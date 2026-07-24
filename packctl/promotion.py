@@ -13,11 +13,13 @@ from .common import (
     finding,
     git_commit,
     git_is_dirty,
+    git_tracked_files,
     is_relative_contract_path,
     is_within,
     load_json,
     make_report,
     sha256_bytes,
+    sha256_file,
     sort_findings,
     tree_digest,
     write_json,
@@ -26,6 +28,78 @@ from .validation import SOURCE_MAP_PATH
 
 
 REQUIRED_SKILL_TARGETS = {"claude_user_skills", "agents_user_skills"}
+
+
+def _route_contains(repo_path: str, kind: object, output_path: str) -> bool:
+    if kind == "file":
+        return output_path == repo_path
+    if kind != "tree":
+        return False
+    if repo_path == ".":
+        return True
+    prefix = repo_path.rstrip("/") + "/"
+    return output_path == repo_path or output_path.startswith(prefix)
+
+
+def _tracked_projection(root: Path, repo_path: str, kind: object) -> list[str]:
+    tracked = git_tracked_files(root)
+    if kind == "file":
+        return [Path(repo_path).name] if repo_path in tracked else []
+    prefix = "" if repo_path == "." else repo_path.rstrip("/") + "/"
+    return [
+        relative if not prefix else relative[len(prefix) :]
+        for relative in tracked
+        if not prefix or relative.startswith(prefix)
+    ]
+
+
+def _projection_entries(
+    source: Path,
+    kind: str,
+    source_files: object,
+) -> list[tuple[str, str]]:
+    if (
+        not isinstance(source_files, list)
+        or not source_files
+        or not all(
+            isinstance(item, str)
+            and item != "."
+            and is_relative_contract_path(item)
+            for item in source_files
+        )
+        or source_files != sorted(set(source_files))
+    ):
+        raise ValueError("invalid source projection")
+    if kind == "file":
+        if source_files != [source.name] or not source.is_file():
+            raise ValueError("invalid file projection")
+        return [(source.name, sha256_file(source))]
+    if kind != "tree" or not source.is_dir():
+        raise ValueError("invalid tree projection")
+    resolved_source = source.resolve(strict=True)
+    entries: list[tuple[str, str]] = []
+    for relative in source_files:
+        candidate = (source / relative).resolve(strict=True)
+        if not candidate.is_file() or not is_within(candidate, resolved_source):
+            raise ValueError("projected source escapes its route")
+        entries.append((relative, sha256_file(candidate)))
+    return entries
+
+
+def _projection_digest(source: Path, kind: str, source_files: object) -> str:
+    material = bytearray()
+    for relative, file_hash in _projection_entries(source, kind, source_files):
+        material.extend(relative.encode("utf-8"))
+        material.extend(b"\0")
+        material.extend(file_hash.encode("ascii"))
+        material.extend(b"\n")
+    return sha256_bytes(bytes(material))
+
+
+def _plan_digest(plan: dict[str, object]) -> str:
+    material = dict(plan)
+    material.pop("plan_digest", None)
+    return sha256_bytes(canonical_json_bytes(material))
 
 
 def _load_object(path: Path, code: str) -> tuple[dict[str, object] | None, list[dict[str, object]]]:
@@ -78,7 +152,7 @@ def _routing_findings(
         "skill_target_ids",
     }
     allowed = required | {"not_applicable_reason"}
-    route_ids: set[str] = set()
+    routes_by_id: dict[str, list[dict[str, object]]] = {}
     for index, route in enumerate(promotion_map["artifacts"]):
         if not isinstance(route, dict) or not required.issubset(route) or set(route) - allowed:
             findings.append(
@@ -92,7 +166,17 @@ def _routing_findings(
             )
             continue
         artifact_id = str(route["artifact_id"])
-        route_ids.add(artifact_id)
+        routes_by_id.setdefault(artifact_id, []).append(route)
+        if len(routes_by_id[artifact_id]) > 1:
+            findings.append(
+                finding(
+                    "PROMOTION-ROUTING-INVALID",
+                    path="promotion-map.json",
+                    line=1,
+                    message="Promotion artifact identifiers must be unique.",
+                    evidence=artifact_id,
+                )
+            )
         repo_path = str(route["repo_path"])
         if not is_relative_contract_path(repo_path):
             findings.append(
@@ -164,23 +248,38 @@ def _routing_findings(
 
     try:
         source_map = load_json(root / SOURCE_MAP_PATH)
-        expected = {
-            str(item["routing_artifact_id"])
+        expected = [
+            (
+                str(item["routing_artifact_id"]),
+                str(item["output_path"]),
+            )
             for item in source_map["artifacts"]
             if isinstance(item, dict)
-        }
+        ]
     except (OSError, UnicodeError, json.JSONDecodeError, KeyError, TypeError):
-        expected = set()
-    for artifact_id in sorted(expected - route_ids):
-        findings.append(
-            finding(
-                "PROMOTION-UNROUTED",
-                path=SOURCE_MAP_PATH,
-                line=0,
-                message="A source-map routing artifact has no promotion route.",
-                evidence=artifact_id,
+        expected = []
+    for artifact_id, output_path in sorted(expected):
+        matching_routes = routes_by_id.get(artifact_id, [])
+        if not any(
+            _route_contains(
+                str(route.get("repo_path", "")),
+                route.get("artifact_kind"),
+                output_path,
             )
-        )
+            for route in matching_routes
+        ):
+            findings.append(
+                finding(
+                    "PROMOTION-UNROUTED",
+                    path=SOURCE_MAP_PATH,
+                    line=0,
+                    message=(
+                        "A source-map output is not contained by its named "
+                        "promotion route."
+                    ),
+                    evidence=f"artifact_id={artifact_id} output_path={output_path}",
+                )
+            )
     return sort_findings(findings)
 
 
@@ -334,6 +433,36 @@ def _legacy_overlap_findings(
     return sort_findings(findings)
 
 
+def _destination_findings(
+    destination: Path,
+    artifact_id: str,
+    allowed: list[Path],
+    forbidden: list[Path],
+) -> list[dict[str, object]]:
+    resolved = destination.resolve(strict=False)
+    if any(is_within(resolved, blocked) for blocked in forbidden):
+        return [
+            finding(
+                "PROMOTION-TARGET-FORBIDDEN",
+                path=artifact_id,
+                line=0,
+                message="A routed destination resolves inside a forbidden root.",
+                evidence=artifact_id,
+            )
+        ]
+    if not any(is_within(resolved, root) for root in allowed):
+        return [
+            finding(
+                "PROMOTION-TARGET-ESCAPE",
+                path=artifact_id,
+                line=0,
+                message="A routed destination resolves outside all allowlisted roots.",
+                evidence=artifact_id,
+            )
+        ]
+    return []
+
+
 def check_promotion(
     root: Path,
     promotion_map_path: Path,
@@ -375,7 +504,34 @@ def check_promotion(
     routes: list[dict[str, object]] = []
     for route_value in promotion_map["artifacts"]:
         route = dict(route_value)
-        route["_resolved_source"] = str((root / str(route["repo_path"])).resolve(strict=True))
+        route["_resolved_source"] = str(
+            (root / str(route["repo_path"])).resolve(strict=True)
+        )
+        route["_source_files"] = _tracked_projection(
+            root,
+            str(route["repo_path"]),
+            route["artifact_kind"],
+        )
+        if not route["_source_files"]:
+            findings.append(
+                finding(
+                    "PROMOTION-SOURCE-UNTRACKED",
+                    path=str(route["repo_path"]),
+                    line=0,
+                    message="A promotion route has no tracked source files.",
+                    evidence=str(route["artifact_id"]),
+                )
+            )
+        if not is_within(Path(str(route["_resolved_source"])), root):
+            findings.append(
+                finding(
+                    "PROMOTION-SOURCE-ESCAPE",
+                    path=str(route["repo_path"]),
+                    line=0,
+                    message="A routed source resolves outside the repository.",
+                    evidence=str(route["artifact_id"]),
+                )
+            )
         routes.append(route)
     findings.extend(_legacy_overlap_findings(routes, targets))
     if any(item["severity"] == "error" for item in findings):
@@ -386,7 +542,24 @@ def check_promotion(
     raw_operations: list[dict[str, object]] = []
     for route in routes:
         source = Path(str(route["_resolved_source"]))
-        after_digest = tree_digest(source)
+        source_files = list(route["_source_files"])
+        try:
+            after_digest = _projection_digest(
+                source,
+                str(route["artifact_kind"]),
+                source_files,
+            )
+        except (OSError, ValueError) as error:
+            findings.append(
+                finding(
+                    "PROMOTION-SOURCE-INVALID",
+                    path=str(route["repo_path"]),
+                    line=0,
+                    message="A tracked source projection cannot be read safely.",
+                    evidence=f"{route['artifact_id']}:{type(error).__name__}",
+                )
+            )
+            continue
         artifact_id = str(route["artifact_id"])
         for target_id in route["vault_targets"]:
             target_root = targets.get(str(target_id))
@@ -401,12 +574,23 @@ def check_promotion(
                     )
                 )
                 continue
-            destination = target_root / artifact_id / commit
+            destination = (target_root / artifact_id / commit).resolve(
+                strict=False
+            )
+            findings.extend(
+                _destination_findings(
+                    destination,
+                    artifact_id,
+                    allowed,
+                    forbidden,
+                )
+            )
             raw_operations.append(
                 {
                     "artifact_id": artifact_id,
                     "artifact_kind": route["artifact_kind"],
                     "source_path": str(source),
+                    "source_files": source_files,
                     "target_path": str(destination),
                     "logical_target_ids": [str(target_id)],
                     "before_digest": tree_digest(destination),
@@ -427,12 +611,23 @@ def check_promotion(
                     )
                 )
                 continue
-            destination = target_root / Path(str(route["repo_path"])).name
+            destination = (
+                target_root / Path(str(route["repo_path"])).name
+            ).resolve(strict=False)
+            findings.extend(
+                _destination_findings(
+                    destination,
+                    artifact_id,
+                    allowed,
+                    forbidden,
+                )
+            )
             raw_operations.append(
                 {
                     "artifact_id": artifact_id,
                     "artifact_kind": route["artifact_kind"],
                     "source_path": str(source),
+                    "source_files": source_files,
                     "target_path": str(destination),
                     "logical_target_ids": [str(target_id)],
                     "before_digest": tree_digest(destination),
@@ -496,10 +691,15 @@ def check_promotion(
         )
     transaction_material = {
         "source_commit": commit,
+        "promotion_map_hash": sha256_file(promotion_map_path),
+        "local_targets_hash": sha256_file(local_targets_path),
         "operations": [
             {
                 "artifact_id": item["artifact_id"],
                 "physical_alias": item["physical_alias"],
+                "target_path": item["target_path"],
+                "logical_target_ids": item["logical_target_ids"],
+                "source_files": item["source_files"],
                 "before_digest": item["before_digest"],
                 "after_digest": item["after_digest"],
             }
@@ -516,7 +716,9 @@ def check_promotion(
         "source_root": str(root),
         "source_commit": commit,
         "promotion_map_path": str(promotion_map_path),
+        "promotion_map_hash": transaction_material["promotion_map_hash"],
         "local_targets_path": str(local_targets_path),
+        "local_targets_hash": transaction_material["local_targets_hash"],
         "backup_root": str(backup_root),
         "allowed_physical_roots": [str(path) for path in allowed],
         "forbidden_physical_roots": [str(path) for path in forbidden],
@@ -531,6 +733,7 @@ def check_promotion(
         ),
         "operations": operations,
     }
+    plan["plan_digest"] = _plan_digest(plan)
     write_json(plan_path, plan)
     return make_report(
         "promote check",
@@ -544,9 +747,21 @@ def check_promotion(
     )
 
 
-def _copy_artifact(source: Path, destination: Path, kind: str) -> None:
-    if kind == "tree":
+def _copy_artifact(
+    source: Path,
+    destination: Path,
+    kind: str,
+    source_files: object | None = None,
+) -> None:
+    if kind == "tree" and source_files is None:
         shutil.copytree(source, destination)
+    elif kind == "tree":
+        entries = _projection_entries(source, kind, source_files)
+        destination.mkdir(parents=True, exist_ok=False)
+        for relative, _ in entries:
+            target = destination / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source / relative, target)
     else:
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
@@ -624,7 +839,9 @@ def apply_promotion(
         "source_root",
         "source_commit",
         "promotion_map_path",
+        "promotion_map_hash",
         "local_targets_path",
+        "local_targets_hash",
         "backup_root",
         "allowed_physical_roots",
         "forbidden_physical_roots",
@@ -632,6 +849,7 @@ def apply_promotion(
         "artifact_ids",
         "target_ids",
         "operations",
+        "plan_digest",
     }
     if set(plan) != required or plan.get("schema_version") != 1:
         return make_report(
@@ -647,6 +865,41 @@ def apply_promotion(
                 )
             ],
         )
+    if _plan_digest(plan) != plan["plan_digest"]:
+        return make_report(
+            "promote apply",
+            root,
+            [
+                finding(
+                    "PROMOTION-PLAN-TAMPERED",
+                    path=plan_path.name,
+                    line=1,
+                    message="The promotion plan changed after it was sealed.",
+                    evidence="plan_digest mismatch",
+                )
+            ],
+        )
+    contract_findings: list[dict[str, object]] = []
+    for path_field, hash_field in (
+        ("promotion_map_path", "promotion_map_hash"),
+        ("local_targets_path", "local_targets_hash"),
+    ):
+        try:
+            actual_hash = sha256_file(Path(str(plan[path_field])))
+        except OSError:
+            actual_hash = "unreadable"
+        if actual_hash != plan[hash_field]:
+            contract_findings.append(
+                finding(
+                    "PROMOTION-CONTRACT-CHANGED",
+                    path=Path(str(plan[path_field])).name,
+                    line=1,
+                    message="A promotion contract changed after promote --check.",
+                    evidence=hash_field,
+                )
+            )
+    if contract_findings:
+        return make_report("promote apply", root, contract_findings)
     findings = _validate_plan_paths(plan)
     if git_commit(root) != plan["source_commit"] or git_is_dirty(root):
         findings.append(
@@ -661,7 +914,15 @@ def apply_promotion(
     for operation in plan["operations"]:
         source = Path(str(operation["source_path"]))
         target = Path(str(operation["target_path"]))
-        if tree_digest(source) != operation["after_digest"]:
+        try:
+            source_digest = _projection_digest(
+                source,
+                str(operation["artifact_kind"]),
+                operation["source_files"],
+            )
+        except (OSError, ValueError):
+            source_digest = "invalid"
+        if source_digest != operation["after_digest"]:
             findings.append(
                 finding(
                     "PROMOTION-SOURCE-CHANGED",
@@ -730,7 +991,12 @@ def apply_promotion(
             _remove_artifact(old)
             old_paths.append(old)
             target.parent.mkdir(parents=True, exist_ok=True)
-            _copy_artifact(source, stage, str(operation["artifact_kind"]))
+            _copy_artifact(
+                source,
+                stage,
+                str(operation["artifact_kind"]),
+                operation["source_files"],
+            )
             stage_paths.append(stage)
             if tree_digest(stage) != operation["after_digest"]:
                 raise RuntimeError(f"staging verification failed for {alias}")

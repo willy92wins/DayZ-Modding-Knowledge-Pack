@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -33,6 +34,18 @@ def promotion_fixture(
         },
         payload={"LICENSE", "README.md", "skills/demo/SKILL.md"},
     )
+    source_map_path = root / "sources/source-map.json"
+    source_map = json.loads(source_map_path.read_text(encoding="utf-8"))
+    for item in source_map["artifacts"]:
+        item["routing_artifact_id"] = (
+            "fixture"
+            if str(item["output_path"]).startswith("skills/demo/")
+            else "fixture-root"
+        )
+    write_json(source_map_path, source_map)
+    run_git(root, "add", "sources/source-map.json")
+    run_git(root, "commit", "-qm", "route fixture artifacts")
+
     targets_root = tmp_path / "targets"
     claude = targets_root / "claude"
     agents = claude if alias_skills else targets_root / "agents"
@@ -51,6 +64,18 @@ def promotion_fixture(
                 "applicability": "domain_invariant",
                 "vault_targets": ["obsidian_snapshots"],
                 "skill_target_ids": REQUIRED_SKILL_TARGETS,
+            },
+            {
+                "artifact_id": "fixture-root",
+                "repo_path": ".",
+                "artifact_kind": "tree",
+                "applicability": "governance",
+                "vault_targets": ["obsidian_snapshots"],
+                "skill_target_ids": [],
+                "not_applicable_reason": (
+                    "Fixture repository contract is durable vault context, "
+                    "not an installed skill."
+                ),
             }
         ],
     }
@@ -105,13 +130,16 @@ def test_promotion_check_routes_repo_vault_and_both_skill_roots(
     assert codes(report) == ["PROMOTION-DRIFT"]
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     assert plan["source_commit"] == run_git(root, "rev-parse", "HEAD")
-    assert set(plan["artifact_ids"]) == {"fixture"}
+    assert set(plan["artifact_ids"]) == {"fixture", "fixture-root"}
     assert set(plan["target_ids"]) == {
         "claude_user_skills",
         "agents_user_skills",
         "obsidian_snapshots",
     }
-    assert len(plan["operations"]) == 3
+    assert len(plan["operations"]) == 4
+    assert plan["plan_digest"]
+    assert plan["promotion_map_hash"]
+    assert plan["local_targets_hash"]
 
 
 def test_alias_targets_dedupe_physical_write_but_keep_logical_readbacks(
@@ -132,7 +160,7 @@ def test_alias_targets_dedupe_physical_write_but_keep_logical_readbacks(
         if "claude_user_skills" in operation["logical_target_ids"]
     )
     assert set(skill_operation["logical_target_ids"]) == set(REQUIRED_SKILL_TARGETS)
-    assert len(plan["operations"]) == 2
+    assert len(plan["operations"]) == 3
 
 
 def test_unrouted_source_artifact_fails_closed(repo_factory, tmp_path: Path) -> None:
@@ -140,6 +168,29 @@ def test_unrouted_source_artifact_fails_closed(repo_factory, tmp_path: Path) -> 
         repo_factory, tmp_path
     )
     write_json(map_path, {"schema_version": 1, "artifacts": []})
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-UNROUTED" in codes(report)
+    assert not plan_path.exists()
+
+
+def test_routing_id_must_cover_each_source_map_output(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    source_map_path = root / "sources/source-map.json"
+    value = json.loads(source_map_path.read_text(encoding="utf-8"))
+    readme = next(
+        item for item in value["artifacts"] if item["output_path"] == "README.md"
+    )
+    readme["routing_artifact_id"] = "fixture"
+    write_json(source_map_path, value)
+    run_git(root, "add", "sources/source-map.json")
+    run_git(root, "commit", "-qm", "misroute fixture artifact")
 
     report = check_promotion(root, map_path, config_path, plan_path)
 
@@ -243,6 +294,106 @@ def test_compare_and_swap_rejects_target_change_without_writes(
     assert codes(report) == ["PROMOTION-TARGET-CHANGED"]
     assert tree_digest(changed) == before
     assert not (paths["agents"] / "demo").exists()
+
+
+def test_apply_rejects_tampered_plan_before_any_write(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan["operations"][0]["after_digest"] = "0" * 64
+    write_json(plan_path, plan)
+
+    report = apply_promotion(plan_path)
+
+    assert codes(report) == ["PROMOTION-PLAN-TAMPERED"]
+    assert not (paths["claude"] / "demo").exists()
+    assert not (paths["agents"] / "demo").exists()
+
+
+@pytest.mark.parametrize("contract", ["promotion_map", "local_targets"])
+def test_apply_rejects_contract_change_after_check(
+    repo_factory,
+    tmp_path: Path,
+    contract: str,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    changed_path = map_path if contract == "promotion_map" else config_path
+    changed_path.write_text(
+        changed_path.read_text(encoding="utf-8") + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    report = apply_promotion(plan_path)
+
+    assert codes(report) == ["PROMOTION-CONTRACT-CHANGED"]
+    assert not (paths["claude"] / "demo").exists()
+
+
+def test_tree_promotion_copies_only_tracked_projection(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    ignored = root / "skills/demo/local-secret.txt"
+    ignored.write_text("must not leave source tree\n", encoding="utf-8")
+    (root / ".git/info/exclude").write_text(
+        "skills/demo/local-secret.txt\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    check_report = check_promotion(root, map_path, config_path, plan_path)
+    assert check_report["verdict"] == "WARN"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    skill_operation = next(
+        item
+        for item in plan["operations"]
+        if item["artifact_id"] == "fixture" and item["target_role"] == "skill"
+    )
+    assert skill_operation["source_files"] == ["SKILL.md"]
+
+    report = apply_promotion(plan_path)
+
+    assert report["verdict"] == "PASS"
+    assert not (paths["claude"] / "demo/local-secret.txt").exists()
+    assert not (
+        paths["vault"]
+        / "fixture"
+        / run_git(root, "rev-parse", "HEAD")
+        / "local-secret.txt"
+    ).exists()
+
+
+def test_check_revalidates_destination_after_child_link_resolution(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    forbidden = paths["targets"] / "plugins"
+    forbidden.mkdir()
+    linked = paths["agents"] / "demo"
+    try:
+        os.symlink(forbidden, linked, target_is_directory=True)
+    except OSError as error:
+        pytest.skip(f"directory symlink unavailable: {error}")
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-TARGET-FORBIDDEN" in codes(report)
+    assert not plan_path.exists()
 
 
 def test_apply_writes_all_targets_and_receipt_without_physical_paths(

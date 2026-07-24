@@ -19,6 +19,7 @@ from .common import (
 
 SOURCE_MAP_PATH = "sources/source-map.json"
 CLAIMS_PATH = "sources/claims.json"
+LINK_ALLOWLIST_PATH = "sources/link-allowlist.json"
 VERIFICATION_LEVELS = {
     "runtime_verified",
     "source_verified",
@@ -603,6 +604,37 @@ def _without_fenced_blocks(lines: Iterable[str]) -> Iterable[tuple[int, str]]:
 def validate_links(root: Path) -> list[dict[str, object]]:
     root = Path(root).resolve()
     findings: list[dict[str, object]] = []
+    allowed_links: set[tuple[str, str]] = set()
+    allowlist_path = root / LINK_ALLOWLIST_PATH
+    if allowlist_path.is_file():
+        try:
+            allowlist = load_json(allowlist_path)
+            if (
+                not isinstance(allowlist, dict)
+                or set(allowlist) != {"schema_version", "entries"}
+                or allowlist["schema_version"] != 1
+                or not isinstance(allowlist["entries"], list)
+            ):
+                raise ValueError("invalid allowlist root")
+            for entry in allowlist["entries"]:
+                if (
+                    not isinstance(entry, dict)
+                    or set(entry) != {"path", "target", "reason"}
+                    or not str(entry["reason"]).strip()
+                    or not is_relative_contract_path(entry["path"])
+                ):
+                    raise ValueError("invalid allowlist entry")
+                allowed_links.add((str(entry["path"]), str(entry["target"])))
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as error:
+            findings.append(
+                finding(
+                    "LINK-ALLOWLIST-INVALID",
+                    path=LINK_ALLOWLIST_PATH,
+                    line=1,
+                    message="The local-link allowlist does not match schema v1.",
+                    evidence=type(error).__name__,
+                )
+            )
     markdown_paths = [
         root / path
         for path in git_tracked_files(root)
@@ -646,6 +678,8 @@ def validate_links(root: Path) -> list[dict[str, object]]:
                     )
                     continue
                 if not candidate.exists():
+                    if (relative, target) in allowed_links:
+                        continue
                     findings.append(
                         finding(
                             "LINK-BROKEN",
@@ -680,6 +714,19 @@ def validate_privacy(root: Path) -> list[dict[str, object]]:
         re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}\b"),
         re.compile(r"\bgithub_pat_[A-Za-z0-9_]{20,}\b"),
         re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
+        re.compile(r"-----BEGIN (?:[A-Z0-9]+ )?PRIVATE KEY-----"),
+        re.compile(
+            r"""(?ix)
+            \b(?:password|passwd|api[_-]?key|client[_-]?secret|access[_-]?token)\b
+            \s*[:=]\s*
+            ["']
+            (?!
+                <|\$\{|%|\[REDACTED\]|changeme|example|placeholder
+            )
+            [^"'\r\n]{8,}
+            ["']
+            """
+        ),
     ]
     for relative in _payload_paths(root):
         path = root / relative

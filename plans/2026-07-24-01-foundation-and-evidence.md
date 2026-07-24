@@ -68,6 +68,9 @@ fases de contenido puedan trabajar sin crear más drift.
   todo archivo seguido por Git; solo `payload` alimenta el ZIP.
 - [ ] Declarar por separado miembros generados para evitar auto-hash del
   `manifest.json`.
+- [ ] Registrar caches, backups, fixtures regenerables, evidencia privada y
+  otros inputs no adoptados en `excluded_inputs[]`, con hash y razón tipada;
+  ningún input descubierto queda implícitamente descartado.
 - [ ] Crear claim registry para todo snippet/claim ejecutable introducido tras
   el baseline, con revisión, `path:line`, licencia, verificación y routing.
 - [ ] Emitir `SOURCE-UNMAPPED` si falta un archivo y

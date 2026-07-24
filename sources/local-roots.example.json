@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "roots": {
+    "dayz_vanilla_scripts": {
+      "path_env": "PACK_DAYZ_VANILLA_SCRIPTS_ROOT",
+      "writable": false
+    },
+    "installed_user_skills": {
+      "path_env": "PACK_INSTALLED_USER_SKILLS_ROOT",
+      "writable": false
+    },
+    "obsidian_knowledge": {
+      "path_env": "PACK_OBSIDIAN_KNOWLEDGE_ROOT",
+      "writable": false
+    },
+    "py3d_fork": {
+      "path_env": "PACK_PY3D_FORK_ROOT",
+      "writable": false
+    }
+  }
+}

@@ -116,6 +116,14 @@ La feature no modifica ni ejecuta DayZ runtime. En todos los escenarios,
     intervención; nunca recibe verdict `PASS`.
     - **Repro in-game**: N/A — fixture de rollback fallido y recuperación manual.
 
+13. **Given** una fuente comparada que contiene caches, backups, fixtures
+    generadas o evidencia privada que no pertenece al payload,
+    **When** se valida el source map,
+    **Then** cada input excluido conserva ID de fuente, path relativo, hash y
+    motivo tipado; no aparece como artefacto ni queda perdido sin adjudicación.
+    - **Repro in-game**: N/A — fixture con un `.pyc`, un `.bak` y una fixture
+      regenerable; los tres quedan excluidos de la allowlist y cubiertos una vez.
+
 ## Success Criteria
 
 - **SC-001 / A1–A2**: 100% de archivos seguidos por Git tiene exactamente una
@@ -175,6 +183,10 @@ La feature no modifica ni ejecuta DayZ runtime. En todos los escenarios,
   ordenan por claves canónicas; dos ejecuciones sobre los mismos bytes producen
   JSON byte-idéntico salvo campos de observación explícitamente excluidos del
   artefacto reproducible.
+- **SC-020 / inputs excluidos**: todo archivo descubierto bajo una fuente
+  reconciliada que no se adopta como artefacto tiene exactamente una entrada
+  `excluded_inputs[]` con hash y razón tipada; caches, backups, fixtures
+  regenerables y evidencia privada nunca entran en el ZIP.
 
 ## Scope — Out of scope
 
@@ -225,19 +237,32 @@ La feature no modifica ni ejecuta DayZ runtime. En todos los escenarios,
 - `sources[]` con `source_id`, `kind`, `revision`, `license` y, cuando aplica,
   `local_root_id`; ningún root físico;
 - `artifacts[]` con `artifact_id`, `output_path`, `distribution_role`,
-  `license`, `verification_level`, `routing_artifact_id` e `inputs[]`;
+  `license`, `verification_level`, `routing_artifact_id`, `hash_policy`
+  (`sha256|self_exempt`) e `inputs[]`;
+- `excluded_inputs[]` con `source_id`, `source_revision`, `source_path`,
+  `source_hash`, `reason` y `decision_evidence`;
 - `generated_artifacts[]` para miembros no seguidos por Git.
 
 Cada `input` contiene `source_id`, `source_revision`, `source_path`,
 `source_hash`, `decision` (`adopt|keep_pack|merge|reject`) y
 `decision_evidence`. Cada payload contiene además `output_hash`. Cada
 `repo_only` exige `distribution_reason`; el propio source map no intenta
-hashearse a sí mismo. Paths son relativos POSIX, sin drive, raíz, `..`, NUL ni
-backslash.
+hashearse a sí mismo: es el único artefacto permitido con
+`hash_policy=self_exempt`, no lleva `output_hash` y sus inputs apuntan al spec e
+inventario que lo generan, nunca a sus propios bytes. Paths son relativos
+POSIX, sin drive, raíz, `..`, NUL ni backslash.
 
 Todo archivo seguido por Git aparece una vez en `artifacts`. Solo
 `distribution_role=payload` entra en la allowlist. Un `generated_artifact` no
 puede existir como archivo seguido por Git.
+
+`excluded_inputs[].reason` pertenece al enum
+`generated|cache|backup|project_evidence|superseded|license_restricted`.
+Una exclusión registra el input comparado pero no crea un output; si contenía
+conocimiento durable, `decision_evidence` identifica el artefacto que lo
+asimiló o explica por qué quedó superseded. Un mismo par
+`source_id + source_path` no puede aparecer a la vez como input de artefacto y
+como excluido.
 
 ### 2. Claim registry v1
 
@@ -442,7 +467,8 @@ Ningún consumidor depende de una API DayZ sin verificar.
 | SC-011, SC-012 | schema de grading + tres pilotos + StarDZ negatives | offline eval harness |
 | SC-013 | clean gate y matriz de exits/códigos | offline subprocess tests |
 | SC-018 | `python -m pytest -q -p no:cacheprovider tools/py3d/tests` | offline gate |
-| Scenarios 1–12 | no runtime DayZ; comandos y fault injection descritos arriba | offline |
+| SC-020 | fixture de inputs excluidos + unicidad contra inputs adoptados | offline `pytest tests/packctl` |
+| Scenarios 1–13 | no runtime DayZ; comandos y fault injection descritos arriba | offline |
 
 ## Crash-recovery / intervención
 

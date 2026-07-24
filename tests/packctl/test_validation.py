@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from conftest import ZERO_COMMIT, artifact, make_source_map, source, write_json
 
 from packctl.validation import (
@@ -157,6 +159,36 @@ def test_links_broken_outside_fence_fails(repo_factory) -> None:
     assert codes(validate_links(root)) == ["LINK-BROKEN"]
 
 
+def test_exact_context_link_allowlist_suppresses_only_declared_target(
+    repo_factory,
+) -> None:
+    root = repo_factory(
+        {
+            "docs/links.md": (
+                "[private context](../private/session.md)\n"
+                "[still broken](other.md)\n"
+            ),
+            "sources/link-allowlist.json": (
+                '{\n'
+                '  "schema_version": 1,\n'
+                '  "entries": [\n'
+                '    {\n'
+                '      "path": "docs/links.md",\n'
+                '      "target": "../private/session.md",\n'
+                '      "reason": "Private context is intentionally not distributed."\n'
+                '    }\n'
+                '  ]\n'
+                '}\n'
+            ),
+        }
+    )
+
+    findings = validate_links(root)
+
+    assert codes(findings) == ["LINK-BROKEN"]
+    assert findings[0]["evidence"] == "other.md"
+
+
 def test_private_absolute_path_is_rejected(repo_factory) -> None:
     root = repo_factory({"notes.md": "Open C:\\Users\\alice\\private\\file.txt\n"})
 
@@ -172,6 +204,30 @@ def test_secret_finding_redacts_the_value(repo_factory) -> None:
     assert codes(findings) == ["PRIVACY-SECRET"]
     assert token not in json.dumps(findings)
     assert "[REDACTED]" in json.dumps(findings)
+
+
+@pytest.mark.parametrize(
+    "secret_line",
+    [
+        "-----BEGIN PRIVATE KEY-----",
+        'password = "this-is-a-real-literal-secret"',
+        "api_key: '0123456789abcdef0123456789abcdef'",
+    ],
+)
+def test_privacy_rejects_private_keys_and_literal_credentials(
+    repo_factory,
+    secret_line: str,
+) -> None:
+    root = repo_factory(
+        {"notes.md": secret_line + "\n"},
+        payload={"LICENSE", "README.md", "notes.md"},
+    )
+
+    findings = validate_privacy(root)
+
+    assert [item["code"] for item in findings] == ["PRIVACY-SECRET"]
+    assert findings[0]["evidence"] == "[REDACTED]"
+    assert secret_line not in json.dumps(findings)
 
 
 def test_license_missing_fails(repo_factory) -> None:

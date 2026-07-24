@@ -173,7 +173,7 @@ Gotcha bpy #4: `bm.to_mesh(me)` invalida las refs RNA previas (`me.uv_layers[..]
 
 ### 2.1 MLOD (editable, py3d)
 - Por face-vertex: `point_index (u32) + normal_index (u32) + uv (2×float32)` —
-  [`py3d/__init__.py:1012-1015`](../../tools/py3d/__init__.py) (site-packages, verificado). Sin comprimir. Default (0,0) `:992`.
+  [`py3d/__init__.py:1012-1015`](../../tools/py3d/py3d/__init__.py) (site-packages, verificado). Sin comprimir. Default (0,0) `:992`.
 - Cara = 3-4 vértices + texture/material ASCIIZ por cara (`:1044-1045`).
 - TAGG `#UVSet#`: py3d lo ESCRIBE al guardar (`:1614-1619`, duplicando las UV de las
   caras) y lo IGNORA al leer (`:1542`). El formato admite **hasta 8 UV sets** por LOD;
@@ -203,7 +203,7 @@ Gotcha bpy #4: `bm.to_mesh(me)` invalida las refs RNA previas (`me.uv_layers[..]
 | Ruta | Flip | Cita |
 |---|---|---|
 | OBJ → p3d | `v_dayz = 1 − v_obj` | `LFQuad_dev\assemble_p3d.py:35` (`vt.uv=(u,1.0-vv)`) |
-| p3d → glTF (viewer/inspector) | `1 − v` al exportar, des-flip al reconstruir | [`py3d/__init__.py:349,555`](../../tools/py3d/__init__.py); `dayz-3d-viewer/SKILL.md:151` |
+| p3d → glTF (viewer/inspector) | `1 − v` al exportar, des-flip al reconstruir | [`py3d/__init__.py:349,555`](../../tools/py3d/py3d/__init__.py); `dayz-3d-viewer/SKILL.md:151` |
 | Blender interno | V=0 abajo (OpenGL) | El exportador OBJ ya lo deja en convención OBJ |
 - Regla: cada conversor debe declarar su convención; verificar con un checker asimétrico,
   no con textura plana (que es UV-invariante y esconde el flip).

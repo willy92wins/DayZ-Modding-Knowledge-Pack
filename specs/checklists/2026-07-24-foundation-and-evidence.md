@@ -7,8 +7,8 @@
 
 ## Measurability
 
-- [x] **CHK001** — SC-001–SC-019 tienen conteos, hashes, exits, códigos o
-  estados binarios verificables (`spec:119-176`).
+- [x] **CHK001** — SC-001–SC-020 tienen conteos, hashes, exits, códigos o
+  estados binarios verificables.
 - [x] **CHK002** — no se usan «funciona», «robusto» o «correcto» como criterio;
   cada resultado tiene un observable o una fixture exacta.
 - [x] **CHK003** — límites numéricos declaran unidad/umbral: 1024 caracteres,
@@ -16,12 +16,12 @@
 
 ## Testability / verification path
 
-- [x] **CHK004** — los 12 escenarios usan Given/When/Then
-  (`spec:37-117`). El repro in-game está explícitamente marcado N/A porque esta
+- [x] **CHK004** — los 13 escenarios usan Given/When/Then. El repro in-game
+  está explícitamente marcado N/A porque esta
   feature no carga ni modifica DayZ runtime; cada uno ofrece su repro offline
   autoritativo en lugar de simular un gate de juego inexistente.
-- [x] **CHK005** — SC-001–SC-019 y Scenarios 1–12 aparecen en la matriz
-  (`spec:432-445`).
+- [x] **CHK005** — SC-001–SC-020 y Scenarios 1–13 aparecen en la matriz de
+  verificación.
 - [x] **CHK006** — todos los checks son offline y están marcados así; no se
   consume un ciclo DayZDiag/servidor sin necesidad.
 
@@ -64,10 +64,13 @@
   fault-injection, rollback fallido e intervención manual (Scenarios 8–12);
   `rigorous-data-audit` está obligado antes de Task 8
   (`spec:447-453`).
+- [x] **CHK017** — los inputs descubiertos pero no adoptados tienen contrato
+  explícito `excluded_inputs[]`, hash, razón tipada y fixture positiva/negativa;
+  no se confunde «excluido del payload» con «ignorado sin decisión».
 
 ## Result
 
-- **Pass count: 16 / 16**
+- **Pass count: 17 / 17**
 - **Failing IDs**: ninguno.
 - **Verdict**: Ready-to-implement para Tasks 1–7. Task 8 conserva el hard stop
   explícito sobre el root físico de `rigorous-data-audit`.

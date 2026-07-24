@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from packctl.gate import run_gate
@@ -77,3 +78,61 @@ def test_gate_requires_external_skills_ref_when_skills_exist(
     assert "SKILLS-REF-NOT-CONFIGURED" in [
         item["code"] for item in report["findings"]
     ]
+
+
+def test_gate_rejects_missing_evidence_even_when_fail_is_expected(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    case = {
+        "schema_version": 1,
+        "case_id": "missing-evidence",
+        "family": "api",
+        "prompt": "Answer from evidence.",
+        "fixtures": {"fixture.c": "class Demo {};\n"},
+        "assertions": [
+            {
+                "assertion_id": "mentions-demo",
+                "type": "contains",
+                "value": "Demo",
+                "evidence": ["proof.txt"],
+            }
+        ],
+        "grader": {"type": "mechanical"},
+        "required_evidence": ["proof.txt"],
+        "variants": [
+            {
+                "variant_id": "baseline",
+                "skill_revision": "absent",
+                "baseline_revision": "absent",
+                "runner_id": "fixture",
+                "expected_verdict": "FAIL",
+                "response": "Demo",
+                "evidence": {},
+                "tokens_input": 1,
+                "tokens_output": 1,
+            },
+            {
+                "variant_id": "current",
+                "skill_revision": "current",
+                "baseline_revision": "absent",
+                "runner_id": "fixture",
+                "expected_verdict": "PASS",
+                "response": "Demo",
+                "evidence": {"proof.txt": "fixture.c:1\n"},
+                "tokens_input": 1,
+                "tokens_output": 1,
+            }
+        ],
+    }
+    root = repo_factory(
+        {"evals/cases/missing-evidence.json": json.dumps(case)},
+        payload={"LICENSE", "README.md"},
+    )
+
+    report = run_gate(root, tmp_path / "reports")
+
+    assert "EVAL-MISSING-EVIDENCE" in [
+        item["code"] for item in report["findings"]
+    ]
+    assert report["checks"]["evals"]["verdict"] == "FAIL"

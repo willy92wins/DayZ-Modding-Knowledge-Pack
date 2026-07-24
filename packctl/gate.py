@@ -250,6 +250,15 @@ def run_gate(root: Path, report_dir: Path) -> dict[str, object]:
                 grading_path = output / "grading.json"
                 actual = result["verdict"]
                 expected = variant["expected_verdict"]
+                for eval_finding in result["findings"]:
+                    if eval_finding["code"] == "EVAL-MISSING-EVIDENCE":
+                        copied = dict(eval_finding)
+                        copied["path"] = case_path.relative_to(root).as_posix()
+                        copied["evidence"] = (
+                            f"variant={variant['variant_id']} "
+                            f"missing={eval_finding['evidence']}"
+                        )
+                        eval_findings.append(copied)
                 if actual != expected:
                     eval_findings.append(
                         finding(
