@@ -4,6 +4,13 @@
 > autoriza publicar. Las copias instaladas solo se modifican en Task 8, desde
 > un commit validado y con readback.
 
+> **Estado:** completado el 2026-07-24. Contenido promovido desde
+> `7a25432febc112a957a7c1ef7a7d2c16c221b24f` mediante la transacción
+> `c7b5366cc761a8038e52f6a2`; recibo create-only
+> `promotions/receipts/c7b5366cc761a8038e52f6a2.json`. El cierre verificó
+> 53/53 targets físicos, 67 aliases lógicos, cadena `COMMIT`, cero residuos,
+> cero paths privados y recovery idempotente.
+
 ## Objetivo y traza DPF
 
 Cerrar A1–A9 y B1–B5. El resultado es una fuente reconciliada, validable y
@@ -59,139 +66,139 @@ fases de contenido puedan trabajar sin crear más drift.
 
 ## Task 1 — Source map y política de conflictos
 
-- [ ] Definir schema v1 con `output_path`, `distribution_role`
+- [x] Definir schema v1 con `output_path`, `distribution_role`
   (`payload|repo_only`), `output_hash`, inputs con `source_id`,
   `source_revision`, `source_hash`, `license`, `verification_level`,
   `decision` y `decision_evidence`.
-- [ ] Separar IDs públicos de roots locales: el mapa versionado nunca guarda
+- [x] Separar IDs públicos de roots locales: el mapa versionado nunca guarda
   paths de usuario; `local-roots.json` no entra en Git ni en el ZIP.
-- [ ] Inventariar los 138 archivos baseline y clasificar exactamente una vez
+- [x] Inventariar los 138 archivos baseline y clasificar exactamente una vez
   todo archivo seguido por Git; solo `payload` alimenta el ZIP.
-- [ ] Declarar por separado miembros generados para evitar auto-hash del
+- [x] Declarar por separado miembros generados para evitar auto-hash del
   `manifest.json`.
-- [ ] Registrar caches, backups, fixtures regenerables, evidencia privada y
+- [x] Registrar caches, backups, fixtures regenerables, evidencia privada y
   otros inputs no adoptados en `excluded_inputs[]`, con hash y razón tipada;
   ningún input descubierto queda implícitamente descartado.
-- [ ] Crear claim registry para todo snippet/claim ejecutable introducido tras
+- [x] Crear claim registry para todo snippet/claim ejecutable introducido tras
   el baseline, con revisión, `path:line`, licencia, verificación y routing.
-- [ ] Emitir `SOURCE-UNMAPPED` si falta un archivo y
+- [x] Emitir `SOURCE-UNMAPPED` si falta un archivo y
   `SOURCE-CONFLICT-UNDECIDED` si dos fuentes difieren sin adjudicación.
-- [ ] Fijar explícitamente la convención del manifiesto: el count incluye o
+- [x] Fijar explícitamente la convención del manifiesto: el count incluye o
   excluye el propio manifest, y validator/builder usan la misma.
-- [ ] Gate: 138 entradas cubiertas y 0 conflictos silenciosos.
+- [x] Gate: 138 entradas cubiertas y 0 conflictos silenciosos.
 
 ## Task 2 — Reconciliación de fuentes
 
-- [ ] Comparar por contenido cada una de las 14 skills contra su fuente actual.
-- [ ] Clasificar cada delta como `adopt`, `keep-pack`, `merge` o `reject`, con
+- [x] Comparar por contenido cada una de las 14 skills contra su fuente actual.
+- [x] Clasificar cada delta como `adopt`, `keep-pack`, `merge` o `reject`, con
   evidencia; nunca usar mtime como autoridad.
-- [ ] Repetir para las 15 vault notes y el fork/rollout py3d.
-- [ ] Mantener sanitización pública: una mejora válida con ruta privada se
+- [x] Repetir para las 15 vault notes y el fork/rollout py3d.
+- [x] Mantener sanitización pública: una mejora válida con ruta privada se
   adapta, no se copia literalmente.
-- [ ] Hacer un commit independiente por familia: skills, knowledge y py3d.
-- [ ] Gate: `SOURCE-CONFLICT-UNDECIDED=0`.
+- [x] Hacer un commit independiente por familia: skills, knowledge y py3d.
+- [x] Gate: `SOURCE-CONFLICT-UNDECIDED=0`.
 
 ## Task 3 — Validez y frontmatter de skills
 
-- [ ] Acortar las ocho descriptions rechazadas sin perder triggers; mover
+- [x] Acortar las ocho descriptions rechazadas sin perder triggers; mover
   detalle al cuerpo/references.
-- [ ] Aplicar el test de caps y progressive disclosure a las 14 skills.
-- [ ] Añadir por skill metadata durable de compatibilidad sin inventar
+- [x] Aplicar el test de caps y progressive disclosure a las 14 skills.
+- [x] Añadir por skill metadata durable de compatibilidad sin inventar
   frontmatter fuera de la especificación oficial.
-- [ ] Ejecutar `skills-ref` con UTF-8 explícito en Windows.
-- [ ] Añadir una fixture que excede 1024 y comprobar que el gate falla.
-- [ ] Gate: 14/14 válidas; nuevas skills se descubren dinámicamente y también
+- [x] Ejecutar `skills-ref` con UTF-8 explícito en Windows.
+- [x] Añadir una fixture que excede 1024 y comprobar que el gate falla.
+- [x] Gate: 14/14 válidas; nuevas skills se descubren dinámicamente y también
   deben pasar.
 
 ## Task 4 — Licencias, privacidad y documentación
 
-- [ ] Añadir MIT raíz únicamente sobre material propio.
-- [ ] Mantener la licencia upstream de py3d y registrar atribuciones.
-- [ ] Crear notices por componente; GPL/DPL-ND/CC-NC quedan como referencias,
+- [x] Añadir MIT raíz únicamente sobre material propio.
+- [x] Mantener la licencia upstream de py3d y registrar atribuciones.
+- [x] Crear notices por componente; GPL/DPL-ND/CC-NC quedan como referencias,
   no payload.
-- [ ] Documentar contribución, compatibilidad, breaking changes y update
+- [x] Documentar contribución, compatibilidad, breaking changes y update
   strategy.
-- [ ] Añadir scanners por contenido para secretos, identidad, rutas absolutas
+- [x] Añadir scanners por contenido para secretos, identidad, rutas absolutas
   y payloads de terceros.
-- [ ] Gate: audit de release con 0 findings no allowlisted.
+- [x] Gate: audit de release con 0 findings no allowlisted.
 
 ## Task 5 — `packctl`: validator y builder reproducible
 
-- [ ] Implementar inventario, source-map validation, skill validation,
+- [x] Implementar inventario, source-map validation, skill validation,
   Markdown-link validation con fences ignoradas, privacy/license checks,
   Python checks y py3d tests.
-- [ ] Implementar `dayz-api-index` regenerable y read-only: allowed-roots,
+- [x] Implementar `dayz-api-index` regenerable y read-only: allowed-roots,
   metadata de build/schema, scanner que excluye comentarios, query que conserva
   colisiones y rechazo fail-closed de escapes/mismatches.
-- [ ] Cubrir fixtures API clase activa/comentada/inexistente/colisión, escape,
+- [x] Cubrir fixtures API clase activa/comentada/inexistente/colisión, escape,
   build mismatch y schema mismatch para cerrar B2 explícitamente.
-- [ ] Definir findings tipados con `code`, `severity`, `path`, `line`,
+- [x] Definir findings tipados con `code`, `severity`, `path`, `line`,
   `message` y `evidence`.
-- [ ] Definir verdict JSON `PASS|WARN|FAIL` y exits estables:
+- [x] Definir verdict JSON `PASS|WARN|FAIL` y exits estables:
   `0=sin findings bloqueantes`, `1=findings de validación`,
   `2=uso/configuración/error interno`.
-- [ ] Builder por allowlist; orden, timestamps, permisos y encoding
+- [x] Builder por allowlist; orden, timestamps, permisos y encoding
   normalizados.
-- [ ] Fijar LF mediante `.gitattributes`, recalcular hashes sobre bytes
+- [x] Fijar LF mediante `.gitattributes`, recalcular hashes sobre bytes
   canónicos y demostrar validator exit 0 desde un clon limpio aun con
   `core.autocrlf=true`.
-- [ ] Mutaciones dirigidas: private path, frontmatter largo, source unmapped,
+- [x] Mutaciones dirigidas: private path, frontmatter largo, source unmapped,
   link roto, licencia ausente y archivo extra.
-- [ ] Gate: dos builds del mismo commit tienen SHA-256 idéntico.
+- [x] Gate: dos builds del mismo commit tienen SHA-256 idéntico.
 
 ## Task 6 — Harness de evals piloto
 
-- [ ] Definir schema para prompt, fixtures, assertions mecánicas, grader,
+- [x] Definir schema para prompt, fixtures, assertions mecánicas, grader,
   evidence, tiempo, tokens, skill/baseline revision y verdict.
-- [ ] Ejecutar en workspace temporal limpio.
-- [ ] Pilotar tres familias: API/Enforce, UI y persistence.
-- [ ] Añadir como negativos los contratos falsos detectados en StarDZ.
-- [ ] Comparar skill actual contra snapshot anterior o ausencia de skill.
-- [ ] Gate: cada run produce `grading.json`; un grader sin evidencia falla.
+- [x] Ejecutar en workspace temporal limpio.
+- [x] Pilotar tres familias: API/Enforce, UI y persistence.
+- [x] Añadir como negativos los contratos falsos detectados en StarDZ.
+- [x] Comparar skill actual contra snapshot anterior o ausencia de skill.
+- [x] Gate: cada run produce `grading.json`; un grader sin evidencia falla.
 
 ## Task 7 — Routing y promoción de tres superficies
 
-- [ ] Definir por artefacto `artifact_id`, `repo_path`, `vault_target_id`,
+- [x] Definir por artefacto `artifact_id`, `repo_path`, `vault_target_id`,
   `skill_target_ids`, `applicability`, `not_applicable_reason`,
   `source_commit` y hashes esperados.
-- [ ] Mantener roots físicos únicamente en `promotions/local-targets.json`;
+- [x] Mantener roots físicos únicamente en `promotions/local-targets.json`;
   mapa y recibos versionados usan IDs lógicos y nunca rutas privadas.
-- [ ] Requerir repo + Obsidian para todo conocimiento aceptado. Requerir skill
+- [x] Requerir repo + Obsidian para todo conocimiento aceptado. Requerir skill
   para toda invariante de dominio; `not_applicable` solo vale para gobierno o
   tooling sin consumidor de skill y exige motivo.
-- [ ] `[DESIGN]` Separar `promote --check` read-only de `promote --apply`.
+- [x] `[DESIGN]` Separar `promote --check` read-only de `promote --apply`.
   `check` emite commit, hash previo y hash esperado; `apply` revalida por
   compare-and-swap bajo lock antes de escribir.
-- [ ] `[DESIGN]` `apply` usa staging en el mismo volumen, valida el árbol
+- [x] `[DESIGN]` `apply` usa staging en el mismo volumen, valida el árbol
   completo, crea y verifica backup, reemplaza solo targets allowlisted,
   verifica readback y revierte en orden inverso ante cualquier fallo.
-- [ ] Resolver junctions componente a componente, rechazar escapes/loops,
+- [x] Resolver junctions componente a componente, rechazar escapes/loops,
   preservar el enlace y deduplicar aliases físicos sin omitir readback de cada
   target lógico. Plugins/cachés nunca son roots gestionados.
-- [ ] Promover a Obsidian mediante snapshot exacto e inmutable por
+- [x] Promover a Obsidian mediante snapshot exacto e inmutable por
   `{artifact_id}/{source_commit}`; no reemplazar notas privadas canónicas.
-- [ ] Cubrir fixtures: routing ausente, hash distinto, target no configurado,
+- [x] Cubrir fixtures: routing ausente, hash distinto, target no configurado,
   target read-only, copia parcial, skill legacy con triggers solapados y
   `not_applicable` inválido.
-- [ ] Gate: dry-run produce `PROMOTION-UNROUTED=0` y
+- [x] Gate: dry-run produce `PROMOTION-UNROUTED=0` y
   `PROMOTION-DRIFT=0`.
 
 ## Task 8 — Gates de cierre y primera promoción
 
-- [ ] Crear un commit limpio con el contenido reconciliado.
-- [ ] Checkout limpio y validator completo exit 0.
-- [ ] Build reproducible ×2 con SHA idéntico.
-- [ ] Ejecutar promoción desde ese commit a Obsidian y todos los targets
+- [x] Crear un commit limpio con el contenido reconciliado.
+- [x] Checkout limpio y validator completo exit 0.
+- [x] Build reproducible ×2 con SHA idéntico.
+- [x] Ejecutar promoción desde ese commit a Obsidian y todos los targets
   de skills configurados y escribibles.
-- [ ] Resolver explícitamente si el target físico externo de
+- [x] Resolver explícitamente si el target físico externo de
   `rigorous-data-audit` se añade a `allowed_physical_roots`; sin autorización,
   mantener fail-closed y no declarar la fase cerrada.
-- [ ] Leer de vuelta cada destino, verificar hashes y crear un recibo sin rutas
+- [x] Leer de vuelta cada destino, verificar hashes y crear un recibo sin rutas
   privadas; un fallo deja verdict no-cero y no declara la fase cerrada.
-- [ ] `git diff --check` limpio.
-- [ ] Revisión fría Codex contra A/B.
-- [ ] Actualizar `HANDOFF.md`, DPF y memoria durable.
-- [ ] Commit separado para recibo/handoff de promoción.
+- [x] `git diff --check` limpio.
+- [x] Revisión fría Codex contra A/B.
+- [x] Actualizar `HANDOFF.md`, DPF y memoria durable.
+- [x] Commit separado para recibo/handoff de promoción.
 
 ## Hard stops
 

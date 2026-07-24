@@ -23,6 +23,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `dayz_test_run` / `dayz_test_stop` lifecycle.
 - Hardened generated test launchers so credentials are scoped to child
   processes and no VPP password is packaged by default.
+- Promoted the validated Phase 01 snapshot from commit
+  `7a25432febc112a957a7c1ef7a7d2c16c221b24f` to Obsidian and all configured
+  skill targets with create-only receipt `c7b5366cc761a8038e52f6a2`.
+
+### Fixed
+
+- Promotion now durably synchronizes and safely removes verified Windows
+  sidecars containing read-only files while preserving fail-closed behavior
+  for unrelated permission errors.
 
 ### Security
 

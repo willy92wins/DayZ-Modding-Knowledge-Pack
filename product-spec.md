@@ -34,14 +34,14 @@ y entrada en el changelog.
 | # | Criterio | Cómo se verifica | Estado |
 |---|---|---|---|
 | A1 | Git es fuente canónica del pack distribuible; Obsidian conserva memoria/evidencia completa y las skills instaladas son despliegues operativos | roles registrados en ADR 001/002; ninguna release se construye desde una copia instalada | ✓ |
-| A2 | Inventario de procedencia cubre el 100% de archivos distribuibles y adjudica cada drift pack↔fuente | validador devuelve 0 `SOURCE-UNMAPPED`, 0 conflictos sin decisión | ❓ |
-| A3 | Todas las skills cumplen la especificación Agent Skills y frontmatter ≤1024 caracteres | `skills-ref validate` con UTF-8: N/N válidas, exit 0 | ❓ |
-| A4 | Dos builds limpios del mismo commit producen ZIP byte-idéntico y manifiestos iguales | dos SHA-256 iguales; orden, timestamps y encoding normalizados | ❓ |
-| A5 | Manifest machine-readable declara release, commit, DayZ build, schema, licencias, hashes y convención de conteo | schema validation exit 0; número declarado = archivos reales según convención explícita | ❓ |
-| A6 | Licencia MIT raíz, notices de terceros y política “no redistribuir rutas/inputs privados” | audit de licencias: 0 archivos distribuibles sin cobertura; py3d conserva MIT upstream | ❓ |
-| A7 | Matriz por skill con build DayZ probado, fecha, dependencias y breaking changes | 100% de skills listadas; ninguna afirma compatibilidad sin evidencia | ❓ |
-| A8 | Cero secretos, identidades, rutas privadas o links locales rotos no allowlisted | scanner y link audit exit 0 sobre el ZIP construido | ❓ |
-| A9 | Todo conocimiento aceptado tiene routing repo↔Obsidian↔skill aplicable y recibo de promoción por commit/hash | `PROMOTION-UNROUTED=0`, `PROMOTION-DRIFT=0`; readback de todos los targets configurados; `not_applicable` exige motivo y se prohíbe para invariantes de dominio | ❓ |
+| A2 | Inventario de procedencia cubre el 100% de archivos distribuibles y adjudica cada drift pack↔fuente | validador devuelve 0 `SOURCE-UNMAPPED`, 0 conflictos sin decisión | ✓ |
+| A3 | Todas las skills cumplen la especificación Agent Skills y frontmatter ≤1024 caracteres | `skills-ref validate` con UTF-8: N/N válidas, exit 0 | ✓ |
+| A4 | Dos builds limpios del mismo commit producen ZIP byte-idéntico y manifiestos iguales | dos SHA-256 iguales; orden, timestamps y encoding normalizados | ✓ |
+| A5 | Manifest machine-readable declara release, commit, DayZ build, schema, licencias, hashes y convención de conteo | schema validation exit 0; número declarado = archivos reales según convención explícita | ✓ |
+| A6 | Licencia MIT raíz, notices de terceros y política “no redistribuir rutas/inputs privados” | audit de licencias: 0 archivos distribuibles sin cobertura; py3d conserva MIT upstream | ✓ |
+| A7 | Matriz por skill con build DayZ probado, fecha, dependencias y breaking changes | 100% de skills listadas; ninguna afirma compatibilidad sin evidencia | ✓ |
+| A8 | Cero secretos, identidades, rutas privadas o links locales rotos no allowlisted | scanner y link audit exit 0 sobre el ZIP construido | ✓ |
+| A9 | Todo conocimiento aceptado tiene routing repo↔Obsidian↔skill aplicable y recibo de promoción por commit/hash | `PROMOTION-UNROUTED=0`, `PROMOTION-DRIFT=0`; readback de todos los targets configurados; `not_applicable` exige motivo y se prohíbe para invariantes de dominio | ✓ |
 
 ## B — Evidencia, APIs, evaluaciones y preflight
 
@@ -50,11 +50,11 @@ y entrada en el changelog.
 
 | # | Criterio | Cómo se verifica | Estado |
 |---|---|---|---|
-| B1 | Cada claim/snippet ejecutable nuevo registra fuente, build/commit, `path:line`, licencia, fecha, nivel de verificación y routing de promoción | provenance audit: 0 claims ejecutables sin registro o destino | ❓ |
-| B2 | Índice `dayz-api-index` regenerable, vanilla-first, read-only, con allowed-roots y rechazo de build/schema incompatible | fixtures clase activa/comentada/inexistente/colisión; path escape y build mismatch fallan cerrados | ❓ |
-| B3 | Harness de evals compara skill actual contra versión anterior o ausencia de skill en workspace limpio | cada run emite `grading.json`, evidencia, duración y tokens; piloto cubre API, UI y persistence | ❓ |
-| B4 | Errores StarDZ auditados existen como casos negativos | evals rechazan `autoptr` falso, overload falso, `Managed` falso, `JsonLoadFile`, `OnDrop` incompleto y Dabs inválido | ❓ |
-| B5 | Pipeline CI-like ejecuta skill validation, provenance, links, privacy, Python, py3d y build reproducible | un comando local devuelve 0; mutaciones dirigidas producen códigos estables y exit no-cero | ❓ |
+| B1 | Cada claim/snippet ejecutable nuevo registra fuente, build/commit, `path:line`, licencia, fecha, nivel de verificación y routing de promoción | provenance audit: 0 claims ejecutables sin registro o destino | ✓ |
+| B2 | Índice `dayz-api-index` regenerable, vanilla-first, read-only, con allowed-roots y rechazo de build/schema incompatible | fixtures clase activa/comentada/inexistente/colisión; path escape y build mismatch fallan cerrados | ✓ |
+| B3 | Harness de evals compara skill actual contra versión anterior o ausencia de skill en workspace limpio | cada run emite `grading.json`, evidencia, duración y tokens; piloto cubre API, UI y persistence | ✓ |
+| B4 | Errores StarDZ auditados existen como casos negativos | evals rechazan `autoptr` falso, overload falso, `Managed` falso, `JsonLoadFile`, `OnDrop` incompleto y Dabs inválido | ✓ |
+| B5 | Pipeline CI-like ejecuta skill validation, provenance, links, privacy, Python, py3d y build reproducible | un comando local devuelve 0; mutaciones dirigidas producen códigos estables y exit no-cero | ✓ |
 | B6 | Template mínimo `@MyMod` implementa la estructura, contratos de config, build y misión de test recomendados | scaffold se instancia sin rutas privadas y pasa el preflight estructural | ❓ |
 | B7 | Simuladores offline reducen iteraciones sin presentarse como sustitutos del engine | parser de config y validadores loot/CE/physics tienen fixtures positivas, negativas y límites explícitos | ❓ |
 

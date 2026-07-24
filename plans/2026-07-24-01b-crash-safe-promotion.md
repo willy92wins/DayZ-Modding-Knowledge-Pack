@@ -225,8 +225,15 @@ locks vivos y huérfanos, tres generaciones consecutivas, retry tras `ABORT`,
 inicialización atómica, renames transitorias, copias y limpieza read-only, y
 carreras bajo lock.
 
-Verificación intermedia antes del gate final:
+Verificación final del commit promovido
+`7a25432febc112a957a7c1ef7a7d2c16c221b24f`:
 
-- `python -m pytest -q`: 271 passed, 13 skipped;
-- los 13 skips son fixtures condicionadas por capacidades de enlaces del host;
-- ninguna promoción sobre roots reales se ha ejecutado todavía.
+- `python -m pytest -q`: 282 passed, 13 skipped;
+- gate: `packctl` 143 passed/3 skipped, py3d 130/10, 14/14 skills,
+  12 variantes de eval y cero findings;
+- build reproducible:
+  `e48bee5e53e943d687b5cc234e30fa14d3c4347340c6900c146a3ce0e9289fbf`
+  en ambas ejecuciones;
+- transacción `c7b5366cc761a8038e52f6a2`: `COMMIT`, 53 targets físicos,
+  67 aliases lógicos, 162 eventos válidos, cero residuos y dos recoveries
+  idempotentes `PASS/COMMIT`.

@@ -44,14 +44,20 @@ existe, PowerShell solo para integración Windows/DayZ.
 
 ## Fase 01 — Foundation + evidence
 
-- [ ] Ejecutar
+- [x] Ejecutar
   [`2026-07-24-01-foundation-and-evidence.md`](2026-07-24-01-foundation-and-evidence.md).
-- [ ] Bloquear content edits mientras exista `SOURCE-UNMAPPED`.
-- [ ] Registrar baseline de evals y compatibilidad DayZ.
-- [ ] Producir el primer ZIP reproducible sin afirmar aún que el contenido está
+- [x] Bloquear content edits mientras exista `SOURCE-UNMAPPED`.
+- [x] Registrar baseline de evals y compatibilidad DayZ.
+- [x] Producir el primer ZIP reproducible sin afirmar aún que el contenido está
   actualizado.
-- [ ] Promover el snapshot reconciliado a Obsidian y targets de skills
+- [x] Promover el snapshot reconciliado a Obsidian y targets de skills
   configurados solo después de todos los gates, con readback y recibo.
+
+**Cierre:** commit de contenido `7a25432febc112a957a7c1ef7a7d2c16c221b24f`;
+gate 143/3 `packctl`, 130/10 `py3d`, 14/14 skills, 12 evals y dos builds con
+SHA-256 `e48bee5e53e943d687b5cc234e30fa14d3c4347340c6900c146a3ce0e9289fbf`;
+promoción `c7b5366cc761a8038e52f6a2` verificada en 53 targets físicos y 67 aliases
+lógicos.
 
 ## Fase 02 — `dayz-ui-lab`
 

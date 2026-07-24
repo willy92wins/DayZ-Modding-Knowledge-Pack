@@ -236,7 +236,24 @@ adicionales:
 La ejecución focalizada posterior al decimocuarto fix cubrió los dos casos de
 sincronización y los tres de eliminación read-only: **5 passed**. La
 recuperación idempotente de la transacción abortada también devolvió `PASS` y
-`decision=ABORT`. Estos resultados demuestran el contrato focalizado en el
-árbol de trabajo, pero no autorizan por sí solos otro intento real: primero se
-repite el gate completo desde commit limpio, validator, 14/14 skills,
-12 variantes de eval y build reproducible por duplicado.
+`decision=ABORT`.
+
+## Cierre de promoción
+
+**[EXACT]** El commit de contenido
+`7a25432febc112a957a7c1ef7a7d2c16c221b24f` superó el gate integral:
+`packctl` 143 passed/3 skipped, py3d 130/10, pytest global 282/13, 14/14
+skills, 12 variantes de eval, 43 archivos Python compilados, validator con
+cero findings, clon limpio con `core.autocrlf=true` y dos builds con SHA-256
+idéntico
+`e48bee5e53e943d687b5cc234e30fa14d3c4347340c6900c146a3ce0e9289fbf`.
+
+El preflight posterior verificó staging 53/53, backup y cleanup 16/16, acceso
+DELETE 16/16, PRE 53/53 y cero residuos. La sexta transacción
+`c7b5366cc761a8038e52f6a2` terminó en `COMMIT`. La revisión independiente
+validó los 162 eventos encadenados, el hash del recibo
+`44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd`,
+53/53 targets físicos, 67 aliases lógicos, cero paths privados y cero
+sidecars. Dos recoveries posteriores devolvieron `PASS/COMMIT` sin mutar la
+cadena. Un `promote --check` desde el checkout limpio del commit promovido
+devolvió `PASS`, cero findings y 53 operaciones sin drift.
