@@ -141,17 +141,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Administrative handoff records the verified prior-art commit, promotion receipt and next UI action.",
+          "decision_evidence": "Administrative handoff records the verified Phase 02 plan review, pending amendments and the accepted py3d boundary.",
           "license": "MIT",
-          "source_hash": "0f9a4e4ec96e06122b16f233c0ff50e37a23901a10b7748ea6da0b8702d1efa7",
+          "source_hash": "07b2e1ea911c8eb13d1f4e015e5d115200d794568297ea406d7f29b55777db06",
           "source_id": "pack-r21-authored",
           "source_path": "HANDOFF.md",
-          "source_revision": "r21-prior-art-admin@2026-07-24",
+          "source_revision": "r21-phase02-plan-review@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0f9a4e4ec96e06122b16f233c0ff50e37a23901a10b7748ea6da0b8702d1efa7",
+      "output_hash": "07b2e1ea911c8eb13d1f4e015e5d115200d794568297ea406d7f29b55777db06",
       "output_path": "HANDOFF.md",
       "routing_artifact_id": "root/handoff",
       "verification_level": "cross_checked"
