@@ -1,0 +1,26 @@
+--- a/dayz-3d-viewer/SKILL.md
++++ b/dayz-3d-viewer/SKILL.md
+@@ -25,8 +25,12 @@
+ ```bash
+ apt-get install -y liblzo2-dev
+ pip install pygltflib python-lzo pillow numpy opensimplex --break-system-packages
+-# CRITICAL: py3d must be KoffeinFlummi's version (DayZ MLOD), NOT the PyPI "py3d" (point cloud lib):
+-pip install git+https://github.com/KoffeinFlummi/py3d.git --break-system-packages
++# CRITICAL: py3d = fork DayZ >= 1.2.0 (NUNCA el "py3d" de PyPI ni git+upstream):
++# py3d DayZ fork >= 1.2.0 (wheel vendorizada en esta skill - D2=B).
++# NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
++pip install --break-system-packages "$SKILL_DIR"/wheels/py3d-*-py3-none-any.whl 2>/dev/null \
++  || pip install --break-system-packages $(ls /sessions/*/mnt/*/_tools/py3d/dist/py3d-*-py3-none-any.whl 2>/dev/null | sort -V | tail -1)
++python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,2,0), (py3d.__version__, py3d.__file__)"
+ ```
+ 
+ ## Scripts
+@@ -153,7 +157,7 @@
+ 
+ 2. **GLTFLoader in sandbox**: Claude's artifact iframe blocks `fetch()` and `Request.clone()`. GLB loading via `loader.load()` or even `loader.parse()` fails because the loader internally resolves buffer/image URIs via fetch. Fix: bypass GLTFLoader entirely for embedded mode, build geometry from raw typed arrays.
+ 
+-3. **PyPI py3d collision**: `pip install py3d` installs a point cloud visualization library, NOT the DayZ P3D library. Must install from GitHub: `pip install git+https://github.com/KoffeinFlummi/py3d.git`
++3. **PyPI py3d collision**: `pip install py3d` installs a point cloud visualization library, NOT the DayZ P3D library. Install the DayZ fork wheel vendored in this skill (`wheels/py3d-*.whl`; fallback `_tools/py3d/dist/` if mounted) and assert `py3d.IS_DAYZ_FORK`.
+ 
+ 4. **LZO on DXT mipmaps**: Arma2+ PAA files compress large mipmaps (256+) with LZO. Indicated by top bit of width field. Requires `liblzo2-dev` + `python-lzo`.
+ 

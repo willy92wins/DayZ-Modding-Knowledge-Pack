@@ -1,0 +1,16 @@
+--- a/dayz-p3d-inspector/SKILL.md
++++ b/dayz-p3d-inspector/SKILL.md
+@@ -45,7 +45,12 @@
+ ## Install Dependencies
+ 
+ ```bash
+-pip install git+https://github.com/KoffeinFlummi/py3d.git numpy --break-system-packages
++# py3d DayZ fork >= 1.2.0 (wheel vendorizada en esta skill - D2=B).
++# NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
++pip install --break-system-packages "$SKILL_DIR"/wheels/py3d-*-py3-none-any.whl 2>/dev/null \
++  || pip install --break-system-packages $(ls /sessions/*/mnt/*/_tools/py3d/dist/py3d-*-py3-none-any.whl 2>/dev/null | sort -V | tail -1)
++python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,2,0), (py3d.__version__, py3d.__file__)"
++pip install numpy --break-system-packages
+ ```
+ 
+ Only the extractor and builder need py3d — the viewer is pure Python that

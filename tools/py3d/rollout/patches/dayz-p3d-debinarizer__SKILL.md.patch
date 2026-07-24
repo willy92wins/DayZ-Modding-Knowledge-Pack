@@ -1,0 +1,24 @@
+--- a/dayz-p3d-debinarizer/SKILL.md
++++ b/dayz-p3d-debinarizer/SKILL.md
+@@ -23,7 +23,11 @@
+ # Install dependencies (REQUIRED)
+ apt-get install -y liblzo2-dev
+ pip install python-lzo --break-system-packages
+-pip install git+https://github.com/KoffeinFlummi/py3d.git --break-system-packages
++# py3d DayZ fork >= 1.2.0 (wheel vendorizada en esta skill - D2=B).
++# NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
++pip install --break-system-packages "$SKILL_DIR"/wheels/py3d-*-py3-none-any.whl 2>/dev/null \
++  || pip install --break-system-packages $(ls /sessions/*/mnt/*/_tools/py3d/dist/py3d-*-py3-none-any.whl 2>/dev/null | sort -V | tail -1)
++python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,2,0), (py3d.__version__, py3d.__file__)"
+ 
+ # Run conversion
+ cd /path/to/skill/scripts
+@@ -316,7 +320,7 @@
+ 
+ | Package | Purpose | Install |
+ |---------|---------|---------|
+-| py3d (KoffeinFlummi) | MLOD P3D writing | `pip install git+https://github.com/KoffeinFlummi/py3d.git` |
++| py3d (fork DayZ >= 1.2.0) | MLOD P3D writing | wheel vendorizada `wheels/py3d-*.whl` (ver Install; NUNCA `pip install py3d`) |
+ 
+ **Note:** LZO is handled entirely by the bundled pure-Python `lzo_decompress.py` (canonical `lzo1x_decompress` port) — it decodes every block in the 173-model vanilla corpus. The old `python-lzo` native fallback was removed 2026-05-27: liblzo2 never builds in the Cowork sandbox, so the branch was dead code (R25).
+ 

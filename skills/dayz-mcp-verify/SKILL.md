@@ -1,0 +1,360 @@
+---
+name: dayz-mcp-verify
+description: >
+  Auto-probar un mod DayZ in-game conduciéndolo con las tools MCP de dayz-mcp — sin tocar
+  teclado ni OCR. Smoke visual + colisión + telemetría de objetos: spawnear el classname,
+  orbitar la cámara y capturar, raycast contra el objeto, leer placement/attachments, y emitir
+  un veredicto con evidencia (PNGs + JSON). Compón con dayz-test-ingame para el build/deploy/
+  launch (añade @DayZ_MCP) — esta skill NO lanza el juego, lo conduce. Úsala cuando el usuario
+  quiera: "auto-probar el mod", "verificar el mod in-game con el MCP", "smoke visual del mod",
+  "probar sin tocar el juego", "re-test visual", "comprobar que el .p3d carga / se ve / colisiona",
+  "spawn + captura + raycast automatizado", "test in-game sin teclas". Cubre objetos estáticos,
+  items/armas, edificios (NO puertas), placement de vehículos, y la **escalera de aceptación de coches
+  conducibles** (rip→conducible: spawn → render → get-in → conducir → sentido de ruedas, vía los verbos
+  owner-side `vehicle_get_in_client`/`engine_set`/`vehicle_control`/`vehicle_telemetry` + orquestador
+  `references/drive_ladder.py`). Úsala también para: "estrenar/iterar un coche conducible", "acceptance
+  ladder", "drive_ladder". NO cubre otras acciones de player ni UI (puertas, inventario interactivo,
+  disparar) — esas quedan a test manual.
+---
+
+# DayZ MCP verify — auto-test in-game vía tools MCP
+
+## WHAT THIS DOES
+
+Conduce un cliente DayZDiag ya lanzado, vía las tools del servidor MCP `dayz-mcp`, para
+verificar un mod sin intervención humana: spawnea el objeto, lo mira desde varios ángulos
+(cámara + window-grab), comprueba su colisión por raycast, lee su placement/telemetría, y
+produce un reporte con criterios pass/fail y evidencia. Es el lazo de **observación**
+automatizada que cierra el hueco entre "el PBO compila/despliega" y "se ve y se comporta bien
+in-game", para la clase de propiedades que NO requieren input de teclado.
+
+Server-authoritative + captura pasiva por píxeles. El control y los datos son engine-native
+(spawn, raycast, telemetría, cámara); la única pieza no-native es la captura visual
+(window-grab del cliente renderizado — `MakeScreenshot` está roto en diag, T165276).
+
+## COMPOSICIÓN — esta skill NO lanza el juego
+
+El build/deploy/launch es de **`dayz-test-ingame`** (su preflight de entorno corre solito:
+`P:\` montado, junction `P:\Mods`, AddonBuilder, `allowFilePatching`). Esta skill lo invoca
+con el mod MCP añadido y luego conduce. Por diseño cerrado del proyecto (G-6), el MCP no
+arranca ni mata el juego.
+
+Antes del flujo operativo, leer el protocolo canónico:
+`<runbooks>\dayz-mcp-agent-session-protocol.md`.
+La secuencia exclusiva es `session_acquire` → `session_wait` (máximo 30 s por llamada) → uso →
+`session_release` → `session_status`; `session_heartbeat` solo renueva mientras el trabajo
+exclusivo está activo. Todo lifecycle se identifica por `run_id`: compartir mod no concede
+ownership. El gate post-mutation reconcilia el resultado antes del release y el gate
+pre-handoff exige estado propio limpio. Con cuarentena retail solo se permiten lecturas; si
+quien abrió retail no puede cerrarlo por la UI, declarar `manual_cleanup_required`.
+
+Lanzamiento (desde `<TargetMod>_dev\tools\`):
+
+```powershell
+.\dayz-test.ps1 -Mod <TargetMod> -Mode all -Build -ExtraMods "@DayZ_MCP"
+```
+
+- `-Mode all` (server + cliente) es OBLIGATORIO: la captura visual lee del **cliente
+  renderizado**. Un `-Mode server` headless no tiene ventana que grabbear.
+- `@DayZ_MCP` se carga junto al mod bajo test; ambos peers (server + client bridge) pollean al
+  loopback del server MCP.
+
+## PREREQUISITES (gate antes de conducir)
+
+1. **`dayz-mcp` registrado y conectable.** Gate PRIMARIO: ¿están disponibles las tools
+   `mcp__dayz-mcp__*` en la sesión? (ToolSearch las encuentra → gate PASS). `claude mcp list` es
+   SECUNDARIO y NO fiable: da falsos `× Failed to connect` con el server operativo — no bloquear
+   por él si ToolSearch ve las tools. Las tools solo están disponibles en una sesión que arrancó
+   CON el server ya registrado (registro broker `--client`, ver TROUBLESHOOTING).
+2. **Config del bridge sembrada.** El bridge in-game lee `dayz_mcp.json` (url + key + pollHz) de
+   sus profiles; el server MCP usa `<DayZ_MCP_dev>\tools\.dayz_mcp.key`. Sembrar la MISMA key en
+   los profiles del launch con `install-mcp.ps1` apuntando a los dirs que `dayz-test.ps1` genera:
+
+   ```powershell
+   <DayZ_MCP_dev>\tools\install-mcp.ps1 `
+     -ServerProfiles "<TargetMod>_dev\_server\profiles" `
+     -ClientProfiles "<TargetMod>_dev\_client\profiles" `
+     -MissionPath "<...>\mpmissions\dayzOffline.chernarusplus"
+   ```
+
+   `[verify on first run]` — el seeding genérico (mod arbitrario + `@DayZ_MCP` vía
+   `dayz-test.ps1`) hasta ahora solo se ejerció a través de `run-fase3.ps1`. La PRIMERA corrida
+   de esta skill valida que el bridge encuentra la config en estos paths; si `bridge_status`
+   reporta `last_poll_age_s = null`, la config no está donde el bridge la busca — ajustar el
+   path y declararlo.
+3. **`bridge_status` verde.** Primera llamada SIEMPRE: `bridge_status`. El `server_peer` debe
+   tener `last_poll_age_s` fresco (no null). Para captura, el `client_peer` también. `never
+   polled` → el bridge no arrancó (config/key/arranque) → abortar y diagnosticar, no seguir
+   conduciendo a ciegas.
+
+## EL LAZO
+
+1. **Lanzar** vía `dayz-test.ps1 … -ExtraMods "@DayZ_MCP"` (espera a que cliente y server
+   estén dentro; BUG-009: la autoconexión del cliente es flaky — `-ServerWait` mayor / reintento).
+2. **Gate** `bridge_status` (PREREQUISITES.3).
+3. **Condiciones de escena** (capturas comparables): `world_time_set` a mediodía
+   (los 5 args `year/month/day/hour=12/minute=0` son obligatorios) y `world_weather_set(overcast=1.0)`. Cielo cubierto = luz difusa: elimina el
+   glint especular de sol directo que quema armas/materiales a blanco y tapa el detalle
+   (hallazgo A6_SR2M 2026-06-17). NO uses `time_multiplier=0` antes de animaciones pendientes
+   (congela la sim).
+4. **Playbook** según tipo de mod (abajo).
+5. **Reporte** con evidencia.
+
+## PLAYBOOKS (criterios pass/fail por tipo)
+
+Todos parten de spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS si `ok` y sin
+`unknown_type`/`spawn_failed`; guarda el `pos` real para los pasos siguientes.
+
+### Objeto estático / contenedor / edificio
+- **Carga**: spawn ok (arriba). FAIL → el classname no resuelve (mod no montado: paths
+  absolutos `!Workshop`, ver dayz-test-ingame; o `CfgPatches` no registra).
+- **Visible + texturado + winding**: orbita la cámara (≥4 poses — frente/lado/atrás/picado) con
+  `camera_set` + `capture_screenshot`; lee cada PNG. PASS = el objeto se ve (no invisible), sin
+  texturas missing (no magenta/blanco/negro pleno), proporciones plausibles, sin caras invertidas
+  ni agujeros (winding). El agujero/cara-faltante desde un ángulo y sólida desde el opuesto = winding
+  invertido.
+- **Colisión**: `scene_raycast(from_pos, to)` apuntando al objeto desde ≥2 ángulos (para
+  edificios: multi-punto — paredes, esquinas, suelo). PASS = los rayos que deben pegar dan
+  `hit=true` con `object_type`/`object_class` del objeto. Sin hit donde debería = ViewGeo/FireGeo
+  ausente o mal resuelto (LODs).
+- **Placement**: `telemetry_read(mode="object_at", type=<classname>, pos=<spawn_pos>, radius=2)`
+  → `found=true`, `pos` ~ spawn, `orientation` razonable. PASS = no enterrado ni flotando
+  (cruza `pos.y` con el visual).
+
+### Item / arma
+- Carga + visible/texturado/winding como arriba, con **énfasis en proporciones vs la referencia
+  real** y en la geometría post-import (orientación, winding) — es donde fallan las mallas
+  generadas/importadas.
+- `telemetry_read object_at` → `attachment_count`, `health01`. PASS de telemetría = found + stats
+  sanos.
+
+### Vehículo (solo placement/estructura)
+- Carga + visible + colisión + telemetría. `vehicle_enter(pos)` → `seated=true` confirma el
+  asiento. `telemetry_read` → `engine_on_server`, `wheel_count`, `fuel_fraction`.
+- `vehicle_enter` SIENTA al player (placement/asiento). Para CONDUCIR: la escalera de
+  drivability (§DRIVABILITY + `references/acceptance-ladder.md`) cubre conducción autónoma vía los verbos owner-side
+  (`vehicle_get_in_client`/`engine_set`/`vehicle_control`/`vehicle_telemetry`).
+
+## CAPTURAR ARMA ALZADA / ADS (raise client-side) [VERIFIED-SR2M gate iter36→37]
+
+Para validar la pose de arma ALZADA/apuntada (p.ej. el agarre de la mano de apoyo) no hay tool de input
+de player. Se fuerza el raise EN EL MOD, **client-side** — el personaje capturado es el player LOCAL del
+cliente, así que un override desde el `init.c` del servidor NO mueve la pose que el cliente renderiza
+(síntoma exacto: el log del server dice `raised=1` pero la captura sale con el arma BAJADA).
+
+Drop-in: un `modded class MissionGameplay` en un mod del gate (declara un `missionScriptModule` en su
+`class defs`, `files[]={"Mod/Scripts/5_Mission"}`; build `-PackOnly` para que el `.c` sobreviva al pack):
+
+```c
+modded class MissionGameplay
+{
+    override void OnUpdate(float t)
+    {
+        super.OnUpdate(t);
+        PlayerBase p = PlayerBase.Cast(GetGame().GetPlayer()); if (!p) return;
+        HumanInputController h = p.GetInputController(); if (!h) return;
+        h.OverrideRaise(HumanInputControllerOverrideType.ENABLED, true);  // ENABLED persiste; ONE_FRAME parpadea -> idle
+    }
+};
+```
+
+Claves:
+- La pose de aim en 3ª persona depende SOLO de `IsRaised()` (`dayzplayerimplement.c:1726`, AimingModel) →
+  un raise sostenido basta. NO llamar `SetIronsights()`: fuerza la cámara ironsight que pelea con la
+  free-cam del MCP, y server-side dejó el arma sin textura.
+- `WeaponADS()` (`human.c:86`) es flag de INPUT sin override de script (`human.c:234-255`) → siempre 0
+  aunque el ADS funcione. La señal de éxito = `IsRaised()` / log del cliente, NO `WeaponADS()`.
+- Mantener un `OverrideRaise(ENABLED)` también server-side (init.c) para que el servidor concuerde.
+- Juzgar el agarre por la mano a resolución NATIVA (recortar el frame del orbit), nunca el contact-sheet
+  reescalado. Mecanismo del grip + parity geométrica: skill `dayz-animation-pipeline`
+  (`references/weapon-in-hands.md`).
+
+## TOOL → QUÉ VERIFICA
+
+| Tool | Verifica | Señal de fallo |
+|---|---|---|
+| `world_spawn` | el classname carga | `unknown_type` / `spawn_failed` → mod no montado |
+| `camera_set` + `capture_screenshot` | render: visible, texturas, winding, proporciones | invisible / magenta / agujeros |
+| `scene_raycast` | colisión (ViewGeo/FireGeo) | sin hit donde debería pegar |
+| `telemetry_read` (object_at) | placement, orientación, attachments, health | `found=false` / pos enterrada |
+| `bridge_status` | liveness de peers (gate) | `last_poll_age_s=null` → bridge caído |
+| `world_time_set` / `world_weather_set` | escena reproducible para capturas | — |
+
+## QUÉ NO CUBRE (declarar SIEMPRE en el reporte)
+
+- **Acciones de player y UI**: abrir/cerrar puertas, inventario interactivo, disparar, recargar,
+  menús. No hay tool de input de player genérico. (Conducir SÍ está cubierto — escalera
+  §DRIVABILITY / `references/acceptance-ladder.md` con los verbos owner-side.) Para un edificio, la geometría/colisión SÍ;
+  las **puertas NO** → test manual.
+- **`exec_enforce`** no ejecuta en el server diag headless (GATE4B-LIM, limitación de engine tipo
+  MakeScreenshot) — no apoyarse en él para "ejecutar lógica arbitraria de verificación".
+- **`telemetry_read`** se expone tal cual (BUG-010/011/012, hardening pendiente): no certifica
+  fixtures JSONL grandes ni rangos extremos.
+
+## REPORTING
+
+Un reporte con: tabla de criterios (criterio · PASS/FAIL/INFO · evidencia), los PNGs y los JSON
+de telemetría/raycast como evidencia, veredicto global, y una sección **"a test manual"** con lo
+no cubierto (puertas, disparo, etc.). Coste de contexto: cada captura pesa ~25k tokens (~240-320
+px) — **batch** las capturas de una pose-órbita y NO re-leas un PNG salvo para verificar algo
+concreto (las imágenes inflan el contexto rápido). Presupuesto duro ~25k tokens/imagen: no pedir
+más resolución.
+
+## TROUBLESHOOTING
+
+| Síntoma | Causa | Fix |
+|---|---|---|
+| `claude mcp list` → `× Failed to connect` | `claude mcp list` NO es fiable: da falsos `Failed` con el server operativo. La contención E4 del puerto 8765 (lock `ExclusiveThreadingHTTPServer`, fail-closed) era el modo de fallo PRE-broker | verificar PRIMERO con ToolSearch (¿tools `mcp__dayz-mcp__*` disponibles? → todo OK, ignorar el `Failed`). El registro broker `--client` (desde 2026-06-24) supera la contención E4: N sesiones comparten el server sin pelear por 8765, y el orphan-guard suelta huérfanos solo. Si las tools faltan de verdad: registrar en modo broker (`--client`) y abrir sesión NUEVA (las tools cargan al arranque) |
+| tools no aparecen en la sesión | el server se registró DESPUÉS de abrir la sesión | abrir una sesión nueva (los MCP se cargan al arranque) |
+| `bridge_status.server_peer.last_poll_age_s = null` | el bridge server no pollea | revisar `dayz_mcp.json` en server_profiles + la key; confirmar `@DayZ_MCP` montado (paths absolutos `!Workshop`) |
+| `client_peer … null` (server ok) | el cliente no conecta o `client_profiles\dayz_mcp.json` falta | BUG-009 (autoconexión flaky): `-ServerWait` mayor / reintento; sembrar la config del cliente |
+| `version_state = legacy_blocked` | `--require-version` ON contra un bridge que no manda `ver=` | desplegar el PBO 4B (manda `ver=4~…`), o registrar el server sin `--require-version` para ese run |
+| capturas byte-idénticas entre poses | grab cogió un frame stale del escritorio (no el render) | el grab canónico con `PrintWindow(PW_RENDERFULLCONTENT)` ya lo arregla (2026-06-14); si reaparece, confirmar que la ventana del cliente existe y renderiza |
+| timeout de tool y luego comandos "zombie" al reconectar | BUG-024: un timeout deja el comando en cola; el bridge lo ejecuta al volver | tras un timeout, reconciliar con `bridge_status` antes de seguir |
+
+## REFERENCES
+
+- `dayz-test-ingame` — build/deploy/launch (esta skill lo compone con `-ExtraMods "@DayZ_MCP"`).
+- `DayZ_MCP_dev\tools\README-mcp.md` — orden de arranque + troubleshooting del bridge.
+- `DayZ_MCP_dev\HANDOFF.md` (LIVE-STATE) — invariantes del server, 11 tools, GATE4B-LIM, backlog.
+- `_shared\dayz-conventions.md` — L2 (LODs, ViewGeo/FireGeo, formato de respuestas DayZ).
+- Precedente de captura por cámara+órbita: el `gate-mcp.ps1` del A6 (window-grab por órbita,
+  hallazgo dayz-test-ingame 2026-06-17) — barrido batch alternativo al agente conduciendo tools.
+
+
+## VEHÍCULO: receta de smoke repetible (added 2026-06-24)
+
+Smoke visual de un vehículo CarScript conducido por MCP, verificado end-to-end en MercedesAMGLF
+2026-06-24. Repetible sin re-derivar:
+
+1. **Misión = stock `dayzOffline.chernarusplus`** (la del DayZServer install), NO una mount-probe
+   `void main()` de Fase 0: la mount-probe no spawnea player → el cliente no renderiza el mundo y la
+   captura sale negra. La stock spawnea player (`CreateCharacter`→`CreatePlayer`) → free-cam con mundo
+   renderizado. Pásala con `-Mission "<...>\dayzOffline.chernarusplus"`.
+2. **Seed del bridge en los profiles que genera `dayz-test.ps1`**: `dayz_mcp.json`
+   `{"url":"http://127.0.0.1:8765/","key":"<key>","pollHz":5}` (ASCII) en `<Mod>_dev\_server\profiles\`
+   y `..\_client\profiles\`. El bridge lo lee de `$profile:` (server `MCPBridge.c:125`, client
+   `MCPClientBridge.c:211`); key = `DayZ_MCP_dev\tools\.dayz_mcp.key`. Sembrar ANTES del launch (el
+   bridge lee el config en su init, una sola vez). No uses `install-mcp.ps1 -Register` (re-registra el
+   modo broker `--client`).
+3. **Launch**: `dayz-test.ps1 -Mod <Mod> -Mode all -Build -PackOnly -ExtraMods "@DayZ_MCP" -Mission
+   "<...>\dayzOffline.chernarusplus" -ServerWait 240`. `-PackOnly` obligatorio en mods con `.c`
+   (binarize los dropea → NO_IGNITER). Llamar el `.ps1` por ruta absoluta (P:\ es subst).
+4. **Readiness**: la stock corre el CE (`InitOffline`) ~1-3 min; durante el CE `bridge_status` sale
+   STALE (`last_poll_age_s` crece aunque `version_state=ok`) — NO spawnees ahí. Espera a `connected to
+   server` en el `script*.log` del server y a que `bridge_status` vuelva fresco (<1 s). Poll
+   host-direct con PowerShell del log, NO Monitor bash (hereda el cache bindfs, LL-142).
+5. **Smoke** (agrupado, R5): `world_time_set(year,month,day,hour=12,minute=0)` (los 5 obligatorios) + `world_weather_set overcast=1.0` → `world_spawn
+   <Class> pos≈[player+~10]` → esperar 30 s (sobrevive sin crash nativo = LL-099 descartado) →
+   `camera_set` (cam_mode **"lookat"**, `cam_pos`+`look_at`) + `capture_screenshot` + `scene_raycast` +
+   `telemetry_read object_at`. Telemetría sana = `found=1`, `health01=1`, `velocity 0`.
+6. **Captura flaky**: el grab a veces coge la pantalla de carga o el overlay del menú "Continuar" del
+   cliente en vez del render. Si pasa: espera settle (~30-40 s en background — el foreground sleep está
+   bloqueado en este entorno) y recaptura; usa varios ángulos. Cenital que delata bien la
+   (des)alineación de proxys: `cam_pos=[carX+3, 16, carZ+1]` `look_at=[carX, suelo+0.1, carZ]`. ~25k
+   tokens/imagen — batch las capturas, no re-leas un PNG salvo para verificar algo concreto.
+7. **El ojo del usuario > la captura** cuando el render es ambiguo: en MercedesAMGLF el grab era flaky y
+   la lectura del usuario fue el diagnóstico fiable de winding y alineación de proxys. Si hay humano en
+   el bucle, contrástalo. (Caso s3 2026-06-24: yo iba a firmar PASS sobre renders tenues; el ojo del
+   usuario cazó la desalineación de proxys que yo no resolvía → FAIL correcto.)
+
+8. **SESIÓN COMPARTIDA.** El puerto 2302 y el cliente Steam siguen siendo recursos únicos, pero
+   la exclusión se coordina con el lease FIFO del runbook, no atribuyendo procesos ni desalojando
+   otras sesiones. Adquiere antes del launch o de la primera mutación, conserva el `run_id` del
+   lifecycle guard y libera en cuanto termine la secuencia exclusiva. NUNCA mates un proceso para
+   desbloquear la caja: si el estado no reconcilia, conserva el proceso y declara cierre degradado.
+
+9. **"Ruedas = lámina/disco plano" NO es bug de proxy.** Un `world_spawn` de un CarScript sin attachments deja
+   `wheel_count=0`/`attachment_count=0` → solo se ve el hub/disco, sin neumáticos. Esperado en el smoke visual; las
+   ruedas reales requieren attachments (fase de física), fuera de alcance del smoke.
+
+10. **`legacy_blocked` ("poll did not include ver=") suele ser INIT INCOMPLETO, no mismatch de versión (added
+    2026-06-28).** Refina la fila homónima de TROUBLESHOOTING: con el PBO 4B desplegado, justo tras lanzar el server
+    el `bridge_status` puede salir `legacy_blocked`/`last_poll_age_s=null` porque el bridge aún no completó el
+    handshake; pasa a `ok` con `ver=4~…` cuando el mission del server CARGA del todo (~1-2 min). NO redepliegues ni
+    re-registres por eso — espera y re-chequea. Solo es mismatch real si sigue `legacy_blocked` con el mission ya
+    cargado (cliente conectado, world renderizado). Origen: SUB_BRZ Fase 5 2026-06-28.
+
+11. **Patrón histórico superseded 2026-07-15.** `cmd start`/`.bat` evitaba que un job background
+    perdiera su hijo, pero creaba un proceso fuera del lifecycle registrado. Para cualquier smoke
+    actual, usa exclusivamente el launcher Diag gestionado: adquiere lease, conserva su `run_id` y
+    opera/termina solo ese run. No existe fallback unmanaged para sortear el lifecycle guard.
+
+## DRIVABILITY + ESCALERA DE ACEPTACIÓN (resumen — detalle en reference)
+
+Fase 5 del proyecto DayZ-MCP añadió y gateó in-game verbos owner-side que SÍ **conducen** el
+coche (el cliente toma ownership y maneja throttle/steer): `vehicle_get_in_client(pos)` (sienta +
+ownership), `engine_set("start"/"stop")`, `vehicle_control(throttle, steer, brake, handbrake,
+hold_ttl_s)` (control SOSTENIDO, fail-closed), `vehicle_telemetry()`, `vehicle_release()`, y
+`query_get_in_condition(pos, component)` (peer server, diagnostica cuál de los 7 gates de
+`ActionGetInTransport` bloquea). Sobre ellos corre la **escalera de aceptación** rip→conducible:
+rungs ordenados **R1 spawnea → R2 render → R3 get-in disponible → R4 sentado → R5 conduce → R6
+sentido de ruedas**, cada uno leyendo ground-truth in-game y mapeando su fallo a un fix conocido de
+la taxonomía SUB_BRZ (`dayz-vehicles/references/`). Orquestador de referencia `references/drive_ladder.py`
+(conduce R1→R6, emite `verdict.json`; NO aplica fixes ni rebuildea) + fixtures `references/test_drive_ladder.py`.
+
+**Detalle completo** (verbos, mecanismo owner-side verificado, precondiciones, colocación del spawn,
+R2.5 restore-gameplay, barandillas anti-verde-falso, la tabla de la escalera y el mapeo fallo→fix) →
+`references/acceptance-ladder.md`.
+
+
+## (added 2026-07-14) No hay tool de restore-gameplay: para test MANUAL del usuario, relanzar sin @DayZ_MCP
+
+`camera_set` SIEMPRE suprime el control del player (`SuppressGameplay()` -> `PlayerControlDisable`, ver
+§R2.5) y **NO hay tool MCP que dispare `RestoreGameplay()`** — solo el gate interno `drive_probe_client`
+lo hace, y no está expuesto como verbo/tool. Consecuencia práctica: tras un smoke MCP que usó `camera_set`
+(free-cam o static-cam lookat), el USUARIO no puede tomar el control del player para probar el coche a mano
+— su input sigue suprimido y no hay verbo para revertirlo en caliente.
+
+Regla: cuando el flujo pasa del smoke MCP (automático) al **test manual del usuario** (conducir, juzgar
+feel/estética), **relanzar el juego SIN `@DayZ_MCP`** (o al menos con un cliente que nunca haya recibido
+`camera_set` en esa sesión). Un cliente limpio tiene control normal. Si el cliente ya quedó "capado":
+reconectar (Esc -> Disconnect -> Reconnect) recrea el player con cámara/control limpios; no hay atajo por
+tool. Origen: SUB_BRZ s35 — se perdió tiempo buscando una tool de restore inexistente y el usuario tuvo
+que cerrar el juego y pedir relanzar normal.
+
+## (added 2026-07-14) Smoke autonomo: world_spawn toma [x, y_up, z] motor, y captura con display dormido = frame negro (SP-060)
+
+Dos caveats de smoke MCP autonomo verificados in-vivo (SUB_BRZ s32):
+
+1. **`world_spawn` toma el vector en orden MOTOR `[x, y_up, z_north]`** (`MCPBridge.c:1638` `Vector(x,y,z)`), pero el connect-log del bridge imprime la posicion del player como `<x, z_north, y_up>`. Pasar la tripleta del log VERBATIM spawnea el objeto a ~6 km de altura -> `IsSpawnReady` (radio 2.0 m) nunca se cumple -> job timeout + `found=0`, y el motor auto-borra el huerfano (`NETWORK (E): Will delete object ... outside world coords`). Costo 3 timeouts seguidos. Regla: convertir `<x,z,y>` -> `[x,y,z]` antes de todo `world_spawn`/`camera_set`; tras un timeout de spawn, grep del RPT por `outside world coords` ANTES de reintentar (distingue coords-malas de spawn-lento). Verificable con `scene_raycast` al terreno (da la y_up real).
+2. **Captura con el display en reposo o la sesion bloqueada = frame NEGRO** aunque el client corra. Fix: traer la ventana del client a foreground + input wiggle (raton / F15) antes de CADA `capture_screenshot`. Sintoma enganoso: parece "render roto del mod" y es el compositor.
+3. (menor) Spawn adyacente al player puede caer DENTRO de un edificio -> sondear 3-4 `scene_raycast` a terreno despejado antes de elegir la pos.
+
+Origen: SUB_BRZ s32 smoke MCP (2026-07-11): 3 timeouts de `world_spawn` con la pos cruda del log + 2 capturas negras con LockApp; ambos resueltos con lo de arriba.
+
+## (added 2026-07-14) Gates numericos de telemetria: calibrar contra el SUELO FISICO MEDIDO, no contra fixtures ideales (SP-061)
+
+Invariante para cualquier acceptance-ladder / gate numerico sobre telemetria in-game (drive_ladder de coches, spikes, futuros harnesses):
+
+1. **Un umbral calibrado con fixtures matematicas ideales es un gate que ninguna fisica real pasa.** El motor tiene suelo de ruido nativo (dither del body entre SetVelocity y lectura; interpolador de red del cliente). Antes de fijar un umbral: MEDIR el suelo en un run real (p95 de la metrica sobre datos reales), umbral = suelo x margen (>=2x), y documentar los numeros medidos junto a la constante. Dos mediciones independientes convergentes (implementador + receptor, +-20%) validan el numero. Caso: LFHeli W0 batch1 - jitter gate a 0.5 m/s con suelo real 4.3-5.1 m/s -> NO-GO falso que costo una correctiva entera; recalibrado dio GO con margen 2.2x.
+2. **La metrica de suavidad perceptiva es el zigzag frame-a-frame en METROS (2a diferencia, |delta v_implied|*dt)** - NO |delta residual vs ideal| por frame (autocorrelacionado; media 2x el zigzag real) y NO implied-velocity en m/s (escala 1/dt: el mismo proceso da suelos distintos a 30 vs 60 FPS y rompe celdas A/B de FPS).
+3. **Transitorios de arranque (teleport de setup + interpolador persiguiendolo) se excluyen con warm-up acotado en la ventana de score del cliente** (transitorio real 0.25 s -> warm-up 1.0 s = margen 4x), fail-closed todo lo demas.
+4. *(extension LFHeli X.5e/f)* **Los checks ESTRUCTURALES relativos tambien necesitan piso absoluto, y la mediaNA del frame-time es falaz con distribucion bimodal.** Un run a 250 FPS con frame-time bimodal (rafagas 4 ms + poblacion ~50 ms) rompio tres umbrales relativos: max-gap 3x mediana, dt-tol 30%*dt, coverage span/mediana_dt. Fixes: pisos absolutos con base fisica (gap 0.150 s; dt-tol 0.015 s) y coverage por media de la columna dt (la media de los DELTAS de t es TAUTOLOGICA: span/(n-1) -> ratio ~1 siempre - check vacuo, trampa G3).
+
+Cross-ref `dayz-vehicles` (drive_ladder) y `dayz-mod-workflow` ("primer run real -> retune, no NO-GO"). Origen: LFHeli X.5d (2026-07-11), doble medicion convergente + selftest 31/31.
+
+## (added 2026-07-14) Gates telemetricos (extiende SP-061): epsilon float en bordes + invariante AGREGADA de balance temporal (SP-063)
+
+Dos defectos adversariales reproducidos en un gate ya doblemente sellado (re-sello Codex, confirmados por el receptor):
+
+1. **Comparadores de umbral temporal necesitan epsilon de representacion float.** Un contrato "el borde exacto tolera" (gap 150 ms / desviacion 15 ms) se viola en binario: deltas acumulados dan `0.15000000000000002 > 0.15` -> falso REJECT del borde, y NO determinista. Fix: `> limite + EPS` (1e-6 s) en CADA comparador temporal, con fixtures de borde N-1/N/N+1 (149/150/151 y 14/15/16 ms).
+2. **Un coverage por conteo x media es una IDENTIDAD evadible sesgando el denominador.** `rows >= K*span/mean(dt)` <=> `sum(dt) >= K*span`: una columna dt sesgada +50% SOSTENIDA (bajo el floor por-fila) compensa un 40% de filas perdidas -> GO fail-open sobre traza incompleta. Fix: invariante AGREGADA de balance two-sided `|span - sum(dt[1:])| <= max(1%*span, 0.1 s)` - para productor honesto es ~0 por identidad fisica; medido <=0.0001% del span en 9 CSVs reales vs 9.98% en la fixture adversarial.
+3. **(Meta) floor-por-fila + invariante agregada son PAREJA obligatoria**: el por-fila caza el outlier aislado; el agregado caza el sesgo sostenido pequeno. Un solo nivel deja un flanco abierto - y la fixture que lo demuestra es el ACOPLAMIENTO de dos checks "cerrados" por separado.
+
+Cross-ref `dayz-vehicles` (drive_ladder). Origen: re-sello LFHeli X5EF (2026-07-11), F-01/F-02 con outputs literales + fixture cruzada 40%-drops + dt-6ms -> GO fail-open.
+
+## (added 2026-07-18 s37) Conditioning server-side de un coche custom (OnDebugSpawn real)
+
+`vehicle_get_in_client` ejecuta OnDebugSpawn CLIENT-side = no-op bajo autoridad del server
+(sintoma: `vehicle_fixture_ready=1` enganoso con `wheel_count=0`/`fuel=0` en telemetria
+server). Para condicionar de verdad (ruedas+fluidos autoritativos) sin tocar codigo:
+`vehicle_enter(pos)` (asiento server) y despues raw enqueue
+`vehicle_drive {throttle:0.01, duration:0.5}` — su fase PREP ejecuta `car.OnDebugSpawn()`
+SERVER-side (MCPBridge.c:2104-2112) y el micro-drive de 0.5 s es despreciable. OJO:
+`vehicle_drive` exige el asiento SERVER-side (da `not_seated` con el seat owner-client).
+`vehicle_prepare_fixture` NO sirve fuera del Mercedes (hardcode `MERCEDES_AMGLF` en
+MCPBridge.c:835 y loopback.py:113; chip abierto para generalizarlo). El raw `/enqueue`
+exige `{identity, lease_token}` en el body ademas de `?key=` (la identity/token salen de
+`session_acquire`). gear idx de `vehicle_telemetry`: 0=R, 1=N, 2=1a ... 7=6a.
+Verificado in-game SUB_BRZ s37 (wheel_count 0->4, fuel 1.0, kit completo, run B3 a 6a).

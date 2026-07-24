@@ -1,0 +1,34 @@
+--- a/dayz-model-pipeline/SKILL.md
++++ b/dayz-model-pipeline/SKILL.md
+@@ -56,15 +56,22 @@
+ ### Path A: Blender Headless + py3d Assembly (PRIMARY)
+ 
+ This is the PRIMARY path. Blender generates pro-grade geometry; py3d assembles the .p3d.
+-Install: `apt-get install -y blender && pip install git+https://github.com/KoffeinFlummi/py3d.git opensimplex --break-system-packages`
+-
+-> **CRITICAL: py3d installation** — Do NOT use `pip install py3d`. That installs a
+-> completely different 3D visualization library (py3d 0.1.x by a different author).
+-> The correct library is **KoffeinFlummi/py3d** (v1.0.0) which provides `P3D`, `LOD`,
+-> `Face`, `Point`, `Selection`, `Vertex` classes for reading/writing Arma/DayZ MLOD
+-> .p3d files. Always install from GitHub:
+-> `pip install git+https://github.com/KoffeinFlummi/py3d.git --break-system-packages`
+-> Verify after install: `python3 -c "from py3d import P3D; print('OK')"`
++Install: `apt-get install -y blender && pip install opensimplex --break-system-packages` + py3d fork DayZ (bloque CRITICAL abajo).
++
++> **CRITICAL: py3d installation** — Do NOT use `pip install py3d` (different
++> point-cloud library) and do NOT install upstream from GitHub anymore. Use the
++> **py3d DayZ fork >= 1.2.0** (codec KoffeinFlummi + guards anti-corrupcion,
++> constantes LOD DayZ, `validate()`, proxies, recipe y CLI `python -m py3d`),
++> vendorizado como wheel en `wheels/` de esta skill (D2=B):
++>
++> ```bash
++> SKILL_DIR=<dir de esta skill>
++> # py3d DayZ fork >= 1.2.0 (wheel vendorizada en esta skill - D2=B).
++> # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
++> pip install --break-system-packages "$SKILL_DIR"/wheels/py3d-*-py3-none-any.whl 2>/dev/null \
++>   || pip install --break-system-packages $(ls /sessions/*/mnt/*/_tools/py3d/dist/py3d-*-py3-none-any.whl 2>/dev/null | sort -V | tail -1)
++> python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,2,0), (py3d.__version__, py3d.__file__)"
++> ```
+ 
+ **Step 1: Define the Object**
+ - User describes what the object does, how it looks, what moves

@@ -1,0 +1,396 @@
+---
+name: rigorous-data-audit
+description: >
+  Audit data-critical mod code (persistence, state machines, admin commands, async queues,
+  cross-tick flows) for invariant violations, race conditions, path inconsistencies,
+  flag-lifecycle bugs, and recovery-path defects before declaring a release safe.
+  Use this skill whenever the user says "audit X", "revisa a fondo", "release-safe?",
+  "esto puede romper progresión", "puede haber data loss", or asks for thorough
+  pre-release verification of a mod that touches player data, persistence, atomic file
+  flows, OnStoreSave/OnStoreLoad, EE* hooks gating, marker files, sidecars, recovery
+  paths, or quarantine. Trigger proactively whenever modifying LF_VStorage,
+  LFPowerGrid persistence, or any mod where a bug means lost player progression. This
+  is NOT for cosmetic/UI mods. The skill enforces a 7-step workflow including
+  mechanical pre-checks, multi-angle parallel audit, adversarial verification, and an
+  implementer-grade cross-actor pass that catches bugs reasoning-only audits miss.
+---
+
+# Rigorous Data Audit
+
+Procedure for auditing mods where a bug equals lost player progression. Built
+from a real failure: six parallel Opus reasoning agents reviewed LF_VStorage
+1.4.6 from independent angles and signed off as "release-safe" — an external
+implementer-grade audit then found 12 VULNs (P0–P3) the agents missed. This
+skill encodes the lessons.
+
+A second failure refined it further: a loose application of this skill's
+"parallel agents + consolidation" shape — pointed at fact-checking a corpus —
+produced an audit that was **~55% confabulated**, because there was no
+adversarial verification step between "agents reported it" and "acting on it".
+Step 3 below exists because of that. See `postmortem.md` for the case.
+
+Read `references/why-this-skill-exists.md` for the full retrospective if you
+want the original case study.
+
+## When to invoke
+
+Trigger automatically when any of these are true:
+
+- Mod touches persistence, save files, state machines, or async work queues
+- A bug would cause **silent data loss** (lost items, wrong sids, money loss)
+- User asks for "audit", "revisa a fondo", "release-safe?", "puede romper progresión"
+- User just applied multiple fixes and wants verification before rebuild/test
+- User hands you findings from an external auditor and asks you to verify
+
+If the change is cosmetic or UI-only, this skill is overkill — skip it.
+
+## Why reasoning alone is insufficient
+
+The reasoning agents that signed off on LF_VStorage 1.4.6 were not lazy. Each
+read the relevant code and produced a coherent argument. They missed bugs
+anyway. Looking at the 12 VULNs the implementer-grade audit caught:
+
+| Failure mode | VULN examples | Why reasoning misses it |
+|---|---|---|
+| Path-helper inconsistency | VULN-003 (`.tmp` vs `.lfv.tmp`) | Bug is enumerable, not deducible — reasoning agents trace happy paths and see helpers used in isolation |
+| Sidecar/marker not cleaned | VULN-008 (`.restoring`/`.manifest.json` survive `DeleteContainerFiles`) | Symmetric obligation — every Write needs a Delete. Reasoning agents check the writer side, not the cleanup side |
+| Alternative entry point skips invariant | VULN-009 (sync path leaves stale marker), VULN-001 (kill-switch not durable) | Agent fixates on the canonical async path; the synchronous shortcut is "obviously similar" so gets a glance |
+| Flag lifecycle asymmetry | VULN-010 (admin clears flag while sidecar still references stale state) | Two state stores must move together; reasoning agents check each store internally |
+| Pre-super gate placement | VULN-004 (gate runs after vanilla super) | Order of operations within an EE hook is invisible from "is the gate present?" |
+| Sanity caps missing | VULN-011 (LFV2 count fields uncapped) | Threat model not in scope of the agent's prompt |
+
+Five of those are **enumerable mechanically** — a script + grep finds them in
+under a minute. Three are **cross-actor** — one writer + a different deleter +
+admin override. Reasoning across 3+ files is where Opus agents thin out.
+
+And separately: agents *report* findings convincingly whether or not the
+findings are real. The fix is three-pronged: cheap mechanical pre-checks
+first, then reasoning agents specifically prompted on the gaps reasoning is
+bad at, then an adversarial verification pass before any finding is trusted.
+
+## Workflow
+
+Seven steps in two phases.
+
+- **Phase A (steps 1–6)** is the audit. It runs entirely from the codebase
+  and ends with a verified findings list and fixes applied.
+- **Phase B (step 7)** is in-game validation. A clean audit is necessary but
+  not sufficient for "release-safe".
+
+Skipping early steps makes later ones less effective — do not skip. Each step
+below carries two annotations in a quote block: **Model** (the model tier the
+step's work should run on) and **Done when** (the explicit exit criterion —
+do not advance until it holds).
+
+## Phase A — Audit (steps 1–6)
+
+### Step 1 — Mechanical pre-checks (cheap, deterministic, fast)
+
+> **Model** — Sonnet; Haiku is fine for the pure grep + table-walk checks.
+> **Done when** — a written list of mechanical findings exists (zero items if
+> clean), each citing `path:line_start-line_end`, ready to paste into step 2.
+
+Run before spawning any agents. Each check is a grep + table walk; together
+they take ~10 minutes and catch the bookkeeping-style bugs reasoning misses.
+
+The four reference docs give the procedures. Read them before running:
+
+- `references/path-naming-matrix.md` — catches path-helper drift (VULN-003 class)
+- `references/sidecar-cleanup-symmetry.md` — catches missing cleanup on delete/reset (VULN-008 class)
+- `references/entry-point-audit.md` — catches alternative entry points skipping invariants (VULN-009, VULN-001 class)
+- `references/flag-lifecycle-audit.md` — catches flag/sidecar state-store divergence (VULN-010 class)
+
+Plus the existing structural check:
+
+- `references/state-machine-matrix.md` — catches illegal transitions and double-counted state
+- **Full-ancestry super-chain walk** (added 2026-07-05): whenever an invariant depends
+  on "leaf class chains super" (physical Open/Close failsafes, EE* hook propagation,
+  modded-base overrides), grep the override in EVERY class of the inheritance chain up
+  to the modded base — never just the leaf. See dated section at end of this file.
+
+This list goes into step 2's agent prompts as known-context so agents do not
+waste cycles re-finding.
+
+### Step 2 — Eight parallel reasoning auditors
+
+> **Model** — Opus. Sonnet is tolerable per-angle for cost, but the step 4
+> cross-actor pass must stay Opus.
+> **Done when** — eight angle reports are in; every finding pastes the literal
+> code snippet it is about (not just a line citation) plus severity. A
+> "finding" that only describes code without pasting it is bounced back as
+> SUSPECT, not accepted.
+
+Eight angles, one subagent per angle, all spawned in the same turn so they run
+concurrently. Bound each agent's report (≤700 words, no narrative).
+
+**Show, don't tell.** A claim of the form "this code has bug X" must include a
+copy-paste of the actual code, with `path:line`. A description without the
+snippet is a hypothesis, not a finding — the next step cannot verify it and it
+will be dropped. This requirement is what makes "verified" something grep-able
+rather than narrative.
+
+The angles, in the order they should appear in the parallel batch:
+
+1. **Persistence & atomic flow** — write barriers, fsync semantics, `.tmp`/`.bak1`/`.bak2` rotation, header/footer verification, partial-write recovery
+2. **State machine** — every transition, every gate, every "should never happen" branch
+3. **Async queues & cross-tick safety** — re-entry on the same sid, cancellation, queue-during-iteration, shutdown drain
+4. **Engine hooks (EE*)** — entry-point gating placement, super-call ordering, EEDelete vs EEKilled symmetry, OnStoreSave/OnStoreLoad cadence
+5. **Admin commands** — input validation, path traversal, race with running queues, sidecar ↔ in-memory consistency
+6. **Recovery paths** — what crash leaves on disk, what boot consumes, degraded modes, partial-state quarantine
+7. **Action layer (pre-super gates)** — every action handler that might fire while a container is virtualized; gates run **before** vanilla super
+8. **Threat model & input bounds** — sanity caps on counts, sizes, lengths from disk; bound check before allocation
+
+Full prompts are in `references/audit-prompts.md`. The implementer-grade
+prompt for step 4 is also there.
+
+### Step 3 — Adversarial verification + consolidate
+
+> **Model** — Sonnet. The independent verifier subagent and the citation
+> checks are file-reading work, not deep reasoning.
+> **Done when** — every row in the deduped table has been confirmed against
+> the real file (by the independent verifier or by you); the 20% self-sample
+> passed (<10% confabulation); each row is labelled defect vs improvement.
+
+This is the step that turns "agents reported it" into "it is real". It exists
+because skipping it once produced a ~55%-confabulated audit (`postmortem.md`).
+Three sub-steps, in order:
+
+**3a — Verify every cited snippet against the real file.** Open the file at
+the cited range and confirm it says what the agent's pasted snippet claims.
+Reasoning agents drift on line numbers, copy citations from sibling files, and
+occasionally invent plausible ranges wholesale. A finding whose snippet does
+not match the file is not a finding — re-derive it or drop it.
+
+**3b — Independent verifier pass.** Spawn one subagent with a **fresh context
+that has not seen the angle reports**. Hand it only the bare list of claims
+(claim + location, no reasoning, no severity). Its single task: for each
+claim, open the cited file and answer "does the file actually say this — yes
+or no", pasting the relevant lines. A claim the independent verifier cannot
+confirm is dropped. This is adversarial on purpose — convergence between
+agents that *shared* context (the same spec, the same conventions doc) is
+contagion, not confirmation. The verifier must not share that context.
+
+**3c — 20% self-sample gate.** Before trusting the consolidated table, pick
+20% of the findings at random and verify them yourself by opening the files.
+If more than 10% of the sample is confabulated, the audit is not trustworthy —
+re-run step 2 with stricter prompts, or discard it. Do not act on an audit
+that fails this gate.
+
+Then build the single deduped table:
+
+| ID | Severity | Title | File:Lines | Found by | Verified by | Defect/Improvement | Status |
+|---|---|---|---|---|---|---|---|
+
+- Severity is yours to assign — do not trust the agent's self-reported
+  severity. P0 = data-loss possible. P1 = recovery required. P2 = degraded
+  behavior. P3 = code smell.
+- **Defect vs improvement.** Defensive coding is not a bug. An `OR` branch
+  that accepts two input formats, a tolerant parser, a redundant guard — those
+  are robustness, not defects. Label them "improvement" at most; do not file
+  them as findings or inflate their severity. The 55%-confabulated audit's
+  single biggest error class was calling tolerance a bug.
+
+### Step 4 — Implementer-grade cross-actor pass
+
+> **Model** — Opus, no substitution. The cross-actor reasoning is exactly
+> where smaller models drop bugs.
+> **Done when** — the fresh-context agent returns clean. If it found
+> something, fix it and re-run step 4 with fresh context; repeat until clean.
+
+This is the step that, in retrospect, would have caught the 12 VULNs.
+
+Spawn **one** Opus agent with a fresh context — no audit history, no agent
+output, no priors. Hand it the codebase, the README/spec, and this single
+prompt: *"Find every way this code can lose, corrupt, or silently misroute
+player data. Trace each writer to every reader, each sidecar to every cleanup
+site, each admin flag to every consumer. Where any of those triples is
+incomplete, that is a bug."*
+
+Full prompt: `references/audit-prompts.md` § "Implementer-grade pass".
+
+The cross-actor framing matters. Reasoning agents prompted "audit this layer"
+look within the layer; they do not chase across actors. The implementer-grade
+prompt explicitly says "trace across actors".
+
+If this agent finds nothing, that is the signal that the audit is converging.
+If it finds one thing, fix it and re-run step 4 with fresh context (it may
+unblock a chain of further findings).
+
+### Step 5 — Apply fixes
+
+> **Model** — Opus. This is code editing.
+> **Done when** — every applied fix names the check or angle that caught it;
+> a re-grep confirms the pattern is gone everywhere; no fix exceeds the
+> minimum verified change.
+
+Standard editing flow, with four specifics:
+
+- For every fix, write down which mechanical check or which agent angle caught
+  it. If a fix has no source, it is a hunch — re-verify before shipping.
+- After each fix, re-grep to confirm the bug pattern is gone everywhere (not
+  just at the cited line). VULN-003-class bugs often have siblings.
+- **Minimum verifiable patch.** Apply only what step 3 verified. When the
+  verified instruction is "add bands X before the else", add bands X — do not
+  also add Y, Z, W because a sibling (unverified) finding suggested them.
+  "While I'm here" is exactly how a patch gets bloated with
+  confabulation-derived changes.
+- **Do not ship artifacts from an un-reverified audit.** Packaging a `.skill`,
+  cutting a release, or handing the user a patch file based on findings that
+  did not pass step 3 is how false confidence propagates. Applying a patch
+  costs minutes; the bad release it enables costs hours.
+
+### Step 6 — Re-audit subset
+
+> **Model** — Sonnet for the mechanical re-checks; Opus for the two re-run
+> angles.
+> **Done when** — mechanical pre-checks plus the two most-changed angles run
+> clean. A new finding loops back to step 5.
+
+Re-run mechanical pre-checks (cheap) plus the two angles whose code changed
+most. If a new finding appears, loop back to step 5.
+
+## Phase B — In-game validation (step 7)
+
+### Step 7 — In-game test gate
+
+> **Model** — n/a. The user runs these; the skill cannot.
+> **Done when** — all four scenarios below pass in-game. Only then is
+> "release-safe" earned.
+
+Audit clean ≠ release-safe. Before declaring release-safe:
+
+- Player connects with a virtualized container, server restart, container
+  intact (basic round-trip)
+- Crash mid-virtualize (kill server) → reboot → recovery completes, no data
+  loss, no orphan markers
+- Admin reset on a virtualizing container → stable state after reset
+- All sids on disk after a long session match player intent (no orphans, no
+  ghosts)
+
+The skill cannot run these tests for the user. The skill's contribution is to
+make the audit phase trustworthy enough that the in-game test phase is short.
+
+## Anti-patterns
+
+Watching for these saves rounds:
+
+- **Declaring "release-safe" after step 2.** Steps 3–7 are not optional.
+  Phase A alone is never "release-safe" — Phase B is the gate.
+- **Using eight identical agents instead of eight different angles.** Eight
+  reasoning agents prompted "audit this code" produce eight redundant reports.
+  The angles must differ.
+- **Skipping step 1 because "the agents will catch it".** They demonstrably
+  do not.
+- **Treating defensive coding as a bug.** A tolerant `OR` branch, a redundant
+  guard, a parser that accepts two formats — robustness, not defects. Calling
+  tolerance a bug was the 55%-confabulated audit's biggest error class.
+- **Trusting consolidated metrics without drill-down.** "34 VERIFIED, 9
+  CONFABULATED" is smoke if it is a summed number with no per-finding
+  click-through. Metrics without traceable findings are sums of guesses.
+- **Acting on an audit that has not passed step 3.** The agents' report is a
+  set of hypotheses. Adversarial verification (independent verifier + 20%
+  self-sample) is what makes it a set of facts. No verification = do not act.
+- **Trusting "convergence" between agents that shared context.** Four agents
+  citing the same bug because they all read the same conventions doc is
+  contagion, not confirmation. The step 3 verifier must have fresh context.
+- **Re-running the same audit after fixes.** Step 6 changes the cheap checks
+  plus the two layers most edited — full 8-angle re-runs waste budget.
+- **Spawning step 2 agents serially.** They are independent; spawn in one turn
+  so they run concurrently.
+- **Shipping a `.skill` / release / patch file from un-reverified findings.**
+  Cheap to apply, expensive to walk back.
+
+## References
+
+- `references/why-this-skill-exists.md` — full retrospective on the LF_VStorage 1.4.6 case
+- `postmortem.md` — the ~55%-confabulated audit and the eight lessons that hardened step 3 and step 5
+- `references/audit-prompts.md` — eight angle prompts + implementer-grade pass prompt
+- `references/path-naming-matrix.md` — mechanical check #1
+- `references/sidecar-cleanup-symmetry.md` — mechanical check #2
+- `references/entry-point-audit.md` — mechanical check #3
+- `references/flag-lifecycle-audit.md` — mechanical check #4
+- `references/state-machine-matrix.md` — structural state-transition check
+
+## (added 2026-06-10) Semántica de eventos engine + completitud del plan de remediación
+
+Origen: LFGungame GG-01 (2026-06-10) — un wiring de respawn sobre el evento equivocado pasó la pasada completa de esta skill (8 auditores + cross-actor) y 2 reviews externos porque todos verificaron la FIRMA del hook y nadie su SEMÁNTICA. Y F-25 se cayó del plan de remediación sin clasificar (los grupos cubrían 26/27 findings).
+
+- **Añadir a los prompts de los auditores (todas las dimensiones que toquen hooks)**: para cada override de evento engine (`OnClient*Event`, `EE*`, `On*`), NO basta verificar que la firma existe en vanilla. Verificar el CONTRATO de los parámetros: (1) leer el cuerpo del handler vanilla del evento — su uso interno revela qué entrega (ejemplo canónico: `OnClientRespawnEvent` mata al unconscious "choosing to respawn" → el player es el personaje VIEJO; el nuevo nace en `OnClientNewEvent`); (2) grep de prior art en mods reales del árbol: quién hookea ese evento y para qué. Si el mod auditado usa un evento que ningún prior art usa para ese propósito, es finding (mínimo confianza Media).
+- **Checklist de completitud del plan (step 2, al procesar findings)**: si la auditoría produjo N findings y el plan los clasifica en grupos, verificar mecánicamente que |unión de grupos| == N (lista de IDs, no de memoria). Un finding sin grupo = finding perdido (caso real: F-25).
+
+## (added 2026-06-11) Triage de producción: artefacto desplegado, atribución de camino, gates con nombre mentiroso, spawn de auditores
+
+Origen: LF_VStorage 2026-06-11 (5 bugs de producción; auditoría dual Claude+Codex; ver LL-143/LL-144).
+
+- **Artefacto desplegado ≠ source (preludio de Step 1 cuando el trigger es un bug de PRODUCCIÓN)**: si el código auditado se distribuye empaquetado (PBO/build), comparar mtime del artefacto vs mtime de los archivos de los fixes relevantes Y sondear el INTERIOR del artefacto (string-probe de classnames sobre el binario, sin desempaquetar) ANTES de root-causear contra source. Declarar la deriva como finding propio. Caso: PBO 28-may sin el CodeLockBridge del 01-jun — 2 de 5 bugs eran parcialmente deployment drift.
+- **Atribución de camino en evidencia de logs**: una línea de log que "prueba que X funciona" se atribuye al camino emisor (shutdown síncrono vs hook de acción vs scan periódico) antes de clasificar parcial-vs-roto. Caso: "MMG virtualiza" venía SOLO de OnMissionFinish; cero actividad del camino de runtime en toda la sesión.
+- **Gates con nombre mentiroso (añadir a los prompts de los auditores)**: para cada función-gate de un trigger (HasX/CanY/IsZ), pegar y leer el CUERPO — no aceptar el nombre como evidencia de cobertura. Caso: `HasCargoOrAttachments` sin ningún chequeo de attachments → todo el almacenamiento por slots invisible para los 4 triggers; lo pasaron por alto 9 auditores + cross-actor y lo destapó el pushback del usuario.
+- **Spawn de auditores (Step 2, operativo)**: los agentes background auto-deniegan permission prompts fuera del cwd → lanzar los auditores en FOREGROUND, todos en un solo turno (paralelos). Caso: el agente de checks mecánicos rebotó en background con PERMISSION-FAIL.
+
+## (added 2026-07-05) Super-chain verification is a FULL-ANCESTRY walk, not a leaf check
+
+Origin: LF_VStorage F-NEW-1 (review 2026-07-05). The mod's physical Open/Close
+failsafe (`modded class ItemBase`) only fires if every class between the leaf and
+ItemBase chains `super`. Verification pass A-F5 checked the leaf
+(`rag_baseitems_container_base.Open()` — chains super) and declared the invariant
+satisfied. The break was one level up: `RaG_ContainerBase.Open()/Close()`
+(RaG_Core, `RaG_ContainerBase.c:142-154`) set state and return WITHOUT `super` —
+the failsafe never fires for the entire family. The miss survived TWO independent
+verification passes (a prior session and a search agent) because both stopped at
+the leaf.
+
+Procedure (mechanical, ~5 min per family):
+1. Resolve the full chain: leaf → parents → vanilla base (`class X : Y` headers;
+   third-party mods' extracted sources or PBO string-grep).
+2. For EACH class in the chain, grep `override void <Method>` — if present,
+   confirm it calls `super.<Method>()`. One missing link voids the invariant for
+   every descendant.
+3. Record the verdict per FAMILY (base class), not per leaf classname.
+4. If any link is broken: the failsafe does not cover that family — a dedicated
+   wrapper hook on the family base (with super + explicit notify) is required.
+
+Corollary: a bridge/failsafe decision justified by "handled when the leaf chains
+super" is UNVERIFIED until the full walk is on record. Treat such comments as
+claims to audit, not facts.
+
+
+## (added 2026-07-08) Delta-contract propagation — a Step-1 check when the trigger is "make it fail-closed"
+
+Origin: LF_VStorage 1.5.0 pre-release audit. The change under review hardened durability
+contracts (signature -> bool + gate on it; "verify sidecar before declaring persisted").
+5 of ~9 real findings — including BOTH release blockers — were not the fix being wrong but
+the fix MISSING at a sibling call-site: `HandleRestoreFailure` didn't clear the flag+sidecar
+its 3 sibling terminal paths cleared; `MigrateLegacyTmp` got the `isCanonicalTmp` filter but
+`PromoteOrphanTmp` didn't; retry/recover got the checked `ClearFor` gate but `reset` didn't;
+DropQueue's success branch untracked but its 2 fail-closed branches didn't. The 8 structural
+angle-auditors under-weight this — each reads its own layer's canonical path — yet the whole
+point of a fail-closed delta is that it touches MANY sites.
+
+Add to Step 1 (mechanical pre-checks) whenever the delta changes a signature to bool,
+introduces a "verify-before-durable" contract, or propagates a fail-closed gate:
+- Grep EVERY call-site of the changed symbol AND its sibling/opposite operation that should
+  now share the contract: the success path, EVERY failure/early-return branch, the
+  sync/shutdown shortcut, the admin variant, the boot-reconcile variant.
+- For each, confirm it consumes the new contract (checks the bool / clears the same
+  flag+sidecar / runs the same gate). Dominant failure mode is asymmetry: N-1 of N branches
+  updated, one missed. Enumerate the branches mechanically — do not eyeball.
+- This is a DELTA check (enumerate the changed symbol's fan-out), complementary to the 5
+  structural checks; run it FIRST when the audit trigger is "someone hardened contracts".
+
+Corollary (contradiction resolution): when two auditors disagree whether an orphaned on-disk
+artifact (stale sidecar/marker) is dangerous or inert, the decisive question is whether the
+boot/recovery scan ENUMERATES it. A sidecar whose primary enumerator glob (e.g. `*.lfv`) is
+gone is inert even though it survives on disk — check the enumerator before rating severity.
+
+Caveat when APPLYING the propagation (added 2026-07-08b, Step 5): if the missing call-site
+transitions to a terminal/admin-blocking state (QUARANTINE, quarantine-orphaned) and its
+failure branch contains a HARD-GATE (marker/payload preservation that prevents data loss), do
+NOT reorder the flow to gate the durable write on the newly-checked contract. Reordering can
+route the fail path into a marker-deleting / payload-purging branch and CREATE a worse
+data-loss than the one you were closing. Prefer consume+retry of the contract with the durable
+write kept in its ORIGINAL position. Verify the ENTIRE `else`/failure branch of the site you
+touch, not just the happy path. Origin: a reorder of a degraded-partial handler introduced an
+`.lfv`-deleting path at MAX failures; the adversarial reviewer caught it on the round after the
+"fix" — the first apply attempt did not. Corollary: after a propagation fix, re-run the
+adversarial verify pass (Step 3/4) on the CHANGED handler, because an apply can regress worse
+than the finding.
