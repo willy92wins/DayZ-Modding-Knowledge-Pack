@@ -48,6 +48,10 @@ If you are an AI assistant tasked with helping the user mod DayZ, internalize th
 ```
 DayZ-Modding-Knowledge-Pack/
 ├── README.md                     ← you are here
+├── compatibility-matrix.md       ← per-skill build/evidence status
+├── CONTRIBUTING.md               ← evidence, privacy and contribution rules
+├── THIRD_PARTY_NOTICES.md        ← included and research-only attributions
+├── sources/                      ← provenance and executable-claim contracts
 ├── skills/
 │   ├── _shared/                  ← conventions referenced by several skills
 │   │   ├── dayz-conventions.md
@@ -262,15 +266,38 @@ are the real value; keep them even if you adapt everything else.
 - **Placeholders.** Angle-bracket tokens like `<notes>`, `<research-notes>`, `<skills>`,
   `<claude-home>`, `<tmp>`, and `C:\Users\<you>\…` replace the author's private local paths. `P:\`
   is the standard DayZ work-drive convention, left as-is.
-- **Provenance & integrity.** This pack was depersonalized (no author identity, no private paths),
-  scanned for secrets/credentials (**none present**), and UTF-8/mojibake-cleaned before packaging.
-  `tools/py3d` ships under its own MIT `LICENSE`.
+- **Provenance & integrity.** Releases are built from the versioned
+  [`sources/source-map.json`](sources/source-map.json), scanned for secrets,
+  identities and private paths, and checked for broken local links. Physical
+  source and promotion roots stay in ignored local configuration.
+- **Licensing.** Original pack material is MIT under [`LICENSE`](LICENSE).
+  `tools/py3d` retains its own upstream MIT license. Research-only GPL,
+  DPL-ND, proprietary and unknown-license material is not release payload; see
+  [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 - **Moving target.** DayZ/Enfusion changes across versions. Dates and version-specific facts are
-  noted where known; re-verify against your game build.
+  noted where known; re-verify against your game build and consult the
+  [`compatibility-matrix.md`](compatibility-matrix.md).
 
 ---
 
-## 9. A worked first move (for the assistant)
+## 9. Updates and releases
+
+Git is the canonical editable source. A release is created only after
+`python -m packctl gate --root .` passes from a clean commit and two clean
+builds produce the same SHA-256. The resulting payload is then promoted to
+Obsidian and configured skill roots with hash readback; installed copies are
+never edited as independent sources.
+
+For a DayZ stable update, first pin the exact build and diff the relevant
+vanilla contracts, then rerun offline validation and the smallest
+representative in-game matrix. Record evidence and unknowns in
+[`compatibility-matrix.md`](compatibility-matrix.md) and notable changes in
+[`CHANGELOG.md`](CHANGELOG.md). Contribution and privacy requirements are in
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+---
+
+## 10. A worked first move (for the assistant)
 
 > **User:** "Help me make this ripped car drivable in DayZ."
 >

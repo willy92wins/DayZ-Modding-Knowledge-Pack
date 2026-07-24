@@ -1,1 +1,10 @@
 .worktrees/
+__pycache__/
+.pytest_cache/
+sources/local-roots.json
+promotions/local-targets.json
+promotions/plans/
+promotions/journals/
+promotions/backups/
+dist/
+reports/
