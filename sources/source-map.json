@@ -1689,6 +1689,29 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/plans/2026-07-24-prior-art-assimilation-proposal.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Evidence refresh of pinned external prior art after Phase 01; proposal only.",
+          "license": "MIT",
+          "source_hash": "d6560463692ef8e9be4e34aa91147a47617f973c1f960c9a0e61825e174dfa11",
+          "source_id": "pack-r21-authored",
+          "source_path": "plans/2026-07-24-prior-art-assimilation-proposal.md",
+          "source_revision": "r21-prior-art-review@2026-07-24",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d6560463692ef8e9be4e34aa91147a47617f973c1f960c9a0e61825e174dfa11",
+      "output_path": "plans/2026-07-24-prior-art-assimilation-proposal.md",
+      "routing_artifact_id": "repo/plans",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/plans/2026-07-24-r21-master-roadmap.md",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
