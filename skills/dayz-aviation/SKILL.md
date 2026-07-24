@@ -1,7 +1,17 @@
 ---
 name: dayz-aviation
 description: >
-  DayZ aviation modding (planes, seaplanes, flight model; fixed-wing validated — helicopters: pattern documented from four author/teams (SIBNIC, RedFalcon, Llama, Expansion) across five aircraft, spanning monolithic (kinematic + force-based) and modular-aerofoil approaches, plus LM_Planes fixed-wing, CarScript-as-aviation). Covers the CarScript-as-aviation hack pattern: custom Pawn replication, real aerodynamics in Enforce Script (lift/drag/stall, ISA atmosphere), NaN-safe physics, PID auto-stabilization, flight-control AnimationSources, aviation memory points (axis_thruster, light_wing_*), script-driven dials (dial_altitude/horizon), Buoyancy for seaplanes, retractable gear, RPM-band sound crossfade, damage zones, input bindings, and two flight modes (PLANE_MODE_AIR/GROUND). Use for: helicopter, plane, aircraft, flight model, rotor, propeller, elevator, aileron, rudder, throttle, dial_horizon, dial_altitude, stall warning, seaplane, flying boat, Buoyancy, gear retract, axis_thruster, light_wing, CarScript aviation, plane physics, autopilot, Cessna, Spitfire, Catalina, Tigermoth, biplane. ALWAYS invoke before writing any DayZ aviation entity code or config. Use alongside enforce-script-reference and dayz-model-pipeline.
+  DayZ aviation modding for planes, seaplanes and helicopters. Covers the
+  source-verified CarScript-as-aviation patterns, custom flight physics
+  (lift/drag/stall, atmosphere, NaN guards), controls and input bindings,
+  PID stabilization, rotors/propellers, AnimationSources, aviation memory
+  points, dials, buoyancy, retractable gear, sounds and damage zones. Use for
+  helicopter, plane, aircraft, flight model, rotor, propeller, elevator,
+  aileron, rudder, throttle, autopilot, seaplane/flying boat, axis_thruster,
+  dial_horizon/dial_altitude, stall warning, Cessna, Spitfire, Catalina,
+  Tigermoth or biplane. Always invoke before authoring/debugging aviation
+  entity code or config; compose with enforce-script-reference and
+  dayz-model-pipeline.
 ---
 
 # DayZ Aviation Modding

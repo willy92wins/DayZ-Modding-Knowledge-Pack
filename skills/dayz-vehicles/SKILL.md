@@ -1,21 +1,17 @@
 ---
 name: dayz-vehicles
 description: >
-  DayZ ground and water vehicle modding — authoring, importing and shipping drivable wheeled vehicles
-  (cars, trucks, quads/ATVs, motorbikes; coches, camiones, quad, moto) on the CarScript base, plus
-  boats/watercraft on the sibling Boat base (both share the Transport crew/get-in/fuel contract).
-  Covers the full config.cpp + model.cfg contract (SimulationModule drivetrain/engine/suspension,
-  Axles/Wheels, Crew, AnimationSources, wheel naming wheel_1_1..wheel_2_2), structural parity
-  against a vanilla vehicle (LODs, wheel hubs, crew proxies, lights, ride-height), and the
-  packaging/deploy failures that pass local filepatching but break on a dedicated server:
-  binarize dropping config-only textures (vehicle renders white/untextured / sin textura en
-  dedicado), ODOL-vs-MLOD model.cfg semantics, reversed wheel spin (ruedas al reves),
-  harmless P:\ / Y:\ proxy paths, and offline PBO verification. Use for: DayZ car, truck, quad,
-  ATV, motorbike, coche, moto, vehiculo, drivable vehicle, CarScript, wheels, "wheel won't turn",
-  "wheels spin backwards", "vehicle white/untextured on server", import a vehicle, Blender/OBJ
-  vehicle to DayZ, civiliansedan parity, crew proxy, "get-in broken", vehicle build/pack/binarize.
-  ALWAYS invoke before authoring or debugging any DayZ ground-vehicle entity, config.cpp, or
-  model.cfg. For aircraft/flight use dayz-aviation; for generic model assembly use dayz-model-pipeline.
+  Author, import, debug and ship DayZ ground/water vehicles: CarScript cars,
+  trucks, quads/ATVs and motorbikes plus Boat-based watercraft. Covers the
+  config.cpp/model.cfg contract, drivetrain/engine/suspension, Axles/Wheels,
+  Crew/get-in/actions, AnimationSources, structural parity, LODs, wheel/crew
+  proxies, View/Fire/Geometry, placement, winding and dedicated-server
+  packaging failures. Use for car/truck/quad/ATV/moto/boat, drivable vehicle,
+  CarScript, civiliansedan parity, importing Blender/OBJ/ripped racing-game vehicles,
+  "get-in broken", wheels missing/not steering/spinning backwards, white or
+  untextured vehicle, vehicle build/pack/binarize or proxy pose. Always invoke
+  before authoring/debugging a vehicle entity, config.cpp or model.cfg. Use
+  dayz-aviation for flight and dayz-model-pipeline for generic assembly.
 ---
 
 # DayZ Ground Vehicle Modding

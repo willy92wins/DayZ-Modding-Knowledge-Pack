@@ -1,21 +1,16 @@
 ---
 name: dayz-mcp-verify
 description: >
-  Auto-probar un mod DayZ in-game conduciéndolo con las tools MCP de dayz-mcp — sin tocar
-  teclado ni OCR. Smoke visual + colisión + telemetría de objetos: spawnear el classname,
-  orbitar la cámara y capturar, raycast contra el objeto, leer placement/attachments, y emitir
-  un veredicto con evidencia (PNGs + JSON). Compón con dayz-test-ingame para el build/deploy/
-  launch (añade @DayZ_MCP); el lifecycle se orquesta mediante dayz_test_run/dayz_test_stop
-  y luego esta skill conduce el juego. Úsala cuando el usuario
-  quiera: "auto-probar el mod", "verificar el mod in-game con el MCP", "smoke visual del mod",
-  "probar sin tocar el juego", "re-test visual", "comprobar que el .p3d carga / se ve / colisiona",
-  "spawn + captura + raycast automatizado", "test in-game sin teclas". Cubre objetos estáticos,
-  items/armas, edificios (NO puertas), placement de vehículos, y la **escalera de aceptación de coches
-  conducibles** (rip→conducible: spawn → render → get-in → conducir → sentido de ruedas, vía los verbos
-  owner-side `vehicle_get_in_client`/`engine_set`/`vehicle_control`/`vehicle_telemetry` + orquestador
-  `references/drive_ladder.py`). Úsala también para: "estrenar/iterar un coche conducible", "acceptance
-  ladder", "drive_ladder". NO cubre otras acciones de player ni UI (puertas, inventario interactivo,
-  disparar) — esas quedan a test manual.
+  Auto-test a DayZ mod in-game through dayz-mcp without keyboard or OCR:
+  spawn a classname, orbit/capture, raycast collision, inspect
+  placement/attachments/telemetry and emit PNG+JSON evidence. Compose with
+  dayz-test-ingame; dayz_test_run/dayz_test_stop own the managed lifecycle,
+  then this skill drives the bridge. Use for "auto-probar el mod", "verificar
+  in-game con MCP", visual smoke/re-test, "comprobar que el .p3d carga/se
+  ve/colisiona", automated spawn+capture+raycast, or the vehicle acceptance
+  ladder (spawn→render→get-in→drive→wheel direction). Covers static objects,
+  items/weapons, buildings without doors and vehicle placement/drivability.
+  Player UI, door interaction, inventory use and firing remain manual.
 ---
 
 # DayZ MCP verify — auto-test in-game vía tools MCP

@@ -1,19 +1,14 @@
 ---
 name: ai-3d-to-dayz
 description: >
-  Generar un objeto / prop / item 3D para un mod DayZ desde cero con ayuda de IA, de principio a fin:
-  generación (image/text-to-3D) → limpieza + retopología low-poly manifold → UV + normal bake (high→low)
-  → texturizado PBR → handoff a .p3d / .paa / .rvmat. Es el FRONT-END de generación que alimenta a los
-  skills dayz-model-pipeline / dayz-texture-pipeline / dayz-pbo-build (no los reemplaza). Úsala cuando el
-  usuario quiera: "generar un objeto / asset / modelo 3D para DayZ", "crear un prop / item desde cero",
-  "hacer un modelo para el mod sin modelarlo a mano", "image to 3D para DayZ", "convertir un GLB de IA en
-  .p3d", "usar Hunyuan / Tripo / Rodin para un asset DayZ", "low poly hiperrealista para DayZ", "mi punto
-  débil son los modelos 3D". Decide qué generador (Hunyuan 2.1 local / Tripo) y arrastra las trampas que
-  rompen el .p3d. NO es para personajes humanoides ni animación (el canal fuente no cubre animación
-  config-driven DayZ). Compón con hunyuan3d-local, 3d-ai-studio-api, blender-assembly, dayz-3d-viewer,
-  y 3d-generation-harness (the harness owns generic end-to-end gates/discipline; this skill is the
-  DayZ-specific AI route inside its Phase 0).
-  Síntesis del canal @stefan_3d_ai; KB completa en 20_Knowledge/ai-3d-pipeline.
+  Front-end para generar un prop, item o asset 3D de DayZ con IA: image/text-to-3D,
+  limpieza y retopología low-poly manifold, UV, normal bake high→low, PBR y handoff
+  a .p3d/.paa/.rvmat. Úsala para "generar un objeto/modelo 3D para DayZ", "crear un
+  prop desde cero", "image to 3D", "convertir un GLB de IA en .p3d", Hunyuan,
+  Tripo o Rodin, y low-poly realista. Decide el generador y los gates del front-end;
+  alimenta dayz-model-pipeline, el pipeline de texturas y dayz-pbo-build, no los
+  sustituye. Compón con hunyuan3d-local, 3d-ai-studio-api, blender-assembly,
+  dayz-3d-viewer y 3d-generation-harness. No usar para humanoides ni animación.
 ---
 
 # ai-3d-to-dayz

@@ -1,6 +1,17 @@
 ---
 name: dayz-feature-spec
-description: Author a lightweight feature spec and run pre-implementation consistency/quality gates before coding a non-trivial DayZ mod feature — the DayZ-adapted spine of spec-driven development (specify → checklist → analyze → implement). Use BEFORE writing code for a new mod feature or a non-trivial change, right after Plan mode and before dayz-mod-workflow. Covers (1) a feature spec with measurable Success Criteria and Given/When/Then acceptance scenarios that include in-game repro steps, ASSUMED markers, and a Forward Contract of every classname / model.cfg selection / .p3d proxy / stringtable key the next phase consumes; (2) a "unit tests for English" spec-quality checklist; (3) a read-only cross-artifact analyze gate (spec ↔ plan ↔ HANDOFF/tasks ↔ code) with CRITICAL/HIGH/MEDIUM/LOW severity that flags coverage gaps, contradictions, terminology drift, unverified cross-file refs, and CLAUDE.md (R1–R9) violations. Triggers - "spec de la feature", "definición de done", "criterios de aceptación", "antes de implementar", "define done", "acceptance criteria", "consistency gate", "analyze spec", "spec checklist", "is this ready to implement", "está listo para codear", starting a new mod feature. Complements dayz-mod-workflow (implement), rigorous-data-audit (code audit), and R5 (in-game test gate). Adapted from github/spec-kit.
+description: >
+  Define and quality-gate a non-trivial DayZ feature before implementation.
+  Produces measurable Success Criteria, Given/When/Then scenarios with in-game
+  repro, resolved ASSUMED markers, and a Forward Contract for every classname,
+  model.cfg selection, .p3d proxy, stringtable/layout key or injected object the
+  next phase consumes. Then runs a spec checklist and a read-only
+  spec↔plan↔tasks/HANDOFF↔code consistency gate for coverage gaps,
+  contradictions, terminology drift and unverified references. Use for "spec
+  de la feature", "definición de done", "criterios de aceptación", "antes de
+  implementar", acceptance criteria, consistency/analyze gate, spec checklist
+  or "¿está listo para codear?". Run after planning and before
+  dayz-mod-workflow; compose with rigorous-data-audit for data-critical work.
 ---
 
 # DayZ Feature Spec

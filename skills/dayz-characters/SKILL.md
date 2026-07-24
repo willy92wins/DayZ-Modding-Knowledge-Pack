@@ -1,24 +1,17 @@
 ---
 name: dayz-characters
 description: >
-  DayZ humanoid-character modding — importing and authoring custom infected (zombies), survivors and
-  human NPCs on the vanilla character bases. The whole pipeline: AI/Blender mesh → retopo → RIG to the
-  vanilla skeleton OFP2_ManSkeleton → UV + normal bake → texture (_co/_nohq/_smdi) → character LODs →
-  config.cpp inheritance (ZombieMaleBase / ZombieFemaleBase / SurvivorBase) + model.cfg → PBO → in-game.
-  Owns the character-specific parts (rig a custom mesh to OFP2_ManSkeleton, canonical bind pose, baked
-  scaling because runtime SetScale is broken, config inheritance that gives skeleton+anims+AI for free,
-  the one-anim-mod-at-a-time wall, character LODs incl. see-through holes). Delegates generic steps to
-  ai-3d-to-dayz / hunyuan3d-local (generation), dayz-model-pipeline (assembly/LODs), dayz-texture-pipeline
-  (textures), dayz-animation-pipeline (skeleton/anim deep-dive), dayz-pbo-build + dayz-test-ingame.
-  Use for: custom zombie, infected, survivor, NPC, character, humanoid, "rig to OFP2_ManSkeleton",
-  "bind a mesh to the DayZ skeleton", "mesh explodes in-game", "pinched / spiky vertices", "all weights
-  went to Pelvis", "bone doesn't exist in skeleton", bigger zombie, giant infected, see-through chest
-  hole, reskin ZombieMaleBase, custom survivor skin, character LODs, baked character scale, "anims don't
-  play on my character", "foot sliding", "character faces or walks backward in-game", "limbs stretch or
-  overextend under animation", "rig looks fine at rest but deforms when animating". Import a humanoid from
-  Blender / an AI generator into DayZ.
-  ALWAYS invoke before rigging or configuring any DayZ humanoid character. For wheeled vehicles use
-  dayz-vehicles; for aircraft dayz-aviation; for generic non-character geometry dayz-model-pipeline.
+  Import and author DayZ humanoids: infected/zombies, survivors and human
+  NPCs on vanilla character bases. Covers retopo and rigging to
+  OFP2_ManSkeleton, bind pose, weights, baked scale, UV/normal bake/textures,
+  character LODs, config.cpp/model.cfg inheritance and in-game deformation.
+  Use for custom zombie/infected/survivor/NPC, "rig to OFP2_ManSkeleton",
+  mesh explodes or stretches, spiky/pinched vertices, all weights on Pelvis,
+  missing bone, giant infected, see-through body holes, foot sliding, wrong
+  facing or animations not playing. Always invoke before rigging/configuring a
+  DayZ humanoid. Compose with ai-3d-to-dayz, dayz-model-pipeline,
+  dayz-animation-pipeline, dayz-pbo-build and dayz-test-ingame; use
+  dayz-vehicles/dayz-aviation for those domains.
 ---
 
 # DayZ Humanoid Character Modding

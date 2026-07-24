@@ -1,24 +1,17 @@
 ---
 name: dayz-weapons
 description: >
-  DayZ firearm modding — the ENTITY side of a custom gun: importing and authoring a rifle, SMG or
-  pistol, its .p3d contract (named selections bolt/trigger/magazine + memory points), the
-  weapon-selection to player-bone remap, the CfgWeapons/config.cpp contract, and the model-path /
-  winding invariants that decide whether the build even loads. Covers inheritance base choice
-  (Rifle_Base / RifleBoltFree_Base / BoltActionRifle_Base / Pistol_Base), chamberableFrom, magazines,
-  modes / Mode_SemiAuto / Mode_FullAuto, fire modes, dispersion, recoil, jam config, attachment /
-  optics slots, muzzle flash + ejection memory points, AddItemBoneRemap, Weapon_Bolt / Weapon_Trigger,
-  serve-binarized, and REGLA DE IMPORTS import winding. Use for: custom weapon / rifle / pistol / SMG
-  for DayZ, import a gun from Blender or an AI mesh, CfgWeapons, "which base do I inherit for my gun",
-  "bolt doesn't move", "charging handle static", "selection is over the barrel", "trigger dead on fire",
-  "weapon mesh deforms / stretches", "magazine won't attach", "muzzle flash in the wrong place",
-  "optics / attachment slot won't accept X", "chamber / jam", "ejection port", "casing ejects wrong
-  side", "weapon renders but bolt/trigger static", "weapon white / invisible / crashes on equip",
-  "weapon stuck in semi / full-auto missing", AddItemBoneRemap, Weapon_Bolt, fire modes, Mode_* config,
-  chamberableFrom, dispersion. Weapon ANIMATION (grip / hand pose / ADS line / bolt-slide / reload /
-  fire / jam-unjam motion) is OUT of scope and delegated to dayz-animation-pipeline. For vehicles use
-  dayz-vehicles; for humanoid characters dayz-characters; for generic non-weapon geometry
-  dayz-model-pipeline.
+  Author and import the entity side of a DayZ firearm (rifle, SMG or pistol):
+  .p3d bolt/trigger/magazine selections and memory points, player-bone remap,
+  CfgWeapons/config.cpp inheritance, chamberableFrom, magazines, semi/full-auto
+  modes, dispersion/recoil/jam, attachment/optic slots, muzzle/ejection points,
+  winding and serve-binarized paths. Use for custom weapon imports,
+  CfgWeapons/base selection, bolt or trigger static, deformed mesh, magazine or
+  optic not attaching, muzzle/ejection misplaced, chamber/jam, missing fire
+  mode, white/invisible weapon or crash on equip; triggers include
+  AddItemBoneRemap, Weapon_Bolt, Weapon_Trigger and Mode_*. Grip/hand pose, ADS,
+  reload, fire and jam animations belong to dayz-animation-pipeline. Use
+  dayz-vehicles/dayz-characters/dayz-model-pipeline for those domains.
 ---
 
 # DayZ Firearm Modding — the ENTITY side

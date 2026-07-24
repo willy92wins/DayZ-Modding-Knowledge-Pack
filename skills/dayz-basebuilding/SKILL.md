@@ -1,24 +1,18 @@
 ---
 name: dayz-basebuilding
 description: >
-  DayZ base-building modding — authoring, extending and debugging buildable player structures on the
-  vanilla BaseBuildingBase chain (fences, watchtowers, gates, tents, shelters, flag poles, barbed wire).
-  Covers the whole model: craft a fence kit / watchtower kit (RecipeBase) → deploy it with a hologram
-  preview → the kit spawns the real entity → attach the base material → BuildPart → upgrade parts
-  (required_parts / conflicted_parts) → dismantle / fold back to a kit. Owns the config Construction{}
-  block field-by-field, the four-class runtime quartet (BaseBuildingBase / Construction / ConstructionPart
-  / ConstructionActionData), the synced-bitmask persistence (part id caps at 93, OnStoreSave/Load ordering,
-  subclass-after-super), the build/dismantle/destroy action system + AT_* type ints, damage-zone-to-part
-  mapping, and the Fence gate state machine. Use for: DayZ base building, construct or build a fence /
-  watchtower / gate / wall, territory flag, dismantle a part, deploy a kit, fence kit, watchtower kit,
-  barbed wire, tent or barrel deploy, "base won't save after a server restart", "parts disappear / reset
-  on restart", "my construction part doesn't show", CanBuild / CanBuildPart, SetAnimationPhase show/hide a
-  part, "the build action doesn't appear", "part has no collision", "dismantle is blocked", hologram
-  placement, ConstructionActionData, RegisterPartForSync. Delegates geometry/proxies/Deployed-proxy to
-  dayz-model-pipeline; config.cpp + Enforce script to enforce-script-reference; data-critical persistence
-  to rigorous-data-audit; part show/hide animation to dayz-animation-pipeline; packaging to dayz-pbo-build.
-  ALWAYS invoke before authoring or debugging any DayZ buildable structure, its Construction{} config, or
-  its persistence. For wheeled vehicles use dayz-vehicles; for humanoid characters use dayz-characters.
+  Author, extend and debug DayZ buildable structures on BaseBuildingBase:
+  fences, watchtowers, gates, walls, shelters, tents, flag poles and barbed
+  wire. Covers kit recipe/deploy/hologram flow, Construction{} fields,
+  BaseBuildingBase/Construction/ConstructionPart/ConstructionActionData,
+  required/conflicted parts, build/dismantle/destroy actions, synced-bitmask
+  persistence, damage-zone mapping and the Fence gate state machine. Use for
+  "base won't save", parts reset/disappear after restart, construction part or
+  action missing, CanBuild/CanBuildPart, RegisterPartForSync, blocked
+  dismantle, missing collision or hologram placement. Always invoke before
+  authoring/debugging a buildable structure or its persistence. Delegate
+  geometry to dayz-model-pipeline, script APIs to enforce-script-reference,
+  persistence audit to rigorous-data-audit and packaging to dayz-pbo-build.
 ---
 
 # DayZ Base Building
