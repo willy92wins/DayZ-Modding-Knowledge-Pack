@@ -237,3 +237,30 @@ eran las VENTANILLAS invisibles. Causa real unica de parabrisas + ventanillas + 
    reconstrucciones de no-problemas: aqui evito reconstruir la puerta (chapa ya solida) y
    subir alpha (defecto era winding), redirigiendo a doble-cara de cristal, todo offline
    antes de un solo build.
+
+## Gate de linaje de winding
+
+[EXACT][CLAIM-R21-RIP-WINDING-LINEAGE]
+`VehicleImport/scripts/winding_lineage_gate.py` compara el winding por cara del
+target contra el `source_face_id` sellado y deriva la relación esperada del
+determinante: positivo = `PRESERVE`, negativo = `REVERSE`. Emite
+`SOLID|INVERTED|MIXED` con exits `0|1|2`; manifiesto, linaje o determinante
+ausente/no finito/cero falla cerrado como `MIXED`.
+
+Este gate prueba **preservación de linaje**, no corrección visual o de colisión.
+El A/B in-game y los controles de ViewGeometry siguen siendo el gate final. La
+suite focal de linaje pasó 16/16 el 2026-07-24; no se congela un total global
+de tests porque el árbol fuente sigue evolucionando.
+
+## Override de tipo de material por identidad exacta
+
+[EXACT][CLAIM-R21-RIP-MATERIAL-OVERRIDE] Una excepción de material puede
+declararse en `source.material_type_overrides`, pero solo por identidad exacta
+`part + mat_name + mat_path`. Debe coincidir con exactamente un mesh visible o
+el mapa falla cerrado; conserva el tipo previo en `source_type` y registra
+`override=source.material_type_overrides`.
+
+El mecanismo está source-verificado y sus tests focales pasan. La validación
+amplia del perfil BRZ conserva un fallo conocido independiente
+(`builder.occ_struct` todavía presente); no usar ese fallo como evidencia
+contra el override ni ocultarlo al declarar el estado del perfil.

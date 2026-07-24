@@ -52,7 +52,7 @@
 
 | Campo | Qué es |
 |---|---|
-| `source{car_root, game_path, importer, manifest_dir, work_stem, import_report, blender_exe}` | rutas del rip y derivación de TODOS los paths de work del front-end (`<stem>_p2_raw.blend`, `<stem>_p2_geo.npz`, `<stem>_material_map.json`); clave ausente = FAIL nombrando la clave |
+| `source{car_root, game_path, importer, manifest_dir, work_stem, import_report, blender_exe, material_type_overrides?}` | rutas del rip y derivación de TODOS los paths de work del front-end (`<stem>_p2_raw.blend`, `<stem>_p2_geo.npz`, `<stem>_material_map.json`); `material_type_overrides` es una lista opcional de `{part, mat_name, mat_path, type}`; cada entrada debe coincidir con exactamente un mesh visible o el mapa falla cerrado |
 | `intake{budgets{visual_total_faces_max, viewpilot_resolved_max, shadow_faces_max, uv_uniq_min, dup_face_rate_max}, ladder_policy}` | presupuestos de ENTRADA + política `authored_lod_by_budget` → `lod_plan.json` (pieza→LOD autorado); FAIL si ningún plan cabe |
 
 ## Reglas de uso
@@ -62,3 +62,7 @@
    profile-scoped: son historia del coche, no doctrina del pipeline.
 3. Cambios de schema → actualizar ESTE doc en el mismo commit (es el contrato que lee
    el coche #N).
+4. [EXACT][CLAIM-R21-RIP-MATERIAL-OVERRIDE-SCHEMA] `material_type_overrides` no
+   sustituye la clasificación global por carpeta. Conserva `source_type`,
+   registra `override=source.material_type_overrides` y solo se admite con
+   identidad exacta `part + mat_name + mat_path`.

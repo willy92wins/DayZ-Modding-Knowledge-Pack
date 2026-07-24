@@ -5,7 +5,8 @@ description: >
   teclado ni OCR. Smoke visual + colisión + telemetría de objetos: spawnear el classname,
   orbitar la cámara y capturar, raycast contra el objeto, leer placement/attachments, y emitir
   un veredicto con evidencia (PNGs + JSON). Compón con dayz-test-ingame para el build/deploy/
-  launch (añade @DayZ_MCP) — esta skill NO lanza el juego, lo conduce. Úsala cuando el usuario
+  launch (añade @DayZ_MCP); el lifecycle se orquesta mediante dayz_test_run/dayz_test_stop
+  y luego esta skill conduce el juego. Úsala cuando el usuario
   quiera: "auto-probar el mod", "verificar el mod in-game con el MCP", "smoke visual del mod",
   "probar sin tocar el juego", "re-test visual", "comprobar que el .p3d carga / se ve / colisiona",
   "spawn + captura + raycast automatizado", "test in-game sin teclas". Cubre objetos estáticos,
@@ -32,27 +33,26 @@ Server-authoritative + captura pasiva por píxeles. El control y los datos son e
 (spawn, raycast, telemetría, cámara); la única pieza no-native es la captura visual
 (window-grab del cliente renderizado — `MakeScreenshot` está roto en diag, T165276).
 
-## COMPOSICIÓN — esta skill NO lanza el juego
+## COMPOSICIÓN — lifecycle público + verificación MCP
 
 El build/deploy/launch es de **`dayz-test-ingame`** (su preflight de entorno corre solito:
 `P:\` montado, junction `P:\Mods`, AddonBuilder, `allowFilePatching`). Esta skill lo invoca
-con el mod MCP añadido y luego conduce. Por diseño cerrado del proyecto (G-6), el MCP no
-arranca ni mata el juego.
+con el mod MCP añadido y luego conduce. Los verbos de bridge no arrancan ni terminan
+procesos; las herramientas públicas de test sí orquestan el lifecycle gestionado.
 
 Antes del flujo operativo, leer el protocolo canónico:
 `<runbooks>\dayz-mcp-agent-session-protocol.md`.
-La secuencia exclusiva es `session_acquire` → `session_wait` (máximo 30 s por llamada) → uso →
-`session_release` → `session_status`; `session_heartbeat` solo renueva mientras el trabajo
-exclusivo está activo. Todo lifecycle se identifica por `run_id`: compartir mod no concede
-ownership. El gate post-mutation reconcilia el resultado antes del release y el gate
-pre-handoff exige estado propio limpio. Con cuarentena retail solo se permiten lecturas; si
-quien abrió retail no puede cerrarlo por la UI, declarar `manual_cleanup_required`.
+[EXACT][CLAIM-R21-MCP-ORCHESTRATED-TEST] Ejecuta el lifecycle con
+`dayz_test_run` y detenlo con `dayz_test_stop` sobre el `run_id` exacto. Ambas
+herramientas poseen cola FIFO, lease, heartbeat y release; no las envuelvas en
+un segundo `session_acquire`. Reserva las primitivas `session_*` para
+mutaciones de bajo nivel que no estén ya encapsuladas. Todo lifecycle se
+identifica por `run_id`: compartir mod no concede ownership. Con cuarentena
+retail solo se permiten lecturas; si quien abrió retail no puede cerrarlo por
+la UI, declarar `manual_cleanup_required`.
 
-Lanzamiento (desde `<TargetMod>_dev\tools\`):
-
-```powershell
-.\dayz-test.ps1 -Mod <TargetMod> -Mode all -Build -ExtraMods "@DayZ_MCP"
-```
+El request de `dayz_test_run` debe seleccionar `Mode=all`, build cuando cambió
+el PBO y `@DayZ_MCP` como dependencia adicional:
 
 - `-Mode all` (server + cliente) es OBLIGATORIO: la captura visual lee del **cliente
   renderizado**. Un `-Mode server` headless no tiene ventana que grabbear.
@@ -260,9 +260,9 @@ Smoke visual de un vehículo CarScript conducido por MCP, verificado end-to-end 
 
 8. **SESIÓN COMPARTIDA.** El puerto 2302 y el cliente Steam siguen siendo recursos únicos, pero
    la exclusión se coordina con el lease FIFO del runbook, no atribuyendo procesos ni desalojando
-   otras sesiones. Adquiere antes del launch o de la primera mutación, conserva el `run_id` del
-   lifecycle guard y libera en cuanto termine la secuencia exclusiva. NUNCA mates un proceso para
-   desbloquear la caja: si el estado no reconcilia, conserva el proceso y declara cierre degradado.
+   otras sesiones. `dayz_test_run` adquiere y mantiene la exclusión; conserva el `run_id` y
+   termina ese mismo run con `dayz_test_stop`. NUNCA mates un proceso para desbloquear la caja:
+   si el estado no reconcilia, conserva el proceso y declara cierre degradado.
 
 9. **"Ruedas = lámina/disco plano" NO es bug de proxy.** Un `world_spawn` de un CarScript sin attachments deja
    `wheel_count=0`/`attachment_count=0` → solo se ve el hub/disco, sin neumáticos. Esperado en el smoke visual; las
@@ -277,8 +277,8 @@ Smoke visual de un vehículo CarScript conducido por MCP, verificado end-to-end 
 
 11. **Patrón histórico superseded 2026-07-15.** `cmd start`/`.bat` evitaba que un job background
     perdiera su hijo, pero creaba un proceso fuera del lifecycle registrado. Para cualquier smoke
-    actual, usa exclusivamente el launcher Diag gestionado: adquiere lease, conserva su `run_id` y
-    opera/termina solo ese run. No existe fallback unmanaged para sortear el lifecycle guard.
+    actual, usa exclusivamente `dayz_test_run`, conserva su `run_id` y termina solo ese run con
+    `dayz_test_stop`. No existe fallback unmanaged para sortear el lifecycle guard.
 
 ## DRIVABILITY + ESCALERA DE ACEPTACIÓN (resumen — detalle en reference)
 

@@ -47,7 +47,7 @@ param(
     [int]$Height = 1080,
     [string]$PlayerName = 'Dev',
     [string]$AdminSteamId = '',
-    [string]$AdminPass = 'dayzadmin',
+    [string]$AdminPass = '',
     [int]$ServerWait = 60,
     [switch]$Build,
     [switch]$Clean,
@@ -117,11 +117,28 @@ $LifecyclePython = '<dayz-projects>\DayZ_MCP_dev\tools\.venv-mcp\Scripts\python.
 $LifecycleKeyfile = '<dayz-projects>\DayZ_MCP_dev\tools\.dayz_mcp.key'
 $LifecyclePort = 8765
 $script:RunId = $RunId
+$script:LifecycleClientIdentityJson = $null
+$script:LifecycleLeaseToken = $null
+
+# claim: CLAIM-R21-TEST-CREDENTIAL-SCOPE-TEMPLATE
+function Initialize-LifecycleCredentials {
+    $identity = [Environment]::GetEnvironmentVariable('DAYZ_MCP_CLIENT_ID_JSON', 'Process')
+    $lease = [Environment]::GetEnvironmentVariable('DAYZ_MCP_LEASE_TOKEN', 'Process')
+    if (-not [string]::IsNullOrWhiteSpace($identity)) {
+        $script:LifecycleClientIdentityJson = $identity
+    }
+    if (-not [string]::IsNullOrWhiteSpace($lease)) {
+        $script:LifecycleLeaseToken = $lease
+    }
+    [Environment]::SetEnvironmentVariable('DAYZ_MCP_CLIENT_ID_JSON', $null, 'Process')
+    [Environment]::SetEnvironmentVariable('DAYZ_MCP_LEASE_TOKEN', $null, 'Process')
+}
 
 function Assert-LifecycleEnvironment {
-    $identity = [Environment]::GetEnvironmentVariable('DAYZ_MCP_CLIENT_ID_JSON')
-    $lease = [Environment]::GetEnvironmentVariable('DAYZ_MCP_LEASE_TOKEN')
-    if ([string]::IsNullOrWhiteSpace($identity) -or [string]::IsNullOrWhiteSpace($lease)) {
+    if (
+        [string]::IsNullOrWhiteSpace($script:LifecycleClientIdentityJson) -or
+        [string]::IsNullOrWhiteSpace($script:LifecycleLeaseToken)
+    ) {
         Die 'Managed lifecycle environment is incomplete.'
     }
     if (-not (Test-Path -LiteralPath $LifecyclePython -PathType Leaf)) {
@@ -145,12 +162,21 @@ function Invoke-LifecycleCli {
 
     $raw = @()
     $exitCode = 2
-    Push-Location $LifecycleTools
+    $previousIdentity = [Environment]::GetEnvironmentVariable('DAYZ_MCP_CLIENT_ID_JSON', 'Process')
+    $previousLease = [Environment]::GetEnvironmentVariable('DAYZ_MCP_LEASE_TOKEN', 'Process')
+    [Environment]::SetEnvironmentVariable('DAYZ_MCP_CLIENT_ID_JSON', $script:LifecycleClientIdentityJson, 'Process')
+    [Environment]::SetEnvironmentVariable('DAYZ_MCP_LEASE_TOKEN', $script:LifecycleLeaseToken, 'Process')
     try {
-        $raw = @(& $LifecyclePython @cliArgs 2>&1)
-        $exitCode = $LASTEXITCODE
+        Push-Location $LifecycleTools
+        try {
+            $raw = @(& $LifecyclePython @cliArgs 2>&1)
+            $exitCode = $LASTEXITCODE
+        } finally {
+            Pop-Location
+        }
     } finally {
-        Pop-Location
+        [Environment]::SetEnvironmentVariable('DAYZ_MCP_CLIENT_ID_JSON', $previousIdentity, 'Process')
+        [Environment]::SetEnvironmentVariable('DAYZ_MCP_LEASE_TOKEN', $previousLease, 'Process')
     }
 
     $result = $null
@@ -307,6 +333,7 @@ function Initialize-VppSuperadmin {
     Set-Content -Path $saTxt -Value ($merged -join "`r`n") -Encoding ASCII
     Ok "VPP superadmin(s) -> $saTxt ($($merged -join ', '))"
 
+    # claim: CLAIM-R21-TEST-VPP-SECRET-TEMPLATE
     # credentials.txt: login password on line 1, hashed by VPP at first boot. Seed only when not
     # already set, so an existing hash or user-chosen password is never clobbered.
     $cred = Join-Path $vppDir 'Permissions\credentials.txt'
@@ -317,9 +344,12 @@ function Initialize-VppSuperadmin {
         elseif ($first -and $first.Trim() -and ($first -notmatch '^\s*//')) { $needsPass = $false }
     }
     if ($needsPass) {
-        New-Item -ItemType Directory -Force -Path (Split-Path $cred) | Out-Null
-        Set-Content -Path $cred -Value $AdminPass -Encoding ASCII
-        Ok "VPP login password set -> '$AdminPass' (VPP hashes it at boot; store it, the raw is then lost)"
+        if (-not [string]::IsNullOrWhiteSpace($AdminPass)) {
+            New-Item -ItemType Directory -Force -Path (Split-Path $cred) | Out-Null
+            Set-Content -Path $cred -Value $AdminPass -Encoding ASCII
+            Ok 'VPP login password seeded from -AdminPass (value redacted; VPP hashes it at boot)'
+        }
+        else { Ok 'VPP password not seeded (passwordless local-dev mode is active)' }
     }
     else { Ok 'VPP credentials.txt already set (not overwriting)' }
 }
@@ -562,6 +592,7 @@ function Show-VppHint {
 # Main
 # ---------------------------------------------------------------------------
 if ($Retail) { Die 'Retail lifecycle is manual-only and quarantined; no build or launch was started.' }
+Initialize-LifecycleCredentials
 if ($Kill) { Stop-DayZ; exit 0 }
 if ($Clean) { $Build = $true }
 

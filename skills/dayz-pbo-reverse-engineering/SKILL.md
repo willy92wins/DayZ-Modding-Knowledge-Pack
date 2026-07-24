@@ -318,6 +318,29 @@ If user opts to extend (pass 3, additional skills, etc.).
 
 ## Anti-patterns observed during reverse-engineering work
 
+### Recover historical artifacts before declaring a companion missing
+
+[EXACT][CLAIM-R21-PBO-HISTORICAL-RECOVERY] Before concluding that a referenced
+PBO or archive is unrecoverable, search delivery history and metadata as well
+as live files:
+
+- Use cloud-sync metadata to recover the resource tree, names, sizes,
+  timestamps, content hashes and deletion provenance. A live hydration mapping
+  proves only that a mapping exists; it does not prove payload bytes remain.
+- Inspect browser download history for stable attachment or channel
+  identifiers, but never retain expiring signed query strings, cookies or
+  credentials.
+- Search the normal delivery UI, including linked announcement channels, and
+  preserve each recovered revision separately with timestamp and SHA-256.
+- Treat Jump Lists, Recycle Bin metadata, Steam manifests/caches and archive
+  indexes as supporting evidence, not as the missing payload.
+
+Hash and size metadata can prove identity if a copy later appears, but cannot
+substitute for the bytes. A later revision is a historical reference, never an
+unlabelled replacement for the missing exact version. This sequence recovered
+a later companion revision after metadata first identified the exact deleted
+artifact in a 2026-07-20 case study.
+
 1. **Don't trust filenames as authoritative**: a PBO named `aviation_dials` may turn out to be a source-only distribution (verified case from LM_Planes).
 2. **Don't conflate ZIP/RAR contents with PBO contents**: source PBOs often wrap asset zips, but those zips are NOT the mod itself.
 3. **Don't assume parameter overrides are simple**: Llama's "simple" 99-line parameter file for an aircraft references custom base class with 60+ Get* methods and 1900 lines of logic.

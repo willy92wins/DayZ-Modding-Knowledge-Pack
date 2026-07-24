@@ -54,19 +54,27 @@ El launcher oficial es Diag-only y aplica esta matriz:
 
 | Ruta | Ejecutable / rol | Contrato |
 |---|---|---|
-| Diag gestionado | `DayZDiag_x64.exe`, incluido el rol `-server` | `managed_lifecycle=true`; requiere lease y `run_id`. |
+| Diag gestionado | `DayZDiag_x64.exe`, incluido el rol `-server` | `managed_lifecycle=true`; `dayz_test_run` posee lease/heartbeat/release y devuelve `run_id`. |
 | Servidor dedicado | `DayZServer_x64.exe` | `managed_lifecycle=false`; probe-gated y no lo inicia el launcher oficial. |
 | Retail manual externo | Sesión abierta por el usuario fuera del launcher | Sin lifecycle de agente; activa cuarentena. |
 
-1. Ejecuta `session_status`; con cuarentena retail solo se permiten lecturas.
-2. Para launch, stop o cualquier mutación: `session_acquire` → `session_wait` (máximo 30 s por
-   llamada) → uso. Renueva con `session_heartbeat` solo durante trabajo exclusivo activo.
-3. El caller entrega lifecycle mediante `DAYZ_MCP_CLIENT_ID_JSON` y
-   `DAYZ_MCP_LEASE_TOKEN`, solo en su entorno; nunca copies sus valores a argv, logs o handoff.
-4. Conserva el `run_id` devuelto. El mismo mod no concede ownership: stop/adopt requieren el
-   run exacto. `-Kill` sin `-RunId` queda fail-closed.
-5. Termina con `session_release` y `session_status`. NUNCA sustituyas el lifecycle guard por
-   un kill o por atribución basada en nombre, mod, cmdline o perfil.
+1. Ejecuta `bridge_status`; con cuarentena retail solo se permiten lecturas.
+2. [EXACT][CLAIM-R21-TEST-PUBLIC-LIFECYCLE] Usa `dayz_test_run` para el
+   server/client gestionado y `dayz_test_stop` para el `run_id` exacto. Esas
+   herramientas poseen la cola FIFO, lease, heartbeat y liberación; NO
+   pre-adquieras otro lease alrededor de ellas.
+3. `session_acquire`/`session_wait`/`session_heartbeat`/`session_release` quedan
+   para mutaciones de bajo nivel que no estén encapsuladas por las herramientas
+   públicas.
+4. [EXACT][CLAIM-R21-TEST-CREDENTIAL-SCOPE] El launcher aprobado recibe
+   `DAYZ_MCP_CLIENT_ID_JSON` y `DAYZ_MCP_LEASE_TOKEN` solo en el entorno de
+   proceso. La plantilla los captura, los retira del entorno padre y los
+   restaura únicamente alrededor del proceso hijo; nunca copies sus valores a
+   shell, argv, logs o handoff ni invoques el launcher aprobado directamente.
+5. Conserva el `run_id` devuelto. El mismo mod no concede ownership: stop/adopt
+   requieren el run exacto. `-Kill` sin `-RunId` queda fail-closed.
+6. Verifica estado terminal después del stop. NUNCA sustituyas el lifecycle
+   guard por un kill o por atribución basada en nombre, mod, cmdline o perfil.
 
 Retail manual-only activa cuarentena retail: el usuario que lo abrió lo cierra por la UI y
 después ejecuta doctor/rescan. Sin acceso a esa UI, declarar `manual_cleanup_required`; otro
@@ -222,8 +230,10 @@ admin works regardless of version (idempotent; an already-hashed password is nev
 - `<server profiles>\VPPAdminTools\Permissions\SuperAdmins\SuperAdmins.txt` — one SteamID64 per
   line; the file the installed VPP actually reads. (verified in-situ 2026-06-09)
 - `<server profiles>\VPPAdminTools\Permissions\credentials.txt` — the **in-game login
-  password** on line 1. VPP hashes it on first boot and the raw is then lost. Seeded from
-  `-AdminPass` (default `dayzadmin`); the preflight prints it once — store it.
+  password** on line 1. VPP hashes it on first boot and the raw is then lost.
+  [EXACT][CLAIM-R21-TEST-VPP-SECRET] There is no packaged default. It is seeded
+  only when the operator explicitly supplies non-empty `-AdminPass`, and its
+  value is never printed.
 - `<server profiles>\VPPAdminTools\SuperAdmins.json` — `{ "SUPER_ADMINS": ["<SteamID64>"] }`,
   the legacy layout; still seeded for older VPP builds that read it.
 
@@ -238,8 +248,8 @@ in `SuperAdmins.txt`) gets access with NO password (`missionServer.c:14` →
 `DisablePasswordProtection(true)`; granted because `HasUserGroup`→`IsSuperAdmin`,
 `PermissionManager.c:693`). This is the robust local-dev default: the `credentials.txt` password
 path repeatedly failed across sessions (SHA256/version quirks), and disabling it removes that
-whole failure class. The seeded `credentials.txt` password only matters if you remove
-`vppDisablePassword` (for password-gated testing). In-game keys: End = toggle admin, Home = open
+whole failure class. An explicitly seeded `credentials.txt` password only matters if you remove
+`vppDisablePassword` for password-gated testing. In-game keys: End = toggle admin, Home = open
 menu (rebind under Options → Controls if a fresh client profile lost them).
 
 Earlier this doc claimed VPP reads the root `SuperAdmins.json` — that was wrong for the installed

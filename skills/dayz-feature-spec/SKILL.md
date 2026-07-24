@@ -73,3 +73,17 @@ If a future task tempts you to re-add generic app cruft here, don't — that was
 ## Provenance
 
 Adapted from github/spec-kit, reviewed 2026-07-01. Sources: `templates/spec-template.md`, `templates/commands/analyze.md`, `templates/commands/clarify.md`, `templates/checklist-template.md`. Generic scaffolding excluded by design.
+
+## Forward Contract for injected objects
+
+[EXACT][CLAIM-R21-FEATURE-INJECTED-CONTRACT] When a plan injects an object
+that replaces another implementation (planner, bridge, transport, repository),
+the Forward Contract MUST enumerate every field and method the consumer reads,
+not only the field that motivates the test double. Grep all accesses on the
+injected value and prefer the existing result type over a partial look-alike.
+
+The failure mode is concrete: a consumer can read `.status.value`, `.proposal`
+and `.source` even when a plan mentions only `.proposal`; the partial object
+then fails at runtime despite satisfying the prose spec. Verified example:
+`GameMaster/tools/gm/service.py:209-218`; the complete existing result contract
+is `GameMaster/tools/gm/ollama_planner.py:43-50`.

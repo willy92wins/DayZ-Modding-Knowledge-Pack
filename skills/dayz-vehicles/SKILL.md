@@ -415,6 +415,10 @@ references.
   the `Transport`→Car/Boat sibling hierarchy and the per-type deltas — boat propeller/buoyancy/
   BoatFluid + always-free get-in, truck 3-axle DRIVE_642 + single-classname double wheels, ATV
   slots on `Chassis`, and the honest motorbike gap. All source-verified against vanilla `P:\scripts`.
+- **Get-in prompt, cursor actions and proxied-sub pose** →
+  `references/get-in-actions-and-proxy-pose.md`: the four-link get-in condition
+  chain, the `ActionConstructor` + `PlayerBase` registration contract, and the
+  measured `Geometry`/`autocenter=0` gate for multi-LOD proxy submodels.
 - **Let a rider FIRE their own weapon from a moving vehicle (free-gunner / walk-on-bed)** →
   `references/gunner-shoot-from-vehicle.md`: the SIBNIC "Gunner" pattern reverse-engineered — the one
   trick (`IsInVehicle()`→false unlocks the weapon) plus `LinkToLocalSpaceOf` attach, frozen physics,

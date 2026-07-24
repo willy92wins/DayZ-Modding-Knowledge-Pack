@@ -99,6 +99,9 @@ The four reference docs give the procedures. Read them before running:
 - `references/sidecar-cleanup-symmetry.md` — catches missing cleanup on delete/reset (VULN-008 class)
 - `references/entry-point-audit.md` — catches alternative entry points skipping invariants (VULN-009, VULN-001 class)
 - `references/flag-lifecycle-audit.md` — catches flag/sidecar state-store divergence (VULN-010 class)
+- `references/crash-safe-evidence-and-bundles.md` — authoritative evidence indexes and multi-root publication
+- `references/authority-and-loopback.md` — durable authority publication and authenticated-localhost provenance
+- `references/incremental-rebuild-traps.md` — atomic-to-phased conversion hazards
 
 Plus the existing structural check:
 
@@ -310,6 +313,9 @@ Watching for these saves rounds:
 - `references/entry-point-audit.md` — mechanical check #3
 - `references/flag-lifecycle-audit.md` — mechanical check #4
 - `references/state-machine-matrix.md` — structural state-transition check
+- `references/crash-safe-evidence-and-bundles.md` — crash-safe evidence and multi-root bundle publication
+- `references/authority-and-loopback.md` — authority/WAL and authenticated loopback audit
+- `references/incremental-rebuild-traps.md` — lost updates, non-idempotent retries and stuck flags
 
 ## (added 2026-06-10) Semántica de eventos engine + completitud del plan de remediación
 
