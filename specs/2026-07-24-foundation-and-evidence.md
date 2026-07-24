@@ -410,6 +410,7 @@ diseño pendientes:
 - `python -m packctl eval run --case <id> --variant <id> --out <dir>`
 - `python -m packctl promote --check --plan <local-json>`
 - `python -m packctl promote --apply --plan <local-json>`
+- `python -m packctl promote --recover --transaction-root <local-path>`
 
 Argumento ausente/inválido devuelve `2`. Finding de contenido devuelve `1`.
 `--root` y outputs se resuelven antes de operar y se comprueba su contención.
@@ -477,6 +478,12 @@ Task 8 se ejecutará `rigorous-data-audit` sobre CAS, backup, rollback, idempote
 y recibos. El operador nunca borra backups automáticamente. Si existe journal
 incompleto, lock no adjudicado o rollback fallido, `apply` se bloquea con exit
 `2` hasta recuperar/verificar o autorizar una operación separada.
+
+Amendment aprobado el 2026-07-24: la operación separada es `promote --recover`.
+Usa journal append-only encadenado, locks del sistema operativo, fsync/rename
+durable y decide únicamente PRE (`ABORT`) antes de `COMMIT` o POST después de
+`COMMIT`. La matriz y las fronteras de terminación están congeladas en
+`plans/2026-07-24-01b-crash-safe-promotion.md`.
 
 ## Open questions / NEEDS CLARIFICATION
 

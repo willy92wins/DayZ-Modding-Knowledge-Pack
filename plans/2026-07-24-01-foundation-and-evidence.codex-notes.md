@@ -2,8 +2,9 @@
 title: "Codex audit — Phase 01 promotion transaction"
 date: 2026-07-24
 reviewer: codex
-status: needs-user-decision
+status: approved-for-implementation
 reviewed_commit: 35bd072dc398b15cb8186129b910b73521f7fcf3
+decision_date: 2026-07-24
 ---
 
 # Codex audit — Phase 01 promotion transaction
@@ -89,7 +90,15 @@ manifiestos PRE/POST y termination injection en cada frontera. También impide
 superar honestamente el hard stop de promoción parcial
 (`plans/2026-07-24-01-foundation-and-evidence.md:200-205`).
 
-## Propuesta para decisión
+## Decisión
+
+**[EXACT] Aprobado por el usuario el 2026-07-24**, incluido el backup root local
+`%LOCALAPPDATA%\DayZ-Modding-Knowledge-Pack\promotion-backups`.
+
+El contrato ejecutable y sus viability tests quedan en
+`plans/2026-07-24-01b-crash-safe-promotion.md`.
+
+## Propuesta aprobada
 
 **[DESIGN] Mi recomendación es ampliar Task 7/8 antes de la primera promoción
 real** con un subcontrato de crash recovery:
@@ -104,5 +113,5 @@ real** con un subcontrato de crash recovery:
 5. gate que demuestre estado totalmente PRE o totalmente POST tras cada
    reinicio; nunca mezcla silenciosa.
 
-Hasta decidir e implementar este subcontrato, `promote --apply` no debe
+Hasta implementar y verificar este subcontrato, `promote --apply` no debe
 ejecutarse sobre las raíces reales.
