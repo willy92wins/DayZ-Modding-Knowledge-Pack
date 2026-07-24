@@ -381,7 +381,7 @@ Para árboles, tree digest = SHA-256 de concatenar, por cada archivo ordenado,
 `relative_path UTF-8`, byte NUL, SHA-256 lowercase del archivo y LF. Para un
 artefacto `file`, digest = SHA-256 de sus bytes, independiente del basename del
 snapshot. Un target ausente usa el sentinel `absent`
-(`packctl/common.py:307-323`). El orden de la proyección fuente y el del árbol
+(`packctl/common.py:348-364`). El orden de la proyección fuente y el del árbol
 materializado usan la misma semántica de `Path` del host; el plan contiene
 paths absolutos locales y no es portable entre hosts
 (`packctl/promotion.py:93-106`).
@@ -408,6 +408,13 @@ paths absolutos locales y no es portable entre hosts
    sella `COMMIT` con el hash exacto del recibo y publica ese recibo
    create-only.
 
+En Windows, `MoveFileExW` reintenta solo los códigos 5/32/33 mediante seis
+esperas con 2,55 s acumulados. Cada retry exige que source siga presente y que
+destination no vuelva ambiguo el resultado anterior; de lo contrario falla
+cerrado y deja la adjudicación al rollback/recovery
+(`packctl/common.py:52-123`). El informe conserva tipo + `winerror`, nunca un
+path físico (`packctl/promotion.py:1131-1139`).
+
 Ante excepción capturable antes de `COMMIT`, revierte en orden inverso, verifica
 los hashes originales y solo entonces registra `ABORT`. Ante terminación del
 proceso, `promote --recover` continúa la misma adjudicación: sin `COMMIT`
@@ -415,7 +422,7 @@ restaura todos los PRE; con `COMMIT` exige todos los POST y solo completa el
 recibo sellado. Un digest ajeno a PRE/POST, una cadena inválida o un rollback
 incompleto devuelve exit `2`, conserva la evidencia y exige intervención.
 Nunca declara éxito parcial. Un plan cuyo target ya coincide es idempotente:
-hace readback, no replace (`packctl/promotion.py:1825-2014,2078-2443`).
+hace readback, no replace (`packctl/promotion.py:1843-2031,2096-2460`).
 
 El recibo versionado contiene schema, transaction, source commit, artifact IDs,
 target IDs lógicos, aliases físicos opacos, before/after digests, verdict y

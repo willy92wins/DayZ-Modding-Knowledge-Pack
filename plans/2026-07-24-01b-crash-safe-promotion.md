@@ -81,6 +81,8 @@ Evidencia de API:
   <https://docs.python.org/3/library/fcntl.html#fcntl.flock>.
 - Microsoft `MOVEFILE_WRITE_THROUGH`:
   <https://learn.microsoft.com/windows/win32/api/winbase/nf-winbase-movefileexw>.
+- Microsoft `CreateFileW`, acceso DELETE y `FILE_SHARE_DELETE`:
+  <https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-createfilew>.
 
 ## Interfaces
 
@@ -160,7 +162,7 @@ Recovery/rollback:
 ## Registro de implementación Codex
 
 **[EXACT]** Implementado el 2026-07-24 en
-`packctl/common.py:51-151`, `packctl/promotion.py:861-2443` y
+`packctl/common.py:52-209`, `packctl/promotion.py:886-2461` y
 `packctl/cli.py:63-76,155-160`. La auditoría se ejecutó localmente, sin Claude ni subagentes,
 por decisión expresa del usuario.
 
@@ -188,12 +190,17 @@ primer diseño no hacía explícitos:
     semántica de `Path` del host; esto evita que un árbol mixto como
     `SKILL.md` + `references/...` selle un digest que su staging no puede
     reproducir.
+11. `MoveFileExW` reintenta solo denegaciones transitorias de Windows
+    5/32/33 con una espera total acotada a 2,55 s. Antes de cada retry exige que
+    source siga presente y, sin `replace`, destination siga ausente; un estado
+    ambiguo se entrega a rollback/recovery sin repetir la mutación. El
+    diagnóstico conserva tipo + `winerror`, nunca el path físico.
 
 La matriz ejecutable está en
-`tests/packctl/test_promotion.py:536-620,696-714,1092-1698`. Cubre las fronteras de
+`tests/packctl/test_promotion.py:537-621,697-800,1017-1064,1233-1839`. Cubre las fronteras de
 muerte forward/recovery, corrupción de evidencia, targets y recibos ajenos,
 locks vivos y huérfanos, tres generaciones consecutivas, retry tras `ABORT`,
-inicialización atómica y carreras bajo lock.
+inicialización atómica, renames transitorias y carreras bajo lock.
 
 Verificación intermedia antes del gate final:
 

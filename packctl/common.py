@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import subprocess
+import time
 import uuid
 from pathlib import Path
 from typing import Any, Iterable
@@ -48,6 +49,37 @@ def sync_directory(path: Path) -> None:
         os.close(descriptor)
 
 
+_WINDOWS_TRANSIENT_RENAME_ERRORS = frozenset({5, 32, 33})
+_WINDOWS_RENAME_RETRY_DELAYS = (0.05, 0.1, 0.2, 0.4, 0.8, 1.0)
+
+
+def _windows_move_file_ex(
+    source: Path,
+    destination: Path,
+    flags: int,
+) -> tuple[bool, int, str]:
+    import ctypes
+
+    move_file_ex = ctypes.WinDLL(
+        "kernel32",
+        use_last_error=True,
+    ).MoveFileExW
+    move_file_ex.argtypes = [
+        ctypes.c_wchar_p,
+        ctypes.c_wchar_p,
+        ctypes.c_uint32,
+    ]
+    move_file_ex.restype = ctypes.c_int
+    if move_file_ex(str(source), str(destination), flags):
+        return True, 0, ""
+    error = ctypes.get_last_error()
+    return False, error, ctypes.FormatError(error)
+
+
+def _sleep_before_windows_rename_retry(delay: float) -> None:
+    time.sleep(delay)
+
+
 def durable_rename(
     source: Path,
     destination: Path,
@@ -57,29 +89,38 @@ def durable_rename(
     source = Path(source)
     destination = Path(destination)
     if os.name == "nt":
-        import ctypes
-
-        move_file_ex = ctypes.WinDLL(
-            "kernel32",
-            use_last_error=True,
-        ).MoveFileExW
-        move_file_ex.argtypes = [
-            ctypes.c_wchar_p,
-            ctypes.c_wchar_p,
-            ctypes.c_uint32,
-        ]
-        move_file_ex.restype = ctypes.c_int
         flags = 0x00000008
         if replace:
             flags |= 0x00000001
-        if not move_file_ex(str(source), str(destination), flags):
-            error = ctypes.get_last_error()
-            raise OSError(
-                error,
-                ctypes.FormatError(error),
-                str(destination),
+        for attempt in range(len(_WINDOWS_RENAME_RETRY_DELAYS) + 1):
+            moved, error, message = _windows_move_file_ex(
+                source,
+                destination,
+                flags,
             )
-        return
+            if moved:
+                return
+            source_exists = source.exists() or source.is_symlink()
+            destination_exists = (
+                destination.exists() or destination.is_symlink()
+            )
+            retryable_state = source_exists and (
+                replace or not destination_exists
+            )
+            if (
+                error not in _WINDOWS_TRANSIENT_RENAME_ERRORS
+                or attempt == len(_WINDOWS_RENAME_RETRY_DELAYS)
+                or not retryable_state
+            ):
+                raise OSError(
+                    None,
+                    message,
+                    str(destination),
+                    error,
+                )
+            _sleep_before_windows_rename_retry(
+                _WINDOWS_RENAME_RETRY_DELAYS[attempt]
+            )
     if replace:
         os.replace(source, destination)
     else:

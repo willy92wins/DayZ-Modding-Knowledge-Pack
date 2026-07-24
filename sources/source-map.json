@@ -1316,7 +1316,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "91edadeae78b744097d8ea2ec04b7daee0d86b7d1c2e50bffc2d230522233f2a",
+          "source_hash": "fa7ee7b131324161e577391273dee170f1e05aac56468b1d0c3bcc062cc7ee1c",
           "source_id": "pack-r21-authored",
           "source_path": "packctl/common.py",
           "source_revision": "r21-phase01@2026-07-24",
@@ -1324,7 +1324,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "91edadeae78b744097d8ea2ec04b7daee0d86b7d1c2e50bffc2d230522233f2a",
+      "output_hash": "fa7ee7b131324161e577391273dee170f1e05aac56468b1d0c3bcc062cc7ee1c",
       "output_path": "packctl/common.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -1408,7 +1408,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "c84613e5c5dfd2d9a8ba226b6af37b6c2261547be40c2ce3062ecdf09b0f8f3b",
+          "source_hash": "7d1e1d2fb04770c7fae916a72b26aea05389c83438cf3b7cb094fe32f76529f5",
           "source_id": "pack-r21-authored",
           "source_path": "packctl/promotion.py",
           "source_revision": "r21-phase01@2026-07-24",
@@ -1416,7 +1416,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c84613e5c5dfd2d9a8ba226b6af37b6c2261547be40c2ce3062ecdf09b0f8f3b",
+      "output_hash": "7d1e1d2fb04770c7fae916a72b26aea05389c83438cf3b7cb094fe32f76529f5",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -1454,7 +1454,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 rigorous-data-audit findings and the unresolved crash-recovery decision are recorded for review.",
           "license": "MIT",
-          "source_hash": "44585c2cbf260aae279c3a833e95bed8206c52ec4f38bb720a1c1b42dda7ccda",
+          "source_hash": "1039b1208d4e72c7f752639552f77913eecac730b72870c8198dbcf3d68d97ec",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-01-foundation-and-evidence.codex-notes.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -1462,7 +1462,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "44585c2cbf260aae279c3a833e95bed8206c52ec4f38bb720a1c1b42dda7ccda",
+      "output_hash": "1039b1208d4e72c7f752639552f77913eecac730b72870c8198dbcf3d68d97ec",
       "output_path": "plans/2026-07-24-01-foundation-and-evidence.codex-notes.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -1510,7 +1510,7 @@
           "decision": "adopt",
           "decision_evidence": "User-approved crash-recovery amendment with explicit viability tests and hard stops.",
           "license": "MIT",
-          "source_hash": "35346055f2d89e8cd32f6ce2407dd20d6ad7837f89ed8b8b53a10bf47554b173",
+          "source_hash": "336d7bc8893cfce102b731c903e2d1ba42c6f0155533fc21187c54266d584dab",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-01b-crash-safe-promotion.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -1518,7 +1518,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "35346055f2d89e8cd32f6ce2407dd20d6ad7837f89ed8b8b53a10bf47554b173",
+      "output_hash": "336d7bc8893cfce102b731c903e2d1ba42c6f0155533fc21187c54266d584dab",
       "output_path": "plans/2026-07-24-01b-crash-safe-promotion.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -4890,7 +4890,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "3d9cfad8dc29f44366af8b8908956e0afd2b9a76040a4c4bd4414734e0139355",
+          "source_hash": "9f7859b135c26b36631a744b7e1cc6977c07876cd5496301126578b3d9048f9d",
           "source_id": "pack-r21-authored",
           "source_path": "skills/rigorous-data-audit/references/crash-safe-evidence-and-bundles.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -4918,7 +4918,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3d9cfad8dc29f44366af8b8908956e0afd2b9a76040a4c4bd4414734e0139355",
+      "output_hash": "9f7859b135c26b36631a744b7e1cc6977c07876cd5496301126578b3d9048f9d",
       "output_path": "skills/rigorous-data-audit/references/crash-safe-evidence-and-bundles.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -5237,7 +5237,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "b34414e78f1c5a5250d28464f3cfa4c504fc60ed991c839666aacee037530183",
+          "source_hash": "892c1deadd337ef4f753afdef367af90243865970676e0a0cc760884c213517a",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "r21-phase01@2026-07-24",
@@ -5245,7 +5245,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b34414e78f1c5a5250d28464f3cfa4c504fc60ed991c839666aacee037530183",
+      "output_hash": "892c1deadd337ef4f753afdef367af90243865970676e0a0cc760884c213517a",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -5352,7 +5352,7 @@
           "decision": "adopt",
           "decision_evidence": "The approved Phase 01 provenance contract and source inventory generate this self-exempt registry.",
           "license": "MIT",
-          "source_hash": "78dcd634f060192e7ce56cd6d2a9d4ed8811a001b63dbed7c960a0e7fb2f0b69",
+          "source_hash": "c83a542c782517f320f08a4c3c44055fc87c7e771c17833bb684b9bb55b29a7c",
           "source_id": "pack-r21-authored",
           "source_path": "specs/2026-07-24-foundation-and-evidence.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -5397,7 +5397,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "78dcd634f060192e7ce56cd6d2a9d4ed8811a001b63dbed7c960a0e7fb2f0b69",
+          "source_hash": "c83a542c782517f320f08a4c3c44055fc87c7e771c17833bb684b9bb55b29a7c",
           "source_id": "pack-r21-authored",
           "source_path": "specs/2026-07-24-foundation-and-evidence.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -5405,7 +5405,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "78dcd634f060192e7ce56cd6d2a9d4ed8811a001b63dbed7c960a0e7fb2f0b69",
+      "output_hash": "c83a542c782517f320f08a4c3c44055fc87c7e771c17833bb684b9bb55b29a7c",
       "output_path": "specs/2026-07-24-foundation-and-evidence.md",
       "routing_artifact_id": "repo/specs",
       "verification_level": "cross_checked"
@@ -5604,7 +5604,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "a60371ff287f6a9298f41becc0ccd48cad2dab96cfcd3a5db843a951a694e4bf",
+          "source_hash": "a079f6e8522deccbb6951a75adfa99b788d60915b55798c0a2e21d9f0fa664c8",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_promotion.py",
           "source_revision": "r21-phase01@2026-07-24",
@@ -5612,7 +5612,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a60371ff287f6a9298f41becc0ccd48cad2dab96cfcd3a5db843a951a694e4bf",
+      "output_hash": "a079f6e8522deccbb6951a75adfa99b788d60915b55798c0a2e21d9f0fa664c8",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"

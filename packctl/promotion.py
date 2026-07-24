@@ -1128,6 +1128,17 @@ class _PromotionIntegrityError(RuntimeError):
         self.evidence = evidence
 
 
+def _exception_evidence(error: BaseException) -> str:
+    if isinstance(error, OSError):
+        winerror = getattr(error, "winerror", None)
+        if isinstance(winerror, int):
+            return f"{type(error).__name__}:winerror={winerror}"
+        errno = getattr(error, "errno", None)
+        if isinstance(errno, int):
+            return f"{type(error).__name__}:errno={errno}"
+    return type(error).__name__
+
+
 def _lock_path_for_root(root: Path) -> Path:
     return root.parent / f".{root.name}.packctl.lock"
 
@@ -1766,7 +1777,7 @@ def _publish_or_verify_receipt(
         except OSError as error:
             raise _PromotionIntegrityError(
                 "PROMOTION-RECEIPT-CONFLICT",
-                type(error).__name__,
+                _exception_evidence(error),
             ) from error
         if existing != receipt_bytes:
             raise _PromotionIntegrityError(
@@ -2139,7 +2150,7 @@ def recover_promotion(
     except Exception as error:
         wrapped = _PromotionIntegrityError(
             "PROMOTION-ROLLBACK-FAILED",
-            type(error).__name__,
+            _exception_evidence(error),
         )
         return _integrity_report(
             "promote recover",
@@ -2493,7 +2504,7 @@ def apply_promotion(
                 if isinstance(rollback_error, _PromotionIntegrityError)
                 else _PromotionIntegrityError(
                     "PROMOTION-ROLLBACK-FAILED",
-                    type(rollback_error).__name__,
+                    _exception_evidence(rollback_error),
                 )
             )
             return make_report(
@@ -2508,7 +2519,7 @@ def apply_promotion(
                             "Promotion failed and did not publish a "
                             "success receipt."
                         ),
-                        evidence=type(error).__name__,
+                        evidence=_exception_evidence(error),
                     ),
                     finding(
                         "PROMOTION-ROLLBACK-FAILED",
@@ -2568,7 +2579,7 @@ def apply_promotion(
                             "Promotion failed before publishing a "
                             "transaction."
                         ),
-                        evidence=type(error).__name__,
+                        evidence=_exception_evidence(error),
                     )
                 ],
             )
@@ -2581,7 +2592,7 @@ def apply_promotion(
                         root,
                         _PromotionIntegrityError(
                             "PROMOTION-RECOVERY-REQUIRED",
-                            type(error).__name__,
+                            _exception_evidence(error),
                         ),
                         transaction_root=transaction_root,
                     )
@@ -2596,7 +2607,7 @@ def apply_promotion(
             evidence = (
                 rollback_error.evidence
                 if isinstance(rollback_error, _PromotionIntegrityError)
-                else type(rollback_error).__name__
+                else _exception_evidence(rollback_error)
             )
             return make_report(
                 "promote apply",
@@ -2610,7 +2621,7 @@ def apply_promotion(
                             "Promotion failed and did not publish a "
                             "success receipt."
                         ),
-                        evidence=type(error).__name__,
+                        evidence=_exception_evidence(error),
                     ),
                     finding(
                         "PROMOTION-ROLLBACK-FAILED",
@@ -2641,7 +2652,7 @@ def apply_promotion(
                         "Promotion failed, restored PRE, and did not "
                         "publish a success receipt."
                     ),
-                    evidence=type(error).__name__,
+                    evidence=_exception_evidence(error),
                 )
             ],
             artifacts={"transaction_root": str(transaction_root)},

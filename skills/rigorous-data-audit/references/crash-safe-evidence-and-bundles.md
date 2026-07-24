@@ -77,18 +77,25 @@ multi-root publisher, also audit these less-obvious boundaries:
     materialized tree readback. Host path semantics can order `SKILL.md` and
     `references/...` differently from raw string sorting, making a valid source
     impossible to verify after staging.
+11. Treat platform rename denials as an adjudicated boundary. Retry only known
+    transient codes, for a bounded interval, and only while source/destination
+    still prove the prior attempt did not create an ambiguous state. Preserve a
+    path-free OS error code for diagnosis; never turn a retry into a second
+    blind mutation.
 
 These checks need fixtures for successive generations, retry after `ABORT`,
 failure during transaction initialization, contract mutation while waiting for
 locks, mutation after backup, renamed standalone-file snapshots, a lock root
-equal to its target, mixed-case projected paths and invalid transaction roots.
+equal to its target, mixed-case projected paths, transient/ambiguous renames
+and invalid transaction roots.
 
 ## Evidence
 
 - `Utopia_PC_Suite/plans/2026-07-22-phase-0a-foundation-plan.md:262-289,375-378`
 - `Utopia_PC_Suite/plans/2026-07-22-phase-0b-dedicated-persistence-plan.md:383-439`
-- `DayZ-Modding-Knowledge-Pack/packctl/promotion.py:93-106,1598-1635,1829-2447`
-- `DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:536-620,696-714,1092-1698`
+- `DayZ-Modding-Knowledge-Pack/packctl/common.py:52-123`
+- `DayZ-Modding-Knowledge-Pack/packctl/promotion.py:93-106,1131-1139,1612-1649,1843-2461`
+- `DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:537-621,697-800,1017-1064,1233-1839`
 
 Verification level: mechanism/source contract cross-check plus offline
 termination/recovery tests, 2026-07-24.

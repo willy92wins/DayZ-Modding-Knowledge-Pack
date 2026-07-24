@@ -23,39 +23,40 @@ commit revisado:
 
 1. **[EXACT] Riesgo de escritura fuera de política.** `backup_root` no estaba
    sometido a allowlist/forbidden roots. Ahora falla cerrado tanto al crear el
-   plan como al aplicarlo (`packctl/promotion.py:321-340,836-857`;
-   `tests/packctl/test_promotion.py:299-328`).
+   plan como al aplicarlo (`packctl/promotion.py:296-359,900-934`;
+   `tests/packctl/test_promotion.py:433-457`).
 2. **[EXACT] Riesgo de misrouting por alias.** La deduplicación física perdía la
    ruta de cada target lógico. El plan sella `logical_target_paths`, vuelve a
    resolverlas antes de escribir y hace readback por cada alias
-   (`packctl/promotion.py:594-749,938-972,1380-1394`;
-   `tests/packctl/test_promotion.py:597-629`).
+   (`packctl/promotion.py:627-736,959-1079,1652-1691`;
+   `tests/packctl/test_promotion.py:272-291,918-952`).
 3. **[EXACT] Degradación idempotente.** Una operación con PRE=POST seguía
-   reemplazando. Ahora solo hace readback (`packctl/promotion.py:1318-1319`;
-   `tests/packctl/test_promotion.py:632-667`).
+   reemplazando. Ahora solo hace readback (`packctl/promotion.py:2269-2271`;
+   `tests/packctl/test_promotion.py:953-990`).
 4. **[EXACT] Riesgo destructivo sobre residuos ajenos.** Staging/old
    preexistentes se borraban. Ahora bloquean y se conservan; un staging parcial
    creado por la operación sí se limpia
-   (`packctl/promotion.py:1320-1340`;
-   `tests/packctl/test_promotion.py:410-460`).
+   (`packctl/promotion.py:1803-1830,2275-2284`;
+   `tests/packctl/test_promotion.py:625-678`).
 5. **[EXACT] Riesgo de corrupción en excepción entre dos replaces.** Si fallaba
    después de mover el target a `.old` y antes de publicar staging, la operación
    aún no figuraba como tocada. La frontera `after_old_move` ya revierte y
-   verifica PRE (`packctl/promotion.py:1360-1374`;
-   `tests/packctl/test_promotion.py:670-693`).
+   verifica PRE (`packctl/promotion.py:1843-1973,2370-2374`;
+   `tests/packctl/test_promotion.py:991-1016`).
 6. **[EXACT] Evidencia PASS falsa.** El recibo se publicaba antes de la última
    escritura fallible del journal. Ahora el recibo es la última publicación y
-   un fallo previo revierte sin recibo (`packctl/promotion.py:1415-1437`;
-   `tests/packctl/test_promotion.py:696-722`).
+   un fallo previo revierte sin recibo (`packctl/promotion.py:2431-2460`;
+   `tests/packctl/test_promotion.py:1067-1095`).
 7. **[EXACT] Locks no exclusivos.** El nombre incluía `transaction_id`, por lo
    que dos transacciones distintas podían adquirir locks diferentes sobre el
-   mismo root. Ahora el lock es único por root, create-only y fsync; CAS se
-   repite bajo lock (`packctl/promotion.py:1289-1312`).
+   mismo root. Ahora el lock es único por root y CAS se repite bajo lock
+   (`packctl/promotion.py:1142-1234`;
+   `tests/packctl/test_promotion.py:679-830`).
 8. **[EXACT] Recovery gate ausente.** Un lock no adjudicado, journal pendiente,
    rollback fallido o `complete` sin recibo válido bloquea con exit 2. Solo
    `rolled-back` verificado o `complete` con recibo coherente permiten continuar
-   (`packctl/promotion.py:1005-1124`;
-   `tests/packctl/test_promotion.py:463-572`).
+   (`packctl/promotion.py:1495-1609,1991-2159`;
+   `tests/packctl/test_promotion.py:803-896,1233-1583`).
 9. **[EXACT] Hueco de privacidad.** Los contratos públicos `repo_only` no
    entraban en el scanner. `sources/*.json`, `promotions/*.json` y el schema del
    manifest ya se inspeccionan, incluyendo backslashes escapados en JSON
@@ -122,51 +123,51 @@ ejecutarse sobre las raíces reales.
 La implementación sustituyó el journal mutable por eventos create-only
 hash-chained, locks del sistema operativo, plan sellado, inicialización atómica,
 durabilidad explícita y recovery determinista
-(`packctl/common.py:51-151`; `packctl/promotion.py:1131-1668,1832-2450`;
-`tests/packctl/test_promotion.py:1092-1698`).
+(`packctl/common.py:52-209`; `packctl/promotion.py:1142-1679,1843-2461`;
+`tests/packctl/test_promotion.py:1233-1839`).
 
 Durante la segunda auditoría y las promociones reales se localizaron y
-corrigieron once fallos
+corrigieron doce fallos
 adicionales:
 
 1. **[EXACT] Corrupción lógica de snapshots de fichero.** El digest incluía el
    basename de la fuente, pero el target vault se llama con el commit. Los
    mismos bytes producían digests distintos. El digest de un fichero ahora es
-   su SHA-256 binario (`packctl/common.py:307-314`;
-   `tests/packctl/test_promotion.py:569-620`).
+   su SHA-256 binario (`packctl/common.py:348-355`;
+   `tests/packctl/test_promotion.py:570-621`).
 2. **[EXACT] Degradación tras promociones sucesivas.** El scanner terminal
    exigía que el target actual siguiera en el POST de cada transacción
    histórica, bloqueando una tercera generación legítima. Ahora valida cadena,
    semántica y recibo históricos, mientras el estado físico actual se adjudica
    solo para la transacción que se recupera
-   (`packctl/promotion.py:2024-2114`;
-   `tests/packctl/test_promotion.py:1480-1524`).
+   (`packctl/promotion.py:2035-2125`;
+   `tests/packctl/test_promotion.py:1621-1665`).
 3. **[EXACT] Retry envenenado tras `ABORT`.** Un ID derivado solo del plan
    volvía a seleccionar una transacción terminal. Cada intento incorpora
    entropía del sistema y conserva el contrato sellado
-   (`packctl/promotion.py:763-781`;
-   `tests/packctl/test_promotion.py:1525-1548`).
+   (`packctl/promotion.py:766-784`;
+   `tests/packctl/test_promotion.py:1666-1689`).
 4. **[EXACT] Escritura dentro de evidencia no confiable.** El CLI intentaba
    dejar `recover-report.json` en una transacción corrupta. Recovery ahora
    devuelve el informe por stdout sin mutar esa raíz
    (`packctl/cli.py:155-160`;
-   `tests/packctl/test_promotion.py:1549-1582`).
+   `tests/packctl/test_promotion.py:1690-1723`).
 5. **[EXACT] Ventana antes de `PENDING`.** Una terminación durante la creación
    de `plan.json` podía dejar una transacción visible pero inválida. La
    inicialización se materializa en un directorio oculto y se publica mediante
    rename durable solo tras sellar plan y primer evento
-   (`packctl/promotion.py:1601-1638`;
-   `tests/packctl/test_promotion.py:1583-1621`).
+   (`packctl/promotion.py:1612-1649`;
+   `tests/packctl/test_promotion.py:1724-1762`).
 6. **[EXACT] TOCTOU de contrato tras preflight.** Apply no repetía la
    validación del contrato sellado después de adquirir locks. Ahora lo hace
    antes de publicar la transacción
-   (`packctl/promotion.py:2202-2241`;
-   `tests/packctl/test_promotion.py:1622-1660`).
+   (`packctl/promotion.py:2213-2252`;
+   `tests/packctl/test_promotion.py:1763-1801`).
 7. **[EXACT] Riesgo destructivo entre backup y old-move.** Una mutación externa
    podía moverse a `.old` y ser eliminada como si fuera PRE. Un CAS adicional
    detiene la operación y preserva el digest ajeno
-   (`packctl/promotion.py:2304-2350`;
-   `tests/packctl/test_promotion.py:1661-1698`).
+   (`packctl/promotion.py:2315-2361`;
+   `tests/packctl/test_promotion.py:1802-1839`).
 8. **[EXACT] Pérdida de semántica de enlaces anidados.** Copiar un symlink o
    junction dentro de un árbol podía restaurarlo como contenido materializado.
    Payloads y sidecars que los contienen ahora fallan cerrados
@@ -184,7 +185,7 @@ adicionales:
     bloqueado. El lock ahora es un sidecar hermano determinista y la fixture
     prueba que el digest permanece estable
     (`packctl/promotion.py:1131-1144`;
-    `tests/packctl/test_promotion.py:696-714`).
+    `tests/packctl/test_promotion.py:697-713`).
 11. **[EXACT] Orden de digest distinto entre proyección y readback.** La segunda
     promoción real publicó tres destinos y falló cerrada al primer árbol que
     combinaba `SKILL.md` con `references/...`: la proyección recorría strings
@@ -193,11 +194,22 @@ adicionales:
     cálculos usan ahora el mismo orden de `Path`, con una fixture mixta que
     reproduce la divergencia de Windows
     (`packctl/promotion.py:93-106`;
-    `tests/packctl/test_promotion.py:536-568`).
+    `tests/packctl/test_promotion.py:537-569`).
+12. **[EXACT] Rename transitoria de Windows sin retry ni diagnóstico útil.** La
+    tercera promoción real verificó staging y backup de `physical-0006`, pero
+    `MoveFileExW` devolvió un `OSError` al mover el target; rollback restauró los
+    53 PRE y cerró en `ABORT`. Una apertura posterior con acceso DELETE tuvo
+    éxito, evidencia compatible con un handle transitorio pero insuficiente
+    para atribuir qué proceso lo mantuvo. Windows reintenta ahora de forma
+    acotada solo los códigos 5/32/33, únicamente mientras source/destination
+    sigan en un estado no ambiguo; cualquier otro estado falla cerrado. El
+    informe expone tipo + `winerror` sin filtrar paths físicos
+    (`packctl/common.py:52-123`; `packctl/promotion.py:1131-1139`;
+    `tests/packctl/test_promotion.py:713-800,1017-1064`).
 
-La ejecución intermedia posterior al undécimo fix fue
-`python -m pytest -q tests/packctl`: **135 passed, 3 skipped**. La recuperación
-idempotente de la transacción abortada también devolvió `PASS` y
+La ejecución posterior al duodécimo fix fue
+`python -m pytest -q tests/packctl`: **138 passed, 3 skipped**. La
+recuperación idempotente de la transacción abortada también devolvió `PASS` y
 `decision=ABORT`. Estos resultados demuestran el contrato focalizado en el
 árbol de trabajo, pero no autorizan por sí solos otro intento real: primero se
 repite el gate completo desde commit limpio, validator, 14/14 skills,

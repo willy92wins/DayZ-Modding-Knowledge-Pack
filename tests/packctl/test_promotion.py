@@ -10,6 +10,7 @@ import pytest
 
 from conftest import run_git, write_json
 
+import packctl.common as common
 from packctl.common import canonical_json_bytes, sha256_bytes, tree_digest
 from packctl.promotion import apply_promotion, check_promotion
 import packctl.promotion as promotion
@@ -709,6 +710,96 @@ def test_root_lock_sidecar_does_not_modify_an_exact_target(
     assert tree_digest(target) == before
 
 
+@pytest.mark.skipif(os.name != "nt", reason="Windows rename retry contract")
+def test_windows_durable_rename_retries_transient_delete_denial(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "payload.txt").write_text("payload\n", encoding="utf-8")
+    destination = tmp_path / "destination"
+    outcomes = [
+        (False, 5, "Access is denied."),
+        (False, 32, "The process cannot access the file."),
+        (True, 0, ""),
+    ]
+    calls: list[tuple[Path, Path, int]] = []
+    delays: list[float] = []
+
+    def fake_move(
+        candidate_source: Path,
+        candidate_destination: Path,
+        flags: int,
+    ) -> tuple[bool, int, str]:
+        calls.append((candidate_source, candidate_destination, flags))
+        outcome = outcomes.pop(0)
+        if outcome[0]:
+            candidate_source.rename(candidate_destination)
+        return outcome
+
+    monkeypatch.setattr(
+        common,
+        "_windows_move_file_ex",
+        fake_move,
+    )
+    monkeypatch.setattr(
+        common,
+        "_sleep_before_windows_rename_retry",
+        delays.append,
+    )
+
+    common.durable_rename(source, destination, replace=False)
+
+    assert destination.joinpath("payload.txt").read_text(encoding="utf-8") == (
+        "payload\n"
+    )
+    assert [call[2] for call in calls] == [0x00000008] * 3
+    assert delays == [0.05, 0.1]
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows rename retry contract")
+def test_windows_durable_rename_does_not_retry_ambiguous_state(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "payload.txt").write_text("payload\n", encoding="utf-8")
+    destination = tmp_path / "destination"
+    calls = 0
+    delays: list[float] = []
+
+    def ambiguous_move(
+        candidate_source: Path,
+        candidate_destination: Path,
+        flags: int,
+    ) -> tuple[bool, int, str]:
+        nonlocal calls
+        calls += 1
+        candidate_source.rename(candidate_destination)
+        return False, 5, "Access is denied."
+
+    monkeypatch.setattr(
+        common,
+        "_windows_move_file_ex",
+        ambiguous_move,
+    )
+    monkeypatch.setattr(
+        common,
+        "_sleep_before_windows_rename_retry",
+        delays.append,
+    )
+
+    with pytest.raises(PermissionError) as captured:
+        common.durable_rename(source, destination, replace=False)
+
+    assert captured.value.winerror == 5
+    assert calls == 1
+    assert delays == []
+    assert destination.joinpath("payload.txt").is_file()
+
+
 def test_live_os_lock_blocks_apply_with_exit_2(
     repo_factory,
     tmp_path: Path,
@@ -921,6 +1012,56 @@ def test_failure_after_moving_old_restores_original_target(
     assert "PROMOTION-APPLY-FAILED" in codes(report)
     assert tree_digest(existing) == before
     assert (existing / "old.txt").read_text(encoding="utf-8") == "original\n"
+
+
+def test_apply_reports_winerror_without_physical_path(
+    repo_factory,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    blocked_target = paths["claude"] / "demo"
+    original_rename = promotion.durable_rename
+    failed = False
+
+    def deny_publish_once(
+        source: Path,
+        destination: Path,
+        *,
+        replace: bool,
+    ) -> None:
+        nonlocal failed
+        if (
+            not failed
+            and destination == blocked_target
+            and ".packctl-stage-" in source.name
+        ):
+            failed = True
+            raise OSError(
+                None,
+                "Access is denied.",
+                str(destination),
+                5,
+            )
+        original_rename(source, destination, replace=replace)
+
+    monkeypatch.setattr(
+        "packctl.promotion.durable_rename",
+        deny_publish_once,
+    )
+
+    report = apply_promotion(plan_path)
+
+    assert report["verdict"] == "FAIL"
+    assert report["findings"][0]["evidence"] == "PermissionError:winerror=5"
+    assert str(paths["targets"]) not in report["findings"][0]["evidence"]
+    assert_plan_state(
+        json.loads(plan_path.read_text(encoding="utf-8")),
+        state="PRE",
+    )
 
 
 def test_receipt_is_not_published_when_commit_event_write_fails(
