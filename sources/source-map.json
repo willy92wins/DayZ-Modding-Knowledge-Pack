@@ -1593,6 +1593,29 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/plans/2026-07-24-02-dayz-ui-lab.codex-notes.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 evidence review and the proposed UI/tooling contract amendments are recorded for user adjudication.",
+          "license": "MIT",
+          "source_hash": "ff8e7d5125c64ea1c684d5752b160270758dfa0fbc2283d03ec7847974983485",
+          "source_id": "pack-r21-authored",
+          "source_path": "plans/2026-07-24-02-dayz-ui-lab.codex-notes.md",
+          "source_revision": "r21-phase01@2026-07-24",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ff8e7d5125c64ea1c684d5752b160270758dfa0fbc2283d03ec7847974983485",
+      "output_path": "plans/2026-07-24-02-dayz-ui-lab.codex-notes.md",
+      "routing_artifact_id": "repo/plans",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/plans/2026-07-24-02-dayz-ui-lab.md",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
