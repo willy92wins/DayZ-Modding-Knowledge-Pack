@@ -4,7 +4,8 @@
 
 Fuente canónica y versionada del pack público de conocimiento DayZ: skills
 modulares, notas verificadas y tooling reutilizable. El ZIP publicado es un
-artefacto generado; no es una fuente editable.
+artefacto generado; no es una fuente editable. Obsidian conserva la memoria
+durable completa y las skills instaladas son destinos de promoción verificable.
 
 ## Definición de Producto Final
 
@@ -28,12 +29,22 @@ sus entregables a criterios concretos de esa DPF.
 - `specs/`: contratos de features antes de implementar.
 - `plans/`: roadmap y planes por subsistema.
 - `decisions/`: ADRs del pack.
+- `promotions/`: routing lógico y recibos repo↔Obsidian↔skills, sin rutas
+  privadas.
 - `HANDOFF.md`: estado vivo de la iniciativa.
 
 ## Convenciones del proyecto
 
-- Editar únicamente este repositorio; nunca el ZIP publicado ni una copia
-  instalada en un agente.
+- Autorar y revisar contenido canónico únicamente en este repositorio; nunca
+  editar el ZIP publicado ni una copia instalada de forma independiente.
+- Mantener tres roles distintos: Git = fuente distribuible; Obsidian = memoria
+  durable/evidencia completa; skills instaladas = despliegue operativo.
+- Toda invariante de dominio aceptada debe existir en el repo, en su nota
+  Obsidian y en la skill activa correspondiente. Un artefacto sin consumidor de
+  skill usa `not_applicable` con motivo; una invariante de dominio no puede
+  hacerlo.
+- Las copias instaladas solo cambian mediante promoción post-gate con staging,
+  validación y readback por hash; nunca mediante edición independiente.
 - Cada archivo distribuible debe declarar una fuente canónica en el inventario
   de procedencia de la fase 01.
 - Cada API, firma o cifra técnica nueva necesita build/commit y evidencia
@@ -55,6 +66,8 @@ El estado vivo se mantiene únicamente en [`HANDOFF.md`](HANDOFF.md).
 
 - [`decisions/001-canonical-source-and-baseline.md`](decisions/001-canonical-source-and-baseline.md)
   — este Git es la fuente; el ZIP anterior queda como baseline inmutable.
+- [`decisions/002-three-surface-promotion.md`](decisions/002-three-surface-promotion.md)
+  — todo conocimiento aceptado se enruta a repo, Obsidian y skills aplicables.
 
 ## Gotchas conocidos
 
@@ -63,6 +76,8 @@ El estado vivo se mantiene únicamente en [`HANDOFF.md`](HANDOFF.md).
 - Ocho de catorce skills incumplen el máximo oficial de 1024 caracteres del
   campo `description`.
 - Las catorce skills del ZIP divergen de sus fuentes locales actuales.
+- La promoción automatizada todavía no existe; no escribir copias instaladas
+  hasta cerrar la fase 01.
 - El validador oficial `skills-ref` necesita `PYTHONUTF8=1` en Windows PowerShell
   clásico para no intentar leer UTF-8 como cp1252.
 - El audit preliminar detectó 53 links locales aparentemente rotos; el validador

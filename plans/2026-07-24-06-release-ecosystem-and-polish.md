@@ -16,7 +16,7 @@ auditable del programa.
 ## Task 2 — Contribución y extensión
 
 - [ ] Guía de contribución: source map, research, provenance, fixtures, evals,
-  licencias, review y changelog.
+  licencias, routing repo↔Obsidian↔skills, review y changelog.
 - [ ] Ejemplo de añadir una skill/reference y atravesar el pipeline.
 - [ ] Template `@MyMod` con contratos de config/build/test.
 - [ ] Gate: una contribución fixture pasa end-to-end sin conocimiento tácito.
@@ -44,12 +44,16 @@ auditable del programa.
 - [ ] Escanear ZIP por secrets, identidad, private paths, payloads de terceros
   y archivos fuera de allowlist.
 - [ ] Verificar SHA, file count, source commit y DayZ build dentro del manifest.
+- [ ] Verificar todos los recibos de promoción y readback de targets activos:
+  `PROMOTION-UNROUTED=0`, `PROMOTION-DRIFT=0`.
 - [ ] No publicar: entregar el RC local y su reporte para decisión del usuario.
 
 ## Task 6 — Revisión final
 
 - [ ] Trazar A–H: cada criterio tiene evidencia o exclusión aprobada.
 - [ ] Revisión fría Codex de contenido, tooling, licencias y release.
+- [ ] Confirmar que ninguna invariante de dominio existe solo en repo, solo en
+  Obsidian o solo en una skill instalada.
 - [ ] Corregir findings y repetir gates proporcionales.
 - [ ] Marcar DPF/HANDOFF y crear tag local solo si todos los gates están verdes.
 
@@ -61,4 +65,5 @@ auditable del programa.
 - Claim de compatibilidad sin build.
 - Link roto no allowlisted.
 - Finding crítico de eval/audit.
+- Routing incompleto o drift de promoción.
 - Push, GitHub release o Workshop sin orden explícita separada.

@@ -14,6 +14,11 @@ el testing sin exponer infraestructura privada ni romper ownership.
 - Modificar: `skills/dayz-test-ingame/**`
 - Crear: `knowledge/dayz-mcp-bridge-protocol.md`
 - Crear: `knowledge/dayz-mcp-lite.md`
+- Crear/actualizar:
+  `VAULT/AI/20_Knowledge/dayz-mcp-bridge-protocol.md`.
+- Crear/actualizar: `VAULT/AI/20_Knowledge/dayz-mcp-lite.md`.
+- Promover: `dayz-mcp-verify` y `dayz-test-ingame` a los targets activos
+  configurados.
 - Crear: `tools/dayz-test-orchestrator/` si el research confirma extracción
   limpia y licenciable.
 - Crear schemas y ladders first-party; no incluir keys, profiles o paths.
@@ -59,6 +64,8 @@ el testing sin exponer infraestructura privada ni romper ownership.
 - [ ] dayz-labs como companion opcional sin lifecycle authority.
 - [ ] Lake/StarDZ como prior art, no dependencia.
 - [ ] Cheat Engine queda fuera de la ruta recomendada por fragilidad/riesgo.
+- [ ] Actualizar Obsidian con evidencia privada; promover skills desde el commit
+  validado y verificar hashes/recibo.
 - [ ] Validator/evals/ladders verdes; revisión fría Codex; DPF/HANDOFF actualizados.
 
 ## Hard stops
@@ -69,3 +76,4 @@ el testing sin exponer infraestructura privada ni romper ownership.
 - Key/path/profile privado en Git.
 - Dos autoridades de lifecycle.
 - Screenshot diff usado como prueba de gameplay sin gate DayZDiag.
+- `PROMOTION-UNROUTED` o `PROMOTION-DRIFT`.

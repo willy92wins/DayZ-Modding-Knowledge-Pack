@@ -95,6 +95,9 @@ Cerrar E1–E7, F1–F5 y B7 sin monolitos ni APIs inventadas.
 
 - Cada workstream tiene research con fuentes primarias, unknowns y referente.
 - Cada feature aceptada tiene feature spec/checklist y plan hijo.
+- Cada invariante aceptada actualiza su nota Obsidian y la skill canónica;
+  después se promueve a targets activos con recibo.
 - No hay implementación huérfana de criterio DPF.
 - py3d baseline no retrocede.
-- Validator/evals/source-map verdes.
+- Validator/evals/source-map verdes; `PROMOTION-UNROUTED=0` y
+  `PROMOTION-DRIFT=0`.

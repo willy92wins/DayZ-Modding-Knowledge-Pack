@@ -17,6 +17,9 @@ explícitos versionado, migración, rollback, atomicidad y recovery.
 - Crear: `skills/dayz-persistence/references/migration-matrix.md`
 - Crear: `skills/dayz-persistence/evals/evals.json`
 - Crear: `tests/persistence/` para simuladores/fixtures first-party.
+- Crear/actualizar: `VAULT/AI/20_Knowledge/dayz-persistence.md`.
+- Promover: `dayz-persistence` y los deltas aplicables de
+  `rigorous-data-audit`/basebuilding a los targets activos configurados.
 - Enriquecer, sin duplicar: basebuilding persistence y
   `rigorous-data-audit`.
 
@@ -78,6 +81,8 @@ explícitos versionado, migración, rollback, atomicidad y recovery.
 - [ ] Evals positivos exigen legacy/future/truncated/rollback.
 - [ ] Ejecutar `rigorous-data-audit` sobre ejemplos y simuladores.
 - [ ] Validator pack + eval harness + source map verdes.
+- [ ] Actualizar Obsidian con contratos completos y evidencia privada; promover
+  las skills aplicables desde el commit validado y verificar hashes/recibo.
 - [ ] Revisión fría Codex y actualización DPF/HANDOFF.
 
 ## Hard stops
@@ -88,3 +93,4 @@ explícitos versionado, migración, rollback, atomicidad y recovery.
 - Future version aceptada silenciosamente.
 - `ctx.Read` fallido con estado parcial tratado como válido.
 - Test que solo cubre happy path.
+- `PROMOTION-UNROUTED` o `PROMOTION-DRIFT`.

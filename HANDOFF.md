@@ -16,26 +16,34 @@ SHA-256; py3d `130 passed, 10 skipped`; `compileall` correcto con un
   expansiones de dominio/tooling → MCP → release/polish.
 - DPF y seis planes de fase redactados y revisados; no se ha enriquecido
   contenido todavía.
+- El usuario exige persistencia en tres superficies: repo, Obsidian y skills
+  activas; el contrato queda formalizado en ADR 002.
 
 ## Issues abiertos
 
 1. **[ALTA] Drift de fuentes** — las 14 skills difieren de sus copias
    canónicas actuales; no se puede editar contenido antes de reconciliarlas.
-2. **[ALTA] Validez Agent Skills** — 8/14 frontmatters exceden 1024 caracteres.
-3. **[MEDIA] Integridad editorial** — 53 links locales candidatos a rotos y
+2. **[ALTA] Promoción ausente** — aún no existe routing ni readback verificable
+   repo↔Obsidian↔skills; no se deben editar instalaciones a mano.
+3. **[ALTA] Validez Agent Skills** — 8/14 frontmatters exceden 1024 caracteres.
+4. **[MEDIA] Integridad editorial** — 53 links locales candidatos a rotos y
    una discrepancia 137/138 en la semántica del manifiesto.
-4. **[MEDIA] Licencia raíz ausente** — solo py3d incluye `LICENSE`.
+5. **[MEDIA] Licencia raíz ausente** — solo py3d incluye `LICENSE`.
 
 ## Próxima acción
 
 Esperar la decisión del usuario sobre la propuesta. Si ordena ejecutar, empezar
 por el plan 01 de foundation/evidence; no tocar UI o persistence antes de cerrar
-su gate de fuentes.
+su gate de fuentes y promoción.
 
 ## Invariantes cerradas
 
 - El ZIP anterior es solo baseline; no se modifica.
-- Este Git es la única fuente editable.
+- Este Git es la única fuente editable del pack distribuible.
+- Obsidian conserva evidencia/memoria completa; las skills activas reciben
+  promociones verificadas desde Git tras gates.
+- Ninguna invariante de dominio puede quedar únicamente en una de las tres
+  superficies.
 - StarDZ, dayz-labs y Lake son prior art selectivo, no dependencias del pack.
 - VPP, Expansion, TraderPlus y TraderX son corpus local opcional; no se
   redistribuyen.
@@ -47,9 +55,10 @@ su gate de fuentes.
 - `product-spec.md`
 - `plans/2026-07-24-r21-master-roadmap.md`
 - `decisions/001-canonical-source-and-baseline.md`
+- `decisions/002-three-surface-promotion.md`
 
 **Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde:
-foundation/evidence pendiente · próxima acción: plan 01`.
+source-map/promoción pendientes · próxima acción: plan 01`.
 <!-- LIVE-STATE:END -->
 
 ---

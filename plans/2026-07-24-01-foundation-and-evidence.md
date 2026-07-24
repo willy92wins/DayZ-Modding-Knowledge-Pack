@@ -1,13 +1,14 @@
 # Fase 01 — Foundation, procedencia y evaluaciones
 
 > **Modo de ejecución:** Codex inline, sin Claude/subagentes. Este plan no
-> autoriza publicar ni modificar copias instaladas.
+> autoriza publicar. Las copias instaladas solo se modifican en Task 8, desde
+> un commit validado y con readback.
 
 ## Objetivo y traza DPF
 
-Cerrar A1–A8 y B1–B5. El resultado es una fuente reconciliada, validable y
-reproducible sobre la que las fases de contenido puedan trabajar sin crear más
-drift.
+Cerrar A1–A9 y B1–B5. El resultado es una fuente reconciliada, validable y
+reproducible con promoción verificable a Obsidian y skills, sobre la que las
+fases de contenido puedan trabajar sin crear más drift.
 
 ## Baseline verificado
 
@@ -34,6 +35,11 @@ drift.
 - Crear: `CHANGELOG.md`
 - Crear: `packctl/` y `tests/packctl/`
 - Crear: `evals/schema.json`, `evals/cases/`, `evals/baselines/`
+- Crear: `promotions/promotion-map.schema.json`
+- Crear: `promotions/promotion-map.json`
+- Crear: `promotions/local-targets.example.json`
+- Crear local y excluir de Git: `promotions/local-targets.json`
+- Crear: `promotions/receipts/`
 - Modificar: `.gitignore`, `README.md`, `MANIFEST.txt`
 - Reconciliar: `skills/**`, `knowledge/**`, `tools/py3d/**`
 
@@ -41,7 +47,7 @@ drift.
 
 - [ ] Crear `specs/2026-07-24-foundation-and-evidence.md`.
 - [ ] Cerrar schema, severidades, exits, fixtures positivas/negativas y
-  determinismo antes de escribir `packctl`.
+  determinismo de build/promoción antes de escribir `packctl`.
 - [ ] Etiquetar ejemplos ejecutables `[EXACT]` o `[DESIGN]`.
 - [ ] Gate: checklist de feature spec completo y todos los criterios A/B de esta
   fase trazados a una fixture o revisión verificable.
@@ -121,14 +127,38 @@ drift.
 - [ ] Comparar skill actual contra snapshot anterior o ausencia de skill.
 - [ ] Gate: cada run produce `grading.json`; un grader sin evidencia falla.
 
-## Task 7 — Gates de cierre
+## Task 7 — Routing y promoción de tres superficies
 
+- [ ] Definir por artefacto `artifact_id`, `repo_path`, `vault_target_id`,
+  `skill_target_ids`, `applicability`, `not_applicable_reason`,
+  `source_commit` y hashes esperados.
+- [ ] Mantener roots físicos únicamente en `promotions/local-targets.json`;
+  mapa y recibos versionados usan IDs lógicos y nunca rutas privadas.
+- [ ] Requerir repo + Obsidian para todo conocimiento aceptado. Requerir skill
+  para toda invariante de dominio; `not_applicable` solo vale para gobierno o
+  tooling sin consumidor de skill y exige motivo.
+- [ ] `[DESIGN]` Separar `promote --check` read-only de `promote --apply`.
+  `apply` usa staging, valida el árbol completo, reemplaza solo targets
+  allowlisted y verifica readback por hash.
+- [ ] Cubrir fixtures: routing ausente, hash distinto, target no configurado,
+  target read-only, copia parcial, skill legacy con triggers solapados y
+  `not_applicable` inválido.
+- [ ] Gate: dry-run produce `PROMOTION-UNROUTED=0` y
+  `PROMOTION-DRIFT=0`.
+
+## Task 8 — Gates de cierre y primera promoción
+
+- [ ] Crear un commit limpio con el contenido reconciliado.
 - [ ] Checkout limpio y validator completo exit 0.
 - [ ] Build reproducible ×2 con SHA idéntico.
+- [ ] Ejecutar promoción desde ese commit a Obsidian y todos los targets
+  de skills configurados y escribibles.
+- [ ] Leer de vuelta cada destino, verificar hashes y crear un recibo sin rutas
+  privadas; un fallo deja verdict no-cero y no declara la fase cerrada.
 - [ ] `git diff --check` limpio.
 - [ ] Revisión fría Codex contra A/B.
 - [ ] Actualizar `HANDOFF.md`, DPF y memoria durable.
-- [ ] Commit de cierre de fase; no promover todavía a las instalaciones.
+- [ ] Commit separado para recibo/handoff de promoción.
 
 ## Hard stops
 
@@ -138,3 +168,6 @@ drift.
 - Cualquier skill inválida.
 - Builder no determinista.
 - Evals que solo puntúan narrativa sin evidencia.
+- Cualquier `PROMOTION-UNROUTED`, `PROMOTION-DRIFT`, destino no allowlisted o
+  promoción parcial.
+- Invariante de dominio marcada `not_applicable` para skills.

@@ -12,7 +12,9 @@ afirmaciones no verificadas en doctrina.
 
 El producto terminado incluye infraestructura de evidencia, UI iterativa,
 persistencia segura, skills de dominio prioritarias, tooling py3d, metodología
-MCP publicable y documentación de release/contribución.
+MCP publicable y documentación de release/contribución. Todo conocimiento
+aceptado queda además en Obsidian y, cuando es una invariante de dominio, en la
+skill activa correspondiente.
 
 **Alcance y orden confirmados con el usuario el 2026-07-24.**
 
@@ -25,12 +27,13 @@ y entrada en el changelog.
 
 ## A — Fuente, compatibilidad y release reproducible
 
-> **Intent:** que exista una sola verdad editable y que cualquier release pueda
-> reconstruirse, auditarse y compartir sin filtrar datos privados.
+> **Intent:** que exista una sola verdad distribuible y que Obsidian/skills
+> reciban promociones verificables sin convertirse en fuentes paralelas ni
+> filtrar datos privados.
 
 | # | Criterio | Cómo se verifica | Estado |
 |---|---|---|---|
-| A1 | Fuente Git canónica con el ZIP anterior fijado por hash y commit | 138/138 hashes ZIP↔árbol; commit raíz registrado en ADR 001 | ✓ |
+| A1 | Git es fuente canónica del pack distribuible; Obsidian conserva memoria/evidencia completa y las skills instaladas son despliegues operativos | roles registrados en ADR 001/002; ninguna release se construye desde una copia instalada | ✓ |
 | A2 | Inventario de procedencia cubre el 100% de archivos distribuibles y adjudica cada drift pack↔fuente | validador devuelve 0 `SOURCE-UNMAPPED`, 0 conflictos sin decisión | ❓ |
 | A3 | Todas las skills cumplen la especificación Agent Skills y frontmatter ≤1024 caracteres | `skills-ref validate` con UTF-8: N/N válidas, exit 0 | ❓ |
 | A4 | Dos builds limpios del mismo commit producen ZIP byte-idéntico y manifiestos iguales | dos SHA-256 iguales; orden, timestamps y encoding normalizados | ❓ |
@@ -38,6 +41,7 @@ y entrada en el changelog.
 | A6 | Licencia MIT raíz, notices de terceros y política “no redistribuir rutas/inputs privados” | audit de licencias: 0 archivos distribuibles sin cobertura; py3d conserva MIT upstream | ❓ |
 | A7 | Matriz por skill con build DayZ probado, fecha, dependencias y breaking changes | 100% de skills listadas; ninguna afirma compatibilidad sin evidencia | ❓ |
 | A8 | Cero secretos, identidades, rutas privadas o links locales rotos no allowlisted | scanner y link audit exit 0 sobre el ZIP construido | ❓ |
+| A9 | Todo conocimiento aceptado tiene routing repo↔Obsidian↔skill aplicable y recibo de promoción por commit/hash | `PROMOTION-UNROUTED=0`, `PROMOTION-DRIFT=0`; readback de todos los targets configurados; `not_applicable` exige motivo y se prohíbe para invariantes de dominio | ❓ |
 
 ## B — Evidencia, APIs, evaluaciones y preflight
 
@@ -46,7 +50,7 @@ y entrada en el changelog.
 
 | # | Criterio | Cómo se verifica | Estado |
 |---|---|---|---|
-| B1 | Cada claim/snippet ejecutable nuevo registra fuente, build/commit, `path:line`, licencia, fecha y nivel de verificación | provenance audit: 0 claims ejecutables sin registro | ❓ |
+| B1 | Cada claim/snippet ejecutable nuevo registra fuente, build/commit, `path:line`, licencia, fecha, nivel de verificación y routing de promoción | provenance audit: 0 claims ejecutables sin registro o destino | ❓ |
 | B2 | Índice `dayz-api-index` regenerable, vanilla-first, read-only, con allowed-roots y rechazo de build/schema incompatible | fixtures clase activa/comentada/inexistente/colisión; path escape y build mismatch fallan cerrados | ❓ |
 | B3 | Harness de evals compara skill actual contra versión anterior o ausencia de skill en workspace limpio | cada run emite `grading.json`, evidencia, duración y tokens; piloto cubre API, UI y persistence | ❓ |
 | B4 | Errores StarDZ auditados existen como casos negativos | evals rechazan `autoptr` falso, overload falso, `Managed` falso, `JsonLoadFile`, `OnDrop` incompleto y Dabs inválido | ❓ |
@@ -134,7 +138,7 @@ y entrada en el changelog.
 |---|---|---|---|
 | H1 | Integración Workbench/Mikero/viewers documentada con versiones y licencia | comandos smokeados o marcados como companion no verificado | ❓ |
 | H2 | Entorno limpio de server reproducible usa VM o alternativa viable, elegida tras spike | segunda máquina/VM ejecuta smoke sin junctions privados | ❓ |
-| H3 | Guía de contribución define source map, evidencia, tests, licencia y release | contribución fixture atraviesa validación end-to-end | ❓ |
+| H3 | Guía de contribución define source map, evidencia, tests, licencia, promoción a Obsidian/skills y release | contribución fixture atraviesa validación y promoción end-to-end | ❓ |
 | H4 | Notas duplicadas se consolidan sin perder claims/evidencia | mapa old→canonical; link audit y diff semántico revisados | ❓ |
 | H5 | Diagramas mínimos cubren skeleton, proxy frame y lifecycle Construction quartet | assets first-party, links válidos y revisión humana | ❓ |
 | H6 | Risk register/known engine bugs vive versionado y distingue crash/exception/corruption/degradation/cosmetic | cada entrada tiene evidencia, build y severidad concreta | ❓ |
@@ -148,7 +152,9 @@ y entrada en el changelog.
 - Escribir ODOL.
 - Fijar budgets de CPU/red/widgets sin benchmark reproducible.
 - Publicar repo, release o Workshop durante la fase de planificación.
-- Editar simultáneamente copias instaladas; la promoción ocurre desde Git tras gates.
+- Tratar Obsidian o skills instaladas como fuentes paralelas de release; la
+  promoción ocurre desde Git tras gates y conserva evidencia privada solo en
+  Obsidian.
 
 ## Referencias de paridad
 
@@ -185,3 +191,5 @@ La fase 01 fijará revisión, hash y root local de cada alias fuera de Git.
 - 2026-07-24 — alcance inicial y orden aprobados por el usuario.
 - 2026-07-24 — se añade source reconciliation como gate P0 tras medir drift en
   las 14 skills; no cambia el orden, lo hace seguro.
+- 2026-07-24 — el usuario exige que todo conocimiento reunido permanezca también
+  en Obsidian y en las skills aplicables; se añade A9 y ADR 002.
