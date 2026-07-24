@@ -96,5 +96,5 @@ injected value and prefer the existing result type over a partial look-alike.
 The failure mode is concrete: a consumer can read `.status.value`, `.proposal`
 and `.source` even when a plan mentions only `.proposal`; the partial object
 then fails at runtime despite satisfying the prose spec. Verified example:
-`GameMaster/tools/gm/service.py:209-218`; the complete existing result contract
-is `GameMaster/tools/gm/ollama_planner.py:43-50`.
+`GameMaster_dev/tools/gm/service.py:209-218`; the complete existing result
+contract is `GameMaster_dev/tools/gm/ollama_planner.py:43-50`.

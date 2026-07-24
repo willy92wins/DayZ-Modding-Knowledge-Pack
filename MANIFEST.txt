@@ -1,147 +1,157 @@
-DayZ Modding Knowledge Pack - MANIFEST
-=======================================
-Files: 137   Total: 2127 KB
-Start at README.md.
+DayZ Modding Knowledge Pack - r21 Phase 01 inventory
+=====================================================
 
-Integrity: depersonalized (no author identity or private paths), scanned for
-secrets/credentials (none present), UTF-8/mojibake-cleaned. py3d under MIT (tools/py3d/LICENSE).
-Angle-bracket tokens (<notes>, <you>, <skills>, ...) are placeholders for the author's local paths.
+Payload files (including MANIFEST.txt): 147
+Archive members (including generated manifest.json): 148
+Listed files below (MANIFEST.txt excluded to avoid self-hash): 146
 
-File listing (path | KB):
-knowledge\DAYZ_INFRA.md | 13,6
-knowledge\DAYZ_TECHNICAL_NOTES.md | 15,7
-knowledge\vault-notes\dayz-animations-creatures-weapons.md | 38,8
-knowledge\vault-notes\dayz-capacidades-verificadas.md | 13,5
-knowledge\vault-notes\dayz-custom-infected.md | 11,2
-knowledge\vault-notes\dayz-debinarizer-inspector-memory-selection-bugs.md | 5,5
-knowledge\vault-notes\dayz-enforce-script-reference.md | 5,4
-knowledge\vault-notes\dayz-modded-class-server-stub-pattern.md | 5,3
-knowledge\vault-notes\dayz-model-pipeline.md | 4,9
-knowledge\vault-notes\dayz-mod-implementation-checklists.md | 22,8
-knowledge\vault-notes\dayz-objectbuilder-lod-conventions.md | 7
-knowledge\vault-notes\dayz-ui-development.md | 3,6
-knowledge\vault-notes\dayz-vehicles-crossproject.md | 5,8
-knowledge\vault-notes\dayz-weapon-config-crossproject.md | 5,8
-knowledge\vault-notes\dayz-wiki-systems-reference.md | 9,8
-knowledge\vault-notes\dayz-wrp-roadgraph-extraction.md | 8,7
-knowledge\vault-notes\uv-mapping-dayz.md | 27,5
-README.md | 19,6
-skills\_shared\dayz-conventions.md | 37,4
-skills\_shared\enscript-style.md | 48,8
-skills\ai-3d-to-dayz\SKILL.md | 9,2
-skills\ardy-motion-generation\references\dayz-integration-plan.md | 5,4
-skills\ardy-motion-generation\SKILL.md | 8,6
-skills\blender-animation\references\characters-armatures.md | 60
-skills\blender-animation\references\dayz-handoff.md | 45,7
-skills\blender-animation\references\objects-camera-materials-drivers.md | 73,7
-skills\blender-animation\references\physics-sims.md | 79,3
-skills\blender-animation\references\realism-and-iteration.md | 38,9
-skills\blender-animation\SKILL.md | 17,1
-skills\dayz-aviation\references\aerodynamics-and-flight-physics.md | 21,9
-skills\dayz-aviation\references\animation-and-modelcfg.md | 6,5
-skills\dayz-aviation\references\combat.md | 12,4
-skills\dayz-aviation\references\effects-and-lights.md | 1,8
-skills\dayz-aviation\references\helicopters.md | 88,8
-skills\dayz-aviation\references\inputs-and-bindings.md | 2,7
-skills\dayz-aviation\references\sounds.md | 4,5
-skills\dayz-aviation\SKILL.md | 36,5
-skills\dayz-basebuilding\references\config-contract.md | 5,7
-skills\dayz-basebuilding\references\entity-lifecycle.md | 7,5
-skills\dayz-basebuilding\references\fence-gate-case.md | 3,5
-skills\dayz-basebuilding\references\persistence-audit.md | 4,8
-skills\dayz-basebuilding\SKILL.md | 14,4
-skills\dayz-characters\references\character-rigging.md | 15,5
-skills\dayz-characters\references\character-uv-bake.md | 8,6
-skills\dayz-characters\references\check_dayz_winding.py | 5,3
-skills\dayz-characters\SKILL.md | 38,5
-skills\dayz-feature-spec\references\analyze-gate.md | 3,8
-skills\dayz-feature-spec\references\spec-checklist.md | 2,4
-skills\dayz-feature-spec\references\spec-template.md | 2,9
-skills\dayz-feature-spec\SKILL.md | 8,2
-skills\dayz-mcp-verify\references\acceptance-ladder.md | 17,8
-skills\dayz-mcp-verify\references\drive_ladder.py | 21,4
-skills\dayz-mcp-verify\references\test_drive_ladder.py | 10
-skills\dayz-mcp-verify\SKILL.md | 28,1
-skills\dayz-pbo-reverse-engineering\SKILL.md | 18,8
-skills\dayz-test-ingame\references\session-findings.md | 16,4
-skills\dayz-test-ingame\SKILL.md | 32,5
-skills\dayz-test-ingame\templates\client.bat | 0,3
-skills\dayz-test-ingame\templates\dayz-test.ps1 | 27,5
-skills\dayz-test-ingame\templates\offline.bat | 0,3
-skills\dayz-test-ingame\templates\server.bat | 0,3
-skills\dayz-vehicles\references\audit_getin_wheels.py | 2,9
-skills\dayz-vehicles\references\build-packaging-and-debug.md | 7,2
-skills\dayz-vehicles\references\decimation-libraries.md | 11,3
-skills\dayz-vehicles\references\emissive-leds-and-dynamic-lights.md | 13,6
-skills\dayz-vehicles\references\external-obj-import.md | 15,3
-skills\dayz-vehicles\references\rip-import.md | 79,3
-skills\dayz-vehicles\references\gunner-shoot-from-vehicle.md | 9,2
-skills\dayz-vehicles\references\placement-and-autocenter.md | 5,1
-skills\dayz-vehicles\references\png-to-paa-encoding.md | 10,4
-skills\dayz-vehicles\references\vehicle-config-and-modelcfg.md | 49,8
-skills\dayz-vehicles\references\vehicle-structural-parity.md | 92,8
-skills\dayz-vehicles\references\vehicle-types-boat-truck.md | 11,9
-skills\dayz-vehicles\references\visual-gates-and-winding.md | 27
-skills\dayz-vehicles\SKILL.md | 63,2
-skills\dayz-weapons\references\bone-remap.md | 4,9
-skills\dayz-weapons\references\cfgweapons-contract.md | 7,5
-skills\dayz-weapons\references\import-rule-v4.md | 4,9
-skills\dayz-weapons\references\p3d-selection-contract.md | 6,6
-skills\dayz-weapons\SKILL.md | 10,5
-skills\rip-vehicle-import\references\profile-schema.md | 4,3
-skills\rip-vehicle-import\SKILL.md | 19,6
-skills\rigorous-data-audit\index.md | 15,5
-skills\rigorous-data-audit\references\audit-prompts.md | 13
-skills\rigorous-data-audit\references\entry-point-audit.md | 5,1
-skills\rigorous-data-audit\references\flag-lifecycle-audit.md | 4,9
-skills\rigorous-data-audit\references\path-naming-matrix.md | 3,7
-skills\rigorous-data-audit\references\sidecar-cleanup-symmetry.md | 4
-skills\rigorous-data-audit\references\state-machine-matrix.md | 3
-skills\rigorous-data-audit\references\why-this-skill-exists.md | 6,1
-skills\rigorous-data-audit\SKILL.md | 24,6
-tools\py3d\.gitignore | 0,1
-tools\py3d\LICENSE | 1,1
-tools\py3d\py3d\__init__.py | 81,2
-tools\py3d\py3d\__main__.py | 9,1
-tools\py3d\README.md | 3,6
-tools\py3d\rollout\apply-s2-rollout.ps1 | 9,3
-tools\py3d\rollout\audit_p3d.py | 8,2
-tools\py3d\rollout\fix-junctions.ps1 | 3,8
-tools\py3d\rollout\patched\dayz-3d-viewer\SKILL.md | 11,7
-tools\py3d\rollout\patched\dayz-animation-pipeline\references\py3d-1.0.0-quirks.md | 10,7
-tools\py3d\rollout\patched\dayz-model-pipeline\references\py3d-direct-generation.md | 36,5
-tools\py3d\rollout\patched\dayz-model-pipeline\SKILL.md | 32,1
-tools\py3d\rollout\patched\dayz-p3d-audit\scripts\audit_p3d.py | 8,2
-tools\py3d\rollout\patched\dayz-p3d-audit\SKILL.md | 37,1
-tools\py3d\rollout\patched\dayz-p3d-debinarizer\SKILL.md | 20,5
-tools\py3d\rollout\patched\dayz-p3d-inspector\SKILL.md | 22,7
-tools\py3d\rollout\patched\dayz-pbo-build\references\validation-scripts.md | 35,3
-tools\py3d\rollout\patched\dayz-proxy-align\SKILL.md | 11,8
-tools\py3d\rollout\patches\dayz-3d-viewer__SKILL.md.patch | 2
-tools\py3d\rollout\patches\dayz-animation-pipeline__references__py3d-1.0.0-quirks.md.patch | 1,7
-tools\py3d\rollout\patches\dayz-model-pipeline__references__py3d-direct-generation.md.patch | 2,3
-tools\py3d\rollout\patches\dayz-model-pipeline__SKILL.md.patch | 2,1
-tools\py3d\rollout\patches\dayz-p3d-audit__scripts__audit_p3d.py.patch | 25,7
-tools\py3d\rollout\patches\dayz-p3d-audit__SKILL.md.patch | 0,4
-tools\py3d\rollout\patches\dayz-p3d-debinarizer__SKILL.md.patch | 1,5
-tools\py3d\rollout\patches\dayz-p3d-inspector__SKILL.md.patch | 0,9
-tools\py3d\rollout\patches\dayz-pbo-build__references__validation-scripts.md.patch | 2,5
-tools\py3d\rollout\patches\dayz-proxy-align__SKILL.md.patch | 0,9
-tools\py3d\rollout\README.md | 4,8
-tools\py3d\setup.cfg | 0
-tools\py3d\setup.py | 0,5
-tools\py3d\tests\builders.py | 8,1
-tools\py3d\tests\conftest.py | 1,5
-tools\py3d\tests\helpers.py | 3,8
-tools\py3d\tests\make_fixtures.py | 1,2
-tools\py3d\tests\test_s1a_contract.py | 1,7
-tools\py3d\tests\test_s1a_guards.py | 4,7
-tools\py3d\tests\test_s1b_helpers.py | 3,7
-tools\py3d\tests\test_s1b_stale_save.py | 4,7
-tools\py3d\tests\test_s1c_validate.py | 3,5
-tools\py3d\tests\test_s2_cli.py | 5,5
-tools\py3d\tests\test_s2_helpers.py | 6,7
-tools\py3d\tests\test_s2_integ.py | 5,4
-tools\py3d\tests\test_s2_proxy_recipe.py | 7,9
-tools\py3d\tests\test_s2_validate12.py | 7,4
-tools\py3d\tests\test_s3_features.py | 17,1
+The generated manifest.json inside each release ZIP is authoritative for
+payload hashes, licenses, source commit, DayZ build and exact member counts.
+
+File listing (POSIX path | bytes | SHA-256):
+CHANGELOG.md | 1142 | 241004817dc4aeed0b837178c385ec622e10be0054cb7dd87750dc60e95b79de
+CONTRIBUTING.md | 2897 | 86317285dc15585eb93240d8177a285d212526cac81e10fef031fdfd2d7e4c6e
+LICENSE | 1097 | 6085cc8ede8ece7c743ea7bfc955e8c270662141de05c20cb913db28ac5060dd
+README.md | 21868 | 2fc90da27b74fee6d7b4e47e04017baa27ebfb587c6ad9ed22d93cca7114035b
+THIRD_PARTY_NOTICES.md | 2408 | 4fc94e54784a184a21046997fd6302dfed1c52e9620f245b28a7df8e989d5c13
+compatibility-matrix.md | 6933 | 7c6dc3453f5f71d9e59f1a865de04e08f9a3f1676f86e69052e6a241ef5e598e
+knowledge/DAYZ_INFRA.md | 14147 | e74a7fdbcb71576b70d12cafe52b05aee4cb082b464b056db035fa83da295f77
+knowledge/DAYZ_TECHNICAL_NOTES.md | 16321 | 19af77def8b8a5c9ebe824887623aef71c50a65bd0444ed2dc59b08ac8e023cc
+knowledge/vault-notes/dayz-animations-creatures-weapons.md | 40316 | 31b88af0d1a08fc9bdcf21f139e8e75db330a1542ebf1171a8df3e2e5090b724
+knowledge/vault-notes/dayz-capacidades-verificadas.md | 14086 | 7fb201f22331261925ec4d321307b6879a2548843260f664798f16e1285a57ec
+knowledge/vault-notes/dayz-custom-infected.md | 11611 | 2e5aadb801480827d18984a1750cc61facd168f350abc4d49a97ae00ddc57574
+knowledge/vault-notes/dayz-debinarizer-inspector-memory-selection-bugs.md | 5744 | cbbff1958917e3a65804f74e3cfc25d21fff3a40a0a8117b56d7f85d23c4db66
+knowledge/vault-notes/dayz-enforce-script-reference.md | 5667 | 30ff6d677c465567b869bceff175f0a2e2bc98c9066e086325bd751527f73c52
+knowledge/vault-notes/dayz-mod-implementation-checklists.md | 23645 | 0d8399a9d286292bcf3e1af0a97ef1f3d0a4b4e26b91b375e744f31218d1bc2f
+knowledge/vault-notes/dayz-modded-class-server-stub-pattern.md | 5571 | 1fb6bb240c7c353e70c7c2e3b3d13c3c4509b0a3c70c3e330e22f7905d2052b6
+knowledge/vault-notes/dayz-model-pipeline.md | 5135 | 77f913039432e123f91842349c7dd31b203cf2451188b9cf8e6b324e933ce526
+knowledge/vault-notes/dayz-objectbuilder-lod-conventions.md | 7236 | 2401e5cb86351bb3e361cd86c196265152ac4a9df061324957be980b42104c02
+knowledge/vault-notes/dayz-ui-development.md | 3733 | c5bb164e310f792dbc00e2b23ba713f556a14b73296a998681787b1accd2dcce
+knowledge/vault-notes/dayz-vehicles-crossproject.md | 6003 | 8861b0a38b572c4d3f375750a0dc2bd3216c2e749019f1b5581f1eaf23226050
+knowledge/vault-notes/dayz-weapon-config-crossproject.md | 6093 | 1dd2245bf7580d1f9fd740759b4b88a958fa7a847f4fad36ded38954abd323dd
+knowledge/vault-notes/dayz-wiki-systems-reference.md | 10192 | c19a8f1c2cf4a1310507f675ad861d37e59abd4c8f01fb630c741117aeb39724
+knowledge/vault-notes/dayz-wrp-roadgraph-extraction.md | 9078 | d91793c0a34520170796299117e7c73293341ff8048b6fb642e2473bdb04cad5
+knowledge/vault-notes/uv-mapping-dayz.md | 28524 | 74719c28470354bf797259265f195548c1a4e03fe7aca3ebbfdf1d5c24f9e3f8
+skills/_shared/dayz-conventions.md | 38907 | f987b3ca79bd0de3cfd9fbc82378c6472cf25a195f990757600b45f981e6264f
+skills/_shared/enscript-style.md | 51975 | 3feec2e94b919d1458bc5f0fbb09a606a81c007987d8fd81cce7efd0bd01586f
+skills/ai-3d-to-dayz/SKILL.md | 8913 | 3ff77747d547b73cfad334a2e33813774b8ff7c773601b71b130a7ffe44b7e60
+skills/ardy-motion-generation/SKILL.md | 8982 | 8965868ad6bda047546afb69e468a7a5b415f3bb7c95a0ade7ef8ffcf740815c
+skills/ardy-motion-generation/references/dayz-integration-plan.md | 5586 | 087f21cc980edc709abceb4848b0dab3bd7e71b2287ff765f5c25b14becb730b
+skills/blender-animation/SKILL.md | 17788 | c8a166cab4df587b4a68407fd50f259ee8b2768f232aab4923a6221743afd961
+skills/blender-animation/references/characters-armatures.md | 62379 | fc8aae4da3f6ac39292071a3f303250d95aac9a4cf13cdeee7b5ab6ab0463499
+skills/blender-animation/references/dayz-handoff.md | 47067 | 498a8868f62188ddcb634957c50513c81b482e748b6672a4f63b047016b9c6c7
+skills/blender-animation/references/objects-camera-materials-drivers.md | 76563 | e6d016f2dfa0e3d025e3cc51f79a5a61d0be1ee0a1b6856afbac4fff44f9a313
+skills/blender-animation/references/physics-sims.md | 82571 | c954a425ac5adbc2743ca1183d3a52b13c0cb8c28bbe82aa1c0b76750e1b6c49
+skills/blender-animation/references/realism-and-iteration.md | 40473 | 18591064e3b6cc875a732d202ce51d2624cf848f3940008da2c302134dd76560
+skills/dayz-aviation/SKILL.md | 37422 | 491a07b06da2298188448ed533273b22e7aa3886a00ed3a7d779b5271ff754b0
+skills/dayz-aviation/references/aerodynamics-and-flight-physics.md | 22938 | 8df6126861d92ec8293f05b0bf1e30c8937f5b98b72c82370661e372a491ae22
+skills/dayz-aviation/references/animation-and-modelcfg.md | 6850 | 09d245d80511d7123f9e2a8ea992224fc0077e84cb988905355ad09b57eabf8f
+skills/dayz-aviation/references/combat.md | 12993 | 459b2b804ed0d562fdd152fd3d5ab20a2ab4cecdafb78f37d5c2205907011318
+skills/dayz-aviation/references/effects-and-lights.md | 1942 | 8acf5f2bbc320a70b6c69fcdcb24a73e6096e98625fc55c99701c7fd2377a309
+skills/dayz-aviation/references/helicopters.md | 92202 | f3967c8a2f7f2bebc4bf826cd4c6a6663a2316fcc214eb03b7f27d608de44b2c
+skills/dayz-aviation/references/inputs-and-bindings.md | 2800 | 2bb3cecdd4a89b971c66d25eb49ec410088b41c40871a296c89869cc0e535aba
+skills/dayz-aviation/references/sounds.md | 4681 | 7dabb4c821731f8df963be65e9465cc373aa18cab0203ab879db31102d8a66d8
+skills/dayz-basebuilding/SKILL.md | 13893 | b7bd601729e0831c0af66800c1484f14ad798e608724b366601dd8d1110d3387
+skills/dayz-basebuilding/references/config-contract.md | 5952 | 50cbec8e3f24d280d8a3c1074f0e60f1c2b36d8f7f80d8e0a588418121240a3c
+skills/dayz-basebuilding/references/entity-lifecycle.md | 7745 | 217005b443254c414d391253935c8c09625ce870e8fb4010fe74ac563fd7afb3
+skills/dayz-basebuilding/references/fence-gate-case.md | 3672 | db23470e83ef3f13cab582561df53956c457bb9d1fac3aaa09f3ec253220cd00
+skills/dayz-basebuilding/references/persistence-audit.md | 5005 | 4342eaf047162f7d326828cbb654deb2b49a2f0c915ec199d6ebb0b1a21a72da
+skills/dayz-characters/SKILL.md | 38792 | 1b84ff1dd8c8fcf11244235115ffb4b87e6bc7244f6df59ccc7dca0b4c2524f2
+skills/dayz-characters/references/character-rigging.md | 16144 | be9a2fa9d3558af3e468f3a07fa3e8c7328d540bc9085b26c774d2ea9eac2fec
+skills/dayz-characters/references/character-uv-bake.md | 8992 | 591ba31be0d6438923c1f4dc44f420828878b86adb1d289117f83ed76c73b0d6
+skills/dayz-characters/references/check_dayz_winding.py | 5571 | 8c9bdb972e82b984d88b4e58604195317d7dcd8a01679512f5d5d87f79724041
+skills/dayz-feature-spec/SKILL.md | 8754 | 28666ad55ec074f9a0fde160cdb92693bc390a37080f23642809dad0c34429cf
+skills/dayz-feature-spec/references/analyze-gate.md | 3957 | 8ed98e9c0a6f217f8e85c9d287eef30dcec625f861903b1e56970331cda81a15
+skills/dayz-feature-spec/references/spec-checklist.md | 2498 | f0164a3cdb9a2e9af5a4d803a2aa4ff727b30aa7f65b6bb167bb6820db7d3b87
+skills/dayz-feature-spec/references/spec-template.md | 3066 | e036ca0a065dfed3db0f7b12ed72790e018d1a193c52bebb626357354820d739
+skills/dayz-mcp-verify/SKILL.md | 28477 | fd68b06f8479aa0a81099a6529d56653b2b3109a9095f18acc06aa1ea6466e8f
+skills/dayz-mcp-verify/references/acceptance-ladder.md | 18393 | b343ffc2d5fa7719e2ae978638b5368b6bcf4effddab229b5131b3e66cbba8fc
+skills/dayz-mcp-verify/references/drive_ladder.py | 22356 | 3fd3692c673a79cd25c1e117548e1ca1547c9545bb69d5c20642bdc2919ea353
+skills/dayz-mcp-verify/references/test_drive_ladder.py | 10477 | 162d7d6e8a5de83f025fba27ea0c3b451f3634cc9a2c739fbb46cdf5765b2bbc
+skills/dayz-pbo-reverse-engineering/SKILL.md | 20879 | 4c72e47fb3ee9d859619b69e1b462efdc6e3f72d932a774c81de368a8bccca14
+skills/dayz-test-ingame/SKILL.md | 34212 | 2a28791723254c63d0e5ec3668ce7d26f47bff3b451d99d6f55d6afb9c257326
+skills/dayz-test-ingame/references/session-findings.md | 16975 | 4337b7dcd357400b9beb1ba4432ccce4464e1ec733fe4e86feb2bb4161871937
+skills/dayz-test-ingame/templates/client.bat | 321 | 33bc7a591d8ab63871e8ae9569bab076f34fdc1d676606aa19ea2b022dbb62a3
+skills/dayz-test-ingame/templates/dayz-test.ps1 | 30247 | 375458bd6126f1914e930369dfddf0fff473a27a9a045c79c33e8e861315ce44
+skills/dayz-test-ingame/templates/offline.bat | 337 | 234b2e401beb898a4b5e5118849e5a2eee33704ab160f4c10fbf7814dcf5a4b3
+skills/dayz-test-ingame/templates/server.bat | 329 | 512a36483a9d8b1688007ffbe67d7efd2cf17f605cf6f697b0381c54d3f66b14
+skills/dayz-vehicles/SKILL.md | 64958 | 59bd4c9cc0544d91004d2056a22a8873585fa4f7e593adb22472a6f6c09c70d1
+skills/dayz-vehicles/references/audit_getin_wheels.py | 3046 | c3342548c5b1f573804af3307f08ddebf34984cd241ac9aac2059999ef458452
+skills/dayz-vehicles/references/build-packaging-and-debug.md | 7447 | 7025ab69c69add7bdf21ee2ff6045ad730b7c6f2e61ecdcc8c2f5d43236e3f7b
+skills/dayz-vehicles/references/decimation-libraries.md | 11890 | 5468a1723517dcf2c067a08171a270cd16a18520db4fd755ce8f2f6ef8c5aba0
+skills/dayz-vehicles/references/emissive-leds-and-dynamic-lights.md | 14236 | bd398b4f09500e2b8490990f37444d7f337e8b38e77c900a8c1b37abdec92fe0
+skills/dayz-vehicles/references/external-obj-import.md | 16067 | 9dfb898f8b3eda9f70738d85fa567d3d929cee654cbe0d0bf0b8268c3daa8fdd
+skills/dayz-vehicles/references/rip-import.md | 81153 | 98bffaf257759a1e0caa7f1cd1308298eadaa59a04f4bf056df08e1532b7a409
+skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md | 4091 | e983edd5bdd7071a9920275ced0c639311fea25df5d583459e125bdc69bd0796
+skills/dayz-vehicles/references/gunner-shoot-from-vehicle.md | 9513 | db5774db0470a7f599c797f6c5d206fecc14cea700698a4f5777f9175830abb0
+skills/dayz-vehicles/references/placement-and-autocenter.md | 5307 | 9ba13cbe7c9a14940ccc97c5db8748aea6da6623370748e89bc6bcd9cf47bcd4
+skills/dayz-vehicles/references/png-to-paa-encoding.md | 10971 | 98c4f6c941a7ab560be22a3a36b1a23ed02df50a7c415a4519eb1249eae1b186
+skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md | 51686 | a28e8437e61fc96fe949115686301ffb300807d29915531dba5ceab21d5f1ed1
+skills/dayz-vehicles/references/vehicle-structural-parity.md | 95119 | 4e6ff7145310bc9dff8bd562990a7ecc3928e5f7e398175c6d08509579e87f18
+skills/dayz-vehicles/references/vehicle-types-boat-truck.md | 12382 | d322158714c12a1cf7d6945ec57bc8936910c0f3236c04b013f9ba90045236b5
+skills/dayz-vehicles/references/visual-gates-and-winding.md | 27979 | 5be7ee9a168664e91699d2968d8a29a857a746a08c66fbbd0090e4a5fed3f4ee
+skills/dayz-weapons/SKILL.md | 9964 | 75de1d49f176458f245c95a73c53480171f8263da7e122d8b6e0abdd92ea32b8
+skills/dayz-weapons/references/bone-remap.md | 5064 | af62f610b9d6570890bfa310ec85463605a916cf4d467f5b91a38911fc5850f5
+skills/dayz-weapons/references/cfgweapons-contract.md | 7847 | b68ee79f051f15f83ffe3b69d3fa45c4d3c5a1a200e60f6d594e3d62c14d0a34
+skills/dayz-weapons/references/import-rule-v4.md | 5074 | aaf8cb7a9cdfb743510fc15adec7e52a433bb0889e3179b637be9ef1b624b1ab
+skills/dayz-weapons/references/p3d-selection-contract.md | 6884 | c96c8f84240f0d043c8319181ad7abfc78c6feae23cc3df406a4ef9cb76360cc
+skills/rip-vehicle-import/SKILL.md | 21424 | 98bdb3be94eb4ce058addbe9c84d29fd3c6ca19f8937497ddd0d6e577f7766f3
+skills/rip-vehicle-import/references/profile-schema.md | 4937 | 1794533b449333234ac6567d1812ad514d0ca539d8b00d89bdd89d14173dc457
+skills/rigorous-data-audit/SKILL.md | 26158 | db50a689235286da5c942fdf7eda51706a32ce794cdaad2e3c53bc7b6fb0ebfb
+skills/rigorous-data-audit/index.md | 16077 | 18d0fb2c0ba039e3f7a031f207892f5800b86a97d4e5e38b110c5901f99af954
+skills/rigorous-data-audit/references/audit-prompts.md | 13665 | b4c09e235c8b310525b329f7e61dad10c3a51dc984ddced88858bc253f2081e4
+skills/rigorous-data-audit/references/authority-and-loopback.md | 2224 | f3a379af6ff934d615ba9e5e45d5cccece24b3d4681e80a3e5f4a75b29700248
+skills/rigorous-data-audit/references/crash-safe-evidence-and-bundles.md | 2289 | c4bf1311d16fcde1a90c954c8bc3a895613cd73614935ffff86de221591a8c39
+skills/rigorous-data-audit/references/entry-point-audit.md | 5386 | 193cef8782c0d5a4e20be350798c9385debd76bc29846e5bbafea57d4f52512f
+skills/rigorous-data-audit/references/flag-lifecycle-audit.md | 5101 | 7d93bbe72b4a9057c76c8ee1505c4103e3e943976312fc299885d56954964dc7
+skills/rigorous-data-audit/references/incremental-rebuild-traps.md | 2127 | cecadcbad0df87b2017d22ec5ef18f9e63d1fd0e0b42bfb2ce82da61fbdf1884
+skills/rigorous-data-audit/references/path-naming-matrix.md | 3920 | 119824f8b688f1e5cb6deaf6191dc0ff712b4fda63f681ab91650697454a8462
+skills/rigorous-data-audit/references/sidecar-cleanup-symmetry.md | 4217 | 9ae7d8873e281a3bcce4822b397a4ed4d90170bb20c8d01ac37ca5f92b8e3bcb
+skills/rigorous-data-audit/references/state-machine-matrix.md | 3202 | 4ea24aa7ec7f300c407bf75142f07e1e0ca22ef4a6f0b4863a9f318ff7556d52
+skills/rigorous-data-audit/references/why-this-skill-exists.md | 6391 | da35906780733ae0f0be03d35322eff561bac2cb412893690751be781db86310
+tools/py3d/.gitignore | 66 | b837019020e40fcaf425d6b59b2a6a39cfd7cd323e0ef9fffdaddbec2b0e8288
+tools/py3d/LICENSE | 1101 | da3f475371cdbc43613d0c2d490cf55005d0e8c0b5f566201dd3201ecfddce6b
+tools/py3d/README.md | 3773 | b11b72bf00a27296f53d3c74b19e42a6ca265e132f151fbc86bc95c966e90942
+tools/py3d/py3d/__init__.py | 85275 | b443241caafdbcfa8fad549fdfdb4315dc13ec7a98c45f9ce383ff0017ae9fe7
+tools/py3d/py3d/__main__.py | 9514 | a98a25cf390a0db98c01fb7f77e4aa1de6d1aedaefece1ebfee6c7b39e7f53e5
+tools/py3d/rollout/README.md | 4970 | 62a1787b1f42e5fd8f41ae8e8b645eda249b967476f182e931e482da657bb442
+tools/py3d/rollout/apply-s2-rollout.ps1 | 9645 | 80740c845fa62d1fc5c4ba98b34c90165018c450cf45a43c29b09f8a397ddb1e
+tools/py3d/rollout/audit_p3d.py | 8616 | fe3e84eab983e553479a6ec2b22f54746c191ee08ee140460886f33446f2a56d
+tools/py3d/rollout/fix-junctions.ps1 | 3968 | 019bba3c8a911cce052a72e629a622147cac2663f967cf55f29a3db472d9fcff
+tools/py3d/rollout/patched/dayz-3d-viewer/SKILL.md | 12244 | cdca273aee38bf8f9fca1041641b89936831506f7baffba113fb858346f6247f
+tools/py3d/rollout/patched/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md | 11164 | 784efcdf7dbf76d840e0cc33258f7546107cfa210d4dfdf3633379c074a4031a
+tools/py3d/rollout/patched/dayz-model-pipeline/SKILL.md | 33323 | 968a51a14a9d19477e0931f9ada8a2b38ff4e0b130ffdc65020eb5aa56e497b4
+tools/py3d/rollout/patched/dayz-model-pipeline/references/py3d-direct-generation.md | 38416 | 9dda66ddc2745b2f82670c89f0e3428f12a70756ff71b301512a60b93e062d25
+tools/py3d/rollout/patched/dayz-p3d-audit/SKILL.md | 38641 | 445788829110327bd8595d3a43c225f46b5ddabf1f5b59436cccff874d501181
+tools/py3d/rollout/patched/dayz-p3d-audit/scripts/audit_p3d.py | 8616 | fe3e84eab983e553479a6ec2b22f54746c191ee08ee140460886f33446f2a56d
+tools/py3d/rollout/patched/dayz-p3d-debinarizer/SKILL.md | 21351 | 5e9e220d63d26c9c69a56ea2ae305d6e1d2d44d40dac75002cf85018611cee9a
+tools/py3d/rollout/patched/dayz-p3d-inspector/SKILL.md | 23717 | 151e96c7f4816651f92da084484c50cf01885d7c57ab4ae4e376e6428521d88f
+tools/py3d/rollout/patched/dayz-pbo-build/references/validation-scripts.md | 37214 | 94bf38d4701e8ed454a9db47bdadd41a0189a49b992ed9acd450b7557f86cb28
+tools/py3d/rollout/patched/dayz-proxy-align/SKILL.md | 12250 | 4d3bffd9712ae21c5ad2d4a544ab2dda2a049e6f60c990ec08828580c41b9351
+tools/py3d/rollout/patches/dayz-3d-viewer__SKILL.md.patch | 2039 | 1b7fc13b0f70ded0546abf307e4ddf5fc302cc9ca38c4b468d5b79d6d53d9ecc
+tools/py3d/rollout/patches/dayz-animation-pipeline__references__py3d-1.0.0-quirks.md.patch | 1726 | 940c9796a3a53795118445c1cf9d9161f63959cb04b6431141896cf8dbc73a1d
+tools/py3d/rollout/patches/dayz-model-pipeline__SKILL.md.patch | 2179 | cca2ddef58e2ce008bee1d9b9f89e13511fca9db99022798c871222e5396909f
+tools/py3d/rollout/patches/dayz-model-pipeline__references__py3d-direct-generation.md.patch | 2392 | 28b163070d6889d2fb6a9e3200471c42712fb21fa30965b5a88bfe0f4a8d8e7c
+tools/py3d/rollout/patches/dayz-p3d-audit__SKILL.md.patch | 427 | 0f8771a37849d0bcebe3766b6d91137470eea3e8fc760b0e75ec6b735b8f4208
+tools/py3d/rollout/patches/dayz-p3d-audit__scripts__audit_p3d.py.patch | 26945 | 05d9ff07145068e8816b21bb6daea22745d09f04f900b71c41ae83d12dd5024c
+tools/py3d/rollout/patches/dayz-p3d-debinarizer__SKILL.md.patch | 1554 | 1cc2d5fb67c9c6a1915e903f646dca769ecd2b42abb7bab5e1b12219c69b172a
+tools/py3d/rollout/patches/dayz-p3d-inspector__SKILL.md.patch | 902 | e79a39db4ce6726a78a179d63bed6ecfde9ece2763154d651e70cbab691a3b18
+tools/py3d/rollout/patches/dayz-pbo-build__references__validation-scripts.md.patch | 2593 | c14bd117c25c179e0edfdda119e089be443b9c831a62223eaf363ccbecdbf874
+tools/py3d/rollout/patches/dayz-proxy-align__SKILL.md.patch | 898 | b73c1941e4151e7e761fe2941aa2102ee27fc45316326fd6e91c239e92db1e30
+tools/py3d/setup.cfg | 42 | ed6c7cfe7adb6bdfc7d3e66584d4925180b3297f846625928f9f65e888e6821f
+tools/py3d/setup.py | 508 | 389bee0f185fffbdaaf6861fbdd056a8f5a1afb3f96a03aaab4a6c93af933543
+tools/py3d/tests/builders.py | 8579 | d875153e4f97e839174fd45a065384796e66540e6091c8f46c7d8345b2fd1aae
+tools/py3d/tests/conftest.py | 1609 | f7f8fc1aff26ebfab88ad506fb8a04722a97a18e551120ec0d9e81b816b6652d
+tools/py3d/tests/helpers.py | 4040 | 154b82c4c8c40153c84a213ab68aa5437587848fa1786ee3d7b6c7d1f978eb09
+tools/py3d/tests/make_fixtures.py | 1260 | 0fb7bca68bc68ff7693ec2a6c6be7236a2233488c6be06069688e1b4a3865abb
+tools/py3d/tests/test_s1a_contract.py | 1788 | 64f936a04cc05a03e004d2bd8a7ff3523885005135b569e50015505630ec609a
+tools/py3d/tests/test_s1a_guards.py | 4987 | f292f27591b8a9c6f8bf7c79ff134256c9f550ee06621d5135555e2cc533a114
+tools/py3d/tests/test_s1b_helpers.py | 3864 | e0acfb197d7a0174db603ded7c874996c127ac4a53a08e93758389a3f235751b
+tools/py3d/tests/test_s1b_stale_save.py | 4953 | 9acd1b81044db2bf08bb1ae7d4fc06262610258f0f4ecae1a0f5676357ff5c2a
+tools/py3d/tests/test_s1c_validate.py | 3650 | 7d60359dae3afced4d5e9b5bf638d56d5659746f8ae99c4cecb382175c398761
+tools/py3d/tests/test_s2_cli.py | 5823 | b94bb2d8dba56e88e398165b16f62e2b7150059bcd1b34c9fad105ca94f082ea
+tools/py3d/tests/test_s2_helpers.py | 7053 | fcc1f7170fa29b18b7706bc688ce1b21a36af0824c5e517e50c69b2085519e46
+tools/py3d/tests/test_s2_integ.py | 5679 | 4d8f9fa87b8fec446f3d082400610f4032a6134613d53dc4a0494c6da6ad161d
+tools/py3d/tests/test_s2_proxy_recipe.py | 8313 | 5b2ab699914110626eeb036e929c4341832336e423f5b021d56512225df68873
+tools/py3d/tests/test_s2_validate12.py | 7739 | 8c892898f09c767114935975c925b1f7d96b5fa254d3ac63e1008a9b3022569e
+tools/py3d/tests/test_s3_features.py | 17917 | f099d419c8f934fcc39f8910c2c936bc68742f5aa6025762efdfbc06b995e5e8

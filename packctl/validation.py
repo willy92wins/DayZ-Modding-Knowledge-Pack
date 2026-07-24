@@ -918,15 +918,22 @@ def validate_claims(root: Path) -> list[dict[str, object]]:
 
     source_map, _ = _load_source_map(root)
     artifact_paths: dict[str, str] = {}
+    claim_scan_paths: list[str] = []
     if source_map and isinstance(source_map.get("artifacts"), list):
         artifact_paths = {
             str(item["artifact_id"]): str(item["output_path"])
             for item in source_map["artifacts"]
             if isinstance(item, dict)
         }
+        claim_scan_paths = sorted(
+            str(item["output_path"])
+            for item in source_map["artifacts"]
+            if isinstance(item, dict)
+            and item.get("distribution_role") == "payload"
+        )
 
     seen_markers: set[str] = set()
-    for relative in git_tracked_files(root):
+    for relative in claim_scan_paths:
         path = root / relative
         if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
             continue

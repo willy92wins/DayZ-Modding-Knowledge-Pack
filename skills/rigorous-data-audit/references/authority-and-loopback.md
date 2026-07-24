@@ -44,7 +44,7 @@ launcher; that later operational state does not weaken these invariants.
 
 Verification anchors:
 
-- `DayZ_MCP_dev/server.py:802-807,915-995`
-- `DayZ_MCP_dev/dayz_test_tool.py:477-516,528-553`
-- `DayZ_MCP_dev/native_launcher_transaction.py:115-151,176-207`
+- `DayZ_MCP_dev/tools/dayz_mcp/server.py:802-807,915-995`
+- `DayZ_MCP_dev/tools/dayz_mcp/dayz_test_tool.py:477-516,528-553`
+- `DayZ_MCP_dev/tools/dayz_mcp/native_launcher_transaction.py:115-151,176-207`
 - `DayZ_MCP_dev/tools/approved-launchers.json:4-13`

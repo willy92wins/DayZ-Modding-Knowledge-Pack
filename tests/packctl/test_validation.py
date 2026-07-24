@@ -283,6 +283,19 @@ def test_claim_registry_requires_marker_and_exact_range(repo_factory) -> None:
     assert validate_claims(root) == []
 
 
+def test_claim_registry_ignores_repo_only_contract_examples(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "specs/example.md": (
+                "Example syntax: [EXACT][CLAIM-EXAMPLE-ONLY]\n"
+            )
+        },
+        payload={"LICENSE", "README.md"},
+    )
+
+    assert validate_claims(root) == []
+
+
 def test_unregistered_exact_claim_fails(repo_factory) -> None:
     root = repo_factory(
         {
