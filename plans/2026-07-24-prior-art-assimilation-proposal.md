@@ -1,6 +1,7 @@
 # Propuesta de asimilación post-Fase 01
 
-> **Estado:** propuesta para discusión; no modifica todavía los planes 02–06.
+> **Estado:** aprobada por el usuario el 2026-07-24; deltas formalizados en
+> DPF y planes 04–06.
 > **Snapshots revisados:** dayz-labs `dbd6ad3e54e30c81a9aeb88fcb9f60f007804c2a`,
 > Lake-Dayz-MCP `ac56f369c3b1d91ec602d63e2b2a003ffa1212bb` y
 > StarDZ `dbdcd23b02eae0cb612110644f61fdd0d08a0d4b`.
@@ -175,9 +176,9 @@ los repos directos VPP/Expansion/TraderPlus/TraderX y DayZDiag.
 6. Ningún companion puede convertirse accidentalmente en segunda autoridad de
    lifecycle.
 
-## Decisión solicitada
+## Decisión adoptada
 
-Mi recomendación es aprobar estos tres deltas y nada más:
+El usuario aprobó estos tres deltas y nada más el 2026-07-24:
 
 1. `dayz-api-index` v2 como workstream de Fase 04, sin bloquear UI.
 2. Postconditions/cache/publicación transaccional dentro de
@@ -185,4 +186,6 @@ Mi recomendación es aprobar estos tres deltas y nada más:
 3. dayz-labs solo como companion documentado sin lifecycle authority.
 
 StarDZ queda cerrado como fuente ya explotada; Lake y dayz-labs siguen siendo
-prior art sin dependencia ni payload.
+prior art sin dependencia ni payload. Los contratos quedaron trazados a
+B8/E4/B6/G5 y a las Fases 04–06; la implementación futura conserva sus
+viability gates.

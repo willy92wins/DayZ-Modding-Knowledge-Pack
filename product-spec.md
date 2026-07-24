@@ -55,8 +55,9 @@ y entrada en el changelog.
 | B3 | Harness de evals compara skill actual contra versión anterior o ausencia de skill en workspace limpio | cada run emite `grading.json`, evidencia, duración y tokens; piloto cubre API, UI y persistence | ✓ |
 | B4 | Errores StarDZ auditados existen como casos negativos | evals rechazan `autoptr` falso, overload falso, `Managed` falso, `JsonLoadFile`, `OnDrop` incompleto y Dabs inválido | ✓ |
 | B5 | Pipeline CI-like ejecuta skill validation, provenance, links, privacy, Python, py3d y build reproducible | un comando local devuelve 0; mutaciones dirigidas producen códigos estables y exit no-cero | ✓ |
-| B6 | Template mínimo `@MyMod` implementa la estructura, contratos de config, build y misión de test recomendados | scaffold se instancia sin rutas privadas y pasa el preflight estructural | ❓ |
+| B6 | Template mínimo `@MyMod` implementa la estructura, contratos de config, build y misión de test recomendados, consumiendo los mismos gates release-grade que `dayz-workshop-release` | scaffold se instancia sin rutas privadas; preflight y dry-run verifican artefacto nuevo/estructural y una publicación fallida conserva el PBO previo | ❓ |
 | B7 | Simuladores offline reducen iteraciones sin presentarse como sustitutos del engine | parser de config y validadores loot/CE/physics tienen fixtures positivas, negativas y límites explícitos | ❓ |
+| B8 | `dayz-api-index` v2 distingue liveness `active/commented/missing`, parent chain, guardas y namespace sin sustituir la lectura de fuente | fixtures estructurales cubren liveness, ciclos, `#ifdef`, overrides/config y comentarios; conserva allowed-roots/build/schema/tree digest | ❓ |
 
 ## C — `dayz-ui-lab` y skill `dayz-ui`
 
@@ -98,7 +99,7 @@ y entrada en el changelog.
 | E1 | `dayz-multiplayer-sync` cubre RPC, fiabilidad, ownership, predicción y diagnóstico de desync | fixtures cliente/servidor, auth fail-closed y dos clientes locales | ❓ |
 | E2 | `dayz-sound-particles` cubre `.ptc`, soundsets, Effect systems y occlusion | ejemplos fuente-pineados + build/smoke por subsistema | ❓ |
 | E3 | `dayz-terrain` cubre mapa básico, roadgraph y CE | proyecto mínimo reproducible y checks de roadgraph/CE | ❓ |
-| E4 | `dayz-workshop-release` cubre mod.cpp, dependencias, signing/bisign, imágenes, changelog y actualización | release dry-run verifica PBO, firmas, metadata y dependency contract | ❓ |
+| E4 | `dayz-workshop-release` cubre mod.cpp, dependencias, signing/bisign, imágenes, changelog, preflight, cache invalidable y publicación transaccional | dry-run exige PBO nuevo, header/prefix/entries, firma cuando aplique y log sin fatal; cambios de inputs/toolchain invalidan cache y un fallo conserva bytes/manifest previos | ❓ |
 | E5 | Vault incorpora RPT decision tree, arquitecturas mod y guía de performance medida | ramas deduplicadas con evidencia; budgets declaran build/hardware/corpus | ❓ |
 | E6 | Disease/modifiers y plugin lifecycle se auditan vanilla-first antes de convertirse en skill/referencia | research con `path:line`, sides, lifecycle y fixtures; unknowns quedan marcados | ❓ |
 | E7 | Compatibilidad se revisa contra la stable fijada y registra breaking changes | matriz actualizada desde fuentes locales/oficiales y fecha verificable | ❓ |
@@ -127,7 +128,7 @@ y entrada en el changelog.
 | G2 | Modo lite funciona con DayZDiag + filePatching + scripts ingame, sin bridge privado | ladder mínima spawn→acción→RPT/verdict reproducible | ❓ |
 | G3 | Un orquestador integra test-ingame + MCP y watch mode incremental | cambio de fixture dispara rebuild/retest exacto; lease y run_id permanecen fail-closed | ❓ |
 | G4 | Secuencias, crash/RPT detection, screenshot diff, telemetry y dos clientes tienen gates separados | cada capability tiene fixture y verdict; ningún número de performance sin medición | ❓ |
-| G5 | Alternativas VPP/init.c y companions se documentan con límites y sin Cheat Engine como dependencia recomendada | matriz capability/fiabilidad/riesgo/licencia verificada | ❓ |
+| G5 | Alternativas VPP/init.c y companions se documentan con límites; dayz-labs queda pineado, opcional y sin autoridad de lifecycle, y Cheat Engine no es dependencia recomendada | matriz capability/fiabilidad/riesgo/licencia/version verificada; gates excluyen installer y `start/stop/restart`; WPF no cuenta como evidencia `.layout` | ❓ |
 
 ## H — Ecosistema, contribución y pulido
 
@@ -193,3 +194,6 @@ La fase 01 fijará revisión, hash y root local de cada alias fuera de Git.
   las 14 skills; no cambia el orden, lo hace seguro.
 - 2026-07-24 — el usuario exige que todo conocimiento reunido permanezca también
   en Obsidian y en las skills aplicables; se añade A9 y ADR 002.
+- 2026-07-24 — aprobados tres deltas post-Fase 01: B8 para
+  `dayz-api-index` v2 sin bloquear UI, E4/B6 con postconditions/cache/publicación
+  transaccional y G5 con dayz-labs solo como companion pineado sin lifecycle.

@@ -122,6 +122,29 @@ Path resolution is env-var-first, Steam-default fallback (`DAYZ_GAME_PATH`, `DAY
 So: edit a model -> re-run with `-Build`. Edit a script -> just relaunch (or even keep the
 client running, depending on what changed).
 
+## RELEASE-GRADE BUILD BOUNDARY
+
+[EXACT][CLAIM-R21-TEST-BUILD-POSTCONDITION] `exit_0_is_not_build_success`.
+AddonBuilder can leave an old destination PBO in place after a later copy step
+fails, so process exit and `Test-Path` alone do not prove that the requested
+bytes were built or deployed. A release verdict requires evidence for a
+`fresh_pbo`, the expected `header_prefix` and file entries, and a clean
+`fatal_log` scan; require a valid `.bisign` too when signing is expected.
+
+[DESIGN] The Phase 04 release workflow must stage the candidate outside the
+published path, validate it, and publish only after every gate passes. On any
+failure, require `previous_artifact_unchanged` and do not advance the build
+manifest or cache. Its cache key must cover input bytes, build options, prefix,
+DayZ build, tool versions/hashes and signing-key identity. Its preflight must
+reject case/path conflicts, excluded-but-referenced files, absolute packaged
+paths, stale or missing `.paa` dependencies, and unsupported ODOL inputs before
+binarization.
+
+The current generated dev launcher does not yet implement that complete
+release contract. Use its PBO for iteration, but do not label the result
+release-ready until the future `dayz-pbo-build` / `dayz-workshop-release`
+pipeline supplies these postconditions.
+
 ## MODES
 
 | Mode | What | Status |
@@ -388,7 +411,8 @@ folders. For a structured script-failure diagnosis, hand off to `dayz-mod-workfl
 
 Authoring the mod, production server config, Central Economy / persistence tuning beyond the
 minimal dev `serverDZ.cfg`, signing for Workshop release. PBO validation/packaging internals
-live in `dayz-pbo-build` — this skill calls AddonBuilder, it does not re-implement the checks.
+are planned for `dayz-pbo-build` / `dayz-workshop-release` in r21 Phase 04 — this skill calls
+AddonBuilder and records their required handoff contract; it does not re-implement the checks.
 
 ## REFERENCES
 

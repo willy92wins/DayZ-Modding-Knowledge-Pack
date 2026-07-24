@@ -9,6 +9,9 @@ auditable del programa.
 
 - [ ] Documentar Workbench/Animation Editor, Mikero y viewers/debinarizers con
   versión, licencia, rol y smoke.
+- [ ] Documentar dayz-labs como companion opcional pineado, con matriz de
+  capacidades y límites: sin installer en gates, sin `start/stop/restart`
+  cuando DayZ_MCP posee el run y sin equiparar WPF a evidencia `.layout`.
 - [ ] Ejecutar spike Docker vs VM para server DayZ; escoger una única vía viable.
 - [ ] Reproducir un smoke desde entorno limpio sin junctions privados.
 - [ ] Documentar instalación y teardown.
@@ -18,7 +21,12 @@ auditable del programa.
 - [ ] Guía de contribución: source map, research, provenance, fixtures, evals,
   licencias, routing repo↔Obsidian↔skills, review y changelog.
 - [ ] Ejemplo de añadir una skill/reference y atravesar el pipeline.
-- [ ] Template `@MyMod` con contratos de config/build/test.
+- [ ] Template `@MyMod` con contratos de config/build/test que consume el
+  preflight y los postconditions release-grade de Fase 04.
+- [ ] El template no acepta exit 0/existencia como build pass: comprueba
+  candidato fresco, header/prefix/entries, fatal log y firma cuando aplique.
+- [ ] El ejemplo publica desde staging y demuestra con fault injection que un
+  fallo conserva el PBO anterior y no avanza cache/manifest.
 - [ ] Gate: una contribución fixture pasa end-to-end sin conocimiento tácito.
 
 ## Task 3 — Consolidación editorial
@@ -65,5 +73,7 @@ auditable del programa.
 - Claim de compatibilidad sin build.
 - Link roto no allowlisted.
 - Finding crítico de eval/audit.
+- Build marcada PASS sin postconditions o publicación que no conserve rollback.
+- Companion que asume lifecycle authority o se instala desde un gate.
 - Routing incompleto o drift de promoción.
 - Push, GitHub release o Workshop sin orden explícita separada.

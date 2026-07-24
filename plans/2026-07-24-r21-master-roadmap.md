@@ -38,7 +38,7 @@ existe, PowerShell solo para integración Windows/DayZ.
 | 01 | Foundation + evidence | A1–A9, B1–B5 | baseline | source/promotion maps completos, 14/14 skills válidas, validator/build/promoción reproducibles |
 | 02 | `dayz-ui-lab` | C | 01 | parser/corpus/determinismo/diff + calibración DayZDiag |
 | 03 | `dayz-persistence` | D | 01 | matriz de compatibilidad/migración y fault injection |
-| 04 | py3d + skills de dominio | E, F, B7 | 01 y 03 cuando toque persistence | research por dominio + planes ejecutables separados |
+| 04 | py3d + skills de dominio | E, F, B7–B8 | 01 y 03 cuando toque persistence | índice API v2 + research por dominio + planes ejecutables separados |
 | 05 | MCP publicable | G | 01; UI para visual diff | protocolo/lite/orchestrator y capability gates |
 | 06 | Ecosistema + release | H, B6 y cierre A | 01–05 | release candidate reproducible, auditada y documentada |
 
@@ -64,6 +64,8 @@ lógicos.
 - [ ] Ejecutar
   [`2026-07-24-02-dayz-ui-lab.md`](2026-07-24-02-dayz-ui-lab.md).
 - [ ] Cerrar B19/B20 antes de cualquier golden/diff.
+- [ ] `dayz-api-index` v2 no bloquea C1: adjudicar dudas contra fuente mientras
+  el v1 no distinga liveness.
 - [ ] Promover patrones a `dayz-ui` solo después de corpus + DayZDiag.
 - [ ] Cerrar con la nota Obsidian y la skill activa sincronizadas al commit.
 
@@ -80,7 +82,10 @@ lógicos.
 - [ ] Ejecutar
   [`2026-07-24-04-py3d-and-domain-skills.md`](2026-07-24-04-py3d-and-domain-skills.md).
 - [ ] Dividir la ejecución posterior en un plan por skill/herramienta.
+- [ ] Cerrar primero el workstream acotado `dayz-api-index` v2 (B8).
 - [ ] No mezclar ODOL writer ni cifras de performance sin benchmark.
+- [ ] Tratar exit 0/existencia de PBO como evidencia insuficiente; release exige
+  postconditions, cache completa y publicación transaccional.
 - [ ] Cada workstream aceptado deja routing y recibo de promoción.
 
 ## Fase 05 — MCP publicable
@@ -89,6 +94,8 @@ lógicos.
   [`2026-07-24-05-dayz-mcp-public-and-automation.md`](2026-07-24-05-dayz-mcp-public-and-automation.md).
 - [ ] Mantener lease/run-id y lifecycle request-bound.
 - [ ] Separar protocolo público, modo lite y capacidades avanzadas.
+- [ ] Mantener dayz-labs pineado como companion opcional; excluir sus verbos de
+  lifecycle y su installer de los gates.
 - [ ] Promover los contratos MCP verificados a Obsidian y skills activas.
 
 ## Fase 06 — Ecosistema y release
@@ -97,6 +104,8 @@ lógicos.
   [`2026-07-24-06-release-ecosystem-and-polish.md`](2026-07-24-06-release-ecosystem-and-polish.md).
 - [ ] Consolidar duplicados solo con mapa de procedencia.
 - [ ] Cerrar licencias, contribución, companions y risk register.
+- [ ] Hacer que el template `@MyMod` consuma el preflight y los postconditions
+  release-grade definidos en Fase 04.
 - [ ] Repetir todos los gates desde un checkout limpio antes del release.
 - [ ] Verificar `PROMOTION-UNROUTED=0` y `PROMOTION-DRIFT=0` en todos los
   targets configurados.

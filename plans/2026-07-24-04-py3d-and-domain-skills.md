@@ -6,17 +6,18 @@
 
 ## Objetivo y traza DPF
 
-Cerrar E1–E7, F1–F5 y B7 sin monolitos ni APIs inventadas.
+Cerrar E1–E7, F1–F5 y B7–B8 sin monolitos ni APIs inventadas.
 
 ## Orden interno
 
-1. py3d/export validation.
-2. `dayz-multiplayer-sync`.
-3. `dayz-sound-particles`.
-4. `dayz-terrain`.
-5. `dayz-workshop-release`.
-6. disease/modifiers, plugin lifecycle, RPT y performance budgets.
-7. simuladores offline.
+1. `dayz-api-index` v2, acotado y sin bloquear Fase 02.
+2. py3d/export validation.
+3. `dayz-multiplayer-sync`.
+4. `dayz-sound-particles`.
+5. `dayz-terrain`.
+6. `dayz-workshop-release`.
+7. disease/modifiers, plugin lifecycle, RPT y performance budgets.
+8. simuladores offline.
 
 ## Evidencia de partida
 
@@ -26,6 +27,24 @@ Cerrar E1–E7, F1–F5 y B7 sin monolitos ni APIs inventadas.
   `SKILL_SOURCE/dayz-p3d-debinarizer/scripts/odol_reader.py:731`.
 - El converter actual invierte el orden de índices al emitir MLOD:
   `SKILL_SOURCE/dayz-p3d-debinarizer/scripts/odol_to_mlod.py:120`.
+
+## Workstream 0 — `dayz-api-index` v2
+
+- [ ] Extender el índice v1 sin romper su JSON tipado, allowed-roots, metadata
+  de build/schema, tree digest ni regeneración local.
+- [ ] Emitir liveness estructurada `active|commented|missing`, parent chain,
+  guardas de método/clase, namespace de config y uso heurístico solo opt-in.
+- [ ] Fixtures mínimas: declaración activa, comentada, ausente,
+  activa+comentada, parent cycle, método solo consola/guardado, override PC
+  válido, `CfgXxx` correcto/incorrecto y uso dentro de comentario.
+- [ ] Falla cerrada ante path escape, build/schema/tree incompatibles y ciclos.
+- [ ] No introducir SQLite ni redistribuir una base DayZ salvo benchmark que
+  demuestre necesidad; el índice sigue siendo evidencia auxiliar y nunca
+  sustituye abrir la fuente citada.
+- [ ] Gate: consulta devuelve estado, `path:line`, parent/guarda/namespace
+  esperados para cada fixture y mantiene verdes los contratos v1.
+- [ ] B8 no es dependencia de C1: `dayz-ui-lab` continúa con grep/fuente
+  directa cuando v1 devuelve cero o una declaración ambigua.
 
 ## Workstream A — py3d
 
@@ -59,7 +78,9 @@ Cerrar E1–E7, F1–F5 y B7 sin monolitos ni APIs inventadas.
 ## Workstream D — terrain
 
 - [ ] Fijar mapa mínimo, toolchain, roadgraph y CE para la stable actual.
-- [ ] Auditar compatibilidad de los parsers CE con 1.28/1.29.
+- [ ] Auditar compatibilidad de los parsers CE con 1.28/1.29, incluidos random
+  presets y nodos anidados; conservarlos o rechazarlos explícitamente, nunca
+  descartarlos en silencio.
 - [ ] Definir proyecto ejemplo y outputs verificables.
 - [ ] Integrar el runbook roadgraph existente, sin duplicarlo.
 - [ ] Plan hijo después de validar un round-trip mínimo.
@@ -69,9 +90,24 @@ Cerrar E1–E7, F1–F5 y B7 sin monolitos ni APIs inventadas.
 - [ ] Extraer requisitos de dayz-labs y fuentes oficiales, no código GPL.
 - [ ] Cubrir `mod.cpp`, requires/dependencies, PBO, signing/bisign, previews,
   changelog y update/rollback.
-- [ ] Dry-run local sin publicar.
+- [ ] Dry-run local sin publicar: `exit 0` o PBO preexistente nunca bastan.
+- [ ] Postconditions: candidato creado por este run, digest/frescura coherente
+  con inputs, header/prefix/entries esperados, `.bisign` cuando corresponda y
+  log sin errores fatales.
+- [ ] Cache key completa: bytes de inputs, opciones, prefix, build DayZ,
+  versiones/hashes de todas las herramientas efectivas e identidad de clave
+  de firma; un cambio en cualquiera invalida, tocar solo mtime no.
+- [ ] Preflight fail-closed: conflictos de case/path,
+  excluidos-pero-referenciados, paths absolutos empaquetados, `.paa`
+  stale/missing y ODOL no soportado antes de binarize.
+- [ ] Publicar desde staging solo tras validar. Ante cualquier fallo, el
+  artefacto anterior queda byte-idéntico y cache/manifest no avanzan.
 - [ ] Definir estrategia de secrets fuera del repo.
-- [ ] Plan hijo después de fijar tool versions y artifacts.
+- [ ] Fixtures de viabilidad: PBO bloqueado/copy fallida, header/prefix
+  incorrecto, firma ausente, fatal log, invalidación por cada componente de
+  cache y fallo inyectado en publicación/rollback.
+- [ ] Plan hijo después de fijar tool versions, artifacts y semántica exacta
+  de commit/rollback.
 
 ## Workstream F — conocimiento y budgets
 
@@ -95,6 +131,10 @@ Cerrar E1–E7, F1–F5 y B7 sin monolitos ni APIs inventadas.
 
 - Cada workstream tiene research con fuentes primarias, unknowns y referente.
 - Cada feature aceptada tiene feature spec/checklist y plan hijo.
+- `dayz-api-index` v2 supera su matriz completa y no se convierte en
+  dependencia de UI.
+- El release dry-run no puede producir PASS ni refrescar cache/manifest con un
+  PBO viejo, inválido o no publicable; rollback conserva el anterior por hash.
 - Cada invariante aceptada actualiza su nota Obsidian y la skill canónica;
   después se promueve a targets activos con recibo.
 - No hay implementación huérfana de criterio DPF.

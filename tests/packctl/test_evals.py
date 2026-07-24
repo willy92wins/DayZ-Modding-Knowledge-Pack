@@ -122,12 +122,15 @@ def test_eval_variants_use_fresh_declared_workspace_only(tmp_path: Path) -> None
     assert grading_b["verdict"] == "FAIL"
 
 
-def test_versioned_pilot_cases_and_stardz_negatives_are_mechanical() -> None:
+def test_versioned_cases_and_stardz_negatives_are_mechanical() -> None:
     root = Path(__file__).resolve().parents[2]
     cases = sorted((root / "evals/cases").glob("*.json"))
 
     assert {path.stem for path in cases} == {
         "api-enforce",
+        "api-index-liveness",
+        "build-artifact-postcondition",
+        "companion-lifecycle-authority",
         "persistence",
         "stardz-negatives",
         "ui-layout",

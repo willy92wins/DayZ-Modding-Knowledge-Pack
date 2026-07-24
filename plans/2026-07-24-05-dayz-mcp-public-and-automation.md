@@ -61,7 +61,15 @@ el testing sin exponer infraestructura privada ni romper ownership.
 ## Task 5 — Companions y cierre
 
 - [ ] VPP/init.c como alternativa básica documentada con límites.
-- [ ] dayz-labs como companion opcional sin lifecycle authority.
+- [ ] dayz-labs como companion opcional, documentado por release/commit exactos
+  y sin lifecycle authority; baseline revisado:
+  `v0.1.35` / `dbd6ad3e54e30c81a9aeb88fcb9f60f007804c2a`.
+- [ ] Excluir `start/stop/restart` de dayz-labs cuando DayZ_MCP posee el run;
+  solo `dayz_test_run` / `dayz_test_stop` con `run_id` exacto gobiernan procesos.
+- [ ] No instalar/actualizar dayz-labs por defecto ni ejecutar su installer
+  dentro de los gates del pack.
+- [ ] Tratar sus tests/capturas WPF como evidencia de su propia aplicación,
+  nunca como evidencia de fidelidad de un `.layout` DayZ.
 - [ ] Lake/StarDZ como prior art, no dependencia.
 - [ ] Cheat Engine queda fuera de la ruta recomendada por fragilidad/riesgo.
 - [ ] Actualizar Obsidian con evidencia privada; promover skills desde el commit
@@ -75,5 +83,8 @@ el testing sin exponer infraestructura privada ni romper ownership.
 - Protocol example no verificado contra código.
 - Key/path/profile privado en Git.
 - Dos autoridades de lifecycle.
+- Companion sin versión fijada, installer ejecutado por un gate o verbo de
+  proceso externo sobre un run gestionado.
 - Screenshot diff usado como prueba de gameplay sin gate DayZDiag.
+- Screenshot WPF usado como prueba de semántica `.layout`.
 - `PROMOTION-UNROUTED` o `PROMOTION-DRIFT`.

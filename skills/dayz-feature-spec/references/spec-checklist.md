@@ -26,7 +26,7 @@ Mark each `[x]` pass / `[ ]` fail. Any fail → fix the spec, do not proceed to 
 
 - [ ] CHK010 Every Forward-Contract symbol is verified `path:line` OR explicitly marked `[UNVERIFIED]`.
 - [ ] CHK011 Every classname / selection / bone / proxy path / stringtable key the code will emit or the next phase will read actually exists (opened the file, not from memory).
-- [ ] CHK012 No `[UNVERIFIED]` ref remains that the code depends on for correctness.
+- [ ] CHK012 No `[UNVERIFIED]` ref remains that the code depends on for correctness. API-index evidence distinguishes `active|commented|missing`, records source `path:line` and compile guards; a zero-record v1 result is not treated as proof of absence.
 
 ## Scope & consistency
 

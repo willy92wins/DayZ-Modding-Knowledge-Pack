@@ -46,6 +46,22 @@ identifica por `run_id`: compartir mod no concede ownership. Con cuarentena
 retail solo se permiten lecturas; si quien abrió retail no puede cerrarlo por
 la UI, declarar `manual_cleanup_required`.
 
+### Companion externo: dayz-labs
+
+[EXACT][CLAIM-R21-MCP-COMPANION-AUTHORITY]
+`external_companion_no_lifecycle_authority`. La release dayz-labs v0.1.35,
+revisada en el commit fijado
+`dbd6ad3e54e30c81a9aeb88fcb9f60f007804c2a`, puede servir como referencia o
+companion opcional. Sus verbos `start/stop/restart` quedan excluidos mientras
+DayZ_MCP posee un run: solo `dayz_test_run` / `dayz_test_stop` sobre el
+`run_id` exacto gobiernan ese lifecycle. No instales ni actualices el companion
+como parte de un gate; documenta siempre la `pinned_version` examinada.
+
+Su interfaz es WPF y captura su propia aplicación:
+`wpf_not_layout_evidence`. Una captura correcta de dayz-labs no valida el
+parser, las proporciones, el clipping ni la semántica de un `.layout` DayZ; el
+visor UI necesita su propio render y comparación contra evidencia del juego.
+
 El request de `dayz_test_run` debe seleccionar `Mode=all`, build cuando cambió
 el PBO y `@DayZ_MCP` como dependencia adicional:
 

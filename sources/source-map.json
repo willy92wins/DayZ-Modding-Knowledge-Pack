@@ -376,6 +376,75 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/evals/cases/api-index-liveness.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adversarial fixture proves that a zero-record v1 result cannot establish declaration absence.",
+          "license": "MIT",
+          "source_hash": "609299ebd052f6a76123c0cb9407539ca4a2cdf5b4323731d6b100af0adbcff6",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/cases/api-index-liveness.json",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "609299ebd052f6a76123c0cb9407539ca4a2cdf5b4323731d6b100af0adbcff6",
+      "output_path": "evals/cases/api-index-liveness.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/evals/cases/build-artifact-postcondition.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adversarial fixture rejects exit-zero/existence-only build verdicts and requires transactional postconditions.",
+          "license": "MIT",
+          "source_hash": "23181b7077a0b5200f970106c2f614bd46c4456610722e53f5c87b5d9fda7509",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/cases/build-artifact-postcondition.json",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "23181b7077a0b5200f970106c2f614bd46c4456610722e53f5c87b5d9fda7509",
+      "output_path": "evals/cases/build-artifact-postcondition.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/evals/cases/companion-lifecycle-authority.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adversarial fixture keeps an external companion optional, pinned and outside governed lifecycle/UI evidence.",
+          "license": "MIT",
+          "source_hash": "9b0f896cbdcc7f13ed603a434e9b6376ea52ec580478efa227162203cb99faec",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/cases/companion-lifecycle-authority.json",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9b0f896cbdcc7f13ed603a434e9b6376ea52ec580478efa227162203cb99faec",
+      "output_path": "evals/cases/companion-lifecycle-authority.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/evals/cases/persistence.json",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -1607,17 +1676,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "Approved prior-art deltas are formalized in the Phase 04 plan.",
           "license": "MIT",
-          "source_hash": "d0521e6ad331fdb0ad38f49bfc7a23738abb94d842350e1fd679ec3be5a2190e",
+          "source_hash": "5080eaeff424f02d8bf90bd8a051ef6b85226d361c9abd1a1408b605ce1fb51b",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-04-py3d-and-domain-skills.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d0521e6ad331fdb0ad38f49bfc7a23738abb94d842350e1fd679ec3be5a2190e",
+      "output_hash": "5080eaeff424f02d8bf90bd8a051ef6b85226d361c9abd1a1408b605ce1fb51b",
       "output_path": "plans/2026-07-24-04-py3d-and-domain-skills.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -1640,17 +1709,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "Approved prior-art deltas are formalized in the Phase 05 plan.",
           "license": "MIT",
-          "source_hash": "1d15371dc46ada5c3eb9e44c6021529c94d73ba5b50686c0dfa3ea7273d316fa",
+          "source_hash": "290ac5caa10ccfa4854579aa293b8e6253ff2486206b0fc0a2e022dbf1d8bcb5",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-05-dayz-mcp-public-and-automation.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1d15371dc46ada5c3eb9e44c6021529c94d73ba5b50686c0dfa3ea7273d316fa",
+      "output_hash": "290ac5caa10ccfa4854579aa293b8e6253ff2486206b0fc0a2e022dbf1d8bcb5",
       "output_path": "plans/2026-07-24-05-dayz-mcp-public-and-automation.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -1673,17 +1742,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "Approved prior-art deltas are formalized in the Phase 06 plan.",
           "license": "MIT",
-          "source_hash": "5a1370e579c9a56389c03a4b77dfa9928df657337a253c2dab1651c179bf7af7",
+          "source_hash": "5f35655661f7878d06b4980438ac7d7c02789c032a1aec0e494da179be1287d8",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-06-release-ecosystem-and-polish.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5a1370e579c9a56389c03a4b77dfa9928df657337a253c2dab1651c179bf7af7",
+      "output_hash": "5f35655661f7878d06b4980438ac7d7c02789c032a1aec0e494da179be1287d8",
       "output_path": "plans/2026-07-24-06-release-ecosystem-and-polish.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -1696,17 +1765,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Evidence refresh of pinned external prior art after Phase 01; proposal only.",
+          "decision_evidence": "The user approved the three evidence-backed deltas; the proposal records the adopted boundary.",
           "license": "MIT",
-          "source_hash": "d6560463692ef8e9be4e34aa91147a47617f973c1f960c9a0e61825e174dfa11",
+          "source_hash": "2fbe7af9d25c49cc23e24bf46ea4de81e11a71878e23b08ae06d458fec28deaa",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-prior-art-assimilation-proposal.md",
-          "source_revision": "r21-prior-art-review@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d6560463692ef8e9be4e34aa91147a47617f973c1f960c9a0e61825e174dfa11",
+      "output_hash": "2fbe7af9d25c49cc23e24bf46ea4de81e11a71878e23b08ae06d458fec28deaa",
       "output_path": "plans/2026-07-24-prior-art-assimilation-proposal.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -1729,17 +1798,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "The roadmap now traces the three approved prior-art deltas to Phases 04-06.",
           "license": "MIT",
-          "source_hash": "29b9d92b47118e2c0b81e8b2b0cfc6bdd8ca1e40884a06d603627319570e44a7",
+          "source_hash": "09c0610412625dbb31f95b17971700e59d47ca668b911bf79dba00edbcb700f4",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-r21-master-roadmap.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "29b9d92b47118e2c0b81e8b2b0cfc6bdd8ca1e40884a06d603627319570e44a7",
+      "output_hash": "09c0610412625dbb31f95b17971700e59d47ca668b911bf79dba00edbcb700f4",
       "output_path": "plans/2026-07-24-r21-master-roadmap.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -1762,17 +1831,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "The DPF records the three approved post-Phase-01 criteria without reopening closed B2.",
           "license": "MIT",
-          "source_hash": "8a9c13c2f686c964b0e6b99096f0615e9bc6bc974e5c912eb6aea2152eb0c440",
+          "source_hash": "21ee238ad1d0b56875c62a660865b7bbfe56b0ad26e1a98cf4e10609a3ef2910",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8a9c13c2f686c964b0e6b99096f0615e9bc6bc974e5c912eb6aea2152eb0c440",
+      "output_hash": "21ee238ad1d0b56875c62a660865b7bbfe56b0ad26e1a98cf4e10609a3ef2910",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
@@ -3092,17 +3161,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "Approved API-index liveness boundary was added after an adversarial RED-to-GREEN evaluation.",
           "license": "MIT",
-          "source_hash": "05de9cb3cac5b8b68044ac4f253c3fb9301eb1a1bf6e21cd13b3ee6271fd1db3",
+          "source_hash": "f5e103912e974eb50b00d789fcd39cf2816f375a97a489b79bbc653da52c6e23",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-feature-spec/SKILL.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "05de9cb3cac5b8b68044ac4f253c3fb9301eb1a1bf6e21cd13b3ee6271fd1db3",
+      "output_hash": "f5e103912e974eb50b00d789fcd39cf2816f375a97a489b79bbc653da52c6e23",
       "output_path": "skills/dayz-feature-spec/SKILL.md",
       "routing_artifact_id": "skill/dayz-feature-spec",
       "verification_level": "cross_checked"
@@ -3176,17 +3245,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "The feature-spec checklist now operationalizes the approved API-index liveness boundary.",
           "license": "MIT",
-          "source_hash": "9bef483072a547cdda15f0f8eea15c9620120ad6698f349635129cabe83bf299",
+          "source_hash": "62c08493a453523f609266804cbb12dd6ecb1315f2056396cf6bfe9b45d0c9d6",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-feature-spec/references/spec-checklist.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9bef483072a547cdda15f0f8eea15c9620120ad6698f349635129cabe83bf299",
+      "output_hash": "62c08493a453523f609266804cbb12dd6ecb1315f2056396cf6bfe9b45d0c9d6",
       "output_path": "skills/dayz-feature-spec/references/spec-checklist.md",
       "routing_artifact_id": "skill/dayz-feature-spec",
       "verification_level": "cross_checked"
@@ -3280,17 +3349,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "Approved optional-companion authority boundary was added after an adversarial RED-to-GREEN evaluation.",
           "license": "MIT",
-          "source_hash": "b9d5d30596fad82881d6797686b2d823ca04006100c9919b99def4fd5b914781",
+          "source_hash": "e5f003007141e5cb85f0f8caf0858c7a3580c4bc9347effdb802c41de25e598a",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b9d5d30596fad82881d6797686b2d823ca04006100c9919b99def4fd5b914781",
+      "output_hash": "e5f003007141e5cb85f0f8caf0858c7a3580c4bc9347effdb802c41de25e598a",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -3530,17 +3599,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "Approved release-grade build boundary was added after an adversarial RED-to-GREEN evaluation.",
           "license": "MIT",
-          "source_hash": "55e72bb036ced8ac576d4fad493f8ef7d867335da29b4c1b57f215dca32beb25",
+          "source_hash": "a5b2ed3bc477e39c637b1c7689e748454c990237d9bd4538ba7f1a3b8ac9cf97",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-test-ingame/SKILL.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "55e72bb036ced8ac576d4fad493f8ef7d867335da29b4c1b57f215dca32beb25",
+      "output_hash": "a5b2ed3bc477e39c637b1c7689e748454c990237d9bd4538ba7f1a3b8ac9cf97",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -5281,17 +5350,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
+          "decision_evidence": "Claim registry records the three approved evidence-backed contracts and their skill ranges.",
           "license": "MIT",
-          "source_hash": "e64f6fb0000b580c21cd49c1b0f542fcd675afbb990241c840ff352d621c6abb",
+          "source_hash": "c5aa419c2019d702ff6d592b45ad86d74b2a1e590e3bcfa05bb07ba2e97e2b28",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e64f6fb0000b580c21cd49c1b0f542fcd675afbb990241c840ff352d621c6abb",
+      "output_hash": "c5aa419c2019d702ff6d592b45ad86d74b2a1e590e3bcfa05bb07ba2e97e2b28",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -5602,17 +5671,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
+          "decision_evidence": "The mechanical eval-catalog contract includes the three approved post-Phase-01 cases.",
           "license": "MIT",
-          "source_hash": "f8cd2c349b586b147148eff12e480070ae9269198f5919767dd152e4c63a30c6",
+          "source_hash": "29d46523bf70ade2cab7cdbf26c7ac1c886606c8adbb8c5d29caba67b74f628e",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_evals.py",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f8cd2c349b586b147148eff12e480070ae9269198f5919767dd152e4c63a30c6",
+      "output_hash": "29d46523bf70ade2cab7cdbf26c7ac1c886606c8adbb8c5d29caba67b74f628e",
       "output_path": "tests/packctl/test_evals.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"

@@ -98,3 +98,17 @@ and `.source` even when a plan mentions only `.proposal`; the partial object
 then fails at runtime despite satisfying the prose spec. Verified example:
 `GameMaster_dev/tools/gm/service.py:209-218`; the complete existing result
 contract is `GameMaster_dev/tools/gm/ollama_planner.py:43-50`.
+
+## API-index liveness boundary
+
+[EXACT][CLAIM-R21-FEATURE-API-INDEX-LIVENESS] A zero-record result from
+`dayz-api-index` v1 does not prove that a declaration is absent: v1 strips
+comments, so commented-out and genuinely missing declarations both yield zero
+active records. Until v2 reports `active|commented|missing`, the parent chain,
+compile guards and config namespace, open the cited source, record the source
+`path:line`, and inspect the surrounding `#ifdef` state before recommending an
+API.
+
+The v2 index is supporting evidence, not an implementation gate for unrelated
+work. In particular, it does not block the `.layout` viewer or the UI evidence
+loop defined by the r21 product spec.

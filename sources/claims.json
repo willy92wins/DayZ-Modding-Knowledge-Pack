@@ -15,6 +15,19 @@
       "verification_level": "source_verified"
     },
     {
+      "artifact_id": "file/skills/dayz-feature-spec/skill.md",
+      "claim_id": "CLAIM-R21-FEATURE-API-INDEX-LIVENESS",
+      "evidence_locator": "packctl/api_index.py:32-76,87-147,150-212,287-355; tests/packctl/test_api_index.py:38-59,62-80,83-126",
+      "license": "MIT",
+      "line_end": 114,
+      "line_start": 104,
+      "observed_at": "2026-07-24",
+      "promotion_artifact_id": "skill/dayz-feature-spec",
+      "source_id": "pack-r21-authored",
+      "source_revision": "r21-phase01@2026-07-24",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/skills/dayz-mcp-verify/skill.md",
       "claim_id": "CLAIM-R21-MCP-ORCHESTRATED-TEST",
       "evidence_locator": "DayZ_MCP_dev/tools/dayz_mcp/dayz_test_tool.py:477-516,528-553; DayZ_MCP_dev/tools/dayz_mcp/server.py:802-807,915-995",
@@ -26,6 +39,19 @@
       "source_id": "dayz-mcp-filesystem",
       "source_revision": "filesystem@2026-07-24",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-mcp-verify/skill.md",
+      "claim_id": "CLAIM-R21-MCP-COMPANION-AUTHORITY",
+      "evidence_locator": "dayz-labs/src/Dzl.Core/Ipc/ControlPlane.cs:6-20; dayz-labs/src/Dzl.Core/Launch/ProcessManager.cs:60-73; DayZ_MCP_dev/tools/dayz_mcp/dayz_test_tool.py:477-516,528-553; DayZ_MCP_dev/tools/dayz_mcp/server.py:802-807,915-995",
+      "license": "GPL-3.0-only; assets CC-BY-NC-SA",
+      "line_end": 63,
+      "line_start": 51,
+      "observed_at": "2026-07-24",
+      "promotion_artifact_id": "skill/dayz-mcp-verify",
+      "source_id": "dayz-labs",
+      "source_revision": "dbd6ad3e54e30c81a9aeb88fcb9f60f007804c2a",
+      "verification_level": "cross_checked"
     },
     {
       "artifact_id": "file/skills/dayz-pbo-reverse-engineering/skill.md",
@@ -52,6 +78,19 @@
       "source_id": "dayz-mcp-filesystem",
       "source_revision": "filesystem@2026-07-24",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/skill.md",
+      "claim_id": "CLAIM-R21-TEST-BUILD-POSTCONDITION",
+      "evidence_locator": "dayz-labs/docs/guides/building-mods.md:94-99; dayz-labs/src/Dzl.Core/Build/ModBuild.cs:42-100; skills/dayz-test-ingame/SKILL.md:399-400",
+      "license": "GPL-3.0-only; assets CC-BY-NC-SA",
+      "line_end": 146,
+      "line_start": 127,
+      "observed_at": "2026-07-24",
+      "promotion_artifact_id": "skill/dayz-test-ingame",
+      "source_id": "dayz-labs",
+      "source_revision": "dbd6ad3e54e30c81a9aeb88fcb9f60f007804c2a",
+      "verification_level": "cross_checked"
     },
     {
       "artifact_id": "file/skills/dayz-test-ingame/templates/dayz-test.ps1",
@@ -84,8 +123,8 @@
       "claim_id": "CLAIM-R21-TEST-VPP-SECRET",
       "evidence_locator": "skills/dayz-test-ingame/templates/dayz-test.ps1:336-354; tests/packctl/test_dayz_test_template_contract.py",
       "license": "MIT",
-      "line_end": 236,
-      "line_start": 234,
+      "line_end": 259,
+      "line_start": 257,
       "observed_at": "2026-07-24",
       "promotion_artifact_id": "skill/dayz-test-ingame",
       "source_id": "pack-r21-authored",
