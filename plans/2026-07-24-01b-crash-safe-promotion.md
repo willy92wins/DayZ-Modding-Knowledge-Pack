@@ -68,6 +68,13 @@ write→flush→`os.fsync`→readback→rename durable. En POSIX se hace fsync d
 directorio padre; en Windows la rename usa
 `MoveFileExW(..., MOVEFILE_WRITE_THROUGH)` sin permitir copy cross-volume.
 Staging, old y recovery sidecars permanecen en el mismo volumen que su target.
+Cuando `copy2` preserva un atributo read-only en Windows, el `fsync` del
+sidecar todavía no publicado habilita escritura solo durante la apertura,
+sin tocar la fuente, y restaura el modo original en `finally`. Una apertura
+`rb` no sustituye este paso: `_commit`, usado por `os.fsync` en Windows,
+rechaza ese descriptor con `EBADF`
+(`packctl/common.py:190-219`;
+`tests/packctl/test_promotion.py:1843-1890`).
 
 Evidencia de API:
 
@@ -162,7 +169,7 @@ Recovery/rollback:
 ## Registro de implementación Codex
 
 **[EXACT]** Implementado el 2026-07-24 en
-`packctl/common.py:52-209`, `packctl/promotion.py:886-2461` y
+`packctl/common.py:43-219`, `packctl/promotion.py:886-2461` y
 `packctl/cli.py:63-76,155-160`. La auditoría se ejecutó localmente, sin Claude ni subagentes,
 por decisión expresa del usuario.
 
@@ -195,12 +202,18 @@ primer diseño no hacía explícitos:
     source siga presente y, sin `replace`, destination siga ausente; un estado
     ambiguo se entrega a rollback/recovery sin repetir la mutación. El
     diagnóstico conserva tipo + `winerror`, nunca el path físico.
+12. un backup o staging con archivos read-only debe sincronizar los bytes sin
+    degradar sus atributos. En Windows la copia no publicada se vuelve
+    escribible solo durante `fsync` y recupera siempre su modo original,
+    incluso si el flush falla.
 
 La matriz ejecutable está en
-`tests/packctl/test_promotion.py:537-621,697-800,1017-1064,1233-1839`. Cubre las fronteras de
+`tests/packctl/test_promotion.py:537-621,697-800,1017-1064,1233-1839,1843-1890`.
+Cubre las fronteras de
 muerte forward/recovery, corrupción de evidencia, targets y recibos ajenos,
 locks vivos y huérfanos, tres generaciones consecutivas, retry tras `ABORT`,
-inicialización atómica, renames transitorias y carreras bajo lock.
+inicialización atómica, renames transitorias, copias read-only y carreras bajo
+lock.
 
 Verificación intermedia antes del gate final:
 

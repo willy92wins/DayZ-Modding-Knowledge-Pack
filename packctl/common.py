@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import stat
 import subprocess
 import time
 import uuid
@@ -188,21 +189,34 @@ def durable_write_json(
 
 def sync_tree(path: Path) -> None:
     path = Path(path)
-    mode = "r+b" if os.name == "nt" else "rb"
     if path.is_file():
-        with path.open(mode) as handle:
-            os.fsync(handle.fileno())
+        _sync_file(path)
         return
     directories = [path]
     for child in sorted(path.rglob("*")):
         if child.is_file():
-            with child.open(mode) as handle:
-                os.fsync(handle.fileno())
+            _sync_file(child)
         elif child.is_dir():
             directories.append(child)
     if os.name != "nt":
         for directory in reversed(directories):
             sync_directory(directory)
+
+
+def _sync_file(path: Path) -> None:
+    mode = "r+b" if os.name == "nt" else "rb"
+    original_mode: int | None = None
+    if os.name == "nt":
+        file_stat = path.stat()
+        if file_stat.st_file_attributes & stat.FILE_ATTRIBUTE_READONLY:
+            original_mode = file_stat.st_mode
+            path.chmod(original_mode | stat.S_IWRITE)
+    try:
+        with path.open(mode) as handle:
+            os.fsync(handle.fileno())
+    finally:
+        if original_mode is not None:
+            path.chmod(original_mode)
 
 
 def load_json(path: Path) -> Any:

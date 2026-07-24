@@ -251,9 +251,9 @@
     {
       "artifact_id": "file/skills/rigorous-data-audit/references/crash-safe-evidence-and-bundles.md",
       "claim_id": "CLAIM-R21-RDA-PROMOTION-RECOVERY-REFINEMENTS",
-      "evidence_locator": "DayZ-Modding-Knowledge-Pack/packctl/common.py:52-123; DayZ-Modding-Knowledge-Pack/packctl/promotion.py:93-106,1131-1155,1612-1649,1843-2461; DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:537-621,697-800,1017-1064,1233-1839",
+      "evidence_locator": "DayZ-Modding-Knowledge-Pack/packctl/common.py:53-124,190-219; DayZ-Modding-Knowledge-Pack/packctl/promotion.py:93-106,1131-1155,1612-1649,1843-2461; DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:537-621,697-800,1017-1064,1233-1839,1843-1890",
       "license": "MIT",
-      "line_end": 90,
+      "line_end": 89,
       "line_start": 49,
       "observed_at": "2026-07-24",
       "promotion_artifact_id": "skill/rigorous-data-audit",

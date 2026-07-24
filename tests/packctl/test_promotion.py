@@ -1837,3 +1837,54 @@ def test_target_change_after_backup_is_preserved_before_old_move(
     assert report["verdict"] == "FAIL"
     assert report["artifacts"]["exit_code"] == 2
     assert sentinel.read_text(encoding="utf-8") == "external mutation\n"
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows read-only semantics")
+def test_copy_artifact_syncs_and_preserves_readonly_files(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    source_file = source / "readonly.txt"
+    source_file.write_text("durable\n", encoding="utf-8")
+    source_file.chmod(0o444)
+    destination = tmp_path / "destination"
+
+    try:
+        promotion._copy_artifact(source, destination, "tree")
+
+        copied = destination / source_file.name
+        assert copied.read_bytes() == source_file.read_bytes()
+        assert not copied.stat().st_mode & 0o200
+    finally:
+        for path in (source_file, destination / source_file.name):
+            if path.exists():
+                path.chmod(0o666)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows read-only semantics")
+def test_copy_artifact_restores_readonly_attribute_when_fsync_fails(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    source_file = source / "readonly.txt"
+    source_file.write_text("durable\n", encoding="utf-8")
+    source_file.chmod(0o444)
+    destination = tmp_path / "destination"
+
+    def fail_fsync(_descriptor: int) -> None:
+        raise OSError("injected fsync failure")
+
+    monkeypatch.setattr(common.os, "fsync", fail_fsync)
+    try:
+        with pytest.raises(OSError, match="injected fsync failure"):
+            promotion._copy_artifact(source, destination, "tree")
+
+        copied = destination / source_file.name
+        assert not copied.stat().st_mode & 0o200
+    finally:
+        for path in (source_file, destination / source_file.name):
+            if path.exists():
+                path.chmod(0o666)

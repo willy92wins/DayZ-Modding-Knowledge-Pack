@@ -82,20 +82,25 @@ multi-root publisher, also audit these less-obvious boundaries:
     still prove the prior attempt did not create an ambiguous state. Preserve a
     path-free OS error code for diagnosis; never turn a retry into a second
     blind mutation.
+12. Preserve read-only payloads without making durability depend on a permanent
+    metadata change. On Windows, `fsync` requires a write-capable descriptor:
+    make only the unpublished copy temporarily writable, flush it, and restore
+    its original mode even when the flush fails. Never mutate the source to
+    make backup creation succeed.
 
 These checks need fixtures for successive generations, retry after `ABORT`,
 failure during transaction initialization, contract mutation while waiting for
 locks, mutation after backup, renamed standalone-file snapshots, a lock root
 equal to its target, mixed-case projected paths, transient/ambiguous renames
-and invalid transaction roots.
+read-only copies and invalid transaction roots.
 
 ## Evidence
 
 - `Utopia_PC_Suite/plans/2026-07-22-phase-0a-foundation-plan.md:262-289,375-378`
 - `Utopia_PC_Suite/plans/2026-07-22-phase-0b-dedicated-persistence-plan.md:383-439`
-- `DayZ-Modding-Knowledge-Pack/packctl/common.py:52-123`
+- `DayZ-Modding-Knowledge-Pack/packctl/common.py:53-124,190-219`
 - `DayZ-Modding-Knowledge-Pack/packctl/promotion.py:93-106,1131-1139,1612-1649,1843-2461`
-- `DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:537-621,697-800,1017-1064,1233-1839`
+- `DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:537-621,697-800,1017-1064,1233-1839,1843-1890`
 
 Verification level: mechanism/source contract cross-check plus offline
 termination/recovery tests, 2026-07-24.

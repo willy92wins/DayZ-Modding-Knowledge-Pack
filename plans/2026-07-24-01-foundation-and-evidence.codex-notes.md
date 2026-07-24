@@ -123,17 +123,17 @@ ejecutarse sobre las raíces reales.
 La implementación sustituyó el journal mutable por eventos create-only
 hash-chained, locks del sistema operativo, plan sellado, inicialización atómica,
 durabilidad explícita y recovery determinista
-(`packctl/common.py:52-209`; `packctl/promotion.py:1142-1679,1843-2461`;
+(`packctl/common.py:43-219`; `packctl/promotion.py:1142-1679,1843-2461`;
 `tests/packctl/test_promotion.py:1233-1839`).
 
 Durante la segunda auditoría y las promociones reales se localizaron y
-corrigieron doce fallos
+corrigieron trece fallos
 adicionales:
 
 1. **[EXACT] Corrupción lógica de snapshots de fichero.** El digest incluía el
    basename de la fuente, pero el target vault se llama con el commit. Los
    mismos bytes producían digests distintos. El digest de un fichero ahora es
-   su SHA-256 binario (`packctl/common.py:348-355`;
+   su SHA-256 binario (`packctl/common.py:362-378`;
    `tests/packctl/test_promotion.py:570-621`).
 2. **[EXACT] Degradación tras promociones sucesivas.** El scanner terminal
    exigía que el target actual siguiera en el POST de cada transacción
@@ -204,11 +204,25 @@ adicionales:
     acotada solo los códigos 5/32/33, únicamente mientras source/destination
     sigan en un estado no ambiguo; cualquier otro estado falla cerrado. El
     informe expone tipo + `winerror` sin filtrar paths físicos
-    (`packctl/common.py:52-123`; `packctl/promotion.py:1131-1139`;
+    (`packctl/common.py:53-124`; `packctl/promotion.py:1131-1139`;
     `tests/packctl/test_promotion.py:713-800,1017-1064`).
+13. **[EXACT] El backup durable no admitía archivos read-only.** La cuarta
+    promoción real completó 52 de 53 destinos y falló cerrada en
+    `physical-0053`, después de `STAGE_READY` y antes de `BACKUP_READY`. El
+    backup parcial contenía los 46 archivos y sus tamaños, pero el traceback
+    aislado demostró que `copytree` había preservado 18 atributos read-only y
+    que `sync_tree` fallaba al abrir el primero con `r+b`; `rb` + `os.fsync`
+    devuelve `EBADF` en Windows. La sincronización ahora habilita escritura
+    solo de forma temporal sobre la copia aún no publicada, ejecuta `fsync` y
+    restaura el modo original en `finally`, también ante fallo inyectado. La
+    reproducción sobre el árbol físico verificó digest idéntico y los 18
+    atributos read-only preservados
+    (`packctl/common.py:190-219`;
+    `tests/packctl/test_promotion.py:1843-1890`).
 
-La ejecución posterior al duodécimo fix fue
-`python -m pytest -q tests/packctl`: **138 passed, 3 skipped**. La
+La ejecución focalizada posterior al decimotercer fix fue
+`python -m pytest -q tests/packctl/test_promotion.py::test_copy_artifact_syncs_and_preserves_readonly_files tests/packctl/test_promotion.py::test_copy_artifact_restores_readonly_attribute_when_fsync_fails`:
+**2 passed**. La
 recuperación idempotente de la transacción abortada también devolvió `PASS` y
 `decision=ABORT`. Estos resultados demuestran el contrato focalizado en el
 árbol de trabajo, pero no autorizan por sí solos otro intento real: primero se
