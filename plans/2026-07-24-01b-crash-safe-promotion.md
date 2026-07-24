@@ -75,6 +75,12 @@ sin tocar la fuente, y restaura el modo original en `finally`. Una apertura
 rechaza ese descriptor con `EBADF`
 (`packctl/common.py:190-219`;
 `tests/packctl/test_promotion.py:1843-1890`).
+La limpieza posterior solo borra sidecars cuyo digest ya fue adjudicado. Si
+uno contiene archivos read-only, Windows permite reintentar después de quitar
+ese atributo del path que va a desaparecer; una denegación que no sea
+read-only sigue fallando cerrada
+(`packctl/promotion.py:840-847,2662-2688`;
+`tests/packctl/test_promotion.py:1894-1936`).
 
 Evidencia de API:
 
@@ -206,14 +212,18 @@ primer diseño no hacía explícitos:
     degradar sus atributos. En Windows la copia no publicada se vuelve
     escribible solo durante `fsync` y recupera siempre su modo original,
     incluso si el flush falla.
+13. la limpieza de staging, `.old` y sidecars de recovery elimina archivos
+    read-only solo después de verificar que el residuo tiene un digest
+    permitido. El retry se limita a ese atributo; otras denegaciones conservan
+    el error y exigen intervención.
 
 La matriz ejecutable está en
-`tests/packctl/test_promotion.py:537-621,697-800,1017-1064,1233-1839,1843-1890`.
+`tests/packctl/test_promotion.py:537-621,697-800,1017-1064,1233-1839,1843-1936`.
 Cubre las fronteras de
 muerte forward/recovery, corrupción de evidencia, targets y recibos ajenos,
 locks vivos y huérfanos, tres generaciones consecutivas, retry tras `ABORT`,
-inicialización atómica, renames transitorias, copias read-only y carreras bajo
-lock.
+inicialización atómica, renames transitorias, copias y limpieza read-only, y
+carreras bajo lock.
 
 Verificación intermedia antes del gate final:
 

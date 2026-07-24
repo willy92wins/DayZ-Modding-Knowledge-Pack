@@ -841,9 +841,9 @@ def _remove_artifact(path: Path) -> None:
     if not path.exists() and not path.is_symlink():
         return
     if path.is_dir() and not path.is_symlink():
-        shutil.rmtree(path)
+        shutil.rmtree(path, onerror=_retry_readonly_removal)
     else:
-        path.unlink()
+        _unlink_readonly_artifact(path)
 
 
 def _fault(
@@ -2657,3 +2657,31 @@ def apply_promotion(
             ],
             artifacts={"transaction_root": str(transaction_root)},
         )
+
+
+def _make_removable(path: Path, error: BaseException) -> None:
+    import stat
+
+    if os.name != "nt" or not isinstance(error, PermissionError):
+        raise error
+    file_stat = path.stat()
+    if not file_stat.st_file_attributes & stat.FILE_ATTRIBUTE_READONLY:
+        raise error
+    path.chmod(file_stat.st_mode | stat.S_IWRITE)
+
+
+def _retry_readonly_removal(
+    function,
+    raw_path: str,
+    exc_info: tuple[object, BaseException, object],
+) -> None:
+    _make_removable(Path(raw_path), exc_info[1])
+    function(raw_path)
+
+
+def _unlink_readonly_artifact(path: Path) -> None:
+    try:
+        path.unlink()
+    except PermissionError as error:
+        _make_removable(path, error)
+        path.unlink()

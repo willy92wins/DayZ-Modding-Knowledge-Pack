@@ -127,7 +127,7 @@ durabilidad explícita y recovery determinista
 `tests/packctl/test_promotion.py:1233-1839`).
 
 Durante la segunda auditoría y las promociones reales se localizaron y
-corrigieron trece fallos
+corrigieron catorce fallos
 adicionales:
 
 1. **[EXACT] Corrupción lógica de snapshots de fichero.** El digest incluía el
@@ -219,10 +219,22 @@ adicionales:
     atributos read-only preservados
     (`packctl/common.py:190-219`;
     `tests/packctl/test_promotion.py:1843-1890`).
+14. **[EXACT] La limpieza de sidecars no admitía archivos read-only.** La
+    quinta promoción real publicó y verificó los 53 POST, pero antes de
+    `COMMIT` intentó eliminar el `.old` PRE de `physical-0053` con
+    `shutil.rmtree` y recibió `winerror=5`. El rollback restauró ese target,
+    volvió a fallar sobre el mismo residuo y quedó correctamente marcado como
+    intervención requerida, sin recibo. La eliminación ahora quita el atributo
+    read-only solo del sidecar conocido que se va a borrar, reintenta la
+    operación para árboles y ficheros, y sigue propagando cualquier
+    `PermissionError` que no corresponda a ese atributo. Recovery cerró luego
+    la transacción en `ABORT`; una segunda ejecución idempotente verificó 53/53
+    PRE, cero residuos, cero recibo y 215 eventos sellados
+    (`packctl/promotion.py:840-847,2662-2688`;
+    `tests/packctl/test_promotion.py:1894-1936`).
 
-La ejecución focalizada posterior al decimotercer fix fue
-`python -m pytest -q tests/packctl/test_promotion.py::test_copy_artifact_syncs_and_preserves_readonly_files tests/packctl/test_promotion.py::test_copy_artifact_restores_readonly_attribute_when_fsync_fails`:
-**2 passed**. La
+La ejecución focalizada posterior al decimocuarto fix cubrió los dos casos de
+sincronización y los tres de eliminación read-only: **5 passed**. La
 recuperación idempotente de la transacción abortada también devolvió `PASS` y
 `decision=ABORT`. Estos resultados demuestran el contrato focalizado en el
 árbol de trabajo, pero no autorizan por sí solos otro intento real: primero se

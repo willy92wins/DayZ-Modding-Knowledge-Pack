@@ -424,6 +424,14 @@ la fuente no se modifica. Esto evita el `PermissionError` observado cuando
 (`packctl/common.py:190-219`;
 `tests/packctl/test_promotion.py:1843-1890`).
 
+La limpieza de residuos verificados también admite archivos read-only. Solo
+después de comprobar que staging, `.old` o sidecar de recovery tiene un digest
+permitido, la herramienta quita el atributo del path que va a borrar y
+reintenta. Una denegación de permisos que no provenga de
+`FILE_ATTRIBUTE_READONLY` conserva el error y falla cerrada
+(`packctl/promotion.py:840-847,2662-2688`;
+`tests/packctl/test_promotion.py:1894-1936`).
+
 Ante excepción capturable antes de `COMMIT`, revierte en orden inverso, verifica
 los hashes originales y solo entonces registra `ABORT`. Ante terminación del
 proceso, `promote --recover` continúa la misma adjudicación: sin `COMMIT`

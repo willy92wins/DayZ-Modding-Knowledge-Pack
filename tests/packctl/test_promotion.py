@@ -1888,3 +1888,49 @@ def test_copy_artifact_restores_readonly_attribute_when_fsync_fails(
         for path in (source_file, destination / source_file.name):
             if path.exists():
                 path.chmod(0o666)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows read-only semantics")
+def test_remove_artifact_deletes_readonly_tree(tmp_path: Path) -> None:
+    tree = tmp_path / "readonly-tree"
+    tree.mkdir()
+    readonly_file = tree / "readonly.txt"
+    readonly_file.write_text("retired sidecar\n", encoding="utf-8")
+    readonly_file.chmod(0o444)
+
+    try:
+        promotion._remove_artifact(tree)
+        assert not tree.exists()
+    finally:
+        if readonly_file.exists():
+            readonly_file.chmod(0o666)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows read-only semantics")
+def test_remove_artifact_deletes_readonly_file(tmp_path: Path) -> None:
+    readonly_file = tmp_path / "readonly.txt"
+    readonly_file.write_text("retired sidecar\n", encoding="utf-8")
+    readonly_file.chmod(0o444)
+
+    try:
+        promotion._remove_artifact(readonly_file)
+        assert not readonly_file.exists()
+    finally:
+        if readonly_file.exists():
+            readonly_file.chmod(0o666)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows read-only semantics")
+def test_remove_artifact_does_not_mask_other_permission_errors(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    artifact = tmp_path / "writable.txt"
+    artifact.write_text("foreign denial\n", encoding="utf-8")
+
+    def deny_unlink(_path: Path) -> None:
+        raise PermissionError("injected non-readonly denial")
+
+    monkeypatch.setattr(Path, "unlink", deny_unlink)
+    with pytest.raises(PermissionError, match="non-readonly denial"):
+        promotion._remove_artifact(artifact)
