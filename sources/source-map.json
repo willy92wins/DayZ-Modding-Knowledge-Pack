@@ -1422,6 +1422,29 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/plans/2026-07-24-01-foundation-and-evidence.codex-notes.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 01 rigorous-data-audit findings and the unresolved crash-recovery decision are recorded for review.",
+          "license": "MIT",
+          "source_hash": "71566999901afa1e52429b1285b074fe4b14df27b868d5707f4f99126a1c97cc",
+          "source_id": "pack-r21-authored",
+          "source_path": "plans/2026-07-24-01-foundation-and-evidence.codex-notes.md",
+          "source_revision": "r21-phase01@2026-07-24",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "71566999901afa1e52429b1285b074fe4b14df27b868d5707f4f99126a1c97cc",
+      "output_path": "plans/2026-07-24-01-foundation-and-evidence.codex-notes.md",
+      "routing_artifact_id": "repo/plans",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/plans/2026-07-24-01-foundation-and-evidence.md",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
