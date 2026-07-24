@@ -249,6 +249,19 @@
       "verification_level": "source_verified"
     },
     {
+      "artifact_id": "file/skills/rigorous-data-audit/references/crash-safe-evidence-and-bundles.md",
+      "claim_id": "CLAIM-R21-RDA-PROMOTION-RECOVERY-REFINEMENTS",
+      "evidence_locator": "DayZ-Modding-Knowledge-Pack/packctl/promotion.py:1594-1631,1825-2443; DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:536-587,1043-1649",
+      "license": "MIT",
+      "line_end": 77,
+      "line_start": 49,
+      "observed_at": "2026-07-24",
+      "promotion_artifact_id": "skill/rigorous-data-audit",
+      "source_id": "pack-r21-authored",
+      "source_revision": "r21-phase01@2026-07-24",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/skills/rigorous-data-audit/references/authority-and-loopback.md",
       "claim_id": "CLAIM-R21-RDA-PRODUCTIVE-CLOSURE",
       "evidence_locator": "DayZ_MCP_dev/tools/dayz_mcp/server.py:802-807,915-995; DayZ_MCP_dev/tools/approved-launchers.json:4-13",

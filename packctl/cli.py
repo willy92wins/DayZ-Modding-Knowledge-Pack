@@ -10,7 +10,7 @@ from .builder import build_archive
 from .common import exit_code_for, finding, make_report, write_json
 from .evals import run_eval_case
 from .gate import run_gate
-from .promotion import apply_promotion, check_promotion
+from .promotion import apply_promotion, check_promotion, recover_promotion
 from .validation import validate_repo
 
 
@@ -60,6 +60,7 @@ def _parser() -> argparse.ArgumentParser:
     action = promote.add_mutually_exclusive_group(required=True)
     action.add_argument("--check", action="store_true")
     action.add_argument("--apply", action="store_true")
+    action.add_argument("--recover", action="store_true")
     promote.add_argument("--root", type=Path, default=Path("."))
     promote.add_argument(
         "--promotion-map",
@@ -71,7 +72,8 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("promotions/local-targets.json"),
     )
-    promote.add_argument("--plan", required=True, type=Path)
+    promote.add_argument("--plan", type=Path)
+    promote.add_argument("--transaction-root", type=Path)
     return parser
 
 
@@ -136,6 +138,8 @@ def main(argv: list[str] | None = None) -> int:
             report = run_eval_case(case_path, args.variant, args.out)
             report_path = args.out / "report.json"
         elif args.command == "promote" and args.check:
+            if args.plan is None:
+                parser.error("promote --check requires --plan")
             report = check_promotion(
                 args.root,
                 args.promotion_map,
@@ -144,8 +148,21 @@ def main(argv: list[str] | None = None) -> int:
             )
             report_path = args.plan.with_suffix(".check-report.json")
         elif args.command == "promote" and args.apply:
+            if args.plan is None:
+                parser.error("promote --apply requires --plan")
             report = apply_promotion(args.plan)
             report_path = args.plan.with_suffix(".apply-report.json")
+        elif args.command == "promote" and args.recover:
+            if args.transaction_root is None:
+                parser.error(
+                    "promote --recover requires --transaction-root"
+                )
+            report = recover_promotion(args.transaction_root)
+            sys.stdout.write(
+                json.dumps(report, ensure_ascii=False, sort_keys=True)
+                + "\n"
+            )
+            return exit_code_for(report)
         else:
             parser.error("unsupported command")
             return 2

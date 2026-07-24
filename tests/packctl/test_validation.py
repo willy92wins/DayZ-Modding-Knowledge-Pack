@@ -28,6 +28,21 @@ def codes(findings: list[dict[str, object]]) -> list[str]:
     return [str(finding["code"]) for finding in findings]
 
 
+def test_repository_checkout_contract_is_canonical_lf() -> None:
+    root = Path(__file__).resolve().parents[2]
+    assert (root / ".gitattributes").read_bytes() == b"* text eol=lf\n"
+    source_map = json.loads(
+        (root / "sources/source-map.json").read_text(encoding="utf-8")
+    )
+    crlf_paths = [
+        str(item["output_path"])
+        for item in source_map["artifacts"]
+        if b"\r\n" in (root / str(item["output_path"])).read_bytes()
+    ]
+
+    assert crlf_paths == []
+
+
 def test_source_clean_maps_every_tracked_file_once(repo_factory) -> None:
     root = repo_factory()
 

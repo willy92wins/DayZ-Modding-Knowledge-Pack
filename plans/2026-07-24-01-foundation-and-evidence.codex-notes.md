@@ -2,7 +2,7 @@
 title: "Codex audit — Phase 01 promotion transaction"
 date: 2026-07-24
 reviewer: codex
-status: approved-for-implementation
+status: implemented-awaiting-final-gate
 reviewed_commit: 35bd072dc398b15cb8186129b910b73521f7fcf3
 decision_date: 2026-07-24
 ---
@@ -115,3 +115,70 @@ real** con un subcontrato de crash recovery:
 
 Hasta implementar y verificar este subcontrato, `promote --apply` no debe
 ejecutarse sobre las raíces reales.
+
+## Addendum de implementación y segunda auditoría
+
+**[EXACT] El bloqueante residual anterior está cerrado en código y fixtures.**
+La implementación sustituyó el journal mutable por eventos create-only
+hash-chained, locks del sistema operativo, plan sellado, inicialización atómica,
+durabilidad explícita y recovery determinista
+(`packctl/common.py:51-151`; `packctl/promotion.py:1128-1665,1825-2443`;
+`tests/packctl/test_promotion.py:1043-1649`).
+
+Durante la segunda auditoría se localizaron y corrigieron nueve fallos
+adicionales:
+
+1. **[EXACT] Corrupción lógica de snapshots de fichero.** El digest incluía el
+   basename de la fuente, pero el target vault se llama con el commit. Los
+   mismos bytes producían digests distintos. El digest de un fichero ahora es
+   su SHA-256 binario (`packctl/common.py:307-314`;
+   `tests/packctl/test_promotion.py:536-587`).
+2. **[EXACT] Degradación tras promociones sucesivas.** El scanner terminal
+   exigía que el target actual siguiera en el POST de cada transacción
+   histórica, bloqueando una tercera generación legítima. Ahora valida cadena,
+   semántica y recibo históricos, mientras el estado físico actual se adjudica
+   solo para la transacción que se recupera
+   (`packctl/promotion.py:1986-2075`;
+   `tests/packctl/test_promotion.py:1431-1473`).
+3. **[EXACT] Retry envenenado tras `ABORT`.** Un ID derivado solo del plan
+   volvía a seleccionar una transacción terminal. Cada intento incorpora
+   entropía del sistema y conserva el contrato sellado
+   (`packctl/promotion.py:760-778`;
+   `tests/packctl/test_promotion.py:1476-1497`).
+4. **[EXACT] Escritura dentro de evidencia no confiable.** El CLI intentaba
+   dejar `recover-report.json` en una transacción corrupta. Recovery ahora
+   devuelve el informe por stdout sin mutar esa raíz
+   (`packctl/cli.py:155-160`;
+   `tests/packctl/test_promotion.py:1500-1531`).
+5. **[EXACT] Ventana antes de `PENDING`.** Una terminación durante la creación
+   de `plan.json` podía dejar una transacción visible pero inválida. La
+   inicialización se materializa en un directorio oculto y se publica mediante
+   rename durable solo tras sellar plan y primer evento
+   (`packctl/promotion.py:1594-1631`;
+   `tests/packctl/test_promotion.py:1534-1570`).
+6. **[EXACT] TOCTOU de contrato tras preflight.** Apply no repetía la
+   validación del contrato sellado después de adquirir locks. Ahora lo hace
+   antes de publicar la transacción
+   (`packctl/promotion.py:2195-2238`;
+   `tests/packctl/test_promotion.py:1573-1609`).
+7. **[EXACT] Riesgo destructivo entre backup y old-move.** Una mutación externa
+   podía moverse a `.old` y ser eliminada como si fuera PRE. Un CAS adicional
+   detiene la operación y preserva el digest ajeno
+   (`packctl/promotion.py:2301-2347`;
+   `tests/packctl/test_promotion.py:1612-1649`).
+8. **[EXACT] Pérdida de semántica de enlaces anidados.** Copiar un symlink o
+   junction dentro de un árbol podía restaurarlo como contenido materializado.
+   Payloads y sidecars que los contienen ahora fallan cerrados
+   (`packctl/promotion.py:878-892,1019-1028,1679-1687`).
+9. **[EXACT] Degradación de reproducibilidad entre checkouts.** Con
+   `core.autocrlf=true` y sin política versionada, un clon limpio del commit
+   validado produjo 66 `SOURCE-HASH-MISMATCH`. El usuario aprobó fijar LF,
+   registrar `.gitattributes` como artefacto gobernado y añadir una fixture que
+   rechaza cualquier CRLF versionado
+   (`.gitattributes:1`; `tests/packctl/test_validation.py:31-43`).
+
+La ejecución intermedia posterior a estas correcciones fue
+`python -m pytest -q`: **271 passed, 13 skipped**. Este resultado demuestra el
+contrato offline en el árbol de trabajo, pero no autoriza por sí solo la
+promoción real: aún faltan el gate completo desde commit limpio, validator,
+14/14 skills, 12 variantes de eval y build reproducible por duplicado.

@@ -252,6 +252,13 @@ hashearse a sí mismo: es el único artefacto permitido con
 inventario que lo generan, nunca a sus propios bytes. Paths son relativos
 POSIX, sin drive, raíz, `..`, NUL ni backslash.
 
+**[EXACT]** Todos los archivos versionados son texto en Fase 01 y
+`.gitattributes` fija `* text eol=lf`. Los SHA-256 de output se calculan sobre
+esos bytes LF, de modo que un checkout limpio produce los mismos hashes aunque
+la configuración global del host use `core.autocrlf=true`
+(`.gitattributes:1`; `tests/packctl/test_validation.py:31-43`). Añadir formatos
+binarios en fases posteriores exige declararlos `-text` antes de versionarlos.
+
 Todo archivo seguido por Git aparece una vez en `artifacts`. Solo
 `distribution_role=payload` entra en la allowlist. Un `generated_artifact` no
 puede existir como archivo seguido por Git.
@@ -348,7 +355,7 @@ El grader falla si una assertion aprobada no referencia evidencia existente.
 
 ### 7. Promotion map y transacción v1
 
-**[DESIGN]** `promotions/promotion-map.json` contiene rutas, no estado de una
+**[EXACT]** `promotions/promotion-map.json` contiene rutas, no estado de una
 ejecución. Cada entrada fija `artifact_id`, `repo_path`, `artifact_kind`,
 `applicability`, `vault_targets[]`, `skill_target_ids[]` y, cuando no aplica,
 `not_applicable_reason`. `domain_invariant` exige ambos IDs de skills;
@@ -370,27 +377,41 @@ staging y backup. Ningún target descubierto automáticamente es escribible.
 6. calcula `before_digest` y `after_digest`;
 7. emite plan local con `transaction_id`, commit, digests y operaciones.
 
-Tree digest = SHA-256 de concatenar, por cada archivo ordenado,
-`relative_path UTF-8`, byte NUL, SHA-256 lowercase del archivo y LF. Un target
-ausente usa el sentinel `absent`.
+Para árboles, tree digest = SHA-256 de concatenar, por cada archivo ordenado,
+`relative_path UTF-8`, byte NUL, SHA-256 lowercase del archivo y LF. Para un
+artefacto `file`, digest = SHA-256 de sus bytes, independiente del basename del
+snapshot. Un target ausente usa el sentinel `absent`
+(`packctl/common.py:307-323`).
 
 `promote --apply --plan <local-plan>`:
 
-1. adquiere locks exclusivos por root físico;
-2. revalida commit, repo limpio, routing, source digests y todos los
-   `before_digest` (compare-and-swap);
-3. crea staging en el mismo volumen, valida el árbol completo y su hash;
-4. crea backup, verifica que coincide con `before_digest`;
-5. reemplaza una vez por destino físico, preservando junctions externos;
-6. verifica readback por operación física y por cada ID lógico;
-7. escribe snapshot vault inmutable
+1. adquiere locks exclusivos del sistema operativo por root físico, en orden
+   canónico;
+2. vuelve a validar bajo lock plan sellado, contratos, commit, repo limpio,
+   routing, aliases, source digests y todos los `before_digest`;
+3. publica atómicamente una transacción que ya contiene `plan.json` y
+   `PENDING` durables;
+4. crea staging en el mismo volumen, valida el árbol completo y registra
+   `STAGE_READY`;
+5. crea backup durable, verifica `before_digest`, repite CAS y registra
+   `BACKUP_READY`;
+6. mueve PRE a `.old`, publica staging, verifica cada destino físico y registra
+   `TARGET_PUBLISHED`;
+7. verifica readback por operación física y por cada ID lógico;
+8. escribe snapshot vault inmutable
    `{artifact_id}/{source_commit}` sin tocar notas privadas;
-8. publica el recibo solo después de todos los readbacks.
+9. registra `POST_VERIFIED`, vuelve a comprobar todos los POST y aliases,
+   sella `COMMIT` con el hash exacto del recibo y publica ese recibo
+   create-only.
 
-Ante fallo, revierte en orden inverso y verifica los hashes originales. Si el
-rollback falla, conserva lock/journal/backup, devuelve exit `2` y exige
-intervención. Nunca declara éxito parcial. Un plan cuyo target ya coincide es
-idempotente: hace readback, no replace.
+Ante excepción capturable antes de `COMMIT`, revierte en orden inverso, verifica
+los hashes originales y solo entonces registra `ABORT`. Ante terminación del
+proceso, `promote --recover` continúa la misma adjudicación: sin `COMMIT`
+restaura todos los PRE; con `COMMIT` exige todos los POST y solo completa el
+recibo sellado. Un digest ajeno a PRE/POST, una cadena inválida o un rollback
+incompleto devuelve exit `2`, conserva la evidencia y exige intervención.
+Nunca declara éxito parcial. Un plan cuyo target ya coincide es idempotente:
+hace readback, no replace (`packctl/promotion.py:1825-2014,2078-2443`).
 
 El recibo versionado contiene schema, transaction, source commit, artifact IDs,
 target IDs lógicos, aliases físicos opacos, before/after digests, verdict y
@@ -399,7 +420,8 @@ automáticamente en esta fase.
 
 ## CLI pública
 
-Todos los siguientes símbolos son **[DESIGN]** y quedan congelados para Fase 01.
+Todos los siguientes símbolos son **[EXACT]** y quedan congelados para Fase 01
+(`packctl/cli.py:17-76,101-170`).
 Los valores entre `<...>` son metasyntaxis de argumento, no placeholders de
 diseño pendientes:
 
@@ -473,11 +495,12 @@ Ningún consumidor depende de una API DayZ sin verificar.
 
 ## Crash-recovery / intervención
 
-Esta feature toca copias persistentes de skills y snapshots de Obsidian. Antes de
-Task 8 se ejecutará `rigorous-data-audit` sobre CAS, backup, rollback, idempotencia
-y recibos. El operador nunca borra backups automáticamente. Si existe journal
-incompleto, lock no adjudicado o rollback fallido, `apply` se bloquea con exit
-`2` hasta recuperar/verificar o autorizar una operación separada.
+Esta feature toca copias persistentes de skills y snapshots de Obsidian. Antes
+de Task 8 se ejecutó `rigorous-data-audit` sobre CAS, backup, rollback,
+idempotencia, termination injection y recibos. El operador nunca borra backups
+automáticamente. Si existe journal incompleto, lock vivo, evidencia no
+adjudicable o rollback fallido, `apply` se bloquea con exit `2` hasta ejecutar
+recovery o intervenir fuera de la herramienta.
 
 Amendment aprobado el 2026-07-24: la operación separada es `promote --recover`.
 Usa journal append-only encadenado, locks del sistema operativo, fsync/rename
@@ -487,7 +510,8 @@ durable y decide únicamente PRE (`ABORT`) antes de `COMMIT` o POST después de
 
 ## Open questions / NEEDS CLARIFICATION
 
-Ninguna para empezar Tasks 1–7. Antes de Task 8 debe resolverse explícitamente
-si el destino físico externo de `rigorous-data-audit` entra en
-`allowed_physical_roots`; sin esa decisión, la promoción de esa skill queda
-fail-closed y la fase no puede cerrarse.
+Ninguna. El usuario aprobó incluir el destino físico externo de
+`rigorous-data-audit` en `allowed_physical_roots` y usar
+`%LOCALAPPDATA%\DayZ-Modding-Knowledge-Pack\promotion-backups`. Las rutas
+expandidas permanecen exclusivamente en `promotions/local-targets.json`,
+ignorado por Git.

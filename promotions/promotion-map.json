@@ -307,6 +307,17 @@
     },
     {
       "applicability": "governance",
+      "artifact_id": "root/gitattributes",
+      "artifact_kind": "file",
+      "not_applicable_reason": "Git line-ending policy makes repository hashes reproducible and is not skill content.",
+      "repo_path": ".gitattributes",
+      "skill_target_ids": [],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "governance",
       "artifact_id": "root/gitignore",
       "artifact_kind": "file",
       "not_applicable_reason": "Git exclusion policy is repository governance, not skill content.",

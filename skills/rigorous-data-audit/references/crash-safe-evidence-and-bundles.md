@@ -44,9 +44,44 @@ Require:
 If the product contract fixes canonical launch paths, generation directories
 are staging/archive only; they must not silently replace the active arguments.
 
+## Crash-recovery audit refinements
+
+[EXACT][CLAIM-R21-RDA-PROMOTION-RECOVERY-REFINEMENTS] For a recoverable
+multi-root publisher, also audit these less-obvious boundaries:
+
+1. Publish the transaction root only after its sealed plan and first durable
+   `PENDING` event exist. A visible directory without authoritative evidence is
+   not a recoverable transaction.
+2. Define digest identity per artifact kind. A standalone file digest must
+   represent its bytes, not a source basename that can legitimately change at
+   the destination.
+3. Separate historical terminal validation from live-target adjudication.
+   Verify every old chain and receipt, but do not require current targets to
+   remain forever at an older committed generation.
+4. Give each retry a distinct attempt/transaction ID. Reusing the same ID after
+   a clean `ABORT` turns valid terminal evidence into a permanent retry poison.
+5. Revalidate sealed contracts and logical/physical bindings after acquiring
+   all locks. Repeat target CAS before backup, before moving the target, and
+   immediately before `COMMIT`.
+6. Treat unknown target content as foreign evidence. Never delete, archive or
+   restore over a digest that is neither the sealed PRE nor POST.
+7. Do not write a diagnostic report inside a transaction root until its path,
+   sealed plan and event chain are trusted.
+8. Reject or explicitly preserve nested symlink/junction semantics in payload,
+   backup and recovery sidecars; materializing a link target is not equivalent
+   to restoring the link.
+
+These checks need fixtures for successive generations, retry after `ABORT`,
+failure during transaction initialization, contract mutation while waiting for
+locks, mutation after backup, renamed standalone-file snapshots and invalid
+transaction roots.
+
 ## Evidence
 
 - `Utopia_PC_Suite/plans/2026-07-22-phase-0a-foundation-plan.md:262-289,375-378`
 - `Utopia_PC_Suite/plans/2026-07-22-phase-0b-dedicated-persistence-plan.md:383-439`
+- `DayZ-Modding-Knowledge-Pack/packctl/promotion.py:1594-1631,1825-2443`
+- `DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:536-587,1043-1649`
 
-Verification level: mechanism/source contract cross-check, 2026-07-22.
+Verification level: mechanism/source contract cross-check plus offline
+termination/recovery tests, 2026-07-24.

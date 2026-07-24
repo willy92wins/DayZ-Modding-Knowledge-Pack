@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import subprocess
+import uuid
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -35,6 +36,132 @@ def write_json(path: Path, value: object, *, compact: bool = False) -> None:
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_bytes(data)
     os.replace(temporary, path)
+
+
+def sync_directory(path: Path) -> None:
+    if os.name == "nt":
+        return
+    descriptor = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def durable_rename(
+    source: Path,
+    destination: Path,
+    *,
+    replace: bool,
+) -> None:
+    source = Path(source)
+    destination = Path(destination)
+    if os.name == "nt":
+        import ctypes
+
+        move_file_ex = ctypes.WinDLL(
+            "kernel32",
+            use_last_error=True,
+        ).MoveFileExW
+        move_file_ex.argtypes = [
+            ctypes.c_wchar_p,
+            ctypes.c_wchar_p,
+            ctypes.c_uint32,
+        ]
+        move_file_ex.restype = ctypes.c_int
+        flags = 0x00000008
+        if replace:
+            flags |= 0x00000001
+        if not move_file_ex(str(source), str(destination), flags):
+            error = ctypes.get_last_error()
+            raise OSError(
+                error,
+                ctypes.FormatError(error),
+                str(destination),
+            )
+        return
+    if replace:
+        os.replace(source, destination)
+    else:
+        if source.is_file():
+            os.link(source, destination, follow_symlinks=False)
+            source.unlink()
+        else:
+            if destination.exists() or destination.is_symlink():
+                raise FileExistsError(str(destination))
+            os.rename(source, destination)
+    sync_directory(destination.parent)
+
+
+def durable_write_bytes(
+    path: Path,
+    data: bytes,
+    *,
+    create_only: bool,
+) -> None:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(
+        f".{path.name}.packctl-tmp-{uuid.uuid4().hex}"
+    )
+    descriptor = os.open(
+        temporary,
+        os.O_WRONLY
+        | os.O_CREAT
+        | os.O_EXCL
+        | getattr(os, "O_BINARY", 0),
+        0o600,
+    )
+    try:
+        view = memoryview(data)
+        written = 0
+        while written < len(view):
+            written += os.write(descriptor, view[written:])
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+    try:
+        if temporary.read_bytes() != data:
+            raise OSError("durable write readback mismatch")
+        durable_rename(
+            temporary,
+            path,
+            replace=not create_only,
+        )
+        if path.read_bytes() != data:
+            raise OSError("durable publish readback mismatch")
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def durable_write_json(
+    path: Path,
+    value: object,
+    *,
+    create_only: bool,
+) -> bytes:
+    data = canonical_json_bytes(value)
+    durable_write_bytes(path, data, create_only=create_only)
+    return data
+
+
+def sync_tree(path: Path) -> None:
+    path = Path(path)
+    mode = "r+b" if os.name == "nt" else "rb"
+    if path.is_file():
+        with path.open(mode) as handle:
+            os.fsync(handle.fileno())
+        return
+    directories = [path]
+    for child in sorted(path.rglob("*")):
+        if child.is_file():
+            with child.open(mode) as handle:
+                os.fsync(handle.fileno())
+        elif child.is_dir():
+            directories.append(child)
+    if os.name != "nt":
+        for directory in reversed(directories):
+            sync_directory(directory)
 
 
 def load_json(path: Path) -> Any:
@@ -181,13 +308,12 @@ def tree_digest(path: Path) -> str:
     if not path.exists():
         return "absent"
     if path.is_file():
-        entries = [(path.name, sha256_file(path))]
-    else:
-        entries = [
-            (item.relative_to(path).as_posix(), sha256_file(item))
-            for item in sorted(path.rglob("*"))
-            if item.is_file()
-        ]
+        return sha256_file(path)
+    entries = [
+        (item.relative_to(path).as_posix(), sha256_file(item))
+        for item in sorted(path.rglob("*"))
+        if item.is_file()
+    ]
     digest = hashlib.sha256()
     for relative, file_hash in entries:
         digest.update(relative.encode("utf-8"))

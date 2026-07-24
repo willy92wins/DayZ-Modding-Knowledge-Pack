@@ -1,7 +1,7 @@
 ---
 title: "Phase 01b — Crash-safe multi-root promotion"
 date: 2026-07-24
-status: approved
+status: implemented-awaiting-final-gate
 approved_by: user
 implements:
   - SC-015
@@ -27,7 +27,7 @@ solo vive en `promotions/local-targets.json`, ignorado por Git.
 
 ### Journal
 
-**[DESIGN]** Cada transacción contiene un snapshot sellado de su plan y un
+**[EXACT]** Cada transacción contiene un snapshot sellado de su plan y un
 directorio de eventos JSON create-only. Los eventos tienen secuencia contigua,
 `transaction_id`, `event_type`, `previous_event_hash`, payload y `event_hash`.
 La cadena completa se revalida antes de aplicar, recuperar o añadir un evento.
@@ -49,7 +49,7 @@ No se añade ningún evento después de `COMMIT` o `ABORT`.
 
 ### Locks
 
-**[DESIGN]** Cada root físico usa un lock exclusivo no bloqueante mantenido por
+**[EXACT]** Cada root físico usa un lock exclusivo no bloqueante mantenido por
 el sistema operativo:
 
 - Windows: `msvcrt.locking(fd, LK_NBLCK, 1)`;
@@ -61,7 +61,7 @@ los roots en orden canónico y repiten CAS/readback bajo lock.
 
 ### Durabilidad
 
-**[DESIGN]** Todo evento, plan local, marker y recibo usa
+**[EXACT]** Todo evento, plan local, marker y recibo usa
 write→flush→`os.fsync`→readback→rename durable. En POSIX se hace fsync del
 directorio padre; en Windows la rename usa
 `MoveFileExW(..., MOVEFILE_WRITE_THROUGH)` sin permitir copy cross-volume.
@@ -82,12 +82,12 @@ Evidencia de API:
 
 ## Interfaces
 
-- **[DESIGN]** CLI:
+- **[EXACT]** CLI:
   `python -m packctl promote --recover --transaction-root <local-path>`.
-- **[DESIGN]** Python:
+- **[EXACT]** Python:
   `recover_promotion(transaction_root: Path, *, terminate_at: str | None = None)
   -> dict[str, object]`.
-- **[DESIGN]** El fault de muerte solo se activa en tests mediante
+- **[EXACT]** El fault de muerte solo se activa en tests mediante
   `PACKCTL_TERMINATE_AT` o `PACKCTL_RECOVER_TERMINATE_AT`; ejecuta
   `os._exit(97)` y no pasa por `except/finally`.
 
@@ -154,3 +154,40 @@ Recovery/rollback:
 - Lock basado solo en existencia/PID.
 - Test de muerte que use excepción capturable en vez de terminar el proceso.
 - Cualquier promoción real antes del gate completo desde commit limpio.
+
+## Registro de implementación Codex
+
+**[EXACT]** Implementado el 2026-07-24 en
+`packctl/common.py:51-151`, `packctl/promotion.py:861-2443` y
+`packctl/cli.py:63-76,155-160`. La auditoría se ejecutó localmente, sin Claude ni subagentes,
+por decisión expresa del usuario.
+
+Además del contrato inicial, la implementación cierra estos casos que el
+primer diseño no hacía explícitos:
+
+1. la raíz de transacción solo se publica después de que `plan.json` y
+   `PENDING` existan y sean durables;
+2. el digest de un artefacto `file` representa sus bytes y no el nombre que
+   recibe el snapshot;
+3. plan, contratos, aliases y CAS se vuelven a validar bajo los locks;
+4. CAS se repite antes del backup, antes de mover el target y antes de
+   `COMMIT`, preservando una mutación externa como evidencia ajena;
+5. un `ABORT` limpio admite un nuevo intento con otro `transaction_id`;
+6. el escaneo histórico valida cadena y recibo terminal, pero no exige que un
+   target siga eternamente en el estado de una promoción ya superada;
+7. recovery no escribe diagnósticos dentro de una transacción cuya evidencia
+   todavía no ha validado;
+8. symlinks o junctions anidados en payloads, backups o residuos se rechazan
+   para no convertir un enlace en una copia al restaurar.
+
+La matriz ejecutable está en
+`tests/packctl/test_promotion.py:536-587,1043-1649`. Cubre las fronteras de
+muerte forward/recovery, corrupción de evidencia, targets y recibos ajenos,
+locks vivos y huérfanos, tres generaciones consecutivas, retry tras `ABORT`,
+inicialización atómica y carreras bajo lock.
+
+Verificación intermedia antes del gate final:
+
+- `python -m pytest -q`: 271 passed, 13 skipped;
+- los 13 skips son fixtures condicionadas por capacidades de enlaces del host;
+- ninguna promoción sobre roots reales se ha ejecutado todavía.

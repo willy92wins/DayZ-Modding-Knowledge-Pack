@@ -43,6 +43,7 @@ fases de contenido puedan trabajar sin crear más drift.
 - Crear: `promotions/local-targets.example.json`
 - Crear local y excluir de Git: `promotions/local-targets.json`
 - Crear: `promotions/receipts/`
+- Crear: `.gitattributes`
 - Modificar: `.gitignore`, `README.md`, `MANIFEST.txt`
 - Reconciliar: `skills/**`, `knowledge/**`, `tools/py3d/**`
 - Crear: `specs/checklists/2026-07-24-foundation-and-evidence.md`
@@ -131,6 +132,9 @@ fases de contenido puedan trabajar sin crear más drift.
   `2=uso/configuración/error interno`.
 - [ ] Builder por allowlist; orden, timestamps, permisos y encoding
   normalizados.
+- [ ] Fijar LF mediante `.gitattributes`, recalcular hashes sobre bytes
+  canónicos y demostrar validator exit 0 desde un clon limpio aun con
+  `core.autocrlf=true`.
 - [ ] Mutaciones dirigidas: private path, frontmatter largo, source unmapped,
   link roto, licencia ausente y archivo extra.
 - [ ] Gate: dos builds del mismo commit tienen SHA-256 idéntico.

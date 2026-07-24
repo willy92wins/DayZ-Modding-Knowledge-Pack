@@ -6,10 +6,12 @@ import re
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Callable
 
 from .common import (
     canonical_json_bytes,
+    durable_rename,
+    durable_write_bytes,
+    durable_write_json,
     finding,
     git_commit,
     git_is_dirty,
@@ -21,6 +23,8 @@ from .common import (
     sha256_bytes,
     sha256_file,
     sort_findings,
+    sync_directory,
+    sync_tree,
     tree_digest,
     write_json,
 )
@@ -87,8 +91,11 @@ def _projection_entries(
 
 
 def _projection_digest(source: Path, kind: str, source_files: object) -> str:
+    entries = _projection_entries(source, kind, source_files)
+    if kind == "file":
+        return entries[0][1]
     material = bytearray()
-    for relative, file_hash in _projection_entries(source, kind, source_files):
+    for relative, file_hash in entries:
         material.extend(relative.encode("utf-8"))
         material.extend(b"\0")
         material.extend(file_hash.encode("ascii"))
@@ -480,6 +487,19 @@ def _destination_findings(
                 evidence=artifact_id,
             )
         ]
+    if _contains_links(destination):
+        return [
+            finding(
+                "PROMOTION-TARGET-LINKED",
+                path=artifact_id,
+                line=0,
+                message=(
+                    "A routed destination contains a symlink or junction "
+                    "that cannot be restored by digest alone."
+                ),
+                evidence=artifact_id,
+            )
+        ]
     return []
 
 
@@ -752,7 +772,7 @@ def check_promotion(
         ],
     }
     transaction_id = sha256_bytes(
-        canonical_json_bytes(transaction_material)
+        canonical_json_bytes(transaction_material) + os.urandom(32)
     )[:24]
     receipt_path = root / "promotions" / "receipts" / f"{transaction_id}.json"
     plan = {
@@ -810,6 +830,8 @@ def _copy_artifact(
     else:
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
+    sync_tree(destination)
+    sync_directory(destination.parent)
 
 
 def _remove_artifact(path: Path) -> None:
@@ -821,14 +843,55 @@ def _remove_artifact(path: Path) -> None:
         path.unlink()
 
 
-def _fault(fault_at: str | None, boundary: str, index: int) -> None:
-    if fault_at == f"{boundary}:{index}":
-        raise RuntimeError(f"fault injection at {boundary}:{index}")
+def _fault(
+    fault_at: str | None,
+    boundary: str,
+    index: int | None = None,
+    *,
+    aliases: tuple[str, ...] = (),
+) -> None:
+    value = boundary if index is None else f"{boundary}:{index}"
+    candidates = {value}
+    for alias in aliases:
+        candidates.add(alias if index is None else f"{alias}:{index}")
+    if fault_at in candidates:
+        raise RuntimeError(f"fault injection at {value}")
+
+
+def _terminate(
+    boundary: str,
+    index: int | None = None,
+    *,
+    recovery: bool,
+    explicit: str | None = None,
+) -> None:
+    value = boundary if index is None else f"{boundary}:{index}"
+    environment_name = (
+        "PACKCTL_RECOVER_TERMINATE_AT"
+        if recovery
+        else "PACKCTL_TERMINATE_AT"
+    )
+    if explicit == value or os.environ.get(environment_name) == value:
+        os._exit(97)
 
 
 def _is_junction(path: Path) -> bool:
     checker = getattr(path, "is_junction", None)
     return bool(checker()) if checker is not None else False
+
+
+def _contains_links(path: Path) -> bool:
+    if path.is_symlink() or _is_junction(path):
+        return True
+    if not path.is_dir():
+        return False
+    for current, directories, files in os.walk(path, followlinks=False):
+        current_path = Path(current)
+        for name in [*directories, *files]:
+            candidate = current_path / name
+            if candidate.is_symlink() or _is_junction(candidate):
+                return True
+    return False
 
 
 def _validate_plan_paths(plan: dict[str, object]) -> list[dict[str, object]]:
@@ -953,6 +1016,19 @@ def _promotion_state_findings(
                     evidence=str(operation["physical_alias"]),
                 )
             )
+        elif _contains_links(target):
+            findings.append(
+                finding(
+                    "PROMOTION-TARGET-LINKED",
+                    path=str(operation["artifact_id"]),
+                    line=0,
+                    message=(
+                        "A sealed target contains a symlink or junction "
+                        "that cannot be restored by digest alone."
+                    ),
+                    evidence=str(operation["physical_alias"]),
+                )
+            )
         for target_id, logical_value in operation["logical_target_paths"].items():
             logical_target = Path(str(logical_value)).resolve(strict=False)
             if os.path.normcase(str(logical_target)) != os.path.normcase(str(target)):
@@ -1002,35 +1078,945 @@ def _promotion_state_findings(
     return sort_findings(findings)
 
 
-def _recovery_findings(
-    root: Path,
-    backup_root: Path,
-    lock_roots: list[Path],
-    transaction_id: str,
-) -> list[dict[str, object]]:
-    findings: list[dict[str, object]] = []
-    for index, lock_root in enumerate(lock_roots):
-        lock_candidates = {lock_root / ".packctl.lock"}
-        lock_candidates.update(lock_root.glob(".packctl-*.lock"))
-        for lock_path in sorted(
-            lock_candidates,
-            key=lambda path: os.path.normcase(str(path)),
-        ):
-            if lock_path.exists() or lock_path.is_symlink():
-                findings.append(
-                    finding(
-                        "PROMOTION-LOCK-UNADJUDICATED",
-                        path="allowed_physical_roots",
-                        line=0,
-                        message=(
-                            "A promotion lock already exists and requires "
-                            "operator adjudication."
-                        ),
-                        evidence=f"root-{index + 1}",
-                    )
-                )
-                break
+_PLAN_FIELDS = {
+    "schema_version",
+    "transaction_id",
+    "source_root",
+    "source_commit",
+    "promotion_map_path",
+    "promotion_map_hash",
+    "local_targets_path",
+    "local_targets_hash",
+    "backup_root",
+    "allowed_physical_roots",
+    "forbidden_physical_roots",
+    "receipt_path",
+    "artifact_ids",
+    "target_ids",
+    "operations",
+    "plan_digest",
+}
+_EVENT_FIELDS = {
+    "schema_version",
+    "sequence",
+    "transaction_id",
+    "event_type",
+    "previous_event_hash",
+    "payload",
+    "event_hash",
+}
+_EVENT_TYPES = {
+    "PENDING",
+    "STAGE_READY",
+    "BACKUP_READY",
+    "TARGET_PUBLISHED",
+    "POST_VERIFIED",
+    "PRE_RESTORED",
+    "COMMIT",
+    "ABORT",
+}
+_TERMINAL_EVENTS = {"COMMIT", "ABORT"}
 
+
+class _PromotionIntegrityError(RuntimeError):
+    def __init__(self, code: str, evidence: str) -> None:
+        super().__init__(evidence)
+        self.code = code
+        self.evidence = evidence
+
+
+class _RootLocks:
+    def __init__(self, roots: list[Path]) -> None:
+        self.roots = roots
+        self.descriptors: list[int] = []
+
+    def __enter__(self) -> "_RootLocks":
+        try:
+            for root in self.roots:
+                lock_path = root / ".packctl.lock"
+                descriptor = os.open(
+                    lock_path,
+                    os.O_RDWR | os.O_CREAT,
+                    0o600,
+                )
+                if os.fstat(descriptor).st_size == 0:
+                    os.write(descriptor, b"\0")
+                    os.fsync(descriptor)
+                os.lseek(descriptor, 0, os.SEEK_SET)
+                try:
+                    if os.name == "nt":
+                        import msvcrt
+
+                        msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
+                    else:
+                        import fcntl
+
+                        fcntl.flock(
+                            descriptor,
+                            fcntl.LOCK_EX | fcntl.LOCK_NB,
+                        )
+                except OSError:
+                    os.close(descriptor)
+                    raise _PromotionIntegrityError(
+                        "PROMOTION-LOCK-ACTIVE",
+                        os.path.normcase(str(root)),
+                    )
+                self.descriptors.append(descriptor)
+        except Exception:
+            self._release()
+            raise
+        return self
+
+    def _release(self) -> None:
+        for descriptor in reversed(self.descriptors):
+            try:
+                os.lseek(descriptor, 0, os.SEEK_SET)
+                if os.name == "nt":
+                    import msvcrt
+
+                    msvcrt.locking(descriptor, msvcrt.LK_UNLCK, 1)
+                else:
+                    import fcntl
+
+                    fcntl.flock(descriptor, fcntl.LOCK_UN)
+            except OSError:
+                pass
+            finally:
+                os.close(descriptor)
+        self.descriptors.clear()
+
+    def __exit__(self, *_: object) -> None:
+        self._release()
+
+
+def _integrity_report(
+    command: str,
+    root: Path,
+    error: _PromotionIntegrityError,
+    *,
+    transaction_root: Path | None = None,
+) -> dict[str, object]:
+    artifacts: dict[str, object] = {
+        "requires_intervention": True,
+        "exit_code": 2,
+    }
+    if transaction_root is not None:
+        artifacts["transaction_root"] = str(transaction_root)
+    return make_report(
+        command,
+        root,
+        [
+            finding(
+                error.code,
+                path="",
+                line=0,
+                message="Promotion evidence or state failed closed.",
+                evidence=error.evidence,
+            )
+        ],
+        artifacts=artifacts,
+    )
+
+
+def _lock_roots_for_plan(plan: dict[str, object]) -> list[Path]:
+    allowed_roots = [
+        Path(str(item)).resolve(strict=True)
+        for item in plan["allowed_physical_roots"]
+    ]
+    protected = [
+        Path(str(operation["target_path"])).resolve(strict=False)
+        for operation in plan["operations"]
+    ]
+    protected.append(Path(str(plan["backup_root"])).resolve(strict=True))
+    selected: dict[str, Path] = {}
+    for path in protected:
+        candidates = [
+            allowed
+            for allowed in allowed_roots
+            if is_within(path, allowed)
+        ]
+        if not candidates:
+            raise _PromotionIntegrityError(
+                "PROMOTION-TARGET-ESCAPE",
+                "lock-root-unresolved",
+            )
+        root = max(candidates, key=lambda candidate: len(candidate.parts))
+        selected[os.path.normcase(str(root))] = root
+    return sorted(
+        selected.values(),
+        key=lambda path: os.path.normcase(str(path)),
+    )
+
+
+def _read_events(transaction_root: Path) -> list[dict[str, object]]:
+    events_root = transaction_root / "events"
+    if (
+        not events_root.is_dir()
+        or events_root.is_symlink()
+        or _is_junction(events_root)
+    ):
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "events-root-missing-or-unsafe",
+        )
+    paths = sorted(events_root.glob("*.json"), key=lambda path: path.name)
+    if not paths:
+        return []
+    events: list[dict[str, object]] = []
+    previous_hash = "0" * 64
+    terminal_seen = False
+    for sequence, path in enumerate(paths):
+        if (
+            path.name != f"{sequence:08d}.json"
+            or path.is_symlink()
+            or _is_junction(path)
+        ):
+            raise _PromotionIntegrityError(
+                "PROMOTION-JOURNAL-INVALID",
+                "event-sequence-invalid",
+            )
+        try:
+            event = load_json(path)
+        except (OSError, UnicodeError, json.JSONDecodeError) as error:
+            raise _PromotionIntegrityError(
+                "PROMOTION-JOURNAL-INVALID",
+                f"event-unreadable:{type(error).__name__}",
+            ) from error
+        if not isinstance(event, dict) or set(event) != _EVENT_FIELDS:
+            raise _PromotionIntegrityError(
+                "PROMOTION-JOURNAL-INVALID",
+                "event-schema-invalid",
+            )
+        if (
+            event.get("schema_version") != 1
+            or event.get("sequence") != sequence
+            or event.get("transaction_id") != transaction_root.name
+            or event.get("event_type") not in _EVENT_TYPES
+            or event.get("previous_event_hash") != previous_hash
+            or not isinstance(event.get("payload"), dict)
+            or terminal_seen
+        ):
+            raise _PromotionIntegrityError(
+                "PROMOTION-JOURNAL-INVALID",
+                "event-contract-invalid",
+            )
+        material = dict(event)
+        event_hash = material.pop("event_hash")
+        if (
+            not isinstance(event_hash, str)
+            or event_hash != sha256_bytes(canonical_json_bytes(material))
+        ):
+            raise _PromotionIntegrityError(
+                "PROMOTION-JOURNAL-INVALID",
+                "event-hash-mismatch",
+            )
+        if sequence == 0 and event["event_type"] != "PENDING":
+            raise _PromotionIntegrityError(
+                "PROMOTION-JOURNAL-INVALID",
+                "first-event-not-pending",
+            )
+        if sequence > 0 and event["event_type"] == "PENDING":
+            raise _PromotionIntegrityError(
+                "PROMOTION-JOURNAL-INVALID",
+                "duplicate-pending",
+            )
+        terminal_seen = event["event_type"] in _TERMINAL_EVENTS
+        previous_hash = event_hash
+        events.append(event)
+    return events
+
+
+def _append_event(
+    transaction_root: Path,
+    event_type: str,
+    payload: dict[str, object],
+) -> dict[str, object]:
+    if event_type not in _EVENT_TYPES:
+        raise ValueError(f"unsupported promotion event: {event_type}")
+    events = _read_events(transaction_root)
+    if events and events[-1]["event_type"] in _TERMINAL_EVENTS:
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "event-after-terminal",
+        )
+    sequence = len(events)
+    previous_hash = (
+        str(events[-1]["event_hash"]) if events else "0" * 64
+    )
+    material: dict[str, object] = {
+        "schema_version": 1,
+        "sequence": sequence,
+        "transaction_id": transaction_root.name,
+        "event_type": event_type,
+        "previous_event_hash": previous_hash,
+        "payload": payload,
+    }
+    event = dict(material)
+    event["event_hash"] = sha256_bytes(canonical_json_bytes(material))
+    try:
+        plan_value = load_json(transaction_root / "plan.json")
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            f"sealed-plan-unreadable:{type(error).__name__}",
+        ) from error
+    if not isinstance(plan_value, dict):
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "sealed-plan-invalid",
+        )
+    _validate_event_semantics(plan_value, [*events, event])
+    durable_write_json(
+        transaction_root / "events" / f"{sequence:08d}.json",
+        event,
+        create_only=True,
+    )
+    return event
+
+
+def _validate_event_semantics(
+    plan: dict[str, object],
+    events: list[dict[str, object]],
+) -> None:
+    operations = {
+        str(operation["physical_alias"]): operation
+        for operation in plan["operations"]
+    }
+    changed = {
+        alias
+        for alias, operation in operations.items()
+        if operation["before_digest"] != operation["after_digest"]
+    }
+    per_type: dict[str, set[str]] = {
+        "STAGE_READY": set(),
+        "BACKUP_READY": set(),
+        "TARGET_PUBLISHED": set(),
+        "PRE_RESTORED": set(),
+    }
+    singleton_counts = {"POST_VERIFIED": 0, "COMMIT": 0, "ABORT": 0}
+    for event in events[1:]:
+        event_type = str(event["event_type"])
+        payload = event["payload"]
+        if event_type in per_type:
+            alias = payload.get("physical_alias")
+            if (
+                not isinstance(alias, str)
+                or alias not in operations
+                or alias in per_type[event_type]
+            ):
+                raise _PromotionIntegrityError(
+                    "PROMOTION-JOURNAL-INVALID",
+                    f"{event_type.lower()}-alias-invalid",
+                )
+            operation = operations[alias]
+            if event_type == "STAGE_READY":
+                valid = (
+                    alias in changed
+                    and payload.get("after_digest")
+                    == operation["after_digest"]
+                )
+            elif event_type == "BACKUP_READY":
+                valid = (
+                    alias in per_type["STAGE_READY"]
+                    and payload.get("before_digest")
+                    == operation["before_digest"]
+                    and payload.get("existed")
+                    == (operation["before_digest"] != "absent")
+                )
+            elif event_type == "TARGET_PUBLISHED":
+                valid = (
+                    alias in per_type["BACKUP_READY"]
+                    and payload.get("after_digest")
+                    == operation["after_digest"]
+                )
+            else:
+                valid = set(payload) == {"physical_alias"}
+            if not valid:
+                raise _PromotionIntegrityError(
+                    "PROMOTION-JOURNAL-INVALID",
+                    f"{event_type.lower()}-payload-invalid",
+                )
+            per_type[event_type].add(alias)
+        elif event_type in singleton_counts:
+            singleton_counts[event_type] += 1
+            if singleton_counts[event_type] != 1:
+                raise _PromotionIntegrityError(
+                    "PROMOTION-JOURNAL-INVALID",
+                    f"duplicate-{event_type.lower()}",
+                )
+            if event_type == "POST_VERIFIED" and (
+                per_type["TARGET_PUBLISHED"] != changed
+                or per_type["PRE_RESTORED"]
+                or payload.get("operation_count") != len(operations)
+                or payload.get("logical_target_count")
+                != len(plan["target_ids"])
+            ):
+                raise _PromotionIntegrityError(
+                    "PROMOTION-JOURNAL-INVALID",
+                    "post-verified-before-all-targets",
+                )
+            if event_type == "COMMIT" and (
+                singleton_counts["POST_VERIFIED"] != 1
+                or singleton_counts["ABORT"] != 0
+                or per_type["PRE_RESTORED"]
+            ):
+                raise _PromotionIntegrityError(
+                    "PROMOTION-JOURNAL-INVALID",
+                    "commit-without-post-verification",
+                )
+            if event_type == "ABORT" and (
+                per_type["PRE_RESTORED"] != set(operations)
+                or singleton_counts["COMMIT"] != 0
+            ):
+                raise _PromotionIntegrityError(
+                    "PROMOTION-JOURNAL-INVALID",
+                    "abort-without-all-pre-restored",
+                )
+
+
+def _load_transaction(
+    transaction_root: Path,
+) -> tuple[dict[str, object], list[dict[str, object]]]:
+    raw_transaction_root = Path(transaction_root)
+    if raw_transaction_root.is_symlink() or _is_junction(
+        raw_transaction_root
+    ):
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "transaction-root-linked",
+        )
+    transaction_root = raw_transaction_root.resolve(strict=False)
+    if (
+        not re.fullmatch(r"[0-9a-f]{24}", transaction_root.name)
+        or not transaction_root.is_dir()
+        or transaction_root.is_symlink()
+        or _is_junction(transaction_root)
+    ):
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "transaction-root-invalid",
+        )
+    plan_path = transaction_root / "plan.json"
+    if (
+        not plan_path.is_file()
+        or plan_path.is_symlink()
+        or _is_junction(plan_path)
+    ):
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "sealed-plan-missing-or-unsafe",
+        )
+    try:
+        plan = load_json(plan_path)
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            f"sealed-plan-unreadable:{type(error).__name__}",
+        ) from error
+    if (
+        not isinstance(plan, dict)
+        or set(plan) != _PLAN_FIELDS
+        or plan.get("schema_version") != 1
+        or plan.get("transaction_id") != transaction_root.name
+        or _plan_digest(plan) != plan.get("plan_digest")
+    ):
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "sealed-plan-invalid",
+        )
+    backup_root = Path(str(plan["backup_root"])).resolve(strict=True)
+    if transaction_root.parent.resolve(strict=True) != backup_root:
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "transaction-backup-root-mismatch",
+        )
+    source_root = Path(str(plan["source_root"])).resolve(strict=False)
+    sealed_receipt_path = Path(str(plan["receipt_path"]))
+    receipt_path = sealed_receipt_path.resolve(strict=False)
+    expected_receipt = (
+        source_root
+        / "promotions"
+        / "receipts"
+        / f"{transaction_root.name}.json"
+    ).resolve(strict=False)
+    if (
+        os.path.normcase(str(receipt_path))
+        != os.path.normcase(str(expected_receipt))
+        or os.path.normcase(str(receipt_path))
+        != os.path.normcase(str(sealed_receipt_path))
+        or not is_within(receipt_path, source_root)
+    ):
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "receipt-path-invalid",
+        )
+    allowed = [
+        Path(str(item)).resolve(strict=True)
+        for item in plan["allowed_physical_roots"]
+    ]
+    forbidden = [
+        Path(str(item)).resolve(strict=False)
+        for item in plan["forbidden_physical_roots"]
+    ]
+    if (
+        not any(is_within(backup_root, root) for root in allowed)
+        or any(is_within(backup_root, root) for root in forbidden)
+    ):
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "backup-root-outside-contract",
+        )
+    for operation in plan["operations"]:
+        target = Path(str(operation["target_path"])).resolve(strict=False)
+        if (
+            not any(is_within(target, root) for root in allowed)
+            or any(is_within(target, root) for root in forbidden)
+        ):
+            raise _PromotionIntegrityError(
+                "PROMOTION-JOURNAL-INVALID",
+                f"target-outside-contract:{operation['physical_alias']}",
+            )
+    events = _read_events(transaction_root)
+    if not events:
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "pending-event-missing",
+        )
+    if events[0]["payload"].get("plan_digest") != plan["plan_digest"]:
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "pending-plan-digest-mismatch",
+        )
+    _validate_event_semantics(plan, events)
+    return plan, events
+
+
+def _create_transaction(
+    plan: dict[str, object],
+) -> Path:
+    backup_root = Path(str(plan["backup_root"]))
+    transaction_id = str(plan["transaction_id"])
+    transaction_root = backup_root / transaction_id
+    initializing_root = backup_root / f".{transaction_id}.packctl-init"
+    initializing_transaction = initializing_root / transaction_id
+    initializing_root.mkdir(exist_ok=False)
+    try:
+        initializing_transaction.mkdir(exist_ok=False)
+        sync_directory(initializing_root)
+        (initializing_transaction / "events").mkdir(exist_ok=False)
+        sync_directory(initializing_transaction)
+        durable_write_json(
+            initializing_transaction / "plan.json",
+            plan,
+            create_only=True,
+        )
+        _append_event(
+            initializing_transaction,
+            "PENDING",
+            {"plan_digest": plan["plan_digest"]},
+        )
+        durable_rename(
+            initializing_transaction,
+            transaction_root,
+            replace=False,
+        )
+        try:
+            initializing_root.rmdir()
+            sync_directory(backup_root)
+        except OSError:
+            pass
+        return transaction_root
+    except Exception:
+        _remove_artifact(initializing_root)
+        raise
+
+
+def _logical_state_valid(
+    operation: dict[str, object],
+    expected_digest: object,
+) -> bool:
+    target = Path(str(operation["target_path"]))
+    for logical_value in operation["logical_target_paths"].values():
+        logical = Path(str(logical_value))
+        if (
+            os.path.normcase(str(logical.resolve(strict=False)))
+            != os.path.normcase(str(target.resolve(strict=False)))
+            or tree_digest(logical) != expected_digest
+        ):
+            return False
+    return True
+
+
+def _require_logical_bindings(plan: dict[str, object]) -> None:
+    for operation in plan["operations"]:
+        target = Path(str(operation["target_path"]))
+        for target_id, logical_value in operation[
+            "logical_target_paths"
+        ].items():
+            logical = Path(str(logical_value))
+            if (
+                os.path.normcase(str(logical.resolve(strict=False)))
+                != os.path.normcase(str(target.resolve(strict=False)))
+            ):
+                raise _PromotionIntegrityError(
+                    "PROMOTION-LOGICAL-TARGET-CHANGED",
+                    str(target_id),
+                )
+
+
+def _require_physical_bindings(plan: dict[str, object]) -> None:
+    for operation in plan["operations"]:
+        target = Path(str(operation["target_path"]))
+        if os.path.normcase(str(target.resolve(strict=False))) != os.path.normcase(
+            str(target)
+        ):
+            raise _PromotionIntegrityError(
+                "PROMOTION-TARGET-CHANGED",
+                str(operation["physical_alias"]),
+            )
+
+
+def _require_unlinked_targets(plan: dict[str, object]) -> None:
+    for operation in plan["operations"]:
+        target = Path(str(operation["target_path"]))
+        if _contains_links(target):
+            raise _PromotionIntegrityError(
+                "PROMOTION-FOREIGN-TARGET",
+                f"{operation['physical_alias']}:linked-target",
+            )
+
+
+def _require_plan_state(
+    plan: dict[str, object],
+    *,
+    state: str,
+    code: str,
+) -> None:
+    key = "before_digest" if state == "PRE" else "after_digest"
+    for operation in plan["operations"]:
+        target = Path(str(operation["target_path"]))
+        expected = operation[key]
+        if tree_digest(target) != expected or not _logical_state_valid(
+            operation,
+            expected,
+        ):
+            raise _PromotionIntegrityError(
+                code,
+                f"{operation['physical_alias']}:{state}",
+            )
+
+
+def _receipt_value(
+    plan: dict[str, object],
+    completed_at: str,
+) -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "transaction_id": plan["transaction_id"],
+        "source_commit": plan["source_commit"],
+        "artifact_ids": plan["artifact_ids"],
+        "target_ids": plan["target_ids"],
+        "operations": [
+            {
+                "artifact_id": operation["artifact_id"],
+                "physical_alias": operation["physical_alias"],
+                "logical_target_ids": operation["logical_target_ids"],
+                "before_digest": operation["before_digest"],
+                "after_digest": operation["after_digest"],
+            }
+            for operation in plan["operations"]
+        ],
+        "verdict": "PASS",
+        "completed_at": completed_at,
+    }
+
+
+def _publish_or_verify_receipt(
+    plan: dict[str, object],
+    commit_event: dict[str, object],
+) -> Path:
+    completed_at = commit_event["payload"].get("completed_at")
+    receipt_hash = commit_event["payload"].get("receipt_hash")
+    if not isinstance(completed_at, str) or not isinstance(
+        receipt_hash,
+        str,
+    ):
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "commit-payload-invalid",
+        )
+    receipt = _receipt_value(plan, completed_at)
+    receipt_bytes = canonical_json_bytes(receipt)
+    if sha256_bytes(receipt_bytes) != receipt_hash:
+        raise _PromotionIntegrityError(
+            "PROMOTION-JOURNAL-INVALID",
+            "commit-receipt-hash-invalid",
+        )
+    receipt_path = Path(str(plan["receipt_path"]))
+    if receipt_path.exists() or receipt_path.is_symlink():
+        try:
+            existing = receipt_path.read_bytes()
+        except OSError as error:
+            raise _PromotionIntegrityError(
+                "PROMOTION-RECEIPT-CONFLICT",
+                type(error).__name__,
+            ) from error
+        if existing != receipt_bytes:
+            raise _PromotionIntegrityError(
+                "PROMOTION-RECEIPT-CONFLICT",
+                "existing-receipt-differs",
+            )
+        return receipt_path
+    try:
+        durable_write_bytes(
+            receipt_path,
+            receipt_bytes,
+            create_only=True,
+        )
+    except FileExistsError:
+        if not receipt_path.is_file() or receipt_path.read_bytes() != receipt_bytes:
+            raise _PromotionIntegrityError(
+                "PROMOTION-RECEIPT-CONFLICT",
+                "receipt-create-race",
+            )
+    return receipt_path
+
+
+def _operation_paths(
+    operation: dict[str, object],
+    transaction_id: str,
+) -> tuple[Path, Path, Path, Path]:
+    target = Path(str(operation["target_path"]))
+    return (
+        target.parent / f".{target.name}.packctl-stage-{transaction_id}",
+        target.parent / f".{target.name}.packctl-old-{transaction_id}",
+        target.parent
+        / f".{target.name}.packctl-recover-stage-{transaction_id}",
+        target.parent
+        / f".{target.name}.packctl-recover-post-{transaction_id}",
+    )
+
+
+def _ensure_known_residue(
+    path: Path,
+    allowed_digests: set[object],
+    alias: str,
+) -> None:
+    if not path.exists() and not path.is_symlink():
+        return
+    if _contains_links(path) or tree_digest(path) not in allowed_digests:
+        raise _PromotionIntegrityError(
+            "PROMOTION-FOREIGN-TARGET",
+            f"{alias}:{path.name}",
+        )
+
+
+def _recorded_aliases(
+    events: list[dict[str, object]],
+    event_type: str,
+) -> set[str]:
+    return {
+        str(event["payload"].get("physical_alias"))
+        for event in events
+        if event["event_type"] == event_type
+    }
+
+
+def _rollback_to_pre(
+    plan: dict[str, object],
+    transaction_root: Path,
+    *,
+    terminate_at: str | None,
+    rollback_fault: bool,
+    discardable_stages: set[Path] | None = None,
+) -> None:
+    if rollback_fault:
+        raise RuntimeError("rollback fault injection")
+    transaction_id = str(plan["transaction_id"])
+    events = _read_events(transaction_root)
+    restored = _recorded_aliases(events, "PRE_RESTORED")
+    staged = _recorded_aliases(events, "STAGE_READY")
+    discardable_stages = discardable_stages or set()
+    for index in reversed(range(len(plan["operations"]))):
+        operation = plan["operations"][index]
+        alias = str(operation["physical_alias"])
+        target = Path(str(operation["target_path"]))
+        before_digest = operation["before_digest"]
+        after_digest = operation["after_digest"]
+        stage, old, recovery_stage, recovery_post = _operation_paths(
+            operation,
+            transaction_id,
+        )
+        _ensure_known_residue(old, {before_digest}, alias)
+        _ensure_known_residue(recovery_stage, {before_digest}, alias)
+        _ensure_known_residue(recovery_post, {after_digest}, alias)
+        current = tree_digest(target)
+        if current not in {before_digest, after_digest, "absent"}:
+            raise _PromotionIntegrityError(
+                "PROMOTION-FOREIGN-TARGET",
+                f"{alias}:target",
+            )
+
+        if before_digest != "absent" and current != before_digest:
+            backup = transaction_root / alias
+            if _contains_links(backup) or tree_digest(backup) != before_digest:
+                raise _PromotionIntegrityError(
+                    "PROMOTION-JOURNAL-INVALID",
+                    f"{alias}:backup-invalid",
+                )
+            if not recovery_stage.exists():
+                _copy_artifact(
+                    backup,
+                    recovery_stage,
+                    "tree" if backup.is_dir() else "file",
+                )
+            _terminate(
+                "after_recovery_stage",
+                index,
+                recovery=True,
+                explicit=terminate_at,
+            )
+
+        if current == after_digest and before_digest != after_digest:
+            if recovery_post.exists() or recovery_post.is_symlink():
+                raise _PromotionIntegrityError(
+                    "PROMOTION-FOREIGN-TARGET",
+                    f"{alias}:duplicate-post",
+                )
+            durable_rename(target, recovery_post, replace=False)
+            current = "absent"
+            _terminate(
+                "after_recovery_old_move",
+                index,
+                recovery=True,
+                explicit=terminate_at,
+            )
+
+        if before_digest == "absent":
+            if current != "absent":
+                raise _PromotionIntegrityError(
+                    "PROMOTION-FOREIGN-TARGET",
+                    f"{alias}:expected-absence",
+                )
+        elif current == "absent":
+            if tree_digest(recovery_stage) != before_digest:
+                raise _PromotionIntegrityError(
+                    "PROMOTION-JOURNAL-INVALID",
+                    f"{alias}:recovery-stage-invalid",
+                )
+            durable_rename(recovery_stage, target, replace=False)
+        elif current != before_digest:
+            raise _PromotionIntegrityError(
+                "PROMOTION-FOREIGN-TARGET",
+                f"{alias}:unexpected-state",
+            )
+        _terminate(
+            "after_pre_publish",
+            index,
+            recovery=True,
+            explicit=terminate_at,
+        )
+        if tree_digest(target) != before_digest or not _logical_state_valid(
+            operation,
+            before_digest,
+        ):
+            raise _PromotionIntegrityError(
+                "PROMOTION-ROLLBACK-FAILED",
+                f"{alias}:pre-readback",
+            )
+        _terminate(
+            "after_pre_verified",
+            index,
+            recovery=True,
+            explicit=terminate_at,
+        )
+        if alias not in restored:
+            _append_event(
+                transaction_root,
+                "PRE_RESTORED",
+                {"physical_alias": alias},
+            )
+            restored.add(alias)
+        if stage.exists() or stage.is_symlink():
+            if stage in discardable_stages:
+                _remove_artifact(stage)
+            elif alias in staged:
+                _ensure_known_residue(stage, {after_digest}, alias)
+                _remove_artifact(stage)
+            else:
+                raise _PromotionIntegrityError(
+                    "PROMOTION-FOREIGN-TARGET",
+                    f"{alias}:{stage.name}",
+                )
+        for residue, allowed_digests in (
+            (old, {before_digest}),
+            (recovery_stage, {before_digest}),
+            (recovery_post, {after_digest}),
+        ):
+            _ensure_known_residue(residue, allowed_digests, alias)
+            _remove_artifact(residue)
+
+    _require_plan_state(
+        plan,
+        state="PRE",
+        code="PROMOTION-ROLLBACK-FAILED",
+    )
+    events = _read_events(transaction_root)
+    if events[-1]["event_type"] not in _TERMINAL_EVENTS:
+        _append_event(
+            transaction_root,
+            "ABORT",
+            {"completed_at": datetime.now(timezone.utc).isoformat()},
+        )
+    _terminate(
+        "after_abort",
+        recovery=True,
+        explicit=terminate_at,
+    )
+
+
+def _terminal_event(
+    events: list[dict[str, object]],
+) -> dict[str, object] | None:
+    if events and events[-1]["event_type"] in _TERMINAL_EVENTS:
+        return events[-1]
+    return None
+
+
+def _validate_terminal_transaction(
+    plan: dict[str, object],
+    events: list[dict[str, object]],
+) -> None:
+    terminal = _terminal_event(events)
+    if terminal is None:
+        raise _PromotionIntegrityError(
+            "PROMOTION-RECOVERY-REQUIRED",
+            f"{plan['transaction_id']}:pending",
+        )
+    receipt_path = Path(str(plan["receipt_path"]))
+    if terminal["event_type"] == "COMMIT":
+        _require_plan_state(
+            plan,
+            state="POST",
+            code="PROMOTION-COMMIT-STATE-INVALID",
+        )
+        _publish_or_verify_receipt(plan, terminal)
+    else:
+        _require_plan_state(
+            plan,
+            state="PRE",
+            code="PROMOTION-ABORT-STATE-INVALID",
+        )
+        if receipt_path.exists() or receipt_path.is_symlink():
+            raise _PromotionIntegrityError(
+                "PROMOTION-RECEIPT-CONFLICT",
+                f"{plan['transaction_id']}:receipt-after-abort",
+            )
+
+
+def _scan_transactions(
+    backup_root: Path,
+) -> None:
     try:
         transaction_roots = sorted(
             (
@@ -1040,147 +2026,149 @@ def _recovery_findings(
             ),
             key=lambda path: path.name,
         )
-    except OSError:
-        transaction_roots = []
-        findings.append(
-            finding(
-                "PROMOTION-RECOVERY-REQUIRED",
-                path="backup_root",
-                line=0,
-                message="The promotion backup root cannot be inspected safely.",
-                evidence="backup-root-unreadable",
-            )
-        )
-
+    except OSError as error:
+        raise _PromotionIntegrityError(
+            "PROMOTION-RECOVERY-REQUIRED",
+            f"backup-root-unreadable:{type(error).__name__}",
+        ) from error
     for transaction_root in transaction_roots:
-        prior_id = transaction_root.name
-        reason = ""
-        journal: object = None
-        if prior_id == transaction_id:
-            reason = "current-transaction-root-exists"
-        elif (
-            transaction_root.is_symlink()
-            or _is_junction(transaction_root)
-            or not transaction_root.is_dir()
-            or not is_within(transaction_root.resolve(strict=False), backup_root)
-        ):
-            reason = "unsafe-transaction-root"
-        else:
-            journal_path = transaction_root / "journal.json"
-            if (
-                not journal_path.is_file()
-                or journal_path.is_symlink()
-                or _is_junction(journal_path)
-            ):
-                reason = "journal-missing-or-unsafe"
-            else:
-                try:
-                    journal = load_json(journal_path)
-                except (OSError, UnicodeError, json.JSONDecodeError):
-                    reason = "journal-unreadable"
-        if not reason:
-            if (
-                not isinstance(journal, dict)
-                or journal.get("schema_version") != 1
-                or journal.get("transaction_id") != prior_id
-            ):
-                reason = "journal-invalid"
-            elif (
-                journal.get("state") == "rolled-back"
-                and journal.get("rollback_errors") == []
-            ):
-                continue
-            elif journal.get("state") == "complete":
-                receipt_path = (
-                    root / "promotions" / "receipts" / f"{prior_id}.json"
+        try:
+            prior_plan, prior_events = _load_transaction(transaction_root)
+            terminal = _terminal_event(prior_events)
+            if terminal is None:
+                raise _PromotionIntegrityError(
+                    "PROMOTION-RECOVERY-REQUIRED",
+                    f"{transaction_root.name}:pending",
                 )
-                try:
-                    receipt = load_json(receipt_path)
-                except (OSError, UnicodeError, json.JSONDecodeError):
-                    receipt = None
+            receipt_path = Path(str(prior_plan["receipt_path"]))
+            if terminal["event_type"] == "COMMIT":
                 if (
-                    isinstance(receipt, dict)
-                    and receipt.get("schema_version") == 1
-                    and receipt.get("transaction_id") == prior_id
-                    and receipt.get("source_commit") == journal.get("source_commit")
-                    and receipt.get("verdict") == "PASS"
+                    not receipt_path.exists()
+                    and not receipt_path.is_symlink()
                 ):
-                    continue
-                reason = "complete-journal-without-valid-receipt"
+                    raise _PromotionIntegrityError(
+                        "PROMOTION-RECOVERY-REQUIRED",
+                        f"{transaction_root.name}:receipt-missing",
+                    )
+                _publish_or_verify_receipt(prior_plan, terminal)
+            elif receipt_path.exists() or receipt_path.is_symlink():
+                raise _PromotionIntegrityError(
+                    "PROMOTION-RECEIPT-CONFLICT",
+                    f"{transaction_root.name}:receipt-after-abort",
+                )
+        except _PromotionIntegrityError as error:
+            if error.code in {
+                "PROMOTION-JOURNAL-INVALID",
+                "PROMOTION-RECEIPT-CONFLICT",
+                "PROMOTION-COMMIT-STATE-INVALID",
+                "PROMOTION-ABORT-STATE-INVALID",
+            }:
+                evidence = (
+                    f"{transaction_root.name}:{error.code}:"
+                    f"{error.evidence}"
+                )
             else:
-                reason = f"journal-state-{journal.get('state')}"
-        findings.append(
-            finding(
+                evidence = f"{transaction_root.name}:{error.evidence}"
+            raise _PromotionIntegrityError(
                 "PROMOTION-RECOVERY-REQUIRED",
-                path="backup_root",
-                line=0,
-                message=(
-                    "A prior promotion is incomplete or unverifiable and "
-                    "requires operator adjudication."
-                ),
-                evidence=f"{prior_id}:{reason}",
-            )
-        )
-    return sort_findings(findings)
+                evidence,
+            ) from error
 
 
-def apply_promotion(
-    plan_path: Path,
+def recover_promotion(
+    transaction_root: Path,
     *,
-    fault_at: str | None = None,
-    rollback_fault: bool = False,
+    terminate_at: str | None = None,
 ) -> dict[str, object]:
-    plan_path = Path(plan_path).resolve()
-    plan, load_findings = _load_object(plan_path, "PROMOTION-PLAN-INVALID")
+    transaction_root = Path(transaction_root).absolute()
+    fallback_root = transaction_root.parent
+    try:
+        plan, events = _load_transaction(transaction_root)
+        root = Path(str(plan["source_root"])).resolve(strict=False)
+        with _RootLocks(_lock_roots_for_plan(plan)):
+            plan, events = _load_transaction(transaction_root)
+            _require_physical_bindings(plan)
+            _require_logical_bindings(plan)
+            _require_unlinked_targets(plan)
+            terminal = _terminal_event(events)
+            if terminal is not None:
+                _validate_terminal_transaction(plan, events)
+                return make_report(
+                    "promote recover",
+                    root,
+                    [],
+                    artifacts={
+                        "transaction_root": str(transaction_root),
+                        "decision": terminal["event_type"],
+                        "receipt_path": (
+                            str(plan["receipt_path"])
+                            if terminal["event_type"] == "COMMIT"
+                            else ""
+                        ),
+                    },
+                )
+            _rollback_to_pre(
+                plan,
+                transaction_root,
+                terminate_at=terminate_at,
+                rollback_fault=False,
+            )
+            return make_report(
+                "promote recover",
+                root,
+                [],
+                artifacts={
+                    "transaction_root": str(transaction_root),
+                    "decision": "ABORT",
+                },
+            )
+    except _PromotionIntegrityError as error:
+        return _integrity_report(
+            "promote recover",
+            locals().get("root", fallback_root),
+            error,
+            transaction_root=transaction_root,
+        )
+    except Exception as error:
+        wrapped = _PromotionIntegrityError(
+            "PROMOTION-ROLLBACK-FAILED",
+            type(error).__name__,
+        )
+        return _integrity_report(
+            "promote recover",
+            locals().get("root", fallback_root),
+            wrapped,
+            transaction_root=transaction_root,
+        )
+
+
+def _load_apply_plan(
+    plan_path: Path,
+) -> tuple[dict[str, object] | None, Path, list[dict[str, object]]]:
+    plan, findings = _load_object(plan_path, "PROMOTION-PLAN-INVALID")
     if plan is None:
-        return make_report("promote apply", plan_path.parent, load_findings)
+        return None, plan_path.parent, findings
     root = Path(str(plan.get("source_root", "."))).resolve()
-    required = {
-        "schema_version",
-        "transaction_id",
-        "source_root",
-        "source_commit",
-        "promotion_map_path",
-        "promotion_map_hash",
-        "local_targets_path",
-        "local_targets_hash",
-        "backup_root",
-        "allowed_physical_roots",
-        "forbidden_physical_roots",
-        "receipt_path",
-        "artifact_ids",
-        "target_ids",
-        "operations",
-        "plan_digest",
-    }
-    if set(plan) != required or plan.get("schema_version") != 1:
-        return make_report(
-            "promote apply",
-            root,
-            [
-                finding(
-                    "PROMOTION-PLAN-INVALID",
-                    path=plan_path.name,
-                    line=1,
-                    message="The promotion plan does not match schema v1.",
-                    evidence="Invalid plan fields.",
-                )
-            ],
-        )
+    if set(plan) != _PLAN_FIELDS or plan.get("schema_version") != 1:
+        return None, root, [
+            finding(
+                "PROMOTION-PLAN-INVALID",
+                path=plan_path.name,
+                line=1,
+                message="The promotion plan does not match schema v1.",
+                evidence="Invalid plan fields.",
+            )
+        ]
     if _plan_digest(plan) != plan["plan_digest"]:
-        return make_report(
-            "promote apply",
-            root,
-            [
-                finding(
-                    "PROMOTION-PLAN-TAMPERED",
-                    path=plan_path.name,
-                    line=1,
-                    message="The promotion plan changed after it was sealed.",
-                    evidence="plan_digest mismatch",
-                )
-            ],
-        )
+        return None, root, [
+            finding(
+                "PROMOTION-PLAN-TAMPERED",
+                path=plan_path.name,
+                line=1,
+                message="The promotion plan changed after it was sealed.",
+                evidence="plan_digest mismatch",
+            )
+        ]
     contract_findings: list[dict[str, object]] = []
     for path_field, hash_field in (
         ("promotion_map_path", "promotion_map_hash"),
@@ -1200,365 +2188,454 @@ def apply_promotion(
                     evidence=hash_field,
                 )
             )
-    if contract_findings:
-        return make_report("promote apply", root, contract_findings)
-    findings = _validate_plan_paths(plan)
-    if findings:
-        return make_report("promote apply", root, findings)
-    findings = _promotion_state_findings(plan, root)
-    if findings:
-        return make_report("promote apply", root, findings)
+    contract_findings.extend(_validate_plan_paths(plan))
+    return plan, root, sort_findings(contract_findings)
 
+
+def apply_promotion(
+    plan_path: Path,
+    *,
+    fault_at: str | None = None,
+    rollback_fault: bool = False,
+) -> dict[str, object]:
+    plan_path = Path(plan_path).resolve()
+    plan, root, findings = _load_apply_plan(plan_path)
+    if plan is None or findings:
+        return make_report("promote apply", root, findings)
     transaction_id = str(plan["transaction_id"])
     backup_base = Path(str(plan["backup_root"]))
-    allowed_roots = [
-        Path(item).resolve(strict=True)
-        for item in plan["allowed_physical_roots"]
-    ]
-    protected_paths = [
-        Path(str(operation["target_path"]))
-        for operation in plan["operations"]
-    ] + [backup_base]
-    lock_roots_by_key: dict[str, Path] = {}
-    for protected_path in protected_paths:
-        candidates = [
-            allowed
-            for allowed in allowed_roots
-            if is_within(protected_path, allowed)
-        ]
-        selected = max(candidates, key=lambda path: len(path.parts))
-        lock_roots_by_key[os.path.normcase(str(selected))] = selected
-    lock_roots = sorted(
-        lock_roots_by_key.values(),
-        key=lambda path: os.path.normcase(str(path)),
-    )
-    recovery_findings = _recovery_findings(
-        root,
-        backup_base,
-        lock_roots,
-        transaction_id,
-    )
-    if recovery_findings:
-        return make_report(
-            "promote apply",
-            root,
-            recovery_findings,
-            artifacts={
-                "requires_intervention": True,
-                "exit_code": 2,
-            },
-        )
-    backup_root = backup_base / transaction_id
+    transaction_root = backup_base / transaction_id
+    owned_stages: set[Path] = set()
+    transaction_created = False
     try:
-        backup_root.mkdir(exist_ok=False)
-    except OSError as error:
+        with _RootLocks(_lock_roots_for_plan(plan)):
+            locked_plan, locked_root, locked_findings = _load_apply_plan(
+                plan_path
+            )
+            if locked_plan is None or locked_findings:
+                return make_report(
+                    "promote apply",
+                    locked_root,
+                    locked_findings,
+                )
+            if locked_plan != plan:
+                return make_report(
+                    "promote apply",
+                    root,
+                    [
+                        finding(
+                            "PROMOTION-PLAN-TAMPERED",
+                            path=plan_path.name,
+                            line=1,
+                            message=(
+                                "The promotion plan changed during lock "
+                                "acquisition."
+                            ),
+                            evidence="locked plan differs",
+                        )
+                    ],
+                )
+            _scan_transactions(backup_base)
+            locked_findings = _promotion_state_findings(plan, root)
+            if locked_findings:
+                return make_report(
+                    "promote apply",
+                    root,
+                    locked_findings,
+                )
+            transaction_root = _create_transaction(plan)
+            transaction_created = True
+            _terminate("after_pending", recovery=False)
+            _fault(fault_at, "after_pending")
+
+            for index, operation in enumerate(plan["operations"]):
+                if operation["before_digest"] == operation["after_digest"]:
+                    continue
+                source = Path(str(operation["source_path"]))
+                target = Path(str(operation["target_path"]))
+                alias = str(operation["physical_alias"])
+                stage, old, recovery_stage, recovery_post = _operation_paths(
+                    operation,
+                    transaction_id,
+                )
+                for residue in (stage, old, recovery_stage, recovery_post):
+                    if residue.exists() or residue.is_symlink():
+                        raise RuntimeError(
+                            f"preexisting transaction residue for {alias}"
+                        )
+                target.parent.mkdir(parents=True, exist_ok=True)
+                owned_stages.add(stage)
+                _copy_artifact(
+                    source,
+                    stage,
+                    str(operation["artifact_kind"]),
+                    operation["source_files"],
+                )
+                if tree_digest(stage) != operation["after_digest"]:
+                    raise RuntimeError(
+                        f"staging verification failed for {alias}"
+                    )
+                _append_event(
+                    transaction_root,
+                    "STAGE_READY",
+                    {
+                        "physical_alias": alias,
+                        "after_digest": operation["after_digest"],
+                    },
+                )
+                _terminate("after_stage", index, recovery=False)
+                _fault(
+                    fault_at,
+                    "after_stage",
+                    index,
+                    aliases=("after_staging",),
+                )
+
+                if (
+                    _contains_links(target)
+                    or os.path.normcase(
+                        str(target.resolve(strict=False))
+                    )
+                    != os.path.normcase(str(target))
+                    or tree_digest(target) != operation["before_digest"]
+                ):
+                    raise _PromotionIntegrityError(
+                        "PROMOTION-TARGET-CHANGED",
+                        f"{alias}:changed-before-backup",
+                    )
+                backup = transaction_root / alias
+                existed = target.exists() or target.is_symlink()
+                if existed:
+                    _copy_artifact(
+                        target,
+                        backup,
+                        (
+                            "tree"
+                            if target.is_dir() and not target.is_symlink()
+                            else "file"
+                        ),
+                    )
+                    if tree_digest(backup) != operation["before_digest"]:
+                        raise RuntimeError(
+                            f"backup verification failed for {alias}"
+                        )
+                else:
+                    durable_write_bytes(
+                        transaction_root / f"{alias}.absent",
+                        b"absent\n",
+                        create_only=True,
+                    )
+                _append_event(
+                    transaction_root,
+                    "BACKUP_READY",
+                    {
+                        "physical_alias": alias,
+                        "before_digest": operation["before_digest"],
+                        "existed": existed,
+                    },
+                )
+                _terminate("after_backup", index, recovery=False)
+                _fault(fault_at, "after_backup", index)
+
+                if (
+                    _contains_links(target)
+                    or os.path.normcase(
+                        str(target.resolve(strict=False))
+                    )
+                    != os.path.normcase(str(target))
+                    or tree_digest(target) != operation["before_digest"]
+                ):
+                    raise _PromotionIntegrityError(
+                        "PROMOTION-TARGET-CHANGED",
+                        f"{alias}:changed-after-backup",
+                    )
+                if existed:
+                    durable_rename(target, old, replace=False)
+                _terminate("after_old_move", index, recovery=False)
+                _fault(fault_at, "after_old_move", index)
+                durable_rename(stage, target, replace=False)
+                _terminate("after_publish", index, recovery=False)
+                if tree_digest(target) != operation["after_digest"]:
+                    raise RuntimeError(
+                        f"readback verification failed for {alias}"
+                    )
+                _append_event(
+                    transaction_root,
+                    "TARGET_PUBLISHED",
+                    {
+                        "physical_alias": alias,
+                        "after_digest": operation["after_digest"],
+                    },
+                )
+                _terminate("after_target_event", index, recovery=False)
+                _fault(
+                    fault_at,
+                    "after_publish",
+                    index,
+                    aliases=("after_replace",),
+                )
+                _fault(fault_at, "after_readback", index)
+
+            _require_plan_state(
+                plan,
+                state="POST",
+                code="PROMOTION-POST-VERIFY-FAILED",
+            )
+            _append_event(
+                transaction_root,
+                "POST_VERIFIED",
+                {
+                    "operation_count": len(plan["operations"]),
+                    "logical_target_count": len(plan["target_ids"]),
+                },
+            )
+            _terminate("after_post_verified", recovery=False)
+            _fault(fault_at, "after_post_verified")
+
+            for operation in plan["operations"]:
+                stage, old, recovery_stage, recovery_post = _operation_paths(
+                    operation,
+                    transaction_id,
+                )
+                for residue, allowed in (
+                    (stage, {operation["after_digest"]}),
+                    (old, {operation["before_digest"]}),
+                    (recovery_stage, {operation["before_digest"]}),
+                    (recovery_post, {operation["after_digest"]}),
+                ):
+                    _ensure_known_residue(
+                        residue,
+                        allowed,
+                        str(operation["physical_alias"]),
+                    )
+                    _remove_artifact(residue)
+
+            _require_plan_state(
+                plan,
+                state="POST",
+                code="PROMOTION-POST-VERIFY-FAILED",
+            )
+            completed_at = datetime.now(timezone.utc).isoformat()
+            receipt = _receipt_value(plan, completed_at)
+            receipt_hash = sha256_bytes(canonical_json_bytes(receipt))
+            commit_event = _append_event(
+                transaction_root,
+                "COMMIT",
+                {
+                    "completed_at": completed_at,
+                    "receipt_hash": receipt_hash,
+                },
+            )
+            _terminate("after_commit", recovery=False)
+            _fault(fault_at, "after_commit")
+            receipt_path = _publish_or_verify_receipt(plan, commit_event)
+            return make_report(
+                "promote apply",
+                root,
+                [],
+                artifacts={
+                    "receipt_path": str(receipt_path),
+                    "transaction_root": str(transaction_root),
+                    "operation_count": len(plan["operations"]),
+                    "logical_target_count": len(plan["target_ids"]),
+                },
+            )
+    except _PromotionIntegrityError as error:
+        if error.code == "PROMOTION-LOCK-ACTIVE":
+            return _integrity_report(
+                "promote apply",
+                root,
+                error,
+                transaction_root=(
+                    transaction_root
+                    if transaction_root.exists()
+                    else None
+                ),
+            )
+        if not transaction_created:
+            return _integrity_report(
+                "promote apply",
+                root,
+                error,
+                transaction_root=(
+                    transaction_root
+                    if transaction_root.exists()
+                    else None
+                ),
+            )
+        try:
+            with _RootLocks(_lock_roots_for_plan(plan)):
+                _, events = _load_transaction(transaction_root)
+                if _terminal_event(events) is not None:
+                    return _integrity_report(
+                        "promote apply",
+                        root,
+                        error,
+                        transaction_root=transaction_root,
+                    )
+                _rollback_to_pre(
+                    plan,
+                    transaction_root,
+                    terminate_at=None,
+                    rollback_fault=rollback_fault,
+                    discardable_stages=owned_stages,
+                )
+        except Exception as rollback_error:
+            wrapped = (
+                rollback_error
+                if isinstance(rollback_error, _PromotionIntegrityError)
+                else _PromotionIntegrityError(
+                    "PROMOTION-ROLLBACK-FAILED",
+                    type(rollback_error).__name__,
+                )
+            )
+            return make_report(
+                "promote apply",
+                root,
+                [
+                    finding(
+                        "PROMOTION-APPLY-FAILED",
+                        path=plan_path.name,
+                        line=0,
+                        message=(
+                            "Promotion failed and did not publish a "
+                            "success receipt."
+                        ),
+                        evidence=type(error).__name__,
+                    ),
+                    finding(
+                        "PROMOTION-ROLLBACK-FAILED",
+                        path=plan_path.name,
+                        line=0,
+                        message=(
+                            "Rollback could not restore and verify all PRE "
+                            "states."
+                        ),
+                        evidence=wrapped.evidence,
+                    ),
+                ],
+                artifacts={
+                    "transaction_root": str(transaction_root),
+                    "requires_intervention": True,
+                    "exit_code": 2,
+                },
+            )
         return make_report(
             "promote apply",
             root,
             [
                 finding(
-                    "PROMOTION-RECOVERY-REQUIRED",
-                    path="backup_root",
+                    "PROMOTION-APPLY-FAILED",
+                    path=plan_path.name,
                     line=0,
                     message=(
-                        "A create-only transaction root could not be "
-                        "materialized."
+                        "Promotion failed, restored PRE, and did not "
+                        "publish a success receipt."
+                    ),
+                    evidence=error.code,
+                )
+            ],
+            artifacts={"transaction_root": str(transaction_root)},
+        )
+    except Exception as error:
+        if not transaction_created:
+            if transaction_root.exists():
+                return _integrity_report(
+                    "promote apply",
+                    root,
+                    _PromotionIntegrityError(
+                        "PROMOTION-JOURNAL-INVALID",
+                        "transaction-initialization-incomplete",
+                    ),
+                    transaction_root=transaction_root,
+                )
+            return make_report(
+                "promote apply",
+                root,
+                [
+                    finding(
+                        "PROMOTION-APPLY-FAILED",
+                        path=plan_path.name,
+                        line=0,
+                        message=(
+                            "Promotion failed before publishing a "
+                            "transaction."
+                        ),
+                        evidence=type(error).__name__,
+                    )
+                ],
+            )
+        try:
+            with _RootLocks(_lock_roots_for_plan(plan)):
+                _, events = _load_transaction(transaction_root)
+                if _terminal_event(events) is not None:
+                    return _integrity_report(
+                        "promote apply",
+                        root,
+                        _PromotionIntegrityError(
+                            "PROMOTION-RECOVERY-REQUIRED",
+                            type(error).__name__,
+                        ),
+                        transaction_root=transaction_root,
+                    )
+                _rollback_to_pre(
+                    plan,
+                    transaction_root,
+                    terminate_at=None,
+                    rollback_fault=rollback_fault,
+                    discardable_stages=owned_stages,
+                )
+        except Exception as rollback_error:
+            evidence = (
+                rollback_error.evidence
+                if isinstance(rollback_error, _PromotionIntegrityError)
+                else type(rollback_error).__name__
+            )
+            return make_report(
+                "promote apply",
+                root,
+                [
+                    finding(
+                        "PROMOTION-APPLY-FAILED",
+                        path=plan_path.name,
+                        line=0,
+                        message=(
+                            "Promotion failed and did not publish a "
+                            "success receipt."
+                        ),
+                        evidence=type(error).__name__,
+                    ),
+                    finding(
+                        "PROMOTION-ROLLBACK-FAILED",
+                        path=plan_path.name,
+                        line=0,
+                        message=(
+                            "Rollback could not restore and verify all PRE "
+                            "states."
+                        ),
+                        evidence=evidence,
+                    ),
+                ],
+                artifacts={
+                    "transaction_root": str(transaction_root),
+                    "requires_intervention": True,
+                    "exit_code": 2,
+                },
+            )
+        return make_report(
+            "promote apply",
+            root,
+            [
+                finding(
+                    "PROMOTION-APPLY-FAILED",
+                    path=plan_path.name,
+                    line=0,
+                    message=(
+                        "Promotion failed, restored PRE, and did not "
+                        "publish a success receipt."
                     ),
                     evidence=type(error).__name__,
                 )
             ],
-            artifacts={
-                "requires_intervention": True,
-                "exit_code": 2,
-            },
+            artifacts={"transaction_root": str(transaction_root)},
         )
-    journal_path = backup_root / "journal.json"
-    lock_paths: list[Path] = []
-    preserve_locks = False
-    lock_conflict = False
-    touched: list[tuple[dict[str, object], Path, bool]] = []
-    stage_paths: list[Path] = []
-    old_paths: list[Path] = []
-    journal: dict[str, object] = {
-        "schema_version": 1,
-        "transaction_id": transaction_id,
-        "source_commit": plan["source_commit"],
-        "state": "starting",
-        "touched_aliases": [],
-    }
-    try:
-        for lock_root in lock_roots:
-            lock_path = lock_root / ".packctl.lock"
-            try:
-                descriptor = os.open(
-                    lock_path,
-                    os.O_CREAT | os.O_EXCL | os.O_WRONLY,
-                )
-            except FileExistsError:
-                lock_conflict = True
-                raise
-            lock_paths.append(lock_path)
-            try:
-                os.write(descriptor, transaction_id.encode("ascii"))
-                os.fsync(descriptor)
-            finally:
-                os.close(descriptor)
-        write_json(journal_path, journal)
-        locked_findings = _promotion_state_findings(plan, root)
-        if locked_findings:
-            journal["state"] = "rolled-back"
-            journal["rollback_errors"] = []
-            write_json(journal_path, journal)
-            return make_report("promote apply", root, locked_findings)
-
-        for index, operation in enumerate(plan["operations"]):
-            source = Path(str(operation["source_path"]))
-            target = Path(str(operation["target_path"]))
-            alias = str(operation["physical_alias"])
-            if operation["before_digest"] == operation["after_digest"]:
-                continue
-            stage = target.parent / f".{target.name}.packctl-stage-{transaction_id}"
-            old = target.parent / f".{target.name}.packctl-old-{transaction_id}"
-            if (
-                stage.exists()
-                or stage.is_symlink()
-                or old.exists()
-                or old.is_symlink()
-            ):
-                raise RuntimeError(
-                    f"preexisting transaction residue for {alias}"
-                )
-            target.parent.mkdir(parents=True, exist_ok=True)
-            stage_paths.append(stage)
-            _copy_artifact(
-                source,
-                stage,
-                str(operation["artifact_kind"]),
-                operation["source_files"],
-            )
-            old_paths.append(old)
-            if tree_digest(stage) != operation["after_digest"]:
-                raise RuntimeError(f"staging verification failed for {alias}")
-            _fault(fault_at, "after_staging", index)
-
-            backup = backup_root / alias
-            existed = target.exists() or target.is_symlink()
-            if existed:
-                _copy_artifact(
-                    target,
-                    backup,
-                    "tree" if target.is_dir() and not target.is_symlink() else "file",
-                )
-                if tree_digest(backup) != operation["before_digest"]:
-                    raise RuntimeError(f"backup verification failed for {alias}")
-            else:
-                (backup_root / f"{alias}.absent").write_text(
-                    "absent\n", encoding="utf-8", newline="\n"
-                )
-            _fault(fault_at, "after_backup", index)
-
-            touched.append((operation, backup, existed))
-            if existed:
-                os.replace(target, old)
-            _fault(fault_at, "after_old_move", index)
-            os.replace(stage, target)
-            stage_paths.remove(stage)
-            journal["state"] = "replacing"
-            journal["touched_aliases"] = [
-                str(item[0]["physical_alias"]) for item in touched
-            ]
-            write_json(journal_path, journal)
-            _fault(fault_at, "after_replace", index)
-            if tree_digest(target) != operation["after_digest"]:
-                raise RuntimeError(f"readback verification failed for {alias}")
-            _fault(fault_at, "after_readback", index)
-            _remove_artifact(old)
-
-        journal["state"] = "readback-complete"
-        write_json(journal_path, journal)
-        for operation in plan["operations"]:
-            target = Path(str(operation["target_path"]))
-            if tree_digest(target) != operation["after_digest"]:
-                raise RuntimeError(
-                    f"physical readback failed for {operation['physical_alias']}"
-                )
-            for target_id, logical_value in operation["logical_target_paths"].items():
-                logical_target = Path(str(logical_value))
-                if (
-                    os.path.normcase(str(logical_target.resolve(strict=False)))
-                    != os.path.normcase(str(target.resolve(strict=False)))
-                    or tree_digest(logical_target) != operation["after_digest"]
-                ):
-                    raise RuntimeError(
-                        f"logical readback failed for {target_id}"
-                    )
-        receipt = {
-            "schema_version": 1,
-            "transaction_id": transaction_id,
-            "source_commit": plan["source_commit"],
-            "artifact_ids": plan["artifact_ids"],
-            "target_ids": plan["target_ids"],
-            "operations": [
-                {
-                    "artifact_id": operation["artifact_id"],
-                    "physical_alias": operation["physical_alias"],
-                    "logical_target_ids": operation["logical_target_ids"],
-                    "before_digest": operation["before_digest"],
-                    "after_digest": operation["after_digest"],
-                }
-                for operation in plan["operations"]
-            ],
-            "verdict": "PASS",
-            "completed_at": datetime.now(timezone.utc).isoformat(),
-        }
-        receipt_path = Path(str(plan["receipt_path"]))
-        success_report = make_report(
-            "promote apply",
-            root,
-            [],
-            artifacts={
-                "receipt_path": str(receipt_path),
-                "operation_count": len(plan["operations"]),
-                "logical_target_count": len(plan["target_ids"]),
-            },
-        )
-        for stage in stage_paths:
-            _remove_artifact(stage)
-        stage_paths.clear()
-        for old in old_paths:
-            _remove_artifact(old)
-        old_paths.clear()
-        journal["state"] = "complete"
-        write_json(journal_path, journal)
-        for lock_path in lock_paths:
-            lock_path.unlink(missing_ok=True)
-        lock_paths.clear()
-        write_json(receipt_path, receipt)
-        return success_report
-    except Exception as error:
-        rollback_errors: list[str] = []
-        for operation, backup, existed in reversed(touched):
-            target = Path(str(operation["target_path"]))
-            try:
-                if rollback_fault:
-                    raise RuntimeError("rollback fault injection")
-                _remove_artifact(target)
-                if existed:
-                    _copy_artifact(
-                        backup,
-                        target,
-                        "tree" if backup.is_dir() else "file",
-                    )
-                if tree_digest(target) != operation["before_digest"]:
-                    raise RuntimeError("rollback digest mismatch")
-            except Exception as rollback_error:
-                rollback_errors.append(
-                    f"{operation['physical_alias']}:{type(rollback_error).__name__}"
-                )
-        cleanup_errors: list[str] = []
-        for stage in list(stage_paths):
-            try:
-                _remove_artifact(stage)
-                stage_paths.remove(stage)
-            except Exception as cleanup_error:
-                cleanup_errors.append(
-                    f"stage:{type(cleanup_error).__name__}"
-                )
-        if not rollback_errors and not cleanup_errors:
-            for old in list(old_paths):
-                try:
-                    _remove_artifact(old)
-                    old_paths.remove(old)
-                except Exception as cleanup_error:
-                    cleanup_errors.append(
-                        f"old:{type(cleanup_error).__name__}"
-                    )
-        recovery_errors = rollback_errors + cleanup_errors
-        journal["state"] = (
-            "rollback-failed" if recovery_errors else "rolled-back"
-        )
-        journal["error_type"] = type(error).__name__
-        journal["rollback_errors"] = recovery_errors
-        try:
-            write_json(journal_path, journal)
-        except Exception as journal_error:
-            recovery_errors.append(
-                f"journal:{type(journal_error).__name__}"
-            )
-        if not recovery_errors:
-            for lock_path in list(lock_paths):
-                try:
-                    lock_path.unlink(missing_ok=True)
-                    lock_paths.remove(lock_path)
-                except Exception as cleanup_error:
-                    recovery_errors.append(
-                        f"lock:{type(cleanup_error).__name__}"
-                    )
-        if recovery_errors:
-            preserve_locks = True
-        failure_findings = [
-            finding(
-                "PROMOTION-APPLY-FAILED",
-                path=plan_path.name,
-                line=0,
-                message="Promotion failed and did not publish a success receipt.",
-                evidence=type(error).__name__,
-            )
-        ]
-        artifacts: dict[str, object] = {
-            "journal_path": str(journal_path),
-            "backup_root": str(backup_root),
-        }
-        if lock_conflict:
-            failure_findings.append(
-                finding(
-                    "PROMOTION-LOCK-UNADJUDICATED",
-                    path="allowed_physical_roots",
-                    line=0,
-                    message=(
-                        "A promotion lock appeared during acquisition and "
-                        "requires operator adjudication."
-                    ),
-                    evidence="lock-race",
-                )
-            )
-            artifacts["requires_intervention"] = True
-            artifacts["exit_code"] = 2
-        if recovery_errors:
-            failure_findings.append(
-                finding(
-                    "PROMOTION-ROLLBACK-FAILED",
-                    path=plan_path.name,
-                    line=0,
-                    message=(
-                        "Rollback or its recovery evidence/cleanup could not "
-                        "be completed safely."
-                    ),
-                    evidence=",".join(recovery_errors),
-                )
-            )
-            artifacts["requires_intervention"] = True
-            artifacts["exit_code"] = 2
-        return make_report(
-            "promote apply",
-            root,
-            failure_findings,
-            artifacts=artifacts,
-        )
-    finally:
-        for stage in stage_paths:
-            try:
-                _remove_artifact(stage)
-            except Exception:
-                pass
-        if not preserve_locks:
-            for old in old_paths:
-                try:
-                    _remove_artifact(old)
-                except Exception:
-                    pass
-            for lock_path in lock_paths:
-                try:
-                    lock_path.unlink(missing_ok=True)
-                except Exception:
-                    pass

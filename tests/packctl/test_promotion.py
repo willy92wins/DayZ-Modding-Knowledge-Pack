@@ -2,17 +2,143 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
 from conftest import run_git, write_json
 
-from packctl.common import tree_digest
+from packctl.common import canonical_json_bytes, sha256_bytes, tree_digest
 from packctl.promotion import apply_promotion, check_promotion
+import packctl.promotion as promotion
 
 
 REQUIRED_SKILL_TARGETS = ["claude_user_skills", "agents_user_skills"]
+
+
+def run_promote_process(
+    cwd: Path,
+    *args: str,
+    environment: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
+    process_environment = dict(os.environ)
+    project_root = str(Path(__file__).resolve().parents[2])
+    process_environment["PYTHONPATH"] = (
+        project_root
+        + os.pathsep
+        + process_environment.get("PYTHONPATH", "")
+    )
+    process_environment.update(environment or {})
+    return subprocess.run(
+        [sys.executable, "-m", "packctl", "promote", *args],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        env=process_environment,
+    )
+
+
+def transaction_root(plan: dict[str, object]) -> Path:
+    return Path(str(plan["backup_root"])) / str(plan["transaction_id"])
+
+
+def journal_events(root: Path) -> list[dict[str, object]]:
+    return [
+        json.loads(path.read_text(encoding="utf-8"))
+        for path in sorted((root / "events").glob("*.json"))
+    ]
+
+
+def assert_valid_event_chain(root: Path) -> list[dict[str, object]]:
+    events = journal_events(root)
+    assert events
+    previous_hash = "0" * 64
+    for sequence, event in enumerate(events):
+        event_path = root / "events" / f"{sequence:08d}.json"
+        assert event_path.is_file()
+        assert event["schema_version"] == 1
+        assert event["sequence"] == sequence
+        assert event["transaction_id"] == root.name
+        assert event["previous_event_hash"] == previous_hash
+        material = dict(event)
+        event_hash = str(material.pop("event_hash"))
+        assert event_hash == sha256_bytes(canonical_json_bytes(material))
+        previous_hash = event_hash
+    return events
+
+
+def seed_every_target_with_pre_state(
+    root: Path,
+    paths: dict[str, Path],
+) -> None:
+    commit = run_git(root, "rev-parse", "HEAD")
+    targets = [
+        paths["claude"] / "demo",
+        paths["agents"] / "demo",
+        paths["vault"] / "fixture" / commit,
+        paths["vault"] / "fixture-root" / commit,
+    ]
+    for index, target in enumerate(dict.fromkeys(targets)):
+        target.mkdir(parents=True, exist_ok=True)
+        (target / "pre.txt").write_text(
+            f"pre-{index}\n",
+            encoding="utf-8",
+        )
+
+
+def assert_plan_state(
+    plan: dict[str, object],
+    *,
+    state: str,
+) -> None:
+    digest_key = "before_digest" if state == "PRE" else "after_digest"
+    for operation in plan["operations"]:
+        target = Path(str(operation["target_path"]))
+        assert tree_digest(target) == operation[digest_key]
+        for logical_path in operation["logical_target_paths"].values():
+            logical = Path(str(logical_path))
+            assert (
+                os.path.normcase(str(logical.resolve(strict=False)))
+                == os.path.normcase(str(target.resolve(strict=False)))
+            )
+            assert tree_digest(logical) == operation[digest_key]
+
+
+def start_lock_holder(lock_path: Path) -> subprocess.Popen[str]:
+    script = r"""
+import os
+import sys
+
+path = sys.argv[1]
+fd = os.open(path, os.O_RDWR | os.O_CREAT)
+if os.fstat(fd).st_size == 0:
+    os.write(fd, b"\0")
+    os.fsync(fd)
+os.lseek(fd, 0, os.SEEK_SET)
+if os.name == "nt":
+    import msvcrt
+    msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+else:
+    import fcntl
+    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+sys.stdout.write("ready\n")
+sys.stdout.flush()
+sys.stdin.readline()
+"""
+    holder = subprocess.Popen(
+        [sys.executable, "-c", script, str(lock_path)],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+    )
+    assert holder.stdout is not None
+    assert holder.stdout.readline().strip() == "ready"
+    return holder
 
 
 def codes(report: dict[str, object]) -> list[str]:
@@ -407,6 +533,60 @@ def test_tree_promotion_copies_only_tracked_projection(
     ).exists()
 
 
+def test_file_promotion_hashes_content_independently_of_snapshot_name(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    source_map_path = root / "sources/source-map.json"
+    source_map = json.loads(source_map_path.read_text(encoding="utf-8"))
+    readme_artifact = next(
+        item
+        for item in source_map["artifacts"]
+        if item["output_path"] == "README.md"
+    )
+    readme_artifact["routing_artifact_id"] = "fixture-file"
+    write_json(source_map_path, source_map)
+    run_git(root, "add", "sources/source-map.json")
+    run_git(root, "commit", "-qm", "route file fixture")
+    promotion_map = json.loads(map_path.read_text(encoding="utf-8"))
+    promotion_map["artifacts"].append(
+        {
+            "artifact_id": "fixture-file",
+            "repo_path": "README.md",
+            "artifact_kind": "file",
+            "applicability": "governance",
+            "vault_targets": ["obsidian_snapshots"],
+            "skill_target_ids": [],
+            "not_applicable_reason": (
+                "Fixture file is durable vault context, not a skill."
+            ),
+        }
+    )
+    write_json(map_path, promotion_map)
+    check = check_promotion(root, map_path, config_path, plan_path)
+    assert check["verdict"] == "WARN"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    file_operation = next(
+        operation
+        for operation in plan["operations"]
+        if operation["artifact_id"] == "fixture-file"
+    )
+
+    report = apply_promotion(plan_path)
+
+    target = Path(str(file_operation["target_path"]))
+    assert report["verdict"] == "PASS"
+    assert target.read_bytes() == (root / "README.md").read_bytes()
+    assert target == (
+        paths["vault"]
+        / "fixture-file"
+        / run_git(root, "rev-parse", "HEAD")
+    )
+
+
 @pytest.mark.parametrize("residue_kind", ["stage", "old"])
 def test_apply_rejects_preexisting_residue_without_deleting_it(
     repo_factory,
@@ -462,7 +642,7 @@ def test_partial_stage_from_failed_copy_is_removed(
     assert not created_stage.exists()
 
 
-def test_unadjudicated_lock_blocks_apply_with_exit_2(
+def test_stale_lock_file_does_not_block_apply(
     repo_factory,
     tmp_path: Path,
 ) -> None:
@@ -471,36 +651,36 @@ def test_unadjudicated_lock_blocks_apply_with_exit_2(
     )
     check_promotion(root, map_path, config_path, plan_path)
     lock = paths["targets"] / ".packctl.lock"
-    lock.write_text("interrupted-transaction\n", encoding="utf-8")
+    lock.write_text("stale metadata\n", encoding="utf-8")
 
     report = apply_promotion(plan_path)
 
-    assert "PROMOTION-LOCK-UNADJUDICATED" in codes(report)
-    assert report["artifacts"]["requires_intervention"] is True
-    assert report["artifacts"]["exit_code"] == 2
+    assert report["verdict"] == "PASS"
     assert lock.exists()
-    assert not (paths["claude"] / "demo").exists()
+    assert (paths["claude"] / "demo/SKILL.md").is_file()
 
 
-def test_failed_lock_write_removes_the_owned_lock(
+def test_live_os_lock_blocks_apply_with_exit_2(
     repo_factory,
     tmp_path: Path,
-    monkeypatch,
 ) -> None:
     root, map_path, config_path, plan_path, paths = promotion_fixture(
         repo_factory, tmp_path
     )
     check_promotion(root, map_path, config_path, plan_path)
+    lock = paths["targets"] / ".packctl.lock"
+    holder = start_lock_holder(lock)
+    try:
+        report = apply_promotion(plan_path)
+    finally:
+        assert holder.stdin is not None
+        holder.stdin.write("\n")
+        holder.stdin.flush()
+        holder.wait(timeout=10)
 
-    def fail_lock_write(descriptor: int, value: bytes) -> int:
-        raise OSError("lock write fault")
-
-    monkeypatch.setattr("packctl.promotion.os.write", fail_lock_write)
-
-    report = apply_promotion(plan_path)
-
-    assert "PROMOTION-APPLY-FAILED" in codes(report)
-    assert not (paths["targets"] / ".packctl.lock").exists()
+    assert "PROMOTION-LOCK-ACTIVE" in codes(report)
+    assert report["artifacts"]["requires_intervention"] is True
+    assert report["artifacts"]["exit_code"] == 2
     assert not (paths["claude"] / "demo").exists()
 
 
@@ -544,7 +724,7 @@ def test_unverifiable_journal_blocks_apply_with_exit_2(
     assert not (paths["claude"] / "demo").exists()
 
 
-def test_verified_rolled_back_journal_does_not_block_apply(
+def test_legacy_mutable_journal_does_not_count_as_terminal_evidence(
     repo_factory,
     tmp_path: Path,
 ) -> None:
@@ -569,8 +749,9 @@ def test_verified_rolled_back_journal_does_not_block_apply(
 
     report = apply_promotion(plan_path)
 
-    assert report["verdict"] == "PASS"
-    assert (paths["claude"] / "demo/SKILL.md").is_file()
+    assert "PROMOTION-RECOVERY-REQUIRED" in codes(report)
+    assert report["artifacts"]["exit_code"] == 2
+    assert not (paths["claude"] / "demo/SKILL.md").exists()
 
 
 def test_check_revalidates_destination_after_child_link_resolution(
@@ -693,7 +874,7 @@ def test_failure_after_moving_old_restores_original_target(
     assert (existing / "old.txt").read_text(encoding="utf-8") == "original\n"
 
 
-def test_receipt_is_not_published_when_final_journal_write_fails(
+def test_receipt_is_not_published_when_commit_event_write_fails(
     repo_factory,
     tmp_path: Path,
     monkeypatch,
@@ -703,18 +884,18 @@ def test_receipt_is_not_published_when_final_journal_write_fails(
     )
     check_promotion(root, map_path, config_path, plan_path)
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    original_write = __import__("packctl.promotion", fromlist=["write_json"]).write_json
+    original_append = promotion._append_event
 
-    def fail_complete_journal(path: Path, value: object, **kwargs) -> None:
-        if (
-            Path(path).name == "journal.json"
-            and isinstance(value, dict)
-            and value.get("state") == "complete"
-        ):
-            raise OSError("journal completion fault")
-        original_write(path, value, **kwargs)
+    def fail_commit_event(
+        transaction: Path,
+        event_type: str,
+        payload: dict[str, object],
+    ) -> dict[str, object]:
+        if event_type == "COMMIT":
+            raise OSError("commit event fault")
+        return original_append(transaction, event_type, payload)
 
-    monkeypatch.setattr("packctl.promotion.write_json", fail_complete_journal)
+    monkeypatch.setattr("packctl.promotion._append_event", fail_commit_event)
 
     report = apply_promotion(plan_path)
 
@@ -840,3 +1021,629 @@ def test_vault_snapshot_preserves_private_note(repo_factory, tmp_path: Path) -> 
     apply_promotion(plan_path)
 
     assert private.read_bytes() == before
+
+
+APPLY_TERMINATION_BOUNDARIES = (
+    ["after_pending"]
+    + [
+        f"{boundary}:{index}"
+        for boundary in (
+            "after_stage",
+            "after_backup",
+            "after_old_move",
+            "after_publish",
+            "after_target_event",
+        )
+        for index in range(4)
+    ]
+    + ["after_post_verified", "after_commit"]
+)
+
+
+def test_apply_publishes_hash_chained_terminal_journal(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+
+    report = apply_promotion(plan_path)
+
+    assert report["verdict"] == "PASS"
+    transaction = transaction_root(plan)
+    assert json.loads((transaction / "plan.json").read_text(encoding="utf-8")) == plan
+    events = assert_valid_event_chain(transaction)
+    assert events[0]["event_type"] == "PENDING"
+    assert events[-2]["event_type"] == "POST_VERIFIED"
+    assert events[-1]["event_type"] == "COMMIT"
+    assert sum(event["event_type"] == "COMMIT" for event in events) == 1
+    assert all(event["event_type"] != "ABORT" for event in events)
+
+
+@pytest.mark.parametrize("boundary", APPLY_TERMINATION_BOUNDARIES)
+def test_apply_process_termination_recovers_to_one_decided_state(
+    repo_factory,
+    tmp_path: Path,
+    boundary: str,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    seed_every_target_with_pre_state(root, paths)
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+
+    killed = run_promote_process(
+        root,
+        "--apply",
+        "--plan",
+        str(plan_path),
+        environment={"PACKCTL_TERMINATE_AT": boundary},
+    )
+
+    assert killed.returncode == 97
+    transaction = transaction_root(plan)
+    recovered = promotion.recover_promotion(transaction)
+    assert recovered["verdict"] == "PASS"
+    events = assert_valid_event_chain(transaction)
+    receipt_path = Path(str(plan["receipt_path"]))
+    if boundary == "after_commit":
+        assert events[-1]["event_type"] == "COMMIT"
+        assert_plan_state(plan, state="POST")
+        assert receipt_path.is_file()
+    else:
+        assert events[-1]["event_type"] == "ABORT"
+        assert_plan_state(plan, state="PRE")
+        assert not receipt_path.exists()
+
+
+@pytest.mark.parametrize(
+    "boundary",
+    [
+        "after_recovery_stage:0",
+        "after_recovery_old_move:0",
+        "after_pre_publish:0",
+        "after_pre_verified:0",
+        "after_abort",
+    ],
+)
+def test_recovery_process_termination_is_restartable(
+    repo_factory,
+    tmp_path: Path,
+    boundary: str,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    seed_every_target_with_pre_state(root, paths)
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    killed_apply = run_promote_process(
+        root,
+        "--apply",
+        "--plan",
+        str(plan_path),
+        environment={"PACKCTL_TERMINATE_AT": "after_publish:0"},
+    )
+    assert killed_apply.returncode == 97
+    transaction = transaction_root(plan)
+
+    killed_recovery = run_promote_process(
+        root,
+        "--recover",
+        "--transaction-root",
+        str(transaction),
+        environment={"PACKCTL_RECOVER_TERMINATE_AT": boundary},
+    )
+    assert killed_recovery.returncode == 97
+
+    recovered = run_promote_process(
+        root,
+        "--recover",
+        "--transaction-root",
+        str(transaction),
+    )
+    assert recovered.returncode == 0, recovered.stderr
+    events = assert_valid_event_chain(transaction)
+    assert events[-1]["event_type"] == "ABORT"
+    assert_plan_state(plan, state="PRE")
+    assert not Path(str(plan["receipt_path"])).exists()
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ["payload", "truncate", "sequence", "plan"],
+)
+def test_recovery_rejects_corrupt_authoritative_evidence_without_target_writes(
+    repo_factory,
+    tmp_path: Path,
+    mutation: str,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    seed_every_target_with_pre_state(root, paths)
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    killed = run_promote_process(
+        root,
+        "--apply",
+        "--plan",
+        str(plan_path),
+        environment={"PACKCTL_TERMINATE_AT": "after_pending"},
+    )
+    assert killed.returncode == 97
+    transaction = transaction_root(plan)
+    before = {
+        str(operation["target_path"]): tree_digest(
+            Path(str(operation["target_path"]))
+        )
+        for operation in plan["operations"]
+    }
+    first_event = transaction / "events/00000000.json"
+    if mutation == "payload":
+        event = json.loads(first_event.read_text(encoding="utf-8"))
+        event["payload"] = {"tampered": True}
+        write_json(first_event, event)
+    elif mutation == "truncate":
+        first_event.write_text("{", encoding="utf-8")
+    elif mutation == "sequence":
+        first_event.rename(transaction / "events/00000001.json")
+    else:
+        sealed_plan = json.loads(
+            (transaction / "plan.json").read_text(encoding="utf-8")
+        )
+        sealed_plan["source_commit"] = "0" * 40
+        write_json(transaction / "plan.json", sealed_plan)
+
+    report = promotion.recover_promotion(transaction)
+
+    assert report["verdict"] == "FAIL"
+    assert report["artifacts"]["exit_code"] == 2
+    assert "PROMOTION-JOURNAL-INVALID" in codes(report)
+    assert {
+        path: tree_digest(Path(path))
+        for path in before
+    } == before
+
+
+def test_recovery_rejects_foreign_target_digest_without_deleting_it(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    seed_every_target_with_pre_state(root, paths)
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    killed = run_promote_process(
+        root,
+        "--apply",
+        "--plan",
+        str(plan_path),
+        environment={"PACKCTL_TERMINATE_AT": "after_publish:0"},
+    )
+    assert killed.returncode == 97
+    target = Path(str(plan["operations"][0]["target_path"]))
+    sentinel = target / "foreign-after-crash.txt"
+    sentinel.write_text("operator data\n", encoding="utf-8")
+    foreign_digest = tree_digest(target)
+
+    report = promotion.recover_promotion(transaction_root(plan))
+
+    assert report["verdict"] == "FAIL"
+    assert report["artifacts"]["exit_code"] == 2
+    assert "PROMOTION-FOREIGN-TARGET" in codes(report)
+    assert tree_digest(target) == foreign_digest
+    assert sentinel.read_text(encoding="utf-8") == "operator data\n"
+
+
+def test_commit_recovery_refuses_to_overwrite_foreign_receipt(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    killed = run_promote_process(
+        root,
+        "--apply",
+        "--plan",
+        str(plan_path),
+        environment={"PACKCTL_TERMINATE_AT": "after_commit"},
+    )
+    assert killed.returncode == 97
+    receipt_path = Path(str(plan["receipt_path"]))
+    receipt_path.parent.mkdir(parents=True, exist_ok=True)
+    foreign = b'{"foreign":true}\n'
+    receipt_path.write_bytes(foreign)
+
+    report = promotion.recover_promotion(transaction_root(plan))
+
+    assert report["verdict"] == "FAIL"
+    assert report["artifacts"]["exit_code"] == 2
+    assert "PROMOTION-RECEIPT-CONFLICT" in codes(report)
+    assert receipt_path.read_bytes() == foreign
+
+
+@pytest.mark.parametrize(
+    ("termination_boundary", "terminal", "state"),
+    [
+        ("after_publish:0", "ABORT", "PRE"),
+        ("after_commit", "COMMIT", "POST"),
+    ],
+)
+def test_recovery_is_idempotent_after_terminal_decision(
+    repo_factory,
+    tmp_path: Path,
+    termination_boundary: str,
+    terminal: str,
+    state: str,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    seed_every_target_with_pre_state(root, paths)
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    killed = run_promote_process(
+        root,
+        "--apply",
+        "--plan",
+        str(plan_path),
+        environment={"PACKCTL_TERMINATE_AT": termination_boundary},
+    )
+    assert killed.returncode == 97
+    transaction = transaction_root(plan)
+
+    first = promotion.recover_promotion(transaction)
+    event_bytes = {
+        path.name: path.read_bytes()
+        for path in (transaction / "events").glob("*.json")
+    }
+    second = promotion.recover_promotion(transaction)
+
+    assert first["verdict"] == second["verdict"] == "PASS"
+    assert {
+        path.name: path.read_bytes()
+        for path in (transaction / "events").glob("*.json")
+    } == event_bytes
+    assert assert_valid_event_chain(transaction)[-1]["event_type"] == terminal
+    assert_plan_state(plan, state=state)
+
+
+def test_commit_seals_exact_create_only_receipt_hash(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+
+    report = apply_promotion(plan_path)
+
+    assert report["verdict"] == "PASS"
+    events = assert_valid_event_chain(transaction_root(plan))
+    commit = events[-1]
+    receipt_path = Path(str(plan["receipt_path"]))
+    receipt_bytes = receipt_path.read_bytes()
+    assert commit["payload"]["receipt_hash"] == sha256_bytes(receipt_bytes)
+    assert str(tmp_path).encode("utf-8") not in receipt_bytes
+
+
+def test_apply_refuses_mixed_pending_transaction_until_recovery(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    seed_every_target_with_pre_state(root, paths)
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    killed = run_promote_process(
+        root,
+        "--apply",
+        "--plan",
+        str(plan_path),
+        environment={"PACKCTL_TERMINATE_AT": "after_publish:0"},
+    )
+    assert killed.returncode == 97
+    mixed = {
+        str(operation["target_path"]): tree_digest(
+            Path(str(operation["target_path"]))
+        )
+        for operation in plan["operations"]
+    }
+
+    refused = run_promote_process(
+        root,
+        "--apply",
+        "--plan",
+        str(plan_path),
+    )
+
+    assert refused.returncode == 2
+    report = json.loads(
+        plan_path.with_suffix(".apply-report.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert "PROMOTION-RECOVERY-REQUIRED" in codes(report)
+    assert {
+        path: tree_digest(Path(path))
+        for path in mixed
+    } == mixed
+
+
+@pytest.mark.parametrize(
+    ("termination_boundary", "terminal_code"),
+    [
+        ("after_commit", "PROMOTION-COMMIT-STATE-INVALID"),
+        ("after_pending", "PROMOTION-ABORT-STATE-INVALID"),
+    ],
+)
+def test_terminal_decision_rejects_later_target_mutation(
+    repo_factory,
+    tmp_path: Path,
+    termination_boundary: str,
+    terminal_code: str,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    seed_every_target_with_pre_state(root, paths)
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    killed = run_promote_process(
+        root,
+        "--apply",
+        "--plan",
+        str(plan_path),
+        environment={"PACKCTL_TERMINATE_AT": termination_boundary},
+    )
+    assert killed.returncode == 97
+    transaction = transaction_root(plan)
+    if termination_boundary == "after_pending":
+        assert promotion.recover_promotion(transaction)["verdict"] == "PASS"
+    target = Path(str(plan["operations"][0]["target_path"]))
+    sentinel = target / "foreign-after-terminal.txt"
+    sentinel.write_text("operator mutation\n", encoding="utf-8")
+    foreign_digest = tree_digest(target)
+
+    report = promotion.recover_promotion(transaction)
+
+    assert report["verdict"] == "FAIL"
+    assert report["artifacts"]["exit_code"] == 2
+    assert terminal_code in codes(report)
+    assert tree_digest(target) == foreign_digest
+    assert sentinel.read_text(encoding="utf-8") == "operator mutation\n"
+
+
+def test_three_sequential_commits_accept_superseded_terminal_history(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    exclude = root / ".git/info/exclude"
+    exclude.write_text(
+        exclude.read_text(encoding="utf-8")
+        + "\npromotions/receipts/\n",
+        encoding="utf-8",
+    )
+    transaction_ids: list[str] = []
+    for version in range(1, 4):
+        skill = root / "skills/demo/SKILL.md"
+        skill.write_text(
+            "---\n"
+            "name: demo\n"
+            f"description: Promotion fixture v{version}.\n"
+            "---\n"
+            "# Demo\n",
+            encoding="utf-8",
+        )
+        run_git(root, "add", "skills/demo/SKILL.md")
+        run_git(root, "commit", "-qm", f"fixture v{version}")
+        checked = check_promotion(
+            root,
+            map_path,
+            config_path,
+            plan_path,
+        )
+        assert checked["verdict"] in {"PASS", "WARN"}
+        plan = json.loads(plan_path.read_text(encoding="utf-8"))
+        transaction_ids.append(str(plan["transaction_id"]))
+
+        applied = apply_promotion(plan_path)
+
+        assert applied["verdict"] == "PASS"
+        assert tree_digest(paths["claude"] / "demo") == tree_digest(
+            root / "skills/demo"
+        )
+    assert len(set(transaction_ids)) == 3
+
+
+def test_clean_abort_can_be_rechecked_and_retried_as_new_transaction(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    first_plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    failed = apply_promotion(plan_path, fault_at="after_stage:0")
+    assert "PROMOTION-APPLY-FAILED" in codes(failed)
+    assert assert_valid_event_chain(transaction_root(first_plan))[-1][
+        "event_type"
+    ] == "ABORT"
+
+    check_promotion(root, map_path, config_path, plan_path)
+    retry_plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    retried = apply_promotion(plan_path)
+
+    assert retry_plan["transaction_id"] != first_plan["transaction_id"]
+    assert retried["verdict"] == "PASS"
+    assert (paths["claude"] / "demo/SKILL.md").is_file()
+
+
+def test_cli_recovery_does_not_write_report_inside_invalid_transaction(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    killed = run_promote_process(
+        root,
+        "--apply",
+        "--plan",
+        str(plan_path),
+        environment={"PACKCTL_TERMINATE_AT": "after_pending"},
+    )
+    assert killed.returncode == 97
+    transaction = transaction_root(plan)
+    (transaction / "events/00000000.json").write_text(
+        "{",
+        encoding="utf-8",
+    )
+
+    recovered = run_promote_process(
+        root,
+        "--recover",
+        "--transaction-root",
+        str(transaction),
+    )
+
+    assert recovered.returncode == 2
+    assert not (transaction / "recover-report.json").exists()
+
+
+def test_failed_transaction_initialization_never_publishes_a_transaction(
+    repo_factory,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    original_write = promotion.durable_write_json
+
+    def fail_sealed_plan(
+        path: Path,
+        value: object,
+        *,
+        create_only: bool,
+    ) -> bytes:
+        if path.name == "plan.json":
+            raise OSError("sealed plan fsync fault")
+        return original_write(path, value, create_only=create_only)
+
+    monkeypatch.setattr(
+        "packctl.promotion.durable_write_json",
+        fail_sealed_plan,
+    )
+
+    report = apply_promotion(plan_path)
+
+    assert "PROMOTION-APPLY-FAILED" in codes(report)
+    assert "exit_code" not in report["artifacts"]
+    assert not transaction_root(plan).exists()
+    assert not any(
+        path.name.endswith(".packctl-init")
+        for path in paths["backups"].iterdir()
+    )
+    assert not (paths["claude"] / "demo").exists()
+
+
+def test_apply_revalidates_sealed_contracts_after_acquiring_os_locks(
+    repo_factory,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    original_enter = promotion._RootLocks.__enter__
+    mutated = False
+
+    def mutate_after_lock(self):
+        nonlocal mutated
+        result = original_enter(self)
+        if not mutated:
+            config = json.loads(config_path.read_text(encoding="utf-8"))
+            config["targets"]["claude_user_skills"]["ownership"] = (
+                "changed-after-preflight"
+            )
+            write_json(config_path, config)
+            mutated = True
+        return result
+
+    monkeypatch.setattr(
+        promotion._RootLocks,
+        "__enter__",
+        mutate_after_lock,
+    )
+
+    report = apply_promotion(plan_path)
+
+    assert "PROMOTION-CONTRACT-CHANGED" in codes(report)
+    assert not transaction_root(
+        json.loads(plan_path.read_text(encoding="utf-8"))
+    ).exists()
+    assert not (paths["claude"] / "demo").exists()
+
+
+def test_target_change_after_backup_is_preserved_before_old_move(
+    repo_factory,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    seed_every_target_with_pre_state(root, paths)
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    first_target = Path(str(plan["operations"][0]["target_path"]))
+    sentinel = first_target / "external-after-backup.txt"
+    original_append = promotion._append_event
+    injected = False
+
+    def mutate_after_backup(
+        transaction: Path,
+        event_type: str,
+        payload: dict[str, object],
+    ) -> dict[str, object]:
+        nonlocal injected
+        event = original_append(transaction, event_type, payload)
+        if event_type == "BACKUP_READY" and not injected:
+            sentinel.write_text("external mutation\n", encoding="utf-8")
+            injected = True
+        return event
+
+    monkeypatch.setattr(
+        "packctl.promotion._append_event",
+        mutate_after_backup,
+    )
+
+    report = apply_promotion(plan_path)
+
+    assert report["verdict"] == "FAIL"
+    assert report["artifacts"]["exit_code"] == 2
+    assert sentinel.read_text(encoding="utf-8") == "external mutation\n"
