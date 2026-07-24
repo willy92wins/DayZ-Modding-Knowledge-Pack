@@ -125,7 +125,7 @@ durabilidad explícita y recovery determinista
 (`packctl/common.py:51-151`; `packctl/promotion.py:1128-1665,1825-2443`;
 `tests/packctl/test_promotion.py:1043-1649`).
 
-Durante la segunda auditoría se localizaron y corrigieron nueve fallos
+Durante la segunda auditoría se localizaron y corrigieron diez fallos
 adicionales:
 
 1. **[EXACT] Corrupción lógica de snapshots de fichero.** El digest incluía el
@@ -176,6 +176,14 @@ adicionales:
    registrar `.gitattributes` como artefacto gobernado y añadir una fixture que
    rechaza cualquier CRLF versionado
    (`.gitattributes:1`; `tests/packctl/test_validation.py:31-43`).
+10. **[EXACT] El lock contaminaba un target exacto.** La primera promoción real
+    falló cerrada antes de `PENDING`: el allowed root físico de
+    `rigorous-data-audit` era también el target, por lo que
+    `target/.packctl.lock` entraba en el digest y Windows denegaba leer su byte
+    bloqueado. El lock ahora es un sidecar hermano determinista y la fixture
+    prueba que el digest permanece estable
+    (`packctl/promotion.py:1128-1141`;
+    `tests/packctl/test_promotion.py:663-681`).
 
 La ejecución intermedia posterior a estas correcciones fue
 `python -m pytest -q`: **271 passed, 13 skipped**. Este resultado demuestra el

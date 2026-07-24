@@ -55,9 +55,11 @@ el sistema operativo:
 - Windows: `msvcrt.locking(fd, LK_NBLCK, 1)`;
 - POSIX: `fcntl.flock(fd, LOCK_EX | LOCK_NB)`.
 
-El fichero puede sobrevivir, pero el lock del kernel se libera al terminar el
-proceso. Existencia no equivale a lock vivo. Apply y recovery adquieren todos
-los roots en orden canónico y repiten CAS/readback bajo lock.
+El fichero es un sidecar hermano determinista
+`.<root-name>.packctl.lock`, nunca un hijo del árbol cuyo digest protege. Puede
+sobrevivir, pero el lock del kernel se libera al terminar el proceso.
+Existencia no equivale a lock vivo. Apply y recovery adquieren todos los roots
+en orden canónico y repiten CAS/readback bajo lock.
 
 ### Durabilidad
 
@@ -179,9 +181,12 @@ primer diseño no hacía explícitos:
    todavía no ha validado;
 8. symlinks o junctions anidados en payloads, backups o residuos se rechazan
    para no convertir un enlace en una copia al restaurar.
+9. el lock vive fuera del árbol protegido, por lo que un allowed root que
+   coincide exactamente con el target no contamina su digest ni bloquea su
+   propio readback.
 
 La matriz ejecutable está en
-`tests/packctl/test_promotion.py:536-587,1043-1649`. Cubre las fronteras de
+`tests/packctl/test_promotion.py:536-587,663-681,1058-1664`. Cubre las fronteras de
 muerte forward/recovery, corrupción de evidencia, targets y recibos ajenos,
 locks vivos y huérfanos, tres generaciones consecutivas, retry tras `ABORT`,
 inicialización atómica y carreras bajo lock.

@@ -386,7 +386,8 @@ snapshot. Un target ausente usa el sentinel `absent`
 `promote --apply --plan <local-plan>`:
 
 1. adquiere locks exclusivos del sistema operativo por root físico, en orden
-   canónico;
+   canónico, mediante sidecars hermanos `.<root-name>.packctl.lock` que no
+   alteran el digest del árbol protegido;
 2. vuelve a validar bajo lock plan sellado, contratos, commit, repo limpio,
    routing, aliases, source digests y todos los `before_digest`;
 3. publica atómicamente una transacción que ya contiene `plan.json` y

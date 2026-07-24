@@ -1125,6 +1125,10 @@ class _PromotionIntegrityError(RuntimeError):
         self.evidence = evidence
 
 
+def _lock_path_for_root(root: Path) -> Path:
+    return root.parent / f".{root.name}.packctl.lock"
+
+
 class _RootLocks:
     def __init__(self, roots: list[Path]) -> None:
         self.roots = roots
@@ -1133,7 +1137,7 @@ class _RootLocks:
     def __enter__(self) -> "_RootLocks":
         try:
             for root in self.roots:
-                lock_path = root / ".packctl.lock"
+                lock_path = _lock_path_for_root(root)
                 descriptor = os.open(
                     lock_path,
                     os.O_RDWR | os.O_CREAT,

@@ -70,18 +70,21 @@ multi-root publisher, also audit these less-obvious boundaries:
 8. Reject or explicitly preserve nested symlink/junction semantics in payload,
    backup and recovery sidecars; materializing a link target is not equivalent
    to restoring the link.
+9. Keep lock metadata outside the protected content boundary. If an allowed
+   physical root can equal the promoted target, `root/.lock` changes the digest
+   it is meant to protect and an exclusive lock may make its own readback fail.
 
 These checks need fixtures for successive generations, retry after `ABORT`,
 failure during transaction initialization, contract mutation while waiting for
-locks, mutation after backup, renamed standalone-file snapshots and invalid
-transaction roots.
+locks, mutation after backup, renamed standalone-file snapshots, a lock root
+equal to its target and invalid transaction roots.
 
 ## Evidence
 
 - `Utopia_PC_Suite/plans/2026-07-22-phase-0a-foundation-plan.md:262-289,375-378`
 - `Utopia_PC_Suite/plans/2026-07-22-phase-0b-dedicated-persistence-plan.md:383-439`
 - `DayZ-Modding-Knowledge-Pack/packctl/promotion.py:1594-1631,1825-2443`
-- `DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:536-587,1043-1649`
+- `DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:536-587,663-681,1058-1664`
 
 Verification level: mechanism/source contract cross-check plus offline
 termination/recovery tests, 2026-07-24.

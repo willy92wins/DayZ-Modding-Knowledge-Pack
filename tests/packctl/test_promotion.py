@@ -650,7 +650,7 @@ def test_stale_lock_file_does_not_block_apply(
         repo_factory, tmp_path
     )
     check_promotion(root, map_path, config_path, plan_path)
-    lock = paths["targets"] / ".packctl.lock"
+    lock = promotion._lock_path_for_root(paths["targets"])
     lock.write_text("stale metadata\n", encoding="utf-8")
 
     report = apply_promotion(plan_path)
@@ -658,6 +658,22 @@ def test_stale_lock_file_does_not_block_apply(
     assert report["verdict"] == "PASS"
     assert lock.exists()
     assert (paths["claude"] / "demo/SKILL.md").is_file()
+
+
+def test_root_lock_sidecar_does_not_modify_an_exact_target(
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "exact-target"
+    target.mkdir()
+    (target / "content.txt").write_text("stable\n", encoding="utf-8")
+    before = tree_digest(target)
+
+    with promotion._RootLocks([target]):
+        assert tree_digest(target) == before
+        assert not (target / ".packctl.lock").exists()
+        assert (tmp_path / ".exact-target.packctl.lock").is_file()
+
+    assert tree_digest(target) == before
 
 
 def test_live_os_lock_blocks_apply_with_exit_2(
@@ -668,7 +684,7 @@ def test_live_os_lock_blocks_apply_with_exit_2(
         repo_factory, tmp_path
     )
     check_promotion(root, map_path, config_path, plan_path)
-    lock = paths["targets"] / ".packctl.lock"
+    lock = promotion._lock_path_for_root(paths["targets"])
     holder = start_lock_holder(lock)
     try:
         report = apply_promotion(plan_path)
