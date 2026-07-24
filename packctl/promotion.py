@@ -1,0 +1,875 @@
+from __future__ import annotations
+
+import json
+import os
+import re
+import shutil
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Callable
+
+from .common import (
+    canonical_json_bytes,
+    finding,
+    git_commit,
+    git_is_dirty,
+    is_relative_contract_path,
+    is_within,
+    load_json,
+    make_report,
+    sha256_bytes,
+    sort_findings,
+    tree_digest,
+    write_json,
+)
+from .validation import SOURCE_MAP_PATH
+
+
+REQUIRED_SKILL_TARGETS = {"claude_user_skills", "agents_user_skills"}
+
+
+def _load_object(path: Path, code: str) -> tuple[dict[str, object] | None, list[dict[str, object]]]:
+    try:
+        value = load_json(path)
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        return None, [
+            finding(
+                code,
+                path=path.name,
+                line=1,
+                message="A promotion contract cannot be loaded as JSON.",
+                evidence=type(error).__name__,
+            )
+        ]
+    if not isinstance(value, dict):
+        return None, [
+            finding(
+                code,
+                path=path.name,
+                line=1,
+                message="A promotion contract root must be an object.",
+                evidence=type(value).__name__,
+            )
+        ]
+    return value, []
+
+
+def _routing_findings(
+    root: Path,
+    promotion_map: dict[str, object],
+) -> list[dict[str, object]]:
+    findings: list[dict[str, object]] = []
+    if set(promotion_map) != {"schema_version", "artifacts"} or promotion_map.get("schema_version") != 1 or not isinstance(promotion_map.get("artifacts"), list):
+        return [
+            finding(
+                "PROMOTION-ROUTING-INVALID",
+                path="promotion-map.json",
+                line=1,
+                message="The promotion map does not match schema v1.",
+                evidence="Expected schema_version and artifacts.",
+            )
+        ]
+    required = {
+        "artifact_id",
+        "repo_path",
+        "artifact_kind",
+        "applicability",
+        "vault_targets",
+        "skill_target_ids",
+    }
+    allowed = required | {"not_applicable_reason"}
+    route_ids: set[str] = set()
+    for index, route in enumerate(promotion_map["artifacts"]):
+        if not isinstance(route, dict) or not required.issubset(route) or set(route) - allowed:
+            findings.append(
+                finding(
+                    "PROMOTION-ROUTING-INVALID",
+                    path="promotion-map.json",
+                    line=1,
+                    message="A promotion route has invalid fields.",
+                    evidence=f"artifacts[{index}]",
+                )
+            )
+            continue
+        artifact_id = str(route["artifact_id"])
+        route_ids.add(artifact_id)
+        repo_path = str(route["repo_path"])
+        if not is_relative_contract_path(repo_path):
+            findings.append(
+                finding(
+                    "PROMOTION-ROUTING-INVALID",
+                    path="promotion-map.json",
+                    line=1,
+                    message="A route repo_path is not a safe relative path.",
+                    evidence=artifact_id,
+                )
+            )
+            continue
+        source = root / repo_path
+        kind = route["artifact_kind"]
+        if kind not in {"file", "tree"} or not source.exists() or (kind == "file") != source.is_file():
+            findings.append(
+                finding(
+                    "PROMOTION-ROUTING-INVALID",
+                    path=repo_path,
+                    line=0,
+                    message="A routed source is missing or has the wrong artifact kind.",
+                    evidence=f"artifact_id={artifact_id} kind={kind}",
+                )
+            )
+        if not isinstance(route["vault_targets"], list) or not route["vault_targets"]:
+            findings.append(
+                finding(
+                    "PROMOTION-ROUTING-INVALID",
+                    path="promotion-map.json",
+                    line=1,
+                    message="Every route requires at least one vault target.",
+                    evidence=artifact_id,
+                )
+            )
+        skill_targets = set(route["skill_target_ids"]) if isinstance(route["skill_target_ids"], list) else set()
+        applicability = route["applicability"]
+        if applicability == "domain_invariant":
+            if skill_targets != REQUIRED_SKILL_TARGETS:
+                findings.append(
+                    finding(
+                        "PROMOTION-ROUTING-INVALID",
+                        path="promotion-map.json",
+                        line=1,
+                        message="A domain invariant must route to both installed skill roots.",
+                        evidence=f"artifact_id={artifact_id} targets={sorted(skill_targets)}",
+                    )
+                )
+        elif applicability in {"governance", "tooling"}:
+            if not skill_targets and not str(route.get("not_applicable_reason", "")).strip():
+                findings.append(
+                    finding(
+                        "PROMOTION-NOT-APPLICABLE-INVALID",
+                        path="promotion-map.json",
+                        line=1,
+                        message="A route without skill targets requires a concrete reason.",
+                        evidence=artifact_id,
+                    )
+                )
+        else:
+            findings.append(
+                finding(
+                    "PROMOTION-ROUTING-INVALID",
+                    path="promotion-map.json",
+                    line=1,
+                    message="A route has an unsupported applicability.",
+                    evidence=f"artifact_id={artifact_id}",
+                )
+            )
+
+    try:
+        source_map = load_json(root / SOURCE_MAP_PATH)
+        expected = {
+            str(item["routing_artifact_id"])
+            for item in source_map["artifacts"]
+            if isinstance(item, dict)
+        }
+    except (OSError, UnicodeError, json.JSONDecodeError, KeyError, TypeError):
+        expected = set()
+    for artifact_id in sorted(expected - route_ids):
+        findings.append(
+            finding(
+                "PROMOTION-UNROUTED",
+                path=SOURCE_MAP_PATH,
+                line=0,
+                message="A source-map routing artifact has no promotion route.",
+                evidence=artifact_id,
+            )
+        )
+    return sort_findings(findings)
+
+
+def _target_config_findings(
+    config: dict[str, object],
+) -> tuple[dict[str, Path], list[Path], list[Path], Path | None, list[dict[str, object]]]:
+    findings: list[dict[str, object]] = []
+    required = {
+        "schema_version",
+        "allowed_physical_roots",
+        "forbidden_physical_roots",
+        "backup_root",
+        "targets",
+    }
+    if set(config) != required or config.get("schema_version") != 1:
+        return {}, [], [], None, [
+            finding(
+                "PROMOTION-CONFIG-INVALID",
+                path="local-targets.json",
+                line=1,
+                message="The local target configuration does not match schema v1.",
+                evidence="Invalid top-level fields.",
+            )
+        ]
+    try:
+        allowed = [Path(item).resolve(strict=True) for item in config["allowed_physical_roots"]]
+        forbidden = [Path(item).resolve(strict=False) for item in config["forbidden_physical_roots"]]
+        backup_root = Path(str(config["backup_root"])).resolve(strict=True)
+    except (OSError, TypeError) as error:
+        return {}, [], [], None, [
+            finding(
+                "PROMOTION-CONFIG-INVALID",
+                path="local-targets.json",
+                line=1,
+                message="A configured physical root cannot be resolved.",
+                evidence=type(error).__name__,
+            )
+        ]
+    targets: dict[str, Path] = {}
+    if not isinstance(config["targets"], dict):
+        findings.append(
+            finding(
+                "PROMOTION-CONFIG-INVALID",
+                path="local-targets.json",
+                line=1,
+                message="targets must be an object.",
+                evidence=type(config["targets"]).__name__,
+            )
+        )
+        return targets, allowed, forbidden, backup_root, findings
+    for target_id, item in config["targets"].items():
+        if not isinstance(item, dict) or set(item) != {"path", "ownership", "writable"}:
+            findings.append(
+                finding(
+                    "PROMOTION-CONFIG-INVALID",
+                    path="local-targets.json",
+                    line=1,
+                    message="A target configuration has invalid fields.",
+                    evidence=str(target_id),
+                )
+            )
+            continue
+        path = Path(str(item["path"]))
+        if not path.exists() or not path.is_dir():
+            findings.append(
+                finding(
+                    "PROMOTION-TARGET-MISSING",
+                    path=str(target_id),
+                    line=0,
+                    message="A configured target root does not exist.",
+                    evidence=str(target_id),
+                )
+            )
+            continue
+        resolved = path.resolve(strict=True)
+        if any(is_within(resolved, blocked) for blocked in forbidden):
+            findings.append(
+                finding(
+                    "PROMOTION-TARGET-FORBIDDEN",
+                    path=str(target_id),
+                    line=0,
+                    message="A configured target resolves inside a forbidden root.",
+                    evidence=str(target_id),
+                )
+            )
+            continue
+        if not any(is_within(resolved, root) for root in allowed):
+            findings.append(
+                finding(
+                    "PROMOTION-TARGET-ESCAPE",
+                    path=str(target_id),
+                    line=0,
+                    message="A configured target resolves outside all allowlisted roots.",
+                    evidence=str(target_id),
+                )
+            )
+            continue
+        if item["ownership"] != "user_owned" or item["writable"] is not True:
+            findings.append(
+                finding(
+                    "PROMOTION-TARGET-READONLY",
+                    path=str(target_id),
+                    line=0,
+                    message="A target is not explicitly user-owned and writable.",
+                    evidence=str(target_id),
+                )
+            )
+            continue
+        targets[str(target_id)] = resolved
+    return targets, allowed, forbidden, backup_root, sort_findings(findings)
+
+
+def _skill_name(skill_file: Path) -> str | None:
+    try:
+        text = skill_file.read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return None
+    match = re.search(r"(?m)^name:\s*['\"]?([a-z0-9-]+)", text)
+    return match.group(1) if match else None
+
+
+def _legacy_overlap_findings(
+    routes: list[dict[str, object]],
+    targets: dict[str, Path],
+) -> list[dict[str, object]]:
+    findings: list[dict[str, object]] = []
+    for route in routes:
+        if route["applicability"] != "domain_invariant":
+            continue
+        source_name = _skill_name(Path(route["_resolved_source"]) / "SKILL.md")
+        if not source_name:
+            continue
+        destination_name = Path(str(route["repo_path"])).name
+        for target_id in route["skill_target_ids"]:
+            root = targets.get(str(target_id))
+            if root is None:
+                continue
+            for skill_file in sorted(root.glob("*/SKILL.md")):
+                if skill_file.parent.name == destination_name:
+                    continue
+                if _skill_name(skill_file) == source_name:
+                    findings.append(
+                        finding(
+                            "PROMOTION-LEGACY-OVERLAP",
+                            path=str(target_id),
+                            line=0,
+                            message="A legacy installed skill overlaps the promoted skill name.",
+                            evidence=f"skill={source_name} legacy={skill_file.parent.name}",
+                        )
+                    )
+    return sort_findings(findings)
+
+
+def check_promotion(
+    root: Path,
+    promotion_map_path: Path,
+    local_targets_path: Path,
+    plan_path: Path,
+) -> dict[str, object]:
+    root = Path(root).resolve()
+    promotion_map_path = Path(promotion_map_path).resolve()
+    local_targets_path = Path(local_targets_path).resolve()
+    plan_path = Path(plan_path).resolve()
+    findings: list[dict[str, object]] = []
+    if git_is_dirty(root):
+        findings.append(
+            finding(
+                "PROMOTION-DIRTY",
+                path=".",
+                line=0,
+                message="Promotion requires a clean source commit.",
+                evidence="git status --porcelain is non-empty",
+            )
+        )
+    promotion_map, map_load_findings = _load_object(
+        promotion_map_path, "PROMOTION-ROUTING-INVALID"
+    )
+    config, config_load_findings = _load_object(
+        local_targets_path, "PROMOTION-CONFIG-INVALID"
+    )
+    findings.extend(map_load_findings)
+    findings.extend(config_load_findings)
+    if promotion_map is None or config is None:
+        return make_report("promote check", root, findings)
+    findings.extend(_routing_findings(root, promotion_map))
+    targets, allowed, forbidden, backup_root, target_findings = _target_config_findings(config)
+    findings.extend(target_findings)
+    if any(item["severity"] == "error" for item in findings):
+        plan_path.unlink(missing_ok=True)
+        return make_report("promote check", root, findings)
+
+    routes: list[dict[str, object]] = []
+    for route_value in promotion_map["artifacts"]:
+        route = dict(route_value)
+        route["_resolved_source"] = str((root / str(route["repo_path"])).resolve(strict=True))
+        routes.append(route)
+    findings.extend(_legacy_overlap_findings(routes, targets))
+    if any(item["severity"] == "error" for item in findings):
+        plan_path.unlink(missing_ok=True)
+        return make_report("promote check", root, findings)
+
+    commit = git_commit(root)
+    raw_operations: list[dict[str, object]] = []
+    for route in routes:
+        source = Path(str(route["_resolved_source"]))
+        after_digest = tree_digest(source)
+        artifact_id = str(route["artifact_id"])
+        for target_id in route["vault_targets"]:
+            target_root = targets.get(str(target_id))
+            if target_root is None:
+                findings.append(
+                    finding(
+                        "PROMOTION-TARGET-MISSING",
+                        path=str(target_id),
+                        line=0,
+                        message="A routed target has no valid local configuration.",
+                        evidence=artifact_id,
+                    )
+                )
+                continue
+            destination = target_root / artifact_id / commit
+            raw_operations.append(
+                {
+                    "artifact_id": artifact_id,
+                    "artifact_kind": route["artifact_kind"],
+                    "source_path": str(source),
+                    "target_path": str(destination),
+                    "logical_target_ids": [str(target_id)],
+                    "before_digest": tree_digest(destination),
+                    "after_digest": after_digest,
+                    "target_role": "vault",
+                }
+            )
+        for target_id in route["skill_target_ids"]:
+            target_root = targets.get(str(target_id))
+            if target_root is None:
+                findings.append(
+                    finding(
+                        "PROMOTION-TARGET-MISSING",
+                        path=str(target_id),
+                        line=0,
+                        message="A routed target has no valid local configuration.",
+                        evidence=artifact_id,
+                    )
+                )
+                continue
+            destination = target_root / Path(str(route["repo_path"])).name
+            raw_operations.append(
+                {
+                    "artifact_id": artifact_id,
+                    "artifact_kind": route["artifact_kind"],
+                    "source_path": str(source),
+                    "target_path": str(destination),
+                    "logical_target_ids": [str(target_id)],
+                    "before_digest": tree_digest(destination),
+                    "after_digest": after_digest,
+                    "target_role": "skill",
+                }
+            )
+    if any(item["severity"] == "error" for item in findings):
+        plan_path.unlink(missing_ok=True)
+        return make_report("promote check", root, findings)
+
+    deduped: dict[str, dict[str, object]] = {}
+    for operation in raw_operations:
+        key = os.path.normcase(str(Path(str(operation["target_path"])).resolve(strict=False)))
+        existing = deduped.get(key)
+        if existing is None:
+            deduped[key] = operation
+        else:
+            if (
+                existing["after_digest"] != operation["after_digest"]
+                or existing["source_path"] != operation["source_path"]
+            ):
+                findings.append(
+                    finding(
+                        "PROMOTION-ALIAS-CONFLICT",
+                        path=str(operation["artifact_id"]),
+                        line=0,
+                        message="Two logical targets alias one path with different content.",
+                        evidence=",".join(
+                            sorted(
+                                set(existing["logical_target_ids"])
+                                | set(operation["logical_target_ids"])
+                            )
+                        ),
+                    )
+                )
+            existing["logical_target_ids"] = sorted(
+                set(existing["logical_target_ids"]) | set(operation["logical_target_ids"])
+            )
+    if any(item["severity"] == "error" for item in findings):
+        plan_path.unlink(missing_ok=True)
+        return make_report("promote check", root, findings)
+    operations = sorted(deduped.values(), key=lambda item: os.path.normcase(str(item["target_path"])))
+    for index, operation in enumerate(operations, 1):
+        operation["physical_alias"] = f"physical-{index:04d}"
+    drifted = [
+        operation
+        for operation in operations
+        if operation["before_digest"] != operation["after_digest"]
+    ]
+    if drifted:
+        findings.append(
+            finding(
+                "PROMOTION-DRIFT",
+                severity="warning",
+                path="",
+                line=0,
+                message="One or more configured targets differ from the source commit.",
+                evidence=f"operation_count={len(drifted)}",
+            )
+        )
+    transaction_material = {
+        "source_commit": commit,
+        "operations": [
+            {
+                "artifact_id": item["artifact_id"],
+                "physical_alias": item["physical_alias"],
+                "before_digest": item["before_digest"],
+                "after_digest": item["after_digest"],
+            }
+            for item in operations
+        ],
+    }
+    transaction_id = sha256_bytes(
+        canonical_json_bytes(transaction_material)
+    )[:24]
+    receipt_path = root / "promotions" / "receipts" / f"{transaction_id}.json"
+    plan = {
+        "schema_version": 1,
+        "transaction_id": transaction_id,
+        "source_root": str(root),
+        "source_commit": commit,
+        "promotion_map_path": str(promotion_map_path),
+        "local_targets_path": str(local_targets_path),
+        "backup_root": str(backup_root),
+        "allowed_physical_roots": [str(path) for path in allowed],
+        "forbidden_physical_roots": [str(path) for path in forbidden],
+        "receipt_path": str(receipt_path),
+        "artifact_ids": sorted({str(item["artifact_id"]) for item in operations}),
+        "target_ids": sorted(
+            {
+                target_id
+                for item in operations
+                for target_id in item["logical_target_ids"]
+            }
+        ),
+        "operations": operations,
+    }
+    write_json(plan_path, plan)
+    return make_report(
+        "promote check",
+        root,
+        findings,
+        artifacts={
+            "plan_path": str(plan_path),
+            "operation_count": len(operations),
+            "logical_target_count": len(plan["target_ids"]),
+        },
+    )
+
+
+def _copy_artifact(source: Path, destination: Path, kind: str) -> None:
+    if kind == "tree":
+        shutil.copytree(source, destination)
+    else:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+
+
+def _remove_artifact(path: Path) -> None:
+    if not path.exists() and not path.is_symlink():
+        return
+    if path.is_dir() and not path.is_symlink():
+        shutil.rmtree(path)
+    else:
+        path.unlink()
+
+
+def _fault(fault_at: str | None, boundary: str, index: int) -> None:
+    if fault_at == f"{boundary}:{index}":
+        raise RuntimeError(f"fault injection at {boundary}:{index}")
+
+
+def _validate_plan_paths(plan: dict[str, object]) -> list[dict[str, object]]:
+    findings: list[dict[str, object]] = []
+    root = Path(str(plan["source_root"])).resolve(strict=True)
+    allowed = [Path(item).resolve(strict=True) for item in plan["allowed_physical_roots"]]
+    forbidden = [Path(item).resolve(strict=False) for item in plan["forbidden_physical_roots"]]
+    for operation in plan["operations"]:
+        source = Path(str(operation["source_path"])).resolve(strict=True)
+        target = Path(str(operation["target_path"])).resolve(strict=False)
+        if not is_within(source, root):
+            findings.append(
+                finding(
+                    "PROMOTION-SOURCE-ESCAPE",
+                    path=str(operation["artifact_id"]),
+                    line=0,
+                    message="A planned source resolves outside the repository.",
+                    evidence=str(operation["physical_alias"]),
+                )
+            )
+        if any(is_within(target, blocked) for blocked in forbidden):
+            findings.append(
+                finding(
+                    "PROMOTION-TARGET-FORBIDDEN",
+                    path=str(operation["artifact_id"]),
+                    line=0,
+                    message="A planned target resolves inside a forbidden root.",
+                    evidence=str(operation["physical_alias"]),
+                )
+            )
+        elif not any(is_within(target, allowed_root) for allowed_root in allowed):
+            findings.append(
+                finding(
+                    "PROMOTION-TARGET-ESCAPE",
+                    path=str(operation["artifact_id"]),
+                    line=0,
+                    message="A planned target resolves outside all allowlisted roots.",
+                    evidence=str(operation["physical_alias"]),
+                )
+            )
+    return sort_findings(findings)
+
+
+def apply_promotion(
+    plan_path: Path,
+    *,
+    fault_at: str | None = None,
+    rollback_fault: bool = False,
+) -> dict[str, object]:
+    plan_path = Path(plan_path).resolve()
+    plan, load_findings = _load_object(plan_path, "PROMOTION-PLAN-INVALID")
+    if plan is None:
+        return make_report("promote apply", plan_path.parent, load_findings)
+    root = Path(str(plan.get("source_root", "."))).resolve()
+    required = {
+        "schema_version",
+        "transaction_id",
+        "source_root",
+        "source_commit",
+        "promotion_map_path",
+        "local_targets_path",
+        "backup_root",
+        "allowed_physical_roots",
+        "forbidden_physical_roots",
+        "receipt_path",
+        "artifact_ids",
+        "target_ids",
+        "operations",
+    }
+    if set(plan) != required or plan.get("schema_version") != 1:
+        return make_report(
+            "promote apply",
+            root,
+            [
+                finding(
+                    "PROMOTION-PLAN-INVALID",
+                    path=plan_path.name,
+                    line=1,
+                    message="The promotion plan does not match schema v1.",
+                    evidence="Invalid plan fields.",
+                )
+            ],
+        )
+    findings = _validate_plan_paths(plan)
+    if git_commit(root) != plan["source_commit"] or git_is_dirty(root):
+        findings.append(
+            finding(
+                "PROMOTION-SOURCE-CHANGED",
+                path=".",
+                line=0,
+                message="The source commit/worktree changed after promote --check.",
+                evidence=f"expected_commit={plan['source_commit']}",
+            )
+        )
+    for operation in plan["operations"]:
+        source = Path(str(operation["source_path"]))
+        target = Path(str(operation["target_path"]))
+        if tree_digest(source) != operation["after_digest"]:
+            findings.append(
+                finding(
+                    "PROMOTION-SOURCE-CHANGED",
+                    path=str(operation["artifact_id"]),
+                    line=0,
+                    message="A planned source digest changed after promote --check.",
+                    evidence=str(operation["physical_alias"]),
+                )
+            )
+        if tree_digest(target) != operation["before_digest"]:
+            findings.append(
+                finding(
+                    "PROMOTION-TARGET-CHANGED",
+                    path=str(operation["artifact_id"]),
+                    line=0,
+                    message="A target changed after promote --check; compare-and-swap rejected.",
+                    evidence=str(operation["physical_alias"]),
+                )
+            )
+    if findings:
+        return make_report("promote apply", root, findings)
+
+    transaction_id = str(plan["transaction_id"])
+    backup_root = Path(str(plan["backup_root"])) / transaction_id
+    backup_root.mkdir(parents=True, exist_ok=True)
+    journal_path = backup_root / "journal.json"
+    lock_roots = sorted(
+        {
+            next(
+                allowed
+                for allowed in [Path(item).resolve(strict=True) for item in plan["allowed_physical_roots"]]
+                if is_within(Path(str(operation["target_path"])), allowed)
+            )
+            for operation in plan["operations"]
+        },
+        key=lambda path: os.path.normcase(str(path)),
+    )
+    lock_paths: list[Path] = []
+    preserve_locks = False
+    touched: list[tuple[dict[str, object], Path, bool]] = []
+    stage_paths: list[Path] = []
+    old_paths: list[Path] = []
+    journal: dict[str, object] = {
+        "schema_version": 1,
+        "transaction_id": transaction_id,
+        "source_commit": plan["source_commit"],
+        "state": "starting",
+        "touched_aliases": [],
+    }
+    try:
+        for lock_root in lock_roots:
+            lock_path = lock_root / f".packctl-{transaction_id}.lock"
+            descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.write(descriptor, transaction_id.encode("ascii"))
+            os.close(descriptor)
+            lock_paths.append(lock_path)
+        write_json(journal_path, journal)
+
+        for index, operation in enumerate(plan["operations"]):
+            source = Path(str(operation["source_path"]))
+            target = Path(str(operation["target_path"]))
+            alias = str(operation["physical_alias"])
+            stage = target.parent / f".{target.name}.packctl-stage-{transaction_id}"
+            old = target.parent / f".{target.name}.packctl-old-{transaction_id}"
+            _remove_artifact(stage)
+            _remove_artifact(old)
+            old_paths.append(old)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            _copy_artifact(source, stage, str(operation["artifact_kind"]))
+            stage_paths.append(stage)
+            if tree_digest(stage) != operation["after_digest"]:
+                raise RuntimeError(f"staging verification failed for {alias}")
+            _fault(fault_at, "after_staging", index)
+
+            backup = backup_root / alias
+            existed = target.exists() or target.is_symlink()
+            if existed:
+                _copy_artifact(
+                    target,
+                    backup,
+                    "tree" if target.is_dir() and not target.is_symlink() else "file",
+                )
+                if tree_digest(backup) != operation["before_digest"]:
+                    raise RuntimeError(f"backup verification failed for {alias}")
+            else:
+                (backup_root / f"{alias}.absent").write_text(
+                    "absent\n", encoding="utf-8", newline="\n"
+                )
+            _fault(fault_at, "after_backup", index)
+
+            if existed:
+                os.replace(target, old)
+            os.replace(stage, target)
+            stage_paths.remove(stage)
+            touched.append((operation, backup, existed))
+            journal["state"] = "replacing"
+            journal["touched_aliases"] = [
+                str(item[0]["physical_alias"]) for item in touched
+            ]
+            write_json(journal_path, journal)
+            _fault(fault_at, "after_replace", index)
+            if tree_digest(target) != operation["after_digest"]:
+                raise RuntimeError(f"readback verification failed for {alias}")
+            _fault(fault_at, "after_readback", index)
+            _remove_artifact(old)
+
+        journal["state"] = "readback-complete"
+        write_json(journal_path, journal)
+        for operation in plan["operations"]:
+            target = Path(str(operation["target_path"]))
+            if tree_digest(target) != operation["after_digest"]:
+                raise RuntimeError(
+                    f"logical readback failed for {operation['physical_alias']}"
+                )
+        receipt = {
+            "schema_version": 1,
+            "transaction_id": transaction_id,
+            "source_commit": plan["source_commit"],
+            "artifact_ids": plan["artifact_ids"],
+            "target_ids": plan["target_ids"],
+            "operations": [
+                {
+                    "artifact_id": operation["artifact_id"],
+                    "physical_alias": operation["physical_alias"],
+                    "logical_target_ids": operation["logical_target_ids"],
+                    "before_digest": operation["before_digest"],
+                    "after_digest": operation["after_digest"],
+                }
+                for operation in plan["operations"]
+            ],
+            "verdict": "PASS",
+            "completed_at": datetime.now(timezone.utc).isoformat(),
+        }
+        receipt_path = Path(str(plan["receipt_path"]))
+        write_json(receipt_path, receipt)
+        journal["state"] = "complete"
+        write_json(journal_path, journal)
+        return make_report(
+            "promote apply",
+            root,
+            [],
+            artifacts={
+                "receipt_path": str(receipt_path),
+                "operation_count": len(plan["operations"]),
+                "logical_target_count": len(plan["target_ids"]),
+            },
+        )
+    except Exception as error:
+        rollback_errors: list[str] = []
+        for operation, backup, existed in reversed(touched):
+            target = Path(str(operation["target_path"]))
+            try:
+                if rollback_fault:
+                    raise RuntimeError("rollback fault injection")
+                _remove_artifact(target)
+                if existed:
+                    _copy_artifact(
+                        backup,
+                        target,
+                        "tree" if backup.is_dir() else "file",
+                    )
+                if tree_digest(target) != operation["before_digest"]:
+                    raise RuntimeError("rollback digest mismatch")
+            except Exception as rollback_error:
+                rollback_errors.append(
+                    f"{operation['physical_alias']}:{type(rollback_error).__name__}"
+                )
+        journal["state"] = "rollback-failed" if rollback_errors else "rolled-back"
+        journal["error_type"] = type(error).__name__
+        journal["rollback_errors"] = rollback_errors
+        write_json(journal_path, journal)
+        failure_findings = [
+            finding(
+                "PROMOTION-APPLY-FAILED",
+                path=plan_path.name,
+                line=0,
+                message="Promotion failed and did not publish a success receipt.",
+                evidence=type(error).__name__,
+            )
+        ]
+        artifacts: dict[str, object] = {
+            "journal_path": str(journal_path),
+            "backup_root": str(backup_root),
+        }
+        if rollback_errors:
+            preserve_locks = True
+            failure_findings.append(
+                finding(
+                    "PROMOTION-ROLLBACK-FAILED",
+                    path=plan_path.name,
+                    line=0,
+                    message="Rollback could not restore every touched target.",
+                    evidence=",".join(rollback_errors),
+                )
+            )
+            artifacts["requires_intervention"] = True
+            artifacts["exit_code"] = 2
+        return make_report(
+            "promote apply",
+            root,
+            failure_findings,
+            artifacts=artifacts,
+        )
+    finally:
+        for stage in stage_paths:
+            _remove_artifact(stage)
+        if not preserve_locks:
+            for old in old_paths:
+                _remove_artifact(old)
+            for lock_path in lock_paths:
+                lock_path.unlink(missing_ok=True)
