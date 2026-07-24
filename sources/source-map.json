@@ -141,17 +141,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "Administrative handoff records the verified prior-art commit, promotion receipt and next UI action.",
           "license": "MIT",
-          "source_hash": "6f5de23e437c592a970638b1f97ebe2a96366aef0a3f841c844acd5dfb4c851a",
+          "source_hash": "0f9a4e4ec96e06122b16f233c0ff50e37a23901a10b7748ea6da0b8702d1efa7",
           "source_id": "pack-r21-authored",
           "source_path": "HANDOFF.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-prior-art-admin@2026-07-24",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6f5de23e437c592a970638b1f97ebe2a96366aef0a3f841c844acd5dfb4c851a",
+      "output_hash": "0f9a4e4ec96e06122b16f233c0ff50e37a23901a10b7748ea6da0b8702d1efa7",
       "output_path": "HANDOFF.md",
       "routing_artifact_id": "root/handoff",
       "verification_level": "cross_checked"
@@ -1935,6 +1935,29 @@
       "license": "MIT",
       "output_hash": "44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd",
       "output_path": "promotions/receipts/c7b5366cc761a8038e52f6a2.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/51a7024ef9a5e333e5fab7b8.json",
+      "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt hash a3c0ccc8c92b92c6eeb105838becdf7d17649508904bdf945c3e9ddfb29cec59 matches the terminal COMMIT for the verified promotion of source commit 13af7f8b59962bca6fded981ad75cd77a37616ef.",
+          "license": "MIT",
+          "source_hash": "a3c0ccc8c92b92c6eeb105838becdf7d17649508904bdf945c3e9ddfb29cec59",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/51a7024ef9a5e333e5fab7b8.json",
+          "source_revision": "13af7f8b59962bca6fded981ad75cd77a37616ef",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a3c0ccc8c92b92c6eeb105838becdf7d17649508904bdf945c3e9ddfb29cec59",
+      "output_path": "promotions/receipts/51a7024ef9a5e333e5fab7b8.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
