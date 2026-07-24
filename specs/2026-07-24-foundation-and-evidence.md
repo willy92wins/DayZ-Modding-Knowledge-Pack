@@ -381,7 +381,10 @@ Para árboles, tree digest = SHA-256 de concatenar, por cada archivo ordenado,
 `relative_path UTF-8`, byte NUL, SHA-256 lowercase del archivo y LF. Para un
 artefacto `file`, digest = SHA-256 de sus bytes, independiente del basename del
 snapshot. Un target ausente usa el sentinel `absent`
-(`packctl/common.py:307-323`).
+(`packctl/common.py:307-323`). El orden de la proyección fuente y el del árbol
+materializado usan la misma semántica de `Path` del host; el plan contiene
+paths absolutos locales y no es portable entre hosts
+(`packctl/promotion.py:93-106`).
 
 `promote --apply --plan <local-plan>`:
 

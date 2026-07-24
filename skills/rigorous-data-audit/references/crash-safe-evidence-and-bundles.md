@@ -73,18 +73,22 @@ multi-root publisher, also audit these less-obvious boundaries:
 9. Keep lock metadata outside the protected content boundary. If an allowed
    physical root can equal the promoted target, `root/.lock` changes the digest
    it is meant to protect and an exclusive lock may make its own readback fail.
+10. Use one path-ordering rule for the sealed source projection and the
+    materialized tree readback. Host path semantics can order `SKILL.md` and
+    `references/...` differently from raw string sorting, making a valid source
+    impossible to verify after staging.
 
 These checks need fixtures for successive generations, retry after `ABORT`,
 failure during transaction initialization, contract mutation while waiting for
 locks, mutation after backup, renamed standalone-file snapshots, a lock root
-equal to its target and invalid transaction roots.
+equal to its target, mixed-case projected paths and invalid transaction roots.
 
 ## Evidence
 
 - `Utopia_PC_Suite/plans/2026-07-22-phase-0a-foundation-plan.md:262-289,375-378`
 - `Utopia_PC_Suite/plans/2026-07-22-phase-0b-dedicated-persistence-plan.md:383-439`
-- `DayZ-Modding-Knowledge-Pack/packctl/promotion.py:1594-1631,1825-2443`
-- `DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:536-587,663-681,1058-1664`
+- `DayZ-Modding-Knowledge-Pack/packctl/promotion.py:93-106,1598-1635,1829-2447`
+- `DayZ-Modding-Knowledge-Pack/tests/packctl/test_promotion.py:536-620,696-714,1092-1698`
 
 Verification level: mechanism/source contract cross-check plus offline
 termination/recovery tests, 2026-07-24.

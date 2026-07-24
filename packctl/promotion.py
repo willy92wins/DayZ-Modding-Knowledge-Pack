@@ -95,7 +95,10 @@ def _projection_digest(source: Path, kind: str, source_files: object) -> str:
     if kind == "file":
         return entries[0][1]
     material = bytearray()
-    for relative, file_hash in entries:
+    for relative, file_hash in sorted(
+        entries,
+        key=lambda entry: Path(entry[0]),
+    ):
         material.extend(relative.encode("utf-8"))
         material.extend(b"\0")
         material.extend(file_hash.encode("ascii"))

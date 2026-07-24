@@ -122,54 +122,55 @@ ejecutarse sobre las raíces reales.
 La implementación sustituyó el journal mutable por eventos create-only
 hash-chained, locks del sistema operativo, plan sellado, inicialización atómica,
 durabilidad explícita y recovery determinista
-(`packctl/common.py:51-151`; `packctl/promotion.py:1128-1665,1825-2443`;
-`tests/packctl/test_promotion.py:1043-1649`).
+(`packctl/common.py:51-151`; `packctl/promotion.py:1131-1668,1832-2450`;
+`tests/packctl/test_promotion.py:1092-1698`).
 
-Durante la segunda auditoría se localizaron y corrigieron diez fallos
+Durante la segunda auditoría y las promociones reales se localizaron y
+corrigieron once fallos
 adicionales:
 
 1. **[EXACT] Corrupción lógica de snapshots de fichero.** El digest incluía el
    basename de la fuente, pero el target vault se llama con el commit. Los
    mismos bytes producían digests distintos. El digest de un fichero ahora es
    su SHA-256 binario (`packctl/common.py:307-314`;
-   `tests/packctl/test_promotion.py:536-587`).
+   `tests/packctl/test_promotion.py:569-620`).
 2. **[EXACT] Degradación tras promociones sucesivas.** El scanner terminal
    exigía que el target actual siguiera en el POST de cada transacción
    histórica, bloqueando una tercera generación legítima. Ahora valida cadena,
    semántica y recibo históricos, mientras el estado físico actual se adjudica
    solo para la transacción que se recupera
-   (`packctl/promotion.py:1986-2075`;
-   `tests/packctl/test_promotion.py:1431-1473`).
+   (`packctl/promotion.py:2024-2114`;
+   `tests/packctl/test_promotion.py:1480-1524`).
 3. **[EXACT] Retry envenenado tras `ABORT`.** Un ID derivado solo del plan
    volvía a seleccionar una transacción terminal. Cada intento incorpora
    entropía del sistema y conserva el contrato sellado
-   (`packctl/promotion.py:760-778`;
-   `tests/packctl/test_promotion.py:1476-1497`).
+   (`packctl/promotion.py:763-781`;
+   `tests/packctl/test_promotion.py:1525-1548`).
 4. **[EXACT] Escritura dentro de evidencia no confiable.** El CLI intentaba
    dejar `recover-report.json` en una transacción corrupta. Recovery ahora
    devuelve el informe por stdout sin mutar esa raíz
    (`packctl/cli.py:155-160`;
-   `tests/packctl/test_promotion.py:1500-1531`).
+   `tests/packctl/test_promotion.py:1549-1582`).
 5. **[EXACT] Ventana antes de `PENDING`.** Una terminación durante la creación
    de `plan.json` podía dejar una transacción visible pero inválida. La
    inicialización se materializa en un directorio oculto y se publica mediante
    rename durable solo tras sellar plan y primer evento
-   (`packctl/promotion.py:1594-1631`;
-   `tests/packctl/test_promotion.py:1534-1570`).
+   (`packctl/promotion.py:1601-1638`;
+   `tests/packctl/test_promotion.py:1583-1621`).
 6. **[EXACT] TOCTOU de contrato tras preflight.** Apply no repetía la
    validación del contrato sellado después de adquirir locks. Ahora lo hace
    antes de publicar la transacción
-   (`packctl/promotion.py:2195-2238`;
-   `tests/packctl/test_promotion.py:1573-1609`).
+   (`packctl/promotion.py:2202-2241`;
+   `tests/packctl/test_promotion.py:1622-1660`).
 7. **[EXACT] Riesgo destructivo entre backup y old-move.** Una mutación externa
    podía moverse a `.old` y ser eliminada como si fuera PRE. Un CAS adicional
    detiene la operación y preserva el digest ajeno
-   (`packctl/promotion.py:2301-2347`;
-   `tests/packctl/test_promotion.py:1612-1649`).
+   (`packctl/promotion.py:2304-2350`;
+   `tests/packctl/test_promotion.py:1661-1698`).
 8. **[EXACT] Pérdida de semántica de enlaces anidados.** Copiar un symlink o
    junction dentro de un árbol podía restaurarlo como contenido materializado.
    Payloads y sidecars que los contienen ahora fallan cerrados
-   (`packctl/promotion.py:878-892,1019-1028,1679-1687`).
+   (`packctl/promotion.py:886-897,1022-1033,1686-1693`).
 9. **[EXACT] Degradación de reproducibilidad entre checkouts.** Con
    `core.autocrlf=true` y sin política versionada, un clon limpio del commit
    validado produjo 66 `SOURCE-HASH-MISMATCH`. El usuario aprobó fijar LF,
@@ -182,11 +183,22 @@ adicionales:
     `target/.packctl.lock` entraba en el digest y Windows denegaba leer su byte
     bloqueado. El lock ahora es un sidecar hermano determinista y la fixture
     prueba que el digest permanece estable
-    (`packctl/promotion.py:1128-1141`;
-    `tests/packctl/test_promotion.py:663-681`).
+    (`packctl/promotion.py:1131-1144`;
+    `tests/packctl/test_promotion.py:696-714`).
+11. **[EXACT] Orden de digest distinto entre proyección y readback.** La segunda
+    promoción real publicó tres destinos y falló cerrada al primer árbol que
+    combinaba `SKILL.md` con `references/...`: la proyección recorría strings
+    case-sensitive, mientras `tree_digest` recorría `Path` con la semántica del
+    host. El rollback restauró los 53 estados PRE y cerró en `ABORT`. Ambos
+    cálculos usan ahora el mismo orden de `Path`, con una fixture mixta que
+    reproduce la divergencia de Windows
+    (`packctl/promotion.py:93-106`;
+    `tests/packctl/test_promotion.py:536-568`).
 
-La ejecución intermedia posterior a estas correcciones fue
-`python -m pytest -q`: **271 passed, 13 skipped**. Este resultado demuestra el
-contrato offline en el árbol de trabajo, pero no autoriza por sí solo la
-promoción real: aún faltan el gate completo desde commit limpio, validator,
-14/14 skills, 12 variantes de eval y build reproducible por duplicado.
+La ejecución intermedia posterior al undécimo fix fue
+`python -m pytest -q tests/packctl`: **135 passed, 3 skipped**. La recuperación
+idempotente de la transacción abortada también devolvió `PASS` y
+`decision=ABORT`. Estos resultados demuestran el contrato focalizado en el
+árbol de trabajo, pero no autorizan por sí solos otro intento real: primero se
+repite el gate completo desde commit limpio, validator, 14/14 skills,
+12 variantes de eval y build reproducible por duplicado.

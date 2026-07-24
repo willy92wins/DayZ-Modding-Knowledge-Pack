@@ -184,9 +184,13 @@ primer diseño no hacía explícitos:
 9. el lock vive fuera del árbol protegido, por lo que un allowed root que
    coincide exactamente con el target no contamina su digest ni bloquea su
    propio readback.
+10. la proyección fuente y el readback físico ordenan las rutas con la misma
+    semántica de `Path` del host; esto evita que un árbol mixto como
+    `SKILL.md` + `references/...` selle un digest que su staging no puede
+    reproducir.
 
 La matriz ejecutable está en
-`tests/packctl/test_promotion.py:536-587,663-681,1058-1664`. Cubre las fronteras de
+`tests/packctl/test_promotion.py:536-620,696-714,1092-1698`. Cubre las fronteras de
 muerte forward/recovery, corrupción de evidencia, targets y recibos ajenos,
 locks vivos y huérfanos, tres generaciones consecutivas, retry tras `ABORT`,
 inicialización atómica y carreras bajo lock.

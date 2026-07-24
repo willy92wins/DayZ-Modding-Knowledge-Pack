@@ -533,6 +533,39 @@ def test_tree_promotion_copies_only_tracked_projection(
     ).exists()
 
 
+def test_tree_promotion_uses_consistent_order_for_mixed_case_projection(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    reference = root / "skills/demo/references/detail.md"
+    reference.parent.mkdir()
+    reference.write_text("reference\n", encoding="utf-8", newline="\n")
+    run_git(root, "add", "skills/demo/references/detail.md")
+    run_git(root, "commit", "-qm", "add mixed-case projection fixture")
+
+    check_report = check_promotion(root, map_path, config_path, plan_path)
+    assert check_report["verdict"] == "WARN"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    skill_operation = next(
+        item
+        for item in plan["operations"]
+        if item["artifact_id"] == "fixture" and item["target_role"] == "skill"
+    )
+    assert skill_operation["source_files"] == [
+        "SKILL.md",
+        "references/detail.md",
+    ]
+    assert tree_digest(root / "skills/demo") == skill_operation["after_digest"]
+
+    report = apply_promotion(plan_path)
+
+    assert report["verdict"] == "PASS"
+    assert tree_digest(paths["claude"] / "demo") == skill_operation["after_digest"]
+
+
 def test_file_promotion_hashes_content_independently_of_snapshot_name(
     repo_factory,
     tmp_path: Path,
