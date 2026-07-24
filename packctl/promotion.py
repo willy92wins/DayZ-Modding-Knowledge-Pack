@@ -318,6 +318,26 @@ def _target_config_findings(
                 evidence=type(error).__name__,
             )
         ]
+    if any(is_within(backup_root, blocked) for blocked in forbidden):
+        findings.append(
+            finding(
+                "PROMOTION-BACKUP-FORBIDDEN",
+                path="backup_root",
+                line=0,
+                message="The configured backup root resolves inside a forbidden root.",
+                evidence="backup_root",
+            )
+        )
+    elif not any(is_within(backup_root, root) for root in allowed):
+        findings.append(
+            finding(
+                "PROMOTION-BACKUP-ESCAPE",
+                path="backup_root",
+                line=0,
+                message="The configured backup root resolves outside all allowlisted roots.",
+                evidence="backup_root",
+            )
+        )
     targets: dict[str, Path] = {}
     if not isinstance(config["targets"], dict):
         findings.append(
@@ -342,7 +362,7 @@ def _target_config_findings(
                 )
             )
             continue
-        path = Path(str(item["path"]))
+        path = Path(os.path.abspath(Path(str(item["path"]))))
         if not path.exists() or not path.is_dir():
             findings.append(
                 finding(
@@ -388,7 +408,7 @@ def _target_config_findings(
                 )
             )
             continue
-        targets[str(target_id)] = resolved
+        targets[str(target_id)] = path
     return targets, allowed, forbidden, backup_root, sort_findings(findings)
 
 
@@ -574,9 +594,8 @@ def check_promotion(
                     )
                 )
                 continue
-            destination = (target_root / artifact_id / commit).resolve(
-                strict=False
-            )
+            logical_destination = target_root / artifact_id / commit
+            destination = logical_destination.resolve(strict=False)
             findings.extend(
                 _destination_findings(
                     destination,
@@ -593,6 +612,9 @@ def check_promotion(
                     "source_files": source_files,
                     "target_path": str(destination),
                     "logical_target_ids": [str(target_id)],
+                    "logical_target_paths": {
+                        str(target_id): str(logical_destination)
+                    },
                     "before_digest": tree_digest(destination),
                     "after_digest": after_digest,
                     "target_role": "vault",
@@ -611,9 +633,10 @@ def check_promotion(
                     )
                 )
                 continue
-            destination = (
+            logical_destination = (
                 target_root / Path(str(route["repo_path"])).name
-            ).resolve(strict=False)
+            )
+            destination = logical_destination.resolve(strict=False)
             findings.extend(
                 _destination_findings(
                     destination,
@@ -630,6 +653,9 @@ def check_promotion(
                     "source_files": source_files,
                     "target_path": str(destination),
                     "logical_target_ids": [str(target_id)],
+                    "logical_target_paths": {
+                        str(target_id): str(logical_destination)
+                    },
                     "before_digest": tree_digest(destination),
                     "after_digest": after_digest,
                     "target_role": "skill",
@@ -667,6 +693,24 @@ def check_promotion(
             existing["logical_target_ids"] = sorted(
                 set(existing["logical_target_ids"]) | set(operation["logical_target_ids"])
             )
+            existing_paths = existing["logical_target_paths"]
+            operation_paths = operation["logical_target_paths"]
+            for target_id, logical_path in operation_paths.items():
+                prior = existing_paths.get(target_id)
+                if prior is not None and prior != logical_path:
+                    findings.append(
+                        finding(
+                            "PROMOTION-ALIAS-CONFLICT",
+                            path=str(operation["artifact_id"]),
+                            line=0,
+                            message=(
+                                "One logical target identifier maps to multiple "
+                                "paths."
+                            ),
+                            evidence=str(target_id),
+                        )
+                    )
+                existing_paths[target_id] = logical_path
     if any(item["severity"] == "error" for item in findings):
         plan_path.unlink(missing_ok=True)
         return make_report("promote check", root, findings)
@@ -699,6 +743,7 @@ def check_promotion(
                 "physical_alias": item["physical_alias"],
                 "target_path": item["target_path"],
                 "logical_target_ids": item["logical_target_ids"],
+                "logical_target_paths": item["logical_target_paths"],
                 "source_files": item["source_files"],
                 "before_digest": item["before_digest"],
                 "after_digest": item["after_digest"],
@@ -781,11 +826,37 @@ def _fault(fault_at: str | None, boundary: str, index: int) -> None:
         raise RuntimeError(f"fault injection at {boundary}:{index}")
 
 
+def _is_junction(path: Path) -> bool:
+    checker = getattr(path, "is_junction", None)
+    return bool(checker()) if checker is not None else False
+
+
 def _validate_plan_paths(plan: dict[str, object]) -> list[dict[str, object]]:
     findings: list[dict[str, object]] = []
     root = Path(str(plan["source_root"])).resolve(strict=True)
     allowed = [Path(item).resolve(strict=True) for item in plan["allowed_physical_roots"]]
     forbidden = [Path(item).resolve(strict=False) for item in plan["forbidden_physical_roots"]]
+    backup_root = Path(str(plan["backup_root"])).resolve(strict=True)
+    if any(is_within(backup_root, blocked) for blocked in forbidden):
+        findings.append(
+            finding(
+                "PROMOTION-BACKUP-FORBIDDEN",
+                path="backup_root",
+                line=0,
+                message="The planned backup root resolves inside a forbidden root.",
+                evidence="backup_root",
+            )
+        )
+    elif not any(is_within(backup_root, allowed_root) for allowed_root in allowed):
+        findings.append(
+            finding(
+                "PROMOTION-BACKUP-ESCAPE",
+                path="backup_root",
+                line=0,
+                message="The planned backup root resolves outside all allowlisted roots.",
+                evidence="backup_root",
+            )
+        )
     for operation in plan["operations"]:
         source = Path(str(operation["source_path"])).resolve(strict=True)
         target = Path(str(operation["target_path"])).resolve(strict=False)
@@ -819,6 +890,237 @@ def _validate_plan_paths(plan: dict[str, object]) -> list[dict[str, object]]:
                     evidence=str(operation["physical_alias"]),
                 )
             )
+        for target_id, logical_value in operation["logical_target_paths"].items():
+            logical_target = Path(str(logical_value)).resolve(strict=False)
+            if any(is_within(logical_target, blocked) for blocked in forbidden):
+                findings.append(
+                    finding(
+                        "PROMOTION-TARGET-FORBIDDEN",
+                        path=str(operation["artifact_id"]),
+                        line=0,
+                        message=(
+                            "A planned logical target resolves inside a "
+                            "forbidden root."
+                        ),
+                        evidence=str(target_id),
+                    )
+                )
+            elif not any(
+                is_within(logical_target, allowed_root)
+                for allowed_root in allowed
+            ):
+                findings.append(
+                    finding(
+                        "PROMOTION-TARGET-ESCAPE",
+                        path=str(operation["artifact_id"]),
+                        line=0,
+                        message=(
+                            "A planned logical target resolves outside all "
+                            "allowlisted roots."
+                        ),
+                        evidence=str(target_id),
+                    )
+                )
+    return sort_findings(findings)
+
+
+def _promotion_state_findings(
+    plan: dict[str, object],
+    root: Path,
+) -> list[dict[str, object]]:
+    findings: list[dict[str, object]] = []
+    if git_commit(root) != plan["source_commit"] or git_is_dirty(root):
+        findings.append(
+            finding(
+                "PROMOTION-SOURCE-CHANGED",
+                path=".",
+                line=0,
+                message="The source commit/worktree changed after promote --check.",
+                evidence=f"expected_commit={plan['source_commit']}",
+            )
+        )
+    for operation in plan["operations"]:
+        source = Path(str(operation["source_path"]))
+        target = Path(str(operation["target_path"]))
+        resolved_target = target.resolve(strict=False)
+        if os.path.normcase(str(resolved_target)) != os.path.normcase(str(target)):
+            findings.append(
+                finding(
+                    "PROMOTION-TARGET-CHANGED",
+                    path=str(operation["artifact_id"]),
+                    line=0,
+                    message="A sealed physical target no longer resolves to itself.",
+                    evidence=str(operation["physical_alias"]),
+                )
+            )
+        for target_id, logical_value in operation["logical_target_paths"].items():
+            logical_target = Path(str(logical_value)).resolve(strict=False)
+            if os.path.normcase(str(logical_target)) != os.path.normcase(str(target)):
+                findings.append(
+                    finding(
+                        "PROMOTION-LOGICAL-TARGET-CHANGED",
+                        path=str(operation["artifact_id"]),
+                        line=0,
+                        message=(
+                            "A logical target no longer resolves to its sealed "
+                            "physical destination."
+                        ),
+                        evidence=str(target_id),
+                    )
+                )
+        try:
+            source_digest = _projection_digest(
+                source,
+                str(operation["artifact_kind"]),
+                operation["source_files"],
+            )
+        except (OSError, ValueError):
+            source_digest = "invalid"
+        if source_digest != operation["after_digest"]:
+            findings.append(
+                finding(
+                    "PROMOTION-SOURCE-CHANGED",
+                    path=str(operation["artifact_id"]),
+                    line=0,
+                    message="A planned source digest changed after promote --check.",
+                    evidence=str(operation["physical_alias"]),
+                )
+            )
+        if tree_digest(target) != operation["before_digest"]:
+            findings.append(
+                finding(
+                    "PROMOTION-TARGET-CHANGED",
+                    path=str(operation["artifact_id"]),
+                    line=0,
+                    message=(
+                        "A target changed after promote --check; "
+                        "compare-and-swap rejected."
+                    ),
+                    evidence=str(operation["physical_alias"]),
+                )
+            )
+    return sort_findings(findings)
+
+
+def _recovery_findings(
+    root: Path,
+    backup_root: Path,
+    lock_roots: list[Path],
+    transaction_id: str,
+) -> list[dict[str, object]]:
+    findings: list[dict[str, object]] = []
+    for index, lock_root in enumerate(lock_roots):
+        lock_candidates = {lock_root / ".packctl.lock"}
+        lock_candidates.update(lock_root.glob(".packctl-*.lock"))
+        for lock_path in sorted(
+            lock_candidates,
+            key=lambda path: os.path.normcase(str(path)),
+        ):
+            if lock_path.exists() or lock_path.is_symlink():
+                findings.append(
+                    finding(
+                        "PROMOTION-LOCK-UNADJUDICATED",
+                        path="allowed_physical_roots",
+                        line=0,
+                        message=(
+                            "A promotion lock already exists and requires "
+                            "operator adjudication."
+                        ),
+                        evidence=f"root-{index + 1}",
+                    )
+                )
+                break
+
+    try:
+        transaction_roots = sorted(
+            (
+                child
+                for child in backup_root.iterdir()
+                if re.fullmatch(r"[0-9a-f]{24}", child.name)
+            ),
+            key=lambda path: path.name,
+        )
+    except OSError:
+        transaction_roots = []
+        findings.append(
+            finding(
+                "PROMOTION-RECOVERY-REQUIRED",
+                path="backup_root",
+                line=0,
+                message="The promotion backup root cannot be inspected safely.",
+                evidence="backup-root-unreadable",
+            )
+        )
+
+    for transaction_root in transaction_roots:
+        prior_id = transaction_root.name
+        reason = ""
+        journal: object = None
+        if prior_id == transaction_id:
+            reason = "current-transaction-root-exists"
+        elif (
+            transaction_root.is_symlink()
+            or _is_junction(transaction_root)
+            or not transaction_root.is_dir()
+            or not is_within(transaction_root.resolve(strict=False), backup_root)
+        ):
+            reason = "unsafe-transaction-root"
+        else:
+            journal_path = transaction_root / "journal.json"
+            if (
+                not journal_path.is_file()
+                or journal_path.is_symlink()
+                or _is_junction(journal_path)
+            ):
+                reason = "journal-missing-or-unsafe"
+            else:
+                try:
+                    journal = load_json(journal_path)
+                except (OSError, UnicodeError, json.JSONDecodeError):
+                    reason = "journal-unreadable"
+        if not reason:
+            if (
+                not isinstance(journal, dict)
+                or journal.get("schema_version") != 1
+                or journal.get("transaction_id") != prior_id
+            ):
+                reason = "journal-invalid"
+            elif (
+                journal.get("state") == "rolled-back"
+                and journal.get("rollback_errors") == []
+            ):
+                continue
+            elif journal.get("state") == "complete":
+                receipt_path = (
+                    root / "promotions" / "receipts" / f"{prior_id}.json"
+                )
+                try:
+                    receipt = load_json(receipt_path)
+                except (OSError, UnicodeError, json.JSONDecodeError):
+                    receipt = None
+                if (
+                    isinstance(receipt, dict)
+                    and receipt.get("schema_version") == 1
+                    and receipt.get("transaction_id") == prior_id
+                    and receipt.get("source_commit") == journal.get("source_commit")
+                    and receipt.get("verdict") == "PASS"
+                ):
+                    continue
+                reason = "complete-journal-without-valid-receipt"
+            else:
+                reason = f"journal-state-{journal.get('state')}"
+        findings.append(
+            finding(
+                "PROMOTION-RECOVERY-REQUIRED",
+                path="backup_root",
+                line=0,
+                message=(
+                    "A prior promotion is incomplete or unverifiable and "
+                    "requires operator adjudication."
+                ),
+                evidence=f"{prior_id}:{reason}",
+            )
+        )
     return sort_findings(findings)
 
 
@@ -901,67 +1203,79 @@ def apply_promotion(
     if contract_findings:
         return make_report("promote apply", root, contract_findings)
     findings = _validate_plan_paths(plan)
-    if git_commit(root) != plan["source_commit"] or git_is_dirty(root):
-        findings.append(
-            finding(
-                "PROMOTION-SOURCE-CHANGED",
-                path=".",
-                line=0,
-                message="The source commit/worktree changed after promote --check.",
-                evidence=f"expected_commit={plan['source_commit']}",
-            )
-        )
-    for operation in plan["operations"]:
-        source = Path(str(operation["source_path"]))
-        target = Path(str(operation["target_path"]))
-        try:
-            source_digest = _projection_digest(
-                source,
-                str(operation["artifact_kind"]),
-                operation["source_files"],
-            )
-        except (OSError, ValueError):
-            source_digest = "invalid"
-        if source_digest != operation["after_digest"]:
-            findings.append(
-                finding(
-                    "PROMOTION-SOURCE-CHANGED",
-                    path=str(operation["artifact_id"]),
-                    line=0,
-                    message="A planned source digest changed after promote --check.",
-                    evidence=str(operation["physical_alias"]),
-                )
-            )
-        if tree_digest(target) != operation["before_digest"]:
-            findings.append(
-                finding(
-                    "PROMOTION-TARGET-CHANGED",
-                    path=str(operation["artifact_id"]),
-                    line=0,
-                    message="A target changed after promote --check; compare-and-swap rejected.",
-                    evidence=str(operation["physical_alias"]),
-                )
-            )
+    if findings:
+        return make_report("promote apply", root, findings)
+    findings = _promotion_state_findings(plan, root)
     if findings:
         return make_report("promote apply", root, findings)
 
     transaction_id = str(plan["transaction_id"])
-    backup_root = Path(str(plan["backup_root"])) / transaction_id
-    backup_root.mkdir(parents=True, exist_ok=True)
-    journal_path = backup_root / "journal.json"
+    backup_base = Path(str(plan["backup_root"]))
+    allowed_roots = [
+        Path(item).resolve(strict=True)
+        for item in plan["allowed_physical_roots"]
+    ]
+    protected_paths = [
+        Path(str(operation["target_path"]))
+        for operation in plan["operations"]
+    ] + [backup_base]
+    lock_roots_by_key: dict[str, Path] = {}
+    for protected_path in protected_paths:
+        candidates = [
+            allowed
+            for allowed in allowed_roots
+            if is_within(protected_path, allowed)
+        ]
+        selected = max(candidates, key=lambda path: len(path.parts))
+        lock_roots_by_key[os.path.normcase(str(selected))] = selected
     lock_roots = sorted(
-        {
-            next(
-                allowed
-                for allowed in [Path(item).resolve(strict=True) for item in plan["allowed_physical_roots"]]
-                if is_within(Path(str(operation["target_path"])), allowed)
-            )
-            for operation in plan["operations"]
-        },
+        lock_roots_by_key.values(),
         key=lambda path: os.path.normcase(str(path)),
     )
+    recovery_findings = _recovery_findings(
+        root,
+        backup_base,
+        lock_roots,
+        transaction_id,
+    )
+    if recovery_findings:
+        return make_report(
+            "promote apply",
+            root,
+            recovery_findings,
+            artifacts={
+                "requires_intervention": True,
+                "exit_code": 2,
+            },
+        )
+    backup_root = backup_base / transaction_id
+    try:
+        backup_root.mkdir(exist_ok=False)
+    except OSError as error:
+        return make_report(
+            "promote apply",
+            root,
+            [
+                finding(
+                    "PROMOTION-RECOVERY-REQUIRED",
+                    path="backup_root",
+                    line=0,
+                    message=(
+                        "A create-only transaction root could not be "
+                        "materialized."
+                    ),
+                    evidence=type(error).__name__,
+                )
+            ],
+            artifacts={
+                "requires_intervention": True,
+                "exit_code": 2,
+            },
+        )
+    journal_path = backup_root / "journal.json"
     lock_paths: list[Path] = []
     preserve_locks = False
+    lock_conflict = False
     touched: list[tuple[dict[str, object], Path, bool]] = []
     stage_paths: list[Path] = []
     old_paths: list[Path] = []
@@ -974,30 +1288,55 @@ def apply_promotion(
     }
     try:
         for lock_root in lock_roots:
-            lock_path = lock_root / f".packctl-{transaction_id}.lock"
-            descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-            os.write(descriptor, transaction_id.encode("ascii"))
-            os.close(descriptor)
+            lock_path = lock_root / ".packctl.lock"
+            try:
+                descriptor = os.open(
+                    lock_path,
+                    os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                )
+            except FileExistsError:
+                lock_conflict = True
+                raise
             lock_paths.append(lock_path)
+            try:
+                os.write(descriptor, transaction_id.encode("ascii"))
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
         write_json(journal_path, journal)
+        locked_findings = _promotion_state_findings(plan, root)
+        if locked_findings:
+            journal["state"] = "rolled-back"
+            journal["rollback_errors"] = []
+            write_json(journal_path, journal)
+            return make_report("promote apply", root, locked_findings)
 
         for index, operation in enumerate(plan["operations"]):
             source = Path(str(operation["source_path"]))
             target = Path(str(operation["target_path"]))
             alias = str(operation["physical_alias"])
+            if operation["before_digest"] == operation["after_digest"]:
+                continue
             stage = target.parent / f".{target.name}.packctl-stage-{transaction_id}"
             old = target.parent / f".{target.name}.packctl-old-{transaction_id}"
-            _remove_artifact(stage)
-            _remove_artifact(old)
-            old_paths.append(old)
+            if (
+                stage.exists()
+                or stage.is_symlink()
+                or old.exists()
+                or old.is_symlink()
+            ):
+                raise RuntimeError(
+                    f"preexisting transaction residue for {alias}"
+                )
             target.parent.mkdir(parents=True, exist_ok=True)
+            stage_paths.append(stage)
             _copy_artifact(
                 source,
                 stage,
                 str(operation["artifact_kind"]),
                 operation["source_files"],
             )
-            stage_paths.append(stage)
+            old_paths.append(old)
             if tree_digest(stage) != operation["after_digest"]:
                 raise RuntimeError(f"staging verification failed for {alias}")
             _fault(fault_at, "after_staging", index)
@@ -1018,11 +1357,12 @@ def apply_promotion(
                 )
             _fault(fault_at, "after_backup", index)
 
+            touched.append((operation, backup, existed))
             if existed:
                 os.replace(target, old)
+            _fault(fault_at, "after_old_move", index)
             os.replace(stage, target)
             stage_paths.remove(stage)
-            touched.append((operation, backup, existed))
             journal["state"] = "replacing"
             journal["touched_aliases"] = [
                 str(item[0]["physical_alias"]) for item in touched
@@ -1040,8 +1380,18 @@ def apply_promotion(
             target = Path(str(operation["target_path"]))
             if tree_digest(target) != operation["after_digest"]:
                 raise RuntimeError(
-                    f"logical readback failed for {operation['physical_alias']}"
+                    f"physical readback failed for {operation['physical_alias']}"
                 )
+            for target_id, logical_value in operation["logical_target_paths"].items():
+                logical_target = Path(str(logical_value))
+                if (
+                    os.path.normcase(str(logical_target.resolve(strict=False)))
+                    != os.path.normcase(str(target.resolve(strict=False)))
+                    or tree_digest(logical_target) != operation["after_digest"]
+                ):
+                    raise RuntimeError(
+                        f"logical readback failed for {target_id}"
+                    )
         receipt = {
             "schema_version": 1,
             "transaction_id": transaction_id,
@@ -1062,10 +1412,7 @@ def apply_promotion(
             "completed_at": datetime.now(timezone.utc).isoformat(),
         }
         receipt_path = Path(str(plan["receipt_path"]))
-        write_json(receipt_path, receipt)
-        journal["state"] = "complete"
-        write_json(journal_path, journal)
-        return make_report(
+        success_report = make_report(
             "promote apply",
             root,
             [],
@@ -1075,6 +1422,19 @@ def apply_promotion(
                 "logical_target_count": len(plan["target_ids"]),
             },
         )
+        for stage in stage_paths:
+            _remove_artifact(stage)
+        stage_paths.clear()
+        for old in old_paths:
+            _remove_artifact(old)
+        old_paths.clear()
+        journal["state"] = "complete"
+        write_json(journal_path, journal)
+        for lock_path in lock_paths:
+            lock_path.unlink(missing_ok=True)
+        lock_paths.clear()
+        write_json(receipt_path, receipt)
+        return success_report
     except Exception as error:
         rollback_errors: list[str] = []
         for operation, backup, existed in reversed(touched):
@@ -1095,10 +1455,47 @@ def apply_promotion(
                 rollback_errors.append(
                     f"{operation['physical_alias']}:{type(rollback_error).__name__}"
                 )
-        journal["state"] = "rollback-failed" if rollback_errors else "rolled-back"
+        cleanup_errors: list[str] = []
+        for stage in list(stage_paths):
+            try:
+                _remove_artifact(stage)
+                stage_paths.remove(stage)
+            except Exception as cleanup_error:
+                cleanup_errors.append(
+                    f"stage:{type(cleanup_error).__name__}"
+                )
+        if not rollback_errors and not cleanup_errors:
+            for old in list(old_paths):
+                try:
+                    _remove_artifact(old)
+                    old_paths.remove(old)
+                except Exception as cleanup_error:
+                    cleanup_errors.append(
+                        f"old:{type(cleanup_error).__name__}"
+                    )
+        recovery_errors = rollback_errors + cleanup_errors
+        journal["state"] = (
+            "rollback-failed" if recovery_errors else "rolled-back"
+        )
         journal["error_type"] = type(error).__name__
-        journal["rollback_errors"] = rollback_errors
-        write_json(journal_path, journal)
+        journal["rollback_errors"] = recovery_errors
+        try:
+            write_json(journal_path, journal)
+        except Exception as journal_error:
+            recovery_errors.append(
+                f"journal:{type(journal_error).__name__}"
+            )
+        if not recovery_errors:
+            for lock_path in list(lock_paths):
+                try:
+                    lock_path.unlink(missing_ok=True)
+                    lock_paths.remove(lock_path)
+                except Exception as cleanup_error:
+                    recovery_errors.append(
+                        f"lock:{type(cleanup_error).__name__}"
+                    )
+        if recovery_errors:
+            preserve_locks = True
         failure_findings = [
             finding(
                 "PROMOTION-APPLY-FAILED",
@@ -1112,15 +1509,32 @@ def apply_promotion(
             "journal_path": str(journal_path),
             "backup_root": str(backup_root),
         }
-        if rollback_errors:
-            preserve_locks = True
+        if lock_conflict:
+            failure_findings.append(
+                finding(
+                    "PROMOTION-LOCK-UNADJUDICATED",
+                    path="allowed_physical_roots",
+                    line=0,
+                    message=(
+                        "A promotion lock appeared during acquisition and "
+                        "requires operator adjudication."
+                    ),
+                    evidence="lock-race",
+                )
+            )
+            artifacts["requires_intervention"] = True
+            artifacts["exit_code"] = 2
+        if recovery_errors:
             failure_findings.append(
                 finding(
                     "PROMOTION-ROLLBACK-FAILED",
                     path=plan_path.name,
                     line=0,
-                    message="Rollback could not restore every touched target.",
-                    evidence=",".join(rollback_errors),
+                    message=(
+                        "Rollback or its recovery evidence/cleanup could not "
+                        "be completed safely."
+                    ),
+                    evidence=",".join(recovery_errors),
                 )
             )
             artifacts["requires_intervention"] = True
@@ -1133,9 +1547,18 @@ def apply_promotion(
         )
     finally:
         for stage in stage_paths:
-            _remove_artifact(stage)
+            try:
+                _remove_artifact(stage)
+            except Exception:
+                pass
         if not preserve_locks:
             for old in old_paths:
-                _remove_artifact(old)
+                try:
+                    _remove_artifact(old)
+                except Exception:
+                    pass
             for lock_path in lock_paths:
-                lock_path.unlink(missing_ok=True)
+                try:
+                    lock_path.unlink(missing_ok=True)
+                except Exception:
+                    pass

@@ -296,6 +296,38 @@ def test_compare_and_swap_rejects_target_change_without_writes(
     assert not (paths["agents"] / "demo").exists()
 
 
+@pytest.mark.parametrize(
+    ("location", "expected_code"),
+    [
+        ("outside", "PROMOTION-BACKUP-ESCAPE"),
+        ("forbidden", "PROMOTION-BACKUP-FORBIDDEN"),
+    ],
+)
+def test_backup_root_must_be_allowlisted_and_not_forbidden(
+    repo_factory,
+    tmp_path: Path,
+    location: str,
+    expected_code: str,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    backup_root = (
+        tmp_path / "outside-backups"
+        if location == "outside"
+        else paths["targets"] / "plugins" / "backups"
+    )
+    backup_root.mkdir(parents=True)
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    config["backup_root"] = str(backup_root)
+    write_json(config_path, config)
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert expected_code in codes(report)
+    assert not plan_path.exists()
+
+
 def test_apply_rejects_tampered_plan_before_any_write(
     repo_factory,
     tmp_path: Path,
@@ -375,6 +407,172 @@ def test_tree_promotion_copies_only_tracked_projection(
     ).exists()
 
 
+@pytest.mark.parametrize("residue_kind", ["stage", "old"])
+def test_apply_rejects_preexisting_residue_without_deleting_it(
+    repo_factory,
+    tmp_path: Path,
+    residue_kind: str,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    operation = plan["operations"][0]
+    target = Path(operation["target_path"])
+    residue = target.parent / (
+        f".{target.name}.packctl-{residue_kind}-{plan['transaction_id']}"
+    )
+    residue.mkdir(parents=True)
+    sentinel = residue / "foreign.txt"
+    sentinel.write_text("do not delete\n", encoding="utf-8")
+
+    report = apply_promotion(plan_path)
+
+    assert "PROMOTION-APPLY-FAILED" in codes(report)
+    assert sentinel.read_text(encoding="utf-8") == "do not delete\n"
+
+
+def test_partial_stage_from_failed_copy_is_removed(
+    repo_factory,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    created_stage: Path | None = None
+
+    def fail_after_partial_copy(source, destination, kind, source_files=None):
+        nonlocal created_stage
+        created_stage = Path(destination)
+        created_stage.mkdir(parents=True)
+        (created_stage / "partial.txt").write_text(
+            "partial\n", encoding="utf-8"
+        )
+        raise OSError("copy fault")
+
+    monkeypatch.setattr("packctl.promotion._copy_artifact", fail_after_partial_copy)
+
+    report = apply_promotion(plan_path)
+
+    assert "PROMOTION-APPLY-FAILED" in codes(report)
+    assert created_stage is not None
+    assert not created_stage.exists()
+
+
+def test_unadjudicated_lock_blocks_apply_with_exit_2(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    lock = paths["targets"] / ".packctl.lock"
+    lock.write_text("interrupted-transaction\n", encoding="utf-8")
+
+    report = apply_promotion(plan_path)
+
+    assert "PROMOTION-LOCK-UNADJUDICATED" in codes(report)
+    assert report["artifacts"]["requires_intervention"] is True
+    assert report["artifacts"]["exit_code"] == 2
+    assert lock.exists()
+    assert not (paths["claude"] / "demo").exists()
+
+
+def test_failed_lock_write_removes_the_owned_lock(
+    repo_factory,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+
+    def fail_lock_write(descriptor: int, value: bytes) -> int:
+        raise OSError("lock write fault")
+
+    monkeypatch.setattr("packctl.promotion.os.write", fail_lock_write)
+
+    report = apply_promotion(plan_path)
+
+    assert "PROMOTION-APPLY-FAILED" in codes(report)
+    assert not (paths["targets"] / ".packctl.lock").exists()
+    assert not (paths["claude"] / "demo").exists()
+
+
+@pytest.mark.parametrize(
+    "state",
+    ["starting", "replacing", "readback-complete", "rollback-failed", "complete"],
+)
+def test_unverifiable_journal_blocks_apply_with_exit_2(
+    repo_factory,
+    tmp_path: Path,
+    state: str,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    prior_id = "a" * 24
+    prior_root = paths["backups"] / prior_id
+    prior_root.mkdir()
+    write_json(
+        prior_root / "journal.json",
+        {
+            "schema_version": 1,
+            "transaction_id": prior_id,
+            "source_commit": "0" * 40,
+            "state": state,
+            "touched_aliases": [],
+            "rollback_errors": (
+                ["physical-0001:OSError"]
+                if state == "rollback-failed"
+                else []
+            ),
+        },
+    )
+
+    report = apply_promotion(plan_path)
+
+    assert "PROMOTION-RECOVERY-REQUIRED" in codes(report)
+    assert report["artifacts"]["requires_intervention"] is True
+    assert report["artifacts"]["exit_code"] == 2
+    assert not (paths["claude"] / "demo").exists()
+
+
+def test_verified_rolled_back_journal_does_not_block_apply(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    prior_id = "b" * 24
+    prior_root = paths["backups"] / prior_id
+    prior_root.mkdir()
+    write_json(
+        prior_root / "journal.json",
+        {
+            "schema_version": 1,
+            "transaction_id": prior_id,
+            "source_commit": "0" * 40,
+            "state": "rolled-back",
+            "touched_aliases": [],
+            "rollback_errors": [],
+        },
+    )
+
+    report = apply_promotion(plan_path)
+
+    assert report["verdict"] == "PASS"
+    assert (paths["claude"] / "demo/SKILL.md").is_file()
+
+
 def test_check_revalidates_destination_after_child_link_resolution(
     repo_factory,
     tmp_path: Path,
@@ -394,6 +592,134 @@ def test_check_revalidates_destination_after_child_link_resolution(
 
     assert "PROMOTION-TARGET-FORBIDDEN" in codes(report)
     assert not plan_path.exists()
+
+
+def test_apply_revalidates_every_logical_alias(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    physical = paths["claude"] / "demo"
+    physical.mkdir()
+    (physical / "old.txt").write_text("old\n", encoding="utf-8")
+    logical = paths["agents"] / "demo"
+    try:
+        os.symlink(physical, logical, target_is_directory=True)
+    except OSError as error:
+        pytest.skip(f"directory symlink unavailable: {error}")
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    aliased = next(
+        item
+        for item in plan["operations"]
+        if set(item["logical_target_ids"]) == set(REQUIRED_SKILL_TARGETS)
+    )
+    assert set(aliased["logical_target_paths"]) == set(REQUIRED_SKILL_TARGETS)
+
+    logical.unlink()
+    replacement = paths["targets"] / "replacement"
+    replacement.mkdir()
+    os.symlink(replacement, logical, target_is_directory=True)
+
+    report = apply_promotion(plan_path)
+
+    assert "PROMOTION-LOGICAL-TARGET-CHANGED" in codes(report)
+    assert (physical / "old.txt").read_text(encoding="utf-8") == "old\n"
+
+
+def test_idempotent_operation_is_read_back_without_replace(
+    repo_factory,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    target = paths["claude"] / "demo"
+    target.mkdir()
+    (target / "SKILL.md").write_bytes((root / "skills/demo/SKILL.md").read_bytes())
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    noop = next(
+        item
+        for item in plan["operations"]
+        if item["target_path"] == str(target.resolve())
+    )
+    assert noop["before_digest"] == noop["after_digest"]
+    original_copy = __import__("packctl.promotion", fromlist=["_copy_artifact"])._copy_artifact
+    destinations: list[Path] = []
+
+    def recording_copy(source, destination, kind, source_files=None):
+        destinations.append(Path(destination))
+        return original_copy(source, destination, kind, source_files)
+
+    monkeypatch.setattr("packctl.promotion._copy_artifact", recording_copy)
+
+    report = apply_promotion(plan_path)
+
+    assert report["verdict"] == "PASS"
+    assert not any(
+        destination.parent == target.parent
+        and f".{target.name}.packctl-stage-" in destination.name
+        for destination in destinations
+    )
+
+
+def test_failure_after_moving_old_restores_original_target(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    existing = paths["claude"] / "demo"
+    existing.mkdir()
+    (existing / "old.txt").write_text("original\n", encoding="utf-8")
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    index = next(
+        index
+        for index, item in enumerate(plan["operations"])
+        if item["target_path"] == str(existing.resolve())
+    )
+    before = tree_digest(existing)
+
+    report = apply_promotion(plan_path, fault_at=f"after_old_move:{index}")
+
+    assert "PROMOTION-APPLY-FAILED" in codes(report)
+    assert tree_digest(existing) == before
+    assert (existing / "old.txt").read_text(encoding="utf-8") == "original\n"
+
+
+def test_receipt_is_not_published_when_final_journal_write_fails(
+    repo_factory,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    original_write = __import__("packctl.promotion", fromlist=["write_json"]).write_json
+
+    def fail_complete_journal(path: Path, value: object, **kwargs) -> None:
+        if (
+            Path(path).name == "journal.json"
+            and isinstance(value, dict)
+            and value.get("state") == "complete"
+        ):
+            raise OSError("journal completion fault")
+        original_write(path, value, **kwargs)
+
+    monkeypatch.setattr("packctl.promotion.write_json", fail_complete_journal)
+
+    report = apply_promotion(plan_path)
+
+    assert "PROMOTION-APPLY-FAILED" in codes(report)
+    assert not Path(plan["receipt_path"]).exists()
 
 
 def test_apply_writes_all_targets_and_receipt_without_physical_paths(

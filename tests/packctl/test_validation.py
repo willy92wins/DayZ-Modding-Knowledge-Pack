@@ -5,7 +5,14 @@ from pathlib import Path
 
 import pytest
 
-from conftest import ZERO_COMMIT, artifact, make_source_map, source, write_json
+from conftest import (
+    ZERO_COMMIT,
+    artifact,
+    make_source_map,
+    run_git,
+    source,
+    write_json,
+)
 
 from packctl.validation import (
     validate_claims,
@@ -31,7 +38,6 @@ def test_source_unmapped_has_stable_code(repo_factory) -> None:
     root = repo_factory()
     extra = root / "tracked-extra.txt"
     extra.write_text("unmapped\n", encoding="utf-8")
-    from conftest import run_git
 
     run_git(root, "add", "tracked-extra.txt")
 
@@ -191,6 +197,18 @@ def test_exact_context_link_allowlist_suppresses_only_declared_target(
 
 def test_private_absolute_path_is_rejected(repo_factory) -> None:
     root = repo_factory({"notes.md": "Open C:\\Users\\alice\\private\\file.txt\n"})
+
+    assert codes(validate_privacy(root)) == ["PRIVACY-PRIVATE-PATH"]
+
+
+def test_private_path_in_repo_only_public_contract_is_rejected(
+    repo_factory,
+) -> None:
+    root = repo_factory(payload={"LICENSE", "README.md"})
+    source_map_path = root / "sources/source-map.json"
+    value = json.loads(source_map_path.read_text(encoding="utf-8"))
+    value["sources"][0]["notes"] = "C:\\Users\\alice\\private"
+    write_json(source_map_path, value)
 
     assert codes(validate_privacy(root)) == ["PRIVACY-PRIVATE-PATH"]
 

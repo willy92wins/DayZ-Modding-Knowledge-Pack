@@ -703,6 +703,23 @@ def _payload_paths(root: Path) -> list[str]:
     )
 
 
+def _privacy_scan_paths(root: Path) -> list[str]:
+    tracked = set(git_tracked_files(root))
+    public_contracts = {
+        relative
+        for relative in tracked
+        if (
+            (
+                relative.startswith("sources/")
+                or relative.startswith("promotions/")
+            )
+            and Path(relative).suffix.lower() == ".json"
+        )
+        or relative == "packctl/manifest.schema.json"
+    }
+    return sorted(set(_payload_paths(root)) | public_contracts)
+
+
 def validate_privacy(root: Path) -> list[dict[str, object]]:
     root = Path(root).resolve()
     findings: list[dict[str, object]] = []
@@ -728,7 +745,7 @@ def validate_privacy(root: Path) -> list[dict[str, object]]:
             """
         ),
     ]
-    for relative in _payload_paths(root):
+    for relative in _privacy_scan_paths(root):
         path = root / relative
         if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
             continue
@@ -737,15 +754,16 @@ def validate_privacy(root: Path) -> list[dict[str, object]]:
         except (OSError, UnicodeError):
             continue
         for line_number, line in enumerate(lines, 1):
+            private_scan_line = line.replace("\\\\", "\\")
             for pattern in private_patterns:
-                match = pattern.search(line)
+                match = pattern.search(private_scan_line)
                 if match:
                     findings.append(
                         finding(
                             "PRIVACY-PRIVATE-PATH",
                             path=relative,
                             line=line_number,
-                            message="A payload file contains a user-specific absolute path.",
+                            message="A public pack file contains a user-specific absolute path.",
                             evidence=match.group(0),
                         )
                     )
@@ -757,7 +775,7 @@ def validate_privacy(root: Path) -> list[dict[str, object]]:
                             "PRIVACY-SECRET",
                             path=relative,
                             line=line_number,
-                            message="A payload file contains a token-shaped secret.",
+                            message="A public pack file contains a token-shaped secret.",
                             evidence="[REDACTED]",
                         )
                     )
