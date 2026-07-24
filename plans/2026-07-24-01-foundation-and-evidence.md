@@ -26,6 +26,8 @@ fases de contenido puedan trabajar sin crear más drift.
 
 - Crear: `sources/source-map.schema.json`
 - Crear: `sources/source-map.json`
+- Crear: `sources/claims.schema.json`
+- Crear: `sources/claims.json`
 - Crear: `sources/local-roots.example.json`
 - Crear local y excluir de Git: `sources/local-roots.json`
 - Crear: `compatibility-matrix.md`
@@ -34,6 +36,7 @@ fases de contenido puedan trabajar sin crear más drift.
 - Crear: `CONTRIBUTING.md`
 - Crear: `CHANGELOG.md`
 - Crear: `packctl/` y `tests/packctl/`
+- Crear: `tools/dayz-api-index/` o su módulo canónico dentro de `packctl/`
 - Crear: `evals/schema.json`, `evals/cases/`, `evals/baselines/`
 - Crear: `promotions/promotion-map.schema.json`
 - Crear: `promotions/promotion-map.json`
@@ -42,24 +45,31 @@ fases de contenido puedan trabajar sin crear más drift.
 - Crear: `promotions/receipts/`
 - Modificar: `.gitignore`, `README.md`, `MANIFEST.txt`
 - Reconciliar: `skills/**`, `knowledge/**`, `tools/py3d/**`
+- Crear: `specs/checklists/2026-07-24-foundation-and-evidence.md`
 
 ## Task 0 — Contrato de implementación
 
-- [ ] Crear `specs/2026-07-24-foundation-and-evidence.md`.
-- [ ] Cerrar schema, severidades, exits, fixtures positivas/negativas y
+- [x] Crear `specs/2026-07-24-foundation-and-evidence.md`.
+- [x] Cerrar schema, severidades, exits, fixtures positivas/negativas y
   determinismo de build/promoción antes de escribir `packctl`.
-- [ ] Etiquetar ejemplos ejecutables `[EXACT]` o `[DESIGN]`.
-- [ ] Gate: checklist de feature spec completo y todos los criterios A/B de esta
+- [x] Etiquetar ejemplos ejecutables `[EXACT]` o `[DESIGN]`.
+- [x] Gate: checklist de feature spec completo y todos los criterios A/B de esta
   fase trazados a una fixture o revisión verificable.
 
 ## Task 1 — Source map y política de conflictos
 
-- [ ] Definir schema v1 con `output_path`, `source_id`, `source_revision`,
-  `source_hash`, `license`, `verification_level`, `decision` y
-  `decision_evidence`.
+- [ ] Definir schema v1 con `output_path`, `distribution_role`
+  (`payload|repo_only`), `output_hash`, inputs con `source_id`,
+  `source_revision`, `source_hash`, `license`, `verification_level`,
+  `decision` y `decision_evidence`.
 - [ ] Separar IDs públicos de roots locales: el mapa versionado nunca guarda
   paths de usuario; `local-roots.json` no entra en Git ni en el ZIP.
-- [ ] Inventariar los 138 archivos baseline.
+- [ ] Inventariar los 138 archivos baseline y clasificar exactamente una vez
+  todo archivo seguido por Git; solo `payload` alimenta el ZIP.
+- [ ] Declarar por separado miembros generados para evitar auto-hash del
+  `manifest.json`.
+- [ ] Crear claim registry para todo snippet/claim ejecutable introducido tras
+  el baseline, con revisión, `path:line`, licencia, verificación y routing.
 - [ ] Emitir `SOURCE-UNMAPPED` si falta un archivo y
   `SOURCE-CONFLICT-UNDECIDED` si dos fuentes difieren sin adjudicación.
 - [ ] Fijar explícitamente la convención del manifiesto: el count incluye o
@@ -106,6 +116,11 @@ fases de contenido puedan trabajar sin crear más drift.
 - [ ] Implementar inventario, source-map validation, skill validation,
   Markdown-link validation con fences ignoradas, privacy/license checks,
   Python checks y py3d tests.
+- [ ] Implementar `dayz-api-index` regenerable y read-only: allowed-roots,
+  metadata de build/schema, scanner que excluye comentarios, query que conserva
+  colisiones y rechazo fail-closed de escapes/mismatches.
+- [ ] Cubrir fixtures API clase activa/comentada/inexistente/colisión, escape,
+  build mismatch y schema mismatch para cerrar B2 explícitamente.
 - [ ] Definir findings tipados con `code`, `severity`, `path`, `line`,
   `message` y `evidence`.
 - [ ] Definir verdict JSON `PASS|WARN|FAIL` y exits estables:
@@ -138,8 +153,16 @@ fases de contenido puedan trabajar sin crear más drift.
   para toda invariante de dominio; `not_applicable` solo vale para gobierno o
   tooling sin consumidor de skill y exige motivo.
 - [ ] `[DESIGN]` Separar `promote --check` read-only de `promote --apply`.
-  `apply` usa staging, valida el árbol completo, reemplaza solo targets
-  allowlisted y verifica readback por hash.
+  `check` emite commit, hash previo y hash esperado; `apply` revalida por
+  compare-and-swap bajo lock antes de escribir.
+- [ ] `[DESIGN]` `apply` usa staging en el mismo volumen, valida el árbol
+  completo, crea y verifica backup, reemplaza solo targets allowlisted,
+  verifica readback y revierte en orden inverso ante cualquier fallo.
+- [ ] Resolver junctions componente a componente, rechazar escapes/loops,
+  preservar el enlace y deduplicar aliases físicos sin omitir readback de cada
+  target lógico. Plugins/cachés nunca son roots gestionados.
+- [ ] Promover a Obsidian mediante snapshot exacto e inmutable por
+  `{artifact_id}/{source_commit}`; no reemplazar notas privadas canónicas.
 - [ ] Cubrir fixtures: routing ausente, hash distinto, target no configurado,
   target read-only, copia parcial, skill legacy con triggers solapados y
   `not_applicable` inválido.
@@ -153,6 +176,9 @@ fases de contenido puedan trabajar sin crear más drift.
 - [ ] Build reproducible ×2 con SHA idéntico.
 - [ ] Ejecutar promoción desde ese commit a Obsidian y todos los targets
   de skills configurados y escribibles.
+- [ ] Resolver explícitamente si el target físico externo de
+  `rigorous-data-audit` se añade a `allowed_physical_roots`; sin autorización,
+  mantener fail-closed y no declarar la fase cerrada.
 - [ ] Leer de vuelta cada destino, verificar hashes y crear un recibo sin rutas
   privadas; un fallo deja verdict no-cero y no declara la fase cerrada.
 - [ ] `git diff --check` limpio.
@@ -170,4 +196,8 @@ fases de contenido puedan trabajar sin crear más drift.
 - Evals que solo puntúan narrativa sin evidencia.
 - Cualquier `PROMOTION-UNROUTED`, `PROMOTION-DRIFT`, destino no allowlisted o
   promoción parcial.
+- Cualquier junction/reparse point que resuelva fuera de roots físicos
+  allowlisted o dentro de plugin/cache.
+- Cualquier rollback no verificado; queda exit `2`, journal/backup e intervención
+  obligatoria.
 - Invariante de dominio marcada `not_applicable` para skills.
