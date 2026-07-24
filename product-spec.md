@@ -1,0 +1,187 @@
+# product-spec.md — DayZ Modding Knowledge Pack
+
+> **Definición de Producto Final (DPF).** El progreso vivo está en
+> `HANDOFF.md`; este documento fija el resultado aceptable.
+
+## Qué es “terminado”
+
+El siguiente release del pack será una fuente Git reproducible y un ZIP
+depersonalizado que una persona o agente pueda usar para crear, verificar,
+probar y publicar mods DayZ sin depender de rutas privadas ni convertir
+afirmaciones no verificadas en doctrina.
+
+El producto terminado incluye infraestructura de evidencia, UI iterativa,
+persistencia segura, skills de dominio prioritarias, tooling py3d, metodología
+MCP publicable y documentación de release/contribución.
+
+**Alcance y orden confirmados con el usuario el 2026-07-24.**
+
+## Cláusula de desafío
+
+Cada criterio sirve al `Intent` de su grupo. Si una implementación más simple
+protege mejor ese Intent, o una exigencia literal lo contradice, se plantea en
+el Grill del plan antes de implementar. El criterio no cambia sin aprobación
+y entrada en el changelog.
+
+## A — Fuente, compatibilidad y release reproducible
+
+> **Intent:** que exista una sola verdad editable y que cualquier release pueda
+> reconstruirse, auditarse y compartir sin filtrar datos privados.
+
+| # | Criterio | Cómo se verifica | Estado |
+|---|---|---|---|
+| A1 | Fuente Git canónica con el ZIP anterior fijado por hash y commit | 138/138 hashes ZIP↔árbol; commit raíz registrado en ADR 001 | ✓ |
+| A2 | Inventario de procedencia cubre el 100% de archivos distribuibles y adjudica cada drift pack↔fuente | validador devuelve 0 `SOURCE-UNMAPPED`, 0 conflictos sin decisión | ❓ |
+| A3 | Todas las skills cumplen la especificación Agent Skills y frontmatter ≤1024 caracteres | `skills-ref validate` con UTF-8: N/N válidas, exit 0 | ❓ |
+| A4 | Dos builds limpios del mismo commit producen ZIP byte-idéntico y manifiestos iguales | dos SHA-256 iguales; orden, timestamps y encoding normalizados | ❓ |
+| A5 | Manifest machine-readable declara release, commit, DayZ build, schema, licencias, hashes y convención de conteo | schema validation exit 0; número declarado = archivos reales según convención explícita | ❓ |
+| A6 | Licencia MIT raíz, notices de terceros y política “no redistribuir rutas/inputs privados” | audit de licencias: 0 archivos distribuibles sin cobertura; py3d conserva MIT upstream | ❓ |
+| A7 | Matriz por skill con build DayZ probado, fecha, dependencias y breaking changes | 100% de skills listadas; ninguna afirma compatibilidad sin evidencia | ❓ |
+| A8 | Cero secretos, identidades, rutas privadas o links locales rotos no allowlisted | scanner y link audit exit 0 sobre el ZIP construido | ❓ |
+
+## B — Evidencia, APIs, evaluaciones y preflight
+
+> **Intent:** que el asistente aprenda contratos verificables y que una mejora
+> de una skill pueda demostrarse frente a un baseline, no solo parecer mejor.
+
+| # | Criterio | Cómo se verifica | Estado |
+|---|---|---|---|
+| B1 | Cada claim/snippet ejecutable nuevo registra fuente, build/commit, `path:line`, licencia, fecha y nivel de verificación | provenance audit: 0 claims ejecutables sin registro | ❓ |
+| B2 | Índice `dayz-api-index` regenerable, vanilla-first, read-only, con allowed-roots y rechazo de build/schema incompatible | fixtures clase activa/comentada/inexistente/colisión; path escape y build mismatch fallan cerrados | ❓ |
+| B3 | Harness de evals compara skill actual contra versión anterior o ausencia de skill en workspace limpio | cada run emite `grading.json`, evidencia, duración y tokens; piloto cubre API, UI y persistence | ❓ |
+| B4 | Errores StarDZ auditados existen como casos negativos | evals rechazan `autoptr` falso, overload falso, `Managed` falso, `JsonLoadFile`, `OnDrop` incompleto y Dabs inválido | ❓ |
+| B5 | Pipeline CI-like ejecuta skill validation, provenance, links, privacy, Python, py3d y build reproducible | un comando local devuelve 0; mutaciones dirigidas producen códigos estables y exit no-cero | ❓ |
+| B6 | Template mínimo `@MyMod` implementa la estructura, contratos de config, build y misión de test recomendados | scaffold se instancia sin rutas privadas y pasa el preflight estructural | ❓ |
+| B7 | Simuladores offline reducen iteraciones sin presentarse como sustitutos del engine | parser de config y validadores loot/CE/physics tienen fixtures positivas, negativas y límites explícitos | ❓ |
+
+## C — `dayz-ui-lab` y skill `dayz-ui`
+
+> **Intent:** que un agente pueda implementar una interfaz solicitada, observar
+> un resultado determinista, comparar, corregir e iterar antes del gate real en
+> DayZDiag, sin confundir preview offline con verdad del engine.
+
+| # | Criterio | Cómo se verifica | Estado |
+|---|---|---|---|
+| C1 | Parser honesto cierra B19/B20 | 319/319 corpus público + 46/46 TraderX + LFPG, exit 0; 0 falso `missing-child-block`; CRLF/LF verificados en DayZDiag | ❓ |
+| C2 | Escenarios versionables componen shell, subviews y colecciones, detectando ciclos y paths rotos | fixture shell→subview→3 cards conserva orden/identidad/geometría en 1920×1080 y 3440×1440 | ❓ |
+| C3 | Render JSON/PNG por escenario/resolución es determinista y resuelve assets propios | dos renders byte-idénticos; fixture `.styles` + `.imageset` 9-slice + fuente sin fallback silencioso | ❓ |
+| C4 | Diff accionable identifica referencia rota, clipping, solape y estado ausente por widget/escenario | fixture negativa produce exactamente los hallazgos esperados; control verde produce 0 | ❓ |
+| C5 | Corpus positivo = VPP/Expansion/TraderPlus/TraderX; negativo = LFPG Sorter V4 TEST; terceros no se redistribuyen | manifests por commit/hash y auditoría de allowlist | ❓ |
+| C6 | DayZDiag manda como golden y calibra resoluciones/aspect ratios definidos | screenshot+RPT por escenario; deltas offline cuantificados por widget, sin umbral inventado | ❓ |
+| C7 | Pooling solo se promueve con lifecycle completo y beneficio medido | create/unlink vs reuse: mismo output; 0 estado fantasma/callback duplicado; benchmark reproducible | ❓ |
+| C8 | Skill UI incorpora arquitectura, Forward Contract visual y árboles de diagnóstico verificados | evals “vacío/estilo/colección/tooltip/fuente/offline≠engine” pasan | ❓ |
+
+## D — `dayz-persistence`
+
+> **Intent:** que actualizar, migrar, truncar o hacer rollback nunca convierta
+> una incompatibilidad en corrupción silenciosa o pérdida evitable.
+
+| # | Criterio | Cómo se verifica | Estado |
+|---|---|---|---|
+| D1 | Skill separa stream vanilla, CF ModStorage y archivos/sidecars | tres contratos y tres suites de fixtures independientes | ❓ |
+| D2 | Versionado/migración cubre fresh, legacy, known, future, truncated, same-build upgrade y rollback | matriz completa produce verdict/acción esperados, sin lectura parcial aceptada | ❓ |
+| D3 | Sidecars usan temp→verify→replace, backup y recuperación fail-closed | fault injection en cada frontera I/O conserva original o evidencia recuperable | ❓ |
+| D4 | APIs deprecated y ejemplos incompletos no se recomiendan | evals rechazan `JsonLoadFile` como patrón nuevo y headers ligados solo al build DayZ | ❓ |
+| D5 | Todo cambio persistente documenta legacy, datos post-cambio en rollback y alternativa sin cambio de formato | checklist y rigorous-data-audit sin hallazgos bloqueantes | ❓ |
+
+## E — Skills y conocimiento de dominio
+
+> **Intent:** cubrir las áreas que hoy obligan al asistente a improvisar,
+> manteniendo módulos pequeños y research vanilla-first.
+
+| # | Criterio | Cómo se verifica | Estado |
+|---|---|---|---|
+| E1 | `dayz-multiplayer-sync` cubre RPC, fiabilidad, ownership, predicción y diagnóstico de desync | fixtures cliente/servidor, auth fail-closed y dos clientes locales | ❓ |
+| E2 | `dayz-sound-particles` cubre `.ptc`, soundsets, Effect systems y occlusion | ejemplos fuente-pineados + build/smoke por subsistema | ❓ |
+| E3 | `dayz-terrain` cubre mapa básico, roadgraph y CE | proyecto mínimo reproducible y checks de roadgraph/CE | ❓ |
+| E4 | `dayz-workshop-release` cubre mod.cpp, dependencias, signing/bisign, imágenes, changelog y actualización | release dry-run verifica PBO, firmas, metadata y dependency contract | ❓ |
+| E5 | Vault incorpora RPT decision tree, arquitecturas mod y guía de performance medida | ramas deduplicadas con evidencia; budgets declaran build/hardware/corpus | ❓ |
+| E6 | Disease/modifiers y plugin lifecycle se auditan vanilla-first antes de convertirse en skill/referencia | research con `path:line`, sides, lifecycle y fixtures; unknowns quedan marcados | ❓ |
+| E7 | Compatibilidad se revisa contra la stable fijada y registra breaking changes | matriz actualizada desde fuentes locales/oficiales y fecha verificable | ❓ |
+
+## F — py3d y validación de export
+
+> **Intent:** que el tooling 3D reduzca iteraciones y bloquee corrupción o
+> modelos no canónicos antes de binarize.
+
+| # | Criterio | Cómo se verifica | Estado |
+|---|---|---|---|
+| F1 | Proxies soportan add/remove/align con rotación y round-trip | fixtures con matrices conocidas; save→reload conserva transform y selección | ❓ |
+| F2 | Helpers de RTM/SEAnim/animación tienen contrato y límites explícitos | round-trip o export fixture comparado con referente aceptado | ❓ |
+| F3 | Pre-export valida winding, huesos y escala | fixtures positivas/negativas y códigos estables; 0 reparación silenciosa | ❓ |
+| F4 | Existe lectura ODOL read-only para anatomía/paridad, con cobertura y limitaciones declaradas, sin añadir writer ODOL | v53/v54/v55 fixtures legalmente distribuibles, self-diff y fallos boundary/oob fail-closed | ❓ |
+| F5 | py3d mantiene toda su suite verde y una sola distribución canónica | baseline 130 pass/10 skip no retrocede; wheels/rollout hashes pineados | ❓ |
+
+## G — MCP publicable y automatización
+
+> **Intent:** hacer reproducible la metodología de prueba incluso sin el bridge
+> privado y ampliar capacidades sin debilitar lifecycle/ownership.
+
+| # | Criterio | Cómo se verifica | Estado |
+|---|---|---|---|
+| G1 | Protocolo del bridge documenta comandos, schemas, errores, versión y extensión | ejemplos request/response validados contra schema y bridge actual | ❓ |
+| G2 | Modo lite funciona con DayZDiag + filePatching + scripts ingame, sin bridge privado | ladder mínima spawn→acción→RPT/verdict reproducible | ❓ |
+| G3 | Un orquestador integra test-ingame + MCP y watch mode incremental | cambio de fixture dispara rebuild/retest exacto; lease y run_id permanecen fail-closed | ❓ |
+| G4 | Secuencias, crash/RPT detection, screenshot diff, telemetry y dos clientes tienen gates separados | cada capability tiene fixture y verdict; ningún número de performance sin medición | ❓ |
+| G5 | Alternativas VPP/init.c y companions se documentan con límites y sin Cheat Engine como dependencia recomendada | matriz capability/fiabilidad/riesgo/licencia verificada | ❓ |
+
+## H — Ecosistema, contribución y pulido
+
+> **Intent:** que el pack sea mantenible, enseñable y ampliable sin duplicación
+> ni dependencia de la máquina original.
+
+| # | Criterio | Cómo se verifica | Estado |
+|---|---|---|---|
+| H1 | Integración Workbench/Mikero/viewers documentada con versiones y licencia | comandos smokeados o marcados como companion no verificado | ❓ |
+| H2 | Entorno limpio de server reproducible usa VM o alternativa viable, elegida tras spike | segunda máquina/VM ejecuta smoke sin junctions privados | ❓ |
+| H3 | Guía de contribución define source map, evidencia, tests, licencia y release | contribución fixture atraviesa validación end-to-end | ❓ |
+| H4 | Notas duplicadas se consolidan sin perder claims/evidencia | mapa old→canonical; link audit y diff semántico revisados | ❓ |
+| H5 | Diagramas mínimos cubren skeleton, proxy frame y lifecycle Construction quartet | assets first-party, links válidos y revisión humana | ❓ |
+| H6 | Risk register/known engine bugs vive versionado y distingue crash/exception/corruption/degradation/cosmetic | cada entrada tiene evidencia, build y severidad concreta | ❓ |
+
+## Fuera de alcance
+
+- Importar StarDZ como skill monolítica o copiar snippets no verificados.
+- Bundlear código/assets GPL, DPL-ND, CC-NC, vanilla DayZ o mods de terceros.
+- Integrar lifecycle de dayz-labs/Lake como autoridad paralela a DayZ_MCP.
+- Ejecutar Enforce en el navegador o prometer previews 3D fieles al engine.
+- Escribir ODOL.
+- Fijar budgets de CPU/red/widgets sin benchmark reproducible.
+- Publicar repo, release o Workshop durante la fase de planificación.
+- Editar simultáneamente copias instaladas; la promoción ocurre desde Git tras gates.
+
+## Referencias de paridad
+
+- Baseline ZIP SHA-256
+  `E63C26C5C385E3037B4AFE9C918B3A9DE9E12CC0AF876316214518BF852735E5`;
+  commit raíz `d48e2c1a02dacc97645a9e70d8bc1058e6dae9a5`.
+- Agent Skills reference validator: snapshot oficial
+  `38a2ff82958afee88dadf4831509e6f7e9d8ef4e`.
+- DayZ inicial de compatibilidad: `1.29.0.163451`, verificado 2026-07-24.
+- UI: VPP y Expansion fijados por commit; TraderX por manifest
+  `3069958660046119589` y PBO hashes; LFPG Sorter V4 TEST como negativo.
+- Prior art auditado: dayz-labs `dbd6ad3e...`, Lake `ac56f369...`,
+  StarDZ `dbdcd23b...`.
+- py3d upstream `7acd58b`/tag `v1.0` y fork baseline `1.3.0`.
+
+Aliases de evidencia usados en los planes:
+
+- `VANILLA/3_game/entities/entityai.c:2908-2925,2965-2989` — contrato
+  `OnStoreSave`/`OnStoreLoad`.
+- `VANILLA/3_game/tools/jsonfileloader.c:7-40,99-105` — `LoadFile` y
+  deprecación de `JsonLoadFile`.
+- `CF_ROOT/Entities/ItemBase.c:22-84` y
+  `CF_ROOT/ModStorage/CF_ModStorageObject.c:25-76,80-156` — integración y
+  framing de CF ModStorage.
+- `VANILLA/3_game/gameplay.c:104-117` — firma de `ScriptRPC.Send`.
+- `VAULT/AI/10_Projects/DayZ_UI_Research/project-brief.md:25-26` y
+  `research/2026-07-24-ui-positive-reference-corpus-codex.md:64-105` —
+  baseline B19/B20 y corpora UI.
+
+La fase 01 fijará revisión, hash y root local de cada alias fuera de Git.
+
+## Changelog de alcance
+
+- 2026-07-24 — alcance inicial y orden aprobados por el usuario.
+- 2026-07-24 — se añade source reconciliation como gate P0 tras medir drift en
+  las 14 skills; no cambia el orden, lo hace seguro.
