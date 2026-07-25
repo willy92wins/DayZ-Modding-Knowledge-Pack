@@ -64,6 +64,8 @@ lógicos.
 - [ ] Ejecutar
   [`2026-07-24-02-dayz-ui-lab.md`](2026-07-24-02-dayz-ui-lab.md).
 - [ ] Cerrar B19/B20 antes de cualquier golden/diff.
+- [ ] Cerrar C6 con sonda first-party + `engine-capture-v1`; el import manual
+  DayZDiag no depende de MCP y pooling queda después de calibración.
 - [ ] `dayz-api-index` v2 no bloquea C1: adjudicar dudas contra fuente mientras
   el v1 no distinga liveness.
 - [ ] Promover patrones a `dayz-ui` solo después de corpus + DayZDiag.
@@ -94,6 +96,8 @@ lógicos.
   [`2026-07-24-05-dayz-mcp-public-and-automation.md`](2026-07-24-05-dayz-mcp-public-and-automation.md).
 - [ ] Mantener lease/run-id y lifecycle request-bound.
 - [ ] Separar protocolo público, modo lite y capacidades avanzadas.
+- [ ] Implementar el adapter UI solo contra `engine-capture-v1`, run-bound,
+  lossless y fail-closed ante cliente ambiguo; no redefinir el schema en MCP.
 - [ ] Mantener dayz-labs pineado como companion opcional; excluir sus verbos de
   lifecycle y su installer de los gates.
 - [ ] Promover los contratos MCP verificados a Obsidian y skills activas.

@@ -69,10 +69,10 @@ y entrada en el changelog.
 |---|---|---|---|
 | C1 | Parser honesto cierra B19/B20 | 319/319 corpus público + 46/46 TraderX + LFPG, exit 0; 0 falso `missing-child-block`; CRLF/LF verificados en DayZDiag | ❓ |
 | C2 | Escenarios versionables componen shell, subviews y colecciones, detectando ciclos y paths rotos | fixture shell→subview→3 cards conserva orden/identidad/geometría en 1920×1080 y 3440×1440 | ❓ |
-| C3 | Render JSON/PNG por escenario/resolución es determinista y resuelve assets propios | dos renders byte-idénticos; fixture `.styles` + `.imageset` 9-slice + fuente sin fallback silencioso | ❓ |
+| C3 | El render semántico es determinista entre ejecuciones limpias; RGBA/PNG solo son canónicos dentro de un perfil de raster fijado, y resuelven assets propios | dos `render.json` byte-idénticos sin timestamps/rutas privadas; dentro del perfil fijado, dos buffers RGBA y PNG byte-idénticos; fuera del perfil, artefacto `non_canonical`; fixture `.styles` + `.imageset` 9-slice + fuente sin fallback silencioso | ❓ |
 | C4 | Diff accionable identifica referencia rota, clipping, solape y estado ausente por widget/escenario | fixture negativa produce exactamente los hallazgos esperados; control verde produce 0 | ❓ |
 | C5 | Corpus positivo = VPP/Expansion/TraderPlus/TraderX; negativo = LFPG Sorter V4 TEST; terceros no se redistribuyen | manifests por commit/hash y auditoría de allowlist | ❓ |
-| C6 | DayZDiag manda como golden y calibra resoluciones/aspect ratios definidos | screenshot+RPT por escenario; deltas offline cuantificados por widget, sin umbral inventado | ❓ |
+| C6 | DayZDiag manda como golden; una sonda ingame first-party exporta geometría/estado runtime y calibra resoluciones/aspect ratios definidos | bundle `engine-capture-v1` coherente por escenario/run con screenshot PNG, snapshot estructurado completo, RPT sanitizado, build y resolución; import manual basta para cerrar el gate; deltas offline cuantificados por widget, sin umbral inventado | ❓ |
 | C7 | Pooling solo se promueve con lifecycle completo y beneficio medido | create/unlink vs reuse: mismo output; 0 estado fantasma/callback duplicado; benchmark reproducible | ❓ |
 | C8 | Skill UI incorpora arquitectura, Forward Contract visual y árboles de diagnóstico verificados | evals “vacío/estilo/colección/tooltip/fuente/offline≠engine” pasan | ❓ |
 
@@ -127,7 +127,7 @@ y entrada en el changelog.
 | G1 | Protocolo del bridge documenta comandos, schemas, errores, versión y extensión | ejemplos request/response validados contra schema y bridge actual | ❓ |
 | G2 | Modo lite funciona con DayZDiag + filePatching + scripts ingame, sin bridge privado | ladder mínima spawn→acción→RPT/verdict reproducible | ❓ |
 | G3 | Un orquestador integra test-ingame + MCP y watch mode incremental | cambio de fixture dispara rebuild/retest exacto; lease y run_id permanecen fail-closed | ❓ |
-| G4 | Secuencias, crash/RPT detection, screenshot diff, telemetry y dos clientes tienen gates separados | cada capability tiene fixture y verdict; ningún número de performance sin medición | ❓ |
+| G4 | Secuencias, crash/RPT detection, screenshot diff, telemetry y dos clientes tienen gates separados | cada capability tiene fixture y verdict; el adapter de screenshot importa `engine-capture-v1`, selecciona un único cliente por `run_id` y conserva PNG lossless o falla cerrado; ningún número de performance sin medición | ❓ |
 | G5 | Alternativas VPP/init.c y companions se documentan con límites; dayz-labs queda pineado, opcional y sin autoridad de lifecycle, y Cheat Engine no es dependencia recomendada | matriz capability/fiabilidad/riesgo/licencia/version verificada; gates excluyen installer y `start/stop/restart`; WPF no cuenta como evidencia `.layout` | ❓ |
 
 ## H — Ecosistema, contribución y pulido
@@ -197,3 +197,8 @@ La fase 01 fijará revisión, hash y root local de cada alias fuera de Git.
 - 2026-07-24 — aprobados tres deltas post-Fase 01: B8 para
   `dayz-api-index` v2 sin bloquear UI, E4/B6 con postconditions/cache/publicación
   transaccional y G5 con dayz-labs solo como companion pineado sin lifecycle.
+- 2026-07-25 — aprobadas las enmiendas de Fase 02: determinismo semántico
+  cross-run y raster solo dentro de perfil fijado; snapshot ingame estructurado;
+  sonda first-party vanilla-first sin Dabs obligatorio; schema
+  `engine-capture-v1` ahora y adapter MCP run-bound/lossless en Fase 05.
+  `py3d` queda fuera de esta ejecución y continúa en paralelo bajo Fase 04.

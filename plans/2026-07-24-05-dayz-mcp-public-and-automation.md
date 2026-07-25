@@ -54,6 +54,10 @@ el testing sin exponer infraestructura privada ni romper ownership.
 - [ ] Secuencias declarativas de acciones con fixtures.
 - [ ] Crash/exception/RPT detection con vocabulario preciso.
 - [ ] Screenshot diff calibrado desde `dayz-ui-lab`.
+- [ ] Adapter estrecho para `engine-capture-v1`: seleccionar un único cliente
+  por `run_id`, capturar PNG lossless y ligar screenshot/snapshot/RPT/manifest
+  al mismo capture id. Run inexistente, cliente ambiguo, JPEG full-resolution o
+  bundle incompleto fallan cerrados.
 - [ ] Telemetry con build/hardware/corpus y sin budgets heredados.
 - [ ] Dos clientes locales con identidad/run exactos.
 - [ ] Cada capability tiene flag, schema, test y verdict independiente.
@@ -83,6 +87,8 @@ el testing sin exponer infraestructura privada ni romper ownership.
 - Protocol example no verificado contra código.
 - Key/path/profile privado en Git.
 - Dos autoridades de lifecycle.
+- Captura UI por nombre de proceso sin `run_id`/cliente exactos, o adapter que
+  cambie la semántica de `engine-capture-v1`.
 - Companion sin versión fijada, installer ejecutado por un gate o verbo de
   proceso externo sobre un run gestionado.
 - Screenshot diff usado como prueba de gameplay sin gate DayZDiag.

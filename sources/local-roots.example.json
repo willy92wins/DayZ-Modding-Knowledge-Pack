@@ -9,6 +9,10 @@
       "path_env": "PACK_DAYZ_VANILLA_ROOT",
       "writable": false
     },
+    "dayz_ui_research": {
+      "path_env": "PACK_DAYZ_UI_RESEARCH_ROOT",
+      "writable": false
+    },
     "rip_vehicle_import": {
       "path_env": "PACK_RIP_VEHICLE_IMPORT_ROOT",
       "writable": false

@@ -1600,17 +1600,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Phase 02 evidence review and the proposed UI/tooling contract amendments are recorded for user adjudication.",
+          "decision_evidence": "Phase 02 evidence review records the four approved UI/tooling amendments and the excluded py3d workstream.",
           "license": "MIT",
-          "source_hash": "ff8e7d5125c64ea1c684d5752b160270758dfa0fbc2283d03ec7847974983485",
+          "source_hash": "30fcc464b013a1905dbb76e70d3353bfb30af874f0aee18a903cc822a0333810",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-02-dayz-ui-lab.codex-notes.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-phase02-approved@2026-07-25",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ff8e7d5125c64ea1c684d5752b160270758dfa0fbc2283d03ec7847974983485",
+      "output_hash": "30fcc464b013a1905dbb76e70d3353bfb30af874f0aee18a903cc822a0333810",
       "output_path": "plans/2026-07-24-02-dayz-ui-lab.codex-notes.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -1633,17 +1633,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "The approved Phase 02 plan fixes the architecture and records B19 GREEN plus the authorized-engine gate that still blocks B20.",
           "license": "MIT",
-          "source_hash": "f43fa3daa1a7f13955e9a4f2cb22e25082f656a2b3b2c760e1f4a062853023df",
+          "source_hash": "b92626a9299b657176d455513a3d6e3f7ccc669b0309067c5a22745881e26383",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-02-dayz-ui-lab.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-phase02-approved@2026-07-25",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f43fa3daa1a7f13955e9a4f2cb22e25082f656a2b3b2c760e1f4a062853023df",
+      "output_hash": "b92626a9299b657176d455513a3d6e3f7ccc669b0309067c5a22745881e26383",
       "output_path": "plans/2026-07-24-02-dayz-ui-lab.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -1732,17 +1732,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Approved prior-art deltas are formalized in the Phase 05 plan.",
+          "decision_evidence": "Phase 05 receives the approved narrow run-bound, lossless adapter contract for engine-capture-v1 without redefining lifecycle or schema.",
           "license": "MIT",
-          "source_hash": "290ac5caa10ccfa4854579aa293b8e6253ff2486206b0fc0a2e022dbf1d8bcb5",
+          "source_hash": "c4733b06e7502fbe26a37093c0dca110ff53f9bcb113e3c420faa1d34250874d",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-05-dayz-mcp-public-and-automation.md",
-          "source_revision": "r21-prior-art-approved@2026-07-24",
+          "source_revision": "r21-phase02-approved@2026-07-25",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "290ac5caa10ccfa4854579aa293b8e6253ff2486206b0fc0a2e022dbf1d8bcb5",
+      "output_hash": "c4733b06e7502fbe26a37093c0dca110ff53f9bcb113e3c420faa1d34250874d",
       "output_path": "plans/2026-07-24-05-dayz-mcp-public-and-automation.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -1821,17 +1821,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "The roadmap now traces the three approved prior-art deltas to Phases 04-06.",
+          "decision_evidence": "The roadmap now traces engine-capture-v1 and its manual/MCP ownership boundary across Phases 02 and 05.",
           "license": "MIT",
-          "source_hash": "09c0610412625dbb31f95b17971700e59d47ca668b911bf79dba00edbcb700f4",
+          "source_hash": "489ba8571b0a24ab39d3f53cd36fa5c7f451c920db9e189c98637a9066e2a2aa",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-r21-master-roadmap.md",
-          "source_revision": "r21-prior-art-approved@2026-07-24",
+          "source_revision": "r21-phase02-approved@2026-07-25",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "09c0610412625dbb31f95b17971700e59d47ca668b911bf79dba00edbcb700f4",
+      "output_hash": "489ba8571b0a24ab39d3f53cd36fa5c7f451c920db9e189c98637a9066e2a2aa",
       "output_path": "plans/2026-07-24-r21-master-roadmap.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -1854,17 +1854,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "The DPF records the three approved post-Phase-01 criteria without reopening closed B2.",
+          "decision_evidence": "The DPF records the four user-approved Phase 02 UI/MCP contract amendments and the explicit py3d boundary.",
           "license": "MIT",
-          "source_hash": "21ee238ad1d0b56875c62a660865b7bbfe56b0ad26e1a98cf4e10609a3ef2910",
+          "source_hash": "8da4dc65f1697b09a4e29f66bbf0baa92e63bd4e4df6d40d2160ea8714769592",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
-          "source_revision": "r21-prior-art-approved@2026-07-24",
+          "source_revision": "r21-phase02-approved@2026-07-25",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "21ee238ad1d0b56875c62a660865b7bbfe56b0ad26e1a98cf4e10609a3ef2910",
+      "output_hash": "8da4dc65f1697b09a4e29f66bbf0baa92e63bd4e4df6d40d2160ea8714769592",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
@@ -5488,17 +5488,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
+          "decision_evidence": "The example registry exposes the read-only DayZ UI research root through an environment variable without embedding a private path.",
           "license": "MIT",
-          "source_hash": "2e336df2090a9ecae42d23abe893660b1ce0dfd7d402f47bf83a3e4c1b12f67a",
+          "source_hash": "bf722199972eca3dd64d098c93c81324b9d1f5226be4d7193df38b4f11e2fe81",
           "source_id": "pack-r21-authored",
           "source_path": "sources/local-roots.example.json",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-phase02-approved@2026-07-25",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2e336df2090a9ecae42d23abe893660b1ce0dfd7d402f47bf83a3e4c1b12f67a",
+      "output_hash": "bf722199972eca3dd64d098c93c81324b9d1f5226be4d7193df38b4f11e2fe81",
       "output_path": "sources/local-roots.example.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -5568,6 +5568,29 @@
       "license": "MIT",
       "output_hash": "7fac902a6dd955b9a988606b891b8b43cfdc7e12934c32bbd007bc62ba252a66",
       "output_path": "specs/2026-07-24-foundation-and-evidence.md",
+      "routing_artifact_id": "repo/specs",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/specs/2026-07-25-dayz-ui-lab.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "The user-approved Phase 02 contracts remain closed as a 16/16 feature spec and now record the B19/B20 execution checkpoint.",
+          "license": "MIT",
+          "source_hash": "0dad906c895d02f2ff81597d377b1d6de98babc03d6f45544cbc850a7e111cfe",
+          "source_id": "pack-r21-authored",
+          "source_path": "specs/2026-07-25-dayz-ui-lab.md",
+          "source_revision": "r21-phase02-approved@2026-07-25",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0dad906c895d02f2ff81597d377b1d6de98babc03d6f45544cbc850a7e111cfe",
+      "output_path": "specs/2026-07-25-dayz-ui-lab.md",
       "routing_artifact_id": "repo/specs",
       "verification_level": "cross_checked"
     },
@@ -5799,6 +5822,286 @@
       "output_hash": "085afbc6b66d5afab7f44c8e1cd3e5427eb82859606afa3adeccb6353cd9261c",
       "output_path": "tests/packctl/test_validation.py",
       "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/dayz_ui_lab/parse.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "The existing Phase 01 parser was migrated as the implementation baseline before the source-verified B19 correction.",
+          "license": "User-authored inputs; MIT public projection",
+          "source_hash": "b2ab0790c65da17c2c7ef22144ddf94f9bceccabdc79e1d5c4b696b5fc2fa708",
+          "source_id": "dayz-ui-research",
+          "source_path": "renderer/parse.py",
+          "source_revision": "filesystem@2026-07-25",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 removes the false missing-child-block diagnostic and strict mode after a RED-to-GREEN test cycle.",
+          "license": "MIT",
+          "source_hash": "8504d9d7304d2b64a0af1c4cb759faebf2b7e39d37560d1559b0d704c19a0dbc",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/dayz_ui_lab/parse.py",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8504d9d7304d2b64a0af1c4cb759faebf2b7e39d37560d1559b0d704c19a0dbc",
+      "output_path": "tools/dayz-ui-lab/dayz_ui_lab/parse.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/probe/lf_uiprobe/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 authors a vanilla-first source-only probe with no mandatory framework dependency.",
+          "license": "MIT",
+          "source_hash": "bb5b989e45fcc122f9d415bfef606e87df3a4de3fec40a48fd3cb57cd517fe09",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/probe/LF_UIProbe/config.cpp",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bb5b989e45fcc122f9d415bfef606e87df3a4de3fec40a48fd3cb57cd517fe09",
+      "output_path": "tools/dayz-ui-lab/probe/LF_UIProbe/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/probe/lf_uiprobe/gui/layouts/continuation.layout.template",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 authors the byte-controlled B20 micro-fixture while leaving its engine result explicitly open.",
+          "license": "MIT",
+          "source_hash": "d3f4e026067a407caba2b178bd855c71de22881c7b20e0bd75ed4664a0baa092",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/probe/LF_UIProbe/gui/layouts/continuation.layout.template",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "unverified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d3f4e026067a407caba2b178bd855c71de22881c7b20e0bd75ed4664a0baa092",
+      "output_path": "tools/dayz-ui-lab/probe/LF_UIProbe/gui/layouts/continuation.layout.template",
+      "routing_artifact_id": "tools",
+      "verification_level": "unverified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/probe/lf_uiprobe/gui/layouts/leaf-without-child-block.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "Vanilla camera-tools syntax proves that a WidgetClass leaf may omit a child block.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "97eeda51a899a84d46371bdbae3f6019228e2077c11b94af8fa6df5dc4be3e26",
+          "source_id": "dayz-vanilla",
+          "source_path": "gui/layouts/camera_tools/camera_tools.layout",
+          "source_revision": "1.29.0.163451",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 authors a minimal first-party B19 fixture from the verified vanilla grammar.",
+          "license": "MIT",
+          "source_hash": "7fd1df9749505560a020f6ce80c377e19a21810ac56e0698c8792ab6aff6c136",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/probe/LF_UIProbe/gui/layouts/leaf-without-child-block.layout",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7fd1df9749505560a020f6ce80c377e19a21810ac56e0698c8792ab6aff6c136",
+      "output_path": "tools/dayz-ui-lab/probe/LF_UIProbe/gui/layouts/leaf-without-child-block.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/probe/lf_uiprobe/pboprefix",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "The source-only probe declares the same in-game prefix used by its verified layout paths.",
+          "license": "MIT",
+          "source_hash": "9a7852a7b3bbdbfa25268129d9ca3b649b11039d2c165765ea762889ac49fd29",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/probe/LF_UIProbe/$PBOPREFIX$",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9a7852a7b3bbdbfa25268129d9ca3b649b11039d2c165765ea762889ac49fd29",
+      "output_path": "tools/dayz-ui-lab/probe/LF_UIProbe/$PBOPREFIX$",
+      "routing_artifact_id": "tools",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/probe/lf_uiprobe/scripts/5_mission/lf_uiprobe_mission.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "Widget creation, lookup, identity, text and cleanup signatures were verified before authoring the probe.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "6bb20bad5efa498e584c7ae8976a1bf5310bcd9019215f31cb2990af21ce0c9e",
+          "source_id": "dayz-vanilla",
+          "source_path": "scripts/1_core/proto/enwidgets.c",
+          "source_revision": "1.29.0.163451",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The RPT logging signature was verified before authoring the probe sentinels.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "ca3151514781ced9355bf1e2f095f98d984764091d5fa51d621bd099f51ea746",
+          "source_id": "dayz-vanilla",
+          "source_path": "scripts/1_core/proto/endebug.c",
+          "source_revision": "1.29.0.163451",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Vanilla MissionGameplay creates its HUD workspace during OnInit, validating the probe hook context.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "5a3d98e41ab191beedbaff8b198bc27bab243dbb946b6571d41e0bf17ef2bb40",
+          "source_id": "dayz-vanilla",
+          "source_path": "scripts/5_mission/mission/missiongameplay.c",
+          "source_revision": "1.29.0.163451",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 authors a one-shot client probe that reports engine observations without encoding an expected B20 value.",
+          "license": "MIT",
+          "source_hash": "edb9e9014b6b71847c427da4b5e85ac7ac2c4621658487073d0d0a74a842c94f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/probe/LF_UIProbe/scripts/5_Mission/LF_UIProbe_Mission.c",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "edb9e9014b6b71847c427da4b5e85ac7ac2c4621658487073d0d0a74a842c94f",
+      "output_path": "tools/dayz-ui-lab/probe/LF_UIProbe/scripts/5_Mission/LF_UIProbe_Mission.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/probe/prepare_probe.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 authors a fail-closed staging tool so LF and CRLF fixtures are byte-controlled despite repository LF normalization.",
+          "license": "MIT",
+          "source_hash": "0993ecd2328024b98dfb521ea109e6097bb9967bff3a449535e8a5370767fc3b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/probe/prepare_probe.py",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0993ecd2328024b98dfb521ea109e6097bb9967bff3a449535e8a5370767fc3b",
+      "output_path": "tools/dayz-ui-lab/probe/prepare_probe.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/probe/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 documents the authorized lifecycle, sentinel boundary and unresolved engine gate.",
+          "license": "MIT",
+          "source_hash": "038e018f3ab0cd0563130f32ca97b808f466bce4560d21090eb4daa3e9dfc038",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/probe/README.md",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "038e018f3ab0cd0563130f32ca97b808f466bce4560d21090eb4daa3e9dfc038",
+      "output_path": "tools/dayz-ui-lab/probe/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/tests/test_parser.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "The existing Phase 01 parser tests were migrated before replacing the false B19 expectations.",
+          "license": "User-authored inputs; MIT public projection",
+          "source_hash": "4e952ec20c2135c8c4f13317e45406ee998283b81b744347a455ed7f24cecccb",
+          "source_id": "dayz-ui-research",
+          "source_path": "renderer/test_phase1_parser.py",
+          "source_revision": "filesystem@2026-07-25",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 asserts that valid leaves are warning-free and that the false strict-child-block API is absent.",
+          "license": "MIT",
+          "source_hash": "eee23b6bbbdbdb3b720615335d042a23dcef36959851294f1cc6d35b125d1d80",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/tests/test_parser.py",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "eee23b6bbbdbdb3b720615335d042a23dcef36959851294f1cc6d35b125d1d80",
+      "output_path": "tools/dayz-ui-lab/tests/test_parser.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/tests/test_probe.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 tests exact LF/CRLF staging, vanilla-only dependencies, the verified void GetText call shape and fail-closed destination handling.",
+          "license": "MIT",
+          "source_hash": "65d2678abcdc3fbd0c8d18c1e4262e8d3cba759bade2c58ec4cebdfa91f166c0",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/tests/test_probe.py",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "65d2678abcdc3fbd0c8d18c1e4262e8d3cba759bade2c58ec4cebdfa91f166c0",
+      "output_path": "tools/dayz-ui-lab/tests/test_probe.py",
+      "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
     {
@@ -8960,6 +9263,14 @@
       "notes": "Vanilla script source used for API and behavior verification; no code copied.",
       "revision": "1.29.0.163451",
       "source_id": "dayz-vanilla"
+    },
+    {
+      "kind": "filesystem",
+      "license": "User-authored inputs; MIT public projection",
+      "local_root_id": "dayz_ui_research",
+      "notes": "Read-only source for the UI parser/viewer reconciliation; third-party corpora remain excluded.",
+      "revision": "filesystem@2026-07-25",
+      "source_id": "dayz-ui-research"
     },
     {
       "kind": "git",
