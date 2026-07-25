@@ -24,6 +24,13 @@ familias.
   se ha codificado un valor esperado sin observación DayZDiag.
 - `session_status` y `bridge_status` devolvieron `unauthorized`; no se lanzó
   DayZ por un camino alternativo.
+- El diagnóstico read-only posterior separó daemon de cliente: `doctor
+  --daemon-policy normal --json` devolvió PASS sin findings usando la clave
+  vigente, mientras este task siguió recibiendo HTTP 401. El cliente MCP lee
+  la clave una sola vez al arrancar (`DayZ_MCP_dev/tools/dayz_mcp/server.py:
+  347-353`) y el keyfile fue recreado después de arrancar los clientes antiguos.
+  La explicación sustentada es una clave cacheada obsoleta en este task, no un
+  fallo de DayZ ni del daemon.
 - C1 continúa abierto y bloquea scenario/render/diff. La skill `dayz-ui` no se
   crea/promueve antes de corpus + DayZDiag.
 - MCP solo será adapter de `engine-capture-v1`; no duplica lifecycle. El delta
@@ -38,7 +45,9 @@ familias.
 1. **[ALTA] B20 / C1** — falta observar en DayZDiag el texto exacto de las
    variantes LF/CRLF antes de escribir tests/implementación.
 2. **[ALTA] Autorización MCP** — la identidad actual recibe `unauthorized`;
-   puede resolverse con una sesión autorizada o ejecución manual DayZDiag.
+   el daemon sano acepta la clave vigente, pero este task conserva un cliente
+   anterior a su rotación. Debe continuarse desde un task Codex nuevo o una
+   sesión autorizada; no reiniciar/matar procesos compartidos ni rotar la clave.
 3. **[MEDIA] Skill UI** — repo y Obsidian ya conservan el aprendizaje; la
    tercera superficie espera el gate C1 aprobado.
 4. **[MEDIA] Integración pendiente** — la rama activa todavía no se ha
@@ -46,10 +55,12 @@ familias.
 
 ## Próxima acción
 
-Restaurar autorización MCP o ejecutar manualmente `LF_UIProbe` con DayZDiag;
-conservar los resultados RPT LF/CRLF; fijarlos como test RED y aplicar el GREEN
-mínimo B20. Después ejecutar el gate 319/319 + TraderX 46/46 + LFPG. No empezar
-scenario/render/diff ni tocar py3d antes.
+Abrir un task Codex nuevo, que creará su cliente MCP después de la rotación,
+y retomar este handoff. Allí: verificar `session_status` + `bridge_status`,
+ejecutar `LF_UIProbe` mediante `dayz_test_run`, conservar el `run_id` y los
+resultados RPT LF/CRLF, detener exactamente ese run, fijar el valor observado
+como test RED y aplicar el GREEN mínimo B20. Después ejecutar el gate 319/319 +
+TraderX 46/46 + LFPG. No empezar scenario/render/diff ni tocar py3d antes.
 
 ## Invariantes cerradas
 
@@ -107,6 +118,8 @@ Fase 02 slices 1–2 cerrados · B20 espera observación DayZDiag autorizada`.
 - Se añadió `LF_UIProbe` con staging LF/CRLF reproducible y sin expectativa B20.
 - El commit de contenido es `9cb9b9c70208b037de457715482d70c24b19a5b9`.
 - B20 quedó bloqueado honestamente por MCP `unauthorized`; no hubo bypass.
+- El follow-up read-only confirmó daemon sano y aisló el bloqueo en la clave
+  cacheada por el cliente MCP de este task tras una rotación del keyfile.
 
 ### 2026-07-24 — Prior art aprobado y promovido
 

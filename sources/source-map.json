@@ -143,15 +143,15 @@
           "decision": "adopt",
           "decision_evidence": "Administrative handoff records Phase 02 slices 1-2, B19 GREEN, the staged B20 probe and the authorized-engine blocker.",
           "license": "MIT",
-          "source_hash": "edb540df184ad7d0277f49a149ef9b1bd7936dcb83a82879ad76ad8b63995e13",
+          "source_hash": "86a72d1cf5e66cb3fa9ce8e2202f6385d2c50366b13f94cca0e60a05974ba6ab",
           "source_id": "pack-r21-authored",
           "source_path": "HANDOFF.md",
-          "source_revision": "r21-phase02-b19@2026-07-25",
+          "source_revision": "r21-phase02-b20-auth-handoff@2026-07-25",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "edb540df184ad7d0277f49a149ef9b1bd7936dcb83a82879ad76ad8b63995e13",
+      "output_hash": "86a72d1cf5e66cb3fa9ce8e2202f6385d2c50366b13f94cca0e60a05974ba6ab",
       "output_path": "HANDOFF.md",
       "routing_artifact_id": "root/handoff",
       "verification_level": "cross_checked"
