@@ -1,6 +1,8 @@
-# Rollout S2 — py3d fork DayZ a las 8 skills (D2=B) — wheel vigente: **1.3.0** (S3)
+# Rollout py3d fork DayZ a las 8 skills (D2=B) — wheel vigente: **1.4.0** (r21)
 
-> Generado: 2026-06-06 · Plan: `LF_RollingStone_dev/plans/2026-06-06-py3d-fork.md`
+> Generado: 2026-06-06 · Actualizado: 2026-07-25
+> · Plan r21: `plans/2026-07-25-04a-py3d-proxy-lifecycle.md`
+> · Plan original: `LF_RollingStone_dev/plans/2026-06-06-py3d-fork.md`
 > §SESIÓN 2 Paso 3 · GATE-D2 resuelto en S1C → **D2=B: wheel vendorizada por skill**
 > (try-path: 1º `wheels/` de la skill, 2º `_tools/py3d/dist/` si está montada).
 > Las skills son read-only en sesión Cowork: este paquete se aplica EDITANDO el
@@ -8,19 +10,46 @@
 
 ## Contenido
 
-- `patches/*.patch` — 10 diffs unificados (`patch -p1` desde el dir `skills/`).
+- `patches/*.patch` — 11 diffs unificados (`git apply --check` desde el dir
+  `skills/`); 10 tienen también proyección completa y
+  `dayz-animation-pipeline/SKILL.md` se aplica solo como patch acumulativo.
 - `patched/<skill>/...` — los 10 archivos YA parcheados (alternativa: copiar encima).
 - `audit_p3d.py` — reemplazo completo de `dayz-p3d-audit/scripts/audit_p3d.py`
   (delegado en `P3D.validate()` v1.2.0; ids LOD normalizados DayZ; GeoPhys y
   centroide absoluto retirados — F2-12/D8).
-- La wheel a vendorizar vive en `../dist/` — vigente `py3d-1.3.0-py3-none-any.whl`
-  (sha pineado en `apply-s2-rollout.ps1`); la 1.2.0 se conserva como histórica.
+- La wheel a vendorizar vive en `../dist/` — vigente
+  `py3d-1.4.0-py3-none-any.whl`. `wheel-manifest.json` fija nombre, versión,
+  SHA-256 y `SOURCE_DATE_EPOCH`; `apply-s2-rollout.ps1` no contiene hashes
+  duplicados.
 
-## Aplicación (por cada una de las 8 skills)
+## Aplicación
 
-1. `mkdir -p <skill>/wheels && cp dist/py3d-1.3.0-py3-none-any.whl <skill>/wheels/`
-2. Aplicar su patch (o copiar el archivo de `patched/`).
-3. Verificación: `python3 -c "import py3d; assert py3d.IS_DAYZ_FORK and tuple(map(int, py3d.__version__.split('.'))) >= (1,2,0)"` tras instalar la wheel de esa skill.
+La raíz destino es obligatoria; el script nunca descubre ni modifica una
+instalación implícita:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File .\apply-s2-rollout.ps1 `
+  -TargetSkillRoot <skills-root> -NoWrite
+
+# Solo tras revisar el plan anterior:
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File .\apply-s2-rollout.ps1 `
+  -TargetSkillRoot <skills-root>
+```
+
+El rollout valida antes el wheel/manifiesto/versiones, conserva backup de
+cualquier archivo o wheel reemplazado y relee cada copia por SHA-256. Una
+segunda pasada `-NoWrite` debe terminar con `planned changes: 0`.
+
+Para reconstruir el artefacto ignorado y su manifiesto rastreado:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File .\build-wheel.ps1 -Python <python-3.10-or-newer>
+```
+
+Ese build se ejecuta dos veces y falla si los SHA-256 difieren.
 
 | Skill | Archivos | Cambio |
 |---|---|---|
@@ -31,7 +60,7 @@
 | dayz-p3d-audit | scripts/audit_p3d.py (REEMPLAZO) · SKILL.md | delegación validate() + fix API confabulada `py3d.read_p3d` (:543) |
 | dayz-pbo-build | references/validation-scripts.md | 6× `pip install py3d` (bug PyPI) + casing `P3d`→`P3D` (:705, R22-P3-02) |
 | dayz-proxy-align | SKILL.md | install |
-| dayz-animation-pipeline | references/py3d-1.0.0-quirks.md | banner HISTÓRICO + tabla quirk→fork (R22-P1-01) |
+| dayz-animation-pipeline | SKILL.md (patch-only) · references/py3d-1.0.0-quirks.md | lector/escritor RTM/SEAnim estricto + límites BMTR/ANM; banner histórico y API real |
 
 ## Verificación realizada en S2 (2026-06-06, sandbox)
 
@@ -80,3 +109,19 @@
 - `fix-junctions.ps1`: smoke de wheel version-agnostic (`py3d-*.whl`).
 - Los .ps1 quedan COMMITEADOS en el repo desde S3 (R22-P2-01: antes solo
   existían en `_tools/`, divergencia repo↔working-tree).
+
+## UPDATE r21 (2026-07-25) — wheel 1.4.0
+
+- Ciclo de vida de proxies completo y fail-closed:
+  `add_proxy(..., space=...)`, `get_proxies(strict=True)`, `align_proxy()` y
+  `remove_proxy()`, con espacios raw/engine explícitos y compatibilidad del
+  default histórico.
+- Nueva distribución reproducible: dos builds con epoch fijo, manifiesto
+  rastreado y SHA-256 único. El wheel sigue ignorado; la fuente de verdad es
+  `tools/py3d/`.
+- Rollout v4: raíz destino explícita, modo `-NoWrite`, backups, readback,
+  aplicación patch-only y ausencia total de rutas privadas codificadas.
+- Proyecciones nuevas para el gate de pre-export MLOD, inspección ODOL estricta
+  frente a recuperación, RTM/SEAnim estricto y lifecycle de proxies 1.4.0.
+- Gate de señuelo verificado: 19 cambios planeados, 19 aplicados y segunda
+  pasada idempotente con `planned changes: 0`.

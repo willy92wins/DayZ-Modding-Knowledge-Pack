@@ -51,6 +51,29 @@ Before doing anything, read the relevant reference file:
 - **LF_PowerGrid object recipes** → `references/lfpg-recipes.md`
 - **AnswerOverflow community findings (mined 2026-05-17)** → `references/answeroverflow-2026-05-17.md` (binarize misalignment on personality meshes, nested proxy disappearance on binarized models, Maya Object Builder alternative)
 
+## Contract-driven pre-export gate (r21 F3)
+
+When the DayZ Modding Knowledge Pack is available, run its
+`tools/dayz-model-preflight/` gate before packing any imported or transformed
+MLOD:
+
+```bash
+python -m dayz_model_preflight check target.p3d \
+  --contract preflight.json --json preflight-result.json
+```
+
+The v1 contract must supply intended dimensions/tolerances, required non-empty
+bone selections and complete one-to-one source→target face lineage plus the
+full affine transform. The gate composes the DayZ py3d fork's `validate()`
+findings and then checks scale, bones, transformed positions and
+determinant-aware winding. Exit `0/1/2` means `PASS/FAIL/INVALID`.
+
+Do not invent missing lineage from normals or centroids. One-to-many splits,
+triangle↔quad mappings, duplicate/uncovered faces and absent evidence are
+unsupported in v1 and must remain `INVALID`, never a guessed pass. This is a
+read-only offline gate; DayZATool/Object Builder and DayZDiag remain the
+acceptance boundary for the built asset.
+
 ## Pipeline Overview
 
 ### Path A: Blender Headless + py3d Assembly (PRIMARY)
@@ -60,17 +83,17 @@ Install: `apt-get install -y blender && pip install opensimplex --break-system-p
 
 > **CRITICAL: py3d installation** — Do NOT use `pip install py3d` (different
 > point-cloud library) and do NOT install upstream from GitHub anymore. Use the
-> **py3d DayZ fork >= 1.2.0** (codec KoffeinFlummi + guards anti-corrupcion,
+> **py3d DayZ fork >= 1.4.0** (codec KoffeinFlummi + guards anti-corrupcion,
 > constantes LOD DayZ, `validate()`, proxies, recipe y CLI `python -m py3d`),
 > vendorizado como wheel en `wheels/` de esta skill (D2=B):
 >
 > ```bash
 > SKILL_DIR=<dir de esta skill>
-> # py3d DayZ fork >= 1.2.0 (wheel vendorizada en esta skill - D2=B).
+> # py3d DayZ fork >= 1.4.0 (wheel vendorizada en esta skill - D2=B).
 > # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
 > pip install --break-system-packages "$SKILL_DIR"/wheels/py3d-*-py3-none-any.whl 2>/dev/null \
 >   || pip install --break-system-packages $(ls /sessions/*/mnt/*/_tools/py3d/dist/py3d-*-py3-none-any.whl 2>/dev/null | sort -V | tail -1)
-> python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,2,0), (py3d.__version__, py3d.__file__)"
+> python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,4,0), (py3d.__version__, py3d.__file__)"
 > ```
 
 **Step 1: Define the Object**

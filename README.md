@@ -13,7 +13,7 @@ It contains three things:
 | Part | What it is |
 |---|---|
 | `skills/` | 14 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
-| `tools/py3d/` | An **improved fork of py3d** — the Python MLOD `.p3d` reader/writer that powers most of the asset scripts. Not available anywhere else. |
+| `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export and ODOL parity tools. |
 | `knowledge/` | **Verified reference notes** — technical facts, infra, and cross-project pattern syntheses. |
 
 ---
@@ -71,7 +71,10 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── ai-3d-to-dayz/            ← AI-generated 3D (Hunyuan/Tripo/TRELLIS) → DayZ
 │   └── ardy-motion-generation/   ← motion generation → DayZ integration
 ├── tools/
-│   └── py3d/                     ← DayZ fork of py3d (MLOD .p3d codec), MIT
+│   ├── py3d/                     ← DayZ fork of py3d (MLOD .p3d codec), MIT
+│   ├── dayz-animation-formats/   ← strict RTM/SEAnim v1 reader/writer/inspect
+│   ├── dayz-model-preflight/     ← contract-driven MLOD export gate
+│   └── dayz-odol-strict/         ← read-only ODOL v53-v55 anatomy/diff adapter
 └── knowledge/
     ├── DAYZ_TECHNICAL_NOTES.md   ← py3d MLOD facts, LODs, winding, config, runtime
     ├── DAYZ_INFRA.md             ← drives, AddonBuilder, serverDZ.cfg, RPT triage, terrain
@@ -174,12 +177,14 @@ included skill, that is one of these. Installing the plugin makes those referenc
 
 ---
 
-## 5. The `tools/py3d` tool
+## 5. 3D tooling
+
+### `tools/py3d`
 
 `tools/py3d/` is a **DayZ-specific fork of** [KoffeinFlummi/py3d](https://github.com/KoffeinFlummi/py3d)
 (MIT) — a pure-Python reader/writer for the **MLOD `.p3d`** format (the editable, non-binarized
 model format). Most asset scripts in these skills import it. Upstream is an unmaintained minimal
-codec; this fork (`__version__ = "1.3.0"`, `IS_DAYZ_FORK = True`) adds anti-corruption guards so
+codec; this fork (`__version__ = "1.4.0"`, `IS_DAYZ_FORK = True`) adds anti-corruption guards so
 the paths that used to silently corrupt a `.p3d` now fail *early* with an actionable message.
 
 Highlights (see `tools/py3d/README.md` for the full list):
@@ -189,6 +194,8 @@ Highlights (see `tools/py3d/README.md` for the full list):
 - `p3d.save(path, verify=True, backup_dir=...)` — atomic write with reopen+parse+invariant verify;
   on failure the original stays byte-intact.
 - `p3d.validate()` → `list[Finding]` with codes (stale selection, weight range, normals budget…).
+- Complete fail-closed proxy lifecycle: raw/engine frame conversion,
+  `add_proxy`, strict enumeration, in-place align and index-safe remove.
 
 **Install:** it targets Python 3. From the pack root:
 ```
@@ -198,6 +205,48 @@ python -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False); print(py3d.__
 ```
 Or just add `tools/py3d/` to `PYTHONPATH`. **License:** MIT — `tools/py3d/LICENSE` (© 2017 Felix
 Wiegand, upstream author); keep that file with any redistribution.
+
+### `tools/dayz-animation-formats`
+
+Strict stdlib reader/writer for SEAnim v1 and DayZ RTM (`RTM_MDAT` and
+`RTM_0101`) plus deterministic JSON inspection:
+
+```text
+python -m dayz_animation_formats inspect input.rtm --output anatomy.json
+```
+
+Frozen first-party fixtures are independently decoded by
+Arma3ObjectBuilder during validation. BMTR and `.anm` conversion remain
+explicitly out of scope; unsupported signatures fail closed.
+
+### `tools/dayz-model-preflight`
+
+Read-only MLOD gate driven by a versioned JSON contract. It composes
+`py3d.validate()` with intended scale, required non-empty bone selections and
+determinant-aware face-lineage/winding checks:
+
+```text
+python -m dayz_model_preflight check target.p3d \
+  --contract preflight.json --json preflight-result.json
+```
+
+The DayZ py3d fork `>=1.4.0` is required. Missing or ambiguous one-to-one
+lineage is `INVALID`; the tool never guesses a mapping or repairs a model.
+
+### `tools/dayz-odol-strict`
+
+Fail-closed, read-only ODOL v53-v55 anatomy inspection and deterministic diff:
+
+```text
+python -m dayz_odol_strict inspect input.p3d \
+  --backend-root <external-backend> --json anatomy.json
+python -m dayz_odol_strict diff reference.json candidate.json
+```
+
+The adapter, schemas and three user-authorized first-party fixtures are
+redistributable. The compatible BisDLL-derived backend has no redistribution
+license and is therefore external, hash-pinned and loaded only in an isolated
+subprocess. No ODOL writer or partial-success mode is included.
 
 ---
 

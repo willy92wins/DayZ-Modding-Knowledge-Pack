@@ -17,8 +17,11 @@ angle-sort de dayz-proxy-align), Recipe JSON v1 (to_dict/
 from_dict scoped al inspector, D7), validate() v1.2.0 con la
 paridad depurada del audit (F2-12) y CLI (python -m py3d).
 
-Canonical home: P:\py3d (local, no GitHub). Plan:
-LF_RollingStone_dev/plans/2026-06-06-py3d-fork.md
+S4 (1.4.0): conversion explicita raw/engine y ciclo de vida proxy
+add/strict-inspect/align/remove con validacion previa y remapeo seguro.
+
+Canonical source: tools/py3d in the DayZ Modding Knowledge Pack. External
+checkouts and vendored wheels are rollout targets, never independent sources.
 """
 
 
@@ -30,7 +33,7 @@ import struct
 import tempfile
 
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 IS_DAYZ_FORK = True
 
 _REQUIRED = object()
@@ -134,6 +137,16 @@ def classify_lod_resolution(resolution):
 
 PROXY_NAME_RE = re.compile(r"^proxy:(?P<path>.+)\.(?P<index>\d+)$",
                            re.IGNORECASE)
+PROXY_ENGINE_CORRECTION = (
+    (-1.0, 0.0, 0.0),
+    (0.0, 0.0, 1.0),
+    (0.0, 1.0, 0.0),
+)
+_IDENTITY_3 = (
+    (1.0, 0.0, 0.0),
+    (0.0, 1.0, 0.0),
+    (0.0, 0.0, 1.0),
+)
 
 
 def _v_sub(a, b):
@@ -169,6 +182,98 @@ def _det3(m):
     return (m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
             - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
             + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]))
+
+
+def _mat_mul3(a, b):
+    return tuple(
+        tuple(sum(a[i][k] * b[k][j] for k in range(3)) for j in range(3))
+        for i in range(3)
+    )
+
+
+def _validate_proxy_rotation(rotation):
+    try:
+        rows = tuple(tuple(float(value) for value in row) for row in rotation)
+    except (TypeError, ValueError):
+        raise ValueError("proxy rotation must be a finite 3x3 matrix")
+    if len(rows) != 3 or any(len(row) != 3 for row in rows):
+        raise ValueError("proxy rotation must be a finite 3x3 matrix")
+    if any(not math.isfinite(value) for row in rows for value in row):
+        raise ValueError("proxy rotation must be a finite 3x3 matrix")
+    tolerance = 1e-6
+    for i in range(3):
+        for j in range(3):
+            dot = sum(rows[k][i] * rows[k][j] for k in range(3))
+            expected = 1.0 if i == j else 0.0
+            if abs(dot - expected) > tolerance:
+                raise ValueError(
+                    "proxy rotation must be orthonormal with determinant +1"
+                )
+    if abs(_det3(rows) - 1.0) > tolerance:
+        raise ValueError(
+            "proxy rotation must be orthonormal with determinant +1"
+        )
+    return rows
+
+
+def proxy_frame_to_engine(rotation):
+    """Convert a validated raw MLOD proxy frame to its DayZ engine frame."""
+    return _mat_mul3(
+        PROXY_ENGINE_CORRECTION,
+        _validate_proxy_rotation(rotation),
+    )
+
+
+def proxy_frame_from_engine(rotation):
+    """Convert a validated DayZ engine proxy frame to its raw MLOD frame."""
+    return _mat_mul3(
+        PROXY_ENGINE_CORRECTION,
+        _validate_proxy_rotation(rotation),
+    )
+
+
+def _validate_proxy_anchor(anchor):
+    try:
+        values = tuple(float(value) for value in anchor)
+    except (TypeError, ValueError):
+        raise ValueError("proxy anchor must contain three finite numbers")
+    if len(values) != 3 or any(not math.isfinite(value) for value in values):
+        raise ValueError("proxy anchor must contain three finite numbers")
+    return values
+
+
+def _validate_proxy_scale(scale):
+    if isinstance(scale, bool):
+        raise ValueError("proxy scale must be finite and greater than zero")
+    try:
+        value = float(scale)
+    except (TypeError, ValueError):
+        raise ValueError("proxy scale must be finite and greater than zero")
+    if not math.isfinite(value) or value <= 0.0:
+        raise ValueError("proxy scale must be finite and greater than zero")
+    try:
+        packed = struct.unpack("<f", struct.pack("<f", value))[0]
+    except (OverflowError, struct.error):
+        raise ValueError("proxy scale must fit float32")
+    if packed == 0.0:
+        raise ValueError("proxy scale is degenerate after float32 packing")
+    return value
+
+
+def _validate_proxy_path_index(path, index):
+    if not isinstance(path, str):
+        raise TypeError("proxy path must be a string")
+    if not path:
+        raise ValueError("proxy path must not be empty")
+    if "\0" in path:
+        raise ValueError("proxy path must not contain NUL")
+    if path.lower().endswith(".p3d"):
+        raise ValueError("proxy path must omit the .p3d suffix")
+    if isinstance(index, bool) or not isinstance(index, int):
+        raise TypeError("proxy index must be an int >= 1 (bool is invalid)")
+    if index < 1:
+        raise ValueError("proxy index must be >= 1")
+    return path, index
 
 
 def _validate_transform_matrix(matrix):
@@ -234,22 +339,40 @@ def derive_proxy_frame(tri):
     return list(center), (x, y, z), bool(ambiguous), [float(d) for d in deg]
 
 
-def canonical_proxy_triangle(anchor, rotation=None, scale=0.001):
+def canonical_proxy_triangle(anchor, rotation=None, scale=0.001, space="raw"):
     """Port de proxy_frame.canonical_triangle (proxy_frame.py:54-61).
 
     Triangulo inambiguo en *anchor* cuyo frame derivado == rotation
     (identidad si None). Orden: [anchor, vert_y (+Y, cateto corto),
     vert_z (+Z, cateto largo 2x)].
     """
-    a = tuple(float(c) for c in anchor)
-    R = ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)) \
-        if rotation is None else tuple(tuple(float(c) for c in row)
-                                       for row in rotation)
-    vy = (a[0] + scale * R[1][0], a[1] + scale * R[1][1],
-          a[2] + scale * R[1][2])
-    vz = (a[0] + 2.0 * scale * R[2][0], a[1] + 2.0 * scale * R[2][1],
-          a[2] + 2.0 * scale * R[2][2])
-    return [list(a), list(vy), list(vz)]
+    if space not in ("raw", "engine"):
+        raise ValueError("proxy space must be 'raw' or 'engine'")
+    a = _validate_proxy_anchor(anchor)
+    raw_rotation = _IDENTITY_3 if rotation is None \
+        else _validate_proxy_rotation(rotation)
+    if space == "engine":
+        raw_rotation = proxy_frame_from_engine(raw_rotation)
+    scale = _validate_proxy_scale(scale)
+    vy = (a[0] + scale * raw_rotation[1][0],
+          a[1] + scale * raw_rotation[1][1],
+          a[2] + scale * raw_rotation[1][2])
+    vz = (a[0] + 2.0 * scale * raw_rotation[2][0],
+          a[1] + 2.0 * scale * raw_rotation[2][1],
+          a[2] + 2.0 * scale * raw_rotation[2][2])
+    triangle = [list(a), list(vy), list(vz)]
+    try:
+        packed = [
+            tuple(struct.unpack("<f", struct.pack("<f", value))[0]
+                  for value in point)
+            for point in triangle
+        ]
+    except (OverflowError, struct.error):
+        raise ValueError("proxy scale/anchor must fit float32")
+    if _v_norm(_v_cross(_v_sub(packed[1], packed[0]),
+                          _v_sub(packed[2], packed[0]))) == 0.0:
+        raise ValueError("proxy scale is degenerate after float32 packing")
+    return triangle
 
 
 # ---------------------------------------------------------------------------
@@ -1513,7 +1636,7 @@ class LOD:
         return per_point
 
     def add_proxy(self, path, index=1, origin=(0.0, 0.0, 0.0),
-                  rotation=None, scale=0.001):
+                  rotation=None, scale=0.001, space="raw"):
         """F2-06: anade un proxy MLOD canonico (triangulo inambiguo de
         proxy_frame.py:54-61) como selection 'proxy:<path>.<index %03d>'.
 
@@ -1522,19 +1645,19 @@ class LOD:
         Nombre duplicado -> ValueError (sin upsert silencioso de
         geometria). Devuelve el nombre de la selection creada.
         """
-        name = "proxy:%s.%03d" % (path, int(index))
+        path, index = _validate_proxy_path_index(path, index)
+        tri = canonical_proxy_triangle(origin, rotation, scale, space)
+        name = "proxy:%s.%03d" % (path, index)
         if name in self.selections:
             raise ValueError(
                 "add_proxy: selection %r already exists - remove it first "
                 "or use a different index" % name)
-        tri = canonical_proxy_triangle(origin, rotation, scale)
         base = len(self.points)
         for c in tri:
             p = Point()
             p.coords = (float(c[0]), float(c[1]), float(c[2]))
             self.points.append(p)
-        R = ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)) \
-            if rotation is None else rotation
+        R = derive_proxy_frame(tri)[1]
         # normal geometrica del triangulo canonico: y X z = +x local
         self.facenormals.append(tuple(float(c) for c in R[0]))
         ni = len(self.facenormals) - 1
@@ -1554,7 +1677,304 @@ class LOD:
         sel.faces = {fa: 1}
         return name
 
-    def get_proxies(self):
+    def _resolve_proxy_anatomy(self, name, exclusive=False):
+        match = PROXY_NAME_RE.match(name)
+        if not match:
+            raise ValueError(
+                "proxy %r: name must match proxy:<path>.<index>" % name
+            )
+        selection = self.selections.get(name)
+        if selection is None:
+            raise ValueError("proxy %r: selection does not exist" % name)
+        if selection.all_points is not self.points or \
+                selection.all_faces is not self.faces:
+            raise ValueError(
+                "proxy %r: selection is not bound to the owning LOD" % name
+            )
+        if len(selection.points) != 3:
+            raise ValueError(
+                "proxy %r: selection must contain exactly 3 points" % name
+            )
+        if len(selection.faces) != 1:
+            raise ValueError(
+                "proxy %r: selection must contain exactly 1 face" % name
+            )
+        if any(weight != 1 for weight in selection.points.values()) or \
+                any(weight != 1 for weight in selection.faces.values()):
+            raise ValueError(
+                "proxy %r: selection weights must all equal 1" % name
+            )
+        point_ids = set(map(id, self.points))
+        if any(id(point) not in point_ids for point in selection.points):
+            raise ValueError(
+                "proxy %r: selection contains a foreign point" % name
+            )
+        for point in selection.points:
+            if sum(point is candidate for candidate in self.points) != 1:
+                raise ValueError(
+                    "proxy %r: each selected point must occur exactly once "
+                    "in the owning LOD" % name
+                )
+        face = next(iter(selection.faces))
+        face_occurrences = sum(face is candidate for candidate in self.faces)
+        if face_occurrences == 0:
+            raise ValueError(
+                "proxy %r: selection contains a foreign face" % name
+            )
+        if face_occurrences != 1:
+            raise ValueError(
+                "proxy %r: selected face must occur exactly once in the "
+                "owning LOD" % name
+            )
+        if len(face.vertices) != 3:
+            raise ValueError(
+                "proxy %r: selected face must be triangular" % name
+            )
+        for vertex in face.vertices:
+            point_index = vertex.point_index
+            if isinstance(point_index, bool) or \
+                    not isinstance(point_index, int) or \
+                    not 0 <= point_index < len(self.points):
+                raise ValueError(
+                    "proxy %r: selected face has an invalid point index" % name
+                )
+        face_points = [
+            self.points[vertex.point_index] for vertex in face.vertices
+        ]
+        selected_ids = set(map(id, selection.points))
+        if len(set(map(id, face_points))) != 3 or \
+                set(map(id, face_points)) != selected_ids:
+            raise ValueError(
+                "proxy %r: selected face must use exactly the selected points"
+                % name
+            )
+        normal_indices = {vertex.normal_index for vertex in face.vertices}
+        if len(normal_indices) != 1:
+            raise ValueError(
+                "proxy %r: selected face must use one normal" % name
+            )
+        normal_index = next(iter(normal_indices))
+        if isinstance(normal_index, bool) or \
+                not isinstance(normal_index, int) or \
+                not 0 <= normal_index < len(self.facenormals):
+            raise ValueError(
+                "proxy %r: selected face has an invalid normal index" % name
+            )
+        try:
+            coords = [
+                tuple(float(value) for value in point.coords)
+                for point in face_points
+            ]
+        except (TypeError, ValueError):
+            raise ValueError(
+                "proxy %r: selected points must have finite 3D coordinates"
+                % name
+            )
+        if any(
+            len(coords_value) != 3 or
+            any(not math.isfinite(value) for value in coords_value)
+            for coords_value in coords
+        ):
+            raise ValueError(
+                "proxy %r: selected points must have finite 3D coordinates"
+                % name
+            )
+        area = _v_norm(
+            _v_cross(_v_sub(coords[1], coords[0]),
+                     _v_sub(coords[2], coords[0]))
+        )
+        if area == 0.0:
+            raise ValueError(
+                "proxy %r: selected face must be non-degenerate" % name
+            )
+        anchor, raw_frame, ambiguous, angles = derive_proxy_frame(coords)
+        try:
+            normal = tuple(
+                float(value) for value in self.facenormals[normal_index]
+            )
+        except (TypeError, ValueError):
+            raise ValueError(
+                "proxy %r: selected face normal must be a finite 3D vector"
+                % name
+            )
+        if len(normal) != 3 or \
+                any(not math.isfinite(value) for value in normal):
+            raise ValueError(
+                "proxy %r: selected face normal must be a finite 3D vector"
+                % name
+            )
+        if _v_norm(_v_sub(normal, raw_frame[0])) > 1e-3:
+            raise ValueError(
+                "proxy %r: selected face normal does not match its frame"
+                % name
+            )
+        angle_order = sorted(
+            range(3),
+            key=lambda index: _proxy_angle(
+                _v_sub(coords[(index + 1) % 3], coords[index]),
+                _v_sub(coords[(index + 2) % 3], coords[index]),
+            ),
+            reverse=True,
+        )
+        scale = _v_norm(
+            _v_sub(coords[angle_order[1]], coords[angle_order[0]])
+        )
+        anatomy = {
+            "match": match,
+            "selection": selection,
+            "points": tuple(face_points),
+            "face": face,
+            "normal_index": normal_index,
+            "anchor": anchor,
+            "raw_frame": raw_frame,
+            "ambiguous": ambiguous,
+            "angles_deg": angles,
+            "scale": scale,
+        }
+        if not exclusive:
+            return anatomy
+
+        point_indices = {
+            index for index, point in enumerate(self.points)
+            if id(point) in selected_ids
+        }
+        for other_face in self.faces:
+            if other_face is face:
+                continue
+            for vertex in other_face.vertices:
+                point_index = vertex.point_index
+                if isinstance(point_index, bool) or \
+                        not isinstance(point_index, int) or \
+                        not 0 <= point_index < len(self.points):
+                    raise ValueError(
+                        "proxy %r: another face has an invalid point index"
+                        % name
+                    )
+                if point_index in point_indices:
+                    raise ValueError(
+                        "proxy %r: point is shared by another face" % name
+                    )
+                if vertex.normal_index == normal_index:
+                    raise ValueError(
+                        "proxy %r: normal is shared by another face" % name
+                    )
+        for other_name, other_selection in self.selections.items():
+            if other_name == name:
+                continue
+            if other_selection is selection:
+                raise ValueError(
+                    "proxy %r: selection object is shared by name %r"
+                    % (name, other_name)
+                )
+            if any(id(point) in selected_ids
+                   for point in other_selection.points):
+                raise ValueError(
+                    "proxy %r: point is shared by selection %r"
+                    % (name, other_name)
+                )
+            if any(other_face is face for other_face in other_selection.faces):
+                raise ValueError(
+                    "proxy %r: face is shared by selection %r"
+                    % (name, other_name)
+                )
+        for edge in self.sharp_edges:
+            try:
+                first, second = edge
+            except (TypeError, ValueError):
+                raise ValueError(
+                    "proxy %r: LOD contains a malformed sharp edge" % name
+                )
+            if any(
+                isinstance(index, bool) or not isinstance(index, int) or
+                not 0 <= index < len(self.points)
+                for index in (first, second)
+            ):
+                raise ValueError(
+                    "proxy %r: sharp edge has an invalid point index" % name
+                )
+            if first in point_indices or second in point_indices:
+                raise ValueError(
+                    "proxy %r: point is shared by a sharp edge" % name
+                )
+        anatomy["point_indices"] = point_indices
+        return anatomy
+
+    def align_proxy(self, name, origin, rotation=None, scale=0.001,
+                    space="raw"):
+        """Rewrite one exclusively owned canonical proxy transform in place.
+
+        The three Point objects, selected Face, Selection and owning list
+        objects retain their identities. The proxy's exclusive facenormal
+        keeps its existing pool index.
+        """
+        triangle = canonical_proxy_triangle(origin, rotation, scale, space)
+        anatomy = self._resolve_proxy_anatomy(name, exclusive=True)
+        normal = derive_proxy_frame(triangle)[1][0]
+
+        for point, coords in zip(anatomy["points"], triangle):
+            point.coords = tuple(float(value) for value in coords)
+        self.facenormals[anatomy["normal_index"]] = tuple(
+            float(value) for value in normal
+        )
+        return name
+
+    def remove_proxy(self, name):
+        """Remove one exclusively owned canonical proxy without list rebinding.
+
+        Exactly the proxy selection, triangular face and three selected points
+        are removed. The normal pool is intentionally unchanged. Every
+        surviving face vertex and sharp-edge point index is validated and
+        remapped before the first mutation.
+        """
+        anatomy = self._resolve_proxy_anatomy(name, exclusive=True)
+        remove_indices = anatomy["point_indices"]
+        face = anatomy["face"]
+
+        surviving_points = [
+            point for index, point in enumerate(self.points)
+            if index not in remove_indices
+        ]
+        surviving_faces = [
+            candidate for candidate in self.faces if candidate is not face
+        ]
+        point_remap = {}
+        next_index = 0
+        for old_index in range(len(self.points)):
+            if old_index not in remove_indices:
+                point_remap[old_index] = next_index
+                next_index += 1
+
+        vertex_updates = []
+        for surviving_face in surviving_faces:
+            for vertex in surviving_face.vertices:
+                old_index = vertex.point_index
+                if old_index not in point_remap:
+                    raise ValueError(
+                        "proxy %r: surviving face has an invalid point index"
+                        % name
+                    )
+                vertex_updates.append((vertex, point_remap[old_index]))
+
+        sharp_edge_updates = []
+        for first, second in self.sharp_edges:
+            if first not in point_remap or second not in point_remap:
+                raise ValueError(
+                    "proxy %r: surviving sharp edge has an invalid point index"
+                    % name
+                )
+            sharp_edge_updates.append(
+                (point_remap[first], point_remap[second])
+            )
+
+        self.points[:] = surviving_points
+        self.faces[:] = surviving_faces
+        for vertex, point_index in vertex_updates:
+            vertex.point_index = point_index
+        self.sharp_edges[:] = sharp_edge_updates
+        del self.selections[name]
+        return name
+
+    def get_proxies(self, strict=False):
         """F2-06: lista de proxies de este LOD con su frame derivado por
         ANGLE-SORT (proxy_frame.py:38-52).
 
@@ -1567,17 +1987,45 @@ class LOD:
         out = []
         for name, sel in self.selections.items():
             m = PROXY_NAME_RE.match(name)
-            if not m or len(sel.points) != 3:
+            if not m:
                 continue
-            ids = set(map(id, sel.points))
-            coords = [p.coords for p in self.points if id(p) in ids]
-            anchor, R, ambiguous, deg = derive_proxy_frame(coords)
+            if strict:
+                anatomy = self._resolve_proxy_anatomy(name)
+                anchor = anatomy["anchor"]
+                R = anatomy["raw_frame"]
+                ambiguous = anatomy["ambiguous"]
+                deg = anatomy["angles_deg"]
+                scale = anatomy["scale"]
+            else:
+                if len(sel.points) != 3:
+                    continue
+                ids = set(map(id, sel.points))
+                coords = [p.coords for p in self.points if id(p) in ids]
+                anchor, R, ambiguous, deg = derive_proxy_frame(coords)
+                angle_order = sorted(
+                    range(3),
+                    key=lambda index: _proxy_angle(
+                        _v_sub(coords[(index + 1) % 3], coords[index]),
+                        _v_sub(coords[(index + 2) % 3], coords[index]),
+                    ),
+                    reverse=True,
+                )
+                scale = _v_norm(
+                    _v_sub(coords[angle_order[1]],
+                           coords[angle_order[0]])
+                )
+            raw_frame = [list(row) for row in R]
             out.append({
                 "name": name,
                 "path": m.group("path"),
                 "index": int(m.group("index")),
                 "anchor": anchor,
-                "frame": [list(row) for row in R],
+                "frame": raw_frame,
+                "raw_frame": raw_frame,
+                "engine_frame": [
+                    list(row) for row in proxy_frame_to_engine(R)
+                ],
+                "scale": scale,
                 "ambiguous": ambiguous,
                 "angles_deg": deg,
             })

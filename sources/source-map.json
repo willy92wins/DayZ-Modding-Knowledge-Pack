@@ -7,7 +7,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Phase 01 clean-checkout validation found 66 platform-dependent hashes; the user approved canonical LF normalization.",
           "license": "MIT",
           "source_hash": "a79691a93b46e49ce460c26ef22afcc03d6eca1e63bf2edbc20e96159510f6c9",
@@ -15,10 +15,20 @@
           "source_path": ".gitattributes",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "f9ea0a3998d7da4601d71a9e732871fca616a6ed3fa8c8575ce573788a3bfc96",
+          "source_id": "pack-r21-authored",
+          "source_path": ".gitattributes",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a79691a93b46e49ce460c26ef22afcc03d6eca1e63bf2edbc20e96159510f6c9",
+      "output_hash": "f9ea0a3998d7da4601d71a9e732871fca616a6ed3fa8c8575ce573788a3bfc96",
       "output_path": ".gitattributes",
       "routing_artifact_id": "root/gitattributes",
       "verification_level": "offline_tested"
@@ -30,7 +40,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
           "source_hash": "2a8a63136ac5a6681b845f76e4f2b036d43c0406f65f6ea722491dedf0244424",
@@ -38,10 +48,20 @@
           "source_path": ".gitignore",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "8d2711f0c2b9f7c338b2494d904a703b58eae699a2cbf849809f81a905447013",
+          "source_id": "pack-r21-authored",
+          "source_path": ".gitignore",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2a8a63136ac5a6681b845f76e4f2b036d43c0406f65f6ea722491dedf0244424",
+      "output_hash": "8d2711f0c2b9f7c338b2494d904a703b58eae699a2cbf849809f81a905447013",
       "output_path": ".gitignore",
       "routing_artifact_id": "root/gitignore",
       "verification_level": "cross_checked"
@@ -52,7 +72,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
           "source_hash": "354ac708c454d1195f89ecf4c6604f65cf3eaaee27096d65c1331c0298afef79",
@@ -60,10 +80,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "93d21a6d94afa81a6cc85a629efa94eaeb09f98d27b32380f20d3ae4d5b144f5",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "354ac708c454d1195f89ecf4c6604f65cf3eaaee27096d65c1331c0298afef79",
+      "output_hash": "93d21a6d94afa81a6cc85a629efa94eaeb09f98d27b32380f20d3ae4d5b144f5",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -194,18 +224,28 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "ce3e47d8f15faf74859ea79861a3515e3e1d407bc28917f72c08ef20f608ea22",
+          "source_hash": "692dd8328953fafee96d8333d05ce0a626d329b97275fea83afba6e386482774",
           "source_id": "pack-r21-authored",
           "source_path": "MANIFEST.txt",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 04 inventory was regenerated mechanically from the source-mapped payload.",
+          "license": "MIT",
+          "source_hash": "5b4bbfeff205f641d9fddb0be0cda0397860495b53e4d4e7209f488ed693fa50",
+          "source_id": "pack-r21-authored",
+          "source_path": "MANIFEST.txt",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ce3e47d8f15faf74859ea79861a3515e3e1d407bc28917f72c08ef20f608ea22",
+      "output_hash": "5b4bbfeff205f641d9fddb0be0cda0397860495b53e4d4e7209f488ed693fa50",
       "output_path": "MANIFEST.txt",
       "routing_artifact_id": "root/manifest",
       "verification_level": "cross_checked"
@@ -226,18 +266,28 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "f5156f7fa6e4a414677e9f79c3be98f67e559e75f03dd3042c9a99723ef32b86",
+          "source_hash": "b421495b9564d26a7048496548ed8db6e3724a93044ae304dad6cd5c4b9b5605",
           "source_id": "pack-r21-authored",
           "source_path": "README.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "e541ddf85352a591cfcf595d683723ab42c7aeab0731078fffc0c4a45838a011",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f5156f7fa6e4a414677e9f79c3be98f67e559e75f03dd3042c9a99723ef32b86",
+      "output_hash": "e541ddf85352a591cfcf595d683723ab42c7aeab0731078fffc0c4a45838a011",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -248,7 +298,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
           "source_hash": "4fc94e54784a184a21046997fd6302dfed1c52e9620f245b28a7df8e989d5c13",
@@ -256,10 +306,20 @@
           "source_path": "THIRD_PARTY_NOTICES.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "6509061aaac74e4f8575cbd460b81519bce93170c0710989eeea7a1c863171c5",
+          "source_id": "pack-r21-authored",
+          "source_path": "THIRD_PARTY_NOTICES.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4fc94e54784a184a21046997fd6302dfed1c52e9620f245b28a7df8e989d5c13",
+      "output_hash": "6509061aaac74e4f8575cbd460b81519bce93170c0710989eeea7a1c863171c5",
       "output_path": "THIRD_PARTY_NOTICES.md",
       "routing_artifact_id": "root/third-party-notices",
       "verification_level": "cross_checked"
@@ -1837,6 +1897,98 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/plans/2026-07-25-04a-py3d-proxy-lifecycle.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "87cb93975db4d9c3fc15149bed1fcdea2abeadd20adddbbc705d925fca1cf20e",
+          "source_id": "pack-r21-authored",
+          "source_path": "plans/2026-07-25-04a-py3d-proxy-lifecycle.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "87cb93975db4d9c3fc15149bed1fcdea2abeadd20adddbbc705d925fca1cf20e",
+      "output_path": "plans/2026-07-25-04a-py3d-proxy-lifecycle.md",
+      "routing_artifact_id": "repo/plans",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/plans/2026-07-25-04b-dayz-animation-formats.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "b3de9f369e6045eeb96757299c91c93814f18e8d9d5da8c47ac9b88246d5f547",
+          "source_id": "pack-r21-authored",
+          "source_path": "plans/2026-07-25-04b-dayz-animation-formats.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b3de9f369e6045eeb96757299c91c93814f18e8d9d5da8c47ac9b88246d5f547",
+      "output_path": "plans/2026-07-25-04b-dayz-animation-formats.md",
+      "routing_artifact_id": "repo/plans",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/plans/2026-07-25-04c-dayz-model-preflight.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "2a3e15a7c9546b8be2f5a347f3882bf7b96dce11dedb7ed978d8d060f76b7f31",
+          "source_id": "pack-r21-authored",
+          "source_path": "plans/2026-07-25-04c-dayz-model-preflight.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2a3e15a7c9546b8be2f5a347f3882bf7b96dce11dedb7ed978d8d060f76b7f31",
+      "output_path": "plans/2026-07-25-04c-dayz-model-preflight.md",
+      "routing_artifact_id": "repo/plans",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/plans/2026-07-25-04d-dayz-odol-strict.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "c02ba0299bb5a30db1890c5d011668c912a30f1110bce05e7fb0ceb108771186",
+          "source_id": "pack-r21-authored",
+          "source_path": "plans/2026-07-25-04d-dayz-odol-strict.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c02ba0299bb5a30db1890c5d011668c912a30f1110bce05e7fb0ceb108771186",
+      "output_path": "plans/2026-07-25-04d-dayz-odol-strict.md",
+      "routing_artifact_id": "repo/plans",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/product-spec.md",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -1939,29 +2091,6 @@
       "verification_level": "cross_checked"
     },
     {
-      "artifact_id": "file/promotions/receipts/c7b5366cc761a8038e52f6a2.json",
-      "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Receipt hash 44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd matches the terminal COMMIT for the verified promotion of source commit 7a25432febc112a957a7c1ef7a7d2c16c221b24f.",
-          "license": "MIT",
-          "source_hash": "44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd",
-          "source_id": "pack-r21-authored",
-          "source_path": "promotions/receipts/c7b5366cc761a8038e52f6a2.json",
-          "source_revision": "7a25432febc112a957a7c1ef7a7d2c16c221b24f",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd",
-      "output_path": "promotions/receipts/c7b5366cc761a8038e52f6a2.json",
-      "routing_artifact_id": "repo/promotions",
-      "verification_level": "offline_tested"
-    },
-    {
       "artifact_id": "file/promotions/receipts/51a7024ef9a5e333e5fab7b8.json",
       "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -1981,6 +2110,29 @@
       "license": "MIT",
       "output_hash": "a3c0ccc8c92b92c6eeb105838becdf7d17649508904bdf945c3e9ddfb29cec59",
       "output_path": "promotions/receipts/51a7024ef9a5e333e5fab7b8.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/c7b5366cc761a8038e52f6a2.json",
+      "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt hash 44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd matches the terminal COMMIT for the verified promotion of source commit 7a25432febc112a957a7c1ef7a7d2c16c221b24f.",
+          "license": "MIT",
+          "source_hash": "44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/c7b5366cc761a8038e52f6a2.json",
+          "source_revision": "7a25432febc112a957a7c1ef7a7d2c16c221b24f",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd",
+      "output_path": "promotions/receipts/c7b5366cc761a8038e52f6a2.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
@@ -5572,6 +5724,75 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/specs/2026-07-25-dayz-animation-formats.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "c3b040171bc55594537f5a042b39f3a68bc822c3ed13d1937a3a909cf9473da1",
+          "source_id": "pack-r21-authored",
+          "source_path": "specs/2026-07-25-dayz-animation-formats.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c3b040171bc55594537f5a042b39f3a68bc822c3ed13d1937a3a909cf9473da1",
+      "output_path": "specs/2026-07-25-dayz-animation-formats.md",
+      "routing_artifact_id": "repo/specs",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/specs/2026-07-25-dayz-model-preflight.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "e8c95c70be4611e4a796b792c78dabce420ef705e22d08f520e9cb5bba45da47",
+          "source_id": "pack-r21-authored",
+          "source_path": "specs/2026-07-25-dayz-model-preflight.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e8c95c70be4611e4a796b792c78dabce420ef705e22d08f520e9cb5bba45da47",
+      "output_path": "specs/2026-07-25-dayz-model-preflight.md",
+      "routing_artifact_id": "repo/specs",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/specs/2026-07-25-dayz-odol-strict.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "e7ea1f6fbbf5a142ebcacaa36e10b5113f0d9250947c6ce0003aa877fdba3f6e",
+          "source_id": "pack-r21-authored",
+          "source_path": "specs/2026-07-25-dayz-odol-strict.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e7ea1f6fbbf5a142ebcacaa36e10b5113f0d9250947c6ce0003aa877fdba3f6e",
+      "output_path": "specs/2026-07-25-dayz-odol-strict.md",
+      "routing_artifact_id": "repo/specs",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/specs/2026-07-25-dayz-ui-lab.md",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -5591,6 +5812,29 @@
       "license": "MIT",
       "output_hash": "0dad906c895d02f2ff81597d377b1d6de98babc03d6f45544cbc850a7e111cfe",
       "output_path": "specs/2026-07-25-dayz-ui-lab.md",
+      "routing_artifact_id": "repo/specs",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/specs/2026-07-25-py3d-proxy-lifecycle.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "4b453f401c9cfcefc5dd80f37b6e17c496bb44f17f6821ba5e35b5b6102e5429",
+          "source_id": "pack-r21-authored",
+          "source_path": "specs/2026-07-25-py3d-proxy-lifecycle.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4b453f401c9cfcefc5dd80f37b6e17c496bb44f17f6821ba5e35b5b6102e5429",
+      "output_path": "specs/2026-07-25-py3d-proxy-lifecycle.md",
       "routing_artifact_id": "repo/specs",
       "verification_level": "cross_checked"
     },
@@ -5808,7 +6052,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
           "source_hash": "085afbc6b66d5afab7f44c8e1cd3e5427eb82859606afa3adeccb6353cd9261c",
@@ -5816,12 +6060,1394 @@
           "source_path": "tests/packctl/test_validation.py",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "e2f15d9cb02647038336d32076e675852315176172b2432e42de029675323865",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_validation.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "085afbc6b66d5afab7f44c8e1cd3e5427eb82859606afa3adeccb6353cd9261c",
+      "output_hash": "e2f15d9cb02647038336d32076e675852315176172b2432e42de029675323865",
       "output_path": "tests/packctl/test_validation.py",
       "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "f399f0744d32d8622040b2ce4738834e1c76a5b98e1be7ed25bf560bf3aa9f8e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/README.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f399f0744d32d8622040b2ce4738834e1c76a5b98e1be7ed25bf560bf3aa9f8e",
+      "output_path": "tools/dayz-animation-formats/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/dayz_animation_formats/__init__.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "0fc8bf59663cb0783128019f474b6481b530f613f13dca82ad87cba553236d4a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/dayz_animation_formats/__init__.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0fc8bf59663cb0783128019f474b6481b530f613f13dca82ad87cba553236d4a",
+      "output_path": "tools/dayz-animation-formats/dayz_animation_formats/__init__.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/dayz_animation_formats/__main__.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "962268f0a282d552cc6a2265ae316bc3dee80e4772efe8122c028fd3c1857c8c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/dayz_animation_formats/__main__.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "962268f0a282d552cc6a2265ae316bc3dee80e4772efe8122c028fd3c1857c8c",
+      "output_path": "tools/dayz-animation-formats/dayz_animation_formats/__main__.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/dayz_animation_formats/binary.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "f77d6576005b6d08247c3382c244dbd4e3c47ce48ec3f40ff54fddc78b8210ba",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/dayz_animation_formats/binary.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f77d6576005b6d08247c3382c244dbd4e3c47ce48ec3f40ff54fddc78b8210ba",
+      "output_path": "tools/dayz-animation-formats/dayz_animation_formats/binary.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/dayz_animation_formats/errors.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "ea49a08df6be25aa335be06eba815e5e9efa7de4c46e318a2a26dc02cc44b87e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/dayz_animation_formats/errors.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ea49a08df6be25aa335be06eba815e5e9efa7de4c46e318a2a26dc02cc44b87e",
+      "output_path": "tools/dayz-animation-formats/dayz_animation_formats/errors.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/dayz_animation_formats/inspect.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "d93f40103c6a0bec35570d5c7b5ddc06adda0b556a769dceb9c92ceb8a9e84d9",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/dayz_animation_formats/inspect.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d93f40103c6a0bec35570d5c7b5ddc06adda0b556a769dceb9c92ceb8a9e84d9",
+      "output_path": "tools/dayz-animation-formats/dayz_animation_formats/inspect.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/dayz_animation_formats/rtm.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "keep_pack",
+          "decision_evidence": "A3OB 2.5.1 was used only as an external binary oracle; no GPL source is copied or linked.",
+          "license": "GPL-3.0-or-later",
+          "source_hash": "265c7c861ce1508e07c9a4034e8336745c1a70c33a3ea94121763401954b659e",
+          "source_id": "a3ob",
+          "source_path": "Arma3ObjectBuilder/io/data_rtm.py",
+          "source_revision": "57ddcc6f906bec888b606ffd0969517f25076495",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "c11cd0702822e2a7f6f968e50da11178fbbdd4f5b4bf550c1552aaac6ac57b5b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/dayz_animation_formats/rtm.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c11cd0702822e2a7f6f968e50da11178fbbdd4f5b4bf550c1552aaac6ac57b5b",
+      "output_path": "tools/dayz-animation-formats/dayz_animation_formats/rtm.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/dayz_animation_formats/seanim.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "keep_pack",
+          "decision_evidence": "The MIT implementation was used as an external compatibility oracle; the pack keeps independently authored strict code.",
+          "license": "MIT",
+          "source_hash": "b16a73abf41a8c76a4944af96bdeaa9a8d193c7922e25bc33e4345e4ab983540",
+          "source_id": "se2dev-io-anim-seanim",
+          "source_path": "seanim.py",
+          "source_revision": "dffe313b635ce8940264201f25db9e68f4486d7e",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "c0d0d8b5e90a06ccf28b6a44bea1222a562ff668c1c5328050680049df4cbd9c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/dayz_animation_formats/seanim.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c0d0d8b5e90a06ccf28b6a44bea1222a562ff668c1c5328050680049df4cbd9c",
+      "output_path": "tools/dayz-animation-formats/dayz_animation_formats/seanim.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/pyproject.toml",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "2de5ffd304b8f195efd01923dc8f65b087898e417b5736e6780b95090416c29b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/pyproject.toml",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2de5ffd304b8f195efd01923dc8f65b087898e417b5736e6780b95090416c29b",
+      "output_path": "tools/dayz-animation-formats/pyproject.toml",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/schemas/animation-inspect-v1.schema.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "ce1d107e74a27fe21e5880970a6053487f95eda13992e6ac162be42ce58474ef",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/schemas/animation-inspect-v1.schema.json",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ce1d107e74a27fe21e5880970a6053487f95eda13992e6ac162be42ce58474ef",
+      "output_path": "tools/dayz-animation-formats/schemas/animation-inspect-v1.schema.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/tests/conftest.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "bfd0e5baa6b84819ac0821bd691a67d2b7c9b0231608418d3a8e7c60273b659c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/tests/conftest.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bfd0e5baa6b84819ac0821bd691a67d2b7c9b0231608418d3a8e7c60273b659c",
+      "output_path": "tools/dayz-animation-formats/tests/conftest.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/tests/fixtures/origins.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "85936d1e5568d4c84fd9d7d9451a2dc9e0d60794e0a10e73d46ac300b366b646",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/tests/fixtures/ORIGINS.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "85936d1e5568d4c84fd9d7d9451a2dc9e0d60794e0a10e73d46ac300b366b646",
+      "output_path": "tools/dayz-animation-formats/tests/fixtures/ORIGINS.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/tests/fixtures/rtm-0101-mdat.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "0d8dff96fad1d85b9b7e9c017308f49ce4c999bc1528902d0c763275b4785839",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/tests/fixtures/rtm-0101-mdat.json",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0d8dff96fad1d85b9b7e9c017308f49ce4c999bc1528902d0c763275b4785839",
+      "output_path": "tools/dayz-animation-formats/tests/fixtures/rtm-0101-mdat.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/tests/fixtures/rtm-0101-mdat.rtm",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "37aa63f705d874c79b94721027d376a7cab347fc94691ad419e1172c5597c3f8",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/tests/fixtures/rtm-0101-mdat.rtm",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "37aa63f705d874c79b94721027d376a7cab347fc94691ad419e1172c5597c3f8",
+      "output_path": "tools/dayz-animation-formats/tests/fixtures/rtm-0101-mdat.rtm",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/tests/fixtures/seanim-v1-full.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "8faaf44be79c8c485564b110abf30996c11b26ed5c70672a45a08f8cf58cb267",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/tests/fixtures/seanim-v1-full.json",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8faaf44be79c8c485564b110abf30996c11b26ed5c70672a45a08f8cf58cb267",
+      "output_path": "tools/dayz-animation-formats/tests/fixtures/seanim-v1-full.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/tests/fixtures/seanim-v1-full.seanim",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "75af1c6ab01ae715e6cea01e6897b804586687ccf7a234c21be6bef871288b29",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/tests/fixtures/seanim-v1-full.seanim",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "75af1c6ab01ae715e6cea01e6897b804586687ccf7a234c21be6bef871288b29",
+      "output_path": "tools/dayz-animation-formats/tests/fixtures/seanim-v1-full.seanim",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/tests/test_animation_cli.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "9634d14abe2e487154e5b5ae67ba9c0204efee04dc436f55b12213c4c7024c15",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/tests/test_animation_cli.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9634d14abe2e487154e5b5ae67ba9c0204efee04dc436f55b12213c4c7024c15",
+      "output_path": "tools/dayz-animation-formats/tests/test_animation_cli.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/tests/test_binary.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "fc9c6baca78b9795ebe6a0c6c0dfa922b25121516885965abc29e93c35f903eb",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/tests/test_binary.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fc9c6baca78b9795ebe6a0c6c0dfa922b25121516885965abc29e93c35f903eb",
+      "output_path": "tools/dayz-animation-formats/tests/test_binary.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/tests/test_fixture_provenance.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "ca80d9ac1aeae9a42e38a7ee4b6f5ec8c75a2e9735bfbda361bddc1afbe52868",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/tests/test_fixture_provenance.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ca80d9ac1aeae9a42e38a7ee4b6f5ec8c75a2e9735bfbda361bddc1afbe52868",
+      "output_path": "tools/dayz-animation-formats/tests/test_fixture_provenance.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/tests/test_rtm.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "cc1785389d5394d426d65b97b154422a39be19f944db08556ae34208d1861815",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/tests/test_rtm.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "cc1785389d5394d426d65b97b154422a39be19f944db08556ae34208d1861815",
+      "output_path": "tools/dayz-animation-formats/tests/test_rtm.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-animation-formats/tests/test_seanim.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "7a498f26f0e8221656ec1d23dee75e3df9c4712b5b9944575cfba076793a4d18",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-animation-formats/tests/test_seanim.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7a498f26f0e8221656ec1d23dee75e3df9c4712b5b9944575cfba076793a4d18",
+      "output_path": "tools/dayz-animation-formats/tests/test_seanim.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "b2445b1e5242494c3535042fc0922667819fb61c0b34d2031d32d288ee061f52",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/README.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b2445b1e5242494c3535042fc0922667819fb61c0b34d2031d32d288ee061f52",
+      "output_path": "tools/dayz-model-preflight/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/dayz_model_preflight/__init__.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "e1b0bf7176a6dad25e210be4340fe88958ccce699e516af65d1a880af809411c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/dayz_model_preflight/__init__.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e1b0bf7176a6dad25e210be4340fe88958ccce699e516af65d1a880af809411c",
+      "output_path": "tools/dayz-model-preflight/dayz_model_preflight/__init__.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/dayz_model_preflight/__main__.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "bd6139d26fd70717ec0be6b400261917d3dd20cf427673a5eadb51e59b63cf5d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/dayz_model_preflight/__main__.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bd6139d26fd70717ec0be6b400261917d3dd20cf427673a5eadb51e59b63cf5d",
+      "output_path": "tools/dayz-model-preflight/dayz_model_preflight/__main__.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/dayz_model_preflight/contract.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "f1df43e676dc038ed74385b4af4dc8bbe0ef84f83756a9577b66111da45af626",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/dayz_model_preflight/contract.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f1df43e676dc038ed74385b4af4dc8bbe0ef84f83756a9577b66111da45af626",
+      "output_path": "tools/dayz-model-preflight/dayz_model_preflight/contract.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/dayz_model_preflight/errors.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "63f221501459dfb7d8b8f7e86b892ed49dd1df5e82746755dff01d840ad77ef0",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/dayz_model_preflight/errors.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "63f221501459dfb7d8b8f7e86b892ed49dd1df5e82746755dff01d840ad77ef0",
+      "output_path": "tools/dayz-model-preflight/dayz_model_preflight/errors.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/dayz_model_preflight/findings.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "1b8b7e3f9b720fd7ffc8fb274c6ea856dfe0c1e615d08d2c53cd74f7de23f221",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/dayz_model_preflight/findings.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1b8b7e3f9b720fd7ffc8fb274c6ea856dfe0c1e615d08d2c53cd74f7de23f221",
+      "output_path": "tools/dayz-model-preflight/dayz_model_preflight/findings.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/dayz_model_preflight/runner.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "72cd1164002d6715803eccdb2b4185663ed30fe49bf67341ccfcfa0e661f5537",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/dayz_model_preflight/runner.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "72cd1164002d6715803eccdb2b4185663ed30fe49bf67341ccfcfa0e661f5537",
+      "output_path": "tools/dayz-model-preflight/dayz_model_preflight/runner.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/dayz_model_preflight/winding.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "15709b25a88470caccddb78ebf59d48569844bf489f9a1e41acc72276af7d1e1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/dayz_model_preflight/winding.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "15709b25a88470caccddb78ebf59d48569844bf489f9a1e41acc72276af7d1e1",
+      "output_path": "tools/dayz-model-preflight/dayz_model_preflight/winding.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/pyproject.toml",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "31cc851e49e38e22163ea1f26f13d670ef5d6548baa2571e5ed84a1e06d22381",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/pyproject.toml",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "31cc851e49e38e22163ea1f26f13d670ef5d6548baa2571e5ed84a1e06d22381",
+      "output_path": "tools/dayz-model-preflight/pyproject.toml",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/schemas/dayz-model-preflight-v1.schema.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "263709d01ab7934948c60cd08e8e736b726d4f545ddd97fe7a1dabe40f547aeb",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/schemas/dayz-model-preflight-v1.schema.json",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "263709d01ab7934948c60cd08e8e736b726d4f545ddd97fe7a1dabe40f547aeb",
+      "output_path": "tools/dayz-model-preflight/schemas/dayz-model-preflight-v1.schema.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/tests/_support.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "43e5f59f0bed70f187ead980020f003592f71d552e8670939b777d0776e32062",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/tests/_support.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "43e5f59f0bed70f187ead980020f003592f71d552e8670939b777d0776e32062",
+      "output_path": "tools/dayz-model-preflight/tests/_support.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/tests/conftest.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "b42778ab3789d8086321cf144577b14dd2675850a082a3c1ab2ac129de180a32",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/tests/conftest.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b42778ab3789d8086321cf144577b14dd2675850a082a3c1ab2ac129de180a32",
+      "output_path": "tools/dayz-model-preflight/tests/conftest.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/tests/test_contract.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "03cafc2a0edd0c22ca9181a5f07be6e1c4e77d5f7db9262822cb2d2621bfedeb",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/tests/test_contract.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "03cafc2a0edd0c22ca9181a5f07be6e1c4e77d5f7db9262822cb2d2621bfedeb",
+      "output_path": "tools/dayz-model-preflight/tests/test_contract.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/tests/test_runner_cli.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "e736bb030a978b1ebd6207241ce8dc9451b3e046bccdb3652322f8708c9fa81f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/tests/test_runner_cli.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e736bb030a978b1ebd6207241ce8dc9451b3e046bccdb3652322f8708c9fa81f",
+      "output_path": "tools/dayz-model-preflight/tests/test_runner_cli.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/tests/test_scale_bones.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "d3e4a237e92d40513c6f533cf1dbb2e1b921259fda838225b827ccc3a04b8570",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/tests/test_scale_bones.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d3e4a237e92d40513c6f533cf1dbb2e1b921259fda838225b827ccc3a04b8570",
+      "output_path": "tools/dayz-model-preflight/tests/test_scale_bones.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-model-preflight/tests/test_winding.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "3578d19ce6ae62b6a34fcc6586430090b5214248109e49f58f2c8d7770fa4e4e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-model-preflight/tests/test_winding.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3578d19ce6ae62b6a34fcc6586430090b5214248109e49f58f2c8d7770fa4e4e",
+      "output_path": "tools/dayz-model-preflight/tests/test_winding.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "d2e8ae28e8d154949a81175a214545fc79abbfafe7098073d8483b07a5974573",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/README.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d2e8ae28e8d154949a81175a214545fc79abbfafe7098073d8483b07a5974573",
+      "output_path": "tools/dayz-odol-strict/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/backend/manifest-v1.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "485852927678f79d9d7660ae194db0096bb5ba70faf90ca8aea00559903bd09a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/backend/manifest-v1.json",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "keep_pack",
+          "decision_evidence": "The no-license repository was inspected only as external backend ancestry; its archive and source stay outside Git.",
+          "license": "No license/redistribution grant observed",
+          "source_hash": "ea014e3c7584cfd9a2ef520d06d1eb75a58c1486f0291c3b03d8a7c57143a1e3",
+          "source_id": "bisdll-arma3",
+          "source_path": "archive/5600bad995c89154b4f6700ef087f86ef4c49315.zip",
+          "source_revision": "5600bad995c89154b4f6700ef087f86ef4c49315",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "485852927678f79d9d7660ae194db0096bb5ba70faf90ca8aea00559903bd09a",
+      "output_path": "tools/dayz-odol-strict/backend/manifest-v1.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/dayz_odol_strict/__init__.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "b57974505ab83b0116e1127386add83582adb8787dd9d9e63423a52f886a0003",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/dayz_odol_strict/__init__.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b57974505ab83b0116e1127386add83582adb8787dd9d9e63423a52f886a0003",
+      "output_path": "tools/dayz-odol-strict/dayz_odol_strict/__init__.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/dayz_odol_strict/__main__.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "ad5b00c8ced9768b7e5b9d0b00fa384e3257298188eed8de1df4d347a68d61cb",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/dayz_odol_strict/__main__.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ad5b00c8ced9768b7e5b9d0b00fa384e3257298188eed8de1df4d347a68d61cb",
+      "output_path": "tools/dayz-odol-strict/dayz_odol_strict/__main__.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/dayz_odol_strict/diff.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "e09dc0ba5aacd5a0b2e44a89cc5281973fce227a8ad150cc87e8fd86edb37ee4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/dayz_odol_strict/diff.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e09dc0ba5aacd5a0b2e44a89cc5281973fce227a8ad150cc87e8fd86edb37ee4",
+      "output_path": "tools/dayz-odol-strict/dayz_odol_strict/diff.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/dayz_odol_strict/errors.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "1531040cbfccdad3623653620031e29b5dbc4d4a40fdd8e079d1bc19c92ed3cb",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/dayz_odol_strict/errors.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1531040cbfccdad3623653620031e29b5dbc4d4a40fdd8e079d1bc19c92ed3cb",
+      "output_path": "tools/dayz-odol-strict/dayz_odol_strict/errors.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/dayz_odol_strict/inspect.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "93e8d50dce762c612200068fdfeb58e760c437d63486064b5f0e39c2b3225121",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/dayz_odol_strict/inspect.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "93e8d50dce762c612200068fdfeb58e760c437d63486064b5f0e39c2b3225121",
+      "output_path": "tools/dayz-odol-strict/dayz_odol_strict/inspect.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/dayz_odol_strict/manifest.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "33b22ec3c372d21d03a7434de69b93b4e72c413cf3c05d09014e94d6fbf83c10",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/dayz_odol_strict/manifest.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "33b22ec3c372d21d03a7434de69b93b4e72c413cf3c05d09014e94d6fbf83c10",
+      "output_path": "tools/dayz-odol-strict/dayz_odol_strict/manifest.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/dayz_odol_strict/preflight.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "d37eccc0eafe65b448ae9d3b2da9eb47a2b72788b781a2fe921802c769f832b3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/dayz_odol_strict/preflight.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d37eccc0eafe65b448ae9d3b2da9eb47a2b72788b781a2fe921802c769f832b3",
+      "output_path": "tools/dayz-odol-strict/dayz_odol_strict/preflight.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/dayz_odol_strict/worker.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "102e8b381445bbba28790b41e36aa860c4b3418ad678cd0f79428308f6795e4a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/dayz_odol_strict/worker.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "102e8b381445bbba28790b41e36aa860c4b3418ad678cd0f79428308f6795e4a",
+      "output_path": "tools/dayz-odol-strict/dayz_odol_strict/worker.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/pyproject.toml",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "25f793a83322e5dc63b8b02eade017607be4d81f452ea09d82874df545aec4fd",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/pyproject.toml",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "25f793a83322e5dc63b8b02eade017607be4d81f452ea09d82874df545aec4fd",
+      "output_path": "tools/dayz-odol-strict/pyproject.toml",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/schemas/dayz-odol-strict-v1.schema.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "41b493e48d5e228a87e6349183dee4b6b262476731b15667bc45dca4486127a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/schemas/dayz-odol-strict-v1.schema.json",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "41b493e48d5e228a87e6349183dee4b6b262476731b15667bc45dca4486127a5",
+      "output_path": "tools/dayz-odol-strict/schemas/dayz-odol-strict-v1.schema.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/conftest.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "5fedf20ac6ba338fcdc270466d806aaaa41e64597ed5264b1e2f695422f3ab72",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/conftest.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5fedf20ac6ba338fcdc270466d806aaaa41e64597ed5264b1e2f695422f3ab72",
+      "output_path": "tools/dayz-odol-strict/tests/conftest.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/fake_backend/odol_reader.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "41662325c4eaa1d4535bdc389f239f89a74de61340511fc33a6e4c7070312cef",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/fake_backend/odol_reader.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "41662325c4eaa1d4535bdc389f239f89a74de61340511fc33a6e4c7070312cef",
+      "output_path": "tools/dayz-odol-strict/tests/fake_backend/odol_reader.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/fixtures/fixtures.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "b53f03351b7c99affb51226b162bbabe3444b68e3edec5cd40dd77c873b7170f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/fixtures/fixtures.json",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b53f03351b7c99affb51226b162bbabe3444b68e3edec5cd40dd77c873b7170f",
+      "output_path": "tools/dayz-odol-strict/tests/fixtures/fixtures.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/fixtures/odol-v53-ammo-box.p3d",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "First-party; public redistribution authorized 2026-07-25",
+          "source_hash": "c2ba93cc05d3d47df5400c6f5f68aef928687eef06ce38747340927cd39e96ba",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/fixtures/odol-v53-ammo-box.p3d",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "First-party; public redistribution authorized 2026-07-25",
+      "output_hash": "c2ba93cc05d3d47df5400c6f5f68aef928687eef06ce38747340927cd39e96ba",
+      "output_path": "tools/dayz-odol-strict/tests/fixtures/odol-v53-ammo-box.p3d",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/fixtures/odol-v54-rugermarkiv-optic.p3d",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "First-party; public redistribution authorized 2026-07-25",
+          "source_hash": "ccdb62e78661f2a0d98e5d5ca8844a8a7f0ae5242c2e1f403530d01d0ef037f9",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/fixtures/odol-v54-rugermarkiv-optic.p3d",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "First-party; public redistribution authorized 2026-07-25",
+      "output_hash": "ccdb62e78661f2a0d98e5d5ca8844a8a7f0ae5242c2e1f403530d01d0ef037f9",
+      "output_path": "tools/dayz-odol-strict/tests/fixtures/odol-v54-rugermarkiv-optic.p3d",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/fixtures/odol-v55-lfquad-body.p3d",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "First-party; public redistribution authorized 2026-07-25",
+          "source_hash": "9dd2b16a70001b5e6513bf26da0b24db6c2a92c09f6fa09ae9aab20f77ef19d3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/fixtures/odol-v55-lfquad-body.p3d",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "First-party; public redistribution authorized 2026-07-25",
+      "output_hash": "9dd2b16a70001b5e6513bf26da0b24db6c2a92c09f6fa09ae9aab20f77ef19d3",
+      "output_path": "tools/dayz-odol-strict/tests/fixtures/odol-v55-lfquad-body.p3d",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/test_backend_manifest.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "b0d5742609896a61fa07e03875dd66607c4d3732bdb2f57154f491bdad59a5d4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/test_backend_manifest.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b0d5742609896a61fa07e03875dd66607c4d3732bdb2f57154f491bdad59a5d4",
+      "output_path": "tools/dayz-odol-strict/tests/test_backend_manifest.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/test_cli_diff.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "5f9f78fdeceb71668e88ef144af5b2644aea7a8ae90dac88a8df6abfc18495ed",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/test_cli_diff.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5f9f78fdeceb71668e88ef144af5b2644aea7a8ae90dac88a8df6abfc18495ed",
+      "output_path": "tools/dayz-odol-strict/tests/test_cli_diff.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/test_inspect_contract.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "bcc3899ac0fba08c68b6052883ebacb70e11e488a57f3b422faa1098502bb891",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/test_inspect_contract.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bcc3899ac0fba08c68b6052883ebacb70e11e488a57f3b422faa1098502bb891",
+      "output_path": "tools/dayz-odol-strict/tests/test_inspect_contract.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/test_odol_fixture_provenance.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "854d34d985f21f23545759ab034c24bef4befc8e0c3e70dc2d4c505770938df1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/test_odol_fixture_provenance.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "854d34d985f21f23545759ab034c24bef4befc8e0c3e70dc2d4c505770938df1",
+      "output_path": "tools/dayz-odol-strict/tests/test_odol_fixture_provenance.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/test_preflight.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "ef1b9df19474e5edf008cd4c2ef1d99c82cb516f09e998f933959c49421c4a51",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/test_preflight.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ef1b9df19474e5edf008cd4c2ef1d99c82cb516f09e998f933959c49421c4a51",
+      "output_path": "tools/dayz-odol-strict/tests/test_preflight.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-odol-strict/tests/test_real_fixtures.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "c9a1704f7a95b9e214a3382a9bcd46b3c552f7796ca653f1229002c932d4aeb1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/tests/test_real_fixtures.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c9a1704f7a95b9e214a3382a9bcd46b3c552f7796ca653f1229002c932d4aeb1",
+      "output_path": "tools/dayz-odol-strict/tests/test_real_fixtures.py",
+      "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
     {
@@ -5855,6 +7481,28 @@
       "output_path": "tools/dayz-ui-lab/dayz_ui_lab/parse.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/probe/lf_uiprobe/pboprefix",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "The source-only probe declares the same in-game prefix used by its verified layout paths.",
+          "license": "MIT",
+          "source_hash": "9a7852a7b3bbdbfa25268129d9ca3b649b11039d2c165765ea762889ac49fd29",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/probe/LF_UIProbe/$PBOPREFIX$",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9a7852a7b3bbdbfa25268129d9ca3b649b11039d2c165765ea762889ac49fd29",
+      "output_path": "tools/dayz-ui-lab/probe/LF_UIProbe/$PBOPREFIX$",
+      "routing_artifact_id": "tools",
+      "verification_level": "source_verified"
     },
     {
       "artifact_id": "file/tools/dayz-ui-lab/probe/lf_uiprobe/config.cpp",
@@ -5933,28 +7581,6 @@
       "verification_level": "source_verified"
     },
     {
-      "artifact_id": "file/tools/dayz-ui-lab/probe/lf_uiprobe/pboprefix",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "The source-only probe declares the same in-game prefix used by its verified layout paths.",
-          "license": "MIT",
-          "source_hash": "9a7852a7b3bbdbfa25268129d9ca3b649b11039d2c165765ea762889ac49fd29",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/dayz-ui-lab/probe/LF_UIProbe/$PBOPREFIX$",
-          "source_revision": "r21-phase02@2026-07-25",
-          "verification_level": "source_verified"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "9a7852a7b3bbdbfa25268129d9ca3b649b11039d2c165765ea762889ac49fd29",
-      "output_path": "tools/dayz-ui-lab/probe/LF_UIProbe/$PBOPREFIX$",
-      "routing_artifact_id": "tools",
-      "verification_level": "source_verified"
-    },
-    {
       "artifact_id": "file/tools/dayz-ui-lab/probe/lf_uiprobe/scripts/5_mission/lf_uiprobe_mission.c",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -6007,28 +7633,6 @@
       "verification_level": "source_verified"
     },
     {
-      "artifact_id": "file/tools/dayz-ui-lab/probe/prepare_probe.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Phase 02 authors a fail-closed staging tool so LF and CRLF fixtures are byte-controlled despite repository LF normalization.",
-          "license": "MIT",
-          "source_hash": "0993ecd2328024b98dfb521ea109e6097bb9967bff3a449535e8a5370767fc3b",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/dayz-ui-lab/probe/prepare_probe.py",
-          "source_revision": "r21-phase02@2026-07-25",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "0993ecd2328024b98dfb521ea109e6097bb9967bff3a449535e8a5370767fc3b",
-      "output_path": "tools/dayz-ui-lab/probe/prepare_probe.py",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
       "artifact_id": "file/tools/dayz-ui-lab/probe/readme.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -6049,6 +7653,28 @@
       "output_path": "tools/dayz-ui-lab/probe/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/probe/prepare_probe.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 authors a fail-closed staging tool so LF and CRLF fixtures are byte-controlled despite repository LF normalization.",
+          "license": "MIT",
+          "source_hash": "0993ecd2328024b98dfb521ea109e6097bb9967bff3a449535e8a5370767fc3b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/probe/prepare_probe.py",
+          "source_revision": "r21-phase02@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0993ecd2328024b98dfb521ea109e6097bb9967bff3a449535e8a5370767fc3b",
+      "output_path": "tools/dayz-ui-lab/probe/prepare_probe.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/tools/dayz-ui-lab/tests/test_parser.py",
@@ -6224,7 +7850,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "1d715a461f2b94bdfcdc06fa2c6cb6d9e334ea9e12680c4440f351a44a90df6a",
@@ -6252,10 +7878,20 @@
           "source_path": "README.md",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "3e7177ba2a5b8e08b913cebacf71c8be22461e46682ad516b2220002242584c2",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/README.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "1d715a461f2b94bdfcdc06fa2c6cb6d9e334ea9e12680c4440f351a44a90df6a",
+      "output_hash": "3e7177ba2a5b8e08b913cebacf71c8be22461e46682ad516b2220002242584c2",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6276,7 +7912,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "e15ca9a4fba208a14d7c8630a04dae6f72e2c98cca274c78903aad62b7e4fbc8",
@@ -6304,10 +7940,30 @@
           "source_path": "py3d/__init__.py",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "keep_pack",
+          "decision_evidence": "A3OB 2.5.1 proxy geometry was used as an external convention oracle; the py3d lifecycle implementation remains independent.",
+          "license": "GPL-3.0-or-later",
+          "source_hash": "8ccc87bb3d83134e806c5498cc4fc5d2d31ff7f56ac1a6a13121187bc29d7a41",
+          "source_id": "a3ob",
+          "source_path": "Arma3ObjectBuilder/utilities/proxy.py",
+          "source_revision": "57ddcc6f906bec888b606ffd0969517f25076495",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "0aa8f21d60e11e3afa80479c8cf04bd234f4b315a17f96721d8a04fb8723a439",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/py3d/__init__.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e15ca9a4fba208a14d7c8630a04dae6f72e2c98cca274c78903aad62b7e4fbc8",
+      "output_hash": "0aa8f21d60e11e3afa80479c8cf04bd234f4b315a17f96721d8a04fb8723a439",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6380,7 +8036,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "136b26f96a3208046e5a9bf33a4501ee85dcd61c08bd524a1037c829f625493a",
@@ -6408,10 +8064,20 @@
           "source_path": "rollout/README.md",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "116e31e6229c0b2eecc65f641ed72b95e46f59024056f7898565957a54ec5220",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/README.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "136b26f96a3208046e5a9bf33a4501ee85dcd61c08bd524a1037c829f625493a",
+      "output_hash": "116e31e6229c0b2eecc65f641ed72b95e46f59024056f7898565957a54ec5220",
       "output_path": "tools/py3d/rollout/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6432,7 +8098,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "8fc929a8bbc267c6899b60aec43e22db1aa96c15b441b61b72bd9039b251e4ce",
@@ -6460,10 +8126,20 @@
           "source_path": "rollout/apply-s2-rollout.ps1",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "bfed5d29316f1c5f3c07913520459531796a9ce770b327733e00ba11418aa395",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8fc929a8bbc267c6899b60aec43e22db1aa96c15b441b61b72bd9039b251e4ce",
+      "output_hash": "bfed5d29316f1c5f3c07913520459531796a9ce770b327733e00ba11418aa395",
       "output_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6517,6 +8193,28 @@
       "license": "MIT",
       "output_hash": "7885474fd3115b013e8c6ef0f340857789c88fe9db1c66dd361ae53173368332",
       "output_path": "tools/py3d/rollout/audit_p3d.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/py3d/rollout/build-wheel.ps1",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "97376a85a48e8e75e4ae0a1680d10bdb77be2cd3c5a362c017aef38995512755",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/build-wheel.ps1",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "97376a85a48e8e75e4ae0a1680d10bdb77be2cd3c5a362c017aef38995512755",
+      "output_path": "tools/py3d/rollout/build-wheel.ps1",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
@@ -6640,7 +8338,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "2fef10faedb1416c692d882ef2955e4269cb2b632113cf8ef5e4e462abc01506",
@@ -6668,10 +8366,20 @@
           "source_path": "rollout/patched/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "d805a1599a78f2d68344c5055bde115ed59071a901b57d8693134735b2416c02",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patched/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2fef10faedb1416c692d882ef2955e4269cb2b632113cf8ef5e4e462abc01506",
+      "output_hash": "d805a1599a78f2d68344c5055bde115ed59071a901b57d8693134735b2416c02",
       "output_path": "tools/py3d/rollout/patched/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6692,7 +8400,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "dfdff6871a89e2f1cc0f8ddc0c54506f5f804561a63d1bebea90d875cdc8ab4a",
@@ -6720,10 +8428,20 @@
           "source_path": "rollout/patched/dayz-model-pipeline/SKILL.md",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "09475f805d91679483351fe49f42fb01e44b3c769ff58a521f4fd1c8a2a801ad",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patched/dayz-model-pipeline/SKILL.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "dfdff6871a89e2f1cc0f8ddc0c54506f5f804561a63d1bebea90d875cdc8ab4a",
+      "output_hash": "09475f805d91679483351fe49f42fb01e44b3c769ff58a521f4fd1c8a2a801ad",
       "output_path": "tools/py3d/rollout/patched/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6900,7 +8618,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "0a8a81c64cb9cccbdbe2e4e2c4adb8a21ca9bd29f965bcaa909297cfbcae4dab",
@@ -6928,10 +8646,20 @@
           "source_path": "rollout/patched/dayz-p3d-debinarizer/SKILL.md",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "07ccc023c188d4047279ef293e29505e338d6a8129be4e22e235aea941c5a6d5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patched/dayz-p3d-debinarizer/SKILL.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0a8a81c64cb9cccbdbe2e4e2c4adb8a21ca9bd29f965bcaa909297cfbcae4dab",
+      "output_hash": "07ccc023c188d4047279ef293e29505e338d6a8129be4e22e235aea941c5a6d5",
       "output_path": "tools/py3d/rollout/patched/dayz-p3d-debinarizer/SKILL.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6952,7 +8680,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "70775a99722f775e39c4cdcfe77d88e15d75931b0fcae5f47dde65034be4e0d8",
@@ -6980,10 +8708,20 @@
           "source_path": "rollout/patched/dayz-p3d-inspector/SKILL.md",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "43232fbeaaebc71745abb4c7d078345a6850a1d23f338628568c99f2a2418ff9",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patched/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "70775a99722f775e39c4cdcfe77d88e15d75931b0fcae5f47dde65034be4e0d8",
+      "output_hash": "43232fbeaaebc71745abb4c7d078345a6850a1d23f338628568c99f2a2418ff9",
       "output_path": "tools/py3d/rollout/patched/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -7056,7 +8794,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "570e686dc4e537bbf3d44e35fa5b04141837f26ed3f141332ad7c8cf622deb8e",
@@ -7084,10 +8822,20 @@
           "source_path": "rollout/patched/dayz-proxy-align/SKILL.md",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "9d5df92356e2541abaff6e61aa4f9b4aeb45805386ee1e658b6920b4d8738720",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patched/dayz-proxy-align/SKILL.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "570e686dc4e537bbf3d44e35fa5b04141837f26ed3f141332ad7c8cf622deb8e",
+      "output_hash": "9d5df92356e2541abaff6e61aa4f9b4aeb45805386ee1e658b6920b4d8738720",
       "output_path": "tools/py3d/rollout/patched/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -7145,6 +8893,28 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/tools/py3d/rollout/patches/dayz-animation-pipeline__skill.md.patch",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "e23dc81b7e57649188a2b4164bcda4c2c8f1d100f83e16c1e41bf98d4f0a97cc",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patches/dayz-animation-pipeline__SKILL.md.patch",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e23dc81b7e57649188a2b4164bcda4c2c8f1d100f83e16c1e41bf98d4f0a97cc",
+      "output_path": "tools/py3d/rollout/patches/dayz-animation-pipeline__SKILL.md.patch",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/tools/py3d/rollout/patches/dayz-animation-pipeline__references__py3d-1.0.0-quirks.md.patch",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -7160,7 +8930,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "a9deee48864e8f7e498aef079c104a056292816e09afdcb72efaf1394e7fafeb",
@@ -7188,10 +8958,20 @@
           "source_path": "rollout/patches/dayz-animation-pipeline__references__py3d-1.0.0-quirks.md.patch",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "769b936786879aaf2ec0d4939fc153459e4ee6175fec896eafdc0558897e62d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patches/dayz-animation-pipeline__references__py3d-1.0.0-quirks.md.patch",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a9deee48864e8f7e498aef079c104a056292816e09afdcb72efaf1394e7fafeb",
+      "output_hash": "769b936786879aaf2ec0d4939fc153459e4ee6175fec896eafdc0558897e62d7",
       "output_path": "tools/py3d/rollout/patches/dayz-animation-pipeline__references__py3d-1.0.0-quirks.md.patch",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -7212,7 +8992,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "c84b865b0db5af985a92f0cc26982094d3052eced8660e4be52006c821fc0b4e",
@@ -7240,10 +9020,20 @@
           "source_path": "rollout/patches/dayz-model-pipeline__SKILL.md.patch",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "5a0c553ede64311e2f2891fad1ca4c2415c026d0b367cef7166e026c0cde6180",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patches/dayz-model-pipeline__SKILL.md.patch",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c84b865b0db5af985a92f0cc26982094d3052eced8660e4be52006c821fc0b4e",
+      "output_hash": "5a0c553ede64311e2f2891fad1ca4c2415c026d0b367cef7166e026c0cde6180",
       "output_path": "tools/py3d/rollout/patches/dayz-model-pipeline__SKILL.md.patch",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -7420,7 +9210,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "71fedb9aa511018e96cf830257f9ee35b7a8a1e54fd6d0381436533a3bc99a89",
@@ -7448,10 +9238,20 @@
           "source_path": "rollout/patches/dayz-p3d-debinarizer__SKILL.md.patch",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "430d4f18d75efdc1a381da849af303ed1bf12883f65748f7e21b5037076850d5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patches/dayz-p3d-debinarizer__SKILL.md.patch",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "71fedb9aa511018e96cf830257f9ee35b7a8a1e54fd6d0381436533a3bc99a89",
+      "output_hash": "430d4f18d75efdc1a381da849af303ed1bf12883f65748f7e21b5037076850d5",
       "output_path": "tools/py3d/rollout/patches/dayz-p3d-debinarizer__SKILL.md.patch",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -7472,7 +9272,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "7cede699c526bcd35033687ed5c11b6afe1bffa7a89c0691260140eca00cbdb7",
@@ -7500,10 +9300,20 @@
           "source_path": "rollout/patches/dayz-p3d-inspector__SKILL.md.patch",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "229fe2f319ad9aab3125c4de2c0b259daddd5c921502dc64af45de77ece8907e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patches/dayz-p3d-inspector__SKILL.md.patch",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7cede699c526bcd35033687ed5c11b6afe1bffa7a89c0691260140eca00cbdb7",
+      "output_hash": "229fe2f319ad9aab3125c4de2c0b259daddd5c921502dc64af45de77ece8907e",
       "output_path": "tools/py3d/rollout/patches/dayz-p3d-inspector__SKILL.md.patch",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -7576,7 +9386,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "e8f14c43a51ececb519065e937b241925d2e9c64be884d57189358cfca5952fe",
@@ -7604,11 +9414,43 @@
           "source_path": "rollout/patches/dayz-proxy-align__SKILL.md.patch",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "6c0405f327ea1dc75415e53c457b7d4011462ab153a944f30554929b013a5ca8",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patches/dayz-proxy-align__SKILL.md.patch",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e8f14c43a51ececb519065e937b241925d2e9c64be884d57189358cfca5952fe",
+      "output_hash": "6c0405f327ea1dc75415e53c457b7d4011462ab153a944f30554929b013a5ca8",
       "output_path": "tools/py3d/rollout/patches/dayz-proxy-align__SKILL.md.patch",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/py3d/rollout/wheel-manifest.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "871c449f536832c84a9c18b1386ace48d1f160172e7ab6514857d05f95f146a2",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/wheel-manifest.json",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "871c449f536832c84a9c18b1386ace48d1f160172e7ab6514857d05f95f146a2",
+      "output_path": "tools/py3d/rollout/wheel-manifest.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
@@ -7680,7 +9522,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "dd3baaee4f64de8d205f65d09488044fc0b66799b4c9f60d849569fa87962a8d",
@@ -7708,10 +9550,20 @@
           "source_path": "setup.py",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "6349ad4ec9eea23c24f7d5344299654d3bb32f2e77006de93513e1abc4cc344d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/setup.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "dd3baaee4f64de8d205f65d09488044fc0b66799b4c9f60d849569fa87962a8d",
+      "output_hash": "6349ad4ec9eea23c24f7d5344299654d3bb32f2e77006de93513e1abc4cc344d",
       "output_path": "tools/py3d/setup.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -7784,7 +9636,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
           "source_hash": "a361f62620858a979402d3e094ed79cf80cd6123d737c3913dd77756524c8424",
@@ -7812,10 +9664,20 @@
           "source_path": "tests/conftest.py",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "ecbaf3420fceaf795e19501156c681e24d1fb7f5ecc38259d6e3c277f86a90f3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/conftest.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a361f62620858a979402d3e094ed79cf80cd6123d737c3913dd77756524c8424",
+      "output_hash": "ecbaf3420fceaf795e19501156c681e24d1fb7f5ecc38259d6e3c277f86a90f3",
       "output_path": "tools/py3d/tests/conftest.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -8493,6 +10355,28 @@
       "license": "MIT",
       "output_hash": "99d54814c646e2bc674ad109b3bc76d06aa7798dab198f7bfc1c5da855ef945e",
       "output_path": "tools/py3d/tests/test_s3_features.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/py3d/tests/test_s4_proxy_lifecycle.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "license": "MIT",
+          "source_hash": "72df01dda26ce3f3f4aad623344c588efe191072f8746a50ccbf70c2d15ce57f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/test_s4_proxy_lifecycle.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "72df01dda26ce3f3f4aad623344c588efe191072f8746a50ccbf70c2d15ce57f",
+      "output_path": "tools/py3d/tests/test_s4_proxy_lifecycle.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }
@@ -9238,9 +11122,25 @@
       "output_path": "manifest.json"
     }
   ],
-  "release_id": "r21-phase01-foundation",
+  "release_id": "r21-phase04-py3d",
   "schema_version": 1,
   "sources": [
+    {
+      "kind": "git",
+      "license": "GPL-3.0-or-later",
+      "notes": "External proxy/RTM oracle only; no source is copied or linked into the MIT payload.",
+      "public_locator": "https://github.com/MrClock8163/Arma3ObjectBuilder",
+      "revision": "57ddcc6f906bec888b606ffd0969517f25076495",
+      "source_id": "a3ob"
+    },
+    {
+      "kind": "git",
+      "license": "No license/redistribution grant observed",
+      "notes": "External ODOL evidence/backend ancestry only; no source is redistributed.",
+      "public_locator": "https://github.com/ScripyZz/BisDLL-Arma-3",
+      "revision": "5600bad995c89154b4f6700ef087f86ef4c49315",
+      "source_id": "bisdll-arma3"
+    },
     {
       "kind": "git",
       "license": "GPL-3.0-only; assets CC-BY-NC-SA",
@@ -9258,19 +11158,19 @@
     },
     {
       "kind": "filesystem",
-      "license": "Bohemia Interactive reference only",
-      "local_root_id": "dayz_vanilla",
-      "notes": "Vanilla script source used for API and behavior verification; no code copied.",
-      "revision": "1.29.0.163451",
-      "source_id": "dayz-vanilla"
-    },
-    {
-      "kind": "filesystem",
       "license": "User-authored inputs; MIT public projection",
       "local_root_id": "dayz_ui_research",
       "notes": "Read-only source for the UI parser/viewer reconciliation; third-party corpora remain excluded.",
       "revision": "filesystem@2026-07-25",
       "source_id": "dayz-ui-research"
+    },
+    {
+      "kind": "filesystem",
+      "license": "Bohemia Interactive reference only",
+      "local_root_id": "dayz_vanilla",
+      "notes": "Vanilla script source used for API and behavior verification; no code copied.",
+      "revision": "1.29.0.163451",
+      "source_id": "dayz-vanilla"
     },
     {
       "kind": "git",
@@ -9334,8 +11234,8 @@
     {
       "kind": "authored",
       "license": "MIT",
-      "notes": "Reviewed Phase 01 additions and reconciled public projections.",
-      "revision": "r21-phase01@2026-07-24",
+      "notes": "Reviewed r21 additions and reconciled public projections through Phase 04.",
+      "revision": "r21-phase04@2026-07-25",
       "source_id": "pack-r21-authored"
     },
     {
@@ -9353,6 +11253,14 @@
       "notes": "Deployment copy audited for semantic drift and generated residue.",
       "revision": "filesystem@2026-07-24",
       "source_id": "py3d-rollout"
+    },
+    {
+      "kind": "git",
+      "license": "MIT",
+      "notes": "External SEAnim reader/writer oracle; no source is bundled.",
+      "public_locator": "https://github.com/SE2Dev/io_anim_seanim",
+      "revision": "dffe313b635ce8940264201f25db9e68f4486d7e",
+      "source_id": "se2dev-io-anim-seanim"
     },
     {
       "kind": "git",

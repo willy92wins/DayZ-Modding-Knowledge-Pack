@@ -34,6 +34,33 @@ cd /path/to/skill/scripts
 python3 odol_to_mlod.py input.p3d output_mlod.p3d
 ```
 
+## Strict inspection versus recovery (r21 F4)
+
+This skill's converter is a **recovery** workflow: it may retain useful data
+when one or more LODs cannot be converted. Never describe that partial MLOD as
+a complete anatomy/parity pass.
+
+For read-only v53/v54/v55 inspection, use the DayZ Modding Knowledge Pack's
+`tools/dayz-odol-strict/` adapter with the compatible backend installed
+externally:
+
+```bash
+export DAYZ_ODOL_BACKEND_ROOT=/external/dayz-p3d-debinarizer/scripts
+python -m dayz_odol_strict inspect input.p3d --json anatomy.json
+```
+
+The strict adapter accepts only v53-v55, limits the signed LOD count to
+`1..64` before the backend runs, slices embedded/container payloads at the
+unique validated ODOL signature, pins the complete backend file closure by
+SHA-256 and rejects every `lod_errors`, missing LOD, partial field, out-of-
+bounds/overlapping interval or inexact declared end. It is read-only: it does
+not emit ODOL or MLOD.
+
+The backend remains external because the BisDLL-derived source does not carry
+a redistribution license. Do not copy it into a released MIT pack or skill.
+The strict adapter's three test fixtures are separate, user-authorized
+first-party binaries.
+
 ## Architecture
 
 ```

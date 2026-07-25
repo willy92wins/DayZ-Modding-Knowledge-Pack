@@ -18,7 +18,7 @@ def fork():
     assert getattr(py3d, "IS_DAYZ_FORK", False), (
         "el modulo py3d importado NO es el fork (site-packages interfiere?): %r"
         % getattr(py3d, "__file__", None))
-    assert py3d.__version__ == "1.3.0"
+    assert py3d.__version__ == "1.4.0"
     return py3d
 
 

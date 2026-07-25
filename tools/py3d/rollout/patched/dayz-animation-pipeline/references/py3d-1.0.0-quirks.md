@@ -1,4 +1,4 @@
-# py3d 1.0.0 quirks — HISTORICO (superado por el fork DayZ >= 1.2.0)
+# py3d 1.0.0 quirks — HISTORICO (superado por el fork DayZ >= 1.4.0)
 
 > **Estado 2026-06-06 (rollout py3d-fork S2):** este documento queda como
 > HISTORICO. La verificacion R22 (plan py3d-fork, R22-P1-01) demostro que
@@ -18,6 +18,14 @@
 > Validacion integral: `python -m py3d validate modelo.p3d` o
 > `P3D.validate()` (v1.2.0). El texto original se conserva abajo para
 > contexto de sesiones antiguas (LFQuad D30, LL-055/056).
+
+> **Estado 2026-07-25 (r21 F2/F3):** para formatos de animación nuevos, usar
+> el paquete estricto `tools/dayz-animation-formats/` del Knowledge Pack, no
+> ampliar `scripts/seanim_writer.py`. Soporta SEAnim v1 completo y RTM
+> `RTM_0101` con `RTM_MDAT` opcional, con lectores/escritores puros y CLI
+> determinista. `.anm`/BMTR siguen fuera de alcance. Antes de exportar un MLOD
+> transformado/importado, `tools/dayz-model-preflight/` compone py3d >=1.4.0
+> con contrato explícito de escala, huesos y linaje/winding.
 
 ---
 
@@ -196,8 +204,8 @@ JSON against either frame produces mirrored output for one of them.
 
 After any py3d-based `.p3d` write:
 
-1. Re-open the output with `py3d.read_p3d` (or `dayz-p3d-inspector`'s
-   `extract_recipe`).
+1. Re-open the output with `py3d.P3D(open(output, "rb"))` (or
+   `dayz-p3d-inspector`'s `extract_recipe`). `py3d.read_p3d` does not exist.
 2. For each selection you wrote: assert `len(sel.faces) > 0` AND the count
    matches the JSON source ±N (small drift from refiner steps is OK, zero
    drift is not — that means the write didn't take).

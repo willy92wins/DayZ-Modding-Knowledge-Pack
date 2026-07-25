@@ -30,13 +30,20 @@ def codes(findings: list[dict[str, object]]) -> list[str]:
 
 def test_repository_checkout_contract_is_canonical_lf() -> None:
     root = Path(__file__).resolve().parents[2]
-    assert (root / ".gitattributes").read_bytes() == b"* text eol=lf\n"
+    assert (root / ".gitattributes").read_bytes() == (
+        b"* text eol=lf\n"
+        b"*.p3d binary\n"
+        b"*.rtm binary\n"
+        b"*.seanim binary\n"
+    )
     source_map = json.loads(
         (root / "sources/source-map.json").read_text(encoding="utf-8")
     )
+    binary_suffixes = {".p3d", ".rtm", ".seanim"}
     crlf_paths = [
         str(item["output_path"])
         for item in source_map["artifacts"]
+        if Path(str(item["output_path"])).suffix not in binary_suffixes
         if b"\r\n" in (root / str(item["output_path"])).read_bytes()
     ]
 

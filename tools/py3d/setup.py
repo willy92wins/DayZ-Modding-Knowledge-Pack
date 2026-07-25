@@ -5,7 +5,7 @@ from setuptools import setup
 setup(
     name = "py3d",
     packages = ["py3d"],
-    version = "1.3.0",
+    version = "1.4.0",
     install_requires = [],
     author = 'Felix "KoffeinFlummi" Wiegand',
     author_email = "koffeinflummi@protonmail.com",

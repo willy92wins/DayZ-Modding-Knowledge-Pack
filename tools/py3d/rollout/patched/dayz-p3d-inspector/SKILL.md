@@ -32,10 +32,18 @@ Anything else is delegated to a sibling skill — do **not** duplicate it here:
 | Task                                      | Use this skill instead                  |
 |-------------------------------------------|-----------------------------------------|
 | ODOL (binarized) .p3d -> MLOD (editable)  | `dayz-p3d-debinarizer` (pre-step)       |
+| ODOL v53-v55 strict read-only anatomy/diff | Knowledge Pack `tools/dayz-odol-strict` |
 | Visual viewer with PAA textures / glTF    | `dayz-3d-viewer` (or invoke before)     |
 | PAA <-> PNG conversion                    | `dayz-3d-viewer` (`paa_to_png.py`)      |
 | Deep config / path / structure validation | `dayz-p3d-audit` (post-step)            |
 | Generating a .p3d from scratch (Blender)  | `dayz-model-pipeline`                   |
+
+`dayz-p3d-debinarizer` is the recovery/edit route and may intentionally
+salvage a partial model. `dayz-odol-strict` is the fail-closed parity route:
+it accepts only v53-v55, invokes a hash-pinned external backend in an isolated
+subprocess and rejects any missing/partial LOD or boundary mismatch. Use its
+deterministic anatomy JSON as the reference/candidate input when completeness,
+not editability, is the criterion. It never writes ODOL or MLOD.
 
 The viewer in this skill renders untextured flat-shaded geometry on purpose:
 its job is to make memory points, axes, selections, collision LODs, and bounds

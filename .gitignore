@@ -8,3 +8,5 @@ promotions/journals/
 promotions/backups/
 dist/
 reports/
+build/
+*.egg-info/
