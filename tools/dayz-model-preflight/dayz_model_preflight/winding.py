@@ -9,13 +9,23 @@ def check_winding(source_model, target_model, winding):
     matrix, determinant = _validate_transform(winding.get("transform"))
     tolerance = winding.get("position_tolerance_m")
     if isinstance(tolerance, bool) or \
-            not isinstance(tolerance, (int, float)) or \
-            not math.isfinite(float(tolerance)) or tolerance <= 0:
+            not isinstance(tolerance, (int, float)):
         raise PreflightError(
             "PREFLIGHT_CONTRACT_INVALID",
             "winding position tolerance must be positive and finite",
         )
-    tolerance = float(tolerance)
+    try:
+        tolerance = float(tolerance)
+    except OverflowError:
+        raise PreflightError(
+            "PREFLIGHT_CONTRACT_INVALID",
+            "winding position tolerance must be positive and finite",
+        )
+    if not math.isfinite(tolerance) or tolerance <= 0:
+        raise PreflightError(
+            "PREFLIGHT_CONTRACT_INVALID",
+            "winding position tolerance must be positive and finite",
+        )
     mappings = winding.get("faces")
     if not isinstance(mappings, list) or not mappings:
         _evidence_error("winding requires a non-empty face map")
@@ -185,10 +195,15 @@ def _validate_transform(value):
         normalized = []
         for component in row:
             if isinstance(component, bool) or \
-                    not isinstance(component, (int, float)) or \
-                    not math.isfinite(float(component)):
+                    not isinstance(component, (int, float)):
                 _transform_error("transform values must be finite numbers")
-            normalized.append(float(component))
+            try:
+                normalized_component = float(component)
+            except OverflowError:
+                _transform_error("transform values must be finite numbers")
+            if not math.isfinite(normalized_component):
+                _transform_error("transform values must be finite numbers")
+            normalized.append(normalized_component)
         matrix.append(normalized)
     if any(
         abs(actual - expected) > 1e-12
@@ -222,7 +237,13 @@ def _position(value):
             "PREFLIGHT_WINDING_GEOMETRY_MISMATCH",
             "model point is not a three-component position",
         )
-    output = tuple(float(component) for component in value)
+    try:
+        output = tuple(float(component) for component in value)
+    except (TypeError, ValueError, OverflowError):
+        raise PreflightError(
+            "PREFLIGHT_WINDING_GEOMETRY_MISMATCH",
+            "model point contains a non-finite position",
+        )
     if not all(math.isfinite(component) for component in output):
         raise PreflightError(
             "PREFLIGHT_WINDING_GEOMETRY_MISMATCH",

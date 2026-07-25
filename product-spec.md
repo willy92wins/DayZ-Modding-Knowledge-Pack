@@ -111,11 +111,11 @@ y entrada en el changelog.
 
 | # | Criterio | Cómo se verifica | Estado |
 |---|---|---|---|
-| F1 | Proxies soportan add/remove/align con rotación y round-trip | fixtures con matrices conocidas; save→reload conserva transform y selección | ❓ |
-| F2 | Helpers de RTM/SEAnim/animación tienen contrato y límites explícitos | round-trip o export fixture comparado con referente aceptado | ❓ |
-| F3 | Pre-export valida winding, huesos y escala | fixtures positivas/negativas y códigos estables; 0 reparación silenciosa | ❓ |
-| F4 | Existe lectura ODOL read-only para anatomía/paridad, con cobertura y limitaciones declaradas, sin añadir writer ODOL | v53/v54/v55 fixtures legalmente distribuibles, self-diff y fallos boundary/oob fail-closed | ❓ |
-| F5 | py3d mantiene toda su suite verde y una sola distribución canónica | baseline 130 pass/10 skip no retrocede; wheels/rollout hashes pineados | ❓ |
+| F1 | Proxies soportan add/remove/align con rotación y round-trip | fixtures con matrices conocidas; save→reload conserva transform y selección | ✓ |
+| F2 | Helpers de RTM/SEAnim/animación tienen contrato y límites explícitos | round-trip o export fixture comparado con referente aceptado | ✓ |
+| F3 | Pre-export valida winding, huesos y escala | fixtures positivas/negativas y códigos estables; 0 reparación silenciosa | ✓ |
+| F4 | Existe lectura ODOL read-only para anatomía/paridad, con cobertura y limitaciones declaradas, sin añadir writer ODOL | v53/v54/v55 fixtures legalmente distribuibles, self-diff y fallos boundary/oob fail-closed | ✓ |
+| F5 | py3d mantiene toda su suite verde y una sola distribución canónica | baseline 130 pass/10 skip no retrocede; wheels/rollout hashes pineados | ✓ |
 
 ## G — MCP publicable y automatización
 
@@ -169,7 +169,9 @@ y entrada en el changelog.
   `3069958660046119589` y PBO hashes; LFPG Sorter V4 TEST como negativo.
 - Prior art auditado: dayz-labs `dbd6ad3e...`, Lake `ac56f369...`,
   StarDZ `dbdcd23b...`.
-- py3d upstream `7acd58b`/tag `v1.0` y fork baseline `1.3.0`.
+- py3d upstream `7acd58b`/tag `v1.0` y fork release `1.4.0`; wheel
+  reproducible SHA-256
+  `cc014a4330e8f4a0cb905b20c300ec726b62febddb0eb6d1c6426e41c563c8ff`.
 
 Aliases de evidencia usados en los planes:
 
@@ -202,3 +204,7 @@ La fase 01 fijará revisión, hash y root local de cada alias fuera de Git.
   sonda first-party vanilla-first sin Dabs obligatorio; schema
   `engine-capture-v1` ahora y adapter MCP run-bound/lossless en Fase 05.
   `py3d` queda fuera de esta ejecución y continúa en paralelo bajo Fase 04.
+- 2026-07-25 — cerrada Fase 04: F1–F5 pasan el gate limpio; py3d 1.4.0,
+  RTM/SEAnim estricto, preflight MLOD y lector ODOL v53–v55 se distribuyen
+  desde Git con fixtures y procedencia verificadas. El rollout a instalaciones
+  activas queda separado y requiere autorización final.

@@ -178,6 +178,12 @@ def test_geometry_mismatch_is_invalid_evidence(tmp_path):
             [0.0, 0.0, 0.0, 1.0],
         ],
         [
+            [10 ** 1000, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ],
+        [
             [1.0, 0.0, 0.0, 0.0],
             [0.0, 1.0, 0.0, 0.0],
             [0.0, 0.0, 1.0, 0.0],
@@ -193,6 +199,14 @@ def test_singular_nonfinite_or_nonaffine_transform_is_invalid(
     with pytest.raises(PreflightError) as raised:
         check_winding(source, target, _winding(transform))
     assert raised.value.code == "PREFLIGHT_WINDING_TRANSFORM_INVALID"
+
+
+def test_huge_position_tolerance_is_contract_invalid(tmp_path):
+    points = [(0, 0, 0), (2, 0, 0), (0, 1, 0)]
+    source, target = _pair(tmp_path, points)
+    with pytest.raises(PreflightError) as raised:
+        check_winding(source, target, _winding(tolerance=10 ** 1000))
+    assert raised.value.code == "PREFLIGHT_CONTRACT_INVALID"
 
 
 @pytest.mark.parametrize(

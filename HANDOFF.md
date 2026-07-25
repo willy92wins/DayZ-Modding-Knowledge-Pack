@@ -3,143 +3,134 @@
 <!-- LIVE-STATE:START -->
 # DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-25
 
-**Última verificación real:** el contenido de Fase 02 slices 1–2 quedó
-versionado en `9cb9b9c70208b037de457715482d70c24b19a5b9`. La suite UI pasó
-10/10, el corpus público 319/319, TraderX no-B20 42/42, LFPG 7/7 y los cuatro
-B20 fallaron explícitamente como se esperaba. `py_compile`, preflight DayZ y
-`packctl validate` pasaron; el validator informó cero findings en sus seis
-familias.
+**Última verificación real:** la Fase 04 queda implementada en el commit de
+contenido `aa0a101a44a3e4edf33a2679559628343c26e1c6`. Su gate limpio pasó
+validación, 14/14 skills, 18 variantes de eval, compilación, suites packctl y
+py3d, y dos builds reproducibles. F1–F5 están cerrados en `product-spec.md`.
 
 ## Estado actual
 
-- Las cuatro enmiendas UI/MCP están aprobadas e incorporadas en DPF, roadmap,
-  plan y feature spec.
-- B19 está cerrado: una leaf válida no produce `missing-child-block`;
-  `has_child_block` permanece informativo y `strict_child_blocks` ya no existe
-  en parser, API ni CLI.
-- La micro-fixture `LF_UIProbe` está preparada con source first-party,
-  vanilla-first y sin Dabs obligatorio. El preparador genera LF/CRLF
-  byte-equivalentes fuera del árbol versionado.
-- B20 sigue abierto por diseño: no se ha modificado la semántica del parser ni
-  se ha codificado un valor esperado sin observación DayZDiag.
-- `session_status` y `bridge_status` devolvieron `unauthorized`; no se lanzó
-  DayZ por un camino alternativo.
-- El diagnóstico read-only posterior separó daemon de cliente: `doctor
-  --daemon-policy normal --json` devolvió PASS sin findings usando la clave
-  vigente, mientras este task siguió recibiendo HTTP 401. El cliente MCP lee
-  la clave una sola vez al arrancar (`DayZ_MCP_dev/tools/dayz_mcp/server.py:
-  347-353`) y el keyfile fue recreado después de arrancar los clientes antiguos.
-  La explicación sustentada es una clave cacheada obsoleta en este task, no un
-  fallo de DayZ ni del daemon.
-- C1 continúa abierto y bloquea scenario/render/diff. La skill `dayz-ui` no se
-  crea/promueve antes de corpus + DayZDiag.
-- MCP solo será adapter de `engine-capture-v1`; no duplica lifecycle. El delta
-  run-bound/lossless queda en Fase 05.
-- Py3d permanece intacto y fuera de esta ejecución.
-- El commit raíz histórico sigue siendo
-  `d48e2c1a02dacc97645a9e70d8bc1058e6dae9a5`; la rama activa es
-  `r21/phase01-foundation` y no se ha mezclado a la rama principal.
+- La rama activa es `r21/phase04-py3d`.
+- `tools/py3d` publica el fork 1.4.0 con ciclo completo de proxies MLOD:
+  add, inspección estricta, align, remove y round-trip raw/engine.
+- `tools/dayz-animation-formats` implementa lectura/escritura estricta de
+  SEAnim v1 y RTM `RTM_MDAT`/`RTM_0101`.
+- `tools/dayz-model-preflight` valida escala, huesos, winding y estructura
+  MLOD sin reparación silenciosa.
+- `tools/dayz-odol-strict` inspecciona y compara ODOL v53–v55 en modo
+  read-only mediante un backend externo fijado por hash. El backend no se
+  redistribuye; sí se distribuyen el adaptador, contrato, manifiesto y
+  fixtures first-party.
+- Todo el código de Fase 04 se distribuye desde el source pack. py3d añade un
+  wheel reproducible generado desde esa fuente; su SHA-256 es
+  `cc014a4330e8f4a0cb905b20c300ec726b62febddb0eb6d1c6426e41c563c8ff`.
+  ODOL se distribuye como instalación desde fuente; no se afirma un wheel
+  autónomo que omita su manifiesto externo al paquete Python.
+- El rollout se verificó sobre una copia desechable: 19 cambios planeados,
+  19 aplicados y 0 cambios en la segunda pasada.
+- Las skills instaladas reales y `P:\py3d` permanecen intactos. Aplicar el
+  rollout operativo requiere autorización final separada.
+- La Fase 02 conserva su bloqueo B20/C1 por observación DayZDiag y no ha sido
+  modificada por este trabajo.
+
+## Validación de Fase 04
+
+- Suite global: 582 passed, 18 skipped.
+- py3d: 196 passed, 10 skipped.
+- animación: 82 passed.
+- preflight: 73 passed.
+- ODOL: 69 passed, 5 skipped sin backend; 74 passed con el backend fijado.
+- `packctl validate`: cero findings en claims, licencias, links, privacidad,
+  skills y source map.
+- `skills-ref` oficial en
+  `38a2ff82958afee88dadf4831509e6f7e9d8ef4e`: 14/14.
+- Wheel py3d: dos builds byte-idénticos y smoke aislado
+  add→inspect→align→save/reload→remove.
+- Fixtures binarias protegidas de normalización Git mediante
+  `.gitattributes`; bytes de working tree e índice verificados.
 
 ## Issues abiertos
 
-1. **[ALTA] B20 / C1** — falta observar en DayZDiag el texto exacto de las
-   variantes LF/CRLF antes de escribir tests/implementación.
-2. **[ALTA] Autorización MCP** — la identidad actual recibe `unauthorized`;
-   el daemon sano acepta la clave vigente, pero este task conserva un cliente
-   anterior a su rotación. Debe continuarse desde un task Codex nuevo o una
-   sesión autorizada; no reiniciar/matar procesos compartidos ni rotar la clave.
-3. **[MEDIA] Skill UI** — repo y Obsidian ya conservan el aprendizaje; la
-   tercera superficie espera el gate C1 aprobado.
-4. **[MEDIA] Integración pendiente** — la rama activa todavía no se ha
-   mezclado a principal.
+1. **[ALTA, fuera de Fase 04] B20 / C1** — falta observar en DayZDiag el texto
+   exacto de las variantes LF/CRLF.
+2. **[MEDIA] Integración de rama** — la rama Fase 04 queda lista para integrar;
+   no se mezcla ni publica automáticamente.
+3. **[MEDIA] Rollout operativo** — no actualizar skills instaladas ni
+   `P:\py3d` sin aprobación explícita.
 
 ## Próxima acción
 
-Abrir un task Codex nuevo, que creará su cliente MCP después de la rotación,
-y retomar este handoff. Allí: verificar `session_status` + `bridge_status`,
-ejecutar `LF_UIProbe` mediante `dayz_test_run`, conservar el `run_id` y los
-resultados RPT LF/CRLF, detener exactamente ese run, fijar el valor observado
-como test RED y aplicar el GREEN mínimo B20. Después ejecutar el gate 319/319 +
-TraderX 46/46 + LFPG. No empezar scenario/render/diff ni tocar py3d antes.
+Elegir cómo integrar `r21/phase04-py3d` siguiendo el flujo de cierre de rama.
+Tras integrarla, el rollout operativo puede ejecutarse por separado sobre una
+raíz explícita, primero con `-NoWrite`, y solo después de aprobar el destino.
 
 ## Invariantes cerradas
 
-- El ZIP anterior es solo baseline; no se modifica.
-- Este Git es la única fuente editable del pack distribuible.
-- Obsidian conserva evidencia/memoria completa; las skills activas reciben
-  promociones verificadas desde Git tras gates.
-- Ninguna invariante de dominio puede quedar únicamente en una de las tres
-  superficies.
-- StarDZ, dayz-labs y Lake son prior art selectivo, no dependencias del pack.
-- Un cero de `dayz-api-index` v1 no prueba ausencia; se abre la fuente y se
-  inspeccionan guardas hasta que B8 esté cerrado.
-- Un PBO existente tras exit 0 no es un release PASS sin postconditions y
-  publicación transaccional.
-- dayz-labs no ejecuta `start/stop/restart` sobre runs gobernados por DayZ_MCP.
-- VPP, Expansion, TraderPlus y TraderX son corpus local opcional; no se
-  redistribuyen.
-- `dayz-ui-lab` no depende de py3d; PAA/EDDS permanece interno al lab hasta que
-  exista un segundo consumidor real.
-- Una leaf `.layout` puede omitir su bloque hijo; esa ausencia no es warning ni
-  error.
-- `ButtonWidget.GetText(out string)` devuelve `void`; el valor sale por el
-  parámetro `out`.
-- B20 no se implementa hasta que DayZDiag fije el valor lógico LF/CRLF.
-- MCP no posee semántica UI ni crea una segunda autoridad de lifecycle.
-- Ejecución y revisión por Codex, sin Claude/subagentes, mientras siga vigente
-  la instrucción del usuario.
-- Los cinco intentos fallidos de promoción permanecen como evidencia terminal
-  `ABORT`; no se borran backups ni journals automáticamente.
+- Git es la única fuente editable del pack distribuible.
+- Ningún writer ODOL entra en alcance.
+- Los parsers y validadores fallan cerrados en límites, valores no finitos,
+  índices inválidos y anatomía ambigua.
+- El backend ODOL se invoca aislado y debe coincidir con el manifiesto fijado.
+- Fixtures de terceros no se redistribuyen; las incluidas tienen licencia y
+  procedencia registradas.
+- El wheel py3d deriva de la fuente versionada y el rollout verifica hash,
+  versión, backup y readback.
+- Obsidian conserva evidencia completa; las skills activas son despliegues,
+  no fuentes paralelas.
 
 ## Punteros
 
 - `product-spec.md`
-- `plans/2026-07-24-r21-master-roadmap.md`
-- `plans/2026-07-24-02-dayz-ui-lab.md`
-- `plans/2026-07-24-02-dayz-ui-lab.codex-notes.md`
-- `specs/2026-07-25-dayz-ui-lab.md`
-- `tools/dayz-ui-lab/probe/README.md`
-- `plans/2026-07-24-04-py3d-and-domain-skills.md`
-- `decisions/001-canonical-source-and-baseline.md`
-- `decisions/002-three-surface-promotion.md`
+- `plans/2026-07-25-04a-py3d-proxy-lifecycle.md`
+- `plans/2026-07-25-04b-dayz-animation-formats.md`
+- `plans/2026-07-25-04c-dayz-model-preflight.md`
+- `plans/2026-07-25-04d-dayz-odol-strict.md`
+- `specs/2026-07-25-py3d-proxy-lifecycle.md`
+- `specs/2026-07-25-dayz-animation-formats.md`
+- `specs/2026-07-25-dayz-model-preflight.md`
+- `specs/2026-07-25-dayz-odol-strict.md`
+- `tools/py3d/rollout/README.md`
 
 **Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde:
-Fase 02 slices 1–2 cerrados · B20 espera observación DayZDiag autorizada`.
+Fase 04 F1–F5 cerrada · rollout operativo pendiente de autorización`.
 <!-- LIVE-STATE:END -->
 
 ---
 
 ## Log histórico
 
+### 2026-07-25 — Fase 04 py3d y validación 3D
+
+- Se implementaron y verificaron los cuatro workstreams aprobados.
+- Se distribuyen todas las piezas legalmente redistribuibles desde el pack.
+- El backend externo ODOL queda excluido por diseño; se fija por hash y se
+  prueba desde su checkout local.
+- La revisión independiente añadió límites estrictos para float32, números
+  enormes, normales de proxy, rutas NUL, mapeos winding ambiguos y fallos I/O
+  al preparar el payload temporal del backend.
+- El rollout se probó solo sobre copias desechables.
+
 ### 2026-07-25 — Fase 02 slices 1–2
 
-- Se aprobaron e incorporaron las cuatro enmiendas UI/MCP.
-- B19 cerró por RED→GREEN y corpus; `strict_child_blocks` fue retirado.
-- Se añadió `LF_UIProbe` con staging LF/CRLF reproducible y sin expectativa B20.
-- El commit de contenido es `9cb9b9c70208b037de457715482d70c24b19a5b9`.
-- B20 quedó bloqueado honestamente por MCP `unauthorized`; no hubo bypass.
-- El follow-up read-only confirmó daemon sano y aisló el bloqueo en la clave
-  cacheada por el cliente MCP de este task tras una rotación del keyfile.
+- B19 cerró por RED→GREEN y corpus.
+- Se añadió `LF_UIProbe` con staging LF/CRLF reproducible.
+- B20 quedó bloqueado honestamente por un cliente MCP con clave cacheada
+  obsoleta; no hubo bypass.
 
 ### 2026-07-24 — Prior art aprobado y promovido
 
-- Se aprobaron únicamente tres deltas: API index v2 no bloqueante, build/release
-  transaccional y dayz-labs como companion sin lifecycle authority.
+- Se aprobaron tres deltas: API index v2 no bloqueante, build/release
+  transaccional y dayz-labs como companion sin autoridad de lifecycle.
 - El commit `13af7f8b59962bca6fded981ad75cd77a37616ef` superó el gate integral.
-- La transacción `51a7024ef9a5e333e5fab7b8` promovió ese commit a Obsidian y
-  skills activas con readback completo y cero residuos.
 
 ### 2026-07-24 — Fase 01 cerrada
 
 - Se cerraron A1–A9 y B1–B5 con gate reproducible y source map completo.
 - La transacción `c7b5366cc761a8038e52f6a2` promovió el commit de contenido
   `7a25432febc112a957a7c1ef7a7d2c16c221b24f` a las tres superficies.
-- Cinco intentos previos fallaron cerrados y terminaron en `ABORT`; sus
-  hallazgos quedaron convertidos en regresiones del motor de promoción.
 
 ### 2026-07-24 — Bootstrap
 
 - Se fijó el ZIP previo por SHA-256.
 - Se extrajeron y verificaron 138 archivos sin diferencias.
 - Se inicializó Git y se creó el commit raíz exacto.
-- Se midió el baseline antes de planificar.

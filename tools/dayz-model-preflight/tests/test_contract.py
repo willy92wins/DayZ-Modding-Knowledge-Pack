@@ -117,8 +117,20 @@ def test_load_contract_normalizes_scalar_tolerance_and_resolves_source(
             "PREFLIGHT_CONTRACT_INVALID",
         ),
         (
+            lambda value: value["scale"]["expected_dimensions_m"].__setitem__(
+                0, 10 ** 1000
+            ),
+            "PREFLIGHT_CONTRACT_INVALID",
+        ),
+        (
             lambda value: value["winding"]["transform"][0].__setitem__(
                 0, math.inf
+            ),
+            "PREFLIGHT_WINDING_TRANSFORM_INVALID",
+        ),
+        (
+            lambda value: value["winding"]["transform"][0].__setitem__(
+                0, 10 ** 1000
             ),
             "PREFLIGHT_WINDING_TRANSFORM_INVALID",
         ),

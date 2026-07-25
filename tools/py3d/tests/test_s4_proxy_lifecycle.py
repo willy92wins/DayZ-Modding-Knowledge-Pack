@@ -137,6 +137,7 @@ def test_proxy_frame_conversion_uses_involutive_dayz_correction(fork):
         ((1.0, 0.25, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
         ((-1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
         ((math.nan, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+        ((10 ** 1000, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
     ],
 )
 def test_canonical_proxy_triangle_rejects_invalid_rotation(fork, rotation):
@@ -145,7 +146,9 @@ def test_canonical_proxy_triangle_rejects_invalid_rotation(fork, rotation):
         fork.canonical_proxy_triangle((0.0, 0.0, 0.0), rotation=rotation)
 
 
-@pytest.mark.parametrize("scale", [0.0, -0.001, math.nan, math.inf, 1e-50])
+@pytest.mark.parametrize(
+    "scale", [0.0, -0.001, math.nan, math.inf, 1e-50, 10 ** 1000]
+)
 def test_canonical_proxy_triangle_rejects_invalid_or_f32_degenerate_scale(
     fork, scale
 ):
@@ -483,6 +486,8 @@ def test_align_proxy_rejects_shared_anatomy_atomically(fork, sharing):
         ("not-a-proxy", (0.0, 0.0, 0.0), IDENTITY, 0.001,
          "raw", "name"),
         ("proxy:\\lf\\align.001", (math.nan, 0.0, 0.0), IDENTITY, 0.001,
+         "raw", "anchor"),
+        ("proxy:\\lf\\align.001", (10 ** 1000, 0.0, 0.0), IDENTITY, 0.001,
          "raw", "anchor"),
         ("proxy:\\lf\\align.001", (0.0, 0.0, 0.0), IDENTITY, 0.0,
          "raw", "scale"),

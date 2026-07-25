@@ -184,3 +184,30 @@ def test_invalid_preflight_never_reaches_manifest_or_worker(
         inspect_odol(source, tmp_path)
     assert raised.value.code == "ODOL_SIGNATURE_MISSING"
     assert calls == []
+
+
+def test_temporary_payload_staging_failure_is_backend_failure(
+    tmp_path, monkeypatch
+):
+    """Rompe si un fallo I/O temporal escapa como traceback no contractual."""
+    source = tmp_path / "input.p3d"
+    source.write_bytes(b"synthetic input")
+    monkeypatch.setattr(
+        "dayz_odol_strict.inspect.preflight_odol_bytes",
+        lambda _data: _preflight(),
+    )
+    monkeypatch.setattr(
+        "dayz_odol_strict.inspect.verify_backend_manifest",
+        lambda *_args, **_kwargs: _backend(),
+    )
+    original_write_bytes = Path.write_bytes
+
+    def fail_payload_write(path, data):
+        if path.name == "payload.p3d":
+            raise OSError("synthetic staging failure")
+        return original_write_bytes(path, data)
+
+    monkeypatch.setattr(Path, "write_bytes", fail_payload_write)
+    with pytest.raises(OdolStrictError) as raised:
+        inspect_odol(source, tmp_path)
+    assert raised.value.code == "ODOL_BACKEND_FAILURE"

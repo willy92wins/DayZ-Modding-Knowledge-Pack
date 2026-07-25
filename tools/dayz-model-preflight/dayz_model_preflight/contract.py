@@ -225,7 +225,10 @@ def _index(value, label):
 def _number(value, label, positive=False):
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         _invalid("%s must be a finite number" % label)
-    result = float(value)
+    try:
+        result = float(value)
+    except OverflowError:
+        _invalid("%s must be a finite number" % label)
     if not math.isfinite(result) or (positive and result <= 0.0):
         _invalid(
             "%s must be a %sfinite number"
@@ -258,13 +261,24 @@ def _matrix(value):
         normalized_row = []
         for component in row:
             if isinstance(component, bool) or \
-                    not isinstance(component, (int, float)) or \
-                    not math.isfinite(float(component)):
+                    not isinstance(component, (int, float)):
                 raise PreflightError(
                     "PREFLIGHT_WINDING_TRANSFORM_INVALID",
                     "winding.transform must contain finite numbers",
                 )
-            normalized_row.append(float(component))
+            try:
+                normalized_component = float(component)
+            except OverflowError:
+                raise PreflightError(
+                    "PREFLIGHT_WINDING_TRANSFORM_INVALID",
+                    "winding.transform must contain finite numbers",
+                )
+            if not math.isfinite(normalized_component):
+                raise PreflightError(
+                    "PREFLIGHT_WINDING_TRANSFORM_INVALID",
+                    "winding.transform must contain finite numbers",
+                )
+            normalized_row.append(normalized_component)
         matrix.append(normalized_row)
     if any(
         abs(actual - expected) > 1e-12

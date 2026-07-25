@@ -194,7 +194,7 @@ def _mat_mul3(a, b):
 def _validate_proxy_rotation(rotation):
     try:
         rows = tuple(tuple(float(value) for value in row) for row in rotation)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         raise ValueError("proxy rotation must be a finite 3x3 matrix")
     if len(rows) != 3 or any(len(row) != 3 for row in rows):
         raise ValueError("proxy rotation must be a finite 3x3 matrix")
@@ -235,7 +235,7 @@ def proxy_frame_from_engine(rotation):
 def _validate_proxy_anchor(anchor):
     try:
         values = tuple(float(value) for value in anchor)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         raise ValueError("proxy anchor must contain three finite numbers")
     if len(values) != 3 or any(not math.isfinite(value) for value in values):
         raise ValueError("proxy anchor must contain three finite numbers")
@@ -247,7 +247,7 @@ def _validate_proxy_scale(scale):
         raise ValueError("proxy scale must be finite and greater than zero")
     try:
         value = float(scale)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         raise ValueError("proxy scale must be finite and greater than zero")
     if not math.isfinite(value) or value <= 0.0:
         raise ValueError("proxy scale must be finite and greater than zero")
@@ -1765,7 +1765,7 @@ class LOD:
                 tuple(float(value) for value in point.coords)
                 for point in face_points
             ]
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, OverflowError):
             raise ValueError(
                 "proxy %r: selected points must have finite 3D coordinates"
                 % name
@@ -1792,7 +1792,7 @@ class LOD:
             normal = tuple(
                 float(value) for value in self.facenormals[normal_index]
             )
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, OverflowError):
             raise ValueError(
                 "proxy %r: selected face normal must be a finite 3D vector"
                 % name

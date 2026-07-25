@@ -187,10 +187,18 @@ def inspect_odol(path, backend_root, backend_manifest=None):
         else Path(backend_manifest)
     )
     backend = verify_backend_manifest(backend_root, manifest_path)
-    with tempfile.TemporaryDirectory(prefix="dayz-odol-strict-") as directory:
-        payload_path = Path(directory) / "payload.p3d"
-        payload_path.write_bytes(preflight["payload"])
-        worker_result = invoke_worker(payload_path, backend)
+    try:
+        with tempfile.TemporaryDirectory(
+            prefix="dayz-odol-strict-"
+        ) as directory:
+            payload_path = Path(directory) / "payload.p3d"
+            payload_path.write_bytes(preflight["payload"])
+            worker_result = invoke_worker(payload_path, backend)
+    except OSError:
+        raise OdolStrictError(
+            "ODOL_BACKEND_FAILURE",
+            "temporary backend payload staging failed",
+        )
     return build_strict_summary(preflight, worker_result, backend)
 
 
