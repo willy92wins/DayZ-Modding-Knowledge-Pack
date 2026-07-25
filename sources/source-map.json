@@ -141,17 +141,17 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Administrative handoff records the verified Phase 02 plan review, pending amendments and the accepted py3d boundary.",
+          "decision_evidence": "Administrative handoff records Phase 02 slices 1-2, B19 GREEN, the staged B20 probe and the authorized-engine blocker.",
           "license": "MIT",
-          "source_hash": "07b2e1ea911c8eb13d1f4e015e5d115200d794568297ea406d7f29b55777db06",
+          "source_hash": "edb540df184ad7d0277f49a149ef9b1bd7936dcb83a82879ad76ad8b63995e13",
           "source_id": "pack-r21-authored",
           "source_path": "HANDOFF.md",
-          "source_revision": "r21-phase02-plan-review@2026-07-24",
+          "source_revision": "r21-phase02-b19@2026-07-25",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "07b2e1ea911c8eb13d1f4e015e5d115200d794568297ea406d7f29b55777db06",
+      "output_hash": "edb540df184ad7d0277f49a149ef9b1bd7936dcb83a82879ad76ad8b63995e13",
       "output_path": "HANDOFF.md",
       "routing_artifact_id": "root/handoff",
       "verification_level": "cross_checked"
