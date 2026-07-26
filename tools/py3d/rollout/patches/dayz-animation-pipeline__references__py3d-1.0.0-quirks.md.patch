@@ -1,41 +1,12 @@
 --- a/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md
 +++ b/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md
-@@ -1,3 +1,34 @@
+@@ -1,4 +1,4 @@
+-# py3d 1.0.0 quirks — HISTORICO (superado por el fork DayZ >= 1.2.0)
 +# py3d 1.0.0 quirks — HISTORICO (superado por el fork DayZ >= 1.4.0)
-+
-+> **Estado 2026-06-06 (rollout py3d-fork S2):** este documento queda como
-+> HISTORICO. La verificacion R22 (plan py3d-fork, R22-P1-01) demostro que
-+> varios de estos "quirks" describian APIs de WRAPPERS de proyecto
-+> (`set_face_weight`, `add_memory_point`, `lod.materials`), NO la superficie
-+> real de upstream 1.0.0. El **fork DayZ de py3d (>= 1.2.0, wheel vendorizada
-+> por skill)** resuelve o supera cada caso:
-+>
-+> | Quirk historico | En el fork |
-+> |---|---|
-+> | 1 `Selection()` sin args | TypeError accionable; usar `lod.new_selection(name)` o `lod.set_selection(name, ...)` (F1-01/F2-04) |
-+> | 2 weights int vs float | guard en write: int-like coercionado, invalido -> `ValueError` temprano con nombre de la selection (F1-02) |
-+> | 3 materiales lowercase | `lod.faces_by_material()` / `faces_for_material()` case-insensitive (F1-03) |
-+> | 4 memory points duplicados | `lod.set_memory_point(name, xyz)` upsert idempotente, NUNCA duplica (F1-04) |
-+> | 5 rebind tras crecer el LOD | invariantes de membership en write: stale/foreign -> raise; ademas `P3D.save(verify=True)` re-lee y verifica (F1-05/F1-08) |
-+>
-+> Validacion integral: `python -m py3d validate modelo.p3d` o
-+> `P3D.validate()` (v1.2.0). El texto original se conserva abajo para
-+> contexto de sesiones antiguas (LFQuad D30, LL-055/056).
-+
-+> **Estado 2026-07-25 (r21 F2/F3):** para formatos de animación nuevos, usar
-+> el paquete estricto `tools/dayz-animation-formats/` del Knowledge Pack, no
-+> ampliar `scripts/seanim_writer.py`. Soporta SEAnim v1 completo y RTM
-+> `RTM_0101` con `RTM_MDAT` opcional, con lectores/escritores puros y CLI
-+> determinista. `.anm`/BMTR siguen fuera de alcance. Antes de exportar un MLOD
-+> transformado/importado, `tools/dayz-model-preflight/` compone py3d >=1.4.0
-+> con contrato explícito de escala, huesos y linaje/winding.
-+
-+---
-+
- # py3d 1.0.0 quirks for in-sandbox `.p3d` updates (sandbox-deliverable)
  
- The animation-pipeline ships scripts that touch `.p3d` files in-sandbox via
-@@ -173,8 +204,8 @@
+ > **Estado 2026-06-06 (rollout py3d-fork S2):** este documento queda como
+ > HISTORICO. La verificacion R22 (plan py3d-fork, R22-P1-01) demostro que
+@@ -196,8 +196,8 @@ JSON against either frame produces mirrored output for one of them.
  
  After any py3d-based `.p3d` write:
  

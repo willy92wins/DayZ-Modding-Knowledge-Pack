@@ -1,136 +1,108 @@
-# Rollout py3d fork DayZ a las 8 skills (D2=B) — wheel vigente: **1.4.0** (r21)
+# Rollout py3d 1.4.0 — patch-only con preimagen fijada
 
-> Generado: 2026-06-06 · Actualizado: 2026-07-25
-> · Plan r21: `plans/2026-07-25-04a-py3d-proxy-lifecycle.md`
-> · Plan original: `LF_RollingStone_dev/plans/2026-06-06-py3d-fork.md`
-> §SESIÓN 2 Paso 3 · GATE-D2 resuelto en S1C → **D2=B: wheel vendorizada por skill**
-> (try-path: 1º `wheels/` de la skill, 2º `_tools/py3d/dist/` si está montada).
-> Las skills son read-only en sesión Cowork: este paquete se aplica EDITANDO el
-> source de las skills fuera de sesión (Settings > Capabilities, o el repo origen).
+> Estado: preparado, no autorizado para una raíz real.
+> Preimagen: `reports/live-snapshot-2026-07-26/MANIFEST.sha256`.
+> Distribución: wheel vendorizado por skill; esta decisión no se modifica aquí.
 
-## Contenido
+Este directorio contiene una operación fail-closed. No hay proyecciones completas ni una ruta que copie archivos de conocimiento encima de las skills vivas. Cada cambio de texto se hace con un patch unificado, precedido por `git apply --check`; la idempotencia se reconoce con `git apply --reverse --check`.
 
-- `patches/*.patch` — 11 diffs unificados (`git apply --check` desde el dir
-  `skills/`); 10 tienen también proyección completa y
-  `dayz-animation-pipeline/SKILL.md` se aplica solo como patch acumulativo.
-- `patched/<skill>/...` — los 10 archivos YA parcheados (alternativa: copiar encima).
-- `audit_p3d.py` — reemplazo completo de `dayz-p3d-audit/scripts/audit_p3d.py`
-  (delegado en `P3D.validate()` v1.2.0; ids LOD normalizados DayZ; GeoPhys y
-  centroide absoluto retirados — F2-12/D8).
-- La wheel a vendorizar vive en `../dist/` — vigente
-  `py3d-1.4.0-py3-none-any.whl`. `wheel-manifest.json` v2 fija nombre,
-  versión, SHA-256, `SOURCE_DATE_EPOCH` y toolchain (`python_version` más
-  `build_requires`); `apply-s2-rollout.ps1` no contiene hashes duplicados.
+## Artefactos vigentes
 
-## Aplicación
+- `apply-s2-rollout.ps1`: preflight, backup externo, aplicación de patches y copia fijada del wheel.
+- `preimage-manifest.json`: 11 rutas con SHA-256 de la preimagen viva. Diez son los destinos históricos de `$PatchedFiles`; `dayz-animation-pipeline/SKILL.md` es el patch acumulativo adicional que ya aplicaba limpio.
+- `patches/`: cuatro patches atribuibles a py3d 1.4.0.
+- `wheel-manifest.json`: identidad v2 del wheel, incluida su versión y SHA-256.
+- `patched/`: eliminado deliberadamente. Restaurarlo reabriría la ruta de reemplazo completo que causó BUG-018/BUG-019.
 
-La raíz destino es obligatoria; el script nunca descubre ni modifica una
-instalación implícita:
+## Clasificación por destino
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\apply-s2-rollout.ps1 `
-  -TargetSkillRoot <skills-root> -NoWrite
-
-# Solo tras revisar el plan anterior:
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\apply-s2-rollout.ps1 `
-  -TargetSkillRoot <skills-root>
-```
-
-El rollout valida antes el wheel/manifiesto/versiones, conserva backup de
-cualquier archivo o wheel reemplazado y relee cada copia por SHA-256. Una
-segunda pasada `-NoWrite` debe terminar con `planned changes: 0`.
-
-Para verificar el build reproducible contra la identidad rastreada:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\build-wheel.ps1 -Python <python-3.10-or-newer>
-```
-
-Ese gate construye dos veces, falla si los SHA-256 difieren entre sí y también
-falla si el wheel reproducible no coincide con la identidad fijada. No publica
-nada en `../dist/` ni modifica el manifiesto sin autorización explícita.
-Re-sellar deliberadamente la identidad y publicar el wheel exige
-`-UpdateManifest`:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\build-wheel.ps1 -Python <python-3.10-or-newer> -UpdateManifest
-```
-
-| Skill | Archivos | Cambio |
+| Destino | Estado | Evidencia / delta conservado |
 |---|---|---|
-| dayz-model-pipeline | SKILL.md · references/py3d-direct-generation.md | install line → wheel D2=B + nota fork |
-| dayz-3d-viewer | SKILL.md | install (x2 sitios) |
-| dayz-p3d-inspector | SKILL.md | install |
-| dayz-p3d-debinarizer | SKILL.md | install + tabla deps |
-| dayz-p3d-audit | scripts/audit_p3d.py (REEMPLAZO) · SKILL.md | delegación validate() + fix API confabulada `py3d.read_p3d` (:543) |
-| dayz-pbo-build | references/validation-scripts.md | 6× `pip install py3d` (bug PyPI) + casing `P3d`→`P3D` (:705, R22-P3-02) |
-| dayz-proxy-align | SKILL.md | install |
-| dayz-animation-pipeline | SKILL.md (patch-only) · references/py3d-1.0.0-quirks.md | lector/escritor RTM/SEAnim estricto + límites BMTR/ANM; banner histórico y API real |
+| `dayz-model-pipeline/SKILL.md` | `patched` | Eleva el mínimo y la aserción de py3d a 1.4.0; conserva literal el winding condicional y el resto del vivo. |
+| `dayz-model-pipeline/references/py3d-direct-generation.md` | `not_applicable` | La proyección no contiene delta nuevo de 1.4.0; reemplazarla eliminaría el winding condicional y resoluciones LOD DayZ-canónicas. |
+| `dayz-3d-viewer/SKILL.md` | `not_applicable` | No contiene API nueva de 1.4.0; sus diferencias son divergencia destructiva respecto al vivo. |
+| `dayz-p3d-inspector/SKILL.md` | `not_applicable` | No hay delta separable de 1.4.0; se preserva SP-028. |
+| `dayz-p3d-debinarizer/SKILL.md` | `not_applicable` | No hay delta separable de 1.4.0; se preserva SP-034. |
+| `dayz-p3d-audit/SKILL.md` | `not_applicable` | No aporta 1.4.0; se preservan SP-017, SP-051 y los 13 Silent Killers. |
+| `dayz-p3d-audit/scripts/audit_p3d.py` | `not_applicable` | La proyección es un subconjunto estricto del vivo: 7 de 15 funciones; se preservan las 15, incluido `check_wheel_slot_firegeo`. |
+| `dayz-pbo-build/references/validation-scripts.md` | `not_applicable` | No contiene delta de 1.4.0; los cambios proyectados pertenecen a otro alcance. |
+| `dayz-proxy-align/SKILL.md` | `patched` | Eleva el mínimo a 1.4.0 y añade el ciclo `add / inspect / align / remove`; conserva proxies pure-geometry y el frame P'. |
+| `dayz-animation-pipeline/references/py3d-1.0.0-quirks.md` | `patched` | Eleva el mínimo y sustituye la API inexistente `py3d.read_p3d` por `py3d.P3D(open(...))`. |
+| `dayz-animation-pipeline/SKILL.md` | `patched` | Patch acumulativo ya validado contra la preimagen viva; no tiene proyección completa. |
 
-## Verificación realizada en S2 (2026-06-06, sandbox)
+Los siete `not_applicable` siguen en el manifiesto: aunque no se escriben, su hash se comprueba para detectar drift de la preimagen. No se fabrica un patch vacío.
 
-- 10/10 patches aplican limpio (`patch -p1 --dry-run` + apply real sobre copia).
-- Audit parcheado: ALL PASSED sobre fixture sano; paridad VAL-AUDIT 19 negativos
-  (ver `tests/test_s2_validate12.py` y evidencia S2).
-- Gates INTEG-INSPECTOR / INTEG-AUDIT (pre-migración) / INTEG-VIEWER /
-  RECIPE-COMPAT con scripts SIN modificar: PASS (`tests/test_s2_integ.py`).
+## Preflight y aplicación
 
-## Post-migración (fuera de este paquete — R20, no silencioso)
+Los dos parámetros de raíz son obligatorios. `-BackupRoot` debe quedar fuera de `-TargetSkillRoot`; se rechaza tanto una ruta igual como una contenida en el destino.
 
-- Retirar de las skills los workarounds inline ya cubiertos por el fork
-  (mapas resolución→LOD duplicados, checks de winding por centroide).
-- Bug-ledger: cerrar "casing P3d en pbo-build" (R22-P3-02) al aplicar.
+Prueba permitida en esta fase, únicamente contra una copia temporal del snapshot:
 
-## APPLIED (2026-06-07)
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File .\apply-s2-rollout.ps1 `
+  -TargetSkillRoot <temporary-snapshot-copy> `
+  -BackupRoot <external-temporary-backup-root> `
+  -NoWrite
+```
 
-- Root canónico real del plugin (app Store-virtualizada:
-  `%LOCALAPPDATA%\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\…\skills`):
-  10/10 archivos byte-exactos vs `patched/` + wheel vendorizada en las 8 skills
-  (sha `f44b6171…`). Verificación R26 host: PASS.
-- `.agents\skills` (Codex): NO eran copias — junctions al path virtualizado,
-  rotas para host desde la migración 2026-06-05; re-apuntadas las 14 al
-  LocalCache real con `fix-junctions.ps1` (smoke 8/8). Si la app se reinstala
-  (cambia package-id), re-correr ese script.
-- `~\.claude\skills`: sin copias de las 8 (`_retired_2026-06-05`).
-- `P:\py3d`: clon del bundle, HEAD `3c45373` (D1 cerrado).
-- Hallazgo fuera del paquete → BUG-020 (`py3d.read_p3d` ×2 en
-  dayz-animation-pipeline) para la sesión de limpieza.
-- Las 8 skills re-empaquetadas como `.skill` (estado parcheado + wheel) y
-  entregadas para sobrescritura vía Settings > Capabilities.
-- Scripts de esta aplicación: `apply-s2-rollout.ps1` (v2, idempotente) +
-  `fix-junctions.ps1`. Detalle: bug-ledger DayZ_Tooling (BUG-001/018/019/020) y
-  handoff `30_Sessions/2026-06-07-DayZ_Tooling-py3d-rollout.md`.
+Una ejecución de escritura usa los mismos parámetros sin `-NoWrite`, pero requiere autorización expresa del usuario y una raíz aprobada:
 
-## UPDATE S3 (2026-06-07) — wheel 1.3.0
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File .\apply-s2-rollout.ps1 `
+  -TargetSkillRoot <authorized-skill-root> `
+  -BackupRoot <external-backup-root>
+```
 
-- Fork 1.3.0 (plan `plans/2026-06-07-py3d-fork-s3.md`): F3-01 `ERR_MASS_ONLY_GEOMETRY`
-  (BUG-021, LL-080), F3-02 `P3D.transform()` det-aware + `BLENDER_TO_DAYZ`,
-  F3-03 `LOD.make_double_sided()`.
-- Los 10 patches S2 NO cambian (piden fork `>= 1.2.0`; 1.3.0 los satisface).
-  El audit parcheado emite el código nuevo automáticamente (delega en `validate()`).
-- `apply-s2-rollout.ps1` v3: `$WHEEL`/`$WHEEL_SHA` → 1.3.0; check de `P:\py3d`
-  HEAD dinámico contra el bundle (el hash hardcodeado driftaba por release).
-  Re-correr EN HOST (idempotente) para re-vendorizar las 8 skills.
-- `fix-junctions.ps1`: smoke de wheel version-agnostic (`py3d-*.whl`).
-- Los .ps1 quedan COMMITEADOS en el repo desde S3 (R22-P2-01: antes solo
-  existían en `_tools/`, divergencia repo↔working-tree).
+Por cada destino textual, el preflight produce una de estas decisiones:
 
-## UPDATE r21 (2026-07-25) — wheel 1.4.0
+- `[PLAN] patch`: hash de preimagen exacto y `git apply --check` verde.
+- `[OK] already applied`: `git apply --reverse --check` verde; no se escribe.
+- `[OK] not applicable`: hash vivo exacto y ninguna escritura prevista.
+- `[FAIL] preimage mismatch`: incluye path, SHA-256 esperado y observado; la operación completa aborta.
 
-- Ciclo de vida de proxies completo y fail-closed:
-  `add_proxy(..., space=...)`, `get_proxies(strict=True)`, `align_proxy()` y
-  `remove_proxy()`, con espacios raw/engine explícitos y compatibilidad del
-  default histórico.
-- Nueva distribución reproducible: dos builds con epoch fijo, manifiesto
-  rastreado y SHA-256 único. El wheel sigue ignorado; la fuente de verdad es
-  `tools/py3d/`.
-- Rollout v4: raíz destino explícita, modo `-NoWrite`, backups, readback,
-  aplicación patch-only y ausencia total de rutas privadas codificadas.
-- Proyecciones nuevas para el gate de pre-export MLOD, inspección ODOL estricta
-  frente a recuperación, RTM/SEAnim estricto y lifecycle de proxies 1.4.0.
-- Gate de señuelo verificado: 19 cambios planeados, 19 aplicados y segunda
-  pasada idempotente con `planned changes: 0`.
+Cualquier fallo de preflight impide crear backups o modificar destinos. Antes del primer cambio, todos los archivos que se van a parchear se copian al backup externo y se releen por SHA-256. Tras ese I/O se repite el control de preimagen para cerrar la ventana de cambio concurrente.
+## Wheel vendorizado
+
+El mecanismo sigue siendo una copia vendorizada en `wheels/` de las ocho skills consumidoras. El aplicador solo endurece tres propiedades:
+
+1. los backups de wheels viven bajo `-BackupRoot`, fuera de las skills;
+2. cada copia con el nombre fijado debe coincidir con el SHA-256 de `wheel-manifest.json`, o se aborta sin sobrescribirla;
+3. ningún `py3d-*.whl` obsoleto se elimina hasta que su backup exista y su hash haya sido verificado.
+
+Si hace falta instalar o sustituir un wheel, también se exige que `../dist/<filename fijado>` exista y tenga el hash del manifiesto. No hay fallback a `pip`, venv ni una instalación centralizada.
+
+### Gate de identidad actualmente bloqueado
+
+`tools/py3d/dist/` está vacío. `build-wheel.ps1` construye dos veces de forma reproducible, pero el artefacto resultante no coincide con la identidad histórica fijada antes de que existiera `tools/py3d/pyproject.toml`; por diseño aborta y no publica en `dist/`.
+
+No se debe ejecutar `-UpdateManifest` ni editar `wheel-manifest.json` para sortearlo. Re-sellar la identidad es una decisión explícita del usuario. Hasta entonces, una copia temporal del snapshot sin wheels puede validar todos los destinos textuales, pero el preflight global terminará bloqueado cuando detecte que necesita un wheel fuente ausente.
+
+## Comprobaciones de mantenimiento
+
+Desde la raíz del repositorio:
+
+```powershell
+python -m pytest -q
+python -m pytest -q tests\py3d_rollout\test_apply_rollout.py
+python -m packctl validate --root . --report .\reports\validate-sesion2.json
+```
+
+Para inspeccionar el gate reproducible sin re-sellar:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File tools\py3d\build-wheel.ps1 `
+  -Python <python-3.10-or-newer>
+```
+
+El fallo esperado debe mostrar `expected=<sha256 fijado>` y `actual=<sha256 reproducible>`, dejar `dist/` vacío y no modificar el manifiesto.
+
+## Restricciones operativas
+
+- Nunca ejecutar este paquete contra una raíz real sin autorización explícita.
+- Nunca usar el snapshot como destino; siempre copiarlo a un temporal.
+- Nunca ubicar el backup dentro de la raíz de skills.
+- Un drift de preimagen o wheel es un bloqueo, no una invitación a sobrescribir.
+- `packctl` y cualquier rediseño de instalación quedan fuera de este rollout.

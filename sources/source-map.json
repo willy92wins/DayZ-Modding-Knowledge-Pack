@@ -6149,7 +6149,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "23d0e4325e81e96cbdaf739c6a890a67e037bde4477d9a2db849966cf89860c8",
+      "output_hash": "e68d8b2325477129c3f28d54d9e2a63cf6145ee99b215c9551ce903029c8db1d",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -6186,6 +6186,29 @@
       "output_path": "tests/packctl/test_validation.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/py3d_rollout/test_apply_rollout.py",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed patch-only rollout bytes implement the user-approved BUG-018/BUG-019 remediation against the fixed live preimage.",
+          "license": "MIT",
+          "source_hash": "459379d5c38ea6b0e63615f4ded96bafcf9915db0a0773d4c006fe3688a7502e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/py3d_rollout/test_apply_rollout.py",
+          "source_revision": "r21-patch-only@2026-07-26",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "459379d5c38ea6b0e63615f4ded96bafcf9915db0a0773d4c006fe3688a7502e",
+      "output_path": "tests/py3d_rollout/test_apply_rollout.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload."
     },
     {
       "artifact_id": "file/tools/dayz-animation-formats/readme.md",
@@ -8215,10 +8238,20 @@
           "source_path": "tools/py3d/rollout/README.md",
           "source_revision": "r21-wheel-gate@2026-07-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed patch-only rollout bytes implement the user-approved BUG-018/BUG-019 remediation against the fixed live preimage.",
+          "license": "MIT",
+          "source_hash": "3145a8705c7eac0f18011ea96e0f3ca19ca50fdfc99c0ab1370038c2f8954351",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/README.md",
+          "source_revision": "r21-patch-only@2026-07-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f02c984735c4f418945fb2b597df29845afe243df1528eca1b88a2da27f2dfa4",
+      "output_hash": "3145a8705c7eac0f18011ea96e0f3ca19ca50fdfc99c0ab1370038c2f8954351",
       "output_path": "tools/py3d/rollout/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -8287,10 +8320,20 @@
           "source_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
           "source_revision": "r21-wheel-gate@2026-07-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed patch-only rollout bytes implement the user-approved BUG-018/BUG-019 remediation against the fixed live preimage.",
+          "license": "MIT",
+          "source_hash": "d9c764f6c836675b7971614f77fc6bfaf8f1c062ad5966c4bd986a876f06d37d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
+          "source_revision": "r21-patch-only@2026-07-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "fbe62cc959ef42239227feadb7ef3e3966aec2572f8d161c72fd034549c7783c",
+      "output_hash": "835064afd109e8fc718da180b3405ed5d252052d6318a0e1b27fa3ab804df97f",
       "output_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -8432,628 +8475,6 @@
       "verification_level": "offline_tested"
     },
     {
-      "artifact_id": "file/tools/py3d/rollout/patched/dayz-3d-viewer/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "4549081d0082cb0eb6425b1b3a021efd4033d8b0c9809cacee4435638c8b7e73",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patched/dayz-3d-viewer/SKILL.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "4549081d0082cb0eb6425b1b3a021efd4033d8b0c9809cacee4435638c8b7e73",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-3d-viewer/SKILL.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "4549081d0082cb0eb6425b1b3a021efd4033d8b0c9809cacee4435638c8b7e73",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patched/dayz-3d-viewer/SKILL.md",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "4549081d0082cb0eb6425b1b3a021efd4033d8b0c9809cacee4435638c8b7e73",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patched/dayz-3d-viewer/SKILL.md",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "4549081d0082cb0eb6425b1b3a021efd4033d8b0c9809cacee4435638c8b7e73",
-      "output_path": "tools/py3d/rollout/patched/dayz-3d-viewer/SKILL.md",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patched/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "2fef10faedb1416c692d882ef2955e4269cb2b632113cf8ef5e4e462abc01506",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patched/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "2fef10faedb1416c692d882ef2955e4269cb2b632113cf8ef5e4e462abc01506",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "2fef10faedb1416c692d882ef2955e4269cb2b632113cf8ef5e4e462abc01506",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patched/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "2fef10faedb1416c692d882ef2955e4269cb2b632113cf8ef5e4e462abc01506",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patched/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "d805a1599a78f2d68344c5055bde115ed59071a901b57d8693134735b2416c02",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "d805a1599a78f2d68344c5055bde115ed59071a901b57d8693134735b2416c02",
-      "output_path": "tools/py3d/rollout/patched/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patched/dayz-model-pipeline/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "dfdff6871a89e2f1cc0f8ddc0c54506f5f804561a63d1bebea90d875cdc8ab4a",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patched/dayz-model-pipeline/SKILL.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "dfdff6871a89e2f1cc0f8ddc0c54506f5f804561a63d1bebea90d875cdc8ab4a",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-model-pipeline/SKILL.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "dfdff6871a89e2f1cc0f8ddc0c54506f5f804561a63d1bebea90d875cdc8ab4a",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patched/dayz-model-pipeline/SKILL.md",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "dfdff6871a89e2f1cc0f8ddc0c54506f5f804561a63d1bebea90d875cdc8ab4a",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patched/dayz-model-pipeline/SKILL.md",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "09475f805d91679483351fe49f42fb01e44b3c769ff58a521f4fd1c8a2a801ad",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-model-pipeline/SKILL.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "09475f805d91679483351fe49f42fb01e44b3c769ff58a521f4fd1c8a2a801ad",
-      "output_path": "tools/py3d/rollout/patched/dayz-model-pipeline/SKILL.md",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patched/dayz-model-pipeline/references/py3d-direct-generation.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "dbbe5caf186bdd4416b8c14e23ff86e5c41af9c3c0a5ca3036ae2f4fdc4598eb",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patched/dayz-model-pipeline/references/py3d-direct-generation.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "dbbe5caf186bdd4416b8c14e23ff86e5c41af9c3c0a5ca3036ae2f4fdc4598eb",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-model-pipeline/references/py3d-direct-generation.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "dbbe5caf186bdd4416b8c14e23ff86e5c41af9c3c0a5ca3036ae2f4fdc4598eb",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patched/dayz-model-pipeline/references/py3d-direct-generation.md",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "dbbe5caf186bdd4416b8c14e23ff86e5c41af9c3c0a5ca3036ae2f4fdc4598eb",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patched/dayz-model-pipeline/references/py3d-direct-generation.md",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "dbbe5caf186bdd4416b8c14e23ff86e5c41af9c3c0a5ca3036ae2f4fdc4598eb",
-      "output_path": "tools/py3d/rollout/patched/dayz-model-pipeline/references/py3d-direct-generation.md",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patched/dayz-p3d-audit/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "2849251a700a4e1e71c8bcb84298e0b478f0881c28cb205dee35f6d520d6a968",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patched/dayz-p3d-audit/SKILL.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "2849251a700a4e1e71c8bcb84298e0b478f0881c28cb205dee35f6d520d6a968",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-p3d-audit/SKILL.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "2849251a700a4e1e71c8bcb84298e0b478f0881c28cb205dee35f6d520d6a968",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patched/dayz-p3d-audit/SKILL.md",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "2849251a700a4e1e71c8bcb84298e0b478f0881c28cb205dee35f6d520d6a968",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patched/dayz-p3d-audit/SKILL.md",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "2849251a700a4e1e71c8bcb84298e0b478f0881c28cb205dee35f6d520d6a968",
-      "output_path": "tools/py3d/rollout/patched/dayz-p3d-audit/SKILL.md",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patched/dayz-p3d-audit/scripts/audit_p3d.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "7885474fd3115b013e8c6ef0f340857789c88fe9db1c66dd361ae53173368332",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patched/dayz-p3d-audit/scripts/audit_p3d.py",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "7885474fd3115b013e8c6ef0f340857789c88fe9db1c66dd361ae53173368332",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-p3d-audit/scripts/audit_p3d.py",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "7885474fd3115b013e8c6ef0f340857789c88fe9db1c66dd361ae53173368332",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patched/dayz-p3d-audit/scripts/audit_p3d.py",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "7885474fd3115b013e8c6ef0f340857789c88fe9db1c66dd361ae53173368332",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patched/dayz-p3d-audit/scripts/audit_p3d.py",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "7885474fd3115b013e8c6ef0f340857789c88fe9db1c66dd361ae53173368332",
-      "output_path": "tools/py3d/rollout/patched/dayz-p3d-audit/scripts/audit_p3d.py",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patched/dayz-p3d-debinarizer/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "0a8a81c64cb9cccbdbe2e4e2c4adb8a21ca9bd29f965bcaa909297cfbcae4dab",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patched/dayz-p3d-debinarizer/SKILL.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "0a8a81c64cb9cccbdbe2e4e2c4adb8a21ca9bd29f965bcaa909297cfbcae4dab",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-p3d-debinarizer/SKILL.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "0a8a81c64cb9cccbdbe2e4e2c4adb8a21ca9bd29f965bcaa909297cfbcae4dab",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patched/dayz-p3d-debinarizer/SKILL.md",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "0a8a81c64cb9cccbdbe2e4e2c4adb8a21ca9bd29f965bcaa909297cfbcae4dab",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patched/dayz-p3d-debinarizer/SKILL.md",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "07ccc023c188d4047279ef293e29505e338d6a8129be4e22e235aea941c5a6d5",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-p3d-debinarizer/SKILL.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "07ccc023c188d4047279ef293e29505e338d6a8129be4e22e235aea941c5a6d5",
-      "output_path": "tools/py3d/rollout/patched/dayz-p3d-debinarizer/SKILL.md",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patched/dayz-p3d-inspector/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "70775a99722f775e39c4cdcfe77d88e15d75931b0fcae5f47dde65034be4e0d8",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patched/dayz-p3d-inspector/SKILL.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "70775a99722f775e39c4cdcfe77d88e15d75931b0fcae5f47dde65034be4e0d8",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-p3d-inspector/SKILL.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "70775a99722f775e39c4cdcfe77d88e15d75931b0fcae5f47dde65034be4e0d8",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patched/dayz-p3d-inspector/SKILL.md",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "70775a99722f775e39c4cdcfe77d88e15d75931b0fcae5f47dde65034be4e0d8",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patched/dayz-p3d-inspector/SKILL.md",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "43232fbeaaebc71745abb4c7d078345a6850a1d23f338628568c99f2a2418ff9",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-p3d-inspector/SKILL.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "43232fbeaaebc71745abb4c7d078345a6850a1d23f338628568c99f2a2418ff9",
-      "output_path": "tools/py3d/rollout/patched/dayz-p3d-inspector/SKILL.md",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patched/dayz-pbo-build/references/validation-scripts.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "30e61de58b8606eb9c1e073c707d8c358c7771c7b831752c5485ef51fd61f8b4",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patched/dayz-pbo-build/references/validation-scripts.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "30e61de58b8606eb9c1e073c707d8c358c7771c7b831752c5485ef51fd61f8b4",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-pbo-build/references/validation-scripts.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "30e61de58b8606eb9c1e073c707d8c358c7771c7b831752c5485ef51fd61f8b4",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patched/dayz-pbo-build/references/validation-scripts.md",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "30e61de58b8606eb9c1e073c707d8c358c7771c7b831752c5485ef51fd61f8b4",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patched/dayz-pbo-build/references/validation-scripts.md",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "30e61de58b8606eb9c1e073c707d8c358c7771c7b831752c5485ef51fd61f8b4",
-      "output_path": "tools/py3d/rollout/patched/dayz-pbo-build/references/validation-scripts.md",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patched/dayz-proxy-align/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "570e686dc4e537bbf3d44e35fa5b04141837f26ed3f141332ad7c8cf622deb8e",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patched/dayz-proxy-align/SKILL.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "570e686dc4e537bbf3d44e35fa5b04141837f26ed3f141332ad7c8cf622deb8e",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-proxy-align/SKILL.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "570e686dc4e537bbf3d44e35fa5b04141837f26ed3f141332ad7c8cf622deb8e",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patched/dayz-proxy-align/SKILL.md",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "570e686dc4e537bbf3d44e35fa5b04141837f26ed3f141332ad7c8cf622deb8e",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patched/dayz-proxy-align/SKILL.md",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "9d5df92356e2541abaff6e61aa4f9b4aeb45805386ee1e658b6920b4d8738720",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patched/dayz-proxy-align/SKILL.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "9d5df92356e2541abaff6e61aa4f9b4aeb45805386ee1e658b6920b4d8738720",
-      "output_path": "tools/py3d/rollout/patched/dayz-proxy-align/SKILL.md",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patches/dayz-3d-viewer__skill.md.patch",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "20e83ce2bb82287fc6c68bc45c2130b4351741b6838e8e48f651c9aacff62a87",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patches/dayz-3d-viewer__SKILL.md.patch",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "20e83ce2bb82287fc6c68bc45c2130b4351741b6838e8e48f651c9aacff62a87",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patches/dayz-3d-viewer__SKILL.md.patch",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "20e83ce2bb82287fc6c68bc45c2130b4351741b6838e8e48f651c9aacff62a87",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patches/dayz-3d-viewer__SKILL.md.patch",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "20e83ce2bb82287fc6c68bc45c2130b4351741b6838e8e48f651c9aacff62a87",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patches/dayz-3d-viewer__SKILL.md.patch",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "20e83ce2bb82287fc6c68bc45c2130b4351741b6838e8e48f651c9aacff62a87",
-      "output_path": "tools/py3d/rollout/patches/dayz-3d-viewer__SKILL.md.patch",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
       "artifact_id": "file/tools/py3d/rollout/patches/dayz-animation-pipeline__skill.md.patch",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -9129,10 +8550,20 @@
           "source_path": "tools/py3d/rollout/patches/dayz-animation-pipeline__references__py3d-1.0.0-quirks.md.patch",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed patch-only rollout bytes implement the user-approved BUG-018/BUG-019 remediation against the fixed live preimage.",
+          "license": "MIT",
+          "source_hash": "22c1c1e8dfd0471be506f74936f4f0214d1e075ce1e1dcc5da6491fa0f04482a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patches/dayz-animation-pipeline__references__py3d-1.0.0-quirks.md.patch",
+          "source_revision": "r21-patch-only@2026-07-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "769b936786879aaf2ec0d4939fc153459e4ee6175fec896eafdc0558897e62d7",
+      "output_hash": "22c1c1e8dfd0471be506f74936f4f0214d1e075ce1e1dcc5da6491fa0f04482a",
       "output_path": "tools/py3d/rollout/patches/dayz-animation-pipeline__references__py3d-1.0.0-quirks.md.patch",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -9191,343 +8622,21 @@
           "source_path": "tools/py3d/rollout/patches/dayz-model-pipeline__SKILL.md.patch",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed patch-only rollout bytes implement the user-approved BUG-018/BUG-019 remediation against the fixed live preimage.",
+          "license": "MIT",
+          "source_hash": "a609df48c141e66c2ef2daf39281198e45426d9aae78c7077a38c45b918d9476",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patches/dayz-model-pipeline__SKILL.md.patch",
+          "source_revision": "r21-patch-only@2026-07-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5a0c553ede64311e2f2891fad1ca4c2415c026d0b367cef7166e026c0cde6180",
+      "output_hash": "a609df48c141e66c2ef2daf39281198e45426d9aae78c7077a38c45b918d9476",
       "output_path": "tools/py3d/rollout/patches/dayz-model-pipeline__SKILL.md.patch",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patches/dayz-model-pipeline__references__py3d-direct-generation.md.patch",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "f14cb665b37f800468eb62b6e85da05fbdcb364835f2f5ebe30563c9591880a2",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patches/dayz-model-pipeline__references__py3d-direct-generation.md.patch",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "f14cb665b37f800468eb62b6e85da05fbdcb364835f2f5ebe30563c9591880a2",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patches/dayz-model-pipeline__references__py3d-direct-generation.md.patch",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "f14cb665b37f800468eb62b6e85da05fbdcb364835f2f5ebe30563c9591880a2",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patches/dayz-model-pipeline__references__py3d-direct-generation.md.patch",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "f14cb665b37f800468eb62b6e85da05fbdcb364835f2f5ebe30563c9591880a2",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patches/dayz-model-pipeline__references__py3d-direct-generation.md.patch",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "f14cb665b37f800468eb62b6e85da05fbdcb364835f2f5ebe30563c9591880a2",
-      "output_path": "tools/py3d/rollout/patches/dayz-model-pipeline__references__py3d-direct-generation.md.patch",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patches/dayz-p3d-audit__skill.md.patch",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "810edee08f27a047a1ac69773af7418e0f0c2d77d8e3d60a283cdc75ed128918",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patches/dayz-p3d-audit__SKILL.md.patch",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "810edee08f27a047a1ac69773af7418e0f0c2d77d8e3d60a283cdc75ed128918",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patches/dayz-p3d-audit__SKILL.md.patch",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "810edee08f27a047a1ac69773af7418e0f0c2d77d8e3d60a283cdc75ed128918",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patches/dayz-p3d-audit__SKILL.md.patch",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "810edee08f27a047a1ac69773af7418e0f0c2d77d8e3d60a283cdc75ed128918",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patches/dayz-p3d-audit__SKILL.md.patch",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "810edee08f27a047a1ac69773af7418e0f0c2d77d8e3d60a283cdc75ed128918",
-      "output_path": "tools/py3d/rollout/patches/dayz-p3d-audit__SKILL.md.patch",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patches/dayz-p3d-audit__scripts__audit_p3d.py.patch",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "b333ef34529e516a2b62644bcc3fce7b4a2e735109191caaf75c8f53ef3d1f7b",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patches/dayz-p3d-audit__scripts__audit_p3d.py.patch",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "b333ef34529e516a2b62644bcc3fce7b4a2e735109191caaf75c8f53ef3d1f7b",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patches/dayz-p3d-audit__scripts__audit_p3d.py.patch",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "b333ef34529e516a2b62644bcc3fce7b4a2e735109191caaf75c8f53ef3d1f7b",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patches/dayz-p3d-audit__scripts__audit_p3d.py.patch",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "b333ef34529e516a2b62644bcc3fce7b4a2e735109191caaf75c8f53ef3d1f7b",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patches/dayz-p3d-audit__scripts__audit_p3d.py.patch",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "b333ef34529e516a2b62644bcc3fce7b4a2e735109191caaf75c8f53ef3d1f7b",
-      "output_path": "tools/py3d/rollout/patches/dayz-p3d-audit__scripts__audit_p3d.py.patch",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patches/dayz-p3d-debinarizer__skill.md.patch",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "71fedb9aa511018e96cf830257f9ee35b7a8a1e54fd6d0381436533a3bc99a89",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patches/dayz-p3d-debinarizer__SKILL.md.patch",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "71fedb9aa511018e96cf830257f9ee35b7a8a1e54fd6d0381436533a3bc99a89",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patches/dayz-p3d-debinarizer__SKILL.md.patch",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "71fedb9aa511018e96cf830257f9ee35b7a8a1e54fd6d0381436533a3bc99a89",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patches/dayz-p3d-debinarizer__SKILL.md.patch",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "71fedb9aa511018e96cf830257f9ee35b7a8a1e54fd6d0381436533a3bc99a89",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patches/dayz-p3d-debinarizer__SKILL.md.patch",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "430d4f18d75efdc1a381da849af303ed1bf12883f65748f7e21b5037076850d5",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patches/dayz-p3d-debinarizer__SKILL.md.patch",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "430d4f18d75efdc1a381da849af303ed1bf12883f65748f7e21b5037076850d5",
-      "output_path": "tools/py3d/rollout/patches/dayz-p3d-debinarizer__SKILL.md.patch",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patches/dayz-p3d-inspector__skill.md.patch",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "7cede699c526bcd35033687ed5c11b6afe1bffa7a89c0691260140eca00cbdb7",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patches/dayz-p3d-inspector__SKILL.md.patch",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "7cede699c526bcd35033687ed5c11b6afe1bffa7a89c0691260140eca00cbdb7",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patches/dayz-p3d-inspector__SKILL.md.patch",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "7cede699c526bcd35033687ed5c11b6afe1bffa7a89c0691260140eca00cbdb7",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patches/dayz-p3d-inspector__SKILL.md.patch",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "7cede699c526bcd35033687ed5c11b6afe1bffa7a89c0691260140eca00cbdb7",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patches/dayz-p3d-inspector__SKILL.md.patch",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "229fe2f319ad9aab3125c4de2c0b259daddd5c921502dc64af45de77ece8907e",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patches/dayz-p3d-inspector__SKILL.md.patch",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "229fe2f319ad9aab3125c4de2c0b259daddd5c921502dc64af45de77ece8907e",
-      "output_path": "tools/py3d/rollout/patches/dayz-p3d-inspector__SKILL.md.patch",
-      "routing_artifact_id": "tools",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/tools/py3d/rollout/patches/dayz-pbo-build__references__validation-scripts.md.patch",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "80df8bf388b5fcc1d61996a308e156ed84e638d00af763a5655aa561503ec1ae",
-          "source_id": "pack-baseline",
-          "source_path": "tools/py3d/rollout/patches/dayz-pbo-build__references__validation-scripts.md.patch",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "80df8bf388b5fcc1d61996a308e156ed84e638d00af763a5655aa561503ec1ae",
-          "source_id": "pack-r21-authored",
-          "source_path": "tools/py3d/rollout/patches/dayz-pbo-build__references__validation-scripts.md.patch",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
-          "license": "MIT",
-          "source_hash": "80df8bf388b5fcc1d61996a308e156ed84e638d00af763a5655aa561503ec1ae",
-          "source_id": "py3d-canonical",
-          "source_path": "rollout/patches/dayz-pbo-build__references__validation-scripts.md.patch",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "keep_pack",
-          "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
-          "license": "MIT",
-          "source_hash": "80df8bf388b5fcc1d61996a308e156ed84e638d00af763a5655aa561503ec1ae",
-          "source_id": "py3d-rollout",
-          "source_path": "rollout/patches/dayz-pbo-build__references__validation-scripts.md.patch",
-          "source_revision": "filesystem@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "80df8bf388b5fcc1d61996a308e156ed84e638d00af763a5655aa561503ec1ae",
-      "output_path": "tools/py3d/rollout/patches/dayz-pbo-build__references__validation-scripts.md.patch",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
@@ -9585,11 +8694,43 @@
           "source_path": "tools/py3d/rollout/patches/dayz-proxy-align__SKILL.md.patch",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed patch-only rollout bytes implement the user-approved BUG-018/BUG-019 remediation against the fixed live preimage.",
+          "license": "MIT",
+          "source_hash": "a93276a6a345df3b74d1890c916dde471e8da85e0fd6c3f4670818a81cf7cbd5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/patches/dayz-proxy-align__SKILL.md.patch",
+          "source_revision": "r21-patch-only@2026-07-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6c0405f327ea1dc75415e53c457b7d4011462ab153a944f30554929b013a5ca8",
+      "output_hash": "a93276a6a345df3b74d1890c916dde471e8da85e0fd6c3f4670818a81cf7cbd5",
       "output_path": "tools/py3d/rollout/patches/dayz-proxy-align__SKILL.md.patch",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/py3d/rollout/preimage-manifest.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed patch-only rollout bytes implement the user-approved BUG-018/BUG-019 remediation against the fixed live preimage.",
+          "license": "MIT",
+          "source_hash": "c466fe4c7aac871f6246c9d8387c7637b5c907d15ec36376d4125ee8c5fe0356",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/preimage-manifest.json",
+          "source_revision": "r21-patch-only@2026-07-26",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c466fe4c7aac871f6246c9d8387c7637b5c907d15ec36376d4125ee8c5fe0356",
+      "output_path": "tools/py3d/rollout/preimage-manifest.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },

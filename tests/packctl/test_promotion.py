@@ -1087,7 +1087,11 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
 
     findings = promotion._executable_placeholder_findings(routes)
 
-    observed_paths = sorted(str(item["path"]) for item in findings)
+    observed_paths = sorted(
+        str(item["path"])
+        for item in findings
+        if item["code"] == "PROMOTION-PLACEHOLDER-IN-EXECUTABLE"
+    )
     assert not any(
         item.startswith(("packctl/", "tests/"))
         for item in observed_paths

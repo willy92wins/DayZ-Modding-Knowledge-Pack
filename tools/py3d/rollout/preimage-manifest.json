@@ -1,0 +1,72 @@
+{
+  "schema_version": "py3d-rollout-preimage-v1",
+  "snapshot_id": "live-snapshot-2026-07-26",
+  "entries": [
+    {
+      "relative_path": "dayz-model-pipeline/SKILL.md",
+      "preimage_sha256": "1507ca7dcdc03d8714b6c971a20e4ec2ed69f8baea1a5ada2ef73acca8f563f7",
+      "status": "patched",
+      "patch_path": "patches/dayz-model-pipeline__SKILL.md.patch"
+    },
+    {
+      "relative_path": "dayz-model-pipeline/references/py3d-direct-generation.md",
+      "preimage_sha256": "3a5f040503e4dce3ad9280095fb3d930d1e05e3068fdbfdcb2a8bf4c94950567",
+      "status": "not_applicable",
+      "reason": "La proyección no contiene delta nuevo de py3d 1.4.0 y eliminaría reglas vivas de geometría."
+    },
+    {
+      "relative_path": "dayz-3d-viewer/SKILL.md",
+      "preimage_sha256": "52e63f23d81c8c5c75d54aac7acb9634ed0bd4e075c852d7224bbb9cb91eb12d",
+      "status": "not_applicable",
+      "reason": "La proyección no contiene API nueva de py3d 1.4.0; solo diverge del conocimiento vivo."
+    },
+    {
+      "relative_path": "dayz-p3d-inspector/SKILL.md",
+      "preimage_sha256": "a7a6deccd7bd3972bebc4e3560ed8c94a94beff8553ca7a42fcf639107e6e6d8",
+      "status": "not_applicable",
+      "reason": "La proyección no contiene delta atribuible a py3d 1.4.0 y perdería SP-028."
+    },
+    {
+      "relative_path": "dayz-p3d-debinarizer/SKILL.md",
+      "preimage_sha256": "39cea72607c84b53d9b845dc54aef3b2a60ca01852b4e733330496eae597a247",
+      "status": "not_applicable",
+      "reason": "La proyección no contiene delta atribuible a py3d 1.4.0 y perdería SP-034."
+    },
+    {
+      "relative_path": "dayz-p3d-audit/SKILL.md",
+      "preimage_sha256": "1488093087123a14ae57dd320140a71887fc1f9d2b42ec50f213f942b0582bab",
+      "status": "not_applicable",
+      "reason": "La proyección no aporta py3d 1.4.0 y perdería SP-017, SP-051 y el conteo de 13 Silent Killers."
+    },
+    {
+      "relative_path": "dayz-p3d-audit/scripts/audit_p3d.py",
+      "preimage_sha256": "a36f9276933289f858c8041e355c5bebeafeb94214a3087f358beda300e40874",
+      "status": "not_applicable",
+      "reason": "La proyección no aporta py3d 1.4.0 y es un subconjunto estricto: 7 de 15 funciones vivas."
+    },
+    {
+      "relative_path": "dayz-pbo-build/references/validation-scripts.md",
+      "preimage_sha256": "371f71bbdfc99433c6e9d6251b9ce2f7cee7d47c846b78545604542c35955d81",
+      "status": "not_applicable",
+      "reason": "La proyección no contiene delta de py3d 1.4.0; sus cambios pertenecen a otro alcance."
+    },
+    {
+      "relative_path": "dayz-proxy-align/SKILL.md",
+      "preimage_sha256": "3716f48c88d7c66e996922c91fbd621fa38a94283e7ad33609fc09e7a337db3d",
+      "status": "patched",
+      "patch_path": "patches/dayz-proxy-align__SKILL.md.patch"
+    },
+    {
+      "relative_path": "dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
+      "preimage_sha256": "2fef10faedb1416c692d882ef2955e4269cb2b632113cf8ef5e4e462abc01506",
+      "status": "patched",
+      "patch_path": "patches/dayz-animation-pipeline__references__py3d-1.0.0-quirks.md.patch"
+    },
+    {
+      "relative_path": "dayz-animation-pipeline/SKILL.md",
+      "preimage_sha256": "bcaacd1bd0e716bd3a265f19c9c006b6a2869cfd42bb4c238786706cb3c1a914",
+      "status": "patched",
+      "patch_path": "patches/dayz-animation-pipeline__SKILL.md.patch"
+    }
+  ]
+}
