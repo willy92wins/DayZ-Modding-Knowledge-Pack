@@ -297,9 +297,12 @@ script.log) are created next to `tools\` under `<Mod>_dev\`.
 
 ## FILEPATCHING SCOPE — read before promising hot-reload
 
-`-filePatching` hot-loads **scripts and configs** from raw source, not binarized assets.
-Model/texture/material changes need a `-Build`. Do not tell the user "just edit and it
-reloads" for a `.p3d` or `.paa` change — that is the most common false expectation here.
+`-filePatching` hot-loads **scripts and configs** from raw source in the general case, not
+binarized assets. Model/texture/material changes need a `-Build`. Do not tell the user "just
+edit and it reloads" for a `.p3d` or `.paa` change — that is the most common false expectation
+here. **On this install even scripts do NOT hot-load — the PBO wins** (measured 2026-07-20);
+see the SP-078 section at the end of this file and use the `srcprobe` discriminator before
+attributing anything to filepatching.
 
 ## MOD PATHS MUST BE ABSOLUTE — silent no-mount otherwise (verified 2026-06-01)
 
@@ -453,3 +456,57 @@ The standard `DayZDiag_x64` defines `DIAG_DEVELOPER` but NOT `DEVELOPER` (bare).
 Expensive trap: if a mod PBO EMITS a `#ifdef DEVELOPER` symbol (a call to `SendGetInVehicle`, etc.), the symbol does not exist -> HARD compile failure of the WHOLE PBO -> every tool/script of the mod drops. Not a silent no-op (unlike `ExecuteEnforceScript`, Developer-only, which returns false at runtime).
 
 Rule before basing a design on a vanilla `#ifdef DEVELOPER` API: (1) grep the `#ifdef` guarding it (`DEVELOPER` or `DIAG_DEVELOPER`?); (2) if `DEVELOPER`, read the `defines:` line of a recent `script_*.log` for that build to confirm it is active; (3) if not, do NOT emit the symbol - wrapping it in `#ifdef DEVELOPER` is not "robustness" if the design DEPENDS on it; find a non-DEVELOPER path. Cross-ref `dayz-mod-workflow` (anti-confabulation). Origin: DayZ_MCP Fase 5 Tramo A (2026-06-28), compile logs of both profiles.
+
+## Secure-launcher allow-list: the base_mods format is decided by junctions, not style (SP-089, added 2026-07-25)
+
+On this box DayZDiag only launches through the registered native launcher (SP-085), so a mod that is not in the sealed allow-list of `dayz-test-v1` cannot be tested at all. Adding the Nth mod is mechanical - copy a live project block in `DayZ_MCP_dev\tools\build_native_launcher.py` (`_build_request_policy()` AND `_build_worker_runtime()`, same order) - but the `default_base_mods` FORMAT is a correctness trap, not a style choice.
+
+`request_path_authority._open_descendant` rejects any path component that is a reparse point (`item.reparse_tag != 0 -> _invalid()`). Therefore:
+
+- A dep whose folder under `P:\Mods` is a JUNCTION (`@CF`, `@Dabs Framework`, `@VPPAdminTools` -> Steam workshop) MUST be listed as its ABSOLUTE workshop path, and that path must also be sealed in `mod_roots`.
+- A dep that is a REAL directory under `P:\Mods` (a locally built mod, e.g. `@LFHeliCore`) can be a bare relative name: `dayz_test_worker._mod_path` joins it to `mods_root` and it accredits under the sealed `P:\Mods` root (exactly 1 match required).
+
+Why it costs a session: the wrong format passes EVERY unit test (they only pin strings) and fails at accreditation time, when the server is launched. Check `Get-Item <path> | Select-Object LinkType` for each dep BEFORE choosing the format.
+
+Two more gates in the same flow, both of which have already burned a session:
+
+- `tests\test_secure_launcher.py` HARDCODES the launcher PE sha256. Every rebuild changes it (adding a mod changes the PE), so update it after `build_native_launcher.py --offline --verify-reproducible` or the suite stays red for a reason unrelated to the change.
+- `launcher_registry_update install-dayz-test-v1 --expected-sha256 <X>` is a compare-and-swap on the BYTES of `approved-launchers.json` (NOT the PE hash), and it REFUSES to install while a `dayz-test-v1` entry exists -> run `rollback-last` first; it prints the restored registry sha, which is the CAS token the install needs.
+
+Origin: LFHeli OH-1 (2026-07-25), authorizing the 6th mod, after the 2026-07-22 session was lost to this same flow. Cross-ref SP-085 (diag hangs, 0 CPU / 0 RPT, when launched outside the registered launcher).
+
+## `-ExecutionPolicy Bypass` — quirk intermitente de Codex, NO un bloqueo del host (corregido 2026-07-22)
+
+`[corregido por el usuario 2026-07-22]` La versión previa de esta sección (2026-07-21, escrita por
+Codex) afirmaba que la policy de PowerShell del host era `Restricted` y que Microsoft Defender
+interrumpía los wrappers con `-ExecutionPolicy Bypass`, y de ahí derivaba un régimen "BLOCKED-
+SECURITY / solo managed Python lifecycle". **Era un MALENTENDIDO de Codex sobre lo que dijo el
+usuario.** Lo real:
+
+- **Codex (ChatGPT CLI) A VECES dispara SU PROPIA política de seguridad cuando el comando contiene
+  `-ExecutionPolicy Bypass`.** Es un rechazo intermitente del AGENTE Codex, no un fallo del host: la
+  policy de PowerShell del host NO está en `Restricted` por esto, y Defender NO interrumpe los
+  launches.
+- Por tanto los lanzadores `.ps1`/`.bat` de este skill **NO están host-bloqueados**: Claude y el
+  usuario los ejecutan con normalidad. **No hay "BLOCKED-SECURITY"** por este motivo, ni requisito de
+  pasar por un "managed Python lifecycle" para poder lanzar.
+- **Única implicación, y SOLO al delegar un launch a Codex**: `-ExecutionPolicy Bypass` puede ser
+  rechazado de forma intermitente por Codex → evita ese flag en el comando que le pasas a Codex, o
+  deja que el launch lo haga Claude o el usuario.
+- **Independiente y vigente**: el protocolo de sesión compartida (lease FIFO + `run_id`,
+  §PROTOCOLO DE SESIÓN COMPARTIDA) sigue aplicando para coordinar launch/stop; no tiene relación con
+  esto.
+
+(El reporte `P:\Utopia_PC_Suite\reports\2026-07-21-powershell-defender-diagnosis.md` arrastra el
+mismo malentendido de Codex — reconciliar o marcar si se cita. No deshabilites Defender ni añadas
+exclusiones como "workaround": no procede, porque no era Defender.)
+
+## Script changes NEVER hot-load from the work drive on this install - the PBO wins; rebuild the PBO for every script iteration (SP-078, added 2026-07-20)
+
+Measured 2026-07-20 (LFHeli toggle diagnosis): with `-filePatching` on server AND client, `allowFilePatching=1`, work drive mounted and `P:\<prefix>\scripts\...` present, the engine still compiled the scripts FROM THE PBO. Probe prints existing only in the source tree never appeared over two boots; after `dayz-test.ps1 -Build` (packonly repack) the same prints appeared immediately. Consequences:
+
+1. "Iterate scripts without repacking" does NOT work here. Every Enforce change needs a PBO rebuild (packonly, seconds) + relaunch. Treat the PBO as the only script source of truth.
+2. Loose-file MODEL/texture shadowing is equally unproven on this install - do not attribute stale visuals to (or expect fresh visuals from) work-drive loose files; verify what the engine runs, do not assume filepatching semantics.
+3. **The srcprobe discriminator** (cheap, definitive, one boot): change a LOG STRING in an already-printing line in the SOURCE only (e.g. `[TAG]` -> `[TAG srcprobe]`), relaunch WITHOUT rebuilding, grep the script log: token present = source served; absent (old string still printing) = PBO served. Use it before wasting cycles on "why doesn't my script change do anything".
+
+Origin: 3 boots lost to probes that were "deployed" but never in the runtime; the PBO-wins fact then explained an earlier red herring the same day (a stale `P:\LFHeli\models` tree suspected of shadowing the deployed model - it never did).

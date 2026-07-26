@@ -369,3 +369,14 @@ MCPBridge.c:835 y loopback.py:113; chip abierto para generalizarlo). El raw `/en
 exige `{identity, lease_token}` en el body ademas de `?key=` (la identity/token salen de
 `session_acquire`). gear idx de `vehicle_telemetry`: 0=R, 1=N, 2=1a ... 7=6a.
 Verificado in-game SUB_BRZ s37 (wheel_count 0->4, fuel 1.0, kit completo, run B3 a 6a).
+
+## (added 2026-07-22) Spawn pelado expone el tren de rodaje → parece misalignment; condicionar antes de juzgar alineación
+
+Un `world_spawn` de un vehículo CarScript lo crea SIN attachments (`wheel_count=0`, `attachment_count=0`): las ruedas/neumáticos NO están, así que los **frenos (rotor + caliper — el caliper suele ser ROJO), la suspensión y los hubs quedan AL DESCUBIERTO** en el paso de rueda y se ven "flotando" con un hueco. **Eso NO es misalignment**: es geometría base correcta, simétrica y en su sitio, contenida en el volumen que ocuparía la rueda ausente.
+
+Reglas:
+- Un smoke con **spawn pelado es MATERIALS-ONLY** — valida pintura/texturas/winding del cuerpo, NO la alineación del tren de rodaje ni el aspecto "completo".
+- Para juzgar alineación/aspecto CON ruedas: **CONDICIONAR** el coche (`wheel_count 0→4`) con `vehicle_enter(pos)` + micro-drive server-side (`OnDebugSpawn`; ver nota "Conditioning server-side (OnDebugSpawn real)" s37 arriba) y recapturar con las ruedas puestas.
+- Ante una pieza que "parece desplazada": **MEDIR antes de concluir** (bbox/centroide/simetría izq-der + bisección vs backup + containment en volumen de rueda) — no firmar "roto" ni "OK" por opinión.
+
+Verificado: SUB_BRZ 2026-07-22 — un susto de "piezas desalineadas" resultó ser frenos/suspensión al descubierto por spawn pelado; el forense (Codex, py3d) midió simetría ≤0.003 m, bisección 0-movimiento en 6 shells y containment en el volumen de rueda (`VehicleImport\work\reviews\2026-07-22-SUB_BRZ-misalign-forensic.md`). Costó 30 min de forense evitable. Cross-ref LL-209.

@@ -81,3 +81,8 @@ Treat a non-zero deployed bounding center as pose risk, not as proof of the
 exact visual displacement. The evidence is cross-checked against one custom
 vehicle plus working vanilla/community multi-LOD proxy controls; it is not a
 claim that every single-LOD engine proxy follows the same path.
+
+## Two caveats from the measured case (restored 2026-07-26)
+
+- only ONE `modded class PlayerBase` per mod — put SetActions inside the existing one.
+- prompt shown + hand animation playing + server state flipping (`[LFHELI-DBG] door open=true`) with NO visible door motion = the SCRIPT chain is fine; suspect the baked-anim side (selection content in the binarized ODOL, skeleton bone, axis) — the script/anim boundary is exactly SetAnimationPhase.

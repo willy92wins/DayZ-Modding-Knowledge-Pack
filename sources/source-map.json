@@ -2241,6 +2241,72 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/skills/_shared/model-routing.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Restored from the 2026-07-24 promotion backup: user-authored shared reference that existed in the installed skill trees before the mirror promotion and was absent from the pack, so the promotion deleted it. Re-adopted so the surfaces converge instead of diverging again.",
+          "license": "User-authored input",
+          "source_hash": "bc2da5a578fc866f0db911cd1990409aa4370fc6e94272d714d4bfc1fe862be1",
+          "source_id": "installed-skills",
+          "source_path": "_shared/model-routing.md",
+          "source_revision": "filesystem@2026-07-26",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "User-authored input",
+      "output_hash": "bc2da5a578fc866f0db911cd1990409aa4370fc6e94272d714d4bfc1fe862be1",
+      "output_path": "skills/_shared/model-routing.md",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/_shared/prompt-conventions.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Restored from the 2026-07-24 promotion backup: user-authored shared reference that existed in the installed skill trees before the mirror promotion and was absent from the pack, so the promotion deleted it. Re-adopted so the surfaces converge instead of diverging again.",
+          "license": "User-authored input",
+          "source_hash": "cb3c399da82dcb115e38a011d500311acaa0310df303a4051d565f2500b81044",
+          "source_id": "installed-skills",
+          "source_path": "_shared/prompt-conventions.md",
+          "source_revision": "filesystem@2026-07-26",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "User-authored input",
+      "output_hash": "cb3c399da82dcb115e38a011d500311acaa0310df303a4051d565f2500b81044",
+      "output_path": "skills/_shared/prompt-conventions.md",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/_shared/skill-resolution.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Restored from the 2026-07-24 promotion backup: user-authored shared reference that existed in the installed skill trees before the mirror promotion and was absent from the pack, so the promotion deleted it. Re-adopted so the surfaces converge instead of diverging again.",
+          "license": "User-authored input",
+          "source_hash": "19e7f1cb0e50207a0ddb1d35ee5642970e86e305a7d62212ab6d3192562d36bc",
+          "source_id": "installed-skills",
+          "source_path": "_shared/skill-resolution.md",
+          "source_revision": "filesystem@2026-07-26",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "User-authored input",
+      "output_hash": "19e7f1cb0e50207a0ddb1d35ee5642970e86e305a7d62212ab6d3192562d36bc",
+      "output_path": "skills/_shared/skill-resolution.md",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/skills/ai-3d-to-dayz/skill.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -3569,7 +3635,7 @@
           "decision": "adopt",
           "decision_evidence": "Approved optional-companion authority boundary was added after an adversarial RED-to-GREEN evaluation.",
           "license": "MIT",
-          "source_hash": "e5f003007141e5cb85f0f8caf0858c7a3580c4bc9347effdb802c41de25e598a",
+          "source_hash": "b98505fe1052cfea00edefb365b448b9c188aebdc29eec9f26c563c9371ea017",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -3577,7 +3643,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e5f003007141e5cb85f0f8caf0858c7a3580c4bc9347effdb802c41de25e598a",
+      "output_hash": "b98505fe1052cfea00edefb365b448b9c188aebdc29eec9f26c563c9371ea017",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -3827,7 +3893,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a5b2ed3bc477e39c637b1c7689e748454c990237d9bd4538ba7f1a3b8ac9cf97",
+      "output_hash": "4abe6a858760e9ed69fb0e12ebcfadef498d5d9886914041484fe3a0d10b0002",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -4071,7 +4137,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "182421ff55de758623581b9d57fbba7fdaaf4b983cc5efce095a5302f68caa74",
+          "source_hash": "88636f09517d696523c6aef961000e4c9907096511dc4c2536b3d73118b9b8ec",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -4079,7 +4145,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "182421ff55de758623581b9d57fbba7fdaaf4b983cc5efce095a5302f68caa74",
+      "output_hash": "88636f09517d696523c6aef961000e4c9907096511dc4c2536b3d73118b9b8ec",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -4403,7 +4469,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e983edd5bdd7071a9920275ced0c639311fea25df5d583459e125bdc69bd0796",
+      "output_hash": "895045eecf7362bf8d9971eccbea5c34454517c0fe5c9b65f345a0e4bec2bac1",
       "output_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
