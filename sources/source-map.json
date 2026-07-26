@@ -8130,6 +8130,28 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/tools/py3d/pyproject.toml",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed wheel-gate bytes pin the py3d build toolchain and enforce fail-closed wheel identity verification.",
+          "license": "MIT",
+          "source_hash": "2b0148dd48cdcbcb1c4354e20e46ca92dff5a515205b2fb8b8c4b1bd53e7d3bb",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/pyproject.toml",
+          "source_revision": "r21-wheel-gate@2026-07-26",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2b0148dd48cdcbcb1c4354e20e46ca92dff5a515205b2fb8b8c4b1bd53e7d3bb",
+      "output_path": "tools/py3d/pyproject.toml",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/tools/py3d/rollout/readme.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -8183,10 +8205,20 @@
           "source_path": "tools/py3d/rollout/README.md",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed wheel-gate bytes pin the py3d build toolchain and enforce fail-closed wheel identity verification.",
+          "license": "MIT",
+          "source_hash": "f02c984735c4f418945fb2b597df29845afe243df1528eca1b88a2da27f2dfa4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/README.md",
+          "source_revision": "r21-wheel-gate@2026-07-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "116e31e6229c0b2eecc65f641ed72b95e46f59024056f7898565957a54ec5220",
+      "output_hash": "f02c984735c4f418945fb2b597df29845afe243df1528eca1b88a2da27f2dfa4",
       "output_path": "tools/py3d/rollout/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -8245,10 +8277,20 @@
           "source_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed wheel-gate bytes pin the py3d build toolchain and enforce fail-closed wheel identity verification.",
+          "license": "MIT",
+          "source_hash": "fbe62cc959ef42239227feadb7ef3e3966aec2572f8d161c72fd034549c7783c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
+          "source_revision": "r21-wheel-gate@2026-07-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "bfed5d29316f1c5f3c07913520459531796a9ce770b327733e00ba11418aa395",
+      "output_hash": "fbe62cc959ef42239227feadb7ef3e3966aec2572f8d161c72fd034549c7783c",
       "output_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -8319,10 +8361,20 @@
           "source_path": "tools/py3d/rollout/build-wheel.ps1",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed wheel-gate bytes pin the py3d build toolchain and enforce fail-closed wheel identity verification.",
+          "license": "MIT",
+          "source_hash": "7d9fa996bdca63229f783014b1a1b9939bddaac4f7db5244b70318eff1b2ccf3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/build-wheel.ps1",
+          "source_revision": "r21-wheel-gate@2026-07-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "97376a85a48e8e75e4ae0a1680d10bdb77be2cd3c5a362c017aef38995512755",
+      "output_hash": "7d9fa996bdca63229f783014b1a1b9939bddaac4f7db5244b70318eff1b2ccf3",
       "output_path": "tools/py3d/rollout/build-wheel.ps1",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -9555,10 +9607,20 @@
           "source_path": "tools/py3d/rollout/wheel-manifest.json",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed wheel-gate bytes pin the py3d build toolchain and enforce fail-closed wheel identity verification.",
+          "license": "MIT",
+          "source_hash": "20be66d3a505b2656273bd174158ab9502d959820ee19d2d54c5065aa364363e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/wheel-manifest.json",
+          "source_revision": "r21-wheel-gate@2026-07-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f39fad9bd54c6422a015abcac6787bf479e75d6a0cd859187c15ce45b83519db",
+      "output_hash": "20be66d3a505b2656273bd174158ab9502d959820ee19d2d54c5065aa364363e",
       "output_path": "tools/py3d/rollout/wheel-manifest.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -10486,6 +10548,28 @@
       "license": "MIT",
       "output_hash": "e2eebd2b4fc17620ddedc4e9c6cb43ca920ed7fa124cda0decd242abd9c37269",
       "output_path": "tools/py3d/tests/test_s4_proxy_lifecycle.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/py3d/tests/test_s4_wheel_gate.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed wheel-gate bytes pin the py3d build toolchain and enforce fail-closed wheel identity verification.",
+          "license": "MIT",
+          "source_hash": "9d91d5f7eb6e101032537712146f9cff2877152267f081da4879d2d104c5e412",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/test_s4_wheel_gate.py",
+          "source_revision": "r21-wheel-gate@2026-07-26",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9d91d5f7eb6e101032537712146f9cff2877152267f081da4879d2d104c5e412",
+      "output_path": "tools/py3d/tests/test_s4_wheel_gate.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

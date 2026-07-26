@@ -18,9 +18,9 @@
   (delegado en `P3D.validate()` v1.2.0; ids LOD normalizados DayZ; GeoPhys y
   centroide absoluto retirados — F2-12/D8).
 - La wheel a vendorizar vive en `../dist/` — vigente
-  `py3d-1.4.0-py3-none-any.whl`. `wheel-manifest.json` fija nombre, versión,
-  SHA-256 y `SOURCE_DATE_EPOCH`; `apply-s2-rollout.ps1` no contiene hashes
-  duplicados.
+  `py3d-1.4.0-py3-none-any.whl`. `wheel-manifest.json` v2 fija nombre,
+  versión, SHA-256, `SOURCE_DATE_EPOCH` y toolchain (`python_version` más
+  `build_requires`); `apply-s2-rollout.ps1` no contiene hashes duplicados.
 
 ## Aplicación
 
@@ -42,14 +42,23 @@ El rollout valida antes el wheel/manifiesto/versiones, conserva backup de
 cualquier archivo o wheel reemplazado y relee cada copia por SHA-256. Una
 segunda pasada `-NoWrite` debe terminar con `planned changes: 0`.
 
-Para reconstruir el artefacto ignorado y su manifiesto rastreado:
+Para verificar el build reproducible contra la identidad rastreada:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File .\build-wheel.ps1 -Python <python-3.10-or-newer>
 ```
 
-Ese build se ejecuta dos veces y falla si los SHA-256 difieren.
+Ese gate construye dos veces, falla si los SHA-256 difieren entre sí y también
+falla si el wheel reproducible no coincide con la identidad fijada. No publica
+nada en `../dist/` ni modifica el manifiesto sin autorización explícita.
+Re-sellar deliberadamente la identidad y publicar el wheel exige
+`-UpdateManifest`:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File .\build-wheel.ps1 -Python <python-3.10-or-newer> -UpdateManifest
+```
 
 | Skill | Archivos | Cambio |
 |---|---|---|

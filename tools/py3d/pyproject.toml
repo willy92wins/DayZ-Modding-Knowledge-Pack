@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools==83.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "py3d"
+dynamic = ["version"]
+description = "DayZ fork: reading and writing Arma/DayZ P3D files (MLOD), with anti-corruption guards."
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Felix \"KoffeinFlummi\" Wiegand", email = "koffeinflummi@protonmail.com"},
+]
+dependencies = []
+keywords = ["arma", "3d", "p3d", "mlod"]
+
+[project.urls]
+Homepage = "https://github.com/KoffeinFlummi/py3d"
+
+[tool.setuptools.dynamic]
+version = {attr = "py3d.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["py3d*"]

@@ -115,7 +115,9 @@ try {
     throw "tracked wheel manifest is not valid JSON"
 }
 $ExpectedFields = @(
+    "build_requires",
     "filename",
+    "python_version",
     "schema_version",
     "sha256",
     "source_date_epoch",
@@ -125,7 +127,7 @@ $ActualFields = @($Manifest.PSObject.Properties.Name | Sort-Object)
 if (Compare-Object $ExpectedFields $ActualFields) {
     throw "tracked wheel manifest fields are invalid"
 }
-if ($Manifest.schema_version -ne "py3d-wheel-manifest-v1") {
+if ($Manifest.schema_version -ne "py3d-wheel-manifest-v2") {
     throw "tracked wheel manifest schema is unsupported"
 }
 if ($Manifest.source_date_epoch -ne 1784937600) {
@@ -133,6 +135,18 @@ if ($Manifest.source_date_epoch -ne 1784937600) {
 }
 if ($Manifest.sha256 -notmatch "^[0-9a-f]{64}$") {
     throw "tracked wheel manifest SHA-256 is invalid"
+}
+if ($Manifest.python_version -notmatch '^\d+\.\d+\.\d+$') {
+    throw "tracked wheel manifest Python version is invalid"
+}
+$BuildRequires = @($Manifest.build_requires)
+$InvalidBuildRequires = @(
+    $BuildRequires | Where-Object {
+        $_ -isnot [string] -or [string]::IsNullOrWhiteSpace($_)
+    }
+)
+if ($BuildRequires.Count -eq 0 -or $InvalidBuildRequires.Count -gt 0) {
+    throw "tracked wheel manifest build requirements are invalid"
 }
 
 $SourceVersion = Get-SourceVersion

@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$Python = "python",
-    [string]$OutputDirectory = ""
+    [string]$OutputDirectory = "",
+    [switch]$UpdateManifest
 )
 
 $ErrorActionPreference = "Stop"
@@ -52,6 +53,127 @@ function Get-SourceVersion {
     return $CoreVersion
 }
 
+function Get-BuildRequirements {
+    $PyprojectPath = Join-Path $SourceRoot "pyproject.toml"
+    if (-not (Test-Path -LiteralPath $PyprojectPath -PathType Leaf)) {
+        throw "py3d pyproject.toml is missing"
+    }
+    $Pyproject = [IO.File]::ReadAllText($PyprojectPath)
+    $BuildSystem = [regex]::Match(
+        $Pyproject,
+        '(?ms)^\[build-system\]\s*(?<body>.*?)(?=^\[|\z)'
+    )
+    if (-not $BuildSystem.Success) {
+        throw "py3d pyproject.toml has no build-system table"
+    }
+    $Requires = [regex]::Match(
+        $BuildSystem.Groups["body"].Value,
+        '(?m)^\s*requires\s*=\s*\[(?<items>[^\]]*)\]\s*$'
+    )
+    if (-not $Requires.Success) {
+        throw "py3d build requirements could not be resolved"
+    }
+    $Items = $Requires.Groups["items"].Value
+    $RequirementMatches = [regex]::Matches(
+        $Items,
+        '"(?<requirement>[^"]+)"'
+    )
+    $Requirements = @(
+        $RequirementMatches | ForEach-Object {
+            $_.Groups["requirement"].Value
+        }
+    )
+    if ($Requirements.Count -eq 0) {
+        throw "py3d build requirements are empty"
+    }
+    $Remainder = [regex]::Replace($Items, '"[^"]+"\s*,?', '')
+    if (-not [string]::IsNullOrWhiteSpace($Remainder)) {
+        throw "py3d build requirements use unsupported TOML syntax"
+    }
+    foreach ($Requirement in $Requirements) {
+        if ($Requirement -notmatch '^[A-Za-z0-9][A-Za-z0-9._-]*==[A-Za-z0-9][A-Za-z0-9._+-]*$') {
+            throw "py3d build requirement is not exactly pinned: $Requirement"
+        }
+    }
+    return $Requirements
+}
+
+function Get-PythonVersion {
+    $VersionOutput = @(
+        & $Python -c "import platform; print(platform.python_version())"
+    )
+    if ($LASTEXITCODE -ne 0) {
+        throw "python version query failed with exit code $LASTEXITCODE"
+    }
+    $PythonVersion = ($VersionOutput -join "").Trim()
+    if ($PythonVersion -notmatch '^\d+\.\d+\.\d+$') {
+        throw "python version query returned an invalid value"
+    }
+    return $PythonVersion
+}
+
+function Read-PinnedManifest([string[]]$PinnedBuildRequires) {
+    if (-not (Test-Path -LiteralPath $ManifestPath -PathType Leaf)) {
+        if (-not $UpdateManifest) {
+            throw "tracked wheel manifest is missing; use -UpdateManifest to seal it"
+        }
+        return $null
+    }
+    try {
+        $Manifest = Get-Content -LiteralPath $ManifestPath -Raw |
+            ConvertFrom-Json
+    } catch {
+        throw "tracked wheel manifest is not valid JSON"
+    }
+    $ExpectedFields = @(
+        "build_requires",
+        "filename",
+        "python_version",
+        "schema_version",
+        "sha256",
+        "source_date_epoch",
+        "source_version"
+    )
+    $ActualFields = @($Manifest.PSObject.Properties.Name | Sort-Object)
+    if (Compare-Object $ExpectedFields $ActualFields) {
+        throw "tracked wheel manifest fields are invalid"
+    }
+    if ($Manifest.schema_version -ne "py3d-wheel-manifest-v2") {
+        throw "tracked wheel manifest schema is unsupported"
+    }
+    if ($Manifest.source_date_epoch -ne $SourceDateEpoch) {
+        throw "tracked wheel manifest uses the wrong SOURCE_DATE_EPOCH"
+    }
+    if ($Manifest.sha256 -notmatch "^[0-9a-f]{64}$") {
+        throw "tracked wheel manifest SHA-256 is invalid"
+    }
+    if ($Manifest.python_version -notmatch '^\d+\.\d+\.\d+$') {
+        throw "tracked wheel manifest Python version is invalid"
+    }
+    $ManifestBuildRequires = @($Manifest.build_requires)
+    $InvalidBuildRequires = @(
+        $ManifestBuildRequires | Where-Object {
+            $_ -isnot [string] -or [string]::IsNullOrWhiteSpace($_)
+        }
+    )
+    if (
+        $ManifestBuildRequires.Count -eq 0 -or
+        $InvalidBuildRequires.Count -gt 0
+    ) {
+        throw "tracked wheel manifest build requirements are invalid"
+    }
+    if (
+        [string]::Join("`n", $ManifestBuildRequires) -ne
+        [string]::Join("`n", $PinnedBuildRequires)
+    ) {
+        throw "tracked wheel manifest build requirements do not match pyproject.toml"
+    }
+    return $Manifest
+}
+
+$BuildRequires = @(Get-BuildRequirements)
+$PinnedManifest = Read-PinnedManifest $BuildRequires
+$PythonVersion = Get-PythonVersion
 $HadEpoch = Test-Path Env:SOURCE_DATE_EPOCH
 $PreviousEpoch = $env:SOURCE_DATE_EPOCH
 try {
@@ -75,6 +197,23 @@ try {
         throw "wheel filename '$($WheelA.Name)' does not match '$ExpectedName'"
     }
 
+    if (
+        $null -ne $PinnedManifest -and
+        $HashA -ne $PinnedManifest.sha256 -and
+        -not $UpdateManifest
+    ) {
+        $ExpectedHash = $PinnedManifest.sha256
+        Write-Host "expected=$ExpectedHash actual=$HashA"
+        throw "The reproducible build does not match the pinned wheel identity."
+    }
+
+    if (-not $UpdateManifest) {
+        Write-Host "py3d wheel reproducible and pinned: $($WheelA.Name)"
+        Write-Host "SHA-256: $HashA"
+        Write-Host "Manifest: $ManifestPath"
+        return
+    }
+
     New-Item -ItemType Directory -Force -Path $OutputDirectory | Out-Null
     $ResolvedOutput = (Resolve-Path -LiteralPath $OutputDirectory).Path
     $Destination = Join-Path $ResolvedOutput $WheelA.Name
@@ -85,11 +224,13 @@ try {
     }
 
     $Manifest = [ordered]@{
-        schema_version = "py3d-wheel-manifest-v1"
+        schema_version = "py3d-wheel-manifest-v2"
         filename = $WheelA.Name
         sha256 = $HashA
         source_date_epoch = $SourceDateEpoch
         source_version = $Version
+        python_version = $PythonVersion
+        build_requires = $BuildRequires
     }
     $ManifestText = (
         ($Manifest | ConvertTo-Json -Depth 3) -replace "`r`n", "`n"
