@@ -32,6 +32,24 @@ from .validation import SOURCE_MAP_PATH
 
 
 REQUIRED_SKILL_TARGETS = {"claude_user_skills", "agents_user_skills"}
+ADJUDICATIONS_PATH = Path("promotions/adjudications.json")
+SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
+PROMOTION_EXECUTABLE_SUFFIXES = {".ps1", ".psm1", ".bat", ".cmd", ".py"}
+PROMOTION_PATH_PLACEHOLDERS = (
+    "<you>",
+    "<runbooks>",
+    "<dayz-projects>",
+    "<vault>",
+    "<skill-source>",
+    "<vanilla>",
+    "<cf-root>",
+)
+PROMOTION_PLACEHOLDER_SCANNER_EXCLUSIONS = frozenset(
+    {
+        "packctl/promotion.py",
+        "tests/packctl/test_promotion.py",
+    }
+)
 
 
 def _route_contains(repo_path: str, kind: object, output_path: str) -> bool:
@@ -422,6 +440,588 @@ def _target_config_findings(
     return targets, allowed, forbidden, backup_root, sort_findings(findings)
 
 
+def _executable_placeholder_findings(
+    routes: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    findings: list[dict[str, object]] = []
+    scanned: set[str] = set()
+    for route in routes:
+        source = Path(str(route["_resolved_source"]))
+        repo_path = str(route["repo_path"])
+        if route["artifact_kind"] == "file":
+            candidates = [(repo_path, source)]
+        else:
+            candidates = [
+                (
+                    (Path(repo_path) / str(relative)).as_posix(),
+                    source / str(relative),
+                )
+                for relative in route["_source_files"]
+            ]
+        for relative, candidate in candidates:
+            if relative in PROMOTION_PLACEHOLDER_SCANNER_EXCLUSIONS:
+                continue
+            if candidate.suffix.lower() not in PROMOTION_EXECUTABLE_SUFFIXES:
+                continue
+            try:
+                resolved = candidate.resolve(strict=True)
+                key = os.path.normcase(str(resolved))
+                if key in scanned:
+                    continue
+                scanned.add(key)
+                lines = resolved.read_text(encoding="utf-8").splitlines()
+            except (OSError, UnicodeError) as error:
+                findings.append(
+                    finding(
+                        "PROMOTION-SOURCE-INVALID",
+                        path=relative,
+                        line=0,
+                        message=(
+                            "An executable source payload cannot be scanned "
+                            "safely."
+                        ),
+                        evidence=type(error).__name__,
+                    )
+                )
+                continue
+            for line_number, line in enumerate(lines, 1):
+                folded = line.casefold()
+                for token in PROMOTION_PATH_PLACEHOLDERS:
+                    start = folded.find(token)
+                    if start < 0:
+                        continue
+                    observed = line[start : start + len(token)]
+                    findings.append(
+                        finding(
+                            "PROMOTION-PLACEHOLDER-IN-EXECUTABLE",
+                            path=relative,
+                            line=line_number,
+                            message=(
+                                "An executable payload still contains an "
+                                "unresolved path placeholder."
+                            ),
+                            evidence=f"{relative}:{line_number} {observed}",
+                        )
+                    )
+    return sort_findings(findings)
+
+
+def _load_adjudications(
+    root: Path,
+) -> tuple[dict[tuple[str, str], str], list[dict[str, object]]]:
+    path = root / ADJUDICATIONS_PATH
+    if not path.exists():
+        return {}, []
+    value, findings = _load_object(path, "PROMOTION-ADJUDICATION-INVALID")
+    if value is None:
+        return {}, findings
+    if (
+        set(value) != {"schema_version", "adjudications"}
+        or value.get("schema_version") != 1
+        or not isinstance(value.get("adjudications"), list)
+    ):
+        return {}, [
+            finding(
+                "PROMOTION-ADJUDICATION-INVALID",
+                path=ADJUDICATIONS_PATH.as_posix(),
+                line=1,
+                message="The promotion adjudications do not match schema v1.",
+                evidence="Expected schema_version and adjudications.",
+            )
+        ]
+    required = {"artifact_id", "target_id", "observed_digest", "reason"}
+    adjudications: dict[tuple[str, str], str] = {}
+    for index, entry in enumerate(value["adjudications"]):
+        valid = (
+            isinstance(entry, dict)
+            and set(entry) == required
+            and all(isinstance(entry[field], str) for field in required)
+            and bool(entry["artifact_id"].strip())
+            and bool(entry["target_id"].strip())
+            and bool(entry["reason"].strip())
+            and SHA256_PATTERN.fullmatch(entry["observed_digest"]) is not None
+        )
+        if not valid:
+            findings.append(
+                finding(
+                    "PROMOTION-ADJUDICATION-INVALID",
+                    path=ADJUDICATIONS_PATH.as_posix(),
+                    line=1,
+                    message="A promotion adjudication has invalid fields.",
+                    evidence=f"adjudications[{index}]",
+                )
+            )
+            continue
+        key = (entry["artifact_id"], entry["target_id"])
+        if key in adjudications:
+            findings.append(
+                finding(
+                    "PROMOTION-ADJUDICATION-INVALID",
+                    path=ADJUDICATIONS_PATH.as_posix(),
+                    line=1,
+                    message="Promotion adjudications must be unique per target.",
+                    evidence=f"artifact_id={key[0]} target_id={key[1]}",
+                )
+            )
+            continue
+        adjudications[key] = entry["observed_digest"]
+    return adjudications, sort_findings(findings)
+
+
+_RECEIPT_FIELDS = frozenset(
+    {
+        "schema_version",
+        "transaction_id",
+        "source_commit",
+        "artifact_ids",
+        "target_ids",
+        "operations",
+        "verdict",
+        "completed_at",
+    }
+)
+_RECEIPT_OPERATION_FIELDS = frozenset(
+    {
+        "artifact_id",
+        "physical_alias",
+        "logical_target_ids",
+        "before_digest",
+        "after_digest",
+    }
+)
+
+
+def _nonempty_sorted_unique_strings(value: object) -> bool:
+    return (
+        isinstance(value, list)
+        and bool(value)
+        and all(isinstance(item, str) and bool(item.strip()) for item in value)
+        and value == sorted(set(value))
+    )
+
+
+def _receipt_claimed_pairs(
+    receipt: object,
+) -> set[tuple[str, str]]:
+    pairs: set[tuple[str, str]] = set()
+    if not isinstance(receipt, dict):
+        return pairs
+    operations = receipt.get("operations")
+    if not isinstance(operations, list):
+        return pairs
+    for operation in operations:
+        if not isinstance(operation, dict):
+            continue
+        artifact_id = operation.get("artifact_id")
+        target_ids = operation.get("logical_target_ids")
+        if (
+            not isinstance(artifact_id, str)
+            or not artifact_id.strip()
+            or not isinstance(target_ids, list)
+        ):
+            continue
+        for target_id in target_ids:
+            if isinstance(target_id, str) and target_id.strip():
+                pairs.add((artifact_id, target_id))
+    return pairs
+
+
+def _receipt_contract_is_canonical(
+    path: Path,
+    receipt: dict[str, object],
+) -> bool:
+    if (
+        set(receipt) != _RECEIPT_FIELDS
+        or receipt.get("schema_version") != 1
+        or receipt.get("verdict") != "PASS"
+        or not isinstance(receipt.get("transaction_id"), str)
+        or re.fullmatch(r"[0-9a-f]{24}", receipt["transaction_id"]) is None
+        or path.name != f"{receipt['transaction_id']}.json"
+        or not isinstance(receipt.get("source_commit"), str)
+        or re.fullmatch(
+            r"(?:[0-9a-f]{40}|[0-9a-f]{64})",
+            receipt["source_commit"],
+        )
+        is None
+        or not _nonempty_sorted_unique_strings(receipt.get("artifact_ids"))
+        or not _nonempty_sorted_unique_strings(receipt.get("target_ids"))
+        or not isinstance(receipt.get("operations"), list)
+        or not receipt["operations"]
+        or not isinstance(receipt.get("completed_at"), str)
+    ):
+        return False
+    try:
+        completed = datetime.fromisoformat(
+            receipt["completed_at"].replace("Z", "+00:00")
+        )
+        if completed.tzinfo is None:
+            return False
+    except ValueError:
+        return False
+
+    aliases: set[str] = set()
+    pairs: set[tuple[str, str]] = set()
+    artifact_ids: set[str] = set()
+    target_ids: set[str] = set()
+    for operation in receipt["operations"]:
+        if not isinstance(operation, dict) or set(operation) != _RECEIPT_OPERATION_FIELDS:
+            return False
+        artifact_id = operation.get("artifact_id")
+        alias = operation.get("physical_alias")
+        logical_target_ids = operation.get("logical_target_ids")
+        before_digest = operation.get("before_digest")
+        after_digest = operation.get("after_digest")
+        if (
+            not isinstance(artifact_id, str)
+            or not artifact_id.strip()
+            or not isinstance(alias, str)
+            or re.fullmatch(r"physical-[0-9]+", alias) is None
+            or alias in aliases
+            or not _nonempty_sorted_unique_strings(logical_target_ids)
+            or not isinstance(before_digest, str)
+            or (
+                before_digest != "absent"
+                and SHA256_PATTERN.fullmatch(before_digest) is None
+            )
+            or not isinstance(after_digest, str)
+            or SHA256_PATTERN.fullmatch(after_digest) is None
+        ):
+            return False
+        aliases.add(alias)
+        artifact_ids.add(artifact_id)
+        for target_id in logical_target_ids:
+            key = (artifact_id, target_id)
+            if key in pairs:
+                return False
+            pairs.add(key)
+            target_ids.add(target_id)
+    return (
+        receipt["artifact_ids"] == sorted(artifact_ids)
+        and receipt["target_ids"] == sorted(target_ids)
+    )
+
+
+def _pairs_have_matching_adjudications(
+    pairs: set[tuple[str, str]],
+    adjudications: dict[tuple[str, str], str],
+    observed_digests: dict[tuple[str, str], str],
+) -> bool:
+    return bool(pairs) and all(
+        key in observed_digests
+        and adjudications.get(key) == observed_digests[key]
+        for key in pairs
+    )
+
+
+def _append_scoped_receipt_finding(
+    findings: list[dict[str, object]],
+    *,
+    code: str,
+    path: str,
+    message: str,
+    evidence: str,
+    pairs: set[tuple[str, str]],
+    adjudications: dict[tuple[str, str], str],
+    observed_digests: dict[tuple[str, str], str],
+) -> None:
+    if _pairs_have_matching_adjudications(
+        pairs, adjudications, observed_digests
+    ):
+        return
+    findings.append(
+        finding(
+            code,
+            path=path,
+            line=1,
+            message=message,
+            evidence=evidence,
+        )
+    )
+
+
+def _sealed_receipt_transitions(
+    root: Path,
+    backup_root: Path,
+    path: Path,
+    receipt: dict[str, object],
+) -> tuple[
+    list[tuple[tuple[str, str], str, str, str]],
+    str | None,
+    str,
+]:
+    transaction_id = str(receipt["transaction_id"])
+    try:
+        receipt_bytes = path.read_bytes()
+        plan, events = _load_transaction(backup_root / transaction_id)
+    except (OSError, _PromotionIntegrityError) as error:
+        evidence = (
+            error.evidence
+            if isinstance(error, _PromotionIntegrityError)
+            else _exception_evidence(error)
+        )
+        return [], "PROMOTION-RECEIPT-UNSEALED", evidence
+    terminal = _terminal_event(events)
+    if terminal is None or terminal.get("event_type") != "COMMIT":
+        return [], "PROMOTION-RECEIPT-UNSEALED", "commit-event-missing"
+    completed_at = terminal["payload"].get("completed_at")
+    receipt_hash = terminal["payload"].get("receipt_hash")
+    if (
+        not isinstance(completed_at, str)
+        or not isinstance(receipt_hash, str)
+        or SHA256_PATTERN.fullmatch(receipt_hash) is None
+    ):
+        return [], "PROMOTION-RECEIPT-UNSEALED", "commit-payload-invalid"
+    expected_receipt = _receipt_value(plan, completed_at)
+    expected_path = Path(str(plan["receipt_path"])).resolve(strict=False)
+    if (
+        receipt != expected_receipt
+        or os.path.normcase(str(expected_path))
+        != os.path.normcase(str(path.resolve(strict=False)))
+        or Path(str(plan["source_root"])).resolve(strict=False) != root
+    ):
+        return (
+            [],
+            "PROMOTION-RECEIPT-JOURNAL-MISMATCH",
+            "receipt-does-not-match-sealed-plan",
+        )
+    if (
+        receipt_bytes != canonical_json_bytes(expected_receipt)
+        or sha256_bytes(receipt_bytes) != receipt_hash
+    ):
+        return [], "PROMOTION-RECEIPT-HASH-MISMATCH", "receipt-hash-mismatch"
+    transitions: list[tuple[tuple[str, str], str, str, str]] = []
+    for operation in receipt["operations"]:
+        for target_id in operation["logical_target_ids"]:
+            transitions.append(
+                (
+                    (str(operation["artifact_id"]), str(target_id)),
+                    str(operation["before_digest"]),
+                    str(operation["after_digest"]),
+                    transaction_id,
+                )
+            )
+    return transitions, None, ""
+
+
+def _causal_receipt_head(
+    transitions: list[tuple[str, str, str]],
+) -> tuple[str | None, str | None, str]:
+    outgoing: dict[str, tuple[str, str]] = {}
+    incoming: dict[str, tuple[str, str]] = {}
+    no_op_states: set[str] = set()
+    seen_edges: set[tuple[str, str]] = set()
+    for before_digest, after_digest, transaction_id in transitions:
+        if before_digest == after_digest:
+            no_op_states.add(before_digest)
+            continue
+        edge = (before_digest, after_digest)
+        if edge in seen_edges:
+            return (
+                None,
+                "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
+                f"duplicate-transition:{transaction_id}",
+            )
+        seen_edges.add(edge)
+        prior_outgoing = outgoing.get(before_digest)
+        if prior_outgoing is not None:
+            return (
+                None,
+                "PROMOTION-RECEIPT-HISTORY-FORK",
+                f"fork-at:{before_digest}",
+            )
+        prior_incoming = incoming.get(after_digest)
+        if prior_incoming is not None:
+            return (
+                None,
+                "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
+                f"multiple-preimages:{after_digest}",
+            )
+        outgoing[before_digest] = (after_digest, transaction_id)
+        incoming[after_digest] = (before_digest, transaction_id)
+
+    if not seen_edges:
+        if len(no_op_states) == 1:
+            return next(iter(no_op_states)), None, ""
+        return None, "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS", "no-unique-state"
+
+    nodes = set(outgoing) | set(incoming)
+    visited: set[str] = set()
+    for start in nodes:
+        trail: set[str] = set()
+        current = start
+        while current in outgoing and current not in visited:
+            if current in trail:
+                return (
+                    None,
+                    "PROMOTION-RECEIPT-HISTORY-CYCLE",
+                    f"cycle-at:{current}",
+                )
+            trail.add(current)
+            current = outgoing[current][0]
+        visited.update(trail)
+
+    roots = nodes - set(incoming)
+    heads = nodes - set(outgoing)
+    if len(roots) != 1 or len(heads) != 1:
+        return (
+            None,
+            "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
+            f"roots={len(roots)} heads={len(heads)}",
+        )
+    current = next(iter(roots))
+    connected = {current}
+    while current in outgoing:
+        current = outgoing[current][0]
+        connected.add(current)
+    if connected != nodes or not no_op_states.issubset(nodes):
+        return (
+            None,
+            "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
+            "disconnected-history",
+        )
+    return next(iter(heads)), None, ""
+
+
+def _latest_receipt_digests(
+    root: Path,
+    backup_root: Path,
+    adjudications: dict[tuple[str, str], str],
+    observed_digests: dict[tuple[str, str], str],
+) -> tuple[dict[tuple[str, str], str], list[dict[str, object]]]:
+    receipts_root = root / "promotions" / "receipts"
+    transitions_by_key: dict[
+        tuple[str, str], list[tuple[str, str, str]]
+    ] = {}
+    findings: list[dict[str, object]] = []
+    if not receipts_root.exists():
+        return {}, findings
+    for path in sorted(receipts_root.glob("*.json")):
+        if path.is_symlink() or _is_junction(path):
+            findings.append(
+                finding(
+                    "PROMOTION-RECEIPT-INVALID",
+                    path=path.name,
+                    line=1,
+                    message="A promotion receipt is linked or unsafe.",
+                    evidence=path.name,
+                )
+            )
+            continue
+        receipt, load_findings = _load_object(
+            path,
+            "PROMOTION-RECEIPT-INVALID",
+        )
+        findings.extend(load_findings)
+        if receipt is None:
+            continue
+        pairs = _receipt_claimed_pairs(receipt)
+        if not _receipt_contract_is_canonical(path, receipt):
+            _append_scoped_receipt_finding(
+                findings,
+                code="PROMOTION-RECEIPT-INVALID",
+                path=path.name,
+                message="A promotion receipt is not canonical schema v1.",
+                evidence=path.name,
+                pairs=pairs,
+                adjudications=adjudications,
+                observed_digests=observed_digests,
+            )
+            continue
+        transitions, issue_code, issue_evidence = _sealed_receipt_transitions(
+            root, backup_root, path, receipt
+        )
+        if issue_code is not None:
+            _append_scoped_receipt_finding(
+                findings,
+                code=issue_code,
+                path=path.name,
+                message=(
+                    "A promotion receipt is not bound to its canonical "
+                    "sealed COMMIT evidence."
+                ),
+                evidence=issue_evidence,
+                pairs=pairs,
+                adjudications=adjudications,
+                observed_digests=observed_digests,
+            )
+            continue
+        for key, before_digest, after_digest, transaction_id in transitions:
+            transitions_by_key.setdefault(key, []).append(
+                (before_digest, after_digest, transaction_id)
+            )
+
+    history: dict[tuple[str, str], str] = {}
+    for key in sorted(transitions_by_key):
+        if observed_digests.get(key) == "absent":
+            continue
+        head, issue_code, issue_evidence = _causal_receipt_head(
+            transitions_by_key[key]
+        )
+        if issue_code is not None:
+            _append_scoped_receipt_finding(
+                findings,
+                code=issue_code,
+                path="promotions/receipts",
+                message=(
+                    "Promotion receipt history does not have one causal head."
+                ),
+                evidence=(
+                    f"artifact_id={key[0]} target_id={key[1]} "
+                    f"detail={issue_evidence}"
+                ),
+                pairs={key},
+                adjudications=adjudications,
+                observed_digests=observed_digests,
+            )
+            continue
+        if head is not None:
+            history[key] = head
+    return history, sort_findings(findings)
+
+def _target_is_empty(path: Path) -> bool:
+    try:
+        if path.is_dir() and not path.is_symlink():
+            return next(path.iterdir(), None) is None
+        if path.is_file() and not path.is_symlink():
+            return path.stat().st_size == 0
+    except OSError:
+        return False
+    return False
+
+
+def _target_preimage_findings(
+    operations: list[dict[str, object]],
+    receipt_digests: dict[tuple[str, str], str],
+    adjudications: dict[tuple[str, str], str],
+) -> list[dict[str, object]]:
+    findings: list[dict[str, object]] = []
+    for operation in operations:
+        actual = str(operation["before_digest"])
+        if actual == "absent":
+            continue
+        target_id = str(operation["logical_target_ids"][0])
+        key = (str(operation["artifact_id"]), target_id)
+        expected = receipt_digests.get(key)
+        if expected == actual or adjudications.get(key) == actual:
+            continue
+        target = Path(str(operation["target_path"]))
+        if expected is None and _target_is_empty(target):
+            continue
+        findings.append(
+            finding(
+                "PROMOTION-TARGET-UNEXPLAINED",
+                path=str(operation["artifact_id"]),
+                line=0,
+                message=(
+                    "The promotion target contains bytes no previous receipt "
+                    "explains."
+                ),
+                evidence=f"expected={expected or 'none'} actual={actual}",
+            )
+        )
+    return sort_findings(findings)
+
+
 def _skill_name(skill_file: Path) -> str | None:
     try:
         text = skill_file.read_text(encoding="utf-8")
@@ -581,6 +1181,17 @@ def check_promotion(
         plan_path.unlink(missing_ok=True)
         return make_report("promote check", root, findings)
 
+    findings.extend(_executable_placeholder_findings(routes))
+    if any(item["severity"] == "error" for item in findings):
+        plan_path.unlink(missing_ok=True)
+        return make_report("promote check", root, findings)
+
+    adjudications, adjudication_findings = _load_adjudications(root)
+    findings.extend(adjudication_findings)
+    if any(item["severity"] == "error" for item in findings):
+        plan_path.unlink(missing_ok=True)
+        return make_report("promote check", root, findings)
+
     commit = git_commit(root)
     raw_operations: list[dict[str, object]] = []
     for route in routes:
@@ -684,6 +1295,34 @@ def check_promotion(
                     "target_role": "skill",
                 }
             )
+    if any(item["severity"] == "error" for item in findings):
+        plan_path.unlink(missing_ok=True)
+        return make_report("promote check", root, findings)
+
+    observed_digests: dict[tuple[str, str], str] = {}
+    for operation in raw_operations:
+        for target_id in operation["logical_target_ids"]:
+            observed_digests[(str(operation["artifact_id"]), target_id)] = str(
+                operation["before_digest"]
+            )
+    receipt_digests, receipt_findings = _latest_receipt_digests(
+        root,
+        backup_root,
+        adjudications,
+        observed_digests,
+    )
+    findings.extend(receipt_findings)
+    if any(item["severity"] == "error" for item in findings):
+        plan_path.unlink(missing_ok=True)
+        return make_report("promote check", root, findings)
+
+    findings.extend(
+        _target_preimage_findings(
+            raw_operations,
+            receipt_digests,
+            adjudications,
+        )
+    )
     if any(item["severity"] == "error" for item in findings):
         plan_path.unlink(missing_ok=True)
         return make_report("promote check", root, findings)

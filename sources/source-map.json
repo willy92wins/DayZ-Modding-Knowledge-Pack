@@ -67,6 +67,29 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/pytest.ini",
+      "distribution_reason": "Pytest collection policy is repository governance and is excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Canonical no-flag pytest collection excludes the ignored reports tree while preserving every test tree.",
+          "license": "MIT",
+          "source_hash": "208451b05bb13c0ef84cb22df676388f4d1953aeb6ded25e31af625ec8a775b2",
+          "source_id": "pack-r21-authored",
+          "source_path": "pytest.ini",
+          "source_revision": "r21-pytest-collection@2026-07-26",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "208451b05bb13c0ef84cb22df676388f4d1953aeb6ded25e31af625ec8a775b2",
+      "output_path": "pytest.ini",
+      "routing_artifact_id": "root/pytest",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/changelog.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -1555,7 +1578,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fd4852e5df7030d3a63991eae901125991d6b0f5a6d87fe8001aa230bc75c254",
+      "output_hash": "8f748b41cb6997f50909fe49b7dd6fed0082a034587fbb3334eff28f8a6d694b",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -2072,17 +2095,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
+          "decision_evidence": "Pytest collection configuration is routed as repository governance for the canonical no-flag gate.",
           "license": "MIT",
-          "source_hash": "ac90f1c501814d7742cea3a1c6117468b813ab8b2fc33836bc59aa09dcb0d7c7",
+          "source_hash": "73abdd35b6987b6df8c00d04cff57626891bec71f213ad72107bbeba4f0072d6",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/promotion-map.json",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-pytest-collection@2026-07-26",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ac90f1c501814d7742cea3a1c6117468b813ab8b2fc33836bc59aa09dcb0d7c7",
+      "output_hash": "73abdd35b6987b6df8c00d04cff57626891bec71f213ad72107bbeba4f0072d6",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -6126,7 +6149,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1141e0af06434caffb6ef843dde3cf5a52993a66eb9901e4bd23b5bd639195b8",
+      "output_hash": "23d0e4325e81e96cbdaf739c6a890a67e037bde4477d9a2db849966cf89860c8",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"

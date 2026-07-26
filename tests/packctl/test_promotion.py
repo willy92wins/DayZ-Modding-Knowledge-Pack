@@ -76,18 +76,49 @@ def seed_every_target_with_pre_state(
     paths: dict[str, Path],
 ) -> None:
     commit = run_git(root, "rev-parse", "HEAD")
-    targets = [
-        paths["claude"] / "demo",
-        paths["agents"] / "demo",
-        paths["vault"] / "fixture" / commit,
-        paths["vault"] / "fixture-root" / commit,
+    specs = [
+        ("fixture", "claude_user_skills", paths["claude"] / "demo"),
+        ("fixture", "agents_user_skills", paths["agents"] / "demo"),
+        (
+            "fixture",
+            "obsidian_snapshots",
+            paths["vault"] / "fixture" / commit,
+        ),
+        (
+            "fixture-root",
+            "obsidian_snapshots",
+            paths["vault"] / "fixture-root" / commit,
+        ),
     ]
-    for index, target in enumerate(dict.fromkeys(targets)):
+    unique_targets: dict[Path, int] = {}
+    for _, _, target in specs:
+        if target in unique_targets:
+            continue
+        unique_targets[target] = len(unique_targets)
         target.mkdir(parents=True, exist_ok=True)
         (target / "pre.txt").write_text(
-            f"pre-{index}\n",
+            f"pre-{unique_targets[target]}\n",
             encoding="utf-8",
         )
+    commit_test_adjudications(
+        root,
+        [
+            {
+                "artifact_id": artifact_id,
+                "target_id": target_id,
+                "observed_digest": tree_digest(target),
+                "reason": "Fixture preimage required by recovery coverage.",
+            }
+            for artifact_id, target_id, target in specs
+        ],
+    )
+    current_commit = run_git(root, "rev-parse", "HEAD")
+    for artifact_id, target_id, target in specs:
+        if target_id != "obsidian_snapshots":
+            continue
+        current = paths["vault"] / artifact_id / current_commit
+        current.mkdir(parents=True, exist_ok=True)
+        (current / "pre.txt").write_bytes((target / "pre.txt").read_bytes())
 
 
 def assert_plan_state(
@@ -242,6 +273,833 @@ def promotion_fixture(
         "backups": backups,
     }
 
+
+def seed_installed_demo(root: Path, target: Path) -> Path:
+    target.mkdir(parents=True, exist_ok=True)
+    (target / "SKILL.md").write_bytes(
+        (root / "skills/demo/SKILL.md").read_bytes()
+    )
+    return target
+
+
+def _append_test_journal_event(
+    sealed_transaction: Path,
+    events: list[dict[str, object]],
+    event_type: str,
+    payload: dict[str, object],
+) -> None:
+    material: dict[str, object] = {
+        "schema_version": 1,
+        "sequence": len(events),
+        "transaction_id": sealed_transaction.name,
+        "event_type": event_type,
+        "previous_event_hash": (
+            str(events[-1]["event_hash"]) if events else "0" * 64
+        ),
+        "payload": payload,
+    }
+    event = dict(material)
+    event["event_hash"] = sha256_bytes(canonical_json_bytes(material))
+    write_json(
+        sealed_transaction / "events" / f"{len(events):08d}.json",
+        event,
+    )
+    events.append(event)
+
+
+def commit_test_receipt(
+    root: Path,
+    *,
+    backup_root: Path,
+    target_path: Path,
+    name: str,
+    target_id: str,
+    before_digest: str = "absent",
+    after_digest: str,
+    completed_at: str,
+    seal_journal: bool = True,
+) -> Path:
+    source_commit = run_git(root, "rev-parse", "HEAD")
+    receipt_path = root / "promotions" / "receipts" / f"{name}.json"
+    receipt_path.parent.mkdir(parents=True, exist_ok=True)
+    receipt = {
+        "schema_version": 1,
+        "transaction_id": name,
+        "source_commit": source_commit,
+        "artifact_ids": ["fixture"],
+        "target_ids": [target_id],
+        "operations": [
+            {
+                "artifact_id": "fixture",
+                "physical_alias": "physical-0001",
+                "logical_target_ids": [target_id],
+                "before_digest": before_digest,
+                "after_digest": after_digest,
+            }
+        ],
+        "verdict": "PASS",
+        "completed_at": completed_at,
+    }
+    receipt_path.write_bytes(canonical_json_bytes(receipt))
+    if seal_journal:
+        target = target_path.resolve(strict=False)
+        backup = backup_root.resolve(strict=True)
+        sealed_transaction = backup / name
+        (sealed_transaction / "events").mkdir(parents=True)
+        plan: dict[str, object] = {
+            "schema_version": 1,
+            "transaction_id": name,
+            "source_root": str(root.resolve()),
+            "source_commit": source_commit,
+            "promotion_map_path": str(root / "promotions/promotion-map.json"),
+            "promotion_map_hash": "0" * 64,
+            "local_targets_path": str(root / "local-targets.json"),
+            "local_targets_hash": "0" * 64,
+            "backup_root": str(backup),
+            "allowed_physical_roots": [str(backup.parent)],
+            "forbidden_physical_roots": [str(backup.parent / "plugins")],
+            "receipt_path": str(receipt_path.resolve()),
+            "artifact_ids": ["fixture"],
+            "target_ids": [target_id],
+            "operations": [
+                {
+                    "artifact_id": "fixture",
+                    "artifact_kind": "tree",
+                    "source_path": str((root / "skills/demo").resolve()),
+                    "source_files": ["SKILL.md"],
+                    "target_path": str(target),
+                    "logical_target_ids": [target_id],
+                    "logical_target_paths": {target_id: str(target)},
+                    "before_digest": before_digest,
+                    "after_digest": after_digest,
+                    "target_role": "skill",
+                    "physical_alias": "physical-0001",
+                }
+            ],
+        }
+        plan["plan_digest"] = sha256_bytes(canonical_json_bytes(plan))
+        write_json(sealed_transaction / "plan.json", plan)
+        events: list[dict[str, object]] = []
+        _append_test_journal_event(
+            sealed_transaction, events, "PENDING",
+            {"plan_digest": plan["plan_digest"]},
+        )
+        if before_digest != after_digest:
+            _append_test_journal_event(
+                sealed_transaction, events, "STAGE_READY",
+                {"physical_alias": "physical-0001", "after_digest": after_digest},
+            )
+            _append_test_journal_event(
+                sealed_transaction, events, "BACKUP_READY",
+                {
+                    "physical_alias": "physical-0001",
+                    "before_digest": before_digest,
+                    "existed": before_digest != "absent",
+                },
+            )
+            _append_test_journal_event(
+                sealed_transaction, events, "TARGET_PUBLISHED",
+                {"physical_alias": "physical-0001", "after_digest": after_digest},
+            )
+        _append_test_journal_event(
+            sealed_transaction, events, "POST_VERIFIED",
+            {"operation_count": 1, "logical_target_count": 1},
+        )
+        _append_test_journal_event(
+            sealed_transaction, events, "COMMIT",
+            {
+                "completed_at": completed_at,
+                "receipt_hash": sha256_bytes(receipt_path.read_bytes()),
+            },
+        )
+    run_git(root, "add", receipt_path.relative_to(root).as_posix())
+    run_git(root, "commit", "-qm", f"add receipt {name}")
+    return receipt_path
+
+def commit_test_adjudications(
+    root: Path,
+    entries: list[dict[str, str]],
+) -> None:
+    path = root / "promotions" / "adjudications.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    write_json(
+        path,
+        {"schema_version": 1, "adjudications": entries},
+    )
+    run_git(root, "add", path.relative_to(root).as_posix())
+    run_git(root, "commit", "-qm", "add promotion adjudications")
+
+
+def commit_test_adjudication(
+    root: Path,
+    *,
+    target_id: str,
+    observed_digest: str,
+    reason: str,
+) -> None:
+    commit_test_adjudications(
+        root,
+        [
+            {
+                "artifact_id": "fixture",
+                "target_id": target_id,
+                "observed_digest": observed_digest,
+                "reason": reason,
+            }
+        ],
+    )
+
+
+
+def _set_test_target_state(target: Path, value: str) -> str:
+    target.mkdir(parents=True, exist_ok=True)
+    (target / "state.txt").write_text(value, encoding="utf-8")
+    return tree_digest(target)
+
+
+def test_receipt_history_uses_causal_head_when_clock_moves_backward(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    first_digest = _set_test_target_state(target, "first\n")
+    head_digest = _set_test_target_state(target, "head\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="a" * 24, target_id="claude_user_skills",
+        after_digest=first_digest,
+        completed_at="2026-07-25T10:00:00+00:00",
+    )
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="b" * 24, target_id="claude_user_skills",
+        before_digest=first_digest, after_digest=head_digest,
+        completed_at="2026-07-25T09:59:59+00:00",
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(report)
+    assert plan_path.is_file()
+
+
+def test_receipt_history_rejects_restored_superseded_digest(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    first_digest = _set_test_target_state(target, "first\n")
+    head_digest = _set_test_target_state(target, "head\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="c" * 24, target_id="claude_user_skills",
+        after_digest=first_digest,
+        completed_at="2026-07-25T10:00:00+00:00",
+    )
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="d" * 24, target_id="claude_user_skills",
+        before_digest=first_digest, after_digest=head_digest,
+        completed_at="2026-07-25T09:59:59+00:00",
+    )
+    assert _set_test_target_state(target, "first\n") == first_digest
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-TARGET-UNEXPLAINED" in codes(report)
+    assert not plan_path.exists()
+
+
+def test_receipt_history_fork_fails_closed(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    first_digest = _set_test_target_state(target, "first\n")
+    second_digest = _set_test_target_state(target, "second\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="1" * 24, target_id="claude_user_skills",
+        after_digest=first_digest,
+        completed_at="2026-07-25T10:00:00+00:00",
+    )
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="2" * 24, target_id="claude_user_skills",
+        after_digest=second_digest,
+        completed_at="2026-07-25T11:00:00+00:00",
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-HISTORY-FORK" in codes(report)
+    assert not plan_path.exists()
+
+
+def test_receipt_history_cycle_fails_closed(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    first_digest = _set_test_target_state(target, "first\n")
+    second_digest = _set_test_target_state(target, "second\n")
+    _set_test_target_state(target, "first\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="3" * 24, target_id="claude_user_skills",
+        before_digest=first_digest, after_digest=second_digest,
+        completed_at="2026-07-25T10:00:00+00:00",
+    )
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="4" * 24, target_id="claude_user_skills",
+        before_digest=second_digest, after_digest=first_digest,
+        completed_at="2026-07-25T11:00:00+00:00",
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-HISTORY-CYCLE" in codes(report)
+    assert not plan_path.exists()
+
+
+def test_disconnected_receipt_history_fails_closed_as_ambiguous(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    first_digest = _set_test_target_state(target, "first\n")
+    head_digest = _set_test_target_state(target, "head\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="5" * 24, target_id="claude_user_skills",
+        after_digest=first_digest,
+        completed_at="2026-07-25T10:00:00+00:00",
+    )
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="6" * 24, target_id="claude_user_skills",
+        before_digest="e" * 64, after_digest=head_digest,
+        completed_at="2026-07-25T11:00:00+00:00",
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS" in codes(report)
+    assert not plan_path.exists()
+
+
+@pytest.mark.parametrize(
+    ("container", "field"),
+    [
+        ("root", "transaction_id"),
+        ("root", "source_commit"),
+        ("root", "artifact_ids"),
+        ("root", "target_ids"),
+        ("operation", "physical_alias"),
+        ("operation", "before_digest"),
+    ],
+)
+def test_receipt_requires_complete_canonical_contract(
+    repo_factory,
+    tmp_path: Path,
+    container: str,
+    field: str,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    receipt_path = commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="7" * 24, target_id="claude_user_skills",
+        after_digest=tree_digest(target),
+        completed_at="2026-07-25T10:00:00+00:00",
+    )
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    if container == "root":
+        del receipt[field]
+    else:
+        del receipt["operations"][0][field]
+    write_json(receipt_path, receipt)
+    run_git(root, "add", receipt_path.relative_to(root).as_posix())
+    run_git(root, "commit", "-qm", f"remove receipt field {field}")
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-INVALID" in codes(report)
+    assert not plan_path.exists()
+
+
+def test_receipt_filename_must_equal_transaction_id(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    receipt_path = commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="8" * 24, target_id="claude_user_skills",
+        after_digest=tree_digest(target),
+        completed_at="2026-07-25T10:00:00+00:00",
+    )
+    renamed = receipt_path.with_name(f'{"9" * 24}.json')
+    receipt_path.rename(renamed)
+    run_git(root, "add", "-A", "promotions/receipts")
+    run_git(root, "commit", "-qm", "mismatch receipt filename")
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-INVALID" in codes(report)
+    assert not plan_path.exists()
+
+
+def test_receipt_without_sealed_journal_fails_closed(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="a0" * 12, target_id="claude_user_skills",
+        after_digest=tree_digest(target),
+        completed_at="2026-07-25T10:00:00+00:00",
+        seal_journal=False,
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-UNSEALED" in codes(report)
+    assert not plan_path.exists()
+
+
+def test_receipt_bytes_must_match_commit_receipt_hash(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    receipt_path = commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="b0" * 12, target_id="claude_user_skills",
+        after_digest=tree_digest(target),
+        completed_at="2026-07-25T10:00:00+00:00",
+    )
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    write_json(receipt_path, receipt)
+    run_git(root, "add", receipt_path.relative_to(root).as_posix())
+    run_git(root, "commit", "-qm", "reformat sealed receipt bytes")
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-HASH-MISMATCH" in codes(report)
+    assert not plan_path.exists()
+
+
+def test_matching_adjudication_is_the_only_override_for_unsealed_receipt(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    observed_digest = tree_digest(target)
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="c0" * 12, target_id="claude_user_skills",
+        after_digest="f" * 64,
+        completed_at="2026-07-25T10:00:00+00:00",
+        seal_journal=False,
+    )
+    commit_test_adjudication(
+        root, target_id="claude_user_skills",
+        observed_digest=observed_digest,
+        reason="Explicitly adjudicate the observed fixture preimage.",
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-UNSEALED" not in codes(report)
+    assert plan_path.is_file()
+
+
+def test_nonmatching_adjudication_does_not_override_unsealed_receipt(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="d0" * 12, target_id="claude_user_skills",
+        after_digest=tree_digest(target),
+        completed_at="2026-07-25T10:00:00+00:00",
+        seal_journal=False,
+    )
+    commit_test_adjudication(
+        root, target_id="claude_user_skills",
+        observed_digest="e" * 64,
+        reason="Deliberately does not match the observed fixture preimage.",
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-UNSEALED" in codes(report)
+    assert not plan_path.exists()
+
+def test_target_matching_latest_receipt_passes_preimage_gate(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    actual_digest = tree_digest(target)
+    commit_test_receipt(
+        root,
+        backup_root=paths["backups"],
+        target_path=target,
+        name="0" * 24,
+        target_id="claude_user_skills",
+        after_digest="f" * 64,
+        completed_at="2026-07-24T10:00:00+00:00",
+    )
+    commit_test_receipt(
+        root,
+        backup_root=paths["backups"],
+        target_path=target,
+        name="1" * 24,
+        target_id="claude_user_skills",
+        before_digest="f" * 64,
+        after_digest=actual_digest,
+        completed_at="2026-07-25T10:00:00+00:00",
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(report)
+    assert plan_path.is_file()
+
+
+def test_target_with_extra_file_fails_preimage_gate_without_writes(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    expected_digest = tree_digest(target)
+    commit_test_receipt(
+        root,
+        backup_root=paths["backups"],
+        target_path=target,
+        name="2" * 24,
+        target_id="claude_user_skills",
+        after_digest=expected_digest,
+        completed_at="2026-07-25T10:00:00+00:00",
+    )
+    (target / "live-only.md").write_text("preserve me\n", encoding="utf-8")
+    actual_digest = tree_digest(target)
+    backup_entries = list(paths["backups"].rglob("*"))
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    matches = [
+        item for item in report["findings"]
+        if item["code"] == "PROMOTION-TARGET-UNEXPLAINED"
+    ]
+    assert len(matches) == 1
+    assert matches[0]["message"] == (
+        "The promotion target contains bytes no previous receipt explains."
+    )
+    assert matches[0]["evidence"] == (
+        f"expected={expected_digest} actual={actual_digest}"
+    )
+    assert tree_digest(target) == actual_digest
+    assert (target / "live-only.md").read_text(encoding="utf-8") == "preserve me\n"
+    assert list(paths["backups"].rglob("*")) == backup_entries
+    assert not plan_path.exists()
+
+
+def test_target_with_modified_file_fails_preimage_gate(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    expected_digest = tree_digest(target)
+    commit_test_receipt(
+        root,
+        backup_root=paths["backups"],
+        target_path=target,
+        name="3" * 24,
+        target_id="claude_user_skills",
+        after_digest=expected_digest,
+        completed_at="2026-07-25T10:00:00+00:00",
+    )
+    (target / "SKILL.md").write_text("locally changed\n", encoding="utf-8")
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-TARGET-UNEXPLAINED" in codes(report)
+    assert tree_digest(target) != expected_digest
+    assert not plan_path.exists()
+
+
+def test_nonempty_target_without_receipt_fails_preimage_gate(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    actual_digest = tree_digest(target)
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    matches = [
+        item for item in report["findings"]
+        if item["code"] == "PROMOTION-TARGET-UNEXPLAINED"
+    ]
+    assert len(matches) == 1
+    assert matches[0]["evidence"] == f"expected=none actual={actual_digest}"
+    assert not plan_path.exists()
+
+
+def test_absent_target_without_receipt_passes_preimage_gate(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    assert not target.exists()
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(report)
+    assert not target.exists()
+    assert plan_path.is_file()
+
+
+def test_matching_adjudication_allows_observed_target_digest(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    observed_digest = tree_digest(target)
+    commit_test_adjudication(
+        root,
+        target_id="claude_user_skills",
+        observed_digest=observed_digest,
+        reason="Preserve content reviewed outside prior receipt history.",
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(report)
+    assert plan_path.is_file()
+
+
+def test_adjudication_expires_after_target_digest_changes(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    observed_digest = tree_digest(target)
+    commit_test_adjudication(
+        root,
+        target_id="claude_user_skills",
+        observed_digest=observed_digest,
+        reason="Preserve content reviewed outside prior receipt history.",
+    )
+    first = check_promotion(root, map_path, config_path, plan_path)
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(first)
+    (target / "changed.txt").write_text("changed again\n", encoding="utf-8")
+
+    second = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-TARGET-UNEXPLAINED" in codes(second)
+    assert not plan_path.exists()
+
+
+def test_adjudication_with_empty_reason_is_schema_error(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = seed_installed_demo(root, paths["claude"] / "demo")
+    commit_test_adjudication(
+        root,
+        target_id="claude_user_skills",
+        observed_digest=tree_digest(target),
+        reason="",
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-ADJUDICATION-INVALID" in codes(report)
+    assert not plan_path.exists()
+
+
+def commit_demo_payload(root: Path, relative: str, content: str) -> Path:
+    path = root / "skills" / "demo" / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
+    run_git(root, "add", path.relative_to(root).as_posix())
+    run_git(root, "commit", "-qm", f"add executable fixture {relative}")
+    return path
+
+
+def test_ps1_pack_alias_fails_placeholder_gate_without_writes(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    commit_demo_payload(
+        root,
+        "templates/demo.ps1",
+        'param()\nWrite-Output "demo"\n$Root = "<dayz-projects>\\LF"\n',
+    )
+    target = paths["claude"] / "demo"
+    backup_entries = list(paths["backups"].rglob("*"))
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    matches = [
+        item for item in report["findings"]
+        if item["code"] == "PROMOTION-PLACEHOLDER-IN-EXECUTABLE"
+    ]
+    assert len(matches) == 1
+    assert matches[0]["message"] == (
+        "An executable payload still contains an unresolved path placeholder."
+    )
+    assert matches[0]["path"] == "skills/demo/templates/demo.ps1"
+    assert matches[0]["line"] == 3
+    assert matches[0]["evidence"] == (
+        "skills/demo/templates/demo.ps1:3 <dayz-projects>"
+    )
+    assert not target.exists()
+    assert list(paths["backups"].rglob("*")) == backup_entries
+    assert not plan_path.exists()
+
+
+def test_ps1_usage_text_with_mod_placeholder_passes(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    commit_demo_payload(
+        root,
+        "templates/demo.ps1",
+        'Write-Output "Usage: demo <mod>"\n',
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-PLACEHOLDER-IN-EXECUTABLE" not in codes(report)
+    assert plan_path.is_file()
+
+
+def test_markdown_pack_alias_is_not_scanned_by_placeholder_gate(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    commit_demo_payload(
+        root,
+        "references/policy.md",
+        "Use <dayz-projects> as the distribution alias.\n",
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-PLACEHOLDER-IN-EXECUTABLE" not in codes(report)
+    assert plan_path.is_file()
+
+
+def test_python_pack_alias_fails_placeholder_gate_case_insensitively(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    commit_demo_payload(
+        root,
+        "scripts/demo.py",
+        'print("demo")\nVAULT_ROOT = "<VaUlT>"\n',
+    )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    matches = [
+        item for item in report["findings"]
+        if item["code"] == "PROMOTION-PLACEHOLDER-IN-EXECUTABLE"
+    ]
+    assert len(matches) == 1
+    assert matches[0]["line"] == 2
+    assert matches[0]["evidence"] == "skills/demo/scripts/demo.py:2 <VaUlT>"
+    assert not plan_path.exists()
+
+
+
+def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_real_payloads() -> None:
+    root = Path(__file__).resolve().parents[2]
+    promotion_map = json.loads(
+        (root / "promotions/promotion-map.json").read_text(encoding="utf-8")
+    )
+    routes = []
+    for route_value in promotion_map["artifacts"]:
+        route = dict(route_value)
+        route["_resolved_source"] = str(
+            (root / str(route["repo_path"])).resolve(strict=True)
+        )
+        route["_source_files"] = promotion._tracked_projection(
+            root,
+            str(route["repo_path"]),
+            route["artifact_kind"],
+        )
+        routes.append(route)
+
+    findings = promotion._executable_placeholder_findings(routes)
+
+    observed_paths = sorted(str(item["path"]) for item in findings)
+    assert not any(
+        item.startswith(("packctl/", "tests/"))
+        for item in observed_paths
+    )
+    assert observed_paths == [
+        "skills/dayz-characters/references/check_dayz_winding.py",
+        "skills/dayz-mcp-verify/references/drive_ladder.py",
+        "skills/dayz-test-ingame/templates/dayz-test.ps1",
+        "skills/dayz-test-ingame/templates/dayz-test.ps1",
+        "skills/dayz-test-ingame/templates/dayz-test.ps1",
+        "tools/py3d/rollout/fix-junctions.ps1",
+    ]
 
 def test_promotion_check_routes_repo_vault_and_both_skill_roots(
     repo_factory,
@@ -930,6 +1788,21 @@ def test_apply_revalidates_every_logical_alias(
         os.symlink(physical, logical, target_is_directory=True)
     except OSError as error:
         pytest.skip(f"directory symlink unavailable: {error}")
+    observed_digest = tree_digest(physical)
+    commit_test_adjudications(
+        root,
+        [
+            {
+                "artifact_id": "fixture",
+                "target_id": target_id,
+                "observed_digest": observed_digest,
+                "reason": (
+                    "Fixture preimage required before logical alias retarget."
+                ),
+            }
+            for target_id in REQUIRED_SKILL_TARGETS
+        ],
+    )
     check_promotion(root, map_path, config_path, plan_path)
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     aliased = next(
@@ -961,6 +1834,12 @@ def test_idempotent_operation_is_read_back_without_replace(
     target = paths["claude"] / "demo"
     target.mkdir()
     (target / "SKILL.md").write_bytes((root / "skills/demo/SKILL.md").read_bytes())
+    commit_test_adjudication(
+        root,
+        target_id="claude_user_skills",
+        observed_digest=tree_digest(target),
+        reason="Fixture preimage required by idempotent apply coverage.",
+    )
     check_promotion(root, map_path, config_path, plan_path)
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     noop = next(
@@ -998,6 +1877,12 @@ def test_failure_after_moving_old_restores_original_target(
     existing = paths["claude"] / "demo"
     existing.mkdir()
     (existing / "old.txt").write_text("original\n", encoding="utf-8")
+    commit_test_adjudication(
+        root,
+        target_id="claude_user_skills",
+        observed_digest=tree_digest(existing),
+        reason="Fixture preimage required by rollback coverage.",
+    )
     check_promotion(root, map_path, config_path, plan_path)
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     index = next(
@@ -1145,6 +2030,21 @@ def test_fault_injection_restores_every_touched_target(
     existing_agents = paths["agents"] / "demo"
     existing_agents.mkdir()
     (existing_agents / "old.txt").write_text("original\n", encoding="utf-8")
+    commit_test_adjudications(
+        root,
+        [
+            {
+                "artifact_id": "fixture",
+                "target_id": target_id,
+                "observed_digest": tree_digest(target),
+                "reason": "Fixture preimage required by fault coverage.",
+            }
+            for target_id, target in (
+                ("claude_user_skills", existing),
+                ("agents_user_skills", existing_agents),
+            )
+        ],
+    )
     check_promotion(root, map_path, config_path, plan_path)
     before = tree_digest(existing)
 

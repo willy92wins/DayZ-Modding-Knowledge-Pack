@@ -329,6 +329,17 @@
     },
     {
       "applicability": "governance",
+      "artifact_id": "root/pytest",
+      "artifact_kind": "file",
+      "not_applicable_reason": "Pytest collection policy is repository test governance, not skill content.",
+      "repo_path": "pytest.ini",
+      "skill_target_ids": [],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "governance",
       "artifact_id": "root/changelog",
       "artifact_kind": "file",
       "not_applicable_reason": "Release history is public pack documentation, not operational skill content.",
