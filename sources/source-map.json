@@ -614,6 +614,75 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/evals/live/cases/basebuilding-part-id-cap.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved B3b live discriminating evaluation harness, verified with deterministic offline scripted runners.",
+          "license": "MIT",
+          "source_hash": "ffab68c84b3e3a2990cc64e06d6b3968963c8e56c2aef1b1cb85298b4186a03a",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/live/cases/basebuilding-part-id-cap.json",
+          "source_revision": "r21-live-eval@2026-07-27",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ffab68c84b3e3a2990cc64e06d6b3968963c8e56c2aef1b1cb85298b4186a03a",
+      "output_path": "evals/live/cases/basebuilding-part-id-cap.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/evals/live/runners/claude-code.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved B3b live discriminating evaluation harness, verified with deterministic offline scripted runners.",
+          "license": "MIT",
+          "source_hash": "1f85bb1b7533c52a91cad0a691dd694d8a3ac747bb0c60fe67b8644365aad85b",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/live/runners/claude-code.py",
+          "source_revision": "r21-live-eval@2026-07-27",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1f85bb1b7533c52a91cad0a691dd694d8a3ac747bb0c60fe67b8644365aad85b",
+      "output_path": "evals/live/runners/claude-code.py",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/evals/live/schema.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved B3b live discriminating evaluation harness, verified with deterministic offline scripted runners.",
+          "license": "MIT",
+          "source_hash": "0fdaef9fe0d984660f1e8fdc3a740300e858f946f0679a181ac07162888ff1d9",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/live/schema.json",
+          "source_revision": "r21-live-eval@2026-07-27",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0fdaef9fe0d984660f1e8fdc3a740300e858f946f0679a181ac07162888ff1d9",
+      "output_path": "evals/live/schema.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/evals/schema.json",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -1440,7 +1509,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "435c1b6f038de45245b56c6b93d16eeb5a3f576e41c8c352795f7ea282631d68",
+      "output_hash": "42bf4251fa610011ae4d9ddf5f2ef1025049699ec1061cf05476b48039b59ef5",
       "output_path": "packctl/cli.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -1511,6 +1580,29 @@
       "license": "MIT",
       "output_hash": "b5690e35e4b0810351380c947e1851ba852c4612f87b150d361e660c7d357292",
       "output_path": "packctl/gate.py",
+      "routing_artifact_id": "repo/packctl",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/packctl/live_evals.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved B3b live discriminating evaluation harness, verified with deterministic offline scripted runners.",
+          "license": "MIT",
+          "source_hash": "37ec09a0c48a8bfd1db6d538a0db5c90c10a19b15e3c9cac83c2b98251155a25",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/live_evals.py",
+          "source_revision": "r21-live-eval@2026-07-27",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "37ec09a0c48a8bfd1db6d538a0db5c90c10a19b15e3c9cac83c2b98251155a25",
+      "output_path": "packctl/live_evals.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
     },
@@ -2176,6 +2268,29 @@
       "license": "MIT",
       "output_hash": "44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd",
       "output_path": "promotions/receipts/c7b5366cc761a8038e52f6a2.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/e2aa6cf9058070bb4fbf2a8c.json",
+      "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt hash 6457aac30352ef2b766fd9a713cbf0c06b6e2aacf8eb8b5a36bf137c9318cf3d matches the terminal COMMIT for the verified promotion of source commit 913192dfd6cb15a817949ea85414bcfe46b89673.",
+          "license": "MIT",
+          "source_hash": "6457aac30352ef2b766fd9a713cbf0c06b6e2aacf8eb8b5a36bf137c9318cf3d",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/e2aa6cf9058070bb4fbf2a8c.json",
+          "source_revision": "913192dfd6cb15a817949ea85414bcfe46b89673",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6457aac30352ef2b766fd9a713cbf0c06b6e2aacf8eb8b5a36bf137c9318cf3d",
+      "output_path": "promotions/receipts/e2aa6cf9058070bb4fbf2a8c.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
@@ -6177,6 +6292,29 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/tests/packctl/test_live_evals.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved B3b live discriminating evaluation harness, verified with deterministic offline scripted runners.",
+          "license": "MIT",
+          "source_hash": "4e8794fd6e041068475a6486a7c8188929a0570984bead731226c3b7a7e42e9c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_live_evals.py",
+          "source_revision": "r21-live-eval@2026-07-27",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4e8794fd6e041068475a6486a7c8188929a0570984bead731226c3b7a7e42e9c",
+      "output_path": "tests/packctl/test_live_evals.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/tests/packctl/test_promotion.py",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -6234,6 +6372,7 @@
     },
     {
       "artifact_id": "file/tests/py3d_rollout/test_apply_rollout.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
       "hash_policy": "sha256",
       "inputs": [
@@ -6252,8 +6391,7 @@
       "output_hash": "459379d5c38ea6b0e63615f4ded96bafcf9915db0a0773d4c006fe3688a7502e",
       "output_path": "tests/py3d_rollout/test_apply_rollout.py",
       "routing_artifact_id": "repo/tests",
-      "verification_level": "offline_tested",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload."
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/tools/dayz-animation-formats/readme.md",

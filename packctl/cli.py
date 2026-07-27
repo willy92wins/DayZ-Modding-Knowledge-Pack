@@ -9,6 +9,7 @@ from .api_index import build_index, query_index
 from .builder import build_archive
 from .common import exit_code_for, finding, make_report, write_json
 from .evals import run_eval_case
+from .live_evals import run_live_eval_case
 from .gate import run_gate
 from .promotion import apply_promotion, check_promotion, recover_promotion
 from .validation import validate_repo
@@ -55,6 +56,11 @@ def _parser() -> argparse.ArgumentParser:
     eval_run.add_argument("--case", required=True)
     eval_run.add_argument("--variant", required=True)
     eval_run.add_argument("--out", required=True, type=Path)
+    eval_live = eval_commands.add_parser("live")
+    eval_live.add_argument("--root", required=True, type=Path)
+    eval_live.add_argument("--case", required=True, type=Path)
+    eval_live.add_argument("--runner", required=True, type=Path)
+    eval_live.add_argument("--report", required=True, type=Path)
 
     promote = commands.add_parser("promote")
     action = promote.add_mutually_exclusive_group(required=True)
@@ -130,6 +136,14 @@ def main(argv: list[str] | None = None) -> int:
                 expected_schema=args.expected_schema,
             )
             report_path = args.report
+        elif args.command == "eval" and args.eval_command == "live":
+            report = run_live_eval_case(
+                args.root,
+                args.case,
+                args.runner,
+                args.report,
+            )
+            return exit_code_for(report)
         elif args.command == "eval" and args.eval_command == "run":
             root = Path.cwd()
             case_path = Path(args.case)
