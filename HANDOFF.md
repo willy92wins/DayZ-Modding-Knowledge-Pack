@@ -1,98 +1,67 @@
 # HANDOFF — DayZ Modding Knowledge Pack
 
 <!-- LIVE-STATE:START -->
-# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-25
+# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-27
 
-**Última verificación real:** la Fase 04 queda implementada en el commit de
-contenido `aa0a101a44a3e4edf33a2679559628343c26e1c6`. Su gate limpio pasó
-validación, 14/14 skills, 18 variantes de eval, compilación, suites packctl y
-py3d, y dos builds reproducibles. F1–F5 están cerrados en `product-spec.md`.
+**Última verificación real:** la cola correctiva de BUG-018 está cerrada y
+commiteada. HEAD `191df01` en `r21/phase01-foundation`, árbol limpio, `main`
+intacto en `994cb77`. Suite 643 passed / 18 skipped y `packctl validate` PASS con
+cero findings, medidos sobre el árbol y no leídos de informes.
 
 ## Estado actual
 
-- La rama activa es `r21/phase04-py3d`.
-- `tools/py3d` publica el fork 1.4.0 con ciclo completo de proxies MLOD:
-  add, inspección estricta, align, remove y round-trip raw/engine.
-- `tools/dayz-animation-formats` implementa lectura/escritura estricta de
-  SEAnim v1 y RTM `RTM_MDAT`/`RTM_0101`.
-- `tools/dayz-model-preflight` valida escala, huesos, winding y estructura
-  MLOD sin reparación silenciosa.
-- `tools/dayz-odol-strict` inspecciona y compara ODOL v53–v55 en modo
-  read-only mediante un backend externo fijado por hash. El backend no se
-  redistribuye; sí se distribuyen el adaptador, contrato, manifiesto y
-  fixtures first-party.
-- Todo el código de Fase 04 se distribuye desde el source pack. py3d añade un
-  wheel reproducible generado desde esa fuente; su SHA-256 es
-  `cc014a4330e8f4a0cb905b20c300ec726b62febddb0eb6d1c6426e41c563c8ff`.
-  ODOL se distribuye como instalación desde fuente; no se afirma un wheel
-  autónomo que omita su manifiesto externo al paquete Python.
-- El rollout se verificó sobre una copia desechable: 19 cambios planeados,
-  19 aplicados y 0 cambios en la segunda pasada.
-- Las skills instaladas reales y `P:\py3d` permanecen intactos. Aplicar el
-  rollout operativo requiere autorización final separada.
-- La Fase 02 conserva su bloqueo B20/C1 por observación DayZDiag y no ha sido
-  modificada por este trabajo.
+- El rollout py3d es **patch-only con preimagen fijada**: `patched/` eliminado,
+  cero rutas de reemplazo completo, backup obligatorio fuera de la raíz destino y
+  `preimage-manifest.json` con las 11 rutas (4 `patched`, 7 `not_applicable`,
+  todas con hash para detectar drift). BUG-018 cerrado.
+- La promoción tiene tres gates fail-closed: preimagen con historia **causal** de
+  receipts (sin confiar en el reloj, con el receipt sellado contra su journal),
+  placeholders en payloads ejecutables, y localización de alias al copiar.
+- El wheel py3d tiene gate de identidad. Está **rojo a propósito**: al fijar el
+  toolchain en `pyproject.toml` el artefacto cambió, así que `cc014a43…` ya no es
+  reproducible y solo un re-baseline deliberado lo cierra.
+- El conocimiento que solo existía en las skills instaladas está **adoptado** al
+  repo (SP-091, SP-092, SP-093, una sección más de `dayz-vehicles` y el
+  `evals.json` de `blender-animation`). La comparación viva↔repo da 0 ficheros y
+  0 secciones en riesgo ante una promoción espejo.
 
-## Validación de Fase 04
+## Bloqueo vigente
 
-- Suite global: 582 passed, 18 skipped.
-- py3d: 196 passed, 10 skipped.
-- animación: 82 passed.
-- preflight: 73 passed.
-- ODOL: 69 passed, 5 skipped sin backend; 74 passed con el backend fijado.
-- `packctl validate`: cero findings en claims, licencias, links, privacidad,
-  skills y source map.
-- `skills-ref` oficial en
-  `38a2ff82958afee88dadf4831509e6f7e9d8ef4e`: 14/14.
-- Wheel py3d: dos builds byte-idénticos y smoke aislado
-  add→inspect→align→save/reload→remove.
-- Fixtures binarias protegidas de normalización Git mediante
-  `.gitattributes`; bytes de working tree e índice verificados.
+`promote --check` desde árbol limpio devuelve FAIL con **2
+`PROMOTION-CONFIG-INVALID`** sobre `tools/py3d/rollout/fix-junctions.ps1`, líneas
+3 y 14, ambas por `<claude-appdata>`. Es **deliberado**: el alias entró en la
+lista cerrada sin valor en el mapa para que el gate deje de dar verde sobre un
+fichero que se promovería roto.
 
-## Issues abiertos
-
-1. **[ALTA, fuera de Fase 04] B20 / C1** — falta observar en DayZDiag el texto
-   exacto de las variantes LF/CRLF.
-2. **[MEDIA] Integración de rama** — la rama Fase 04 queda lista para integrar;
-   no se mezcla ni publica automáticamente.
-3. **[MEDIA] Rollout operativo** — no actualizar skills instaladas ni
-   `P:\py3d` sin aprobación explícita.
+Mientras eso siga así, el check retorna antes de llegar al gate de preimagen, y
+los 12 `PROMOTION-TARGET-UNEXPLAINED` de los seis artefactos restaurados quedan
+enmascarados.
 
 ## Próxima acción
 
-Elegir cómo integrar `r21/phase04-py3d` siguiendo el flujo de cierre de rama.
-Tras integrarla, el rollout operativo puede ejecutarse por separado sobre una
-raíz explícita, primero con `-NoWrite`, y solo después de aprobar el destino.
+1. Decidir `fix-junctions.ps1`: mapear `<claude-appdata>` o excluir el fichero de
+   la promoción. Bloquea todo lo demás de promoción.
+2. Escribir las 12 adjudicaciones (6 artefactos × 2 targets). Ya es seguro: la
+   adopción cerró el riesgo de borrado.
+3. Lanzar el eval vivo. Los evals actuales son tautológicos por schema y no
+   miden eficacia de skill.
+4. Poner al día la memoria durable, siete commits por detrás.
+
+Prompt de arranque completo:
+`VAULT/AI/10_Projects/DayZ_Modding_Knowledge_Pack/reviews/2026-07-27-prompt-siguiente-sesion.md`.
 
 ## Invariantes cerradas
 
-- Git es la única fuente editable del pack distribuible.
-- Ningún writer ODOL entra en alcance.
-- Los parsers y validadores fallan cerrados en límites, valores no finitos,
-  índices inválidos y anatomía ambigua.
-- El backend ODOL se invoca aislado y debe coincidir con el manifiesto fijado.
-- Fixtures de terceros no se redistribuyen; las incluidas tienen licencia y
-  procedencia registradas.
-- El wheel py3d deriva de la fuente versionada y el rollout verifica hash,
-  versión, backup y readback.
-- Obsidian conserva evidencia completa; las skills activas son despliegues,
-  no fuentes paralelas.
-
-## Punteros
-
-- `product-spec.md`
-- `plans/2026-07-25-04a-py3d-proxy-lifecycle.md`
-- `plans/2026-07-25-04b-dayz-animation-formats.md`
-- `plans/2026-07-25-04c-dayz-model-preflight.md`
-- `plans/2026-07-25-04d-dayz-odol-strict.md`
-- `specs/2026-07-25-py3d-proxy-lifecycle.md`
-- `specs/2026-07-25-dayz-animation-formats.md`
-- `specs/2026-07-25-dayz-model-preflight.md`
-- `specs/2026-07-25-dayz-odol-strict.md`
-- `tools/py3d/rollout/README.md`
+- Git es la única fuente editable; las skills instaladas son despliegues. La
+  adopción va del destino al repo, nunca al revés sin gate.
+- Ningún writer ODOL entra en alcance. El backend externo se fija por hash y no
+  se redistribuye.
+- Los parsers y validadores fallan cerrados; un gate que no puede ponerse rojo no
+  es un gate.
+- No se ejecuta ninguna promoción real sin autorización explícita del usuario.
 
 **Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde:
-Fase 04 F1–F5 cerrada · rollout operativo pendiente de autorización`.
+BUG-018 cerrado · promoción bloqueada a propósito por <claude-appdata>`.
 <!-- LIVE-STATE:END -->
 
 ---
