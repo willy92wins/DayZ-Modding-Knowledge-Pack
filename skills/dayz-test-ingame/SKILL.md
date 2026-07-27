@@ -510,3 +510,31 @@ Measured 2026-07-20 (LFHeli toggle diagnosis): with `-filePatching` on server AN
 3. **The srcprobe discriminator** (cheap, definitive, one boot): change a LOG STRING in an already-printing line in the SOURCE only (e.g. `[TAG]` -> `[TAG srcprobe]`), relaunch WITHOUT rebuilding, grep the script log: token present = source served; absent (old string still printing) = PBO served. Use it before wasting cycles on "why doesn't my script change do anything".
 
 Origin: 3 boots lost to probes that were "deployed" but never in the runtime; the PBO-wins fact then explained an earlier red herring the same day (a stale `P:\LFHeli\models` tree suspected of shadowing the deployed model - it never did).
+
+
+## Secure-launcher runtime traps: daemon argv, staging dir, opaque errors (SP-092, added 2026-07-26)
+
+Three infra traps cost most of a session on 2026-07-26. All three are cheap preflights.
+
+**1. The daemon argv is derived from the client registrations - and the handoff documented it wrong.**
+`host_config.resolve_daemon_provenance()` reads BOTH `~/.claude.json` (`mcpServers.dayz-mcp`) and
+`~/.codex/config.toml` (`[mcp_servers.dayz-mcp]`), requires them to agree, and builds ONE canonical
+daemon argv. Hand-starting the daemon with anything else is rejected with `daemon_identity_unverified`
+- by design, so nothing can squat the port and impersonate the daemon. The session handoff said
+`--idle-timeout 1800.0`; the registrations say `600`, so the canonical argv ends in `--idle-timeout 600.0`.
+That single wrong number made every retry impossible.
+Never guess the argv - ask the system:
+`python -c "import sys; sys.path.insert(0,r'<tools>'); from dayz_mcp import host_config; print(host_config.resolve_daemon_provenance().argv)"`
+
+**2. The CLI hides its own error code.** `secure_launcher` prints only
+`secure launcher failed: ControlClientError` and swallows the code. Getting `daemon_identity_unverified`
+required a wrapper script that caught the exception and read `.code`. If a launch fails, capture the
+code first - do not retry blind.
+
+**3. `oh1-build-deploy.ps1` fills the staging dir but never creates it.** `$Stage` under
+`%LOCALAPPDATA%\Temp\LFHeli_OH1_stage` holds `$PBOPREFIX$`, so when Windows cleans `%TEMP%` the build
+dies with `staging dir missing`. Rebuild it by copying the pack source (models/, proxies/,
+`$PBOPREFIX$`, config.cpp) into it; the script overwrites the p3ds with the fresh ODOLs afterwards.
+
+Also: the daemon self-terminates on its idle timeout (600 s), so a launch flow that worked hours
+earlier will fail later with no change to the mod. Check port 8765 before blaming the build.

@@ -67,29 +67,6 @@
       "verification_level": "cross_checked"
     },
     {
-      "artifact_id": "file/pytest.ini",
-      "distribution_reason": "Pytest collection policy is repository governance and is excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Canonical no-flag pytest collection excludes the ignored reports tree while preserving every test tree.",
-          "license": "MIT",
-          "source_hash": "208451b05bb13c0ef84cb22df676388f4d1953aeb6ded25e31af625ec8a775b2",
-          "source_id": "pack-r21-authored",
-          "source_path": "pytest.ini",
-          "source_revision": "r21-pytest-collection@2026-07-26",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "208451b05bb13c0ef84cb22df676388f4d1953aeb6ded25e31af625ec8a775b2",
-      "output_path": "pytest.ini",
-      "routing_artifact_id": "root/pytest",
-      "verification_level": "offline_tested"
-    },
-    {
       "artifact_id": "file/changelog.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -196,7 +173,7 @@
           "decision": "merge",
           "decision_evidence": "Administrative handoff records Phase 02 slices 1-2, B19 GREEN, the staged B20 probe and the authorized-engine blocker.",
           "license": "MIT",
-          "source_hash": "86a72d1cf5e66cb3fa9ce8e2202f6385d2c50366b13f94cca0e60a05974ba6ab",
+          "source_hash": "b52ee50cabb979f0bbc912aa130d915daf3ee7889aa816caa52bb4713dca7312",
           "source_id": "pack-r21-authored",
           "source_path": "HANDOFF.md",
           "source_revision": "r21-phase02-b20-auth-handoff@2026-07-25",
@@ -2180,6 +2157,29 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/pytest.ini",
+      "distribution_reason": "Pytest collection policy is repository governance and is excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Canonical no-flag pytest collection excludes the ignored reports tree while preserving every test tree.",
+          "license": "MIT",
+          "source_hash": "208451b05bb13c0ef84cb22df676388f4d1953aeb6ded25e31af625ec8a775b2",
+          "source_id": "pack-r21-authored",
+          "source_path": "pytest.ini",
+          "source_revision": "r21-pytest-collection@2026-07-26",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "208451b05bb13c0ef84cb22df676388f4d1953aeb6ded25e31af625ec8a775b2",
+      "output_path": "pytest.ini",
+      "routing_artifact_id": "root/pytest",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/skills/_shared/dayz-conventions.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -2494,6 +2494,28 @@
       "license": "MIT",
       "output_hash": "d8c849ffba9df1cb60925ca74a3f87811d5b6e29e558a998fde2a16a01f84d00",
       "output_path": "skills/blender-animation/SKILL.md",
+      "routing_artifact_id": "skill/blender-animation",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-animation/evals/evals.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Eval catalogue existed only in the installed skill; adopted so a mirror promotion cannot delete it.",
+          "license": "MIT",
+          "source_hash": "753e3250bb4b32014482b782384ddd35b51b6bd9af3efd44d290cc5954507f4c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-animation/evals/evals.json",
+          "source_revision": "r21-adopt-live@2026-07-27",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "753e3250bb4b32014482b782384ddd35b51b6bd9af3efd44d290cc5954507f4c",
+      "output_path": "skills/blender-animation/evals/evals.json",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
     },
@@ -3908,7 +3930,7 @@
           "decision": "adopt",
           "decision_evidence": "Approved release-grade build boundary was added after an adversarial RED-to-GREEN evaluation.",
           "license": "MIT",
-          "source_hash": "a5b2ed3bc477e39c637b1c7689e748454c990237d9bd4538ba7f1a3b8ac9cf97",
+          "source_hash": "3b8312763cd61f88380ba270d8cd86a704bd0e2ab8164bccfcfe71d4a8844482",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -3916,7 +3938,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4abe6a858760e9ed69fb0e12ebcfadef498d5d9886914041484fe3a0d10b0002",
+      "output_hash": "3b8312763cd61f88380ba270d8cd86a704bd0e2ab8164bccfcfe71d4a8844482",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -4160,7 +4182,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "88636f09517d696523c6aef961000e4c9907096511dc4c2536b3d73118b9b8ec",
+          "source_hash": "2dfc6a63cd26f7c3634ee096728dd84dd699c8975617242430adb73e01a0da59",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -4168,7 +4190,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "88636f09517d696523c6aef961000e4c9907096511dc4c2536b3d73118b9b8ec",
+      "output_hash": "2dfc6a63cd26f7c3634ee096728dd84dd699c8975617242430adb73e01a0da59",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

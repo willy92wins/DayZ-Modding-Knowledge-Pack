@@ -540,3 +540,78 @@ When the user reports "piece X sits N cm off / tilted" on an imported model (rot
 3. **Apply an offset ONLY if the deployed-artifact measurement demands it.** An eyeballed offset on an already-centered model is a REGRESSION (it moves what was right) and burns an in-game cycle to discover it.
 
 Measured case (LFHeli OH-1 round 3, AMENDED same day): user reported tail rotor "10 cm low" + interior "10 cm high, pokes through the canopy". First pass measured global bboxes and called it all perspective - WRONG on two counts: (a) "interior inside the glass" by global bbox missed a REAL 7.25 cm LOCAL protrusion through the canopy roof (per-cell interior-maxY vs glass-surface-Y grid found it; the user's eye was right); (b) the ring fit gave 9.7 mm misreported as 0.9 mm (units slip). CAVEAT the rule accordingly: bbox-vs-bbox NEVER proves containment - protrusion is LOCAL, measure per-cell surface-vs-surface before declaring a pose complaint perceptual. Complements the feel rule (subjective feel -> player data; measurable pose -> deployed-artifact measurement). Origin: LFHeli_dev/reviews/2026-07-20-LA-medicion-pose-fina.md.
+
+
+## Proxy placement convention - measured on a working reference car (SP-091, added 2026-07-26)
+
+Two full build+test cycles were burned on LFHeli OH-1 guessing this from the broken model alone.
+The answer was one probe away: read a car that WORKS. Reference used:
+`SUB_BRZ_dev\_references\Tyson89-Landrover` (MLOD v257, py3d reads it directly, no debinarize).
+
+MEASURED on Landrover.p3d LOD0 (18 proxies):
+- **NOT ONE has its anchor at the origin.** Every anchor sits at the real target position:
+  `Landrover_Wheel [0.8746, 0.4513, -1.5638]`, `Landrover_Driver_Door [0.888, 0.6492, -0.8629]`,
+  `Landrover_Trunk [0.0021, 1.1487, 2.5139]`.
+- **NOT ONE has an identity frame (0 of 18).** The standard frame is `[[-1,0,0],[0,0,1],[0,1,0]]`;
+  the opposite side mirrors it as `[[1,0,0],[0,0,-1],[0,1,0]]`; the spare wheel uses its own rotation.
+- Sub-models are authored in **proxy-local space**, origin at the attachment point:
+  `Landrover_Wheel |center| = 0.000 m`, `Landrover_Trunk 0.000 m`,
+  `Landrover_Hood 0.726 m` and `Landrover_Driver_Door 0.821 m` (they pivot on their hinge).
+
+RULES:
+1. Proxy anchor = target position in HOST coordinates. Anchor at origin is a defect.
+2. Sub-model geometry authored near ITS OWN origin (< ~1 m). A sub-model whose bbox center sits
+   2-7 m away is authored in host coordinates - that is the defect, and it is the one worth gating.
+3. The frame `[[-1,0,0],[0,0,1],[0,1,0]]` is the NORMAL neutral, not a smell: the crew proxies that
+   work carry it too. Numerical identity NEVER appears in a working model - forcing it makes
+   placement WORSE (verified in-game on OH-1).
+4. A zero-size crew marker proxy (~463 bytes) is immune to any frame rotation because its geometry
+   sits at the origin. Do not infer the convention from those - use a geometry-bearing proxy.
+5. Doors on a working vehicle are PROXIES with their own .p3d anchored at the hinge, not baked
+   geometry driven by a bone. Consider that before designing bone-driven doors.
+
+METHOD RULE (the expensive lesson): calibrate every gate rule against a model that WORKS before
+trusting it. Three rules were written from the broken model; two were false positives that would
+have red-flagged every correct model. The reference car killed both in one probe.
+
+Gates implementing this: `LFHeli_dev\tools\import_gates\proxy_placement_gate.py` (P1 anchor at
+origin, P8 sub-model authored in host space, P9 normal/winding coherence) plus
+`texture_binding_gate.py` (one .rvmat must not carry two base textures).
+
+## Rewriting a proxy triangle: translate, never re-orient without fixing normals (SP-093, added 2026-07-26)
+
+Rewriting the 3 points of a proxy triangle to change its ORIENTATION flips the geometric winding
+while the stored vertex normals stay as they were. Measured on OH-1: `dot(geometric, stored)` went
+from `+1.0` to `-1.0` on all three proxies, and it shipped unnoticed because the parity check only
+watched point coordinates. A pure TRANSLATION does not have this problem (winding is preserved;
+the same check stayed at `+1.0` across 96 faces).
+
+Rule: any parity/verification of a .p3d edit must assert `dot(geometric_normal, stored_normal) > 0.9`
+on every touched face. Byte-level guards are not enough - "only 192 bytes changed, all inside the
+authorized coordinate ranges" was TRUE and still shipped inverted normals, because unchanged normals
+were exactly the bug.
+
+
+## Two diagnoses that look solid and are not: identical textures, and server co-move (SP-094, added 2026-07-26)
+
+Both cost real cycles on LFHeli OH-1. Both are one cheap measurement away.
+
+**A. "One .rvmat bound to two base textures" is NOT automatically the cause of a texture defect.**
+On OH-1, `oh1_fuselage.rvmat` resolved to `rd_oh1_fuselage_co.paa` (10403 faces) and
+`rd_oh1_hs_fuselage_basecolor_co.paa` (6420 faces), UVs perfectly inside [0,1]. It reads like a
+smoking gun. **Hashing the files killed it**: all four .paa were byte-identical
+(`16B0FD978AAD7552...`, 6822200 bytes) - the same image under two names, so reassigning the faces
+would not change a single pixel. Rule: before concluding a texture-binding split explains anything
+visible, **hash the referenced textures**. If they are identical, the split is hygiene, not a cause,
+and the real defect is elsewhere (runtime/VFS, material stage, UV layout vs atlas content).
+This applies directly to the T1 rule of `texture_binding_gate.py` - the gate is right to flag it,
+but a FAIL there is not a diagnosis.
+
+**B. Server-authoritative co-movement does NOT prove the client renders it that way.**
+The user reported the hull staying behind while rotors and interior climbed. The instrumented
+measurement over a 28 m ascent said the opposite: `ratio shell/root = 1.000`, `proxy/root = 1.000`,
+separation constant at 0.626 m - hull and proxy co-move exactly. Both statements were true: the
+authoritative transform is coherent and the client still renders the part detached. Rule: when a
+part "does not follow", measure BOTH sides before designing a fix. A perfect server-side ratio with
+a visible mismatch points at render/replication/perception, and it rules out the physics and
+cohesion branches - which is worth a lot, because those are the expensive ones to chase.
