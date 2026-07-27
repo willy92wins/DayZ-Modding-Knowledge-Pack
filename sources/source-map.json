@@ -2051,7 +2051,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "09541c8e53a1f79e5d7874f01ca13309d2362309ec80a01443895d44346ef876",
+          "source_hash": "f3da45fbce88ec173b561285993327178c089275c5848e96c811b2f11559ae98",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/local-targets.example.json",
           "source_revision": "r21-phase01@2026-07-24",
@@ -2059,7 +2059,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "09541c8e53a1f79e5d7874f01ca13309d2362309ec80a01443895d44346ef876",
+      "output_hash": "f3da45fbce88ec173b561285993327178c089275c5848e96c811b2f11559ae98",
       "output_path": "promotions/local-targets.example.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"

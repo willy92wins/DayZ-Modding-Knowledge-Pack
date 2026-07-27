@@ -1,5 +1,19 @@
 {
   "schema_version": 1,
+  "path_aliases": {
+    "<claude-appdata>": {
+      "kind": "path",
+      "value": "<absolute-claude-appdata-root>"
+    },
+    "<dayz-projects>": {
+      "kind": "path",
+      "value": "<absolute-dayz-projects-root>"
+    },
+    "<you>": {
+      "kind": "fragment",
+      "value": "<local-user-name>"
+    }
+  },
   "allowed_physical_roots": [
     "<absolute-user-owned-root>"
   ],
