@@ -267,6 +267,8 @@ def _validate_proxy_path_index(path, index):
         raise ValueError("proxy path must not be empty")
     if "\0" in path:
         raise ValueError("proxy path must not contain NUL")
+    if any(ord(char) < 32 or 0x7F <= ord(char) <= 0x9F for char in path):
+        raise ValueError("proxy path must not contain control characters")
     if path.lower().endswith(".p3d"):
         raise ValueError("proxy path must omit the .p3d suffix")
     if isinstance(index, bool) or not isinstance(index, int):
@@ -1648,6 +1650,10 @@ class LOD:
         path, index = _validate_proxy_path_index(path, index)
         tri = canonical_proxy_triangle(origin, rotation, scale, space)
         name = "proxy:%s.%03d" % (path, index)
+        if PROXY_NAME_RE.match(name) is None:
+            raise ValueError(
+                "add_proxy: composed name does not match proxy contract"
+            )
         if name in self.selections:
             raise ValueError(
                 "add_proxy: selection %r already exists - remove it first "
@@ -2021,7 +2027,7 @@ class LOD:
                 "index": int(m.group("index")),
                 "anchor": anchor,
                 "frame": raw_frame,
-                "raw_frame": raw_frame,
+                "raw_frame": [row[:] for row in raw_frame],
                 "engine_frame": [
                     list(row) for row in proxy_frame_to_engine(R)
                 ],

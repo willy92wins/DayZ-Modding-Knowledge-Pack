@@ -1,5 +1,6 @@
 """Fase 04a: ciclo de vida estricto de proxies MLOD."""
 
+import itertools
 import math
 import re
 
@@ -31,6 +32,26 @@ def _matrix_close(actual, expected, tolerance=1e-9):
         assert tuple(row_actual) == pytest.approx(
             tuple(row_expected), abs=tolerance
         )
+
+
+def _matrix_multiply(left, right):
+    return tuple(
+        tuple(
+            sum(left[row][inner] * right[inner][column] for inner in range(3))
+            for column in range(3)
+        )
+        for row in range(3)
+    )
+
+
+def _transform_triangle(matrix, triangle):
+    return tuple(
+        tuple(
+            sum(matrix[row][column] * point[column] for column in range(3))
+            for row in range(3)
+        )
+        for point in triangle
+    )
 
 
 def _lod_snapshot(lod):
@@ -114,6 +135,27 @@ def _add_unrelated_triangle_after_proxy(fork, lod):
     return selection, face, tuple(lod.points[base:base + 3])
 
 
+def test_proxy_engine_correction_squared_is_exact_identity(fork):
+    """Comparacion exacta: P' solo contiene 0 y +/-1."""
+    assert _matrix_multiply(
+        fork.PROXY_ENGINE_CORRECTION,
+        fork.PROXY_ENGINE_CORRECTION,
+    ) == IDENTITY
+
+
+def test_proxy_engine_correction_twice_restores_proxy_triangle(fork):
+    """Comparacion exacta: P' solo permuta y niega componentes."""
+    triangle = (
+        (1.0, 2.0, 3.0),
+        (1.0, 2.01, 3.0),
+        (1.02, 2.0, 3.0),
+    )
+    corrected = _transform_triangle(fork.PROXY_ENGINE_CORRECTION, triangle)
+    restored = _transform_triangle(fork.PROXY_ENGINE_CORRECTION, corrected)
+
+    assert restored == triangle
+
+
 def test_proxy_frame_conversion_uses_involutive_dayz_correction(fork):
     """Rompe si raw↔engine omite o aplica por el lado incorrecto P'."""
     assert fork.PROXY_ENGINE_CORRECTION == ENGINE_CORRECTION
@@ -179,6 +221,52 @@ def test_add_proxy_rejects_bad_path_or_index_without_mutation(
     with pytest.raises(error_type, match=message):
         lod.add_proxy(path, index=index)
     assert _lod_snapshot(lod) == before
+
+
+@pytest.mark.parametrize(
+    "control",
+    ["\n", "\r", "\t", "\x1f", "\x7f", "\x85"],
+)
+def test_add_proxy_rejects_control_characters_without_mutation(fork, control):
+    """Rompe si una ruta de proxy puede contener controles no imprimibles."""
+    lod = build_cube_p3d(fork).lods[0]
+    before = _lod_snapshot(lod)
+
+    with pytest.raises(ValueError, match="control"):
+        lod.add_proxy(f"\\lf\\control{control}path")
+
+    assert _lod_snapshot(lod) == before
+
+
+def test_every_proxy_name_accepted_by_add_is_enumerated(fork):
+    """Rompe si add acepta un nombre que get_proxies omite."""
+    alphabet = ("a", "Z", "0", "_", "-", ".", "\\", "/", " ", ":")
+    candidates = [
+        "".join(characters)
+        for length in (1, 2)
+        for characters in itertools.product(alphabet, repeat=length)
+    ]
+    candidates.extend(
+        [
+            "\\lf\\line\nbreak",
+            "\\lf\\carriage\rreturn",
+            "\\lf\\tab\tpath",
+            "\\lf\\delete\x7fpath",
+            "\\lf\\c1\x85path",
+        ]
+    )
+    lod = build_cube_p3d(fork).lods[0]
+    accepted_names = []
+    for index, candidate in enumerate(candidates, start=1):
+        try:
+            accepted_names.append(lod.add_proxy(candidate, index=index))
+        except ValueError:
+            continue
+
+    enumerated_names = {item["name"] for item in lod.get_proxies()}
+
+    assert accepted_names
+    assert enumerated_names == set(accepted_names)
 
 
 @pytest.mark.parametrize(
@@ -249,6 +337,29 @@ def test_get_proxies_exposes_both_frames_and_scale(fork):
     _matrix_close(descriptor["raw_frame"], ROT_Y90)
     _matrix_close(descriptor["engine_frame"], expected_engine)
     assert descriptor["scale"] == pytest.approx(0.025, abs=1e-12)
+
+
+def test_get_proxies_returns_independent_frame_and_raw_frame_values(fork):
+    """Rompe si las dos claves publicas comparten la misma lista mutable."""
+    lod = build_cube_p3d(fork).lods[0]
+    name = lod.add_proxy(
+        "\\lf\\independent-frames",
+        rotation=ROT_Y90,
+        scale=0.025,
+    )
+    descriptor = {item["name"]: item for item in lod.get_proxies()}[name]
+    _matrix_close(descriptor["frame"], ROT_Y90)
+    _matrix_close(descriptor["raw_frame"], ROT_Y90)
+    assert descriptor["frame"] == descriptor["raw_frame"]
+
+    raw_before = [row[:] for row in descriptor["raw_frame"]]
+    descriptor["frame"][0][0] = 123.0
+    assert descriptor["raw_frame"] == raw_before
+
+    frame_before = [row[:] for row in descriptor["frame"]]
+    descriptor["raw_frame"][1][1] = 456.0
+    assert descriptor["frame"] == frame_before
+    assert descriptor["frame"] is not descriptor["raw_frame"]
 
 
 def test_engine_space_identity_roundtrips_as_engine_identity(fork):

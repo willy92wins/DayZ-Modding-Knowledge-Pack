@@ -13,14 +13,18 @@ from dayz_odol_strict.worker import invoke_worker
 FAKE_BACKEND = Path(__file__).with_name("fake_backend")
 
 
-def _write_manifest(tmp_path, files=("odol_reader.py",)):
+def _write_manifest(
+    tmp_path,
+    files=("odol_reader.py",),
+    source_root=FAKE_BACKEND,
+):
     value = {
         "api_id": "odol_reader.ODOL.from_bytes-v1",
         "files": [
             {
                 "path": name,
                 "sha256": hashlib.sha256(
-                    (FAKE_BACKEND / name).read_bytes()
+                    (source_root / name).read_bytes()
                 ).hexdigest(),
             }
             for name in files
@@ -151,6 +155,49 @@ def test_isolated_worker_returns_only_serializable_backend_fields(tmp_path):
     }
     assert "verdict" not in result
     assert str(root) not in json.dumps(result)
+
+
+def test_isolated_worker_does_not_import_unpinned_python_from_backend_root(
+    tmp_path,
+):
+    root = _copy_fake_root(tmp_path)
+    reader_path = root / "odol_reader.py"
+    reader_path.write_text(
+        "import backend_helper\n"
+        + reader_path.read_text(encoding="utf-8"),
+        encoding="utf-8",
+        newline="",
+    )
+    (root / "backend_helper.py").write_text(
+        "import struct\nassert struct.calcsize('<I') == 4\n",
+        encoding="utf-8",
+        newline="",
+    )
+    marker_path = root / "intruder-imported"
+    (root / "struct.py").write_text(
+        "from pathlib import Path\n"
+        "Path(__file__).with_name('intruder-imported').write_text("
+        "'yes', encoding='utf-8')\n"
+        "def calcsize(_format):\n"
+        "    return 4\n",
+        encoding="utf-8",
+        newline="",
+    )
+    manifest, manifest_hash = _write_manifest(
+        tmp_path,
+        files=("backend_helper.py", "odol_reader.py"),
+        source_root=root,
+    )
+    verified = verify_backend_manifest(root, manifest, manifest_hash)
+    payload_path = tmp_path / "payload.bin"
+    payload_path.write_text(
+        json.dumps(_worker_payload()), encoding="utf-8", newline=""
+    )
+
+    result = invoke_worker(payload_path, verified)
+
+    assert result["version"] == 55
+    assert not marker_path.exists()
 
 
 def test_isolated_worker_exception_is_backend_failure(tmp_path):

@@ -1,4 +1,5 @@
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -53,6 +54,50 @@ def _failure():
     )
 
 
+class _PinnedBackendFinder:
+    def __init__(self, root, files):
+        self._module_paths = {}
+        for item in files:
+            relative = Path(item["path"])
+            if relative.suffix != ".py" or len(relative.parts) != 1:
+                continue
+            module_name = relative.stem
+            if module_name in self._module_paths:
+                raise ImportError("duplicate pinned backend module")
+            self._module_paths[module_name] = (root / relative).resolve()
+        if "odol_reader" not in self._module_paths:
+            raise ImportError("pinned odol_reader module is unavailable")
+
+    def find_spec(self, fullname, path=None, target=None):
+        module_path = self._module_paths.get(fullname)
+        if module_path is None:
+            return None
+        return importlib.util.spec_from_file_location(fullname, module_path)
+
+    def module_names(self):
+        return tuple(self._module_paths)
+
+
+def _load_pinned_odol(root, files):
+    finder = _PinnedBackendFinder(root, files)
+    if any(name in sys.modules for name in finder.module_names()):
+        raise ImportError("pinned backend module was already imported")
+    spec = finder.find_spec("odol_reader")
+    if spec is None or spec.loader is None:
+        raise ImportError("pinned odol_reader module cannot be loaded")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["odol_reader"] = module
+    sys.meta_path.insert(0, finder)
+    try:
+        spec.loader.exec_module(module)
+    except Exception:
+        sys.modules.pop("odol_reader", None)
+        raise
+    finally:
+        sys.meta_path.remove(finder)
+    return module.ODOL
+
+
 def _worker_main():
     try:
         request = json.loads(sys.stdin.read())
@@ -69,8 +114,7 @@ def _worker_main():
                 candidate.read_bytes()
             ).hexdigest() != item["sha256"]:
                 return 2
-        sys.path.insert(0, os.fspath(root))
-        from odol_reader import ODOL
+        ODOL = _load_pinned_odol(root, files)
 
         odol = ODOL.from_bytes(payload_path.read_bytes())
         lods = []

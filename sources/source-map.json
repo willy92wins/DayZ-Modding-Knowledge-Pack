@@ -7567,7 +7567,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "102e8b381445bbba28790b41e36aa860c4b3418ad678cd0f79428308f6795e4a",
+      "output_hash": "c85d8f1599d81bf15e03ebef1875ca30ad4efd47e23369a1ee1a8789b336f2ed",
       "output_path": "tools/dayz-odol-strict/dayz_odol_strict/worker.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -7765,7 +7765,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b0d5742609896a61fa07e03875dd66607c4d3732bdb2f57154f491bdad59a5d4",
+      "output_hash": "a88b5dcb9a553398ae77650556e0ccabd0c045e8b7eda6ad2f0dd87cb6120f96",
       "output_path": "tools/dayz-odol-strict/tests/test_backend_manifest.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -8393,7 +8393,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "81109314b7936502e3122c41e2f442ec1e48b3c79045aafa978fb6871d9ce903",
+      "output_hash": "3b70173f886523ab367755ae2a2dbe11e1bf7897546b57b8af885e381e3f9bd0",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -9985,7 +9985,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e2eebd2b4fc17620ddedc4e9c6cb43ca920ed7fa124cda0decd242abd9c37269",
+      "output_hash": "16567d7c0bd7dccfe78453a1caf06cbab3a861cca6ae3138060e061af131c55f",
       "output_path": "tools/py3d/tests/test_s4_proxy_lifecycle.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
