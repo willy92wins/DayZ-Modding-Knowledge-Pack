@@ -2028,7 +2028,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "86232f4f6a0bc4112566e4d81da2b599b6997fb88f3ceb353fa654557c3b5387",
+          "source_hash": "6fcc6e7b94b15002d1d194a031091f61e490b593ba59d5e06d4f427f4223fbbf",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -2036,9 +2036,32 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "86232f4f6a0bc4112566e4d81da2b599b6997fb88f3ceb353fa654557c3b5387",
+      "output_hash": "6fcc6e7b94b15002d1d194a031091f61e490b593ba59d5e06d4f427f4223fbbf",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/promotions/adjudications.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Operator adjudications of promotion targets whose bytes no receipt explains; each entry authorizes one observed digest and expires when the target moves.",
+          "license": "MIT",
+          "source_hash": "90a2701cdf616726dcac0427da6db65de03a07acccfce8dbcee295a0decade8f",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "r21-preimage-adjudications@2026-07-27",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "90a2701cdf616726dcac0427da6db65de03a07acccfce8dbcee295a0decade8f",
+      "output_path": "promotions/adjudications.json",
+      "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
     },
     {

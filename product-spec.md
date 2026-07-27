@@ -52,7 +52,8 @@ y entrada en el changelog.
 |---|---|---|---|
 | B1 | Cada claim/snippet ejecutable nuevo registra fuente, build/commit, `path:line`, licencia, fecha, nivel de verificación y routing de promoción | provenance audit: 0 claims ejecutables sin registro o destino | ✓ |
 | B2 | Índice `dayz-api-index` regenerable, vanilla-first, read-only, con allowed-roots y rechazo de build/schema incompatible | fixtures clase activa/comentada/inexistente/colisión; path escape y build mismatch fallan cerrados | ✓ |
-| B3 | Harness de evals compara skill actual contra versión anterior o ausencia de skill en workspace limpio | cada run emite `grading.json`, evidencia, duración y tokens; piloto cubre API, UI y persistence | ✓ |
+| B3a | Harness mecánico de regresión del catálogo: cada caso de `evals/cases/` está bien formado y su veredicto fijado cuadra con sus aserciones | `packctl gate` recorre las variantes y falla con `EVAL-UNEXPECTED-VERDICT` si alguna se desvía; cada run emite `grading.json` y evidencia. **No compara contra baseline**: la respuesta puntuada está escrita en el propio caso | ✓ |
+| B3b | Existe al menos un caso vivo `DISCRIMINATING`: mismo enunciado y fixture, N runs por brazo, la skill montada frente a ausente, y el brazo sin skill por debajo de su techo | `pass_rate(with_skill) >= min_pass_with_skill`, `pass_rate(without_skill) <= max_pass_without_skill` y diferencia `>= min_discrimination`, sobre un runner real y con el hash del árbol de skills registrado por brazo | ❓ |
 | B4 | Errores StarDZ auditados existen como casos negativos | evals rechazan `autoptr` falso, overload falso, `Managed` falso, `JsonLoadFile`, `OnDrop` incompleto y Dabs inválido | ✓ |
 | B5 | Pipeline CI-like ejecuta skill validation, provenance, links, privacy, Python, py3d y build reproducible | un comando local devuelve 0; mutaciones dirigidas producen códigos estables y exit no-cero | ✓ |
 | B6 | Template mínimo `@MyMod` implementa la estructura, contratos de config, build y misión de test recomendados, consumiendo los mismos gates release-grade que `dayz-workshop-release` | scaffold se instancia sin rutas privadas; preflight y dry-run verifican artefacto nuevo/estructural y una publicación fallida conserva el PBO previo | ❓ |
@@ -204,6 +205,13 @@ La fase 01 fijará revisión, hash y root local de cada alias fuera de Git.
   sonda first-party vanilla-first sin Dabs obligatorio; schema
   `engine-capture-v1` ahora y adapter MCP run-bound/lossless en Fase 05.
   `py3d` queda fuera de esta ejecución y continúa en paralelo bajo Fase 04.
+- 2026-07-26 — B3 se parte en B3a/B3b tras medir que el catálogo mecánico no
+  compara contra baseline; aprobado por el usuario. Aplicado el 2026-07-27:
+  `evals/schema.json:104-114,138-140` exige `response` como campo del propio caso
+  y `packctl/gate.py:262-274` compara ese veredicto fijado contra las aserciones
+  del mismo archivo, así que los 18/18 miden coherencia del catálogo, no eficacia
+  de una skill. B3a conserva el texto original con esa reserva escrita; B3b queda
+  en `❓` hasta que un run real lo demuestre.
 - 2026-07-25 — cerrada Fase 04: F1–F5 pasan el gate limpio; py3d 1.4.0,
   RTM/SEAnim estricto, preflight MLOD y lector ODOL v53–v55 se distribuyen
   desde Git con fixtures y procedencia verificadas. El rollout a instalaciones
