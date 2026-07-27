@@ -2028,7 +2028,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "6fcc6e7b94b15002d1d194a031091f61e490b593ba59d5e06d4f427f4223fbbf",
+          "source_hash": "deffa63bfdd39d614495a1a90604eaa238e46045c65d1dd529c2b3a5685f57de",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -2036,7 +2036,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6fcc6e7b94b15002d1d194a031091f61e490b593ba59d5e06d4f427f4223fbbf",
+      "output_hash": "deffa63bfdd39d614495a1a90604eaa238e46045c65d1dd529c2b3a5685f57de",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
@@ -8798,7 +8798,7 @@
           "decision": "merge",
           "decision_evidence": "Reviewed wheel-gate bytes pin the py3d build toolchain and enforce fail-closed wheel identity verification.",
           "license": "MIT",
-          "source_hash": "20be66d3a505b2656273bd174158ab9502d959820ee19d2d54c5065aa364363e",
+          "source_hash": "513bda0c0ae17e1b7a8db79fb2468d902e3348d05821c0422cffb07efc8e1407",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/rollout/wheel-manifest.json",
           "source_revision": "r21-wheel-gate@2026-07-26",
@@ -8806,7 +8806,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "20be66d3a505b2656273bd174158ab9502d959820ee19d2d54c5065aa364363e",
+      "output_hash": "513bda0c0ae17e1b7a8db79fb2468d902e3348d05821c0422cffb07efc8e1407",
       "output_path": "tools/py3d/rollout/wheel-manifest.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

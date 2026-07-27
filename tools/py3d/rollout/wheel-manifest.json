@@ -1,11 +1,11 @@
 {
-    "schema_version": "py3d-wheel-manifest-v2",
-    "filename": "py3d-1.4.0-py3-none-any.whl",
-    "sha256": "cc014a4330e8f4a0cb905b20c300ec726b62febddb0eb6d1c6426e41c563c8ff",
-    "source_date_epoch": 1784937600,
-    "source_version": "1.4.0",
-    "python_version": "3.14.3",
-    "build_requires": [
-        "setuptools==83.0.0"
-    ]
+    "schema_version":  "py3d-wheel-manifest-v2",
+    "filename":  "py3d-1.4.0-py3-none-any.whl",
+    "sha256":  "c635bf7ec12c56da0bd11c93b417ff1caacb0810c64e07972daa75b31f98be3c",
+    "source_date_epoch":  1784937600,
+    "source_version":  "1.4.0",
+    "python_version":  "3.14.3",
+    "build_requires":  [
+                           "setuptools==83.0.0"
+                       ]
 }

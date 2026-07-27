@@ -172,7 +172,14 @@ y entrada en el changelog.
   StarDZ `dbdcd23b...`.
 - py3d upstream `7acd58b`/tag `v1.0` y fork release `1.4.0`; wheel
   reproducible SHA-256
-  `cc014a4330e8f4a0cb905b20c300ec726b62febddb0eb6d1c6426e41c563c8ff`.
+  `c635bf7ec12c56da0bd11c93b417ff1caacb0810c64e07972daa75b31f98be3c`,
+  re-baselinado el 2026-07-27 por decisión explícita del usuario. El valor
+  anterior `cc014a4330e8…` se fijó antes de que `tools/py3d/pyproject.toml`
+  existiera, cuando PEP 517 resolvía `setuptools` dinámicamente y el wheel
+  embebía esa versión; no es alcanzable con el toolchain pineado y no se
+  conserva como objetivo. La reproducibilidad es **toolchain-bound**: vale para
+  `setuptools==83.0.0` y Python `3.14.3`, ambos declarados en
+  `rollout/wheel-manifest.json`.
 
 Aliases de evidencia usados en los planes:
 
