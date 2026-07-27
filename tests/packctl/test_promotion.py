@@ -1246,6 +1246,8 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
         "skills/dayz-test-ingame/templates/dayz-test.ps1",
         "skills/dayz-test-ingame/templates/dayz-test.ps1",
         "tools/py3d/rollout/fix-junctions.ps1",
+        "tools/py3d/rollout/fix-junctions.ps1",
+        "tools/py3d/rollout/fix-junctions.ps1",
     ]
 
     findings = promotion._executable_placeholder_findings(
@@ -1253,6 +1255,7 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
         {
             "<dayz-projects>": str(root),
             "<you>": "fixture-user",
+            "<claude-appdata>": str(root / "claude-appdata"),
         },
     )
 

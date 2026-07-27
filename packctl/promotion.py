@@ -43,6 +43,7 @@ PROMOTION_PATH_PLACEHOLDERS = (
     "<skill-source>",
     "<vanilla>",
     "<cf-root>",
+    "<claude-appdata>",
 )
 PROMOTION_PLACEHOLDER_SCANNER_EXCLUSIONS = frozenset(
     {

@@ -1555,7 +1555,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "252aba586351d9321c6453a64503dff3c775c13edff4fcaad5efe5ae5a4ad816",
+      "output_hash": "80319d8cd1baf8acb0e8f36ca4997481ec6721bb48b1ef7b020c05826c782f7c",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -6171,7 +6171,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7cd2f8684c054a90400b5c3a291d60691ce9d8fb13672c8d17dc2675b16b35a8",
+      "output_hash": "9dbfcebe9dc68aaf2e7febf9dd1257873c2f09cb92bd486560fd72e25c45b2f8",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
