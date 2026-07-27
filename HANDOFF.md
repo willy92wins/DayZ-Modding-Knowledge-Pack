@@ -1,79 +1,86 @@
 # HANDOFF — DayZ Modding Knowledge Pack
 
 <!-- LIVE-STATE:START -->
-# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-27 (tarde)
+# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-27 (noche)
 
-**Última verificación real:** HEAD `78071a7` en `r21/phase01-foundation`, árbol
-limpio, `main` intacto en `994cb77`, sin remoto. Suite 643 passed / 18 skipped,
-`packctl validate` PASS con cero findings, y `packctl promote --check` en
-`verdict=WARN` con **exit 0**. Los tres medidos sobre el árbol, no leídos de
-informes.
+**Última verificación real:** HEAD `8ac8993` en `r21/phase01-foundation`, árbol
+limpio, `main` intacto en `994cb77`, sin remoto. Suite **660 passed / 18
+skipped**, `packctl validate` PASS con cero findings, `promote --check` en `WARN`
+con exit 0. Medidos sobre el árbol, no leídos de informes.
 
-## Estado actual
+## Lo que cambió en esta sesión
 
-- **El gate de promoción está verde.** Ya no hay `PROMOTION-CONFIG-INVALID` ni
-  `PROMOTION-TARGET-UNEXPLAINED`. El único finding es `PROMOTION-DRIFT
-  operation_count=43`, que es el aviso de trabajo pendiente: el plan tiene 54
-  operaciones y 43 con `before_digest != after_digest`.
-- `<claude-appdata>` está mapeado en `local-targets.json` a la raíz
-  **virtualizada** `C:\Users\guill\AppData\Roaming\Claude`, no a la física.
-  La línea 14 de `fix-junctions.ps1` usa ese prefijo para *detectar* junctions
-  rotas y las reconstruye contra una raíz que autodetecta en runtime, así que
-  mapearlo a la física lo convertiría en no-op.
-- Ese fichero está **gitignored**, luego la decisión no viaja con el repo. Queda
-  documentada en `promotions/local-targets.example.json`, que además no tenía la
-  clave `path_aliases` que el cargador exige.
-- Las **12 adjudicaciones** están en `promotions/adjudications.json`, con los
-  digests releídos del check en el momento. 7 se consumen; 5 quedan inertes
-  porque el gate indexa por `logical_target_ids[0]`.
-- El rollout py3d sigue patch-only con preimagen fijada (BUG-018 cerrado) y el
-  gate de identidad del wheel sigue **rojo a propósito**.
+- **Promoción real ejecutada** (tx `e2aa6cf9058070bb4fbf2a8c`, `verdict=PASS`, 54
+  operaciones). Readback verificado a mano: cero ficheros perdidos en el destino;
+  las seis diferencias de contenido son ejecutables bajo localización de alias y
+  se reproducen byte a byte aplicando el mapa a los bytes del repo.
+- **Wheel re-baselinado** a `c635bf7e…`, gate verde. La reproducibilidad es
+  **toolchain-bound** (`setuptools==83.0.0`, Python `3.14.3`), no propiedad del
+  código, y el `product-spec` ya lo dice así.
+- **Eval vivo discriminante entregado** (`8ac8993`): schema que prohíbe
+  `response`, runner agnóstico de proveedor, gate que declara `VACUOUS` el caso
+  que pasa sin la skill, caso semilla del cap de 93 partes y adaptador para el
+  CLI de Claude Code. **No enganchado a `gate` ni `validate`** a propósito.
+- **B3 partido en B3a (✓) / B3b (❓)**. B3b sigue sin evidencia y así debe quedar
+  hasta que un run real lo demuestre.
+
+## Lo siguiente, y está aprobado
+
+**Implementar BUG-020** siguiendo el plan aprobado por el usuario:
+`VAULT/AI/10_Projects/DayZ_Modding_Knowledge_Pack/plans/2026-07-27-bug020-identidad-de-ocurrencia-sellada.md`
+(mover a `<repo>/plans/` al retomarlo).
+
+Orden del plan: (1) convertir el medidor fiel en test de regresión con los tres
+receipts reales de fixture — hoy debe dar **12 rotos / 0 visibles**; (2)
+sustituir el `sorted` por nombre de `promotion.py:1145` por orden de
+`completed_at`; (3) reescribir `_causal_receipt_head` sobre ocurrencias
+`(digest, transaction_id)`; (4) **cuatro fixtures negativas obligatorias** —
+fork real, preimagen múltiple, ciclo real, transición duplicada; (5) re-medir con
+las adjudicaciones vaciadas: los 12 deben resolver solos.
+
+**Hallazgo que abarata el plan:** el `transaction_id` ya viaja en cada transición
+(`_sealed_receipt_transitions:1039-1049`) y el receipt no cambia de forma, así
+que la ocurrencia se **deriva** al recorrer. Si eso aguanta, no hay migración de
+formato, ni lectura legacy v1, ni backup de receipts — al contrario de lo que
+asumía la entrada del ledger. **Cláusula de parada vigente:** si al implementarlo
+aparece algo que exija *persistir* la ocurrencia, parar y re-aprobar como
+migración de formato.
 
 ## Lo que hay que saber antes de tocar nada
 
-- **La comparación viva↔repo caduca.** La premisa «0 en riesgo» de `4d594ae`
-  había caducado en 10 horas: `dayz-test-ingame` y `dayz-vehicles` ganaron
-  SP-095 y SP-096 solo en las instaladas. Adjudicar sin re-medir habría repetido
-  BUG-018/BUG-019 por tercera vía. Re-medir **siempre** antes de adjudicar.
-- **Las instaladas ya no son uniformemente CRLF.** Las líneas originales son
-  CRLF y las secciones nuevas LF puro. Copiar el fichero entero —el método de
-  `4d594ae`— hoy reescribiría todas las líneas de un fichero LF del repo. Adoptar
-  solo el bloque añadido, normalizado.
-- **`promote --check` no escribe a stdout.** El informe va a
-  `<plan>.check-report.json` y el fichero `--plan` no se crea si el check falla.
-  Un exit 1 mudo en consola no significa que no haya diagnóstico.
-- Quedan 4 ficheros `*.bak_pre_sp-09*` solo en las instaladas. Son backups cuyo
-  contenido ya es subconjunto del repo; la promoción espejo los borrará y eso
-  está escrito en las razones de las adjudicaciones, no dejado en silencio.
+- **`validate` sobre un fichero sin rastrear no dice nada del estado
+  post-commit.** Mordió dos veces en esta sesión: con `adjudications.json` y con
+  el receipt de la promoción. Ejecutar `validate` **después** de `git add`.
+- **Cada receipt necesita su propia entrada de procedencia**; el artefacto de
+  árbol `repo/promotions` no los cubre.
+- **La comparación viva↔repo caduca.** Re-medir siempre antes de adjudicar.
+- **Las adjudicaciones tapan, no arreglan.** Los 12 pares adjudicados tienen el
+  historial causal roto y el gate sale verde solo porque
+  `_append_scoped_receipt_finding:974-977` suprime el finding mientras la
+  adjudicación iguale al digest observado.
+- **`logical_target_ids` es una lista en los tres receipts.** Si se inspecciona
+  con `ConvertTo-Json` de PowerShell parece una cadena; no lo es.
+- `promote --check` no escribe a stdout: el informe va a
+  `<plan>.check-report.json`, y el fichero `--plan` no se crea si el check falla.
 
-## Bloqueo vigente
+## Deuda sin sesión asignada
 
-**No ejecutar `promote --apply` hasta decidir BUG-020** (identidad de nodo del
-historial causal = digest en vez de ocurrencia sellada). El gate ya no frena; el
-guardarraíl es de decisión, no técnico.
-
-## Próxima acción
-
-1. Decidir BUG-020. Es lo único que separa de una promoción real.
-2. Lanzar el eval vivo. El prompt está listo y actualizado a `05b092d`:
-   `VAULT/AI/10_Projects/DayZ_Modding_Knowledge_Pack/reviews/2026-07-26-prompt-implementation-codex-live-eval.md`.
-3. Deuda sin sesión asignada: BUG-021, BUG-022, `MEN-1`…`MEN-6`, y las 8 skills
-   del rollout py3d aún en `py3d-1.2.0`.
+BUG-021, BUG-022, `MEN-1`…`MEN-6`, y el rollout py3d a las 8 skills instaladas
+(que siguen en `py3d-1.2.0`, dos releases por detrás; ahora ya hay wheel con
+identidad verde).
 
 ## Invariantes cerradas
 
 - Git es la única fuente editable; las skills instaladas son despliegues. La
   adopción va del destino al repo, nunca al revés sin gate.
-- Una adjudicación autoriza **un digest concreto** y caduca sola si el destino se
-  mueve. No se firma sobre una comparación heredada.
-- Ningún writer ODOL entra en alcance. El backend externo se fija por hash y no
-  se redistribuye. «Aislado» ahí significa subproceso, no sandbox.
-- Los parsers y validadores fallan cerrados; un gate que no puede ponerse rojo no
-  es un gate.
-- No se ejecuta ninguna promoción real sin autorización explícita del usuario.
+- Una adjudicación autoriza **un digest concreto** y caduca sola.
+- Ningún writer ODOL. El backend externo se fija por hash y no se redistribuye;
+  «aislado» ahí significa subproceso, no sandbox.
+- Un gate que no puede ponerse rojo no es un gate.
+- Ninguna promoción real sin autorización explícita del usuario.
 
-**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: gate de
-promoción verde en 78071a7 · decidir BUG-020 antes de cualquier --apply`.
+**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: eval
+vivo entregado en 8ac8993 · implementar BUG-020 con el plan aprobado`.
 <!-- LIVE-STATE:END -->
 
 ---
