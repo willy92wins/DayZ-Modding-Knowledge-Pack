@@ -1,86 +1,74 @@
 # HANDOFF — DayZ Modding Knowledge Pack
 
 <!-- LIVE-STATE:START -->
-# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-27 (noche)
+# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-27 (cierre)
 
-**Última verificación real:** HEAD `8ac8993` en `r21/phase01-foundation`, árbol
-limpio, `main` intacto en `994cb77`, sin remoto. Suite **660 passed / 18
-skipped**, `packctl validate` PASS con cero findings, `promote --check` en `WARN`
-con exit 0. Medidos sobre el árbol, no leídos de informes.
+**Última verificación real:** HEAD `ac21d13` en `r21/phase01-foundation`, árbol
+limpio, `main` intacto en `994cb77`, sin remoto. Suite **668 passed / 18
+skipped**, `packctl validate` PASS con cero findings. Medidos sobre el árbol.
 
-## Lo que cambió en esta sesión
+## Cerrado en esta sesión
 
-- **Promoción real ejecutada** (tx `e2aa6cf9058070bb4fbf2a8c`, `verdict=PASS`, 54
-  operaciones). Readback verificado a mano: cero ficheros perdidos en el destino;
-  las seis diferencias de contenido son ejecutables bajo localización de alias y
-  se reproducen byte a byte aplicando el mapa a los bytes del repo.
-- **Wheel re-baselinado** a `c635bf7e…`, gate verde. La reproducibilidad es
-  **toolchain-bound** (`setuptools==83.0.0`, Python `3.14.3`), no propiedad del
-  código, y el `product-spec` ya lo dice así.
-- **Eval vivo discriminante entregado** (`8ac8993`): schema que prohíbe
-  `response`, runner agnóstico de proveedor, gate que declara `VACUOUS` el caso
-  que pasa sin la skill, caso semilla del cap de 93 partes y adaptador para el
-  CLI de Claude Code. **No enganchado a `gate` ni `validate`** a propósito.
-- **B3 partido en B3a (✓) / B3b (❓)**. B3b sigue sin evidencia y así debe quedar
-  hasta que un run real lo demuestre.
+- **Promoción real ejecutada** (tx `e2aa6cf9058070bb4fbf2a8c`, PASS, 54
+  operaciones). Readback verificado a mano: 0 ficheros perdidos.
+- **Wheel re-baselinado** a `c635bf7e…`. Reproducibilidad **toolchain-bound**
+  (`setuptools==83.0.0`, Python 3.14.3).
+- **Eval vivo discriminante** entregado (`8ac8993`). B3a ✓ / B3b ❓ sin evidencia
+  fabricada.
+- **BUG-020 implementado** (`ac21d13`): identidad de nodo = ocurrencia sellada.
+  Medición independiente: **30 resuelven, 0 rotos, 0 enmascarados** (antes
+  18/12/12). No hubo migración de formato: la ocurrencia se deriva al recorrer.
 
-## Lo siguiente, y está aprobado
+## BLOQUEO VIGENTE — resolver antes de tocar promoción
 
-**Implementar BUG-020** siguiendo el plan aprobado por el usuario:
-`VAULT/AI/10_Projects/DayZ_Modding_Knowledge_Pack/plans/2026-07-27-bug020-identidad-de-ocurrencia-sellada.md`
-(mover a `<repo>/plans/` al retomarlo).
+`promote --check` da **FAIL con 8 `PROMOTION-TARGET-UNEXPLAINED`**. No es
+regresión de BUG-020: son 4 skills (`dayz-feature-spec`, `dayz-test-ingame`,
+`dayz-vehicles`, `rigorous-data-audit`) × 2 targets cuyas copias instaladas
+**cambiaron de contenido a las 17:38 y 18:30 del 2026-07-27**, durante el job de
+Codex de BUG-020 — que tenía alcance limitado al worktree y no debería haberlas
+tocado. Mismo número de ficheros, contenido distinto.
 
-Orden del plan: (1) convertir el medidor fiel en test de regresión con los tres
-receipts reales de fixture — hoy debe dar **12 rotos / 0 visibles**; (2)
-sustituir el `sorted` por nombre de `promotion.py:1145` por orden de
-`completed_at`; (3) reescribir `_causal_receipt_head` sobre ocurrencias
-`(digest, transaction_id)`; (4) **cuatro fixtures negativas obligatorias** —
-fork real, preimagen múltiple, ciclo real, transición duplicada; (5) re-medir con
-las adjudicaciones vaciadas: los 12 deben resolver solos.
+**Sospecha NO verificada:** el propio harness de Claude Code reescribe los árboles
+de skills instalados (encaja con los avisos de skills que cambiaron toda la
+sesión). Si es cierto, el gate de preimagen seguirá disparándose para siempre y
+hay que decidir qué hacer con esos destinos.
 
-**Hallazgo que abarata el plan:** el `transaction_id` ya viaja en cada transición
-(`_sealed_receipt_transitions:1039-1049`) y el receipt no cambia de forma, así
-que la ocurrencia se **deriva** al recorrer. Si eso aguanta, no hay migración de
-formato, ni lectura legacy v1, ni backup de receipts — al contrario de lo que
-asumía la entrada del ledger. **Cláusula de parada vigente:** si al implementarlo
-aparece algo que exija *persistir* la ocurrencia, parar y re-aprobar como
-migración de formato.
+**NO adjudicar esos 8** hasta saber quién escribe. Adjudicar es firmar sobre un
+destino que muta solo.
 
-## Lo que hay que saber antes de tocar nada
+## Trampas que esta sesión pagó
 
 - **`validate` sobre un fichero sin rastrear no dice nada del estado
-  post-commit.** Mordió dos veces en esta sesión: con `adjudications.json` y con
-  el receipt de la promoción. Ejecutar `validate` **después** de `git add`.
-- **Cada receipt necesita su propia entrada de procedencia**; el artefacto de
-  árbol `repo/promotions` no los cubre.
-- **La comparación viva↔repo caduca.** Re-medir siempre antes de adjudicar.
-- **Las adjudicaciones tapan, no arreglan.** Los 12 pares adjudicados tienen el
-  historial causal roto y el gate sale verde solo porque
-  `_append_scoped_receipt_finding:974-977` suprime el finding mientras la
-  adjudicación iguale al digest observado.
-- **`logical_target_ids` es una lista en los tres receipts.** Si se inspecciona
-  con `ConvertTo-Json` de PowerShell parece una cadena; no lo es.
-- `promote --check` no escribe a stdout: el informe va a
-  `<plan>.check-report.json`, y el fichero `--plan` no se crea si el check falla.
+  post-commit.** Mordió tres veces. `git add` y **después** validar.
+- **Cada receipt necesita su propia entrada de procedencia**; `repo/promotions`
+  no los cubre.
+- **La comparación viva↔repo caduca** (la de `4d594ae` duró 10 h). Re-medir
+  siempre antes de adjudicar.
+- **Las copias instaladas tienen EOL mixto**: originales CRLF, secciones nuevas
+  LF. Adoptar solo el bloque añadido, normalizado, no el fichero entero.
+- **`logical_target_ids` es una lista en los tres receipts**; `ConvertTo-Json` de
+  PowerShell la muestra como cadena. Leer el JSON con Python.
+- `promote --check` no escribe a stdout: informe en `<plan>.check-report.json`, y
+  el `--plan` no se crea si falla.
 
 ## Deuda sin sesión asignada
 
 BUG-021, BUG-022, `MEN-1`…`MEN-6`, y el rollout py3d a las 8 skills instaladas
-(que siguen en `py3d-1.2.0`, dos releases por detrás; ahora ya hay wheel con
-identidad verde).
+(siguen en `py3d-1.2.0`; ya hay wheel con identidad verde).
 
 ## Invariantes cerradas
 
-- Git es la única fuente editable; las skills instaladas son despliegues. La
-  adopción va del destino al repo, nunca al revés sin gate.
-- Una adjudicación autoriza **un digest concreto** y caduca sola.
-- Ningún writer ODOL. El backend externo se fija por hash y no se redistribuye;
-  «aislado» ahí significa subproceso, no sandbox.
+- Git es la única fuente editable; las instaladas son despliegues. La adopción va
+  del destino al repo, nunca al revés sin gate.
+- Una adjudicación autoriza **un digest concreto**, caduca sola, y **tapa, no
+  arregla**.
+- Ningún writer ODOL; «aislado» ahí significa subproceso, no sandbox.
 - Un gate que no puede ponerse rojo no es un gate.
 - Ninguna promoción real sin autorización explícita del usuario.
 
-**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: eval
-vivo entregado en 8ac8993 · implementar BUG-020 con el plan aprobado`.
+**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: BUG-020
+cerrado en ac21d13 · averiguar quién escribe en las skills instaladas antes de
+tocar promoción`.
 <!-- LIVE-STATE:END -->
 
 ---
