@@ -400,3 +400,14 @@ touch, not just the happy path. Origin: a reorder of a degraded-partial handler 
 "fix" — the first apply attempt did not. Corollary: after a propagation fix, re-run the
 adversarial verify pass (Step 3/4) on the CHANGED handler, because an apply can regress worse
 than the finding.
+
+## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+
+Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
+de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
+la entrada completa (síntoma, origen, evidencia) vive allí.
+
+- **LL-045** — Acota toda afirmación de no-causalidad al tamaño, versión, fixture y condiciones donde se verificó. No promociones «X no importa» como conclusión universal si el corpus no cubre otros regímenes.
+- **LL-139** — Haz que todo fake/stub remoto emita los mismos tipos que el wire real, no solo valores equivalentes. No uses `is True`/`is False` con datos serializados; prueba explícitamente `0/1`, bool y valores ausentes según contrato.
+- **LL-140** — Verifica toda exclusión de recurso con dos adquisiciones reales en el SO objetivo y exige que la segunda falle. Inspecciona defaults de socket, file-sharing y mutex de la stdlib; configura el lock fail-closed.
+- **LL-190** — Para todo verificador que afirme deleted/moved/repaired/restored, exige un count afectado mayor que cero o un pre-check independiente que demuestre que no había trabajo. No aceptes `{ok:true, count:0}` como prueba por sí sola.

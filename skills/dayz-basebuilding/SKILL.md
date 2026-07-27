@@ -183,3 +183,12 @@ against the real `.c` and `.p3d`, never from memory.
   combolock, barbed-wire area damage, and the v110 gate-persistence version bump.
 - `references/persistence-audit.md` — the three-int bitmask packing, the 93-part cap, `OnStoreSave/Load`
   ordering, the version bumps, and the R9 hand-off checklist.
+
+## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+
+Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
+de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
+la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
+`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+
+- **LL-042** — Crea una clase de script homónima para cada clase config placeable y hereda del kit/static base que aporta `SetActions`, `IsDeployable` y el enlace kit↔static. Verifica ambas mitades antes de diagnosticar holograma o texturas.

@@ -587,3 +587,22 @@ divergence between the Claude and Codex registrations. Always invoke with
 
 Cross-ref SP-089 (allow-list format), SP-092 (daemon argv, staging dir, opaque errors), SP-085
 (diag hangs outside the registered launcher).
+
+## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+
+Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
+de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
+la entrada completa (síntoma, origen, evidencia) vive allí.
+
+- **LL-118** — Ante una regresión, compara primero el comando de launch, argumentos `-mod`, rutas y entorno con el último run que pasó. Verifica un invariante medible entre ambos runs y consulta los ledgers antes de formular una hipótesis de código.
+
+## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+
+Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
+de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
+la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
+`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+
+- **LL-196** — Busca `Print()` y `DbgLog` del mod en el `script_*.log` más reciente del profiles correspondiente. Usa el RPT para engine, CE, red, compilación y fallos nativos; no concluyas “el código no corrió” por ausencia de prints en el RPT.
+- **LL-197** — Prepara comando, rutas y argumentos antes de adquirir un lease corto; adquiere y usa el token en llamadas adyacentes. Si hubo análisis prolongado, vuelve a adquirir justo antes de la operación bloqueante.
+- **LL-198** — En ciclos gestionados, ejecuta `adopt → stop` mientras server y client sigan vivos; pide mantener ambos abiertos entre iteraciones. Si un peer ya murió, usa el cierre degradado documentado y espera el auto-heal antes de relanzar.

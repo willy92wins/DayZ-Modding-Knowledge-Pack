@@ -31,6 +31,127 @@ wheels/brakes/`CarFluid`; `Boat` owns propeller/buoyancy/`BoatFluid`(fuel-only).
 `CarScript` config with 3 axles + double wheels, NOT a new class. Boats, truck double-wheels, ATV and
 the motorbike gap → `references/vehicle-types-boat-truck.md`.
 
+## ITERATION BUDGET — check this BEFORE opening a front (added 2026-07-27)
+
+Measured over one month of vehicle work (125 session handoffs: MercedesAMGLF 46, SUB_BRZ 38,
+LFHeli 37): **26 sessions ended in STOP/BLOCKED/FALSIFIED against 24 green**. The three failure
+modes below are process gates, not config facts — and each burned dozens of sessions on a
+different project before being named. They cost more iterations than any invariant below.
+
+1. **Count the cycles spent on one objective, and make the count block.** `DZ-R5` already says
+   "after 2 rebuilds without progress, STOP and change strategy"; it does not bite because nobody
+   tracks N. Carry `ciclos_en_este_objetivo: N` in the HANDOFF `LIVE-STATE`, and at N>=3 the
+   re-entry gate must pick one of three exits before touching code: change strategy, escalate to a
+   human, or drop the objective. Evidence: MercedesAMGLF Task 9 reached **v64 across 29 sessions**,
+   and what finally closed it was shifting 28 proxy triangles by -0.240 m in X.
+
+2. **Keep the test harness OUT of the product task.** Task 9 mixed "align the Mercedes proxies"
+   (product) with "build an automated live verifier" (daemon, broker, lease, preflight, camera
+   contract, JPEG SHA) — the harness silently took the bulk of the time and became the project.
+   If a product task is blocked TWICE by the harness, stop the product and decide explicitly: scope
+   the harness as its own project, or run that one test by hand and move on.
+
+3. **When the judge is the eye, offline analysis gets ONE round.** Green offline gates do not
+   predict the live result. A Task 9 build reported `263/263 global + verifier 35/35 hard PASS` plus
+   every SHA, and then: `Visual: FAIL of evidence, client hung`. The LFHeli "seis frentes" night
+   spent ~25 Codex sessions to produce refutations only (binding intact, re-bake refuted, clock and
+   interpolation refuted) and concluded the discriminator was the user's own screenshot. If the
+   discriminator is visual or feel, spend one offline round ruling out cheap causes, then go to the
+   game — extra offline rounds postpone the verdict, they do not replace it.
+
+Corollary already paid twice: SUB_BRZ needed 30+ sessions to conclude that a decimated rip mesh
+cannot reach game-ready quality (pivot to a human artist), and the LFHeli HH-60G reached the same
+verdict independently weeks later. A visual red that survives N rounds is a signal to escalate to a
+human, not to run round N+1.
+
+## DOOR MECHANISM SELECTOR — decide this BEFORE modelling or scripting anything (added 2026-07-27)
+
+DayZ has **three unrelated door mechanisms**. Picking the wrong one costs a full modelling +
+config cycle, and they share vocabulary (`source`, `component`, `axis`), so the mistake is not
+obvious from the symptom. Doors have now been re-solved from scratch on three projects
+(MercedesAMGLF, SUB_BRZ, LFHeli) — pick from this table first.
+
+| You are building | Mechanism | Where the contract lives |
+|---|---|---|
+| Door/hatch/lid on a **building or static prop** | `class Doors` under `HouseNoDestruct`; animation `source` maps to a Doors `component` | skill **`dayz-doors`** |
+| Door on a **vanilla-style car**, as a detachable part | Attachment: `CarDoor` item + `ActionCarDoorsOutside`; the action target is resolved by **raycast against the ITEM's ViewGeometry** | invariants **#21 and #22** below |
+| Door that must **stay part of the shell** (no detach, custom radial) | Own actions driving `GetNearestDoorIndex` / `IsDoorOpen` (fail-closed) / `SetDoorOpen`, with the motion in `model.cfg` AnimationSources | LFHeli OH-1 contract v5 |
+
+**`dayz-doors` does NOT cover vehicle doors.** Its scope is buildings and static props. The name
+attracts anyone with a door problem; if the door belongs to a car or a helicopter, that skill is
+the wrong contract and its `class Doors` pattern will not produce a working radial.
+
+Two traps specific to the vehicle paths:
+
+- **Attachment path**: the radial silently never appears if the item's ViewGeometry points carry
+  `flags 0x0` instead of `0x02000000` — config, script overrides, slots, bones and anim sources
+  all correct, action still filtered. Census the item's VG point flags against a working control
+  BEFORE touching config. Full contract in #22.
+- **Scripted path**: enumeration probes must be READ-ONLY. A diagnostic probe that calls
+  `SetAnimationPhase` to "look at" a door corrupts live state — the door closes visually while the
+  logical state stays open, and the next diagnosis is chasing a bug the probe created.
+
+Status honesty: #21 and #22 are measured offline and their in-game gate was still pending as of
+2026-07-18; the OH-1 scripted contract v5 is implemented with its cycle gate pending. Treat all
+three as verified-offline, and confirm in-game on first use.
+
+## INV-ALIGN — a faithful import does NOT mean the pieces line up (added 2026-07-27)
+
+**A bit-exact import and correctly-fitting pieces are different properties.** When a model is
+assembled by script, each piece is placed at a **procedurally computed anchor** (centroid, bbox
+centre, a reference point). If that anchor diverges from the real reference, the pieces sit wrong
+while every import check passes. Paid three times (MercedesAMGLF, SUB_BRZ, LFHeli):
+
+- MercedesAMGLF: the 28 wheel proxies sat **-0.240 m in X** from their Memory hubs. Fix: measure
+  the offset with py3d and shift only those triangles (max error 0.0 m afterwards).
+- LFHeli OH-1: import fidelity 12/12 at max 3.2e-7 m, and the `SEATS` procedural anchor still
+  diverged **583 mm** from the source mesh.
+
+**Gate before declaring an assembly good**: for every proxy, measure its anchor against the real
+reference (the matching Memory point, or the source mesh position) and assert the delta is ~0.
+Import fidelity, digest equality and structural diffs do NOT catch this — they compare the piece
+to itself, not to where it belongs.
+
+**Do NOT "fix" it by adjusting the pipeline transform.** That is the intuitive move and it is a
+false fix: it displaces everything else that was already correct. Correct the individual anchor.
+
+**False friend — `autocenter=0` is not this bug.** It is a real and separate requirement (the
+engine recenters LODs by bbox without it, displacing collision ~20-25 cm from visual; see
+`dayz-model-pipeline` and `dayz-p3d-audit`), but it does not cause or cure anchor divergence.
+MercedesAMGLF spent a full RCA on that hypothesis and closed it as unproven: adding `autocenter=0`
+to all 18 proxy LODs changed nothing geometric, and the protrusions and see-through were already
+present in the earlier baseline. Do not re-run that investigation.
+
+## TEXTURE OR MESH? — discriminate BEFORE auditing the texture pipeline (added 2026-07-27)
+
+"The textures look wrong" on an imported vehicle is a symptom with at least three unrelated
+causes, and auditing the texture pipeline is the **most expensive** way to find out which. Run
+this ladder first; each rung is minutes, the full audit is sessions.
+
+1. **Audit the UVs, not the textures.** Exact SAT overlap + island count + density
+   (`uv-clean-atlas`, `uv_audit.py`). Overlap > 0, atomised islands (2-4 faces each) or wildly
+   uneven density means the problem is upstream of any `.rvmat` — no material wiring fixes it.
+2. **Ask where the mesh came from.** A decimated rip cannot yield game-ready UVs: the cause is
+   topology, not the unwrap algorithm or the texture route. The fix is retopo (bake the high-poly
+   onto a clean low-poly), and no amount of pipeline correction substitutes for it.
+3. **Render the same material on a known-good control.** If a vanilla-derived control looks right
+   with the same route, the pipeline is exonerated and the defect is in this asset.
+4. **Only now** audit `.rvmat` stages, `_co/_nohq/_smdi` paths, `.paa` conversion and
+   `hiddenSelections` — see `dayz-texture-pipeline`, and its
+   `references/vehicle-materials-and-color-variants.md` for the vehicle-specific shader choice
+   (Super where faces carry a `_co`, NormalMapSpecularMap for constant-colour parts, tiled detail
+   for overlapping or un-baked UVs).
+
+**Cost rule**: if two rounds of pipeline auditing come back clean, "the texture is applied wrong"
+is REFUTED — change branch instead of running a third. An audit that exonerates the pipeline is
+evidence about where the bug is NOT, and repeating it produces no new information.
+
+Evidence for the rule: on LFHeli OH-1, F6 ran a double audit that exculpated the entire offline
+chain (UVs identical across blend/MLOD/ODOL, old PAA identical to new, `rvmat uvSource=tex`, zero
+`hiddenSelections`, no faces inside the watermark box) — the textures were never the problem. On
+SUB_BRZ the documented root cause was the decimated rip's topology, reached after six rounds and
+a pivot to a human artist. In both cases the ladder above would have branched away on rung 1 or 2.
+
 ## INVARIANTS YOU WILL HIT — preflight checklist (read BEFORE authoring, not after the in-game fail)
 
 These recur on **every** vehicle. They were each won the hard way on one project and then re-derived
@@ -657,3 +778,13 @@ RULES for any model-import gate:
 Origin: LFHeli OH-1 2026-07-27, R21 dual (Codex + Claude subagent). The rebuilt gate lives at
 `LFHeli_dev\tools\import_gates_v2\`; the retired one at `tools\import_gates_RETIRED_20260726\` as a
 negative reference.
+
+## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+
+Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
+de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
+la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
+`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+
+- **LL-076** — Antes de diferir una feature, clasifica la severidad de su ausencia y valida los mínimos exigidos por el engine. Todo `CarScript` debe incluir al menos `DamageSystem.GlobalHealth`; su ausencia puede matar el proceso aunque el daño sea una feature posterior.
+- **LL-172** — Ante paneles negros o see-through, decodifica primero el `_co` desplegado y mide píxeles oscuros. Si la textura está limpia, trata el síntoma como winding y exige captura in-game antes de voltear regiones.

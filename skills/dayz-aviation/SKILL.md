@@ -562,3 +562,14 @@ Only the variant aircraft body changes; wheels are shared. Reduces config + asse
 
 
 <!-- llama-mod-extraction: findings f_087-f_091, f_096, f_097, f_101, f_103, f_105-f_107, f_110-f_116, f_120, f_123-f_125 | pbo: LM_Planes | pass: 2 | date: 2026-05-23 | source: workshop 3730564764 per-aircraft .c files | count: 23 -->
+
+## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+
+Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
+de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
+la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
+`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+
+- **LL-194** — Enumera cada campo leído por solver/FSM durante replay y clasifícalo como restaurado, recomputado tras handshake o inicializado incondicionalmente. Nunca inicialices K-values o tablas derivadas solo dentro de `IsServer`.
+- **LL-195** — No uses un handshake one-shot si depende de crew/possession/spawn aún asíncronos. Reintenta desde el cliente hasta ACK o empuja desde el servidor cuando el estado esté listo; compara identidades por ID estable, no por instancia.
+- **LL-201** — Diagnostica reconciliación con series alineadas: dientes de sierra indican correcciones seguidas de re-divergencia; crecimiento monótono o plateau sin resets indica que el transform no se corrige. Busca el evento que dispara la convergencia antes de retocar el solver.

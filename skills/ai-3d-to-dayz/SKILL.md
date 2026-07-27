@@ -112,3 +112,12 @@ Recipe verificado en `20_Knowledge/dayz-custom-infected.md` -- heredar `ZombieMa
 `OFP2_ManSkeleton` + animaciones + IA vanilla (gratis por herencia del bloque `enfanimsys`); el coste real es
 riguear la malla a los bones vanilla. Escalado runtime de DayZ roto (T140705) -> hornear el tamano en la
 malla. La generacion de la malla full-body organica va por fal Rodin (ver hunyuan3d-local added 2026-06-23).
+
+## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+
+Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
+de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
+la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
+`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+
+- **LL-154** — Prepara la referencia con rembg, autocrop, fondo blanco, margen y agujeros transparentes rellenados; usa cuerpo completo cuando el output lo requiera. Tras generar, valida `trimesh.extents`: un eje casi cero es un fallo plano aunque el render parezca plausible.

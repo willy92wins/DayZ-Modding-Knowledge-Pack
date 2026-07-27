@@ -112,3 +112,21 @@ API.
 The v2 index is supporting evidence, not an implementation gate for unrelated
 work. In particular, it does not block the `.layout` viewer or the UI evidence
 loop defined by the r21 product spec.
+
+## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+
+Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
+de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
+la entrada completa (síntoma, origen, evidencia) vive allí.
+
+- **LL-017** — Todo test de decisión define PASS, FAIL e INCONCLUSO/setup-failed, con una precondición explícita que separa el tercero. Fija métricas y emparejamiento antes de ejecutar.
+- **LL-116** — Todo probe usado para decidir arquitectura mantiene los inputs durante la ventana, usa un fixture mecánicamente completo y valida fail-closed antes del side effect. Si un resultado nulo admite más de una causa plausible, clasifícalo INCONCLUSO.
+
+## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+
+Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
+de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
+la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
+`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+
+- **LL-040** — No cierres ni descartes un criterio por silencio del log hasta ejecutar la interacción que puede revelar el fallo. Si la condición aún no es reproducible, conserva el gate o demuestra paridad estructural con un referente funcional.

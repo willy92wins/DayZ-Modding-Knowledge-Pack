@@ -2504,7 +2504,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ce1a9c2ef3817e57bd3a5321553c9374b890c50d55a3d2f05b7ba0f0ebc8aa62",
+      "output_hash": "7405336594c296207906987854f91c037d0ac210917e5bd3541e6f20318a5cdd",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
@@ -2904,7 +2904,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c01b54a6fe043c78a7145bc9da78d7daca42d5dad017f7ead0be4c4ac56c92ef",
+      "output_hash": "27e54db55c3eb34c01b20295998ac5894e60becc4d40aba01d314528e115cf62",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -3240,7 +3240,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "01e258c8fd0605ca516ecdd20424a7759e4a2ddecf41941947bd7ec416b01194",
+      "output_hash": "df2008f809ec27799281287040ad7234fcbe1ffb836b1d7059f7f28482d580c1",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -3638,7 +3638,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f5e103912e974eb50b00d789fcd39cf2816f375a97a489b79bbc653da52c6e23",
+      "output_hash": "805c3f7f8dd74f8e22b33945011199e55cb72f02d85b75754613a3b2e9ee7fac",
       "output_path": "skills/dayz-feature-spec/SKILL.md",
       "routing_artifact_id": "skill/dayz-feature-spec",
       "verification_level": "cross_checked"
@@ -3818,7 +3818,7 @@
           "decision": "adopt",
           "decision_evidence": "Approved optional-companion authority boundary was added after an adversarial RED-to-GREEN evaluation.",
           "license": "MIT",
-          "source_hash": "b98505fe1052cfea00edefb365b448b9c188aebdc29eec9f26c563c9371ea017",
+          "source_hash": "877cc9dbb4eac88b98040bdec02f90e98c5ba6c4d3f03d321d1b1441f9b5b9f6",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -3826,7 +3826,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b98505fe1052cfea00edefb365b448b9c188aebdc29eec9f26c563c9371ea017",
+      "output_hash": "877cc9dbb4eac88b98040bdec02f90e98c5ba6c4d3f03d321d1b1441f9b5b9f6",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -4076,7 +4076,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3877cc683ef3248ba7086926a63310f5a943fbcaf43ee83e8f8b5f12bc4b1eaf",
+      "output_hash": "fb8d6f65bc0b2a6c710b4585529d7c1176284fb372f75597a526180f2d1bfacb",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -4320,7 +4320,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "d2c93d79fc6e331b62a15d36077e88a681cf969c4fcca622f3fcb912b6ab5c3b",
+          "source_hash": "93d71ece417c01764ee00b872d175566aafc25a5421f5081c0555177a2f590bb",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -4328,7 +4328,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d2c93d79fc6e331b62a15d36077e88a681cf969c4fcca622f3fcb912b6ab5c3b",
+      "output_hash": "93d71ece417c01764ee00b872d175566aafc25a5421f5081c0555177a2f590bb",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -5312,7 +5312,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "72d85025b088675f4a25d8f37bd5b16c095099d65575c6e133a4bac5752598c3",
+      "output_hash": "a5087f356ee77fbd78ba05230981f1a63fea005be1e134e52dc0b3d22f60eb7d",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"

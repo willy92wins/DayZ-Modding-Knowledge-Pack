@@ -380,3 +380,14 @@ Reglas:
 - Ante una pieza que "parece desplazada": **MEDIR antes de concluir** (bbox/centroide/simetría izq-der + bisección vs backup + containment en volumen de rueda) — no firmar "roto" ni "OK" por opinión.
 
 Verificado: SUB_BRZ 2026-07-22 — un susto de "piezas desalineadas" resultó ser frenos/suspensión al descubierto por spawn pelado; el forense (Codex, py3d) midió simetría ≤0.003 m, bisección 0-movimiento en 6 shells y containment en el volumen de rueda (`VehicleImport\work\reviews\2026-07-22-SUB_BRZ-misalign-forensic.md`). Costó 30 min de forense evitable. Cross-ref LL-209.
+
+## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+
+Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
+de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
+la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
+`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+
+- **LL-181** — Antes de culpar al mod por un FAIL automatizado, verifica el source del actuador/bridge y confirma que el estímulo llegó al sujeto. Ejecuta un control delta equivalente o un test manual para discriminar un defecto del harness.
+- **LL-187** — Si varias defensas interceptan el mismo fallo, diseña un repro por capa que alcance su punto de protección. Exige la señal específica de cada capa; un PASS agregado de “no falla” no demuestra que todas funcionen.
+- **LL-202** — Ante el primer error anómalo de un verbo client-side, verifica el PID del cliente, el tail de su RPT y `bridge_status` antes de seguir. Si el peer murió, extrae minidump/evidencia y documenta el cierre degradado; no diagnostiques los errores posteriores como estado del harness.
