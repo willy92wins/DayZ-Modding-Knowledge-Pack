@@ -152,6 +152,32 @@ chain (UVs identical across blend/MLOD/ODOL, old PAA identical to new, `rvmat uv
 SUB_BRZ the documented root cause was the decimated rip's topology, reached after six rounds and
 a pivot to a human artist. In both cases the ladder above would have branched away on rung 1 or 2.
 
+### Rip-specific rung 0 — a "paint" material in the source has NO diffuse; never substitute a livery sheet (added 2026-07-27)
+
+Before running the ladder on a **ripped** vehicle (GTA, source-game, any game rip), census which source
+material each face carries and what the import mapped it to. Game rips colour the body through the
+host game's **paint system**, not through a texture: in GTA those materials are
+`vehicle_generic_smallspecmap*` / "primary" and their diffuse is legitimately **absent or a
+zero-byte file**. An importer that needs *some* texture per face will silently fall back to whatever
+is available — and if what is available is the model's **livery/decal sheet**, the result is signs,
+numbers and camo stamped across the whole fuselage. The symptom reads as "the UVs are wrong" or
+"textures are crossed", and both readings send you down the expensive branch.
+
+- **Discriminator (minutes)**: count faces per `(source material -> texture)` pair. A single texture
+  carrying a large share of the model, especially a decal/livery atlas, is the signature. Cross-check
+  the source file size on disk: a **0-byte** or missing DDS proves the fallback fired.
+- **Fix direction**: those faces want a **flat colour `_co`** (the host game's paint slot has no DayZ
+  equivalent), not the decal sheet and not a re-unwrap. Their UVs were never meant to address a
+  texture, so no UV work is involved.
+- **Measured evidence.** LFHeli HH-60G (2026-07-27): `hh60g_sign_1_co.paa` — a 22.4 MB livery sheet —
+  carried **23,716 / 35,385 faces (67%)**, of which **8,695 (24.6% of the model)** were pure fallback
+  (7,568 of the body's `[PRIMARY]` material plus all four doors), with
+  `vehicle_generic_smallspecmap3.dds` confirmed **0 bytes** on disk. The user's independent report was
+  "things and colours drawn where they don't belong". The OH-1 line hit the same class separately
+  (rotor blades wearing camo and a registration number) after the PAA route had been exonerated.
+- Status honesty: the diagnosis is measured; the flat-colour fix was **not yet confirmed in-game** at
+  the time of writing — treat the fix direction as unverified until a cycle closes it.
+
 ## INVARIANTS YOU WILL HIT — preflight checklist (read BEFORE authoring, not after the in-game fail)
 
 These recur on **every** vehicle. They were each won the hard way on one project and then re-derived
@@ -736,6 +762,42 @@ authoritative transform is coherent and the client still renders the part detach
 part "does not follow", measure BOTH sides before designing a fix. A perfect server-side ratio with
 a visible mismatch points at render/replication/perception, and it rules out the physics and
 cohesion branches - which is worth a lot, because those are the expensive ones to chase.
+
+## `autocenter=0` on VISUAL LODs: the misalignment that keeps coming back (SP-097, added 2026-07-27)
+
+This one has now cost cycles on THREE vehicles (LFQuad wheel offset, Mercedes AMG proxies, LFHeli
+OH-1 "interior a bit high / tail rotor a bit low"), and every time it was chased as geometry — pose
+tweaks, re-centering, transform hunts — when the fix is a PROPERTY.
+
+**The measurement that settles it** (Mercedes, `AI/10_Projects/MercedesAMGLF/research/`
+`2026-07-09-proxy-alignment-reusable-codex.md`): the vanilla control proxies
+`P:\DZ\vehicles\wheeled\civiliansedan\proxy\prox_int.p3d` and `sedan_engine.p3d` carry
+`autocenter=0`; the Mercedes `mb_*` proxies had `lod.properties={}`. With the property absent the
+engine re-centres the sub-model on its own bbox, which shows up as a per-piece offset of tens of
+centimetres — predicted deltas there were e.g. interior `(0,-0.686,-0.577)`, chassis
+`(0,-0.657,-0.011)` m, matching the in-game captures. Sibling case `bug-ledger.md:25` (T9-WHEEL-046):
+28 wheel proxies sat at exactly `-0.240 m` in X from their Memory hubs — **FIXED + LIVE PROVEN**,
+max proxy→hub error `0.0 m` afterwards.
+
+**The trap is WHICH LOD carries it.** Measured on LFHeli OH-1 (2026-07-27, py3d over the four
+deployed p3d): `autocenter=0` was present ONLY on the Geometry LOD (`1e13`) and **absent on every
+visual LOD 0/1/2/3**, in the shell and in all three proxied sub-models. A model can therefore look
+"correct" in a properties dump and still be re-centred where it matters.
+
+RULES:
+
+1. **Any proxied sub-model, and any host, gets its properties checked PER LOD, not per file.**
+   A `autocenter=0` on Geometry says nothing about the visual LODs the player sees.
+2. **Calibrate against a vanilla proxy, always.** Debinarize `prox_int.p3d` / `sedan_engine.p3d`
+   (`dayz-p3d-debinarizer`) and read which LODs carry the property. Do not infer it from docs.
+3. **A misalignment complaint is a PROPERTY hypothesis before it is a geometry hypothesis.** Test
+   the cheap one first: adding a property is reversible, moving vertices is not.
+4. Related: SP-091 (proxy placement convention, anchors and frames) and SP-093 (rewriting a proxy
+   triangle inverts winding). Those cover WHERE the proxy sits; this one covers whether the engine
+   moves it afterwards.
+
+Origin: LFHeli OH-1 2026-07-27, promoted the day the cross-project pattern was recognised — the user
+pointed at the Mercedes precedent from memory after it had already cost cycles in three projects.
 
 ## An import gate rule is not deliverable without a negative fixture (SP-096, added 2026-07-27)
 
