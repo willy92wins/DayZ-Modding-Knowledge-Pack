@@ -47,10 +47,6 @@ digest concreto y caduca sola.
 
 ## Deuda sin sesión asignada
 
-- **Indexado por destino físico**: el gate de preimagen indexa por
-  `logical_target_ids[0]`, que tras el dedup es un artefacto de ordenación.
-  Mitigado (están escritas las dos claves de los 11 artefactos), no arreglado.
-  Misma familia que BUG-020.
 - **Rollout py3d** a las 8 skills instaladas (siguen en `py3d-1.2.0`). Requiere
   autorización explícita y ahora cae dentro de la frontera: por repo + promoción,
   no host-direct.
@@ -66,6 +62,14 @@ digest concreto y caduca sola.
   arregla** — por eso se adopta ANTES de adjudicar.
 - Preimagen e historial causal son **dos gates distintos**. Firmar preimágenes no
   tapa historia (medido: 0 enmascarados).
+- El gate de preimagen ve **una operación por destino lógico**, con un id cada
+  una: 68 medidas instrumentando el gate real. No hay adjudicación inerte, y el
+  layout de junctions no puede voltear su clave. La afirmación contraria, que este
+  fichero y `verified-apis.md` sostuvieron hasta el 2026-07-28, salía de medir
+  contra el plan deduplicado — que no es el índice del gate.
+- **Instrumentar mutando dicts ajenos exige snapshot en el momento de la
+  llamada**: el dedup muta las operaciones in place después
+  (`promotion.py:1702`), así que guardar referencias mide el estado equivocado.
 - Ningún writer ODOL; «aislado» ahí significa subproceso, no sandbox.
 - Un gate que no puede ponerse rojo no es un gate.
 - Ninguna promoción real sin autorización explícita del usuario.

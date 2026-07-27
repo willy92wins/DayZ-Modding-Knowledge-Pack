@@ -1337,26 +1337,31 @@ def _target_preimage_findings(
         actual = str(operation["before_digest"])
         if actual == "absent":
             continue
-        target_id = str(operation["logical_target_ids"][0])
-        key = (str(operation["artifact_id"]), target_id)
-        expected = receipt_digests.get(key)
-        if expected == actual or adjudications.get(key) == actual:
-            continue
         target = Path(str(operation["target_path"]))
-        if expected is None and _target_is_empty(target):
-            continue
-        findings.append(
-            finding(
-                "PROMOTION-TARGET-UNEXPLAINED",
-                path=str(operation["artifact_id"]),
-                line=0,
-                message=(
-                    "The promotion target contains bytes no previous receipt "
-                    "explains."
-                ),
-                evidence=f"expected={expected or 'none'} actual={actual}",
+        # Every logical target must be explained on its own key. Callers pass
+        # pre-dedup operations, which carry exactly one id, so today this is one
+        # iteration; the dedup that merges ids runs later and mutates these dicts
+        # in place. Checking only the first id would silently accept a target
+        # whose remaining ids have no receipt and no adjudication.
+        for raw_target_id in operation["logical_target_ids"]:
+            key = (str(operation["artifact_id"]), str(raw_target_id))
+            expected = receipt_digests.get(key)
+            if expected == actual or adjudications.get(key) == actual:
+                continue
+            if expected is None and _target_is_empty(target):
+                continue
+            findings.append(
+                finding(
+                    "PROMOTION-TARGET-UNEXPLAINED",
+                    path=str(operation["artifact_id"]),
+                    line=0,
+                    message=(
+                        "The promotion target contains bytes no previous receipt "
+                        "explains."
+                    ),
+                    evidence=f"expected={expected or 'none'} actual={actual}",
+                )
             )
-        )
     return sort_findings(findings)
 
 

@@ -191,7 +191,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ca4bfc12be1f1ef554d72cef252340d99f458f4e1701ac232c87adc470fac6ed",
+      "output_hash": "f32989c4f7984571f14ad527ad4a41166eef33937ebfe85bb8f266a953f73827",
       "output_path": "HANDOFF.md",
       "routing_artifact_id": "root/handoff",
       "verification_level": "cross_checked"
@@ -1647,7 +1647,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c41b0e60f5505c6566f1d3504f26ac565b2a9329feb20763e90fc8b9161ae082",
+      "output_hash": "e4b3560b42413958d719066bfb9665d671a3fb7c984c7ec6f30153c81aaa3b19",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -6424,7 +6424,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "752fd80950f9c3489e710b96244ff29c48d6f9d7675e0f89158b78ec516cc48b",
+      "output_hash": "659f4e303cf6344bf16d5610d76f11b6b3f29fa5fc4dd1827987e269e6b67b4c",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"

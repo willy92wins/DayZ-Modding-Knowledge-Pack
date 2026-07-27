@@ -966,6 +966,46 @@ def test_absent_target_without_receipt_passes_preimage_gate(
     assert plan_path.is_file()
 
 
+def test_preimage_gate_checks_every_logical_target_not_just_the_first(
+    tmp_path: Path,
+) -> None:
+    """Rompe si un id lógico posterior al primero deja de comprobarse.
+
+    Las operaciones que hoy llegan al gate son pre-dedup y llevan un solo id
+    (medido: 68 de 68). El dedup que fusiona ids muta esos mismos dicts in place
+    después, así que comprobar solo `[0]` es una trampa latente: bastaría con
+    llamar a esta función con operaciones de plan para que una adjudicación del
+    segundo id dejara de contar en silencio.
+    """
+    digest = "a" * 64
+    target = tmp_path / "merged-target"
+    target.mkdir()
+    (target / "payload.txt").write_text("content", encoding="utf-8")
+    operation = {
+        "artifact_id": "skill/demo",
+        "target_path": str(target),
+        "logical_target_ids": ["agents_user_skills", "claude_user_skills"],
+        "before_digest": digest,
+    }
+    receipts = {("skill/demo", "agents_user_skills"): digest}
+
+    only_first_explained = promotion._target_preimage_findings(
+        [operation], receipts, {},
+    )
+
+    assert [item["code"] for item in only_first_explained] == [
+        "PROMOTION-TARGET-UNEXPLAINED"
+    ]
+
+    second_adjudicated = promotion._target_preimage_findings(
+        [operation],
+        receipts,
+        {("skill/demo", "claude_user_skills"): digest},
+    )
+
+    assert second_adjudicated == []
+
+
 def test_matching_adjudication_allows_observed_target_digest(
     repo_factory, tmp_path: Path,
 ) -> None:
