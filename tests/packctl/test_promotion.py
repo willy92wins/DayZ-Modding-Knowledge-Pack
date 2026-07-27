@@ -1218,6 +1218,36 @@ def test_python_pack_alias_missing_from_map_fails_config_case_insensitively(
 
 
 
+def test_path_alias_nested_in_absolute_path_fails_without_writes(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    configure_complete_path_aliases(config_path, tmp_path)
+    commit_demo_payload(
+        root,
+        "templates/demo.ps1",
+        '$Root = "C:\\wrapper\\<dayz-projects>\\tool"\n',
+    )
+    backup_entries = list(paths["backups"].rglob("*"))
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    matches = [
+        item for item in report["findings"]
+        if item["code"] == "PROMOTION-CONFIG-INVALID"
+    ]
+    assert len(matches) == 1
+    assert matches[0]["evidence"] == (
+        "skills/demo/templates/demo.ps1:1 <dayz-projects>"
+    )
+    assert not plan_path.exists()
+    assert not (paths["claude"] / "demo").exists()
+    assert list(paths["backups"].rglob("*")) == backup_entries
+
+
 def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_real_payloads() -> None:
     root = Path(__file__).resolve().parents[2]
     promotion_map = json.loads(
@@ -1256,19 +1286,88 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
     findings = promotion._executable_placeholder_findings(
         routes,
         {
-            "<dayz-projects>": str(root),
-            "<you>": "fixture-user",
-            "<claude-appdata>": str(root / "claude-appdata"),
+            "<dayz-projects>": {"kind": "path", "value": str(root)},
+            "<you>": {"kind": "fragment", "value": "fixture-user"},
+            "<claude-appdata>": {
+                "kind": "path",
+                "value": str(root / "claude-appdata"),
+            },
         },
     )
 
     assert findings == []
 
 
+def test_legacy_v1_without_path_aliases_passes_without_placeholders(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    config.pop("path_aliases")
+    write_json(config_path, config)
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-CONFIG-INVALID" not in codes(report)
+    assert plan_path.is_file()
+
+
+def test_legacy_v1_without_path_aliases_still_scans_executable_payloads(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    commit_demo_payload(
+        root,
+        "templates/demo.ps1",
+        'param()\n$Root = "<dayz-projects>\\LF"\n',
+    )
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    config.pop("path_aliases")
+    write_json(config_path, config)
+    backup_entries = list(paths["backups"].rglob("*"))
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    matches = [
+        item for item in report["findings"]
+        if item["code"] == "PROMOTION-CONFIG-INVALID"
+    ]
+    assert len(matches) == 1
+    assert matches[0]["evidence"] == (
+        "skills/demo/templates/demo.ps1:2 <dayz-projects>"
+    )
+    assert not plan_path.exists()
+    assert not (paths["claude"] / "demo").exists()
+    assert list(paths["backups"].rglob("*")) == backup_entries
+
+
+def test_optional_path_aliases_does_not_allow_unknown_top_level_fields(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    config.pop("path_aliases")
+    config["unexpected"] = {}
+    write_json(config_path, config)
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-CONFIG-INVALID" in codes(report)
+    assert not plan_path.exists()
+
+
 @pytest.mark.parametrize(
     "case",
     [
-        "missing-field",
         "not-object",
         "unknown-alias",
         "missing-value",
@@ -1292,39 +1391,34 @@ def test_invalid_path_alias_config_fails_before_plan_or_writes(
     valid_path = tmp_path / "valid-path"
     valid_path.mkdir()
     invalid: object
-    if case == "missing-field":
-        config = json.loads(config_path.read_text(encoding="utf-8"))
-        config.pop("path_aliases")
-        write_json(config_path, config)
-    else:
-        if case == "not-object":
-            invalid = []
-        elif case == "unknown-alias":
-            invalid = {"<unknown>": {"kind": "path", "value": str(valid_path)}}
-        elif case == "missing-value":
-            invalid = {"<you>": {"kind": "fragment"}}
-        elif case == "empty-value":
-            invalid = {"<you>": {"kind": "fragment", "value": ""}}
-        elif case == "invalid-kind":
-            invalid = {"<you>": {"kind": "directory", "value": "fixture"}}
-        elif case == "relative-path":
-            invalid = {"<dayz-projects>": {"kind": "path", "value": "relative"}}
-        elif case == "missing-path":
-            invalid = {
-                "<dayz-projects>": {
-                    "kind": "path",
-                    "value": str(tmp_path / "does-not-exist"),
-                }
+    if case == "not-object":
+        invalid = []
+    elif case == "unknown-alias":
+        invalid = {"<unknown>": {"kind": "path", "value": str(valid_path)}}
+    elif case == "missing-value":
+        invalid = {"<you>": {"kind": "fragment"}}
+    elif case == "empty-value":
+        invalid = {"<you>": {"kind": "fragment", "value": ""}}
+    elif case == "invalid-kind":
+        invalid = {"<you>": {"kind": "directory", "value": "fixture"}}
+    elif case == "relative-path":
+        invalid = {"<dayz-projects>": {"kind": "path", "value": "relative"}}
+    elif case == "missing-path":
+        invalid = {
+            "<dayz-projects>": {
+                "kind": "path",
+                "value": str(tmp_path / "does-not-exist"),
             }
-        elif case == "fragment-separator":
-            invalid = {"<you>": {"kind": "fragment", "value": "fixture/user"}}
-        elif case == "fragment-drive":
-            invalid = {"<you>": {"kind": "fragment", "value": "C:fixture"}}
-        else:
-            invalid = {"<you>": {"kind": "fragment", "value": "fixture..user"}}
-        config = json.loads(config_path.read_text(encoding="utf-8"))
-        config["path_aliases"] = invalid
-        write_json(config_path, config)
+        }
+    elif case == "fragment-separator":
+        invalid = {"<you>": {"kind": "fragment", "value": "fixture/user"}}
+    elif case == "fragment-drive":
+        invalid = {"<you>": {"kind": "fragment", "value": "C:fixture"}}
+    else:
+        invalid = {"<you>": {"kind": "fragment", "value": "fixture..user"}}
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    config["path_aliases"] = invalid
+    write_json(config_path, config)
     backup_entries = list(paths["backups"].rglob("*"))
 
     report = check_promotion(root, map_path, config_path, plan_path)
@@ -1480,8 +1574,14 @@ def test_alias_value_is_single_pass_literal_and_residual_blocks_commit(
         "tree",
         source_files,
         path_aliases={
-            "<dayz-projects>": str(dayz_projects),
-            "<you>": "<dayz-projects>",
+            "<dayz-projects>": {
+                "kind": "path",
+                "value": str(dayz_projects),
+            },
+            "<you>": {
+                "kind": "fragment",
+                "value": "<dayz-projects>",
+            },
         },
         source_root=root,
     )
@@ -1497,6 +1597,17 @@ def test_alias_value_is_single_pass_literal_and_residual_blocks_commit(
     events = assert_valid_event_chain(transaction)
     assert applied["verdict"] == "FAIL"
     assert "PROMOTION-APPLY-FAILED" in codes(applied)
+    failure = next(
+        item for item in applied["findings"]
+        if item["code"] == "PROMOTION-APPLY-FAILED"
+    )
+    evidence = str(failure["evidence"])
+    assert evidence.startswith("PROMOTION-PLACEHOLDER-IN-EXECUTABLE ")
+    assert ":staging-readback " in evidence
+    assert (
+        "skills/demo/templates/demo.ps1:1 <dayz-projects>"
+        in evidence
+    )
     assert events[-1]["event_type"] == "ABORT"
     assert all(event["event_type"] != "COMMIT" for event in events)
     assert not Path(str(plan["receipt_path"])).exists()
