@@ -3930,7 +3930,7 @@
           "decision": "adopt",
           "decision_evidence": "Approved release-grade build boundary was added after an adversarial RED-to-GREEN evaluation.",
           "license": "MIT",
-          "source_hash": "3b8312763cd61f88380ba270d8cd86a704bd0e2ab8164bccfcfe71d4a8844482",
+          "source_hash": "3877cc683ef3248ba7086926a63310f5a943fbcaf43ee83e8f8b5f12bc4b1eaf",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -3938,7 +3938,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3b8312763cd61f88380ba270d8cd86a704bd0e2ab8164bccfcfe71d4a8844482",
+      "output_hash": "3877cc683ef3248ba7086926a63310f5a943fbcaf43ee83e8f8b5f12bc4b1eaf",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -4182,7 +4182,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "2dfc6a63cd26f7c3634ee096728dd84dd699c8975617242430adb73e01a0da59",
+          "source_hash": "d2c93d79fc6e331b62a15d36077e88a681cf969c4fcca622f3fcb912b6ab5c3b",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -4190,7 +4190,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2dfc6a63cd26f7c3634ee096728dd84dd699c8975617242430adb73e01a0da59",
+      "output_hash": "d2c93d79fc6e331b62a15d36077e88a681cf969c4fcca622f3fcb912b6ab5c3b",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

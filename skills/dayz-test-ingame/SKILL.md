@@ -538,3 +538,52 @@ dies with `staging dir missing`. Rebuild it by copying the pack source (models/,
 
 Also: the daemon self-terminates on its idle timeout (600 s), so a launch flow that worked hours
 earlier will fail later with no change to the mod. Check port 8765 before blaming the build.
+
+## Secure-launcher request grammar, the Steam prerequisite, and orphaned runs (SP-095, added 2026-07-27)
+
+Four traps in one launch session on LFHeli OH-1. Each is cheap once known and expensive when not.
+
+**1. The CLIENT needs Steam running. The SERVER does not.** A client launched with Steam down exits
+immediately, writes a 793-byte RPT with only the header and an `ErrorMessage_*.mdmp` next to it, and
+logs NOTHING useful. The real message is only inside the minidump: extract strings and look for
+`Unable to locate a running instance of Steam`. There is no Windows "Application Error" event
+because the engine handles it itself. Check `Get-Process steam` BEFORE launching a client, and start
+it with `steam.exe -silent` if missing.
+
+**2. The request JSON must not carry a UTF-8 BOM.** `Out-File -Encoding utf8` in Windows PowerShell
+5.1 writes a BOM and the parser rejects the whole request with `invalid_dayz_test_request`. Write it
+with `[IO.File]::WriteAllText($path, $json, (New-Object Text.UTF8Encoding($false)))`, or copy a
+known-good request file and string-replace the fields.
+
+**3. The request grammar has two coupled rules** (`dayz_test_request.py:336-344`), and violating
+either returns the same opaque `invalid_dayz_test_request`:
+- `kill: true` REQUIRES a `run_id`.
+- With a `run_id`, `mode` may NOT be `server` or `all`; and `mode: "client"` REQUIRES a `run_id`.
+So the valid shapes are: `server`/`all` without run_id (starts a run), `client` with run_id (joins
+one), and kill as `mode: "client"` + `kill: true` + run_id (stops the run, not just the client).
+`mode: "all"` in one request launches server AND client and avoids the run_id dance entirely - prefer
+it when starting fresh.
+
+**4. `run_not_adoptable` means the run is gone but its processes may not be.** The kill path tries
+`adopt` then `stop` (`dayz_test_worker.py:496-507`); when both fail the lifecycle has lost the run
+while a DayZ process may still hold port 2302, so every new run fails with `worker_failed` and the
+audit trail shows `session_rejected reason=process_identity_mismatch`. Read
+`%LOCALAPPDATA%\DayZ_MCP\audit\events.jsonl` (tail) - it names the real reason, which the CLI hides.
+Recovery is a documented DEGRADED CLOSURE: close that specific process after verifying by
+`CommandLine` that it is yours, then start a fresh run. This is the sanctioned exception to "never
+kill DayZ processes directly": it applies only to a process you launched, under a run the guard has
+already disowned, that is blocking the port.
+
+**Also**: `lifecycle_cli.py` cannot be invoked standalone - it answers `missing_lifecycle_environment`
+because the launcher chain sets its environment. Drive lifecycle operations through
+`secure_launcher.run_secure_launcher` with a request on stdin.
+
+**Method note that cost real time here**: `host_config.resolve_daemon_provenance()` raises
+`daemon_provenance_conflict` if you call it with the SYSTEM python instead of the `.venv-mcp`
+interpreter that both registrations declare - it compares `command` against the local launch
+executable (`host_config.py:218-222`). That is a false alarm produced by the caller, not a
+divergence between the Claude and Codex registrations. Always invoke with
+`DayZ_MCP_dev\tools\.venv-mcp\Scripts\python.exe`.
+
+Cross-ref SP-089 (allow-list format), SP-092 (daemon argv, staging dir, opaque errors), SP-085
+(diag hangs outside the registered launcher).
