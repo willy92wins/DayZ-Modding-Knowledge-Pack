@@ -458,7 +458,7 @@ def _set_test_target_state(target: Path, value: str) -> str:
     return tree_digest(target)
 
 
-def test_receipt_history_noop_on_restored_root_fails_closed(
+def test_receipt_history_noop_does_not_explain_later_target_mutation(
     repo_factory, tmp_path: Path,
 ) -> None:
     root, map_path, config_path, plan_path, paths = promotion_fixture(
@@ -489,7 +489,7 @@ def test_receipt_history_noop_on_restored_root_fails_closed(
 
     report = check_promotion(root, map_path, config_path, plan_path)
 
-    assert "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS" in codes(report)
+    assert "PROMOTION-TARGET-UNEXPLAINED" in codes(report)
     assert not plan_path.exists()
 
 
@@ -522,7 +522,7 @@ def test_receipt_history_noop_on_unique_head_remains_neutral(
     assert plan_path.is_file()
 
 
-def test_receipt_history_uses_causal_head_when_clock_moves_backward(
+def test_receipt_history_uses_sealed_time_before_filename_order(
     repo_factory, tmp_path: Path,
 ) -> None:
     root, map_path, config_path, plan_path, paths = promotion_fixture(
@@ -533,15 +533,15 @@ def test_receipt_history_uses_causal_head_when_clock_moves_backward(
     head_digest = _set_test_target_state(target, "head\n")
     commit_test_receipt(
         root, backup_root=paths["backups"], target_path=target,
-        name="a" * 24, target_id="claude_user_skills",
+        name="f" * 24, target_id="claude_user_skills",
         after_digest=first_digest,
         completed_at="2026-07-25T10:00:00+00:00",
     )
     commit_test_receipt(
         root, backup_root=paths["backups"], target_path=target,
-        name="b" * 24, target_id="claude_user_skills",
+        name="a" * 24, target_id="claude_user_skills",
         before_digest=first_digest, after_digest=head_digest,
-        completed_at="2026-07-25T09:59:59+00:00",
+        completed_at="2026-07-25T11:00:00+00:00",
     )
 
     report = check_promotion(root, map_path, config_path, plan_path)
@@ -561,15 +561,15 @@ def test_receipt_history_rejects_restored_superseded_digest(
     head_digest = _set_test_target_state(target, "head\n")
     commit_test_receipt(
         root, backup_root=paths["backups"], target_path=target,
-        name="c" * 24, target_id="claude_user_skills",
+        name="f" * 24, target_id="claude_user_skills",
         after_digest=first_digest,
         completed_at="2026-07-25T10:00:00+00:00",
     )
     commit_test_receipt(
         root, backup_root=paths["backups"], target_path=target,
-        name="d" * 24, target_id="claude_user_skills",
+        name="a" * 24, target_id="claude_user_skills",
         before_digest=first_digest, after_digest=head_digest,
-        completed_at="2026-07-25T09:59:59+00:00",
+        completed_at="2026-07-25T11:00:00+00:00",
     )
     assert _set_test_target_state(target, "first\n") == first_digest
 
@@ -579,7 +579,7 @@ def test_receipt_history_rejects_restored_superseded_digest(
     assert not plan_path.exists()
 
 
-def test_receipt_history_fork_fails_closed(
+def test_receipt_history_allows_distinct_roots_across_transactions(
     repo_factory, tmp_path: Path,
 ) -> None:
     root, map_path, config_path, plan_path, paths = promotion_fixture(
@@ -603,11 +603,12 @@ def test_receipt_history_fork_fails_closed(
 
     report = check_promotion(root, map_path, config_path, plan_path)
 
-    assert "PROMOTION-RECEIPT-HISTORY-FORK" in codes(report)
-    assert not plan_path.exists()
+    assert "PROMOTION-RECEIPT-HISTORY-FORK" not in codes(report)
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(report)
+    assert plan_path.is_file()
 
 
-def test_receipt_history_cycle_fails_closed(
+def test_receipt_history_return_to_prior_digest_is_not_cycle(
     repo_factory, tmp_path: Path,
 ) -> None:
     root, map_path, config_path, plan_path, paths = promotion_fixture(
@@ -632,11 +633,12 @@ def test_receipt_history_cycle_fails_closed(
 
     report = check_promotion(root, map_path, config_path, plan_path)
 
-    assert "PROMOTION-RECEIPT-HISTORY-CYCLE" in codes(report)
-    assert not plan_path.exists()
+    assert "PROMOTION-RECEIPT-HISTORY-CYCLE" not in codes(report)
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(report)
+    assert plan_path.is_file()
 
 
-def test_disconnected_receipt_history_fails_closed_as_ambiguous(
+def test_later_transaction_can_start_from_distinct_preimage(
     repo_factory, tmp_path: Path,
 ) -> None:
     root, map_path, config_path, plan_path, paths = promotion_fixture(
@@ -660,8 +662,9 @@ def test_disconnected_receipt_history_fails_closed_as_ambiguous(
 
     report = check_promotion(root, map_path, config_path, plan_path)
 
-    assert "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS" in codes(report)
-    assert not plan_path.exists()
+    assert "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS" not in codes(report)
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(report)
+    assert plan_path.is_file()
 
 
 @pytest.mark.parametrize(

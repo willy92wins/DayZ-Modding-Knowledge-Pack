@@ -1647,7 +1647,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "80319d8cd1baf8acb0e8f36ca4997481ec6721bb48b1ef7b020c05826c782f7c",
+      "output_hash": "b848d39e2a5d981b4ae2d5ac78f9adb9d2f975bd663187153582805c6aedf3fd",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -6154,6 +6154,98 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/tests/packctl/fixtures/receipt_history/51a7024ef9a5e333e5fab7b8.json",
+      "distribution_reason": "Hermetic BUG-020 promotion-history regression support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved BUG-020 regression fixture or test, derived from the three sealed promotion receipts and exercised offline.",
+          "license": "MIT",
+          "source_hash": "a3c0ccc8c92b92c6eeb105838becdf7d17649508904bdf945c3e9ddfb29cec59",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/fixtures/receipt_history/51a7024ef9a5e333e5fab7b8.json",
+          "source_revision": "r21-bug020@2026-07-27",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a3c0ccc8c92b92c6eeb105838becdf7d17649508904bdf945c3e9ddfb29cec59",
+      "output_path": "tests/packctl/fixtures/receipt_history/51a7024ef9a5e333e5fab7b8.json",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/packctl/fixtures/receipt_history/adjudications.json",
+      "distribution_reason": "Hermetic BUG-020 promotion-history regression support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved BUG-020 regression fixture or test, derived from the three sealed promotion receipts and exercised offline.",
+          "license": "MIT",
+          "source_hash": "8153380dfb31c8ec254e9bce9bac05329b8a24a7af1db700fab1029bccae761a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/fixtures/receipt_history/adjudications.json",
+          "source_revision": "r21-bug020@2026-07-27",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8153380dfb31c8ec254e9bce9bac05329b8a24a7af1db700fab1029bccae761a",
+      "output_path": "tests/packctl/fixtures/receipt_history/adjudications.json",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/packctl/fixtures/receipt_history/c7b5366cc761a8038e52f6a2.json",
+      "distribution_reason": "Hermetic BUG-020 promotion-history regression support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved BUG-020 regression fixture or test, derived from the three sealed promotion receipts and exercised offline.",
+          "license": "MIT",
+          "source_hash": "44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/fixtures/receipt_history/c7b5366cc761a8038e52f6a2.json",
+          "source_revision": "r21-bug020@2026-07-27",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd",
+      "output_path": "tests/packctl/fixtures/receipt_history/c7b5366cc761a8038e52f6a2.json",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/packctl/fixtures/receipt_history/e2aa6cf9058070bb4fbf2a8c.json",
+      "distribution_reason": "Hermetic BUG-020 promotion-history regression support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved BUG-020 regression fixture or test, derived from the three sealed promotion receipts and exercised offline.",
+          "license": "MIT",
+          "source_hash": "6457aac30352ef2b766fd9a713cbf0c06b6e2aacf8eb8b5a36bf137c9318cf3d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/fixtures/receipt_history/e2aa6cf9058070bb4fbf2a8c.json",
+          "source_revision": "r21-bug020@2026-07-27",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6457aac30352ef2b766fd9a713cbf0c06b6e2aacf8eb8b5a36bf137c9318cf3d",
+      "output_path": "tests/packctl/fixtures/receipt_history/e2aa6cf9058070bb4fbf2a8c.json",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/tests/packctl/test_api_index.py",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -6332,8 +6424,31 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9dbfcebe9dc68aaf2e7febf9dd1257873c2f09cb92bd486560fd72e25c45b2f8",
+      "output_hash": "20e6c5e12c117386a9eb4765a7fe85c10d88b89410fda4e96d58e9055c57a07f",
       "output_path": "tests/packctl/test_promotion.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/packctl/test_receipt_history_baseline.py",
+      "distribution_reason": "Hermetic BUG-020 promotion-history regression support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved BUG-020 regression fixture or test, derived from the three sealed promotion receipts and exercised offline.",
+          "license": "MIT",
+          "source_hash": "e6101c46d3f46812c8a3f597c24080e2b7d81821fabaa8002a117b3dbca8f5d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_receipt_history_baseline.py",
+          "source_revision": "r21-bug020@2026-07-27",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e6101c46d3f46812c8a3f597c24080e2b7d81821fabaa8002a117b3dbca8f5d7",
+      "output_path": "tests/packctl/test_receipt_history_baseline.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
     },

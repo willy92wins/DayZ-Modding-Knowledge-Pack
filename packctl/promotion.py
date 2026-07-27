@@ -1053,80 +1053,108 @@ def _sealed_receipt_transitions(
 def _causal_receipt_head(
     transitions: list[tuple[str, str, str]],
 ) -> tuple[str | None, str | None, str]:
-    outgoing: dict[str, tuple[str, str]] = {}
-    incoming: dict[str, tuple[str, str]] = {}
-    no_op_states: set[str] = set()
-    seen_edges: set[tuple[str, str]] = set()
+    transitions_by_transaction: dict[str, list[tuple[str, str]]] = {}
+    transaction_order: list[str] = []
     for before_digest, after_digest, transaction_id in transitions:
-        if before_digest == after_digest:
-            no_op_states.add(before_digest)
-            continue
-        edge = (before_digest, after_digest)
-        if edge in seen_edges:
-            return (
-                None,
-                "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
-                f"duplicate-transition:{transaction_id}",
-            )
-        seen_edges.add(edge)
-        prior_outgoing = outgoing.get(before_digest)
-        if prior_outgoing is not None:
-            return (
-                None,
-                "PROMOTION-RECEIPT-HISTORY-FORK",
-                f"fork-at:{before_digest}",
-            )
-        prior_incoming = incoming.get(after_digest)
-        if prior_incoming is not None:
-            return (
-                None,
-                "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
-                f"multiple-preimages:{after_digest}",
-            )
-        outgoing[before_digest] = (after_digest, transaction_id)
-        incoming[after_digest] = (before_digest, transaction_id)
+        if transaction_id not in transitions_by_transaction:
+            transitions_by_transaction[transaction_id] = []
+            transaction_order.append(transaction_id)
+        transitions_by_transaction[transaction_id].append(
+            (before_digest, after_digest)
+        )
 
-    if not seen_edges:
-        if len(no_op_states) == 1:
-            return next(iter(no_op_states)), None, ""
+    if not transaction_order:
         return None, "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS", "no-unique-state"
 
-    nodes = set(outgoing) | set(incoming)
-    visited: set[str] = set()
-    for start in nodes:
-        trail: set[str] = set()
-        current = start
-        while current in outgoing and current not in visited:
-            if current in trail:
+    latest_head: str | None = None
+    for transaction_id in transaction_order:
+        outgoing: dict[tuple[str, str], tuple[str, str]] = {}
+        incoming: dict[tuple[str, str], tuple[str, str]] = {}
+        no_op_states: set[tuple[str, str]] = set()
+        seen_edges: set[
+            tuple[tuple[str, str], tuple[str, str]]
+        ] = set()
+        for before_digest, after_digest in transitions_by_transaction[
+            transaction_id
+        ]:
+            before_occurrence = (before_digest, transaction_id)
+            after_occurrence = (after_digest, transaction_id)
+            if before_digest == after_digest:
+                no_op_states.add(before_occurrence)
+                continue
+            edge = (before_occurrence, after_occurrence)
+            if edge in seen_edges:
                 return (
                     None,
-                    "PROMOTION-RECEIPT-HISTORY-CYCLE",
-                    f"cycle-at:{current}",
+                    "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
+                    f"duplicate-transition:{transaction_id}",
                 )
-            trail.add(current)
-            current = outgoing[current][0]
-        visited.update(trail)
+            seen_edges.add(edge)
+            prior_outgoing = outgoing.get(before_occurrence)
+            if prior_outgoing is not None:
+                return (
+                    None,
+                    "PROMOTION-RECEIPT-HISTORY-FORK",
+                    f"fork-at:{before_digest}",
+                )
+            prior_incoming = incoming.get(after_occurrence)
+            if prior_incoming is not None:
+                return (
+                    None,
+                    "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
+                    f"multiple-preimages:{after_digest}",
+                )
+            outgoing[before_occurrence] = after_occurrence
+            incoming[after_occurrence] = before_occurrence
 
-    roots = nodes - set(incoming)
-    heads = nodes - set(outgoing)
-    if len(roots) != 1 or len(heads) != 1:
-        return (
-            None,
-            "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
-            f"roots={len(roots)} heads={len(heads)}",
-        )
-    current = next(iter(roots))
-    connected = {current}
-    while current in outgoing:
-        current = outgoing[current][0]
-        connected.add(current)
-    if connected != nodes or not no_op_states.issubset(heads):
-        return (
-            None,
-            "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
-            "disconnected-or-non-head-no-op",
-        )
-    return next(iter(heads)), None, ""
+        if not seen_edges:
+            if len(no_op_states) == 1:
+                latest_head = next(iter(no_op_states))[0]
+                continue
+            return (
+                None,
+                "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
+                "no-unique-state",
+            )
+
+        nodes = set(outgoing) | set(incoming)
+        visited: set[tuple[str, str]] = set()
+        for start in nodes:
+            trail: set[tuple[str, str]] = set()
+            current = start
+            while current in outgoing and current not in visited:
+                if current in trail:
+                    return (
+                        None,
+                        "PROMOTION-RECEIPT-HISTORY-CYCLE",
+                        f"cycle-at:{current[0]}",
+                    )
+                trail.add(current)
+                current = outgoing[current]
+            visited.update(trail)
+
+        roots = nodes - set(incoming)
+        heads = nodes - set(outgoing)
+        if len(roots) != 1 or len(heads) != 1:
+            return (
+                None,
+                "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
+                f"roots={len(roots)} heads={len(heads)}",
+            )
+        current = next(iter(roots))
+        connected = {current}
+        while current in outgoing:
+            current = outgoing[current]
+            connected.add(current)
+        if connected != nodes or not no_op_states.issubset(heads):
+            return (
+                None,
+                "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
+                "disconnected-or-non-head-no-op",
+            )
+        latest_head = next(iter(heads))[0]
+
+    return latest_head, None, ""
 
 
 def _latest_receipt_digests(
@@ -1139,10 +1167,17 @@ def _latest_receipt_digests(
     transitions_by_key: dict[
         tuple[str, str], list[tuple[str, str, str]]
     ] = {}
+    sealed_receipts: list[
+        tuple[
+            datetime,
+            str,
+            list[tuple[tuple[str, str], str, str, str]],
+        ]
+    ] = []
     findings: list[dict[str, object]] = []
     if not receipts_root.exists():
         return {}, findings
-    for path in sorted(receipts_root.glob("*.json")):
+    for path in receipts_root.glob("*.json"):
         if path.is_symlink() or _is_junction(path):
             findings.append(
                 finding(
@@ -1192,6 +1227,23 @@ def _latest_receipt_digests(
                 observed_digests=observed_digests,
             )
             continue
+        # Sealing above proves this receipt timestamp is the journal COMMIT
+        # timestamp. It is therefore safe to use as the semantic order.
+        completed_at = datetime.fromisoformat(
+            str(receipt["completed_at"]).replace("Z", "+00:00")
+        )
+        sealed_receipts.append(
+            (
+                completed_at,
+                str(receipt["transaction_id"]),
+                transitions,
+            )
+        )
+
+    for _, _, transitions in sorted(
+        sealed_receipts,
+        key=lambda batch: (batch[0], batch[1]),
+    ):
         for key, before_digest, after_digest, transaction_id in transitions:
             transitions_by_key.setdefault(key, []).append(
                 (before_digest, after_digest, transaction_id)
