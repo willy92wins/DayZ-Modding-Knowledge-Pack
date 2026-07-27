@@ -1,17 +1,25 @@
 # HANDOFF — DayZ Modding Knowledge Pack
 
 <!-- LIVE-STATE:START -->
-# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-27 (cierre de noche)
+# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-28 (madrugada)
 
-**Última verificación real:** HEAD `98421b3` en `r21/phase01-foundation`, árbol
-limpio, `main` intacto en `994cb77`, sin remoto. Suite **697 passed / 18
+**Última verificación real:** HEAD `b015972` en `r21/phase01-foundation`, árbol
+limpio, `main` intacto en `994cb77`, sin remoto. Suite **698 passed / 18
 skipped**, `packctl validate` PASS con cero findings, `packctl promote --check`
-**`WARN` con exit 0** y finding único `PROMOTION-DRIFT operation_count=46`, plan
+**`WARN` con exit 0** y finding único `PROMOTION-DRIFT operation_count=38`, plan
 escrito. Todo medido sobre el árbol, no leído de informes.
+
+**Promoción real ejecutada** (tx `6591ddab82a8162e1550f4c8` sobre `0e35ba9`, PASS,
+54 operaciones, 141 eventos terminando en `COMMIT`), autorizada explícitamente.
+Readback independiente: 162 ficheros antes y después, **0 perdidos**, 16 cambiados
+—los 8 `SKILL.md` adoptados × 2 raíces— y los 162 proyectados coinciden con el repo.
+El drift bajó de 46 a 38: las 38 restantes son **todas** de `obsidian_snapshots`
+con `before_digest: absent`, que es estructural. Cero operaciones de skill con
+drift; las dos raíces están sincronizadas y ya sin la asimetría CRLF/LF.
 
 `ciclos_en_este_objetivo: 1 (deuda de promoción y hardening de Fase 04)`
 
-## Cerrado en esta sesión (6 commits)
+## Cerrado en esta sesión (9 commits)
 
 - **Quién escribe en las skills instaladas — RESUELTO. No es el harness.** Son
   dos sesiones concurrentes de Claude Code del propio usuario, promoviendo
@@ -27,7 +35,18 @@ escrito. Todo medido sobre el árbol, no leído de informes.
   bytes sobre todo el corpus.
 - **BUG-020 verificado de forma independiente**: `_latest_receipt_digests` sobre
   los 68 pares, con las 22 adjudicaciones y con el mapa vacío, da **0 findings en
-  ambas pasadas** → **0 enmascarados**. Antes del fix eran 12.
+  ambas pasadas** → **0 enmascarados**. Antes del fix eran 12. Y el guardarraíl
+  sigue pudiendo ponerse rojo: las cuatro formas de fallo (fork, ciclo, múltiples
+  preimágenes, transición duplicada) fallan cerradas **dentro** de una transacción
+  y pasan **entre** dos. De los «cuatro tests invertidos» del mensaje de `ac21d13`,
+  solo dos lo fueron; los otros dos siguen fallando cerrados.
+- **`0e35ba9`** — el gate de preimagen comprueba **todos** los ids lógicos, no solo
+  `[0]`. Y **retira la deuda que lo pedía**: la afirmación de que el gate indexa por
+  un artefacto de ordenación y deja adjudicaciones inertes **es falsa**, medida
+  instrumentando el gate real (68 operaciones, todas con 1 id). La cifra que la
+  sostenía se había medido contra el plan deduplicado. `LL-217`.
+- **`b015972`** — promoción real, receipt versionado con su propia entrada de
+  procedencia, verificada contra el `receipt_hash` del evento `COMMIT` terminal.
 
 ## AVISO VIGENTE — el destino muta solo, y se ha medido dos veces
 
