@@ -1,74 +1,78 @@
 # HANDOFF — DayZ Modding Knowledge Pack
 
 <!-- LIVE-STATE:START -->
-# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-27 (cierre)
+# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-27 (cierre de noche)
 
-**Última verificación real:** HEAD `ac21d13` en `r21/phase01-foundation`, árbol
-limpio, `main` intacto en `994cb77`, sin remoto. Suite **668 passed / 18
-skipped**, `packctl validate` PASS con cero findings. Medidos sobre el árbol.
+**Última verificación real:** HEAD `98421b3` en `r21/phase01-foundation`, árbol
+limpio, `main` intacto en `994cb77`, sin remoto. Suite **697 passed / 18
+skipped**, `packctl validate` PASS con cero findings, `packctl promote --check`
+**`WARN` con exit 0** y finding único `PROMOTION-DRIFT operation_count=46`, plan
+escrito. Todo medido sobre el árbol, no leído de informes.
 
-## Cerrado en esta sesión
+`ciclos_en_este_objetivo: 1 (deuda de promoción y hardening de Fase 04)`
 
-- **Promoción real ejecutada** (tx `e2aa6cf9058070bb4fbf2a8c`, PASS, 54
-  operaciones). Readback verificado a mano: 0 ficheros perdidos.
-- **Wheel re-baselinado** a `c635bf7e…`. Reproducibilidad **toolchain-bound**
-  (`setuptools==83.0.0`, Python 3.14.3).
-- **Eval vivo discriminante** entregado (`8ac8993`). B3a ✓ / B3b ❓ sin evidencia
-  fabricada.
-- **BUG-020 implementado** (`ac21d13`): identidad de nodo = ocurrencia sellada.
-  Medición independiente: **30 resuelven, 0 rotos, 0 enmascarados** (antes
-  18/12/12). No hubo migración de formato: la ocurrencia se deriva al recorrer.
+## Cerrado en esta sesión (6 commits)
 
-## BLOQUEO VIGENTE — resolver antes de tocar promoción
+- **Quién escribe en las skills instaladas — RESUELTO. No es el harness.** Son
+  dos sesiones concurrentes de Claude Code del propio usuario, promoviendo
+  lecciones. Atribuido por tres vías: transcripciones de sesión con el texto
+  literal, notas de memoria automática escritas 31 y 35 s después de cada
+  escritura, y cada `LL-NNN` citado resuelve en el corpus del vault.
+- **`7e437f0`** — adopción de los 8 artefactos que solo vivían en las instaladas
+  (+227 líneas, 0 borrados). **`7556555`** — 22 adjudicaciones, digests releídos
+  del check. **`f641c96`** — tercera tanda de `dayz-vehicles` adoptada y
+  re-adjudicada.
+- **`982dae6`** — BUG-021 y BUG-022 cerrados. **`4271ff0`** — MEN-1, MEN-5, MEN-6
+  y el test de involución. **`98421b3`** — MEN-2, MEN-3, MEN-4 con round-trip por
+  bytes sobre todo el corpus.
+- **BUG-020 verificado de forma independiente**: `_latest_receipt_digests` sobre
+  los 68 pares, con las 22 adjudicaciones y con el mapa vacío, da **0 findings en
+  ambas pasadas** → **0 enmascarados**. Antes del fix eran 12.
 
-`promote --check` da **FAIL con 8 `PROMOTION-TARGET-UNEXPLAINED`**. No es
-regresión de BUG-020: son 4 skills (`dayz-feature-spec`, `dayz-test-ingame`,
-`dayz-vehicles`, `rigorous-data-audit`) × 2 targets cuyas copias instaladas
-**cambiaron de contenido a las 17:38 y 18:30 del 2026-07-27**, durante el job de
-Codex de BUG-020 — que tenía alcance limitado al worktree y no debería haberlas
-tocado. Mismo número de ficheros, contenido distinto.
+## AVISO VIGENTE — el destino muta solo, y se ha medido dos veces
 
-**Sospecha NO verificada:** el propio harness de Claude Code reescribe los árboles
-de skills instalados (encaja con los avisos de skills que cambiaron toda la
-sesión). Si es cierto, el gate de preimagen seguirá disparándose para siempre y
-hay que decidir qué hacer con esos destinos.
+Escrituras host-direct en skills del pack **tres veces el 2026-07-27** (17:38:17,
+19:39:59, 23:03:24). Coste medido: 8 findings a las 19:02 → **16** a las 19:48; y
+gate limpio a las 20:10 → **FAIL** a las 23:12. El conocimiento es bueno y ya está
+en Git; lo que se repite es el ciclo adoptar → re-medir → re-adjudicar.
 
-**NO adjudicar esos 8** hasta saber quién escribe. Adjudicar es firmar sobre un
-destino que muta solo.
+**Frontera decidida y registrada** en `decisions/decision-log.md` (entrada
+«Frontera de escritura», 2026-07-27): las **15 skills del `promotion-map`** se
+escriben en el repo y llegan al destino por promoción con recibo; fuera de esas
+15 no hay fricción. `promote --apply` solo desde la sesión que sostiene este
+worktree y con autorización explícita del usuario.
 
-## Trampas que esta sesión pagó
-
-- **`validate` sobre un fichero sin rastrear no dice nada del estado
-  post-commit.** Mordió tres veces. `git add` y **después** validar.
-- **Cada receipt necesita su propia entrada de procedencia**; `repo/promotions`
-  no los cubre.
-- **La comparación viva↔repo caduca** (la de `4d594ae` duró 10 h). Re-medir
-  siempre antes de adjudicar.
-- **Las copias instaladas tienen EOL mixto**: originales CRLF, secciones nuevas
-  LF. Adoptar solo el bloque añadido, normalizado, no el fichero entero.
-- **`logical_target_ids` es una lista en los tres receipts**; `ConvertTo-Json` de
-  PowerShell la muestra como cadena. Leer el JSON con Python.
-- `promote --check` no escribe a stdout: informe en `<plan>.check-report.json`, y
-  el `--plan` no se crea si falla.
+**Antes de adjudicar cualquier cosa: re-medir.** Una adjudicación autoriza un
+digest concreto y caduca sola.
 
 ## Deuda sin sesión asignada
 
-BUG-021, BUG-022, `MEN-1`…`MEN-6`, y el rollout py3d a las 8 skills instaladas
-(siguen en `py3d-1.2.0`; ya hay wheel con identidad verde).
+- **Indexado por destino físico**: el gate de preimagen indexa por
+  `logical_target_ids[0]`, que tras el dedup es un artefacto de ordenación.
+  Mitigado (están escritas las dos claves de los 11 artefactos), no arreglado.
+  Misma familia que BUG-020.
+- **Rollout py3d** a las 8 skills instaladas (siguen en `py3d-1.2.0`). Requiere
+  autorización explícita y ahora cae dentro de la frontera: por repo + promoción,
+  no host-direct.
+- **Eval vivo contra modelo real** para sacar B3b de `❓`.
+- **`reports/` acumula basura** de sesiones anteriores (venvs de pytest, tmpdirs
+  con ACLs read-only). Gitignored, no contamina commits; limpieza pendiente.
 
 ## Invariantes cerradas
 
 - Git es la única fuente editable; las instaladas son despliegues. La adopción va
   del destino al repo, nunca al revés sin gate.
 - Una adjudicación autoriza **un digest concreto**, caduca sola, y **tapa, no
-  arregla**.
+  arregla** — por eso se adopta ANTES de adjudicar.
+- Preimagen e historial causal son **dos gates distintos**. Firmar preimágenes no
+  tapa historia (medido: 0 enmascarados).
 - Ningún writer ODOL; «aislado» ahí significa subproceso, no sandbox.
 - Un gate que no puede ponerse rojo no es un gate.
 - Ninguna promoción real sin autorización explícita del usuario.
 
-**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: BUG-020
-cerrado en ac21d13 · averiguar quién escribe en las skills instaladas antes de
-tocar promoción`.
+**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: 98421b3
+con los seis MEN y BUG-021/022 cerrados · re-medir promote --check antes de tocar
+nada, porque el destino muta solo`.
 <!-- LIVE-STATE:END -->
 
 ---
