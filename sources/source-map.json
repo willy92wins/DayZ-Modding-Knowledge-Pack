@@ -6667,7 +6667,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c11cd0702822e2a7f6f968e50da11178fbbdd4f5b4bf550c1552aaac6ac57b5b",
+      "output_hash": "bd803bcf5e5046d4beba1c005fb515933d5f4fb4699bc2f139104a2b766bd685",
       "output_path": "tools/dayz-animation-formats/dayz_animation_formats/rtm.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6699,7 +6699,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c0d0d8b5e90a06ccf28b6a44bea1222a562ff668c1c5328050680049df4cbd9c",
+      "output_hash": "c67f6b0b845d62737a2b1fdd777d9a15a5771ec637ab9115ee48ad4d498adab0",
       "output_path": "tools/dayz-animation-formats/dayz_animation_formats/seanim.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6809,7 +6809,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0d8dff96fad1d85b9b7e9c017308f49ce4c999bc1528902d0c763275b4785839",
+      "output_hash": "79f4e7997bf8f9543f5149c6f1ad5f56ea42a26d90658134c8df120aa3ae1b59",
       "output_path": "tools/dayz-animation-formats/tests/fixtures/rtm-0101-mdat.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6853,7 +6853,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8faaf44be79c8c485564b110abf30996c11b26ed5c70672a45a08f8cf58cb267",
+      "output_hash": "fda11ae1a7b7f3cc5dd0f828539eae79306a3438e9ba561a279c43abb0b65856",
       "output_path": "tools/dayz-animation-formats/tests/fixtures/seanim-v1-full.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6963,7 +6963,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cc1785389d5394d426d65b97b154422a39be19f944db08556ae34208d1861815",
+      "output_hash": "053aa6c758616a392ad17e27536eaf199235138c59eebb5fe1390ab400e9569d",
       "output_path": "tools/dayz-animation-formats/tests/test_rtm.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -6985,7 +6985,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7a498f26f0e8221656ec1d23dee75e3df9c4712b5b9944575cfba076793a4d18",
+      "output_hash": "11abdd27e4031a7377610850c3927deeb2cbf8f015e48d33bfed58f1afbc2c0c",
       "output_path": "tools/dayz-animation-formats/tests/test_seanim.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

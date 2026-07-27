@@ -257,6 +257,7 @@ def read_seanim_bytes(data):
         "framerate": framerate,
         "looped": bool(anim_flags & FLAG_LOOPED),
         "notes": notes,
+        "presence_flags": presence,
         "precision": precision,
         "version": VERSION,
     }
@@ -271,15 +272,7 @@ def write_seanim_bytes(document):
     bone_format, _ = _index_format(len(bones))
     scalar_format = "d" if normalized["precision"] == "float64" else "f"
 
-    presence = 0
-    if any(bone["position_keys"] for bone in bones):
-        presence |= PRESENCE_POSITION
-    if any(bone["rotation_keys"] for bone in bones):
-        presence |= PRESENCE_ROTATION
-    if any(bone["scale_keys"] for bone in bones):
-        presence |= PRESENCE_SCALE
-    if notes:
-        presence |= PRESENCE_NOTE
+    presence = normalized["presence_flags"]
     property_flags = (
         PROPERTY_HIGH_PRECISION
         if normalized["precision"] == "float64"
@@ -388,9 +381,15 @@ def write_seanim(
                 max_frame = max(max_frame, key["frame"])
         normalized_bones.append(normalized)
     normalized_notes = []
-    for note in notes or []:
+    for note_index, note in enumerate(notes or []):
         if isinstance(note, dict):
-            item = {"frame": note.get("frame"), "name": note.get("name")}
+            if "frame" not in note:
+                raise AnimationFormatError(
+                    "ANIM_DOCUMENT_INVALID",
+                    "notes element %d is missing frame" % note_index,
+                )
+            frame = note["frame"]
+            name = note.get("name")
         else:
             try:
                 frame, name = note
@@ -399,8 +398,11 @@ def write_seanim(
                     "ANIM_DOCUMENT_INVALID",
                     "notes must be mappings or (frame, name) pairs",
                 )
-            item = {"frame": frame, "name": name}
-        max_frame = max(max_frame, item["frame"])
+        frame = _strict_int(
+            frame, "notes element %d frame" % note_index, 0, 0xFFFFFFFE
+        )
+        item = {"frame": frame, "name": name}
+        max_frame = max(max_frame, frame)
         normalized_notes.append(item)
     document = {
         "anim_type": int(anim_type),
@@ -495,10 +497,15 @@ def _validate_document(document):
         "anim_type", "bones", "format", "frame_count", "framerate",
         "looped", "notes", "precision", "version",
     }
-    if set(document) != required:
+    optional = {"presence_flags"}
+    if (
+        not required.issubset(document)
+        or not set(document).issubset(required | optional)
+    ):
         raise AnimationFormatError(
             "ANIM_DOCUMENT_INVALID",
-            "document fields must be exactly %s" % sorted(required),
+            "document fields must contain %s; optional fields are %s"
+            % (sorted(required), sorted(optional)),
         )
     if document["format"] != "seanim" or document["version"] != VERSION:
         raise AnimationFormatError(
@@ -606,6 +613,52 @@ def _validate_document(document):
             ),
             "name": name,
         })
+
+    if "presence_flags" in document:
+        presence_flags = _strict_int(
+            document["presence_flags"], "presence_flags", 0, 0xFF
+        )
+        if presence_flags & ~SUPPORTED_PRESENCE:
+            raise AnimationFormatError(
+                "ANIM_DOCUMENT_INVALID",
+                "presence_flags contains unsupported bits",
+            )
+        bone_presence = (
+            PRESENCE_POSITION | PRESENCE_ROTATION | PRESENCE_SCALE
+        )
+        if presence_flags & bone_presence and not bones:
+            raise AnimationFormatError(
+                "ANIM_DOCUMENT_INVALID",
+                "bone channel presence_flags require at least one bone",
+            )
+        channels = (
+            ("position_keys", PRESENCE_POSITION),
+            ("rotation_keys", PRESENCE_ROTATION),
+            ("scale_keys", PRESENCE_SCALE),
+        )
+        for key_name, presence_flag in channels:
+            if any(bone[key_name] for bone in bones) \
+                    and not presence_flags & presence_flag:
+                raise AnimationFormatError(
+                    "ANIM_DOCUMENT_INVALID",
+                    "presence_flags does not declare non-empty %s" % key_name,
+                )
+        if bool(presence_flags & PRESENCE_NOTE) != bool(notes):
+            raise AnimationFormatError(
+                "ANIM_DOCUMENT_INVALID",
+                "presence_flags and notes disagree",
+            )
+    else:
+        presence_flags = 0
+        if any(bone["position_keys"] for bone in bones):
+            presence_flags |= PRESENCE_POSITION
+        if any(bone["rotation_keys"] for bone in bones):
+            presence_flags |= PRESENCE_ROTATION
+        if any(bone["scale_keys"] for bone in bones):
+            presence_flags |= PRESENCE_SCALE
+        if notes:
+            presence_flags |= PRESENCE_NOTE
+
     return {
         "anim_type": anim_type,
         "bones": bones,
@@ -614,6 +667,7 @@ def _validate_document(document):
         "framerate": framerate,
         "looped": document["looped"],
         "notes": notes,
+        "presence_flags": presence_flags,
         "precision": document["precision"],
         "version": VERSION,
     }
@@ -632,12 +686,16 @@ def _normalize_legacy_keys(bone, modern_name, legacy_name):
         )
     value = bone.get(modern_name if has_modern else legacy_name, [])
     output = []
-    for item in value:
+    for item_index, item in enumerate(value):
         if isinstance(item, dict):
-            output.append({
-                "frame": item.get("frame"),
-                "value": item.get("value"),
-            })
+            if "frame" not in item:
+                raise AnimationFormatError(
+                    "ANIM_DOCUMENT_INVALID",
+                    "%s element %d is missing frame"
+                    % (modern_name, item_index),
+                )
+            frame = item["frame"]
+            components = item.get("value")
         else:
             try:
                 frame, components = item
@@ -647,5 +705,12 @@ def _normalize_legacy_keys(bone, modern_name, legacy_name):
                     "%s entries must be mappings or (frame, value) pairs"
                     % modern_name,
                 )
-            output.append({"frame": frame, "value": list(components)})
+            components = list(components)
+        frame = _strict_int(
+            frame,
+            "%s element %d frame" % (modern_name, item_index),
+            0,
+            0xFFFFFFFE,
+        )
+        output.append({"frame": frame, "value": components})
     return output

@@ -26,8 +26,9 @@ def read_rtm_bytes(data):
             signature_offset,
         )
 
+    mdat_present = signature == MDAT_SIGNATURE
     metadata = []
-    if signature == MDAT_SIGNATURE:
+    if mdat_present:
         padding_offset = reader.offset
         if reader.read(4) != b"\0\0\0\0":
             raise AnimationFormatError(
@@ -145,6 +146,7 @@ def read_rtm_bytes(data):
         "bones": bones,
         "format": "rtm",
         "frames": frames,
+        "mdat_present": mdat_present,
         "metadata": metadata,
         "motion": motion,
         "version": "RTM_0101",
@@ -154,7 +156,7 @@ def read_rtm_bytes(data):
 def write_rtm_bytes(document):
     normalized = _validate_document(document)
     output = bytearray()
-    if normalized["metadata"]:
+    if normalized["mdat_present"]:
         output.extend(MDAT_SIGNATURE)
         output.extend(struct.pack("<II", 0, len(normalized["metadata"])))
         for item in normalized["metadata"]:
@@ -293,10 +295,13 @@ def _validate_document(document):
     required = {
         "bones", "format", "frames", "metadata", "motion", "version",
     }
-    if set(document) != required:
+    optional = {"mdat_present"}
+    if not required.issubset(document) \
+            or not set(document).issubset(required | optional):
         raise AnimationFormatError(
             "ANIM_DOCUMENT_INVALID",
-            "document fields must be exactly %s" % sorted(required),
+            "document fields must contain %s; optional fields are %s"
+            % (sorted(required), sorted(optional)),
         )
     if document["format"] != "rtm" or document["version"] != "RTM_0101":
         raise AnimationFormatError(
@@ -357,6 +362,20 @@ def _validate_document(document):
             "value": item["value"],
         })
 
+    if "mdat_present" in document:
+        mdat_present = document["mdat_present"]
+        if not isinstance(mdat_present, bool):
+            raise AnimationFormatError(
+                "ANIM_DOCUMENT_INVALID", "mdat_present must be bool"
+            )
+        if not mdat_present and metadata:
+            raise AnimationFormatError(
+                "ANIM_DOCUMENT_INVALID",
+                "mdat_present cannot be false when metadata is not empty",
+            )
+    else:
+        mdat_present = bool(metadata)
+
     frames_value = _require_list(document["frames"], "frames")
     if not 1 <= len(frames_value) <= 0xFFFFFFFF:
         raise AnimationFormatError(
@@ -406,6 +425,7 @@ def _validate_document(document):
         "bones": bones,
         "format": "rtm",
         "frames": frames,
+        "mdat_present": mdat_present,
         "metadata": metadata,
         "motion": motion,
         "version": "RTM_0101",

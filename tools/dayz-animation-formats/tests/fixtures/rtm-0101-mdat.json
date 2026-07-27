@@ -31,6 +31,7 @@
       ]
     }
   ],
+  "mdat_present": true,
   "metadata": [
     {"name": "step", "phase": 0.5, "value": "left"}
   ],

@@ -25,6 +25,27 @@ def _golden_document():
     )
 
 
+def _declared_empty_channel_bytes(presence_flags):
+    payload = struct.pack(
+        "<6BfII4BI",
+        AnimType.RELATIVE,
+        0,
+        presence_flags,
+        0,
+        0,
+        0,
+        30.0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+    )
+    return b"SEAnim" + struct.pack("<hH", 1, 28) + payload + b"b\0\0\0"
+
+
 def test_reads_frozen_se2dev_fixture_as_hand_checked_document():
     """Rompe si el lector diverge del oracle SE2Dev en cualquier campo."""
     expected = _golden_document()
@@ -36,6 +57,61 @@ def test_writer_reproduces_frozen_se2dev_bytes():
     """Rompe si orden, widths, flags o precisión dejan de ser compatibles."""
     expected = (FIXTURES / "seanim-v1-full.seanim").read_bytes()
     assert write_seanim_bytes(_golden_document()) == expected
+
+
+@pytest.mark.parametrize(
+    ("presence_flags", "channel"),
+    [(1, "position_keys"), (2, "rotation_keys"), (4, "scale_keys")],
+)
+def test_declared_empty_bone_channel_roundtrip_preserves_exact_bytes(
+    presence_flags, channel
+):
+    """Rompe si un canal declarado se elimina por contener cero claves."""
+    original = _declared_empty_channel_bytes(presence_flags)
+
+    document = read_seanim_bytes(original)
+
+    assert write_seanim_bytes(document) == original
+    assert document["presence_flags"] == presence_flags
+    assert document["bones"][0][channel] == []
+
+
+@pytest.mark.parametrize(
+    ("presence_flag", "channel"),
+    [(1, "position_keys"), (2, "rotation_keys"), (4, "scale_keys")],
+)
+def test_keys_in_undeclared_bone_channel_fail_closed(presence_flag, channel):
+    """Rompe si claves no declaradas se emiten reparando flags en silencio."""
+    document = _golden_document()
+    document["presence_flags"] = 0x47 & ~presence_flag
+
+    with pytest.raises(AnimationFormatError) as raised:
+        write_seanim_bytes(document)
+
+    assert raised.value.code == "ANIM_DOCUMENT_INVALID"
+    assert "does not declare" in raised.value.message
+    assert channel in raised.value.message
+
+
+def test_manual_seanim_document_without_presence_flags_keeps_legacy_inference():
+    """Rompe si el nuevo campo pasa a ser obligatorio para llamantes existentes."""
+    document = _golden_document()
+    document.pop("presence_flags", None)
+    expected = (FIXTURES / "seanim-v1-full.seanim").read_bytes()
+
+    assert write_seanim_bytes(document) == expected
+
+
+@pytest.mark.parametrize(
+    "fixture_path",
+    sorted(FIXTURES.glob("*.seanim")),
+    ids=lambda path: path.name,
+)
+def test_seanim_corpus_read_write_roundtrip_is_byte_exact(fixture_path):
+    """Rompe si cualquier SEAnim del corpus se normaliza durante read→write."""
+    original = fixture_path.read_bytes()
+
+    assert write_seanim_bytes(read_seanim_bytes(original)) == original
 
 
 @pytest.mark.parametrize("anim_type", list(range(4)))
@@ -84,6 +160,34 @@ def test_write_seanim_wrapper_defaults_to_relative_and_legacy_bone_keys(
     assert actual["bones"][0]["position_keys"] == [
         {"frame": 0, "value": [1.0, 2.0, 3.0]}
     ]
+
+
+def test_write_seanim_missing_bone_key_frame_is_typed_error(tmp_path):
+    """Rompe si el repro MEN-4 filtra TypeError desde una clave de hueso."""
+    path = tmp_path / "missing-bone-frame.seanim"
+
+    with pytest.raises(AnimationFormatError) as raised:
+        write_seanim(
+            path,
+            bones=[{
+                "name": "b",
+                "position_keys": [{"value": [0, 0, 0]}],
+            }],
+        )
+
+    assert raised.value.code == "ANIM_DOCUMENT_INVALID"
+    assert "position_keys element 0 is missing frame" in raised.value.message
+
+
+def test_write_seanim_missing_note_frame_is_typed_error(tmp_path):
+    """Rompe si una nota sin frame filtra TypeError antes del validador."""
+    path = tmp_path / "missing-note-frame.seanim"
+
+    with pytest.raises(AnimationFormatError) as raised:
+        write_seanim(path, bones=[], notes=[{"name": "event"}])
+
+    assert raised.value.code == "ANIM_DOCUMENT_INVALID"
+    assert "notes element 0 is missing frame" in raised.value.message
 
 
 @pytest.mark.parametrize(
