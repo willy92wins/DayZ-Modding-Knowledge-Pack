@@ -2151,7 +2151,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1a73f44c1effa20cd0c5d2f2d74b01d5e4d68d0c0ee5f6d7bfdc116b82285cd4",
+      "output_hash": "e6d61453bea2d342a806c4ddd56ba93b9aee9518bf1a192352fef0c12e220522",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -2291,6 +2291,29 @@
       "license": "MIT",
       "output_hash": "6457aac30352ef2b766fd9a713cbf0c06b6e2aacf8eb8b5a36bf137c9318cf3d",
       "output_path": "promotions/receipts/e2aa6cf9058070bb4fbf2a8c.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/6591ddab82a8162e1550f4c8.json",
+      "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt hash 08aa22b6436564d0208f866c87a26707a6e52c8f136391dd2db8ea5fd85a561a matches the receipt_hash recorded in the terminal COMMIT event (sequence 140) of transaction 6591ddab82a8162e1550f4c8, verified by reading the journal rather than the receipt.",
+          "license": "MIT",
+          "source_hash": "08aa22b6436564d0208f866c87a26707a6e52c8f136391dd2db8ea5fd85a561a",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/6591ddab82a8162e1550f4c8.json",
+          "source_revision": "0e35ba9a8b59ca66cd5097a8caec68985f45e158",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "08aa22b6436564d0208f866c87a26707a6e52c8f136391dd2db8ea5fd85a561a",
+      "output_path": "promotions/receipts/6591ddab82a8162e1550f4c8.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
