@@ -75,10 +75,65 @@ def _tracked_projection(root: Path, repo_path: str, kind: object) -> list[str]:
     ]
 
 
+def _is_localizable_payload(
+    source: Path,
+    source_root: Path | None,
+) -> bool:
+    if source.suffix.lower() not in PROMOTION_EXECUTABLE_SUFFIXES:
+        return False
+    if source_root is None:
+        return True
+    resolved_root = source_root.resolve(strict=True)
+    resolved_source = source.resolve(strict=True)
+    if not is_within(resolved_source, resolved_root):
+        raise ValueError("projected source escapes repository")
+    relative = resolved_source.relative_to(resolved_root).as_posix()
+    return relative not in PROMOTION_PLACEHOLDER_SCANNER_EXCLUSIONS
+
+
+def _localized_payload_bytes(
+    source: Path,
+    path_aliases: dict[str, str],
+    source_root: Path | None,
+) -> bytes:
+    payload = source.read_bytes()
+    if not path_aliases or not _is_localizable_payload(source, source_root):
+        return payload
+    mapped = [
+        alias
+        for alias in PROMOTION_PATH_PLACEHOLDERS
+        if alias in path_aliases
+    ]
+    if not mapped:
+        return payload
+    pattern = re.compile("|".join(re.escape(alias) for alias in mapped))
+    text = payload.decode("utf-8")
+    localized = pattern.sub(
+        lambda match: path_aliases[match.group(0)],
+        text,
+    )
+    return localized.encode("utf-8")
+
+
+def _projected_file_hash(
+    source: Path,
+    path_aliases: dict[str, str] | None,
+    source_root: Path | None,
+) -> str:
+    if path_aliases and _is_localizable_payload(source, source_root):
+        return sha256_bytes(
+            _localized_payload_bytes(source, path_aliases, source_root)
+        )
+    return sha256_file(source)
+
+
 def _projection_entries(
     source: Path,
     kind: str,
     source_files: object,
+    *,
+    path_aliases: dict[str, str] | None = None,
+    source_root: Path | None = None,
 ) -> list[tuple[str, str]]:
     if (
         not isinstance(source_files, list)
@@ -95,7 +150,12 @@ def _projection_entries(
     if kind == "file":
         if source_files != [source.name] or not source.is_file():
             raise ValueError("invalid file projection")
-        return [(source.name, sha256_file(source))]
+        return [
+            (
+                source.name,
+                _projected_file_hash(source, path_aliases, source_root),
+            )
+        ]
     if kind != "tree" or not source.is_dir():
         raise ValueError("invalid tree projection")
     resolved_source = source.resolve(strict=True)
@@ -104,12 +164,30 @@ def _projection_entries(
         candidate = (source / relative).resolve(strict=True)
         if not candidate.is_file() or not is_within(candidate, resolved_source):
             raise ValueError("projected source escapes its route")
-        entries.append((relative, sha256_file(candidate)))
+        entries.append(
+            (
+                relative,
+                _projected_file_hash(candidate, path_aliases, source_root),
+            )
+        )
     return entries
 
 
-def _projection_digest(source: Path, kind: str, source_files: object) -> str:
-    entries = _projection_entries(source, kind, source_files)
+def _projection_digest(
+    source: Path,
+    kind: str,
+    source_files: object,
+    *,
+    path_aliases: dict[str, str] | None = None,
+    source_root: Path | None = None,
+) -> str:
+    entries = _projection_entries(
+        source,
+        kind,
+        source_files,
+        path_aliases=path_aliases,
+        source_root=source_root,
+    )
     if kind == "file":
         return entries[0][1]
     material = bytearray()
@@ -311,19 +389,109 @@ def _routing_findings(
     return sort_findings(findings)
 
 
+def _path_alias_config_findings(
+    config: dict[str, object],
+) -> tuple[dict[str, str], list[dict[str, object]]]:
+    value = config.get("path_aliases")
+    if not isinstance(value, dict):
+        return {}, [
+            finding(
+                "PROMOTION-CONFIG-INVALID",
+                path="local-targets.json",
+                line=1,
+                message="path_aliases must be an object.",
+                evidence=type(value).__name__,
+            )
+        ]
+    aliases: dict[str, str] = {}
+    findings: list[dict[str, object]] = []
+    for alias, item in value.items():
+        if not isinstance(alias, str) or alias not in PROMOTION_PATH_PLACEHOLDERS:
+            findings.append(
+                finding(
+                    "PROMOTION-CONFIG-INVALID",
+                    path="local-targets.json",
+                    line=1,
+                    message="A path alias is outside the closed alias list.",
+                    evidence=str(alias),
+                )
+            )
+            continue
+        if not isinstance(item, dict) or set(item) != {"kind", "value"}:
+            findings.append(
+                finding(
+                    "PROMOTION-CONFIG-INVALID",
+                    path="local-targets.json",
+                    line=1,
+                    message="A path alias entry has invalid fields.",
+                    evidence=alias,
+                )
+            )
+            continue
+        kind = item.get("kind")
+        alias_value = item.get("value")
+        if (
+            kind not in {"path", "fragment"}
+            or not isinstance(alias_value, str)
+            or not alias_value.strip()
+        ):
+            findings.append(
+                finding(
+                    "PROMOTION-CONFIG-INVALID",
+                    path="local-targets.json",
+                    line=1,
+                    message="A path alias kind or value is invalid.",
+                    evidence=alias,
+                )
+            )
+            continue
+        if kind == "path":
+            candidate = Path(alias_value)
+            valid = candidate.is_absolute() and candidate.exists()
+        else:
+            candidate = Path(alias_value)
+            valid = (
+                "\\" not in alias_value
+                and "/" not in alias_value
+                and not candidate.drive
+                and ".." not in alias_value
+            )
+        if not valid:
+            findings.append(
+                finding(
+                    "PROMOTION-CONFIG-INVALID",
+                    path="local-targets.json",
+                    line=1,
+                    message="A path alias value violates its kind contract.",
+                    evidence=f"{alias}:{kind}",
+                )
+            )
+            continue
+        aliases[alias] = alias_value
+    return aliases, sort_findings(findings)
+
+
 def _target_config_findings(
     config: dict[str, object],
-) -> tuple[dict[str, Path], list[Path], list[Path], Path | None, list[dict[str, object]]]:
+) -> tuple[
+    dict[str, Path],
+    list[Path],
+    list[Path],
+    Path | None,
+    dict[str, str],
+    list[dict[str, object]],
+]:
     findings: list[dict[str, object]] = []
     required = {
         "schema_version",
+        "path_aliases",
         "allowed_physical_roots",
         "forbidden_physical_roots",
         "backup_root",
         "targets",
     }
     if set(config) != required or config.get("schema_version") != 1:
-        return {}, [], [], None, [
+        return {}, [], [], None, {}, [
             finding(
                 "PROMOTION-CONFIG-INVALID",
                 path="local-targets.json",
@@ -332,12 +500,20 @@ def _target_config_findings(
                 evidence="Invalid top-level fields.",
             )
         ]
+    path_aliases, alias_findings = _path_alias_config_findings(config)
+    findings.extend(alias_findings)
     try:
-        allowed = [Path(item).resolve(strict=True) for item in config["allowed_physical_roots"]]
-        forbidden = [Path(item).resolve(strict=False) for item in config["forbidden_physical_roots"]]
+        allowed = [
+            Path(item).resolve(strict=True)
+            for item in config["allowed_physical_roots"]
+        ]
+        forbidden = [
+            Path(item).resolve(strict=False)
+            for item in config["forbidden_physical_roots"]
+        ]
         backup_root = Path(str(config["backup_root"])).resolve(strict=True)
     except (OSError, TypeError) as error:
-        return {}, [], [], None, [
+        return {}, [], [], None, path_aliases, [
             finding(
                 "PROMOTION-CONFIG-INVALID",
                 path="local-targets.json",
@@ -377,7 +553,14 @@ def _target_config_findings(
                 evidence=type(config["targets"]).__name__,
             )
         )
-        return targets, allowed, forbidden, backup_root, findings
+        return (
+            targets,
+            allowed,
+            forbidden,
+            backup_root,
+            path_aliases,
+            sort_findings(findings),
+        )
     for target_id, item in config["targets"].items():
         if not isinstance(item, dict) or set(item) != {"path", "ownership", "writable"}:
             findings.append(
@@ -390,8 +573,8 @@ def _target_config_findings(
                 )
             )
             continue
-        path = Path(os.path.abspath(Path(str(item["path"]))))
-        if not path.exists() or not path.is_dir():
+        target_path = Path(os.path.abspath(Path(str(item["path"]))))
+        if not target_path.exists() or not target_path.is_dir():
             findings.append(
                 finding(
                     "PROMOTION-TARGET-MISSING",
@@ -402,7 +585,7 @@ def _target_config_findings(
                 )
             )
             continue
-        resolved = path.resolve(strict=True)
+        resolved = target_path.resolve(strict=True)
         if any(is_within(resolved, blocked) for blocked in forbidden):
             findings.append(
                 finding(
@@ -436,12 +619,20 @@ def _target_config_findings(
                 )
             )
             continue
-        targets[str(target_id)] = path
-    return targets, allowed, forbidden, backup_root, sort_findings(findings)
+        targets[str(target_id)] = target_path
+    return (
+        targets,
+        allowed,
+        forbidden,
+        backup_root,
+        path_aliases,
+        sort_findings(findings),
+    )
 
 
 def _executable_placeholder_findings(
     routes: list[dict[str, object]],
+    path_aliases: dict[str, str],
 ) -> list[dict[str, object]]:
     findings: list[dict[str, object]] = []
     scanned: set[str] = set()
@@ -491,14 +682,16 @@ def _executable_placeholder_findings(
                     if start < 0:
                         continue
                     observed = line[start : start + len(token)]
+                    if observed == token and token in path_aliases:
+                        continue
                     findings.append(
                         finding(
-                            "PROMOTION-PLACEHOLDER-IN-EXECUTABLE",
-                            path=relative,
-                            line=line_number,
+                            "PROMOTION-CONFIG-INVALID",
+                            path="local-targets.json",
+                            line=1,
                             message=(
-                                "An executable payload still contains an "
-                                "unresolved path placeholder."
+                                "An executable path alias has no exact local "
+                                "configuration."
                             ),
                             evidence=f"{relative}:{line_number} {observed}",
                         )
@@ -506,15 +699,9 @@ def _executable_placeholder_findings(
     return sort_findings(findings)
 
 
-def _load_adjudications(
-    root: Path,
+def _adjudications_from_value(
+    value: dict[str, object],
 ) -> tuple[dict[tuple[str, str], str], list[dict[str, object]]]:
-    path = root / ADJUDICATIONS_PATH
-    if not path.exists():
-        return {}, []
-    value, findings = _load_object(path, "PROMOTION-ADJUDICATION-INVALID")
-    if value is None:
-        return {}, findings
     if (
         set(value) != {"schema_version", "adjudications"}
         or value.get("schema_version") != 1
@@ -531,6 +718,7 @@ def _load_adjudications(
         ]
     required = {"artifact_id", "target_id", "observed_digest", "reason"}
     adjudications: dict[tuple[str, str], str] = {}
+    findings: list[dict[str, object]] = []
     for index, entry in enumerate(value["adjudications"]):
         valid = (
             isinstance(entry, dict)
@@ -566,6 +754,64 @@ def _load_adjudications(
             continue
         adjudications[key] = entry["observed_digest"]
     return adjudications, sort_findings(findings)
+
+
+def _load_adjudications(
+    root: Path,
+) -> tuple[dict[tuple[str, str], str], list[dict[str, object]]]:
+    path = root / ADJUDICATIONS_PATH
+    if not path.exists():
+        return {}, []
+    value, findings = _load_object(path, "PROMOTION-ADJUDICATION-INVALID")
+    if value is None:
+        return {}, findings
+    adjudications, contract_findings = _adjudications_from_value(value)
+    return adjudications, sort_findings([*findings, *contract_findings])
+
+
+def _advance_matching_adjudications(plan: dict[str, object]) -> None:
+    root = Path(str(plan["source_root"])).resolve(strict=False)
+    path = root / ADJUDICATIONS_PATH
+    if not path.exists():
+        return
+    value, load_findings = _load_object(
+        path,
+        "PROMOTION-ADJUDICATION-INVALID",
+    )
+    if value is None:
+        first = load_findings[0]
+        raise _PromotionIntegrityError(
+            "PROMOTION-ADJUDICATION-INVALID",
+            str(first["evidence"]),
+        )
+    adjudications, contract_findings = _adjudications_from_value(value)
+    if contract_findings:
+        first = contract_findings[0]
+        raise _PromotionIntegrityError(
+            "PROMOTION-ADJUDICATION-INVALID",
+            str(first["evidence"]),
+        )
+
+    advances: dict[tuple[str, str], str] = {}
+    for operation in plan["operations"]:
+        before_digest = str(operation["before_digest"])
+        after_digest = str(operation["after_digest"])
+        if before_digest == after_digest:
+            continue
+        artifact_id = str(operation["artifact_id"])
+        for target_id in operation["logical_target_ids"]:
+            key = (artifact_id, str(target_id))
+            if adjudications.get(key) == before_digest:
+                advances[key] = after_digest
+    if not advances:
+        return
+
+    for entry in value["adjudications"]:
+        key = (str(entry["artifact_id"]), str(entry["target_id"]))
+        after_digest = advances.get(key)
+        if after_digest is not None:
+            entry["observed_digest"] = after_digest
+    durable_write_json(path, value, create_only=False)
 
 
 _RECEIPT_FIELDS = frozenset(
@@ -873,11 +1119,11 @@ def _causal_receipt_head(
     while current in outgoing:
         current = outgoing[current][0]
         connected.add(current)
-    if connected != nodes or not no_op_states.issubset(nodes):
+    if connected != nodes or not no_op_states.issubset(heads):
         return (
             None,
             "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS",
-            "disconnected-history",
+            "disconnected-or-non-head-no-op",
         )
     return next(iter(heads)), None, ""
 
@@ -1138,7 +1384,14 @@ def check_promotion(
     if promotion_map is None or config is None:
         return make_report("promote check", root, findings)
     findings.extend(_routing_findings(root, promotion_map))
-    targets, allowed, forbidden, backup_root, target_findings = _target_config_findings(config)
+    (
+        targets,
+        allowed,
+        forbidden,
+        backup_root,
+        path_aliases,
+        target_findings,
+    ) = _target_config_findings(config)
     findings.extend(target_findings)
     if any(item["severity"] == "error" for item in findings):
         plan_path.unlink(missing_ok=True)
@@ -1181,7 +1434,7 @@ def check_promotion(
         plan_path.unlink(missing_ok=True)
         return make_report("promote check", root, findings)
 
-    findings.extend(_executable_placeholder_findings(routes))
+    findings.extend(_executable_placeholder_findings(routes, path_aliases))
     if any(item["severity"] == "error" for item in findings):
         plan_path.unlink(missing_ok=True)
         return make_report("promote check", root, findings)
@@ -1202,6 +1455,8 @@ def check_promotion(
                 source,
                 str(route["artifact_kind"]),
                 source_files,
+                path_aliases=path_aliases,
+                source_root=root,
             )
         except (OSError, ValueError) as error:
             findings.append(
@@ -1454,26 +1709,91 @@ def check_promotion(
     )
 
 
+def _copy_projected_file(
+    source: Path,
+    destination: Path,
+    path_aliases: dict[str, str] | None,
+    source_root: Path | None,
+) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if path_aliases and _is_localizable_payload(source, source_root):
+        destination.write_bytes(
+            _localized_payload_bytes(source, path_aliases, source_root)
+        )
+        shutil.copystat(source, destination)
+    else:
+        shutil.copy2(source, destination)
+
+
 def _copy_artifact(
     source: Path,
     destination: Path,
     kind: str,
     source_files: object | None = None,
+    *,
+    path_aliases: dict[str, str] | None = None,
+    source_root: Path | None = None,
 ) -> None:
     if kind == "tree" and source_files is None:
+        if path_aliases:
+            raise ValueError("localized tree copy requires a source projection")
         shutil.copytree(source, destination)
     elif kind == "tree":
-        entries = _projection_entries(source, kind, source_files)
+        entries = _projection_entries(
+            source,
+            kind,
+            source_files,
+            path_aliases=path_aliases,
+            source_root=source_root,
+        )
         destination.mkdir(parents=True, exist_ok=False)
         for relative, _ in entries:
-            target = destination / relative
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source / relative, target)
+            _copy_projected_file(
+                source / relative,
+                destination / relative,
+                path_aliases,
+                source_root,
+            )
     else:
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
+        if source_files is not None:
+            _projection_entries(
+                source,
+                kind,
+                source_files,
+                path_aliases=path_aliases,
+                source_root=source_root,
+            )
+        _copy_projected_file(
+            source,
+            destination,
+            path_aliases,
+            source_root,
+        )
     sync_tree(destination)
     sync_directory(destination.parent)
+
+
+def _projection_has_path_placeholders(
+    source: Path,
+    destination: Path,
+    kind: str,
+    source_files: object,
+    source_root: Path,
+) -> bool:
+    entries = _projection_entries(source, kind, source_files)
+    for relative, _ in entries:
+        if kind == "file":
+            source_file = source
+            destination_file = destination
+        else:
+            source_file = source / relative
+            destination_file = destination / relative
+        if not _is_localizable_payload(source_file, source_root):
+            continue
+        folded = destination_file.read_bytes().decode("utf-8").casefold()
+        if any(token in folded for token in PROMOTION_PATH_PLACEHOLDERS):
+            return True
+    return False
 
 
 def _remove_artifact(path: Path) -> None:
@@ -1632,6 +1952,7 @@ def _validate_plan_paths(plan: dict[str, object]) -> list[dict[str, object]]:
 def _promotion_state_findings(
     plan: dict[str, object],
     root: Path,
+    path_aliases: dict[str, str],
 ) -> list[dict[str, object]]:
     findings: list[dict[str, object]] = []
     if git_commit(root) != plan["source_commit"] or git_is_dirty(root):
@@ -1691,6 +2012,8 @@ def _promotion_state_findings(
                 source,
                 str(operation["artifact_kind"]),
                 operation["source_files"],
+                path_aliases=path_aliases,
+                source_root=root,
             )
         except (OSError, ValueError):
             source_digest = "invalid"
@@ -2657,6 +2980,7 @@ def _validate_terminal_transaction(
             state="POST",
             code="PROMOTION-COMMIT-STATE-INVALID",
         )
+        _advance_matching_adjudications(plan)
         _publish_or_verify_receipt(plan, terminal)
     else:
         _require_plan_state(
@@ -2799,6 +3123,19 @@ def recover_promotion(
         )
 
 
+def _load_plan_path_aliases(
+    plan: dict[str, object],
+) -> tuple[dict[str, str], list[dict[str, object]]]:
+    config, findings = _load_object(
+        Path(str(plan["local_targets_path"])),
+        "PROMOTION-CONFIG-INVALID",
+    )
+    if config is None:
+        return {}, findings
+    path_aliases, alias_findings = _path_alias_config_findings(config)
+    return path_aliases, sort_findings([*findings, *alias_findings])
+
+
 def _load_apply_plan(
     plan_path: Path,
 ) -> tuple[dict[str, object] | None, Path, list[dict[str, object]]]:
@@ -2857,6 +3194,10 @@ def apply_promotion(
 ) -> dict[str, object]:
     plan_path = Path(plan_path).resolve()
     plan, root, findings = _load_apply_plan(plan_path)
+    path_aliases: dict[str, str] = {}
+    if plan is not None:
+        path_aliases, alias_findings = _load_plan_path_aliases(plan)
+        findings = sort_findings([*findings, *alias_findings])
     if plan is None or findings:
         return make_report("promote apply", root, findings)
     transaction_id = str(plan["transaction_id"])
@@ -2869,13 +3210,21 @@ def apply_promotion(
             locked_plan, locked_root, locked_findings = _load_apply_plan(
                 plan_path
             )
+            locked_aliases: dict[str, str] = {}
+            if locked_plan is not None:
+                locked_aliases, alias_findings = _load_plan_path_aliases(
+                    locked_plan
+                )
+                locked_findings = sort_findings(
+                    [*locked_findings, *alias_findings]
+                )
             if locked_plan is None or locked_findings:
                 return make_report(
                     "promote apply",
                     locked_root,
                     locked_findings,
                 )
-            if locked_plan != plan:
+            if locked_plan != plan or locked_aliases != path_aliases:
                 return make_report(
                     "promote apply",
                     root,
@@ -2888,12 +3237,16 @@ def apply_promotion(
                                 "The promotion plan changed during lock "
                                 "acquisition."
                             ),
-                            evidence="locked plan differs",
+                            evidence="locked plan or aliases differ",
                         )
                     ],
                 )
             _scan_transactions(backup_base)
-            locked_findings = _promotion_state_findings(plan, root)
+            locked_findings = _promotion_state_findings(
+                plan,
+                root,
+                path_aliases,
+            )
             if locked_findings:
                 return make_report(
                     "promote apply",
@@ -2906,11 +3259,22 @@ def apply_promotion(
             _fault(fault_at, "after_pending")
 
             for index, operation in enumerate(plan["operations"]):
-                if operation["before_digest"] == operation["after_digest"]:
-                    continue
                 source = Path(str(operation["source_path"]))
                 target = Path(str(operation["target_path"]))
                 alias = str(operation["physical_alias"])
+                if operation["before_digest"] == operation["after_digest"]:
+                    if _projection_has_path_placeholders(
+                        source,
+                        target,
+                        str(operation["artifact_kind"]),
+                        operation["source_files"],
+                        root,
+                    ):
+                        raise _PromotionIntegrityError(
+                            "PROMOTION-PLACEHOLDER-IN-EXECUTABLE",
+                            f"{alias}:readback",
+                        )
+                    continue
                 stage, old, recovery_stage, recovery_post = _operation_paths(
                     operation,
                     transaction_id,
@@ -2927,10 +3291,23 @@ def apply_promotion(
                     stage,
                     str(operation["artifact_kind"]),
                     operation["source_files"],
+                    path_aliases=path_aliases,
+                    source_root=root,
                 )
                 if tree_digest(stage) != operation["after_digest"]:
                     raise RuntimeError(
                         f"staging verification failed for {alias}"
+                    )
+                if _projection_has_path_placeholders(
+                    source,
+                    stage,
+                    str(operation["artifact_kind"]),
+                    operation["source_files"],
+                    root,
+                ):
+                    raise _PromotionIntegrityError(
+                        "PROMOTION-PLACEHOLDER-IN-EXECUTABLE",
+                        f"{alias}:staging-readback",
                     )
                 _append_event(
                     transaction_root,
@@ -3016,6 +3393,17 @@ def apply_promotion(
                     raise RuntimeError(
                         f"readback verification failed for {alias}"
                     )
+                if _projection_has_path_placeholders(
+                    source,
+                    target,
+                    str(operation["artifact_kind"]),
+                    operation["source_files"],
+                    root,
+                ):
+                    raise _PromotionIntegrityError(
+                        "PROMOTION-PLACEHOLDER-IN-EXECUTABLE",
+                        f"{alias}:target-readback",
+                    )
                 _append_event(
                     transaction_root,
                     "TARGET_PUBLISHED",
@@ -3085,6 +3473,7 @@ def apply_promotion(
             )
             _terminate("after_commit", recovery=False)
             _fault(fault_at, "after_commit")
+            _advance_matching_adjudications(plan)
             receipt_path = _publish_or_verify_receipt(plan, commit_event)
             return make_report(
                 "promote apply",

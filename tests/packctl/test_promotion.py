@@ -241,6 +241,7 @@ def promotion_fixture(
     write_json(map_path, promotion_map)
     config = {
         "schema_version": 1,
+        "path_aliases": {},
         "allowed_physical_roots": [str(targets_root)],
         "forbidden_physical_roots": [str(targets_root / "plugins")],
         "backup_root": str(backups),
@@ -455,6 +456,70 @@ def _set_test_target_state(target: Path, value: str) -> str:
     target.mkdir(parents=True, exist_ok=True)
     (target / "state.txt").write_text(value, encoding="utf-8")
     return tree_digest(target)
+
+
+def test_receipt_history_noop_on_restored_root_fails_closed(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    root_digest = _set_test_target_state(target, "state-a\n")
+    head_digest = _set_test_target_state(target, "state-b\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="e1" * 12, target_id="claude_user_skills",
+        before_digest=root_digest, after_digest=head_digest,
+        completed_at="2026-07-26T10:00:00+00:00",
+    )
+    assert _set_test_target_state(target, "state-a\n") == root_digest
+    commit_test_adjudication(
+        root, target_id="claude_user_skills",
+        observed_digest=root_digest,
+        reason="Adjudicate the restored root before the no-op promotion.",
+    )
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="e2" * 12, target_id="claude_user_skills",
+        before_digest=root_digest, after_digest=root_digest,
+        completed_at="2026-07-26T11:00:00+00:00",
+    )
+    assert _set_test_target_state(target, "state-b\n") == head_digest
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS" in codes(report)
+    assert not plan_path.exists()
+
+
+def test_receipt_history_noop_on_unique_head_remains_neutral(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    first_digest = _set_test_target_state(target, "state-a\n")
+    second_digest = _set_test_target_state(target, "state-b\n")
+    head_digest = _set_test_target_state(target, "state-c\n")
+    for name, before_digest, after_digest, completed_at in (
+        ("e3" * 12, first_digest, second_digest, "2026-07-26T10:00:00+00:00"),
+        ("e4" * 12, second_digest, head_digest, "2026-07-26T11:00:00+00:00"),
+        ("e5" * 12, head_digest, head_digest, "2026-07-26T12:00:00+00:00"),
+    ):
+        commit_test_receipt(
+            root, backup_root=paths["backups"], target_path=target,
+            name=name, target_id="claude_user_skills",
+            before_digest=before_digest, after_digest=after_digest,
+            completed_at=completed_at,
+        )
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS" not in codes(report)
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(report)
+    assert plan_path.is_file()
 
 
 def test_receipt_history_uses_causal_head_when_clock_moves_backward(
@@ -943,6 +1008,59 @@ def test_adjudication_expires_after_target_digest_changes(
     assert not plan_path.exists()
 
 
+def test_adjudicated_preimage_advances_to_post_for_next_pass(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    root_digest = _set_test_target_state(target, "state-a\n")
+    head_digest = _set_test_target_state(target, "state-b\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="e6" * 12, target_id="claude_user_skills",
+        before_digest=root_digest, after_digest=head_digest,
+        completed_at="2026-07-26T10:00:00+00:00",
+    )
+    foreign_digest = _set_test_target_state(target, "state-x\n")
+    reason = "Adjudicate the reconciled state outside receipt history."
+    commit_test_adjudication(
+        root, target_id="claude_user_skills",
+        observed_digest=foreign_digest, reason=reason,
+    )
+    source_digest = tree_digest(root / "skills/demo")
+    assert foreign_digest != source_digest
+    checked = check_promotion(root, map_path, config_path, plan_path)
+    assert checked["verdict"] in {"PASS", "WARN"}
+
+    applied = apply_promotion(plan_path)
+
+    assert applied["verdict"] == "PASS"
+    assert tree_digest(target) == source_digest
+    adjudication_path = root / "promotions/adjudications.json"
+    adjudication_value = json.loads(adjudication_path.read_text(encoding="utf-8"))
+    assert set(adjudication_value) == {"schema_version", "adjudications"}
+    assert len(adjudication_value["adjudications"]) == 1
+    entry = adjudication_value["adjudications"][0]
+    assert set(entry) == {"artifact_id", "target_id", "observed_digest", "reason"}
+    assert entry["observed_digest"] == source_digest
+    assert entry["reason"] == reason
+    receipt_path = Path(str(applied["artifacts"]["receipt_path"]))
+    run_git(
+        root, "add", "promotions/adjudications.json",
+        receipt_path.relative_to(root).as_posix(),
+    )
+    run_git(root, "commit", "-qm", "record automatic adjudication advance")
+
+    second = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-HISTORY-AMBIGUOUS" not in codes(second)
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(second)
+    assert second["verdict"] in {"PASS", "WARN"}
+    assert plan_path.is_file()
+
+
 def test_adjudication_with_empty_reason_is_schema_error(
     repo_factory, tmp_path: Path,
 ) -> None:
@@ -972,7 +1090,40 @@ def commit_demo_payload(root: Path, relative: str, content: str) -> Path:
     return path
 
 
-def test_ps1_pack_alias_fails_placeholder_gate_without_writes(
+def configure_path_aliases(
+    config_path: Path,
+    aliases: dict[str, dict[str, str]],
+) -> None:
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    config["path_aliases"] = aliases
+    write_json(config_path, config)
+
+
+def configure_complete_path_aliases(
+    config_path: Path,
+    tmp_path: Path,
+    *,
+    fragment_value: str = "fixture-user",
+) -> Path:
+    dayz_projects = tmp_path / "DayZ Projects"
+    dayz_projects.mkdir(exist_ok=True)
+    configure_path_aliases(
+        config_path,
+        {
+            "<dayz-projects>": {
+                "kind": "path",
+                "value": str(dayz_projects),
+            },
+            "<you>": {
+                "kind": "fragment",
+                "value": fragment_value,
+            },
+        },
+    )
+    return dayz_projects
+
+
+def test_ps1_pack_alias_missing_from_map_fails_config_without_writes(
     repo_factory, tmp_path: Path,
 ) -> None:
     root, map_path, config_path, plan_path, paths = promotion_fixture(
@@ -990,14 +1141,11 @@ def test_ps1_pack_alias_fails_placeholder_gate_without_writes(
 
     matches = [
         item for item in report["findings"]
-        if item["code"] == "PROMOTION-PLACEHOLDER-IN-EXECUTABLE"
+        if item["code"] == "PROMOTION-CONFIG-INVALID"
     ]
     assert len(matches) == 1
-    assert matches[0]["message"] == (
-        "An executable payload still contains an unresolved path placeholder."
-    )
-    assert matches[0]["path"] == "skills/demo/templates/demo.ps1"
-    assert matches[0]["line"] == 3
+    assert matches[0]["path"] == "local-targets.json"
+    assert matches[0]["line"] == 1
     assert matches[0]["evidence"] == (
         "skills/demo/templates/demo.ps1:3 <dayz-projects>"
     )
@@ -1042,7 +1190,7 @@ def test_markdown_pack_alias_is_not_scanned_by_placeholder_gate(
     assert plan_path.is_file()
 
 
-def test_python_pack_alias_fails_placeholder_gate_case_insensitively(
+def test_python_pack_alias_missing_from_map_fails_config_case_insensitively(
     repo_factory, tmp_path: Path,
 ) -> None:
     root, map_path, config_path, plan_path, _ = promotion_fixture(
@@ -1058,10 +1206,10 @@ def test_python_pack_alias_fails_placeholder_gate_case_insensitively(
 
     matches = [
         item for item in report["findings"]
-        if item["code"] == "PROMOTION-PLACEHOLDER-IN-EXECUTABLE"
+        if item["code"] == "PROMOTION-CONFIG-INVALID"
     ]
     assert len(matches) == 1
-    assert matches[0]["line"] == 2
+    assert matches[0]["line"] == 1
     assert matches[0]["evidence"] == "skills/demo/scripts/demo.py:2 <VaUlT>"
     assert not plan_path.exists()
 
@@ -1085,16 +1233,11 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
         )
         routes.append(route)
 
-    findings = promotion._executable_placeholder_findings(routes)
-
+    unmapped = promotion._executable_placeholder_findings(routes, {})
     observed_paths = sorted(
-        str(item["path"])
-        for item in findings
-        if item["code"] == "PROMOTION-PLACEHOLDER-IN-EXECUTABLE"
-    )
-    assert not any(
-        item.startswith(("packctl/", "tests/"))
-        for item in observed_paths
+        str(item["evidence"]).split(":", 2)[0]
+        for item in unmapped
+        if item["code"] == "PROMOTION-CONFIG-INVALID"
     )
     assert observed_paths == [
         "skills/dayz-characters/references/check_dayz_winding.py",
@@ -1104,6 +1247,255 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
         "skills/dayz-test-ingame/templates/dayz-test.ps1",
         "tools/py3d/rollout/fix-junctions.ps1",
     ]
+
+    findings = promotion._executable_placeholder_findings(
+        routes,
+        {
+            "<dayz-projects>": str(root),
+            "<you>": "fixture-user",
+        },
+    )
+
+    assert findings == []
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "missing-field",
+        "not-object",
+        "unknown-alias",
+        "missing-value",
+        "empty-value",
+        "invalid-kind",
+        "relative-path",
+        "missing-path",
+        "fragment-separator",
+        "fragment-drive",
+        "fragment-dotdot",
+    ],
+)
+def test_invalid_path_alias_config_fails_before_plan_or_writes(
+    repo_factory,
+    tmp_path: Path,
+    case: str,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    valid_path = tmp_path / "valid-path"
+    valid_path.mkdir()
+    invalid: object
+    if case == "missing-field":
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        config.pop("path_aliases")
+        write_json(config_path, config)
+    else:
+        if case == "not-object":
+            invalid = []
+        elif case == "unknown-alias":
+            invalid = {"<unknown>": {"kind": "path", "value": str(valid_path)}}
+        elif case == "missing-value":
+            invalid = {"<you>": {"kind": "fragment"}}
+        elif case == "empty-value":
+            invalid = {"<you>": {"kind": "fragment", "value": ""}}
+        elif case == "invalid-kind":
+            invalid = {"<you>": {"kind": "directory", "value": "fixture"}}
+        elif case == "relative-path":
+            invalid = {"<dayz-projects>": {"kind": "path", "value": "relative"}}
+        elif case == "missing-path":
+            invalid = {
+                "<dayz-projects>": {
+                    "kind": "path",
+                    "value": str(tmp_path / "does-not-exist"),
+                }
+            }
+        elif case == "fragment-separator":
+            invalid = {"<you>": {"kind": "fragment", "value": "fixture/user"}}
+        elif case == "fragment-drive":
+            invalid = {"<you>": {"kind": "fragment", "value": "C:fixture"}}
+        else:
+            invalid = {"<you>": {"kind": "fragment", "value": "fixture..user"}}
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        config["path_aliases"] = invalid
+        write_json(config_path, config)
+    backup_entries = list(paths["backups"].rglob("*"))
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-CONFIG-INVALID" in codes(report)
+    assert not plan_path.exists()
+    assert list(paths["backups"].rglob("*")) == backup_entries
+    assert not (paths["claude"] / "demo").exists()
+
+
+def test_localized_ps1_is_written_and_receipt_hashes_localized_content(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    dayz_projects = configure_complete_path_aliases(config_path, tmp_path)
+    commit_demo_payload(
+        root,
+        "templates/demo.ps1",
+        '$Root = "<dayz-projects>\\LF"\n',
+    )
+
+    checked = check_promotion(root, map_path, config_path, plan_path)
+
+    assert "PROMOTION-CONFIG-INVALID" not in codes(checked)
+    assert "PROMOTION-PLACEHOLDER-IN-EXECUTABLE" not in codes(checked)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    target = paths["claude"] / "demo"
+    operation = next(
+        item
+        for item in plan["operations"]
+        if Path(str(item["target_path"])) == target.resolve()
+    )
+
+    applied = apply_promotion(plan_path)
+
+    expected = f'$Root = "{dayz_projects}\\LF"\n'
+    installed = (target / "templates/demo.ps1").read_text(encoding="utf-8")
+    assert applied["verdict"] == "PASS"
+    assert installed == expected
+    assert all(
+        token not in installed.casefold()
+        for token in promotion.PROMOTION_PATH_PLACEHOLDERS
+    )
+    receipt = json.loads(
+        Path(str(applied["artifacts"]["receipt_path"])).read_text(
+            encoding="utf-8"
+        )
+    )
+    receipt_operation = next(
+        item
+        for item in receipt["operations"]
+        if item["physical_alias"] == operation["physical_alias"]
+    )
+    assert tree_digest(target) == operation["after_digest"]
+    assert receipt_operation["after_digest"] == operation["after_digest"]
+
+
+def test_repeated_localized_promotion_is_idempotent_and_preimage_passes(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    dayz_projects = configure_complete_path_aliases(config_path, tmp_path)
+    commit_demo_payload(
+        root,
+        "templates/demo.ps1",
+        '$Root = "<dayz-projects>\\LF"\n',
+    )
+    first_check = check_promotion(root, map_path, config_path, plan_path)
+    assert first_check["verdict"] == "WARN"
+    first_apply = apply_promotion(plan_path)
+    assert first_apply["verdict"] == "PASS"
+    target = paths["claude"] / "demo"
+    first_digest = tree_digest(target)
+    exclude = root / ".git/info/exclude"
+    exclude.write_text(
+        exclude.read_text(encoding="utf-8")
+        + "\npromotions/receipts/*.json\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    assert run_git(root, "status", "--porcelain") == ""
+
+    second_check = check_promotion(root, map_path, config_path, plan_path)
+
+    assert second_check["verdict"] == "PASS"
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(second_check)
+    second_plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    operation = next(
+        item
+        for item in second_plan["operations"]
+        if Path(str(item["target_path"])) == target.resolve()
+    )
+    assert operation["before_digest"] == operation["after_digest"]
+    second_apply = apply_promotion(plan_path)
+    installed = (target / "templates/demo.ps1").read_text(encoding="utf-8")
+    assert second_apply["verdict"] == "PASS"
+    assert tree_digest(target) == first_digest
+    assert installed == f'$Root = "{dayz_projects}\\LF"\n'
+
+
+def test_markdown_path_alias_is_promoted_literal_without_localization(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    configure_complete_path_aliases(config_path, tmp_path)
+    literal = "Use <dayz-projects> as the distribution alias.\n"
+    commit_demo_payload(root, "references/policy.md", literal)
+
+    checked = check_promotion(root, map_path, config_path, plan_path)
+    assert "PROMOTION-CONFIG-INVALID" not in codes(checked)
+    applied = apply_promotion(plan_path)
+
+    assert applied["verdict"] == "PASS"
+    assert (
+        paths["claude"] / "demo/references/policy.md"
+    ).read_text(encoding="utf-8") == literal
+
+
+def test_alias_value_is_single_pass_literal_and_residual_blocks_commit(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    dayz_projects = configure_complete_path_aliases(
+        config_path,
+        tmp_path,
+        fragment_value="<dayz-projects>",
+    )
+    commit_demo_payload(
+        root,
+        "templates/demo.ps1",
+        'Write-Output "<you>"\n',
+    )
+    checked = check_promotion(root, map_path, config_path, plan_path)
+    assert checked["verdict"] == "WARN"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    source_files = promotion._tracked_projection(root, "skills/demo", "tree")
+    projected = tmp_path / "single-pass-projection"
+    promotion._copy_artifact(
+        root / "skills/demo",
+        projected,
+        "tree",
+        source_files,
+        path_aliases={
+            "<dayz-projects>": str(dayz_projects),
+            "<you>": "<dayz-projects>",
+        },
+        source_root=root,
+    )
+    projected_text = (
+        projected / "templates/demo.ps1"
+    ).read_text(encoding="utf-8")
+    assert projected_text == 'Write-Output "<dayz-projects>"\n'
+    assert str(dayz_projects) not in projected_text
+
+    applied = apply_promotion(plan_path)
+
+    transaction = transaction_root(plan)
+    events = assert_valid_event_chain(transaction)
+    assert applied["verdict"] == "FAIL"
+    assert "PROMOTION-APPLY-FAILED" in codes(applied)
+    assert events[-1]["event_type"] == "ABORT"
+    assert all(event["event_type"] != "COMMIT" for event in events)
+    assert not Path(str(plan["receipt_path"])).exists()
+    assert not (paths["claude"] / "demo").exists()
+
 
 def test_promotion_check_routes_repo_vault_and_both_skill_roots(
     repo_factory,
@@ -1520,7 +1912,13 @@ def test_partial_stage_from_failed_copy_is_removed(
     check_promotion(root, map_path, config_path, plan_path)
     created_stage: Path | None = None
 
-    def fail_after_partial_copy(source, destination, kind, source_files=None):
+    def fail_after_partial_copy(
+        source,
+        destination,
+        kind,
+        source_files=None,
+        **_kwargs,
+    ):
         nonlocal created_stage
         created_stage = Path(destination)
         created_stage.mkdir(parents=True)
@@ -1855,9 +2253,21 @@ def test_idempotent_operation_is_read_back_without_replace(
     original_copy = __import__("packctl.promotion", fromlist=["_copy_artifact"])._copy_artifact
     destinations: list[Path] = []
 
-    def recording_copy(source, destination, kind, source_files=None):
+    def recording_copy(
+        source,
+        destination,
+        kind,
+        source_files=None,
+        **kwargs,
+    ):
         destinations.append(Path(destination))
-        return original_copy(source, destination, kind, source_files)
+        return original_copy(
+            source,
+            destination,
+            kind,
+            source_files,
+            **kwargs,
+        )
 
     monkeypatch.setattr("packctl.promotion._copy_artifact", recording_copy)
 
@@ -2169,6 +2579,10 @@ def test_apply_process_termination_recovers_to_one_decided_state(
     seed_every_target_with_pre_state(root, paths)
     check_promotion(root, map_path, config_path, plan_path)
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    adjudication_path = root / "promotions/adjudications.json"
+    adjudications_before = json.loads(
+        adjudication_path.read_text(encoding="utf-8")
+    )
 
     killed = run_promote_process(
         root,
@@ -2184,14 +2598,29 @@ def test_apply_process_termination_recovers_to_one_decided_state(
     assert recovered["verdict"] == "PASS"
     events = assert_valid_event_chain(transaction)
     receipt_path = Path(str(plan["receipt_path"]))
+    adjudications_after = json.loads(
+        adjudication_path.read_text(encoding="utf-8")
+    )
     if boundary == "after_commit":
         assert events[-1]["event_type"] == "COMMIT"
         assert_plan_state(plan, state="POST")
         assert receipt_path.is_file()
+        expected_post = {
+            (str(operation["artifact_id"]), str(target_id)): str(
+                operation["after_digest"]
+            )
+            for operation in plan["operations"]
+            for target_id in operation["logical_target_ids"]
+        }
+        assert {
+            (entry["artifact_id"], entry["target_id"]): entry["observed_digest"]
+            for entry in adjudications_after["adjudications"]
+        } == expected_post
     else:
         assert events[-1]["event_type"] == "ABORT"
         assert_plan_state(plan, state="PRE")
         assert not receipt_path.exists()
+        assert adjudications_after == adjudications_before
 
 
 @pytest.mark.parametrize(
