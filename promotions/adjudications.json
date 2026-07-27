@@ -1,1 +1,137 @@
-{"adjudications":[{"artifact_id":"skill/_shared","observed_digest":"2e3d198ec836a56db18c33eaf77e957d98cfbdc0d329088a3061bb17484298f1","reason":"The bytes no receipt explains are the three _shared references the 2026-07-24 mirror promotion deleted and 6c994c6 restored, plus the model-routing and skill-resolution material 4d594ae adopted. A live-versus-repo comparison run at a16ef58, immediately before this adjudication, reports zero files and zero sections that a mirror promotion would remove from this target.","target_id":"agents_user_skills"},{"artifact_id":"skill/_shared","observed_digest":"2e3d198ec836a56db18c33eaf77e957d98cfbdc0d329088a3061bb17484298f1","reason":"The bytes no receipt explains are the three _shared references the 2026-07-24 mirror promotion deleted and 6c994c6 restored, plus the model-routing and skill-resolution material 4d594ae adopted. A live-versus-repo comparison run at a16ef58, immediately before this adjudication, reports zero files and zero sections that a mirror promotion would remove from this target.","target_id":"claude_user_skills"},{"artifact_id":"skill/blender-animation","observed_digest":"f91afd74eaf63679073fb18e49418ba9de555e27c6a13cb5c9deb3953f0ac425","reason":"The unexplained bytes are the material 4d594ae adopted from the installed copy, including evals/evals.json, which had no artifact entry in the repo at all. A live-versus-repo comparison at a16ef58 reports zero files and zero sections at risk, so promoting the repo over this target removes nothing that exists only here.","target_id":"agents_user_skills"},{"artifact_id":"skill/blender-animation","observed_digest":"f91afd74eaf63679073fb18e49418ba9de555e27c6a13cb5c9deb3953f0ac425","reason":"The unexplained bytes are the material 4d594ae adopted from the installed copy, including evals/evals.json, which had no artifact entry in the repo at all. A live-versus-repo comparison at a16ef58 reports zero files and zero sections at risk, so promoting the repo over this target removes nothing that exists only here.","target_id":"claude_user_skills"},{"artifact_id":"skill/dayz-characters","observed_digest":"e968e934d5f8b1b7fed938964b0b5c6e57b5f4c8b8b8aed18e6789fc3ecf1d8a","reason":"The installed copy advanced after the last receipt and 4d594ae brought that advance into the repo. A live-versus-repo comparison at a16ef58 reports four files present on both sides, zero files and zero sections present only in the destination.","target_id":"agents_user_skills"},{"artifact_id":"skill/dayz-characters","observed_digest":"e968e934d5f8b1b7fed938964b0b5c6e57b5f4c8b8b8aed18e6789fc3ecf1d8a","reason":"The installed copy advanced after the last receipt and 4d594ae brought that advance into the repo. A live-versus-repo comparison at a16ef58 reports four files present on both sides, zero files and zero sections present only in the destination.","target_id":"claude_user_skills"},{"artifact_id":"skill/dayz-mcp-verify","observed_digest":"341023ee4818b7ee6f42199c264ad06113c9a46b4f997b101384791b59743322","reason":"The repo is ahead of this target, not behind it: six files in the repo against four installed, with zero files and zero sections existing only in the destination as measured at a16ef58. The unexplained bytes are the SP-092 era content 6c994c6 restored and 4d594ae adopted, so nothing is lost by writing the repo over it.","target_id":"agents_user_skills"},{"artifact_id":"skill/dayz-mcp-verify","observed_digest":"341023ee4818b7ee6f42199c264ad06113c9a46b4f997b101384791b59743322","reason":"The repo is ahead of this target, not behind it: six files in the repo against four installed, with zero files and zero sections existing only in the destination as measured at a16ef58. The unexplained bytes are the SP-092 era content 6c994c6 restored and 4d594ae adopted, so nothing is lost by writing the repo over it.","target_id":"claude_user_skills"},{"artifact_id":"skill/dayz-test-ingame","observed_digest":"ce95584ef02475b6b71f289b2000d4b58b6e0642504daf510254457fa7186ec6","reason":"SP-092 was adopted by 4d594ae and SP-095 by 1895299, so every section of the installed SKILL.md now exists in the repo. One destination-only file remains, SKILL.md.bak_pre_sp-095, a pre-edit backup whose content is a strict subset of the adopted text; the mirror promotion will delete it and that deletion is intended, not overlooked.","target_id":"agents_user_skills"},{"artifact_id":"skill/dayz-test-ingame","observed_digest":"ce95584ef02475b6b71f289b2000d4b58b6e0642504daf510254457fa7186ec6","reason":"SP-092 was adopted by 4d594ae and SP-095 by 1895299, so every section of the installed SKILL.md now exists in the repo. One destination-only file remains, SKILL.md.bak_pre_sp-095, a pre-edit backup whose content is a strict subset of the adopted text; the mirror promotion will delete it and that deletion is intended, not overlooked.","target_id":"claude_user_skills"},{"artifact_id":"skill/dayz-vehicles","observed_digest":"f55ec277acc51cb13c96b425f8cc6e6a521fc25ffcf74ac100767895b94f34ac","reason":"SP-091 and SP-093 were adopted by 4d594ae and SP-096 by 1895299, so every section of the installed SKILL.md now exists in the repo. One destination-only file remains, SKILL.md.bak_pre_sp-096, a pre-edit backup whose content is a strict subset of the adopted text; the mirror promotion will delete it and that deletion is intended, not overlooked.","target_id":"agents_user_skills"},{"artifact_id":"skill/dayz-vehicles","observed_digest":"f55ec277acc51cb13c96b425f8cc6e6a521fc25ffcf74ac100767895b94f34ac","reason":"SP-091 and SP-093 were adopted by 4d594ae and SP-096 by 1895299, so every section of the installed SKILL.md now exists in the repo. One destination-only file remains, SKILL.md.bak_pre_sp-096, a pre-edit backup whose content is a strict subset of the adopted text; the mirror promotion will delete it and that deletion is intended, not overlooked.","target_id":"claude_user_skills"}],"schema_version":1}
+{
+  "adjudications": [
+    {
+      "artifact_id": "skill/_shared",
+      "observed_digest": "2e3d198ec836a56db18c33eaf77e957d98cfbdc0d329088a3061bb17484298f1",
+      "reason": "The bytes no receipt explains are the three _shared references the 2026-07-24 mirror promotion deleted and 6c994c6 restored, plus the model-routing and skill-resolution material 4d594ae adopted. A live-versus-repo comparison run at a16ef58, immediately before this adjudication, reports zero files and zero sections that a mirror promotion would remove from this target.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/_shared",
+      "observed_digest": "2e3d198ec836a56db18c33eaf77e957d98cfbdc0d329088a3061bb17484298f1",
+      "reason": "The bytes no receipt explains are the three _shared references the 2026-07-24 mirror promotion deleted and 6c994c6 restored, plus the model-routing and skill-resolution material 4d594ae adopted. A live-versus-repo comparison run at a16ef58, immediately before this adjudication, reports zero files and zero sections that a mirror promotion would remove from this target.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/ai-3d-to-dayz",
+      "observed_digest": "4461a9f13c29922856bf472a041a3fddaf012f609a7cf1a6e9624c2b273193fd",
+      "reason": "The bytes no receipt explains are one promoted-lessons block (LL-154) written 19:39:59, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/ai-3d-to-dayz",
+      "observed_digest": "4461a9f13c29922856bf472a041a3fddaf012f609a7cf1a6e9624c2b273193fd",
+      "reason": "The bytes no receipt explains are one promoted-lessons block (LL-154) written 19:39:59, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/blender-animation",
+      "observed_digest": "f91afd74eaf63679073fb18e49418ba9de555e27c6a13cb5c9deb3953f0ac425",
+      "reason": "The unexplained bytes are the material 4d594ae adopted from the installed copy, including evals/evals.json, which had no artifact entry in the repo at all. A live-versus-repo comparison at a16ef58 reports zero files and zero sections at risk, so promoting the repo over this target removes nothing that exists only here.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/blender-animation",
+      "observed_digest": "f91afd74eaf63679073fb18e49418ba9de555e27c6a13cb5c9deb3953f0ac425",
+      "reason": "The unexplained bytes are the material 4d594ae adopted from the installed copy, including evals/evals.json, which had no artifact entry in the repo at all. A live-versus-repo comparison at a16ef58 reports zero files and zero sections at risk, so promoting the repo over this target removes nothing that exists only here.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-aviation",
+      "observed_digest": "aaecf563ab321c859bd31932276361170a2dea7af7e6bfb65a852eb025896fc5",
+      "reason": "The bytes no receipt explains are one promoted-lessons block (LL-194, LL-195, LL-201) written 19:39:59, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-aviation",
+      "observed_digest": "aaecf563ab321c859bd31932276361170a2dea7af7e6bfb65a852eb025896fc5",
+      "reason": "The bytes no receipt explains are one promoted-lessons block (LL-194, LL-195, LL-201) written 19:39:59, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-basebuilding",
+      "observed_digest": "9baabc1c6629898a14576a2e476a2e7aa6eecc04a1108b8c77de8a23e8396d2f",
+      "reason": "The bytes no receipt explains are one promoted-lessons block (LL-042) written 19:39:59, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-basebuilding",
+      "observed_digest": "9baabc1c6629898a14576a2e476a2e7aa6eecc04a1108b8c77de8a23e8396d2f",
+      "reason": "The bytes no receipt explains are one promoted-lessons block (LL-042) written 19:39:59, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-characters",
+      "observed_digest": "e968e934d5f8b1b7fed938964b0b5c6e57b5f4c8b8b8aed18e6789fc3ecf1d8a",
+      "reason": "The installed copy advanced after the last receipt and 4d594ae brought that advance into the repo. A live-versus-repo comparison at a16ef58 reports four files present on both sides, zero files and zero sections present only in the destination.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-characters",
+      "observed_digest": "e968e934d5f8b1b7fed938964b0b5c6e57b5f4c8b8b8aed18e6789fc3ecf1d8a",
+      "reason": "The installed copy advanced after the last receipt and 4d594ae brought that advance into the repo. A live-versus-repo comparison at a16ef58 reports four files present on both sides, zero files and zero sections present only in the destination.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-feature-spec",
+      "observed_digest": "17b607249ba21131fdfd65ba980f84b3eaefb73e3351eef44725668bda0d0fff",
+      "reason": "The bytes no receipt explains are two promoted-lessons blocks (LL-017, LL-116 at 18:30:50; LL-040 at 19:39:59), written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-feature-spec",
+      "observed_digest": "17b607249ba21131fdfd65ba980f84b3eaefb73e3351eef44725668bda0d0fff",
+      "reason": "The bytes no receipt explains are two promoted-lessons blocks (LL-017, LL-116 at 18:30:50; LL-040 at 19:39:59), written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-mcp-verify",
+      "observed_digest": "cc816a1a9e0744fae6a15bfeae7a34affce365bb927e23620a1fd1b00c58ef15",
+      "reason": "The bytes no receipt explains are one promoted-lessons block (LL-181, LL-187, LL-202) written 19:39:59, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0. Prior rationale for this pair, whose digest this entry supersedes: The repo is ahead of this target, not behind it: six files in the repo against four installed, with zero files and zero sections existing only in the destination as measured at a16ef58. The unexplained bytes are the SP-092 era content 6c994c6 restored and 4d594ae adopted, so nothing is lost by writing the repo over it.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-mcp-verify",
+      "observed_digest": "cc816a1a9e0744fae6a15bfeae7a34affce365bb927e23620a1fd1b00c58ef15",
+      "reason": "The bytes no receipt explains are one promoted-lessons block (LL-181, LL-187, LL-202) written 19:39:59, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0. Prior rationale for this pair, whose digest this entry supersedes: The repo is ahead of this target, not behind it: six files in the repo against four installed, with zero files and zero sections existing only in the destination as measured at a16ef58. The unexplained bytes are the SP-092 era content 6c994c6 restored and 4d594ae adopted, so nothing is lost by writing the repo over it.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-test-ingame",
+      "observed_digest": "04800902281c66b45e8e95885663285421927c110a7a667977bf31145d493abb",
+      "reason": "The bytes no receipt explains are two promoted-lessons blocks (LL-118 at 18:30:51; LL-196, LL-197, LL-198 at 19:39:59), written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0. Prior rationale for this pair, whose digest this entry supersedes: SP-092 was adopted by 4d594ae and SP-095 by 1895299, so every section of the installed SKILL.md now exists in the repo. One destination-only file remains, SKILL.md.bak_pre_sp-095, a pre-edit backup whose content is a strict subset of the adopted text; the mirror promotion will delete it and that deletion is intended, not overlooked.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-test-ingame",
+      "observed_digest": "04800902281c66b45e8e95885663285421927c110a7a667977bf31145d493abb",
+      "reason": "The bytes no receipt explains are two promoted-lessons blocks (LL-118 at 18:30:51; LL-196, LL-197, LL-198 at 19:39:59), written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0. Prior rationale for this pair, whose digest this entry supersedes: SP-092 was adopted by 4d594ae and SP-095 by 1895299, so every section of the installed SKILL.md now exists in the repo. One destination-only file remains, SKILL.md.bak_pre_sp-095, a pre-edit backup whose content is a strict subset of the adopted text; the mirror promotion will delete it and that deletion is intended, not overlooked.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-vehicles",
+      "observed_digest": "eb72231565d0a95c4a5eb8755d3c0a6df3c1cfcbe988c67cca6c16366c4798fc",
+      "reason": "The bytes no receipt explains are four process sections (ITERATION BUDGET, DOOR MECHANISM SELECTOR, INV-ALIGN, TEXTURE OR MESH?) written 17:38:17, plus a promoted-lessons block (LL-076, LL-172) at 19:39:59, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0. Prior rationale for this pair, whose digest this entry supersedes: SP-091 and SP-093 were adopted by 4d594ae and SP-096 by 1895299, so every section of the installed SKILL.md now exists in the repo. One destination-only file remains, SKILL.md.bak_pre_sp-096, a pre-edit backup whose content is a strict subset of the adopted text; the mirror promotion will delete it and that deletion is intended, not overlooked.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-vehicles",
+      "observed_digest": "eb72231565d0a95c4a5eb8755d3c0a6df3c1cfcbe988c67cca6c16366c4798fc",
+      "reason": "The bytes no receipt explains are four process sections (ITERATION BUDGET, DOOR MECHANISM SELECTOR, INV-ALIGN, TEXTURE OR MESH?) written 17:38:17, plus a promoted-lessons block (LL-076, LL-172) at 19:39:59, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0. Prior rationale for this pair, whose digest this entry supersedes: SP-091 and SP-093 were adopted by 4d594ae and SP-096 by 1895299, so every section of the installed SKILL.md now exists in the repo. One destination-only file remains, SKILL.md.bak_pre_sp-096, a pre-edit backup whose content is a strict subset of the adopted text; the mirror promotion will delete it and that deletion is intended, not overlooked.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/rigorous-data-audit",
+      "observed_digest": "dea0758aebbbeef55160904673af56414fd4c1ae026f0ea0162a85ff57326a9e",
+      "reason": "The bytes no receipt explains are one promoted-lessons block (LL-045, LL-139, LL-140, LL-190) written 18:30:50, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/rigorous-data-audit",
+      "observed_digest": "dea0758aebbbeef55160904673af56414fd4c1ae026f0ea0162a85ff57326a9e",
+      "reason": "The bytes no receipt explains are one promoted-lessons block (LL-045, LL-139, LL-140, LL-190) written 18:30:50, written host-direct into both installed roots on 2026-07-27 by two concurrent Claude Code sessions of the user, not by the promotion. Authorship was established from the session transcripts, from auto-memory notes written within a minute of each write, and from the fact that every LL-NNN cited resolves in the vault corpus. The delta is additive: zero deletions, zero reformatting, frontmatter untouched. It was adopted into Git in commit 7e437f0 before this adjudication was written, so a mirror promotion can no longer delete it, and the digest signed here was read from the check report of 2026-07-27 20:00:37 against source commit 7e437f0.",
+      "target_id": "claude_user_skills"
+    }
+  ],
+  "schema_version": 1
+}
