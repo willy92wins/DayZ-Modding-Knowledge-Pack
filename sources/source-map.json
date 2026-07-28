@@ -191,7 +191,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e0546fb6375b6df1aba2034ff61ae92ca79407985898fc6a665f5106bc37df56",
+      "output_hash": "1c04b7da1d2a10e581fd44623aff125b0e91393ce6a3eb8b05f6f4e711228778",
       "output_path": "HANDOFF.md",
       "routing_artifact_id": "root/handoff",
       "verification_level": "cross_checked"
