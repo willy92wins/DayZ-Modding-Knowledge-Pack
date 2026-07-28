@@ -172,14 +172,18 @@ y entrada en el changelog.
   StarDZ `dbdcd23b...`.
 - py3d upstream `7acd58b`/tag `v1.0` y fork release `1.4.0`; wheel
   reproducible SHA-256
-  `c635bf7ec12c56da0bd11c93b417ff1caacb0810c64e07972daa75b31f98be3c`,
-  re-baselinado el 2026-07-27 por decisión explícita del usuario. El valor
-  anterior `cc014a4330e8…` se fijó antes de que `tools/py3d/pyproject.toml`
-  existiera, cuando PEP 517 resolvía `setuptools` dinámicamente y el wheel
-  embebía esa versión; no es alcanzable con el toolchain pineado y no se
+  `8043b796dd18fe3d949fde03031d51afa3759021936760953c0e6ec0d74f86c2`,
+  re-sellado el 2026-07-28 por decisión explícita del usuario: `4271ff0`
+  endureció la fuente del wheel (`tools/py3d/py3d/__init__.py`), así que el
+  sello anterior `c635bf7ec12c…` describía la fuente de `913192d` y el gate
+  se puso rojo por el motivo correcto. Ese valor había sustituido a su vez a
+  `cc014a4330e8…`, fijado antes de que `tools/py3d/pyproject.toml` existiera,
+  cuando PEP 517 resolvía `setuptools` dinámicamente; ninguno de los dos se
   conserva como objetivo. La reproducibilidad es **toolchain-bound**: vale para
   `setuptools==83.0.0` y Python `3.14.3`, ambos declarados en
-  `rollout/wheel-manifest.json`.
+  `rollout/wheel-manifest.json`. La versión `1.4.0` ha designado dos contenidos
+  distintos sin cambiar de nombre de fichero; lo que los distingue es el sello
+  del manifiesto, no la versión.
 
 Aliases de evidencia usados en los planes:
 

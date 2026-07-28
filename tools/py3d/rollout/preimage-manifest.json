@@ -1,10 +1,10 @@
 {
   "schema_version": "py3d-rollout-preimage-v1",
-  "snapshot_id": "live-snapshot-2026-07-26",
+  "snapshot_id": "live-snapshot-2026-07-28",
   "entries": [
     {
       "relative_path": "dayz-model-pipeline/SKILL.md",
-      "preimage_sha256": "1507ca7dcdc03d8714b6c971a20e4ec2ed69f8baea1a5ada2ef73acca8f563f7",
+      "preimage_sha256": "c93e9b7aca0de717be32ffbd9afc85ba2481d36e0af69ea53c4e9cbe7e8dc309",
       "status": "patched",
       "patch_path": "patches/dayz-model-pipeline__SKILL.md.patch"
     },
@@ -22,19 +22,19 @@
     },
     {
       "relative_path": "dayz-p3d-inspector/SKILL.md",
-      "preimage_sha256": "a7a6deccd7bd3972bebc4e3560ed8c94a94beff8553ca7a42fcf639107e6e6d8",
+      "preimage_sha256": "ea6cbf36da65cf9199dbab6e4d85ee68e880e10ce0c1031044f62c982ce33c00",
       "status": "not_applicable",
       "reason": "La proyección no contiene delta atribuible a py3d 1.4.0 y perdería SP-028."
     },
     {
       "relative_path": "dayz-p3d-debinarizer/SKILL.md",
-      "preimage_sha256": "39cea72607c84b53d9b845dc54aef3b2a60ca01852b4e733330496eae597a247",
+      "preimage_sha256": "1aa947e2e8ea3c3768f5c8d8de72c08dd373f4e525c0c34d2e16c9877a47f699",
       "status": "not_applicable",
       "reason": "La proyección no contiene delta atribuible a py3d 1.4.0 y perdería SP-034."
     },
     {
       "relative_path": "dayz-p3d-audit/SKILL.md",
-      "preimage_sha256": "1488093087123a14ae57dd320140a71887fc1f9d2b42ec50f213f942b0582bab",
+      "preimage_sha256": "263f86ae0dc742c04d28ebd1c24a1832c7d5f1afa6dd0619611fc9018f1a7041",
       "status": "not_applicable",
       "reason": "La proyección no aporta py3d 1.4.0 y perdería SP-017, SP-051 y el conteo de 13 Silent Killers."
     },
@@ -64,7 +64,7 @@
     },
     {
       "relative_path": "dayz-animation-pipeline/SKILL.md",
-      "preimage_sha256": "bcaacd1bd0e716bd3a265f19c9c006b6a2869cfd42bb4c238786706cb3c1a914",
+      "preimage_sha256": "869a55b573a269504b1edc16147f60582c9b97c05b279916cdc10547f11d25ce",
       "status": "patched",
       "patch_path": "patches/dayz-animation-pipeline__SKILL.md.patch"
     }
