@@ -19,6 +19,7 @@ MODULE_DIR = Path(__file__).resolve().parent
 TOOL_DIR = MODULE_DIR.parent
 REPO_ROOT = TOOL_DIR.parents[1]
 SCHEMA_VERSION = "dayz-ui-diff-v1"
+VIEWPORT_MISMATCH_CODE = "DIFF-VIEWPORT-MISMATCH"
 MISSING_VALUE = {"missing": True}
 STRUCTURAL_CODES = {
     "DIFF-PROPERTY-CHANGED",
@@ -64,8 +65,13 @@ render = _load_render()
 class DiffError(Exception):
     """Fail-closed CLI input error with a stable code."""
 
-    def __init__(self, message: str, source: str = ""):
-        self.code = "DIFF-INPUT-INVALID"
+    def __init__(
+        self,
+        message: str,
+        source: str = "",
+        code: str = "DIFF-INPUT-INVALID",
+    ):
+        self.code = code
         self.message = message
         self.source = source
         rendered = f"{source}: {message}" if source else message
@@ -208,6 +214,23 @@ def compare_documents(
     """Compare widgets by stable id and report semantic property deltas."""
     _validate_document(expected, "expected")
     _validate_document(observed, "observed")
+    # Geometry is resolved against the viewport, so comparing two renders taken
+    # at different ones reports every size, offset and position as changed. Those
+    # deltas are resolution arithmetic, not defects, and they bury the findings
+    # that are real: 1920x1080 against 3440x1440 on the three-card fixture yields
+    # 86 property changes. Refuse the comparison instead of emitting them.
+    #
+    # Only the pairwise comparison is guarded. Analysing a single render at a
+    # viewport the scenario does not declare stays valid, because the overlay
+    # detectors read that render's own geometry and SC-005 requires composing one
+    # scenario at two resolutions.
+    if expected["viewport"] != observed["viewport"]:
+        raise DiffError(
+            "expected and observed renders declare different viewports: "
+            f"{expected['viewport']['width']}x{expected['viewport']['height']} "
+            f"and {observed['viewport']['width']}x{observed['viewport']['height']}",
+            code=VIEWPORT_MISMATCH_CODE,
+        )
     expected_widgets = _widget_map(expected)
     observed_widgets = _widget_map(observed)
     scenario = observed["scenario_id"]

@@ -118,6 +118,33 @@ class DiffTests(unittest.TestCase):
             if finding["code"] == "DIFF-WIDGET-REMOVED"
         ))
 
+    def test_structural_comparison_refuses_two_different_viewports(self) -> None:
+        # Geometry resolves against the viewport, so comparing two renders taken
+        # at different ones reported 86 property changes on this very fixture,
+        # all of them resolution arithmetic. Failing closed is the point.
+        expected = self.positive_document()
+        observed = self.render.render_document(THREE_CARDS, "populated", viewport=(3440, 1440))
+
+        with self.assertRaises(self.diff.DiffError) as raised:
+            self.diff.compare_documents(expected, observed)
+        self.assertEqual("DIFF-VIEWPORT-MISMATCH", raised.exception.code)
+        self.assertIn("1920x1080", str(raised.exception))
+        self.assertIn("3440x1440", str(raised.exception))
+
+    def test_structural_comparison_accepts_two_equal_viewports(self) -> None:
+        expected = self.positive_document()
+        observed = self.render.render_document(THREE_CARDS, "populated")
+        self.assertEqual([], self.diff.compare_documents(expected, observed))
+
+    def test_overlays_still_accept_a_viewport_the_scenario_does_not_declare(self) -> None:
+        # The guard must not be wider than the defect: composing one scenario at
+        # two resolutions is what SC-005 requires, and an overflow that appears
+        # only at 3440x1440 is a real responsive defect, not an artefact.
+        observed = self.render.render_document(THREE_CARDS, "populated", viewport=(3440, 1440))
+        self.assertNotEqual(observed["viewport"], self.positive_document()["viewport"])
+        findings = self.diff.analyze_document(observed, THREE_CARDS)
+        self.assertEqual({"DIFF-OVERFLOW"}, self.codes(findings))
+
     def test_same_report_has_identical_canonical_bytes(self) -> None:
         document = self.defect_document()
         first = self.diff.build_report(document, scenario_path=DEFECT_SCENARIO)

@@ -11077,7 +11077,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 Task 5 closes SC-009: a structural diff that pairs widgets by stable id plus offline defect overlays for reference-missing, clipping, overlap, overflow and missing state, with a first-party negative fixture producing exactly the four expected findings and the positive control producing zero.",
           "license": "MIT",
-          "source_hash": "9696de7e12a303b4e6ec03089cadd24ea92dde4b5bc469f6b485a840f540f9be",
+          "source_hash": "37c2ada7ac44091d4554c4ae93f3b9ea40eaf1c049ec3ac93a91c0bf3423b299",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/dayz_ui_lab/diff.py",
           "source_revision": "r21-phase02@2026-07-28",
@@ -11085,7 +11085,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9696de7e12a303b4e6ec03089cadd24ea92dde4b5bc469f6b485a840f540f9be",
+      "output_hash": "37c2ada7ac44091d4554c4ae93f3b9ea40eaf1c049ec3ac93a91c0bf3423b299",
       "output_path": "tools/dayz-ui-lab/dayz_ui_lab/diff.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -11165,7 +11165,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 Task 5 closes SC-009: a structural diff that pairs widgets by stable id plus offline defect overlays for reference-missing, clipping, overlap, overflow and missing state, with a first-party negative fixture producing exactly the four expected findings and the positive control producing zero.",
           "license": "MIT",
-          "source_hash": "ca444d160f69b0f0ab0082c6f57be935325ec4db880700fec22eeef0a4b674df",
+          "source_hash": "d83b34fcc3810674098e7a247c7ea9058c41ce475094755d91508c5e5346ef59",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/tests/test_diff.py",
           "source_revision": "r21-phase02@2026-07-28",
@@ -11173,7 +11173,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ca444d160f69b0f0ab0082c6f57be935325ec4db880700fec22eeef0a4b674df",
+      "output_hash": "d83b34fcc3810674098e7a247c7ea9058c41ce475094755d91508c5e5346ef59",
       "output_path": "tools/dayz-ui-lab/tests/test_diff.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
