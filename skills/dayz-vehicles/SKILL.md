@@ -950,3 +950,115 @@ historical "the ODOL came out byte-identical" claim with this in mind.
 
 Origin: LFHeli OH-1 2026-07-28, the session that converted doors to proxied attachments after the
 user pointed out that a vanilla car only draws the door proxy when the door is attached.
+
+### Two traps that follow immediately from converting a baked part into an attachment
+
+Both bite the moment the part becomes an attachment, and both look like "my model change
+broke the vehicle".
+
+**1. A detachable part is INVISIBLE on every debug/admin spawn until something attaches it.**
+`CreateObject`, VPP/admin-tool spawns and MCP-style bridge spawns do not populate attachment
+slots - that is why a VPP-spawned vanilla car has no wheels. The moment you move a door from
+baked hull geometry to an attachment, a spawned vehicle shows an empty doorway, and it reads as
+a regression when it is the contract working.
+
+The hook is `OnDebugSpawn()` (`P:\scripts\3_game\entities\entityai.c:3902-3907`, with
+`OnDebugSpawnEx(DebugSpawnParams)` delegating to it). Two source-verified patterns:
+
+- explicit `CreateAttachment` per part - `LFQuad.c:176-189`:
+  ```c
+  override void OnDebugSpawn()
+  {
+      EntityAI entity;
+      if (Class.CastTo(entity, this))
+      {
+          entity.GetInventory().CreateAttachment("CarBattery");
+          entity.GetInventory().CreateAttachment("SparkPlug");
+          entity.GetInventory().CreateAttachment("LFQuad_Wheel_Front");
+          // ...
+      }
+  }
+  ```
+- vanilla car, `CreateInInventory` per part - `P:\scripts\4_world\entities\vehicles\inheritedcars\civiliansedan.c:407-429`
+  (`SpawnUniversalParts(); SpawnAdditionalItems(); FillUpCarFluids();` then one call per door/wheel).
+
+The `EntityAI` base implementation is config-driven instead: it reads the type's `attachments[]`
+and scans `CfgVehicles`/`CfgMagazines`/`CfgWeapons` for any class whose `inventorySlot` matches,
+then `CreateInInventory`s it (`entityai.c:3907-3958`). Calling `super.OnDebugSpawn()` therefore
+attaches per-type from config with no per-airframe code - useful when one script base serves
+several models. Note the vanilla cars deliberately do NOT call super; they list parts explicitly.
+
+**2. `attachments[] =` silently removes the inherited vital slots. Use `+=`.**
+Config arrays REPLACE on redeclaration. A modded vehicle deriving from a vanilla car inherits
+`attachments[]` with `CarBattery`, `SparkPlug`, wheels and so on. Writing
+
+```cpp
+attachments[] = {"MyMod_Door_1", "MyMod_Door_2"};      // WRONG
+```
+
+drops every inherited slot, so `SpawnUniversalParts()` can no longer attach battery or spark
+plug and the vehicle **can never ignite** - `IsVitalCarBattery`/`IsVitalSparkPlug` stay true
+forever. The symptom appears far from the cause: you changed doors and the engine stopped
+starting. Correct form:
+
+```cpp
+attachments[] += {"MyMod_Door_1", "MyMod_Door_2"};     // keeps the inherited slots
+```
+
+This is a different failure from T148506 (`enforce-script-reference`), which is about `+=` on a
+**string** `inventorySlot` failing silently. Arrays are the case where `+=` is the right tool;
+strings are the case where it is not.
+
+Gate both: assert the config uses `+=` for `attachments[]`, and assert every declared part class
+appears in the `OnDebugSpawn` path. Origin: LFHeli OH-1 2026-07-28, caught before the in-game
+cycle by re-reading the base class the airframe actually inherits from.
+
+## (added 2026-07-28) An animation's SIGN is never judged without its AXIS - use the pseudovector against the control
+
+Wheels spinning backwards, doors hinging the wrong way and inverted steering are the same bug,
+and reviewing `angle1` alone cannot catch any of them: **invert the axis and the angle together
+and every sign check still passes while the part moves backwards.** The only falsifiable
+invariant is the pseudovector `angle1 x unit(axis_dir)`, compared against the homologous class
+of the vanilla CONTROL.
+
+**Where the evidence lives after Binarize** (so this is an OFFLINE gate, not an in-game guess):
+the compiled ODOL carries the whole rig. `odol_reader.py:82-160` - `animations.classes[i]` has
+`anim_name`, `anim_source`, `anim_type` (0=rotation, 4=translation), `angle0/angle1`,
+`offset0/offset1`; `animations.anims2bones[lod][i]` indexes the **global** skeleton (it does NOT
+go through `lod.sub_skeletons_to_skeleton`); `animations.axis_data[lod][i]` is
+**`(position, direction)`, NOT two points** - measured: wheel axes come back as exactly
+`(1,0,0)` unit vectors and dampers as `(0, 0.3, 0)` where 0.3 is the travel length.
+Binarize also **lowercases `anim_source` while preserving `anim_name` case**, so compare
+sources case-insensitively.
+
+**The trap that inverts the verdict: picking the wrong homologue in the control.**
+`CivilianSedan` carries TWO classes driven by `turnfrontleft` with identical angles and
+**opposite** axes - `steering_swivel_1_1` on `(0,-1,0)` and `steering_arm_steering_1_1` on
+`(0,+1,0)`. The homologue of your steering bone is the **swivel** (the knuckle the wheel hangs
+from, i.e. the parent of `wheel_X_1` in your skeleton chain), never the tie rod. Read the
+control's skeleton chain before choosing; a comment in your own `model.cfg` asserting which one
+you matched is not evidence.
+
+**Worked parity check** (SUB_BRZ vs `civiliansedan.p3d` v54, measured 2026-07-28):
+
+| Leg | Mod | Control homologue | Verdict |
+|---|---|---|---|
+| wheel roll x4 | `-6.283185 x (1,0,0)` | `wheel_1_1..2_2`: same | identical |
+| steering x2 | `+pi/2 x (0,1,0)` | `steering_swivel_X_1`: `-pi/2 x (0,-1,0)` | identical |
+| door driver / codriver | `+1.396 x (0,1,0)` / `-1.396 x (0,1,0)` | `DoorsDriver_a` / `DoorsCoDriver_a`: same signs | same convention |
+
+**Dampers have no vanilla homologue if you use the single-bone translation rig** (Tyson89
+pattern). `CivilianSedan` models suspension as ~20 ROTATION classes on `susp_arm_*` bones.
+Gating your `type="translation"` dampers against the sedan fails by construction - their control
+is the Land Rover pattern, not the sedan.
+
+**How to gate it**: assert the pseudovector per animation class against the control, plus
+`anim_source` case-insensitive, bone binding, and a non-degenerate `axis_dir`. The mandatory
+negative fixture is **invert BOTH the axis and the angle** - a gate that still passes that is
+the gate you already had. Checking only "the axis is not null" is not a direction check:
+`rip_native_door_contract_gate.py:665-674` did exactly that and would have accepted a
+backwards-hinging door.
+
+Origin: SUB_BRZ 2026-07-28, R21 dual on the "complete the car" roadmap. The measurement turned
+the wheel-direction question from "spend an in-game cycle to discover it" into "already proven
+offline, in-game only confirms" - which is the difference between one cycle and two.
