@@ -76,11 +76,34 @@ Los 4 parches se forward-checkearon contra el fichero vivo **antes** de re-fijar
 ## Deuda sin sesión asignada
 
 - **Eval vivo**: los 4 casos de `blender-animation` están portados a
-  `evals/live/cases/` (`315517e`) y el test de casos vivos generalizado. **B3b
-  sigue en ❓ a propósito**: son casos, no una ejecución, y correrlos gasta
-  llamadas a modelo. Reserva escrita: el veredicto medido a mano («baseline also
-  passed 7/7» = VACUOUS) **no viaja** con el port, porque medía la ejecución sin
-  skill, no el conocimiento sin skill.
+  `evals/live/cases/` (`315517e`) y el test de casos vivos generalizado. Reserva
+  escrita: el veredicto medido a mano («baseline also passed 7/7» = VACUOUS)
+  **no viaja** con el port, porque medía la ejecución sin skill, no el
+  conocimiento sin skill.
+
+  **B3b sigue en ❓ por un bloqueo de entorno, medido el 2026-07-28, no por falta
+  de casos.** Primera ejecución real intentada con `claude-sonnet-5` / `medium`
+  sobre `txa-add-spine-up-export`: los 10 runs devolvieron
+  `LIVE-EVAL-RUNNER-INVALID exit=2` y el veredicto fue `INCONCLUSIVE`. La causa
+  no está en el harness —que se comportó bien: no inventó veredicto ni contó la
+  tanda como evidencia— sino en que **el CLI `claude` no tiene sesión iniciada**:
+  invocado a mano devuelve `{"is_error":true,"result":"Not logged in · Please run
+  /login"}` con exit 1. Autenticar el CLI es del usuario. Con sesión, la
+  ejecución es un comando:
+  `python -m packctl eval live --root . --case evals/live/cases/<id>.json --runner evals/live/runners/claude-code.py --report <dir>`
+  con `PACKCTL_LIVE_EVAL_MODEL` y `PACKCTL_LIVE_EVAL_EFFORT` puestos.
+
+  **Deuda de diagnosticabilidad que esa ejecución destapó**: el adaptador colapsa
+  cualquier fallo en `exit=2` escribiendo solo `type(error).__name__`
+  (`runners/claude-code.py:110-112`), sin el mensaje ni la salida del CLI. El
+  informe repitió `runner-invalid` diez veces y hubo que invocar el adaptador a
+  mano para ver el motivo. Propagar el `result` del CLI al informe son ~5 líneas.
+
+  Un aviso para quien lo ejecute: `citations_resolve` exige que **todas** las
+  citas resuelvan, y las de raíz `pack` se resuelven contra la raíz del repo
+  (`live_evals.py:266-270`), no contra el workspace que ve el modelo —que solo
+  contiene `.claude/skills/<skill>` y los fixtures. Si el primer resultado real
+  sale `INCONCLUSIVE` por citas no resueltas, mira ahí antes que al conocimiento.
 - **Integración de la rama**: 63 commits, `main` es ancestro y el fast-forward es
   trivial. El usuario decidió **no tocarlo aún** y decidir al cerrar r21.
 - **`reports/`**: 39,2 → 0,85 MB. Quedan 48 directorios vacíos que rechazan el
