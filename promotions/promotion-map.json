@@ -119,6 +119,19 @@
     },
     {
       "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-persistence",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-persistence",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
       "artifact_id": "skill/dayz-pbo-reverse-engineering",
       "artifact_kind": "tree",
       "repo_path": "skills/dayz-pbo-reverse-engineering",

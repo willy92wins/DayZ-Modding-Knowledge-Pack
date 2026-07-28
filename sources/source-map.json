@@ -2373,7 +2373,7 @@
           "decision": "adopt",
           "decision_evidence": "Pytest collection configuration is routed as repository governance for the canonical no-flag gate.",
           "license": "MIT",
-          "source_hash": "73abdd35b6987b6df8c00d04cff57626891bec71f213ad72107bbeba4f0072d6",
+          "source_hash": "ea949cf5d29b446ea6688d2c28e634f07ade659b7f60a3ac930782b2f4e96471",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/promotion-map.json",
           "source_revision": "r21-pytest-collection@2026-07-26",
@@ -2381,7 +2381,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "73abdd35b6987b6df8c00d04cff57626891bec71f213ad72107bbeba4f0072d6",
+      "output_hash": "ea949cf5d29b446ea6688d2c28e634f07ade659b7f60a3ac930782b2f4e96471",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
