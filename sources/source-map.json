@@ -8665,7 +8665,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 authors a one-shot client probe that reports engine observations without encoding an expected B20 value.",
           "license": "MIT",
-          "source_hash": "edb9e9014b6b71847c427da4b5e85ac7ac2c4621658487073d0d0a74a842c94f",
+          "source_hash": "8a6ed6086e1e83146d5ff91b3e3fe6ac2b0c891ee30c7c028df4d11f023697b4",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/probe/LF_UIProbe/scripts/5_Mission/LF_UIProbe_Mission.c",
           "source_revision": "r21-phase02@2026-07-25",
@@ -8673,7 +8673,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "edb9e9014b6b71847c427da4b5e85ac7ac2c4621658487073d0d0a74a842c94f",
+      "output_hash": "8a6ed6086e1e83146d5ff91b3e3fe6ac2b0c891ee30c7c028df4d11f023697b4",
       "output_path": "tools/dayz-ui-lab/probe/LF_UIProbe/scripts/5_Mission/LF_UIProbe_Mission.c",
       "routing_artifact_id": "tools",
       "verification_level": "source_verified"
@@ -8763,7 +8763,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 tests exact LF/CRLF staging, vanilla-only dependencies, the verified void GetText call shape and fail-closed destination handling.",
           "license": "MIT",
-          "source_hash": "65d2678abcdc3fbd0c8d18c1e4262e8d3cba759bade2c58ec4cebdfa91f166c0",
+          "source_hash": "cfb47ab10ee67b2adf86e7ee7843be6e5266ad8881dc1397ace84ee3037550b3",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/tests/test_probe.py",
           "source_revision": "r21-phase02@2026-07-25",
@@ -8771,7 +8771,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "65d2678abcdc3fbd0c8d18c1e4262e8d3cba759bade2c58ec4cebdfa91f166c0",
+      "output_hash": "cfb47ab10ee67b2adf86e7ee7843be6e5266ad8881dc1397ace84ee3037550b3",
       "output_path": "tools/dayz-ui-lab/tests/test_probe.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
