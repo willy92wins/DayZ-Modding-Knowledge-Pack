@@ -3,11 +3,14 @@
 <!-- LIVE-STATE:START -->
 # DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-28 (B20 medido)
 
-**Última verificación real:** HEAD `4684f29` en `r21/phase01-foundation`, árbol
-limpio. **`main` sigue en `f87a59e`** y NO se ha adelantado: la Fase 02 no está en
-verde. Sin remoto. Suite **768 passed / 18 skipped / 15 subtests**, `validate` PASS
-con cero findings, **gate de corpus PASS exit 0**, y **`promote --check` en ROJO**
-(ver aviso 1).
+**Última verificación real:** HEAD `b515776` en `r21/phase01-foundation`, árbol
+limpio. **`main` sigue en `f87a59e`** y NO se ha adelantado: la Fase 02 no está
+cerrada. Sin remoto. **Los cuatro gates en verde**: suite
+**768 passed / 18 skipped / 15 subtests**, `validate` PASS con cero findings,
+gate de corpus PASS exit 0, y `promote --check` **`WARN` con exit 0** — finding
+único `PROMOTION-DRIFT operation_count=40`, que son 39 `obsidian_snapshots` con
+`before_digest: absent` (estructural, por commit) más `skill/rigorous-data-audit`
+repo-ahead (ver «Qué hacer» §5).
 
 `ciclos_en_este_objetivo: 2 (Fase 02 — B20, gate C1 y corpora)`
 
@@ -33,8 +36,8 @@ cadena de medición en `plans/2026-07-24-02-dayz-ui-lab.md` §B20 y en
 
 ## Qué hacer a continuación
 
-1. **Adjudicar `skill/dayz-vehicles`** en cuanto haya 60 min de quietud — es lo
-   único que pone verde el gate (aviso 1).
+1. **Nada de higiene pendiente: arranca directamente por el punto 2.** El árbol
+   queda con los cuatro gates en verde.
 2. **Tasks 3-5** del plan de fase (escenarios, render determinista, diff), offline.
    Es el tramo grande que queda y el natural para delegar a Codex: código puro,
    sin engine de por medio.
@@ -77,14 +80,22 @@ Tres cosas que conviene no romper:
 
 ## Lo que te va a morder si no lo lees
 
-1. **`promote --check` cierra en ROJO, a propósito.** Dos
-   `PROMOTION-TARGET-UNEXPLAINED` sobre `skill/dayz-vehicles`
-   (`expected=27037cfb… actual=11722f3f…`). Novena escritura host-direct, a las
-   20:55, insert-only, **ya adoptada al repo en `94fbc13`** — repo y las dos raíces
-   son byte-idénticos ahora. Falta **adjudicar**, y no se hizo porque solo había
-   **14,6 min** de quietud frente a los 60 exigidos. **Adoptar NO puede poner verde
-   este finding**: mira el destino, y adoptar cambia el repo. Solo una adjudicación
-   —o una promoción nueva— lo explica. No re-midas esperando otra cosa.
+1. **El destino muta solo: van NUEVE escrituras host-direct en `dayz-vehicles`.**
+   La novena se adoptó (`94fbc13`) y se adjudicó (`b515776`) con las tres
+   precondiciones asertadas dentro del script que firma —digest de un
+   `promote --check` corrido por él mismo, repo y las dos raíces idénticas fichero
+   a fichero, 73,3 min de quietud—. **Re-mide `promote --check` antes de tocar
+   nada**; si vuelve `PROMOTION-TARGET-UNEXPLAINED`, el ciclo es: adoptar →
+   refrescar `output_hash` → `git add` → `validate` → suite → commit → re-medir →
+   adjudicar solo con quietud verificada. Script en
+   `scratchpad/adjudicate_vehicles.py`.
+
+   Dos cosas aprendidas hoy y que ahorran un rato: **adoptar NO puede poner verde
+   ese finding** —mira el destino, y adoptar cambia el repo; solo una adjudicación
+   lo explica—, y **la entrada de `dayz-vehicles` en el source-map NO espeja el
+   output** (sus tres inputs son ancestría), así que su adopción es un cambio de
+   **una línea**, `output_hash` sola. La regla general «refresca `output_hash` Y
+   `source_hash`» no aplica a esa entrada.
 2. **No delegues nunca un `--basetemp` relativo ni concatenado.** Una ruta Windows
    con los separadores comidos aterrizó como directorio literal con una ACL que
    negaba `Remove-Item`, `takeown`, `icacls` y `robocopy`, y **rompía la colección
@@ -134,9 +145,9 @@ Tres cosas que conviene no romper:
 - **Un mod que no compila pasa cualquier test que afirme sobre su texto.** Los tres
   tests de la sonda eran verdes con un `.c` que el motor rechazaba entero.
 
-**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: 94fbc13
-con B20 medido y el gate de promoción en rojo · adjudicar dayz-vehicles con 60 min
-de quietud verificada antes de tocar nada más`.
+**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: b515776
+con B20 medido, C1 y C5 cerrados y los cuatro gates en verde · próxima acción:
+Tasks 3-5 del plan de Fase 02, empezando por el contrato dayz-ui-scenario-v1`.
 <!-- LIVE-STATE:END -->
 
 ---
