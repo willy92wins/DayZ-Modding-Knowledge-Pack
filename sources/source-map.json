@@ -5652,7 +5652,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a5087f356ee77fbd78ba05230981f1a63fea005be1e134e52dc0b3d22f60eb7d",
+      "output_hash": "8e0853e09e44a25d77eecc8a48379004a004135b58be898be71d7d6fe84891c3",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"

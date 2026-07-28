@@ -411,3 +411,39 @@ la entrada completa (síntoma, origen, evidencia) vive allí.
 - **LL-139** — Haz que todo fake/stub remoto emita los mismos tipos que el wire real, no solo valores equivalentes. No uses `is True`/`is False` con datos serializados; prueba explícitamente `0/1`, bool y valores ausentes según contrato.
 - **LL-140** — Verifica toda exclusión de recurso con dos adquisiciones reales en el SO objetivo y exige que la segunda falle. Inspecciona defaults de socket, file-sharing y mutex de la stdlib; configura el lock fail-closed.
 - **LL-190** — Para todo verificador que afirme deleted/moved/repaired/restored, exige un count afectado mayor que cero o un pre-check independiente que demuestre que no había trabajo. No aceptes `{ok:true, count:0}` como prueba por sí sola.
+
+## (added 2026-07-28) Two DayZ persistence facts a Step-1 check must assume, not discover
+
+Both were re-read against the pinned build 1.29.0.163451 during the r21 Phase 03
+audit. They are engine properties, not project quirks, so any DayZ mod that
+persists data inherits them.
+
+- **DayZ exposes no rename and no move, so "temp -> verify -> replace" is NOT
+  atomic.** The file primitives stop at `FileExist`, `OpenFile`, `ReadFile`,
+  `CloseFile`, `FPrint`, `FGets`, `MakeDirectory`, `DeleteFile` and `CopyFile`
+  (`VANILLA/1_core/proto/ensystem.c:397-531`); a grep for `Rename|MoveFile` over
+  `1_core` returns zero. The real replace is `DeleteFile(dest)` followed by
+  `CopyFile(tmp, dest)`, leaving a window in which the destination does not
+  exist. Audit consequence: back up BEFORE that window, verify AFTER the copy,
+  and delete the `.tmp` only once the post-copy verify passes. Treat any code or
+  comment claiming an atomic replace as a finding, not as documentation.
+
+- **`EntityAI.OnStoreSave` writes a runtime-dependent NUMBER of fields.** With an
+  energy component it writes nine, without it none
+  (`VANILLA/3_game/entities/entityai.c:2928-2959`). Reading by fixed offset after
+  `super.OnStoreLoad` therefore desynchronises only for the configurations that
+  lack the component -- it will pass every test written against the configuration
+  that has it. Audit consequence: any subclass that reads after `super` must read
+  sequentially and check each read's return; a fixed offset is a latent defect
+  even when the current tests are green.
+
+Both belong in the Step 1 mechanical sweep, because both are grep-able and
+neither is deducible by reading the happy path.
+
+**And the entry-point instance they combine into**, found by this skill's own
+check #3 on the Phase 03 simulator: the normal save path deleted a destination
+that failed its post-copy verify, while the recovery path left the corrupt bytes
+in place as the live file. Same invariant, two entry points, one of them silently
+weaker -- the VULN-009 shape. When a codebase has a `save` and a `recover`, diff
+their verify branches line by line; do not assume the recovery path inherited the
+discipline.
