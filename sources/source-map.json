@@ -6223,6 +6223,29 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/specs/2026-07-28-dayz-persistence.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "The Phase 03 persistence contracts are closed as a 16/16 feature spec whose forward contract was re-read against DayZ build 1.29.0.163451 on 2026-07-28.",
+          "license": "MIT",
+          "source_hash": "d1ef501e6017819616a7b23a28d5f34c949b554cffd59f9db3d64eaceec6b1e1",
+          "source_id": "pack-r21-authored",
+          "source_path": "specs/2026-07-28-dayz-persistence.md",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d1ef501e6017819616a7b23a28d5f34c949b554cffd59f9db3d64eaceec6b1e1",
+      "output_path": "specs/2026-07-28-dayz-persistence.md",
+      "routing_artifact_id": "repo/specs",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/specs/2026-07-25-py3d-proxy-lifecycle.md",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
