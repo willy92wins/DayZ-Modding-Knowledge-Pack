@@ -145,28 +145,66 @@ Cuatro cosas que conviene no romper:
 2. **Un mtime viejo tampoco prueba que el fichero sea viejo.** Ese `.bak` marca
    `20:55` y se creó a las `23:20`: `Copy-Item` preserva el timestamp del origen.
    Es el reverso de la invariante que ya estaba escrita aquí.
-2. **No delegues nunca un `--basetemp` relativo ni concatenado.** Una ruta Windows
+3. **No delegues nunca un `--basetemp` relativo ni concatenado.** Una ruta Windows
    con los separadores comidos aterrizó como directorio literal con una ACL que
    negaba `Remove-Item`, `takeown`, `icacls` y `robocopy`, y **rompía la colección
    de `pytest`**. Resuelto; el aviso se queda por la causa.
-3. **`B3b` está fuera de alcance por decisión del usuario.** Sin API de pago no es
-   alcanzable: `--bare` (`evals/live/runners/claude-code.py:28-43`) es lo único que
-   esconde las skills globales del brazo de control, y es lo que se niega a leer la
-   sesión OAuth. No lo reintentes.
-4. **El harness de evals vivos tiene un fail-open, registrado y sin arreglar.**
-   `_skills_tree_sha256` (`live_evals.py:201-211`) hashea `workspace/.claude/skills`
-   (`:221`, `:233`), así que `LIVE-EVAL-ARM-CONTAMINATED` (`:446`, `:464`) prueba
-   que ese árbol está vacío y **nada más**. Spike de aislamiento **sin empezar**.
-5. **`@DayZ_MCP` no sirve como portador de test.** Su módulo `5_Mission` no
+4. **`B3b` sigue fuera de alcance por decisión del usuario, pero la RAZÓN que
+   había escrita aquí era FALSA.** Decía que `--bare` es lo único que esconde las
+   skills globales y que la sesión OAuth se niega a leerlo. El spike de
+   aislamiento (2026-07-29, CLI `2.1.193`) lo refuta con el `--help` del propio
+   binario: `--bare` salta hooks, LSP, plugin sync, atribución, auto-memory,
+   prefetches, keychain y descubrimiento de `CLAUDE.md` — y dice, literal,
+   «**Skills still resolve via `/skill-name`**». Es decir, **`--bare` nunca
+   escondió las skills**, ni siquiera con API key. Y la restricción de auth que se
+   creía bloqueante es de `--bare`, no del aislamiento.
+
+   **Dos candidatos que no necesitan API de pago y que nadie había mirado:**
+   `--disable-slash-commands`, cuya descripción íntegra es «**Disable all
+   skills**», y `--setting-sources <user,project,local>`, que permitiría cargar
+   `project`/`local` sin `user` y dejar fuera `~\.claude\skills`.
+
+   **Lo que el spike NO puede decidir**, y por eso no lo decide: si esas flags
+   impiden que el **contenido** de la skill llegue al modelo, o solo la invocación
+   por `/nombre`. Una skill puede auto-dispararse por descripción sin que nadie
+   escriba la barra. Distinguirlo exige una corrida viva con fixture
+   discriminante, que es justo `B3b`. **La decisión de reabrir `B3b` es tuya**;
+   lo que cambia es que su premisa técnica ya no se sostiene.
+5. **El harness de evals vivos tiene un fail-open, y el spike lo acotó.**
+   `_skills_tree_sha256` (`live_evals.py:201-211`) hashea `workspace/.claude/skills`,
+   un árbol que **crea el propio harness** (`:221-222`) y en el que, para el brazo
+   de control, no copia nada (`:223`). Los dos checks
+   (`LIVE-EVAL-ARM-CONTAMINATED` en `:446` y `:464`) son reales pero **estrechos**:
+   solo cazan contaminación *local al workspace* —una fixture que plante ficheros
+   bajo `.claude/skills`, o el runner escribiéndolos durante la corrida—.
+
+   **Medido:** `live_evals.py` no contiene **ni una** referencia a raíces de skills
+   globales, a `--bare`, a setting sources ni al home del usuario. El aislamiento
+   frente a las skills instaladas está delegado **al 100 %** a la línea de comandos
+   del runner (`evals/live/runners/claude-code.py:28-43`), y el runner es
+   enchufable: el harness nunca inspecciona, registra ni valida qué mecanismo usó.
+   Por eso el finding no puede ponerse rojo para el modo de contaminación que su
+   propio nombre promete.
+
+   **Fix recomendado, sin implementar porque cambia un contrato:** que el runner
+   declare su mecanismo de aislamiento en la salida y que el harness lo registre y
+   falle cerrado si falta. Un veredicto `DISCRIMINATING` sin evidencia de
+   aislamiento no debería poder emitirse.
+6. **`@DayZ_MCP` no sirve como portador de test.** Su módulo `5_Mission` no
    compila: `CParser: quoted string not closed`, atribuido a
    `DayZ_MCP/scripts/5_Mission/mcpclientbridge.c`. Es del mod del usuario, no del
    pack, y no se ha tocado. Usa **`LFPowerGrid`**, que compila y está verificado.
-6. **`Path.write_text` en Windows reescribe los finales de línea** de un repo que
+7. **`Path.write_text` en Windows reescribe los finales de línea** de un repo que
    es LF por `.gitattributes`. Refrescar dos hashes convirtió 11.529 saltos. El
    blob queda bien, el árbol de trabajo no. Escribe con `write_bytes`.
 
 ## Método que ahorra sesiones
 
+- **Lee el `--help` del binario antes de escribir en el handoff qué hace una
+  flag.** La razón por la que `B3b` estaba cerrado —«`--bare` es lo único que
+  esconde las skills»— era falsa, y bastaban treinta segundos de `--help` para
+  verlo: esa misma flag dice «Skills still resolve via `/skill-name`». Una
+  afirmación heredada sobre una herramienta se verifica igual que una API.
 - **Verifica el GATE que gobierna un tipo de fichero antes de fijarle una ruta a
   Codex.** Esta sesión perdió una tanda entera de 36 minutos porque el prompt
   mandaba crear fixtures `.layout` en un sitio y, tres secciones más abajo,
