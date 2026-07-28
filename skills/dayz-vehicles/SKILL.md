@@ -512,6 +512,20 @@ iterations. They are otherwise diffuse across the references; they live here at 
    cycle: spawn the car + a known-good control (LFQuad/Croco) headless, dump `CrewPositionIndex(0..79)`, and run
    `RaycastRV(ObjIntersectView)` per seat anchored at `pos_driver`/`pos_codriver`. This is what caught the
    inward-winding blocker (#4) without eyeballing and broke the blind-rebuild loop. → `vehicle-structural-parity.md` crew-probe.
+   - **(added 2026-07-28, LL-219) A probe you INHERIT carries the coordinates of the artifact of THEN —
+     re-derive its targets from source before believing a negative.** The probe is not the thing that
+     rots; a hardcoded seat centre is. Re-running it verbatim yields a `hit=0` that is **aim, not
+     mechanism**, and it is indistinguishable from the real verdict — while being exactly the
+     "interesting" answer nobody re-questions. Measured on SUB_BRZ: the s9 mission
+     (`brz_crew_probe_init.c:122-123`) aims at engine `(-0.40, 0.72, -0.12)` / `(0.54, 0.72, -0.12)`,
+     while today's boxes come from `profiles\<car>.json` → `rip_p3_structural.py` seat params at
+     py3d `(±0.357, 0.55, 0.12)` with half-extents `(0.22, 0.25, 0.25)` — the codriver ray passes
+     **3.7 cm** from the box face in X. Still inside, zero margin. Procedure: (a) re-derive the aim
+     point from the profile + generator that produced TODAY's artifact, never from the handoff that
+     described it; (b) compute the ray's margin against the target box — margin below ~one half-extent
+     means the negative is not evidence, fix the literal first; (c) log the aim point used next to the
+     verdict, so a later reader can tell a real `hit=0` from a miss. Same family as METHOD #2
+     (measure, never assume) applied to the instrument instead of the artifact.
 4. **Two failed rebuilds on ONE symptom = HARD STOP — build the probe, do not fire cycle #3.** The rule
    predated the failures and still got skipped (retro 2026-07-03: copilot get-in ~7 days of serial wrong
    hypotheses; handlebar ~2 sessions of parameter sweeps settled by ONE GetSteering log; BRZ get-in 3
