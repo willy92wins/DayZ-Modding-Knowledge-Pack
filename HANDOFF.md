@@ -3,7 +3,7 @@
 <!-- LIVE-STATE:START -->
 # DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-29 (C2, C4 y SC-006)
 
-**Última verificación real:** HEAD `35943a3` en `r21/phase01-foundation`,
+**Última verificación real:** HEAD `db5386b` en `r21/phase01-foundation`,
 árbol limpio. **`main` sigue en `f87a59e`** y NO se ha adelantado: la Fase 02 no
 está cerrada. Sin remoto. **Tres gates en verde y uno rojo a propósito**: suite
 **809 passed / 18 skipped / 305 subtests**, `validate` PASS con cero findings,
@@ -250,7 +250,7 @@ Cuatro cosas que conviene no romper:
 - **Un gate nuevo se prueba en rojo y en verde**, y un gate que solo se ha visto en
   verde no está verificado.
 
-**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: 35943a3
+**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: db5386b
 con Tasks 3-5 cerradas, C2 y C4 en ✓, 28 de 54, y el gate de promoción rojo por
 la décima escritura en dayz-vehicles · próxima acción: re-medir promote --check y,
 con el destino quieto, adjudicar; luego Task 6`.
