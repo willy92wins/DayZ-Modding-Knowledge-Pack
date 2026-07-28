@@ -67,8 +67,14 @@ digest concreto y caduca sola.
 ## Deuda sin sesión asignada
 
 - **Rollout py3d** a las 8 skills instaladas (siguen en `py3d-1.2.0`). Requiere
-  autorización explícita y ahora cae dentro de la frontera: por repo + promoción,
-  no host-direct.
+  autorización explícita. **NO cae dentro de la frontera de escritura**, al
+  contrario de lo que dijeron las versiones previas de este bloque: las 8 son
+  `dayz-3d-viewer`, `dayz-animation-pipeline`, `dayz-model-pipeline`,
+  `dayz-p3d-audit`, `dayz-p3d-debinarizer`, `dayz-p3d-inspector`, `dayz-pbo-build`
+  y `dayz-proxy-align` — todas en `~\.agents\skills` y **ninguna entre las 15 del
+  `promotion-map`**. Intersección cero, medida listando los `wheels\py3d-*.whl`.
+  Es host-direct y no toca este gate. Lo que sí sigue vigente es BUG-018: patch-only
+  con preimagen por destino y backup fuera de la raíz de destino.
 - **Eval vivo contra modelo real** para sacar B3b de `❓`.
 - **`reports/` acumula basura** de sesiones anteriores (venvs de pytest, tmpdirs
   con ACLs read-only). Gitignored, no contamina commits; limpieza pendiente.
