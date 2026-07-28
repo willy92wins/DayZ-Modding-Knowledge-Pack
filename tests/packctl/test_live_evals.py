@@ -369,6 +369,25 @@ def test_seed_case_is_valid_and_fixture_does_not_reveal_invariant() -> None:
     assert any(value > 93 for value in ids)
 
 
+def test_every_shipped_case_is_valid_and_does_not_leak_its_graders() -> None:
+    root = Path(__file__).resolve().parents[2]
+    case_dir = root / "evals" / "live" / "cases"
+    cases = sorted(case_dir.glob("*.json"))
+
+    assert cases, "no live eval cases are shipped"
+    for case_path in cases:
+        assert validate_live_eval_case(case_path) == [], case_path.name
+        case = json.loads(case_path.read_text(encoding="utf-8"))
+        assert case["case_id"] == case_path.stem, case_path.name
+        # A contains_all token printed in the question would let an answer pass
+        # by echoing the prompt, which is the tautology the seed case guards
+        # against by hand.
+        question = case["question"]
+        for grader in case["graders"]:
+            for value in grader.get("values", []):
+                assert value not in question, f"{case_path.name}: {value}"
+
+
 def test_claude_code_adapter_builds_verified_isolated_command() -> None:
     import importlib.util
 

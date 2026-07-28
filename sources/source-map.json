@@ -637,6 +637,98 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/evals/live/cases/physics-bake-then-remove.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved port of the four blender-animation behavioural evals into the live discriminating harness, reframed as knowledge questions because the harness grades text and cannot inspect a .blend or an MP4; every grader token was verified to exist in the skill under test before the case was written.",
+          "license": "MIT",
+          "source_hash": "a53a06cdcef9d8efbff0bf2693ac0d3c9fe098750867f825cd429c0e0ff83996",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/live/cases/physics-bake-then-remove.json",
+          "source_revision": "r21-live-eval@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a53a06cdcef9d8efbff0bf2693ac0d3c9fe098750867f825cd429c0e0ff83996",
+      "output_path": "evals/live/cases/physics-bake-then-remove.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/evals/live/cases/easing-overshoot-audit.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved port of the four blender-animation behavioural evals into the live discriminating harness, reframed as knowledge questions because the harness grades text and cannot inspect a .blend or an MP4; every grader token was verified to exist in the skill under test before the case was written.",
+          "license": "MIT",
+          "source_hash": "b3adffdcaff2d56256d3a20be5691c0960250db9dd8fd347de0cffb6b0354a29",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/live/cases/easing-overshoot-audit.json",
+          "source_revision": "r21-live-eval@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b3adffdcaff2d56256d3a20be5691c0960250db9dd8fd347de0cffb6b0354a29",
+      "output_path": "evals/live/cases/easing-overshoot-audit.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/evals/live/cases/video-output-gate-order.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved port of the four blender-animation behavioural evals into the live discriminating harness, reframed as knowledge questions because the harness grades text and cannot inspect a .blend or an MP4; every grader token was verified to exist in the skill under test before the case was written.",
+          "license": "MIT",
+          "source_hash": "32022d8e76070fdd188023c6d332b1df770eb48425048e336c6f7863b2c9ebdc",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/live/cases/video-output-gate-order.json",
+          "source_revision": "r21-live-eval@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "32022d8e76070fdd188023c6d332b1df770eb48425048e336c6f7863b2c9ebdc",
+      "output_path": "evals/live/cases/video-output-gate-order.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/evals/live/cases/txa-add-spine-up-export.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved port of the four blender-animation behavioural evals into the live discriminating harness, reframed as knowledge questions because the harness grades text and cannot inspect a .blend or an MP4; every grader token was verified to exist in the skill under test before the case was written.",
+          "license": "MIT",
+          "source_hash": "5c3c71a0a59d1f7c0323c677ef8a21df0dfcc4f73456c919e3238035abb38c75",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/live/cases/txa-add-spine-up-export.json",
+          "source_revision": "r21-live-eval@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5c3c71a0a59d1f7c0323c677ef8a21df0dfcc4f73456c919e3238035abb38c75",
+      "output_path": "evals/live/cases/txa-add-spine-up-export.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/evals/live/runners/claude-code.py",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -6416,7 +6508,7 @@
           "decision": "adopt",
           "decision_evidence": "User-approved B3b live discriminating evaluation harness, verified with deterministic offline scripted runners.",
           "license": "MIT",
-          "source_hash": "4e8794fd6e041068475a6486a7c8188929a0570984bead731226c3b7a7e42e9c",
+          "source_hash": "0c5c5fab9674cf0728ab9048dcc326b2309fb514d84f7754c1c6311782b810f6",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_live_evals.py",
           "source_revision": "r21-live-eval@2026-07-27",
@@ -6424,7 +6516,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4e8794fd6e041068475a6486a7c8188929a0570984bead731226c3b7a7e42e9c",
+      "output_hash": "0c5c5fab9674cf0728ab9048dcc326b2309fb514d84f7754c1c6311782b810f6",
       "output_path": "tests/packctl/test_live_evals.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
