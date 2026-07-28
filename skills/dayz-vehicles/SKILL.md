@@ -1161,3 +1161,50 @@ a self-check.
 
 Tool: `LFHeli_dev/tools/p3d_vertex_gate.py` - `count` reports resolved per LOD, `binarize` runs
 the three-state adjudication.
+
+
+## In-vehicle actions need TWO registrations, and a proxied part is your placement oracle (SP-123, added 2026-07-28)
+
+### An action offered to a SEATED occupant must be registered in two places
+
+Measured on LFHeli OH-1, which spent a build cycle on "the close-door action does not appear
+when seated" with the action class already correct.
+
+1. The action must opt in: `ActionBase.InitConditionMask` only sets `ACM_IN_VEHICLE` when
+   `CanBeUsedInVehicle()` returns true (`actionbase.c:113`), and the base returns false
+   (`actionbase.c:335`). Any world action inherited from `ActionInteractBase` is therefore
+   MASKED OUT the moment the player boards.
+2. A seated player has no cursor target on the vehicle carrying them, so the target contract
+   is `CCTNone` plus `HasTarget()` false - the shape vanilla uses in `actioncardoors.c:20-27`.
+3. **Both registrations are required, and the second one is the one people miss:**
+   - `ActionConstructor.RegisterActions` - builds the instance into the global pool.
+   - `PlayerBase.SetActions(out TInputActionMap)` - `AddAction(MyAction, InputActionMap)`.
+     Vanilla puts `ActionOpenCarDoors`/`ActionCloseCarDoors` right there
+     (`playerbase.c:1669-1670`).
+   Registering only in the constructor builds an action the manager never offers, because
+   `FindContextualUserActions` walks the player's `InputActionMap` per input, not the pool.
+
+Vanilla splits inside/outside into separate classes (`ActionCloseCarDoors` vs
+`ActionCloseCarDoorsOutside`); copy that split rather than trying to make one class serve both.
+
+**Ship the opening half too.** If entry/exit is gated on the door being open, an inside-only
+CLOSE action traps the occupant. Pair it with an inside OPEN action, and keep one exemption in
+the gate: a door that is NOT MOUNTED must leave the seat escapable, because no action can open
+what is not there.
+
+### A proxied part is the first correctly-placed reference on the host - use it as an oracle
+
+When a host renders wrong, there is usually nothing trustworthy to measure it against. Parts
+drawn through attachment proxies are placed by the engine from the entity transform, so they
+ARE trustworthy, and the disagreement localises the fault:
+
+- proxies agree with each other and disagree with the host -> **the host is the broken one**.
+  Do not "correct" the proxy anchors to match: you would deform the correct piece, and the
+  error changes with the host's state.
+- On LFHeli OH-1 the doors, both rotors and the interior all followed the aircraft into the
+  air while the fuselage stayed at ground level. The doors had just been migrated to proxies,
+  and became the reference that finally localised a render bug open since 2026-07-20.
+
+Corollary: `scene_raycast` in `rvproxy` mode returns the GEOMETRY LOD, not the visual mesh, so
+it cannot adjudicate a visual misalignment. On a coarse collision hull it reports a surface
+tens of centimetres inside the visible skin. Use it for collision questions only.
