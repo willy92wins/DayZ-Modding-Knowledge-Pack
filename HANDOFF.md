@@ -43,18 +43,16 @@ cambios:
 
 ## Lo que te va a morder si no lo lees
 
-1. **Hay un directorio que rompe `pytest` y no se puede borrar.**
-   `UsersguillAppDataLocalTempr21-sc015-basetemp`, en la raíz del **worktree**
-   `.worktrees\r21-phase01` — no en la raíz del repo. Una ruta
-   Windows sin separadores que dejó una tanda de Codex como `--basetemp`. La
-   colección muere con `PermissionError`. `Remove-Item`, `takeown`, `icacls` y
-   `robocopy /MIR` fallan todos; `icacls` ni puede leer el DACL. **Los gates de
-   esta sesión se corrieron con
-   `--ignore=UsersguillAppDataLocalTempr21-sc015-basetemp` en línea de comandos**,
-   deliberadamente NO en `pytest.ini`. Se arregla con consola elevada:
-   `rmdir /S /Q "C:\Users\guill\DayZ-Modding-Knowledge-Pack\.worktrees\r21-phase01\UsersguillAppDataLocalTempr21-sc015-basetemp"`
-   — ruta absoluta a propósito: la relativa solo funciona desde el worktree, y
-   expandirla contra la raíz del repo devuelve «no se encuentra el archivo».
+1. **No delegues nunca un `--basetemp` relativo ni concatenado.** Una tanda de
+   Codex dejó en la raíz del worktree un directorio literal
+   `UsersguillAppDataLocalTempr21-sc015-basetemp` —una ruta Windows a la que se le
+   comieron los separadores— con una ACL que negaba `Remove-Item`, `takeown`,
+   `icacls` y `robocopy /MIR`; `icacls` ni siquiera podía leer su DACL. **Rompía
+   la colección de `pytest` con `PermissionError`**: no era basura cosmética.
+   **Borrado por el usuario el 2026-07-28 con consola elevada** y verificado
+   después midiendo lo que importa: `pytest -q` **sin ningún `--ignore`** devuelve
+   `748 passed / 18 skipped`, exit 0. Los prompts de delegación ya prohíben el
+   patrón. El aviso se queda por la causa, no por el síntoma.
 2. **El destino sigue mutando solo.** Van ocho escrituras host-direct en
    `dayz-vehicles`. **Re-mide `promote --check` antes de tocar nada.** Si sale
    `PROMOTION-TARGET-UNEXPLAINED`: adoptar → refrescar `output_hash` → `git add` →
