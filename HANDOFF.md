@@ -1,123 +1,100 @@
 # HANDOFF — DayZ Modding Knowledge Pack
 
 <!-- LIVE-STATE:START -->
-# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-28 (pre-sesión nocturna)
+# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-28 (Fase 03 cerrada)
 
-**Última verificación real:** HEAD `44a169b` en `r21/phase01-foundation`, árbol
-limpio, `main` intacto en `994cb77` y 66 commits por detrás. Suite **699 passed /
-18 skipped**, `packctl validate` PASS con cero findings, `packctl promote --check`
-**`WARN` con exit 0** y finding único `PROMOTION-DRIFT operation_count=38` — todas
-de `obsidian_snapshots` con `before_digest: absent`, que es estructural; las 16
-operaciones de skill con drift cero.
+**Última verificación real:** HEAD `1312890` en `r21/phase01-foundation`, árbol
+limpio, **`main` fast-forwardeado a `1312890`** y 0 commits por detrás. Sin remoto.
+Suite **748 passed / 18 skipped**, `packctl validate` PASS con cero findings,
+`packctl promote --check` **`WARN` con exit 0** y finding único
+`PROMOTION-DRIFT operation_count=39` — todas de `obsidian_snapshots` con
+`before_digest: absent`, que es estructural (los snapshots se guardan por commit).
 
-`ciclos_en_este_objetivo: 1 (completar Fase 03 y el tramo ejecutable de Fase 02)`
+`ciclos_en_este_objetivo: 1 (Fase 02 — B20, gate C1 y corpora)`
 
-## Qué se hace esta noche
+> Contador reiniciado a 1 **porque cambia el objetivo**: el anterior era «cerrar
+> Fase 03 y el tramo ejecutable de Fase 02», y la Fase 03 está cerrada. Lo que
+> queda de Fase 02 es un cuerpo de trabajo distinto. Si prefieres tratarlo como el
+> mismo objetivo a medias, súbelo a 2.
 
-**Plan maestro: `plans/2026-07-28-r21-completion-and-criteria-triage.md`** (commit
-`44a169b`). Ahí está el triaje de los 35 criterios abiertos con dueño y evidencia,
-y la secuencia. No re-planificar: ejecutar.
+## Fase 03 `dayz-persistence` — CERRADA, D1–D5 en `✓`
 
-1. **Bloque N1 — Fase 03 `dayz-persistence` entera.** Offline puro, sin engine,
-   sin MCP y sin login. Ejecutar `plans/2026-07-24-03-dayz-persistence.md` en
-   orden. Es data-crítica por declaración propia (`:3-4`) → feature spec +
-   checklist 16/16 ANTES de escribir la skill (`:45`), y `rigorous-data-audit`
-   (`DZ-R9`) antes de declarar nada release-safe.
-2. **Bloque N2 — Fase 02, solo si N1 cierra o para limpio.** Empezar por **B20**,
-   que ya no está bloqueado.
+Nueve commits de contenido, cada criterio con su línea de evidencia **ejecutada**.
+Detalle en `product-spec.md` §D y en el handoff
+`30_Sessions/2026-07-28-DayZ-Modding-Knowledge-Pack-fase03-dayz-persistence-cerrada.md`.
 
-## Decisiones del usuario, 2026-07-28 madrugada (no re-preguntar)
+La skill `dayz-persistence` está **promovida y viva** en las dos raíces
+(transacción `6e8cf995be627d7bf50cd147`, readback independiente: 0 perdidos,
+0 cambiados, 5 añadidos por raíz).
 
-- **Orden**: Fase 03 entera primero, luego lo offline de la Fase 02.
-- **Autonomía ampliada**: commits en la rama, **`promote --apply` autorizado** con
-  el gate verde, y **fast-forward de `main` autorizado** al cerrar una fase en
-  verde. Sigue sin haber remoto y sin `push`.
-- **Sin recorte de alcance**: los 22 criterios fuera de las fases 02–03 entran en
-  el plan. No se propone ninguna exclusión fechada; publicar exige las seis fases.
-- **Desbloqueos**: los tres, hechos con el usuario delante.
+## Qué hacer a continuación
 
-## Entorno medido a las ~04:20, no supuesto
+**Fase 02, `plans/2026-07-24-02-dayz-ui-lab.md`.** Sigue siendo lo que dice el plan
+maestro (`plans/2026-07-28-r21-completion-and-criteria-triage.md` §N2), sin
+cambios:
 
-| Desbloqueo | Estado |
-|---|---|
-| **DayZ MCP** | **resuelto**. Ambos peers `version=6~1.29.163451`, `version_state=ok`, *version accepted*, poll 66-67 s. Lease libre: `owner=null`, `claimable=true`, sin `audit_fault` |
-| **DayZDiag** | **arriba**, dos instancias desde 04:15:34 y 04:15:48 |
-| **Auth del CLI `claude`** | **B3b sigue bloqueado, y NO por falta de `/login`** (ver abajo) |
+1. **B20** — micro-fixture de continuación CRLF/LF observada con
+   `ButtonWidget.GetText` en DayZDiag (`:76`, `:87-90`). Requiere `dayz-mcp`:
+   lease antes de mutar, liberarlo al terminar, nunca matar procesos DayZ a mano,
+   `session_status` antes del handoff.
+2. **Gate C1** (`:95`): LFPG + 319/319 público + 46/46 TraderX, exit 0.
+3. **Corpora** (`:77`): fijar builds, hashes y licencias.
+4. Tasks 3-5 del plan de fase, todas offline.
 
-**Corrección medida a las 04:45 — el bloqueo de B3b no es el `/login`.** El runner
-invoca el CLI con `--bare` (`evals/live/runners/claude-code.py:29-43`), y la ayuda
-del propio CLI dice de esa bandera: *«Anthropic auth is strictly
-`ANTHROPIC_API_KEY` or apiKeyHelper via `--settings` (OAuth and keychain are never
-read)»*. Medido: no existe `ANTHROPIC_API_KEY` ni en sesión, ni en `User`, ni en
-`Machine`. Así que una sesión OAuth no desbloquea el eval; hace falta la variable
-de entorno, que el adaptador hereda porque hace `subprocess.run` sin `env=`.
+## Lo que te va a morder si no lo lees
 
-**Y quitar `--bare` no es el arreglo**: es lo que impide que el CLI auto-descubra
-`CLAUDE.md` y las skills globales del usuario, o sea lo que mantiene honesto el
-brazo `without_skill` —hay un test dedicado,
-`test_without_skill_tree_contamination_rejects_case`. La bandera es load-bearing.
-
-**Decisión del usuario (D5): no se usa API de pago.** El pack debe correr desde
-Cowork con la auth que ya existe. Eso descarta la clave y el `apiKeyHelper`.
-
-Es una pinza, no un descuido: el brazo `without_skill` solo es honesto si el
-runner no ve las skills globales, y `blender-animation` está en `~\.claude\skills`;
-lo único que hoy la esconde es `--bare`, que es justo lo que rechaza la auth de
-Cowork. **B3b se queda en `❓` por diseño; no gastes tiempo de sesión en él.**
-Las tres vías abiertas están en el §4.1.1 del plan, y la tercera —exclusión de
-alcance fechada— exige decisión del usuario: no la tomes por tu cuenta.
-
-**B20 ha dejado de estar bloqueado**, y eso reordena la Fase 02: el hard stop
-«B20 abierto» (`plans/2026-07-24-02-dayz-ui-lab.md:173`) y los items que dependían
-de él (`:76`, `:87-90` — semántica CRLF/LF de continuación observada con
-`ButtonWidget.GetText` en DayZDiag) son ejecutables. Matiz: el puente vivo prueba
-autorización de protocolo, **no** que la fixture de B20 pase. Hay que ejecutarla.
-
-Protocolo `dayz-mcp`: adquirir lease antes de mutar, liberarlo al terminar, nunca
-matar procesos DayZ a mano, `session_status` antes del handoff.
-
-## Hallazgo que corrige el brief
-
-**La Fase 04 NO está cerrada.** `project-brief.md:5` dice «Fase 04 cerrada con
-F1–F5 en verde», pero la fila del roadmap le asigna **`E`, `F` y `B7–B8`**
-(`plans/2026-07-24-r21-master-roadmap.md:41`). F1–F5 sí están; `E1–E7`, `B7` y
-`B8` no. Corregir esa frase forma parte del cierre, y hay un hard stop que
-prohíbe repetir la afirmación.
+1. **Hay un directorio que rompe `pytest` y no se puede borrar.**
+   `UsersguillAppDataLocalTempr21-sc015-basetemp`, en la raíz del repo. Una ruta
+   Windows sin separadores que dejó una tanda de Codex como `--basetemp`. La
+   colección muere con `PermissionError`. `Remove-Item`, `takeown`, `icacls` y
+   `robocopy /MIR` fallan todos; `icacls` ni puede leer el DACL. **Los gates de
+   esta sesión se corrieron con
+   `--ignore=UsersguillAppDataLocalTempr21-sc015-basetemp` en línea de comandos**,
+   deliberadamente NO en `pytest.ini`. Se arregla con consola elevada:
+   `rmdir /S /Q "UsersguillAppDataLocalTempr21-sc015-basetemp"`.
+2. **El destino sigue mutando solo.** Van ocho escrituras host-direct en
+   `dayz-vehicles`. **Re-mide `promote --check` antes de tocar nada.** Si sale
+   `PROMOTION-TARGET-UNEXPLAINED`: adoptar → refrescar `output_hash` → `git add` →
+   `validate` → suite → commit → re-medir → adjudicar **solo con quietud
+   verificada** (script en
+   `scratchpad/adjudicate_vehicles.py`: exige 60 min de quietud e igualdad byte a
+   byte asertadas al firmar).
+3. **`B3b` está fuera de alcance por decisión del usuario.** Sin API de pago no es
+   alcanzable: `--bare` (`evals/live/runners/claude-code.py:28-43`) es lo único que
+   esconde las skills globales del brazo de control, y es lo que se niega a leer la
+   sesión OAuth. No lo reintentes.
+4. **El harness de evals vivos tiene un fail-open, registrado y sin arreglar.**
+   `_skills_tree_sha256` (`live_evals.py:201-211`) hashea `workspace/.claude/skills`
+   (`:221`, `:233`), así que `LIVE-EVAL-ARM-CONTAMINATED` (`:446`, `:464`) prueba
+   que ese árbol está vacío y **nada más**. Quita `--bare` del runner y el brazo de
+   control se contamina sin que ningún gate se ponga rojo. Spike de aislamiento
+   pendiente, **estrictamente después** de lo que haya en curso.
 
 ## Estado de publicación
 
-**19 de 54 criterios en `✓`.** Cerrado: A1–A9 (fundamento, procedencia, build
-reproducible, licencias, promoción), B1/B2/B3a/B4/B5 y F1–F5. Abierto: 35, con
-dueño asignado en el plan. La Fase 06 se llama «Ecosistema + release» y depende de
-01–05 (`roadmap:43`), así que no hay publicación posible antes.
-
-## Deuda anotada, sin sesión asignada
-
-- **Diagnosticabilidad del runner de evals**: el adaptador colapsa todo fallo en
-  `exit=2` escribiendo solo `type(error).__name__`
-  (`evals/live/runners/claude-code.py:110-112`). ~5 líneas propagar el `result`.
-- **`reports/`**: 0,85 MB, pero quedan 48 directorios vacíos que rechazan el
-  borrado por debajo del modelo de ACL (`takeown`, `icacls` y `Set-Acl` fallan los
-  tres). Necesitan consola elevada.
+**24 de 54 criterios en `✓`** (eran 19). Cerrado: A1–A9, B1/B2/B3a/B4/B5, **D1–D5**
+y F1–F5. Abierto: 30 — `B3b`, 8 de Fase 02, 9 de Fase 04 (tramo `E`+`B7`/`B8`),
+5 de Fase 05 y 7 de Fase 06. La Fase 06 produce el release y depende de 01–05, así
+que no hay publicación posible antes.
 
 ## Invariantes cerradas
 
 - Git es la única fuente editable; las instaladas son despliegues. La adopción va
   del destino al repo, nunca al revés sin gate.
-- **Adoptar protege el conocimiento y es barato; adjudicar caduca.** Adopción sola
-  es un punto de parada legítimo, con el gate rojo a propósito. Antes de firmar,
-  exigir quietud verificada del destino e igualdad byte a byte con el repo
-  (`LL-216`, refuerzo 2026-07-28).
+- **Adoptar protege el conocimiento y es barato; adjudicar caduca.** Reforzado con
+  evidencia nueva: la adopción sin firma de `ce67494` evitó firmar una instrucción
+  **técnicamente falsa** que el upstream corrigió ocho horas después.
+- Un `mtime` que se mueve **no** prueba trabajo en curso; `git status --porcelain`
+  sí. Un fichero commiteado conserva su mtime para siempre.
 - Una adjudicación autoriza un digest concreto y **tapa, no arregla**.
-- Preimagen e historial causal son dos gates distintos.
-- El sello del wheel es toolchain-bound y describe un commit fuente: endurecer la
-  fuente pone el gate rojo con razón.
-- Un gate que no puede ponerse rojo no es un gate.
+- Un gate que no puede ponerse rojo no es un gate — y un gate que rechaza tu
+  cambio puede tener razón: relájalo solo dejando constancia de qué se pierde.
 - No declarar un criterio `✓` sin ejecutar su línea de evidencia.
+- `validate` sobre ficheros sin rastrear no dice nada: `git add` y DESPUÉS validar.
 
-**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: 44a169b
-con el plan de cierre commiteado · ejecutar Fase 03 entera antes de tocar Fase 02,
-y re-medir promote --check antes de nada porque el destino muta solo`.
+**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: 1312890
+con la Fase 03 cerrada y main al día · re-medir promote --check antes de tocar
+nada, y borrar el directorio basura con consola elevada antes de correr pytest`.
 <!-- LIVE-STATE:END -->
 
 ---
