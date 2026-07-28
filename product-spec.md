@@ -68,14 +68,49 @@ y entrada en el changelog.
 
 | # | Criterio | Cómo se verifica | Estado |
 |---|---|---|---|
-| C1 | Parser honesto cierra B19/B20 | 319/319 corpus público + 46/46 TraderX + LFPG, exit 0; 0 falso `missing-child-block`; CRLF/LF verificados en DayZDiag | ❓ |
+| C1 | Parser honesto cierra B19/B20 | 319/319 corpus público + 46/46 TraderX + LFPG, exit 0; 0 falso `missing-child-block`; CRLF/LF verificados en DayZDiag | ✓ |
 | C2 | Escenarios versionables componen shell, subviews y colecciones, detectando ciclos y paths rotos | fixture shell→subview→3 cards conserva orden/identidad/geometría en 1920×1080 y 3440×1440 | ❓ |
 | C3 | El render semántico es determinista entre ejecuciones limpias; RGBA/PNG solo son canónicos dentro de un perfil de raster fijado, y resuelven assets propios | dos `render.json` byte-idénticos sin timestamps/rutas privadas; dentro del perfil fijado, dos buffers RGBA y PNG byte-idénticos; fuera del perfil, artefacto `non_canonical`; fixture `.styles` + `.imageset` 9-slice + fuente sin fallback silencioso | ❓ |
 | C4 | Diff accionable identifica referencia rota, clipping, solape y estado ausente por widget/escenario | fixture negativa produce exactamente los hallazgos esperados; control verde produce 0 | ❓ |
-| C5 | Corpus positivo = VPP/Expansion/TraderPlus/TraderX; negativo = LFPG Sorter V4 TEST; terceros no se redistribuyen | manifests por commit/hash y auditoría de allowlist | ❓ |
+| C5 | Corpus positivo = VPP/Expansion/TraderPlus/TraderX; negativo = LFPG Sorter V4 TEST; terceros no se redistribuyen | manifests por commit/hash y auditoría de allowlist | ✓ |
 | C6 | DayZDiag manda como golden; una sonda ingame first-party exporta geometría/estado runtime y calibra resoluciones/aspect ratios definidos | bundle `engine-capture-v1` coherente por escenario/run con screenshot PNG, snapshot estructurado completo, RPT sanitizado, build y resolución; import manual basta para cerrar el gate; deltas offline cuantificados por widget, sin umbral inventado | ❓ |
 | C7 | Pooling solo se promueve con lifecycle completo y beneficio medido | create/unlink vs reuse: mismo output; 0 estado fantasma/callback duplicado; benchmark reproducible | ❓ |
 | C8 | Skill UI incorpora arquitectura, Forward Contract visual y árboles de diagnóstico verificados | evals “vacío/estilo/colección/tooltip/fuente/offline≠engine” pasan | ❓ |
+
+**Evidencia ejecutada el 2026-07-28** para `C1` y `C5`, medida sobre el árbol y
+re-ejecutable desde el repo con
+`python tools/dayz-ui-lab/dayz_ui_lab/corpus.py --root .`:
+
+```
+vpp-admin-tools   69/69    dayz-expansion 234/234    traderplus-v1 16/16
+traderx           46/46    lfpowergrid     11/11
+totals: 376/376 layouts parse across 5/5 corpora, 0 diagnostics emitted
+provenance: 1 tracked .layout, 0 redistributed, 364 third-party layouts compared
+verdict=PASS  (exit 0)
+```
+
+- **C1** — `319/319` público (VPP 69 + Expansion 234 + TraderPlus 16), `46/46`
+  TraderX y `11/11` LFPG, exit `0`. El *0 falso `missing-child-block`* se **mide**,
+  no se infiere de que B19 quitara la rama: el runner cuenta los diagnósticos que
+  el parser emite de verdad y el total es `0`; si alguien reintrodujera uno,
+  `CORPUS-DIAGNOSTICS-EMITTED` se pone rojo. El tramo CRLF/LF quedó verificado en
+  DayZDiag `1.29.163451` con la sonda `LF_UIProbe` (`len=10`, LF y CRLF iguales,
+  valor `"Alpha\nBeta"`); ver `plans/2026-07-24-02-dayz-ui-lab.md` §B20.
+- **C5** — `tools/dayz-ui-lab/corpora/manifest.json` fija los cuatro referentes
+  por commit (VPP `dc22e420`, Expansion `8d3a453b`, TraderPlus `d0cd39f1`) o por
+  manifest de Workshop (TraderX `3069958660046119589`), cada uno con licencia y
+  restricción de redistribución. **Los tres hashes de PBO de TraderX se
+  recomputaron en local** y reproducen los del research, en vez de transcribirse.
+  La auditoría de procedencia compara **por contenido, no por ruta**, los 364
+  layouts de terceros contra lo rastreado en el repo: `0` redistribuidos, y el
+  único `.layout` rastreado es la fixture first-party de la sonda. Un layout de
+  tercero plantado con otro nombre lo detecta un test dedicado.
+
+> Ninguno de los tres repos de referencia se redistribuye. El pack lleva solo
+> URL, commit/manifest, hash y licencia; los bytes los aporta el operador vía
+> `sources/local-roots.json`, que no se rastrea. Un corpus sin raíz configurada
+> **falla el gate**, no se salta en silencio: «no medido» y «pasa» no pueden
+> parecerse.
 
 ## D — `dayz-persistence`
 

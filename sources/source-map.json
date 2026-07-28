@@ -2304,7 +2304,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "5cf94c95a9b924dd929db357d26fc2a49c8f98716bdbafd831d0047261768d93",
+          "source_hash": "1f5b23a940da285bb00797ba912f8df8384579670039e46465fdb1973e084e4f",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -2312,7 +2312,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5cf94c95a9b924dd929db357d26fc2a49c8f98716bdbafd831d0047261768d93",
+      "output_hash": "1f5b23a940da285bb00797ba912f8df8384579670039e46465fdb1973e084e4f",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
@@ -6251,7 +6251,7 @@
           "decision": "adopt",
           "decision_evidence": "The example registry exposes the read-only DayZ UI research root through an environment variable without embedding a private path.",
           "license": "MIT",
-          "source_hash": "bf722199972eca3dd64d098c93c81324b9d1f5226be4d7193df38b4f11e2fe81",
+          "source_hash": "d55c759a5d36b3f4c183b21b65bd024cbec7ed91d5498b960a63675d6e9659d1",
           "source_id": "pack-r21-authored",
           "source_path": "sources/local-roots.example.json",
           "source_revision": "r21-phase02-approved@2026-07-25",
@@ -6259,7 +6259,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "bf722199972eca3dd64d098c93c81324b9d1f5226be4d7193df38b4f11e2fe81",
+      "output_hash": "d55c759a5d36b3f4c183b21b65bd024cbec7ed91d5498b960a63675d6e9659d1",
       "output_path": "sources/local-roots.example.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -8525,6 +8525,72 @@
       "license": "MIT",
       "output_hash": "7fdb63fb948ffd2710c5713e5df68cb7db9e0eff753059f2f4a796d510471d64",
       "output_path": "tools/dayz-ui-lab/dayz_ui_lab/parse.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/corpora/manifest.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 pins each corpus by commit or workshop manifest with its licence and expected counts; the TraderX PBO hashes were recomputed locally rather than copied from the research note.",
+          "license": "MIT",
+          "source_hash": "a602abe82d5bdbcad72ccaa5a98a7969dbc11f2df57b35b5f6de13c226eb0c09",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/corpora/manifest.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a602abe82d5bdbcad72ccaa5a98a7969dbc11f2df57b35b5f6de13c226eb0c09",
+      "output_path": "tools/dayz-ui-lab/corpora/manifest.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/dayz_ui_lab/corpus.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 makes the C1 corpus gate reproducible from the repository and adds the C5 provenance audit, both failing closed when a corpus root is unconfigured.",
+          "license": "MIT",
+          "source_hash": "aa36ea4db5aa0daffb8544e84391acf86481296120355e0a58db7c11b95a05b1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/dayz_ui_lab/corpus.py",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "aa36ea4db5aa0daffb8544e84391acf86481296120355e0a58db7c11b95a05b1",
+      "output_path": "tools/dayz-ui-lab/dayz_ui_lab/corpus.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/tests/test_corpus.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 tests the gate in both directions, including a planted third-party layout and the relative-path exclusion that previously made the audit measure nothing.",
+          "license": "MIT",
+          "source_hash": "7c53193f9829f403ce87f41cffcd89d7f90f776e066a87da93a37b5ed1084027",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/tests/test_corpus.py",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7c53193f9829f403ce87f41cffcd89d7f90f776e066a87da93a37b5ed1084027",
+      "output_path": "tools/dayz-ui-lab/tests/test_corpus.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
