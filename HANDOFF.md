@@ -1,65 +1,66 @@
 # HANDOFF — DayZ Modding Knowledge Pack
 
 <!-- LIVE-STATE:START -->
-# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-28 (Fase 03 cerrada)
+# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-28 (B20 medido)
 
-**Última verificación real:** HEAD `1312890` en `r21/phase01-foundation`, árbol
-limpio, **`main` fast-forwardeado a `1312890`** y 0 commits por detrás. Sin remoto.
-Suite **748 passed / 18 skipped**, `packctl validate` PASS con cero findings,
-`packctl promote --check` **`WARN` con exit 0** y finding único
-`PROMOTION-DRIFT operation_count=39` — todas de `obsidian_snapshots` con
-`before_digest: absent`, que es estructural (los snapshots se guardan por commit).
+**Última verificación real:** HEAD `94fbc13` en `r21/phase01-foundation`, árbol
+limpio. **`main` sigue en `f87a59e`** y NO se ha adelantado: la Fase 02 no está en
+verde. Sin remoto. Suite **755 passed / 18 skipped / 5 subtests**, `validate` PASS
+con cero findings, y **`promote --check` en ROJO** (ver aviso 1).
 
-`ciclos_en_este_objetivo: 1 (Fase 02 — B20, gate C1 y corpora)`
+`ciclos_en_este_objetivo: 2 (Fase 02 — B20, gate C1 y corpora)`
 
-> Contador reiniciado a 1 **porque cambia el objetivo**: el anterior era «cerrar
-> Fase 03 y el tramo ejecutable de Fase 02», y la Fase 03 está cerrada. Lo que
-> queda de Fase 02 es un cuerpo de trabajo distinto. Si prefieres tratarlo como el
-> mismo objetivo a medias, súbelo a 2.
+> Sube a 2, no reinicia: el objetivo es el mismo y solo ha caído B20. Si llega a 3
+> con C1 todavía abierto, el gate de escalada tiene razón — porque lo que falta de
+> C1 no es trabajo de parser sino tres checkouts (ver «Qué hacer»).
 
-## Fase 03 `dayz-persistence` — CERRADA, D1–D5 en `✓`
+## B20 — CERRADO por medición en el engine
 
-Nueve commits de contenido, cada criterio con su línea de evidencia **ejecutada**.
-Detalle en `product-spec.md` §D y en el handoff
-`30_Sessions/2026-07-28-DayZ-Modding-Knowledge-Pack-fase03-dayz-persistence-cerrada.md`.
+`SC-002` tenía una observación pendiente desde el 2026-07-25. Ya existe. DayZDiag
+`1.29.163451`, sonda `LF_UIProbe`, `ButtonWidget.GetText`: `len=10` en LF y en
+CRLF, valor `"Alpha\nBeta"`. **El motor inserta exactamente un salto de línea; no
+concatena**, y normaliza el fin de línea (LF y CRLF dan bytes iguales). Eso
+**refuta** el `ASSUMED` del spec, que decía lo contrario.
 
-La skill `dayz-persistence` está **promovida y viva** en las dos raíces
-(transacción `6e8cf995be627d7bf50cd147`, readback independiente: 0 perdidos,
-0 cambiados, 5 añadidos por raíz).
+El parser lo implementa (`dba357e`) y **TraderX pasa de 42/46 a 46/46**. Detalle y
+cadena de medición en `plans/2026-07-24-02-dayz-ui-lab.md` §B20 y en
+`30_Sessions/2026-07-28-DayZ-Modding-Knowledge-Pack-fase02-b20-medido.md`.
+
+**Ningún criterio se ha movido a `✓`.** Siguen **24 de 54**.
 
 ## Qué hacer a continuación
 
-**Fase 02, `plans/2026-07-24-02-dayz-ui-lab.md`.** Sigue siendo lo que dice el plan
-maestro (`plans/2026-07-28-r21-completion-and-criteria-triage.md` §N2), sin
-cambios:
-
-1. **B20** — micro-fixture de continuación CRLF/LF observada con
-   `ButtonWidget.GetText` en DayZDiag (`:76`, `:87-90`). Requiere `dayz-mcp`:
-   lease antes de mutar, liberarlo al terminar, nunca matar procesos DayZ a mano,
-   `session_status` antes del handoff.
-2. **Gate C1** (`:95`): LFPG + 319/319 público + 46/46 TraderX, exit 0.
-3. **Corpora** (`:77`): fijar builds, hashes y licencias.
-4. Tasks 3-5 del plan de fase, todas offline.
+1. **Adjudicar `skill/dayz-vehicles`** en cuanto haya 60 min de quietud — es lo
+   único que pone verde el gate (aviso 1).
+2. **Corpora (`:77`)**: fijar builds, hashes y licencias. Es lo más rentable que
+   queda offline; los datos están en
+   `10_Projects/DayZ_UI_Research/research/2026-07-24-ui-positive-reference-corpus-codex.md`.
+   Para TraderX se verifican localmente; para VPP/Expansion/TraderPlus serían
+   transcripción, y conviene marcarlo como tal.
+3. **Gate C1 (`:95`) — decidir, no intentar.** Exige `319/319` del corpus público
+   y **VPP, Expansion y TraderPlus no tienen checkout en esta máquina**. Lo que
+   falta son tres checkouts, no más parser. O se clonan, o C1 se replantea con el
+   usuario. No gastes sesión dándole vueltas al parser.
+4. **Tasks 3-5** del plan de fase (escenarios, render determinista, diff), offline.
+5. **Promoción pendiente de `skill/rigorous-data-audit`**: las 36 líneas de
+   `1312890` nunca llegaron a las raíces (la transacción se firmó sobre `8986bae`).
+   Es repo-ahead benigno, verificado por hash de blob. Agrúpalo con la promoción de
+   Fase 02 para no gastar dos transacciones.
 
 ## Lo que te va a morder si no lo lees
 
-1. **No delegues nunca un `--basetemp` relativo ni concatenado.** Una tanda de
-   Codex dejó en la raíz del worktree un directorio literal
-   `UsersguillAppDataLocalTempr21-sc015-basetemp` —una ruta Windows a la que se le
-   comieron los separadores— con una ACL que negaba `Remove-Item`, `takeown`,
-   `icacls` y `robocopy /MIR`; `icacls` ni siquiera podía leer su DACL. **Rompía
-   la colección de `pytest` con `PermissionError`**: no era basura cosmética.
-   **Borrado por el usuario el 2026-07-28 con consola elevada** y verificado
-   después midiendo lo que importa: `pytest -q` **sin ningún `--ignore`** devuelve
-   `748 passed / 18 skipped`, exit 0. Los prompts de delegación ya prohíben el
-   patrón. El aviso se queda por la causa, no por el síntoma.
-2. **El destino sigue mutando solo.** Van ocho escrituras host-direct en
-   `dayz-vehicles`. **Re-mide `promote --check` antes de tocar nada.** Si sale
-   `PROMOTION-TARGET-UNEXPLAINED`: adoptar → refrescar `output_hash` → `git add` →
-   `validate` → suite → commit → re-medir → adjudicar **solo con quietud
-   verificada** (script en
-   `scratchpad/adjudicate_vehicles.py`: exige 60 min de quietud e igualdad byte a
-   byte asertadas al firmar).
+1. **`promote --check` cierra en ROJO, a propósito.** Dos
+   `PROMOTION-TARGET-UNEXPLAINED` sobre `skill/dayz-vehicles`
+   (`expected=27037cfb… actual=11722f3f…`). Novena escritura host-direct, a las
+   20:55, insert-only, **ya adoptada al repo en `94fbc13`** — repo y las dos raíces
+   son byte-idénticos ahora. Falta **adjudicar**, y no se hizo porque solo había
+   **14,6 min** de quietud frente a los 60 exigidos. **Adoptar NO puede poner verde
+   este finding**: mira el destino, y adoptar cambia el repo. Solo una adjudicación
+   —o una promoción nueva— lo explica. No re-midas esperando otra cosa.
+2. **No delegues nunca un `--basetemp` relativo ni concatenado.** Una ruta Windows
+   con los separadores comidos aterrizó como directorio literal con una ACL que
+   negaba `Remove-Item`, `takeown`, `icacls` y `robocopy`, y **rompía la colección
+   de `pytest`**. Resuelto; el aviso se queda por la causa.
 3. **`B3b` está fuera de alcance por decisión del usuario.** Sin API de pago no es
    alcanzable: `--bare` (`evals/live/runners/claude-code.py:28-43`) es lo único que
    esconde las skills globales del brazo de control, y es lo que se niega a leer la
@@ -67,35 +68,47 @@ cambios:
 4. **El harness de evals vivos tiene un fail-open, registrado y sin arreglar.**
    `_skills_tree_sha256` (`live_evals.py:201-211`) hashea `workspace/.claude/skills`
    (`:221`, `:233`), así que `LIVE-EVAL-ARM-CONTAMINATED` (`:446`, `:464`) prueba
-   que ese árbol está vacío y **nada más**. Quita `--bare` del runner y el brazo de
-   control se contamina sin que ningún gate se ponga rojo. Spike de aislamiento
-   pendiente, **estrictamente después** de lo que haya en curso.
+   que ese árbol está vacío y **nada más**. Spike de aislamiento **sin empezar**.
+5. **`@DayZ_MCP` no sirve como portador de test.** Su módulo `5_Mission` no
+   compila: `CParser: quoted string not closed`, atribuido a
+   `DayZ_MCP/scripts/5_Mission/mcpclientbridge.c`. Es del mod del usuario, no del
+   pack, y no se ha tocado. Usa **`LFPowerGrid`**, que compila y está verificado.
+6. **`Path.write_text` en Windows reescribe los finales de línea** de un repo que
+   es LF por `.gitattributes`. Refrescar dos hashes convirtió 11.529 saltos. El
+   blob queda bien, el árbol de trabajo no. Escribe con `write_bytes`.
 
-## Estado de publicación
+## Método que ahorra sesiones (verificado hoy)
 
-**24 de 54 criterios en `✓`** (eran 19). Cerrado: A1–A9, B1/B2/B3a/B4/B5, **D1–D5**
-y F1–F5. Abierto: 30 — `B3b`, 8 de Fase 02, 9 de Fase 04 (tramo `E`+`B7`/`B8`),
-5 de Fase 05 y 7 de Fase 06. La Fase 06 produce el release y depende de 01–05, así
-que no hay publicación posible antes.
+- **Para probar una sonda nueva no toques la allow-list sellada del launcher.**
+  `extra_mods` acredita un `@Name` relativo bajo `P:\Mods`
+  (`dayz_test_worker.py:183-197`) si el directorio es real y no un reparse point.
+  Montarla sobre un proyecto aprobado evita reconstruir el launcher nativo y su CAS.
+- **Para extraer layouts de una PBO de terceros: Mikero `ExtractPbo`** (instalado,
+  en PATH). `PboViewer.exe` **no descomprime** las entradas `Cprs` y escribe los
+  bytes comprimidos sin avisar; un LZSS a mano da texto que empieza bien y
+  degenera. La extracción buena se valida sola porque **reproduce la baseline
+  publicada de 42/46**.
+- **`exit 0` de AddonBuilder no dice nada de los bytes.** Verifica la PBO entrada
+  por entrada contra el fuente antes de creerte una fixture byte-sensible.
 
 ## Invariantes cerradas
 
 - Git es la única fuente editable; las instaladas son despliegues. La adopción va
   del destino al repo, nunca al revés sin gate.
-- **Adoptar protege el conocimiento y es barato; adjudicar caduca.** Reforzado con
-  evidencia nueva: la adopción sin firma de `ce67494` evitó firmar una instrucción
-  **técnicamente falsa** que el upstream corrigió ocho horas después.
+- **Adoptar protege el conocimiento y es barato; adjudicar caduca.**
 - Un `mtime` que se mueve **no** prueba trabajo en curso; `git status --porcelain`
   sí. Un fichero commiteado conserva su mtime para siempre.
 - Una adjudicación autoriza un digest concreto y **tapa, no arregla**.
 - Un gate que no puede ponerse rojo no es un gate — y un gate que rechaza tu
-  cambio puede tener razón: relájalo solo dejando constancia de qué se pierde.
+  cambio puede tener razón.
 - No declarar un criterio `✓` sin ejecutar su línea de evidencia.
 - `validate` sobre ficheros sin rastrear no dice nada: `git add` y DESPUÉS validar.
+- **Un mod que no compila pasa cualquier test que afirme sobre su texto.** Los tres
+  tests de la sonda eran verdes con un `.c` que el motor rechazaba entero.
 
-**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: 1312890
-con la Fase 03 cerrada y main al día · re-medir promote --check antes de tocar
-nada, y borrar el directorio basura con consola elevada antes de correr pytest`.
+**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: 94fbc13
+con B20 medido y el gate de promoción en rojo · adjudicar dayz-vehicles con 60 min
+de quietud verificada antes de tocar nada más`.
 <!-- LIVE-STATE:END -->
 
 ---
