@@ -1,101 +1,132 @@
 # HANDOFF — DayZ Modding Knowledge Pack
 
 <!-- LIVE-STATE:START -->
-# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-28 (B20 medido)
+# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-29 (C2 y SC-006)
 
-**Última verificación real:** HEAD `b515776` en `r21/phase01-foundation`, árbol
-limpio. **`main` sigue en `f87a59e`** y NO se ha adelantado: la Fase 02 no está
-cerrada. Sin remoto. **Los cuatro gates en verde**: suite
-**768 passed / 18 skipped / 15 subtests**, `validate` PASS con cero findings,
-gate de corpus PASS exit 0, y `promote --check` **`WARN` con exit 0** — finding
-único `PROMOTION-DRIFT operation_count=40`, que son 39 `obsidian_snapshots` con
-`before_digest: absent` (estructural, por commit) más `skill/rigorous-data-audit`
-repo-ahead (ver «Qué hacer» §5).
+**Última verificación real:** HEAD `92f37d8` en `r21/phase01-foundation`,
+árbol limpio. **`main` sigue en `f87a59e`** y NO se ha adelantado: la Fase 02 no
+está cerrada. Sin remoto. **Tres gates en verde y uno rojo a propósito**: suite
+**793 passed / 18 skipped / 301 subtests**, `validate` PASS con cero findings,
+gate de corpus PASS exit 0, y `promote --check` en **`FAIL`** por una **décima**
+escritura host-direct en `dayz-vehicles` (ver «Lo que te va a morder» §1).
 
-`ciclos_en_este_objetivo: 2 (Fase 02 — B20, gate C1 y corpora)`
+`ciclos_en_este_objetivo: 1 (Fase 02 — Tasks 3-5)`
 
-> Sube a 2, no reinicia: el objetivo es el mismo y solo ha caído B20. **El motivo
-> por el que iba a haber un ciclo 3 ya no existe**: los tres checkouts que
-> bloqueaban C1 están en disco y el corpus mide verde (ver «Qué hacer» §2). Lo
-> que queda es trabajo normal de repo, no un bloqueo.
+> **Reiniciado a 1**: el objetivo anterior («B20, gate C1 y corpora») está
+> cerrado y este es otro. No arrastra los dos ciclos de aquel.
 
-## B20 — CERRADO por medición en el engine
+## Lo que cerró esta sesión
 
-`SC-002` tenía una observación pendiente desde el 2026-07-25. Ya existe. DayZDiag
-`1.29.163451`, sonda `LF_UIProbe`, `ButtonWidget.GetText`: `len=10` en LF y en
-CRLF, valor `"Alpha\nBeta"`. **El motor inserta exactamente un salto de línea; no
-concatena**, y normaliza el fin de línea (LF y CRLF dan bytes iguales). Eso
-**refuta** el `ASSUMED` del spec, que decía lo contrario.
+**`C2` en `✓` y `SC-006` cerrado: 27 de 54.** Quedan `C3`, `C4`, `C6`, `C7` y
+`C8` de la Fase 02.
 
-El parser lo implementa (`dba357e`) y **TraderX pasa de 42/46 a 46/46**. Detalle y
-cadena de medición en `plans/2026-07-24-02-dayz-ui-lab.md` §B20 y en
-`30_Sessions/2026-07-28-DayZ-Modding-Knowledge-Pack-fase02-b20-medido.md`.
+- **Task 3 / `C2`** — contrato `dayz-ui-scenario-v1` (schema + validador stdlib
+  fail-closed + compositor). Medido sobre el árbol: los tres ids son idénticos a
+  1920×1080 y 3440×1440 con `sibling_index` `0,1,2`, y la geometría **sí** cambia
+  (ancho de card `497.664` → `891.648`). Esa segunda aserción es la que impide
+  que pase una implementación que ignore el viewport. Seis fixtures negativos,
+  exit 1 con su código exacto.
+- **Task 4 / `SC-006`** — contrato `dayz-ui-render-v1`. `render.json`
+  byte-idéntico entre **dos procesos del SO con cwd distinto**. Conserva
+  literalmente los `id` del compositor, comprobado nodo a nodo: ese es el puente
+  para que la Task 6 compare captura de engine contra composición sin traducir.
+- **El escape inválido de `:91-92`** — cerrado el tercio que faltaba. Verificado
+  en los dos sentidos: los subtests nuevos fallan contra el `parse.py` anterior y
+  pasan contra el actual.
 
-**`C1` y `C5` cerrados con evidencia ejecutada: 26 de 54** (eran 24). Quedan
-`C2`, `C3`, `C4`, `C6`, `C7` y `C8` de la Fase 02.
+**`C3` NO cierra**, y no es por falta de trabajo: exige además `SC-007` (raster)
+y `SC-008` (assets), y los dos siguen bloqueados por sus `ASSUMED`. Ver §Raster.
 
 ## Qué hacer a continuación
 
-1. **Nada de higiene pendiente: arranca directamente por el punto 2.** El árbol
-   queda con los cuatro gates en verde.
-2. **Tasks 3-5** del plan de fase (escenarios, render determinista, diff), offline.
-   Es el tramo grande que queda y el natural para delegar a Codex: código puro,
-   sin engine de por medio.
-3. **El escape inválido de `:91-92` ya es decidible.** Se dejó abierto por falta
-   de corpus; ahora está medido: en los **365 layouts** de terceros hay **cero**
-   backslashes dentro de string, y solo **4** en total, que son las cuatro
-   continuaciones de B20. Convertir un escape desconocido en error es seguro
-   sobre ambos corpora. Test RED→GREEN y cierra el tercio que falta del item.
-4. **Task 6 (`C6`)** — la sonda ya funciona y está desplegada en
-   `P:\Mods\@LF_UIProbe`; falta el bundle `engine-capture-v1`. El import manual
-   con DayZDiag basta, no exige MCP.
+1. **Re-mide `promote --check` antes de tocar nada** (§«Lo que te va a morder»).
+2. **Task 5 (`C4`)** — diff estructural por widget/estado + overlays de overflow,
+   clipping, overlap y reference missing. Es lo siguiente y está desbloqueado: el
+   contrato que consume, `dayz-ui-render-v1`, ya existe y es determinista. Offline
+   puro, natural para Codex.
+3. **`SC-008` (assets)** sigue bloqueado por el `ASSUMED` de licencia/procedencia
+   del códec PAA/EDDS. El spec prohíbe meter código de códec antes de cerrarlo, así
+   que eso es una decisión de licencia, no de implementación.
+4. **Task 6 (`C6`)** — la sonda funciona y está desplegada en
+   `P:\Mods\@LF_UIProbe`; falta el bundle `engine-capture-v1`. Requiere engine, no
+   lo mezcles con el bloque offline.
+5. **Promoción pendiente de `skill/rigorous-data-audit`**: las 36 líneas de
+   `1312890` nunca llegaron a las raíces (la transacción se firmó sobre `8986bae`).
+   Repo-ahead benigno, verificado por hash de blob. Agrúpalo con la promoción de
+   Fase 02 para no gastar dos transacciones.
 
-## Corpus: montado, fijado y con gate propio (2026-07-28)
+## Raster (`SC-007`): medido a medias, y esa es la respuesta
+
+Spike ejecutado el 2026-07-28 **antes** de implementar el tramo, sobre una fixture
+que ejercita el raster de verdad (texto en tres familias, alpha, degradado,
+hairline) y con el render inspeccionado visualmente para que un lienzo en blanco
+no fabricara un falso hallazgo.
+
+- **Cinco ejecuciones limpias dan PNG y píxeles byte-idénticos**, y desplazar
+  locale/timezone/cwd tampoco mueve un byte.
+- **No se pudo medir el segundo entorno**: un solo host y **una sola build en
+  caché**, así que la variable cabecera de cualquier perfil de raster —la build
+  del navegador— no pudo mutarse.
+- De seis variables mutadas una a una, **solo `--force-device-scale-factor` mueve
+  píxeles**. Un perfil que nombre las otras cinco promete más de lo que entrega.
+- **`chrome.exe` 150 ya no honra `--screenshot`** por línea de comandos: arranca y
+  se cuelga. El binario que escribe el PNG y termina es `chrome-headless-shell`.
+- **`--deterministic-mode` cuelga esa build.** Un perfil que lo nombrara no
+  produciría artefacto ninguno.
+
+Por eso el emisor marca `raster=false` y **no implementa raster**: un hueco
+implementado se convierte en el perfil de facto sin que nadie lo haya medido.
+Detalle en `10_Projects/DayZ_Modding_Knowledge_Pack/assumptions.md`.
+
+## Corpus: montado, fijado y con gate propio
 
 `C1` y `C5` están en **`✓`**. Los tres referentes públicos viven en
-**`C:\Users\guill\DayZ-UI-Corpora\`** a los commits del research, con el pin
-verificado contra el sha esperado; TraderX se extrae de las PBO del Workshop.
-
-Gate re-ejecutable desde el repo, que es lo que permitió escribir el `✓`:
+**`C:\Users\guill\DayZ-UI-Corpora\`** a los commits del research; TraderX se
+extrae de las PBO del Workshop.
 
 ```
 python tools\dayz-ui-lab\dayz_ui_lab\corpus.py --root .
 → 376/376 layouts, 0 diagnostics, 0 redistribuidos, verdict=PASS, exit 0
 ```
 
-Tres cosas que conviene no romper:
+Cuatro cosas que conviene no romper:
 
 - **Las rutas viven en `sources/local-roots.json`, que NO se rastrea.** Si el
-  gate dice `CORPUS-ROOT-MISSING`, es que falta configurarlo, no que el corpus
-  esté mal. La plantilla es `local-roots.example.json`.
-- **Un corpus sin raíz configurada FALLA el gate**, no se salta. «No medido» y
-  «pasa» no pueden parecerse.
-- **Nada de terceros entra en Git**: solo URL, commit/manifest, hash y licencia.
-  La auditoría compara **por contenido, no por ruta**, así que un layout ajeno
-  renombrado también salta.
-5. **Promoción pendiente de `skill/rigorous-data-audit`**: las 36 líneas de
-   `1312890` nunca llegaron a las raíces (la transacción se firmó sobre `8986bae`).
-   Es repo-ahead benigno, verificado por hash de blob. Agrúpalo con la promoción de
-   Fase 02 para no gastar dos transacciones.
+  gate dice `CORPUS-ROOT-MISSING`, falta configurarlo, no está mal el corpus.
+- **Un corpus sin raíz configurada FALLA el gate**, no se salta.
+- **Nada de terceros entra en Git.** La auditoría compara **por contenido, no por
+  ruta**, así que un layout ajeno renombrado también salta.
+- **La allowlist de `.layout` tiene ahora DOS rutas nombradas** (la sonda y
+  `tools/dayz-ui-lab/fixtures/scenarios`), porque el gate gobierna todos los
+  `.layout` del repo y las fixtures de la Task 3 no cabían en ninguna. La
+  garantía de C5 no la sostiene esa lista sino la comparación por contenido, que
+  no se tocó. Una tercera ubicación sigue fallando, con test propio. **No la
+  amplíes otra vez sin decidirlo**: `decision-log.md` §allowlist.
 
 ## Lo que te va a morder si no lo lees
 
-1. **El destino muta solo: van NUEVE escrituras host-direct en `dayz-vehicles`.**
-   La novena se adoptó (`94fbc13`) y se adjudicó (`b515776`) con las tres
-   precondiciones asertadas dentro del script que firma —digest de un
-   `promote --check` corrido por él mismo, repo y las dos raíces idénticas fichero
-   a fichero, 73,3 min de quietud—. **Re-mide `promote --check` antes de tocar
-   nada**; si vuelve `PROMOTION-TARGET-UNEXPLAINED`, el ciclo es: adoptar →
-   refrescar `output_hash` → `git add` → `validate` → suite → commit → re-medir →
-   adjudicar solo con quietud verificada. Script en
-   `scratchpad/adjudicate_vehicles.py`.
+1. **El destino muta solo: van DIEZ escrituras host-direct en `dayz-vehicles`.**
+   La décima llegó a las **23:20 del 2026-07-28**, en mitad de esta sesión, y
+   caducó la adjudicación de `b515776` —autorizaba `11722f3f`, el recibo explica
+   `27037cfb`, el destino tiene `2337dd3b`—. **Adoptada sin firmar**: había
+   `DayZDiag` ×2 y `AddonBuilder` corriendo, así que la línea de vehículos estaba
+   viva. El gate queda rojo a propósito.
 
-   Dos cosas aprendidas hoy y que ahorran un rato: **adoptar NO puede poner verde
-   ese finding** —mira el destino, y adoptar cambia el repo; solo una adjudicación
-   lo explica—, y **la entrada de `dayz-vehicles` en el source-map NO espeja el
-   output** (sus tres inputs son ancestría), así que su adopción es un cambio de
-   **una línea**, `output_hash` sola. La regla general «refresca `output_hash` Y
-   `source_hash`» no aplica a esa entrada.
+   **Re-mide `promote --check` antes de tocar nada.** Si vuelve
+   `PROMOTION-TARGET-UNEXPLAINED`, el ciclo es: adoptar → refrescar `output_hash`
+   → `git add` → `validate` → suite → commit → re-medir → adjudicar **solo** con
+   quietud verificada y sin sesión de vehículos viva.
+
+   Tres cosas que ahorran tiempo: **adoptar NO puede poner verde ese finding**
+   —mira el destino, y adoptar cambia el repo—; **la entrada de `dayz-vehicles` en
+   el source-map NO espeja el output** (sus tres inputs son ancestría), así que su
+   adopción es un cambio de **una línea**, `output_hash` sola; y **mira el destino
+   antes de sobrescribir**: trae un `SKILL.md.bak_pre_sp123_20260728` que es el
+   backup del propio writer y no debe entrar en Git.
+
+2. **Un mtime viejo tampoco prueba que el fichero sea viejo.** Ese `.bak` marca
+   `20:55` y se creó a las `23:20`: `Copy-Item` preserva el timestamp del origen.
+   Es el reverso de la invariante que ya estaba escrita aquí.
 2. **No delegues nunca un `--basetemp` relativo ni concatenado.** Una ruta Windows
    con los separadores comidos aterrizó como directorio literal con una ACL que
    negaba `Remove-Item`, `takeown`, `icacls` y `robocopy`, y **rompía la colección
@@ -116,19 +147,32 @@ Tres cosas que conviene no romper:
    es LF por `.gitattributes`. Refrescar dos hashes convirtió 11.529 saltos. El
    blob queda bien, el árbol de trabajo no. Escribe con `write_bytes`.
 
-## Método que ahorra sesiones (verificado hoy)
+## Método que ahorra sesiones
 
+- **Verifica el GATE que gobierna un tipo de fichero antes de fijarle una ruta a
+  Codex.** Esta sesión perdió una tanda entera de 36 minutos porque el prompt
+  mandaba crear fixtures `.layout` en un sitio y, tres secciones más abajo,
+  mantener verde el gate que gobierna **todos** los `.layout` del repo. Codex leyó
+  ambas, paró sin escribir un byte y devolvió la contradicción — correctamente—,
+  pero el chequeo costaba 30 segundos. Promovido a `codex-handoff-template`
+  (`LL-221`).
+- **Cuando Codex para y pregunta, verifica su hallazgo contra el código antes de
+  aceptarlo, y también antes de rechazarlo.** Las dos veces que paró esta sesión
+  tenía razón.
+- **Re-ejecuta los gates que Codex declare verdes.** Reportó los dos de pytest
+  como `No module named pytest` con el mismo intérprete con el que aquí corre la
+  suite entera: era su sandbox, no el árbol. La cifra que vale es la tuya.
 - **Para probar una sonda nueva no toques la allow-list sellada del launcher.**
   `extra_mods` acredita un `@Name` relativo bajo `P:\Mods`
   (`dayz_test_worker.py:183-197`) si el directorio es real y no un reparse point.
-  Montarla sobre un proyecto aprobado evita reconstruir el launcher nativo y su CAS.
 - **Para extraer layouts de una PBO de terceros: Mikero `ExtractPbo`** (instalado,
   en PATH). `PboViewer.exe` **no descomprime** las entradas `Cprs` y escribe los
-  bytes comprimidos sin avisar; un LZSS a mano da texto que empieza bien y
-  degenera. La extracción buena se valida sola porque **reproduce la baseline
-  publicada de 42/46**.
+  bytes comprimidos sin avisar.
 - **`exit 0` de AddonBuilder no dice nada de los bytes.** Verifica la PBO entrada
   por entrada contra el fuente antes de creerte una fixture byte-sensible.
+- **Para probar en rojo un cambio de parser sin inventar nada**: corre los tests
+  nuevos contra `git show HEAD:<fichero>` en un árbol desechable. Treinta segundos,
+  y convierte «pasa» en «pasa y antes no pasaba».
 
 ## Invariantes cerradas
 
@@ -144,10 +188,16 @@ Tres cosas que conviene no romper:
 - `validate` sobre ficheros sin rastrear no dice nada: `git add` y DESPUÉS validar.
 - **Un mod que no compila pasa cualquier test que afirme sobre su texto.** Los tres
   tests de la sonda eran verdes con un `.c` que el motor rechazaba entero.
+- **Una aserción de «no cambia» necesita su pareja «sí cambia».** `SC-005` pide que
+  la identidad se conserve entre viewports; sin la aserción de que la geometría
+  difiere, una implementación que ignorase la resolución pasaría el criterio.
+- **Un gate nuevo se prueba en rojo y en verde**, y un gate que solo se ha visto en
+  verde no está verificado.
 
-**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: b515776
-con B20 medido, C1 y C5 cerrados y los cuatro gates en verde · próxima acción:
-Tasks 3-5 del plan de Fase 02, empezando por el contrato dayz-ui-scenario-v1`.
+**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde:
+92f37d8 con C2 y SC-006 cerrados, 27 de 54, y el gate de promoción rojo por
+la décima escritura en dayz-vehicles · próxima acción: Task 5 (C4), el diff
+estructural, que ya tiene su contrato dayz-ui-render-v1 fijado`.
 <!-- LIVE-STATE:END -->
 
 ---
