@@ -84,11 +84,46 @@ y entrada en el changelog.
 
 | # | Criterio | Cómo se verifica | Estado |
 |---|---|---|---|
-| D1 | Skill separa stream vanilla, CF ModStorage y archivos/sidecars | tres contratos y tres suites de fixtures independientes | ❓ |
-| D2 | Versionado/migración cubre fresh, legacy, known, future, truncated, same-build upgrade y rollback | matriz completa produce verdict/acción esperados, sin lectura parcial aceptada | ❓ |
-| D3 | Sidecars usan temp→verify→replace, backup y recuperación fail-closed | fault injection en cada frontera I/O conserva original o evidencia recuperable | ❓ |
-| D4 | APIs deprecated y ejemplos incompletos no se recomiendan | evals rechazan `JsonLoadFile` como patrón nuevo y headers ligados solo al build DayZ | ❓ |
-| D5 | Todo cambio persistente documenta legacy, datos post-cambio en rollback y alternativa sin cambio de formato | checklist y rigorous-data-audit sin hallazgos bloqueantes | ❓ |
+| D1 | Skill separa stream vanilla, CF ModStorage y archivos/sidecars | tres contratos y tres suites de fixtures independientes | ✓ |
+| D2 | Versionado/migración cubre fresh, legacy, known, future, truncated, same-build upgrade y rollback | matriz completa produce verdict/acción esperados, sin lectura parcial aceptada | ✓ |
+| D3 | Sidecars usan temp→verify→replace, backup y recuperación fail-closed | fault injection en cada frontera I/O conserva original o evidencia recuperable | ✓ |
+| D4 | APIs deprecated y ejemplos incompletos no se recomiendan | evals rechazan `JsonLoadFile` como patrón nuevo y headers ligados solo al build DayZ | ✓ |
+| D5 | Todo cambio persistente documenta legacy, datos post-cambio en rollback y alternativa sin cambio de formato | checklist y rigorous-data-audit sin hallazgos bloqueantes | ✓ |
+
+**Evidencia ejecutada el 2026-07-28** (cada `✓` con la línea que lo cierra, medida sobre
+`dcf0671`, no inferida). Spec: `specs/2026-07-28-dayz-persistence.md`, checklist 16/16.
+
+- **D1** — tres referencias de contrato en `skills/dayz-persistence/references/` y tres
+  simuladores que no comparten código: `test_persistence_router.py` parsea los tres módulos
+  con `ast` y exige que sus imports sean disjuntos, así que factorizar un serializador común
+  pone el gate en rojo. Router con `needs_clarification` para entrada ambigua.
+- **D2** — `test_persistence_migration.py`: las 7 celdas con sus cuatro columnas (verdict,
+  bytes consumidos, estado preservado, acción) y **mutation check por celda** —mutar un byte
+  cambia el verdict en 7/7—. `truncated` nunca da `ok` y descarta el estado parcial entero;
+  `future-version` deja el hash del fichero idéntico y emite una sola línea de log por
+  ventana.
+- **D3** — `test_persistence_sidecar.py`: las **9** fronteras I/O con fallo inyectado, cada
+  una con la invariante «original intacto **o** evidencia recuperable». Incluye la ventana
+  real del replace (fallo entre `delete_file` y `copy_file`, destino ausente y `.tmp`+`.bak`
+  recuperables) y un test que exige que el FS exponga exactamente las nueve primitivas de
+  DayZ, sin `rename` ni `move`.
+- **D4** — `evals/cases/persistence-deprecated-api.json`, `persistence-mod-version.json` y
+  `persistence-migration-rollback.json`, ejecutados por el harness (`evals/cases/*.json`, con
+  inventario cerrado en `tests/packctl/test_evals.py`), cada uno con `current=PASS` /
+  `absent=FAIL`. Verificado además que ningún `value` de assertion aparece en el `prompt` de
+  su propio caso.
+- **D5** — `test_persistence_checklist.py`: el checklist falla exactamente una vez por
+  elemento ausente (legacy, rollback, alternativa sin cambio de formato), acumula sin
+  cortocircuito y rechaza una alternativa presentada *después* del cambio. Más
+  `rigorous-data-audit` **sin hallazgos bloqueantes**: 1 P2 y 2 P3, los tres corregidos en
+  `dcf0671`.
+  **Alcance declarado de esa auditoría:** se ejecutó **single-agent**, porque los subagentes
+  exigen autorización explícita en este proyecto (`project-brief.md`) y la sesión no la
+  tenía; hay precedente registrado en `compatibility-matrix.md`. Corrió el Step 1 completo
+  —las comprobaciones mecánicas, que es donde la propia skill dice que el razonamiento
+  falla— y la verificación 1-a-1 de cada hallazgo contra el fichero. **No** corrieron el
+  Step 2 (ocho ángulos en paralelo) ni el Step 4 (implementer-grade con contexto fresco).
+  Informe: `VAULT/10_Projects/DayZ_Modding_Knowledge_Pack/reviews/2026-07-28-phase03-rigorous-data-audit.md`.
 
 ## E — Skills y conocimiento de dominio
 

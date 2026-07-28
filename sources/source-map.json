@@ -2304,7 +2304,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "68a6723dbb3b8a357bd67d2dd0481c136a9bafd95715661bbf601f86f1dc75dc",
+          "source_hash": "5cf94c95a9b924dd929db357d26fc2a49c8f98716bdbafd831d0047261768d93",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -2312,7 +2312,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "68a6723dbb3b8a357bd67d2dd0481c136a9bafd95715661bbf601f86f1dc75dc",
+      "output_hash": "5cf94c95a9b924dd929db357d26fc2a49c8f98716bdbafd831d0047261768d93",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
