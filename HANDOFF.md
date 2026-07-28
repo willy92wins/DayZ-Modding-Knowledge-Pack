@@ -3,10 +3,10 @@
 <!-- LIVE-STATE:START -->
 # DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-29 (C2, C4 y SC-006)
 
-**Última verificación real:** HEAD `eb2f08b` en `r21/phase01-foundation`,
+**Última verificación real:** HEAD `35943a3` en `r21/phase01-foundation`,
 árbol limpio. **`main` sigue en `f87a59e`** y NO se ha adelantado: la Fase 02 no
 está cerrada. Sin remoto. **Tres gates en verde y uno rojo a propósito**: suite
-**806 passed / 18 skipped / 305 subtests**, `validate` PASS con cero findings,
+**809 passed / 18 skipped / 305 subtests**, `validate` PASS con cero findings,
 gate de corpus PASS exit 0, y `promote --check` en **`FAIL`** por una **décima**
 escritura host-direct en `dayz-vehicles` (ver «Lo que te va a morder» §1).
 
@@ -36,6 +36,14 @@ el tramo raster/assets y de la Task 5 solo el gate de Sorter V4 (ver abajo).
   negativa da **exactamente cuatro** hallazgos y el control positivo **cero**,
   medido. Empareja por `id`: invertir la lista de widgets da cero hallazgos. Cada
   detector tiene caso rojo **y** verde.
+- **`BUG-023` cerrado** (`35943a3`) — la comparación estructural rechaza dos
+  renders con viewports distintos (`DIFF-VIEWPORT-MISMATCH`) en vez de emitir 86
+  cambios de geometría que son aritmética de resolución. **`analyze_document` NO
+  se tocó a propósito**: analizar un render a un viewport que el escenario no
+  declara es válido y `SC-005` lo exige; un `DIFF-OVERFLOW` que solo aparece a
+  3440×1440 es un defecto responsive real, no un artefacto. La primera redacción
+  del bug decía lo contrario y se corrigió al medirlo — el detalle está en el
+  `bug-ledger.md`, con el error visible.
 - **El escape inválido de `:91-92`** — cerrado el tercio que faltaba. Verificado
   en los dos sentidos: los subtests nuevos fallan contra el `parse.py` anterior y
   pasan contra el actual.
@@ -48,21 +56,15 @@ y `SC-008` (assets), y los dos siguen bloqueados por sus `ASSUMED`. Ver §Raster
 1. **Re-mide `promote --check` antes de tocar nada** (§«Lo que te va a morder»).
    Es lo único que separa el cuarto gate del verde, y se firma solo cuando la
    línea de vehículos esté quieta.
-2. **`BUG-023`, barato y conviene antes de la Task 6**: el diff valida que
-   concuerde el `scenario_id` pero **no los viewports**, así que un observado
-   capturado a otra resolución produce hallazgos de geometría sin avisar de la
-   discordancia. La Task 6 es justo quien va a enchufar capturas de engine a ese
-   lado, y el spec ya exige fail-closed ahí. El sitio donde comparar está al lado
-   del que ya compara `scenario_id` (`diff.py:639`).
-3. **Task 6 (`C6`)** — la sonda funciona y está desplegada en
+2. **Task 6 (`C6`)** — la sonda funciona y está desplegada en
    `P:\Mods\@LF_UIProbe`; falta el bundle `engine-capture-v1`. Requiere engine, no
    lo mezcles con el bloque offline. El puente ya está tendido: los `id` de widget
    del render son los del compositor y usan la misma derivación que el spec fija
    para `widget-tree.json`.
-4. **`SC-008` (assets)** sigue bloqueado por el `ASSUMED` de licencia/procedencia
+3. **`SC-008` (assets)** sigue bloqueado por el `ASSUMED` de licencia/procedencia
    del códec PAA/EDDS. El spec prohíbe meter código de códec antes de cerrarlo, así
    que eso es una decisión de licencia, no de implementación.
-5. **El gate de Sorter V4** (último bullet de Task 5) sigue abierto **a propósito**:
+4. **El gate de Sorter V4** (último bullet de Task 5) sigue abierto **a propósito**:
    el plan pide «solo los defectos conocidos» y no los enumera en ningún sitio. Un
    gate contra una lista que nadie ha escrito pasa siempre o falla siempre. Enumera
    los defectos primero; eso es una decisión, no implementación.
@@ -210,10 +212,10 @@ Cuatro cosas que conviene no romper:
 - **Un gate nuevo se prueba en rojo y en verde**, y un gate que solo se ha visto en
   verde no está verificado.
 
-**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: eb2f08b
+**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: 35943a3
 con Tasks 3-5 cerradas, C2 y C4 en ✓, 28 de 54, y el gate de promoción rojo por
-la décima escritura en dayz-vehicles · próxima acción: re-medir promote --check y
-decidir entre BUG-023 y la Task 6`.
+la décima escritura en dayz-vehicles · próxima acción: re-medir promote --check y,
+con el destino quieto, adjudicar; luego Task 6`.
 <!-- LIVE-STATE:END -->
 
 ---
