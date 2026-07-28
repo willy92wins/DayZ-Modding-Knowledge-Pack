@@ -850,3 +850,101 @@ la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita:
 
 - **LL-076** — Antes de diferir una feature, clasifica la severidad de su ausencia y valida los mínimos exigidos por el engine. Todo `CarScript` debe incluir al menos `DamageSystem.GlobalHealth`; su ausencia puede matar el proceso aunque el daño sea una feature posterior.
 - **LL-172** — Ante paneles negros o see-through, decodifica primero el `_co` desplegado y mide píxeles oscuros. Si la textura está limpia, trata el síntoma como winding y exige captura in-game antes de voltear regiones.
+
+
+## Detachable parts (doors/hood/trunk): the FOUR-layer contract, and three rules it corrects (SP-098, added 2026-07-28)
+
+Measured on a working control, `SUB_BRZ_dev\_references\Tyson89-Landrover` (MLOD v257, py3d reads it
+directly). LFHeli OH-1 spent weeks on "the door does not animate" with the full script+model contract
+verified, because the project only ever knew layer 3 below.
+
+### The contract is four layers, not one
+
+1. **`CfgSlots`** (`Tyson89-Landrover\scripts\config.cpp:65-77`)
+   ```cpp
+   class Slot_Landrover_Driver_Door {
+       name = "Landrover_Driver_Door";
+       displayName = "...";
+       selection = "doors_driver";        // <-- the ANIMATION BONE selection
+       ghostIcon = "set:dayz_inventory image:doorfront";
+   };
+   ```
+   `selection` is the binding between "the attachment is mounted" and "the proxy is drawn".
+
+2. **`CfgNonAIVehicles` / `ProxyVehiclePart`** (`Tyson89-Landrover\scripts\config.cpp:80-100`) —
+   THE LAYER PEOPLE MISS.
+   ```cpp
+   class ProxyAttachment;
+   class ProxyVehiclePart : ProxyAttachment {
+       scope=2; simulation="ProxyInventory"; autocenter=0; animated=0; shadow=1; reversed=0;
+   };
+   class ProxyLandrover_Driver_Door : ProxyVehiclePart {
+       Model = "\Landrover\proxy\Landrover_Driver_Door.p3d";
+       inventorySlot = "Landrover_Driver_Door";
+   };
+   ```
+   Without it the engine does not resolve the host's `proxy:\...` as an attachment proxy. Note
+   `autocenter=0` appears HERE too: vanilla declares it in THREE places - the sub-model's visual
+   LOD, the sub-model's Geometry LOD, and this config class.
+
+3. **Item class** `Landrover_Driver_Door : CarDoor` with `Model`, `inventorySlot`, `hiddenSelections`,
+   `weight`, `itemSize[]`, `physLayer`, `DamageSystem` (`Tyson89-Landrover\config.cpp:70-95`).
+
+4. **Vehicle**: the slot name inside `attachments[]`, plus `class Doors` in the vehicle DamageSystem.
+
+**Host proxy triangle: DOUBLE membership.** Measured on `Landrover.p3d` LOD0, the 3 points of
+`proxy:\Landrover\proxy\Landrover_Driver_Door.001` belong 3/3 to `doors_driver` (the bone) AND 3/3
+to `Landrover_Driver_Door` (the slot name). A proxy wired only to the bone animates but is not
+attachment-aware.
+
+**A detachable part is a physical ITEM.** It can be dropped on the ground, so its `.p3d` needs real
+special LODs, not an empty Geometry. Measured: `Landrover_Driver_Door.p3d` = visual `463/754`,
+Geometry `32/24`, Memory `7/0`, ViewGeo `32/24`, FireGeo `72/56`, with `autocenter=0` on the visual
+LOD and on Geometry. Budget the item LODs before promising the feature.
+
+Custom inventory slots are the T148506 family (`enforce-script-reference`): if the slot name and the
+`inventorySlot` string diverge, the item never attaches and the proxy never draws.
+
+### Correction to SP-093 - the `dot > 0.9` rule is for PROXY TRIANGLES ONLY
+
+SP-093 says any parity check of a .p3d edit must assert `dot(geometric, stored) > 0.9` on every
+touched face. That is right for proxy triangles and WRONG as a general rule: on a hull authored with
+reversed winding on purpose (`FLIP_VISUAL_WINDING = True` in the OH-1 assembler), every visual face
+has a negative dot BY DESIGN. Measured on the deployed OH-1: `door_1` = 7227 dots per LOD, **zero**
+above 0.9, median `-0.942910`; `door_2` median `-0.939892`. A gate applying SP-093 to migrated
+visual faces fails 100% of valid input, and "fixing" it by flipping normals is the regression.
+
+Rule: proxy triangles -> `dot > 0.9`. Migrated/edited visual faces -> equality of the RESOLVED
+normal vector against the baseline, corner by corner, within 1e-6.
+
+### Correction to SP-097 - which LODs, and what the property does NOT prove
+
+Measured control vs OH-1: all five geometry-bearing Landrover sub-models carry `autocenter=0` on
+their visual LOD **and** Geometry (5/5); the three OH-1 proxied sub-models carry it only on an empty
+Geometry (0/3 on visual). But the HOST of the control has `props={}` on its visual LOD, exactly like
+ours - **the host is exculpated, the sub-models are the gap.** SP-097 does not make that split.
+
+Two further measurements bound the claim, so do not sell the property as a fix:
+- The canonical symptom (`model_info.bounding_center != 0` after binarize) can be ABSENT while the
+  visual-LOD property is missing: the deployed OH-1 shell and sub-models all read `(0,0,0)`, because
+  an empty Geometry LOD carrying `autocenter=0` is already enough to stop binarize re-centring.
+- An A/B binarize with and without the property on the visual LODs produced identical semantics -
+  66/66 `model_info` fields equal, same face counts per LOD; only the property block differs. So the
+  property travels to the ODOL and is verifiable there, but any effect is RUNTIME and cannot be
+  predicted offline. Adjudicating it needs an isolated in-game A/B: two PBOs differing only in the
+  property, with a reproducible camera pose.
+
+### `binarize` is NOT deterministic - never gate on ODOL byte identity
+
+Two runs of `binarize.exe -always` over the same source, same flags: the shell came out
+`2,886,719 b` / `8C290530214C...` and `2,763,097 b` / `0705207DB7F0...`; the interior `1,062,412 b`
+vs `1,062,417 b`. The two small rotor models were byte-identical, so the effect scales with model
+size. Semantically the two shells match (66/66 `model_info` fields, same faces/selections/properties
+per LOD); the divergence is encoding/compression order.
+
+Rule: gates over ODOL compare SEMANTICS (per-LOD counts, selections, properties, proxies, centres),
+never bytes. Hash identity is still valid for MLOD, which the pipeline writes itself. Re-read any
+historical "the ODOL came out byte-identical" claim with this in mind.
+
+Origin: LFHeli OH-1 2026-07-28, the session that converted doors to proxied attachments after the
+user pointed out that a vanilla car only draws the door proxy when the door is attached.
