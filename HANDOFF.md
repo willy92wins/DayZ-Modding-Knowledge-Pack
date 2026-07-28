@@ -1,83 +1,91 @@
 # HANDOFF — DayZ Modding Knowledge Pack
 
 <!-- LIVE-STATE:START -->
-# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-28 (madrugada)
+# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-28 (madrugada, 2ª sesión)
 
-**Última verificación real:** HEAD `b015972` en `r21/phase01-foundation`, árbol
-limpio, `main` intacto en `994cb77`, sin remoto. Suite **698 passed / 18
-skipped**, `packctl validate` PASS con cero findings, `packctl promote --check`
-**`WARN` con exit 0** y finding único `PROMOTION-DRIFT operation_count=38`, plan
-escrito. Todo medido sobre el árbol, no leído de informes.
+**Última verificación real:** HEAD `e892f45` en `r21/phase01-foundation`, árbol
+limpio, `main` intacto en `994cb77` y 63 commits por detrás. Suite **699 passed /
+18 skipped** (una más: el test nuevo de casos vivos), `packctl validate` PASS con
+cero findings, `packctl promote --check` **`WARN` con exit 0** y finding único
+`PROMOTION-DRIFT operation_count=38`. Las 38 llevan `logical_target_ids =
+["obsidian_snapshots"]` y `before_digest: absent` —el destino es por commit—; las
+16 operaciones de skill tienen **drift cero**. Todo medido sobre el árbol.
 
-**Promoción real ejecutada** (tx `6591ddab82a8162e1550f4c8` sobre `0e35ba9`, PASS,
-54 operaciones, 141 eventos terminando en `COMMIT`), autorizada explícitamente.
-Readback independiente: 162 ficheros antes y después, **0 perdidos**, 16 cambiados
-—los 8 `SKILL.md` adoptados × 2 raíces— y los 162 proyectados coinciden con el repo.
-El drift bajó de 46 a 38: las 38 restantes son **todas** de `obsidian_snapshots`
-con `before_digest: absent`, que es estructural. Cero operaciones de skill con
-drift; las dos raíces están sincronizadas y ya sin la asimetría CRLF/LF.
+`ciclos_en_este_objetivo: 1 (rollout py3d y cierre de BUG-018)`
 
-`ciclos_en_este_objetivo: 1 (deuda de promoción y hardening de Fase 04)`
+## Rollout py3d EJECUTADO — BUG-018 resuelto en la práctica
 
-## Cerrado en esta sesión (9 commits)
+Autorizado explícitamente. Las 8 skills consumidoras pasan de `py3d-1.2.0` a
+`1.4.0`. **Readback independiente**, no leído de la salida del script: 101
+ficheros antes y después, **0 perdidos**, 8 wheels sustituidos, 4 documentos
+parcheados. Los 8 wheels hashean al sello. Backup fuera del destino en
+`%LOCALAPPDATA%\DayZ-Modding-Knowledge-Pack\rollout-backups\py3d-1.4.0-20260728-030119847`,
+con las 4 preimágenes y los 8 wheels viejos.
 
-- **Quién escribe en las skills instaladas — RESUELTO. No es el harness.** Son
-  dos sesiones concurrentes de Claude Code del propio usuario, promoviendo
-  lecciones. Atribuido por tres vías: transcripciones de sesión con el texto
-  literal, notas de memoria automática escritas 31 y 35 s después de cada
-  escritura, y cada `LL-NNN` citado resuelve en el corpus del vault.
-- **`7e437f0`** — adopción de los 8 artefactos que solo vivían en las instaladas
-  (+227 líneas, 0 borrados). **`7556555`** — 22 adjudicaciones, digests releídos
-  del check. **`f641c96`** — tercera tanda de `dayz-vehicles` adoptada y
-  re-adjudicada.
-- **`982dae6`** — BUG-021 y BUG-022 cerrados. **`4271ff0`** — MEN-1, MEN-5, MEN-6
-  y el test de involución. **`98421b3`** — MEN-2, MEN-3, MEN-4 con round-trip por
-  bytes sobre todo el corpus.
-- **BUG-020 verificado de forma independiente**: `_latest_receipt_digests` sobre
-  los 68 pares, con las 22 adjudicaciones y con el mapa vacío, da **0 findings en
-  ambas pasadas** → **0 enmascarados**. Antes del fix eran 12. Y el guardarraíl
-  sigue pudiendo ponerse rojo: las cuatro formas de fallo (fork, ciclo, múltiples
-  preimágenes, transición duplicada) fallan cerradas **dentro** de una transacción
-  y pasan **entre** dos. De los «cuatro tests invertidos» del mensaje de `ac21d13`,
-  solo dos lo fueron; los otros dos siguen fallando cerrados.
-- **`0e35ba9`** — el gate de preimagen comprueba **todos** los ids lógicos, no solo
-  `[0]`. Y **retira la deuda que lo pedía**: la afirmación de que el gate indexa por
-  un artefacto de ordenación y deja adjudicaciones inertes **es falsa**, medida
-  instrumentando el gate real (68 operaciones, todas con 1 id). La cifra que la
-  sostenía se había medido contra el plan deduplicado. `LL-217`.
-- **`b015972`** — promoción real, receipt versionado con su propia entrada de
-  procedencia, verificada contra el `receipt_hash` del evento `COMMIT` terminal.
+El reemplazo completo que habría borrado conocimiento en 7 de 10 destinos **nunca
+se ejecutó**. La vía patch-only entregó el delta sin perder una línea: las 4
+líneas retiradas en `dayz-animation-pipeline` fueron reemplazadas por su versión
+actualizada (net +20), y `py3d-1.0.0-quirks.md` ganó una corrección de API real
+(`py3d.read_p3d` no existe; es `py3d.P3D(open(...))`).
 
-## AVISO VIGENTE — el destino muta solo, y se ha medido dos veces
+**La sesión 2 ya estaba implementada** en `3ffecdf` desde el 2026-07-26: el
+aplicador es patch-only, fail-closed, con backup obligatorio fuera del destino y
+CAS repetido tras el backup. No había que construir nada, solo revalidar.
 
-Escrituras host-direct en skills del pack **tres veces el 2026-07-27** (17:38:17,
-19:39:59, 23:03:24). Coste medido: 8 findings a las 19:02 → **16** a las 19:48; y
-gate limpio a las 20:10 → **FAIL** a las 23:12. El conocimiento es bueno y ya está
-en Git; lo que se repite es el ciclo adoptar → re-medir → re-adjudicar.
+## Wheel re-sellado (`7ad464c`) — el gate estaba rojo con razón
 
-**Frontera decidida y registrada** en `decisions/decision-log.md` (entrada
-«Frontera de escritura», 2026-07-27): las **15 skills del `promotion-map`** se
-escriben en el repo y llegan al destino por promoción con recibo; fuera de esas
-15 no hay fricción. `promote --apply` solo desde la sesión que sostiene este
-worktree y con autorización explícita del usuario.
+`4271ff0` endureció **la fuente del wheel** (`tools/py3d/py3d/__init__.py`:
+caracteres de control en rutas de proxy, contrato de nombre en `add_proxy`, y la
+copia de `raw_frame` que quita el aliasing). El sello `c635bf7e…` describía la
+fuente de `913192d`, no la de HEAD. Nuevo sello **`8043b796…`**, derivado dos
+veces. Decisión del usuario: re-sellar 1.4.0 en vez de subir a 1.4.1, asumiendo
+que `1.4.0` designa dos contenidos sin cambiar de nombre de fichero;
+`product-spec.md` lo dice explícitamente.
 
-**Antes de adjudicar cualquier cosa: re-medir.** Una adjudicación autoriza un
-digest concreto y caduca sola.
+## AVISO VIGENTE — el destino muta solo, y ya van CINCO escrituras
+
+Tres el 2026-07-27 (17:38:17, 19:39:59, 23:03:24) y **dos durante esta sesión**:
+02:43:33 (SP-098) y 03:23:51 (regla del censo de rips), ambas de la sesión
+concurrente de LFHeli. Las dos adoptadas byte-exactas (`2c1df33`, `bbd6a49`) y
+adjudicadas (`2d0c9b7`, `e892f45`).
+
+**Lo aprendido, que ahorra la próxima vuelta:** adoptar es lo que protege el
+conocimiento y es barato; adjudicar es lo que caduca. La primera adjudicación de
+esta sesión expiró entre dos commits propios. **No persigas el digest mientras su
+escritor sigue activo** — comprueba que el fichero instalado lleva un rato quieto
+y que el repo lo iguala byte a byte antes de firmar.
+
+Las 5 preimágenes del rollout también habían caducado (drift aditivo del
+2026-07-27 19:44-19:46). Re-fijadas contra el fichero vivo, con snapshot nuevo
+`live-snapshot-2026-07-28` fuera del repo; el del 26 se conserva como registro.
+Los 4 parches se forward-checkearon contra el fichero vivo **antes** de re-fijar.
+
+## Hechos estructurales medidos
+
+- Las 8 skills del rollout viven en `~\.agents\skills` como **junctions al árbol
+  gestionado del plugin de Cowork**; `~\.claude\skills` no contiene ninguna.
+  Intersección con las 15 del `promotion-map` = **0**, verificada, y confirmada
+  empíricamente: se modificaron 12 ficheros en esas 8 y el gate no dijo nada.
+- El `manifest.json` del plugin registra **skills por nombre/id, no ficheros**
+  (cero referencias a `py3d-1.2.0`), así que renombrar el wheel dentro de una
+  skill registrada no deja un huérfano para el reconciliador.
+- La premisa de `3ffecdf` de que «las skills vivas son LF-only» **es falsa desde
+  el 2026-07-27**: 5 de 11 destinos llevan líneas CRLF y `dayz-p3d-inspector`
+  está volcada entera (496 CRLF / 4 LF).
 
 ## Deuda sin sesión asignada
 
-- **Rollout py3d** a las 8 skills instaladas (siguen en `py3d-1.2.0`). Requiere
-  autorización explícita. **NO cae dentro de la frontera de escritura**, al
-  contrario de lo que dijeron las versiones previas de este bloque: las 8 son
-  `dayz-3d-viewer`, `dayz-animation-pipeline`, `dayz-model-pipeline`,
-  `dayz-p3d-audit`, `dayz-p3d-debinarizer`, `dayz-p3d-inspector`, `dayz-pbo-build`
-  y `dayz-proxy-align` — todas en `~\.agents\skills` y **ninguna entre las 15 del
-  `promotion-map`**. Intersección cero, medida listando los `wheels\py3d-*.whl`.
-  Es host-direct y no toca este gate. Lo que sí sigue vigente es BUG-018: patch-only
-  con preimagen por destino y backup fuera de la raíz de destino.
-- **Eval vivo contra modelo real** para sacar B3b de `❓`.
-- **`reports/` acumula basura** de sesiones anteriores (venvs de pytest, tmpdirs
-  con ACLs read-only). Gitignored, no contamina commits; limpieza pendiente.
+- **Eval vivo**: los 4 casos de `blender-animation` están portados a
+  `evals/live/cases/` (`315517e`) y el test de casos vivos generalizado. **B3b
+  sigue en ❓ a propósito**: son casos, no una ejecución, y correrlos gasta
+  llamadas a modelo. Reserva escrita: el veredicto medido a mano («baseline also
+  passed 7/7» = VACUOUS) **no viaja** con el port, porque medía la ejecución sin
+  skill, no el conocimiento sin skill.
+- **Integración de la rama**: 63 commits, `main` es ancestro y el fast-forward es
+  trivial. El usuario decidió **no tocarlo aún** y decidir al cerrar r21.
+- **`reports/`**: 39,2 → 0,85 MB. Quedan 48 directorios vacíos que rechazan el
+  borrado con `UnauthorizedAccessException` incluso para leer su ACL; hacen falta
+  `takeown`/`icacls`.
 
 ## Invariantes cerradas
 
@@ -85,23 +93,16 @@ digest concreto y caduca sola.
   del destino al repo, nunca al revés sin gate.
 - Una adjudicación autoriza **un digest concreto**, caduca sola, y **tapa, no
   arregla** — por eso se adopta ANTES de adjudicar.
-- Preimagen e historial causal son **dos gates distintos**. Firmar preimágenes no
+- Preimagen e historial causal son dos gates distintos. Firmar preimágenes no
   tapa historia (medido: 0 enmascarados).
-- El gate de preimagen ve **una operación por destino lógico**, con un id cada
-  una: 68 medidas instrumentando el gate real. No hay adjudicación inerte, y el
-  layout de junctions no puede voltear su clave. La afirmación contraria, que este
-  fichero y `verified-apis.md` sostuvieron hasta el 2026-07-28, salía de medir
-  contra el plan deduplicado — que no es el índice del gate.
-- **Instrumentar mutando dicts ajenos exige snapshot en el momento de la
-  llamada**: el dedup muta las operaciones in place después
-  (`promotion.py:1702`), así que guardar referencias mide el estado equivocado.
-- Ningún writer ODOL; «aislado» ahí significa subproceso, no sandbox.
-- Un gate que no puede ponerse rojo no es un gate.
-- Ninguna promoción real sin autorización explícita del usuario.
+- El gate de preimagen ve una operación por destino lógico, con un id cada una.
+- Instrumentar mutando dicts ajenos exige snapshot en el momento de la llamada.
+- Un gate que no puede ponerse rojo no es un gate — el del wheel lo demostró.
+- Ninguna promoción real ni rollout sin autorización explícita del usuario.
 
-**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: 98421b3
-con los seis MEN y BUG-021/022 cerrados · re-medir promote --check antes de tocar
-nada, porque el destino muta solo`.
+**Gate de arranque:** declarar `Retomo DayZ Modding Knowledge Pack desde: e892f45
+con el rollout py3d aplicado y BUG-018 cerrado · re-medir promote --check antes
+de tocar nada, porque el destino muta solo y ya van cinco`.
 <!-- LIVE-STATE:END -->
 
 ---
