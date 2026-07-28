@@ -3,10 +3,11 @@
 <!-- LIVE-STATE:START -->
 # DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-07-28 (B20 medido)
 
-**Última verificación real:** HEAD `94fbc13` en `r21/phase01-foundation`, árbol
+**Última verificación real:** HEAD `4684f29` en `r21/phase01-foundation`, árbol
 limpio. **`main` sigue en `f87a59e`** y NO se ha adelantado: la Fase 02 no está en
-verde. Sin remoto. Suite **755 passed / 18 skipped / 5 subtests**, `validate` PASS
-con cero findings, y **`promote --check` en ROJO** (ver aviso 1).
+verde. Sin remoto. Suite **768 passed / 18 skipped / 15 subtests**, `validate` PASS
+con cero findings, **gate de corpus PASS exit 0**, y **`promote --check` en ROJO**
+(ver aviso 1).
 
 `ciclos_en_este_objetivo: 2 (Fase 02 — B20, gate C1 y corpora)`
 
@@ -27,41 +28,48 @@ El parser lo implementa (`dba357e`) y **TraderX pasa de 42/46 a 46/46**. Detalle
 cadena de medición en `plans/2026-07-24-02-dayz-ui-lab.md` §B20 y en
 `30_Sessions/2026-07-28-DayZ-Modding-Knowledge-Pack-fase02-b20-medido.md`.
 
-**Ningún criterio se ha movido a `✓`.** Siguen **24 de 54**.
+**`C1` y `C5` cerrados con evidencia ejecutada: 26 de 54** (eran 24). Quedan
+`C2`, `C3`, `C4`, `C6`, `C7` y `C8` de la Fase 02.
 
 ## Qué hacer a continuación
 
 1. **Adjudicar `skill/dayz-vehicles`** en cuanto haya 60 min de quietud — es lo
    único que pone verde el gate (aviso 1).
-2. **Gate C1 (`:95`) — el corpus YA está en disco y ya da verde.** El usuario
-   autorizó clonar, y los tres referentes están en **`C:\Users\guill\DayZ-UI-Corpora\`**
-   a los commits fijados por el research, **pin verificado**:
+2. **Tasks 3-5** del plan de fase (escenarios, render determinista, diff), offline.
+   Es el tramo grande que queda y el natural para delegar a Codex: código puro,
+   sin engine de por medio.
+3. **El escape inválido de `:91-92` ya es decidible.** Se dejó abierto por falta
+   de corpus; ahora está medido: en los **365 layouts** de terceros hay **cero**
+   backslashes dentro de string, y solo **4** en total, que son las cuatro
+   continuaciones de B20. Convertir un escape desconocido en error es seguro
+   sobre ambos corpora. Test RED→GREEN y cierra el tercio que falta del item.
+4. **Task 6 (`C6`)** — la sonda ya funciona y está desplegada en
+   `P:\Mods\@LF_UIProbe`; falta el bundle `engine-capture-v1`. El import manual
+   con DayZDiag basta, no exige MCP.
 
-   | Referente | Commit | Layouts |
-   |---|---|---|
-   | `VPP-Admin-Tools` | `dc22e420df3b54e821055f9764da1e48f4a31e71` | 69 |
-   | `DayZ-Expansion-Scripts` | `8d3a453b2b6786a0bef728dbdfdc9a1ef0383a9b` | 234 |
-   | `TraderPlusV1` | `d0cd39f105fba57104bf93798129626228a263e6` | 16 |
+## Corpus: montado, fijado y con gate propio (2026-07-28)
 
-   Medido con el parser ya cambiado: **319/319 público**, **46/46 TraderX**,
-   **11/11 LFPG**, cero fallos. **No hay regresión** por el cambio de B20.
+`C1` y `C5` están en **`✓`**. Los tres referentes públicos viven en
+**`C:\Users\guill\DayZ-UI-Corpora\`** a los commits del research, con el pin
+verificado contra el sha esperado; TraderX se extrae de las PBO del Workshop.
 
-   Lo que falta para poder **escribir el `✓`** no es medir, es hacerlo
-   reproducible desde el repo: un **runner de corpus commiteado** (hoy la medida
-   sale de un script de scratchpad) y los **manifests de `:77`/`SC-010`** con
-   commit/hash/licencia. Sin eso se estaría marcando un criterio con evidencia
-   que no se puede re-ejecutar. Los tres repos **no se redistribuyen**: solo
-   entran URL, commit y hash.
-3. **Corpora (`:77`)** — ahora se pueden **verificar**, no transcribir: los tres
-   están en disco. Va emparejado con el runner del punto 2.
-4. **Tasks 3-5** del plan de fase (escenarios, render determinista, diff), offline.
-   Es el tramo natural para delegar a Codex: código puro, sin engine de por medio.
-5. **El escape inválido de `:91-92` ya es decidible.** Se dejó abierto por falta
-   de corpus; ahora está medido: en los **365 layouts** (319 público + 46 TraderX)
-   hay **cero** backslashes dentro de string, y solo **4** en total, que son las
-   cuatro continuaciones de B20. Convertir un escape desconocido en error es
-   seguro sobre ambos corpora. Hazlo con test RED→GREEN y cierra el tercio que
-   falta del item.
+Gate re-ejecutable desde el repo, que es lo que permitió escribir el `✓`:
+
+```
+python tools\dayz-ui-lab\dayz_ui_lab\corpus.py --root .
+→ 376/376 layouts, 0 diagnostics, 0 redistribuidos, verdict=PASS, exit 0
+```
+
+Tres cosas que conviene no romper:
+
+- **Las rutas viven en `sources/local-roots.json`, que NO se rastrea.** Si el
+  gate dice `CORPUS-ROOT-MISSING`, es que falta configurarlo, no que el corpus
+  esté mal. La plantilla es `local-roots.example.json`.
+- **Un corpus sin raíz configurada FALLA el gate**, no se salta. «No medido» y
+  «pasa» no pueden parecerse.
+- **Nada de terceros entra en Git**: solo URL, commit/manifest, hash y licencia.
+  La auditoría compara **por contenido, no por ruta**, así que un layout ajeno
+  renombrado también salta.
 5. **Promoción pendiente de `skill/rigorous-data-audit`**: las 36 líneas de
    `1312890` nunca llegaron a las raíces (la transacción se firmó sobre `8986bae`).
    Es repo-ahead benigno, verificado por hash de blob. Agrúpalo con la promoción de
