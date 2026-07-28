@@ -62,7 +62,54 @@ citadas son de `product-spec.md`, que es donde vive la evidencia exigida.
 
 | Criterio | Qué lo cierra | Bloqueo |
 |---|---|---|
-| `B3b` (`:56`) | un caso vivo `DISCRIMINATING` sobre runner real | **solo el login del CLI**. Los cinco casos ya existen en `evals/live/cases/`; el harness se ejecutó y falló limpio por `Not logged in` |
+| `B3b` (`:56`) | un caso vivo `DISCRIMINATING` sobre runner real | **una `ANTHROPIC_API_KEY` en el entorno**, no un `/login` (§4.1.1) |
+
+#### 4.1.1 — Por qué B3b no lo desbloquea `/login`
+
+Los cinco casos ya existen en `evals/live/cases/` y el harness se ejecutó de
+verdad: diez runs, `LIVE-EVAL-RUNNER-INVALID exit=2`, veredicto `INCONCLUSIVE`,
+sin inventar resultado ni contar la tanda como evidencia.
+
+El runner invoca el CLI con `--bare` (`evals/live/runners/claude-code.py:29-43`),
+y la ayuda del CLI dice de esa bandera: *«Anthropic auth is strictly
+`ANTHROPIC_API_KEY` or apiKeyHelper via `--settings` (OAuth and keychain are never
+read)»*. Medido el 2026-07-28: la variable no existe en sesión, `User` ni
+`Machine`. Una sesión OAuth, por tanto, no lo desbloquea.
+
+**`--bare` es load-bearing y no se quita.** Es lo que impide que el CLI
+auto-descubra `CLAUDE.md` y las skills globales del usuario, es decir lo que
+mantiene honesto el brazo `without_skill`; hay un test dedicado a esa
+contaminación (`tests/packctl/test_live_evals.py`,
+`test_without_skill_tree_contamination_rejects_case`). Quitarla convertiría el
+eval en una medición de otra cosa.
+
+**Decisión del usuario, 2026-07-28 (D5): no se usa API de pago.** El pack debe
+poder ejecutarse desde Cowork con la autenticación que ya existe. Eso descarta
+`ANTHROPIC_API_KEY` y también un `apiKeyHelper`, que necesita la misma clave.
+
+Con esa restricción, **B3b no es alcanzable tal como está especificado hoy**, y
+conviene ver por qué es una pinza y no un descuido:
+
+- El brazo `without_skill` solo es honesto si el runner **no ve las skills
+  globales**. `blender-animation` está instalada en `~\.claude\skills`, así que un
+  CLI que las auto-descubra la encontraría aunque el workspace no la monte.
+- Lo único que hoy lo impide es `--bare`, que también rechaza leer OAuth/keychain.
+- Luego: o hay clave de API, o el brazo de control queda contaminado.
+
+Vías que quedan, ninguna gratis en esfuerzo:
+
+1. **Aislar sin `--bare`.** Investigar si `--settings` puede neutralizar el
+   descubrimiento de skills globales y de `CLAUDE.md`, conservando la auth de
+   Cowork. Si se logra, `test_without_skill_tree_contamination_rejects_case` sigue
+   siendo el juez: no se declara resuelto sin que ese test pase con el runner real.
+2. **Runner alternativo** que implemente el contrato stdin/stdout del harness
+   contra la sesión viva de Cowork, con el mismo aislamiento demostrado.
+3. **Exclusión de alcance fechada para B3b**, que es el mecanismo que el propio
+   criterio de cierre admite (`roadmap:119-122`). Contradice D3, así que exige
+   una decisión explícita del usuario; no la tome la sesión nocturna por su cuenta.
+
+Hasta que una de las tres se resuelva, **B3b se queda en `❓` por diseño y no se
+gasta tiempo de sesión en él**.
 
 ### 4.2 Fase 02 — `dayz-ui-lab`, C1–C8 (8 criterios)
 

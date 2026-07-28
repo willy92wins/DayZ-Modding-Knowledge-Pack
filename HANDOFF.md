@@ -42,7 +42,30 @@ y la secuencia. No re-planificar: ejecutar.
 |---|---|
 | **DayZ MCP** | **resuelto**. Ambos peers `version=6~1.29.163451`, `version_state=ok`, *version accepted*, poll 66-67 s. Lease libre: `owner=null`, `claimable=true`, sin `audit_fault` |
 | **DayZDiag** | **arriba**, dos instancias desde 04:15:34 y 04:15:48 |
-| **Login del CLI `claude`** | **verificar al arrancar**. A las 04:35 seguía devolviendo `Not logged in`. Si ya tiene sesión, B3b se cierra con un comando |
+| **Auth del CLI `claude`** | **B3b sigue bloqueado, y NO por falta de `/login`** (ver abajo) |
+
+**Corrección medida a las 04:45 — el bloqueo de B3b no es el `/login`.** El runner
+invoca el CLI con `--bare` (`evals/live/runners/claude-code.py:29-43`), y la ayuda
+del propio CLI dice de esa bandera: *«Anthropic auth is strictly
+`ANTHROPIC_API_KEY` or apiKeyHelper via `--settings` (OAuth and keychain are never
+read)»*. Medido: no existe `ANTHROPIC_API_KEY` ni en sesión, ni en `User`, ni en
+`Machine`. Así que una sesión OAuth no desbloquea el eval; hace falta la variable
+de entorno, que el adaptador hereda porque hace `subprocess.run` sin `env=`.
+
+**Y quitar `--bare` no es el arreglo**: es lo que impide que el CLI auto-descubra
+`CLAUDE.md` y las skills globales del usuario, o sea lo que mantiene honesto el
+brazo `without_skill` —hay un test dedicado,
+`test_without_skill_tree_contamination_rejects_case`. La bandera es load-bearing.
+
+**Decisión del usuario (D5): no se usa API de pago.** El pack debe correr desde
+Cowork con la auth que ya existe. Eso descarta la clave y el `apiKeyHelper`.
+
+Es una pinza, no un descuido: el brazo `without_skill` solo es honesto si el
+runner no ve las skills globales, y `blender-animation` está en `~\.claude\skills`;
+lo único que hoy la esconde es `--bare`, que es justo lo que rechaza la auth de
+Cowork. **B3b se queda en `❓` por diseño; no gastes tiempo de sesión en él.**
+Las tres vías abiertas están en el §4.1.1 del plan, y la tercera —exclusión de
+alcance fechada— exige decisión del usuario: no la tomes por tu cuenta.
 
 **B20 ha dejado de estar bloqueado**, y eso reordena la Fase 02: el hard stop
 «B20 abierto» (`plans/2026-07-24-02-dayz-ui-lab.md:173`) y los items que dependían

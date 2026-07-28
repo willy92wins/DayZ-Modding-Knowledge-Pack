@@ -191,7 +191,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1c04b7da1d2a10e581fd44623aff125b0e91393ce6a3eb8b05f6f4e711228778",
+      "output_hash": "50fccd8b03d8c3d341af5dcc79a507cc6b0200d41ebb39c05fe7aada44af73c7",
       "output_path": "HANDOFF.md",
       "routing_artifact_id": "root/handoff",
       "verification_level": "cross_checked"
@@ -2123,7 +2123,7 @@
           "decision": "adopt",
           "decision_evidence": "User-approved completion plan: it owns every one of the 35 open criteria, records the four decisions taken on 2026-07-28, and is written under cite-then-verify with every claim carrying a path:line read from the tree.",
           "license": "MIT",
-          "source_hash": "697332a2ed7be0eb24f977bf46c490bafc5f6ba1e98bac737e5aef382c4284da",
+          "source_hash": "3507e7a5e376f2cfcb6102ae1f0674a402fd3f10138bf93390ede609fe4ee919",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-28-r21-completion-and-criteria-triage.md",
           "source_revision": "r21-completion-plan@2026-07-28",
@@ -2131,7 +2131,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "697332a2ed7be0eb24f977bf46c490bafc5f6ba1e98bac737e5aef382c4284da",
+      "output_hash": "3507e7a5e376f2cfcb6102ae1f0674a402fd3f10138bf93390ede609fe4ee919",
       "output_path": "plans/2026-07-28-r21-completion-and-criteria-triage.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
