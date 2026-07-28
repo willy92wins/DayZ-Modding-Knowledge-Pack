@@ -1958,7 +1958,7 @@
           "decision": "adopt",
           "decision_evidence": "The approved Phase 02 plan fixes the architecture and records B19 GREEN plus the authorized-engine gate that still blocks B20.",
           "license": "MIT",
-          "source_hash": "497a032ba5d8466342b9ad8f8e23c4b1ba212736528b061a7b5e31674b2f2577",
+          "source_hash": "06c94054a68f959034e4845a221420753f91971025129155a64b751c6a9d1d00",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-02-dayz-ui-lab.md",
           "source_revision": "r21-phase02-approved@2026-07-25",
@@ -1966,7 +1966,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "497a032ba5d8466342b9ad8f8e23c4b1ba212736528b061a7b5e31674b2f2577",
+      "output_hash": "06c94054a68f959034e4845a221420753f91971025129155a64b751c6a9d1d00",
       "output_path": "plans/2026-07-24-02-dayz-ui-lab.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -2304,7 +2304,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "9b3b871c324ce62bc4f9041777a0a01b9b29dc6de49900bcc97d90bcfbfa36b1",
+          "source_hash": "751e8c48785d2df23d2b89e40c5976deaea6547805538ce046a13a4711e131f2",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -2312,7 +2312,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9b3b871c324ce62bc4f9041777a0a01b9b29dc6de49900bcc97d90bcfbfa36b1",
+      "output_hash": "751e8c48785d2df23d2b89e40c5976deaea6547805538ce046a13a4711e131f2",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
@@ -11065,6 +11065,116 @@
       "license": "MIT",
       "output_hash": "75df36f85e93bfe0ee9e904dfdaa60ddc750620905d4919db20862247d708109",
       "output_path": "tools/dayz-ui-lab/tests/test_render.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/dayz_ui_lab/diff.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 5 closes SC-009: a structural diff that pairs widgets by stable id plus offline defect overlays for reference-missing, clipping, overlap, overflow and missing state, with a first-party negative fixture producing exactly the four expected findings and the positive control producing zero.",
+          "license": "MIT",
+          "source_hash": "9696de7e12a303b4e6ec03089cadd24ea92dde4b5bc469f6b485a840f540f9be",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/dayz_ui_lab/diff.py",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9696de7e12a303b4e6ec03089cadd24ea92dde4b5bc469f6b485a840f540f9be",
+      "output_path": "tools/dayz-ui-lab/dayz_ui_lab/diff.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/defect-overlays/layouts/defects.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 5 closes SC-009: a structural diff that pairs widgets by stable id plus offline defect overlays for reference-missing, clipping, overlap, overflow and missing state, with a first-party negative fixture producing exactly the four expected findings and the positive control producing zero.",
+          "license": "MIT",
+          "source_hash": "d4413f6b88382cd91e6a0589826de9dcd9d91470ec048808a0a75802f283f40c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/defect-overlays/layouts/defects.layout",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d4413f6b88382cd91e6a0589826de9dcd9d91470ec048808a0a75802f283f40c",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/defect-overlays/layouts/defects.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/defect-overlays/observed.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 5 closes SC-009: a structural diff that pairs widgets by stable id plus offline defect overlays for reference-missing, clipping, overlap, overflow and missing state, with a first-party negative fixture producing exactly the four expected findings and the positive control producing zero.",
+          "license": "MIT",
+          "source_hash": "1a4250ca9510f9563f83dfdc14607ba47557b7dcb750dc3cbecfcb9b6038a6e2",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/defect-overlays/observed.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1a4250ca9510f9563f83dfdc14607ba47557b7dcb750dc3cbecfcb9b6038a6e2",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/defect-overlays/observed.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/defect-overlays/scenario.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 5 closes SC-009: a structural diff that pairs widgets by stable id plus offline defect overlays for reference-missing, clipping, overlap, overflow and missing state, with a first-party negative fixture producing exactly the four expected findings and the positive control producing zero.",
+          "license": "MIT",
+          "source_hash": "fdece133e886114a4651d315a830ff20c39bba63b6e54b938151371b6266d371",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/defect-overlays/scenario.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fdece133e886114a4651d315a830ff20c39bba63b6e54b938151371b6266d371",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/defect-overlays/scenario.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/tests/test_diff.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 5 closes SC-009: a structural diff that pairs widgets by stable id plus offline defect overlays for reference-missing, clipping, overlap, overflow and missing state, with a first-party negative fixture producing exactly the four expected findings and the positive control producing zero.",
+          "license": "MIT",
+          "source_hash": "ca444d160f69b0f0ab0082c6f57be935325ec4db880700fec22eeef0a4b674df",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/tests/test_diff.py",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ca444d160f69b0f0ab0082c6f57be935325ec4db880700fec22eeef0a4b674df",
+      "output_path": "tools/dayz-ui-lab/tests/test_diff.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

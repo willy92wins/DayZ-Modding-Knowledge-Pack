@@ -71,7 +71,7 @@ y entrada en el changelog.
 | C1 | Parser honesto cierra B19/B20 | 319/319 corpus público + 46/46 TraderX + LFPG, exit 0; 0 falso `missing-child-block`; CRLF/LF verificados en DayZDiag | ✓ |
 | C2 | Escenarios versionables componen shell, subviews y colecciones, detectando ciclos y paths rotos | fixture shell→subview→3 cards conserva orden/identidad/geometría en 1920×1080 y 3440×1440 | ✓ |
 | C3 | El render semántico es determinista entre ejecuciones limpias; RGBA/PNG solo son canónicos dentro de un perfil de raster fijado, y resuelven assets propios | dos `render.json` byte-idénticos sin timestamps/rutas privadas; dentro del perfil fijado, dos buffers RGBA y PNG byte-idénticos; fuera del perfil, artefacto `non_canonical`; fixture `.styles` + `.imageset` 9-slice + fuente sin fallback silencioso | ❓ |
-| C4 | Diff accionable identifica referencia rota, clipping, solape y estado ausente por widget/escenario | fixture negativa produce exactamente los hallazgos esperados; control verde produce 0 | ❓ |
+| C4 | Diff accionable identifica referencia rota, clipping, solape y estado ausente por widget/escenario | fixture negativa produce exactamente los hallazgos esperados; control verde produce 0 | ✓ |
 | C5 | Corpus positivo = VPP/Expansion/TraderPlus/TraderX; negativo = LFPG Sorter V4 TEST; terceros no se redistribuyen | manifests por commit/hash y auditoría de allowlist | ✓ |
 | C6 | DayZDiag manda como golden; una sonda ingame first-party exporta geometría/estado runtime y calibra resoluciones/aspect ratios definidos | bundle `engine-capture-v1` coherente por escenario/run con screenshot PNG, snapshot estructurado completo, RPT sanitizado, build y resolución; import manual basta para cerrar el gate; deltas offline cuantificados por widget, sin umbral inventado | ❓ |
 | C7 | Pooling solo se promueve con lifecycle completo y beneficio medido | create/unlink vs reuse: mismo output; 0 estado fantasma/callback duplicado; benchmark reproducible | ❓ |
@@ -142,7 +142,41 @@ python tools/dayz-ui-lab/dayz_ui_lab/scenario.py \
   que atrapa un layout de tercero replantado dentro del directorio permitido. Un
   `.layout` en una tercera ubicación sigue dando
   `CORPUS-LAYOUT-OUTSIDE-FIRST-PARTY`, con test propio. El gate mide ahora
-  `4 tracked .layout, 0 redistributed`.
+  `5 tracked .layout, 0 redistributed`.
+
+**Evidencia ejecutada el 2026-07-29** para `C4`, medida sobre el árbol:
+
+```
+python tools/dayz-ui-lab/dayz_ui_lab/diff.py \
+    --observed  tools/dayz-ui-lab/fixtures/scenarios/defect-overlays/observed.json \
+    --scenario  tools/dayz-ui-lab/fixtures/scenarios/defect-overlays/scenario.json
+  → verdict=FAIL, exit 1, findings=4
+    DIFF-REFERENCE-MISSING · DIFF-CLIPPING · DIFF-OVERLAP · DIFF-STATE-MISSING
+control positivo three-cards → verdict=PASS, exit 0, findings=0
+```
+
+- **Exactamente cuatro, con igualdad y no con «al menos»** — el test asserta
+  `len(findings) == 4` y el set exacto de códigos. Los cuatro son los que nombra
+  `SC-009`.
+- **La fixture negativa no es sintética.** `observed.json` **es** la salida del
+  emisor para ese escenario a `1000×1000`, perturbada en exactamente dos sitios:
+  un hijo colgante y un estado ausente. Los otros dos defectos —clipping y
+  solape— son intrínsecos al layout y los reproduce el pipeline real. Verificado
+  comparando el documento hoja a hoja contra `render.py`: difieren en **dos
+  hojas**, las dos inyectadas.
+- **Accionable, no solo detectado** — cada finding lleva escenario, widget id,
+  propiedad, esperado, observado y `path:línea:columna` del layout que hay que
+  editar; ninguna ruta es absoluta.
+- **Emparejamiento por identidad** — invertir el orden de la lista de widgets
+  produce cero hallazgos, comprobado por test. Los ids son los que conserva el
+  render desde el compositor.
+- **Cada detector probado en rojo y en verde**, con clipping y overflow
+  excluyéndose mutuamente en las dos direcciones.
+- **Residual conocido, registrado como `BUG-023` y fuera del alcance de `C4`**: el
+  diff valida que concuerde el `scenario_id` pero **no los viewports**, así que un
+  observado capturado a otra resolución produce hallazgos de geometría sin avisar
+  de la discordancia. Importa para la Task 6, que es quien enchufará capturas de
+  engine a este lado.
 
 ## D — `dayz-persistence`
 
