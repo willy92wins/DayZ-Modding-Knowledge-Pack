@@ -2114,6 +2114,29 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/plans/2026-07-28-r21-completion-and-criteria-triage.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "User-approved completion plan: it owns every one of the 35 open criteria, records the four decisions taken on 2026-07-28, and is written under cite-then-verify with every claim carrying a path:line read from the tree.",
+          "license": "MIT",
+          "source_hash": "697332a2ed7be0eb24f977bf46c490bafc5f6ba1e98bac737e5aef382c4284da",
+          "source_id": "pack-r21-authored",
+          "source_path": "plans/2026-07-28-r21-completion-and-criteria-triage.md",
+          "source_revision": "r21-completion-plan@2026-07-28",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "697332a2ed7be0eb24f977bf46c490bafc5f6ba1e98bac737e5aef382c4284da",
+      "output_path": "plans/2026-07-28-r21-completion-and-criteria-triage.md",
+      "routing_artifact_id": "repo/plans",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/plans/2026-07-25-04b-dayz-animation-formats.md",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
