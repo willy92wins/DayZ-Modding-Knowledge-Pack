@@ -2327,7 +2327,7 @@
           "decision": "adopt",
           "decision_evidence": "Operator adjudications of promotion targets whose bytes no receipt explains; each entry authorizes one observed digest and expires when the target moves.",
           "license": "MIT",
-          "source_hash": "8153380dfb31c8ec254e9bce9bac05329b8a24a7af1db700fab1029bccae761a",
+          "source_hash": "632cb1a46e1384cac9d16ddf09529e88725f750817d764d580fc4ad051cd74e5",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/adjudications.json",
           "source_revision": "r21-preimage-adjudications@2026-07-27",
@@ -2335,7 +2335,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0a1df3fc0f996976c4543a2e1776d4c6d04f289bd37d042025a0800b28448196",
+      "output_hash": "632cb1a46e1384cac9d16ddf09529e88725f750817d764d580fc4ad051cd74e5",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
