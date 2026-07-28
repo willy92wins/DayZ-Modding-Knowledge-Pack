@@ -137,8 +137,10 @@ explícitamente **no ejecutadas en esta fase**.
   hash del archivo idéntico antes y después, y `≤1` línea de log por ventana.
 - **SC-007 / D2 parcial**: `truncated` nunca produce verdict `ok`; el estado
   parcial leído se descarta entero, no se aplica a medias.
-- **SC-008 / D3 fronteras**: `7/7` fronteras I/O tienen fixture de fallo
-  inyectado y assert de «original intacto **o** evidencia recuperable».
+- **SC-008 / D3 fronteras**: `9/9` fronteras I/O tienen fixture de fallo
+  inyectado y assert de «original intacto **o** evidencia recuperable». Son las
+  nueve filas de la tabla de fronteras; la primera redacción decía `7/7` por
+  descuido y se corrigió el 2026-07-28 al implementarla.
 - **SC-009 / D3 ventana de replace**: el contrato documenta explícitamente que
   DayZ **no expone rename/move** y que el replace es `DeleteFile` + `CopyFile`,
   con la ventana en la que el destino no existe, y la fixture la ejercita.
@@ -319,7 +321,7 @@ mutation check no se acepta como prueba (`G3`).
 | SC-005 | mutation check por celda | offline |
 | SC-006 | hash del archivo antes/después + contador de log | offline |
 | SC-007 | assert de que `truncated` no produce `ok` | offline |
-| SC-008 | 7 fixtures de inyección, una por frontera | offline |
+| SC-008 | 9 fixtures de inyección, una por frontera | offline |
 | SC-009 | grep negativo de rename/move + fixture de la ventana | offline |
 | SC-010 | fixture de copia truncada; assert de `.tmp` conservado | offline |
 | SC-011 | fixtures de huérfano válido/truncado | offline |
@@ -363,7 +365,7 @@ ninguna afirmación.
   hash o exit code comprobable por una aserción.
 - [x] CHK002 Ningún adjetivo vago actúa como criterio; «fail-closed» está
   definido por su invariante en la tabla de fronteras.
-- [x] CHK003 Los criterios numéricos llevan unidad y umbral: `7/7` celdas, `7/7`
+- [x] CHK003 Los criterios numéricos llevan unidad y umbral: `7/7` celdas, `9/9`
   fronteras, `≤1` línea de log, `0` findings, `699 passed / 18 skipped`, `≤1024`
   caracteres de `description`.
 - [x] CHK004 Los diez escenarios son Given/When/Then con repro concreta; la

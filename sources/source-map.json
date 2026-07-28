@@ -6232,7 +6232,7 @@
           "decision": "adopt",
           "decision_evidence": "The Phase 03 persistence contracts are closed as a 16/16 feature spec whose forward contract was re-read against DayZ build 1.29.0.163451 on 2026-07-28.",
           "license": "MIT",
-          "source_hash": "d1ef501e6017819616a7b23a28d5f34c949b554cffd59f9db3d64eaceec6b1e1",
+          "source_hash": "1a641a756232f33c90b50dac0c196a0f8af983c174c6bc20fdde4209e040e8ac",
           "source_id": "pack-r21-authored",
           "source_path": "specs/2026-07-28-dayz-persistence.md",
           "source_revision": "r21-phase03-approved@2026-07-28",
@@ -6240,7 +6240,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d1ef501e6017819616a7b23a28d5f34c949b554cffd59f9db3d64eaceec6b1e1",
+      "output_hash": "1a641a756232f33c90b50dac0c196a0f8af983c174c6bc20fdde4209e040e8ac",
       "output_path": "specs/2026-07-28-dayz-persistence.md",
       "routing_artifact_id": "repo/specs",
       "verification_level": "cross_checked"
@@ -6311,6 +6311,213 @@
       "license": "MIT",
       "output_hash": "e7a05cfa1f393fa6127a3067fdf1c22aaa250a58977c0a6a8e3717b4bb6b7b5c",
       "output_path": "tests/packctl/conftest.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/persistence/persistence_stream.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "e752d37b4d74d19957c7527f3ece513cb75d2dc94f45d013b27003bccda3a3e6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/persistence/persistence_stream.py",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e752d37b4d74d19957c7527f3ece513cb75d2dc94f45d013b27003bccda3a3e6",
+      "output_path": "tests/persistence/persistence_stream.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/persistence/persistence_cf.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "6d1795c0472c8310d1297916fcb193876ddd72ef56a8c4aa7a7d0a24549c31ca",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/persistence/persistence_cf.py",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6d1795c0472c8310d1297916fcb193876ddd72ef56a8c4aa7a7d0a24549c31ca",
+      "output_path": "tests/persistence/persistence_cf.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/persistence/persistence_sidecar.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "225b737328345f6d87643206e4aa3655b09701e645ceb207197ee1fb64250f1d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/persistence/persistence_sidecar.py",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "225b737328345f6d87643206e4aa3655b09701e645ceb207197ee1fb64250f1d",
+      "output_path": "tests/persistence/persistence_sidecar.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/persistence/persistence_router.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "be19666c3f70536b68a754bd3ac11b06d409a05c0b9d6ff0802d16be57aeec6d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/persistence/persistence_router.py",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "be19666c3f70536b68a754bd3ac11b06d409a05c0b9d6ff0802d16be57aeec6d",
+      "output_path": "tests/persistence/persistence_router.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/persistence/test_persistence_router.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "828c97ee541e11d219115e86fbc623f9a692eb5a5cc4483ce365d994175cd81e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/persistence/test_persistence_router.py",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "828c97ee541e11d219115e86fbc623f9a692eb5a5cc4483ce365d994175cd81e",
+      "output_path": "tests/persistence/test_persistence_router.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/persistence/test_persistence_stream.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "2d051727e66be32c1c68bde7a760624544ed1ec295a52e017e83f270a1158c8c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/persistence/test_persistence_stream.py",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2d051727e66be32c1c68bde7a760624544ed1ec295a52e017e83f270a1158c8c",
+      "output_path": "tests/persistence/test_persistence_stream.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/persistence/test_persistence_cf.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "b42a6f34dcb463afaed3ac912ba2d1f6f8c47e6ba772bb0cffe7064bc7a5d5b5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/persistence/test_persistence_cf.py",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b42a6f34dcb463afaed3ac912ba2d1f6f8c47e6ba772bb0cffe7064bc7a5d5b5",
+      "output_path": "tests/persistence/test_persistence_cf.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/persistence/test_persistence_migration.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "cde9d5c006c31c74002aa5c47eb1ba2b5a7ffdf8a43373f21ba04a0fdba3be89",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/persistence/test_persistence_migration.py",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "cde9d5c006c31c74002aa5c47eb1ba2b5a7ffdf8a43373f21ba04a0fdba3be89",
+      "output_path": "tests/persistence/test_persistence_migration.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/persistence/test_persistence_sidecar.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "09f9407990f4a0d70b90bc1d933ba42b1b0e43b486319e24542b6b71deea1a92",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/persistence/test_persistence_sidecar.py",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "09f9407990f4a0d70b90bc1d933ba42b1b0e43b486319e24542b6b71deea1a92",
+      "output_path": "tests/persistence/test_persistence_sidecar.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
     },
