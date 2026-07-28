@@ -2433,6 +2433,29 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/promotions/receipts/6e8cf995be627d7bf50cd147.json",
+      "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt hash 8fd17c75a41c1d3373a8e67d85cebfd1e277041aad7888c9fc0bf953659c8a26 records transaction 6e8cf995be627d7bf50cd147, verdict PASS with zero findings, promoting source commit 8986baea82172342d611e260e76270902f1d5a00. Verified independently of the receipt by snapshotting both skill roots before and after: zero files lost, zero changed, five added per root, and the installed dayz-persistence tree byte-identical to the repo.",
+          "license": "MIT",
+          "source_hash": "8fd17c75a41c1d3373a8e67d85cebfd1e277041aad7888c9fc0bf953659c8a26",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/6e8cf995be627d7bf50cd147.json",
+          "source_revision": "8986baea82172342d611e260e76270902f1d5a00",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8fd17c75a41c1d3373a8e67d85cebfd1e277041aad7888c9fc0bf953659c8a26",
+      "output_path": "promotions/receipts/6e8cf995be627d7bf50cd147.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/promotions/receipts/c7b5366cc761a8038e52f6a2.json",
       "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
       "distribution_role": "repo_only",
