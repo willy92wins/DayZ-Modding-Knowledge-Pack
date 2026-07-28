@@ -1958,7 +1958,7 @@
           "decision": "adopt",
           "decision_evidence": "The approved Phase 02 plan fixes the architecture and records B19 GREEN plus the authorized-engine gate that still blocks B20.",
           "license": "MIT",
-          "source_hash": "b92626a9299b657176d455513a3d6e3f7ccc669b0309067c5a22745881e26383",
+          "source_hash": "794e4c386c8f7f6d5f025138a5e337e78613a1bc6574fb7b6c30fab43fe56ee6",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-02-dayz-ui-lab.md",
           "source_revision": "r21-phase02-approved@2026-07-25",
@@ -1966,7 +1966,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b92626a9299b657176d455513a3d6e3f7ccc669b0309067c5a22745881e26383",
+      "output_hash": "794e4c386c8f7f6d5f025138a5e337e78613a1bc6574fb7b6c30fab43fe56ee6",
       "output_path": "plans/2026-07-24-02-dayz-ui-lab.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -6411,7 +6411,7 @@
           "decision": "adopt",
           "decision_evidence": "The user-approved Phase 02 contracts remain closed as a 16/16 feature spec and now record the B19/B20 execution checkpoint.",
           "license": "MIT",
-          "source_hash": "0dad906c895d02f2ff81597d377b1d6de98babc03d6f45544cbc850a7e111cfe",
+          "source_hash": "adfe227929c35bb78f5e6d45f0287132897a628eb40b94fe45af7dca99689de1",
           "source_id": "pack-r21-authored",
           "source_path": "specs/2026-07-25-dayz-ui-lab.md",
           "source_revision": "r21-phase02-approved@2026-07-25",
@@ -6419,7 +6419,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0dad906c895d02f2ff81597d377b1d6de98babc03d6f45544cbc850a7e111cfe",
+      "output_hash": "adfe227929c35bb78f5e6d45f0287132897a628eb40b94fe45af7dca99689de1",
       "output_path": "specs/2026-07-25-dayz-ui-lab.md",
       "routing_artifact_id": "repo/specs",
       "verification_level": "cross_checked"

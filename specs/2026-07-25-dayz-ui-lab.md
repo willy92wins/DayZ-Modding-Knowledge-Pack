@@ -161,11 +161,16 @@ extraídos para research; `VAULT` = memoria privada no distribuible.
 
 ## Assumptions
 
-- **ASSUMED — deferred before B20 GREEN**: DayZ concatena los fragmentos de la
-  continuación sin insertar caracteres. No decide código todavía: el
-  micro-fixture DayZDiag fija primero el valor esperado. La sesión MCP actual
-  responde `unauthorized`, por lo que el gate permanece pendiente y B20 no se
-  declara cerrado.
+- ~~**ASSUMED — deferred before B20 GREEN**: DayZ concatena los fragmentos de la
+  continuación sin insertar caracteres.~~ **REFUTADA por medición, 2026-07-28**
+  (DayZDiag `1.29.163451`, sonda `LF_UIProbe`, `ButtonWidget.GetText`): el
+  engine inserta **exactamente un salto de línea**. `Length()` devuelve `10` y
+  `AlphaBeta` mide 9; el RPT lo escribe como CRLF, pero sus 49.768 bytes no
+  contienen ni un LF suelto ni un CR suelto, así que un CR literal habría
+  aparecido como CR suelto y un CRLF literal habría dado `11`. El valor lógico
+  es `"Alpha\nBeta"`, idéntico para fuente LF y CRLF. El parser lo implementa
+  así en `dba357e`. Haber diferido la decisión hasta medirla es lo que evitó
+  codificar `"AlphaBeta"`.
 - **ASSUMED — deferred before Task 4**: un perfil raster fijado puede producir
   RGBA/PNG byte-idénticos en dos entornos limpios. Se resuelve con spike antes
   de implementar el raster canónico; no afecta B19/B20 ni la IR semántica.
@@ -331,13 +336,33 @@ variantes LF/CRLF byte-equivalentes. El parser B20 permanece deliberadamente
 sin modificar porque `session_status` y `bridge_status` siguen devolviendo
 `unauthorized` y aún no existe observación DayZDiag.
 
+**Checkpoint 2026-07-28**: slice 3 completado. La observación DayZDiag existe y
+`SC-002` está cerrado en sus dos mitades medibles offline: LF y CRLF producen el
+mismo valor lógico, y ese valor —`"Alpha\nBeta"`— es el que devuelve el engine.
+El parser pasa **46/46** en TraderX (antes 42/46), cerrando las cuatro
+continuaciones de `BuyTooltip:80`, `CustomizeTooltip:79`, `SellTooltip:75` y
+`testTooltip:74`. Barra huérfana y forma no observada fallan explícitamente; el
+escape inválido queda pendiente de corpus (ver Open Questions).
+
+`SC-003` **no** está cerrado: exige además `319/319` del corpus público, y VPP,
+Expansion y TraderPlus no tienen checkout local en esta máquina. Lo medible aquí
+se midió; el resto necesita los tres checkouts, no más trabajo de parser.
+
 ## Open Questions / NEEDS CLARIFICATION
 
-No hay decisión de producto pendiente. Hay un gate externo pendiente:
-`session_status` y `bridge_status` del MCP devolvieron `unauthorized` el
-2026-07-25. Debe restaurarse identidad autorizada o ejecutarse el micro-fixture
-por una sesión autorizada antes de implementar/cerrar B20. No se permite
-launcher directo como bypass.
+No hay decisión de producto pendiente. El gate externo de MCP que bloqueaba B20
+**está resuelto**: el 2026-07-28 el micro-fixture corrió por el lifecycle
+gestionado (`dayz_test_run`), sin bypass del launcher, y B20 quedó medido.
+
+Queda **una** pregunta abierta, y es de evidencia, no de producto: qué debe
+hacer el parser con un **escape desconocido dentro de string**. La tabla de
+Error Cases pide error estable; hoy se sustituye en silencio. No se ha cambiado
+porque el corpus público de 319 layouts no tiene checkout en esta máquina y es
+justo el que podría romperse, mientras que TraderX contiene **cero** backslashes
+dentro de string (medido sobre los 46 extraídos con Mikero `ExtractPbo`). Se
+decide cuando haya corpus con el que medirlo. Riesgo asimétrico registrado: un
+backslash **fuera** de string sí es error duro hoy, luego el corpus público no
+contiene ninguno y las reglas de continuación añadidas no pueden romperlo.
 
 ## Spec Quality Checklist
 
