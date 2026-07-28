@@ -182,3 +182,23 @@ def test_orphan_tmp_policy_promotes_only_verified_content_without_mtime() -> Non
     assert _read_bytes(truncated_fs, DESTINATION) is None
     assert _read_bytes(truncated_fs, TEMP) == REPLACEMENT[:-1]
     assert truncated.evidence == (TEMP,)
+
+
+def test_orphan_verify_failure_removes_destination_and_keeps_evidence() -> None:
+    fs = MemoryFileSystem(
+        {
+            DESTINATION: ORIGINAL,
+            TEMP: REPLACEMENT,
+        }
+    )
+
+    result = SidecarStore(fs, fault="post-copy-verify").recover_orphan(
+        DESTINATION
+    )
+
+    assert result.success is False
+    assert result.action == "orphan_verify_failed"
+    assert _read_bytes(fs, DESTINATION) is None
+    assert _read_bytes(fs, TEMP) == REPLACEMENT
+    assert _read_bytes(fs, BACKUP) == ORIGINAL
+    _assert_original_or_recovery_evidence(fs)

@@ -283,6 +283,18 @@ class SidecarStore:
         data_length = struct.unpack(">H", payload[10:12])[0]
         return len(payload) == RECORD_HEADER_SIZE + data_length
 
+    @staticmethod
+    def _temp_path(destination: str) -> str:
+        return f"{destination}.tmp"
+
+    @staticmethod
+    def _backup_path(destination: str) -> str:
+        return f"{destination}.bak"
+
+    @staticmethod
+    def _hash_path(destination: str) -> str:
+        return f"{destination}.sha256"
+
     def _read_all(self, path: str) -> tuple[bool, bytes]:
         handle = self._fs.open_file(path, "r")
         if handle == 0:
@@ -304,7 +316,7 @@ class SidecarStore:
 
     def _write_hash_sidecar(self, destination: str, payload: bytes) -> bool:
         digest = hashlib.sha256(payload).hexdigest().encode("ascii") + b"\n"
-        return self._write_all(f"{destination}.sha256", digest)
+        return self._write_all(self._hash_path(destination), digest)
 
     def load(self, destination: str) -> IOResult:
         evidence = self._evidence(destination)
@@ -328,8 +340,8 @@ class SidecarStore:
         return IOResult(True, "loaded", evidence, payload)
 
     def save(self, destination: str, payload: bytes) -> IOResult:
-        temp = f"{destination}.tmp"
-        backup = f"{destination}.bak"
+        temp = self._temp_path(destination)
+        backup = self._backup_path(destination)
 
         if self._fault == "temp-write":
             self._write_all(temp, payload[: len(payload) // 2])
@@ -428,13 +440,17 @@ class SidecarStore:
         return IOResult(
             True,
             "saved",
-            self._evidence(destination, f"{destination}.sha256", backup),
+            self._evidence(
+                destination,
+                self._hash_path(destination),
+                backup,
+            ),
             payload,
         )
 
     def recover_orphan(self, destination: str) -> IOResult:
-        temp = f"{destination}.tmp"
-        backup = f"{destination}.bak"
+        temp = self._temp_path(destination)
+        backup = self._backup_path(destination)
         temp_ok, payload = self._read_all(temp)
         if not temp_ok or not self._record_valid(payload):
             return IOResult(
@@ -459,6 +475,8 @@ class SidecarStore:
                     self._evidence(destination, temp, backup),
                     None,
                 )
+        if self._fault == "post-copy-verify":
+            self._fs._truncate_next_copy = True
         if not self._fs.copy_file(temp, destination):
             return IOResult(
                 False,
@@ -467,7 +485,12 @@ class SidecarStore:
                 None,
             )
         copied_ok, copied_payload = self._read_all(destination)
-        if not copied_ok or copied_payload != payload:
+        if (
+            not copied_ok
+            or copied_payload != payload
+            or not self._record_valid(copied_payload)
+        ):
+            self._fs.delete_file(destination)
             return IOResult(
                 False,
                 "orphan_verify_failed",
@@ -491,6 +514,10 @@ class SidecarStore:
         return IOResult(
             True,
             "promoted_valid_tmp",
-            self._evidence(destination, f"{destination}.sha256", backup),
+            self._evidence(
+                destination,
+                self._hash_path(destination),
+                backup,
+            ),
             payload,
         )

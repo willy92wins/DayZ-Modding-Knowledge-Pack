@@ -6595,7 +6595,7 @@
           "decision": "adopt",
           "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
           "license": "MIT",
-          "source_hash": "225b737328345f6d87643206e4aa3655b09701e645ceb207197ee1fb64250f1d",
+          "source_hash": "626705d4f72be38ff37a0df21b8450c0b3975b64f65651577f7ab58d412d299c",
           "source_id": "pack-r21-authored",
           "source_path": "tests/persistence/persistence_sidecar.py",
           "source_revision": "r21-phase03-approved@2026-07-28",
@@ -6603,7 +6603,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "225b737328345f6d87643206e4aa3655b09701e645ceb207197ee1fb64250f1d",
+      "output_hash": "626705d4f72be38ff37a0df21b8450c0b3975b64f65651577f7ab58d412d299c",
       "output_path": "tests/persistence/persistence_sidecar.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -6733,7 +6733,7 @@
           "decision": "adopt",
           "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
           "license": "MIT",
-          "source_hash": "09f9407990f4a0d70b90bc1d933ba42b1b0e43b486319e24542b6b71deea1a92",
+          "source_hash": "5edd441746013aafad66e8a9be990299a48bf7551f40534db3cc9b5ed767c5f4",
           "source_id": "pack-r21-authored",
           "source_path": "tests/persistence/test_persistence_sidecar.py",
           "source_revision": "r21-phase03-approved@2026-07-28",
@@ -6741,7 +6741,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "09f9407990f4a0d70b90bc1d933ba42b1b0e43b486319e24542b6b71deea1a92",
+      "output_hash": "5edd441746013aafad66e8a9be990299a48bf7551f40534db3cc9b5ed767c5f4",
       "output_path": "tests/persistence/test_persistence_sidecar.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
