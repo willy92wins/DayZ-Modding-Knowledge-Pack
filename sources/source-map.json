@@ -1958,7 +1958,7 @@
           "decision": "adopt",
           "decision_evidence": "The approved Phase 02 plan fixes the architecture and records B19 GREEN plus the authorized-engine gate that still blocks B20.",
           "license": "MIT",
-          "source_hash": "03a2d64aae311223108e5ff8bb9c531bd4af757b7c6cb29b8a7e210c640fcdf2",
+          "source_hash": "497a032ba5d8466342b9ad8f8e23c4b1ba212736528b061a7b5e31674b2f2577",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-02-dayz-ui-lab.md",
           "source_revision": "r21-phase02-approved@2026-07-25",
@@ -1966,7 +1966,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "03a2d64aae311223108e5ff8bb9c531bd4af757b7c6cb29b8a7e210c640fcdf2",
+      "output_hash": "497a032ba5d8466342b9ad8f8e23c4b1ba212736528b061a7b5e31674b2f2577",
       "output_path": "plans/2026-07-24-02-dayz-ui-lab.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -10999,6 +10999,72 @@
       "license": "MIT",
       "output_hash": "f754456fcaf6eb5e09e2b43c2f2d3b06036efae1867490362ac087c66549b400",
       "output_path": "tools/dayz-ui-lab/tests/test_scenario.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/dayz_ui_lab/render.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 4 creates the dayz-ui-render-v1 contract and closes SC-006: a normalized render document that is byte-identical across clean processes, carries no timestamp or private path, preserves the compositor widget ids for the Task 6 comparison, and marks raster output as non-canonical because the raster profile is unresolved.",
+          "license": "MIT",
+          "source_hash": "7549b7108ebb4b7113bbdf705c245e5e3a57db2c3bc3ae01654b6b3c026a8193",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/dayz_ui_lab/render.py",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7549b7108ebb4b7113bbdf705c245e5e3a57db2c3bc3ae01654b6b3c026a8193",
+      "output_path": "tools/dayz-ui-lab/dayz_ui_lab/render.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/schemas/dayz-ui-render-v1.schema.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 4 creates the dayz-ui-render-v1 contract and closes SC-006: a normalized render document that is byte-identical across clean processes, carries no timestamp or private path, preserves the compositor widget ids for the Task 6 comparison, and marks raster output as non-canonical because the raster profile is unresolved.",
+          "license": "MIT",
+          "source_hash": "d424225d634523f7cf481ed697638e2b9b302c93dfd552a5c76c3c5a45ba6817",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/schemas/dayz-ui-render-v1.schema.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d424225d634523f7cf481ed697638e2b9b302c93dfd552a5c76c3c5a45ba6817",
+      "output_path": "tools/dayz-ui-lab/schemas/dayz-ui-render-v1.schema.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/tests/test_render.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 4 creates the dayz-ui-render-v1 contract and closes SC-006: a normalized render document that is byte-identical across clean processes, carries no timestamp or private path, preserves the compositor widget ids for the Task 6 comparison, and marks raster output as non-canonical because the raster profile is unresolved.",
+          "license": "MIT",
+          "source_hash": "75df36f85e93bfe0ee9e904dfdaa60ddc750620905d4919db20862247d708109",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/tests/test_render.py",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "75df36f85e93bfe0ee9e904dfdaa60ddc750620905d4919db20862247d708109",
+      "output_path": "tools/dayz-ui-lab/tests/test_render.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }
