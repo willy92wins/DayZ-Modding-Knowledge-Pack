@@ -44,14 +44,17 @@ cambios:
 ## Lo que te va a morder si no lo lees
 
 1. **Hay un directorio que rompe `pytest` y no se puede borrar.**
-   `UsersguillAppDataLocalTempr21-sc015-basetemp`, en la raíz del repo. Una ruta
+   `UsersguillAppDataLocalTempr21-sc015-basetemp`, en la raíz del **worktree**
+   `.worktrees\r21-phase01` — no en la raíz del repo. Una ruta
    Windows sin separadores que dejó una tanda de Codex como `--basetemp`. La
    colección muere con `PermissionError`. `Remove-Item`, `takeown`, `icacls` y
    `robocopy /MIR` fallan todos; `icacls` ni puede leer el DACL. **Los gates de
    esta sesión se corrieron con
    `--ignore=UsersguillAppDataLocalTempr21-sc015-basetemp` en línea de comandos**,
    deliberadamente NO en `pytest.ini`. Se arregla con consola elevada:
-   `rmdir /S /Q "UsersguillAppDataLocalTempr21-sc015-basetemp"`.
+   `rmdir /S /Q "C:\Users\guill\DayZ-Modding-Knowledge-Pack\.worktrees\r21-phase01\UsersguillAppDataLocalTempr21-sc015-basetemp"`
+   — ruta absoluta a propósito: la relativa solo funciona desde el worktree, y
+   expandirla contra la raíz del repo devuelve «no se encuentra el archivo».
 2. **El destino sigue mutando solo.** Van ocho escrituras host-direct en
    `dayz-vehicles`. **Re-mide `promote --check` antes de tocar nada.** Si sale
    `PROMOTION-TARGET-UNEXPLAINED`: adoptar → refrescar `output_hash` → `git add` →
