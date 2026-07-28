@@ -175,37 +175,70 @@ def tokenize(text: str, source: str = "") -> list[Token]:
             token_line = line
             token_column = column
             token_index = i
-            i = i + 1
-            column = column + 1
             value_parts: list[str] = []
-            while i < length:
-                current = text[i]
-                if current == '"':
-                    i = i + 1
-                    column = column + 1
-                    break
-                if current == "\\":
-                    if i + 1 >= length:
-                        token = Token("STR", "", token_line, token_column, token_index)
-                        raise LayoutSyntaxError("Unterminated string escape", token, source)
-                    escaped = text[i + 1]
-                    value_parts.append(_decode_escape(escaped))
-                    i = i + 2
-                    column = column + 2
-                    continue
-                value_parts.append(current)
-                if current == "\n":
-                    line = line + 1
-                    column = 1
-                else:
-                    column = column + 1
+
+            while True:
                 i = i + 1
-            else:
-                token = Token("STR", "", token_line, token_column, token_index)
-                raise LayoutSyntaxError("Unterminated string", token, source)
+                column = column + 1
+                segment: list[str] = []
+                while i < length:
+                    current = text[i]
+                    if current == '"':
+                        i = i + 1
+                        column = column + 1
+                        break
+                    if current == "\\":
+                        if i + 1 >= length:
+                            token = Token("STR", "", token_line, token_column, token_index)
+                            raise LayoutSyntaxError("Unterminated string escape", token, source)
+                        escaped = text[i + 1]
+                        segment.append(_decode_escape(escaped))
+                        i = i + 2
+                        column = column + 2
+                        continue
+                    segment.append(current)
+                    if current == "\n":
+                        line = line + 1
+                        column = 1
+                    else:
+                        column = column + 1
+                    i = i + 1
+                else:
+                    token = Token("STR", "", token_line, token_column, token_index)
+                    raise LayoutSyntaxError("Unterminated string", token, source)
+
+                value_parts.append("".join(segment))
+
+                if i >= length or text[i] != "\\":
+                    break
+
+                # Physical line continuation between two quoted strings.
+                # Measured in DayZDiag 1.29.163451 with ButtonWidget.GetText: the
+                # engine returns "Alpha" + one newline + "Beta" (Length()==10),
+                # identically for an LF and a CRLF source. So the join inserts a
+                # character; it is not a bare concatenation.
+                continuation = _scan_continuation(text, i)
+                if continuation is None:
+                    token = Token("STR", "", line, column, i)
+                    raise LayoutSyntaxError(
+                        "Line continuation must join two quoted strings",
+                        token,
+                        source,
+                    )
+                i, consumed_lines, column = continuation
+                line = line + consumed_lines
+                value_parts.append("\n")
 
             tokens.append(Token("STR", "".join(value_parts), token_line, token_column, token_index))
             continue
+
+        if char == "\\":
+            token = Token("UNKNOWN", char, line, column, i)
+            raise LayoutSyntaxError(
+                "Orphan line continuation outside a quoted string",
+                token,
+                source,
+            )
 
         num_match = NUMBER_RE.match(text, i)
         if num_match:
@@ -244,6 +277,46 @@ def _decode_escape(char: str) -> str:
         "\\": "\\",
     }
     return escapes.get(char, char)
+
+
+def _scan_continuation(text: str, index: int) -> tuple[int, int, int] | None:
+    """Match the one continuation form observed in DayZ layouts.
+
+    `text[index]` is the backslash that closed a quoted string. The form is a
+    backslash immediately followed by a single newline, then indentation, then
+    the next quoted string:
+
+        text "first "\\
+             "second"
+
+    Returns `(index_of_opening_quote, newlines_consumed, column_of_quote)`, or
+    `None` for any other shape. Returning `None` is what keeps a backslash from
+    behaving as universal whitespace: separating the backslash from its newline,
+    following it with a bare token instead of a string, or spanning more than one
+    newline all stay hard errors rather than being normalised away.
+
+    `parse_file` reads with universal newlines, so a CRLF source arrives here as
+    LF; CRLF is still matched directly for callers that pass raw text.
+    """
+    length = len(text)
+    cursor = index + 1
+
+    if text.startswith("\r\n", cursor):
+        cursor = cursor + 2
+    elif cursor < length and text[cursor] == "\n":
+        cursor = cursor + 1
+    else:
+        return None
+
+    column = 1
+    while cursor < length and text[cursor] in (" ", "\t"):
+        cursor = cursor + 1
+        column = column + 1
+
+    if cursor >= length or text[cursor] != '"':
+        return None
+
+    return cursor, 1, column
 
 
 class Parser:

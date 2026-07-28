@@ -8515,7 +8515,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 removes the false missing-child-block diagnostic and strict mode after a RED-to-GREEN test cycle.",
           "license": "MIT",
-          "source_hash": "8504d9d7304d2b64a0af1c4cb759faebf2b7e39d37560d1559b0d704c19a0dbc",
+          "source_hash": "7fdb63fb948ffd2710c5713e5df68cb7db9e0eff753059f2f4a796d510471d64",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/dayz_ui_lab/parse.py",
           "source_revision": "r21-phase02@2026-07-25",
@@ -8523,7 +8523,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8504d9d7304d2b64a0af1c4cb759faebf2b7e39d37560d1559b0d704c19a0dbc",
+      "output_hash": "7fdb63fb948ffd2710c5713e5df68cb7db9e0eff753059f2f4a796d510471d64",
       "output_path": "tools/dayz-ui-lab/dayz_ui_lab/parse.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -8741,7 +8741,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 asserts that valid leaves are warning-free and that the false strict-child-block API is absent.",
           "license": "MIT",
-          "source_hash": "eee23b6bbbdbdb3b720615335d042a23dcef36959851294f1cc6d35b125d1d80",
+          "source_hash": "e27ef3d0087e1af99f8b32c71d50aeb7d0212a2cb063982623c27b387e449ebd",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/tests/test_parser.py",
           "source_revision": "r21-phase02@2026-07-25",
@@ -8749,7 +8749,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "eee23b6bbbdbdb3b720615335d042a23dcef36959851294f1cc6d35b125d1d80",
+      "output_hash": "e27ef3d0087e1af99f8b32c71d50aeb7d0212a2cb063982623c27b387e449ebd",
       "output_path": "tools/dayz-ui-lab/tests/test_parser.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
