@@ -1958,7 +1958,7 @@
           "decision": "adopt",
           "decision_evidence": "The approved Phase 02 plan fixes the architecture and records B19 GREEN plus the authorized-engine gate that still blocks B20.",
           "license": "MIT",
-          "source_hash": "794e4c386c8f7f6d5f025138a5e337e78613a1bc6574fb7b6c30fab43fe56ee6",
+          "source_hash": "fe174bb4377fb13b14f5d0373196c3fa01ec54f69d989cce17cbfc7ff37d7540",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-02-dayz-ui-lab.md",
           "source_revision": "r21-phase02-approved@2026-07-25",
@@ -1966,7 +1966,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "794e4c386c8f7f6d5f025138a5e337e78613a1bc6574fb7b6c30fab43fe56ee6",
+      "output_hash": "fe174bb4377fb13b14f5d0373196c3fa01ec54f69d989cce17cbfc7ff37d7540",
       "output_path": "plans/2026-07-24-02-dayz-ui-lab.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -8515,7 +8515,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 removes the false missing-child-block diagnostic and strict mode after a RED-to-GREEN test cycle.",
           "license": "MIT",
-          "source_hash": "7fdb63fb948ffd2710c5713e5df68cb7db9e0eff753059f2f4a796d510471d64",
+          "source_hash": "344b7edf8cc66ceb2b11efb13042824994e5a85368e16015e672355f6f3f28ca",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/dayz_ui_lab/parse.py",
           "source_revision": "r21-phase02@2026-07-25",
@@ -8523,7 +8523,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7fdb63fb948ffd2710c5713e5df68cb7db9e0eff753059f2f4a796d510471d64",
+      "output_hash": "344b7edf8cc66ceb2b11efb13042824994e5a85368e16015e672355f6f3f28ca",
       "output_path": "tools/dayz-ui-lab/dayz_ui_lab/parse.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -8807,7 +8807,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 asserts that valid leaves are warning-free and that the false strict-child-block API is absent.",
           "license": "MIT",
-          "source_hash": "e27ef3d0087e1af99f8b32c71d50aeb7d0212a2cb063982623c27b387e449ebd",
+          "source_hash": "8e2549c056c026bd7e6d5421803465c649bd50205bfc7068dd983b07e9f4854e",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/tests/test_parser.py",
           "source_revision": "r21-phase02@2026-07-25",
@@ -8815,7 +8815,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e27ef3d0087e1af99f8b32c71d50aeb7d0212a2cb063982623c27b387e449ebd",
+      "output_hash": "8e2549c056c026bd7e6d5421803465c649bd50205bfc7068dd983b07e9f4854e",
       "output_path": "tools/dayz-ui-lab/tests/test_parser.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

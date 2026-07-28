@@ -192,7 +192,15 @@ def tokenize(text: str, source: str = "") -> list[Token]:
                             token = Token("STR", "", token_line, token_column, token_index)
                             raise LayoutSyntaxError("Unterminated string escape", token, source)
                         escaped = text[i + 1]
-                        segment.append(_decode_escape(escaped))
+                        decoded = _decode_escape(escaped)
+                        if decoded is None:
+                            token = Token("STR", "", line, column, i)
+                            raise LayoutSyntaxError(
+                                f"Unknown string escape: backslash before {escaped!r}",
+                                token,
+                                source,
+                            )
+                        segment.append(decoded)
                         i = i + 2
                         column = column + 2
                         continue
@@ -268,15 +276,25 @@ def tokenize(text: str, source: str = "") -> list[Token]:
     return tokens
 
 
-def _decode_escape(char: str) -> str:
-    escapes = {
-        "n": "\n",
-        "r": "\r",
-        "t": "\t",
-        '"': '"',
-        "\\": "\\",
-    }
-    return escapes.get(char, char)
+STRING_ESCAPES = {
+    "n": "\n",
+    "r": "\r",
+    "t": "\t",
+    '"': '"',
+    "\\": "\\",
+}
+
+
+def _decode_escape(char: str) -> str | None:
+    """Decode one in-string escape, or `None` when the escape is not observed.
+
+    `None` is what keeps an unknown escape from being normalised away: dropping
+    the backslash turned `"gui\\layouts\\f.edds"` into `"guilayoutsf.edds"`,
+    losing the separators without a diagnostic. The five pinned corpora carry
+    zero in-string backslashes across their 376 layouts, so no observed layout
+    depends on the substitution; `corpus.py` is the gate that keeps that true.
+    """
+    return STRING_ESCAPES.get(char)
 
 
 def _scan_continuation(text: str, index: int) -> tuple[int, int, int] | None:

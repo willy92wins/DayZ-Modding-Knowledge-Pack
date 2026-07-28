@@ -233,24 +233,43 @@ class ContinuationTests(unittest.TestCase):
                     r"Orphan line continuation|Line continuation must join",
                 )
 
-    def test_in_string_escape_handling_is_unchanged(self) -> None:
-        # The continuation work deliberately leaves in-string escapes alone. The
-        # 46-layout TraderX corpus contains zero backslashes inside strings, and
-        # the 319-layout public corpus cannot be measured from this machine, so
-        # turning an unknown escape into an error is not evidenced yet. The
-        # silent drop below is recorded, not endorsed.
+    def test_observed_in_string_escapes_still_decode(self) -> None:
         doc = parse.parse_text(
             'FrameWidgetClass R {\n'
             '    a "x\\ny"\n'
             '    b "q\\"q"\n'
-            '    c "gui\\layouts\\f.edds"\n'
+            '    c "back\\\\slash"\n'
+            '    d "tab\\there"\n'
+            '    e "carriage\\rreturn"\n'
             '}\n',
             source_path="escapes.layout",
         )
         attrs = doc.roots[0].attrs
         self.assertEqual(attrs["a"][0], "x\ny")
         self.assertEqual(attrs["b"][0], 'q"q')
-        self.assertEqual(attrs["c"][0], "guilayoutsf.edds")
+        self.assertEqual(attrs["c"][0], "back\\slash")
+        self.assertEqual(attrs["d"][0], "tab\there")
+        self.assertEqual(attrs["e"][0], "carriage\rreturn")
+
+    def test_unknown_in_string_escape_fails_closed(self) -> None:
+        # This used to be a silent substitution that dropped the backslash, so
+        # "gui\layouts\f.edds" parsed as "guilayoutsf.edds" with no diagnostic.
+        # The five pinned corpora carry zero in-string backslashes across their
+        # 376 layouts, so tightening it cannot break an observed layout; the
+        # corpus gate is what keeps that measured rather than assumed.
+        cases = {
+            "path separator": 'FrameWidgetClass R {\n    c "gui\\layouts\\f.edds"\n}\n',
+            "unknown letter": 'FrameWidgetClass R {\n    c "a\\qb"\n}\n',
+            "escaped newline": 'FrameWidgetClass R {\n    c "a\\\nb"\n}\n',
+            "escaped space": 'FrameWidgetClass R {\n    c "a\\ b"\n}\n',
+        }
+        for label, source in cases.items():
+            with self.subTest(shape=label):
+                with self.assertRaises(parse.LayoutSyntaxError) as raised:
+                    parse.parse_text(source, source_path="escapes.layout")
+                message = str(raised.exception)
+                self.assertIn("escapes.layout:2:", message)
+                self.assertIn("Unknown string escape", message)
 
 
 class Phase1ParserPathTests(unittest.TestCase):
