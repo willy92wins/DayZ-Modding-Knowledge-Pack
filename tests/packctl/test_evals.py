@@ -132,6 +132,9 @@ def test_versioned_cases_and_stardz_negatives_are_mechanical() -> None:
         "build-artifact-postcondition",
         "companion-lifecycle-authority",
         "persistence",
+        "persistence-deprecated-api",
+        "persistence-migration-rollback",
+        "persistence-mod-version",
         "stardz-negatives",
         "ui-layout",
     }

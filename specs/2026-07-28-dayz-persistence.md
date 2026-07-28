@@ -234,7 +234,13 @@ Cada símbolo que la skill, sus fixtures o el mod consumidor leen. Verificado
 | contrato sidecar | verify post-copy porque `CopyFile` puede truncar | patrón de producción | `[EXACT] LFVS_SOURCE/Scripts/4_World/LFV_FileStorage.c:998-1009,1281-1282` |
 | skill `dayz-persistence` | `SKILL.md` frontmatter `description` ≤1024 | pack rule | `[DESIGN]` — gate en el check `skills` de `packctl validate` |
 | `tests/persistence/` | simuladores stream / CF / sidecar | new first-party contract | `[DESIGN] este spec SC-001..SC-011; se crean antes que cualquier consumidor` |
-| evals harness | `evals/evals.json` de la skill | existing contract | `[DESIGN] este spec SC-012..SC-014` |
+| evals harness | `evals/cases/persistence-*.json` | existing contract | `[DESIGN]` este spec SC-012..SC-014 |
+
+Corrección del 2026-07-28: la fila anterior decía `evals/evals.json` de la skill,
+que es lo que pide el plan de fase. Ese fichero no lo ejecuta nadie — el harness
+recorre `evals/cases/*.json` (`packctl/evals.py`; el inventario cerrado vive en
+`tests/packctl/test_evals.py:129`). D4 exige que los evals **corran**, así que los
+tres casos nuevos van a `evals/cases/` y no se crea el fichero por skill.
 
 Ningún símbolo requerido por la primera slice queda `[UNVERIFIED]`. Los
 `[DESIGN]` son artefactos que esta fase **crea**; su existencia es gate del
@@ -266,6 +272,13 @@ move**, luego «temp→verify→replace» no es atómico: el replace real es
 el destino no existe. De ahí las tres exigencias del contrato: backup antes del
 replace, verify **después** de la copia, y borrado del `.tmp` **solo** cuando el
 verify pasa.
+
+Precisión añadida el 2026-07-28 al implementarlo, porque las dos frases parecían
+chocar: un **fragmento incompleto** de una escritura temporal que falló es
+descartable —no contiene nada que recuperar— mientras que un **`.tmp` completo**
+que ya pasó su propio verify es evidencia y se conserva hasta que el verify
+post-copia pase. La fila `temp-write` de la tabla de fronteras habla del primero;
+esta regla, del segundo.
 
 **Router.** Dato propio en entidad propia y que no debe sobrevivir a la
 desinstalación → stream vanilla. Dato de mod que debe sobrevivir a la

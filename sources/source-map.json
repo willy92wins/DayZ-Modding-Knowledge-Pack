@@ -538,6 +538,75 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/evals/cases/persistence-deprecated-api.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 03 D4 eval case; rejects the deprecated loader, build-only mod versioning and rollback-less migration.",
+          "license": "MIT",
+          "source_hash": "e94476202863c76c53b0cbf601c1b933936761db9cdd66be3f028e7dc228169b",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/cases/persistence-deprecated-api.json",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e94476202863c76c53b0cbf601c1b933936761db9cdd66be3f028e7dc228169b",
+      "output_path": "evals/cases/persistence-deprecated-api.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/evals/cases/persistence-mod-version.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 03 D4 eval case; rejects the deprecated loader, build-only mod versioning and rollback-less migration.",
+          "license": "MIT",
+          "source_hash": "bcc64663b0d99d5e8e9a9ab71d9384d838f1513013b5f8020012dfd96c5b6240",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/cases/persistence-mod-version.json",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bcc64663b0d99d5e8e9a9ab71d9384d838f1513013b5f8020012dfd96c5b6240",
+      "output_path": "evals/cases/persistence-mod-version.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/evals/cases/persistence-migration-rollback.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 03 D4 eval case; rejects the deprecated loader, build-only mod versioning and rollback-less migration.",
+          "license": "MIT",
+          "source_hash": "f094349b4b3bf431de3eee123568e3bcfcaf286714e27dab38e3eb0a857e651c",
+          "source_id": "pack-r21-authored",
+          "source_path": "evals/cases/persistence-migration-rollback.json",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f094349b4b3bf431de3eee123568e3bcfcaf286714e27dab38e3eb0a857e651c",
+      "output_path": "evals/cases/persistence-migration-rollback.json",
+      "routing_artifact_id": "repo/evals",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/evals/cases/stardz-negatives.json",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -3381,6 +3450,116 @@
       "output_hash": "df2008f809ec27799281287040ad7234fcbe1ffb836b1d7059f7f28482d580c1",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-persistence/SKILL.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 03 authored contract; every cited signature was re-read against DayZ build 1.29.0.163451 on 2026-07-28 and recorded in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "80d9d724bf91550fc488ac2c832983f88b80f9a355766382e382f75a7edf22d6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/SKILL.md",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "80d9d724bf91550fc488ac2c832983f88b80f9a355766382e382f75a7edf22d6",
+      "output_path": "skills/dayz-persistence/SKILL.md",
+      "routing_artifact_id": "skill/dayz-persistence",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-persistence/references/vanilla-stream.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 03 authored contract; every cited signature was re-read against DayZ build 1.29.0.163451 on 2026-07-28 and recorded in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "9b92b2c72c9f14a96cb15d4284272b95e9b9bbf5d277d27bb9d14a168fa2294c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/references/vanilla-stream.md",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9b92b2c72c9f14a96cb15d4284272b95e9b9bbf5d277d27bb9d14a168fa2294c",
+      "output_path": "skills/dayz-persistence/references/vanilla-stream.md",
+      "routing_artifact_id": "skill/dayz-persistence",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-persistence/references/cf-modstorage.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 03 authored contract; every cited signature was re-read against DayZ build 1.29.0.163451 on 2026-07-28 and recorded in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "a8f1cdd7c30e2659699d37002f8883bda437eccbcac9cf752778e640aef34981",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/references/cf-modstorage.md",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a8f1cdd7c30e2659699d37002f8883bda437eccbcac9cf752778e640aef34981",
+      "output_path": "skills/dayz-persistence/references/cf-modstorage.md",
+      "routing_artifact_id": "skill/dayz-persistence",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-persistence/references/sidecar-files.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 03 authored contract; every cited signature was re-read against DayZ build 1.29.0.163451 on 2026-07-28 and recorded in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "563b2643daf0041053f8b8d4eb85fb135332229421edcc6a38477e2f418205a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/references/sidecar-files.md",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "563b2643daf0041053f8b8d4eb85fb135332229421edcc6a38477e2f418205a5",
+      "output_path": "skills/dayz-persistence/references/sidecar-files.md",
+      "routing_artifact_id": "skill/dayz-persistence",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-persistence/references/migration-matrix.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 03 authored contract; every cited signature was re-read against DayZ build 1.29.0.163451 on 2026-07-28 and recorded in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "03ea800c3d354978886ab2068e73775d4841c4d5a3a89c2a92cc4b59ebe80206",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/references/migration-matrix.md",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "03ea800c3d354978886ab2068e73775d4841c4d5a3a89c2a92cc4b59ebe80206",
+      "output_path": "skills/dayz-persistence/references/migration-matrix.md",
+      "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
     },
     {
@@ -6232,7 +6411,7 @@
           "decision": "adopt",
           "decision_evidence": "The Phase 03 persistence contracts are closed as a 16/16 feature spec whose forward contract was re-read against DayZ build 1.29.0.163451 on 2026-07-28.",
           "license": "MIT",
-          "source_hash": "1a641a756232f33c90b50dac0c196a0f8af983c174c6bc20fdde4209e040e8ac",
+          "source_hash": "38457a41334f23a2c1e9483613184abcad85656c434d3cbe5cce58b777285aa6",
           "source_id": "pack-r21-authored",
           "source_path": "specs/2026-07-28-dayz-persistence.md",
           "source_revision": "r21-phase03-approved@2026-07-28",
@@ -6240,7 +6419,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1a641a756232f33c90b50dac0c196a0f8af983c174c6bc20fdde4209e040e8ac",
+      "output_hash": "38457a41334f23a2c1e9483613184abcad85656c434d3cbe5cce58b777285aa6",
       "output_path": "specs/2026-07-28-dayz-persistence.md",
       "routing_artifact_id": "repo/specs",
       "verification_level": "cross_checked"
@@ -6715,7 +6894,7 @@
           "decision": "adopt",
           "decision_evidence": "The mechanical eval-catalog contract includes the three approved post-Phase-01 cases.",
           "license": "MIT",
-          "source_hash": "29d46523bf70ade2cab7cdbf26c7ac1c886606c8adbb8c5d29caba67b74f628e",
+          "source_hash": "43d32f2f2222c9198ef0f57c742d228277cd70f3986538f24daa96ead16c4359",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_evals.py",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -6723,7 +6902,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "29d46523bf70ade2cab7cdbf26c7ac1c886606c8adbb8c5d29caba67b74f628e",
+      "output_hash": "43d32f2f2222c9198ef0f57c742d228277cd70f3986538f24daa96ead16c4359",
       "output_path": "tests/packctl/test_evals.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
