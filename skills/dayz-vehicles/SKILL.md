@@ -412,6 +412,8 @@ Cross-vehicle durable record (which project won each, links to the three): vault
 
 26. **A rip's BONE NAMES are not its MESH PIECES, and an exclusion REGEX silently classifies content nobody has looked at (LFHeli HH-60G, 2026-07-28).** Two failures of the same import, both invisible offline and both only surfaced by a full in-game cycle. (a) **Regex exclusion.** The day-1 census marked `exclude_v1` with `^(mod_[a-z0-9]+|turret_|weapon_|siren\d|extra_\d|hbgrip_)` to drop "GTA cruft". That swept in `mod_n` (31.598 tris = the whole nose kit: refuelling probe, rescue hoist, radome, nose pods) and `mod_s` (52.550 tris = the entire interior, seats included). The exporter inherited the classification and the vehicle shipped with no nose and a hollow cabin; **94.084 tris of legitimate content, 38% of the source**, lost for ten days without one warning. Rule: **the exclusion list is LITERAL NAMES, one justifying line each — never a regex.** A regex classifies pieces nobody has looked at yet; a literal list forces you to look. (b) **Bone names != mesh pieces.** The string-scan of the skeleton (item 25 above) lists `handle_*` next to `door_*`, so the routing table cited `handle_dside_f/pside_f/dside_r/pside_r`. Measured against the actual LOD levels: those four names exist in **no** level of the `.yft` and in **no** mesh of the imported `.blend` — the skeleton carries bones with no geometry behind them. **Item 25's skeleton-convention list is a hypothesis about names, not a piece inventory**; intersect it with the per-level mesh list before routing anything. Corollary that decides the fix: "the export LOST a piece" and "the export CITED a piece that never existed" look identical from a silent `if obj_by_name(n)` skip and lead to **opposite** repairs (go find it vs delete the row). Gates that would have caught both on day 1, cheap and offline: **SOURCE = the piece set of the richest LOD level, measured** (here `hh60g.yft/High` = 49, set-identical to `hh60g_hi.yft/VeryHigh`); every source piece appears **exactly once** in a routing group or in the literal exclusion list, partition verified by set equality, not by totals; every routed name is **in SOURCE**; and a missing artefact is an **error, never a `[skip]`**. Origin: LFHeli HH-60G, plan v15 Fase 1.1/1.2; measurement in `LFHeli_dev/plans/2026-07-28-hh60g-v15-censo-y-tabla-normativa.md`.
 
+27. **A model that passes every offline gate and still refuses to spawn is almost always over the RESOLVED-VERTEX ceiling — and `binarize` tells you offline, in 90 seconds (LFHeli HH-60G, 2026-07-29).** `PHYSICS (E): Won't simulate, it has no geometry` is emitted when the engine aborts while **loading the MLOD**, before it ever builds physics — so a perfect Geometry LOD does not exonerate the model, and chasing it as a collision problem costs days. **Do this first, not last**: drop the `.p3d`s into a dir under `P:\` with a `model.cfg` declaring **every** basename, run `binarize.exe -always <src> <out>`, and read the verdict — `Too many vertices` names the culprit by filename. Validated 25/25 against in-game verdicts on 28 variants (zero false greens, zero false reds), which turns model bisection from ~6 min per variant into ~90 s per batch. Three rules that make it a real gate: (a) the verdict is **three-valued** — `PASS` needs a *new* non-empty ODOL (a residual one is a false green), `CAPACITY_FAIL` needs the `Too many vertices` line *attributed to that MLOD*, and anything else is `OTHER_FAIL` which **blocks and does not authorize touching geometry**; (b) the verdict is reproducible but the **ODOL bytes are not** (same input, 1.725.025 and 1.726.689 b in two clean runs) — never gate on the ODOL SHA; (c) the ceiling in `(point, normal, uv)` units is **not 65535 and not portable** — measured 46.133 on the HH-60G across four bases, because the engine's cap is on POST-SPLIT vertices and your counter under-counts by a model-dependent factor (1,4205 here, 1,46 on the OH-1). An assembler with `RESOLVED_LIMIT = 65535` hardcoded closed its own gate in green for weeks on a model the engine refuses. **Re-measure per model, and know your headroom** — the deployed HH-60G sat 114 triples under the cliff, one normal tweak from death. Full detail, including why reversing corner order is free while minting a normal is not: **SP-122** at the bottom of this skill. Tool: `LFHeli_dev/tools/p3d_vertex_gate.py`.
+
 ## NEW CAR — DAY-1 (run BEFORE the first in-game cycle; retro 2026-07-03)
 
 Retro of LFQuad→SUB_BRZ→MercedesAMGLF (~90-110 session-equivalents, ~180-220 in-game cycles across
@@ -1016,10 +1018,12 @@ cycle by re-reading the base class the airframe actually inherits from.
 ## (added 2026-07-28) An animation's SIGN is never judged without its AXIS - use the pseudovector against the control
 
 Wheels spinning backwards, doors hinging the wrong way and inverted steering are the same bug,
-and reviewing `angle1` alone cannot catch any of them: **invert the axis and the angle together
-and every sign check still passes while the part moves backwards.** The only falsifiable
-invariant is the pseudovector `angle1 x unit(axis_dir)`, compared against the homologous class
-of the vanilla CONTROL.
+and reviewing `angle1` alone cannot catch any of them, because **the axis sign is a free
+reparametrization**: `R(theta, a) == R(-theta, -a)`, so a mod with axis `(-1,0,0)` and
+`angle1 = +6.28` moves *identically* to the control's `(1,0,0)` / `-6.28`. Compare the raw
+angle against a control and you will flag a correct artifact and miss a real one. The
+falsifiable invariant is the pseudovector `angle1 x unit(axis_dir)`, compared against the
+homologous class of the vanilla CONTROL.
 
 **Where the evidence lives after Binarize** (so this is an OFFLINE gate, not an in-game guess):
 the compiled ODOL carries the whole rig. `odol_reader.py:82-160` - `animations.classes[i]` has
@@ -1052,13 +1056,94 @@ pattern). `CivilianSedan` models suspension as ~20 ROTATION classes on `susp_arm
 Gating your `type="translation"` dampers against the sedan fails by construction - their control
 is the Land Rover pattern, not the sedan.
 
-**How to gate it**: assert the pseudovector per animation class against the control, plus
-`anim_source` case-insensitive, bone binding, and a non-degenerate `axis_dir`. The mandatory
-negative fixture is **invert BOTH the axis and the angle** - a gate that still passes that is
-the gate you already had. Checking only "the axis is not null" is not a direction check:
-`rip_native_door_contract_gate.py:665-674` did exactly that and would have accepted a
-backwards-hinging door.
+**How to gate it**: assert the pseudovector per animation class against the control, on every
+LOD that carries an active binding, plus `anim_source` case-insensitive, bone binding, and a
+non-degenerate `axis_dir`. Two fixtures, and getting them the right way round is the whole
+point:
+
+- **negative (must FAIL)**: invert the axis **or** the angle, one at a time. That is a real
+  direction defect.
+- **positive (must PASS)**: invert **both** at once. Same rotation, different parametrization -
+  a gate that rejects it is over-fitted to one authoring convention and will reject a correct
+  mod.
+
+Checking only "the axis is not null" is not a direction check at all:
+`rip_native_door_contract_gate.py:665-674` does exactly that, so it would accept a
+backwards-hinging door. Translation animations (`anim_type=4`, dampers) need the same treatment
+with `unit(axis_dir) * (offset1 - offset0)`.
 
 Origin: SUB_BRZ 2026-07-28, R21 dual on the "complete the car" roadmap. The measurement turned
 the wheel-direction question from "spend an in-game cycle to discover it" into "already proven
 offline, in-game only confirms" - which is the difference between one cycle and two.
+---
+
+## SP-122 (2026-07-29, LFHeli HH-60G) - binarize is an OFFLINE ORACLE for "does it load", and `RESOLVED_LIMIT = 65535` is a false friend
+
+Extends #24. Everything below is measured on the HH-60G, cross-checked against 25 in-game
+verdicts.
+
+**1. `Too many vertices` and `Won't simulate, it has no geometry` are the SAME defect.**
+The rejection happens while **loading the MLOD**, before conversion, so the engine aborts the
+whole model and emits the generic physics message even though the Geometry LOD is perfect.
+Chasing it as a collision problem costs days. If a model that passes every offline gate does
+not spawn, run binarize on it **before** touching the Geometry LOD.
+
+**2. binarize adjudicates N models per pass, offline, in ~90 s.**
+`binarize.exe -always <src under P:\> <out>`, with a `model.cfg` that declares **every**
+basename in the source dir (undeclared basenames fall back to Default and change the code
+path). Validated on 28 variants against the in-game verdicts of the previous cycle:
+**13 PASS/PASS, 12 FAIL/FAIL, zero false greens, zero false reds.** This turns a model
+bisection from ~6 min per variant into ~90 s per batch.
+
+**3. The verdict has THREE states. Using two is a bug in your bench.**
+- `PASS` - a **new**, non-empty ODOL for the basename under test, in an output dir that did
+  not already contain it. Skip the "new" requirement and a residual ODOL gives you a false green.
+- `CAPACITY_FAIL` - no new ODOL **and** a `Too many vertices` line attributed to that MLOD.
+- `OTHER_FAIL` - any other absence: bad `model.cfg`, undeclared basename, malformed MLOD, I/O,
+  aborted tool. **It blocks and does NOT authorize touching geometry.** Without this state you
+  decimate a mesh because your bench was misconfigured.
+
+**The verdict is reproducible; the ODOL bytes are NOT.** The same `.p3d` produced 1,725,025 and
+1,726,689 bytes with different hashes in two clean consecutive runs. Never gate on the ODOL SHA.
+
+**Noise that does NOT discriminate** (it appears for the known-good control too):
+`Material not loaded`, `No entry '.CfgVehicles'`, `Trying to access error value`,
+`Error occured: Loading LODShape`, `UV mapping too varied`, `vertices of bone X are shared with
+bone Y`, `Too detailed shadow lod`. The word `Error` in the log classifies nothing - attribute
+the outcome to a model and a cause, or record `OTHER_FAIL`.
+
+**4. The ceiling in triple units is not 65535, and it is not portable.**
+Measured by walking four structurally different bases of the same asset to the cliff:
+**46,133 loads, 46,134 does not** - the same integer for all four. The engine's hard cap does
+appear to be 65,535 but on **post-split** vertices, and a `(point, normal, uv)` counter
+under-counts those by a model-dependent factor: **1.4205** here, **1.46** on the OH-1 (see #24).
+An assembler with `RESOLVED_LIMIT = 65535` hardcoded closed its own gate in green, for weeks, on
+a model the engine refuses. **Re-measure per model; the hard gate is binarize's verdict.**
+
+**5. Know your headroom, because it can be one edit wide.**
+The deployed HH-60G sat at 46,019 of 46,133 - **114 triples of margin**, 99.8 %. Any change that
+adds more than 114 resolved vertices kills it: a normal tweak, a UV seam, a texture that forces
+another split. Measure resolved before and after **every** visual edit.
+
+**6. When you mint a normal, you are spending budget; when you reverse a corner order, you are not.**
+The defect that cost this project a week: a winding-flip block negated the stored normal **per
+corner** for the 151 faces (0.43 %) whose source normal disagreed with the source winding. Those
+453 corners minted 630 pool entries and +886 resolved. Re-reversing the corner order of those
+151 faces reaches **identical** coherence at zero cost. A face's corner order is free; a new
+normal is not.
+
+And the identity to have in your head before "fixing" a winding by inverting things:
+`dot(-cross, -n) == dot(cross, n)`. Reversing the corners **and** negating the normal is a
+no-op for their relationship - it re-parametrizes, it does not flip. A policy that does both
+changes nothing.
+
+**7. A perturbation below the consumer's quantum is a null mutation.**
+When walking a limit to find where it breaks, the step must survive the consumer's quantization.
+Nudging a normal by 1e-4 on one component (~0.006 deg) does not survive DayZ's normal
+compression: the estimator counted +120 new triples, the engine saw none, 42 samples "passed",
+and the ceiling would have been reported 7 units too high. Use a step that is unambiguously
+above the quantum (>= 3 deg for normals) and include a sample past the known-failing value as
+a self-check.
+
+Tool: `LFHeli_dev/tools/p3d_vertex_gate.py` - `count` reports resolved per LOD, `binarize` runs
+the three-state adjudication.
