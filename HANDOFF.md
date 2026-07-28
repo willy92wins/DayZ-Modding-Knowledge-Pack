@@ -10,9 +10,10 @@ con cero findings, y **`promote --check` en ROJO** (ver aviso 1).
 
 `ciclos_en_este_objetivo: 2 (Fase 02 — B20, gate C1 y corpora)`
 
-> Sube a 2, no reinicia: el objetivo es el mismo y solo ha caído B20. Si llega a 3
-> con C1 todavía abierto, el gate de escalada tiene razón — porque lo que falta de
-> C1 no es trabajo de parser sino tres checkouts (ver «Qué hacer»).
+> Sube a 2, no reinicia: el objetivo es el mismo y solo ha caído B20. **El motivo
+> por el que iba a haber un ciclo 3 ya no existe**: los tres checkouts que
+> bloqueaban C1 están en disco y el corpus mide verde (ver «Qué hacer» §2). Lo
+> que queda es trabajo normal de repo, no un bloqueo.
 
 ## B20 — CERRADO por medición en el engine
 
@@ -32,16 +33,35 @@ cadena de medición en `plans/2026-07-24-02-dayz-ui-lab.md` §B20 y en
 
 1. **Adjudicar `skill/dayz-vehicles`** en cuanto haya 60 min de quietud — es lo
    único que pone verde el gate (aviso 1).
-2. **Corpora (`:77`)**: fijar builds, hashes y licencias. Es lo más rentable que
-   queda offline; los datos están en
-   `10_Projects/DayZ_UI_Research/research/2026-07-24-ui-positive-reference-corpus-codex.md`.
-   Para TraderX se verifican localmente; para VPP/Expansion/TraderPlus serían
-   transcripción, y conviene marcarlo como tal.
-3. **Gate C1 (`:95`) — decidir, no intentar.** Exige `319/319` del corpus público
-   y **VPP, Expansion y TraderPlus no tienen checkout en esta máquina**. Lo que
-   falta son tres checkouts, no más parser. O se clonan, o C1 se replantea con el
-   usuario. No gastes sesión dándole vueltas al parser.
+2. **Gate C1 (`:95`) — el corpus YA está en disco y ya da verde.** El usuario
+   autorizó clonar, y los tres referentes están en **`C:\Users\guill\DayZ-UI-Corpora\`**
+   a los commits fijados por el research, **pin verificado**:
+
+   | Referente | Commit | Layouts |
+   |---|---|---|
+   | `VPP-Admin-Tools` | `dc22e420df3b54e821055f9764da1e48f4a31e71` | 69 |
+   | `DayZ-Expansion-Scripts` | `8d3a453b2b6786a0bef728dbdfdc9a1ef0383a9b` | 234 |
+   | `TraderPlusV1` | `d0cd39f105fba57104bf93798129626228a263e6` | 16 |
+
+   Medido con el parser ya cambiado: **319/319 público**, **46/46 TraderX**,
+   **11/11 LFPG**, cero fallos. **No hay regresión** por el cambio de B20.
+
+   Lo que falta para poder **escribir el `✓`** no es medir, es hacerlo
+   reproducible desde el repo: un **runner de corpus commiteado** (hoy la medida
+   sale de un script de scratchpad) y los **manifests de `:77`/`SC-010`** con
+   commit/hash/licencia. Sin eso se estaría marcando un criterio con evidencia
+   que no se puede re-ejecutar. Los tres repos **no se redistribuyen**: solo
+   entran URL, commit y hash.
+3. **Corpora (`:77`)** — ahora se pueden **verificar**, no transcribir: los tres
+   están en disco. Va emparejado con el runner del punto 2.
 4. **Tasks 3-5** del plan de fase (escenarios, render determinista, diff), offline.
+   Es el tramo natural para delegar a Codex: código puro, sin engine de por medio.
+5. **El escape inválido de `:91-92` ya es decidible.** Se dejó abierto por falta
+   de corpus; ahora está medido: en los **365 layouts** (319 público + 46 TraderX)
+   hay **cero** backslashes dentro de string, y solo **4** en total, que son las
+   cuatro continuaciones de B20. Convertir un escape desconocido en error es
+   seguro sobre ambos corpora. Hazlo con test RED→GREEN y cierra el tercio que
+   falta del item.
 5. **Promoción pendiente de `skill/rigorous-data-audit`**: las 36 líneas de
    `1312890` nunca llegaron a las raíces (la transacción se firmó sobre `8986bae`).
    Es repo-ahead benigno, verificado por hash de blob. Agrúpalo con la promoción de
