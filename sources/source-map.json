@@ -6494,6 +6494,52 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/tests/persistence/persistence_checklist.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "78565adb7d16f51afd8c357fcaf9d87b1c1c2cc1a9956bb16d54a9b4873b3995",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/persistence/persistence_checklist.py",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "78565adb7d16f51afd8c357fcaf9d87b1c1c2cc1a9956bb16d54a9b4873b3995",
+      "output_path": "tests/persistence/persistence_checklist.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/persistence/test_persistence_checklist.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "First-party Phase 03 persistence artifact authored against the contracts closed in specs/2026-07-28-dayz-persistence.md.",
+          "license": "MIT",
+          "source_hash": "551aa66f86435a33e16ca708bfc1369d37f26beadcc36301f80b901244cd5fe6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/persistence/test_persistence_checklist.py",
+          "source_revision": "r21-phase03-approved@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "551aa66f86435a33e16ca708bfc1369d37f26beadcc36301f80b901244cd5fe6",
+      "output_path": "tests/persistence/test_persistence_checklist.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/tests/persistence/persistence_stream.py",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
