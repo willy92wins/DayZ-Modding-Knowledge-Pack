@@ -69,7 +69,7 @@ y entrada en el changelog.
 | # | Criterio | Cómo se verifica | Estado |
 |---|---|---|---|
 | C1 | Parser honesto cierra B19/B20 | 319/319 corpus público + 46/46 TraderX + LFPG, exit 0; 0 falso `missing-child-block`; CRLF/LF verificados en DayZDiag | ✓ |
-| C2 | Escenarios versionables componen shell, subviews y colecciones, detectando ciclos y paths rotos | fixture shell→subview→3 cards conserva orden/identidad/geometría en 1920×1080 y 3440×1440 | ❓ |
+| C2 | Escenarios versionables componen shell, subviews y colecciones, detectando ciclos y paths rotos | fixture shell→subview→3 cards conserva orden/identidad/geometría en 1920×1080 y 3440×1440 | ✓ |
 | C3 | El render semántico es determinista entre ejecuciones limpias; RGBA/PNG solo son canónicos dentro de un perfil de raster fijado, y resuelven assets propios | dos `render.json` byte-idénticos sin timestamps/rutas privadas; dentro del perfil fijado, dos buffers RGBA y PNG byte-idénticos; fuera del perfil, artefacto `non_canonical`; fixture `.styles` + `.imageset` 9-slice + fuente sin fallback silencioso | ❓ |
 | C4 | Diff accionable identifica referencia rota, clipping, solape y estado ausente por widget/escenario | fixture negativa produce exactamente los hallazgos esperados; control verde produce 0 | ❓ |
 | C5 | Corpus positivo = VPP/Expansion/TraderPlus/TraderX; negativo = LFPG Sorter V4 TEST; terceros no se redistribuyen | manifests por commit/hash y auditoría de allowlist | ✓ |
@@ -111,6 +111,38 @@ verdict=PASS  (exit 0)
 > `sources/local-roots.json`, que no se rastrea. Un corpus sin raíz configurada
 > **falla el gate**, no se salta en silencio: «no medido» y «pasa» no pueden
 > parecerse.
+
+**Evidencia ejecutada el 2026-07-28** para `C2`, medida sobre el árbol:
+
+```
+python tools/dayz-ui-lab/dayz_ui_lab/scenario.py \
+    --scenario tools/dayz-ui-lab/fixtures/scenarios/three-cards/scenario.json \
+    --viewport 1920x1080   → verdict=PASS, exit 0, 17 widgets
+    --viewport 3440x1440   → verdict=PASS, exit 0
+```
+
+- **Identidad y orden** — las tres cards conservan `sibling_index` `0,1,2`, tres
+  ids distintos, y **los mismos tres ids en las dos resoluciones**. La geometría
+  sí cambia (ancho de card `497.664` a 1920×1080, `891.648` a 3440×1440), que es
+  lo que separa «conserva identidad» de «ignora el viewport»: sin esa aserción,
+  una implementación que no leyera la resolución pasaría el criterio.
+- **Determinismo** — dos ejecuciones limpias del mismo escenario/viewport
+  producen bytes idénticos (SHA-256 `1c307898…` las dos); la otra resolución da
+  `2b83d571…`. Sin timestamps ni rutas absolutas.
+- **Fail-closed** — los seis escenarios negativos devuelven exit `1` y su código
+  exacto, uno por fixture: `SCENARIO-SCHEMA-INVALID`, `SCENARIO-CYCLE`,
+  `SCENARIO-LAYOUT-MISSING`, `SCENARIO-STATE-MISSING`,
+  `SCENARIO-BINDING-MISSING` y `SCENARIO-MOUNT-MISSING`. El séptimo,
+  `SCENARIO-DUPLICATE-WIDGET-ID`, es un guard defensivo: con ancestry bien
+  formada y sibling indices contiguos no puede dispararse desde un JSON, así que
+  se prueba inyectando la colisión, no debilitando el algoritmo.
+- **Frontera de C5 intacta** — la allowlist first-party pasa a dos directorios
+  nombrados para alojar las fixtures, pero la garantía de C5 la sostiene la
+  **auditoría por contenido**, que no se tocó y que ya tiene un test demostrando
+  que atrapa un layout de tercero replantado dentro del directorio permitido. Un
+  `.layout` en una tercera ubicación sigue dando
+  `CORPUS-LAYOUT-OUTSIDE-FIRST-PARTY`, con test propio. El gate mide ahora
+  `4 tracked .layout, 0 redistributed`.
 
 ## D — `dayz-persistence`
 

@@ -1958,7 +1958,7 @@
           "decision": "adopt",
           "decision_evidence": "The approved Phase 02 plan fixes the architecture and records B19 GREEN plus the authorized-engine gate that still blocks B20.",
           "license": "MIT",
-          "source_hash": "fe174bb4377fb13b14f5d0373196c3fa01ec54f69d989cce17cbfc7ff37d7540",
+          "source_hash": "03a2d64aae311223108e5ff8bb9c531bd4af757b7c6cb29b8a7e210c640fcdf2",
           "source_id": "pack-r21-authored",
           "source_path": "plans/2026-07-24-02-dayz-ui-lab.md",
           "source_revision": "r21-phase02-approved@2026-07-25",
@@ -1966,7 +1966,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fe174bb4377fb13b14f5d0373196c3fa01ec54f69d989cce17cbfc7ff37d7540",
+      "output_hash": "03a2d64aae311223108e5ff8bb9c531bd4af757b7c6cb29b8a7e210c640fcdf2",
       "output_path": "plans/2026-07-24-02-dayz-ui-lab.md",
       "routing_artifact_id": "repo/plans",
       "verification_level": "cross_checked"
@@ -2304,7 +2304,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "1f5b23a940da285bb00797ba912f8df8384579670039e46465fdb1973e084e4f",
+          "source_hash": "9b3b871c324ce62bc4f9041777a0a01b9b29dc6de49900bcc97d90bcfbfa36b1",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -2312,7 +2312,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1f5b23a940da285bb00797ba912f8df8384579670039e46465fdb1973e084e4f",
+      "output_hash": "9b3b871c324ce62bc4f9041777a0a01b9b29dc6de49900bcc97d90bcfbfa36b1",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
@@ -8559,7 +8559,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 makes the C1 corpus gate reproducible from the repository and adds the C5 provenance audit, both failing closed when a corpus root is unconfigured.",
           "license": "MIT",
-          "source_hash": "aa36ea4db5aa0daffb8544e84391acf86481296120355e0a58db7c11b95a05b1",
+          "source_hash": "89a75ccaec3a7e58a614b6711d3a88d8324d76af489abbd34aa333495877c10a",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/dayz_ui_lab/corpus.py",
           "source_revision": "r21-phase02@2026-07-28",
@@ -8567,7 +8567,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "aa36ea4db5aa0daffb8544e84391acf86481296120355e0a58db7c11b95a05b1",
+      "output_hash": "89a75ccaec3a7e58a614b6711d3a88d8324d76af489abbd34aa333495877c10a",
       "output_path": "tools/dayz-ui-lab/dayz_ui_lab/corpus.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -8581,7 +8581,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 tests the gate in both directions, including a planted third-party layout and the relative-path exclusion that previously made the audit measure nothing.",
           "license": "MIT",
-          "source_hash": "7c53193f9829f403ce87f41cffcd89d7f90f776e066a87da93a37b5ed1084027",
+          "source_hash": "90f0416083e2025028761596daa369c577502ba05e366adf2b243186fb0d0d0f",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/tests/test_corpus.py",
           "source_revision": "r21-phase02@2026-07-28",
@@ -8589,7 +8589,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7c53193f9829f403ce87f41cffcd89d7f90f776e066a87da93a37b5ed1084027",
+      "output_hash": "90f0416083e2025028761596daa369c577502ba05e366adf2b243186fb0d0d0f",
       "output_path": "tools/dayz-ui-lab/tests/test_corpus.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -10691,6 +10691,314 @@
       "license": "MIT",
       "output_hash": "9d91d5f7eb6e101032537712146f9cff2877152267f081da4879d2d104c5e412",
       "output_path": "tools/py3d/tests/test_s4_wheel_gate.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/dayz_ui_lab/scenario.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "dd25a6fb2822b5d5bbb1fc09adbf429fb4bf2b54ae534a09fa25661f8e9e6ee4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/dayz_ui_lab/scenario.py",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "dd25a6fb2822b5d5bbb1fc09adbf429fb4bf2b54ae534a09fa25661f8e9e6ee4",
+      "output_path": "tools/dayz-ui-lab/dayz_ui_lab/scenario.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/binding-missing/scenario.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "81f8448624e83f222763fe98feeffec5c5839334a3f03b83f047e6d95240427d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/binding-missing/scenario.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "81f8448624e83f222763fe98feeffec5c5839334a3f03b83f047e6d95240427d",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/binding-missing/scenario.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/cycle/scenario.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "888d1aa620895fcdecb07e5b04ab6e424ff9a413533c20370fc99dad6a1e0ed3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/cycle/scenario.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "888d1aa620895fcdecb07e5b04ab6e424ff9a413533c20370fc99dad6a1e0ed3",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/cycle/scenario.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/duplicate-widget-id/scenario.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "cdec9144dddba905d30e521ec249a1ac880d00edf838fbf00e0f78234c4b92df",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/duplicate-widget-id/scenario.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "cdec9144dddba905d30e521ec249a1ac880d00edf838fbf00e0f78234c4b92df",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/duplicate-widget-id/scenario.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/layout-missing/scenario.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "e51fe4cedc7a4d17bb3599e7c848638e37c6127e7de7f542ffd8155bd28764f2",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/layout-missing/scenario.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e51fe4cedc7a4d17bb3599e7c848638e37c6127e7de7f542ffd8155bd28764f2",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/layout-missing/scenario.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/mount-missing/scenario.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "10b1d2995d2ab020da2257e51db9b1d729935393cdc2a8cd915ec96a1671f644",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/mount-missing/scenario.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "10b1d2995d2ab020da2257e51db9b1d729935393cdc2a8cd915ec96a1671f644",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/mount-missing/scenario.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/schema-invalid/scenario.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "8441314a1e6ca3e434e3276197cca943c024728879c7c86c968b5e73296eb7e4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/schema-invalid/scenario.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8441314a1e6ca3e434e3276197cca943c024728879c7c86c968b5e73296eb7e4",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/schema-invalid/scenario.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/state-missing/scenario.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "14bcf4eefcb3a4df05dedeeea8af8af7d983ad78ec1a2521da2a9828aae1be3a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/state-missing/scenario.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "14bcf4eefcb3a4df05dedeeea8af8af7d983ad78ec1a2521da2a9828aae1be3a",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/state-missing/scenario.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/three-cards/layouts/card.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "6e3a15f3d0f316e2b542c8effdad209bc24ebc16cb1a861c0b92c658fcb38263",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/three-cards/layouts/card.layout",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6e3a15f3d0f316e2b542c8effdad209bc24ebc16cb1a861c0b92c658fcb38263",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/three-cards/layouts/card.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/three-cards/layouts/shell.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "d5bef22cac53b71fd671beea8e9bd0ae77c3bccb9f3fed91ee939a3ee9cf7942",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/three-cards/layouts/shell.layout",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d5bef22cac53b71fd671beea8e9bd0ae77c3bccb9f3fed91ee939a3ee9cf7942",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/three-cards/layouts/shell.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/three-cards/layouts/subview.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "f5122e6f4969a725977c1f8f939ba74d892a9999dfedc09f5e71856fc618279f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/three-cards/layouts/subview.layout",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f5122e6f4969a725977c1f8f939ba74d892a9999dfedc09f5e71856fc618279f",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/three-cards/layouts/subview.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/scenarios/three-cards/scenario.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "3a7921aea59630fdf0c43ac32006b30bc56a497cff6c37e6f6ef69efced4b6a6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/scenarios/three-cards/scenario.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3a7921aea59630fdf0c43ac32006b30bc56a497cff6c37e6f6ef69efced4b6a6",
+      "output_path": "tools/dayz-ui-lab/fixtures/scenarios/three-cards/scenario.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/schemas/dayz-ui-scenario-v1.schema.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "4812ef3964776ad42d8e3a42de305628a696386d083a9f215b5fb85805c93476",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/schemas/dayz-ui-scenario-v1.schema.json",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4812ef3964776ad42d8e3a42de305628a696386d083a9f215b5fb85805c93476",
+      "output_path": "tools/dayz-ui-lab/schemas/dayz-ui-scenario-v1.schema.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/tests/test_scenario.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Phase 02 Task 3 creates the dayz-ui-scenario-v1 contract: a versioned schema, a stdlib validator that fails closed on unsupported keywords, a shell-subview-collection composer with viewport-independent widget identity, and first-party positive and negative fixtures.",
+          "license": "MIT",
+          "source_hash": "f754456fcaf6eb5e09e2b43c2f2d3b06036efae1867490362ac087c66549b400",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/tests/test_scenario.py",
+          "source_revision": "r21-phase02@2026-07-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f754456fcaf6eb5e09e2b43c2f2d3b06036efae1867490362ac087c66549b400",
+      "output_path": "tools/dayz-ui-lab/tests/test_scenario.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

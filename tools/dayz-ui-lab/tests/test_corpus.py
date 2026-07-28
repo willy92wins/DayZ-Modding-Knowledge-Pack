@@ -214,6 +214,30 @@ class ProvenanceAuditTests(unittest.TestCase):
             )
             self.assertIn("CORPUS-LAYOUT-OUTSIDE-FIRST-PARTY", codes(findings))
 
+    def test_a_layout_under_the_scenario_fixture_directory_is_allowed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            pack, third_party = self._pack(temp_dir)
+            write(
+                pack / "tools/dayz-ui-lab/fixtures/scenarios/green/card.layout",
+                LEAF_LAYOUT,
+            )
+            _, findings = corpus.audit_redistribution(
+                pack, self._entries(), {"vendor": third_party}
+            )
+            self.assertNotIn("CORPUS-LAYOUT-OUTSIDE-FIRST-PARTY", codes(findings))
+
+    def test_a_layout_under_an_unlisted_third_directory_is_flagged(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            pack, third_party = self._pack(temp_dir)
+            write(
+                pack / "tools/dayz-ui-lab/fixtures/unlisted/stray.layout",
+                LEAF_LAYOUT,
+            )
+            _, findings = corpus.audit_redistribution(
+                pack, self._entries(), {"vendor": third_party}
+            )
+            self.assertIn("CORPUS-LAYOUT-OUTSIDE-FIRST-PARTY", codes(findings))
+
     def test_exclusions_apply_to_the_relative_path_not_the_absolute_one(self) -> None:
         # Regression: filtering on absolute path parts matched every file when the
         # pack itself lives under a directory named like an exclusion, so the audit

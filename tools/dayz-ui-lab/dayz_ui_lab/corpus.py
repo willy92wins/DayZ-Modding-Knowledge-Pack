@@ -27,9 +27,13 @@ MODULE_DIR = Path(__file__).resolve().parent
 TOOL_DIR = MODULE_DIR.parent
 DEFAULT_MANIFEST = TOOL_DIR / "corpora" / "manifest.json"
 
-# The probe fixtures are the only .layout files this repository is allowed to
-# track. Everything else would mean a third-party layout leaked into the payload.
+# These named fixture directories are the only places where this repository may
+# track .layout files. Everything else may be a leaked third-party layout.
 FIRST_PARTY_LAYOUT_DIR = "tools/dayz-ui-lab/probe/LF_UIProbe/gui/layouts"
+FIRST_PARTY_LAYOUT_DIRS = (
+    FIRST_PARTY_LAYOUT_DIR,
+    "tools/dayz-ui-lab/fixtures/scenarios",
+)
 
 
 def _load_parser() -> Any:
@@ -268,11 +272,13 @@ def audit_redistribution(
             continue
         tracked.append(path)
 
-    first_party_dir = (pack_root / FIRST_PARTY_LAYOUT_DIR).resolve()
+    first_party_dirs = [
+        (pack_root / directory).resolve() for directory in FIRST_PARTY_LAYOUT_DIRS
+    ]
     outside = [
         str(p.relative_to(pack_root).as_posix())
         for p in tracked
-        if first_party_dir not in p.resolve().parents
+        if not any(directory in p.resolve().parents for directory in first_party_dirs)
     ]
 
     third_party_digests: dict[str, str] = {}
