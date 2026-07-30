@@ -3134,7 +3134,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "27e54db55c3eb34c01b20295998ac5894e60becc4d40aba01d314528e115cf62",
+      "output_hash": "0a3e1e268f32b36de4e33797a7652419e85d9d23d372046244697ee85034b453",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -4158,7 +4158,7 @@
           "decision": "adopt",
           "decision_evidence": "Approved optional-companion authority boundary was added after an adversarial RED-to-GREEN evaluation.",
           "license": "MIT",
-          "source_hash": "877cc9dbb4eac88b98040bdec02f90e98c5ba6c4d3f03d321d1b1441f9b5b9f6",
+          "source_hash": "9899735809d32efe915063d15750f85335bbc12f903a1b8f8d177fd1eeae54fa",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -4166,7 +4166,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "877cc9dbb4eac88b98040bdec02f90e98c5ba6c4d3f03d321d1b1441f9b5b9f6",
+      "output_hash": "9899735809d32efe915063d15750f85335bbc12f903a1b8f8d177fd1eeae54fa",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -4416,7 +4416,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fb8d6f65bc0b2a6c710b4585529d7c1176284fb372f75597a526180f2d1bfacb",
+      "output_hash": "aee2092e14b26151030df38fc26143b31fa037faf712df3d2e8278d3eec384c7",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -4660,7 +4660,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "b97cb03e66e3d6e89573fa8febe5474c2cee23a241031828d3d8b6d951eb9eca",
+          "source_hash": "b610541916fa127e01061d34452444e6e2833016153ee9d77866bd7c1c93898a",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -4668,7 +4668,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b97cb03e66e3d6e89573fa8febe5474c2cee23a241031828d3d8b6d951eb9eca",
+      "output_hash": "b610541916fa127e01061d34452444e6e2833016153ee9d77866bd7c1c93898a",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -5652,7 +5652,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8e0853e09e44a25d77eecc8a48379004a004135b58be898be71d7d6fe84891c3",
+      "output_hash": "a1b83c0b569e73f3863132e307446fda41eabe9a115b9b6793fa83a25e4a1487",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"

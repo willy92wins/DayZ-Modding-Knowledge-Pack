@@ -447,3 +447,57 @@ in place as the live file. Same invariant, two entry points, one of them silentl
 weaker -- the VULN-009 shape. When a codebase has a `save` and a `recover`, diff
 their verify branches line by line; do not assume the recovery path inherited the
 discipline.
+
+## (added 2026-07-29) Dos cosas que la auditoria debe mirar y que ninguna dimension cubre sola
+
+Origen: GameMaster IG-1 (R21 dual + esta skill, 2026-07-29). El codigo entro con dos veredictos
+UNSOUND independientes y salio con 19 fixes. Los dos hallazgos mas graves de la jornada **no estaban
+en el codigo que se venia a auditar**: estaban en los fixes escritos ese mismo dia. Ninguno de los
+8 angulos los habria encontrado, porque los 8 angulos miran el sistema, no el parche.
+
+### 1. Un identificador reutilizado se verifica por su CICLO DE VIDA, no por su igualdad
+
+`G2` obliga a verificar que el simbolo existe. `LL-222` lo extendio a la semantica de un helper que
+reutilizas. Falta el tercer escalon, que es el que muerde en sistemas con dos procesos: cuando un fix
+usa un identificador emitido por OTRO actor, verificar que existe la igualdad **no basta**; hay que
+verificar **cuanto vive** esa igualdad y **quien reinicia el contador**.
+
+Caso real: para borrar una entidad huerfana se reutilizo el `command_id` que devuelve el enqueue,
+tras verificar en el codigo del servidor que `object_id == command.id` — cierto, citado, con
+`path:line`. Lo que no se verifico: el emisor de esos ids **reinicia su contador en cada arranque**
+(`self._next_id = 1`) y se auto-reapea por idle a los 30 min, mientras el mapa que los indexa al otro
+lado **no se limpia nunca** mientras viva el proceso host. Ids reciclados ⇒ el borrado "compensatorio"
+apunta a una entidad de otra sesion. Un fix pensado para no dejar basura podia destruir trabajo en curso.
+
+**Preguntas obligatorias antes de aceptar un id ajeno como clave de una operacion destructiva**:
+quien lo genera y con que contador · ese contador se reinicia (proceso, sesion, mision, reboot) ·
+quien mantiene el mapa que lo resuelve y cuando lo limpia · pueden desincronizarse esos dos ciclos de
+vida · que pasa si el id ya no significa lo que significaba. Si alguna no tiene respuesta citada,
+**la operacion destructiva no se hace**: registrar y reportar, nunca borrar a ciegas.
+
+Corolario del mismo caso: comprobar tambien el **orden de ejecucion** en el otro actor. Alli, un
+`spawn` siempre se difiere a una cola y un `delete` de un lote sin spawn se despacha inmediato, asi
+que la compensacion podia adelantar al spawn que pretendia deshacer y crear el huerfano permanente
+que venia a evitar.
+
+### 2. El Step 6 busca INTERACCIONES entre fixes, no solo defectos en cada fix
+
+El Step 6 dice "re-run los angulos cuyo codigo cambio mas". Insuficiente tal como suena: invita a
+re-auditar cada fix por separado, y el defecto aparece en el **producto** de dos fixes correctos.
+
+Caso real, dos fixes ambos correctos y ambos con test en rojo probado: (a) "en dry-run no llames al
+sweep" — correcto, el sweep mutaba el mundo en un modo que se anuncia como seguro; (b) "al arrancar,
+garantiza el salto de linea final del ledger" — correcto, un append fusionado hacia perder el contrato
+de una entidad viva. Juntos: la unica reparacion de cola rota vivia DENTRO del sweep, que (a) acababa
+de desactivar en dry-run, y (b) cerraba la linea rota sin descartarla, de modo que el siguiente append
+caia detras de ella y esa linea dejaba de ser la ultima. Resultado: `replay()` lanzaba siempre y el
+ledger quedaba **permanentemente ilegible**. Ningun arranque posterior podia siquiera barrer.
+
+**Anadir al Step 6, explicitamente**: por cada par de fixes de la tanda, preguntar si uno **desactiva
+un camino del que el otro depende**. Sobre todo cuando un fix anade un guard (`if not X: ...`) y otro
+toca el recurso que ese camino reparaba o limpiaba. Enumerar los pares mecanicamente si la tanda pasa
+de cuatro fixes; el par culpable rara vez es el que uno sospecha.
+
+**Y usar mutantes en el Step 6, no solo tests verdes.** En este caso la re-auditoria con mutantes
+mato 12 de 14 y los 2 supervivientes eran precisamente tests que "probaban" un fix sin poder
+distinguirlo de su ausencia. Un test que pasa con y sin el fix no es cobertura: es decorado.

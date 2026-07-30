@@ -27,6 +27,28 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
   2026-07-10). Any aviation flight loop living in `EOnSimulate` must add
   `SetEventMask(EntityEvent.SIMULATE)` in the class ctor — RFFS does exactly this (`RFFSHeli_Core.c:180-181`).
   Symptom if missed: mod compiles, spawns, idles normally — and the flight model silently never runs.
+- **`super.EOnSimulate` is an EMPTY STUB — CarScript's real per-tick work lives in `EOnPostSimulate`**
+  (added 2026-07-29, LFHeli OH-1 B3). `CarScript` has no `EOnSimulate` override at all: `super`
+  resolves to the empty body at `P:\scripts\1_core\proto\enentity.c:201-203`. Engine, fluids,
+  part-health checks, fuel/engine auto-stop and exhaust/wheel FX all live in
+  `CarScript.EOnPostSimulate` (`P:\scripts\4_world\entities\vehicles\carscript.c:948`), much of it
+  gated `IsServerOrOwner()` — so it is MEANT to run on the owner client. Consequences: (a) skipping
+  `super.EOnSimulate` protects nothing, and any comment claiming it "would run engine/fluids twice"
+  is false; (b) if you pump the solver manually because the native event went quiet, pump BOTH
+  events like the shipped control does (`RFFSHeli_Core.c:1014-1015` calls `EOnSimulate` then
+  `EOnPostSimulate`) — or state explicitly that the owner suspends CarScript's fluid/health tick.
+  Symptom of pumping only `EOnSimulate`: flight works, but for the whole pumped window the owner
+  carries a frozen fuel/damage clock and dead exhaust/wheel FX.
+- **`EOnFrame` is PER FRAME, not a fixed-rate tick — never pump with a hardcoded dt** (added
+  2026-07-29, LFHeli OH-1 B3). `enentity.c:69,:72,:183`: FRAME/POSTFRAME fire once per rendered
+  frame and hand the real delta in `timeSlice`. RFFS's "every 5 ms" pump
+  (`RFFSHeli_Core.c:1008-1015`) is therefore "at most once per frame", and since it passes a
+  hardcoded `0.025` per call its simulated time runs at `FPS x 0.025` — 1.5x real time at 60 FPS,
+  3x at 120, and it drifts with every framerate change. Copy the ARCHITECTURE, not the cadence:
+  bank the real `timeSlice` in an accumulator and run N fixed steps of your own dt while it lasts,
+  with a per-frame step ceiling so one long frame cannot avalanche. Related trap: a silence
+  detector that the pump itself refreshes re-gates the pump to `1/gap` Hz — only the NATIVE event
+  may refresh that clock.
 - **Native `Helicopter`/`HelicopterScript` is a STUB** — empty `EOnPostSimulate` + empty engine hooks
   (`P:\scripts\4_world\entities\vehicles\helicopterscript.c:1-35`, verified 2026-07-10). Do not inherit
   from it expecting flight behavior; use CarScript-as-aviation (below).

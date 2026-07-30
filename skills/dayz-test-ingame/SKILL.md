@@ -344,6 +344,28 @@ cost many iterations, recorded so the next headless harness works first try:
    server with zero clients won't drive the vehicle's own script; spawn after a client connects
    (the harness has a `-WithClient` mode that connects a second diag instance to 127.0.0.1).
 
+### Mission `init.c`: no extender tipos de módulos anteriores desde el fixture (SP-140)
+
+[IN-GAME CONFIRMED, DayZ 1.29 server diag, 2026-07-30] En este compilador una
+misión generada que añadió `modded class` sobre tipos de `4_World` falló con
+`Unknown type` tanto para una clase concreta (`SmallStone`) como para una base
+(`BuildingBase`). Un incidente anterior reprodujo lo mismo con
+`LFPG_NetworkManager`. Los tests offline del texto no detectaron la frontera.
+
+Regla para oráculos de misión: usa un receptor ya compilado que exponga el
+contrato bajo prueba. Si necesitas añadir un método, el puente debe vivir en el
+mismo módulo/PBO que el tipo y requiere su propio candidato/enmienda; no lo
+inyectes como `modded class` desde `init.c`. Mantén llamadas y expresiones
+booleanas del fixture en formas vanilla de una línea: el operador `&&` al
+comienzo de la línea siguiente produjo `Incompatible parameter` + `Syntax
+error`. Antes de gastar pares, ejecuta un único control que exija Module
+Game/World/Mission, OnInit y el marcador del oráculo.
+
+Evidencia: `P:\LFPowerGrid_dev\_validation\server-footprint-a9p1-20260730\v1-oracle\a7-attempt3-f02-unknown-type\script-final.log`,
+`...\a7-attempt4-f03-cross-module-modded\script-final.log` y
+`...\a7-attempt5-f04-boolean-linebreak\script-final.log`. El receptor existente
+cerró el control en `...\a7-control\script-final.log`.
+
 ## WHEEL SIMULATION DIAGNOSIS (vehicle won't drive / bounces / sinks)
 
 When a modded `CarScript` vehicle spawns but won't drive - wheels mount yet don't
@@ -606,3 +628,48 @@ la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita:
 - **LL-196** — Busca `Print()` y `DbgLog` del mod en el `script_*.log` más reciente del profiles correspondiente. Usa el RPT para engine, CE, red, compilación y fallos nativos; no concluyas “el código no corrió” por ausencia de prints en el RPT.
 - **LL-197** — Prepara comando, rutas y argumentos antes de adquirir un lease corto; adquiere y usa el token en llamadas adyacentes. Si hubo análisis prolongado, vuelve a adquirir justo antes de la operación bloqueante.
 - **LL-198** — En ciclos gestionados, ejecuta `adopt → stop` mientras server y client sigan vivos; pide mantener ambos abiertos entre iteraciones. Si un peer ya murió, usa el cierre degradado documentado y espera el auto-heal antes de relanzar.
+
+## `dayz_test_run` con `build:true` NO construye — y el error que devuelve no lo dice (SP-139, added 2026-07-29)
+
+En esta caja DayZDiag solo arranca por el launcher nativo registrado (SP-085), asi que
+`dayz_test_run` es el unico camino. **Su `build:true` esta ROTO**: devuelve el generico
+`dayz_test_failed` y **NO escribe el PBO** (hash y mtime del desplegado quedan intactos).
+Medido 2026-07-29 en DayZ_MCP, reproducido 2 veces, siempre a los ~16 s.
+
+Por que engana: `dayz_test_failed` es el `except Exception` de `server.py:1101`, que **traga la
+causa real** — no es un codigo de error del tool, es "algo lanzo y no se que". Leer el audit
+(`%LOCALAPPDATA%\DayZ_MCP\audit\events.jsonl`) tampoco basta aqui: el lease se concede y se
+libera limpio, con `runs_released: []` y ningun evento de run. Parece un fallo de build y no
+dice donde.
+
+**Biseccion que lo aisla en 3 llamadas** (hazla antes de tocar nada):
+
+| Llamada | Resultado medido | Que descarta |
+|---|---|---|
+| `preflight: true` | `succeeded` en 1,5 s | launcher, PE, bundle, request y lifecycle estan SANOS |
+| `mode: server` sin `build` | `succeeded` en 5,1 s | el launch funciona |
+| AddonBuilder a mano | `Build Successful`, exit 0, ~3,4 s | **AddonBuilder tampoco es el culpable** |
+
+Con esas tres, el fallo queda acotado a la ruta de build DEL LIFECYCLE, que es plataforma.
+
+**Workaround verificado y repetible** (build fuera del path publicado, que ademas es lo que pide
+el §RELEASE-GRADE BUILD BOUNDARY de esta misma skill):
+
+```powershell
+# 1. construir a staging, NUNCA directo al path publicado
+AddonBuilder.exe P:\<Mod> <staging> -prefix=<Mod> -temp=P:\temp\<Mod> -clear -packonly
+# 2. validar por CONTENIDO antes de publicar (contar anclas, no Contains -- SP-065)
+# 3. publicar y verificar por SHA-256, no por mtime
+Copy-Item <staging>\<Mod>.pbo P:\Mods\@<Mod>\Addons\<Mod>.pbo -Force
+(Get-FileHash 'P:\Mods\@<Mod>\Addons\<Mod>.pbo' -Algorithm SHA256).Hash
+# 4. arrancar con dayz_test_run SIN build
+```
+
+Dos precondiciones que ya estaban documentadas y aqui son load-bearing: el PBO desplegado queda
+**LOCKED mientras el run corre** (para el run antes de publicar), y por SP-078 **los scripts no
+hot-loadean en esta instalacion**, asi que cada iteracion de Enforce necesita este ciclo entero.
+
+Origen: DayZ_MCP, gate agrupado de `query_all_players` (2026-07-29). Coste real: ~20 min de
+biseccion sobre un error opaco que no nombraba ni el build ni el launch.
+
+**Leccion de metodo asociada**: `LL-224` — el error opaco se acoto bisecando CAPACIDADES (preflight / sin la feature / la herramienta a mano), no leyendo el codigo que lo lanzo. La tabla de arriba ES esa biseccion; reutiliza el patron ante cualquier error de wrapper que no describa nada.

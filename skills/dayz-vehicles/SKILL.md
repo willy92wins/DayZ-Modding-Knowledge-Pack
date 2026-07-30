@@ -31,6 +31,69 @@ wheels/brakes/`CarFluid`; `Boat` owns propeller/buoyancy/`BoatFluid`(fuel-only).
 `CarScript` config with 3 axles + double wheels, NOT a new class. Boats, truck double-wheels, ATV and
 the motorbike gap → `references/vehicle-types-boat-truck.md`.
 
+**Per-tick event asymmetry (invariant, added 2026-07-29, LFHeli OH-1):** `CarScript` has NO
+`EOnSimulate` — its ctor registers only `POSTSIMULATE`/`POSTFRAME` (`carscript.c:325-326`) and ALL
+its per-tick work (engine, fluids, part health, fuel/engine auto-stop, exhaust and wheel FX, much of
+it gated `IsServerOrOwner()` so it is meant to run on the owner client) lives in `EOnPostSimulate`
+(`carscript.c:948`). `BoatScript` overrides BOTH (`boatscript.c:347` and `:385`). Consequences on a
+car: hook `EOnPostSimulate` for per-tick logic; `super.EOnSimulate` is the empty stub at
+`enentity.c:201-203`, so calling or skipping it does nothing either way — treat any comment claiming
+it "runs engine/fluids twice" as false. Custom solvers that add `SetEventMask(EntityEvent.SIMULATE)`
+and pump it by hand (aviation) → `dayz-aviation` preflight invariants.
+
+**Imported-mesh budget invariant (added 2026-07-29, LFHeli HH-60G):** a **triples/triangle ratio
+measured on a DECIMATED mesh does not extrapolate to an authored one.** `Decimate` collapses edges
+and breaks normal sharing, so it inflates resolved (point, normal, uv) triples per triangle. Measured
+on the same asset: **1.301** on the Decimate-ratio export (0.26-0.6 per group) versus **0.941** on the
+source's own Medium LODs — 28 % apart, and enough to change how many sub-`.p3d` you plan for (2.43
+projected LODs against 1.75 measured). Rule: measure the ratio on the geometry you will SHIP, not on
+whatever export you have lying around. Corollary, and it is the bigger win: **if the source ships an
+authored LOD ladder (GTA `.yft` High/Medium/Low, source-game, Sollumz-imported `.blend` datablocks), use it
+instead of decimating** — swapping `obj.data` to the `<piece>_medium` datablock is usually better in
+triples AND satisfies the "the agent never decimates visual" clause of a product spec. Re-measure per
+model; never copy a ratio or a resolved ceiling between assets.
+
+**Packaging invariant — a fix that lives in the generator and not in the binary does not exist
+(added 2026-07-29, LFHeli HH-60G):** when the cycle's fix is *adding or changing a PROPERTY* of a
+`.p3d` (`autocenter`, `class`, `sbsource`, `lodnoshadow`), a SHA-based manifest cannot see it — it
+compares the same wrong file on both sides and reports green. Real case: `autocenter=0` was added to
+the hull's visual LOD in both assemblers and the PBO was packed minutes later from `.p3d` built
+before; measured afterwards on the **48 extracted** models, the 8 sub-models carried it and **all 40
+hulls did not**. The post-`ExtractPbo` gate must READ the property, per LOD, on the extracted files.
+Two riders that make the gate survive contact:
+
+- Declare the expectation **in a table with a reason per row, never as "all LODs"**. A healthy pack
+  contains **controls that exist in order NOT to change** (an A/B control arm, a byte-frozen
+  baseline); a blanket gate rejects them and gets switched off on its first run.
+- The producer must satisfy its own gate. Here "all LODs" would have rejected the canonical
+  assembler's own output, because the Memory LOD has no geometry to re-centre and therefore never
+  carries `autocenter`. Exclusions are declared, not assumed.
+
+**Deployment-identity invariant — the artifact your gate validates must be byte-linked to the
+artifact the game loads (added 2026-07-29, SUB_BRZ S42):** a native-contract gate that consumes a
+separate ODOL stage says NOTHING about the deployed PBO. `-packonly` copies whatever format sits in
+the compilable tree, and pairing MLOD↔ODOL stage files by homonymous path is not closure. Measured
+case: the gate validated the ODOL stage doors (~2.1 MB each) while the live PBO carried the source
+MLOD (8.7/8.1 MB, byte-identical to the MLOD stage) — nothing in the pipeline linked the two
+artifacts, and the mismatch surfaced only during post-crash analysis. Rule, before ANY deploy of a
+gated artifact: list the PBO, extract or slice every `.p3d` entry by offset, and require (a) the
+expected signature (`ODOL` where the contract is ODOL) and (b) SHA-256 equal to the approved stage —
+fail on wrong signature, missing entry, casefold/slash collision, or hash mismatch. Corollary:
+record the mounted PBO's SHA-256 contemporaneously at every runtime launch; without that seal, no
+post-crash analysis can prove which artifact the process actually loaded.
+
+**Native-crash fingerprint — compare CODE BYTES, not fault addresses (added 2026-07-30, SUB_BRZ
+S42):** the RPT's `Fault address` is not an identifier — ASLR moves the module base, so the same
+code site prints different addresses across runs and reads as "different bugs". What identifies the
+detection site is `Prev. code bytes` + `Fault code bytes` (16 bytes each) plus the engine `Version`.
+Measured case: six `C0000374` crashes split across two addresses (`3523D5F9` and `57B5D5F9`) had
+**byte-identical** code bytes and identical low 16 bits — one code site, one engine build. Reading
+them by address had produced the (false, and formally rejected) claim that the ODOL-era and
+MLOD-era crashes were unrelated; the byte comparison also killed the hypothesis that the artifact
+FORMAT was the discriminating variable, since the crash appeared in both. Report "same/different
+detection signature", never "same/different bug": `C0000374` is detected on free, not where the
+out-of-bounds write happened, so an identical signature still does not prove identical cause.
+
 ## ITERATION BUDGET — check this BEFORE opening a front (added 2026-07-27)
 
 Measured over one month of vehicle work (125 session handoffs: MercedesAMGLF 46, SUB_BRZ 38,
@@ -178,11 +241,125 @@ numbers and camo stamped across the whole fuselage. The symptom reads as "the UV
 - Status honesty: the diagnosis is measured; the flat-colour fix was **not yet confirmed in-game** at
   the time of writing — treat the fix direction as unverified until a cycle closes it.
 
+## A mesh DRAWN in the wrong place is invisible to every script transform — qualify the probe first (SP-138, added 2026-07-29)
+
+When the user reports that a vehicle **draws** somewhere the entity is not — body on the ground while
+the vehicle climbs, a part left behind, a piece floating — the reflex is to instrument the transforms
+and compare. **That reflex has already been paid for and it returns nothing.**
+
+Measured on LFHeli OH-1 over a 26 m climb: root position, `GetRenderTransform`, both bones, the
+physics body (`dBodyGetWorldTransform`) and the pilot's world position **agreed digit-for-digit**
+while the hull was drawn on the ground. Recorded in that project's own code at
+`LFHeliCore\scripts\4_world\LFHeli\LFHeli_Base.c:3106-3113`. The consequence is the general rule:
+
+> **Any probe derived from the entity root inherits the root's blind spot.** A drawing-position defect
+> lives downstream of every transform Enforce exposes, so no amount of transform logging can see it.
+
+**What does work** — a marker the engine projects from a WORLD point without consulting the entity's
+transform, read off a screenshot: `Debug.DrawSphere` at `GetPosition()` plus a ladder of rungs at
+fixed spacing below it. The rung spacing is what makes the defect **quantitative** (gap in metres =
+rungs × spacing) instead of an eye report. Reference implementation: `LFHeli_Base.c:3114-3128`.
+
+**Probe qualification, mandatory before any number adjudicates:** read the magnitude in the regime
+where the drawing is CORRECT (on the ground) and in the regime where it is WRONG (airborne). If it
+does not change while the eye sees a difference, that magnitude is **blind** — stop using it. A delta
+of exactly `0.000` is a tautology signal, not precision.
+
+**The companion trap, on the inference side.** Over flat ground, "the visual Y is frozen at its
+take-off value" and "the transform is computed from a ground-referenced magnitude" produce **the same
+two signatures**: gap grows with height, gap returns to zero on landing. Arithmetic, confirmed by
+external review. So the flat-ground signature must never be used to EXCLUDE a family of causes — it
+identifies nothing. Discriminate by changing the regime, not by reasoning:
+
+- horizontal traverse at constant world Y over terrain ≥15 m lower — ground-referenced tracks the
+  terrain, frozen-Y does not;
+- descend without touching down and climb again — a replication/state split shows hysteresis, a pure
+  function of height does not.
+
+- Status honesty: the blind-spot measurement and the flat-ground ambiguity are **verified**; the two
+  discriminant manoeuvres above were designed on 2026-07-29 and **had not been run in-game** at the
+  time of writing. Treat them as an untested procedure until a cycle closes it.
+
+## GET-IN DOESN'T APPEAR — name the guard BEFORE touching the model (SP-141, added 2026-07-29)
+
+Four vehicles in this vault have burned iterations on "the get-in prompt does not appear"
+(LFQuad, MercedesAMGLF, LFHeli OH-1 R3, LFHeli HH-60G). The prompt is gated by **five ordered
+guards** inside one function, and a *necessary* chain is not a *measured* cause: knowing the
+prompt must pass through `CanReachSeatFromDoors` says nothing about which guard is firing.
+Name the guard first; the fix follows in minutes.
+
+`ActionGetInTransport.ActionCondition` (`actiongetintransport.c:50-79`) has **exactly one path
+to `true`**, and rejects in this order:
+
+1. `CrewPositionIndex(componentIndex) < 0` — the ViewGeometry component under the cursor is not
+   dual-tagged `componentNN`, or its selection is not the seat's `actionSel` (preflight #4).
+2. `CrewMember(crew_index)` non-null — seat occupied.
+3. `!CrewCanGetThrough(crew_index)` — door state / seat-fold gate. ★ Base
+   `OffroadHatchback.CrewCanGetThrough` covers only posIdx 0..3 and then **`return false`**
+   (`offroadhatchback.c:212-250`), so ANY vehicle with more than four seats must override it or
+   seats 4+ are dead. A `true` on posIdx >= 4 is proof your override is running.
+4. `!IsAreaAtDoorFree(crew_index)` — engine-side door area.
+5. `!CanReachSeatFromDoors(selection, player.GetPosition(), 1.0)` — and this one has three
+   sub-conditions, all silent (`carscript.c:2708-2731`):
+   - `GetDoorConditionPointFromSelection(sel)` must return a non-empty name. ★ **The trap**:
+     base `CarScript` knows only FOUR cases, all lowercase — `seat_driver`, `seat_codriver`,
+     `seat_cargo1`, `seat_cargo2` (`carscript.c:2673-2692`) — and `OffroadHatchback` the same
+     six lowercase ones (`offroadhatchback.c:351-365`). Any other seat selection name returns
+     `""` and the seat can NEVER be boarded, with config, bones, proxies and componentNN all
+     correct. A custom seat set REQUIRES overriding this method.
+   - `MemoryPointExists(conPointName)` — the point must be in the **Memory LOD** of the
+     shipped model.
+   - distance **IN PLAN** (height is zeroed) `<= pDistance`, and the action passes **1.0 m**.
+     Vanilla places its condition points ~0.26 m OUTSIDE the hull at the door station
+     (measured on `offroadhatchback` MLOD: `seat_con_1_1` x=1.1586 against a half-width of
+     0.900) and REUSES two points for four seats. On a long fuselage two points cannot cover
+     ten seats.
+
+**The instrument** (DayZ-MCP): `query_get_in_condition` with a `component` index returns
+`first_block` = exactly one of `componentNN` / `occupied` / `crew_can_get_through` /
+`area_blocked` / `unreachable` / `""`, plus per-seat `crew_can_get_through`, `area_free`,
+`occupied`, `reachable` — the `reachable` loop being the same `GetActionComponentNameList` ->
+`CanReachSeatFromDoors` the action runs. **That names the guard in one call, offline of the
+user's eye.** Pass `component=-1` for the whole crew bank (note: `reachable` is hardcoded false
+in that mode — only the per-component call measures it).
+
+Measured case, HH-60G 2026-07-29: all ten seats `first_block="unreachable"` with guards 1-4
+GREEN on all ten, so the block is guard 5 alone — and that killed two plausible sub-causes at
+once, because neither camelCase nor radius can explain a lowercase seat whose point was 1 mm
+from the player.
+
+★ **Discipline that this cost**: a plan that declared "measured mechanism" on the strength of
+the chain being necessary was rejected by review for exactly that. Measure `first_block` per
+seat BEFORE editing the model, the config or the script.
+
 ## INVARIANTS YOU WILL HIT — preflight checklist (read BEFORE authoring, not after the in-game fail)
 
 These recur on **every** vehicle. They were each won the hard way on one project and then re-derived
 from scratch over dozens of iterations on the next (LFQuad → SUB_BRZ → MercedesAMGLF), because they
 were not promoted to this checklist in time. Check them up front; full detail behind each pointer.
+
+**BEFORE any numbered gate below — calibrate the gate itself (SP-132, added 2026-07-29; LFHeli HH-60G + OH-1).**
+Two rules in this file already cover this — §"Calibration + scope (so a gate is trustworthy, not a false
+green)" and §METHOD habit 2 ("never close a phase on a tautological gate"). Both were live and **neither
+fired across four gates in one week**, because both read as being about *car render/winding* gates. They
+are not: they govern every item below, and capacity, parity, telemetry and policy gates alike. The four
+shapes, so they are recognizable on sight:
+- **A threshold copied instead of measured.** `hh60g_assemble.py:29` carried `RESOLVED_LIMIT = 65535`;
+  the engine's real resolved-vertex ceiling on that model is **46.133** (42% lower), so the gate passed
+  models `binarize` rejects with `Too many vertices`. The cap is model-dependent (×1.4205 on HH-60G,
+  ×1.46 on OH-1) — never copy it between models, re-measure with binarize.
+- **A policy that is a mathematical no-op.** `uniform` and `keepdot` were geometrically inert
+  (`dot(-cross,-n) == dot(cross,n)`); four variants were built on them before the identity was checked.
+- **A gate that shares the producer's frame.** OH-1 seat parity compared under pure translation — the
+  same assumption the sub-model was generated with. `delta 0.000` proved producer and gate agreed, not
+  that either was right.
+- **A field read selectively.** `attachment_count=2` was signed PASS because that one field matched
+  expectation; the regression sat in the same output 20 min before the user hit it in-game.
+
+**One minute, before trusting any gate:** (a) run it against a KNOWN-BAD case — green on a known-bad
+means the bug is the gate, not the artifact; (b) name in one line the assumption the artifact was BUILT
+with, and confirm the gate does not reuse it. A gate that has only ever been seen green is unmeasured,
+not verified.
 
 0. **Gate #0 — mesh + UV health BEFORE anything else (SP-052).** For ANY imported model (source-game or not),
    the FIRST step is a mesh+UV audit, because a broken mesh produces false downstream diagnostics (a
@@ -607,6 +784,8 @@ dropped them in the 2026-06-05 migration):
 |---|---|---|
 | White / untextured on dedicated, fine in filepatching | binarize left config-only textures out of the PBO | build-packaging-and-debug §1 |
 | Wheels spin backwards | `model.cfg` rotation `angle1` sign (re-binarize if ODOL) | build-packaging-and-debug §2-3 |
+| Get-in prompt absent on SOME seats but not others | seat selection name not in `GetDoorConditionPointFromSelection`'s switch (base knows 4 lowercase cases, returns `""` otherwise), or its condition point is >1.0 m in plan from where the player stands | SP-141 |
+| Get-in prompt absent on ALL seats of a >4-seat vehicle | `CrewCanGetThrough` not overridden — base `OffroadHatchback` returns **false** for posIdx >= 4 | SP-141 |
 | Body reads TRANSPARENT / see-through at mid-far distance (NOT black) | a baked distance/far-LOD shipped with its WINDING globally inverted (anti-cross culled from outside) — distinct from black=inverted normals; diagnose by census cross-outward vs the LOD0 control, fix by a global `face.vertices.reverse()` if normals already point outward | preflight #13(d) |
 | Wheels roll but don't pivot left/right when steering (only spin, no turn) | roll and steer are TWO separate `model.cfg` animation classes on TWO separate selections — `wheel_X_1` (`sourceAddress=loop`) vs `wheel_X_1_steering` (bounded ±π/2) — front axle only, needs its own `wheel_X_1_steering` bone between the damper and the wheel in `CfgSkeletons`. Declaring `animTurn` in config.cpp alone does nothing without the matching model.cfg class + p3d selection (Landrover itself declares an orphaned `animTurn` on its REAR axle with no matching class — harmless, but proves the point). NOT the same bug/fix as the row below (in-cabin `DrivingWheel` prop). | vehicle-config-and-modelcfg §11-12 |
 | Need breakable/cracking glass on gunfire (vanilla-style) | reuse the vehicle's own `DamageZones` + `healthLevels[]` rvmat-swap (same mechanism as body-panel damage), ending in the literal string `"hidden"` at 0 health — NOT a physics/particle shatter system, NOT the 2008-era Arma1/OFP convex-glass-in-FireGeometry pipeline (Czech selection names like `sklo predni L` do not apply to DayZ SA). Cross-confirmed 2026-07-07 in 3 independent real configs (Tyson89/Landrover, DayZ-Expansion UAZ, vanilla-adjacent OffroadHatchback dump). | vehicle-config-and-modelcfg §6b |

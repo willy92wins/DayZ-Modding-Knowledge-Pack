@@ -391,3 +391,40 @@ la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita:
 - **LL-181** — Antes de culpar al mod por un FAIL automatizado, verifica el source del actuador/bridge y confirma que el estímulo llegó al sujeto. Ejecuta un control delta equivalente o un test manual para discriminar un defecto del harness.
 - **LL-187** — Si varias defensas interceptan el mismo fallo, diseña un repro por capa que alcance su punto de protección. Exige la señal específica de cada capa; un PASS agregado de “no falla” no demuestra que todas funcionen.
 - **LL-202** — Ante el primer error anómalo de un verbo client-side, verifica el PID del cliente, el tail de su RPT y `bridge_status` antes de seguir. Si el peer murió, extrae minidump/evidencia y documenta el cierre degradado; no diagnostiques los errores posteriores como estado del harness.
+
+## El daemon sirve el codigo que cargo al ARRANCAR — un verbo nuevo no existe hasta reiniciarlo (LL-223, added 2026-07-29)
+
+Si anades un verbo al bridge (`SERVER_COMMANDS` / `CLIENT_COMMANDS` en `loopback.py`) y la tool
+responde **`not_whitelisted`**, no busques el bug en tu diff: el **daemon** cargo ese modulo
+cuando arranco y no lo ha vuelto a leer. `loopback.py` y `server.py` NO estan sellados en
+`app.pyz` —editarlos surte efecto sin rebuild del bundle— pero eso no reinicia nada.
+
+Lo que mas engana: la tool **si aparece registrada** en tu cliente MCP, porque el cliente arranco
+despues de la edicion. La mitad visible del sistema confirma que el verbo existe mientras la
+mitad que decide sigue con la lista vieja.
+
+**Comprobacion de un comando** (mtime del fuente vs arranque del proceso que decide):
+
+```powershell
+(Get-Item '<...>\dayz_mcp\loopback.py').LastWriteTime
+$pid_ = (Get-NetTCPConnection -LocalPort 8765 -State Listen).OwningProcess
+(Get-CimInstance Win32_Process -Filter "ProcessId=$pid_").CreationDate
+```
+
+Fuente mas nuevo que el proceso = esa es la causa, deja de mirar el codigo. Medido 2026-07-29:
+`loopback.py` 15:57:54 vs daemon arrancado 14:18:42 (1 h 39 min de desfase).
+
+**Reinicio**: `Stop-Process` del listener del 8765; el cliente lo re-spawnea lazy en la siguiente
+llamada y `daemon_generation` cambia (asi confirmas que es otro proceso). Reiniciar el daemon
+esta declarado seguro (BUG-062b). **Avisa antes**: desarma momentaneamente las tools MCP de las
+demas sesiones vivas, asi que mira `session_status` (owner/cola) primero.
+
+**Tras el reinicio hay ventana de re-handshake**: las primeras llamadas pueden dar
+`version_blocked` o `peer_reconnect_flush`. Son transitorios — reintenta, no rediagnostiques.
+Confirma con `bridge_status` que ambos peers tienen `version_state: ok` y `last_poll_age_s` bajo.
+
+Hermano pero distinto de la trampa del bundle sellado: alli `app.pyz` sella COPIAS de los modulos
+del lifecycle de test (`dayz_test_worker.py` y cia) y hace falta rebuild+CAS; aqui no hay sellado
+ninguno, basta con que el proceso sea viejo.
+
+Origen: DayZ_MCP, gate in-game de `query_all_players` (2026-07-29).
