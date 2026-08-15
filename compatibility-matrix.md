@@ -4,7 +4,14 @@ Reviewed: **2026-07-24**. Rows for `dayz-clothing` and `dayz-persistence` were
 added on **2026-08-15** with their own evidence; the other rows were not
 re-reviewed on that date.
 
-Target stable build: **DayZ PC 1.29.0.163451** (released 2026-07-15)
+Target stable build: **DayZ PC 1.29.0.163451** (released 2026-07-15) — the build
+every row below was checked against.
+
+> **The stable branch has since moved to `1.29.0.163709`** (observed on the
+> author's install 2026-08-15). **No row has been re-checked against it.** Same
+> minor version, so the API surface is very unlikely to have shifted, but "very
+> unlikely" is not evidence and this matrix only records what was measured. Treat
+> every level below as verified on `163451` until someone re-runs it.
 
 This matrix records what was actually checked. It does not claim that every
 workflow was run end-to-end on this build during r21 Phase 01.

@@ -301,7 +301,9 @@ control positivo three-cards → verdict=PASS, exit 0, findings=0
   commit raíz `d48e2c1a02dacc97645a9e70d8bc1058e6dae9a5`.
 - Agent Skills reference validator: snapshot oficial
   `38a2ff82958afee88dadf4831509e6f7e9d8ef4e`.
-- DayZ inicial de compatibilidad: `1.29.0.163451`, verificado 2026-07-24.
+- DayZ inicial de compatibilidad: `1.29.0.163451`, verificado 2026-07-24. La rama
+  estable se movió a `1.29.0.163709` el 2026-08-15; **nada se ha re-verificado
+  contra esa build** y la matriz lo dice fila por fila.
 - UI: VPP y Expansion fijados por commit; TraderX por manifest
   `3069958660046119589` y PBO hashes; LFPG Sorter V4 TEST como negativo.
 - Prior art auditado: dayz-labs `dbd6ad3e...`, Lake `ac56f369...`,

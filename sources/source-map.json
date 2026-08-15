@@ -343,7 +343,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "70cd8e30cbf236dd1859ab5786997bf56cf1cb1409b770581acacfe9a0bb741e",
+          "source_hash": "276d20acafa6882147dc8a36dce2f8e6d77c5bc63fc98fefaec4e7e779636085",
           "source_id": "pack-r21-authored",
           "source_path": "compatibility-matrix.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -351,7 +351,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "70cd8e30cbf236dd1859ab5786997bf56cf1cb1409b770581acacfe9a0bb741e",
+      "output_hash": "276d20acafa6882147dc8a36dce2f8e6d77c5bc63fc98fefaec4e7e779636085",
       "output_path": "compatibility-matrix.md",
       "routing_artifact_id": "root/compatibility-matrix",
       "verification_level": "cross_checked"
@@ -2304,7 +2304,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "9148306f5001970b2b925f7ba3cd4261cdc226780fff52878feb9df188b9476d",
+          "source_hash": "a137dad6b11276880e7a2686bf09d2f4d67c2dece141c39f798ee2155d654c5e",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -2312,7 +2312,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9148306f5001970b2b925f7ba3cd4261cdc226780fff52878feb9df188b9476d",
+      "output_hash": "a137dad6b11276880e7a2686bf09d2f4d67c2dece141c39f798ee2155d654c5e",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
