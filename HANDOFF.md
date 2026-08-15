@@ -18,7 +18,7 @@ Gates medidos sobre `d2bba60`, salvo el hash del ZIP (ver nota):
 | Suite | **816 passed / 18 skipped / 305 subtests** |
 | Build reproducible | **dos builds byte-idénticos**, 4.452.073 B, **267 entradas** (hash abajo) |
 | py3d | 220 passed / 10 skipped; wheel «reproducible AND pinned» |
-| `packctl gate` | FAIL **solo** por `SKILLS-REF-NOT-CONFIGURED` (ver §Publicación) |
+| `packctl gate` | **todos los checks en PASS** — `skills_ref` 16/16, `python_compile`, evals 24 variantes, tests packctl y py3d |
 | `promote --check` | FAIL — mide el drift local repo↔instaladas, **no** afecta a publicar |
 
 > **El hash del ZIP se mueve con cada commit, incluido este.** `HANDOFF.md` NO
@@ -51,16 +51,30 @@ Verificado **ejecutando**, no leyendo los `✓` del spec:
 - **Licencias**: MIT raíz + `THIRD_PARTY_NOTICES.md` con py3d (copyright upstream
   preservado), spec-kit como adaptación y SE2Dev solo como oráculo no empaquetado.
 
-**Lo único rojo del gate es `SKILLS-REF-NOT-CONFIGURED`, y NO es un defecto del
-pack.** El validador externo pineado (`38a2ff82958afee88dadf4831509e6f7e9d8ef4e`)
-**ya no se puede traer**: ese commit no existe en `anthropics/skills`
-(`upload-pack: not our ref`) y su HEAD ya no tiene el directorio `skills-ref/`.
-Consecuencia honesta: **`A3` está en `✓` por una medición que hoy no es
-reproducible.** Su *sustancia* sí la cubre el validador interno del pack, que
-impone el mismo tope de 1024 caracteres, el shape del front-matter y las reglas de
-nombre — `skills` PASS con 16 skills. Lo que falta es el **contraste** con una
-segunda implementación. Es una decisión tuya: re-pinear a un validador disponible,
-o registrar que el cross-check externo no existe y quedarte con el interno.
+**`A3` vuelve a ser verificable, y el gate está entero en verde.** El validador
+externo se había dado por muerto porque su commit pineado ya no es recuperable
+(`upload-pack: not our ref`) y el HEAD de `anthropics/skills` no conserva el
+directorio `skills-ref/`. **La herramienta no murió: se publicó.** Vive en PyPI
+como `skills-ref==0.1.1` (<https://agentskills.io>) y su console script se llama
+**`agentskills`**, no `skills-ref` — por eso el gate no lo encontraba. Un pin a
+versión de PyPI es además **más estable** que a commit de rama: es un artefacto de
+release inmutable, justo la propiedad que el pin viejo demostró no tener.
+
+```
+python -m venv <root>
+<root>\Scripts\pip install skills-ref==0.1.1
+$env:PACK_SKILLS_REF_ROOT = "<root>"
+```
+
+> **Se pagó solo en cinco minutos.** Nada más enchufarlo encontró **dos skills con
+> frontmatter que NO es YAML válido**: `dayz-clothing` llevaba `Use for: mod de
+> ropa` y `dayz-persistence` llevaba `persistence: OnStoreSave/…`. Un `: ` sin
+> comillas dentro de un escalar YAML se parsea como mapping anidado, así que un
+> loader conforme rechaza esos ficheros. **El validador interno las daba por
+> buenas**, porque comprueba nombres de campo, patrón del nombre y el tope de 1024
+> **sin llegar a parsear el documento como YAML**. Eso es exactamente lo que `A3`
+> quería de una segunda implementación, y el pack llevaba dos skills rotas.
+> Arregladas; 16/16 validan.
 
 **Antes de publicar, dos cosas que no son técnicas:**
 
@@ -211,10 +225,12 @@ fusionados, py3d 1.5.0 desde el fork publicado, dayz-clothing dentro, la nota de
 arena 4_World sintetizada, 16 playbooks— y verificado publicable: validate PASS,
 ZIP reproducible, cero rutas privadas y cero bytes de terceros · lo que aún sale al
 medir contra las skills instaladas es deliberado, NO deuda, y las 3 notas del vault
-que quedan con hueco están fuera a propósito (§Auditoría de huecos) · el único rojo
-es el validador skills-ref externo, cuyo commit pineado ya no existe upstream ·
-próxima acción: decidir ese validador (re-pinear o registrar que no existe), y si
-publicamos, versionar el CHANGELOG y crear el repo`
+que quedan con hueco están fuera a propósito (§Auditoría de huecos) · **el gate
+está entero en verde**: el validador externo se re-pineó a `skills-ref==0.1.1` de
+PyPI (ejecutable `agentskills`) y encontró dos skills con frontmatter no-YAML, ya
+arregladas · **no queda ningún bloqueador técnico para publicar** · próxima acción:
+si publicamos, versionar el `CHANGELOG` y crear el repo; si no, la cola de parches
+de skill tiene 79 pendientes, 6 de ellos contra skills que el pack gobierna`
 <!-- LIVE-STATE:END -->
 
 ---
