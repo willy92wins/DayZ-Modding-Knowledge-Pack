@@ -3,11 +3,11 @@
 <!-- LIVE-STATE:START -->
 # DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-08-15 (listo para publicar, sin publicar)
 
-**Medido el 2026-08-15, no recordado:** HEAD `0aabdad` en `r21/phase01-foundation`,
-árbol limpio, 4 commits nuevos hoy. **`main` sigue en `f87a59e`.** Sin remoto
+**Medido el 2026-08-15, no recordado:** HEAD `776e57a` en `r21/phase01-foundation`,
+árbol limpio, 5 commits nuevos hoy. **`main` sigue en `f87a59e`.** Sin remoto
 configurado, y así se queda: el usuario decidió **preparar todo y no publicar aún**.
 
-Gates de hoy sobre `0aabdad`:
+Gates medidos sobre `0aabdad`, el commit anterior a este bloque:
 
 | Gate | Resultado |
 |---|---|
@@ -17,6 +17,15 @@ Gates de hoy sobre `0aabdad`:
 | py3d | 220 passed / 10 skipped; wheel «reproducible AND pinned» |
 | `packctl gate` | FAIL **solo** por `SKILLS-REF-NOT-CONFIGURED` (ver §Publicación) |
 | `promote --check` | FAIL — mide el drift local repo↔instaladas, **no** afecta a publicar |
+
+> **El hash del ZIP se mueve con cada commit, incluido este.** `HANDOFF.md` NO
+> viaja en el archivo, pero `sources/source-map.json` sí, y ahí vive el hash de
+> `HANDOFF.md`. Escribir un hash de ZIP dentro de este bloque lo invalida al
+> commitearlo: es autorreferencial. Por eso el valor va **atado al commit en que se
+> midió**, nunca presentado como «el hash del pack». Sobre `776e57a` el ZIP es
+> `5499F7969ABEBDEECB7A9E48A03436774CD1F834C8C33E4087D341085E78E43A`, también
+> reproducible en dos builds limpios. Lo que se verifica es la **propiedad**
+> —construir dos veces da lo mismo—, no un número concreto.
 
 `ciclos_en_este_objetivo: 1 (Poner el pack al día y prepararlo para publicar)`
 
