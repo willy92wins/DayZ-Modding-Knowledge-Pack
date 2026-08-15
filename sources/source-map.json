@@ -85,7 +85,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "f9747b4cd3f7994121293234b01e612020825e1e6b9dede803977f35ee72058a",
+          "source_hash": "df8514e9ffc48bd2b3dbcfc613f1e4ef480d0152e7b0e82d756688b2d1a79df9",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -93,7 +93,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f9747b4cd3f7994121293234b01e612020825e1e6b9dede803977f35ee72058a",
+      "output_hash": "df8514e9ffc48bd2b3dbcfc613f1e4ef480d0152e7b0e82d756688b2d1a79df9",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11745,6 +11745,28 @@
       "output_path": "skills/_shared/pack_skill.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/knowledge/vault-notes/dayz-world-arena-optimization.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Synthesised 2026-08-15 from a vault note, keeping engine invariants and measurements and dropping product state; vanilla citations re-verified against P:\\scripts on 1.29.",
+          "license": "MIT",
+          "source_hash": "33815ee2075d938bc18e2b2acdcc3001255be37c5f374ef309f6aa8d21f70cee",
+          "source_id": "obsidian-knowledge",
+          "source_path": "AI/20_Knowledge/dayz-enforce-world-arena-optimization.md",
+          "source_revision": "vault@2026-08-15",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "33815ee2075d938bc18e2b2acdcc3001255be37c5f374ef309f6aa8d21f70cee",
+      "output_path": "knowledge/vault-notes/dayz-world-arena-optimization.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "source_verified"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",

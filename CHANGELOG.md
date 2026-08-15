@@ -7,6 +7,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `knowledge/vault-notes/dayz-world-arena-optimization.md`: what the Enforce
+  compiler actually charges per script module, and why almost nothing that looks
+  like a size proxy is one — a million source bytes removed bought 0 kB of arena.
+  Includes the vanilla early-facade pattern that moves method bodies out of the
+  World arena, with its four pieces re-verified in `P:\scripts` on 1.29.
 - `rip-vehicle-import` cookbooks (`family-b/`), archived runbooks (`history/`) and the
   classify viewer, which reviews a Blender sitting without opening Blender. Its
   three Three.js libraries are **not** bundled; the viewer README says where to
