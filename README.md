@@ -48,6 +48,8 @@ If you are an AI assistant tasked with helping the user mod DayZ, internalize th
 ```
 DayZ-Modding-Knowledge-Pack/
 ├── README.md                     ← you are here
+├── AGENTS.md                     ← how an agent should work with this repo
+├── TOOLS.md                      ← what each tool does and how to run it
 ├── compatibility-matrix.md       ← per-skill build/evidence status
 ├── CONTRIBUTING.md               ← evidence, privacy and contribution rules
 ├── THIRD_PARTY_NOTICES.md        ← included and research-only attributions
@@ -60,9 +62,11 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── dayz-aviation/            ← planes, seaplanes, helicopters
 │   ├── dayz-weapons/             ← custom firearms (entity side)
 │   ├── dayz-characters/          ← infected, survivors, NPCs (rig to OFP2_ManSkeleton)
+│   ├── dayz-clothing/            ← wearable items, custom skeletons, proxies
 │   ├── dayz-basebuilding/        ← buildable structures (BaseBuildingBase)
+│   ├── dayz-persistence/         ← OnStoreSave/Load, schema migration, data safety
 │   ├── dayz-test-ingame/         ← build + deploy + launch with DayZDiag + filepatching
-│   ├── dayz-mcp-verify/          ← auto-test a mod by driving it (see caveat §8)
+│   ├── dayz-mcp-verify/          ← auto-test a mod by driving it (see §8 and the bridge note)
 │   ├── dayz-pbo-reverse-engineering/  ← learn from another author's PBO
 │   ├── dayz-feature-spec/        ← spec + consistency gate before coding
 │   ├── rip-vehicle-import/            ← convert a ripped racing-game car into a drivable DayZ vehicle
@@ -70,14 +74,16 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── blender-animation/        ← author animations in Blender (via MCP) → DayZ
 │   ├── ai-3d-to-dayz/            ← AI-generated 3D (Hunyuan/Tripo/TRELLIS) → DayZ
 │   └── ardy-motion-generation/   ← motion generation → DayZ integration
-├── tools/
+├── tools/                        ← see TOOLS.md
 │   ├── py3d/                     ← DayZ fork of py3d (MLOD .p3d codec), MIT
 │   ├── dayz-animation-formats/   ← strict RTM/SEAnim v1 reader/writer/inspect
 │   ├── dayz-model-preflight/     ← contract-driven MLOD export gate
-│   └── dayz-odol-strict/         ← read-only ODOL v53-v55 anatomy/diff adapter
+│   ├── dayz-odol-strict/         ← read-only ODOL v53-v55 anatomy/diff adapter
+│   └── dayz-ui-lab/              ← offline .layout parse / compose / render / diff
 └── knowledge/
     ├── DAYZ_TECHNICAL_NOTES.md   ← py3d MLOD facts, LODs, winding, config, runtime
     ├── DAYZ_INFRA.md             ← drives, AddonBuilder, serverDZ.cfg, RPT triage, terrain
+    ├── dayz-mcp-bridge-protocol.md  ← driving DayZDiag from an agent (see §8)
     └── vault-notes/              ← 16 topic notes (see §6)
 ```
 
@@ -110,6 +116,10 @@ playbooks:
 3. Load a file from `references/` only when the procedure names it.
 
 Do **not** dump the entire pack into context at once — it is large by design. Route, then load.
+
+[`AGENTS.md`](AGENTS.md) says the same thing in the form most agent hosts expect to read;
+`GEMINI.md`, `.cursorrules` and `.github/copilot-instructions.md` are entry points that lead
+back to it.
 
 ---
 
@@ -179,12 +189,15 @@ included skill, that is one of these. Installing the plugin makes those referenc
 
 ## 5. 3D tooling
 
+> Full index, including `tools/dayz-ui-lab` and what each tool refuses to do:
+> **[`TOOLS.md`](TOOLS.md)**.
+
 ### `tools/py3d`
 
 `tools/py3d/` is a **DayZ-specific fork of** [KoffeinFlummi/py3d](https://github.com/KoffeinFlummi/py3d)
 (MIT) — a pure-Python reader/writer for the **MLOD `.p3d`** format (the editable, non-binarized
 model format). Most asset scripts in these skills import it. Upstream is an unmaintained minimal
-codec; this fork (`__version__ = "1.4.0"`, `IS_DAYZ_FORK = True`) adds anti-corruption guards so
+codec; this fork (`__version__ = "1.5.0"`, `IS_DAYZ_FORK = True`) adds anti-corruption guards so
 the paths that used to silently corrupt a `.p3d` now fail *early* with an actionable message.
 
 Highlights (see `tools/py3d/README.md` for the full list):
@@ -263,6 +276,11 @@ against the vanilla source for your game version (the engine moves).
   AddonBuilder / DayZDiag commands, `serverDZ.cfg` `allowFilePatching`, mission templates, texture
   suffixes, `.p3d` named properties, Central Economy file layout, BattlEye codes, RPT triage,
   terrain pipeline.
+- **`dayz-mcp-bridge-protocol.md`** — driving DayZDiag from an agent: the bridge's tool surface,
+  the invariants that keep it safe (server-authoritative, one FIFO lease, fail-closed ingress,
+  deadman-held controls), and the engine facts it cost in-game cycles to learn — client vs
+  server vehicle ownership, why `SetThrottle` alone never moves a car, `DIAG_DEVELOPER` vs
+  `DEVELOPER`, and why freecam freezes the thing you are trying to measure.
 - **`vault-notes/`** — 16 topic notes, including: `dayz-animations-creatures-weapons`,
   `dayz-custom-infected`, `dayz-enforce-script-reference`, `dayz-mod-implementation-checklists`,
   `dayz-modded-class-server-stub-pattern`, `dayz-objectbuilder-lod-conventions`,
@@ -309,9 +327,13 @@ are the real value; keep them even if you adapt everything else.
   - `dayz-test-ingame` generates a Windows PowerShell orchestrator around a specific tooling layout
     (the `P:\` work-drive junction, AddonBuilder, a `<Mod>_dev\tools\` convention). The *ideas*
     transfer; the generated scripts will need to be re-pointed to your setup.
-  - `dayz-mcp-verify` drives the game through a **custom `dayz-mcp` bridge to DayZDiag that is not
-    public**. Without an equivalent bridge the MCP verbs won't run — read it as methodology
-    (spawn → orbit → screenshot → raycast → telemetry → verdict), not a turnkey tool.
+  - `dayz-mcp-verify` drives the game through the author's **`dayz-mcp` bridge to DayZDiag**,
+    which lives in its own repository and is not part of this pack. Without an equivalent bridge
+    the MCP verbs won't run — read the skill as methodology (spawn → orbit → screenshot →
+    raycast → telemetry → verdict), not a turnkey tool. The surface, the design invariants and
+    the engine facts behind it are documented in
+    [`knowledge/dayz-mcp-bridge-protocol.md`](knowledge/dayz-mcp-bridge-protocol.md), which is
+    enough to build your own; `.mcp.example.json` shows the client wiring.
 - **Placeholders.** Angle-bracket tokens like `<notes>`, `<research-notes>`, `<skills>`,
   `<claude-home>`, `<tmp>`, and `C:\Users\<you>\…` replace the author's private local paths. `P:\`
   is the standard DayZ work-drive convention, left as-is.

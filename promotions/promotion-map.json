@@ -46,17 +46,6 @@
     },
     {
       "applicability": "governance",
-      "artifact_id": "repo/plans",
-      "artifact_kind": "tree",
-      "not_applicable_reason": "Release plans are project governance records, not reusable domain instructions.",
-      "repo_path": "plans",
-      "skill_target_ids": [],
-      "vault_targets": [
-        "obsidian_snapshots"
-      ]
-    },
-    {
-      "applicability": "governance",
       "artifact_id": "repo/promotions",
       "artifact_kind": "tree",
       "not_applicable_reason": "Promotion contracts and public receipts govern deployment and must not enter skill discovery roots.",
@@ -78,22 +67,22 @@
       ]
     },
     {
-      "applicability": "governance",
-      "artifact_id": "repo/specs",
+      "applicability": "tooling",
+      "artifact_id": "repo/tests",
       "artifact_kind": "tree",
-      "not_applicable_reason": "Product and phase specifications remain governance evidence outside skill discovery roots.",
-      "repo_path": "specs",
+      "not_applicable_reason": "Regression fixtures validate the repository pipeline and are not runtime skill instructions.",
+      "repo_path": "tests",
       "skill_target_ids": [],
       "vault_targets": [
         "obsidian_snapshots"
       ]
     },
     {
-      "applicability": "tooling",
-      "artifact_id": "repo/tests",
-      "artifact_kind": "tree",
-      "not_applicable_reason": "Regression fixtures validate the repository pipeline and are not runtime skill instructions.",
-      "repo_path": "tests",
+      "applicability": "governance",
+      "artifact_id": "root/agents",
+      "artifact_kind": "file",
+      "not_applicable_reason": "Agent entry points and pack indexes are repository documentation; they are not duplicated into installed skill roots.",
+      "repo_path": "AGENTS.md",
       "skill_target_ids": [],
       "vault_targets": [
         "obsidian_snapshots"
@@ -114,7 +103,7 @@
       "applicability": "governance",
       "artifact_id": "root/claude",
       "artifact_kind": "file",
-      "not_applicable_reason": "Repository contributor instructions govern source work and are not a distributable skill.",
+      "not_applicable_reason": "Agent entry points and pack indexes are repository documentation; they are not duplicated into installed skill roots.",
       "repo_path": "CLAUDE.md",
       "skill_target_ids": [],
       "vault_targets": [
@@ -145,6 +134,39 @@
     },
     {
       "applicability": "governance",
+      "artifact_id": "root/copilot-instructions",
+      "artifact_kind": "file",
+      "not_applicable_reason": "Agent entry points and pack indexes are repository documentation; they are not duplicated into installed skill roots.",
+      "repo_path": ".github/copilot-instructions.md",
+      "skill_target_ids": [],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "governance",
+      "artifact_id": "root/cursorrules",
+      "artifact_kind": "file",
+      "not_applicable_reason": "Agent entry points and pack indexes are repository documentation; they are not duplicated into installed skill roots.",
+      "repo_path": ".cursorrules",
+      "skill_target_ids": [],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "governance",
+      "artifact_id": "root/gemini",
+      "artifact_kind": "file",
+      "not_applicable_reason": "Agent entry points and pack indexes are repository documentation; they are not duplicated into installed skill roots.",
+      "repo_path": "GEMINI.md",
+      "skill_target_ids": [],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "governance",
       "artifact_id": "root/gitattributes",
       "artifact_kind": "file",
       "not_applicable_reason": "Git line-ending policy makes repository hashes reproducible and is not skill content.",
@@ -167,17 +189,6 @@
     },
     {
       "applicability": "governance",
-      "artifact_id": "root/handoff",
-      "artifact_kind": "file",
-      "not_applicable_reason": "The repository handoff is project state, not reusable domain instruction.",
-      "repo_path": "HANDOFF.md",
-      "skill_target_ids": [],
-      "vault_targets": [
-        "obsidian_snapshots"
-      ]
-    },
-    {
-      "applicability": "governance",
       "artifact_id": "root/license",
       "artifact_kind": "file",
       "not_applicable_reason": "The repository license travels with the pack and does not belong in each installed skill.",
@@ -193,6 +204,17 @@
       "artifact_kind": "file",
       "not_applicable_reason": "The human-readable payload inventory documents releases and is not skill content.",
       "repo_path": "MANIFEST.txt",
+      "skill_target_ids": [],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "governance",
+      "artifact_id": "root/mcp-example",
+      "artifact_kind": "file",
+      "not_applicable_reason": "Agent entry points and pack indexes are repository documentation; they are not duplicated into installed skill roots.",
+      "repo_path": ".mcp.example.json",
       "skill_target_ids": [],
       "vault_targets": [
         "obsidian_snapshots"
@@ -237,6 +259,17 @@
       "artifact_kind": "file",
       "not_applicable_reason": "Attribution and reference-only license boundaries stay at pack level.",
       "repo_path": "THIRD_PARTY_NOTICES.md",
+      "skill_target_ids": [],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "governance",
+      "artifact_id": "root/tools-index",
+      "artifact_kind": "file",
+      "not_applicable_reason": "Agent entry points and pack indexes are repository documentation; they are not duplicated into installed skill roots.",
+      "repo_path": "TOOLS.md",
       "skill_target_ids": [],
       "vault_targets": [
         "obsidian_snapshots"

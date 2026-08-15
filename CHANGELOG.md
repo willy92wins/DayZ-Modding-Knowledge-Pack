@@ -3,6 +3,46 @@
 All notable changes to the DayZ Modding Knowledge Pack are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.1.0] - 2026-08-15
+
+The first release shipped the author's project-management layer along with the
+product. This one separates them, and gives agents other than Claude Code a way in.
+
+### Added
+
+- `AGENTS.md` — the canonical agent file, in English, covering routing, the four
+  rules, layout, installation and the gates. `CLAUDE.md`, `GEMINI.md`,
+  `.cursorrules` and `.github/copilot-instructions.md` are entry points that
+  point at it, so the pack is discoverable from more than one host.
+- `TOOLS.md` — an index of all five bundled tools with what each one does, how to
+  run it and, deliberately, **what it refuses to do**. `tools/dayz-ui-lab` was
+  absent from the README entirely and is now documented.
+- `knowledge/dayz-mcp-bridge-protocol.md` — the in-game verification bridge that
+  `dayz-mcp-verify` drives, previously present only as a one-line caveat saying
+  it was not public. The note carries the tool surface, the design invariants
+  worth copying, and the engine facts the bridge cost in-game cycles to learn:
+  a server-side seat is not client ownership, `SetThrottle` sets *future* input
+  that `CarScript.OnInput` then overwrites, `DEVELOPER` is not defined in
+  DayZDiag while `DIAG_DEVELOPER` is, and freecam freezes the simulation you are
+  trying to measure. Each cited to vanilla `path:line`.
+- `.mcp.example.json` — example client wiring. Named `.example` on purpose:
+  agents auto-start servers declared in `.mcp.json`, and a failed launch on every
+  session is worse than no config.
+
+### Removed
+
+- `plans/`, `specs/`, `promotions/receipts/`, `promotions/adjudications.json`,
+  `HANDOFF.md` and the old Spanish `CLAUDE.md`. These were the internal process
+  layer: phase roadmaps, session state and promotion bookkeeping. They described
+  how the work was run, not what the pack is, and one of them published a private
+  workflow instruction and a set of gotchas that had been stale for weeks.
+
+### Fixed
+
+- The README structure diagram was missing two skills (`dayz-clothing`,
+  `dayz-persistence`) and one whole tool (`dayz-ui-lab`), and still quoted py3d
+  at `1.4.0` after the 1.5.0 sync.
+
 ## [1.0.0] - 2026-08-15
 
 First public release. Everything below was accumulated across r21 phases 01-04

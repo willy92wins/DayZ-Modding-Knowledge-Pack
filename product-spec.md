@@ -1,7 +1,8 @@
 # product-spec.md — DayZ Modding Knowledge Pack
 
-> **Definición de Producto Final (DPF).** El progreso vivo está en
-> `HANDOFF.md`; este documento fija el resultado aceptable.
+> **Definición de Producto Final (DPF).** Este documento fija el resultado
+> aceptable. El progreso vivo no se publica: se mide corriendo las puertas
+> (`python -m packctl gate --root . --report-dir reports`).
 
 ## Qué es “terminado”
 
@@ -95,7 +96,7 @@ verdict=PASS  (exit 0)
   el parser emite de verdad y el total es `0`; si alguien reintrodujera uno,
   `CORPUS-DIAGNOSTICS-EMITTED` se pone rojo. El tramo CRLF/LF quedó verificado en
   DayZDiag `1.29.163451` con la sonda `LF_UIProbe` (`len=10`, LF y CRLF iguales,
-  valor `"Alpha\nBeta"`); ver `plans/2026-07-24-02-dayz-ui-lab.md` §B20.
+  valor `"Alpha\nBeta"`).
 - **C5** — `tools/dayz-ui-lab/corpora/manifest.json` fija los cuatro referentes
   por commit (VPP `dc22e420`, Expansion `8d3a453b`, TraderPlus `d0cd39f1`) o por
   manifest de Workshop (TraderX `3069958660046119589`), cada uno con licencia y
@@ -192,7 +193,7 @@ control positivo three-cards → verdict=PASS, exit 0, findings=0
 | D5 | Todo cambio persistente documenta legacy, datos post-cambio en rollback y alternativa sin cambio de formato | checklist y rigorous-data-audit sin hallazgos bloqueantes | ✓ |
 
 **Evidencia ejecutada el 2026-07-28** (cada `✓` con la línea que lo cierra, medida sobre
-`dcf0671`, no inferida). Spec: `specs/2026-07-28-dayz-persistence.md`, checklist 16/16.
+`dcf0671`, no inferida). Checklist de la spec de persistencia: 16/16.
 
 - **D1** — tres referencias de contrato en `skills/dayz-persistence/references/` y tres
   simuladores que no comparten código: `test_persistence_router.py` parsea los tres módulos

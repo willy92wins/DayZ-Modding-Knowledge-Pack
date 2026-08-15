@@ -1,0 +1,143 @@
+# Tools
+
+Five Python tools ship in this pack. All are stdlib-first, offline and
+deterministic; none of them phone home, and none of them guess.
+
+They exist because the DayZ asset pipeline fails *silently*: a `.p3d` written
+with a stale selection loads white, a mistyped RTM signature produces an
+animation that never plays, a `.layout` typo yields an empty screen with no
+error. Each tool turns one of those silent failures into an early, actionable
+one.
+
+| Tool | What it does | Writes files? |
+|---|---|---|
+| [`py3d`](#tools-py3d) | Read and write MLOD `.p3d` models | **Yes** — with atomic write + verify |
+| [`dayz-animation-formats`](#tools-dayz-animation-formats) | Read/write/inspect RTM and SEAnim v1 | Yes |
+| [`dayz-model-preflight`](#tools-dayz-model-preflight) | Gate a `.p3d` against a contract before export | No — read-only |
+| [`dayz-odol-strict`](#tools-dayz-odol-strict) | Inspect and diff binarized ODOL models | No — read-only |
+| [`dayz-ui-lab`](#tools-dayz-ui-lab) | Parse, compose, render and diff `.layout` UIs offline | Reports only |
+
+---
+
+## `tools/py3d`
+
+A DayZ-specific fork of [KoffeinFlummi/py3d](https://github.com/KoffeinFlummi/py3d)
+(MIT) — a pure-Python reader/writer for the **MLOD `.p3d`** format, the editable
+non-binarized model format. Most asset scripts in these skills import it.
+
+Upstream is an unmaintained minimal codec. This fork adds the anti-corruption
+guards: the paths that used to silently produce a broken `.p3d` now fail early
+with an actionable message.
+
+- `lod.new_selection(name)` — get-or-create a selection that binds and registers.
+- `lod.set_memory_point(name, xyz)` / `get_memory_points()` — idempotent upsert.
+- `lod.faces_by_material()` / `faces_for_material(n)` — case-insensitive match.
+- `p3d.save(path, verify=True, backup_dir=...)` — atomic write with reopen,
+  re-parse and invariant check; on failure the original stays byte-intact.
+- `p3d.validate()` → `list[Finding]` (stale selection, weight range, normals
+  budget, …).
+- A complete fail-closed proxy lifecycle: raw/engine frame conversion,
+  `add_proxy`, strict enumeration, in-place align, index-safe remove.
+
+```bash
+pip install -e tools/py3d
+```
+
+The distribution is named **`py3d-dayz`**; the import name stays `py3d`. A
+different, unrelated library is published on PyPI as `py3d`, so assert you got
+this one:
+
+```bash
+python -c "import py3d; assert py3d.IS_DAYZ_FORK; print(py3d.__version__)"
+```
+
+Current version **1.5.0**. Upstream for this fork:
+[willy92wins/py3d-dayz](https://github.com/willy92wins/py3d-dayz). Known
+limitations are listed in `tools/py3d/KNOWN-ISSUES.md` — read it before
+assuming a bug is yours. **Licence:** MIT, `tools/py3d/LICENSE` (© 2017 Felix
+Wiegand); keep that file with any redistribution.
+
+## `tools/dayz-animation-formats`
+
+Strict reader/writer for **SEAnim v1** and **DayZ RTM** (`RTM_MDAT` and
+`RTM_0101`), plus deterministic JSON inspection.
+
+```bash
+python -m dayz_animation_formats inspect input.rtm --output anatomy.json
+```
+
+Unsupported signatures fail closed rather than being parsed on a guess. The
+frozen first-party fixtures are independently decoded by Arma3ObjectBuilder
+during validation, so the reader is checked against a second implementation and
+not only against itself.
+
+**Out of scope, deliberately:** BMTR, and `.anm` conversion.
+
+## `tools/dayz-model-preflight`
+
+A read-only gate that answers "will this `.p3d` survive export?" *before* you
+spend a build on finding out. Driven by a versioned JSON contract, it composes
+`py3d.validate()` with the intended scale, the bone selections that must exist
+and be non-empty, and determinant-aware face-lineage and winding checks.
+
+```bash
+python -m dayz_model_preflight check target.p3d \
+  --contract preflight.json --json preflight-result.json
+```
+
+Requires the py3d fork `>=1.4.0`. Missing or ambiguous one-to-one lineage is
+reported `INVALID`: the tool never guesses a mapping and never repairs a model.
+
+## `tools/dayz-odol-strict`
+
+Fail-closed, read-only anatomy inspection and deterministic diff for **ODOL
+v53–v55** — the binarized model format the engine actually ships.
+
+```bash
+python -m dayz_odol_strict inspect input.p3d \
+  --backend-root <external-backend> --json anatomy.json
+python -m dayz_odol_strict diff reference.json candidate.json
+```
+
+The adapter, the schemas and three user-authorized first-party fixtures are
+redistributable and included. The compatible BisDLL-derived backend is **not**:
+it has no redistribution licence, so it stays external, hash-pinned, and is
+loaded only inside an isolated subprocess.
+
+**There is no ODOL writer and no partial-success mode**, and neither is planned.
+Inspecting a binarized model is a diagnostic; producing one is the engine's job.
+
+## `tools/dayz-ui-lab`
+
+An offline lab for DayZ `.layout` UIs: parse a layout into a JSON IR, compose
+scenarios from shells and subviews, emit a deterministic semantic render at a
+given viewport, and diff two renders into actionable defects.
+
+```bash
+python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout> --check
+python tools/dayz-ui-lab/dayz_ui_lab/scenario.py --scenario s.json --viewport 1920x1080
+python tools/dayz-ui-lab/dayz_ui_lab/render.py --scenario s.json --viewport 1920x1080 --out render.json
+python tools/dayz-ui-lab/dayz_ui_lab/diff.py --observed render.json --expected ref.json --report diff.json
+python tools/dayz-ui-lab/dayz_ui_lab/corpus.py --root .
+```
+
+`diff.py` reports broken references, clipping, overlap and missing states per
+widget and scenario. `corpus.py` is the regression gate: it parses the pinned
+public corpora (VPP, Expansion, TraderPlus, TraderX) plus a first-party negative
+set — **376/376 layouts, zero diagnostics** — and audits that no third-party
+layout is redistributed with the pack.
+
+**The offline render is not the engine.** It is a semantic model good enough to
+catch structural mistakes before a build; DayZDiag remains the golden reference
+for anything that depends on real rasterization, fonts or the live widget tree.
+
+---
+
+## What is deliberately absent
+
+The DayZ 3D pipeline needs more than this — Blender→`.p3d` assembly, `.paa`
+texture conversion, PBO packing. Those live in tooling that is not the author's
+to redistribute; `README.md` §4 lists what to install and where it comes from.
+
+The offline in-game verification bridge is described in
+[`knowledge/dayz-mcp-bridge-protocol.md`](knowledge/dayz-mcp-bridge-protocol.md).

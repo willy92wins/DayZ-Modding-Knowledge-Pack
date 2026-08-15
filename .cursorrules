@@ -1,0 +1,34 @@
+This repository is a DayZ (Enfusion) modding knowledge pack: 16 domain
+playbooks under skills/, five Python tools under tools/, verified reference
+notes under knowledge/. AGENTS.md is the full agent file; these are the rules
+that matter most in an editor.
+
+ROUTING — never load the pack wholesale. It is ~4 MB.
+1. Read skills/*/SKILL.md front-matter only. Each description is written as
+   trigger conditions: "invoke me when...".
+2. When the task matches one, load that whole SKILL.md and follow it.
+3. Open a file under that skill's references/ only when the procedure names it.
+4. skills/_shared/ holds conventions several skills cite; keep it alongside them.
+
+NEVER INVENT AN API. DayZ fails silently on confabulation: a class that never
+binds, an action that never appears, a model that loads white. Before writing
+any Enforce Script call, config class, .p3d selection or memory point, grep the
+vanilla source (P:\scripts\ -> 1_core, 3_game, 4_world) or a reference in this
+pack and cite path:line. Semantic search and memory are hints; open the file.
+
+RESPECT THE CLIENT/SERVER SPLIT. Decide which side owns each value before
+writing the feature. Most "it doesn't work" bugs are a read on the wrong side.
+
+IN-GAME TESTS COST 3-10 MINUTES EACH. Exhaust offline analysis, batch every
+pending change into one test, and have a plan B before asking for a rebuild.
+
+BE HONEST ABOUT VERIFICATION. Say what you checked, how, and what you did not.
+"It compiles" is not "it works". An error of exactly 0.000 is a tautology, not a
+triumph, and a catastrophic result indicts the instrument just as loudly.
+
+WHEN EDITING THE PACK ITSELF: every executable claim needs a build/commit and a
+path:line; no private paths, credentials, vanilla or third-party assets; the
+pack is MIT and does not take GPL, DPL-ND or CC-NC material. Gates:
+  python -m packctl validate --root . --report reports/validate.json
+  python -m packctl gate --root . --report-dir reports
+  python -m pytest -q

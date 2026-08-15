@@ -85,48 +85,37 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "d820ac978b0752784d65cda7ad00ad154e36b8b0c2f024246ee8a562b0623248",
+          "source_hash": "67304dce7ce82d00195750f69bd429a3b64fd3385b7d154ad2943e466ffc3b52",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
-          "source_revision": "r21-phase04@2026-07-25",
+          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d820ac978b0752784d65cda7ad00ad154e36b8b0c2f024246ee8a562b0623248",
+      "output_hash": "67304dce7ce82d00195750f69bd429a3b64fd3385b7d154ad2943e466ffc3b52",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
     },
     {
       "artifact_id": "file/claude.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
+      "distribution_role": "payload",
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "080b3ecea0618e14acca56d5c5f1207aa9b1f7df99f3b428e691d0f5e5a1a6ec",
-          "source_id": "pack-baseline",
-          "source_path": "CLAUDE.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
           "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision_evidence": "Claude Code entry point; a pointer to AGENTS.md plus skill install paths.",
           "license": "MIT",
-          "source_hash": "080b3ecea0618e14acca56d5c5f1207aa9b1f7df99f3b428e691d0f5e5a1a6ec",
+          "source_hash": "4c302fa38487ece3f4a6f6a9ada49f51902837ebdf07f81921cfc32c8ec2ace9",
           "source_id": "pack-r21-authored",
           "source_path": "CLAUDE.md",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "080b3ecea0618e14acca56d5c5f1207aa9b1f7df99f3b428e691d0f5e5a1a6ec",
+      "output_hash": "4c302fa38487ece3f4a6f6a9ada49f51902837ebdf07f81921cfc32c8ec2ace9",
       "output_path": "CLAUDE.md",
       "routing_artifact_id": "root/claude",
       "verification_level": "cross_checked"
@@ -151,49 +140,6 @@
       "output_hash": "86317285dc15585eb93240d8177a285d212526cac81e10fef031fdfd2d7e4c6e",
       "output_path": "CONTRIBUTING.md",
       "routing_artifact_id": "root/contributing",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/handoff.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "c60a6115362e8ebc9262e91d8bf567426d28a9075fc049e7f10e212f262c602a",
-          "source_id": "pack-baseline",
-          "source_path": "HANDOFF.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Administrative handoff records Phase 02 slices 1-2, B19 GREEN, the staged B20 probe and the authorized-engine blocker.",
-          "license": "MIT",
-          "source_hash": "c60a6115362e8ebc9262e91d8bf567426d28a9075fc049e7f10e212f262c602a",
-          "source_id": "pack-r21-authored",
-          "source_path": "HANDOFF.md",
-          "source_revision": "r21-phase02-b20-auth-handoff@2026-07-25",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "c60a6115362e8ebc9262e91d8bf567426d28a9075fc049e7f10e212f262c602a",
-          "source_id": "pack-r21-authored",
-          "source_path": "HANDOFF.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "b1e8eb0e037f45354b1c4a89ff3260f1d4206d70953b04de9eeb18ccf5a9fa78",
-      "output_path": "HANDOFF.md",
-      "routing_artifact_id": "root/handoff",
       "verification_level": "cross_checked"
     },
     {
@@ -289,15 +235,15 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "8f0dd5621bdfebc2cfe7349e1c02d541f4d1aef530bdbe6193b2c4759acde4d8",
+          "source_hash": "0a812d10292bce0087384325b201861ce4b23233abf43b22a420bb4001cf8463",
           "source_id": "pack-r21-authored",
           "source_path": "README.md",
-          "source_revision": "r21-phase04@2026-07-25",
+          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8f0dd5621bdfebc2cfe7349e1c02d541f4d1aef530bdbe6193b2c4759acde4d8",
+      "output_hash": "0a812d10292bce0087384325b201861ce4b23233abf43b22a420bb4001cf8463",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -1837,444 +1783,6 @@
       "verification_level": "offline_tested"
     },
     {
-      "artifact_id": "file/plans/2026-07-24-01-foundation-and-evidence.codex-notes.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Phase 01 rigorous-data-audit findings and the unresolved crash-recovery decision are recorded for review.",
-          "license": "MIT",
-          "source_hash": "21fa97eb740ed2ec624175603eb07bb08f7ed905ddc57008a698cf994f975f45",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-24-01-foundation-and-evidence.codex-notes.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "21fa97eb740ed2ec624175603eb07bb08f7ed905ddc57008a698cf994f975f45",
-      "output_path": "plans/2026-07-24-01-foundation-and-evidence.codex-notes.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-24-01-foundation-and-evidence.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "be8958eaf4d52383ab7cd84860a55cbe056f0f1f1e7bdfd6bceb7b6dd5c20009",
-          "source_id": "pack-baseline",
-          "source_path": "plans/2026-07-24-01-foundation-and-evidence.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "194d5bcd7a44701e469be4e8d7d60499f3a2404f346a9bb1b0d5489df6e8174d",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-24-01-foundation-and-evidence.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "194d5bcd7a44701e469be4e8d7d60499f3a2404f346a9bb1b0d5489df6e8174d",
-      "output_path": "plans/2026-07-24-01-foundation-and-evidence.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-24-01b-crash-safe-promotion.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "User-approved crash-recovery amendment with explicit viability tests and hard stops.",
-          "license": "MIT",
-          "source_hash": "c1927449afc3ec1a27999c2044cf16b35e610d43ea8718b04ad51c04eb43bcc6",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-24-01b-crash-safe-promotion.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "c1927449afc3ec1a27999c2044cf16b35e610d43ea8718b04ad51c04eb43bcc6",
-      "output_path": "plans/2026-07-24-01b-crash-safe-promotion.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-24-02-dayz-ui-lab.codex-notes.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Phase 02 evidence review records the four approved UI/tooling amendments and the excluded py3d workstream.",
-          "license": "MIT",
-          "source_hash": "30fcc464b013a1905dbb76e70d3353bfb30af874f0aee18a903cc822a0333810",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-24-02-dayz-ui-lab.codex-notes.md",
-          "source_revision": "r21-phase02-approved@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "30fcc464b013a1905dbb76e70d3353bfb30af874f0aee18a903cc822a0333810",
-      "output_path": "plans/2026-07-24-02-dayz-ui-lab.codex-notes.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-24-02-dayz-ui-lab.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "f43fa3daa1a7f13955e9a4f2cb22e25082f656a2b3b2c760e1f4a062853023df",
-          "source_id": "pack-baseline",
-          "source_path": "plans/2026-07-24-02-dayz-ui-lab.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "The approved Phase 02 plan fixes the architecture and records B19 GREEN plus the authorized-engine gate that still blocks B20.",
-          "license": "MIT",
-          "source_hash": "06c94054a68f959034e4845a221420753f91971025129155a64b751c6a9d1d00",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-24-02-dayz-ui-lab.md",
-          "source_revision": "r21-phase02-approved@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "06c94054a68f959034e4845a221420753f91971025129155a64b751c6a9d1d00",
-      "output_path": "plans/2026-07-24-02-dayz-ui-lab.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-24-03-dayz-persistence.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "f2c8575daed017ef92388364755bdff49e774e0fef9b4aac9d1ce2f46def59a5",
-          "source_id": "pack-baseline",
-          "source_path": "plans/2026-07-24-03-dayz-persistence.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
-          "license": "MIT",
-          "source_hash": "f2c8575daed017ef92388364755bdff49e774e0fef9b4aac9d1ce2f46def59a5",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-24-03-dayz-persistence.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "f2c8575daed017ef92388364755bdff49e774e0fef9b4aac9d1ce2f46def59a5",
-      "output_path": "plans/2026-07-24-03-dayz-persistence.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-24-04-py3d-and-domain-skills.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "d0521e6ad331fdb0ad38f49bfc7a23738abb94d842350e1fd679ec3be5a2190e",
-          "source_id": "pack-baseline",
-          "source_path": "plans/2026-07-24-04-py3d-and-domain-skills.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Approved prior-art deltas are formalized in the Phase 04 plan.",
-          "license": "MIT",
-          "source_hash": "5080eaeff424f02d8bf90bd8a051ef6b85226d361c9abd1a1408b605ce1fb51b",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-24-04-py3d-and-domain-skills.md",
-          "source_revision": "r21-prior-art-approved@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "5080eaeff424f02d8bf90bd8a051ef6b85226d361c9abd1a1408b605ce1fb51b",
-      "output_path": "plans/2026-07-24-04-py3d-and-domain-skills.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-24-05-dayz-mcp-public-and-automation.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "1d15371dc46ada5c3eb9e44c6021529c94d73ba5b50686c0dfa3ea7273d316fa",
-          "source_id": "pack-baseline",
-          "source_path": "plans/2026-07-24-05-dayz-mcp-public-and-automation.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Phase 05 receives the approved narrow run-bound, lossless adapter contract for engine-capture-v1 without redefining lifecycle or schema.",
-          "license": "MIT",
-          "source_hash": "c4733b06e7502fbe26a37093c0dca110ff53f9bcb113e3c420faa1d34250874d",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-24-05-dayz-mcp-public-and-automation.md",
-          "source_revision": "r21-phase02-approved@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "c4733b06e7502fbe26a37093c0dca110ff53f9bcb113e3c420faa1d34250874d",
-      "output_path": "plans/2026-07-24-05-dayz-mcp-public-and-automation.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-24-06-release-ecosystem-and-polish.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "5a1370e579c9a56389c03a4b77dfa9928df657337a253c2dab1651c179bf7af7",
-          "source_id": "pack-baseline",
-          "source_path": "plans/2026-07-24-06-release-ecosystem-and-polish.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "Approved prior-art deltas are formalized in the Phase 06 plan.",
-          "license": "MIT",
-          "source_hash": "5f35655661f7878d06b4980438ac7d7c02789c032a1aec0e494da179be1287d8",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-24-06-release-ecosystem-and-polish.md",
-          "source_revision": "r21-prior-art-approved@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "5f35655661f7878d06b4980438ac7d7c02789c032a1aec0e494da179be1287d8",
-      "output_path": "plans/2026-07-24-06-release-ecosystem-and-polish.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-24-prior-art-assimilation-proposal.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "The user approved the three evidence-backed deltas; the proposal records the adopted boundary.",
-          "license": "MIT",
-          "source_hash": "2fbe7af9d25c49cc23e24bf46ea4de81e11a71878e23b08ae06d458fec28deaa",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-24-prior-art-assimilation-proposal.md",
-          "source_revision": "r21-prior-art-approved@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "2fbe7af9d25c49cc23e24bf46ea4de81e11a71878e23b08ae06d458fec28deaa",
-      "output_path": "plans/2026-07-24-prior-art-assimilation-proposal.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-24-r21-master-roadmap.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
-          "license": "MIT",
-          "source_hash": "d9233a5f48957836b4e8f81f2a3ecf2dc5d30742ff99eb5b32c1a90ef61a27d2",
-          "source_id": "pack-baseline",
-          "source_path": "plans/2026-07-24-r21-master-roadmap.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "adopt",
-          "decision_evidence": "The roadmap now traces engine-capture-v1 and its manual/MCP ownership boundary across Phases 02 and 05.",
-          "license": "MIT",
-          "source_hash": "489ba8571b0a24ab39d3f53cd36fa5c7f451c920db9e189c98637a9066e2a2aa",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-24-r21-master-roadmap.md",
-          "source_revision": "r21-phase02-approved@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "489ba8571b0a24ab39d3f53cd36fa5c7f451c920db9e189c98637a9066e2a2aa",
-      "output_path": "plans/2026-07-24-r21-master-roadmap.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-25-04a-py3d-proxy-lifecycle.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "87cb93975db4d9c3fc15149bed1fcdea2abeadd20adddbbc705d925fca1cf20e",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-25-04a-py3d-proxy-lifecycle.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "87cb93975db4d9c3fc15149bed1fcdea2abeadd20adddbbc705d925fca1cf20e",
-      "output_path": "plans/2026-07-25-04a-py3d-proxy-lifecycle.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-28-r21-completion-and-criteria-triage.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "User-approved completion plan: it owns every one of the 35 open criteria, records the four decisions taken on 2026-07-28, and is written under cite-then-verify with every claim carrying a path:line read from the tree.",
-          "license": "MIT",
-          "source_hash": "3507e7a5e376f2cfcb6102ae1f0674a402fd3f10138bf93390ede609fe4ee919",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-28-r21-completion-and-criteria-triage.md",
-          "source_revision": "r21-completion-plan@2026-07-28",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "3507e7a5e376f2cfcb6102ae1f0674a402fd3f10138bf93390ede609fe4ee919",
-      "output_path": "plans/2026-07-28-r21-completion-and-criteria-triage.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-25-04b-dayz-animation-formats.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "b3de9f369e6045eeb96757299c91c93814f18e8d9d5da8c47ac9b88246d5f547",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-25-04b-dayz-animation-formats.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "b3de9f369e6045eeb96757299c91c93814f18e8d9d5da8c47ac9b88246d5f547",
-      "output_path": "plans/2026-07-25-04b-dayz-animation-formats.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-25-04c-dayz-model-preflight.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "2a3e15a7c9546b8be2f5a347f3882bf7b96dce11dedb7ed978d8d060f76b7f31",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-25-04c-dayz-model-preflight.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "2a3e15a7c9546b8be2f5a347f3882bf7b96dce11dedb7ed978d8d060f76b7f31",
-      "output_path": "plans/2026-07-25-04c-dayz-model-preflight.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/plans/2026-07-25-04d-dayz-odol-strict.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "c02ba0299bb5a30db1890c5d011668c912a30f1110bce05e7fb0ceb108771186",
-          "source_id": "pack-r21-authored",
-          "source_path": "plans/2026-07-25-04d-dayz-odol-strict.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "c02ba0299bb5a30db1890c5d011668c912a30f1110bce05e7fb0ceb108771186",
-      "output_path": "plans/2026-07-25-04d-dayz-odol-strict.md",
-      "routing_artifact_id": "repo/plans",
-      "verification_level": "cross_checked"
-    },
-    {
       "artifact_id": "file/product-spec.md",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -2304,40 +1812,17 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "e318eda0f34b47ce898294c299506daa54e1055005d9d132ef0b18bba52f7f4c",
+          "source_hash": "69a6536c4249c632b8d8bdac57593b8d3ba6f859acff7953eb7bd4047b616875",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
-          "source_revision": "r21-phase04@2026-07-25",
+          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e318eda0f34b47ce898294c299506daa54e1055005d9d132ef0b18bba52f7f4c",
+      "output_hash": "69a6536c4249c632b8d8bdac57593b8d3ba6f859acff7953eb7bd4047b616875",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/promotions/adjudications.json",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Operator adjudications of promotion targets whose bytes no receipt explains; each entry authorizes one observed digest and expires when the target moves.",
-          "license": "MIT",
-          "source_hash": "8153380dfb31c8ec254e9bce9bac05329b8a24a7af1db700fab1029bccae761a",
-          "source_id": "pack-r21-authored",
-          "source_path": "promotions/adjudications.json",
-          "source_revision": "r21-preimage-adjudications@2026-07-27",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "e69d0d3d38fed1060fe33a3d8c3b20f6cbdea95dfae641b87b5ce47bd33fedf4",
-      "output_path": "promotions/adjudications.json",
-      "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
     },
     {
@@ -2371,17 +1856,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Pytest collection configuration is routed as repository governance for the canonical no-flag gate.",
+          "decision_evidence": "The internal process layer (plans, specs, session handoff, root CLAUDE.md) stopped being published; its promotion entries were removed with it.",
           "license": "MIT",
-          "source_hash": "04ec275393eb003dfc3006c83529ee3e69bcfceaa065b08f523dce2587a814b2",
+          "source_hash": "61bad45ba2970ae664f262e9150abb5e9f4ae99ba4b93662793942051bf577b7",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/promotion-map.json",
-          "source_revision": "r21-pytest-collection@2026-07-26",
+          "source_revision": "r21-unpublish-internal-layer@2026-08-15",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "04ec275393eb003dfc3006c83529ee3e69bcfceaa065b08f523dce2587a814b2",
+      "output_hash": "61bad45ba2970ae664f262e9150abb5e9f4ae99ba4b93662793942051bf577b7",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -2408,121 +1893,6 @@
       "output_path": "promotions/promotion-map.schema.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/promotions/receipts/51a7024ef9a5e333e5fab7b8.json",
-      "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Receipt hash a3c0ccc8c92b92c6eeb105838becdf7d17649508904bdf945c3e9ddfb29cec59 matches the terminal COMMIT for the verified promotion of source commit 13af7f8b59962bca6fded981ad75cd77a37616ef.",
-          "license": "MIT",
-          "source_hash": "a3c0ccc8c92b92c6eeb105838becdf7d17649508904bdf945c3e9ddfb29cec59",
-          "source_id": "pack-r21-authored",
-          "source_path": "promotions/receipts/51a7024ef9a5e333e5fab7b8.json",
-          "source_revision": "13af7f8b59962bca6fded981ad75cd77a37616ef",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "a3c0ccc8c92b92c6eeb105838becdf7d17649508904bdf945c3e9ddfb29cec59",
-      "output_path": "promotions/receipts/51a7024ef9a5e333e5fab7b8.json",
-      "routing_artifact_id": "repo/promotions",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/promotions/receipts/6e8cf995be627d7bf50cd147.json",
-      "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Receipt hash 8fd17c75a41c1d3373a8e67d85cebfd1e277041aad7888c9fc0bf953659c8a26 records transaction 6e8cf995be627d7bf50cd147, verdict PASS with zero findings, promoting source commit 8986baea82172342d611e260e76270902f1d5a00. Verified independently of the receipt by snapshotting both skill roots before and after: zero files lost, zero changed, five added per root, and the installed dayz-persistence tree byte-identical to the repo.",
-          "license": "MIT",
-          "source_hash": "8fd17c75a41c1d3373a8e67d85cebfd1e277041aad7888c9fc0bf953659c8a26",
-          "source_id": "pack-r21-authored",
-          "source_path": "promotions/receipts/6e8cf995be627d7bf50cd147.json",
-          "source_revision": "8986baea82172342d611e260e76270902f1d5a00",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "8fd17c75a41c1d3373a8e67d85cebfd1e277041aad7888c9fc0bf953659c8a26",
-      "output_path": "promotions/receipts/6e8cf995be627d7bf50cd147.json",
-      "routing_artifact_id": "repo/promotions",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/promotions/receipts/c7b5366cc761a8038e52f6a2.json",
-      "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Receipt hash 44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd matches the terminal COMMIT for the verified promotion of source commit 7a25432febc112a957a7c1ef7a7d2c16c221b24f.",
-          "license": "MIT",
-          "source_hash": "44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd",
-          "source_id": "pack-r21-authored",
-          "source_path": "promotions/receipts/c7b5366cc761a8038e52f6a2.json",
-          "source_revision": "7a25432febc112a957a7c1ef7a7d2c16c221b24f",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "44533938582f194432ff18ff6a4d363c432858960e9ffe5fc7e5c8d14a14d0dd",
-      "output_path": "promotions/receipts/c7b5366cc761a8038e52f6a2.json",
-      "routing_artifact_id": "repo/promotions",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/promotions/receipts/e2aa6cf9058070bb4fbf2a8c.json",
-      "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Receipt hash 6457aac30352ef2b766fd9a713cbf0c06b6e2aacf8eb8b5a36bf137c9318cf3d matches the terminal COMMIT for the verified promotion of source commit 913192dfd6cb15a817949ea85414bcfe46b89673.",
-          "license": "MIT",
-          "source_hash": "6457aac30352ef2b766fd9a713cbf0c06b6e2aacf8eb8b5a36bf137c9318cf3d",
-          "source_id": "pack-r21-authored",
-          "source_path": "promotions/receipts/e2aa6cf9058070bb4fbf2a8c.json",
-          "source_revision": "913192dfd6cb15a817949ea85414bcfe46b89673",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "6457aac30352ef2b766fd9a713cbf0c06b6e2aacf8eb8b5a36bf137c9318cf3d",
-      "output_path": "promotions/receipts/e2aa6cf9058070bb4fbf2a8c.json",
-      "routing_artifact_id": "repo/promotions",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/promotions/receipts/6591ddab82a8162e1550f4c8.json",
-      "distribution_reason": "The create-only promotion receipt is repository governance evidence and is excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Receipt hash 08aa22b6436564d0208f866c87a26707a6e52c8f136391dd2db8ea5fd85a561a matches the receipt_hash recorded in the terminal COMMIT event (sequence 140) of transaction 6591ddab82a8162e1550f4c8, verified by reading the journal rather than the receipt.",
-          "license": "MIT",
-          "source_hash": "08aa22b6436564d0208f866c87a26707a6e52c8f136391dd2db8ea5fd85a561a",
-          "source_id": "pack-r21-authored",
-          "source_path": "promotions/receipts/6591ddab82a8162e1550f4c8.json",
-          "source_revision": "0e35ba9a8b59ca66cd5097a8caec68985f45e158",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "08aa22b6436564d0208f866c87a26707a6e52c8f136391dd2db8ea5fd85a561a",
-      "output_path": "promotions/receipts/6591ddab82a8162e1550f4c8.json",
-      "routing_artifact_id": "repo/promotions",
-      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/pytest.ini",
@@ -6307,190 +5677,6 @@
       "output_hash": "5eb86927bf845d417051300b855fc8543fe8f32eba605f330a5a81569bcd8f33",
       "output_path": "sources/source-map.schema.json",
       "routing_artifact_id": "repo/sources",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/specs/2026-07-24-foundation-and-evidence.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
-          "license": "MIT",
-          "source_hash": "7fac902a6dd955b9a988606b891b8b43cfdc7e12934c32bbd007bc62ba252a66",
-          "source_id": "pack-r21-authored",
-          "source_path": "specs/2026-07-24-foundation-and-evidence.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "7fac902a6dd955b9a988606b891b8b43cfdc7e12934c32bbd007bc62ba252a66",
-      "output_path": "specs/2026-07-24-foundation-and-evidence.md",
-      "routing_artifact_id": "repo/specs",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/specs/2026-07-25-dayz-animation-formats.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "c3b040171bc55594537f5a042b39f3a68bc822c3ed13d1937a3a909cf9473da1",
-          "source_id": "pack-r21-authored",
-          "source_path": "specs/2026-07-25-dayz-animation-formats.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "c3b040171bc55594537f5a042b39f3a68bc822c3ed13d1937a3a909cf9473da1",
-      "output_path": "specs/2026-07-25-dayz-animation-formats.md",
-      "routing_artifact_id": "repo/specs",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/specs/2026-07-25-dayz-model-preflight.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "e8c95c70be4611e4a796b792c78dabce420ef705e22d08f520e9cb5bba45da47",
-          "source_id": "pack-r21-authored",
-          "source_path": "specs/2026-07-25-dayz-model-preflight.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "e8c95c70be4611e4a796b792c78dabce420ef705e22d08f520e9cb5bba45da47",
-      "output_path": "specs/2026-07-25-dayz-model-preflight.md",
-      "routing_artifact_id": "repo/specs",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/specs/2026-07-25-dayz-odol-strict.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "e7ea1f6fbbf5a142ebcacaa36e10b5113f0d9250947c6ce0003aa877fdba3f6e",
-          "source_id": "pack-r21-authored",
-          "source_path": "specs/2026-07-25-dayz-odol-strict.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "e7ea1f6fbbf5a142ebcacaa36e10b5113f0d9250947c6ce0003aa877fdba3f6e",
-      "output_path": "specs/2026-07-25-dayz-odol-strict.md",
-      "routing_artifact_id": "repo/specs",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/specs/2026-07-25-dayz-ui-lab.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "The user-approved Phase 02 contracts remain closed as a 16/16 feature spec and now record the B19/B20 execution checkpoint.",
-          "license": "MIT",
-          "source_hash": "adfe227929c35bb78f5e6d45f0287132897a628eb40b94fe45af7dca99689de1",
-          "source_id": "pack-r21-authored",
-          "source_path": "specs/2026-07-25-dayz-ui-lab.md",
-          "source_revision": "r21-phase02-approved@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "adfe227929c35bb78f5e6d45f0287132897a628eb40b94fe45af7dca99689de1",
-      "output_path": "specs/2026-07-25-dayz-ui-lab.md",
-      "routing_artifact_id": "repo/specs",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/specs/2026-07-28-dayz-persistence.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "The Phase 03 persistence contracts are closed as a 16/16 feature spec whose forward contract was re-read against DayZ build 1.29.0.163451 on 2026-07-28.",
-          "license": "MIT",
-          "source_hash": "38457a41334f23a2c1e9483613184abcad85656c434d3cbe5cce58b777285aa6",
-          "source_id": "pack-r21-authored",
-          "source_path": "specs/2026-07-28-dayz-persistence.md",
-          "source_revision": "r21-phase03-approved@2026-07-28",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "38457a41334f23a2c1e9483613184abcad85656c434d3cbe5cce58b777285aa6",
-      "output_path": "specs/2026-07-28-dayz-persistence.md",
-      "routing_artifact_id": "repo/specs",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/specs/2026-07-25-py3d-proxy-lifecycle.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
-          "license": "MIT",
-          "source_hash": "4b453f401c9cfcefc5dd80f37b6e17c496bb44f17f6821ba5e35b5b6102e5429",
-          "source_id": "pack-r21-authored",
-          "source_path": "specs/2026-07-25-py3d-proxy-lifecycle.md",
-          "source_revision": "r21-phase04@2026-07-25",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "4b453f401c9cfcefc5dd80f37b6e17c496bb44f17f6821ba5e35b5b6102e5429",
-      "output_path": "specs/2026-07-25-py3d-proxy-lifecycle.md",
-      "routing_artifact_id": "repo/specs",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/specs/checklists/2026-07-24-foundation-and-evidence.md",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
-      "distribution_role": "repo_only",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
-          "license": "MIT",
-          "source_hash": "cf0028589a1401b359551696a4a7c5a549660ef9e391e10f10e7da868117de30",
-          "source_id": "pack-r21-authored",
-          "source_path": "specs/checklists/2026-07-24-foundation-and-evidence.md",
-          "source_revision": "r21-phase01@2026-07-24",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "cf0028589a1401b359551696a4a7c5a549660ef9e391e10f10e7da868117de30",
-      "output_path": "specs/checklists/2026-07-24-foundation-and-evidence.md",
-      "routing_artifact_id": "repo/specs",
       "verification_level": "cross_checked"
     },
     {
@@ -11767,6 +10953,160 @@
       "output_path": "knowledge/vault-notes/dayz-world-arena-optimization.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/.cursorrules",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Cursor entry point; the routing procedure and the four rules inline.",
+          "license": "MIT",
+          "source_hash": "efe1e5200d861fadcbb8aebb86bb034f0abd6729f77409a2ac4d6bd4687afa52",
+          "source_id": "pack-r21-authored",
+          "source_path": ".cursorrules",
+          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "efe1e5200d861fadcbb8aebb86bb034f0abd6729f77409a2ac4d6bd4687afa52",
+      "output_path": ".cursorrules",
+      "routing_artifact_id": "root/cursorrules",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/.github/copilot-instructions.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "GitHub Copilot entry point; a pointer to AGENTS.md with the rules inline.",
+          "license": "MIT",
+          "source_hash": "6d51356c0067e8001621c9f22dd1315f8fb03181d8b641f4cc2f6c36124d6e4a",
+          "source_id": "pack-r21-authored",
+          "source_path": ".github/copilot-instructions.md",
+          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6d51356c0067e8001621c9f22dd1315f8fb03181d8b641f4cc2f6c36124d6e4a",
+      "output_path": ".github/copilot-instructions.md",
+      "routing_artifact_id": "root/copilot-instructions",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/.mcp.example.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Example MCP client wiring for a bridge of the documented shape.",
+          "license": "MIT",
+          "source_hash": "bb45ac1af5df48ffaf5e7e94773da5d655bf1c95e3892e529a18cbf0ff649e2d",
+          "source_id": "pack-r21-authored",
+          "source_path": ".mcp.example.json",
+          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bb45ac1af5df48ffaf5e7e94773da5d655bf1c95e3892e529a18cbf0ff649e2d",
+      "output_path": ".mcp.example.json",
+      "routing_artifact_id": "root/mcp-example",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/agents.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Canonical agent entry file; the cross-tool convention several hosts read.",
+          "license": "MIT",
+          "source_hash": "a53816582241ed6b0759c7605da6f3881057b3aef5fd5bfb74d4de7eb349fd4f",
+          "source_id": "pack-r21-authored",
+          "source_path": "AGENTS.md",
+          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a53816582241ed6b0759c7605da6f3881057b3aef5fd5bfb74d4de7eb349fd4f",
+      "output_path": "AGENTS.md",
+      "routing_artifact_id": "root/agents",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/gemini.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Gemini CLI entry point; a pointer to AGENTS.md.",
+          "license": "MIT",
+          "source_hash": "ea4a9cc40a21e76945066cba1c2ea8a2ef0bb599623501d046adbd3058abdadb",
+          "source_id": "pack-r21-authored",
+          "source_path": "GEMINI.md",
+          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ea4a9cc40a21e76945066cba1c2ea8a2ef0bb599623501d046adbd3058abdadb",
+      "output_path": "GEMINI.md",
+      "routing_artifact_id": "root/gemini",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/knowledge/dayz-mcp-bridge-protocol.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Bridge surface, design invariants and the engine facts behind in-game verification.",
+          "license": "MIT",
+          "source_hash": "f328a2d5e819c4f59f05aadc50de5ee48fbf7fdf06995225ac93a0b62776aef6",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/dayz-mcp-bridge-protocol.md",
+          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f328a2d5e819c4f59f05aadc50de5ee48fbf7fdf06995225ac93a0b62776aef6",
+      "output_path": "knowledge/dayz-mcp-bridge-protocol.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/tools.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Index of the bundled tools, what each one refuses to do, and how to run it.",
+          "license": "MIT",
+          "source_hash": "da6a4786cc9b29b8eafbd225fdbde14cd2e31a4c0742793904337abdd960c6ad",
+          "source_id": "pack-r21-authored",
+          "source_path": "TOOLS.md",
+          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "da6a4786cc9b29b8eafbd225fdbde14cd2e31a4c0742793904337abdd960c6ad",
+      "output_path": "TOOLS.md",
+      "routing_artifact_id": "root/tools-index",
+      "verification_level": "cross_checked"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
