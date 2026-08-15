@@ -6,7 +6,19 @@ Evidence level: skill-sourced summary. Verify exact widget/event signatures agai
 
 ## Layout Rules
 
-- Every widget, including leaf widgets, needs an explicit child block.
+- ~~Every widget, including leaf widgets, needs an explicit child block.~~
+  **REFUTED 2026-07-24 — do not reintroduce.** A leaf widget with no child block
+  is valid and ubiquitous. Evidence inside this pack: the first-party fixture
+  [`tools/dayz-ui-lab/probe/LF_UIProbe/gui/layouts/leaf-without-child-block.layout`](../../tools/dayz-ui-lab/probe/LF_UIProbe/gui/layouts/leaf-without-child-block.layout)
+  is a `ButtonWidgetClass` leaf carrying only properties, and the corpus gate
+  parses 376/376 layouts across VPP, DayZ Expansion, TraderPlus, TraderX and
+  LFPowerGrid without it.
+  **Why this line is kept struck through instead of deleted:** a pre-PBO linter
+  turned this exact claim into a detector, `LAYOUT-LEAF-MISSING-BRACES`, whose
+  83-test suite went green certifying fidelity to a false spec, and whose 28
+  "true positives" were all false. It is now quarantined. A wrong claim that has
+  already been built on is worth marking as wrong, because deleting it silently
+  invites the next reader to rediscover and re-implement it.
 - Frame/panel widgets are structure only; visible backgrounds need an image-style widget setup.
 - Every widget should set exact-position and exact-size flags consistently.
 - Brace counts must balance before in-game testing.

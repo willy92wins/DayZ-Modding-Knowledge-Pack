@@ -2210,3 +2210,24 @@ from the player.
 ★ **Discipline that this cost**: a plan that declared "measured mechanism" on the strength of
 the chain being necessary was rejected by review for exactly that. Measure `first_block` per
 seat BEFORE editing the model, the config or the script.
+
+## UV step of any vehicle import: `SAT=0` is the only proof of no-overlap (SP-214, added 2026-07-16)
+
+**[MEASURED]** The validated UV path for hard-surface vehicles is charts by a 100°
+normal cone + SLIM + a **single** anti-fold guard round + SAT finisher + semantic
+shelf pack. Measured: a 10.5k-tri retopo produced 43 islands at **SAT=0**; a
+36.9k-tri rip produced 63 islands at **SAT=0**.
+
+Three rules, each of which cost a measurement to learn:
+
+- **Declare "no overlap" only on an exact `SAT=0`.** The Monte-Carlo estimator has
+  a floor around 0.06-0.15%, so a `0%` from it is not evidence.
+- **Never iterate the anti-fold guard.** It cascades 32 islands into 84, measured.
+- Break the stretch/overlap/legibility trilemma by **relaxing the deformation
+  corner**, not by fragmenting: the real bar tolerates moderate stretch and does
+  not tolerate fragmentation.
+
+`PartUV` was piloted and **rejected as the default route**: 162 of 232 islands on
+the same meshes. Applies to any vehicle import, source-game or not; the implementation
+lives in the `uv-clean-atlas` skill, which this pack does not ship. Cross-ref:
+`rip-vehicle-import`, same step after geometry.

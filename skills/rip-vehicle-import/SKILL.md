@@ -107,3 +107,48 @@ python scripts\asset_contract_checkpoint.py check --contract <ficha>
   prohibido: son cicatrices específicas de ese coche.
 - Minas conocidas aguas abajo (siguiente cirugía): `rip_p2_group.py:33` IN_BLEND hardcoded
   BRZ; `rip_p3_structural.py:715` cae por defecto a `brz.json`.
+
+## Un mirror-gap se decide por CONTENIDO interno, nunca por ausencia de filename (SP-213)
+
+**[MECHANISM VERIFIED]** Que falte `*rf.modelbin` **no** demuestra que falte la
+geometría derecha: un único `modelbin` puede traer las mallas de los dos lados.
+Caso real en el LOD0 del SUB_BRZ — `doorlf_a.modelbin` contenía `doorLF_a_LODS0`,
+`doorRF_a_LODS0`, `mirrorBaseL` **y** `mirrorBaseR`: 8 objetos, 3.795 vértices,
+6.436 triángulos. Un probe que mira solo nombres de fichero lo clasifica como
+`MIRROR_GAP_RIGHT_FROM_LEFT`, y el espejado posterior duplica una fuente que ya
+tenía ambos lados → solape y geometría sintética.
+
+**Regla.** Antes de autorizar un mirror, importar al menos un LOD y censar
+**nombres internos + bbox lateral**:
+
+- el fichero izquierdo contiene mallas a ambos lados del eje → `SHIPPED_EMBEDDED_BOTH`,
+  y el mirror queda **prohibido**;
+- la ausencia de filename solo abre un `NEEDS_INTERNAL_PROBE`. **Nunca autoriza un
+  mirror por sí sola.**
+
+**Test de viabilidad obligatorio** antes de fiarte del gate: fixture con
+`doorlf.modelbin` presente, `doorrf.modelbin` ausente y mallas internas
+`doorLF`/`doorRF` en X opuestas. Esperado `SHIPPED_EMBEDDED_BOTH`, cero geometría
+sintética y conteos post-group iguales al import. Fixture negativa: fuente
+realmente unilateral → `MIRROR_GAP_RIGHT_FROM_LEFT`, y solo después del probe
+interno.
+
+## El paso de UV canónico es la skill `uv-clean-atlas`, y «sin solape» solo se declara con SAT=0 (SP-214)
+
+**[MEASURED]** Para UVs de atlas legible en hard-surface el pipeline validado es
+charts por cono de normales 100° + SLIM + guarda anti-pliegue de **una sola
+ronda** + finisher SAT + shelf pack semántico. Medido: un retopo de 10,5k tris →
+43 islas con **SAT=0**; un rip de 36,9k tris → 63 islas con **SAT=0**.
+
+Tres cosas que hay que respetar o el paso se degrada:
+
+- **`SAT=0` exacto es la única declaración válida de «sin solape».** El
+  Monte-Carlo tiene suelo ~0,06-0,15%, así que un «0%» suyo no prueba nada.
+- **La guarda anti-pliegue jamás se itera**: cascadea de 32 a 84 islas, medido.
+- El «triángulo de imposibilidad» se rompe **relajando la esquina de deformación**,
+  no fragmentando: el listón real tolera stretch moderado y no tolera
+  fragmentación.
+
+`PartUV` se pilotó y se **descartó como vía por defecto**: 162/232 islas sobre las
+mismas mallas. Cross-ref: mismo paso en `dayz-vehicles`; la implementación vive en
+la skill `uv-clean-atlas`, que este pack no distribuye.

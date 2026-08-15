@@ -550,3 +550,33 @@ in place as the live file. Same invariant, two entry points, one of them silentl
 weaker -- the VULN-009 shape. When a codebase has a `save` and a `recover`, diff
 their verify branches line by line; do not assume the recovery path inherited the
 discipline.
+
+## (added 2026-08-14, SP-238 + SP-240) A CORRECTIVE is unaudited input: re-audit its NEW code, never delta-only
+
+**Step 3 says "re-audit until zero critical/major". It did not say that the
+corrective's own code must be audited as if it were a fresh round.** It must.
+
+**Evidence.** A corrective bundle passed its receiver, an R8 walk and the compile
+gate, and closed the findings of six review lanes. Re-running the multi-angle
+audit against **its own new code** then found two new criticals and one blocker,
+all of them **defects in the corrective's design rather than its implementation**:
+a clear-after-reapply that broke the guarantee of an alternate path, and an alias
+in the canonical buy/withdraw/restart flow that left the in-game ATM permanently
+blocked. Four of five independently re-launched auditors converged on the same
+alias without contact. It was the fourth instance of the same shape in one
+campaign, which is what makes it a rule rather than an anecdote.
+
+**Apply, appended to Step 3:**
+
+1. **Re-launch every applicable angle over the NEW code**, not "check that the
+   fixes landed". The round-two findings were in the corrective's design, so a
+   delta-only check could not have seen them. Resumed agents work here and cost
+   roughly 30% of a fresh run, provided they are told explicitly that their
+   cached content is STALE.
+2. **The corrective's prompt carries its own counter-scenarios** -- the scenarios
+   that would refute its design -- and the implementer verifies and documents
+   them as part of RED->GREEN. Treat the arbitration's design as unaudited input.
+   In the case above, the counter-scenarios that were embedded got verified; the
+   one that was not embedded is the one the re-audit had to catch.
+3. **Budget 2-4 rounds for integrity bundles.** The closing signal is "a round
+   with zero NEW critical/major", not "the old findings are closed".

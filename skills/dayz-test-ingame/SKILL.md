@@ -801,3 +801,21 @@ gate from decoration):
 Corollary for measurement campaigns: fix the gates BEFORE the campaign, not after. A campaign run
 through a decorative gate produces greens that mean nothing, and you cannot tell afterwards which
 of them were real.
+
+## Teardown copies the logs BEFORE killing the client, and verifies the copy (SP-237, added 2026-08-13)
+
+Killing the DayZ client immediately loses its last unflushed log buffer. A pilot
+run's flight output was lost this way: the **client** log cut at `t=2118` while
+the **server** recorded the dismount roughly 56 s later, so the interesting
+window existed only in the buffer that the kill discarded.
+
+The order is not "stop, then collect". It is:
+
+1. **Copy** the script logs while the process is still alive;
+2. **Verify the copy contains the stretch that matters** -- count the lines of the
+   probe you expected to see, do not just check the file is non-empty;
+3. **Only then** `Stop-Process`.
+
+A teardown that kills first cannot be repaired afterwards: there is no second
+copy of an unflushed buffer. This costs one line-count assertion and buys the
+whole run.
