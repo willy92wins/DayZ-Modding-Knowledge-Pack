@@ -97,6 +97,39 @@ no tenía fila en la matriz de compatibilidad**, así que `A7` afirmaba cubrir e
 el filesystem y barría `reports/`, que está gitignored; fallaba con un
 `PermissionError` de un venv abandonado antes de compilar nada real.
 
+**`38eb4c8` — la rama estable se movió a `1.29.0.163709`** (DayZ se actualizó el
+2026-08-15 a las 04:37). **El pin NO se subió**: hacerlo habría convertido una
+medición en una suposición para las 16 filas de golpe. La matriz dice que la build
+se movió y que nada se ha re-verificado contra ella.
+
+**`b244589` — nota de la arena `4_World`**, sintetizada de 30,6 KB a 10,3. Era el
+último hueco real de dominio: cobertura medida del pack sobre ella, **2 %**. Fuera
+la contabilidad de producto y los recibos internos; dentro las invariantes de
+motor. Las 4 citas de vanilla del patrón de fachada se **re-verificaron en
+`P:\scripts`** en vez de heredarlas — y el chequeo mejoró el texto, porque la clase
+base vive en `4_world\classes\`, que es justo lo que hace funcionar el patrón.
+
+## Auditoría de huecos: lo que se dejó FUERA a propósito
+
+Se midió cobertura de todas las notas DayZ del vault contra los 2,9 MB del pack.
+Tras añadir la de arena, **quedan tres con hueco y ninguna entra**:
+
+| Nota | Cobertura | Por qué NO entra |
+|---|---:|---|
+| `dayz-enforce-deep-gotchas` | 12 % | **6 de 10 claims son `[WIKI]`** = hint sin verificar, y el `product-spec` prohíbe en «Fuera de alcance» copiar snippets no verificados |
+| `dayz-server-admin-ops` | 16 % | la nota **se marca a sí misma «Uso privado»**; 12 de 21 claims son `[WIKI]` |
+| `japm-pbo-recovery-patterns` | 8 % | 3 rutas privadas, y documenta ingeniería inversa sobre el mod de un tercero identificado |
+
+Las dos primeras vienen del wiki StarDZ (CC BY-SA, hechos reescritos). **No las
+metas sin resolver antes su etiquetado**: el pack vale por ser pequeño y verificado,
+no por ser grande. Si algún día se verifican esos `[WIKI]` contra `P:\scripts`,
+entonces sí.
+
+Las 7 skills instaladas que el pack no gobierna (`codex-handoff-template`,
+`gauntlet-loop`, `introspection-workflow`, `pre-output-discipline`,
+`secrets-handling`, `youtube-research`) son **método de trabajo, no dominio DayZ**.
+Meterlas diluye la definición del producto y arrastra atribuciones de terceros.
+
 ## El backlog está CERRADO. Lo que queda es deliberado
 
 No hay nada pendiente de adoptar. Lo que sigue apareciendo al medir repo contra
@@ -172,14 +205,16 @@ desde este HEAD. El procedimiento entero está en
 
 ## Puerta de arranque
 
-`Retomo DayZ Modding Knowledge Pack desde: d2bba60 (2026-08-15) con el backlog de
-adopción CERRADO —24 ficheros adoptados o fusionados, py3d 1.5.0 desde el fork
-publicado, dayz-clothing dentro, 16 playbooks— y verificado publicable: validate
-PASS, ZIP reproducible de 267 entradas, cero rutas privadas y cero bytes de
-terceros · lo que aún sale al medir contra las skills instaladas es deliberado, NO
-deuda · el único rojo es el validador skills-ref externo, cuyo commit pineado ya no
-existe upstream · próxima acción: decidir ese validador (re-pinear o registrar que
-no existe), y si publicamos, versionar el CHANGELOG y crear el repo`
+`Retomo DayZ Modding Knowledge Pack desde: b244589 (2026-08-15) con el backlog de
+adopción CERRADO y la auditoría de huecos hecha —24 ficheros adoptados o
+fusionados, py3d 1.5.0 desde el fork publicado, dayz-clothing dentro, la nota de
+arena 4_World sintetizada, 16 playbooks— y verificado publicable: validate PASS,
+ZIP reproducible, cero rutas privadas y cero bytes de terceros · lo que aún sale al
+medir contra las skills instaladas es deliberado, NO deuda, y las 3 notas del vault
+que quedan con hueco están fuera a propósito (§Auditoría de huecos) · el único rojo
+es el validador skills-ref externo, cuyo commit pineado ya no existe upstream ·
+próxima acción: decidir ese validador (re-pinear o registrar que no existe), y si
+publicamos, versionar el CHANGELOG y crear el repo`
 <!-- LIVE-STATE:END -->
 
 ---
