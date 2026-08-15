@@ -8,6 +8,7 @@ from pathlib import Path
 from .builder import build_archive
 from .common import (
     finding,
+    git_tracked_files,
     is_within,
     make_report,
     sha256_file,
@@ -82,11 +83,13 @@ def run_gate(root: Path, report_dir: Path) -> dict[str, object]:
     }
     findings.extend(validation["findings"])
 
-    python_files = sorted(
-        str(path.relative_to(root))
-        for path in root.rglob("*.py")
-        if ".git" not in path.parts
-    )
+    # Compile what SHIPS, which is what git tracks -- the same definition the
+    # archive builder uses. Walking the filesystem instead swept in ignored
+    # scratch: report directories, virtualenvs and build output, none of which
+    # reach a release. It also made the gate fail for the wrong reason, since a
+    # leftover venv under reports/ carries read-only files and py_compile stops
+    # on the PermissionError before compiling anything real.
+    python_files = [path for path in git_tracked_files(root) if path.endswith(".py")]
     if python_files:
         compile_result = _run_process(
             root,

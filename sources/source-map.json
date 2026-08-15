@@ -1731,7 +1731,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "b5690e35e4b0810351380c947e1851ba852c4612f87b150d361e660c7d357292",
+          "source_hash": "c0d9fa1a5cdb32d1d14e59686b220f1d857f9f56cee650dfe0356aa6b53d48c0",
           "source_id": "pack-r21-authored",
           "source_path": "packctl/gate.py",
           "source_revision": "r21-phase01@2026-07-24",
@@ -1739,7 +1739,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b5690e35e4b0810351380c947e1851ba852c4612f87b150d361e660c7d357292",
+      "output_hash": "c0d9fa1a5cdb32d1d14e59686b220f1d857f9f56cee650dfe0356aa6b53d48c0",
       "output_path": "packctl/gate.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
