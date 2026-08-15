@@ -38,16 +38,26 @@ def _run_process(
     )
 
 
+# The reference validator ships on PyPI as the distribution `skills-ref`, but its
+# console script is named `agentskills`. The older name is kept first so an
+# existing checkout keeps working.
+_SKILLS_REF_COMMANDS = ("skills-ref", "agentskills")
+
+
 def _skills_ref_executable(configured: str) -> Path | None:
     candidate = Path(configured)
     if candidate.is_file():
         return candidate
-    windows = candidate / ".venv" / "Scripts" / "skills-ref.exe"
-    posix = candidate / ".venv" / "bin" / "skills-ref"
-    if windows.is_file():
-        return windows
-    if posix.is_file():
-        return posix
+    for command in _SKILLS_REF_COMMANDS:
+        for relative in (
+            Path(".venv") / "Scripts" / f"{command}.exe",
+            Path(".venv") / "bin" / command,
+            Path("Scripts") / f"{command}.exe",
+            Path("bin") / command,
+        ):
+            resolved = candidate / relative
+            if resolved.is_file():
+                return resolved
     return None
 
 

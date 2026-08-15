@@ -1,6 +1,6 @@
 ---
 name: dayz-persistence
-description: Use when designing, implementing, debugging, or auditing DayZ persistence: OnStoreSave/OnStoreLoad entity streams, CF ModStorage and storageVersion, persistent-format migration or rollback, sidecar JSON, recoverable file replacement or atomic-save claims, and player-data corruption after save or restart. Invoke for deprecated JSON loading APIs, future or truncated versions, and uninstall-safe mod data.
+description: Use when designing, implementing, debugging, or auditing DayZ persistence — OnStoreSave/OnStoreLoad entity streams, CF ModStorage and storageVersion, persistent-format migration or rollback, sidecar JSON, recoverable file replacement or atomic-save claims, and player-data corruption after save or restart. Invoke for deprecated JSON loading APIs, future or truncated versions, and uninstall-safe mod data.
 ---
 
 # DayZ Persistence

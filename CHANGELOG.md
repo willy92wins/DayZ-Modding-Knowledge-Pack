@@ -56,8 +56,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   incremental rebuilds, vehicle get-in/action contracts, winding lineage and
   material overrides.
 
+### Fixed
+
+- **Two skill descriptions were not valid YAML** and no gate had said so.
+  `dayz-clothing` carried `Use for: mod de ropa` and `dayz-persistence` carried
+  `auditing DayZ persistence: OnStoreSave/...`; an unquoted `: ` inside a YAML
+  scalar parses as a nested mapping. Found by re-pinning the external reference
+  validator, which is the entire reason criterion A3 asks for a second
+  implementation — the pack's own validator checks the caps and the field names
+  and had passed both files.
+
 ### Changed
 
+- **Agent Skills reference validator re-pinned to `skills-ref==0.1.1` from PyPI**,
+  whose console script is `agentskills`. The previous pin was a git commit that is
+  no longer reachable in `anthropics/skills`, and whose directory is gone from
+  HEAD. `packctl gate` now looks for either command name, so an existing checkout
+  keeps working. 16 of 16 skills validate.
 - **py3d 1.4.0 → 1.5.0, distribution renamed `py3d` → `py3d-dayz`.** The pack
   now takes its py3d bytes from the published fork
   `willy92wins/py3d-dayz@c50321c`, which was ahead of the pack and already

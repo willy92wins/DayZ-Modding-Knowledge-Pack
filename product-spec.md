@@ -299,8 +299,14 @@ control positivo three-cards → verdict=PASS, exit 0, findings=0
 - Baseline ZIP SHA-256
   `E63C26C5C385E3037B4AFE9C918B3A9DE9E12CC0AF876316214518BF852735E5`;
   commit raíz `d48e2c1a02dacc97645a9e70d8bc1058e6dae9a5`.
-- Agent Skills reference validator: snapshot oficial
-  `38a2ff82958afee88dadf4831509e6f7e9d8ef4e`.
+- Agent Skills reference validator: **`skills-ref==0.1.1`** de PyPI
+  (<https://agentskills.io>), cuyo console script es **`agentskills`**. Sustituye
+  al pin anterior por commit `38a2ff82958afee88dadf4831509e6f7e9d8ef4e`, que dejó
+  de ser recuperable: ese commit ya no está en `anthropics/skills` y su HEAD no
+  conserva el directorio `skills-ref/`. Una versión de PyPI es un artefacto de
+  release inmutable, así que el pin nuevo es además más estable que el viejo.
+  Instalación reproducible: `python -m venv <root> && <root>/Scripts/pip install
+  skills-ref==0.1.1`, y `PACK_SKILLS_REF_ROOT=<root>`.
 - DayZ inicial de compatibilidad: `1.29.0.163451`, verificado 2026-07-24. La rama
   estable se movió a `1.29.0.163709` el 2026-08-15; **nada se ha re-verificado
   contra esa build** y la matriz lo dice fila por fila.

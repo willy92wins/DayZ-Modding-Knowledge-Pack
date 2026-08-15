@@ -85,7 +85,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "df8514e9ffc48bd2b3dbcfc613f1e4ef480d0152e7b0e82d756688b2d1a79df9",
+          "source_hash": "72625abaa00724b448ed9fab22cd09150772b95183a8c34ad19d2db6089f590f",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -93,7 +93,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "df8514e9ffc48bd2b3dbcfc613f1e4ef480d0152e7b0e82d756688b2d1a79df9",
+      "output_hash": "72625abaa00724b448ed9fab22cd09150772b95183a8c34ad19d2db6089f590f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -1731,7 +1731,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "c0d9fa1a5cdb32d1d14e59686b220f1d857f9f56cee650dfe0356aa6b53d48c0",
+          "source_hash": "ecdffce400859f24d2bb09f13def5881cf6a841e0ff726daff6f5cebdbd0a288",
           "source_id": "pack-r21-authored",
           "source_path": "packctl/gate.py",
           "source_revision": "r21-phase01@2026-07-24",
@@ -1739,7 +1739,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c0d9fa1a5cdb32d1d14e59686b220f1d857f9f56cee650dfe0356aa6b53d48c0",
+      "output_hash": "ecdffce400859f24d2bb09f13def5881cf6a841e0ff726daff6f5cebdbd0a288",
       "output_path": "packctl/gate.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -2304,7 +2304,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "a137dad6b11276880e7a2686bf09d2f4d67c2dece141c39f798ee2155d654c5e",
+          "source_hash": "e318eda0f34b47ce898294c299506daa54e1055005d9d132ef0b18bba52f7f4c",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -2312,7 +2312,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a137dad6b11276880e7a2686bf09d2f4d67c2dece141c39f798ee2155d654c5e",
+      "output_hash": "e318eda0f34b47ce898294c299506daa54e1055005d9d132ef0b18bba52f7f4c",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
@@ -3484,7 +3484,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 03 authored contract; every cited signature was re-read against DayZ build 1.29.0.163451 on 2026-07-28 and recorded in specs/2026-07-28-dayz-persistence.md.",
           "license": "MIT",
-          "source_hash": "80d9d724bf91550fc488ac2c832983f88b80f9a355766382e382f75a7edf22d6",
+          "source_hash": "8e8b831f19b6753563b733767260c6480c089a915e38579d6afcfdfbc7f17cb2",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-persistence/SKILL.md",
           "source_revision": "r21-phase03-approved@2026-07-28",
@@ -3492,7 +3492,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "80d9d724bf91550fc488ac2c832983f88b80f9a355766382e382f75a7edf22d6",
+      "output_hash": "8e8b831f19b6753563b733767260c6480c089a915e38579d6afcfdfbc7f17cb2",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -11425,7 +11425,7 @@
           "decision": "adopt",
           "decision_evidence": "In-game verified worn-clothing pipeline (DayZ 1.29); imported into the pack with the author's private paths replaced by the documented placeholders.",
           "license": "MIT",
-          "source_hash": "06670f9985497f0b420766769fc5f8f7f4b660e304b3ba980782feafd08662c9",
+          "source_hash": "54b9ab6a13ecbf8a9fe179d6aa64be1a7eb0d1958e70401d34573cd68163ff9c",
           "source_id": "installed-skills",
           "source_path": "dayz-clothing/SKILL.md",
           "source_revision": "r21-phase02@2026-08-15",
@@ -11433,7 +11433,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "06670f9985497f0b420766769fc5f8f7f4b660e304b3ba980782feafd08662c9",
+      "output_hash": "54b9ab6a13ecbf8a9fe179d6aa64be1a7eb0d1958e70401d34573cd68163ff9c",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
