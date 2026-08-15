@@ -1312,8 +1312,21 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
         for item in unmapped
         if item["code"] == "PROMOTION-CONFIG-INVALID"
     )
+    # Census of every executable payload carrying a placeholder, with no
+    # localisation configured. It is pinned so that adding one is a deliberate
+    # act: each entry is a file that will not run until an operator points it
+    # at their own machine, and silently growing this list is how a pack ends
+    # up shipping scripts nobody can execute.
     assert observed_paths == [
         "skills/dayz-characters/references/check_dayz_winding.py",
+        "skills/dayz-clothing/references/alignment_viewer_build.py",
+        "skills/dayz-clothing/references/alignment_viewer_extract.py",
+        "skills/dayz-clothing/references/alignment_viewer_extract.py",
+        "skills/dayz-clothing/references/apply_alignment_json.py",
+        "skills/dayz-clothing/references/apply_alignment_json.py",
+        "skills/dayz-clothing/references/apply_alignment_json.py",
+        "skills/dayz-clothing/references/export_clothing_fbx.py",
+        "skills/dayz-clothing/references/export_clothing_fbx.py",
         "skills/dayz-mcp-verify/references/drive_ladder.py",
         "skills/dayz-test-ingame/templates/dayz-test.ps1",
         "skills/dayz-test-ingame/templates/dayz-test.ps1",

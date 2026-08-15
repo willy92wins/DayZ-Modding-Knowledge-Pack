@@ -12,7 +12,7 @@ It contains three things:
 
 | Part | What it is |
 |---|---|
-| `skills/` | 14 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
+| `skills/` | 16 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
 | `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export and ODOL parity tools. |
 | `knowledge/` | **Verified reference notes** — technical facts, infra, and cross-project pattern syntheses. |
 

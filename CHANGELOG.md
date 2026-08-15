@@ -7,6 +7,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-clothing` skill: the worn-clothing pipeline verified in-game on DayZ
+  1.29, covering the three silent failure modes that make a custom
+  `ClothingTypes` item load as nothing, float, or come apart. Its helper
+  scripts ship with placeholder paths and must be re-pointed before use.
+- Compatibility-matrix rows for `dayz-clothing` and `dayz-persistence`. The
+  latter closes a gap: the skill shipped without a row, so the matrix covered
+  14 of 16 skills while claiming to cover all of them.
 - py3d `KNOWN-ISSUES.md`: the published blind spots of the library, including
   three checks that cannot fail for the reason you would rely on them for —
   `save(verify=True)` compares no coordinates, `python -m py3d diff` calls

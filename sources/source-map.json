@@ -85,7 +85,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "f13b6270f7676777453b060d3678198aa1e88bcb09c35c31f71ecc7c24413185",
+          "source_hash": "dff23b7f41173d52c74131ca908314e80109c9576a1f46c890789c8c4980c1f2",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -93,7 +93,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f13b6270f7676777453b060d3678198aa1e88bcb09c35c31f71ecc7c24413185",
+      "output_hash": "dff23b7f41173d52c74131ca908314e80109c9576a1f46c890789c8c4980c1f2",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -289,7 +289,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "e541ddf85352a591cfcf595d683723ab42c7aeab0731078fffc0c4a45838a011",
+          "source_hash": "8f0dd5621bdfebc2cfe7349e1c02d541f4d1aef530bdbe6193b2c4759acde4d8",
           "source_id": "pack-r21-authored",
           "source_path": "README.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -297,7 +297,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e541ddf85352a591cfcf595d683723ab42c7aeab0731078fffc0c4a45838a011",
+      "output_hash": "8f0dd5621bdfebc2cfe7349e1c02d541f4d1aef530bdbe6193b2c4759acde4d8",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -343,7 +343,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "8804a33e9569ae38bcaa64005b19e3f6fdc9f0983149ed70de2288546b9e5efc",
+          "source_hash": "70cd8e30cbf236dd1859ab5786997bf56cf1cb1409b770581acacfe9a0bb741e",
           "source_id": "pack-r21-authored",
           "source_path": "compatibility-matrix.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -351,7 +351,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8804a33e9569ae38bcaa64005b19e3f6fdc9f0983149ed70de2288546b9e5efc",
+      "output_hash": "70cd8e30cbf236dd1859ab5786997bf56cf1cb1409b770581acacfe9a0bb741e",
       "output_path": "compatibility-matrix.md",
       "routing_artifact_id": "root/compatibility-matrix",
       "verification_level": "cross_checked"
@@ -2373,7 +2373,7 @@
           "decision": "adopt",
           "decision_evidence": "Pytest collection configuration is routed as repository governance for the canonical no-flag gate.",
           "license": "MIT",
-          "source_hash": "ea949cf5d29b446ea6688d2c28e634f07ade659b7f60a3ac930782b2f4e96471",
+          "source_hash": "04ec275393eb003dfc3006c83529ee3e69bcfceaa065b08f523dce2587a814b2",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/promotion-map.json",
           "source_revision": "r21-pytest-collection@2026-07-26",
@@ -2381,7 +2381,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ea949cf5d29b446ea6688d2c28e634f07ade659b7f60a3ac930782b2f4e96471",
+      "output_hash": "04ec275393eb003dfc3006c83529ee3e69bcfceaa065b08f523dce2587a814b2",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -7040,7 +7040,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "659f4e303cf6344bf16d5610d76f11b6b3f29fa5fc4dd1827987e269e6b67b4c",
+      "output_hash": "0341e1c3dea6ecdea5dec56009350e63915b546cde49d2bfc20478837f5f877b",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -11283,6 +11283,160 @@
       "output_path": "tools/py3d/tests/test_council_fixes.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-clothing/references/alignment_viewer_build.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "In-game verified worn-clothing pipeline (DayZ 1.29); imported into the pack with the author's private paths replaced by the documented placeholders.",
+          "license": "MIT",
+          "source_hash": "db95ebbd98001478e0a1ded16d457fa285ff8e1b2761f25e792830f233133b14",
+          "source_id": "installed-skills",
+          "source_path": "dayz-clothing/references/alignment_viewer_build.py",
+          "source_revision": "r21-phase02@2026-08-15",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "db95ebbd98001478e0a1ded16d457fa285ff8e1b2761f25e792830f233133b14",
+      "output_path": "skills/dayz-clothing/references/alignment_viewer_build.py",
+      "routing_artifact_id": "skill/dayz-clothing",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-clothing/references/alignment_viewer_extract.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "In-game verified worn-clothing pipeline (DayZ 1.29); imported into the pack with the author's private paths replaced by the documented placeholders.",
+          "license": "MIT",
+          "source_hash": "cff6f12129a60f75dabc933d5097f7bbd112c6bc6fa9f7ef69833a05182e4d56",
+          "source_id": "installed-skills",
+          "source_path": "dayz-clothing/references/alignment_viewer_extract.py",
+          "source_revision": "r21-phase02@2026-08-15",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "cff6f12129a60f75dabc933d5097f7bbd112c6bc6fa9f7ef69833a05182e4d56",
+      "output_path": "skills/dayz-clothing/references/alignment_viewer_extract.py",
+      "routing_artifact_id": "skill/dayz-clothing",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-clothing/references/apply_alignment_json.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "In-game verified worn-clothing pipeline (DayZ 1.29); imported into the pack with the author's private paths replaced by the documented placeholders.",
+          "license": "MIT",
+          "source_hash": "b6074ca9c466d2ff6ca70024d6324a674e271e98894a71014c7365cd17a2c628",
+          "source_id": "installed-skills",
+          "source_path": "dayz-clothing/references/apply_alignment_json.py",
+          "source_revision": "r21-phase02@2026-08-15",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b6074ca9c466d2ff6ca70024d6324a674e271e98894a71014c7365cd17a2c628",
+      "output_path": "skills/dayz-clothing/references/apply_alignment_json.py",
+      "routing_artifact_id": "skill/dayz-clothing",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-clothing/references/export_clothing_fbx.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "In-game verified worn-clothing pipeline (DayZ 1.29); imported into the pack with the author's private paths replaced by the documented placeholders.",
+          "license": "MIT",
+          "source_hash": "82cc4f3d26e0be533cddfa3fa5471d7e35bbe5625eef9f3e49edbbc77b37a789",
+          "source_id": "installed-skills",
+          "source_path": "dayz-clothing/references/export_clothing_fbx.py",
+          "source_revision": "r21-phase02@2026-08-15",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "82cc4f3d26e0be533cddfa3fa5471d7e35bbe5625eef9f3e49edbbc77b37a789",
+      "output_path": "skills/dayz-clothing/references/export_clothing_fbx.py",
+      "routing_artifact_id": "skill/dayz-clothing",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-clothing/references/LEEME-ARTISTA.template.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "In-game verified worn-clothing pipeline (DayZ 1.29); imported into the pack with the author's private paths replaced by the documented placeholders.",
+          "license": "MIT",
+          "source_hash": "aa8d63ed1ab2bfd77ba784df19daa3f21709be80ae167c6fdc0f38c915c79bab",
+          "source_id": "installed-skills",
+          "source_path": "dayz-clothing/references/LEEME-ARTISTA.template.md",
+          "source_revision": "r21-phase02@2026-08-15",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "aa8d63ed1ab2bfd77ba784df19daa3f21709be80ae167c6fdc0f38c915c79bab",
+      "output_path": "skills/dayz-clothing/references/LEEME-ARTISTA.template.md",
+      "routing_artifact_id": "skill/dayz-clothing",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-clothing/references/model.cfg.template",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "In-game verified worn-clothing pipeline (DayZ 1.29); imported into the pack with the author's private paths replaced by the documented placeholders.",
+          "license": "MIT",
+          "source_hash": "d3eb134757698950b1f2c1dd1faac07c55addca4233d0bf2139904a8d2258bf1",
+          "source_id": "installed-skills",
+          "source_path": "dayz-clothing/references/model.cfg.template",
+          "source_revision": "r21-phase02@2026-08-15",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d3eb134757698950b1f2c1dd1faac07c55addca4233d0bf2139904a8d2258bf1",
+      "output_path": "skills/dayz-clothing/references/model.cfg.template",
+      "routing_artifact_id": "skill/dayz-clothing",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-clothing/SKILL.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "In-game verified worn-clothing pipeline (DayZ 1.29); imported into the pack with the author's private paths replaced by the documented placeholders.",
+          "license": "MIT",
+          "source_hash": "06670f9985497f0b420766769fc5f8f7f4b660e304b3ba980782feafd08662c9",
+          "source_id": "installed-skills",
+          "source_path": "dayz-clothing/SKILL.md",
+          "source_revision": "r21-phase02@2026-08-15",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "06670f9985497f0b420766769fc5f8f7f4b660e304b3ba980782feafd08662c9",
+      "output_path": "skills/dayz-clothing/SKILL.md",
+      "routing_artifact_id": "skill/dayz-clothing",
+      "verification_level": "runtime_verified"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
