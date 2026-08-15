@@ -183,7 +183,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "a6e894e2762fc213b07964269b8876200846842f922ebfb5460a33c93e6e20a8",
+          "source_hash": "c60a6115362e8ebc9262e91d8bf567426d28a9075fc049e7f10e212f262c602a",
           "source_id": "pack-r21-authored",
           "source_path": "HANDOFF.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -191,7 +191,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a6e894e2762fc213b07964269b8876200846842f922ebfb5460a33c93e6e20a8",
+      "output_hash": "b1e8eb0e037f45354b1c4a89ff3260f1d4206d70953b04de9eeb18ccf5a9fa78",
       "output_path": "HANDOFF.md",
       "routing_artifact_id": "root/handoff",
       "verification_level": "cross_checked"

@@ -1,78 +1,107 @@
 # HANDOFF — DayZ Modding Knowledge Pack
 
 <!-- LIVE-STATE:START -->
-# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-08-15 (listo para publicar, sin publicar)
+# DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-08-15 (PUBLICADO)
 
-## PUBLICADO el 2026-08-15
+## El pack es público
 
 <https://github.com/willy92wins/DayZ-Modding-Knowledge-Pack> — **público**, rama
-por defecto `main`, release **`v1.0.0`**.
+por defecto `main`, release **`v1.0.0`** con el ZIP reproducible adjunto.
 
-`main` se adelantó por fast-forward a la rama de fase y se empujó: local y remoto
-en `64ba73a`, verificado con `git ls-remote`. El asset de la release se
-**descargó de GitHub y su SHA-256 se comparó con el build local**: idénticos,
-`c12e7ceb8e71333e62bb2274e7494f55763c356a4889a8ab16de1ae494c4e918`, 4.445.820 B.
-Lo que hay publicado es byte a byte lo que se construyó aquí.
+> **Ya hay audiencia, y eso cambia las reglas.** Un `push` a `main` es visible al
+> instante, y borrar no deshace un fork ni un caché. Las invariantes que antes
+> protegían un árbol privado —cero rutas privadas, cero bytes de
+> VPP/Expansion/TraderPlus/TraderX, ninguna afirmación sin su `path:line`— ahora
+> protegen algo que lee gente de fuera. **Corre `packctl gate` antes de cada push.**
 
-> **A partir de ahora hay una audiencia.** Un `push` a `main` es visible al
-> instante y un borrado no deshace un fork ni un caché. Las reglas que antes
-> protegían un repo privado —cero rutas privadas, cero bytes de terceros, ninguna
-> afirmación sin su evidencia— ahora protegen algo que otros leen.
+## Estado medido el 2026-08-15 (no recordado)
 
-**Estado medido:** HEAD `64ba73a`, árbol limpio, **17 commits** hoy.
-
-**El backlog de adopción está cerrado** (§«El backlog está CERRADO»). El pack
-gobierna **16 playbooks** más `_shared`; el ZIP son **267 entradas**.
-
-Gates medidos sobre `d2bba60`, salvo el hash del ZIP (ver nota):
+- **HEAD `0134e56` en `main`**, árbol limpio, remoto sincronizado (verificado con
+  `git ls-remote`, no supuesto). **18 commits** en esta sesión.
+- La rama de fase `r21/phase01-foundation` queda en `64ba73a`, un commit por
+  detrás. La fase está cerrada; **`main` es el tronco a partir de ahora.**
+- Worktree principal: `C:\Users\guill\DayZ-Modding-Knowledge-Pack`. El de fase
+  (`.worktrees\r21-phase01`) ya no hace falta para trabajar.
 
 | Gate | Resultado |
 |---|---|
-| `validate` | **PASS**, 0 findings (claims · licencias · links · privacidad · skills · source-map) |
-| Suite | **816 passed / 18 skipped / 305 subtests** |
-| Build reproducible | **dos builds byte-idénticos**, 4.452.073 B, **267 entradas** (hash abajo) |
-| py3d | 220 passed / 10 skipped; wheel «reproducible AND pinned» |
-| `packctl gate` | **todos los checks en PASS** — `skills_ref` 16/16, `python_compile`, evals 24 variantes, tests packctl y py3d |
-| `promote --check` | FAIL — mide el drift local repo↔instaladas, **no** afecta a publicar |
+| `packctl gate` | **PASS en los 7 checks** — primera vez entero en verde |
+| ├ `validate` | PASS, 0 findings (claims · licencias · links · privacidad · skills · source-map) |
+| ├ `build_reproducible` | **PASS** (antes SKIPPED: exige árbol limpio) |
+| ├ `skills_ref` | **PASS, 16/16** con el validador externo re-pineado |
+| ├ `python_compile` | PASS, 121 ficheros trackeados |
+| ├ `evals` | PASS, 24 variantes |
+| └ `packctl_tests` / `py3d_tests` | PASS / PASS |
+| Suite completa | **816 passed / 18 skipped / 305 subtests** |
 
-> **El hash del ZIP se mueve con cada commit, incluido este.** `HANDOFF.md` NO
-> viaja en el archivo, pero `sources/source-map.json` sí, y ahí vive el hash de
-> `HANDOFF.md`. Escribir un hash de ZIP dentro de este bloque lo invalida al
-> commitearlo: es autorreferencial. Por eso el valor va **atado al commit en que se
-> midió**, nunca presentado como «el hash del pack». Sobre `d2bba60` el ZIP es
-> `815901EB3E2290AFCB65EBF507A36D5465078D45ADA81621B13D8F6959D9DB32`, reproducible
-> en dos builds limpios. Lo que se verifica es la **propiedad** —construir dos veces
-> da lo mismo—, no un número concreto: en cuanto commitees este bloque, cambia.
+**Inventario**: 16 playbooks + `_shared`, 5 `tools/`, 16 notas en
+`knowledge/vault-notes/`, **372 ficheros trackeados**.
 
-`ciclos_en_este_objetivo: 1 (Poner el pack al día y prepararlo para publicar)`
+**Criterios: 28 de 54.** Abiertos: `B3b`, `B6`, `B7`, `B8`, `C3`, `C6`, `C7`,
+`C8` y los grupos **`E` (7), `G` (5) y `H` (6) enteros**, que son fases futuras
+sin empezar — no deuda de la fase cerrada.
 
-> **Reiniciado a 1**: el objetivo anterior era «Backlog de adopción y cierre de
-> Fase 02». Este es otro: puesta al día + preparación de release.
+## Cómo se verificó la publicación (y por qué así)
 
-## Publicación: se puede, y el bloqueador no es legal ni de privacidad
+Construir dos veces en la misma máquina prueba determinismo **en esa máquina**. Lo
+que acredita que lo publicado sirve es otra cadena, y se ejecutó entera:
 
-Verificado **ejecutando**, no leyendo los `✓` del spec:
+1. `git ls-remote` → local y remoto en el mismo commit.
+2. **Descargar el asset de vuelta de GitHub** y hashearlo → idéntico al build local:
+   `c12e7ceb8e71333e62bb2274e7494f55763c356a4889a8ab16de1ae494c4e918`, 4.445.820 B.
+3. **Clonar el repo publicado desde cero** → `validate` PASS, 0 findings.
+4. **Reconstruir desde ese clon** → mismo hash que el asset, **bit a bit**.
 
-- **Sin rutas privadas en el ZIP.** Todo lo que parece una ruta es el marcador
-  `C:\Users\<you>\` documentado en `README.md:316`. Un grep crudo da 15 «hits» y
-  los 15 son marcador; uno de ellos es un test que **asierta** que `OneDrive` no
-  aparece. Si vuelves a mirarlo, mira las líneas antes de alarmarte.
-- **Cero bytes de VPP / Expansion / TraderPlus / TraderX.** Las corpora se pinean
-  por hash con `redistributed_in_pack`, `license` y `source_url`; los únicos
-  `.layout` que viajan son first-party (fixtures + probe).
-- **Las 3 fixtures ODOL** están declaradas first-party y **autorizadas por el
-  usuario para redistribución pública el 2026-07-25** (`fixtures.json`).
-- **Licencias**: MIT raíz + `THIRD_PARTY_NOTICES.md` con py3d (copyright upstream
-  preservado), spec-kit como adaptación y SE2Dev solo como oráculo no empaquetado.
+**Y esa cadena cazó una trampa que apuntaba al revés.** Cuatro ficheros daban
+`SOURCE-HASH-MISMATCH` en el worktree principal. La lectura fácil era «lo publicado
+está roto»; la verdad era que el índice, el clon y GitHub los tienen en **LF** y
+solo mi checkout local conservaba una copia **CRLF** anterior a que
+`.gitattributes` (`* text eol=lf`) aplicara. **Lo publicado estaba bien; la copia
+local era la anomalía.** Renormalizados. Si vuelve a pasar: `git ls-files --eol` lo
+dice en una línea.
 
-**`A3` vuelve a ser verificable, y el gate está entero en verde.** El validador
-externo se había dado por muerto porque su commit pineado ya no es recuperable
-(`upload-pack: not our ref`) y el HEAD de `anthropics/skills` no conserva el
-directorio `skills-ref/`. **La herramienta no murió: se publicó.** Vive en PyPI
-como `skills-ref==0.1.1` (<https://agentskills.io>) y su console script se llama
-**`agentskills`**, no `skills-ref` — por eso el gate no lo encontraba. Un pin a
-versión de PyPI es además **más estable** que a commit de rama: es un artefacto de
-release inmutable, justo la propiedad que el pin viejo demostró no tener.
+## Qué entró hoy
+
+**Puesta al día tras 16 días de repo quieto.** Las skills instaladas habían crecido
+y el repo no lo sabía:
+
+- **24 ficheros adoptados o fusionados** de 10 skills. Conocimiento verificado
+  in-game: `DayzTemporarySkeleton` para ropa, el crash duro de CF sobre
+  persistencia escrita sin CF, el buffer de ~52 KB del RPT diag.
+- **`dayz-clothing` dentro** (13 rutas privadas sustituidas por marcadores) y
+  **`dayz-persistence` con fila en la matriz** — cerraba un hueco por el que `A7`
+  afirmaba cubrir el 100% cubriendo 14 de 16.
+- **py3d 1.5.0** sincronizado desde el fork publicado, distribución renombrada a
+  `py3d-dayz`, wheel re-sellado y verificado «reproducible AND pinned».
+- **Nota de la arena `4_World`** sintetizada de 30,6 KB a 10,3: era el último hueco
+  real de dominio (cobertura del pack sobre ella: **2 %**).
+- **4 parches SP** aplicados (correctiva como input no auditado, orden del
+  teardown, mirror-gap por contenido, paso UV con `SAT=0`).
+
+**Tres defectos reales que ningún gate estaba viendo:**
+
+1. **Dos skills con frontmatter que no es YAML válido** (`Use for: mod de ropa`,
+   `persistence: OnStoreSave/…`). El validador interno las daba por buenas porque
+   comprueba campos y topes **sin parsear el documento como YAML**.
+2. **El pack se contradecía a sí mismo**: `dayz-ui-development.md` afirmaba que
+   toda hoja `.layout` necesita bloque hijo, mientras el propio pack incluye la
+   fixture que lo refuta y un gate que parsea 376/376 layouts sin él. **Tachado, no
+   borrado**, con la evidencia: esa frase ya generó un detector cuya suite de 83
+   tests dio verde certificando una spec falsa.
+3. **El gate compilaba `reports/`**, gitignored, y fallaba por un venv abandonado.
+   Ahora compila lo que git trackea, que es lo que se publica.
+
+**Y `MANIFEST.txt` era falso**: declaraba 222 ficheros contra 267 reales.
+`validate` no podía cazarlo —prueba que cada fichero coincide con su hash, que es
+justo lo que un documento caducado con bytes intactos pasa siempre—. No se
+re-inventarió a mano; ahora apunta a `manifest.json`, que se genera del árbol.
+
+## El validador externo: dónde está y por qué importa
+
+**No había muerto: se había publicado.** `skills-ref==0.1.1` en PyPI
+(<https://agentskills.io>), pero **su ejecutable se llama `agentskills`**, no
+`skills-ref` — por eso el gate no lo encontraba y el pin viejo (un commit de rama
+ya inalcanzable) parecía una herramienta muerta.
 
 ```
 python -m venv <root>
@@ -80,70 +109,72 @@ python -m venv <root>
 $env:PACK_SKILLS_REF_ROOT = "<root>"
 ```
 
-> **Se pagó solo en cinco minutos.** Nada más enchufarlo encontró **dos skills con
-> frontmatter que NO es YAML válido**: `dayz-clothing` llevaba `Use for: mod de
-> ropa` y `dayz-persistence` llevaba `persistence: OnStoreSave/…`. Un `: ` sin
-> comillas dentro de un escalar YAML se parsea como mapping anidado, así que un
-> loader conforme rechaza esos ficheros. **El validador interno las daba por
-> buenas**, porque comprueba nombres de campo, patrón del nombre y el tope de 1024
-> **sin llegar a parsear el documento como YAML**. Eso es exactamente lo que `A3`
-> quería de una segunda implementación, y el pack llevaba dos skills rotas.
-> Arregladas; 16/16 validan.
+Se pagó solo en cinco minutos: encontró las dos skills con YAML inválido. **Es el
+argumento entero del criterio `A3`**: cuando la segunda implementación deja de
+ejecutarse, la primera sigue dando verde por encima del hueco.
 
-**Antes de publicar, dos cosas que no son técnicas:**
+## Drift contra las skills instaladas: 20 ficheros, TODOS deliberados
 
-1. **Publicar tu nombre.** `tools/py3d/pyproject.toml:20` y `setup.py:14` llevan
-   `Guillermo` y `willy92wins@gmail.com` como autoría del paquete. Es correcto y ya
-   es público en el fork, pero conviene que sea una decisión y no un descubrimiento.
-2. **Publicar los playbooks con los que produces mods por los que cobras.** El
-   `README.md` lo dice explícitamente en su primera línea. Decisión de negocio.
+**No es deuda. No lo re-adoptes.** Al medir repo contra `~\.claude\skills` sigue
+saliendo diferencia, y cada categoría es una decisión tomada:
 
-**Hecho al publicar**: `[Unreleased]` → `[1.0.0] - 2026-08-15`, repo creado,
-`main` empujado, release con el ZIP reproducible adjunto y su hash en las notas.
+| verdicto | ficheros | por qué |
+|---|---:|---|
+| `MERGE` | 9 | **el repo va por delante A PROPÓSITO**: secciones restauradas que el destino había perdido. La promoción las devuelve, no al revés |
+| `NEW-IN-TARGET` | 3 | los 726 KB de Three.js, excluidos por política y documentados en `THIRD_PARTY_NOTICES.md` |
+| `SKIP-EXECUTABLE` | 7 | solo la localización de rutas: cero conocimiento |
+| `ADOPT` | 1 | `model.cfg.template`: su única diferencia es el CRLF que se normalizó. **Adoptarlo lo reintroduce** |
 
-**`MANIFEST.txt` era falso y se arregló en el mismo paso.** Declaraba 222 ficheros
-de payload contra 267 reales y listaba hashes superados varias veces. Ningún gate
-lo cazó, y ninguno podía: `validate` prueba que cada fichero trackeado coincide con
-su hash registrado, que es exactamente lo que un documento caducado cuyos propios
-bytes no cambian va a pasar siempre. **No se re-inventarió a mano** —eso solo
-reinicia el reloj del mismo fallo—: ahora apunta a `manifest.json`, que `packctl
-build` genera del árbol que describe y por tanto no puede derivar.
+## Las reglas que costó descubrir
 
-## Lo que se hizo hoy
+**Adopción:**
 
-**`09f1552` — adoptadas 6 skills** (+431 líneas, **0 borradas**): aviation,
-basebuilding, characters, mcp-verify, test-ingame, weapons. La compuerta se
-re-comprueba **en el momento de copiar**, no con una medición anterior, porque
-estas skills tienen writers vivos y cambian entre medir y actuar.
+1. **No adoptes payloads ejecutables.** La promoción los **localiza** por diseño;
+   sus diffs medidos fueron **+33, +33 y +99 bytes** — la sustitución de ruta y
+   nada más. Excepción: un ejecutable **sin ninguna ruta** (como `pack_skill.py`)
+   sí entra, porque el motivo de la regla no aplica.
+2. **Un borrado exige merge, no copia** — pero *líneas solo-repo* NO prueban
+   pérdida. Compara **secciones**: si un encabezado falta, grepea la cadena en
+   **todo el árbol** antes de decidir. Si aparece en otro fichero es reubicación
+   (adopta ambos); si no aparece, es pérdida (restaura).
+3. **Una skill con writer vivo no se adopta**, aunque el fichero concreto lleve
+   días quieto.
 
-**`3604047` — py3d sincronizado desde el fork publicado y subido a 1.5.0.**
-La dirección importa: **GitHub iba por delante del pack**, no al revés, y su copia
-ya venía despersonalizada para release. Distribución renombrada `py3d` →
-`py3d-dayz` (el módulo importable sigue siendo `py3d`). Wheel
-`py3d_dayz-1.5.0-py3-none-any.whl`, SHA-256
-`16eac9218cddb02b52b533540c0259c33d5e5b2d6ad2cd28444ef049d608a73b`, verificado
-«reproducible AND pinned». `audit_p3d.py` movido a `tools/`.
+**La señal más barata y que no falla: un puntero colgante.** El destino había
+borrado la §1 de `build-packaging-and-debug.md` **conservando la referencia cruzada
+a ella**. Un puntero a algo que ya no existe es un accidente, no una edición.
 
-**`2c14416` — `dayz-clothing` dentro**, con sus 13 rutas privadas sustituidas por
-`<dayz-projects>` / `<tmp>`. De paso se cerró un hueco viejo: **`dayz-persistence`
-no tenía fila en la matriz de compatibilidad**, así que `A7` afirmaba cubrir el
-100% cubriendo 14 de 16.
+**Método:**
 
-**`0aabdad` — el gate compila lo que se publica**, no lo que haya suelto. Recorría
-el filesystem y barría `reports/`, que está gitignored; fallaba con un
-`PermissionError` de un venv abandonado antes de compilar nada real.
+- **`read_text` aplica universal newlines**: un read-after-write que compara
+  *texto* falla sobre un fichero CRLF aunque la escritura sea correcta. Compara
+  **bytes**.
+- **Un gate se calibra contra lo que protege.** El de compilación recorría más
+  árbol del que se publica; el del nombre del wheel llevaba la distribución como
+  literal y rompió su propio test al renombrarla. Ahora la **deriva**.
+- **Un resultado catastrófico también delata al medidor**: un chequeo dio «se
+  pierde TODO» porque su variable de ruta estaba mal y el corpus estaba vacío. La
+  sospecha vale en los dos extremos, no solo con el `0.000`.
+- **PS 5.1 mete BOM** con `Out-File -Encoding utf8` (no existe `utf8NoBOM`). Los
+  mensajes de commit se escriben con la herramienta Write, y el BOM se comprueba
+  con `git cat-file`, **no** capturando `git log` en una variable de PowerShell.
 
-**`38eb4c8` — la rama estable se movió a `1.29.0.163709`** (DayZ se actualizó el
-2026-08-15 a las 04:37). **El pin NO se subió**: hacerlo habría convertido una
-medición en una suposición para las 16 filas de golpe. La matriz dice que la build
-se movió y que nada se ha re-verificado contra ella.
+## Lo que queda
 
-**`b244589` — nota de la arena `4_World`**, sintetizada de 30,6 KB a 10,3. Era el
-último hueco real de dominio: cobertura medida del pack sobre ella, **2 %**. Fuera
-la contabilidad de producto y los recibos internos; dentro las invariantes de
-motor. Las 4 citas de vanilla del patrón de fachada se **re-verificaron en
-`P:\scripts`** en vez de heredarlas — y el chequeo mejoró el texto, porque la clase
-base vive en `4_world\classes\`, que es justo lo que hace funcionar el patrón.
+**Nada obligatorio.** Candidatos, por orden de valor:
+
+1. **El linter pre-PBO de `DayZ_Tooling` → `tools/dayz-script-lint/`** (§Candidato
+   futuro más abajo). Sirve a `B7` en parte. Dos condiciones: **BUG-029 resuelto
+   antes de entrar** y el cambio de destino asumido — está registrado como decisión
+   009 en el decision-log de ese proyecto, allí **en revisión**.
+2. **Reconstruir el bundle del experto gráfico**, que quedó viejo y ya no refleja
+   el pack (le faltan las adopciones, py3d 1.5.0, `dayz-clothing` y la nota de arena).
+3. **`C3`** necesita `SC-007` (segunda máquina o segunda build cacheada) y `SC-008`
+   (decisión de licencia del códec PAA/EDDS). **`C6`** necesita engine.
+4. **75 parches SP pendientes** en la cola, casi todos contra skills de plugin que
+   el pack no gobierna.
+5. El gate de **Sorter V4** sigue abierto a propósito: el plan pide «solo los
+   defectos conocidos» y no los enumera.
 
 ## Auditoría de huecos: lo que se dejó FUERA a propósito
 
@@ -159,7 +190,8 @@ Tras añadir la de arena, **quedan tres con hueco y ninguna entra**:
 Las dos primeras vienen del wiki StarDZ (CC BY-SA, hechos reescritos). **No las
 metas sin resolver antes su etiquetado**: el pack vale por ser pequeño y verificado,
 no por ser grande. Si algún día se verifican esos `[WIKI]` contra `P:\scripts`,
-entonces sí.
+entonces sí. **Y ahora el repo es público**, así que meter material con licencia
+share-alike o marcado de uso privado ya no es un descuido interno.
 
 Las 7 skills instaladas que el pack no gobierna (`codex-handoff-template`,
 `gauntlet-loop`, `introspection-workflow`, `pre-output-discipline`,
@@ -171,127 +203,39 @@ Meterlas diluye la definición del producto y arrastra atribuciones de terceros.
 **Aprobado como dirección el 2026-08-15; el código todavía no existe aquí** (vive
 en el sobremesa). `script_validator.py`, 8 detectores semánticos sobre Enforce y
 `.rvmat`, **78 tests**, stdlib-only, smoke reproducido byte-idéntico por dos
-ejecutores: **7% FP en LFPowerGrid, 0% en LF_VStorage**, y un bug real encontrado
+ejecutores: **7 % FP en LFPowerGrid, 0 % en LF_VStorage**, y un bug real encontrado
 (`#ifdef SERVER` vacío). Encaja por forma con `py3d` / `dayz-ui-lab` / los demás.
 
 **Sirve al criterio `B7`, que sigue abierto** — «simuladores offline reducen
-iteraciones… fixtures positivas, negativas y límites explícitos». Ojo: `B7`
-enumera validadores de config/loot/CE y esto es Enforce + `.rvmat`, así que lo
-serviría **en parte**; no lo cierra solo.
+iteraciones… fixtures positivas, negativas y límites explícitos». Ojo: `B7` enumera
+validadores de config/loot/CE y esto es Enforce + `.rvmat`, así que lo serviría
+**en parte**; no lo cierra solo.
 
 **Dos condiciones de entrada:**
 
 1. **`BUG-029` resuelto ANTES de entrar, no dentro.** El detector
    `LAYOUT-LEAF-MISSING-BRACES` implementa una regla falsa —la misma que este pack
-   acaba de tachar en `dayz-ui-development.md`— y su suite de 83 tests dio verde
-   certificando fidelidad a esa spec falsa. **En cuarentena no viaja**: un pack
-   cuya tesis es «verde ≠ verificado» no puede distribuir un detector
-   conocido-falso.
+   tachó en `dayz-ui-development.md`— y su suite de 83 tests dio verde certificando
+   fidelidad a esa spec falsa. **En cuarentena no viaja**: un pack cuya tesis es
+   «verde ≠ verificado» no puede distribuir un detector conocido-falso, y ahora
+   además lo distribuiría en público.
 2. **Entra como `tools/dayz-script-lint/`, no como skill.** La decisión 001 de
    `DayZ_Tooling` lo enrutaba a `dayz-pbo-build`, que **no está en este pack**.
    Cambiar de destino lo convierte en herramienta distribuible con source-map,
    licencia y mantenimiento público. Registrado como decisión 009 en
    `DayZ_Tooling/decisions/decision-log.md`, allí marcada **en revisión**.
 
-## El backlog está CERRADO. Lo que queda es deliberado
-
-No hay nada pendiente de adoptar. Lo que sigue apareciendo al medir repo contra
-destino es, entero, decisión tomada — **no lo re-adoptes creyendo que es deuda**:
-
-| verdicto | ficheros | por qué se queda así |
-|---|---:|---|
-| `MERGE` | 6 | **el repo va por delante A PROPÓSITO**: son las secciones restauradas. La promoción las devuelve al destino, no al revés |
-| `NEW-IN-TARGET` | 3 | los 726 KB de Three.js, excluidos por política y documentados en `THIRD_PARTY_NOTICES.md` |
-| `SKIP-EXECUTABLE` | 7 | solo la localización de rutas: cero conocimiento |
-| `ADOPT` | 1 | `model.cfg.template`: su única diferencia es el CRLF que el repo normalizó. **Adoptarlo lo reintroduce** |
-
-**Cuatro secciones se restauraron porque el destino las había perdido de verdad**,
-verificado buscándolas en TODO el árbol instalado, no diffeando líneas:
-`DOOR MECHANISM SELECTOR` y el guard de get-in `SP-141` (`dayz-vehicles/SKILL.md`),
-la §1 de `build-packaging-and-debug.md`, y —por segunda vez— la sección de
-persistencia de `rigorous-data-audit`.
-
-**La §1 es el caso que mejor enseña la diferencia**: el destino la había borrado
-**conservando la referencia cruzada a ella** («Catches §1 (config-only assets»).
-Un puntero colgante es un accidente, no una edición.
-
-**Y el clasificador por líneas se equivocó en los dos sentidos.** Cuatro ficheros
-que marcó `MERGE` eran adopciones: `prompt-conventions.md` tenía la sección
-**invertida a propósito** el 2026-08-05, y el `SKILL.md` de `rip-vehicle-import` no
-perdió 11 KB sino que se **reestructuró**, archivando el contenido en `history/`.
-Adoptarlo solo habría sido destructivo; adoptarlo **junto a** esos ficheros no.
-La lección: *«el repo tiene líneas que el destino no»* no significa
-«se pierde conocimiento». Hay que leer qué cambió.
-
-## Las reglas de adopción, ya con tres confirmaciones
-
-1. **No adoptes payloads ejecutables.** La promoción los **localiza** por diseño
-   (`decision-log` 2026-07-26). Hoy se volvió a medir: sus diffs son **+33, +33 y
-   +99 bytes** — la sustitución de ruta y nada más. Cero conocimiento, y adoptarlos
-   devuelve una ruta privada a la fuente distribuible.
-2. **Un borrado en el diff exige merge, no copia.** Señal barata: delta de tamaño
-   negativo, o `repo_only_lines > 0`. Verifícalo grepeando el destino por varias
-   cadenas distintas de la sección que desaparecería.
-3. **Una skill con writer vivo no se adopta**, aunque el fichero concreto lleve
-   días quieto.
-
-## Método: lo que se volvió a pagar hoy
-
-- **`read_text` aplica universal newlines.** Un read-after-write que compara texto
-  falla sobre un fichero CRLF aunque la escritura sea correcta. **Compara bytes.**
-- **Un gate se calibra contra lo que protege.** El de compilación recorría más
-  árbol del que se publica; el de nombre de wheel llevaba la distribución como
-  literal y rompió su propio test al renombrarla. Ahora la **deriva** de
-  `pyproject.toml`.
-- **Un resultado catastrófico también delata al medidor.** Un chequeo de pérdida de
-  conocimiento dio «se pierde TODO»: la variable de ruta estaba mal y el corpus
-  estaba vacío. La regla vale en los dos extremos, no solo con el 0.000.
-- **Los ficheros son LF.** `.gitattributes` declara `* text eol=lf`; un fichero
-  CRLF en el árbol se clona como LF y su hash registrado sale mal para todo el que
-  clone.
-
-## Estado de criterios
-
-**28 de 54.** `C2` y `C4` en `✓`, `SC-006` cerrado. Abiertos de Fase 02: `C3`
-(necesita `SC-007`, segunda máquina o segunda build cacheada, y `SC-008`, decisión
-de licencia del códec PAA/EDDS), `C6` (necesita engine), `C7` y `C8`. El gate de
-Sorter V4 sigue abierto a propósito: el plan pide «solo los defectos conocidos» y
-no los enumera.
-
-## Bundle del experto gráfico
-
-`C:\Users\guill\DayZ-Knowledge-Bundle-20260730.zip` — 14,1 MB, 2.124 ficheros,
-interno. **Está 16 días viejo y ya no refleja el pack**: le faltan las 6 skills
-adoptadas, py3d 1.5.0 y `dayz-clothing`. Si hay que reenviarlo, se reconstruye
-desde este HEAD. El procedimiento entero está en
-`30_Sessions/2026-08-15-DayZ-Modding-Knowledge-Pack-bundle-y-backlog-de-adopcion.md`.
-
 ## Puerta de arranque
 
-`Retomo DayZ Modding Knowledge Pack, YA PUBLICADO en
-github.com/willy92wins/DayZ-Modding-Knowledge-Pack (público, main, release v1.0.0,
-asset verificado por hash contra el build local) desde: 64ba73a (2026-08-15) · el
-repo tiene remoto y audiencia: un push a main es visible al instante · próxima
-acción: nada obligatorio; candidatos son el linter de DayZ_Tooling hacia tools/
-con sus dos condiciones, los criterios abiertos B3b/B6/B7/B8 y C3/C6/C7/C8, y
-reconstruir el bundle del experto gráfico, que quedó viejo`
-
-<details><summary>Puerta de arranque anterior (pre-publicación)</summary>
-
-`Retomo DayZ Modding Knowledge Pack desde: b244589 (2026-08-15) con el backlog de
-adopción CERRADO y la auditoría de huecos hecha —24 ficheros adoptados o
-fusionados, py3d 1.5.0 desde el fork publicado, dayz-clothing dentro, la nota de
-arena 4_World sintetizada, 16 playbooks— y verificado publicable: validate PASS,
-ZIP reproducible, cero rutas privadas y cero bytes de terceros · lo que aún sale al
-medir contra las skills instaladas es deliberado, NO deuda, y las 3 notas del vault
-que quedan con hueco están fuera a propósito (§Auditoría de huecos) · **el gate
-está entero en verde**: el validador externo se re-pineó a `skills-ref==0.1.1` de
-PyPI (ejecutable `agentskills`) y encontró dos skills con frontmatter no-YAML, ya
-arregladas · **no queda ningún bloqueador técnico para publicar** · próxima acción:
-si publicamos, versionar el `CHANGELOG` y crear el repo; si no, la cola de parches
-de skill tiene 79 pendientes, 6 de ellos contra skills que el pack gobierna`
-
-</details>
+`Retomo DayZ Modding Knowledge Pack, PÚBLICO en
+github.com/willy92wins/DayZ-Modding-Knowledge-Pack (main, release v1.0.0, asset
+verificado por hash y reproducido desde un clon limpio) · HEAD 0134e56 en main,
+árbol limpio, remoto sincronizado, packctl gate PASS en los 7 checks y suite
+816/18/305 · el drift contra las skills instaladas (20 ficheros) es DELIBERADO, no
+deuda: no lo re-adoptes · el repo tiene audiencia, así que gate antes de cada push
+· próxima acción: nada obligatorio; candidatos son el linter de DayZ_Tooling hacia
+tools/ con sus dos condiciones, reconstruir el bundle del experto gráfico y los
+criterios abiertos B3b/B6/B7/B8 y C3/C6/C7/C8`
 <!-- LIVE-STATE:END -->
 
 ---
