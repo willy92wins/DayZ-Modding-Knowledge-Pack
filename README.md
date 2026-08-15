@@ -287,6 +287,9 @@ against the vanilla source for your game version (the engine moves).
   `dayz-wiki-systems-reference`, `dayz-wrp-roadgraph-extraction`, `uv-mapping-dayz`, and
   cross-project syntheses for vehicles and weapon configs.
 
+> `vault-notes/` is a slice of the author's durable-memory vault — the practice described in §7,
+> which is where this whole pack came from. If you take one process idea away, take that one.
+>
 > The vault notes use Obsidian **`[[wikilink]]`** syntax. Some links point to the author's own
 > process notes that are *not* included in this pack — treat those as contextual pointers; the
 > substantive knowledge is inline. Links between notes that *are* here still resolve.
@@ -314,6 +317,30 @@ are the real value; keep them even if you adapt everything else.
 6. **Be honest about verification.** State *what* you verified, *how* (grep / checksum / repro /
    in-game), and what you did *not*. "It compiles" is not "it works." An error of exactly 0.000 in
    a test is suspicious (a tautology), not perfection.
+7. **Keep a durable memory outside the agent.** This is the rule that produced everything else
+   here, and the one most people skip.
+
+   An assistant's context dies at the end of the session. Without somewhere to put what was
+   learned, every session re-derives the same facts, re-proposes hypotheses that were already
+   refuted, and re-pays for the same in-game cycles. The fix is boring and it works: a plain
+   Markdown vault, in version control, that outlives the conversation.
+
+   The author's is **[Obsidian](https://obsidian.md)** — free, local-first, plain `.md` files on
+   disk with no lock-in, which is exactly why it suits an agent: any assistant can grep it, and
+   the notes stay readable if the app disappears. The `[[wikilink]]` syntax you will see
+   throughout `knowledge/vault-notes/` is Obsidian's, and it is the whole mechanism: linked notes
+   let a fact be written once and reached from every context that needs it. Any tool over plain
+   Markdown works the same way.
+
+   What earns a note is narrow: a **verified API with its `path:line`**, an **assumption that
+   turned out false and why**, a **decision and the alternative it rejected**, a **bug and the
+   measurement that found it**. Not transcripts, not summaries of what you did — those are
+   recoverable from git. Convert relative dates to absolute; "last week" ages badly.
+
+   Three surfaces, three jobs, and keeping them distinct is what stops the drift: **git** is the
+   distributable source, the **vault** is durable memory and full evidence including the private
+   parts, and **installed skills** are the operational deployment. Knowledge flows outward from
+   the vault into skills; releases are never built from an installed copy.
 
 ---
 

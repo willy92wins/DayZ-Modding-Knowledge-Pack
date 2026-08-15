@@ -53,8 +53,18 @@ These are the whole point. Keep them even if you adapt everything else.
    "it works". An error of exactly 0.000 is a tautology, not a triumph — and a
    catastrophic result indicts the instrument just as loudly as a perfect one.
 
-Rules 2–4 in longer form, plus invariant tracing and end-to-end walks, are in
-`README.md` §7.
+Rules 2–4 in longer form, plus invariant tracing, end-to-end walks and the
+durable-memory practice this pack came out of, are in `README.md` §7.
+
+That last one is worth naming here because it is the one an agent can act on
+directly: **your context dies at the end of the session, so write what you
+learned somewhere that does not.** A plain Markdown vault in version control —
+the author uses [Obsidian](https://obsidian.md) — holds the verified APIs with
+their `path:line`, the assumptions that turned out false, the decisions and what
+they rejected. Without it every session re-derives the same facts and
+re-proposes hypotheses that were already refuted. `knowledge/vault-notes/` is
+what that layer looks like once it is grown; its `[[wikilink]]` syntax is
+Obsidian's.
 
 ## Layout
 

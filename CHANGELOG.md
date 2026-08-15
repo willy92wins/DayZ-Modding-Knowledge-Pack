@@ -28,6 +28,11 @@ product. This one separates them, and gives agents other than Claude Code a way 
 - `.mcp.example.json` — example client wiring. Named `.example` on purpose:
   agents auto-start servers declared in `.mcp.json`, and a failed launch on every
   session is worse than no config.
+- README §7 rule 7, **keep a durable memory outside the agent**, recommending a
+  plain-Markdown vault (Obsidian) and saying what earns a note. The practice that
+  produced this entire pack appeared nowhere in it: Obsidian was named only as an
+  internal promotion target, and the `[[wikilink]]` syntax in `vault-notes/` was
+  explained as a formatting quirk rather than as the mechanism it is.
 
 ### Removed
 
