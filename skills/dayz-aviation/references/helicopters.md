@@ -347,8 +347,12 @@ overrides **`EOnSimulate`** (`Core.c:1027`) to fly itself with `SetVelocity`/`Se
 
 [VERIFIED-RFFS] The whole flight model is `FlightSimulation()` (`Core.c:1767-2129`), called from
 `EOnSimulate` **server-side only** when the engine is running and `m_heli_state == 2`
-(`Core.c:1149-1156`). The client re-runs `EOnSimulate` off `EOnFrame` for smoothing every >5 ms
-(`Core.c:1008-1016`) but the authoritative integration is server-side.
+(`Core.c:1149-1156`). The client re-runs `EOnSimulate` off `EOnFrame` every >5 ms
+(`Core.c:1008-1016`), but that re-entry never reaches pose: `FlightSimulation()` stays behind the
+server gate, so the client pump only advances `ExecuteAnimations()` + `KeyboardInputClient()`
+(`Core.c:1143-1145`). It is NOT a smoothing mechanism — proxy pose smoothness comes from native
+CarScript replication [corrected 2026-08-03, LFHeli SF-8b: an earlier draft called this "for
+smoothing"].
 
 ### 2a. Controls → state (per tick)
 
@@ -554,8 +558,11 @@ touch tying the instrument panel to the avionics damage zone. Metric/imperial sw
 (`Core.c:189-208`): telemetry floats (`m_altitude_m`, `m_agl_altitude_m`, `m_airspeed_kph`), the
 `m_heli_state` int, `m_collective_level`, `m_rotor_spin`, fuel/hydraulic levels, klaxon/engine-damaged/
 bullet-strike sound flags, `m_pilot_in_command`, and the packed `c_encoded_config_bool`. Every state
-mutation calls `SetSynchDirty()`. The client mirrors the physics off `EOnFrame`→`EOnSimulate`
-(`Core.c:1008-1016`) for smooth interpolation but never owns the authoritative velocity.
+mutation calls `SetSynchDirty()`. The client pump `EOnFrame`→`EOnSimulate` (`Core.c:1008-1016`)
+does NOT mirror physics or interpolate pose — `FlightSimulation()` is server-gated (`Core.c:1151`)
+and the client re-entry only runs animations + input sync (`Core.c:1143-1145`); proxy pose
+presentation is native CarScript replication, and the client never owns the authoritative velocity
+[corrected 2026-08-03, LFHeli SF-8b: an earlier draft here claimed "smooth interpolation"].
 
 ## 7. NOT in the research copy / [UNVERIFIED]
 

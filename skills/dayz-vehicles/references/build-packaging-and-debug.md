@@ -7,6 +7,8 @@
 > Provenance: `[LFQuad ✓]` = verified this session against the real mod (config.cpp / model.cfg /
 > raw PBO bytes), 2026-06. Line refs are into `P:\LFQuad\config.cpp` and `P:\LFQuad\model.cfg`.
 
+> REDIRECT CAMBIO-1 (familia B): `../../rip-vehicle-import/cookbooks/family-b/coche-blanco.md`.
+
 ## 1. Binarize drops config-only assets → white / untextured vehicle on dedicated
 
 **Symptom:** the vehicle renders white / untextured on a dedicated server, but looks correct in

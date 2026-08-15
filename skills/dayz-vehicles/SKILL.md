@@ -16,6 +16,27 @@ description: >
 
 # DayZ Ground Vehicle Modding
 
+## Selector de familia — ruta crítica day-0 (CAMBIO-2)
+
+1. Identifica la familia por el origen y la arquitectura del asset; no por el síntoma.
+2. Si el asset es un coche source-game/Grub nuevo, proxy-split y con partes móviles, usa **familia B**.
+3. Familia B → abre `../rip-vehicle-import/SKILL.md` y sigue únicamente su adaptador, golden y allowlist.
+4. Ese adaptador abre el `asset-contract.json` del asset como tercer y último fichero day-0; schema, export Blender y primitive son inputs de máquina, no documentos adicionales que el agente mantenga.
+5. Si ya existe un plan/runbook congelado para el asset, sigue ese contrato en vuelo; no lo migres aquí.
+6. Si ninguna fila aplica o falta el adaptador de la familia: **STOP**. No improvises desde este atlas.
+
+| Señal de entrada | Adaptador | Ficheros day-0 |
+|---|---|---|
+| source-game/Grub, coche nuevo, proxy-split + puertas/partes móviles | Familia B | Este router → `../rip-vehicle-import/SKILL.md` → `<asset>\asset-contract.json` |
+| Asset ya en vuelo | Runbook congelado del proyecto | El que cite su plan vigente |
+| Otra familia o datos insuficientes | Ninguno | **STOP** |
+
+El resto de este body es atlas de diagnóstico y **no forma parte del camino crítico day-0**. Solo se consulta cuando el adaptador o un síntoma enlaza una sección concreta.
+
+**Preflight antes de re-importar / re-ensamblar cualquier pieza** (SP-193): mide primero la completitud A NIVEL DE CARAS de la pieza de fábrica contra el modelo ya empaquetado. Una malla "podrida" suele estar completa y el defecto estar en otro sitio; ver SP-193 al final de este atlas.
+
+---
+
 Drivable wheeled vehicles in DayZ extend **`CarScript`** — there is no generic "vehicle" base, and
 you do not build one from `EntityAI` or `Inventory_Base`. `CarScript` gives wheels, seats, sound
 integration and the damage system for free; you configure the rest. This skill is the
@@ -24,6 +45,8 @@ the ground counterpart to `dayz-aviation` (anything that flies belongs there).
 
 Scope: cars, trucks, quads/ATVs, motorbikes — anything wheeled and drivable, modeled from scratch
 or imported (Blender / OBJ) from another game.
+
+> REDIRECT CAMBIO-1: el selector de familia de la cabecera y el adaptador elegido son la única ruta day-0.
 
 **Vehicle type matrix (invariant):** `Car` and `Boat` are SIBLINGS, both directly under `Transport`
 (`car.c:98` / `boat.c:31`) — NOT parent/child. `Transport` owns crew/get-in/flip/fuel; `Car` owns
@@ -40,6 +63,51 @@ car: hook `EOnPostSimulate` for per-tick logic; `super.EOnSimulate` is the empty
 `enentity.c:201-203`, so calling or skipping it does nothing either way — treat any comment claiming
 it "runs engine/fluids twice" as false. Custom solvers that add `SetEventMask(EntityEvent.SIMULATE)`
 and pump it by hand (aviation) → `dayz-aviation` preflight invariants.
+
+**Mirror-vs-rotation invariant (added 2026-08-02, LFHeli HH-60G):** before you declare an
+imported model "mirrored" and reach for the `det=-1` import rule, **check all THREE axes**. A table
+of memory points cannot tell a reflection from a rotation on its own — points have no handedness, so
+only the PATTERN of sign flips does:
+
+**The general test is the SIGNED VOLUME, not counting axes.** Take four LABELLED, non-coplanar
+corresponding points (A,B,C,D) and compute `det[B-A, C-A, D-A]` on each side. An individual point has
+no handedness, but a labelled tetrahedron does:
+
+- signed volume **keeps its sign** -> proper transform (`det=+1`) -> rotation. The model is FINE and
+  `det=-1` would ADD a mirror that is not there.
+- signed volume **flips sign** -> improper transform (`det=-1`) -> the reflection is real; apply the
+  `det=-1` import rule plus pseudovector (`-S.n`) normals.
+- volume ~= 0 -> your four points are coplanar: pick others, the test says nothing.
+
+Counting inverted axes is only the axis-aligned shortcut of that test, and it is easy to misread:
+
+| axes flipped (axis-aligned case only) | what it is |
+|---|---|
+| ONE inverted, other two intact | reflection |
+| TWO inverted, third intact | rotation of 180 deg about the third axis |
+| all three inverted | point reflection = 180 deg rotation + mirror; decompose before acting |
+
+Real case, and it nearly cost a full re-emission of 16 `.p3d`: one session measured only X, saw the
+sign flipped and concluded "mirrored"; the user authorised de-mirroring. Measuring Z too showed
+**38/38 points with X and Z inverted and Y intact** — a 180 deg yaw (det=+1), which is the pipeline's
+normal convention, not a defect. Control that settled it: the sister airframe that already flies
+in-game has the SAME convention (nose at -Z in the file). Applying `det=-1` would have introduced a
+real reflection where none existed and broken a winding policy already verified in-game. The
+review that settled it did exactly the tetrahedron test: `+6.076679` in file against `+6.076514`
+in runtime, ratio `+0.999973` - same sign, proper transform, argument closed without a game cycle.
+
+**Say what the test does NOT cover.** A proper file->runtime transform does not rule out a mirror
+baked in EARLIER (before the `.p3d`, in the source mesh or the exporter) nor a pre-mirrored UV
+island, which is a texture defect and shows up as backwards lettering with the geometry perfectly
+correct. Those are separate investigations with separate evidence; do not let a clean parity check
+close them.
+
+**Corollary worth more than the rule — prefer RELATIVE measurements.** A comparison made *within one
+file, through one reader* is robust to whatever axis convention your reader uses; an absolute
+file-vs-runtime comparison is not. "The 10 crew proxies carry a frame rotated 180 deg from the 15
+piece proxies" is sound even if you never establish which handedness py3d reports, because both sides
+went through the same lens. When a diagnosis can be phrased as a relative comparison against a
+control inside the same asset, phrase it that way and it survives being wrong about conventions.
 
 **Imported-mesh budget invariant (added 2026-07-29, LFHeli HH-60G):** a **triples/triangle ratio
 measured on a DECIMATED mesh does not extrapolate to an authored one.** `Decimate` collapses edges
@@ -127,36 +195,7 @@ cannot reach game-ready quality (pivot to a human artist), and the LFHeli HH-60G
 verdict independently weeks later. A visual red that survives N rounds is a signal to escalate to a
 human, not to run round N+1.
 
-## DOOR MECHANISM SELECTOR — decide this BEFORE modelling or scripting anything (added 2026-07-27)
-
-DayZ has **three unrelated door mechanisms**. Picking the wrong one costs a full modelling +
-config cycle, and they share vocabulary (`source`, `component`, `axis`), so the mistake is not
-obvious from the symptom. Doors have now been re-solved from scratch on three projects
-(MercedesAMGLF, SUB_BRZ, LFHeli) — pick from this table first.
-
-| You are building | Mechanism | Where the contract lives |
-|---|---|---|
-| Door/hatch/lid on a **building or static prop** | `class Doors` under `HouseNoDestruct`; animation `source` maps to a Doors `component` | skill **`dayz-doors`** |
-| Door on a **vanilla-style car**, as a detachable part | Attachment: `CarDoor` item + `ActionCarDoorsOutside`; the action target is resolved by **raycast against the ITEM's ViewGeometry** | invariants **#21 and #22** below |
-| Door that must **stay part of the shell** (no detach, custom radial) | Own actions driving `GetNearestDoorIndex` / `IsDoorOpen` (fail-closed) / `SetDoorOpen`, with the motion in `model.cfg` AnimationSources | LFHeli OH-1 contract v5 |
-
-**`dayz-doors` does NOT cover vehicle doors.** Its scope is buildings and static props. The name
-attracts anyone with a door problem; if the door belongs to a car or a helicopter, that skill is
-the wrong contract and its `class Doors` pattern will not produce a working radial.
-
-Two traps specific to the vehicle paths:
-
-- **Attachment path**: the radial silently never appears if the item's ViewGeometry points carry
-  `flags 0x0` instead of `0x02000000` — config, script overrides, slots, bones and anim sources
-  all correct, action still filtered. Census the item's VG point flags against a working control
-  BEFORE touching config. Full contract in #22.
-- **Scripted path**: enumeration probes must be READ-ONLY. A diagnostic probe that calls
-  `SetAnimationPhase` to "look at" a door corrupts live state — the door closes visually while the
-  logical state stays open, and the next diagnosis is chasing a bug the probe created.
-
-Status honesty: #21 and #22 are measured offline and their in-game gate was still pending as of
-2026-07-18; the OH-1 scripted contract v5 is implemented with its cycle gate pending. Treat all
-three as verified-offline, and confirm in-game on first use.
+> REDIRECT CAMBIO-1: familia B → `../rip-vehicle-import/cookbooks/family-b/radial-puerta-ausente.md`.
 
 ## INV-ALIGN — a faithful import does NOT mean the pieces line up (added 2026-07-27)
 
@@ -280,57 +319,7 @@ identifies nothing. Discriminate by changing the regime, not by reasoning:
   discriminant manoeuvres above were designed on 2026-07-29 and **had not been run in-game** at the
   time of writing. Treat them as an untested procedure until a cycle closes it.
 
-## GET-IN DOESN'T APPEAR — name the guard BEFORE touching the model (SP-141, added 2026-07-29)
-
-Four vehicles in this vault have burned iterations on "the get-in prompt does not appear"
-(LFQuad, MercedesAMGLF, LFHeli OH-1 R3, LFHeli HH-60G). The prompt is gated by **five ordered
-guards** inside one function, and a *necessary* chain is not a *measured* cause: knowing the
-prompt must pass through `CanReachSeatFromDoors` says nothing about which guard is firing.
-Name the guard first; the fix follows in minutes.
-
-`ActionGetInTransport.ActionCondition` (`actiongetintransport.c:50-79`) has **exactly one path
-to `true`**, and rejects in this order:
-
-1. `CrewPositionIndex(componentIndex) < 0` — the ViewGeometry component under the cursor is not
-   dual-tagged `componentNN`, or its selection is not the seat's `actionSel` (preflight #4).
-2. `CrewMember(crew_index)` non-null — seat occupied.
-3. `!CrewCanGetThrough(crew_index)` — door state / seat-fold gate. ★ Base
-   `OffroadHatchback.CrewCanGetThrough` covers only posIdx 0..3 and then **`return false`**
-   (`offroadhatchback.c:212-250`), so ANY vehicle with more than four seats must override it or
-   seats 4+ are dead. A `true` on posIdx >= 4 is proof your override is running.
-4. `!IsAreaAtDoorFree(crew_index)` — engine-side door area.
-5. `!CanReachSeatFromDoors(selection, player.GetPosition(), 1.0)` — and this one has three
-   sub-conditions, all silent (`carscript.c:2708-2731`):
-   - `GetDoorConditionPointFromSelection(sel)` must return a non-empty name. ★ **The trap**:
-     base `CarScript` knows only FOUR cases, all lowercase — `seat_driver`, `seat_codriver`,
-     `seat_cargo1`, `seat_cargo2` (`carscript.c:2673-2692`) — and `OffroadHatchback` the same
-     six lowercase ones (`offroadhatchback.c:351-365`). Any other seat selection name returns
-     `""` and the seat can NEVER be boarded, with config, bones, proxies and componentNN all
-     correct. A custom seat set REQUIRES overriding this method.
-   - `MemoryPointExists(conPointName)` — the point must be in the **Memory LOD** of the
-     shipped model.
-   - distance **IN PLAN** (height is zeroed) `<= pDistance`, and the action passes **1.0 m**.
-     Vanilla places its condition points ~0.26 m OUTSIDE the hull at the door station
-     (measured on `offroadhatchback` MLOD: `seat_con_1_1` x=1.1586 against a half-width of
-     0.900) and REUSES two points for four seats. On a long fuselage two points cannot cover
-     ten seats.
-
-**The instrument** (DayZ-MCP): `query_get_in_condition` with a `component` index returns
-`first_block` = exactly one of `componentNN` / `occupied` / `crew_can_get_through` /
-`area_blocked` / `unreachable` / `""`, plus per-seat `crew_can_get_through`, `area_free`,
-`occupied`, `reachable` — the `reachable` loop being the same `GetActionComponentNameList` ->
-`CanReachSeatFromDoors` the action runs. **That names the guard in one call, offline of the
-user's eye.** Pass `component=-1` for the whole crew bank (note: `reachable` is hardcoded false
-in that mode — only the per-component call measures it).
-
-Measured case, HH-60G 2026-07-29: all ten seats `first_block="unreachable"` with guards 1-4
-GREEN on all ten, so the block is guard 5 alone — and that killed two plausible sub-causes at
-once, because neither camelCase nor radius can explain a lowercase seat whose point was 1 mm
-from the player.
-
-★ **Discipline that this cost**: a plan that declared "measured mechanism" on the strength of
-the chain being necessary was rejected by review for exactly that. Measure `first_block` per
-seat BEFORE editing the model, the config or the script.
+> REDIRECT CAMBIO-1: familia B → `../rip-vehicle-import/cookbooks/family-b/get-in-ausente.md`.
 
 ## INVARIANTS YOU WILL HIT — preflight checklist (read BEFORE authoring, not after the in-game fail)
 
@@ -373,6 +362,34 @@ not verified.
    "low-poly/blurry"). Tools in `LFQuad_dev\tools\` (mesh_health.py, mesh_sanitize.py bpy-headless;
    uv_audit.py py3d) — portable to any vehicle. → `AI/20_Knowledge/uv-mapping-dayz.md`, winding #10(f).
 
+0b. **Gate #0b — when LOD1/2 come from DECIMATE instead of an artist, audit the modifier's OUTPUT
+   (added 2026-08-06, MercedesAMGLF).** No artist is now the normal case, so per-object COLLAPSE +
+   planar DISSOLVE is the default LOD path. The modifier leaves **loose vertices** — vertices no
+   triangle indexes. Every count-based gate stays green (triangles, resolved, identity, monotonicity,
+   frame parity), and the streams ship broken: a per-vertex extract loop driven by `mesh.loops` never
+   reaches a loose vertex, so whatever the array was initialised to is what gets written. Initialised
+   to `(0,0,0)` → **zero-length normals in NORMAL.bin**. Measured: source had 0 loose in 224.700 verts;
+   after decimation, 786 at LOD1 and 4.024 at LOD2 — plus 16 normals of length down to `3e-6` that a
+   `> 0` usability test happily passed. Three checks close the whole class:
+   - delete loose verts after every decimate (`bmesh.ops.delete(bm, geom=[v for v in bm.verts if not
+     v.link_faces], context="VERTS")`). NOT one of the three forbidden calls — it removes only geometry
+     no triangle references. Skip the bmesh round-trip entirely when there is nothing to delete, so
+     must-keep pieces never pass through it.
+   - assert every emitted normal is unit length and normalise on emission. The real cut is **0.5**, not
+     0: a unit normal survives float32 within ~1e-7 of 1.0, so anything shorter is a cancelled sum.
+     Substitute from NEIGHBOUR normals, never from `poly.normal` — if the import transform negates an
+     axis it is a mirror, and the winding-derived normal points the opposite way (see #10 winding).
+   - assert every index falls inside its own piece's vertex range. No count gate sees an out-of-range
+     index; it explodes at assembly.
+
+   **Gate corollary — a drift number that mixes classes is not a measurement.** Split survivors into
+   INTACT (incident-triangle set identical to LOD0 → drift MUST be ~0; any drift here is a real defect),
+   RECOMPUTED (topology changed → drift is legitimate) and DEGENERATE (counted, never averaged in).
+   Mixed together, a p99 of `90.00°` hid a real defect AND hid that untouched geometry was clean at
+   ≤0.26°. An exact round angle is a fingerprint, not a result: `90.00` is `acos(0)` = a null vector on
+   one side. Match survivors on a ~1e-4 m grid, not 1e-6 — positions are written as float32 and a 1e-6
+   grid drops about a third of the untouched vertices at random, which is why the samples looked tiny.
+
 1. **"Get in" radial needs a real SCRIPT CLASS, not a bare config class.** A `class <Mod>: CarScript`
    with no `.c` runs as bare `CarScript`, which inherits `Transport.CrewCanGetThrough()` → **`false`**
    (`scripts/3_game/vehicles/transport.c:493`) → the get-in action is filtered out and **never appears,
@@ -382,13 +399,7 @@ not verified.
 2. **The script module must actually LOAD or the class never binds — silent.** `CfgMods` `files[]` with
    back-slashes / a `.p3d` path that resolves to `*.p3d.p3d` → module not loaded → no get-in, no error.
    → `SKILL.md` §"Binding del script", `rip-import.md`.
-3. **Geometry LOD carries named property `class=vehicle` — REQUIRED PARITY (6/6 vanilla wheeled
-   vehicles have it; cheap to replicate) but REFUTED as the wheel-sim gate:** deploying it alone left
-   `wheelPresent=0` (LFQuad in-game 2026-05-27). The actual wheel-sim gate is the `CfgSlots.selection`
-   ↔ FireGeometry selection wiring (SP-017 — see the FireGeo wheel-slot rule in
-   `vehicle-structural-parity.md` / `dayz-p3d-audit`). Symptom either way: `WheelCountPresent()==0`
-   while `WheelCount()==4`, no traction/spin, body sinks/bounces, **no RPT error**. → SP-027 /
-   `vehicle-structural-parity.md`.
+3. **REDIRECT CAMBIO-1 (familia B):** `../rip-vehicle-import/cookbooks/family-b/wheelpresent-0.md`.
 4. **Seats and wheel hubs must be `componentNN`-tagged (dual-tag) — AND each seat component must be raycast-collidable.** The engine enumerates collision
    components only by `componentNN`; a seat/hub that is a standalone island (0% componentNN overlap) is
    invisible → spawn blocker / no seat. Tag the SAME faces with a `componentNN` too. **Then the ViewGeo seat cube
@@ -399,6 +410,35 @@ not verified.
    positive control (LFQuad/Croco), never trust py3d's default. → "componentNN DUAL-TAG" + "CRITICAL EXTENSION 2026-06-28" (`vehicle-structural-parity.md`).
 5. **Crew/wheel proxies must exist in BOTH ViewGeometry AND FireGeometry**; the proxy triangle uses the
    engine identity frame (`R=((-1,0,0),(0,0,1),(0,1,0))`, model-space), NOT py3d `rotation=None`. → parity + rip-import.
+5b. **`wheelHub` names a GEOMETRY/MEMORY selection, not the visual `wheel_X_Y` — and the visual
+   `wheel_X_Y` IS the proxy's own triangle under a second name (added 2026-08-07, MercedesAMGLF).**
+   `class Wheels { class Left { wheelHub="wheel_1_1_damper_land"; } }` resolves to a selection that
+   lives in Geometry `1e13` (a ~0.20 m hub box) and Memory `1e15` (1 point) — vanilla
+   `DZ/vehicles/wheeled/config.cpp:297`. It is NOT the `wheel_X_Y` selection on the visual LOD.
+   Measured on two independent cars: that visual companion has the SAME centroid and the SAME bbox
+   as its `proxy:<path>.NNN` selection, i.e. it is one triangle carrying two names (vanilla shows it
+   as 1 face too). Consequences, each of which cost a session:
+   - **A gate of the form "proxy anchor -> companion centroid == 0" measures nothing about the wheel.**
+     It computes `|anchor - centroid|` of a single triangle, which is a pure function of that
+     triangle's SIZE. Measured on the same model: 0.131757 m for a 0.339x0.204 triangle vs
+     0.000745 m for py3d's canonical `scale=0.001`. Against the real hub both artifacts read
+     **0.000000 m**. Point the gate at `wheel_X_Y_damper_land`.
+   - **Proxy triangle size bakes NO scale.** The frame is derived from UNIT vectors
+     (`py3d/__init__.py:174-179`, port of `proxy_frame.derive_frame`), and vanilla's binarised proxy
+     matrix is orthonormal (`|aside|=|up|=|dir|=1.000000` on `civiliansedan.p3d` ODOL v54). A 1 mm
+     canonical triangle and a 0.34 m one place the same wheel; SUB_BRZ shipped on `scale=0.001`.
+     Do not "fix" a small triangle.
+   - **Vanilla reference, if you need one:** `civiliansedan` puts the hub **0.106334-0.107333 m
+     INBOARD** of the wheel proxy, the whole delta in X. Hub coincident with the proxy (0 m) is
+     tighter than vanilla, not a defect.
+   - **Before matching a magnitude to another open debt, decompose it by AXIS.** 0.1318 m was read
+     as "the wheel drawn 13 cm off its simulated position" because it resembled a 0.136 m track
+     debt; the 0.1318 lives entirely in Y/Z (`dX = 0.000000` exactly on all four wheels) and the
+     track debt lives entirely in X. Orthogonal — the resemblance was numerology.
+   - **Read a gate's PRODUCT verdict from a run WITHOUT its negative fixtures**, then repeat it on
+     the known-good artifact as a control. Run with `--negative-fixture` and the fixture's
+     deliberate reds (yaw-180 families, stripped companions) interleave with the product rows and
+     read as product failures.
 6. **Wheel `angle1` sign: measure the axle in the `.p3d` BEFORE setting it.** An offline check predicts
    reversed spin without an in-game cycle. → `build-packaging-and-debug.md` §2-3.
 7. **Imported-model winding: keep the RAW glTF winding VERBATIM — NEVER orient to a normal oracle
@@ -451,41 +491,52 @@ not verified.
    - Symptom map: shell visual yaw-180 vs sim ⇒ 1st gear reads as "drives backwards" AND wheel
      proxies sit mirrored (−X,−Z) off their hubs, BOTH at once. Diagnose by comparing
      `dmgZone_front`/hubs (sim) vs headlights/wheel-proxies (visual) against nose=−Z.
-   - THE TRAP: a proxy-split body can have the shell yaw-180 while interior/dash/steering/occlusion
-     proxies are correctly sim-aligned (separate build steps → separate transforms). Bulk-rotating
-     "the visual side" (shell + all body proxies) breaks the correct ones. Measure each proxy's
-     anchor triangle AND content bbox first; rotate ONLY what is actually flipped, and EXCLUDE the
-     correct proxies' anchor triangles from the shell rotation (a rotated anchor rotates its
-     proxy's content with it).
+   > Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“Invariante 11”.
+   - **CORRECTION to THE TRAP (added 2026-08-01, adjudicated from the applied fix's dated backups +
+     in-game outcome — supersedes the "interior/dash/steering/occlusion correctly sim-aligned" claim
+     above):** on the Mercedes those `mb_` contents were VISUAL-aligned (coherent with the yaw-180
+     shell), and the executed fix had to rotate the ENTIRE cabin cluster — all 6 `mb_` contents +
+     crew proxies (View/Fire) + `pos_driver/codriver(+_dir)` + `drivewheel(+_axis`, re-authored to
+     the vanilla rake) — in a second same-day pass (backups `pre-visual-yaw180-2026-07-07\` vs
+     `pre-cabin-align-2026-07-07\`: shell rotated, cabin still old), after a first shell-only pass
+     per the 07-03 scope left the cockpit 180° off the body. The sim-aligned claim came from
+     content-bbox reading plus validating `mb_steering` against a memory point of the SAME
+     misaligned cluster (self-validation — the SP-132 "gate shares the producer's frame" shape).
+     Rules that survive: (a) still measure each proxy separately, but adjudicate cabin orientation
+     with ANATOMICAL PAIRS (seat↔steering-wheel↔column-rake↔driver side) against untouched sim
+     anchors (hubs, dmgZones, engine memory) — never with mixed-content bbox or the cluster's own
+     memory points; (b) the correct rotation unit is EVERYTHING that defines the visual+pose
+     experience: shell + body proxies + crew proxies + `pos_*`/`drivewheel*` cockpit points.
+     Post-fix coherence verified offline (anchors exact on hubs, LHD seat side, wheel 0.34 m ahead
+     of seat, rake (0,0.516,0.857) vanilla-parallel) and live (Task 9 v64 PASS + manual drive
+     2026-07-23, no inverted-drive or backwards-pose reports). Full adjudication:
+     `MERCEDES_AMGLF_dev\reviews\2026-07-02-fable-review-plan-OUTPUT.md`.
+     **R22 refinement (2026-08-01, Codex re-measured the same backups — narrows the rule above):**
+     the "rotate the entire cabin cluster" adjudication is Mercedes-SPECIFIC; the durable rule is
+     two-sided — (1) adjudicate cabin orientation with the anatomical pairs against untouched sim
+     anchors, then (2) rotate exactly the adjudicated cluster IN EVERY FILE/LOD THE HOST
+     REFERENCES, measuring each file, never presuming: the applied 07-07 fix itself MISSED the 12
+     `mb_*_lod1/_lod2.p3d` referenced by the host's visual LODs 1-2 (byte-identical to pre-fix,
+     hash-verified by two independent reviewers) — so mid-distance LODs still draw the body
+     proxies in the OLD orientation. The original warning to measure every proxy separately
+     SURVIVES; what was wrong was its Mercedes factual claim, not its method.
+
    - Cheap steering-wheel check: if the `drivewheel_axis` memory pair is near-VERTICAL (Y-dominant
      direction), the wheel sweeps left-right like a wiper instead of rotating in its plane. The axis
      must be ~perpendicular to the rim plane (Z-dominant, some Y).
    Evidence + probes: `MERCEDES_AMGLF_dev\reviews\2026-07-03-fable-review-b1b6-plan.md`.
-
-12. **AddonBuilder `-include` REPLACES its default copy-list — a binarize build with scripts AND
-    assets must list `*.paa;*.rvmat` too, or the PBO ships texture-less (white car).**
-    (added 2026-07-06, SUB_BRZ binarize experiment) The canonical scripts-only include file
-    (`*.c;*.asi;*.anm`) is NOT additive: it becomes the ONLY copy-list, silently dropping every
-    `.paa`/`.rvmat` that isn't referenced from config.cpp (SUB_BRZ measured: 47 files dropped —
-    28 paa + 19 rvmat, all body swatches — PBO 8.7 MB instead of 11.6 MB, classic white-car on
-    dedicated). Use `-include` with `*.c;*.asi;*.anm;*.paa;*.rvmat` for binarize builds, then
-    diff the emitted PBO entry list against the source tree BY EXTENSION with explicit allowances
-    (config.cpp→config.bin OK, model.cfg baked OK; all `.p3d/.paa/.rvmat/.c` REQUIRED). Wrapper
-    with that diff: `C:\Users\<you>\VehicleImport\scripts\rip_binarize_experiment.ps1`.
-    Related fact (same experiment, verified against vanilla civiliansedan ODOL): **binarize drops
-    the authored ShadowVolume res-1e4 LOD** — an authored shadow LOD only ships via
-    MLOD/packonly; if you adopt ODOL, re-check shadows in-game before trusting the budget.
-
+12. **REDIRECT CAMBIO-1 (familia B):** `../rip-vehicle-import/cookbooks/family-b/coche-blanco.md`.
 13. **Distance-LOD ladder: a single-visual-LOD import renders its FULL face count at ANY distance —
+    > Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“Invariante 13”.
     author the ladder BEFORE fighting LOD0 decimation.** (added 2026-07-07, SUB_BRZ s25 measured)
     Vanilla civiliansedan ships 5 visual LODs (14,636 → 10,364 → 3,717 → 1,713 → 123 faces); SUB_BRZ
     shipped 1 (231k always) and the admin-preview/spawn freeze did NOT move with dedup (−18.5 MiB) or
     shadow (32k→3.5k) fixes — it is render/face-bound. Distance LODs res 2/3/4 are baked FLAT into the
     main (no proxy refs: proxies of res-0 only render while res-0 renders) from the rip's authored LODs
-    (source-game LOD2 = ÷5-8 measured); exclude the cabin from far LODs (vanilla does). Day-1 check: count
+    (planar-dissolve measured ceiling = ÷2-2.6); exclude the cabin from far LODs (vanilla does). Day-1 check: count
     visual LODs vs the control — ≥2 is also the product-spec floor (AC1.4-class). LOD0 decimation stays
     user-gated and becomes a LAST resort, not the first.
-    **s26 EXECUTED the ladder (SUB_BRZ deployed, measured) — three corrections to the ÷5-8 estimate above:**
+    **s26 EXECUTED the ladder (SUB_BRZ deployed, measured) — measured continuation of the contract:**
     (a) **Planar-dissolve (Blender limited-dissolve, shape+UV preserving) tops out at ÷2-2.6, NOT ÷5-8** —
     the rip's authored LODs are mid-detail racing meshes, not impostors. SUB_BRZ body 58.7k → 34.5k@15° /
     27k@30° / 22.4k@45°. It yields ONE good near LOD (res2 ~27k, quality intact, no gate). To reach vanilla
@@ -577,19 +628,89 @@ Cross-vehicle durable record (which project won each, links to the three): vault
 
 20. **Config inherits a vanilla car but your SCRIPT class does not extend that car's script = SWEEP every parent script override (SP-059).** If the config says `class X: OffroadHatchback` while the script is `class X extends MyBase` (with `MyBase extends CarScript`), the config->script binding does NOT drag in the parent car's script overrides - those live on the vanilla `inheritedcars\<parent>.c`, which your class never inherits. Every method with a hostile default in the base that ALL vanilla cars override then bites: `CrewCanGetThrough` (false in `Transport`, `transport.c:493` -> get-in impossible; see #1), `IsVitalGlowPlug` (true in `CarScript` -> engine won't start; see #8), `GetAnimInstance` / `GetSeatAnimationType` (`Error()` in `Transport`, `transport.c:465,475`), `Get3rdPersonCameraType` (`Error()`, `transport.c:483`). Procedure: diff method-by-method against the parent config's `.c` (`4_world\entities\vehicles\inheritedcars\<parent>.c`) and replicate EVERY runtime-contract override, not just the two pose ones - this is DZ-R7 (sweep the invariant to all call-sites) in config form. Origin: LFHeli R21-008 - `LFHeli_Placeholder: OffroadHatchback` (config) + `extends LFHeli_Base` (script) had no get-in and no engine start after passing two reviews; the first fix restored only the two pose methods.
 
-21. **Attachment (wheel/door/part) renders FROM the shell's visual-LOD proxy FRAME — an identity frame hides the piece with the sim intact (SUB_BRZ B1, s37).** The engine instances the attached item's model on the proxy of the visual LOD being drawn, oriented by that proxy's frame. py3d `add_proxy(rotation=None)` writes an identity frame: the attached wheel renders rotated ~90 deg, tucked inside the arch — invisible from outside, no raycast hit at the hub, while attach/sim/damage all work (the exact "attached but invisible" signature). Contract, measured against the civiliansedan control (5 wheel proxies in EVERY visual LOD 1/2/3/4/6 + VG + FG): (a) the attachment proxy exists in EVERY visual LOD of the shell, not just the finest; (b) each carries the per-side lateral frame (x>0 `((1,0,0),(0,0,-1),(0,1,0))`, x<0 mirrored) or, for doors, the UNIFORM measured door frame `((-1,0,0),(0,0,1),(0,1,0))`; (c) proxy point flags 63 like the control (identity-frame proxies also had flags 0); (d) `CfgNonAIVehicles` class name must match the proxy file BASENAME case-insensitively (`sub_brz_wheel_ruined.p3d` -> `ProxySUB_BRZ_Wheel_ruined`; a `_destroyed`-named class over a `_ruined` file correlated with a native client CRASH on the damage swap — B5). Mechanical gate: `derive_proxy_frame` of every visual attachment proxy == expected frame, with a negative fixture (identity MUST fail). Diagnosis shortcut: "attached but invisible" is NOT a missing item LOD 0.0 (refuted in-game s37) and NOT a bone/companion issue if anchors+companions match — measure the FRAMES first. RCA: `VehicleImport\work\s37_b1_rca\B1_RCA_findings.md`. Fix verified offline (double-measured); in-game gate pending as of 2026-07-18.
-
+21. **REDIRECT CAMBIO-1 (familia B):** `../rip-vehicle-import/cookbooks/family-b/attach-invisible.md`.
 22. **An attached item with its OWN radial actions (CarDoor open/close, hood, trunk) needs a raycast-visible ViewGeometry — point flags 0x02000000 — or the action NEVER appears (SUB_BRZ s38).** The action chain resolves the TARGET by raycast: `ActionCarDoorsOutside.ActionCondition` casts `target.GetObject()` to CarDoor and reads the selections of the hit VG COMPONENT of the ITEM (`actioncardoorsoutside.c:34-46`); a VG whose points carry flags 0x0 is not hit by `RaycastRV(ObjIntersectView)` — the same mechanism as the seat-cube blocker (preflight #4, in-game verified SUB_BRZ s9 + MercedesAMGLF s12) — so the item under the cursor never resolves and the radial is silently filtered, with config, script overrides, slots, bones and anim sources all CORRECT. Contract for the item's VG: (a) componentNN dual-tagged with a selection named EXACTLY what the vehicle's `GetAnimSourceFromSelection` expects (e.g. `doors_driver`); (b) every VG point flags 0x02000000; (c) inward winding (copy a fixed seat cube as control). Symptom signature: attachment renders/attaches/damages fine, `GetCarDoorsState` works, but no open/close radial (and hence no get-in-through-door). Diagnose offline in seconds: census the item's VG point flags vs a working control BEFORE touching config or scripts. Origin: SUB_BRZ s38 D4e; the door fix's own in-game gate pending as of 2026-07-17, but the raycast mechanism is the twice-verified #4 one.
 
-23. **MLOD LODs must be SORTED ascending by resolution once the model carries a multi-visual-LOD ladder — unsorted functional LODs break EVERY special-level lookup at once (LFHeli OH-1 v2, 2026-07-17).** A py3d-assembled MLOD with functional LODs appended out of order (1e13, 6e15, 7e15, 2e15, 1e15) spawned fine with ONE visual LOD, but adding a 0/1/2/3 visual ladder — functional LODs byte-identical, proven by structural diff against the spawning v1 — made the engine fail geometry, view AND fire lookups simultaneously: `Won't simulate, wheel wheel_1_1_damper_land has no proper selection in geometry` + `Action selection 'seat_*' was not found in view or fire geometry level`, with all selections present as strings in the file. That all-levels-at-once signature = broken LOD-table lookup, NOT missing selections; do not chase per-selection fixes. Reference control: RFFS `r22.p3d` (identical config contract: Crew actionSel seat_driver/seat_coDriver, SimulationModule Axles, dampers in Geometry, seats in ViewGeo) ships 4 visual LODs and ALL LODs strictly ascending (0,1,2,3,1e13,1e15,6e15,7e15). Fix authored: `model.lods.sort(key=resolution)` before write, + dump the final file's LOD order (works on ODOL via the debinarizer's `odol_reader`) and assert ascending. **HONEST ATTRIBUTION (in-game 2026-07-17): the confirmed spawn fix was the componentNN dual-tag (preflight #4), NOT the sort.** Sequence measured on the OH-1: sorted-but-seats/hubs-not-dual-tagged STILL failed with the identical "seat_* not found / wheel no proper selection"; adding componentNN dual-tag (with the model also sorted) spawned. dual-tag-WITHOUT-sort was never isolated, so the ascending sort is match-vanilla good-practice (RFFS r22 ships ascending) of UNPROVEN necessity here — do not sell it as the fix. The load-bearing lesson: on a py3d/hand-assembled model, "seat not found / no proper selection in geometry" = the collision selections lack componentNN, full stop (#4). binarize accepts any LOD order silently.
+23. **`componentNN` dual-tag is the confirmed fix for simultaneous seat/wheel selection failures; ascending LOD order is match-vanilla practice, not a proven cause (LFHeli OH-1 v2, 2026-07-17).** Sorted-without-dual-tag still failed; sorted-plus-dual-tag spawned; dual-tag-without-sort was never isolated. Therefore a py3d/hand-assembled model with `seat_* not found` / `wheel ... no proper selection` must be checked for collision-selection dual-tag first. `model.lods.sort(key=resolution)` may remain as deterministic authoring hygiene, but no gate may report that sorting fixed the defect. `binarize` accepts either order silently.
+> Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“Invariante 23”.
 
-24. **Binarize "Too many vertices" = per-LOD RESOLVED vertex limit counted on EXACT (point, normal, uv) triples — quantize+share normals instead of decimating, and hard-gate the PBO size (LFHeli OH-1 v2, 2026-07-17).** Empirical bounds on one mesh family: LOD0 at 48 170 exact-triple resolved FAILED, 40 399 PASSED (65535 is the ceiling but the engine-side multiplier over your estimator is unknown — keep margin). Near-equal split normals each burn a slot: rounding in your estimator without quantizing the FILE undercounts (a 48k estimate shipped as a fail). Levers in order: (a) quantize normals to 3 decimals + dedupe the vn pool BY VALUE at ingest; (b) merge to ONE averaged normal per position on big smooth pieces (drops each piece to its pos+uv floor; hull went 28 026 → 20 454); (c) only then trim budgets. Attribute first (resolved counted with pos+uv vs pos+nrm tells you which lever pays). Two trap gates: AddonBuilder prints **Build Successful** while packing a ~1.4 KB PBO with the model DROPPED — always fail the build on PBO size < 50% of the previous build; and a fast bisection bench exists without AddonBuilder: run `binarize.exe -always -norecurse <src_dir_with_model.cfg+data> <dst>` directly (Start-Process with -RedirectStandardError to a file; PS 5.1 mangles native 2>&1) and judge by dst-file existence + stderr.
+24. **`binarize` is the three-state offline load oracle; `RESOLVED_LIMIT = 65535` is a false friend (SP-122, LFHeli HH-60G, 2026-07-29).**
+> Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“Invariante 24”.
+
+Everything below is measured on the HH-60G, cross-checked against 25 in-game verdicts.
+
+**1. `Too many vertices` and `Won't simulate, it has no geometry` are the SAME defect.**
+The rejection happens while **loading the MLOD**, before conversion, so the engine aborts the
+whole model and emits the generic physics message even though the Geometry LOD is perfect.
+Chasing it as a collision problem costs days. If a model that passes every offline gate does
+not spawn, run binarize on it **before** touching the Geometry LOD.
+
+**2. binarize adjudicates N models per pass, offline, in ~90 s.**
+`binarize.exe -always <src under P:\> <out>`, with a `model.cfg` that declares **every**
+basename in the source dir (undeclared basenames fall back to Default and change the code
+path). Validated on 28 variants against the in-game verdicts of the previous cycle:
+**13 PASS/PASS, 12 FAIL/FAIL, zero false greens, zero false reds.** This turns a model
+bisection from ~6 min per variant into ~90 s per batch.
+
+**3. The verdict has THREE states. Using two is a bug in your bench.**
+- `PASS` - a **new**, non-empty ODOL for the basename under test, in an output dir that did
+  not already contain it. Skip the "new" requirement and a residual ODOL gives you a false green.
+- `CAPACITY_FAIL` - no new ODOL **and** a `Too many vertices` line attributed to that MLOD.
+- `OTHER_FAIL` - any other absence: bad `model.cfg`, undeclared basename, malformed MLOD, I/O,
+  aborted tool. **It blocks and does NOT authorize touching geometry.** Without this state you
+  decimate a mesh because your bench was misconfigured.
+
+**The verdict is reproducible; the ODOL bytes are NOT.** The same `.p3d` produced 1,725,025 and
+1,726,689 bytes with different hashes in two clean consecutive runs. Never gate on the ODOL SHA.
+
+**Noise that does NOT discriminate** (it appears for the known-good control too):
+`Material not loaded`, `No entry '.CfgVehicles'`, `Trying to access error value`,
+`Error occured: Loading LODShape`, `UV mapping too varied`, `vertices of bone X are shared with
+bone Y`, `Too detailed shadow lod`. The word `Error` in the log classifies nothing - attribute
+the outcome to a model and a cause, or record `OTHER_FAIL`.
+
+**4. The ceiling in triple units is not 65535, and it is not portable.**
+Measured by walking four structurally different bases of the same asset to the cliff:
+**46,133 loads, 46,134 does not** - the same integer for all four. The engine's hard cap does
+appear to be 65,535 but on **post-split** vertices, and a `(point, normal, uv)` counter
+under-counts those by a model-dependent factor: **1.4205** here, **1.46** on the OH-1 (see #24).
+An assembler with `RESOLVED_LIMIT = 65535` hardcoded closed its own gate in green, for weeks, on
+a model the engine refuses. **Re-measure per model; the hard gate is binarize's verdict.**
+
+**5. Know your headroom, because it can be one edit wide.**
+The deployed HH-60G sat at 46,019 of 46,133 - **114 triples of margin**, 99.8 %. Any change that
+adds more than 114 resolved vertices kills it: a normal tweak, a UV seam, a texture that forces
+another split. Measure resolved before and after **every** visual edit.
+
+**6. When you mint a normal, you are spending budget; when you reverse a corner order, you are not.**
+The defect that cost this project a week: a winding-flip block negated the stored normal **per
+corner** for the 151 faces (0.43 %) whose source normal disagreed with the source winding. Those
+453 corners minted 630 pool entries and +886 resolved. Re-reversing the corner order of those
+151 faces reaches **identical** coherence at zero cost. A face's corner order is free; a new
+normal is not.
+
+And the identity to have in your head before "fixing" a winding by inverting things:
+`dot(-cross, -n) == dot(cross, n)`. Reversing the corners **and** negating the normal is a
+no-op for their relationship - it re-parametrizes, it does not flip. A policy that does both
+changes nothing.
+
+**7. A perturbation below the consumer's quantum is a null mutation.**
+When walking a limit to find where it breaks, the step must survive the consumer's quantization.
+Nudging a normal by 1e-4 on one component (~0.006 deg) does not survive DayZ's normal
+compression: the estimator counted +120 new triples, the engine saw none, 42 samples "passed",
+and the ceiling would have been reported 7 units too high. Use a step that is unambiguously
+above the quantum (>= 3 deg for normals) and include a sample past the known-failing value as
+a self-check.
+
+Tool: `C:\Users\<you>\VehicleImport\scripts\p3d_vertex_gate.py` - `count` reports resolved per LOD
+as `INFORMATIVE_ONLY`; only `binarize` runs the authoritative three-state adjudication.
+
 
 25. **GTA V rip intake (dlc.rpf) — mod RPFs are usually UNENCRYPTED and fully parseable offline; the vehicle skeleton maps 1:1 to DayZ needs (LFHeli HH-60G, 2026-07-18).** Check the encryption dword at offset 12 of the RPF7 header FIRST: `0x4E45504F` ('OPEN', standard for OpenIV-built mod RPFs) = no GTA V install, no NG/AES keys needed. Verified on-disk layout: 16-byte header (`7FPR` magic, entryCount, namesLength, encryption); 16-byte entries discriminated by dword2 (`0x7FFFFF00` = directory, high bit set = resource, else binary); file offsets in 512-byte sectors; binary entry with fileSize==0 = stored verbatim (nested .rpf — recurse in place). A resource on disk = **16-byte RSC7 header IN THE CLEAR** (magic `RSC7`, version — 162 yft / 13 ytd —, sysFlags, gfxFlags) + raw-deflate payload from +16 (`zlib wbits=-15`); scene-standard standalone `.yft`/`.ytd` files are exactly that byte range copied verbatim, so extraction is a copy, not a re-encode. Skeleton conventions worth knowing before Blender (string-scan of the decompressed payload suffices — no FRAG parsing): rotors ship THREE states `rotor_main`/`_slow`/`_fast` (+ `rotor_rear` same) = direct map to the DayZ static+blur rotor pattern; doors `door_[dp]side_[fr]` + `handle_*`; glass as own bones (`windscreen`, `window_*` — glass census for free); `seat_[dp]side_*`, `wheel_lf/rf/lr`, `gear_*` incl. `gear_door_*`; guns/turrets are separate bones (`turret_*`, `weapon_*`) = clean v1 exclusion. Toolchain [IN-VIVO VERIFIED 2026-07-18]: Sollumz 2.8.3 imports binary `.yft` directly (PyMateria/szio, Windows-only) on Blender 5.1 (4.0-5.1 supported), while CodeWalker demands a GTA V game folder on first run — so for OPEN rips the primary chain is own-extractor → Sollumz binary import, CodeWalker only as fallback. Two verified gotchas: (a) **PyMateria's native `.pyd` fails to load from a long path** ("DLL load failed ... filename too long", MAX_PATH) — install Sollumz into a SHORT isolated Blender profile via `BLENDER_USER_RESOURCES=C:\tmp\blp` (also keeps the user's running Blender untouched); headless install = `bpy.ops.extensions.package_install_files(repo="user_default", enable_on_install=True)` + `<addon>.dependencies.install_dependencies(online_access_override=True, optional_dependencies_to_install={"pymateria"})`. (b) **The `.yft` does NOT carry its textures** (they live in sibling `.ytd`), and Sollumz's high-level `gta5.try_load_asset` returns None for a `.ytd`, and its `.yft` import wires 47 named-but-empty image nodes — the FIX is the RAW PyMateria binding: `pmg8 = szio.gta5.native.provider_gen8.pmg8`; `res = pmg8.TextureDictionary.import_rsc(Path(ytd))`; `td = res.result`; `td.textures` is a Map(name→Texture); `tex.export_dds(path)` writes the decoded DDS (PyMateria does all the RSC7+format). ~generic base-game textures (`vehicle_generic_*`) live in GTA's `vehshare.ytd` (not in the mod) and stay missing = pink in Blender, but IRRELEVANT for DayZ (glass gets a vanilla `.rvmat`; the rest are secondary spec/detail overlays). Origin: LFHeli HH-60G intake (`rpf_extract.py`/`ytd_extract.py`/`bl_install.py` in `LFHeli_dev\model_src\HH60G_intake\work\`; textured artist package verified by render).
 
 26. **A rip's BONE NAMES are not its MESH PIECES, and an exclusion REGEX silently classifies content nobody has looked at (LFHeli HH-60G, 2026-07-28).** Two failures of the same import, both invisible offline and both only surfaced by a full in-game cycle. (a) **Regex exclusion.** The day-1 census marked `exclude_v1` with `^(mod_[a-z0-9]+|turret_|weapon_|siren\d|extra_\d|hbgrip_)` to drop "GTA cruft". That swept in `mod_n` (31.598 tris = the whole nose kit: refuelling probe, rescue hoist, radome, nose pods) and `mod_s` (52.550 tris = the entire interior, seats included). The exporter inherited the classification and the vehicle shipped with no nose and a hollow cabin; **94.084 tris of legitimate content, 38% of the source**, lost for ten days without one warning. Rule: **the exclusion list is LITERAL NAMES, one justifying line each — never a regex.** A regex classifies pieces nobody has looked at yet; a literal list forces you to look. (b) **Bone names != mesh pieces.** The string-scan of the skeleton (item 25 above) lists `handle_*` next to `door_*`, so the routing table cited `handle_dside_f/pside_f/dside_r/pside_r`. Measured against the actual LOD levels: those four names exist in **no** level of the `.yft` and in **no** mesh of the imported `.blend` — the skeleton carries bones with no geometry behind them. **Item 25's skeleton-convention list is a hypothesis about names, not a piece inventory**; intersect it with the per-level mesh list before routing anything. Corollary that decides the fix: "the export LOST a piece" and "the export CITED a piece that never existed" look identical from a silent `if obj_by_name(n)` skip and lead to **opposite** repairs (go find it vs delete the row). Gates that would have caught both on day 1, cheap and offline: **SOURCE = the piece set of the richest LOD level, measured** (here `hh60g.yft/High` = 49, set-identical to `hh60g_hi.yft/VeryHigh`); every source piece appears **exactly once** in a routing group or in the literal exclusion list, partition verified by set equality, not by totals; every routed name is **in SOURCE**; and a missing artefact is an **error, never a `[skip]`**. Origin: LFHeli HH-60G, plan v15 Fase 1.1/1.2; measurement in `LFHeli_dev/plans/2026-07-28-hh60g-v15-censo-y-tabla-normativa.md`.
 
-27. **A model that passes every offline gate and still refuses to spawn is almost always over the RESOLVED-VERTEX ceiling — and `binarize` tells you offline, in 90 seconds (LFHeli HH-60G, 2026-07-29).** `PHYSICS (E): Won't simulate, it has no geometry` is emitted when the engine aborts while **loading the MLOD**, before it ever builds physics — so a perfect Geometry LOD does not exonerate the model, and chasing it as a collision problem costs days. **Do this first, not last**: drop the `.p3d`s into a dir under `P:\` with a `model.cfg` declaring **every** basename, run `binarize.exe -always <src> <out>`, and read the verdict — `Too many vertices` names the culprit by filename. Validated 25/25 against in-game verdicts on 28 variants (zero false greens, zero false reds), which turns model bisection from ~6 min per variant into ~90 s per batch. Three rules that make it a real gate: (a) the verdict is **three-valued** — `PASS` needs a *new* non-empty ODOL (a residual one is a false green), `CAPACITY_FAIL` needs the `Too many vertices` line *attributed to that MLOD*, and anything else is `OTHER_FAIL` which **blocks and does not authorize touching geometry**; (b) the verdict is reproducible but the **ODOL bytes are not** (same input, 1.725.025 and 1.726.689 b in two clean runs) — never gate on the ODOL SHA; (c) the ceiling in `(point, normal, uv)` units is **not 65535 and not portable** — measured 46.133 on the HH-60G across four bases, because the engine's cap is on POST-SPLIT vertices and your counter under-counts by a model-dependent factor (1,4205 here, 1,46 on the OH-1). An assembler with `RESOLVED_LIMIT = 65535` hardcoded closed its own gate in green for weeks on a model the engine refuses. **Re-measure per model, and know your headroom** — the deployed HH-60G sat 114 triples under the cliff, one normal tweak from death. Full detail, including why reversing corner order is free while minting a normal is not: **SP-122** at the bottom of this skill. Tool: `LFHeli_dev/tools/p3d_vertex_gate.py`.
+27. **A model that passes every offline gate and still refuses to spawn is almost always over the RESOLVED-VERTEX ceiling — and `binarize` tells you offline, in 90 seconds (LFHeli HH-60G, 2026-07-29).** `PHYSICS (E): Won't simulate, it has no geometry` is emitted when the engine aborts while **loading the MLOD**, before it ever builds physics — so a perfect Geometry LOD does not exonerate the model, and chasing it as a collision problem costs days. **Do this first, not last**: drop the `.p3d`s into a dir under `P:\` with a `model.cfg` declaring **every** basename, run `binarize.exe -always <src> <out>`, and read the verdict — `Too many vertices` names the culprit by filename. Validated 25/25 against in-game verdicts on 28 variants (zero false greens, zero false reds), which turns model bisection from ~6 min per variant into ~90 s per batch. Three rules that make it a real gate: (a) the verdict is **three-valued** — `PASS` needs a *new* non-empty ODOL (a residual one is a false green), `CAPACITY_FAIL` needs the `Too many vertices` line *attributed to that MLOD*, and anything else is `OTHER_FAIL` which **blocks and does not authorize touching geometry**; (b) the verdict is reproducible but the **ODOL bytes are not** (same input, 1.725.025 and 1.726.689 b in two clean runs) — never gate on the ODOL SHA; (c) the ceiling in `(point, normal, uv)` units is **not 65535 and not portable** — measured 46.133 on the HH-60G across four bases, because the engine's cap is on POST-SPLIT vertices and your counter under-counts by a model-dependent factor (1,4205 here, 1,46 on the OH-1). An assembler with `RESOLVED_LIMIT = 65535` hardcoded closed its own gate in green for weeks on a model the engine refuses. **Re-measure per model, and know your headroom** — the deployed HH-60G sat 114 triples under the cliff, one normal tweak from death. Full detail, including why reversing corner order is free while minting a normal is not: **SP-122** at the bottom of this skill. Tool: `C:\Users\<you>\VehicleImport\scripts\p3d_vertex_gate.py`.
 
 ## NEW CAR — DAY-1 (run BEFORE the first in-game cycle; retro 2026-07-03)
 
@@ -629,13 +750,12 @@ the un-promoted get-in cost "decenas de iteraciones" on three cars):
    poison the mod-vs-control discriminator and add a confounded state variable to every symptom.
 6. **Fluids / DamageZones / vitals config from the proven shape** (preflight #8/#9) — copied, never invented.
 
-## GATE LADDER — imported-model VISUAL correctness (run IN ORDER, cheap -> expensive)
+## LEGACY DIAGNOSTIC GATE LADDER — manual for a post-CAMBIO-0 family B asset
 
-Every imported car (rip->DayZ) passes these gates IN THIS ORDER. Skipping a rung = re-work later:
-`gate_car` was built at rung 4 (see-through) while rung 2 (the most BASIC winding check) was missing,
-and the user caught the defect in-game (BRZ backlight mixed-winding, 2026-07-01). Rule: before building
-a "done" validator, enumerate the failure modes and name which rung covers each — if you can't, don't
-code yet. Run cheap topological gates before expensive raycast/in-game ones.
+For vehicles already in flight, this preserves the pre-CAMBIO-0 diagnostic order. For a new family B
+asset, none of these rungs executes automatically unless its exact contract appears in the B1-B6
+allowlist above. The original wording and order are archived byte-for-byte in
+`history/pre-cambio-0-gate-ladder.md`; every rung remains invocable by hand during diagnosis.
 
 0. **STRUCTURAL PARITY** (config/model.cfg) — preflight #1-#6 (get-in, geometry `class=vehicle`,
    componentNN dual-tag+collidable, crew/wheel proxies, DamageZones). Gates spawn/drive, not looks.
@@ -657,6 +777,31 @@ code yet. Run cheap topological gates before expensive raycast/in-game ones.
    LOD0, and its textures/rvmats resolve (`dayz-pbo-build`). A piece with NO material renders invisible
    too — same symptom as inverted winding, different cause; rule it out here.
 
+6. **LOD FRAME PARITY — every `_lodN` variant carries the SAME frame as its LOD0** (added 2026-08-01,
+   MercedesAMGLF R22F-003). Any post-hoc transform of a proxy-split body (yaw fix, flip, translate)
+   must enumerate EVERY file the host references — including the `_lod1`/`_lod2`/`_lodN` variant of
+   each proxy — not just the base pieces. A fix that touches only the bases leaves the distant LODs in
+   the OLD frame: the car looks perfect up close and draws its cabin/mechanicals rotated at mid
+   distance, the moment the engine switches LOD. Why nothing catches it: topology, face counts, vertex
+   ceilings and every structural verifier stay green — each variant is internally valid, just wrongly
+   oriented — and the in-game test passes too, unless the tester WALKS AWAY far enough to trip the
+   switch. Gate — TWO DISTINCT checks; conflating them makes the gate impossible (this correction
+   came from the R22 that reviewed the original wording, 2026-08-01): **(a) transform applied** —
+   each rewritten file against ITS OWN input: exact rotation, immutable topology, error
+   `0.000000000`. That proves the fix ran on that file; it says nothing about LOD-to-LOD agreement.
+   **(b) frame parity LODn vs LOD0** — a metric that TOLERATES decimation (principal axes, oriented
+   bounding box, centroid + direction of matched anatomical features). Never point-to-point: a
+   legitimately simplified LOD has no vertex correspondence with LOD0, so demanding identical
+   topology between them would forbid the decimation the ladder exists for. Plus one in-game orbit
+   backing off through LOD1 and LOD2.
+   Real cost: the MercedesAMGLF yaw-180 fix rotated the 6 base proxies and left 12 `_lod1`/`_lod2`
+   files byte-identical to the pre-fix backup — undetected for 25 days across several visual reviews,
+   because the generating script's file list enumerated only the bases (`cabin_align.py:18`).
+   Corollary for the CONTRACT, not just the gate: if no acceptance criterion demands LOD-to-LOD frame
+   parity, this defect is not merely missed — it is *out of scope*, so no reviewer is wrong to pass it.
+   Add the criterion (MercedesAMGLF `AC1.4c`) alongside the check. Cross-project: any car with a LOD
+   ladder plus body proxies has the identical exposure (SUB_BRZ shares the shape exactly).
+
 **Calibration + scope (so a gate is trustworthy, not a false green):**
 - **Every rung must catch at least one KNOWN in-game bug, not just a synthetic self-test.** The
   self-test proves the MECHANICS; a real known-bad case proves COVERAGE. Keep a short per-car list of
@@ -671,6 +816,121 @@ code yet. Run cheap topological gates before expensive raycast/in-game ones.
   de-dup removed 20320 faces mid-analysis; a stale golden then misleads). Owner of a shared artifact
   (a car's `.p3d`, or THIS skill) = the session working it; edit append-only + verify (this skill was
   being edited by two sessions at once, 2026-07-01).
+
+**A rip-imported PANEL is two parallel skins with an OPEN rim; a vanilla panel is a closed volume
+(SP-247, added 2026-08-15; SUB_BRZ doors E-1 — CORRECTED the same day, see the refutation below).**
+Any door, hood, tailgate or flap coming out of a game rip is a pair of surfaces — outer skin and
+inner card — that are never joined at the edge. The source game never shows that edge, so it was
+never modelled; every DayZ door OPENS, so every imported door shows it. This is the same finding as
+**SP-198**, measured a week earlier on the same car (leading-edge cap 25 cm² against the ~710 cm² a
+real cap needs, 77 mm of thickness available) — and the fact that SP-247 was written without
+reading it is itself the lesson: **before authoring a fix, grep this file for the defect, not just
+for the car.**
+
+- **Count a free edge over ALL faces of the LOD, not within the material.** An edge the skin shares
+  with glass or trim is covered, not open; skirting it pokes through the neighbour. Counting
+  within-material inflates the census and aims the fix at edges that were never exposed.
+
+- **⚠ REFUTED — do NOT close the rim with an extruded skirt, and do NOT calibrate on the edge-on
+  silhouette.** The first version of this entry canonized both, on the strength of an edge-on render
+  going 15.0% → 25.4% of frame against a vanilla control at 26.8%. The user's eye falsified it the
+  same day: the edge was still see-through in game, plus two new defects. Two mechanisms, both
+  measured afterwards, and either one alone is fatal:
+  1. **An extrusion is a flange, not a cap.** Welding a band to the rim closes that edge and opens
+     a new one at the band's inner boundary. Measured on the shipped door: true free edge went
+     **4455 → 5036 mm**. The operation moved the hole inward; it never closed it.
+  2. **The extruded vertices inherited the rim vertex's UV, so every quad has 3D area and ZERO UV
+     area** — 235 of 235 quads measured at 0.00000 UV/3D against 0.18 for the skin beside them. The
+     faces draw (same pixel count cull ON and OFF), which is exactly why a solid-colour offline
+     render scored them as closed, while the engine samples a degenerate mapping and the player
+     reads smeared garbage. A skirt that lands anywhere near glass reads as an artifact ON the
+     glass: 39 quads within 5 cm of a pane, closest 6.1 mm.
+  The silhouette percentage was measuring the patch, not the defect — the exact failure the
+  corollary below warns about, committed in the bullet above it.
+
+- **The rim has to be AUTHORED as a cap, on the vertical leading and trailing edges only.** Weld
+  skin edge to card edge with its own UV strip (or a dedicated opaque edge material); do not sweep
+  the whole free perimeter, because most of it is not exposed — measured on SUB_BRZ, only 31.5% of
+  an automatic perimeter skirt landed on the two edges that were actually the complaint, while 17.4%
+  (663 cm²) landed on the window top and became a new texture defect.
+
+- **RE-IMPORTING DOES NOT FIX THIS — measured twice.** SP-193 found all six visual factory groups
+  already present face-for-face in the shipped proxy (100% centroid match ≤1 mm), and the pipeline's
+  own `build_detachable_doors` output measures **684 mm** of free leading edge against the live
+  door's 743 and vanilla's **0**. The open sandwich is in the source. Re-assembly reproduces it.
+
+- **Gate: a TEXTURED render plus an in-game capture with the panel OPEN, at the angle of the
+  complaint.** Never the silhouette percentage, and never a solid-colour render — both are blind to
+  the UV failure that decides whether the fix is visible at all.
+
+- **Corollary on gates (same family as SP-202).** "56 of 63 quads face the edge", "cap 25→40 cm²"
+  and "silhouette 15.0→25.4%" all improved while the defect was untouched. A metric that improves
+  without the symptom moving is measuring the fix, not the defect — go back to the artifact of the
+  complaint.
+
+**Building an OFFLINE viewer/render for the user to judge? Two traps that make it lie
+(SP-248, added 2026-08-15; SUB_BRZ 1PP).** Both were caught by the user, not by any gate.
+- **What 1PP draws is the 1100 of each part PLUS every proxy that 1100 REFERENCES.** "Does this
+  chunk file have a 1100?" is the wrong question: a proxy that ships only `res=0` is still instanced
+  by the parent's ViewPilot and falls back to its own LOD0. The SUB_BRZ shell's `res=1100` lists
+  **11 proxies including all four body chunks**; excluding them hid the roll cage from the very
+  viewer built to have the user point at it. Read the parent's 1100 proxy list, then per part pick
+  `1100` if present else the finest visual — the same rule the engine uses — and never hardcode the
+  resolution, because a part grows a 1100 the moment you cut something from it.
+- **DayZ model space is left-handed; Three.js and a naive numpy raycaster are right-handed.** Feed
+  raw coordinates and the car renders MIRRORED — driver on the wrong side — which invalidates every
+  left/right judgement the user is about to make. Negate display X **and** swap one pair of triangle
+  vertices so the winding survives; keep ids, bboxes and any ray metric in true model space, since
+  the `.p3d` edit reads those. Gate it with an asymmetric fact that must hold on screen (here: the
+  centreline must project to the RIGHT of the driver's eye, `side > 0`, or the build aborts) — per
+  the reference-frame rule, an orientation you did not assert is an orientation you got wrong.
+
+**The ViewPilot (res-1100) is a CURATED view — not a copy, not a budget, and never trimmed against a
+partial car (SP-249, added 2026-08-15; SUB_BRZ s52, root-caused).** One car shipped both halves of
+this hole at once, and the user found both by eye: a roll-cage bar and a headliner crossing the road
+view in first person, and 73 faces of body sheet silently absent from 1PP while present in the very
+same model's LOD0. Three lessons, each with the measurement that proves it:
+
+- **What the engine draws in 1PP = the main's res-1100 PLUS every proxy that 1100 references**, each
+  contributing its own res-1100 when it has one and its finest visual LOD otherwise. "Does this chunk
+  file have a 1100?" is the wrong question — SUB_BRZ's shell 1100 lists 11 proxies including all four
+  body chunks, which ship only `res=0` and are therefore drawn whole. Corollary for hiding something
+  from first person only: give that part its own res-1100 minus the geometry. A part with only a
+  visual LOD is drawn entire the moment the parent's ViewPilot references it.
+- **A driver-visibility TRIM must run against the complete assembled car — attachments included.**
+  The 73 missing faces were deleted by an occlusion classifier whose rule was "drop every face no
+  seated eye sees front-facing", run over a scene built from shell + interior only
+  (`c2_export_pilot_json.py:11-12`, verified). With the doors absent, the door-aperture sheet was
+  reachable from the seat and read as back-facing, so it was trimmed — the exact strip the user later
+  reported as "missing where the body should meet the door, same on both sides". That file's own
+  comment records the same bug caught once before ("without it the classifier flags rear lights as
+  removable") and fixed by adding ONE more occluder. One occluder short is the whole failure mode.
+  Same trap bites offline viewers: a 1PP viewer built without the chunks hid the roll cage from the
+  very screen built to have the user point at it.
+- **Cabin materials inside BODY chunks are an import misclassification, and that is what puts junk in
+  front of the driver.** 269 `brz_cab_metal` faces in `brz_chunk_01` and 18 `brz_cab_head` in
+  `brz_chunk_02`; the ViewPilot only made them visible. Confine material families to their artifacts
+  and check on PRESENCE, not on visibility — a leak outside the driver's cone today is a leak in his
+  cone after the next pose change.
+
+**The gate this produced** (`rip_viewpilot_content_gate.py`, schema rip_artifact_gate.v1) runs
+three checks — STRUCTURAL (faces of a declared structural selection in the visual LOD but not in the
+1100, keyed by rounded coordinates so it survives AddonBuilder reordering), OCCLUSION (driver-eye ray
+fan over the truly-drawn 1PP scene against a per-car deny list) and CONTAINMENT (material family →
+allowed artifacts, longest prefix wins so one deliberate exception does not weaken its family).
+Calibrated red-then-green on the real artifact: FAIL with 73/269/18 on the pre-fix build, PASS on the
+shipped one. Two habits it enforced on its own author, both worth copying: the first deny list was
+too broad (it banned a material the driver legitimately sees overhead, and the gate said so at
+10.9% of sight lines), and the deliberate shell-side console screen had to be DECLARED rather than
+have the rule loosened.
+
+**Why nothing caught it for weeks:** every gate in that suite treated the 1100 as a budget or as
+presence — perf_budget counts its faces (and already encoded the proxy-LOD rule at
+`rip_perf_budget_gate.py:230-243`, used only for counting), coverage is presence-only ("Nothing
+here has an opinion about geometry"), lod_semantics classifies the SOURCE, and the one driver-eye ray
+gate was scoped to a single defect. No gate compared a model's 1100 against its own LOD0. When a LOD
+is hand-edited outside the builder — this one is proxy-only in `rip_p3_structural.py` and was
+cloned by hand — it has no owner and no gate, which is exactly where silent cuts live.
 
 ## METHOD — three habits that stop the re-derivation (apply BEFORE the per-invariant fixes)
 
@@ -778,29 +1038,7 @@ dropped them in the 2026-06-05 migration):
   (headlights / brake / dashboard).
 - `references/placement-and-autocenter.md` — origin / autocenter / placement gotchas.
 
-## QUICK TRIAGE
-
-| Symptom | Likely cause | Reference |
-|---|---|---|
-| White / untextured on dedicated, fine in filepatching | binarize left config-only textures out of the PBO | build-packaging-and-debug §1 |
-| Wheels spin backwards | `model.cfg` rotation `angle1` sign (re-binarize if ODOL) | build-packaging-and-debug §2-3 |
-| Get-in prompt absent on SOME seats but not others | seat selection name not in `GetDoorConditionPointFromSelection`'s switch (base knows 4 lowercase cases, returns `""` otherwise), or its condition point is >1.0 m in plan from where the player stands | SP-141 |
-| Get-in prompt absent on ALL seats of a >4-seat vehicle | `CrewCanGetThrough` not overridden — base `OffroadHatchback` returns **false** for posIdx >= 4 | SP-141 |
-| Body reads TRANSPARENT / see-through at mid-far distance (NOT black) | a baked distance/far-LOD shipped with its WINDING globally inverted (anti-cross culled from outside) — distinct from black=inverted normals; diagnose by census cross-outward vs the LOD0 control, fix by a global `face.vertices.reverse()` if normals already point outward | preflight #13(d) |
-| Wheels roll but don't pivot left/right when steering (only spin, no turn) | roll and steer are TWO separate `model.cfg` animation classes on TWO separate selections — `wheel_X_1` (`sourceAddress=loop`) vs `wheel_X_1_steering` (bounded ±π/2) — front axle only, needs its own `wheel_X_1_steering` bone between the damper and the wheel in `CfgSkeletons`. Declaring `animTurn` in config.cpp alone does nothing without the matching model.cfg class + p3d selection (Landrover itself declares an orphaned `animTurn` on its REAR axle with no matching class — harmless, but proves the point). NOT the same bug/fix as the row below (in-cabin `DrivingWheel` prop). | vehicle-config-and-modelcfg §11-12 |
-| Need breakable/cracking glass on gunfire (vanilla-style) | reuse the vehicle's own `DamageZones` + `healthLevels[]` rvmat-swap (same mechanism as body-panel damage), ending in the literal string `"hidden"` at 0 health — NOT a physics/particle shatter system, NOT the 2008-era Arma1/OFP convex-glass-in-FireGeometry pipeline (Czech selection names like `sklo predni L` do not apply to DayZ SA). Cross-confirmed 2026-07-07 in 3 independent real configs (Tyson89/Landrover, DayZ-Expansion UAZ, vanilla-adjacent OffroadHatchback dump). | vehicle-config-and-modelcfg §6b |
-| Edited `model.cfg`, behavior unchanged on server | model is ODOL — `model.cfg` is baked, re-binarize | build-packaging-and-debug §2 |
-| `Proxy 'crewdriver' not found in view geometry` / get-in broken | crew proxies missing from ViewGeometry LOD | vehicle-structural-parity |
-| Player seated sideways / spins >180° on entry / hands off the wheel / wrong rider pose | animation-system, NOT structural — get-in spin, seated pose, rider IK and the `ActionGetInTransport` approach-side yaw belong to **`dayz-animation-pipeline`** (it owns "get-in spin", rider pose). Fix the anim instance / crew-proxy triangle frame there, not the vehicle geometry. | `dayz-animation-pipeline` |
-| Wheels / parts missing or misplaced after spawn | LOD / selection / proxy parity gap vs vanilla | vehicle-structural-parity |
-| Wheels attached (vanilla preview in inventory) but INVISIBLE in-game while physics work (car drives) | **NOT "remove the proxies" — that lead was FALSE (verified s12).** Vanilla CivilianSedan AND kt_roadkill BOTH carry `sedanwheel` wheel proxies in the **VISUAL LOD** (5 / 4 resp.) + matching `wheel_X_Y` companion selections; the visual-LOD proxy is exactly what RENDERS the attached wheel. The import's were invisible for TWO reasons: (1) py3d `rotation=None` left an **IDENTITY** frame (engine renders the wheel rotated ~90° → out of sight) instead of the vanilla **mirrored-by-side** frame — measure it: x<0 side `((-1,0,0),(0,0,1),(0,1,0))`, x>0 side `((1,0,0),(0,0,-1),(0,1,0))`; and (2) the visual LOD had **NO `wheel_X_Y` companion selections** (only View/Fire did). Fix: reframe each visual-LOD wheel proxy to the vanilla frame **by anchor-x sign** + add a `wheel_X_Y` companion (same 3pts+1face as the proxy, the `fix_wheel_binding.py` pattern, mapped by the SAME centroid rule as View/Fire). Physics-OK ≠ render-OK; the offline `vis.wheel_proxies` count PASS does not prove render. | rip-import §"VISUAL OVERHAUL" / vehicle-structural-parity — SUB_BRZ s12 |
-| Engine won't start / can't test driving right after admin/debug spawn | car spawned with **empty fluids** (fuel=0 → engine never starts, looks "broken"). `OnDebugSpawn()` must both `CreateAttachment` the drivetrain (CarBattery/SparkPlug/CarRadiator/wheels) AND `Fill(CarFluid.FUEL, GetFluidCapacity(CarFluid.FUEL))` (+ `CarFluid.COOLANT` if `IsVitalRadiator()`). Base `OnDebugSpawn` only drops loose parts into cargo. Verified pattern: LFQuad `LFQuad.c:176-191`. | vehicle-config-and-modelcfg |
-| Engine won't start even WITH fuel + battery + spark plug attached (debug spawn) | a **vital part the car never carries** blocks ignition — vanilla `CheckOperationalRequirements` (`carscript.c:1980`) sets `NO_IGNITER` when a vital GlowPlug is absent (`:2011-2015`), and ALL `IsVital*` default **true** (`:2739-2749`). A petrol car attaching only CarBattery/SparkPlug/CarRadiator (row above) must override `IsVitalTruckBattery`/`IsVitalGlowPlug` → `false` (the vanilla petrol pattern). The un-overridden **GlowPlug** (vital by default) is what blocks — `IsVitalGlowPlug→false` IS the petrol pattern, NOT a "removed requirement"; the car still requires its attached **SparkPlug** as the igniter (`:2004-2008` already satisfied). (`IsVitalEngineBelt→false` is inert — base carscript never checks it.) See preflight #8. Distinct from the empty-fluids row above (a car can have fuel and still not start). Verified: CivilianSedan `civiliansedan.c:358,363` + LFQuad `LFQuad.c:62-80` + SUB_BRZ. | vehicle-config-and-modelcfg |
-| Steering wheel **slides/translates toward driver** instead of rotating when steering | `drivewheel_axis` is vertical `[0,1,0]` or on the wrong side — NOT `type=translation` (already rotation). The wheel mesh (often a proxy e.g. `mb_steering`) is skinned 100% to the `drivewheel` bone, so the whole proxy orbits the axis line. Fix: 2 axis mem-points = **at the wheel hub center** + **along the steering-column rake** (Z-dominant, like vanilla CivilianSedan recovered `dir≈(0,±0.515,±0.857)`), never vertical. Offline check: PCA the `drivewheel` rim disc normal / compare to the vanilla rake. | vehicle-config-and-modelcfg |
-| `config.cpp, line 0: '.raP'` crash on load (packonly build) | the source `config.cpp` got rapified **in place** (now binary `\0raP`), packonly shipped binary-as-cpp. Cause: running `CfgConvert -bin` directly on the real config.cpp **overwrites the source**. Never CfgConvert the live file — copy to a TEMP first (`CfgConvert -bin -dst tmp.bin tmp.cpp`). Recover: `CfgConvert -txt -dst restored.cpp config.cpp` round-trips the binary back to text. | build-packaging-and-debug |
-| Authoring drivetrain / engine / suspension numbers | the full config block | vehicle-config-and-modelcfg |
-
-**Auto-triage in-game (added 2026-06-28):** if the `@DayZ_MCP` bridge is available, the `dayz-mcp-verify` **acceptance ladder** (`references/drive_ladder.py`) drives a car through ordered rungs — spawn → render → get-in → seat → drive → steer — reading ground-truth in-game (raycast solidity, `query_get_in_condition` `first_block`, drive `pos_delta`) and maps each rung's failure to the fixes in THIS table, so a rip→drivable iteration gets a per-rung verdict + named fix instead of eyeballing. Domain invariant worth keeping: **the rungs form a dependency chain — earlier failures MASK later ones, so fix in order** (spawn `componentNN` → winding per-piece → get-in `CrewCanGetThrough` → seat → wheel-sim FireGeo → steer `angle`); never chase a get-in or drive fix while spawn/render is still red. Caveat: get-in diagnosis needs the car adjacent to the player, but a clean drive needs an obstacle-free runway, and `pos_delta≈0` is ambiguous (obstacle vs drivetrain) until re-tested on clear ground. Origin: SUB_BRZ / DayZ-MCP Fase 5.
+> REDIRECT CAMBIO-1: el único índice síntoma→cookbook de familia B está en `../rip-vehicle-import/SKILL.md`.
 
 ## CITE-THEN-VERIFY
 
@@ -865,6 +1103,91 @@ conducir/automatizar un coche desde un peer cliente o de razonar sobre "quien co
   vanilla `carscript.c:1377` lo hace). NO hay inyección vía `HumanInputController` (el input de vehículo es nativo,
   sin API de override). Síntoma: "el coche es del owner pero `SetThrottle` no lo mueve". Origen: DayZ-MCP Fase 5 (SP-032).
 
+## PHYSICS = prediccion del owner con reconciliacion: escribir pose pelea con ella (SP-180, added 2026-08-06, LFHeli F-01)
+
+Extiende la seccion de ownership de arriba. Invariante verificada (runtime + fichero, LFHeli 2026-08-06).
+PREFLIGHT ante CUALQUIER sintoma de "lag de input" / "rubberband" / "el cliente revierte transforms" en un
+CarScript server-authoritative:
+
+- **Mide la estrategia ANTES de teorizar** (1 linea, cualquier lado): `Print(GetNetworkMoveStrategy().ToString())`
+  — NONE=0, LATEST=1, PHYSICS=2 (`pawn.c:138-148`; getter proto native `pawn.c:218` — SI esta expuesto a script;
+  una nota previa que decia lo contrario costo 3 semanas de desvio en LFHeli). En DayZ 1.29 CarScript corre
+  **PHYSICS de serie** (medido `str=2 own=true` en el cliente piloto); no existe flag de config que la seleccione
+  (verificado vanilla + Expansion): la fija el motor por clase nativa. `FEATURE_NETWORK_RECONCILIATION` es
+  incondicional (`defines.c:64`).
+- **Bajo PHYSICS el owner YA simula predictivamente** (contrato Pawn completo en vanilla: `pawn.c:256-329`
+  ObtainMove/ConsumeMove/ReplayMove/RewindState; `CarScriptMove/OwnerState` `carscript.c:3198-3218`;
+  `IsServerOrOwner()` `carscript.c:3222-3231`). Consecuencias:
+  1. Un server que escribe pose/velocidad por tick (`SetOrientation`/`SetVelocity`) NO coopera: genera
+     correccion continua owner<-authority = **lag estructural de ida-y-vuelta + snap-backs**. El sintoma se
+     siente incluso en loopback (el RTT no es la unica latencia: tick server + replicacion + rewind).
+  2. Escribir TRANSFORM desde el cliente owner se REVIERTE en ~0,3 s (medido LFHeli D1). No es un bug que
+     depurar: es la reconciliacion funcionando. No gastes ciclos ahi.
+  3. La via compatible es la de Expansion 1.28+: **fuerzas simetricas owner/server** (`dBodyApplyForce`
+     `enphysics.c:146`, world space; commit gated por `dBodyIsActive && dBodyIsDynamic`,
+     `ExpansionPhysicsState.c:209-218`) + input dentro del `PawnMove` nativo (su RPC legacy se APAGA bajo
+     PHYSICS, `DayZExpansion CarScript.c:1014-1051`) + contrato Move/OwnerState custom con `super` primero
+     (`ExpansionHelicopterScript.c:164-213`). El motor integra; nadie escribe pose.
+- **Spike barato antes de comprometerse a esa arquitectura** (patron ForceSpike E, LFHeli
+  `plans/2026-08-06-forcespike-e.md`): flag de tuning default-off + ventana de 1,5 s en la que ambos lados
+  aplican la MISMA fuerza (contra-gravedad + pulso lateral en un eje que nada del modelo toca) y el server
+  suspende su actuador cinematico; trazas por tick ambos lados; parser offline dictamina SI/NO/INCONCLUSO
+  (`LFHeli_dev/tools/spike_verdict.py`). Trampas del harness ya pagadas: el abort debe ser SIMETRICO
+  (motor/asiento/salida del estado de vuelo), la supresion de la tecla secuestrada va AGUAS ARRIBA de todos
+  los consumidores del canal, y toda salida del estado de vuelo limpia la ventana.
+- Estado de la evidencia: TODO MEDIDO. Vuelo de veredicto 2026-08-06: **SI** — 3 pulsos limpios en el
+  owner (pendiente local ~1,6 m/s2 vs 1,5 teorica, ganancia retenida, reversion puntual <=30% por el
+  desfase owner->server); el snap-back al EXPIRAR la ventana es el actuador cinematico reabsorbiendo
+  (la razon de retirar la escritura de pose en la via completa); un pulso owner-only cerca del suelo
+  (server sin armar por AGL) se revirtio 91% = la limitacion F4 en vivo. Percepcion del piloto: nula
+  (0,15 g lateral durante un ascenso a 7-11 m/s) — el gate es telemetrico, no de feel.
+
+## Armazon Pawn custom (Move/OwnerState): la escalera de tipos y sus reglas duras (SP-188, added 2026-08-06, LFHeli D3-1)
+
+Continuacion de SP-180: cuando la via es "fuerzas + owner prediction", el PRIMER paso de
+construccion es un armazon Pawn INERTE (tipos custom + hooks solo-log, vuelo intacto) — valida el
+wiring con el motor antes de migrar ningun solver (orden de menor riesgo verificado contra el
+corpus Expansion). Receta verificada por fuente vanilla + compile gate (LFHeli 2026-08-06):
+
+- **Escalera de tipos** (deriva del ultimo peldano, no de Pawn*): `PawnMove -> TransportMove ->
+  CarMove -> CarScriptMove` y `PawnOwnerState -> TransportOwnerState -> CarOwnerState ->
+  CarScriptOwnerState` (`transport.c:11-50`, `car.c:89-93`, `carscript.c:135-152`).
+  `TransportOwnerState/TransportMove` llevan transform + velocidad lineal + angular NATIVOS
+  (`transport.c:13-23,:35-42`): **NO los dupliques en el estado custom**.
+- **Hooks** (`pawn.c:238-311`, todos `protected event`): `GetMoveType`/`GetOwnerStateType` (el
+  motor instancia los tipos EN CONSTRUCCION, `pawn.c:235,:244` — los overrides deben existir en la
+  clase, no activarse tarde), `ObtainMove`, `ConsumeMove`, `ReplayMove` (bool: respeta el rechazo
+  del super antes de procesar), `ObtainState`, `RewindState(state, move, inout NetworkRewindType)`.
+  CarScript ya implementa Get*Type/ObtainState/RewindState (`carscript.c:3198-3218`) — super
+  SIEMPRE y exactamente una vez (ObtainState/RewindState del super llevan `m_fTime`).
+- **Serializacion**: `Write/Read` con super PRIMERO; NUNCA serializar `vector` (expandir a
+  floats); `EstimateMaximumSize()` = super + 4 bytes por escalar (bool cuenta 4, conservador).
+  El Move lleva los ejes RAW pre-authority-scale (la atenuacion/FSM se recomputan por tick de
+  solve; hornearlas rompe el determinismo del replay). El latch/estado con memoria del solver va
+  en el OwnerState (server -> owner), no en el Move.
+- **`ReadRawLocal` DENTRO de `ObtainMove`** (R22 que costo una ronda: el orden nativo
+  ObtainMove<->EOnSimulate NO esta expuesto a script; fiarse de la ultima lectura del tick puede
+  serializar ceros/stale y tus gates de round-trip validan un cableado VACIO). Exige ademas que el
+  gate de payload rechace la corrida si todos los samples van en neutro.
+- **Instrumentacion del armazon inerte**: match owner<->authority por `GetMoveId()` EXACTO
+  (muestreo determinista `id % 64 == 0` en AMBOS lados), nunca por reloj; `rewind` se loguea
+  siempre (raro), `replay` solo muestreado (un rewind storm re-corre todos los moves pendientes e
+  inunda el log del cliente, truncado a ~255 chars/linea); contadores agregados a 1 Hz.
+- **"Inerte" lo es para el VUELO, no para la RED**: los tipos custom anaden payload por
+  move/correccion y una asimetria Write/Read desincroniza al owner — el gate de payload existe
+  para eso.
+- Estado de la evidencia: TODO CONFIRMADO EN RUNTIME (vuelo LFHeli D3-1, 2026-08-06): el motor
+  instancia los tipos custom y los transporta (G1), 94 moves muestreados con los 5 ejes exactos en
+  ambos lados y 48 con payload no-cero (G2), 477 rewinds + 47 replays visibles en el owner (G3).
+  Trampa del receptor: el script log de DayZ envuelve cada Print en comillas simples — un parser
+  de logs debe hacer strip de la comilla pegada al ULTIMO token de la linea o el gate de payload
+  da un falso FAIL en ese campo.
+- CAVEAT medido en el mismo vuelo: la cadena script de CONTACTO no recibio NI UN callback del
+  asiento skid-suelo (0 OnContact en todo el vuelo, con touchdown real via AGL) — el override de
+  Car.OnContact NO garantiza contactos suaves de asentado. Antes de construir logica sobre
+  contactos de un vehiculo, mide primero que el callback dispare para TU caso (un print one-shot);
+  la via robusta candidata es EntityEvent.CONTACT + EOnContact, pendiente de validar.
+
 ## Auto-retopo of a dense rip = Quadriflow PER-PANEL + ASCENDING target sweep (SP-055, added 2026-07-14)
 
 For retopologizing a dense vehicle rip to get a clean bake->UV low-poly (domain invariant; saves ~3 discovery cycles):
@@ -922,19 +1245,22 @@ Gates implementing this: `LFHeli_dev\tools\import_gates\proxy_placement_gate.py`
 origin, P8 sub-model authored in host space, P9 normal/winding coherence) plus
 `texture_binding_gate.py` (one .rvmat must not carry two base textures).
 
-## Rewriting a proxy triangle: translate, never re-orient without fixing normals (SP-093, added 2026-07-26)
+## Rewriting a proxy triangle: regla corregida para proxies y caras visuales (SP-093)
+> Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“SP-093 antes de la corrección de alcance”.
 
 Rewriting the 3 points of a proxy triangle to change its ORIENTATION flips the geometric winding
 while the stored vertex normals stay as they were. Measured on OH-1: `dot(geometric, stored)` went
-from `+1.0` to `-1.0` on all three proxies, and it shipped unnoticed because the parity check only
-watched point coordinates. A pure TRANSLATION does not have this problem (winding is preserved;
-the same check stayed at `+1.0` across 96 faces).
+from `+1.0` to `-1.0` on all three proxies. A pure TRANSLATION preserves winding.
 
-Rule: any parity/verification of a .p3d edit must assert `dot(geometric_normal, stored_normal) > 0.9`
-on every touched face. Byte-level guards are not enough - "only 192 bytes changed, all inside the
-authorized coordinate ranges" was TRUE and still shipped inverted normals, because unchanged normals
-were exactly the bug.
+SP-093 says any parity check of a .p3d edit must assert `dot(geometric, stored) > 0.9` on every
+touched face. That is right for proxy triangles and WRONG as a general rule: on a hull authored with
+reversed winding on purpose (`FLIP_VISUAL_WINDING = True` in the OH-1 assembler), every visual face
+has a negative dot BY DESIGN. Measured on the deployed OH-1: `door_1` = 7227 dots per LOD, **zero**
+above 0.9, median `-0.942910`; `door_2` median `-0.939892`. A gate applying SP-093 to migrated
+visual faces fails 100% of valid input, and "fixing" it by flipping normals is the regression.
 
+Rule: proxy triangles -> `dot > 0.9`. Migrated/edited visual faces -> equality of the RESOLVED
+normal vector against the baseline, corner by corner, within 1e-6.
 
 ## Two diagnoses that look solid and are not: identical textures, and server co-move (SP-094, added 2026-07-26)
 
@@ -960,41 +1286,23 @@ part "does not follow", measure BOTH sides before designing a fix. A perfect ser
 a visible mismatch points at render/replication/perception, and it rules out the physics and
 cohesion branches - which is worth a lot, because those are the expensive ones to chase.
 
-## `autocenter=0` on VISUAL LODs: the misalignment that keeps coming back (SP-097, added 2026-07-27)
+## `autocenter=0`: alcance corregido por LOD, host y submodelo (SP-097)
+> Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“SP-097 antes de separar host, submodelo y prueba runtime”.
 
-This one has now cost cycles on THREE vehicles (LFQuad wheel offset, Mercedes AMG proxies, LFHeli
-OH-1 "interior a bit high / tail rotor a bit low"), and every time it was chased as geometry — pose
-tweaks, re-centering, transform hunts — when the fix is a PROPERTY.
+Measured control vs OH-1: all five geometry-bearing Landrover sub-models carry `autocenter=0` on
+their visual LOD **and** Geometry (5/5); the three OH-1 proxied sub-models carry it only on an empty
+Geometry (0/3 on visual). But the HOST of the control has `props={}` on its visual LOD, exactly like
+ours - **the host is exculpated, the sub-models are the gap.** SP-097 does not make that split.
 
-**The measurement that settles it** (Mercedes, `AI/10_Projects/MercedesAMGLF/research/`
-`2026-07-09-proxy-alignment-reusable-codex.md`): the vanilla control proxies
-`P:\DZ\vehicles\wheeled\civiliansedan\proxy\prox_int.p3d` and `sedan_engine.p3d` carry
-`autocenter=0`; the Mercedes `mb_*` proxies had `lod.properties={}`. With the property absent the
-engine re-centres the sub-model on its own bbox, which shows up as a per-piece offset of tens of
-centimetres — predicted deltas there were e.g. interior `(0,-0.686,-0.577)`, chassis
-`(0,-0.657,-0.011)` m, matching the in-game captures. Sibling case `bug-ledger.md:25` (T9-WHEEL-046):
-28 wheel proxies sat at exactly `-0.240 m` in X from their Memory hubs — **FIXED + LIVE PROVEN**,
-max proxy→hub error `0.0 m` afterwards.
-
-**The trap is WHICH LOD carries it.** Measured on LFHeli OH-1 (2026-07-27, py3d over the four
-deployed p3d): `autocenter=0` was present ONLY on the Geometry LOD (`1e13`) and **absent on every
-visual LOD 0/1/2/3**, in the shell and in all three proxied sub-models. A model can therefore look
-"correct" in a properties dump and still be re-centred where it matters.
-
-RULES:
-
-1. **Any proxied sub-model, and any host, gets its properties checked PER LOD, not per file.**
-   A `autocenter=0` on Geometry says nothing about the visual LODs the player sees.
-2. **Calibrate against a vanilla proxy, always.** Debinarize `prox_int.p3d` / `sedan_engine.p3d`
-   (`dayz-p3d-debinarizer`) and read which LODs carry the property. Do not infer it from docs.
-3. **A misalignment complaint is a PROPERTY hypothesis before it is a geometry hypothesis.** Test
-   the cheap one first: adding a property is reversible, moving vertices is not.
-4. Related: SP-091 (proxy placement convention, anchors and frames) and SP-093 (rewriting a proxy
-   triangle inverts winding). Those cover WHERE the proxy sits; this one covers whether the engine
-   moves it afterwards.
-
-Origin: LFHeli OH-1 2026-07-27, promoted the day the cross-project pattern was recognised — the user
-pointed at the Mercedes precedent from memory after it had already cost cycles in three projects.
+Two further measurements bound the claim, so do not sell the property as a fix:
+- The canonical symptom (`model_info.bounding_center != 0` after binarize) can be ABSENT while the
+  visual-LOD property is missing: the deployed OH-1 shell and sub-models all read `(0,0,0)`, because
+  an empty Geometry LOD carrying `autocenter=0` is already enough to stop binarize re-centring.
+- An A/B binarize with and without the property on the visual LODs produced identical semantics -
+  66/66 `model_info` fields equal, same face counts per LOD; only the property block differs. So the
+  property travels to the ODOL and is verifiable there, but any effect is RUNTIME and cannot be
+  predicted offline. Adjudicating it needs an isolated in-game A/B: two PBOs differing only in the
+  property, with a reproducible camera pose.
 
 ## An import gate rule is not deliverable without a negative fixture (SP-096, added 2026-07-27)
 
@@ -1102,34 +1410,9 @@ LOD and on Geometry. Budget the item LODs before promising the feature.
 Custom inventory slots are the T148506 family (`enforce-script-reference`): if the slot name and the
 `inventorySlot` string diverge, the item never attaches and the proxy never draws.
 
-### Correction to SP-093 - the `dot > 0.9` rule is for PROXY TRIANGLES ONLY
+> REDIRECT CAMBIO-1: la corrección de SP-093 ocupa ahora el sitio original de SP-093.
 
-SP-093 says any parity check of a .p3d edit must assert `dot(geometric, stored) > 0.9` on every
-touched face. That is right for proxy triangles and WRONG as a general rule: on a hull authored with
-reversed winding on purpose (`FLIP_VISUAL_WINDING = True` in the OH-1 assembler), every visual face
-has a negative dot BY DESIGN. Measured on the deployed OH-1: `door_1` = 7227 dots per LOD, **zero**
-above 0.9, median `-0.942910`; `door_2` median `-0.939892`. A gate applying SP-093 to migrated
-visual faces fails 100% of valid input, and "fixing" it by flipping normals is the regression.
-
-Rule: proxy triangles -> `dot > 0.9`. Migrated/edited visual faces -> equality of the RESOLVED
-normal vector against the baseline, corner by corner, within 1e-6.
-
-### Correction to SP-097 - which LODs, and what the property does NOT prove
-
-Measured control vs OH-1: all five geometry-bearing Landrover sub-models carry `autocenter=0` on
-their visual LOD **and** Geometry (5/5); the three OH-1 proxied sub-models carry it only on an empty
-Geometry (0/3 on visual). But the HOST of the control has `props={}` on its visual LOD, exactly like
-ours - **the host is exculpated, the sub-models are the gap.** SP-097 does not make that split.
-
-Two further measurements bound the claim, so do not sell the property as a fix:
-- The canonical symptom (`model_info.bounding_center != 0` after binarize) can be ABSENT while the
-  visual-LOD property is missing: the deployed OH-1 shell and sub-models all read `(0,0,0)`, because
-  an empty Geometry LOD carrying `autocenter=0` is already enough to stop binarize re-centring.
-- An A/B binarize with and without the property on the visual LODs produced identical semantics -
-  66/66 `model_info` fields equal, same face counts per LOD; only the property block differs. So the
-  property travels to the ODOL and is verifiable there, but any effect is RUNTIME and cannot be
-  predicted offline. Adjudicating it needs an isolated in-game A/B: two PBOs differing only in the
-  property, with a reproducible camera pose.
+> REDIRECT CAMBIO-1: la corrección de SP-097 ocupa ahora el sitio original de SP-097.
 
 ### `binarize` is NOT deterministic - never gate on ODOL byte identity
 
@@ -1183,30 +1466,11 @@ then `CreateInInventory`s it (`entityai.c:3907-3958`). Calling `super.OnDebugSpa
 attaches per-type from config with no per-airframe code - useful when one script base serves
 several models. Note the vanilla cars deliberately do NOT call super; they list parts explicitly.
 
-**2. `attachments[] =` silently removes the inherited vital slots. Use `+=`.**
-Config arrays REPLACE on redeclaration. A modded vehicle deriving from a vanilla car inherits
-`attachments[]` with `CarBattery`, `SparkPlug`, wheels and so on. Writing
+**2. `attachments[]` depende del límite de PBO; `+=` no es una regla incondicional.**
+> Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“attachments[] += como regla incondicional”.
+Dentro del mismo árbol de configuración fuente, `+=` puede conservar los slots del padre. Cuando la clase padre procede de otro PBO ya compilado, esa lista no es una base contractual segura: materializa en la clase hija la lista COMPLETA de slots vitales y propios. Esto corrige la regla anterior con el caso verificado en `AI/20_Knowledge/dayz-mod-implementation-checklists.md:234-240` (E28).
 
-```cpp
-attachments[] = {"MyMod_Door_1", "MyMod_Door_2"};      // WRONG
-```
-
-drops every inherited slot, so `SpawnUniversalParts()` can no longer attach battery or spark
-plug and the vehicle **can never ignite** - `IsVitalCarBattery`/`IsVitalSparkPlug` stay true
-forever. The symptom appears far from the cause: you changed doors and the engine stopped
-starting. Correct form:
-
-```cpp
-attachments[] += {"MyMod_Door_1", "MyMod_Door_2"};     // keeps the inherited slots
-```
-
-This is a different failure from T148506 (`enforce-script-reference`), which is about `+=` on a
-**string** `inventorySlot` failing silently. Arrays are the case where `+=` is the right tool;
-strings are the case where it is not.
-
-Gate both: assert the config uses `+=` for `attachments[]`, and assert every declared part class
-appears in the `OnDebugSpawn` path. Origin: LFHeli OH-1 2026-07-28, caught before the in-game
-cycle by re-reading the base class the airframe actually inherits from.
+El gate no busca un token `+=`: inspecciona la lista efectiva después de compilar/config-dump y comprueba batería, ignición, radiador, ruedas y cada puerta/parte declarada. Un cambio de puertas no puede retirar silenciosamente un slot vital. Mantén además la comprobación independiente de que cada parte declarada aparece en la ruta `OnDebugSpawn`; son contratos distintos.
 
 ## (added 2026-07-28) An animation's SIGN is never judged without its AXIS - use the pseudovector against the control
 
@@ -1270,77 +1534,7 @@ the wheel-direction question from "spend an in-game cycle to discover it" into "
 offline, in-game only confirms" - which is the difference between one cycle and two.
 ---
 
-## SP-122 (2026-07-29, LFHeli HH-60G) - binarize is an OFFLINE ORACLE for "does it load", and `RESOLVED_LIMIT = 65535` is a false friend
-
-Extends #24. Everything below is measured on the HH-60G, cross-checked against 25 in-game
-verdicts.
-
-**1. `Too many vertices` and `Won't simulate, it has no geometry` are the SAME defect.**
-The rejection happens while **loading the MLOD**, before conversion, so the engine aborts the
-whole model and emits the generic physics message even though the Geometry LOD is perfect.
-Chasing it as a collision problem costs days. If a model that passes every offline gate does
-not spawn, run binarize on it **before** touching the Geometry LOD.
-
-**2. binarize adjudicates N models per pass, offline, in ~90 s.**
-`binarize.exe -always <src under P:\> <out>`, with a `model.cfg` that declares **every**
-basename in the source dir (undeclared basenames fall back to Default and change the code
-path). Validated on 28 variants against the in-game verdicts of the previous cycle:
-**13 PASS/PASS, 12 FAIL/FAIL, zero false greens, zero false reds.** This turns a model
-bisection from ~6 min per variant into ~90 s per batch.
-
-**3. The verdict has THREE states. Using two is a bug in your bench.**
-- `PASS` - a **new**, non-empty ODOL for the basename under test, in an output dir that did
-  not already contain it. Skip the "new" requirement and a residual ODOL gives you a false green.
-- `CAPACITY_FAIL` - no new ODOL **and** a `Too many vertices` line attributed to that MLOD.
-- `OTHER_FAIL` - any other absence: bad `model.cfg`, undeclared basename, malformed MLOD, I/O,
-  aborted tool. **It blocks and does NOT authorize touching geometry.** Without this state you
-  decimate a mesh because your bench was misconfigured.
-
-**The verdict is reproducible; the ODOL bytes are NOT.** The same `.p3d` produced 1,725,025 and
-1,726,689 bytes with different hashes in two clean consecutive runs. Never gate on the ODOL SHA.
-
-**Noise that does NOT discriminate** (it appears for the known-good control too):
-`Material not loaded`, `No entry '.CfgVehicles'`, `Trying to access error value`,
-`Error occured: Loading LODShape`, `UV mapping too varied`, `vertices of bone X are shared with
-bone Y`, `Too detailed shadow lod`. The word `Error` in the log classifies nothing - attribute
-the outcome to a model and a cause, or record `OTHER_FAIL`.
-
-**4. The ceiling in triple units is not 65535, and it is not portable.**
-Measured by walking four structurally different bases of the same asset to the cliff:
-**46,133 loads, 46,134 does not** - the same integer for all four. The engine's hard cap does
-appear to be 65,535 but on **post-split** vertices, and a `(point, normal, uv)` counter
-under-counts those by a model-dependent factor: **1.4205** here, **1.46** on the OH-1 (see #24).
-An assembler with `RESOLVED_LIMIT = 65535` hardcoded closed its own gate in green, for weeks, on
-a model the engine refuses. **Re-measure per model; the hard gate is binarize's verdict.**
-
-**5. Know your headroom, because it can be one edit wide.**
-The deployed HH-60G sat at 46,019 of 46,133 - **114 triples of margin**, 99.8 %. Any change that
-adds more than 114 resolved vertices kills it: a normal tweak, a UV seam, a texture that forces
-another split. Measure resolved before and after **every** visual edit.
-
-**6. When you mint a normal, you are spending budget; when you reverse a corner order, you are not.**
-The defect that cost this project a week: a winding-flip block negated the stored normal **per
-corner** for the 151 faces (0.43 %) whose source normal disagreed with the source winding. Those
-453 corners minted 630 pool entries and +886 resolved. Re-reversing the corner order of those
-151 faces reaches **identical** coherence at zero cost. A face's corner order is free; a new
-normal is not.
-
-And the identity to have in your head before "fixing" a winding by inverting things:
-`dot(-cross, -n) == dot(cross, n)`. Reversing the corners **and** negating the normal is a
-no-op for their relationship - it re-parametrizes, it does not flip. A policy that does both
-changes nothing.
-
-**7. A perturbation below the consumer's quantum is a null mutation.**
-When walking a limit to find where it breaks, the step must survive the consumer's quantization.
-Nudging a normal by 1e-4 on one component (~0.006 deg) does not survive DayZ's normal
-compression: the estimator counted +120 new triples, the engine saw none, 42 samples "passed",
-and the ceiling would have been reported 7 units too high. Use a step that is unambiguously
-above the quantum (>= 3 deg for normals) and include a sample past the known-failing value as
-a self-check.
-
-Tool: `LFHeli_dev/tools/p3d_vertex_gate.py` - `count` reports resolved per LOD, `binarize` runs
-the three-state adjudication.
-
+> REDIRECT CAMBIO-1: SP-122 ocupa ahora el sitio del invariante #24 que corrige.
 
 ## In-vehicle actions need TWO registrations, and a proxied part is your placement oracle (SP-123, added 2026-07-28)
 
@@ -1387,3 +1581,632 @@ ARE trustworthy, and the disagreement localises the fault:
 Corollary: `scene_raycast` in `rvproxy` mode returns the GEOMETRY LOD, not the visual mesh, so
 it cannot adjudicate a visual misalignment. On a coarse collision hull it reports a surface
 tens of centimetres inside the visible skin. Use it for collision questions only.
+
+## (added 2026-08-01) A shared vehicle-core source turns "deploy ordering" gates into fiction
+
+When one Enforce core file serves several vehicle lines (LFHeliCore's `LFHeli_Base.c` serves
+OH-1 and HH-60G), any patch in it — even gated by `ConfigIsExisting("vehicleProp")` so only one
+line executes it — DEPLOYS whenever ANY line rebuilds the core PBO. A sequencing rule like "do
+not deploy the core patch until the model ships its matching memory points" does not survive
+the sibling line's next rebuild. Case: LFHeli 2026-08-01 — the OH-1 line rebuilt and deployed
+the shared core for its own fixes, and the HH-60G get-in patch went live with it, pointing at
+ten `lfheli_con_*` memory points the deployed model does not emit (verified by scanning the
+deployed PBO bytes for the patch symbols, not by mtime).
+
+1. A core-side patch that requires a model-side contract (memory points, selections, bones)
+   must be RUNTIME-TOLERANT: `MemoryPointExists` fallback to the previous mapping, so the
+   patch stays inert until the model actually ships the contract. Deploy-order gates across a
+   shared source are not enforceable by anyone.
+2. Alternatively, land model and core in the same session/build — never leave a
+   contract-dependent patch sitting in shared source "waiting" for its model.
+3. When auditing what is live, verify the deployed PBO CONTENT (byte scan for the patch's
+   symbols). The sibling line's handoff tells you the core changed; only the bytes tell you
+   what rode along.
+
+
+## Phantom vehicle command blocks ALL vanilla get-in after a client crash while seated (added 2026-08-02)
+
+Symptom: the get-in prompt SHOWS but accepting does nothing - both seats, zero RPT/script-log
+trace, and it survives rebuilds because nothing in the mod is broken. Mechanism:
+'ActionGetInTransport.ActionCondition' runs on BOTH sides; the CLIENT player (clean) shows the
+prompt, but the SERVER-side player still carries a non-null 'GetCommand_Vehicle()' restored
+from player storage after a client crash while seated. The first server gate
+(actiongetintransport.c:45-48) rejects silently, and a null 'StartCommand_Vehicle' in Start()
+(actiongetintransport.c:91-92) produces no log either.
+
+Checklist BEFORE suspecting model/proxies/config for a get-in regression:
+1. Check the previous run's client profiles for a 'crash_*.log' - a crash while seated is the
+   phantom's birth certificate.
+2. With dayz-mcp available: 'query_get_in_condition' returning 'first_block=already_in_vehicle'
+   with the player standing in the open = phantom confirmed; 'vehicle_get_in_client' (owner-side
+   direct, skips the action gates) seating fine = seat contract and model are healthy.
+3. The phantom clears on a clean logout cycle. "It fixed itself next session" is the signature
+   of THIS bug, not of a flaky model.
+
+Origin: LFHeli OH-1 gate D 2026-08-02 (GD-1): a full regression gate was misattributed to a
+model surgery whose Geometry/ViewGeo/FireGeo/Memory LODs were byte-identical pre/post.
+
+## ViewPilot (1100) of a shell+proxy car MUST carry the body geometry, not only proxy tris (SP-189, added 2026-08-06, SUB_BRZ B-3)
+
+Symptom: on entering the vehicle in FIRST person the body goes invisible for
+seconds (vanilla never does). Measured root cause: the shell's 1100 LOD held 7
+faces = only the proxy triangles (interior/doors/wheels), zero own geometry,
+while the vanilla control (civiliansedan MLOD) carries 11,977 REAL faces there
+(interior + body + glass) plus its 13 proxies. The engine switches the shell to
+the 1100 on mount; with nothing but proxy anchors in it, the body vanishes
+until proxies resolve. The generator's "subset lives in the interior file"
+design never materialized as a subset (brz_int 1100 = its full visual LOD).
+
+Fix pattern (fix_b3_viewpilot.py, s45): merge the shell LOD0 into the 1100 —
+own geometry with remapped point/normal indices, named selections via
+get-or-create (camo/light_* keep working in 1PP), plus the LOD0-only chunk
+proxies copied VERBATIM (points+face+selection; add_proxy would lose the
+frame). Exclude faces AND anchor points of proxies the 1100 already has.
+Gates that must pass: original proxy sels intact (1 face/3 pts), proxy set ==
+originals + copied, bone companions cardinality unchanged, facenormals <=
+32768, resolved-verts printed vs the ~16k design budget. Binarize preserved
+the merge exactly (22,849 faces / 11 proxies in the ODOL).
+
+Applies to every car built by this pipeline (MercedesAMGLF has the same
+proxy-only 1100 — same latent defect). Day-1 check for car #2: census the
+shell 1100 vs civiliansedan BEFORE first in-game (b3_viewpilot_census.py).
+
+## A winding gate must measure the WHOLE piece, ALL render LODs, and twin pairs (SP-190, added 2026-08-06, SUB_BRZ B-1)
+
+Three blind spots, each one bit us in the same door:
+
+1. **Whole piece, not the touched subset.** The U-2 fix flipped only
+   `brz_paint` and its gate measured only paint (97.9-99.5% green) while
+   `brz_black` (4,460/door) and `brz_mirror` (315/door) stayed inverted. A
+   winding gate censuses EVERY material of the piece (b1_door_census.py
+   pattern: per-material concord/discord vs stored normals).
+2. **All render LODs, including 1100.** The 1100 is a copy of LOD1: fixing
+   LOD1 and skipping 1100 leaves first-person still broken (measured: 4,341
+   paint flips pending in driver door, almost all in its 1100).
+3. **Twin (double-sided) groups have three states.** Healthy pair = BOTH faces
+   concordant with their OWN stored normals (each side owns its normals). A
+   group where ALL faces are discordant is a pair inverted WHOLESALE by an
+   earlier global flip -> flip ALL its faces (preserves opposite parity).
+   Mixed group -> skip + WARN (not adjudicable offline). A blanket twin-skip
+   leaves all-discord pairs broken and the census that skips twins reports
+   green (measured: codriver brz_cab_plastic pair all-discord in LOD1/2/1100).
+
+Post-fix census that re-runs the SAME predicate as the fix is tautological for
+the oracle (it can only fail if reverse() did not mutate). Make it
+non-tautological at the mechanism level: contrast flipped-per-material counts
+against an INDEPENDENT pre-fix census prediction; the oracle itself (stored
+normals sane) is only adjudicated in-game.
+
+## Game winding is the INVERSE of MLOD geometric winding; fix winding per CONNECTED COMPONENT, never per face (SP-191, added 2026-08-07, SUB_BRZ D-1; refines SP-190)
+
+Measured twice in-game with a positive control: a face renders in game when
+its MLOD geometric winding looks into the BLOCKED side of its shell (the
+pipeline transform is a reflection, LL-236; the rasterizer sees mirrored
+winding, while stored normals pass through UNCHANGED for lighting). The body
+works because its rip normals came out mirrored too and the F5 builder aligned
+winding to them - an accidental double compensation. Any part built by a
+different path (the doors came from the s42 cut) breaks the compensation and
+no per-material / per-stored-normal / per-face flip converges: SUB_BRZ burned
+FOUR in-game cycles (U-2 by material, B-1 by stored-normal concordance, C-1
+per-face BVH, D-1 per component) before the method below closed it.
+
+The method that converges (tools in VehicleImport\work\s43_fixes\, reusable):
+1. `c1_export_meshes_json.py` + `c1_bvh_classify.py` (Blender BVH
+   self-occlusion): per face, ray both ways from the centroid against the
+   piece's own mesh -> open / blocked / rim / enclosed. A face is RIGHT when
+   it looks into the blocked side. Validate the classifier on an
+   in-game-correct piece FIRST (positive control).
+2. `d1_comp_census.py`: union-find components by shared edges, vote per
+   component over ADJUDICATED faces only (open+blocked; rim/enclosed carry no
+   signal). A healthy mesh is bimodal (skins ~1.00 vs ~0.00). If a big
+   component mixes both, STOP - per-component flipping would swap a good skin.
+3. Flip whole components >=60% open (reverse + negate normals via NEW pool
+   copies, never in place); leave <=40%; micro-components (<8 adjudicated)
+   with 50/50 reads are left untouched; any REAL ambiguity aborts before save.
+4. Verdict->p3d integrity asserts (face counts, index ranges) - a stale
+   verdict silently flips foreign faces (this bit us).
+5. Convergence gate: re-export, re-classify, re-census -> flip candidates
+   must be ZERO on every render LOD.
+
+Concave sub-objects (mirror housings) defeat ray classification: restore them
+to their last in-game-good state and ASSERT the reverted count against the
+recorded count of the pass that broke them (664/666 here).
+
+Bonus lesson (D-2): a grey band over the windshield in 1PP was the interior's
+sun-visor edge seen because the seated camera rides high - legitimate
+geometry. Adjudicate WHAT the camera sees with a ray fan (d2_band_probe.py)
+BEFORE cutting anything; the fix was posture (crew proxy -5mm), not trimming.
+
+
+## HUD reticle/marker: anchor the ray at the CAMERA, never at the vehicle (SP-189, added 2026-08-07, LFHeli B-4)
+
+A direction reticle drawn by projecting vehicle_origin + GetDirection()*D reads laterally skewed
+against the airframe from any 3PP camera sitting off the symmetry plane: at D=300 the world point
+projects ~0.2 deg off the vanishing point while the nearby nose projects ~7 deg off (parallax) -
+the reticle appears left/right of the hull even though the world point is exactly on axis.
+Camera-anchored is the flight-director pattern and kills the parallax for every camera (3PP
+orbited, 1PP): nose = GetGame().GetCurrentCameraPosition() + veh.GetDirection() * D, then
+GetGame().GetScreenPos(nose), keep the projZ>0 gate. Verified in-game fix path (LFHeli
+LFHeliHUD.c 2026-08-07); the previous bone-anchored origin was a no-op built on a misattributed
+probe (see next paragraph).
+
+Two measurement traps that produced that dead fix, worth one line each:
+- A stable camMS reading across two boots is NOT proof of a systematic engine offset when the
+  probe is a one-shot: it can be the fingerprint of WHEN the one-shot fires (same approach walk,
+  same inherited camera yaw). Adjudicate camera geometry from the vanilla camera code
+  (DayZPlayerCamera3rdPersonVehicle pivots at vehicle origin + GetTransportCameraOffset, default
+  0 1.3 0) before hypothesizing an offset.
+- Selection membership can be PHANTOM: points in a named selection with zero faces referencing
+  them (LFHeli glass carried 357 such points on one side). Any per-side point count over a
+  selection must count only face-referenced points or the asymmetry measurement lies.
+
+
+## Parent-driven selections (hiddenSelections / config anims) do NOT reach a PROXY - host them in the SHELL (SP-192, added 2026-08-07, SUB_BRZ + LFVehicleUI)
+
+Any named selection the CAR's config must drive - hiddenSelections swaps
+(SetObjectTexture/SetObjectMaterial), model.cfg Animations declared on the parent,
+sections[] entries - must live in the PARENT model, never only inside a proxy sub-p3d.
+Evidence, both measured on SUB_BRZ: (a) dashboard needle anims declared over the interior
+proxy = needles STATIC in-game (s45 falsification); (b) the selections that DO work
+(light_dashboard idx 8; screen_nav idx 9 for the nav screen) are faces hosted in the shell
+- light_dashboard ships duplicated shell+proxy with identical coords and works FROM the
+shell copy. MercedesAMGLF carries the same latent defect (interior selections in proxy).
+
+Rules for a proxy-split car (day-1 for car #2, surgery for cars in flight):
+1. Every hiddenSelections entry needs its faces in the SHELL, in LOD0 AND the ViewPilot
+   1100 (SP-189: 1100 mirrors LOD0 content).
+2. MOVE the faces out of the proxy instead of duplicating when the selection can carry a
+   DIFFERENT material than the base (a swap on the shell copy z-fights the proxy copy).
+   A duplicate is only tolerable while both copies always share the same material - the
+   light_dashboard duplicate is a latent z-fight for the dashboard-light swap.
+3. Copy vertex order and stored normals VERBATIM when moving (SP-190/191): faces that
+   render correctly from the proxy keep rendering correctly from the shell (empirical
+   control: the instrument cluster).
+4. Reference surgery with asserts (component pick by aspect+centre, per-LOD face deltas,
+   selection cardinality, proxies/bones untouched):
+   VehicleImport/work/lfvui_f2/surgery_screen_nav.py.
+
+
+## Diagnose before re-authoring, and validate every visual metric on an in-game-verified control (SP-193, added 2026-08-07, SUB_BRZ E-1/E-2)
+
+SUB_BRZ was one session away from re-assembling both doors from the raw rip, on
+the premise that the s42-cut mesh was rotten (five winding passes, 74.7% orphan
+verts). Measured first: all six visual factory groups were ALREADY present face
+for face in the shipped proxy - skin 2043, card 3344, handle 1176, speaker 18,
+wing mirror 4721, mirror base 1174, every one at 100% centroid match <=1 mm. The
+re-assembly would have reproduced identical geometry and fixed nothing.
+
+Day-0 check before any re-import/re-assembly of a ripped part:
+
+1. **Face-level completeness, matched by CENTROID** (invariant to vertex order
+   and to winding, so it measures presence and never orientation). Point-level
+   presence is not enough: a cut can keep every vertex and still drop faces.
+2. **Gaps: exact point-to-triangle, never centroid-to-centroid.** The "missing"
+   door jamb read 17.2 mm median by centroids and 0.7 mm by exact distance
+   (p95 7.1 mm, max 16.2 mm, ZERO faces beyond 30 mm). It was not a hole; adding
+   it would have z-fought skin that is already there. A large triangle's centroid
+   sits far from a small one while the surfaces touch.
+
+**Offline in-game visibility oracle** (this is what pays for itself - the same
+question had cost five in-game cycles):
+
+- A face is DRAWN when its MLOD normal points AWAY from the camera. This is
+  SP-191's rule stated per-camera; calibrate it, do not assume it.
+- Occlusion counts only DRAWN opaque triangles. A culled face cannot occlude, so
+  a plain ray test overstates occlusion badly (mirror glass: 0/315 "visible" with
+  raw rays, 238/315 once culling is applied to the occluders).
+- **Every run re-validates on a piece confirmed visible in game** and declares
+  itself VOID otherwise. Two metrics did exactly that in this session and were
+  discarded rather than reported. A visual metric with no self-check is not
+  evidence.
+- **Judge a part only from cameras that can physically see it.** The mirror glass
+  scores 0% from abeam and from the front three-quarter - correct, a rear-facing
+  mirror is not visible from in front - and 75.6% from the rear three-quarter.
+  A badly chosen camera condemns healthy geometry.
+- To inspect a seam, raster the view with the culling rule and colour the PART
+  apart from the BODY; both are the same material and one colour per material
+  hides the very seam under inspection. Blender's viewport culling is a shading
+  flag and has misled this project before - use the calibrated rule.
+
+**A symmetric piece cannot vote on a sign or mirror fit.** Fitting the
+blend->DayZ transform, the X-sign discrimination test scored 5.5% for BOTH signs
+on a body panel and read as green while measuring nothing: the panel is
+mirror-symmetric about x=0, so flipping X maps it onto itself. Report each
+control's SELF-MIRROR score and make symmetric pieces ABSTAIN explicitly. Here
+only the steering wheel could witness (23.6% vs 0.0%), and it settled that the
+pipeline transform is a REFLECTION (det=-1), confirming SP-191/LL-236. Corollary:
+never take a part's side from its NAME - adjudicate it against an asymmetric
+piece whose in-game position is already measured.
+
+**A flat placeholder _co reads in game as a MISSING part.** brz_mirror_co.paa is
+a 16x16 DXT1, 307 bytes, whose AVGC and MAXC taggs are the SAME value
+(RGB 38,40,44) - proof of a single near-black colour. The glass geometry,
+material and winding were all healthy and it still read as "the mirror has no
+glass". Check the PAA taggs (AVGC == MAXC means flat) before hypothesising
+geometry; an unswatched piece is a texture bug wearing a geometry costume.
+
+**A defect can survive N winding passes by never entering the adjudicated set.**
+The mirror was 315/315 ENCLOSED in the BVH verdict - a category the fixer is told
+to skip - and separately excluded from the component census by material. When a
+defect outlives several passes, first check whether its faces are even in the set
+those passes adjudicate; rim/enclosed are blind spots, not clean bills of health.
+
+Toolkit, parametrised and reusable: `VehicleImport\work\s47_doors\` - p12 face
+completeness, p18 exact surface gap, p17/p20 self-validating visibility oracle,
+p21 culling-correct seam raster, p7/p8 transform fit with abstention.
+
+## An imported door has NO end caps, and a shut door cannot show you (SP-198, added 2026-08-07, SUB_BRZ E-1)
+
+A ripped car door arrives as two open shells - outer skin and inner card - with
+NOTHING closing the leading and trailing edges. The source game never shows that
+edge, so it was never modelled. Every DayZ door OPENS, so every imported door
+shows it. There are no 2D doors: assume the caps are missing until measured.
+
+SUB_BRZ, both doors, measured at the two z extremes of the door-local frame:
+
+| end | faces facing +/-z | cap area | expected (height x thickness) |
+|---|---|---|---|
+| leading | 125 | 25 cm2 | ~710 cm2 |
+| trailing | 62 | 17 cm2 | ~710 cm2 |
+
+3.5% and 2.4% of the area a real cap needs, and what remains is `brz_paint`
+fold-over at the skin edge, not a band. Door thickness available at both ends:
+77 mm.
+
+**Day-0 check for any vehicle with opening doors** - slice the door at its two
+extremes along its long axis, sum the area of faces whose geometric normal runs
+along that axis, and compare against `height x thickness`. Under ~30% means the
+caps are missing. `VehicleImport\work\s43_fixes\s49_probe_ends.py` is the probe.
+
+**Why this hides for entire sessions, and the general lesson:** with the door
+SHUT the body covers that edge, so every closed-door measurement passes. SUB_BRZ
+spent five winding passes, a paint-normals fix and a black-normals fix, plus an
+offline visibility oracle over 20 cameras, a jamb gap measured point-to-triangle
+and a culling-correct seam raster - all on the shut door, all green, while the
+defect sat in the open-door configuration nobody measured. Generalise it:
+**measure a part in the state where it is EXPOSED, not in its default state.**
+A green metric on the hidden configuration is not evidence about the visible one.
+
+Corollary for the in-game checklist: a door verdict is only worth collecting with
+the door OPEN, and the screenshot must show it open. Two rounds of SUB_BRZ
+captures were taken shut and settled nothing.
+
+Corollary for the fix: the caps are new geometry, not a flip. Normals and winding
+passes cannot create a surface that was never there - and if a door edge reads as
+"nothing at all" rather than "wrong colour" or "wrong shading", suspect absence
+before orientation.
+
+
+## Cirugia de caras en un .p3d: un criterio por UN eje parte los quads que cruzan ese eje (SP-197, added 2026-08-07, LFHeli V1)
+
+Al borrar caras de una seleccion por lado ("quita el cristal duplicado de babor"), el criterio
+natural es clasificar cada CARA por el signo de su centroide en X. Es correcto para caras que viven
+enteras a un lado y **silenciosamente destructivo** para cualquier superficie que CRUCE el eje: un
+panel plano suele ser un quad de 2 triangulos, y si el quad cruza X=0, el centroide de un triangulo
+cae a un lado y el del otro al otro. El criterio se lleva la mitad del panel y deja medio cuadrilatero.
+
+Firma visual exacta que reporto el usuario: "se ven medio a triangulos medio a huecos triangulares".
+Medido despues (LFHeli 2026-08-07): 9 paneles del canopy con 2 caras cada uno; en el fichero
+desplegado quedaba 1 de cada pareja. El conteo de ISLAS no lo delata (seguian siendo 17); solo el
+conteo de CARAS por isla.
+
+Reglas:
+
+1. Antes de borrar por lado, comprueba si la seleccion tiene islas que CRUZAN el plano de simetria
+   (min_x < 0 < max_x en la isla). Si las hay, el criterio por centroide de cara NO sirve: decide a
+   nivel de ISLA, o excluye explicitamente las islas que cruzan.
+2. Un criterio de UNA dimension captura todo lo que comparte esa dimension. La banda Z de las dos
+   puertas del OH-1 (+-0,85 m alrededor de cada ancla) cubria z de -3,68 a -0,62, que es donde
+   tambien vive el canopy. Anade la segunda dimension que discrimina (altura Y) o compara cara a cara
+   contra el sub-p3d que replica esa geometria.
+3. Gate que lo caza offline y que ningun conteo agregado sustituye: **cada isla conserva su numero de
+   caras**, o si pierde, pierde 0 o TODAS. Una isla que pasa de 2 caras a 1 es la firma del quad
+   partido. El area total tampoco lo delata si mides por conjunto unico de puntos.
+4. Cuando el criterio geometrico sea dudoso, no lo adivines: **saca un visor y que el usuario
+   seleccione**. Coste medido: ~40 min de visor autocontenido (Three.js UMD r147 + islas clicables +
+   export de la lista) frente a un ciclo de vuelo perdido y una regresion visible en el modelo.
+   Patron reutilizable en `LFHeli_dev/reviews/oh1-glass-picker-v2.html`: dos capas, lo DESPLEGADO
+   (clic = borrar) y lo que YA SE BORRO (clic = restaurar), silueta del casco en wireframe (una malla
+   de contexto solida oculta justo los paneles que se van a elegir), y el export como dos listas de
+   IDs. Self-test obligatorio antes de entregar (DZ-R1): CDN 200, marcador en el DOM que solo se
+   escribe al final del script, y screenshot headless LEIDO.
+
+Corolario del mismo caso: **los puntos huerfanos de una seleccion (miembros de la seleccion sin
+ninguna cara que los use) son EVIDENCIA, no basura.** Los 357 huerfanos a estribor del OH-1 eran el
+rastro exacto de 619 caras que el pipeline habia perdido; un "saneamiento" los borra y con ellos la
+unica pista de que faltaba algo. Mide y entiende antes de limpiar.
+
+
+## Un canto de puerta ausente se mide por LONGITUD DE BORDE LIBRE contra el control vanilla, y tres fixes "obvios" no lo cierran (SP-202, added 2026-08-07, SUB_BRZ E-1; refina SP-198)
+
+> ⚠ SUPERSEDIDO PARCIALMENTE por SP-245 (sección siguiente): el canto trasero SÍ falla, y el
+> cierre por script SÍ funciona con fondo medido. La métrica y los 3 fixes descartados siguen
+> vigentes.
+
+SP-198 dice que una puerta importada no trae tapas de canto. Falta lo accionable: **con qué se mide
+y qué no arregla**. Una sesion entera de sondas en SUB_BRZ, reproducible en cualquier coche del
+pipeline con puertas desmontables.
+
+**El control se saca en un comando** (no hace falta el coche entero):
+
+```
+python odol_to_mlod.py "DZ\vehicles\wheeled\civiliansedan\proxy\sedandoors_driver.p3d" ctrl.p3d
+```
+
+**La metrica correcta es longitud de borde libre por extremo del eje largo**, en una banda del 6%,
+en TODOS los LODs render + el 1100. Medido:
+
+| extremo | vanilla | SUB_BRZ | lectura |
+|---|---|---|---|
+| delantero (pilar A) | **0 mm** | 673 mm | defecto |
+| trasero (pilar B) | 612 mm | 627 mm | **normal, no tocar** |
+
+Dos cosas que esto corrige de golpe:
+
+1. **Tener borde libre en el perimetro de una puerta es NORMAL.** El perimetro entero es un ciclo
+   cerrado de ~4,4 m (piel exterior + cristal) y vanilla tambien lo tiene. Solo el borde DELANTERO
+   es anomalo, porque es el unico que queda a la vista al abrir. Un gate que mida "borde libre
+   total" da rojo en una puerta sana.
+2. **El gate por area (`cap >= 70% de alto x espesor`) esta mal calibrado** y no debe usarse: asume
+   espesor constante en toda la altura y que toda la altura es chapa. En una puerta frameless (BRZ,
+   GT86, y cualquier coupe del rip) la mitad alta es cristal, y el "espesor" que reporta una sonda
+   de banda es la CURVATURA del doblez, no un hueco. Ese gate pedia ~710 cm2 de tapa donde la
+   geometria real admite ~640 y solo en parte de la altura.
+
+**Tres fixes descartados CON MEDIDA — no repetirlos:**
+
+- **Doble-carar la banda frontal**: render con la regla de culling calibrada del pipeline, antes y
+  despues, **0 px de diferencia**. El see-through del canto no es un problema de caras de una sola
+  cara.
+- **Labio doblado (hem) copiando a vanilla**: un borde libre no se cierra desplazandolo; el labio
+  mueve el borde, no lo elimina. Ademas la holgura contra la jamba no da: a 2 mm de profundidad ya
+  hay vertices de carroceria dentro del volumen (gap puerta-jamba medido en 0,7 mm).
+- **Bridge piel exterior <-> panel interior**: los dos bordes NO se corresponden. Solo 6 de 13
+  franjas de altura tienen los dos bordes presentes, con huecos de 121 a 218 mm. Un bridge
+  automatico produce una pared retorcida.
+
+**La causa estructural, que es lo que hay que mirar en el coche siguiente:** la piel exterior y el
+panel interior son **mallas separadas que no se tocan**. En SUB_BRZ el panel interior
+(`brz_cab_plastic`, `brz_black`) muere 108 mm antes del borde delantero, donde la piel exterior
+(`brz_paint`) si llega. Entre ambos no hay nada. Por eso no existen "dos anillos que puentear":
+existen dos bordes de piezas distintas separados 11 cm.
+
+**Consecuencia de planificacion:** cerrar el canto es **modelado a mano** (autorar la pared del
+canto en Blender), no una cirugia por script. Presupuestalo como tal desde el principio y pide la
+captura del defecto CON LA PUERTA ABIERTA antes de empezar — con la puerta cerrada toda medida da
+verde (SP-198) y sin la captura no se distingue "veo a traves" de "el borde queda feo", que llevan
+a fixes distintos.
+
+Sondas reutilizables en `VehicleImport\work\s50_doorcaps\`: `s50_probe_freeedge.py` (la metrica del
+gate, por LOD), `s50_compare_control.py` (control vs candidato, ejes normalizados),
+`s50_probe_bridge.py` (correspondencia de los dos bordes), `s50_render_front.py` (render A/B/C:
+actual con culling, sin culling, y el fix simulado).
+
+## El canto de puerta SE CIERRA POR SCRIPT con una banda de fondo MEDIDO — y ambos cantos fallan (SP-245, added 2026-08-15, SUB_BRZ s52; supersede parcialmente SP-202)
+
+Dos correcciones a SP-202, ambas con medida y la primera confirmada in-game por el usuario:
+
+1. **El canto TRASERO también falla.** La adjudicación "vanilla tiene 612 mm libres ahí → normal,
+   no tocar" era una inferencia mala: que vanilla tenga borde libre no implica que quede EXPUESTO.
+   Con el usuario delante fallan los dos. Y medido a perímetro completo (banda z del 8%, no del
+   6%): vanilla delantero **0 mm** / trasero ~502 mm; el rip 743/598 mm — el delta anómalo está en
+   AMBOS extremos.
+2. **"Cerrar el canto es modelado a mano" queda superseded**: una banda perimetral por script
+   alcanza paridad vanilla. El fix de 5 mm de s51 fallaba por PROFUNDIDAD (5 mm en un hueco de
+   ~77 mm), no por orientación — sus quads sí se dibujaban (probe cull ON == cull OFF).
+
+**La receta que funciona** (`VehicleImport\work\s52_cantos\s52_close_perimeter.py`, ambas puertas,
+LODs visuales + 1100):
+
+- **Filo libre VERDADERO**: contar el uso de cada arista sobre TODAS las caras del LOD y quedarse
+  con las de la piel con uso==1. Contar solo dentro del material de la piel (como s51) marca como
+  "libres" aristas que en realidad cubre el cristal o el trim, y la banda las atraviesa.
+- **Fondo medido por vértice de borde**: raycast hacia dentro por el eje del grosor; fondo = 90%
+  del hueco hasta la primera pared, clamp [8, 60] mm; 60 mm donde no hay pared en 150 mm. El hueco
+  real varía 10→135 mm — cualquier constante está mal en la mitad del perímetro.
+- **Banda estanca**: UN punto extruido por vértice soldado del borde, compartido entre quads
+  vecinos (extruir por-arista con fondos distintos deja rendijas).
+- **Winding**: normal almacenada apuntando FUERA del filo, winding geométrico opuesto (la
+  convención medida al 100% en los LODs render de ambas puertas). "Fuera del filo" = componente
+  del (punto_medio − centroide de la piel) perpendicular a la arista, con el eje del grosor a 0.
+- **Gates de paridad, siempre contra el control** en el MISMO metric: render de canto (BRZ pasó
+  de 15,0% → 25,4% de superficie dibujada vs 26,8% vanilla) y barrido de rayos por el eje largo
+  (65,7% de rayos limpios vs 68,8% vanilla — la puerta quedó MÁS cerrada que la control). Un
+  umbral absoluto sin control falla puertas sanas: la vanilla da 68,8% de "abierto" en el barrido
+  ingenuo porque la mayoría de los rayos pasan por fuera de la silueta legítimamente.
+- **Diagnóstico previo que lo desbloqueó**: renderizar el canto en DOS escenas — coche MONTADO y
+  CERRADO (¿regresión visible por fuera?) y puerta AISLADA (= puerta abierta, donde vive la
+  queja). El defecto solo existe en la segunda; medir solo una responde a otra pregunta.
+
+Pedir la captura del defecto CON LA PUERTA ABIERTA (SP-202) sigue vigente antes de dimensionar.
+
+---
+
+## Desmontables que NO son puertas: capo y maletero (medido sub_wrxsti_04, 2026-08-07)
+
+**Nivel de evidencia: MEDIDO offline. La extension del rig NO esta implementada ni verificada
+in-game a fecha de hoy.** Los numeros de abajo son geometria del modelo, no comportamiento del
+motor; lo que aqui se promueve es DONDE mirar, no una receta probada.
+
+Un rig de desmontables escrito para puertas hornea dos supuestos que son **falsos** para capo y
+maletero, y ninguno de los dos canta: uno aborta con un mensaje que culpa al eje, y el otro ancla
+la bisagra a un metro de donde va, en verde.
+
+1. **El borde de bisagra no es siempre el delantero.** Una puerta bisagra en su borde delantero
+   (-Z), y de ahi que los rigs banden sobre `z.min()`. Pero un **capo bisagra en su borde TRASERO**
+   (el del parabrisas, +Z) y un **maletero en su borde DELANTERO** (-Z). Medido en el WRX: bisagra
+   del capo a **12 mm** del maximo Z de su hoja, la del maletero a **4 mm** del minimo. El borde
+   delantero del capo, que es donde bandaria un rig de puertas, esta a **1,16 m** de la bisagra
+   real. El borde tiene que ser un dato declarado por rol, no una constante.
+
+2. **La inclinacion se mide contra el eje de su CLASE, no siempre contra la vertical.** Capo y
+   maletero dan **89,81 grados** y **88,84 grados** respecto de +Y: revientan cualquier presupuesto
+   de verticalidad. Su eje es lateral (+X). Un gate de "tilt vs Y" no es un gate de calidad para
+   ellos, es una prohibicion.
+
+3. **Trampa de signo, y es silenciosa.** Con eje lateral `axis[1]` vale ~0, asi que la
+   normalizacion habitual `if axis[1] < 0: axis = -axis` deja de ser determinista: el signo lo
+   decide el ruido del PCA. La direccion de apertura tiene que venir del angulo declarado, y el
+   gate offline que caza un signo invertido es **fisico**: el **borde libre** (la banda OPUESTA a
+   la bisagra) debe SUBIR al abrir. Un gate de desplazamiento por magnitud (`|delta| > umbral`)
+   pasa en verde con el signo invertido — mide que se mueve, no hacia donde.
+
+4. **El gate del eje NO valida el conjunto de piezas del rol, y es facil creer que si.** El eje se
+   ajusta sobre UNA pieza (la que declara la bisagra). Meter en el rol una pieza que no toca — una
+   jamba, un panel de carroceria, un faro que en realidad va al paragolpes — no mueve el eje ni un
+   grado: **el contraste de bisagra sigue en verde y el de apertura tambien**. Hace falta un gate
+   aparte sobre la propiedad: distancia maxima de cualquier cara del rol al eje contra un radio
+   declarado, mas el recuento de caras contra el censo. Sin el, la agrupacion mala llega al juego.
+
+5. **Antes de escribir una regla de propiedad `+x`/`-x`, mide si hay caras EN el plano x=0.** Una
+   regla por centroide las descarta por los dos lados y esas caras desaparecen del coche sin que
+   nadie lo note. En el WRX salieron 0 de 18 piezas candidatas, pero eso es un dato medido, no una
+   garantia del formato. Y para una pieza entera no hace falta regla especial si el selector cae a
+   "todas" por defecto.
+
+6. **Un capo suele traer cristal y un maletero no.** Si el codigo estructural exige cuerpo Y
+   cristal para acotar sus cajas, el maletero aborta y el capo pasa — pero clasificando el cristal
+   de los faros como "ventana", con su zona de dano y su material de penetracion de vidrio encima.
+   La caja de cristal tiene que ser opcional, y la clasificacion cuerpo/cristal un dato, no un
+   prefijo de nombre.
+
+7. **La masa del item no se hereda de la puerta.** Un `geometry_mass_kg` global le pone a un capo
+   los kilos de una puerta.
+
+Origen: `VehicleImport\plans\2026-08-07-T6-detachables-rig-extension.md` (T6 del piloto CAMBIO-3),
+sondas en el scratchpad de la sesion. Los puntos 3 y 4 los levanto una revision R22 ciega sobre el
+plan, no la implementacion: son exactamente la clase de defecto que un gate offline no encuentra
+porque el gate estaba midiendo otra cosa.
+
+
+## Borrar caras de un .p3d con py3d: muta `lod.faces` IN PLACE o rompes las selecciones en silencio (SP-203, added 2026-08-07, SUB_BRZ parabrisas; extiende SP-197)
+
+SP-197 cubre QUE caras elegir. Esto es COMO quitarlas sin corromper el modelo, y es el paso donde
+un borrado correcto se convierte en un `.p3d` roto.
+
+**El mecanismo, leido del fuente antes de escribir un byte** (`py3d/__init__.py`, clase
+`Selection`): `Selection.all_faces` **es una REFERENCIA a la lista `lod.faces`**, no una copia; y
+`Selection.write()` valida sus claves **por identidad** contra esa lista y lanza `RuntimeError` si
+alguna es "foreign". Consecuencias:
+
+- `lod.faces = [f for f in lod.faces if ...]` crea una lista NUEVA. Toda `Selection` sigue
+  bindeada a la vieja. En el mejor caso peta; en el peor, pesos serializados a cero en silencio.
+- La forma correcta es mutar **in place** y de indice mayor a menor: `for i in reversed(cut): del
+  lod.faces[i]`.
+- Antes de eso hay que **sacar esas caras de cada `Selection.faces`** (son dicts con la Face como
+  clave), o `write()` aborta por clave foranea.
+
+**Gate obligatorio, y es barato**: re-leer el archivo tras guardar y comprobar el conteo de CADA
+seleccion nombrada. Esperado = conteo anterior menos las retiradas de esa seleccion. Medido en el
+caso real: `glass` 6022→5910 (−112), `interior` 4458→4383 (−75), `trim` 4072 intacta, con 187
+caras borradas. Si una seleccion no cuadra, el borrado se comio algo que no debia.
+
+**Antes de borrar, pregunta a que selecciones pertenecen las caras condenadas.** No es lo mismo
+tocar una seleccion decorativa que `glass`, que gobierna la rotura del cristal. Un 2% de una
+seleccion es asumible; el 90% la convierte en otra cosa.
+
+**Los puntos huerfanos se dejan.** Borrar los puntos que ya no usa ninguna cara obliga a reindexar
+todo el LOD, y este proyecto ya aprendio que los huerfanos son EVIDENCIA, no basura (LFHeli).
+
+**Comprueba cuantos LODs tiene la pieza ANTES de dar el borrado por hecho.** El fix del forro del
+techo (s43) hubo que aplicarlo en el LOD visual Y en el ViewPilot 1100, o reaparecia en primera
+persona. En el caso de este parabrisas el chunk tenia UN SOLO LOD y no aplicaba — pero eso se
+comprueba, no se supone.
+
+### Corolario para el gate de PBO entre builds (refina SP-194)
+
+Al verificar que un build solo cambio lo que debia:
+
+1. **Una clave "order-free" NO puede contener indices de seccion.** Reimplementarla con
+   `face_index_start` / `face_index_end` da un gate que declara DISTINTOS 7 de 10 modelos que no
+   se tocaron, porque esos indices son exactamente lo que AddonBuilder reordena. La clave valida
+   es el multiset de `(material, textura, indices de vertice de la cara, bit de iluminacion)`
+   resuelto por las tablas de NOMBRES, con guard VOID si las secciones no cubren todas las caras.
+2. **Anadir una textura nueva cambia `texHeaders.bin`** — es el indice de texturas del PBO. Es
+   mecanico y esperado; si no esta en la lista de deltas admitidos, el gate da un rojo falso.
+3. Separa el delta por tipo de entrada: `.p3d` se compara **semanticamente**, todo lo demas por
+   **bytes**. Un gate que parsea toda entrada cambiada como ODOL revienta en cuanto el lote
+   incluye una textura.
+
+## DOOR MECHANISM SELECTOR — decide this BEFORE modelling or scripting anything (added 2026-07-27)
+
+DayZ has **three unrelated door mechanisms**. Picking the wrong one costs a full modelling +
+config cycle, and they share vocabulary (`source`, `component`, `axis`), so the mistake is not
+obvious from the symptom. Doors have now been re-solved from scratch on three projects
+(MercedesAMGLF, SUB_BRZ, LFHeli) — pick from this table first.
+
+| You are building | Mechanism | Where the contract lives |
+|---|---|---|
+| Door/hatch/lid on a **building or static prop** | `class Doors` under `HouseNoDestruct`; animation `source` maps to a Doors `component` | skill **`dayz-doors`** |
+| Door on a **vanilla-style car**, as a detachable part | Attachment: `CarDoor` item + `ActionCarDoorsOutside`; the action target is resolved by **raycast against the ITEM's ViewGeometry** | invariants **#21 and #22** below |
+| Door that must **stay part of the shell** (no detach, custom radial) | Own actions driving `GetNearestDoorIndex` / `IsDoorOpen` (fail-closed) / `SetDoorOpen`, with the motion in `model.cfg` AnimationSources | LFHeli OH-1 contract v5 |
+
+**`dayz-doors` does NOT cover vehicle doors.** Its scope is buildings and static props. The name
+attracts anyone with a door problem; if the door belongs to a car or a helicopter, that skill is
+the wrong contract and its `class Doors` pattern will not produce a working radial.
+
+Two traps specific to the vehicle paths:
+
+- **Attachment path**: the radial silently never appears if the item's ViewGeometry points carry
+  `flags 0x0` instead of `0x02000000` — config, script overrides, slots, bones and anim sources
+  all correct, action still filtered. Census the item's VG point flags against a working control
+  BEFORE touching config. Full contract in #22.
+- **Scripted path**: enumeration probes must be READ-ONLY. A diagnostic probe that calls
+  `SetAnimationPhase` to "look at" a door corrupts live state — the door closes visually while the
+  logical state stays open, and the next diagnosis is chasing a bug the probe created.
+
+Status honesty: #21 and #22 are measured offline and their in-game gate was still pending as of
+2026-07-18; the OH-1 scripted contract v5 is implemented with its cycle gate pending. Treat all
+three as verified-offline, and confirm in-game on first use.
+
+## GET-IN DOESN'T APPEAR — name the guard BEFORE touching the model (SP-141, added 2026-07-29)
+
+Four vehicles in this vault have burned iterations on "the get-in prompt does not appear"
+(LFQuad, MercedesAMGLF, LFHeli OH-1 R3, LFHeli HH-60G). The prompt is gated by **five ordered
+guards** inside one function, and a *necessary* chain is not a *measured* cause: knowing the
+prompt must pass through `CanReachSeatFromDoors` says nothing about which guard is firing.
+Name the guard first; the fix follows in minutes.
+
+`ActionGetInTransport.ActionCondition` (`actiongetintransport.c:50-79`) has **exactly one path
+to `true`**, and rejects in this order:
+
+1. `CrewPositionIndex(componentIndex) < 0` — the ViewGeometry component under the cursor is not
+   dual-tagged `componentNN`, or its selection is not the seat's `actionSel` (preflight #4).
+2. `CrewMember(crew_index)` non-null — seat occupied.
+3. `!CrewCanGetThrough(crew_index)` — door state / seat-fold gate. ★ Base
+   `OffroadHatchback.CrewCanGetThrough` covers only posIdx 0..3 and then **`return false`**
+   (`offroadhatchback.c:212-250`), so ANY vehicle with more than four seats must override it or
+   seats 4+ are dead. A `true` on posIdx >= 4 is proof your override is running.
+4. `!IsAreaAtDoorFree(crew_index)` — engine-side door area.
+5. `!CanReachSeatFromDoors(selection, player.GetPosition(), 1.0)` — and this one has three
+   sub-conditions, all silent (`carscript.c:2708-2731`):
+   - `GetDoorConditionPointFromSelection(sel)` must return a non-empty name. ★ **The trap**:
+     base `CarScript` knows only FOUR cases, all lowercase — `seat_driver`, `seat_codriver`,
+     `seat_cargo1`, `seat_cargo2` (`carscript.c:2673-2692`) — and `OffroadHatchback` the same
+     six lowercase ones (`offroadhatchback.c:351-365`). Any other seat selection name returns
+     `""` and the seat can NEVER be boarded, with config, bones, proxies and componentNN all
+     correct. A custom seat set REQUIRES overriding this method.
+   - `MemoryPointExists(conPointName)` — the point must be in the **Memory LOD** of the
+     shipped model.
+   - distance **IN PLAN** (height is zeroed) `<= pDistance`, and the action passes **1.0 m**.
+     Vanilla places its condition points ~0.26 m OUTSIDE the hull at the door station
+     (measured on `offroadhatchback` MLOD: `seat_con_1_1` x=1.1586 against a half-width of
+     0.900) and REUSES two points for four seats. On a long fuselage two points cannot cover
+     ten seats.
+
+**The instrument** (DayZ-MCP): `query_get_in_condition` with a `component` index returns
+`first_block` = exactly one of `componentNN` / `occupied` / `crew_can_get_through` /
+`area_blocked` / `unreachable` / `""`, plus per-seat `crew_can_get_through`, `area_free`,
+`occupied`, `reachable` — the `reachable` loop being the same `GetActionComponentNameList` ->
+`CanReachSeatFromDoors` the action runs. **That names the guard in one call, offline of the
+user's eye.** Pass `component=-1` for the whole crew bank (note: `reachable` is hardcoded false
+in that mode — only the per-component call measures it).
+
+Measured case, HH-60G 2026-07-29: all ten seats `first_block="unreachable"` with guards 1-4
+GREEN on all ten, so the block is guard 5 alone — and that killed two plausible sub-causes at
+once, because neither camelCase nor radius can explain a lowercase seat whose point was 1 mm
+from the player.
+
+★ **Discipline that this cost**: a plan that declared "measured mechanism" on the strength of
+the chain being necessary was rejected by review for exactly that. Measure `first_block` per
+seat BEFORE editing the model, the config or the script.

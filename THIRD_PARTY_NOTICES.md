@@ -63,6 +63,7 @@ redistributed by this pack:
 | [MrClock8163/Arma3ObjectBuilder](https://github.com/MrClock8163/Arma3ObjectBuilder) | proxy-frame and RTM external oracle | GPL-3.0-or-later |
 | [ScripyZz/BisDLL-Arma-3](https://github.com/ScripyZz/BisDLL-Arma-3/tree/5600bad995c89154b4f6700ef087f86ef4c49315) | compatible ODOL parser backend; loaded externally through a pinned manifest | no license/redistribution grant observed |
 | DayZ Expansion, TraderPlus and TraderX | UI/layout comparison corpora | not redistributed; license not asserted here |
+| [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r128) | runtime dependency of the `rip-vehicle-import` classify viewer (`three.min.js`, `GLTFLoader.js`, `OrbitControls.js`, r128 UMD) | MIT; **not redistributed** — the viewer's README says where to fetch them |
 | DayZ game scripts, tools and data | API and runtime-contract evidence | Bohemia Interactive terms; not redistributed |
 
 The source map records pinned revisions and decisions. A link or citation is

@@ -292,3 +292,40 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    Test the patch on a COPY first (never the live file for a get-in edit). The pipeline debt (fold
    the hull + crew-binding into the builder so a full transplant becomes viable for car #2) is a
    separate task.
+
+
+## `validate()` limpio NO prueba que el winding sea correcto (council py3d, 2026-08-12)
+
+Regla dura antes de usar `py3d.validate()` como gate de winding en un vehiculo: **no puede
+ponerse en rojo por la causa que te preocupa.**
+
+El unico check de winding es RELATIVO al Visual LOD (`py3d/__init__.py:934` en v1.4.0, unico
+call site `:2059-2069`). Si estan invertidos TODOS los LODs -- el caso tipico del import
+Blender Z-up -> Y-up -- todo queda coherente entre si y `validate()` devuelve `[]` con exit 0.
+Y si el invertido es el Visual, acusa a los LODs de colision SANOS y sugiere "swap
+vertices[1] and vertices[2] on every face of this LOD": seguir esa sugerencia lleva el modelo
+al estado que ya no se puede detectar. La referencia ademas es el PRIMER visual del fichero,
+no el de menor resolucion (`:2498-2503`), asi que el orden de LODs cambia el veredicto.
+
+Los otros dos instrumentos tampoco valen como prueba de geometria: `save(verify=True)`
+(`_verify_against`) y `python -m py3d diff` solo comparan conteos, nombres de selection y
+suma de masa. Reproducido: dos modelos con un punto en `(0,0,0)` vs `(99,99,99)` -> verify OK
+y `diff` responde `total: 0`, exit 0.
+
+Consecuencia para la §3.5 de `rip-import.md` ("validate() findings that are EXPECTED for a
+vehicle, don't chase"): esa lista existe porque el check asume geometria CONVEXA y por eso
+escupe falsos positivos en cascos huecos y formas en L. Pero la lectura correcta no es solo
+"ignora esos findings", sino tambien **"su ausencia no te acredita nada"**.
+
+Verificacion que si discrimina, en orden de coste:
+1. Comparar el orden de vertices de una cara contra el vanilla equivalente debinarizado.
+2. `cross(e1,e2) . normal_declarada` por cara -- ambos vectores en el MISMO espacio, con lo
+   que el lio left-handed (DayZ) vs right-handed (Three.js) desaparece. Medido sobre 15 LODs
+   vanilla: 1274/1274 caras = 100.0000%, frente a un `pct_outward` que oscila entre 0% y
+   31.8% sin significar nada.
+3. Coherencia de aristas: dos caras vecinas recorren la arista compartida en sentidos
+   opuestos. Localiza las caras concretas en inversiones parciales.
+4. Test in-game (la textura solo se ve desde dentro = winding invertido).
+
+Detalle completo y el resto de defectos del fork: entrada `SP-227` en
+`AI/20_Knowledge/skill-patches-pending.md`.

@@ -1,4 +1,4 @@
-# profiles/<car>.json — schema campo a campo (estado 2026-07-11)
+# profiles/<car>.json — schema legacy/en vuelo (estado 2026-07-11)
 
 > Fuente de verdad de un coche en el pipeline. Loader común: `load_profile()` en
 > `VehicleImport\scripts\rip_p3_structural.py`. El `brz.json` NO es plantilla limpia:
@@ -6,6 +6,13 @@
 > sunk_keep_z, paleta cabina) — para el coche #2 copiar SOLO el contrato, nunca las
 > excepciones. Campos marcados (s1) los introduce la spec
 > `VehicleImport\plans\2026-07-11-s1-frontend-intake.md` (verificar merge antes de usarlos).
+
+>
+> **CAMBIO-0 (2026-08-05):** este schema conserva el wiring de coches ya iniciados y las
+> herramientas manuales. No es plantilla del próximo B. En particular,
+> `source_inventory`, `manifest_decisions`, receipts por corrida y `artifact_gates` fuera de
+> B1-B6 no son entradas del nuevo happy path. Los consumidores existentes no se modifican aquí;
+> el nuevo B se detiene antes de geometría mientras no exista su camino posterior.
 
 ## Identidad y paths
 
@@ -40,7 +47,7 @@
 | `dual_tag` | componentNN dual-tag ON (obligatorio; OFF solo para la fixture negativa) |
 | `collision{chassis, dmgzones, seat_con, refill, crew}` | override exacto de cajas (BRZ) o fallback bbox-bands (otras formas); dmgzones == hitpoints == config.componentNames |
 
-## Gates
+## Gates legacy/en vuelo
 
 | Campo | Qué es |
 |---|---|
@@ -48,7 +55,7 @@
 | `gate{proxy_dir, chunk_prefix, body_selections, exclude_selections, raycast, twin_eps_mm}` | gate_car (see-through): filtro por selección de carrocería + twin-test + params raycast COMPLETOS |
 | `artifact_gates{perf_budget, lod_semantics, interior_rayfan, glass_occ, winding}` | los 8 gates fail-loud del ledger; calibraciones SIEMPRE evidence-scoped (nunca disable); BRZ lleva overrides aprobados (visual 231k WARN-only) que el coche #2 NO hereda |
 
-## (s1) Bloques nuevos — pendientes de la tanda A/B
+## (s1) Bloques legacy — no copiar al próximo B
 
 | Campo | Qué es |
 |---|---|

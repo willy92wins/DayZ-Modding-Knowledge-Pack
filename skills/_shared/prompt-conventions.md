@@ -101,24 +101,65 @@ Ejemplo correcto (parche aplicable a `japm-pbo-recovery`):
 
 > Recover source code from DayZ PBO files obfuscated with JAPM **(also known as "PBO Tools")**. Use whenever: user mentions "PBO Tools", "JAPM", "obfuscated PBO", "lost my source", "recover PBO source", "decompile PBO", ...
 
-## INITIAL RESPONSE DEPTH (added 2026-05-12)
+## PROFUNDIDAD DE RESPUESTA (added 2026-05-12, recalibrada 2026-08-05)
 
-Anti-patrón observado: ante un prompt aparentemente acotado ("búscame sobre X"), respondo con análisis mínimo. El usuario vuelve y pide "haz un análisis mayor / matemático / a fondo". He desperdiciado un turno.
+El modelo ya tiende a ensanchar el alcance y a alargar la respuesta por su cuenta, y su
+harness ya instruye "entregar lo pedido, al alcance pedido". La versión anterior de esta
+sección mandaba lo contrario —subir por defecto **un nivel más profundo**— y empujaba justo
+el fallo que hoy hay que frenar. El default correcto es **el alcance pedido**.
 
-Regla heurística: si el dominio del prompt es complejo — estrategia de juego competitivo, arquitectura, diseño de skills, optimización de modelos, búsqueda transversal en codebase — por defecto **un nivel más profundo** que lo que el prompt literal pide:
+- Tarea acotada ("búscame sobre X", "qué te parece Y") → responder a ese nivel. Si el dominio
+  es complejo y queda algo sustancial por decir, UNA frase al final ofreciéndolo: "puedo
+  bajar a alternativas + criterios + riesgos si lo quieres".
+- No inflar el primer turno con secciones que nadie pidió (matrices, 5+ opciones, auditorías
+  laterales) salvo que el coste de no hacerlo sea irreversible (`G1`, formato persistente).
+- Recomendar antes que enumerar sigue mandando (`G4`): máx 3 opciones y la recomendación
+  primero, no un catálogo.
 
-- "búscame sobre X" en dominio complejo → análisis con ≥3 alternativas + criterios + recomendación, no solo descripción de X.
-- "qué te parece" en código → revisión por dimensiones (funcional, perf, edge cases, mantenimiento), no veredicto binario.
-- "puedo hacer Y" en infra → matriz de requisitos + alternativas + ruta recomendada, no solo sí/no.
-
-Si dudo del nivel, ofrecerlo al principio con palabras-clave que el usuario pueda invocar después:
+Palabras-clave con las que el usuario fija el nivel:
 
 | Palabra-clave | Profundidad |
 |---|---|
 | "rápido" / "breve" | 2-4 frases máximo |
-| (sin palabra) | nivel medio |
+| (sin palabra) | el alcance pedido, sin subir de nivel |
 | "profundo" / "a fondo" / "con math" / "audit" | exhaustivo |
 
-Una vez establecido el nivel, mantenerlo en toda la sesión salvo que el usuario lo rebaje explícitamente.
+Una vez establecido el nivel, mantenerlo en toda la sesión salvo que el usuario lo cambie.
 
-Caso violador (sesión 2026-05-12 "Optimize legendary reanimation deck"): primer turno respondí análisis pequeño a "búscame sobre clive's hideaway". El usuario tuvo que insistir: *"has hecho un análisis muy superficial y me aportas poco, haz una búsqueda mayor de más cartas que recomendarme, haz un análisis matemático"*. Debí ir directamente al nivel profundo dado el contexto (mazo en construcción, sesión previa de iteración).
+Origen y matiz (sesión 2026-05-12 "Optimize legendary reanimation deck"): el caso que creó
+esta regla fue un análisis demasiado superficial a "búscame sobre clive's hideaway", con el
+usuario insistiendo en *"haz una búsqueda mayor... haz un análisis matemático"*. Ese fallo es
+real, pero la respuesta correcta no es subir el default para todo: es **leer el contexto
+acumulado de la sesión**. Dominio complejo + historia previa de iteración pide profundidad;
+un prompt acotado en frío, no.
+
+## PROTOCOLO DE ENTREGA — una edición de skill se EMPAQUETA, no se aplica (added 2026-07-30)
+
+Instrucción del usuario del 2026-07-30, y aplica **siempre**: cuando toque editar una skill, se
+edita usando `skill-creator` y se le entrega el `.skill` para descargar; **la instala él**. No se
+aplica la edición directamente sobre su árbol — tampoco cuando el árbol es escribible
+(`~/.claude/skills/`) y la escritura persistiría.
+
+Por qué, aunque el write funcione: la instalación es suya. Si yo escribo directo, la versión viva y
+la que él tiene registrada divergen sin que lo vea, y el reconciliador del `skills-plugin` puede
+revertir o borrar por su cuenta lo no registrado. Empaquetar deja una sola fuente de verdad y le
+devuelve la decisión de qué entra y cuándo.
+
+Procedimiento:
+
+1. Editar la carpeta de la skill; si es la copia read-only del plugin, editar una copia en el
+   scratchpad. El ledger `skill-patches-pending.md` sigue siendo el REGISTRO de lo pendiente, no la
+   vía de entrega: aunque quede anotado ahí, lo que se entrega es el `.skill`.
+2. Empaquetar con `python C:\Users\<you>\.claude\skills\_shared\pack_skill.py <carpeta> <destino>`.
+   NO uses `skill-creator/scripts/package_skill.py`: su validador lee `SKILL.md` sin `encoding`, así
+   que en Windows cae a cp1252 y muere con `UnicodeDecodeError` ante cualquier em-dash, flecha o
+   acento (3 de 8 skills murieron ahí el 2026-07-27).
+3. Entregar el `.skill` con `SendUserFile`. El usuario pulsa "Save skill".
+4. Empaquetar la skill **entera** — `SKILL.md` + `references/` + `scripts/` + `assets/`. Un
+   `SKILL.md` suelto la instala mutilada, y un fragmento `.md` ni siquiera instala
+   (`SKILL.md must start with YAML frontmatter (---)`).
+
+`pack_skill.py` ya valida que haya frontmatter y `name`, que el `description` no pase de 1024
+caracteres (recortar sacando lo que no dispara al body, nunca truncando), y reabre el zip para
+comprobar que las entradas usan `/` y no `\` — `CreateFromDirectory` de PowerShell 5.1 las escribe
+con backslash y entonces el instalador no encuentra `<nombre>/SKILL.md`.

@@ -412,41 +412,6 @@ la entrada completa (síntoma, origen, evidencia) vive allí.
 - **LL-140** — Verifica toda exclusión de recurso con dos adquisiciones reales en el SO objetivo y exige que la segunda falle. Inspecciona defaults de socket, file-sharing y mutex de la stdlib; configura el lock fail-closed.
 - **LL-190** — Para todo verificador que afirme deleted/moved/repaired/restored, exige un count afectado mayor que cero o un pre-check independiente que demuestre que no había trabajo. No aceptes `{ok:true, count:0}` como prueba por sí sola.
 
-## (added 2026-07-28) Two DayZ persistence facts a Step-1 check must assume, not discover
-
-Both were re-read against the pinned build 1.29.0.163451 during the r21 Phase 03
-audit. They are engine properties, not project quirks, so any DayZ mod that
-persists data inherits them.
-
-- **DayZ exposes no rename and no move, so "temp -> verify -> replace" is NOT
-  atomic.** The file primitives stop at `FileExist`, `OpenFile`, `ReadFile`,
-  `CloseFile`, `FPrint`, `FGets`, `MakeDirectory`, `DeleteFile` and `CopyFile`
-  (`VANILLA/1_core/proto/ensystem.c:397-531`); a grep for `Rename|MoveFile` over
-  `1_core` returns zero. The real replace is `DeleteFile(dest)` followed by
-  `CopyFile(tmp, dest)`, leaving a window in which the destination does not
-  exist. Audit consequence: back up BEFORE that window, verify AFTER the copy,
-  and delete the `.tmp` only once the post-copy verify passes. Treat any code or
-  comment claiming an atomic replace as a finding, not as documentation.
-
-- **`EntityAI.OnStoreSave` writes a runtime-dependent NUMBER of fields.** With an
-  energy component it writes nine, without it none
-  (`VANILLA/3_game/entities/entityai.c:2928-2959`). Reading by fixed offset after
-  `super.OnStoreLoad` therefore desynchronises only for the configurations that
-  lack the component -- it will pass every test written against the configuration
-  that has it. Audit consequence: any subclass that reads after `super` must read
-  sequentially and check each read's return; a fixed offset is a latent defect
-  even when the current tests are green.
-
-Both belong in the Step 1 mechanical sweep, because both are grep-able and
-neither is deducible by reading the happy path.
-
-**And the entry-point instance they combine into**, found by this skill's own
-check #3 on the Phase 03 simulator: the normal save path deleted a destination
-that failed its post-copy verify, while the recovery path left the corrupt bytes
-in place as the live file. Same invariant, two entry points, one of them silently
-weaker -- the VULN-009 shape. When a codebase has a `save` and a `recover`, diff
-their verify branches line by line; do not assume the recovery path inherited the
-discipline.
 
 ## (added 2026-07-29) Dos cosas que la auditoria debe mirar y que ninguna dimension cubre sola
 
@@ -501,3 +466,87 @@ de cuatro fixes; el par culpable rara vez es el que uno sospecha.
 **Y usar mutantes en el Step 6, no solo tests verdes.** En este caso la re-auditoria con mutantes
 mato 12 de 14 y los 2 supervivientes eran precisamente tests que "probaban" un fix sin poder
 distinguirlo de su ausencia. Un test que pasa con y sin el fix no es cobertura: es decorado.
+## (added 2026-08-07) Cuando el arbol auditado es OUTPUT de un generador, el Step 5 no edita el arbol
+
+Origen: LFPowerGrid F4-S2 (2026-08-07). La auditoria produjo 3 fixes de 3 lineas dentro de un
+delta de 24. Aplicarlos parecia trivial. No lo era: el arbol candidato era el output de un
+transformer fail-closed con manifiesto de arbol y contrato pineado por SHA-256, y las lineas a
+tocar eran literales Python suyos, gateados por conteos exactos (`count('"key"') != 2 -> fail`).
+Editar el arbol habria roto el manifiesto y hecho el fix irreproducible.
+
+**Anadir al Step 1 (pre-checks mecanicos), como pregunta cero**: antes de nada, determinar si el
+arbol auditado es output de una herramienta (transformer, codegen, build, migracion) con
+manifiesto, contrato o hashes pineados. Buscar `*-receipt.json`, `contract*.json`,
+`*manifest*.json` junto al arbol, y un `--verify` en la herramienta que lo produjo. Si lo hay, el
+arbol NO es la superficie de edicion.
+
+**Consecuencias, en orden**:
+
+1. **El fix se aplica al literal del generador**, no al artefacto. Despues: regenerar el contrato
+   y su SHA, re-correr `analyze -> apply -> verify` desde un arbol limpio, y re-sellar el
+   artefacto (PBO/paquete). El artefacto anterior se conserva aparte como evidencia.
+2. **Re-anclar los gates es el modo de fallo que esta skill existe para evitar.** Un gate que se
+   toca para que acepte tu fix es un gate aflojado. Regla: re-anclar SIEMPRE mas estricto (dos
+   conteos exactos de 1 en vez de un conteo de 2), anadir un gate de no-regresion por cada
+   comprobacion que el fix elimina, y **probar en rojo cada gate tocado el mismo dia** — tamperar
+   el literal, correr la herramienta, exigir exit != 0 con el token esperado, restaurar y
+   verificar que el restore es byte-identico.
+3. **Decir el coste ANTES de que el usuario apruebe el alcance de fixes.** El coste real no es
+   "editar N lineas": es contrato + SHA + re-corrida + re-sellado + posible re-medicion. Cambia
+   que findings merecen arreglarse. En el caso origen, dos de los cuatro fixes aprobados cambiaron
+   de forma al conocerse el coste, y uno resulto inaplicable.
+4. **Un finding cuyo fix exigiria tocar una region pineada por hash en el contrato no se arregla.**
+   Se documenta, o se convierte en nota de procedimiento. En el caso origen, el cuerpo reubicado
+   era byte-identico por diseno y estaba pineado: el hallazgo "el hook de debug quedo duplicado en
+   dos ficheros y el tester puede editar el que no compila" se cerro con una linea en el
+   procedimiento de test, no con codigo.
+
+### Corolario para el Step 3a: una cita correcta puede no probar lo que se le pide
+
+Un auditor cito un test oficial de vanilla como prueba de que una API era sincrona: el test medi­a
+un contador antes y despues de la llamada y afirmaba `== 1` en la sentencia siguiente. La cita era
+literal y exacta. Pero el hermano de esa API, **documentado como asincrono**, pasaba el mismo
+assert unas lineas mas abajo. El test no discriminaba, asi que no probaba nada sobre sincronia.
+
+**Regla**: antes de aceptar un test, assert o invariante de terceros como prueba de la propiedad
+P, localizar el caso que NO tiene P y comprobar que falla ese mismo assert. Si el control negativo
+pasa, la evidencia no discrimina — es compatible con la conclusion, no la sostiene. Es el mismo
+eje que "un gate que no puede ponerse en rojo no es un gate", aplicado a evidencia ajena en vez de
+a gates propios. Verificar que la cita existe (`G2`) es el primer escalon; verificar que la cita
+DISCRIMINA es el segundo, y es el que se salta.
+
+## (added 2026-07-28) Two DayZ persistence facts a Step-1 check must assume, not discover
+
+Both were re-read against the pinned build 1.29.0.163451 during the r21 Phase 03
+audit. They are engine properties, not project quirks, so any DayZ mod that
+persists data inherits them.
+
+- **DayZ exposes no rename and no move, so "temp -> verify -> replace" is NOT
+  atomic.** The file primitives stop at `FileExist`, `OpenFile`, `ReadFile`,
+  `CloseFile`, `FPrint`, `FGets`, `MakeDirectory`, `DeleteFile` and `CopyFile`
+  (`VANILLA/1_core/proto/ensystem.c:397-531`); a grep for `Rename|MoveFile` over
+  `1_core` returns zero. The real replace is `DeleteFile(dest)` followed by
+  `CopyFile(tmp, dest)`, leaving a window in which the destination does not
+  exist. Audit consequence: back up BEFORE that window, verify AFTER the copy,
+  and delete the `.tmp` only once the post-copy verify passes. Treat any code or
+  comment claiming an atomic replace as a finding, not as documentation.
+
+- **`EntityAI.OnStoreSave` writes a runtime-dependent NUMBER of fields.** With an
+  energy component it writes nine, without it none
+  (`VANILLA/3_game/entities/entityai.c:2928-2959`). Reading by fixed offset after
+  `super.OnStoreLoad` therefore desynchronises only for the configurations that
+  lack the component -- it will pass every test written against the configuration
+  that has it. Audit consequence: any subclass that reads after `super` must read
+  sequentially and check each read's return; a fixed offset is a latent defect
+  even when the current tests are green.
+
+Both belong in the Step 1 mechanical sweep, because both are grep-able and
+neither is deducible by reading the happy path.
+
+**And the entry-point instance they combine into**, found by this skill's own
+check #3 on the Phase 03 simulator: the normal save path deleted a destination
+that failed its post-copy verify, while the recovery path left the corrupt bytes
+in place as the live file. Same invariant, two entry points, one of them silently
+weaker -- the VULN-009 shape. When a codebase has a `save` and a `recover`, diff
+their verify branches line by line; do not assume the recovery path inherited the
+discipline.

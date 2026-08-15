@@ -7,6 +7,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `rip-vehicle-import` cookbooks (`family-b/`), archived runbooks (`history/`) and the
+  classify viewer, which reviews a Blender sitting without opening Blender. Its
+  three Three.js libraries are **not** bundled; the viewer README says where to
+  fetch them, matching the pack's existing policy on third-party tools.
+- `dayz-vehicles` archived gate ladders (`history/`).
 - `dayz-clothing` skill: the worn-clothing pipeline verified in-game on DayZ
   1.29, covering the three silent failure modes that make a custom
   `ClothingTypes` item load as nothing, float, or come apart. Its helper
