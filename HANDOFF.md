@@ -3,17 +3,20 @@
 <!-- LIVE-STATE:START -->
 # DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-08-15 (listo para publicar, sin publicar)
 
-**Medido el 2026-08-15, no recordado:** HEAD `776e57a` en `r21/phase01-foundation`,
-árbol limpio, 5 commits nuevos hoy. **`main` sigue en `f87a59e`.** Sin remoto
+**Medido el 2026-08-15, no recordado:** HEAD `d2bba60` en `r21/phase01-foundation`,
+árbol limpio, 7 commits nuevos hoy. **`main` sigue en `f87a59e`.** Sin remoto
 configurado, y así se queda: el usuario decidió **preparar todo y no publicar aún**.
 
-Gates medidos sobre `0aabdad`, el commit anterior a este bloque:
+**El backlog de adopción está cerrado** (§«El backlog está CERRADO»). El pack
+gobierna **16 playbooks** más `_shared`; el ZIP son **267 entradas**.
+
+Gates medidos sobre `d2bba60`, salvo el hash del ZIP (ver nota):
 
 | Gate | Resultado |
 |---|---|
 | `validate` | **PASS**, 0 findings (claims · licencias · links · privacidad · skills · source-map) |
 | Suite | **816 passed / 18 skipped / 305 subtests** |
-| Build reproducible | **dos builds byte-idénticos** → `CC4C7BD6FD64C462ADCC72C2746AEC893612637239ED518D810904348800414D`, 4.308.996 B, 253 entradas |
+| Build reproducible | **dos builds byte-idénticos**, 4.452.073 B, **267 entradas** (hash abajo) |
 | py3d | 220 passed / 10 skipped; wheel «reproducible AND pinned» |
 | `packctl gate` | FAIL **solo** por `SKILLS-REF-NOT-CONFIGURED` (ver §Publicación) |
 | `promote --check` | FAIL — mide el drift local repo↔instaladas, **no** afecta a publicar |
@@ -22,10 +25,10 @@ Gates medidos sobre `0aabdad`, el commit anterior a este bloque:
 > viaja en el archivo, pero `sources/source-map.json` sí, y ahí vive el hash de
 > `HANDOFF.md`. Escribir un hash de ZIP dentro de este bloque lo invalida al
 > commitearlo: es autorreferencial. Por eso el valor va **atado al commit en que se
-> midió**, nunca presentado como «el hash del pack». Sobre `776e57a` el ZIP es
-> `5499F7969ABEBDEECB7A9E48A03436774CD1F834C8C33E4087D341085E78E43A`, también
-> reproducible en dos builds limpios. Lo que se verifica es la **propiedad**
-> —construir dos veces da lo mismo—, no un número concreto.
+> midió**, nunca presentado como «el hash del pack». Sobre `d2bba60` el ZIP es
+> `815901EB3E2290AFCB65EBF507A36D5465078D45ADA81621B13D8F6959D9DB32`, reproducible
+> en dos builds limpios. Lo que se verifica es la **propiedad** —construir dos veces
+> da lo mismo—, no un número concreto: en cuanto commitees este bloque, cambia.
 
 `ciclos_en_este_objetivo: 1 (Poner el pack al día y prepararlo para publicar)`
 
@@ -94,27 +97,35 @@ no tenía fila en la matriz de compatibilidad**, así que `A7` afirmaba cubrir e
 el filesystem y barría `reports/`, que está gitignored; fallaba con un
 `PermissionError` de un venv abandonado antes de compilar nada real.
 
-## Lo primero de la próxima sesión
+## El backlog está CERRADO. Lo que queda es deliberado
 
-Queda backlog, y **`dayz-vehicles` tiene un writer VIVO** (SKILL.md escrito a las
-15:51 de hoy, `SP-247` y `SP-249` en el mismo rato). Mientras esté vivo no se toca:
-adoptar a mitad de una secuencia mete en el repo un estado internamente incoherente.
+No hay nada pendiente de adoptar. Lo que sigue apareciendo al medir repo contra
+destino es, entero, decisión tomada — **no lo re-adoptes creyendo que es deuda**:
 
-| verdicto | ficheros | bytes | qué son |
-|---|---:|---:|---|
-| `MERGE` | 7 | +37.924 | el repo va por delante en parte del fichero |
-| `NEW-IN-TARGET` | 17 | +814.423 | **de los cuales ~726 KB son Three.js vendorizado** |
-| `ADOPT` | 2 | +2.514 | crecimiento puro |
-| `SKIP-EXECUTABLE` | 7 | +569 | solo la localización de rutas: cero conocimiento |
+| verdicto | ficheros | por qué se queda así |
+|---|---:|---|
+| `MERGE` | 6 | **el repo va por delante A PROPÓSITO**: son las secciones restauradas. La promoción las devuelve al destino, no al revés |
+| `NEW-IN-TARGET` | 3 | los 726 KB de Three.js, excluidos por política y documentados en `THIRD_PARTY_NOTICES.md` |
+| `SKIP-EXECUTABLE` | 7 | solo la localización de rutas: cero conocimiento |
+| `ADOPT` | 1 | `model.cfg.template`: su única diferencia es el CRLF que el repo normalizó. **Adoptarlo lo reintroduce** |
 
-Los dos `MERGE` peligrosos: **`rip-vehicle-import/SKILL.md` (−11.513, 225 líneas
-solo-repo)** y **`dayz-vehicles/SKILL.md` (186 líneas solo-repo)**. Compara sección
-por sección antes de escribir.
+**Cuatro secciones se restauraron porque el destino las había perdido de verdad**,
+verificado buscándolas en TODO el árbol instalado, no diffeando líneas:
+`DOOR MECHANISM SELECTOR` y el guard de get-in `SP-141` (`dayz-vehicles/SKILL.md`),
+la §1 de `build-packaging-and-debug.md`, y —por segunda vez— la sección de
+persistencia de `rigorous-data-audit`.
 
-**`rip-vehicle-import/assets/classify-viewer/` trae Three.js, GLTFLoader y
-OrbitControls vendorizados (~726 KB).** Son MIT, pero entrar en el pack exige
-entrada propia en `THIRD_PARTY_NOTICES.md`. Decisión pendiente: entran con su
-notice, o el visor se referencia sin empaquetar las libs.
+**La §1 es el caso que mejor enseña la diferencia**: el destino la había borrado
+**conservando la referencia cruzada a ella** («Catches §1 (config-only assets»).
+Un puntero colgante es un accidente, no una edición.
+
+**Y el clasificador por líneas se equivocó en los dos sentidos.** Cuatro ficheros
+que marcó `MERGE` eran adopciones: `prompt-conventions.md` tenía la sección
+**invertida a propósito** el 2026-08-05, y el `SKILL.md` de `rip-vehicle-import` no
+perdió 11 KB sino que se **reestructuró**, archivando el contenido en `history/`.
+Adoptarlo solo habría sido destructivo; adoptarlo **junto a** esos ficheros no.
+La lección: *«el repo tiene líneas que el destino no»* no significa
+«se pierde conocimiento». Hay que leer qué cambió.
 
 ## Las reglas de adopción, ya con tres confirmaciones
 
@@ -161,13 +172,14 @@ desde este HEAD. El procedimiento entero está en
 
 ## Puerta de arranque
 
-`Retomo DayZ Modding Knowledge Pack desde: 0aabdad (2026-08-15) con el pack al día
-—6 skills adoptadas, py3d 1.5.0 desde el fork publicado, dayz-clothing dentro— y
-verificado publicable: validate PASS, ZIP reproducible CC4C7BD6…, cero rutas
-privadas y cero bytes de terceros · el único rojo es el validador skills-ref
-externo, cuyo commit pineado ya no existe upstream · próxima acción: fusionar los
-7 ficheros MERGE (rip-vehicle-import y dayz-vehicles, ambos con líneas solo-repo) y
-decidir si entran los 726 KB de Three.js vendorizado`
+`Retomo DayZ Modding Knowledge Pack desde: d2bba60 (2026-08-15) con el backlog de
+adopción CERRADO —24 ficheros adoptados o fusionados, py3d 1.5.0 desde el fork
+publicado, dayz-clothing dentro, 16 playbooks— y verificado publicable: validate
+PASS, ZIP reproducible de 267 entradas, cero rutas privadas y cero bytes de
+terceros · lo que aún sale al medir contra las skills instaladas es deliberado, NO
+deuda · el único rojo es el validador skills-ref externo, cuyo commit pineado ya no
+existe upstream · próxima acción: decidir ese validador (re-pinear o registrar que
+no existe), y si publicamos, versionar el CHANGELOG y crear el repo`
 <!-- LIVE-STATE:END -->
 
 ---
