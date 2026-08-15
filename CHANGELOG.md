@@ -3,7 +3,10 @@
 All notable changes to the DayZ Modding Knowledge Pack are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [1.0.0] - 2026-08-15
+
+First public release. Everything below was accumulated across r21 phases 01-04
+and is published together.
 
 ### Added
 

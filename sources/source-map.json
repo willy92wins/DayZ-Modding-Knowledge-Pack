@@ -85,7 +85,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "72625abaa00724b448ed9fab22cd09150772b95183a8c34ad19d2db6089f590f",
+          "source_hash": "d820ac978b0752784d65cda7ad00ad154e36b8b0c2f024246ee8a562b0623248",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -93,7 +93,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "72625abaa00724b448ed9fab22cd09150772b95183a8c34ad19d2db6089f590f",
+      "output_hash": "d820ac978b0752784d65cda7ad00ad154e36b8b0c2f024246ee8a562b0623248",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -247,7 +247,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 04 inventory was regenerated mechanically from the source-mapped payload.",
           "license": "MIT",
-          "source_hash": "dee59ef02f506a934c2713b556af18d0d6960e4baa0491a8542b6d499fb05900",
+          "source_hash": "705443e0d749894ae618b57cff6962bf285f9cb36c2f0be148e8121a07c20e38",
           "source_id": "pack-r21-authored",
           "source_path": "MANIFEST.txt",
           "source_revision": "r21-phase04@2026-07-25",
@@ -255,7 +255,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "dee59ef02f506a934c2713b556af18d0d6960e4baa0491a8542b6d499fb05900",
+      "output_hash": "705443e0d749894ae618b57cff6962bf285f9cb36c2f0be148e8121a07c20e38",
       "output_path": "MANIFEST.txt",
       "routing_artifact_id": "root/manifest",
       "verification_level": "cross_checked"
