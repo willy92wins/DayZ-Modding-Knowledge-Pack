@@ -7,6 +7,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- py3d `KNOWN-ISSUES.md`: the published blind spots of the library, including
+  three checks that cannot fail for the reason you would rely on them for —
+  `save(verify=True)` compares no coordinates, `python -m py3d diff` calls
+  materially different models equal, and `audit_p3d.py` can print `ALL PASSED`
+  having checked nothing.
+- py3d absolute winding check (`_check_winding_absolute` with normal-agreement
+  and edge-coherence measures) and its council regression tests.
+- In-game verified skill knowledge written between 2026-07-30 and 2026-08-13:
+  worn clothing binds through `DayzTemporarySkeleton` rather than
+  `OFP2_ManSkeleton`; starting CF on a mission whose persistence was written
+  without it crashes the server hard while naming an unrelated vanilla entity;
+  the diag RPT buffers about 52 KB.
 - r21 Phase 04 strict 3D tooling: SEAnim v1 / `RTM_MDAT` / `RTM_0101`
   reader-writer-inspector, contract-driven MLOD pre-export validation and a
   read-only ODOL v53-v55 anatomy/diff adapter with authorized fixtures.
@@ -26,6 +38,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- **py3d 1.4.0 → 1.5.0, distribution renamed `py3d` → `py3d-dayz`.** The pack
+  now takes its py3d bytes from the published fork
+  `willy92wins/py3d-dayz@c50321c`, which was ahead of the pack and already
+  carried the release text. The importable module stays `py3d`; only the
+  distribution name changes, because `py3d` on PyPI is an unrelated library.
+  The version moved rather than being re-sealed again because `1.4.0` had come
+  to designate three different contents distinguished only by a manifest seal.
+  New reproducible wheel: `py3d_dayz-1.5.0-py3-none-any.whl`, SHA-256
+  `16eac9218cddb02b52b533540c0259c33d5e5b2d6ad2cd28444ef049d608a73b`.
+- `audit_p3d.py` moves from `tools/py3d/rollout/` to `tools/py3d/tools/`,
+  matching the published layout.
 - Distinguish fail-closed ODOL parity inspection from partial MLOD recovery;
   the compatible unknown-license backend remains external and SHA-256 pinned.
 - Normalized all 14 skill descriptions to the official 1024-character limit.

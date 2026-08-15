@@ -53,6 +53,25 @@ function Get-SourceVersion {
     return $CoreVersion
 }
 
+function Get-DistributionName {
+    # Read the distribution name rather than assuming it. It is py3d-dayz, not
+    # py3d, because py3d on PyPI belongs to an unrelated library -- and PEP 427
+    # normalises the hyphen to an underscore in the wheel filename. Hardcoding
+    # either form makes this check a liability the day the name changes again.
+    $ProjectFile = Join-Path $SourceRoot "pyproject.toml"
+    if (Test-Path -LiteralPath $ProjectFile) {
+        $Project = [IO.File]::ReadAllText($ProjectFile)
+        $NameMatch = [regex]::Match(
+            $Project, '(?m)^\s*name\s*=\s*"(?<name>[A-Za-z0-9._-]+)"\s*$'
+        )
+        if ($NameMatch.Success) {
+            return $NameMatch.Groups["name"].Value -replace "[-.]+", "_"
+        }
+    }
+    # No declared name: setuptools falls back to the source directory.
+    return (Split-Path -Leaf $SourceRoot) -replace "[-.]+", "_"
+}
+
 function Get-BuildRequirements {
     $PyprojectPath = Join-Path $SourceRoot "pyproject.toml"
     if (-not (Test-Path -LiteralPath $PyprojectPath -PathType Leaf)) {
@@ -192,7 +211,7 @@ try {
     }
 
     $Version = Get-SourceVersion
-    $ExpectedName = "py3d-$Version-py3-none-any.whl"
+    $ExpectedName = "$(Get-DistributionName)-$Version-py3-none-any.whl"
     if ($WheelA.Name -ne $ExpectedName) {
         throw "wheel filename '$($WheelA.Name)' does not match '$ExpectedName'"
     }

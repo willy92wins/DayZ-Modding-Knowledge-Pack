@@ -16,7 +16,7 @@ from builders import build_cube_lod, build_memory_lod, build_multilod_v2_p3d
 from helpers import f32, read_p3d, write_bytes
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-AUDIT = os.path.join(REPO, "rollout", "audit_p3d.py")
+AUDIT = os.path.join(REPO, "tools", "audit_p3d.py")
 
 MIRROR_X = ((-1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))
 SHEAR = ((1.0, 1.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))

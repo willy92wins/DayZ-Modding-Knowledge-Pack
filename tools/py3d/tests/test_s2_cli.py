@@ -87,8 +87,15 @@ def test_cli_validate_clean_and_broken(fork, tmp_path):
     r = run_cli("validate", broken)
     assert r.returncode == 1
     lines = r.stdout.splitlines()
-    assert lines[0] == "findings: 1" and lines[-1] == "result: errors"
-    assert lines[1].startswith("finding.0: ERROR ERR_WINDING_INVERTED lod=1 ")
+    # F4-01: invertir el Geometry LOD dispara DOS errores, el relativo al
+    # Visual y el absoluto contra sus propias normales. Se comprueban por
+    # contenido y no por posicion: el orden de emision no es contrato.
+    assert lines[0] == "findings: 2" and lines[-1] == "result: errors"
+    emitted = [ln for ln in lines if ln.startswith("finding.")]
+    assert any("ERROR ERR_WINDING_INVERTED lod=1 " in ln for ln in emitted), \
+        emitted
+    assert any("ERROR ERR_WINDING_VS_NORMALS lod=1 " in ln for ln in emitted), \
+        emitted
 
     bad = tmp_path / "bad.p3d"
     bad.write_bytes(b"garbage")

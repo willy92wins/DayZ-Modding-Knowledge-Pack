@@ -85,7 +85,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "93d21a6d94afa81a6cc85a629efa94eaeb09f98d27b32380f20d3ae4d5b144f5",
+          "source_hash": "f13b6270f7676777453b060d3678198aa1e88bcb09c35c31f71ecc7c24413185",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -93,7 +93,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "93d21a6d94afa81a6cc85a629efa94eaeb09f98d27b32380f20d3ae4d5b144f5",
+      "output_hash": "f13b6270f7676777453b060d3678198aa1e88bcb09c35c31f71ecc7c24413185",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2304,7 +2304,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "751e8c48785d2df23d2b89e40c5976deaea6547805538ce046a13a4711e131f2",
+          "source_hash": "9148306f5001970b2b925f7ba3cd4261cdc226780fff52878feb9df188b9476d",
           "source_id": "pack-r21-authored",
           "source_path": "product-spec.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -2312,7 +2312,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "751e8c48785d2df23d2b89e40c5976deaea6547805538ce046a13a4711e131f2",
+      "output_hash": "9148306f5001970b2b925f7ba3cd4261cdc226780fff52878feb9df188b9476d",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
@@ -8972,13 +8972,13 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
           "license": "MIT",
-          "source_hash": "1d715a461f2b94bdfcdc06fa2c6cb6d9e334ea9e12680c4440f351a44a90df6a",
+          "source_hash": "1f1dbdcf9f22b68a4c61d51bf9d29ea12367e6605c81e87e2091db6549c03338",
           "source_id": "py3d-canonical",
           "source_path": "README.md",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
           "verification_level": "cross_checked"
         },
         {
@@ -8992,8 +8992,8 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "decision": "merge",
+          "decision_evidence": "Pack ancestry before the fork sync; the shipped bytes now come from the published fork, so this input records what the pack contributed, not the output.",
           "license": "MIT",
           "source_hash": "3e7177ba2a5b8e08b913cebacf71c8be22461e46682ad516b2220002242584c2",
           "source_id": "pack-r21-authored",
@@ -9003,7 +9003,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3e7177ba2a5b8e08b913cebacf71c8be22461e46682ad516b2220002242584c2",
+      "output_hash": "1f1dbdcf9f22b68a4c61d51bf9d29ea12367e6605c81e87e2091db6549c03338",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -9034,13 +9034,13 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
           "license": "MIT",
-          "source_hash": "e15ca9a4fba208a14d7c8630a04dae6f72e2c98cca274c78903aad62b7e4fbc8",
+          "source_hash": "2f1546310f9d8fcdc5348dce9dec338a84cc6e023cba9fdf250445c332f5ae6b",
           "source_id": "py3d-canonical",
           "source_path": "py3d/__init__.py",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
           "verification_level": "cross_checked"
         },
         {
@@ -9064,10 +9064,10 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "decision": "merge",
+          "decision_evidence": "Pack ancestry before the fork sync; the shipped bytes now come from the published fork, so this input records what the pack contributed, not the output.",
           "license": "MIT",
-          "source_hash": "81109314b7936502e3122c41e2f442ec1e48b3c79045aafa978fb6871d9ce903",
+          "source_hash": "3b70173f886523ab367755ae2a2dbe11e1bf7897546b57b8af885e381e3f9bd0",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/py3d/__init__.py",
           "source_revision": "r21-phase04@2026-07-25",
@@ -9075,7 +9075,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3b70173f886523ab367755ae2a2dbe11e1bf7897546b57b8af885e381e3f9bd0",
+      "output_hash": "2f1546310f9d8fcdc5348dce9dec338a84cc6e023cba9fdf250445c332f5ae6b",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -9141,15 +9141,25 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed wheel-gate bytes pin the py3d build toolchain and enforce fail-closed wheel identity verification.",
           "license": "MIT",
-          "source_hash": "2b0148dd48cdcbcb1c4354e20e46ca92dff5a515205b2fb8b8c4b1bd53e7d3bb",
+          "source_hash": "0504bffb38e24858c68ab8ae0f48cb08c335eca56d053040a006bb70c9e07d78",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/pyproject.toml",
           "source_revision": "r21-wheel-gate@2026-07-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
+          "license": "MIT",
+          "source_hash": "0504bffb38e24858c68ab8ae0f48cb08c335eca56d053040a006bb70c9e07d78",
+          "source_id": "py3d-canonical",
+          "source_path": "pyproject.toml",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2b0148dd48cdcbcb1c4354e20e46ca92dff5a515205b2fb8b8c4b1bd53e7d3bb",
+      "output_hash": "0504bffb38e24858c68ab8ae0f48cb08c335eca56d053040a006bb70c9e07d78",
       "output_path": "tools/py3d/pyproject.toml",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -9319,7 +9329,7 @@
       "verification_level": "offline_tested"
     },
     {
-      "artifact_id": "file/tools/py3d/rollout/audit_p3d.py",
+      "artifact_id": "file/tools/py3d/tools/audit_p3d.py",
       "distribution_role": "payload",
       "hash_policy": "sha256",
       "inputs": [
@@ -9344,13 +9354,13 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
           "license": "MIT",
           "source_hash": "7885474fd3115b013e8c6ef0f340857789c88fe9db1c66dd361ae53173368332",
           "source_id": "py3d-canonical",
           "source_path": "rollout/audit_p3d.py",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
           "verification_level": "cross_checked"
         },
         {
@@ -9366,7 +9376,7 @@
       ],
       "license": "MIT",
       "output_hash": "7885474fd3115b013e8c6ef0f340857789c88fe9db1c66dd361ae53173368332",
-      "output_path": "tools/py3d/rollout/audit_p3d.py",
+      "output_path": "tools/py3d/tools/audit_p3d.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
@@ -9389,7 +9399,7 @@
           "decision": "merge",
           "decision_evidence": "Reviewed wheel-gate bytes pin the py3d build toolchain and enforce fail-closed wheel identity verification.",
           "license": "MIT",
-          "source_hash": "7d9fa996bdca63229f783014b1a1b9939bddaac4f7db5244b70318eff1b2ccf3",
+          "source_hash": "fafb637394f82057e77566a064dc4dc57ca82cb33eb160294c97448784636d30",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/rollout/build-wheel.ps1",
           "source_revision": "r21-wheel-gate@2026-07-26",
@@ -9397,7 +9407,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7d9fa996bdca63229f783014b1a1b9939bddaac4f7db5244b70318eff1b2ccf3",
+      "output_hash": "fafb637394f82057e77566a064dc4dc57ca82cb33eb160294c97448784636d30",
       "output_path": "tools/py3d/rollout/build-wheel.ps1",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -9733,7 +9743,7 @@
           "decision": "merge",
           "decision_evidence": "Reviewed wheel-gate bytes pin the py3d build toolchain and enforce fail-closed wheel identity verification.",
           "license": "MIT",
-          "source_hash": "9592c59cde8bdbf5d51f655ab7e3cf9e69ee78be4cddba4f204e43e88da21bfc",
+          "source_hash": "d319ba93428e16aaae6fcbf79848a837dc7c2284ac6e8f309dfdd57d7d45d52b",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/rollout/wheel-manifest.json",
           "source_revision": "r21-wheel-gate@2026-07-26",
@@ -9741,7 +9751,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9592c59cde8bdbf5d51f655ab7e3cf9e69ee78be4cddba4f204e43e88da21bfc",
+      "output_hash": "d319ba93428e16aaae6fcbf79848a837dc7c2284ac6e8f309dfdd57d7d45d52b",
       "output_path": "tools/py3d/rollout/wheel-manifest.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -9824,13 +9834,13 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
           "license": "MIT",
-          "source_hash": "dd3baaee4f64de8d205f65d09488044fc0b66799b4c9f60d849569fa87962a8d",
+          "source_hash": "cd8b246ceb4970b4be7245130d4d8354b998b78a0fa390e201414618b8d032da",
           "source_id": "py3d-canonical",
           "source_path": "setup.py",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
           "verification_level": "cross_checked"
         },
         {
@@ -9844,8 +9854,8 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "decision": "merge",
+          "decision_evidence": "Pack ancestry before the fork sync; the shipped bytes now come from the published fork, so this input records what the pack contributed, not the output.",
           "license": "MIT",
           "source_hash": "6349ad4ec9eea23c24f7d5344299654d3bb32f2e77006de93513e1abc4cc344d",
           "source_id": "pack-r21-authored",
@@ -9855,7 +9865,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6349ad4ec9eea23c24f7d5344299654d3bb32f2e77006de93513e1abc4cc344d",
+      "output_hash": "7f67509ca97413441443b796398531647c8d715df4994ba9129534d97c51d077",
       "output_path": "tools/py3d/setup.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -9938,13 +9948,13 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
           "license": "MIT",
-          "source_hash": "a361f62620858a979402d3e094ed79cf80cd6123d737c3913dd77756524c8424",
+          "source_hash": "ee41e486aa7dfb8243acc9d261f9e831e7edf6db48c7b1c2e8461a362f24ba02",
           "source_id": "py3d-canonical",
           "source_path": "tests/conftest.py",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
           "verification_level": "cross_checked"
         },
         {
@@ -9958,8 +9968,8 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
+          "decision": "merge",
+          "decision_evidence": "Pack ancestry before the fork sync; the shipped bytes now come from the published fork, so this input records what the pack contributed, not the output.",
           "license": "MIT",
           "source_hash": "ecbaf3420fceaf795e19501156c681e24d1fb7f5ecc38259d6e3c277f86a90f3",
           "source_id": "pack-r21-authored",
@@ -9969,7 +9979,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ecbaf3420fceaf795e19501156c681e24d1fb7f5ecc38259d6e3c277f86a90f3",
+      "output_hash": "ee41e486aa7dfb8243acc9d261f9e831e7edf6db48c7b1c2e8461a362f24ba02",
       "output_path": "tools/py3d/tests/conftest.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -10354,8 +10364,8 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision": "merge",
+          "decision_evidence": "Pack ancestry before the fork sync; the shipped bytes now come from the published fork, so this input records what the pack contributed, not the output.",
           "license": "MIT",
           "source_hash": "e2dd773b2919599c37a486324066731d1b01b02b3d11a54502faf8a870826239",
           "source_id": "pack-r21-authored",
@@ -10364,20 +10374,20 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
           "license": "MIT",
-          "source_hash": "e2dd773b2919599c37a486324066731d1b01b02b3d11a54502faf8a870826239",
+          "source_hash": "e9a1e909f997db2584482a22d9dfdb100a3d435781f4ac5dc601bf1c53f87b4b",
           "source_id": "py3d-canonical",
           "source_path": "tests/test_s2_cli.py",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
           "verification_level": "cross_checked"
         },
         {
           "decision": "keep_pack",
           "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
           "license": "MIT",
-          "source_hash": "e2dd773b2919599c37a486324066731d1b01b02b3d11a54502faf8a870826239",
+          "source_hash": "e9a1e909f997db2584482a22d9dfdb100a3d435781f4ac5dc601bf1c53f87b4b",
           "source_id": "py3d-rollout",
           "source_path": "tests/test_s2_cli.py",
           "source_revision": "filesystem@2026-07-24",
@@ -10385,7 +10395,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e2dd773b2919599c37a486324066731d1b01b02b3d11a54502faf8a870826239",
+      "output_hash": "e9a1e909f997db2584482a22d9dfdb100a3d435781f4ac5dc601bf1c53f87b4b",
       "output_path": "tools/py3d/tests/test_s2_cli.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -10562,8 +10572,8 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision": "merge",
+          "decision_evidence": "Pack ancestry before the fork sync; the shipped bytes now come from the published fork, so this input records what the pack contributed, not the output.",
           "license": "MIT",
           "source_hash": "37f5d35017abd5009e8d3703b7124dd47c072d9db7277002c873d2dbda7f2bd2",
           "source_id": "pack-r21-authored",
@@ -10572,20 +10582,20 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
           "license": "MIT",
-          "source_hash": "37f5d35017abd5009e8d3703b7124dd47c072d9db7277002c873d2dbda7f2bd2",
+          "source_hash": "edd1f94093d34ab840e51851c9e691bd7b56fd237fee1066f8d89b4e364293fa",
           "source_id": "py3d-canonical",
           "source_path": "tests/test_s2_validate12.py",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
           "verification_level": "cross_checked"
         },
         {
           "decision": "keep_pack",
           "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
           "license": "MIT",
-          "source_hash": "37f5d35017abd5009e8d3703b7124dd47c072d9db7277002c873d2dbda7f2bd2",
+          "source_hash": "edd1f94093d34ab840e51851c9e691bd7b56fd237fee1066f8d89b4e364293fa",
           "source_id": "py3d-rollout",
           "source_path": "tests/test_s2_validate12.py",
           "source_revision": "filesystem@2026-07-24",
@@ -10593,7 +10603,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "37f5d35017abd5009e8d3703b7124dd47c072d9db7277002c873d2dbda7f2bd2",
+      "output_hash": "edd1f94093d34ab840e51851c9e691bd7b56fd237fee1066f8d89b4e364293fa",
       "output_path": "tools/py3d/tests/test_s2_validate12.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -10614,8 +10624,8 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision": "merge",
+          "decision_evidence": "Pack ancestry before the fork sync; the shipped bytes now come from the published fork, so this input records what the pack contributed, not the output.",
           "license": "MIT",
           "source_hash": "99d54814c646e2bc674ad109b3bc76d06aa7798dab198f7bfc1c5da855ef945e",
           "source_id": "pack-r21-authored",
@@ -10624,20 +10634,20 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "keep_pack",
-          "decision_evidence": "Canonical fork was compared; the pack keeps its reviewed public rollout projection.",
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
           "license": "MIT",
-          "source_hash": "99d54814c646e2bc674ad109b3bc76d06aa7798dab198f7bfc1c5da855ef945e",
+          "source_hash": "1832dabaa476daf4b480cebaabdf7598b431059fc897ce20506202faef0afca0",
           "source_id": "py3d-canonical",
           "source_path": "tests/test_s3_features.py",
-          "source_revision": "f862efd195e59cba5cfb0b1f5ec6c2f1aafc53a6",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
           "verification_level": "cross_checked"
         },
         {
           "decision": "keep_pack",
           "decision_evidence": "Rollout copy was compared as deployment evidence; canonical pack/py3d bytes remain authoritative.",
           "license": "MIT",
-          "source_hash": "99d54814c646e2bc674ad109b3bc76d06aa7798dab198f7bfc1c5da855ef945e",
+          "source_hash": "1832dabaa476daf4b480cebaabdf7598b431059fc897ce20506202faef0afca0",
           "source_id": "py3d-rollout",
           "source_path": "tests/test_s3_features.py",
           "source_revision": "filesystem@2026-07-24",
@@ -10645,7 +10655,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "99d54814c646e2bc674ad109b3bc76d06aa7798dab198f7bfc1c5da855ef945e",
+      "output_hash": "1832dabaa476daf4b480cebaabdf7598b431059fc897ce20506202faef0afca0",
       "output_path": "tools/py3d/tests/test_s3_features.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -11175,6 +11185,102 @@
       "license": "MIT",
       "output_hash": "d83b34fcc3810674098e7a247c7ea9058c41ce475094755d91508c5e5346ef59",
       "output_path": "tools/dayz-ui-lab/tests/test_diff.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/py3d/KNOWN-ISSUES.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
+          "license": "MIT",
+          "source_hash": "38d34a7929a96fb565f1a7726e8f99c866b5c018f68cde449150448a5b527a26",
+          "source_id": "py3d-canonical",
+          "source_path": "KNOWN-ISSUES.md",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 02 bytes are the selected public output.",
+          "license": "MIT",
+          "source_hash": "38d34a7929a96fb565f1a7726e8f99c866b5c018f68cde449150448a5b527a26",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/KNOWN-ISSUES.md",
+          "source_revision": "r21-phase02@2026-08-15",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "38d34a7929a96fb565f1a7726e8f99c866b5c018f68cde449150448a5b527a26",
+      "output_path": "tools/py3d/KNOWN-ISSUES.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/py3d/.gitattributes",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
+          "license": "MIT",
+          "source_hash": "0de27bc0dd7c0827e32a4748840927007d3f8fb728936832e768507d1f934600",
+          "source_id": "py3d-canonical",
+          "source_path": ".gitattributes",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 02 bytes are the selected public output.",
+          "license": "MIT",
+          "source_hash": "0de27bc0dd7c0827e32a4748840927007d3f8fb728936832e768507d1f934600",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/.gitattributes",
+          "source_revision": "r21-phase02@2026-08-15",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0de27bc0dd7c0827e32a4748840927007d3f8fb728936832e768507d1f934600",
+      "output_path": "tools/py3d/.gitattributes",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/py3d/tests/test_council_fixes.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
+          "license": "MIT",
+          "source_hash": "02ef8fcc32ba17f9196b919cc7575c62e52df00cb9184ee66b4f80c54aef7e95",
+          "source_id": "py3d-canonical",
+          "source_path": "tests/test_council_fixes.py",
+          "source_revision": "c50321c254f65c6eae28231363df5230674fb2f0",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed Phase 02 bytes are the selected public output.",
+          "license": "MIT",
+          "source_hash": "02ef8fcc32ba17f9196b919cc7575c62e52df00cb9184ee66b4f80c54aef7e95",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/test_council_fixes.py",
+          "source_revision": "r21-phase02@2026-08-15",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "02ef8fcc32ba17f9196b919cc7575c62e52df00cb9184ee66b4f80c54aef7e95",
+      "output_path": "tools/py3d/tests/test_council_fixes.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

@@ -1,9 +1,9 @@
 {
     "schema_version":  "py3d-wheel-manifest-v2",
-    "filename":  "py3d-1.4.0-py3-none-any.whl",
-    "sha256":  "8043b796dd18fe3d949fde03031d51afa3759021936760953c0e6ec0d74f86c2",
+    "filename":  "py3d_dayz-1.5.0-py3-none-any.whl",
+    "sha256":  "16eac9218cddb02b52b533540c0259c33d5e5b2d6ad2cd28444ef049d608a73b",
     "source_date_epoch":  1784937600,
-    "source_version":  "1.4.0",
+    "source_version":  "1.5.0",
     "python_version":  "3.14.3",
     "build_requires":  [
                            "setuptools==83.0.0"

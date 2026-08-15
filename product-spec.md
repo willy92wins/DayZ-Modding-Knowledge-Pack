@@ -306,20 +306,24 @@ control positivo three-cards → verdict=PASS, exit 0, findings=0
   `3069958660046119589` y PBO hashes; LFPG Sorter V4 TEST como negativo.
 - Prior art auditado: dayz-labs `dbd6ad3e...`, Lake `ac56f369...`,
   StarDZ `dbdcd23b...`.
-- py3d upstream `7acd58b`/tag `v1.0` y fork release `1.4.0`; wheel
-  reproducible SHA-256
-  `8043b796dd18fe3d949fde03031d51afa3759021936760953c0e6ec0d74f86c2`,
-  re-sellado el 2026-07-28 por decisión explícita del usuario: `4271ff0`
-  endureció la fuente del wheel (`tools/py3d/py3d/__init__.py`), así que el
-  sello anterior `c635bf7ec12c…` describía la fuente de `913192d` y el gate
-  se puso rojo por el motivo correcto. Ese valor había sustituido a su vez a
-  `cc014a4330e8…`, fijado antes de que `tools/py3d/pyproject.toml` existiera,
-  cuando PEP 517 resolvía `setuptools` dinámicamente; ninguno de los dos se
-  conserva como objetivo. La reproducibilidad es **toolchain-bound**: vale para
+- py3d upstream `7acd58b`/tag `v1.0` y fork release `1.5.0`; distribución
+  `py3d-dayz` (el módulo importable sigue siendo `py3d`; `py3d` en PyPI es otra
+  librería). Wheel reproducible `py3d_dayz-1.5.0-py3-none-any.whl` SHA-256
+  `16eac9218cddb02b52b533540c0259c33d5e5b2d6ad2cd28444ef049d608a73b`,
+  re-sellado el 2026-08-15 por decisión explícita del usuario al sincronizar el
+  pack con el fork publicado `willy92wins/py3d-dayz@c50321c`, que iba por
+  delante. La reproducibilidad es **toolchain-bound**: vale para
   `setuptools==83.0.0` y Python `3.14.3`, ambos declarados en
-  `rollout/wheel-manifest.json`. La versión `1.4.0` ha designado dos contenidos
-  distintos sin cambiar de nombre de fichero; lo que los distingue es el sello
-  del manifiesto, no la versión.
+  `rollout/wheel-manifest.json`.
+- **Por qué el salto a `1.5.0` y no otro re-sello en `1.4.0`.** Ese nombre llegó
+  a designar tres contenidos distintos —el sello `cc014a4330e8…` anterior a que
+  existiera `tools/py3d/pyproject.toml`, el `c635bf7ec12c…` de `913192d`, y el
+  `8043b796…` que `4271ff0` endureció— y lo único que los separaba era el sello
+  del manifiesto. Subir de versión devuelve la propiedad de que un nombre
+  identifique un contenido; `1.4.0` queda retirado por ambiguo. El fork
+  publicado sigue etiquetado `1.4.0` con estos mismos bytes: al empujarlo hay
+  que subirlo también a `1.5.0`, o volverá a haber dos contenidos bajo un
+  nombre.
 
 Aliases de evidencia usados en los planes:
 

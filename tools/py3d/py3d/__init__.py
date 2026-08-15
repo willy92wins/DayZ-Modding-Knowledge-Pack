@@ -1,27 +1,33 @@
 #!/usr/bin/env python3
 
-r"""py3d - DayZ fork
+r"""py3d-dayz - read and write Arma/DayZ .p3d files (MLOD).
 
-Library for reading and writing Arma/DayZ .p3d files in their unbinarized
-(MLOD) form.
+A maintained fork of https://github.com/KoffeinFlummi/py3d (master 7acd58b,
+MIT, unmaintained since 2018) by Felix "KoffeinFlummi" Wiegand, whose
+copyright is preserved in LICENSE. The importable module is still `py3d`,
+so `import py3d` keeps working; only the distribution name differs, because
+`py3d` on PyPI belongs to an unrelated library.
 
-Fork of https://github.com/KoffeinFlummi/py3d (master 7acd58b, MIT).
-DayZ-pipeline hardening (S1A): early validation of selection weights,
-#Property# length guard, actionable Selection() error, LOD.new_selection().
-Write contract: byte-identical to upstream for valid canonical inputs (D4
-nivel CANON); raises where upstream silently corrupted or crashed late.
+What this fork adds on top of upstream's MLOD codec:
 
-S2 (1.2.0): constantes LOD DayZ + kind()/get_lod(), bbox,
-triangulate, set_selection, set_total_mass, proxies (frame
-angle-sort de dayz-proxy-align), Recipe JSON v1 (to_dict/
-from_dict scoped al inspector, D7), validate() v1.2.0 con la
-paridad depurada del audit (F2-12) y CLI (python -m py3d).
+- Anti-corruption guards: paths that used to corrupt a .p3d silently or
+  crash late now fail EARLY with an actionable message (selection weight
+  validation, #Property# length limit, stale-binding detection).
+- DayZ LOD constants and `LOD.kind()` / `P3D.get_lod()`. Note DayZ does NOT
+  use the Arma-3-era e13 ids for FireGeo/ViewGeo: they are 7e15 / 6e15.
+- Geometry helpers: `bbox`, `triangulate`, `set_selection`,
+  `set_total_mass`, `set_memory_point`, and a proxy lifecycle
+  (add / inspect / align / remove) with explicit raw<->engine frames.
+- `P3D.validate()`, a model validator that reports `Finding`s, and a CLI:
+  `python -m py3d info|validate|diff`.
+- Recipe JSON (`to_dict` / `from_dict`) for inspection. See KNOWN-ISSUES:
+  it is lossy and is NOT a safe persistence format yet.
 
-S4 (1.4.0): conversion explicita raw/engine y ciclo de vida proxy
-add/strict-inspect/align/remove con validacion previa y remapeo seguro.
+Write contract: byte-identical to upstream for valid canonical inputs; it
+raises where upstream would have corrupted the file or crashed later.
 
-Canonical source: tools/py3d in the DayZ Modding Knowledge Pack. External
-checkouts and vendored wheels are rollout targets, never independent sources.
+`IS_DAYZ_FORK = True` is provided so scripts can assert they imported this
+library and not the unrelated `py3d` from PyPI.
 """
 
 
@@ -33,7 +39,7 @@ import struct
 import tempfile
 
 
-__version__ = "1.4.0"
+__version__ = "1.5.0"
 IS_DAYZ_FORK = True
 
 _REQUIRED = object()
@@ -44,7 +50,18 @@ def _read_asciiz(f, encoding="utf-8"):
 
     bts = b""
     while b"\0" not in bts:
-        bts += f.read(1024)
+        chunk = f.read(1024)
+        if not chunk:
+            # Upstream (master 7acd58b) itera aqui para siempre: en EOF
+            # read() devuelve b"" indefinidamente y el proceso queda
+            # COLGADO, sin traceback y sin ser capturable por el llamante.
+            # Un .p3d truncado es el caso normal (escritura a medias,
+            # descarga incompleta, sector danado).
+            raise ValueError(
+                "unterminated asciiz string starting at offset %d: reached "
+                "EOF after %d bytes without a NUL terminator - the file is "
+                "truncated or not a valid MLOD" % (pos, len(bts)))
+        bts += chunk
     bts = bts[:bts.index(b"\0")]
 
     f.seek(pos + len(bts) + 1)
@@ -931,8 +948,148 @@ def _pct_outward(lod):
     return 100.0 * out / tot
 
 
+def _pct_normal_agreement(lod):
+    r"""F4-01 senal B: % de caras cuyo winding concuerda con su normal
+    DECLARADA.
+
+    `cross(e1,e2) . normal_declarada` con AMBOS vectores en el mismo
+    espacio. Por eso no depende del handedness: el lio left-handed (DayZ)
+    vs right-handed (Three.js) se cancela en el producto, y no hay ningun
+    signo que "corregir" segun el motor.
+
+    Es la senal que `_pct_outward` no puede dar: aquella compara contra el
+    centroide del LOD, que (a) asume convexidad y (b) es invariante a
+    invertir el modelo ENTERO -- por eso el bug Z-up -> Y-up era invisible.
+
+    Devuelve None si ninguna cara es evaluable. Las caras degeneradas y las
+    de normal nula NO votan: un check que opina sin datos es peor que uno
+    que calla.
+    """
+    if len(lod.faces) == 0:
+        return None
+    agree = 0
+    tot = 0
+    for face in lod.faces:
+        verts = face.vertices
+        if len(verts) < 3:
+            continue
+        v = [vx.point.coords for vx in verts]
+        cx, cy, cz = _v_cross(_v_sub(v[1], v[0]), _v_sub(v[2], v[0]))
+        if cx == 0.0 and cy == 0.0 and cz == 0.0:
+            continue
+        normal = verts[0].normal
+        if normal is None:
+            continue
+        nx, ny, nz = normal
+        if nx == 0.0 and ny == 0.0 and nz == 0.0:
+            continue
+        dot = cx * nx + cy * ny + cz * nz
+        if dot == 0.0:
+            continue
+        tot += 1
+        if dot > 0:
+            agree += 1
+    if tot == 0:
+        return None
+    return 100.0 * agree / tot
+
+
+def _pct_edge_coherence(lod):
+    r"""F4-01 senal A: % de aristas compartidas recorridas en sentidos
+    opuestos por sus dos caras.
+
+    Puramente topologica: ni centroides, ni normales, ni convexidad. En una
+    superficie orientable bien construida el valor es 100%. Localiza ademas
+    QUE caras discrepan, cosa que una media global no puede.
+
+    Solo puntua aristas usadas por EXACTAMENTE dos caras; los bordes
+    abiertos y las aristas non-manifold son asunto de _check_watertight.
+    Devuelve None si no hay ninguna arista compartida que evaluar.
+    """
+    if len(lod.faces) == 0:
+        return None
+    use = {}
+    for face in lod.faces:
+        verts = face.vertices
+        n = len(verts)
+        if n < 3:
+            continue
+        for i in range(n):
+            a = verts[i].point_index
+            b = verts[(i + 1) % n].point_index
+            if a == b:
+                continue
+            key = (a, b) if a < b else (b, a)
+            use.setdefault(key, []).append(1 if a < b else -1)
+    tot = 0
+    good = 0
+    for dirs in use.values():
+        if len(dirs) != 2:
+            continue
+        tot += 1
+        if dirs[0] != dirs[1]:
+            good += 1
+    if tot == 0:
+        return None
+    return 100.0 * good / tot
+
+
+def _check_winding_absolute(lod, lod_index, kind_label):
+    r"""F4-01 (council 2026-08-12): winding ABSOLUTO de un LOD, sin
+    compararlo con ningun otro.
+
+    Cierra el falso negativo que motivo el fork: `_check_winding_vs_visual`
+    es RELATIVO al Visual, asi que invertir TODOS los LODs dejaba el modelo
+    coherente consigo mismo y `validate()` devolvia [] -- justo el estado
+    que produce un export Blender Z-up -> Y-up sin invertir el orden de
+    vertices.
+
+    Aditivo: codigos nuevos, no toca los de `_check_winding_vs_visual`.
+    """
+    findings = []
+    pct = _pct_normal_agreement(lod)
+    if pct is None:
+        findings.append(Finding(
+            "WARN_WINDING_UNVERIFIABLE", "WARN", lod_index,
+            "%s LOD: winding could not be verified - no face has both a "
+            "non-degenerate winding and a non-degenerate declared normal."
+            % kind_label))
+    elif pct < 10.0:
+        findings.append(Finding(
+            "ERR_WINDING_VS_NORMALS", "ERROR", lod_index,
+            "%s LOD winding contradicts its own declared normals (only "
+            "%.0f%% agree). Every face is wound backwards while its normal "
+            "still points outward: the signature of a Z-up -> Y-up export "
+            "that changed handedness without reordering vertices. The "
+            "texture will only be visible from INSIDE and raycasts from "
+            "outside pass through. Fix: face.vertices.reverse() on every "
+            "face of this LOD." % (kind_label, pct)))
+    elif pct <= 90.0:
+        findings.append(Finding(
+            "WARN_WINDING_NORMAL_MISMATCH", "WARN", lod_index,
+            "%s LOD: only %.0f%% of faces agree with their own declared "
+            "normal - winding is not internally consistent."
+            % (kind_label, pct)))
+    edge = _pct_edge_coherence(lod)
+    if edge is not None and edge < 100.0:
+        findings.append(Finding(
+            "WARN_WINDING_EDGE_INCOHERENT", "WARN", lod_index,
+            "%s LOD: only %.0f%% of shared edges are traversed in opposite "
+            "directions by their two faces (100%% expected on an orientable "
+            "surface) - neighbouring faces disagree on which side is out."
+            % (kind_label, edge)))
+    return findings
+
+
 def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
-    """Port depurado de audit_p3d.check_winding_vs_visual (104-171)."""
+    """Port depurado de audit_p3d.check_winding_vs_visual (104-171).
+
+    OJO (F4-01): este check es RELATIVO al Visual LOD y se apoya en
+    `_pct_outward`, que asume geometria convexa. NO puede detectar una
+    inversion global ni distinguir una caja hueca correcta de una rota.
+    Se conserva por compatibilidad de codigos; la senal que si discrimina
+    es `_check_winding_absolute`.
+    """
     findings = []
     col = _pct_outward(lod)
     vis = _pct_outward(visual_lod)
@@ -948,8 +1105,10 @@ def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
             "%s LOD winding is INVERTED relative to the Visual LOD "
             "(%s=%s %.0f%%-outward vs Visual=%s %.0f%%-outward). Raycasts "
             "from outside pass through -> no collision / no action / no "
-            "ballistic hits. Fix: swap vertices[1] and vertices[2] on "
-            "every face of this LOD."
+            "ballistic hits. Fix: face.vertices.reverse() on every face of "
+            "this LOD (do NOT swap vertices[1] and vertices[2]: that "
+            "inverts a triangle but turns a quad [0,1,2,3] into [0,2,1,3], "
+            "a CROSSED face)."
             % (kind_label, kind_label, col_dom, col, vis_dom, vis)))
     elif not col_uniform:
         findings.append(Finding(
@@ -1151,10 +1310,10 @@ def _lod_has_mass_tagg(lod):
 def _check_mass_only_geometry(lod, lod_index):
     """F3-01 (BUG-021): tagg #Mass# fuera del Geometry LOD -> ERROR.
 
-    LL-079/LL-080 (LFQuad N1.5): un #Mass# espurio en un LOD no-Geometry
-    (aunque todos los valores sean 0.0) hace que binarize/AddonBuilder
-    hornee la masa de ESE LOD -> ODOL con CoM=(0,0,0) e inercia 0 ->
-    ECE_PLACE_ON_SURFACE spawnea bajo tierra. Spec de comportamiento:
+    Observado in-game en un quad custom: un #Mass# espurio en un LOD
+    no-Geometry (aunque todos los valores sean 0.0) hace que binarize/
+    AddonBuilder hornee la masa de ESE LOD -> ODOL con CoM=(0,0,0) e
+    inercia 0 -> ECE_PLACE_ON_SURFACE spawnea bajo tierra. Spec:
     dayz-p3d-audit/SKILL.md:522-557. Aplica a TODO kind != "geometry",
     incluida resolucion desconocida (kind None, D-S3-3).
     """
@@ -2496,11 +2655,14 @@ class P3D:
         findings = []
         visual = None
         visual_index = None
+        # F4-01: la referencia es el visual de MENOR resolucion (LOD0, el de
+        # mas detalle), no el primero que aparezca en el fichero: el orden de
+        # LODs en disco no es normativo y cambiaba el veredicto.
         for i, lod in enumerate(self.lods):
             if lod.kind() == "visual":
-                visual = lod
-                visual_index = i
-                break
+                if visual is None or lod.resolution < visual.resolution:
+                    visual = lod
+                    visual_index = i
         for i, lod in enumerate(self.lods):
             k = lod.kind()
             findings.extend(_check_mass_only_geometry(lod, i))
@@ -2518,6 +2680,7 @@ class P3D:
             if k in _GEOMETRY_CLASS_KINDS:
                 findings.extend(_check_watertight(lod, i))
                 findings.extend(_check_degenerate_faces(lod, i))
+                findings.extend(_check_winding_absolute(lod, i, k))
                 if visual is not None and lod is not visual:
                     findings.extend(_check_winding_vs_visual(
                         lod, i, visual, k))
@@ -2528,6 +2691,10 @@ class P3D:
                         lod, visual, visual_index))
             if k == "visual":
                 findings.extend(_check_pdrive_faces(lod, i))
+                # F4-01: tambien en el visual, o un modelo SOLO-visual (un
+                # prop simple sin LOD de colision) se quedaria sin ninguna
+                # comprobacion de winding.
+                findings.extend(_check_winding_absolute(lod, i, k))
         return findings
 
     def validate(self, normals_budget=32768, normals_severity="WARN"):

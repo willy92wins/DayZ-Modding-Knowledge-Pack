@@ -1,5 +1,5 @@
 """S2 (F2-12): validate() v1.2.0 — un negativo por codigo (1:1) y paridad
-VAL-AUDIT con rollout/audit_p3d.py (audit depurado, scripts del fork)."""
+VAL-AUDIT con tools/audit_p3d.py (audit depurado, scripts del fork)."""
 
 import os
 import subprocess
@@ -10,7 +10,7 @@ import pytest
 from builders import build_multilod_v2_p3d
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-AUDIT = os.path.join(REPO, "rollout", "audit_p3d.py")
+AUDIT = os.path.join(REPO, "tools", "audit_p3d.py")
 
 
 def codes(findings):
@@ -19,20 +19,30 @@ def codes(findings):
 
 # ---- mutadores: cada uno produce exactamente los codigos esperados ----------
 
+# F4-01 (council 2026-08-12): estos tres mutantes ahora emiten TAMBIEN los
+# codigos del check absoluto (_check_winding_absolute). No es ruido
+# duplicado: el relativo dice "difiere del Visual" y el absoluto dice
+# "contradice sus propias normales", que se diagnostican y se arreglan
+# distinto. Y en el caso que motivo el fork -invertir TODOS los LODs- el
+# relativo calla y el absoluto es el unico que habla.
 def mut_winding_inverted(m, p3d):
     for fa in p3d.get_lod("geometry").faces:
         fa.vertices.reverse()
-    return ["ERR_WINDING_INVERTED"]
+    return ["ERR_WINDING_INVERTED", "ERR_WINDING_VS_NORMALS"]
 
 def mut_winding_mixed(m, p3d):
     for fa in p3d.get_lod("geometry").faces[:2]:
         fa.vertices.reverse()
-    return ["WARN_WINDING_MIXED"]
+    return ["WARN_WINDING_MIXED", "WARN_WINDING_NORMAL_MISMATCH",
+            "WARN_WINDING_EDGE_INCOHERENT"]
 
 def mut_winding_lowconf(m, p3d):
     for fa in p3d.get_lod("visual").faces[:160]:
         fa.vertices.reverse()
-    return ["WARN_WINDING_LOWCONF"]  # 1 por LOD de colision; set colapsa
+    # 1 por LOD de colision; el set colapsa. El visual medio invertido
+    # dispara ademas el check absoluto sobre el propio visual.
+    return ["WARN_WINDING_LOWCONF", "WARN_WINDING_NORMAL_MISMATCH",
+            "WARN_WINDING_EDGE_INCOHERENT"]
 
 def mut_component_lowercase(m, p3d):
     geo = p3d.get_lod("geometry")
@@ -175,7 +185,7 @@ def test_val_neg_code_1to1(fork, name, mutate):
 
 @pytest.mark.parametrize("name,mutate", CASES, ids=[c[0] for c in CASES])
 def test_val_audit_parity(fork, name, mutate, tmp_path):
-    """VAL-AUDIT: el audit depurado (rollout/audit_p3d.py, delegando en el
+    """VAL-AUDIT: el audit depurado (tools/audit_p3d.py, delegando en el
     fork) reporta los MISMOS findings, con severidad mapeada
     (ERROR->CRITICAL=exit 1, WARN->WARNING=exit 0)."""
     p3d = build_multilod_v2_p3d(fork)
