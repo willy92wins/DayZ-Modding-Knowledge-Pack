@@ -427,3 +427,38 @@ This does NOT contradict the FALSE GATE section above: the Blender armature / Bl
 Second axis (from the head-to-head round): a conform judge needs TWO axes reported together - (1) reduced over-extension under anim (edge-stretch), (2) rest-pose silhouette preservation (mean radius of a region's verts to its dominant bone's head->tail axis, original vs conform). Optimizing only (1) lets silhouette distortion pass: in a blind A/B the user's eye caught an arm-thickness diff (orig 0.140 m -> A 0.124 vs B 0.113) that all three offline metrics missed.
 
 CAVEAT (why this is doc-applied, not "verified"): this is an offline PREFILTER validated to DISCRIMINATE (negative control + the S8 false-green case), NOT quantitatively validated against the engine; the final fidelity gate is still the user's eye in-game, and the LFInfectedBig case that produced it is not yet in-game-confirmed. Reference impl: `LFInfectedBig\_judge\judge_lbs.py` + `judge_control.py` + `judge_compare.py` / `judge_metric.py`. Origin: 2026-06-28 deform gate.
+
+## (added 2026-08-03, ArmorHneck, IN-GAME VERIFIED) WORN CLOTHING binds via skeleton name "DayzTemporarySkeleton" — NOT OFP2_ManSkeleton
+
+**The single fact that makes custom worn clothing (ClothingTypes m/f) work.** A worn p3d whose
+model.cfg declares `skeletonName="OFP2_ManSkeleton"` renders as a RIGID block anchored above the
+player (floating ~1 m, rotated, not animating) — the engine treats it as a model with its own
+skeleton and never re-binds it to the wearer. ALL vanilla worn clothing (verified: armbend_dynamic_m,
+chainmail_m via ODOL `model_info.skeleton.name`) compiles with the skeleton named
+**`DayzTemporarySkeleton`** — same 159 bones, same hierarchy/order as OFP2, only the NAME differs
+(a placeholder the engine substitutes with the wearer's skeleton). Fix = rename the CfgSkeletons
+class + every `skeletonName=` in the clothing model.cfg to `DayzTemporarySkeleton` and rebinarize.
+The community 114-bone OFP2 template fails TWICE for clothing: wrong bone count AND wrong name.
+
+Worn-clothing canonical frame (measured on chainmail_m/hoodie_m, anatomical components — a global
+Z histogram is TOO COARSE and false-negatives a 180° flip): **-Z = chest/front** (hoodie front
+drawstrings at Z -0.14..-0.07; chainmail pelvis/spine centroids Z -0.04/-0.08), +X = anatomical
+left, +Y up, origin at feet. A mesh built facing +Z disperses into "exploded" rigid pieces when
+worn (each plate transformed by its bone from a flipped frame). Fix = R_y(180°) (det=+1, do NOT
+touch winding) + swap left*/right* selection PAIRS in every LOD.
+
+Diagnosis ladder that isolated this (reusable, each step in-game-cheap):
+1. Cross-matrix bisection: {armband class + vanilla worn p3d} vs {vanilla top class + custom p3d}
+   — separates config-side from p3d-side in ONE config-only rebuild.
+2. Compare `ODOL.model_info.skeleton.name` custom vs vanilla worn (the tell: vanilla has NO
+   "ofp2_manskeleton" string anywhere; a compliant clothing ODOL says DayzTemporarySkeleton).
+3. Structure parity checklist custom-vs-vanilla worn: skeleton 159 bones, per-vertex weight sums
+   (vanilla = raw bytes summing 255), sub_skeletons palette, sections (tops use `camomale` alone;
+   ONLY armbands carry camoMale_big_a/b + small_a/b complexion variants), empty Geometry LOD with
+   autocenter=0 is the vanilla worn pattern.
+4. The registration gate is a live spawn (`unknown_type` = config not loaded — also caught here:
+   config.bin from CfgConvert did not register at all; pack clothing PBOs with config.cpp as TEXT).
+
+Origin: ArmorHneck 2026-08-03 (third-party RAR, ~6 in-game cycles to isolate; dual research
+Claude+Codex on debinarized vanilla). Full case: `ArmorHneck_dev\CLAUDE.md` + research workspace
+REPORT.md (armorhneck_research_ws).

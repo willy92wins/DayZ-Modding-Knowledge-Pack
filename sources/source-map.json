@@ -3134,7 +3134,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0a3e1e268f32b36de4e33797a7652419e85d9d23d372046244697ee85034b453",
+      "output_hash": "c9f0fe644b4989551c67d39971557af1bd20b37f3a5a25f33401dba60a368adc",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -3470,7 +3470,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "df2008f809ec27799281287040ad7234fcbe1ffb836b1d7059f7f28482d580c1",
+      "output_hash": "cadba8df859b30e661a81dee04c4387fd623b797e170a102f991b2df03bc1b69",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -3782,7 +3782,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "58a6cce5d501e85feb64bbdde8400e6b3589bae4bec041d8ff61a17d703aeb71",
+          "source_hash": "1074582e883b6f8b092aea3043119e352807581c350d6f785555b310a59d6a32",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -3790,7 +3790,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "58a6cce5d501e85feb64bbdde8400e6b3589bae4bec041d8ff61a17d703aeb71",
+      "output_hash": "1074582e883b6f8b092aea3043119e352807581c350d6f785555b310a59d6a32",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -4158,7 +4158,7 @@
           "decision": "adopt",
           "decision_evidence": "Approved optional-companion authority boundary was added after an adversarial RED-to-GREEN evaluation.",
           "license": "MIT",
-          "source_hash": "9899735809d32efe915063d15750f85335bbc12f903a1b8f8d177fd1eeae54fa",
+          "source_hash": "ee41746fecc7e9a667bd8a028514bf1ba3e05b95494ea0af44386381fe114fa0",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -4166,7 +4166,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9899735809d32efe915063d15750f85335bbc12f903a1b8f8d177fd1eeae54fa",
+      "output_hash": "ee41746fecc7e9a667bd8a028514bf1ba3e05b95494ea0af44386381fe114fa0",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -4416,7 +4416,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "aee2092e14b26151030df38fc26143b31fa037faf712df3d2e8278d3eec384c7",
+      "output_hash": "55bae40286a552848149b19804b83efe7f9ad0081c80995d462b637eee82b8f4",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -5320,7 +5320,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "fb11f0517d7f5938a0b6d3f983ed61ac01b630841cf02fad2c28b85389fe84cf",
+          "source_hash": "5c01651848a38ae7df4316ea3032ed0657135710164d32e05f3408b43aa876bd",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -5328,7 +5328,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fb11f0517d7f5938a0b6d3f983ed61ac01b630841cf02fad2c28b85389fe84cf",
+      "output_hash": "5c01651848a38ae7df4316ea3032ed0657135710164d32e05f3408b43aa876bd",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -6159,7 +6159,7 @@
           "decision": "adopt",
           "decision_evidence": "Claim registry records the three approved evidence-backed contracts and their skill ranges.",
           "license": "MIT",
-          "source_hash": "c5aa419c2019d702ff6d592b45ad86d74b2a1e590e3bcfa05bb07ba2e97e2b28",
+          "source_hash": "04fe781b36342d2e26b9db88d8efdd32c04b86d0bd8980534a82f5f0b4033716",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -6167,7 +6167,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c5aa419c2019d702ff6d592b45ad86d74b2a1e590e3bcfa05bb07ba2e97e2b28",
+      "output_hash": "04fe781b36342d2e26b9db88d8efdd32c04b86d0bd8980534a82f5f0b4033716",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

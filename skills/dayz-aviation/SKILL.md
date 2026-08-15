@@ -135,6 +135,48 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
   ACK + `ForceCorrection`). SIB/RFFS mirror and hookless owner-prediction are dead ends under PHYSICS.
   Probe `GetNetworkMoveStrategy()` client-side before choosing the network model. (LFHeli 2026-07-14;
   Codex research + R22, plan `2026-07-14-lfheli-physics-pawn-final.md`.)
+- **The RFFS client pump is animations + input sync, NOT a smoothing mechanism** (added 2026-08-03,
+  LFHeli SF-8b, SP-161). The `EOnFrame`→`EOnSimulate(0.025)` client re-entry (`RFFSHeli_Core.c:1008-1016`)
+  never reaches pose: `FlightSimulation()` is gated `IsServer() && m_heli_state == 2` (`:1149-1156`), so
+  the pump only advances `ExecuteAnimations()` + `KeyboardInputClient()` (`:1143-1145`). Do NOT copy the
+  pump expecting presentation smoothness — proxy pose smoothness in RFFS is native CarScript replication.
+  (references/helicopters.md carried the "for smoothing" myth until 2026-08-03; corrected in place.)
+- **Never smooth the PILOT's own camera** (added 2026-08-03, LFHeli SF-8b — refuted with data + feel in
+  2 iterations). A spring/spike filter on the seat camera delays exactly the feedback the pilot steers
+  by: pitch response lagged ("one tap dropped the nose hard" — reported by the pilot), and the jerk
+  distribution got MORE intermittent (p95 |Δroot| +14.65% measured with a 0.14 s spring). It also
+  STACKS with the vanilla lag already present: `DayZPlayerCamera3rdPersonVehicle` ships a SmoothCD
+  ~0.3 s offset filter, so a custom smoother is a second spring fighting the first. Presentation fixes
+  must sink in the shell/cockpit VISUAL or the network layer, never in the flying player's camera.
+  Passenger/spectator cameras are a separate question.
+- **Ownership is measured IN FLIGHT, not at the mount event** (added 2026-08-03, LFHeli SF-8b).
+  `IsOwner()` sampled at the mount event (`OnCommandVehicleStart` or get-in hooks) is a PREMATURE
+  reading — the ownership transfer lands after the get-in completes (measured: owner=false at mount,
+  then own=true in 3,404/3,404 in-flight samples across four flights, strategy=PHYSICS). Any
+  role-based branch (proxy-path designs, isDriver tricks) must be adjudicated with an in-flight
+  probe, never a mount-time sample.
+- **DayZ angular velocity is NOT yaw/pitch/roll, and the axis map is unusual** (added 2026-08-05,
+  LFHeli OH-1 F-02). `dBodySetAngularVelocity(body, angvel)` takes a world-space axis vector in
+  rad/s; the vanilla doc says so verbatim — *"Angular velocity, rotation around x, y and z axis
+  (not yaw/pitch/roll)"* (`P:\scripts\1_core\proto\enphysics.c:163`). Feeding a solver's Euler
+  rate triple straight in is wrong in units AND in frame. The engine convention, established by two
+  INDEPENDENT sources that agree: (a) the worked example in `enmath3d.c:125-131` — `YawPitchRollMatrix("70 15 45")`
+  matches `Rz(pitch)*Ry(yaw)*Rx(roll)` to 4e-7 with `mat[i]` being the world-space model BASIS
+  vectors; (b) the vanilla vehicle camera reads `dBodyGetAngularVelocity` and routes component **Y
+  to yaw, Z to pitch, X to roll** (`P:\scripts\4_world\entities\manbase\dayzplayer\dayzplayercameravehicles.c:137-139`).
+  Right-hand rule about world axes. Verify with the doc example before trusting any derivation —
+  getting the sign wrong makes the airframe counter-rotate, which reads as "the fix made it worse".
+- **A solver's rate accumulators are NOT the derivative of the pose you write** (added 2026-08-05,
+  LFHeli OH-1). If the actuator writes an absolute orientation, derive any published angular
+  velocity from the POSE DELTA (`GetTransform` before/after the write, small-angle rotation vector
+  `w*dt = 1/2 * sum_i (b_i x a_i)`), never from the integrator's `m_PitchRate/m_RollRate/m_YawRate`.
+  Reason: cosmetic and protective terms routinely mutate the target orientation without touching
+  those accumulators — in LFHeli a yaw-roll pendulum, a stabilizer level-nudge and a liftoff assist
+  all did. Publishing the accumulators commands a rotation the next absolute write contradicts, so
+  the body integrates one way and the teleport snaps it back — the exact judder a `vector.Zero`
+  angular write is usually added to suppress. The pose-delta form is also automatically zero on
+  hold/clamp call sites, which is what those sites mean.
+
 ## Helicopters
 
 A **real rotary-wing flight model is documented from FOUR author/teams across five aircraft** (plus
@@ -595,3 +637,73 @@ la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita:
 - **LL-194** — Enumera cada campo leído por solver/FSM durante replay y clasifícalo como restaurado, recomputado tras handshake o inicializado incondicionalmente. Nunca inicialices K-values o tablas derivadas solo dentro de `IsServer`.
 - **LL-195** — No uses un handshake one-shot si depende de crew/possession/spawn aún asíncronos. Reintenta desde el cliente hasta ACK o empuja desde el servidor cuando el estado esté listo; compara identidades por ID estable, no por instancia.
 - **LL-201** — Diagnostica reconciliación con series alineadas: dientes de sierra indican correcciones seguidas de re-divergencia; crecimiento monótono o plateau sin resets indica que el transform no se corrige. Busca el evento que dispara la convergencia antes de retocar el solver.
+
+---
+
+## Source availability on this host — where the heli material actually is (added 2026-08-05, LFHeli council)
+
+The sections above analyse five reference implementations. This one answers the question that costs
+a session every time it is re-derived: **which mod sources are readable on this machine right now,
+and which are a dead end.** All verified 2026-08-05 by reading the PBO index and extracting with
+Mikero `ExtractPbo` (installed at `C:\Program Files (x86)\Mikero\DePboTools\bin\`).
+
+Workshop root: `C:\Program Files (x86)\Steam\steamapps\common\DayZ\!Workshop\`
+
+| Mod | PBO with the scripts | Content | Verdict |
+|---|---|---|---|
+| **RFFS** | `@RedFalcon Flight System Heliz\addons\RFFSHeli_Core.pbo` | 53 `.c`, packing method 0 (**uncompressed**); core is `scripts\4_World\RFFSHeli_Core.c` at **88.559 B**; also `modded_Inputs.xml`, `GUI\RFFSHelicopterGUI.layout`, `scripts\5_Mission\GUI\headsUpDisplay.c` | ✅ extract directly, no tooling gymnastics |
+| **Expansion** | `@DayZ-Expansion-Vehicles\addons\vehicles_scripts.pbo` | **192 `.c`**, 974 KB. Biggest: `ExpansionVehicleHelicopter.c` (116.933 B), `CarScript.c` (97.932 B), `ExpansionHelicopterScript.c` (40.671 B), `ExpansionPhysicsState.c`, `ExpansionInterpolatedInput.c`, `ExpansionHelicopterHud.c` | ✅ the flight code is in `vehicles_scripts.pbo`, **not** in `vehicles_air_gyro.pbo`/`vehicles_air_hatchbird.pbo` (those are models/sounds) |
+| **Arma 2 Helicopters Remastered** | `@Arma 2 Helicopters Remastered\addons\Scripts.pbo` (only 137 KB of the ~700 MB mod) | 24 `.c`, incl. **13 `EXT_*.c` — one flight-parameter file per airframe** (`EXT_UH60M.c`, `EXT_MH6.c`, `EXT_AH64D.c`, `EXT_Mi24.c`…), plus `ExpansionHelicopterScript.c` | ✅ **the cheapest source of tuned per-aircraft numbers**; derives from Expansion. Not among the four teams listed above — add it when comparing feel/rate constants |
+| **AnimatedDynamicHelicopters** | `DynamicHelicopters.pbo` (334 MB, single PBO) | **Anti-extraction bomb**: 358.128 index entries, 25.169 decoy `.c` with Windows reserved-device names (`LPT1.{GUID}`, `COM1`, `NUL`, `PRN`), zero-width chars in paths, `Cprs`-compressed | ❌ do not spend a cycle on it; extracting it can also litter the filesystem |
+| `HelicopterSIB_Hommade_LF` (in the DayZ Projects tree) | `HelicopterSIB_Hommade_LF.pbo` | **One `.c` of 1.177 B.** This is NOT the SIB heli source | ❌ dead end — the real SIB source is the JAPM-deobfuscated copy referenced in §Helicopters (workshop `3485438937`) |
+
+**Two traps this table exists to prevent** (both cost time on 2026-08-05):
+
+1. **A mod named after a heli mod is not its source.** `HelicopterSIB_Hommade_LF` sat in the project's
+   reference list for weeks; it is a 1 KB stub. Check the `.c` count before planning around a source.
+2. **Read the PBO index before extracting.** A 40-line reader over the PBO header (asciiz name +
+   `<4sIIII>` per entry) tells you the `.c` count and the packing method in under a second — enough to
+   spot both an obfuscated mod and an empty one without unpacking 300 MB. Packing method `0` means the
+   scripts are plain text inside the PBO; `Cprs` means compressed.
+
+**Corollary for planning**: before commissioning any research on "how do other heli mods do X",
+check `references/helicopters.md` first — RFFS, MH6, SIB and Expansion are already analysed there
+with `path:line`, including §6 *Multiplayer / sync*. The work that is genuinely missing is almost
+never "what does mod X do"; it is "how does OUR code differ from it", which no prior pass had done.
+
+---
+
+## A diagnostic probe is NOT a fluidity instrument: check cadence and trigger threshold BEFORE it becomes a gate (added 2026-08-13, LFHeli flight conciliation; LL-248)
+
+**Preflight, before you use ANY existing probe to judge "smoothness / no stutter / no lag", and before
+you freeze a baseline computed from it**: open the probe emission site and answer three questions.
+
+1. **What is its emission period?** A probe written to measure a CONSTANT (an offset, a drift, a
+   steady-state residual) is normally throttled to seconds. LFHeli's `[LFHELI-REF]` emits on
+   `refProbeNow - m_RefProbeLastPeriodicLog >= 2.0` (`LFHeliCore\scripts\4_world\LFHeli\LFHeli_Base.c:2203`),
+   i.e. 0.5 Hz, with a cap of 10 lines per 1 s window (`:2205`).
+2. **What is its out-of-band trigger threshold?** `[LFHELI-REF]` only breaks its period when
+   `refStateBodyDistance > 6.0` (`:2204`). The stutters under investigation measured 2.3-3.9 m, so
+   they pass UNDER the trigger and never fire the probe.
+3. **Can it resolve the phenomenon at all?** A jolt lasting one frame, sampled every 2 s, is invisible
+   by construction. An earlier LFHeli research pass had already written this caveat about its own
+   5 Hz probe - "does not [show] whether the change happens in one or several frames"
+   (`LFHeli_dev\reviews\2026-08-03-sf8b-research-codex.md:79`) - and it was still overlooked a week later.
+
+**The trap that makes this expensive: the frozen baseline inherits the blindness.** LFHeli's flight
+baseline was computed over **N=70 samples in 159 s** (`reviews\2026-08-12-investigacion-offset-codex.md:274`),
+which is exactly that throttled probe. An A/B against it is legitimately COMPARABLE (same instrument
+both sides) yet still cannot answer "did the jolts go away" - the product question. Both statements
+are true at once, and a review that picks only one of them adjudicates wrongly.
+
+**Rule.** Run BOTH streams in a measurement cell: the original probe at its original cadence (so the
+A/B against the frozen baseline stays valid) AND a per-frame continuity stream (position/angle delta
+and jerk per frame) that can actually see a one-frame discontinuity. Do not make the second one
+conditional on the first one's outcome: if the first is blind to the phenomenon, its outcome cannot
+be the gate that authorises measuring properly.
+
+**Corollary - measurement mode vs release mode.** Raising a probe's cadence and lowering its trigger
+for a measurement cell is a PARAMETER change, not a telemetry laboratory; do not let a "no new
+instrumentation" boundary block it. And the reverse: never strip diagnostic probes from a build
+before the measurement campaign that consumes them has closed, or the campaign silently loses its
+instrument.

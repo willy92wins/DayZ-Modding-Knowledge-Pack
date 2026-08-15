@@ -122,6 +122,51 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
   `"Deployed"` proxy instead. A missing selection/memory point → the part builds but has no visual or no collision.
 - **Action-type ints** (`_constants.c:6-8`): `AT_BUILD_PART=193`, `AT_DISMANTLE_PART=195`, `AT_DESTROY_PART=209`.
   Passed into `BuildPartServer`/`DismantlePartServer`/`DestroyPartServer` and synced so clients play the right SFX.
+- **How much of a material fits in one slot is decided by the SLOT's `stackMax`, NOT by the item's
+  `varQuantityMax`.** For a splitable item, `GetTargetQuantityMax` asks `InventorySlots.GetStackMaxForSlotId`
+  first and only falls back to `varStackMax`, then to `varQuantityMax` (`itembase.c:3473-3490`). Vanilla
+  declares the cap per slot in `scripts\config.cpp`: `Material_WoodenPlanks` and `Material_MetalSheets` are
+  `stackMax=20` (`:2266-2281`), `Material_Nails` is `99` (`:2260-2264`). A NON-splitable item skips that
+  branch entirely and lands on `varQuantityMax` — `MetalWire` declares no quantity and neither of its slots
+  declares `stackMax` (`:2290-2296`, `:2349-2355`), so it is one wire per slot. Reading the item class instead
+  overstates plank capacity 5× (100 vs 20) and makes any recipe above the slot cap silently unbuildable: the
+  player fills the slot and never reaches the threshold, so the build action simply never appears. Derive
+  slots per material as `ceil(default_qty / slot stackMax)` and get that number from `CfgSlots`, not from the
+  item. Any design promising a uniform configurable range ("1..100 of each material") is broken before it is
+  written. Origin: caught by an independent plan review after the item-class reading had already been written
+  into a spec — the item's ceiling exists, it just is not the one that governs.
+- **A green/red placement hologram needs TWO declarations, and neither is the one the name
+  suggests.** `Hologram.RefreshVisual` tints by calling `SetObjectTexture`/`SetObjectMaterial` on a
+  **hidden-selection index** (`hologram.c:1546-1565`). That index comes from `GetHiddenSelection`,
+  which **falls back to 0 when the name is absent** (`:1523-1531`) — so a model with no
+  `hiddenSelections[]` in config silently renders the ghost in its normal material, with no error
+  anywhere. And the config entry alone is not enough: the model must expose that selection as
+  retexturable via `sections[]` in `model.cfg`, or the swap has nothing to bind to. Declare
+  `hiddenSelections[]` + `hiddenSelectionsTextures[]` + `hiddenSelectionsMaterials[]` with the values
+  the model **already uses** (so normal rendering is unchanged), and put the same selection in
+  `sections[]`. Note the hologram never looks the name up: it asks for `placing`/`inventory`
+  (`:40-43,178-194`) and lands on index 0 regardless, so the name only maps index 0 to a real
+  section. Also declare `hologramMaterial` + `hologramMaterialPath`; the engine appends
+  `_deployable.rvmat` / `_undeployable.rvmat` (`:14-16`). Cost of learning this the hard way: one
+  in-game cycle, plus a review finding that was raised, retired as a likely false positive, and
+  turned out to be true.
+- **`itemBehaviour` does NOT choose the in-hands carry pose.** The int drives behaviour rules and the
+  deploy command (`itembase.c:65`: `0 = heavy, 1 = onehanded, 2 = twohanded`), but the pose comes
+  from **class registration in the anim graph**. Vanilla registers every heavy object explicitly —
+  barrel at `dayzplayercfgbase.c:817`, wooden crate at `:830` — through
+  `ModItemRegisterCallbacks.RegisterHeavy` (`:305,:317`) calling `AddItemInHandsProfileIK(class, …
+  player_main_heavy.asi, pBehavior, … .anm)`. With no registration the item falls back to the
+  `Inventory_Base` one-handed default and is carried in one hand no matter what `itemBehaviour` says.
+  The `.anm` is an IK pose, not a class binding, so reusing a vanilla one for a different class is
+  fine and needs no new animation. Pick the value from the object family you are imitating, not from
+  a mod that ships a different shape: a cabinet is `0` like the barrel, not `2` like a small kit box. `SetActions` adds
+  `ActionTogglePlaceObject` + `ActionPlaceObject` only in the deployable subclass (`container_base.c:32,48-54`),
+  which is what `Barrel_ColorBase` inherits from (`barrel_colorbase.c:1`). A storage entity extending
+  `Container_Base` gets no placement at all, and `IsDeployable()` is `false` by default (`itembase.c:4380-4383`).
+  Adding the two actions to the single class that needs them is cheaper than reparenting a shared base and
+  cannot regress its siblings. The ghost material comes from `hologramMaterial` + `hologramMaterialPath`
+  (`hologram.c:1554-1557`) plus the suffixes `_deployable.rvmat` / `_undeployable.rvmat` (`:14-16`); declare
+  both keys or the hologram renders untextured.
 
 ## PERSISTENCE — one synced bitmask is BOTH netsync AND save (data-critical)
 

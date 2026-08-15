@@ -120,3 +120,46 @@ field, or selection, grep it in vanilla (`P:\scripts\4_world\entities\firearms\`
 `.p3d`) or the cited references, and keep the provenance labels the references use: `[VERIFIED in-game]`
 (a real in-game test in a project handoff) vs `[VERIFIED-vanilla]` (read off disk) vs `[UNVERIFIED]`
 (inferred, not confirmed). Anchor every new weapon lesson to a real mod with `path:line`, never memory.
+
+## AMMO CLASSIFICATION SERVER-SIDE (added 2026-08-13, LFPowerGrid turret)
+
+Reading a cartridge ROLE (pistol / intermediate / full-power / shell / arrow) at runtime — needed by any
+system that must behave differently per ammo class WITHOUT a classname whitelist (turrets, per-class
+ballistics, loot logic, scaling that must also work for modded weapons):
+
+- `enum CartridgeType { None=0, Pistol=1, Intermediate=2, FullPower=3, Shell=4, Arrow=5 }` —
+  `P:\scripts\4_world\entities\itembase\magazine\magazine.c:3-11` `[VERIFIED-vanilla]`
+- The class lives on the MAGAZINE/pile config, not on CfgAmmo:
+  `g_Game.ConfigGetInt("CfgMagazines " + pileType + " iconCartridge")` — `magazine.c:32`
+  `[VERIFIED-vanilla]`. Guard with `ConfigIsExisting("CfgMagazines " + pileType)` first (`magazine.c:29`);
+  a modded pile that omits the key yields 0 (`None`), so choose an explicit fallback band rather than
+  trusting that zero.
+- **Two paths, and the guard covers only one.** The constructor PRE-loads `Magazine.m_AmmoData` inside
+  `if (!g_Game.IsDedicatedServer())` (`magazine.c:45-64`), but the static accessor
+  `Magazine.GetAmmoData(classname)` fills the map LAZILY with **no** such guard (`magazine.c:117-132`)
+  `[VERIFIED-vanilla]` — so it does work server-side. The real caveat is allocation, not availability: the
+  first miss constructs an `AmmoData` (`:123-125`), so never take that path inside a hot loop. Read it once
+  on an attachment event and cache it yourself. (Corrects an earlier version of this entry that claimed the
+  map is never populated on a dedicated server.)
+- **Gate on `IsAmmoPile()` when you mean loose rounds, not magazines.** `Object.IsAmmoPile()` returns false
+  by default (`3_game\entities\object.c:577-580`) and `Ammunition_Base` overrides it to true
+  (`4_world\entities\itembase\magazine\ammunitionpiles.c:27-30`) `[VERIFIED-vanilla]`. Detachable magazines
+  do NOT declare `iconCartridge`, so any per-cartridge-class logic must reject them first or it silently
+  classifies every mag as `None`.
+- **`iconCartridge` coverage is NOT total in vanilla.** `Ammunition_Base` sets it to 0, and at least five
+  concrete `scope=2` ammo classes resolve to 0/`None` (CupidsBolt, RPG7_HE, RPG7_AP, LAW_HE, GrenadeM4).
+  Any band table needs an explicit policy for `None`, and must separate "0 declared" from "key absent" —
+  what `ConfigGetInt` returns for a missing path is undocumented, so probe with `ConfigIsExisting` first.
+- **You can read binarized vanilla configs without a `P:\DZ` tree**: run Mikero/BI `CfgConvert -txt` over
+  the installed game's PBOs (`…\Steam\steamapps\common\DayZ\Addons\weapons_ammunition.pbo`,
+  `weapon_magazines.pbo`). This is how the coverage numbers above were established on a machine with no
+  unpacked vanilla tree — reach for it before declaring a config claim unverifiable.
+- Cartridge -> ammo type for the damage system: `AmmoTypesAPI.MagazineTypeToAmmoType(magType, out ammoType)`
+  — `P:\scripts\3_game\global\ammotypes.c:14`, used by vanilla in `weapon_base.c:848` `[VERIFIED-vanilla]`.
+  Do not hand-roll a `CfgMagazines <t> ammo` lookup.
+- A cartridge damage profile is readable BEFORE firing:
+  `ConfigGetFloat("CfgAmmo " + ammoType + " DamageApplied Health damage")` (also `Blood damage`,
+  `Shock damage`) — `P:\scripts\4_world\entities\dayzplayerimplementfalldamage.c:261-263`
+  `[VERIFIED-vanilla]`. This is how a mod caps absurd modded ammo without a whitelist.
+- `iconCartridge` is nominally a UI icon field reused as the cartridge class: confirm per-pile coherence
+  against a debinarized config before shipping balance that depends on it. `[UNVERIFIED]`

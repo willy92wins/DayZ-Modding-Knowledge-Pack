@@ -15,6 +15,33 @@ description: >
 
 # DayZ MCP verify — auto-test in-game vía tools MCP
 
+## GATE 0 — preguntar QUIÉN conduce, antes de tocar nada (added 2026-08-07)
+
+**Antes de la primera tool de `dayz-mcp` en una tanda de verificación, preguntar al usuario si
+conduce él o el MCP.** No se asume ninguno de los dos. Una sola pregunta por tanda, no por
+captura.
+
+Por qué es un gate y no una preferencia: **con el usuario delante, su ciclo manual es más rápido
+y da mejor resultado** — spawnea con VPP en segundos y juzga la escena entera de un vistazo,
+mientras que el lazo MCP necesita colocar cámara, capturar y encadenar tools. El MCP gana cuando
+el usuario NO está: madrugada, tanda desatendida, o mientras atiende otro frente. Además el
+cambio de modo no es gratis a mitad de camino (el test manual limpio pide relanzar sin
+`@DayZ_MCP`), así que la decisión se toma al principio del ciclo o se paga dos veces.
+
+| Situación | Quién conduce |
+|---|---|
+| Usuario presente y disponible | **Él** (VPP + juicio directo) — el MCP solo si él lo pide |
+| Usuario ausente / tanda desatendida | **MCP**, y se le deja el reporte con evidencia |
+| Duda | **Preguntar.** Nunca asumir |
+
+Lo que NO cambia: el MCP sigue siendo obligatorio para lo que un humano no puede medir a ojo
+(telemetría, raycast numérico, placement exacto, series repetibles). Ahí no se pregunta, se usa.
+
+Medición que originó el gate (2026-08-07, corpus de 276 sesiones): el 63% del reloj de un ciclo
+completo cae del lado del usuario, y el 71% de sus verificaciones reales son automatizables con
+las tools de hoy. Que sea automatizable no implica que convenga automatizarlo: con él delante,
+manda su ciclo.
+
 ## WHAT THIS DOES
 
 Conduce un cliente DayZDiag ya lanzado, vía las tools del servidor MCP `dayz-mcp`, para
@@ -97,6 +124,33 @@ el PBO y `@DayZ_MCP` como dependencia adicional:
    tener `last_poll_age_s` fresco (no null). Para captura, el `client_peer` también. `never
    polled` → el bridge no arrancó (config/key/arranque) → abortar y diagnosticar, no seguir
    conduciendo a ciegas.
+4. **Los mods que pases por `extra_mods`/`base_mods` deben ser DIRECTORIO REAL bajo `P:\Mods`
+   (→ `!Workshop`); las junctions de Steam NO valen.** Dos capas, y confundirlas cuesta una sesión:
+   - La frontera pública `_valid_public_mod` (`DayZ_MCP_dev\tools\dayz_mcp\dayz_test_tool.py:75-85`)
+     rechaza `:`, `\` y `/` en **todos** los proyectos → una ruta absoluta de workshop no pasa nunca
+     por la tool. Eso es diseño, NO una laguna de la policy de tu proyecto.
+   - Los mods suscritos que Steam expone en `!Workshop` (`@CF`, `@Dabs Framework`,
+     `@VPPAdminTools`) son **Junctions** a `steamapps\workshop\content\221100\<id>`, y el guard de
+     identidad de rutas las rechaza → `dayz_test_failed`, que es el catch-all genérico de
+     `server.py:1101` y **se traga la causa real**.
+
+   **Consecuencia operativa**: CF/Dabs/VPP sólo se cargan declarándolos con **ruta absoluta** en el
+   `default_base_mods` del proyecto dentro del `request-policy.json` del launcher — que es como los
+   declaran SUB_BRZ y LFHeli. Los mods que son directorio real (`@DayZ_MCP`, `@LFHeliCore`, el mod
+   bajo test) sí van por `extra_mods` con nombre relativo.
+
+   Diagnóstico en un comando:
+   `Get-Item '<!Workshop>\<@Mod>' -Force | Select-Object LinkType` → `Junction` = no sirve relativo.
+   Medido 2026-08-02 con `preflight=true` (dry-check puro: `dayz_test_worker.py:533-534` retorna
+   antes de build y de lanzar nada): sin mods OK · `@DayZ_MCP` OK · `@A6_SR2M` OK · `@CF` FAIL ·
+   `base_mods=["@CF"]` FAIL.
+
+   ⚠ **Antes de culpar al puente por `version_blocked`/`last_poll_age_s=null`**: comprueba que la
+   `key` de `dayz_mcp.json` en los profiles del proyecto es la MISMA que
+   `DayZ_MCP_dev\tools\.dayz_mcp.key`. Una key stale da 401 y el bridge no pollea nunca, con
+   síntoma idéntico a "el mod no está cargado". Las rotaciones de key dejan atrás a los proyectos
+   que no se ejercitaron desde entonces (2026-08-02: MERCEDES_AMGLF y LFPowerGrid con la vieja,
+   SUB_BRZ/LFHeli/DayZ_MCP con la actual).
 
 ## EL LAZO
 

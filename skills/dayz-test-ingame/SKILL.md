@@ -673,3 +673,131 @@ Origen: DayZ_MCP, gate agrupado de `query_all_players` (2026-07-29). Coste real:
 biseccion sobre un error opaco que no nombraba ni el build ni el launch.
 
 **Leccion de metodo asociada**: `LL-224` — el error opaco se acoto bisecando CAPACIDADES (preflight / sin la feature / la herramienta a mano), no leyendo el codigo que lo lanzo. La tabla de arriba ES esa biseccion; reutiliza el patron ante cualquier error de wrapper que no describa nada.
+
+## (added 2026-08-01, HH-60G v19) El RPT del diag BUFFERIZA ~52 KB, y el lifecycle necesita su ventana tras run_not_adoptable
+
+Dos hechos operativos de la nocturna de 6 boots (todos reproducidos varias veces):
+
+1. **Un RPT congelado NO discrimina proceso muerto de buffer sin flush.** El diag escribe el
+   RPT a buffer de ~52 KB (esta noche: 5 boots distintos, SIEMPRE ~464 lineas / ~52 KB en el
+   momento del fallo, con contenidos distintos). El discriminante real es el **delta de CPU
+   del proceso en 30 s** (`Get-Process` dos veces): plano = parado de verdad; creciendo =
+   vivo con el log retenido. Ademas `Get-Item`/stat sobre P:\ (OneDrive) puede mentir el
+   tamano (927 b reportados con 52 KB reales): leer con `Get-Content` (share-read) y contar.
+2. **Tras un `run_not_adoptable` del `dayz_test_stop`, el lifecycle tiene una ventana de
+   reconciliacion**: el siguiente `dayz_test_run` devuelve `active_run_exists` aunque los
+   procesos esten muertos. Patron que funciono (x3): cerrar los DayZDiag huerfanos por
+   proceso, reintentar el stop hasta que devuelva `run_not_active`, y SOLO entonces lanzar
+   el run nuevo.
+
+## Estrenar CF sobre una misión con persistencia escrita SIN CF = crash duro del servidor (added 2026-08-02)
+
+Si un proyecto añade **Community Framework** (y con él Dabs/VPP) a una misión cuyo `storage_*` se
+escribió en corridas **sin** CF, el servidor arranca, carga la misión y **muere** al leer la
+persistencia. Firma exacta (MercedesAMGLF 2026-08-02, `crash_*.log` del server):
+
+```
+SCRIPT (E): Virtual Machine Exception
+Reason: Failed to read modstorage for entity Type=Rangefinder, Position=<...>
+Class: 'CF_ModStorageObject<ItemBase>'
+  JM/CF/.../modstorage\cf_modstorageobject.c:142  Function OnStoreLoad_CF
+  .../mpmissions/dayzOffline.chernarusplus/init.c:6  Function main
+```
+
+**Lo que más despista**: la entidad citada es **vanilla y aleatoria** (aquí un `Rangefinder`), así
+que el mensaje apunta a cualquier sitio menos al mod que acabas de añadir. Y el cliente NO falla —
+carga bien (`PlayerBase OnStoreLoad SUCCESS`) y se cierra limpio detrás del servidor, lo que refuerza
+la lectura equivocada de «problema del cliente».
+
+**Causa**: las misiones `dayzOffline.*` del DayZServer se COMPARTEN entre proyectos. Un proyecto que
+corre sin CF persiste entidades sin los datos de `modstorage` de CF; el siguiente que sí lleva CF los
+lee y revienta.
+
+**Remedio** (convención ya establecida en la propia carpeta de la misión, con 4 ocurrencias:
+`storage_1_corrupt-modstorage-20260720 / 0728 / 0729 / 0802`): con los procesos parados, **renombrar**
+`storage_1` → `storage_1_corrupt-modstorage-<YYYYMMDD>` y dejar que el server regenere. Es rename, no
+borrado, así que es reversible — pero **volver a arrancar con CF sobre ese storage vuelve a crashear**:
+lo que se conserva es la evidencia, no un estado al que puedas volver con CF puesto.
+
+**Consecuencia que hay que decirle al usuario ANTES**: mundo y personaje se resetean.
+
+Cross-ref `SP-062` (misma acción — renombrar `storage_1` — por un motivo distinto: entidades
+persistidas que re-disparan `EEInit`). Regla combinada: **cualquier cambio en el conjunto de mods
+que altere quién escribe `modstorage` exige storage limpio**, igual que un boot de medición.
+
+## (added 2026-08-12, LFHeli celda COM/pivot) Celda in-game AUTOMATIZADA sin piloto: los 4 muros medidos y sus salidas
+
+Once celdas de iteración en un día para dejar una celda automatizada verde (stack + get-in +
+motor + sondas + parser, ~5 min). Los cuatro muros, medidos con discriminantes, para no volver
+a pagarlos:
+
+1. **DayZDiag NO define DEVELOPER para scripts (SÍ define DIAG y DIAG_DEVELOPER)** — medido con
+   telemetría de defines en cliente conectado. Todo mecanismo vanilla bajo `#ifdef DEVELOPER`
+   (p.ej. `SetGetInVehicleDebug`/`TryGetInVehicleDebug`, playerbase.c:3270-3295) NO EXISTE en
+   diag. Gatea el código de test por parámetro de línea de comandos (`CommandlineGetParam`,
+   game.c:660) o por `#ifdef DIAG`, nunca por DEVELOPER.
+2. **Get-in automatizado en MP: `StartCommand_Vehicle` directo desde el cliente sienta un
+   FANTASMA local** (own=true, HUD activa) pero el server NUNCA registra el crew (crew0=false,
+   consumed=0, ObtainState mudo). La vía que funciona: inyectar la ACCIÓN real —
+   `ActionManagerClient.PerformActionStart(GetAction(ActionGetInTransport), target, null)`
+   (actionmanagerclient.c:762; en MP entra por ActionStart, el flujo sincronizado que el server
+   espeja). El componentIndex del target se obtiene iterando `CrewPositionIndex(c)` hasta que
+   devuelva el asiento buscado (transport.c:116). El éxito se observa con `GetCommand_Vehicle()`
+   al tick siguiente (con retry), no marcando done al inyectar. OJO: `ActionCondition` es
+   protected — no se puede pre-validar desde fuera; el manager valida en ambos lados.
+3. **Un body DORMIDO rechaza la acción get-in inyectada** (sleep gate de PARKED). Si el mod
+   duerme el vehículo en reposo, la celda debe DESPERTARLO antes del get-in — lo más simple:
+   arrancar el motor server-side desde la misión de test (`EngineStart`, car.c:244) NADA MÁS
+   spawnear, no al detectar crew. Además, sin motor/simulación el canal OwnerState no fluye
+   (ObtainState/RewindState callados) aunque el player esté sentado.
+4. **El compile gate real de Enforce es el ARRANQUE del stack** (ningún check offline ve
+   visibilidad de métodos, p.ej. protected). La celda debe buscar `Compile error` / `Can't
+   compile` en el script log del server ANTES de esperar fases posteriores, y tratar el
+   message-box del cliente como cuelgue (timeout de fase).
+
+Patrón de orquestador que funcionó: wrapper con FASES nombradas (BOOT-spawn / BOOT-log /
+COMPILE / CONNECT / GETIN / sondas / SETTLE / teardown / PARSE), cada una con veredicto
+PASS/FAIL y timeout propio; los logs se copian a evidence AUNQUE una fase falle; el teardown
+mata SOLO los PIDs que la celda lanzó. Referencia completa:
+`LFHeli_dev\tools\run_celda_compivot.ps1` + `evidence-2026-08-12-offset\` (11 celdas con la
+causa de cada fallo). Cross-ref: sesión 2026-08-12-lfheli-oh1-com-pivot-medido-recenter-verde.
+
+---
+
+## Preflight: prove your celda's gates can go RED before you trust a single green run (added 2026-08-13, LFHeli council; LL-249)
+
+A test-cell wrapper is only worth what its gates are worth, and two failure modes make a gate
+**structurally incapable of failing** while it keeps printing green. Neither is visible by reading
+the script in good faith. Both were live in a wrapper that had already gated ~12 in-game cells.
+
+**1. A flag that turns your regex into a literal.** This line looks like a compile gate:
+
+```powershell
+Select-String -Path $slog.FullName -Pattern "Compile error|Can't compile" -SimpleMatch
+```
+
+`-SimpleMatch` makes PowerShell search for the whole string **verbatim, pipe included** — a
+sequence that never occurs in a log. Measured against a synthetic log containing both real errors:
+**0 hits with `-SimpleMatch`, 2 without it.** Every cell that "passed the compile gate" passed it
+by construction. Same trap: `-Raw`, `-Literal*`, `[Regex]::Escape` on a pattern you meant as regex,
+and `-match` vs `-like` mixups.
+
+**2. An analyzer whose input does not depend on the experiment.** Hardcoded log paths
+(`$clientPath = ...client_script_2026-08-12_11-25-05.log`) mean every future A/B re-analyses the
+same old flight and reports "no change" tautologically. Its sibling: a script that only prints
+statistics and never sets an exit code — without one, nothing can fail, so it is a report, not a gate.
+
+**Preflight before trusting any inherited gate** (cheap, and it is the only thing that separates a
+gate from decoration):
+
+1. Feed it a fixture that MUST fail, and confirm it fails. If you have never seen the gate red, you
+   do not know it is a gate.
+2. Grep the wrapper for `-SimpleMatch`/`-Raw`/`-Literal*` next to any pattern containing `|`, `.`,
+   `*`, `\` or `(`.
+3. Require parametrised inputs, and assert the analysed artifact is **newer than** the run that
+   produced it (a stale-input check is one line and catches the whole class).
+4. Require a non-zero exit code on failure, and check the caller actually propagates it.
+
+Corollary for measurement campaigns: fix the gates BEFORE the campaign, not after. A campaign run
+through a decorative gate produces greens that mean nothing, and you cannot tell afterwards which
+of them were real.
