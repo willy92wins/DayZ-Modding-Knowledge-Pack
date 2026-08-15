@@ -3,9 +3,23 @@
 <!-- LIVE-STATE:START -->
 # DayZ Modding Knowledge Pack — Estado vivo · snapshot 2026-08-15 (listo para publicar, sin publicar)
 
-**Medido el 2026-08-15, no recordado:** HEAD `d2bba60` en `r21/phase01-foundation`,
-árbol limpio, 7 commits nuevos hoy. **`main` sigue en `f87a59e`.** Sin remoto
-configurado, y así se queda: el usuario decidió **preparar todo y no publicar aún**.
+## PUBLICADO el 2026-08-15
+
+<https://github.com/willy92wins/DayZ-Modding-Knowledge-Pack> — **público**, rama
+por defecto `main`, release **`v1.0.0`**.
+
+`main` se adelantó por fast-forward a la rama de fase y se empujó: local y remoto
+en `64ba73a`, verificado con `git ls-remote`. El asset de la release se
+**descargó de GitHub y su SHA-256 se comparó con el build local**: idénticos,
+`c12e7ceb8e71333e62bb2274e7494f55763c356a4889a8ab16de1ae494c4e918`, 4.445.820 B.
+Lo que hay publicado es byte a byte lo que se construyó aquí.
+
+> **A partir de ahora hay una audiencia.** Un `push` a `main` es visible al
+> instante y un borrado no deshace un fork ni un caché. Las reglas que antes
+> protegían un repo privado —cero rutas privadas, cero bytes de terceros, ninguna
+> afirmación sin su evidencia— ahora protegen algo que otros leen.
+
+**Estado medido:** HEAD `64ba73a`, árbol limpio, **17 commits** hoy.
 
 **El backlog de adopción está cerrado** (§«El backlog está CERRADO»). El pack
 gobierna **16 playbooks** más `_shared`; el ZIP son **267 entradas**.
@@ -84,8 +98,16 @@ $env:PACK_SKILLS_REF_ROOT = "<root>"
 2. **Publicar los playbooks con los que produces mods por los que cobras.** El
    `README.md` lo dice explícitamente en su primera línea. Decisión de negocio.
 
-**Si publicas**, quedan: pasar `[Unreleased]` del `CHANGELOG.md` a una versión,
-crear el repo y empujar. Nada más está pendiente por el lado del release.
+**Hecho al publicar**: `[Unreleased]` → `[1.0.0] - 2026-08-15`, repo creado,
+`main` empujado, release con el ZIP reproducible adjunto y su hash en las notas.
+
+**`MANIFEST.txt` era falso y se arregló en el mismo paso.** Declaraba 222 ficheros
+de payload contra 267 reales y listaba hashes superados varias veces. Ningún gate
+lo cazó, y ninguno podía: `validate` prueba que cada fichero trackeado coincide con
+su hash registrado, que es exactamente lo que un documento caducado cuyos propios
+bytes no cambian va a pasar siempre. **No se re-inventarió a mano** —eso solo
+reinicia el reloj del mismo fallo—: ahora apunta a `manifest.json`, que `packctl
+build` genera del árbol que describe y por tanto no puede derivar.
 
 ## Lo que se hizo hoy
 
@@ -246,6 +268,16 @@ desde este HEAD. El procedimiento entero está en
 
 ## Puerta de arranque
 
+`Retomo DayZ Modding Knowledge Pack, YA PUBLICADO en
+github.com/willy92wins/DayZ-Modding-Knowledge-Pack (público, main, release v1.0.0,
+asset verificado por hash contra el build local) desde: 64ba73a (2026-08-15) · el
+repo tiene remoto y audiencia: un push a main es visible al instante · próxima
+acción: nada obligatorio; candidatos son el linter de DayZ_Tooling hacia tools/
+con sus dos condiciones, los criterios abiertos B3b/B6/B7/B8 y C3/C6/C7/C8, y
+reconstruir el bundle del experto gráfico, que quedó viejo`
+
+<details><summary>Puerta de arranque anterior (pre-publicación)</summary>
+
 `Retomo DayZ Modding Knowledge Pack desde: b244589 (2026-08-15) con el backlog de
 adopción CERRADO y la auditoría de huecos hecha —24 ficheros adoptados o
 fusionados, py3d 1.5.0 desde el fork publicado, dayz-clothing dentro, la nota de
@@ -258,6 +290,8 @@ PyPI (ejecutable `agentskills`) y encontró dos skills con frontmatter no-YAML, 
 arregladas · **no queda ningún bloqueador técnico para publicar** · próxima acción:
 si publicamos, versionar el `CHANGELOG` y crear el repo; si no, la cola de parches
 de skill tiene 79 pendientes, 6 de ellos contra skills que el pack gobierna`
+
+</details>
 <!-- LIVE-STATE:END -->
 
 ---
