@@ -144,6 +144,33 @@ Las 7 skills instaladas que el pack no gobierna (`codex-handoff-template`,
 `secrets-handling`, `youtube-research`) son **método de trabajo, no dominio DayZ**.
 Meterlas diluye la definición del producto y arrastra atribuciones de terceros.
 
+## Candidato futuro: el linter pre-PBO de `DayZ_Tooling` → `tools/`
+
+**Aprobado como dirección el 2026-08-15; el código todavía no existe aquí** (vive
+en el sobremesa). `script_validator.py`, 8 detectores semánticos sobre Enforce y
+`.rvmat`, **78 tests**, stdlib-only, smoke reproducido byte-idéntico por dos
+ejecutores: **7% FP en LFPowerGrid, 0% en LF_VStorage**, y un bug real encontrado
+(`#ifdef SERVER` vacío). Encaja por forma con `py3d` / `dayz-ui-lab` / los demás.
+
+**Sirve al criterio `B7`, que sigue abierto** — «simuladores offline reducen
+iteraciones… fixtures positivas, negativas y límites explícitos». Ojo: `B7`
+enumera validadores de config/loot/CE y esto es Enforce + `.rvmat`, así que lo
+serviría **en parte**; no lo cierra solo.
+
+**Dos condiciones de entrada:**
+
+1. **`BUG-029` resuelto ANTES de entrar, no dentro.** El detector
+   `LAYOUT-LEAF-MISSING-BRACES` implementa una regla falsa —la misma que este pack
+   acaba de tachar en `dayz-ui-development.md`— y su suite de 83 tests dio verde
+   certificando fidelidad a esa spec falsa. **En cuarentena no viaja**: un pack
+   cuya tesis es «verde ≠ verificado» no puede distribuir un detector
+   conocido-falso.
+2. **Entra como `tools/dayz-script-lint/`, no como skill.** La decisión 001 de
+   `DayZ_Tooling` lo enrutaba a `dayz-pbo-build`, que **no está en este pack**.
+   Cambiar de destino lo convierte en herramienta distribuible con source-map,
+   licencia y mantenimiento público. Registrado como decisión 009 en
+   `DayZ_Tooling/decisions/decision-log.md`, allí marcada **en revisión**.
+
 ## El backlog está CERRADO. Lo que queda es deliberado
 
 No hay nada pendiente de adoptar. Lo que sigue apareciendo al medir repo contra
