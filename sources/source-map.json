@@ -85,7 +85,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "4662f17668450b05e7c5fb1caa2845747dfe92d83df77bd587b0284da81b5cbe",
+          "source_hash": "f9747b4cd3f7994121293234b01e612020825e1e6b9dede803977f35ee72058a",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -93,7 +93,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4662f17668450b05e7c5fb1caa2845747dfe92d83df77bd587b0284da81b5cbe",
+      "output_hash": "f9747b4cd3f7994121293234b01e612020825e1e6b9dede803977f35ee72058a",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11723,6 +11723,28 @@
       "output_path": "skills/dayz-vehicles/history/pre-cambio-0-gate-ladder.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/_shared/pack_skill.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Skill packaging helper; documents a cp1252 decode failure in the upstream packager on Windows.",
+          "license": "MIT",
+          "source_hash": "6d6ce564d8529f22aa0ba4522d5cdf6f5994c3019e76ad683a4565ec043b8d51",
+          "source_id": "installed-skills",
+          "source_path": "_shared/pack_skill.py",
+          "source_revision": "filesystem@2026-08-15",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6d6ce564d8529f22aa0ba4522d5cdf6f5994c3019e76ad683a4565ec043b8d51",
+      "output_path": "skills/_shared/pack_skill.py",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",

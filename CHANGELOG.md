@@ -12,6 +12,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   three Three.js libraries are **not** bundled; the viewer README says where to
   fetch them, matching the pack's existing policy on third-party tools.
 - `dayz-vehicles` archived gate ladders (`history/`).
+- `skills/_shared/pack_skill.py`: packages a skill folder into an installable
+  `.skill` zip on Windows, where the upstream packager reads `SKILL.md` without
+  an explicit encoding and dies on any em-dash or accent under cp1252.
 - `dayz-clothing` skill: the worn-clothing pipeline verified in-game on DayZ
   1.29, covering the three silent failure modes that make a custom
   `ClothingTypes` item load as nothing, float, or come apart. Its helper
