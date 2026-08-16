@@ -2,7 +2,8 @@
 
 > **Definición de Producto Final (DPF).** Este documento fija el resultado
 > aceptable. El progreso vivo no se publica: se mide corriendo las puertas
-> (`python -m packctl gate --root . --report-dir reports`).
+> (`python -m packctl gate --root . --report-dir ../pack-gate-reports`; el
+> directorio de informes va fuera del árbol, ver `AGENTS.md` §Gates).
 
 ## Qué es “terminado”
 

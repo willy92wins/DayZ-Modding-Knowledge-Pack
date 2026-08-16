@@ -150,12 +150,23 @@ python -m packctl validate --root . --report reports/validate.json
 ```
 
 ```bash
-python -m packctl gate --root . --report-dir reports
+python -m packctl gate --root . --report-dir ../pack-gate-reports
 ```
 
 ```bash
 python -m pytest -q
 ```
+
+The gate's report directory must sit **outside** the repository. `gate` builds
+the release twice to prove reproducibility, so writing reports into the tree
+would contaminate the input it is measuring; it refuses with
+`GATE-REPORT-IN-ROOT` — and refuses before writing a report, so the only symptom
+is a silent exit 1.
+
+It also needs the external Agent Skills validator, pinned through
+`PACK_SKILLS_REF_ROOT` (a checkout or the executable itself). It ships on PyPI
+as `skills-ref`; the console script is named `agentskills`. Without it the
+`skills_ref` check fails closed rather than being skipped.
 
 `validate` checks provenance, privacy, links and claim ranges. `gate` adds
 skill validation, Python compilation, the layout corpus and a reproducible

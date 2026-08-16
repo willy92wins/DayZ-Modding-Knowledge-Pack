@@ -30,5 +30,8 @@ credentials, vanilla or third-party assets. The pack is MIT and takes no GPL,
 DPL-ND or CC-NC material.
 
 ```bash
-python -m packctl gate --root . --report-dir reports
+python -m packctl gate --root . --report-dir ../pack-gate-reports
 ```
+
+The report directory must be outside the repository and `PACK_SKILLS_REF_ROOT`
+must point at the Agent Skills validator; see `AGENTS.md` §Gates for both.

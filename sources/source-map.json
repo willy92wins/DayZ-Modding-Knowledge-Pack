@@ -1809,7 +1809,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
           "source_hash": "69a6536c4249c632b8d8bdac57593b8d3ba6f859acff7953eb7bd4047b616875",
@@ -1817,10 +1817,20 @@
           "source_path": "product-spec.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Corrects the documented gate invocation: the report directory must sit outside the tree, or packctl gate refuses with GATE-REPORT-IN-ROOT before writing any report.",
+          "license": "MIT",
+          "source_hash": "97e2c3dc2f267373d06e5d576d9a77cad9ac8d02984f96788bc8ed0f56c4b131",
+          "source_id": "pack-r21-authored",
+          "source_path": "product-spec.md",
+          "source_revision": "r22-tool-routing@2026-08-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "69a6536c4249c632b8d8bdac57593b8d3ba6f859acff7953eb7bd4047b616875",
+      "output_hash": "97e2c3dc2f267373d06e5d576d9a77cad9ac8d02984f96788bc8ed0f56c4b131",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
@@ -10985,15 +10995,15 @@
           "decision": "adopt",
           "decision_evidence": "GitHub Copilot entry point; a pointer to AGENTS.md with the rules inline.",
           "license": "MIT",
-          "source_hash": "6d51356c0067e8001621c9f22dd1315f8fb03181d8b641f4cc2f6c36124d6e4a",
+          "source_hash": "1bab9cc3b91061722136599627cfd5c3aeb8af4513c7580b8ed140cc37de8332",
           "source_id": "pack-r21-authored",
           "source_path": ".github/copilot-instructions.md",
-          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
+          "source_revision": "r22-tool-routing@2026-08-16",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6d51356c0067e8001621c9f22dd1315f8fb03181d8b641f4cc2f6c36124d6e4a",
+      "output_hash": "1bab9cc3b91061722136599627cfd5c3aeb8af4513c7580b8ed140cc37de8332",
       "output_path": ".github/copilot-instructions.md",
       "routing_artifact_id": "root/copilot-instructions",
       "verification_level": "cross_checked"
@@ -11029,7 +11039,7 @@
           "decision": "adopt",
           "decision_evidence": "Canonical agent entry file; the cross-tool convention several hosts read.",
           "license": "MIT",
-          "source_hash": "caf1754ed3b0f6a779e73eb84c056705275abf1ef92b745b41c60caed51d4d79",
+          "source_hash": "0679de41dc4af730d86b5178abb515eabe70c22cb2c67513a754ce999aba4825",
           "source_id": "pack-r21-authored",
           "source_path": "AGENTS.md",
           "source_revision": "r22-tool-routing@2026-08-16",
@@ -11037,7 +11047,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "caf1754ed3b0f6a779e73eb84c056705275abf1ef92b745b41c60caed51d4d79",
+      "output_hash": "0679de41dc4af730d86b5178abb515eabe70c22cb2c67513a754ce999aba4825",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
