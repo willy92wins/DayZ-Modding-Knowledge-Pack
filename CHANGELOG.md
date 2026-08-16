@@ -11,6 +11,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   optional PAA / RVMAT) to a deterministic `.glb` and a Three.js HTML
   viewer (`python -m dayz_3d_viewer`). Pillow and LZO are optional extras;
   three.js 0.160.0 is loaded from a CDN, not bundled.
+- `skills/dayz-3d-viewer` — playbook for the viewer tool. Scripts and the
+  old py3d 1.4.0 wheel stay out of the skill; invocations are
+  `python -m dayz_3d_viewer`.
 
 ### Changed
 

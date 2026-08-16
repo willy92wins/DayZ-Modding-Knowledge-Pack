@@ -141,7 +141,7 @@
           "decision": "adopt",
           "decision_evidence": "Canonical agent entry file; the cross-tool convention several hosts read.",
           "license": "MIT",
-          "source_hash": "7848e610c01837c3b3781fdc27e3951ad405a621fe4b47df12b05a9a242bd828",
+          "source_hash": "dc855cadb2501473fc32e16a1ae190e8699f9770c25cf6d85d8f82f208306d59",
           "source_id": "pack-r21-authored",
           "source_path": "AGENTS.md",
           "source_revision": "r22-tool-routing@2026-08-16",
@@ -149,7 +149,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7848e610c01837c3b3781fdc27e3951ad405a621fe4b47df12b05a9a242bd828",
+      "output_hash": "dc855cadb2501473fc32e16a1ae190e8699f9770c25cf6d85d8f82f208306d59",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -173,7 +173,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "b960bdc32655e9fae2e84bd23876c3957ad96cf586feb051f8618d3fde2b8d9c",
+          "source_hash": "ee2921bec8e52233761026464a3449df5c45d9153a4fd709b7760cfa21122d18",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -181,7 +181,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b960bdc32655e9fae2e84bd23876c3957ad96cf586feb051f8618d3fde2b8d9c",
+      "output_hash": "ee2921bec8e52233761026464a3449df5c45d9153a4fd709b7760cfa21122d18",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -345,7 +345,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "57e2b9c049b247bb117a9f5a9b0e845c9a8e4f9741e1e342e007eef7e9dc6f86",
+          "source_hash": "175a2711e302368917eeb5aa419600b598d9f8ebe06f5fd010c321d43a04e3db",
           "source_id": "pack-r21-authored",
           "source_path": "README.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -353,7 +353,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "57e2b9c049b247bb117a9f5a9b0e845c9a8e4f9741e1e342e007eef7e9dc6f86",
+      "output_hash": "175a2711e302368917eeb5aa419600b598d9f8ebe06f5fd010c321d43a04e3db",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -421,7 +421,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "276d20acafa6882147dc8a36dce2f8e6d77c5bc63fc98fefaec4e7e779636085",
+          "source_hash": "65876c80a2e0e1283c57cfcc9cc472b15d181d5e3cbcf1b4a4cc50a7c4ecc8e8",
           "source_id": "pack-r21-authored",
           "source_path": "compatibility-matrix.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -429,7 +429,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "276d20acafa6882147dc8a36dce2f8e6d77c5bc63fc98fefaec4e7e779636085",
+      "output_hash": "65876c80a2e0e1283c57cfcc9cc472b15d181d5e3cbcf1b4a4cc50a7c4ecc8e8",
       "output_path": "compatibility-matrix.md",
       "routing_artifact_id": "root/compatibility-matrix",
       "verification_level": "cross_checked"
@@ -2044,7 +2044,7 @@
           "decision": "adopt",
           "decision_evidence": "The internal process layer (plans, specs, session handoff, root CLAUDE.md) stopped being published; its promotion entries were removed with it.",
           "license": "MIT",
-          "source_hash": "61bad45ba2970ae664f262e9150abb5e9f4ae99ba4b93662793942051bf577b7",
+          "source_hash": "62498f0d3c79845c448cf964715a3eb6630b27900fa6315948eb922dbf790129",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/promotion-map.json",
           "source_revision": "r21-unpublish-internal-layer@2026-08-15",
@@ -2052,7 +2052,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "61bad45ba2970ae664f262e9150abb5e9f4ae99ba4b93662793942051bf577b7",
+      "output_hash": "62498f0d3c79845c448cf964715a3eb6630b27900fa6315948eb922dbf790129",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -11881,6 +11881,60 @@
       "output_path": "tools/py3d/tools/audit_p3d.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-3d-viewer/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "52e63f23d81c8c5c75d54aac7acb9634ed0bd4e075c852d7224bbb9cb91eb12d",
+          "source_id": "installed-skills",
+          "source_path": "dayz-3d-viewer/SKILL.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Skill body retargeted to tools/dayz-3d-viewer; knowledge kept.",
+          "license": "MIT",
+          "source_hash": "fb1d6d01698238623dc2d138c8d29a3c82f7bc185f7e4c5de47e141df9193cf2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-3d-viewer/SKILL.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fb1d6d01698238623dc2d138c8d29a3c82f7bc185f7e4c5de47e141df9193cf2",
+      "output_path": "skills/dayz-3d-viewer/SKILL.md",
+      "routing_artifact_id": "skill/dayz-3d-viewer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-3d-viewer/references/states-animations-leds.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "8e326051b3feaea95e150be65612c23706deb7321fa969f83cbc8a407d6e0a3f",
+          "source_id": "installed-skills",
+          "source_path": "dayz-3d-viewer/references/states-animations-leds.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8e326051b3feaea95e150be65612c23706deb7321fa969f83cbc8a407d6e0a3f",
+      "output_path": "skills/dayz-3d-viewer/references/states-animations-leds.md",
+      "routing_artifact_id": "skill/dayz-3d-viewer",
+      "verification_level": "cross_checked"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",

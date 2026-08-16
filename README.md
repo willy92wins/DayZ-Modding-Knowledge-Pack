@@ -12,7 +12,7 @@ It contains three things:
 
 | Part | What it is |
 |---|---|
-| `skills/` | 16 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
+| `skills/` | 17 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
 | `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export, ODOL parity, UI lab and 3D-viewer tools. |
 | `knowledge/` | **Verified reference notes** — technical facts, infra, and cross-project pattern syntheses. |
 
@@ -73,7 +73,8 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── rigorous-data-audit/      ← audit persistence/state-machine code before release
 │   ├── blender-animation/        ← author animations in Blender (via MCP) → DayZ
 │   ├── ai-3d-to-dayz/            ← AI-generated 3D (Hunyuan/Tripo/TRELLIS) → DayZ
-│   └── ardy-motion-generation/   ← motion generation → DayZ integration
+│   ├── ardy-motion-generation/   ← motion generation → DayZ integration
+│   └── dayz-3d-viewer/           ← MLOD .p3d / PAA / RVMAT → glTF + HTML viewer
 ├── tools/                        ← see TOOLS.md
 │   ├── py3d/                     ← DayZ fork of py3d (MLOD .p3d codec), MIT
 │   ├── dayz-animation-formats/   ← strict RTM/SEAnim v1 reader/writer/inspect
@@ -150,6 +151,7 @@ back to it.
 | Skill | Use when |
 |---|---|
 | `ai-3d-to-dayz` | Index/pointer skill for taking **AI-generated 3D** (Hunyuan, Tripo, TRELLIS) into DayZ: geometry-first, normal-bake into `_nohq`, and why AI-retopo output needs a manifold cleanup pass. |
+| `dayz-3d-viewer` | Convert an MLOD **`.p3d`**, **PAA** and **RVMAT** into a `.glb` and a Three.js HTML viewer (`embedded` or `web`). The executable is `tools/dayz-3d-viewer`; this playbook is how to invoke it. |
 
 **Process, QA & tooling** (domain-agnostic — use them across all of the above)
 | Skill | Use when |
@@ -181,7 +183,7 @@ an interactive Claude Code session and add the Anthropic marketplace). The relev
 | `dayz-texture-pipeline` | `.paa` / `.rvmat` / native PBR materials, the `_co/_nohq/_smdi/_as` map suffixes. |
 | `dayz-p3d-audit`, `dayz-p3d-debinarizer`, `dayz-p3d-inspector` | Collision/action/path audit; ODOL→MLOD de-binarize; model inspection. |
 | `dayz-particles`, `dayz-sound-system`, `dayz-ui-development`, `dayz-doors` | Particles, sound, UI/layouts, door class. |
-| `dayz-pbo-build`, `dayz-preflight`, `dayz-proxy-align`, `dayz-physics-engine`, `dayz-3d-viewer`, `dayz-animation-pipeline`, `mixamo-retarget`, `blender-assembly`, `blender-visual-review` | Packaging, preflight checks, proxy alignment, physics, viewing, animation, retarget, Blender assembly/review. |
+| `dayz-pbo-build`, `dayz-preflight`, `dayz-proxy-align`, `dayz-physics-engine`, `dayz-animation-pipeline`, `mixamo-retarget`, `blender-assembly`, `blender-visual-review` | Packaging, preflight checks, proxy alignment, physics, animation, retarget, Blender assembly/review. |
 
 If you see a cross-reference like *"delegates generic steps to `dayz-model-pipeline`"* inside an
 included skill, that is one of these. Installing the plugin makes those references resolve.
