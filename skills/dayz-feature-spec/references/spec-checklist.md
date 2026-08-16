@@ -38,7 +38,14 @@ Mark each `[x]` pass / `[ ]` fail. Any fail → fix the spec, do not proceed to 
 
 - [ ] CHK016 If the feature touches persistence / progression / async queues / admin commands: crash-recovery and admin-intervention scenarios (R8) are present, AND `rigorous-data-audit` is queued before release.
 
-## Result
+## Falsifiability (added 2026-08-16)
 
-- Pass count: __ / 16
-- If <16: list failing IDs and fix the spec before implement.
+Measurable is not the same as hard to fake. These two checks are the gate that CHK001-003 cannot be.
+
+- [ ] CHK017 For **every** Success Criterion, the false implementation has been named: a broken or trivial build that would satisfy it anyway. If none exists, say so explicitly. A criterion that has never been attacked this way is untested, not safe.
+- [ ] CHK018 Every criterion inherited from an earlier version with a **different architecture** has been re-derived, not migrated — asking "which different implementations produce this same observable *now*?". If the answer includes the architecture just discarded, the criterion is dead even though it is still true.
+
+Origin: a spec passed this checklist 16/16 and an adversarial review then found nine criteria that a broken implementation satisfied, plus one inherited criterion that stopped discriminating after a redesign (`LL-282`, LFLiveContent 2026-08-16). Both gates exist because "the criterion is measurable" and "the criterion is falsifiable" are different properties.
+## Result
+- Pass count: __ / 18
+- If <18: list failing IDs and fix the spec before implement.

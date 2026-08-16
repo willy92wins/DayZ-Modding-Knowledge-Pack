@@ -18,7 +18,7 @@ description: "Use when importing a new ripped racing-game Grub vehicle into DayZ
 | Partes móviles | Puertas, capó, maletero y rueda/item conservan identidad propia, pivote medido y wiring item↔slot↔proxy; no se funden en el shell. |
 | Autoridad de frame | El frame del donor/golden manda para estructura; el frame del source manda para visual importado. Toda conversión se prueba con anclas independientes. Nunca validar una pieza contra un punto producido por el mismo transform. |
 | Golden | `C:\Users\<you>\VehicleImport\goldens\family-b\civiliansedan\r1\q1-structure.json`, revisión `family-b-civiliansedan-r1`, 3.219.555 bytes, SHA-256 `3174D511F2761EE2F4E003694F566D7D92180BB30CE3479A8FA5F1EAA7C45AEB`; donor hashes en `golden-manifest.json`. Es estructural, no clone-ready: `mass_array` vacío y avisos de proxies obligan a STOP antes de copiar masa por vértice o declarar paridad completa. |
-| Allowlist de checks | Solo B1-B6 de la tabla siguiente. Ningún gate legacy, snapshot o copia de workspace amplía el carril. |
+| Allowlist de checks | Solo B1-B7 de la tabla siguiente. Ningún gate legacy, snapshot o copia de workspace amplía el carril. |
 
 ## Inventario de puertas del source (medido 2026-08-06 sobre la biblioteca de 651 rips)
 
@@ -46,6 +46,7 @@ description: "Use when importing a new ripped racing-game Grub vehicle into DayZ
 | `B4_CREW_ACTIONS` | `VehicleImport\scripts\rip_action_contract_gate.py` por su CLI real (`:732-742`). | Disponible. |
 | `B5_DOOR_ALIGNMENT` | `VehicleImport\scripts\rip_door_engine_alignment_gate.py` por su CLI real (`:513-515`). | Disponible. |
 | `B6_NATIVE_DOOR` | `VehicleImport\scripts\rip_native_door_contract_gate.py` por su CLI can?nica (`--profile`, `--mlod-stage`, `--odol-stage`, `--debinarizer-scripts`, `--out`); W2 (`--matrix-authority` + `--matrix-out`) es una extensi?n opcional, no la autoridad base. | Disponible; autoridad de familia B demostrada con perfil no BRZ, golden vanilla, mutaci?n estructural y aver?a instrumental. |
+| `B7_VISUAL_SIGNOFF` | Render: `VehicleImport\scripts\rip_assembled_viewer.py`. Veredicto: `VehicleImport\scripts\rip_visual_signoff.py` (`--render` / `--verdict` / check con `--out`). | Disponible; estrenado con sub_wrxsti_04 el 2026-08-16, cuando el ojo del usuario encontro en minutos cuatro defectos que B1-B6 habian dado por buenos. |
 
 **Ubicación única:** cada primitive/gate se ejecuta solo desde su ruta canónica anterior. Está prohibido
 copiarlo a `work\`, `sNN\`, `_validation\`, `.superpowers\sdd\` o cualquier workspace de corrida.
@@ -58,6 +59,68 @@ Si la ruta canónica falta, el resultado es STOP, nunca “usar la copia más nu
 (GLB con extras + deltas que el agente aplica al `.blend` por script headless). Consultivo:
 la autoridad sigue siendo `.blend` → export → ficha. Uso y contrato de datos en su `README.md`.
 Estrenado con sub_wrxsti_04 (2026-08-06).
+
+## B7 — visto bueno visual antes del build (estrenado 2026-08-16, sub_wrxsti_04)
+
+B1-B6 miden nombres, conteos de caras, hashes y matrices logicas. **Ninguno puede ver un color
+ni la orientacion de un proxy.** El 2026-08-16 el usuario abrio el WRX en un visor por primera
+vez y encontro en minutos cuatro defectos que el allowlist entero habia dado por buenos:
+
+- el 64% del coche en UN material y el interior entero en otro — la importacion registro
+  `material_map: null` y mando 37 piezas con nombre (emblemas, espejos, escape, jambas,
+  faldones, bajos, brazos de suspension) al cubo de pintura de carroceria;
+- los cuatro proxies de rueda escritos con la matriz IDENTIDAD, iguales los cuatro, cuando
+  vanilla escribe DOS frames espejados, uno por lado. Mismo frame + anclajes espejados =
+  un lado montado del reves por obligacion matematica;
+- rueda de berlina vanilla de 176 mm en vez de la del coche;
+- un color de carroceria que nadie habia verificado.
+
+El instrumento existia a medias: `rip_visual_sheet.py` ya renderiza los artefactos y su
+propio docstring dice «renderiza, no juzga» — pero dibuja geometria GRIS y por separado, asi
+que no podia enseñar ninguno de los cuatro. B7 es la otra mitad.
+
+**Como se corre**, en este orden y sin saltarse el medio. RUTAS ABSOLUTAS: este proyecto
+tiene DOS arboles — `C:\Users\<you>\VehicleImport` (scripts, profiles, work) y
+`C:\Users\<you>\OneDrive\Documentos\DayZ Projects` (= `P:\`, el mod desplegado) — y un
+comando relativo solo corre desde uno. El estreno real de B7 murio con
+`can't open file ... No such file or directory` justo por eso.
+
+```
+set FZ=C:\Users\<you>\VehicleImport
+
+python "%FZ%\scripts\rip_visual_signoff.py" --car "%FZ%\profiles\<car>.json" ^
+       --render "%FZ%\work\<car>_viewer.html"
+   REM  (el humano lo abre y lo mira -- este paso no lo puede hacer el agente)
+python "%FZ%\scripts\rip_visual_signoff.py" --car "%FZ%\profiles\<car>.json" ^
+       --verdict pass^|fail --by "human:<quien>" --note "<que viste>"
+python "%FZ%\scripts\rip_visual_signoff.py" --car "%FZ%\profiles\<car>.json" ^
+       --out "%FZ%\work\_gates\b7.json"
+```
+
+**Tres reglas que hacen que sea un gate y no un sello de goma:**
+
+1. **El render va MONTADO y con materiales.** Casco + chunks + interior + desmontables en sus
+   proxies + ruedas en los suyos, con los colores de los rvmat que ship. Las puertas flotando
+   y las llantas invertidas SOLO aparecen ensamblado; en piezas sueltas y en gris, no.
+2. **El veredicto se ata a los bytes.** Lleva el sha256 de cada artefacto que se miro, y el
+   check los vuelve a hashear. Reconstruir una pieza deja el visto bueno STALE, no viejo, y el
+   gate se pone rojo hasta que alguien vuelva a mirar. Es la misma leccion que ya pago el
+   `positive_control`: un control apuntando a una ruta que el siguiente build sobreescribe es
+   una tautologia.
+3. **Fail-closed.** Sin veredicto es `NO_EVIDENCE`, nunca PASS. Un veredicto que cubra menos
+   artefactos de los que el coche tiene ahora es FAIL: no se puede aprobar una pieza que no se
+   enseño.
+
+Firmar tu por el humano invalida el gate entero. El comando `--verdict` existe para que la
+firma tenga nombre y fecha; usarlo en su lugar es falsificarla.
+
+Dos trampas que el render encapsula, pagadas el mismo dia: DayZ es ZURDO y three.js DIESTRO,
+asi que pasar las coordenadas tal cual **es una reflexion** — un coche espejado se ve
+perfectamente plausible hasta que lees un emblema, y el calibrador es texto de marca. Y la
+colocacion de proxy es `vertices @ effective_frame.T + anchor` con
+`effective_frame = MLOD_PROXY_CONVENTION_FRAME @ raw_frame`
+(`rip_detachable_doors.py:55-61,171-176`): deducirla a ojo del triangulo puso cada puerta a
+un metro del coche.
 
 ## Único índice síntoma → cookbook
 
@@ -76,7 +139,7 @@ No crear `INDEX.yaml`, un router de cookbooks ni otra tabla síntoma→cookbook.
 1. Abre este adaptador desde el selector de `dayz-vehicles`.
 2. Abre una única ficha `asset-contract.json`, creada desde la plantilla canónica, y verifica source revision, `Y0`, golden revision y estado.
 3. El humano clasifica en Blender; la primitive captura hash/inventario e importa lists/transforms en esa misma ficha. El agente no abre ni mantiene schema/export como documentos de estado.
-4. Comprueba presencia can?nica de B1-B6 sin ejecutar snapshots. **El allowlist B1-B6 est? completo; cualquier ausencia can?nica da STOP.**
+4. Comprueba presencia can?nica de B1-B6 sin ejecutar snapshots. **El allowlist B1-B7 est? completo; cualquier ausencia can?nica da STOP.**
 5. Convierte preservando procedencia y exige `LINEAGE_CHECKPOINT=PASS`; los otros dos estados bloquean.
 6. Ejecuta solo el allowlist; el test vivo final permanece separado del preflight.
 7. Si aparece uno de los cinco síntomas, abre solo su cookbook. Para otros síntomas, STOP y diagnóstico explícito.
@@ -107,48 +170,3 @@ python scripts\asset_contract_checkpoint.py check --contract <ficha>
   prohibido: son cicatrices específicas de ese coche.
 - Minas conocidas aguas abajo (siguiente cirugía): `rip_p2_group.py:33` IN_BLEND hardcoded
   BRZ; `rip_p3_structural.py:715` cae por defecto a `brz.json`.
-
-## Un mirror-gap se decide por CONTENIDO interno, nunca por ausencia de filename (SP-213)
-
-**[MECHANISM VERIFIED]** Que falte `*rf.modelbin` **no** demuestra que falte la
-geometría derecha: un único `modelbin` puede traer las mallas de los dos lados.
-Caso real en el LOD0 del SUB_BRZ — `doorlf_a.modelbin` contenía `doorLF_a_LODS0`,
-`doorRF_a_LODS0`, `mirrorBaseL` **y** `mirrorBaseR`: 8 objetos, 3.795 vértices,
-6.436 triángulos. Un probe que mira solo nombres de fichero lo clasifica como
-`MIRROR_GAP_RIGHT_FROM_LEFT`, y el espejado posterior duplica una fuente que ya
-tenía ambos lados → solape y geometría sintética.
-
-**Regla.** Antes de autorizar un mirror, importar al menos un LOD y censar
-**nombres internos + bbox lateral**:
-
-- el fichero izquierdo contiene mallas a ambos lados del eje → `SHIPPED_EMBEDDED_BOTH`,
-  y el mirror queda **prohibido**;
-- la ausencia de filename solo abre un `NEEDS_INTERNAL_PROBE`. **Nunca autoriza un
-  mirror por sí sola.**
-
-**Test de viabilidad obligatorio** antes de fiarte del gate: fixture con
-`doorlf.modelbin` presente, `doorrf.modelbin` ausente y mallas internas
-`doorLF`/`doorRF` en X opuestas. Esperado `SHIPPED_EMBEDDED_BOTH`, cero geometría
-sintética y conteos post-group iguales al import. Fixture negativa: fuente
-realmente unilateral → `MIRROR_GAP_RIGHT_FROM_LEFT`, y solo después del probe
-interno.
-
-## El paso de UV canónico es la skill `uv-clean-atlas`, y «sin solape» solo se declara con SAT=0 (SP-214)
-
-**[MEASURED]** Para UVs de atlas legible en hard-surface el pipeline validado es
-charts por cono de normales 100° + SLIM + guarda anti-pliegue de **una sola
-ronda** + finisher SAT + shelf pack semántico. Medido: un retopo de 10,5k tris →
-43 islas con **SAT=0**; un rip de 36,9k tris → 63 islas con **SAT=0**.
-
-Tres cosas que hay que respetar o el paso se degrada:
-
-- **`SAT=0` exacto es la única declaración válida de «sin solape».** El
-  Monte-Carlo tiene suelo ~0,06-0,15%, así que un «0%» suyo no prueba nada.
-- **La guarda anti-pliegue jamás se itera**: cascadea de 32 a 84 islas, medido.
-- El «triángulo de imposibilidad» se rompe **relajando la esquina de deformación**,
-  no fragmentando: el listón real tolera stretch moderado y no tolera
-  fragmentación.
-
-`PartUV` se pilotó y se **descartó como vía por defecto**: 162/232 islas sobre las
-mismas mallas. Cross-ref: mismo paso en `dayz-vehicles`; la implementación vive en
-la skill `uv-clean-atlas`, que este pack no distribuye.

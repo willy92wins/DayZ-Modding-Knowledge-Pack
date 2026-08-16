@@ -85,7 +85,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "a4678791b809dbb05e08a8f394159d37a69add713a913691a5a0361602b813fa",
+          "source_hash": "6309f93d4c773d6aa3ae02f4c117f0c98bd2101a4dbff60a06161dac0d6f9667",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -93,7 +93,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a4678791b809dbb05e08a8f394159d37a69add713a913691a5a0361602b813fa",
+      "output_hash": "6309f93d4c773d6aa3ae02f4c117f0c98bd2101a4dbff60a06161dac0d6f9667",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3456,7 +3456,7 @@
           "decision": "adopt",
           "decision_evidence": "The feature-spec checklist now operationalizes the approved API-index liveness boundary.",
           "license": "MIT",
-          "source_hash": "62c08493a453523f609266804cbb12dd6ecb1315f2056396cf6bfe9b45d0c9d6",
+          "source_hash": "d945d5309a8bfd16b0bd20c4d2cb6947dbf523d237192f345c97865949e8d601",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-feature-spec/references/spec-checklist.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -3464,7 +3464,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "62c08493a453523f609266804cbb12dd6ecb1315f2056396cf6bfe9b45d0c9d6",
+      "output_hash": "d945d5309a8bfd16b0bd20c4d2cb6947dbf523d237192f345c97865949e8d601",
       "output_path": "skills/dayz-feature-spec/references/spec-checklist.md",
       "routing_artifact_id": "skill/dayz-feature-spec",
       "verification_level": "cross_checked"
@@ -4062,7 +4062,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "6d3620c1551ad9556ebbb4e540e0499d83b0f9020923f0affb42875c67027068",
+          "source_hash": "428db588150d3f9b1f803819d2ed498b33094bb53114141a4c17f2480d2268b4",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -4070,7 +4070,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6d3620c1551ad9556ebbb4e540e0499d83b0f9020923f0affb42875c67027068",
+      "output_hash": "428db588150d3f9b1f803819d2ed498b33094bb53114141a4c17f2480d2268b4",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -4146,7 +4146,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "d202587c9929b9a5477d42ec5380510b9b8efb2b1fd5c47893123647423734df",
+          "source_hash": "9f30a136904b0e801ea9a92bc1c8460e4c82f9167580f6730d6bfd04591e4c7e",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/references/build-packaging-and-debug.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -4154,7 +4154,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d202587c9929b9a5477d42ec5380510b9b8efb2b1fd5c47893123647423734df",
+      "output_hash": "9f30a136904b0e801ea9a92bc1c8460e4c82f9167580f6730d6bfd04591e4c7e",
       "output_path": "skills/dayz-vehicles/references/build-packaging-and-debug.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -4694,6 +4694,226 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/skills/dayz-vehicles/references/animation-sign-and-axis.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "775bf060da2f7fb65ae461fda42d4911c2e6485bb30eb6b549b69126462f43bf",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/animation-sign-and-axis.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "775bf060da2f7fb65ae461fda42d4911c2e6485bb30eb6b549b69126462f43bf",
+      "output_path": "skills/dayz-vehicles/references/animation-sign-and-axis.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/binarize-vertex-budget.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "336e4c4c664bc41fc1511e54b6ad071e9b43bdf560249fcda77dbf908e730e9d",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/binarize-vertex-budget.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "336e4c4c664bc41fc1511e54b6ad071e9b43bdf560249fcda77dbf908e730e9d",
+      "output_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/doors-and-panel-edges.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "fbcaf9fdb943d573009a773ef9a89fef03a8b7ce9a6e7dd3142b22bd369d7ec8",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/doors-and-panel-edges.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fbcaf9fdb943d573009a773ef9a89fef03a8b7ce9a6e7dd3142b22bd369d7ec8",
+      "output_path": "skills/dayz-vehicles/references/doors-and-panel-edges.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/legacy-gate-ladder.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "0c3c4da415ce9974e190e9c4be7cfbfdd9bbc4c78850dae6a411a88dedfada23",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/legacy-gate-ladder.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0c3c4da415ce9974e190e9c4be7cfbfdd9bbc4c78850dae6a411a88dedfada23",
+      "output_path": "skills/dayz-vehicles/references/legacy-gate-ladder.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/materials-and-selections.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "937a73918e53a93d172be9eb31cf6187aa7bd9b56a77497fb3ca25516d5f192f",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/materials-and-selections.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "937a73918e53a93d172be9eb31cf6187aa7bd9b56a77497fb3ca25516d5f192f",
+      "output_path": "skills/dayz-vehicles/references/materials-and-selections.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/network-physics-ownership.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "8fe7eb8bb1626a1a96bc434054b234713df9804d03c23cd1b886af98ea6ab8ee",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/network-physics-ownership.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8fe7eb8bb1626a1a96bc434054b234713df9804d03c23cd1b886af98ea6ab8ee",
+      "output_path": "skills/dayz-vehicles/references/network-physics-ownership.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/process-gates.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "1d518e6982abc4af1b5e72f3e153dba60c9e5d9178f2143b87378c5f82891606",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/process-gates.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1d518e6982abc4af1b5e72f3e153dba60c9e5d9178f2143b87378c5f82891606",
+      "output_path": "skills/dayz-vehicles/references/process-gates.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/proxies-and-get-in.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "96c914823790de92848c7579601c2ad4456195c13b32f3a9ed8a9692fb8c5399",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/proxies-and-get-in.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "96c914823790de92848c7579601c2ad4456195c13b32f3a9ed8a9692fb8c5399",
+      "output_path": "skills/dayz-vehicles/references/proxies-and-get-in.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/rip-geometry-and-winding.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "54c27f80dd9a43fbb1e660147215d1b90689d66cbbe52cb226fe4cd4954305b1",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/rip-geometry-and-winding.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "54c27f80dd9a43fbb1e660147215d1b90689d66cbbe52cb226fe4cd4954305b1",
+      "output_path": "skills/dayz-vehicles/references/rip-geometry-and-winding.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/visual-metrics-and-viewer.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "license": "MIT",
+          "source_hash": "48338c7c84c77c424269fa07cc75e7f63df9e64f2a4c2bd199d4c226b7c32d5c",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/visual-metrics-and-viewer.md",
+          "source_revision": "filesystem@2026-08-16",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "48338c7c84c77c424269fa07cc75e7f63df9e64f2a4c2bd199d4c226b7c32d5c",
+      "output_path": "skills/dayz-vehicles/references/visual-metrics-and-viewer.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/skills/dayz-weapons/skill.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -4952,7 +5172,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "09edf11aef173e38e0a9d739e9da719c5b27dad5aee458ed93c293950d2ee74f",
+          "source_hash": "6a10006d3b1785e6c66cd65c77ff0c502f25c39b072c1fb5eb350d343275be14",
           "source_id": "pack-r21-authored",
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -4960,7 +5180,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "09edf11aef173e38e0a9d739e9da719c5b27dad5aee458ed93c293950d2ee74f",
+      "output_hash": "6a10006d3b1785e6c66cd65c77ff0c502f25c39b072c1fb5eb350d343275be14",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"

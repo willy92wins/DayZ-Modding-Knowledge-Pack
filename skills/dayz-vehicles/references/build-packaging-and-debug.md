@@ -9,42 +9,6 @@
 
 > REDIRECT CAMBIO-1 (familia B): `../../rip-vehicle-import/cookbooks/family-b/coche-blanco.md`.
 
-## 1. Binarize drops config-only assets → white / untextured vehicle on dedicated
-
-**Symptom:** the vehicle renders white / untextured on a dedicated server, but looks correct in
-local filepatching. This is the single most common "ships broken" failure for an imported vehicle.
-It is **NOT** a `P:\` path problem (see §4).
-
-**Root cause:** AddonBuilder's binarize dependency-tracker only packs the assets that the
-**geometry** (`.p3d`) references. Assets declared **only in `config.cpp`** are not tracked and get
-left out of the PBO entirely:
-
-- `hiddenSelectionsTextures[]` — the swappable body/color/seat textures. `[LFQuad ✓ config.cpp:290-304]`
-- `hiddenSelectionsMaterials[]` — the paint/seat/light `.rvmat`. `[LFQuad ✓ config.cpp:305-319]`
-- reflector material-switch props: `frontReflectorMatOn/Off`, `brakeReflectorMatOn/Off`,
-  `ReverseReflectorMatOn/Off`, `TailReflectorMatOn/Off`, `dashboardMatOn/Off`. `[LFQuad ✓ config.cpp:320-329]`
-
-The body's paint uses the `color` selection → `B_PAINT.rvmat` + a `*_co.paa`; both are config-only,
-so both are missing from the PBO, and the largest visible surface of the vehicle goes **white**.
-`[LFQuad ✓: 26 such assets present in the folder were absent from the 5.4 MB binarized PBO; the
-18 MB packonly PBO had all of them.]`
-
-**Why filepatching hides it:** filepatching loads the loose files from the mod folder, where every
-asset exists. The PBO is only ever exercised on deploy — so the bug is invisible until a real
-server loads it.
-
-**Fixes** (either works; pick by whether you need the model protected):
-
-- **packonly** — `AddonBuilder <src> <dst> -prefix=<Mod> -packonly`. Copies the WHOLE folder, no
-  binarize. Every asset ships; `.p3d` stays MLOD, `config.cpp` stays text. Bulletproof, simplest,
-  zero asset-tracking to get wrong. Cost: the model is debinarizable and the config ships in clear.
-- **binarize + `-include`** — pass `-include=<list.lst>` covering `*.paa;*.rvmat` so the loose
-  assets are force-copied alongside the binarized geometry. Keeps `.p3d` ODOL (protected) and still
-  ships all textures. Cost: you MUST verify the result — a malformed/ignored include list silently
-  rescues nothing and you ship the same broken PBO.
-
-**Always verify the PBO before distributing** — §5. A green build log does not mean the assets are in.
-
 ## 2. ODOL vs MLOD changes what `model.cfg` MEANS at runtime
 
 This bites whenever animation/skeleton behavior is "fixed in model.cfg" but doesn't change in-game.

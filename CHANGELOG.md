@@ -12,6 +12,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `skills/dayz-vehicles/references/rip-import.md`. Public prose now uses
   neutral import terminology; measured geometry, hashes, LODs and gates are
   unchanged.
+- Synced author working-copy updates into `dayz-feature-spec` (CHK017/CHK018),
+  `dayz-vehicles` (extracted references plus day-0 viewer/signoff doctrine) and
+  `rip-vehicle-import` (`B7_VISUAL_SIGNOFF`). Brand tokens stay neutralized.
 
 ## [1.1.0] - 2026-08-15
 
