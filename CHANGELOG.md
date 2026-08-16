@@ -15,6 +15,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Synced author working-copy updates into `dayz-feature-spec` (CHK017/CHK018),
   `dayz-vehicles` (extracted references plus day-0 viewer/signoff doctrine) and
   `rip-vehicle-import` (`B7_VISUAL_SIGNOFF`). Brand tokens stay neutralized.
+- The DayZ-MCP bridge that `dayz-mcp-verify` drives is now public at
+  https://github.com/willy92wins/dayz-mcp (MIT). The README, the bridge
+  protocol note and `.mcp.example.json` point at it with the install one-liner
+  instead of describing the skill as methodology for a private tool.
 
 ## [1.1.0] - 2026-08-15
 

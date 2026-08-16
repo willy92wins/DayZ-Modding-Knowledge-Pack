@@ -129,11 +129,13 @@ people grepping the wrong file.
 
 ## Availability
 
-The bridge is the author's own project and lives in its own repository, separate
-from this pack: it is a running service with its own lifecycle, not redistributable
-content. Until that repository is public, read this note as **methodology** —
-the surface and the invariants are enough to build an equivalent bridge, and the
-engine facts above apply to any implementation.
+The bridge is published as its own repository, separate from this pack because it
+is a running service with its own lifecycle rather than redistributable content:
+**[https://github.com/willy92wins/dayz-mcp](https://github.com/willy92wins/dayz-mcp)** (MIT). Its README covers install, the three run
+modes, the security model and how a clone generates the machine-local pieces
+(launcher policy, built launcher, registry). This note remains the design record:
+the surface and the invariants are what the implementation is held to, and the
+engine facts above apply to any bridge of this shape.
 
-`.mcp.json` in the pack root is an example client wiring for an MCP server of
-this shape.
+`.mcp.example.json` in the pack root is the client wiring `install-mcp.ps1
+-Register` writes for it.

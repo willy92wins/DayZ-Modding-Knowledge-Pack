@@ -85,7 +85,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "6309f93d4c773d6aa3ae02f4c117f0c98bd2101a4dbff60a06161dac0d6f9667",
+          "source_hash": "9c3a2eae18210606d51d2002edb47ca3cb96e4de1928d16392639f9d1789c8ae",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -93,7 +93,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6309f93d4c773d6aa3ae02f4c117f0c98bd2101a4dbff60a06161dac0d6f9667",
+      "output_hash": "9c3a2eae18210606d51d2002edb47ca3cb96e4de1928d16392639f9d1789c8ae",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -235,7 +235,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "7d8d9e85d9eb95e1c11e62544ca68654ad92a810262875b3c9b9b3eb6c56361a",
+          "source_hash": "9bf8365bd382303dd192e61edc98e04a29deae39db24374052247cdef55009a2",
           "source_id": "pack-r21-authored",
           "source_path": "README.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -243,7 +243,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7d8d9e85d9eb95e1c11e62544ca68654ad92a810262875b3c9b9b3eb6c56361a",
+      "output_hash": "9bf8365bd382303dd192e61edc98e04a29deae39db24374052247cdef55009a2",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -11259,7 +11259,7 @@
           "decision": "adopt",
           "decision_evidence": "Example MCP client wiring for a bridge of the documented shape.",
           "license": "MIT",
-          "source_hash": "bb45ac1af5df48ffaf5e7e94773da5d655bf1c95e3892e529a18cbf0ff649e2d",
+          "source_hash": "0ebc34979593aa6d060c2a2baa3fe46f9a569133071437d508b6f7299f4bf877",
           "source_id": "pack-r21-authored",
           "source_path": ".mcp.example.json",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -11267,7 +11267,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "bb45ac1af5df48ffaf5e7e94773da5d655bf1c95e3892e529a18cbf0ff649e2d",
+      "output_hash": "0ebc34979593aa6d060c2a2baa3fe46f9a569133071437d508b6f7299f4bf877",
       "output_path": ".mcp.example.json",
       "routing_artifact_id": "root/mcp-example",
       "verification_level": "cross_checked"
@@ -11325,7 +11325,7 @@
           "decision": "adopt",
           "decision_evidence": "Bridge surface, design invariants and the engine facts behind in-game verification.",
           "license": "MIT",
-          "source_hash": "f328a2d5e819c4f59f05aadc50de5ee48fbf7fdf06995225ac93a0b62776aef6",
+          "source_hash": "4715f245b7716e6fd4f594d18e523354aae9bc4cbac8b2604c853891ca3febda",
           "source_id": "pack-r21-authored",
           "source_path": "knowledge/dayz-mcp-bridge-protocol.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -11333,7 +11333,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f328a2d5e819c4f59f05aadc50de5ee48fbf7fdf06995225ac93a0b62776aef6",
+      "output_hash": "4715f245b7716e6fd4f594d18e523354aae9bc4cbac8b2604c853891ca3febda",
       "output_path": "knowledge/dayz-mcp-bridge-protocol.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"

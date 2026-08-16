@@ -158,7 +158,7 @@ back to it.
 | `dayz-pbo-reverse-engineering` | **Learning from another author's PBO**: Mikero ExtractPbo, source-vs-deployable classification, the sweep order (config.cpp → model.cfg → scripts → rvmats → p3d), and citation discipline so you don't confabulate what their code does. |
 | `rigorous-data-audit` | **Before releasing data-critical code** (persistence, state machines, admin commands, async multi-tick queues) — anything where a bug means lost player progression. A multi-angle parallel audit + adversarial verification for invariant violations, races, path inconsistencies, and recovery-path defects. |
 | `dayz-test-ingame` | **Building, deploying and launching a mod locally** with `DayZDiag_x64.exe` + filepatching (server+client on one box, or single-exe offline). Generates a parametrized test orchestrator. *Assumes a specific Windows/DayZ tooling layout — see §8.* |
-| `dayz-mcp-verify` | **Auto-testing a mod in-game** by driving it with MCP tools (spawn a classname, orbit the camera, screenshot, raycast, read telemetry) and the drivable-car acceptance ladder. *Requires the author's custom `dayz-mcp` bridge, which is not public — included as methodology, see §8.* |
+| `dayz-mcp-verify` | **Auto-testing a mod in-game** by driving it with MCP tools (spawn a classname, orbit the camera, screenshot, raycast, read telemetry) and the drivable-car acceptance ladder. *Drives the game through [DayZ-MCP](https://github.com/willy92wins/dayz-mcp), published separately — see §8 for the wiring.* |
 
 ---
 
@@ -354,13 +354,22 @@ are the real value; keep them even if you adapt everything else.
   - `dayz-test-ingame` generates a Windows PowerShell orchestrator around a specific tooling layout
     (the `P:\` work-drive junction, AddonBuilder, a `<Mod>_dev\tools\` convention). The *ideas*
     transfer; the generated scripts will need to be re-pointed to your setup.
-  - `dayz-mcp-verify` drives the game through the author's **`dayz-mcp` bridge to DayZDiag**,
-    which lives in its own repository and is not part of this pack. Without an equivalent bridge
-    the MCP verbs won't run — read the skill as methodology (spawn → orbit → screenshot →
-    raycast → telemetry → verdict), not a turnkey tool. The surface, the design invariants and
-    the engine facts behind it are documented in
-    [`knowledge/dayz-mcp-bridge-protocol.md`](knowledge/dayz-mcp-bridge-protocol.md), which is
-    enough to build your own; `.mcp.example.json` shows the client wiring.
+  - `dayz-mcp-verify` drives the game through **[DayZ-MCP](https://github.com/willy92wins/dayz-mcp)**, the
+    bridge to DayZDiag, which is published as its own repository (MIT) and installs
+    independently of this pack:
+
+    ```powershell
+    git clone https://github.com/willy92wins/dayz-mcp
+    cd dayz-mcp\tools
+    .\install-mcp.ps1 -Register
+    ```
+
+    That gives an agent the tools the skill calls (spawn → orbit → screenshot → raycast →
+    telemetry → verdict) plus the managed launch (`dayz_test_run`) that builds a mod, starts
+    a diag server/client with it loaded and waits for readiness — the loop this pack's other
+    skills feed into. The surface, the design invariants and the engine facts behind it are
+    documented in [`knowledge/dayz-mcp-bridge-protocol.md`](knowledge/dayz-mcp-bridge-protocol.md);
+    `.mcp.example.json` shows the client wiring the installer registers.
 - **Placeholders.** Angle-bracket tokens like `<notes>`, `<research-notes>`, `<skills>`,
   `<claude-home>`, `<tmp>`, and `C:\Users\<you>\…` replace the author's private local paths. `P:\`
   is the standard DayZ work-drive convention, left as-is.
