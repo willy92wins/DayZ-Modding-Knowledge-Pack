@@ -510,6 +510,136 @@
       ]
     },
     {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/enforce-script-reference",
+      "artifact_kind": "tree",
+      "repo_path": "skills/enforce-script-reference",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-mod-workflow",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-mod-workflow",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-texture-pipeline",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-texture-pipeline",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-particles",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-particles",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-sound-system",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-sound-system",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-ui-development",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-ui-development",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-doors",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-doors",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-physics-engine",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-physics-engine",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-preflight",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-preflight",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-pbo-build",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-pbo-build",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
       "applicability": "tooling",
       "artifact_id": "tools",
       "artifact_kind": "tree",

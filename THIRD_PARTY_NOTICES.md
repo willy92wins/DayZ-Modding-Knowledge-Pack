@@ -71,6 +71,10 @@ redistributed by this pack:
 | DayZ Expansion, TraderPlus and TraderX | UI/layout comparison corpora | not redistributed; license not asserted here |
 | [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r128) | runtime dependency of the `rip-vehicle-import` classify viewer (`three.min.js`, `GLTFLoader.js`, `OrbitControls.js`, r128 UMD) | MIT; **not redistributed** — the viewer's README says where to fetch them |
 | [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r160) | runtime dependency of `tools/dayz-3d-viewer` generated HTML (`three.module.js`, `GLTFLoader.js`, `OrbitControls.js`, r160 ESM via jsDelivr `three@0.160.0`) | MIT; **not redistributed** — the tool README names the CDN URL |
+| Dabs Framework, LBmaster Groups | UI/script pattern research cited by `dayz-ui-development` | not redistributed; license not asserted here |
+| LM_Planes (Steam workshop 3730564764) | Enforce/config pattern extraction in `enforce-script-reference` | not redistributed; workshop terms |
+| DayZ Modders Discord via [AnswerOverflow](https://www.answeroverflow.com) | Community snippets in `dayz-ui-development` and `dayz-particles`, spot-checked against vanilla | Discord/AnswerOverflow terms; snippets rewritten against `P:\scripts` |
+| IMPWMODPart2, DoorLockSystem | Audio prior-art citations in `dayz-sound-system` | not redistributed |
 | DayZ game scripts, tools and data | API and runtime-contract evidence | Bohemia Interactive terms; not redistributed |
 
 The source map records pinned revisions and decisions. A link or citation is

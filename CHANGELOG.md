@@ -7,6 +7,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Ten author-owned skills that the pack already cited but did not ship:
+  `enforce-script-reference`, `dayz-mod-workflow`, `dayz-texture-pipeline`,
+  `dayz-particles`, `dayz-sound-system`, `dayz-ui-development`, `dayz-doors`
+  (including the author's three worked-example `.p3d`s), `dayz-physics-engine`,
+  `dayz-preflight`, `dayz-pbo-build`. The vendored py3d 1.4.0 wheel that
+  `dayz-pbo-build` used to carry is not included; use pack `tools/py3d` 1.5.0.
+- Routing instruction (AGENTS.md step 0 and README §0): before real
+  multi-session work, ask which durable memory the human will use; recommend
+  Obsidian or an equivalent plain-Markdown folder and do not proceed silently
+  without one.
 - `tools/dayz-3d-viewer` — sixth pack tool. Converts an MLOD `.p3d` (and
   optional PAA / RVMAT) to a deterministic `.glb` and a Three.js HTML
   viewer (`python -m dayz_3d_viewer`). Pillow and LZO are optional extras;
@@ -33,6 +43,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   https://github.com/willy92wins/dayz-mcp (MIT). The README, the bridge
   protocol note and `.mcp.example.json` point at it with the install one-liner
   instead of describing the skill as methodology for a private tool.
+
+### Fixed
+
+- README §4 said those ten skills (and the 3D playbooks still arriving) were
+  first-party Anthropic content, not redistributable, and told readers to
+  install the `anthropic-skills` plugin. That was false: they are the author's;
+  `anthropic-skills` is only the local plugin folder name.
 
 ## [1.1.0] - 2026-08-15
 

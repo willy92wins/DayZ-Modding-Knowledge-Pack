@@ -12,7 +12,7 @@ It contains three things:
 
 | Part | What it is |
 |---|---|
-| `skills/` | 17 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
+| `skills/` | 27 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
 | `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export, ODOL parity, UI lab and 3D-viewer tools. |
 | `knowledge/` | **Verified reference notes** — technical facts, infra, and cross-project pattern syntheses. |
 
@@ -36,10 +36,17 @@ If you are an AI assistant tasked with helping the user mod DayZ, internalize th
 
 3. **The client/server split is not optional knowledge.** Most "it doesn't work" bugs are a
    value read on the wrong side. Map which side owns each piece of state *before* writing a
-   feature. `enforce-script-reference` (see §4) and `knowledge/` cover this.
+   feature. `enforce-script-reference` and `knowledge/` cover this.
 
 4. **In-game testing is expensive (3–10 min per cycle).** Do all offline analysis first, batch
    every pending change into one test, and have a plan B/C ready before you ask for a rebuild.
+
+5. **Before starting real, multi-session work with this pack, ask the human which durable
+   memory they will use.** Recommend [Obsidian](https://obsidian.md) (free, plain Markdown; the
+   vault layout is in §7) or an equivalent plain-Markdown folder; offer to create the skeleton
+   (project brief, verified APIs, assumptions, decision log, bug ledger, session handoffs). Do
+   not silently proceed without one. What a session learns is gone in the next if it only lives
+   in the agent — this pack itself came out of writing those facts down outside it.
 
 ---
 
@@ -58,6 +65,8 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── _shared/                  ← conventions referenced by several skills
 │   │   ├── dayz-conventions.md
 │   │   └── enscript-style.md
+│   ├── enforce-script-reference/ ← Enforce Script + config.cpp reference
+│   ├── dayz-mod-workflow/        ← implement/debug protocol (client/server, anti-confabulation)
 │   ├── dayz-vehicles/            ← cars, trucks, quads, bikes, boats (CarScript)
 │   ├── dayz-aviation/            ← planes, seaplanes, helicopters
 │   ├── dayz-weapons/             ← custom firearms (entity side)
@@ -65,6 +74,14 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── dayz-clothing/            ← wearable items, custom skeletons, proxies
 │   ├── dayz-basebuilding/        ← buildable structures (BaseBuildingBase)
 │   ├── dayz-persistence/         ← OnStoreSave/Load, schema migration, data safety
+│   ├── dayz-texture-pipeline/    ← .paa / .rvmat / native PBR maps
+│   ├── dayz-particles/           ← .ptc / .emat particle pipeline
+│   ├── dayz-sound-system/        ← CfgSoundShaders/Sets + client audio API
+│   ├── dayz-ui-development/      ← .layout / widgets / Dabs MVC
+│   ├── dayz-doors/               ← class Doors on buildings and static props
+│   ├── dayz-physics-engine/      ← dBody*/raycast/layers/EOnContact
+│   ├── dayz-preflight/           ← P:\ / Tools / workshop env check
+│   ├── dayz-pbo-build/           ← pre-build validation + AddonBuilder packaging
 │   ├── dayz-test-ingame/         ← build + deploy + launch with DayZDiag + filepatching
 │   ├── dayz-mcp-verify/          ← auto-test a mod by driving it (see §8 and the bridge note)
 │   ├── dayz-pbo-reverse-engineering/  ← learn from another author's PBO
@@ -154,12 +171,25 @@ back to it.
 |---|---|
 | `ai-3d-to-dayz` | Index/pointer skill for taking **AI-generated 3D** (Hunyuan, Tripo, TRELLIS) into DayZ: geometry-first, normal-bake into `_nohq`, and why AI-retopo output needs a manifold cleanup pass. |
 | `dayz-3d-viewer` | Convert an MLOD **`.p3d`**, **PAA** and **RVMAT** into a `.glb` and a Three.js HTML viewer (`embedded` or `web`). The executable is `tools/dayz-3d-viewer`; this playbook is how to invoke it. |
+| `dayz-texture-pipeline` | **Textures and materials**: `.paa` / `.rvmat` / native PBR (MatPBR `.emat`), the `_co/_nohq/_smdi/_as` suffixes, hiddenSelections, damage/destruct swaps, Multi shader masks. |
+
+**Script, audio, VFX, UI, doors & physics**
+| Skill | Use when |
+|---|---|
+| `enforce-script-reference` | **Any Enforce Script or `config.cpp` work.** Memory (`ref`/`autoptr`/Managed/GC), networking (ScriptRPC, SyncVars, `OnStoreSave/Load`), timers (the `CallLater` 4.5 h bug), type system, action system, side checks, verified API catalog. Load it before writing script. |
+| `dayz-sound-system` | **Audio**: `CfgSoundShaders`/`CfgSoundSets`, client-only `EffectSound`/`SEffectManager`, server→client `StartItemSoundServer`, NoiseSystem, "sound not playing on dedicated server". |
+| `dayz-particles` | **Particles**: plain-text `.ptc`/`.emat`, GUID materials, `Particle`/`ParticleSource`/`ParticleManager`/`SEffectManager`. Consult before writing any particle code. |
+| `dayz-ui-development` | **UI / HUD / menus**: `.layout` brace format, `.styles`, vanilla widgets, Dabs MVC, Expansion menus. Especially when the UI does not match the design or breaks at other resolutions. |
+| `dayz-doors` | A **door, hatch or lid** on a building or static prop (`class Doors`), including a button/lever source and `model.cfg` skeleton work. |
+| `dayz-physics-engine` | **Rigid bodies, layers, raycasts, contacts**: `dBody*`/`dGeom*`/`dJoint*`, `PhxInteractionLayers`, `RaycastRV` vs `*Bullet`, `EOnContact`, TransportHit, "player walks through my object". |
 
 **Process, QA & tooling** (domain-agnostic — use them across all of the above)
 | Skill | Use when |
 |---|---|
 | `dayz-feature-spec` | **Before coding a non-trivial feature.** Writes a lightweight spec with measurable success criteria and Given/When/Then acceptance scenarios (incl. in-game repro), plus a **Forward Contract** — every classname / `model.cfg` selection / `.p3d` proxy / stringtable key the next phase will consume — and a read-only cross-artifact consistency gate. Adapted from github/spec-kit. |
-| `dayz-mod-workflow` *(not included — see §4)* | The implement/debug protocol these skills assume you follow. |
+| `dayz-mod-workflow` | **How to implement and debug**, not what. Client/server data mapping before each feature, anti-confabulation, top-down six-layer diagnosis, edge-case checklists, the verified error catalog. Use alongside the domain skills, not instead of them. |
+| `dayz-preflight` | **Before any other DayZ skill.** Read-only check that `P:\` is mounted, DayZ Tools and vanilla data are locatable, and `P:\Mods` is the workshop junction. Hard-fails if `P:\` is missing. |
+| `dayz-pbo-build` | **Pre-build validation and packaging**: `config.cpp`, `model.cfg`, textures, `.p3d` LODs, stringtable, AddonBuilder invocation. Use when packing, deploying, or asking "is this addon ready". |
 | `dayz-pbo-reverse-engineering` | **Learning from another author's PBO**: Mikero ExtractPbo, source-vs-deployable classification, the sweep order (config.cpp → model.cfg → scripts → rvmats → p3d), and citation discipline so you don't confabulate what their code does. |
 | `rigorous-data-audit` | **Before releasing data-critical code** (persistence, state machines, admin commands, async multi-tick queues) — anything where a bug means lost player progression. A multi-angle parallel audit + adversarial verification for invariant violations, races, path inconsistencies, and recovery-path defects. |
 | `dayz-test-ingame` | **Building, deploying and launching a mod locally** with `DayZDiag_x64.exe` + filepatching (server+client on one box, or single-exe offline). Generates a parametrized test orchestrator. *Assumes a specific Windows/DayZ tooling layout — see §8.* |
@@ -167,28 +197,43 @@ back to it.
 
 ---
 
-## 4. Dependencies NOT included (install these separately)
+## 4. What is in the pack, and what you still install separately
 
-Several skills above **delegate generic steps** to a set of first-party DayZ skills published by
-Anthropic as the **`anthropic-skills` plugin** for Claude Code. Those are not the author's to
-redistribute, so they are not copied here — but the pack assumes they exist, and the single most
-important one (`enforce-script-reference`) is referenced constantly.
+These playbooks are the author's. The local plugin folder they were installed under happened
+to be named `anthropic-skills`; that is a namespace on one machine, not a licence or an
+upstream. They ship under the same MIT licence as the rest of the pack.
 
-Install the `anthropic-skills` plugin from the Claude Code plugin marketplace (run `/plugin` in
-an interactive Claude Code session and add the Anthropic marketplace). The relevant skills:
+### Shipped in this pack
 
-| Skill | Role |
+The ten skills listed in §3 that used to be described as "install the plugin" are now under
+`skills/`: `enforce-script-reference`, `dayz-mod-workflow`, `dayz-texture-pipeline`,
+`dayz-particles`, `dayz-sound-system`, `dayz-ui-development`, `dayz-doors`,
+`dayz-physics-engine`, `dayz-preflight`, `dayz-pbo-build`. Load them like any other skill here.
+
+### Arriving in a later batch
+
+Nine author-owned 3D/pipeline playbooks are MIT as well and are not in this tree yet:
+`dayz-model-pipeline`, `dayz-p3d-audit`, `dayz-p3d-debinarizer`, `dayz-p3d-inspector`,
+`dayz-proxy-align`, `dayz-animation-pipeline`, `mixamo-retarget`, `blender-assembly`,
+`blender-visual-review`. A cross-reference to one of those names is a pointer to a playbook
+that lands in the follow-up adoption, not a request to install a third-party plugin.
+
+### True external dependencies
+
+These are *not* in the pack and have to be installed (or already present) on the machine that
+builds and tests mods:
+
+| Dependency | Role |
 |---|---|
-| **`enforce-script-reference`** | **The** Enforce Script reference — memory (`ref`/`autoptr`/Managed/GC), networking (ScriptRPC, SyncVars, `OnStoreSave/Load`), timers (the `CallLater` 4.5 h bug), type system, config.cpp, the action system, side checks. Load it for *any* Enforce Script or config work. |
-| `dayz-mod-workflow` | Implementation & debugging protocol (client/server mapping, anti-confabulation, top-down debug hierarchy). |
-| `dayz-model-pipeline` | Blender-headless → `.p3d` assembly, LODs, memory points, procedural textures, `model.cfg`, PBO. |
-| `dayz-texture-pipeline` | `.paa` / `.rvmat` / native PBR materials, the `_co/_nohq/_smdi/_as` map suffixes. |
-| `dayz-p3d-audit`, `dayz-p3d-debinarizer`, `dayz-p3d-inspector` | Collision/action/path audit; ODOL→MLOD de-binarize; model inspection. |
-| `dayz-particles`, `dayz-sound-system`, `dayz-ui-development`, `dayz-doors` | Particles, sound, UI/layouts, door class. |
-| `dayz-pbo-build`, `dayz-preflight`, `dayz-proxy-align`, `dayz-physics-engine`, `dayz-animation-pipeline`, `mixamo-retarget`, `blender-assembly`, `blender-visual-review` | Packaging, preflight checks, proxy alignment, physics, animation, retarget, Blender assembly/review. |
+| **DayZ** + unpacked vanilla data on `P:\` | Ground truth for scripts, models and configs. |
+| **DayZ Tools** (AddonBuilder, Object Builder / Workbench, TexView / ImageToPAA) | Pack, inspect and convert assets. |
+| **Python 3** | Pack tools (`pip install -e tools/py3d` and the other `tools/` packages). |
+| **Blender** (with `bpy`) | Authoring and export; several 3D skills assume it. |
+| **DayZDiag_x64.exe** | Local filepatching launch (`dayz-test-ingame`). |
+| Optional: Community Framework, Dabs Framework, VPP Admin Tools | Only when a given skill or project actually uses them. |
+| Optional: [DayZ-MCP](https://github.com/willy92wins/dayz-mcp) | In-game drive loop for `dayz-mcp-verify` — see §8. |
 
-If you see a cross-reference like *"delegates generic steps to `dayz-model-pipeline`"* inside an
-included skill, that is one of these. Installing the plugin makes those references resolve.
+There is nothing to install from an "Anthropic skills" marketplace for this pack.
 
 ---
 
@@ -428,7 +473,7 @@ representative in-game matrix. Record evidence and unknowns in
 > **User:** "Help me make this ripped car drivable in DayZ."
 >
 > 1. `rip-vehicle-import` if it's a racing-game rip (import pipeline), else `dayz-vehicles` (authoring).
-> 2. `enforce-script-reference` (install per §4) for any Enforce Script / config work.
+> 2. `enforce-script-reference` for any Enforce Script / config work.
 > 3. `dayz-feature-spec` first if it's non-trivial — lock the Forward Contract (classnames,
 >    `model.cfg` selections, wheel names) before coding.
 > 4. `dayz-test-ingame` to build/deploy/launch locally; verify in-game.

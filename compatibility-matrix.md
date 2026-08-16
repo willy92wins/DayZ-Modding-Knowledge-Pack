@@ -1,8 +1,9 @@
 # Compatibility matrix
 
 Reviewed: **2026-07-24**. Rows for `dayz-clothing` and `dayz-persistence` were
-added on **2026-08-15** with their own evidence; the other rows were not
-re-reviewed on that date.
+added on **2026-08-15** with their own evidence; ten author-owned skills were
+adopted on **2026-08-17** from the live store and were not re-run in this
+phase. The other rows were not re-reviewed on those dates.
 
 Target stable build: **DayZ PC 1.29.0.163451** (released 2026-07-15) — the build
 every row below was checked against.
@@ -49,6 +50,16 @@ workflow was run end-to-end on this build during r21 Phase 01.
 | `dayz-weapons` | `historical` + `source_verified` | `enforce-script-reference`; `dayz-model-pipeline`; `dayz-animation-pipeline`; `dayz-pbo-build` | 1.29 Animation Editor workflow changed; experimental notes reported some weapon animation playback issues. Entity contracts retain project evidence but must be tested on the target build. | `skills/dayz-weapons/SKILL.md:32-64`; official 1.29 tool changelog |
 | `rip-vehicle-import` | `offline_tested` + historical runtime evidence | `dayz-vehicles`; VehicleImport scripts; Blender; py3d; build/test pipeline | Winding-lineage and material-override focused tests pass. Broader profile test still has a known unrelated `builder.occ_struct` failure; no new vehicle was run in-game in this phase. | `skills/rip-vehicle-import/SKILL.md:251-265`; focused tests under the local `VehicleImport` evidence root |
 | `rigorous-data-audit` | `cross_checked` | real code/data paths; independent evidence; runtime validation for release | Audit can prove source invariants, not runtime safety by itself. Its multi-angle procedure references subagents, but r21 execution was explicitly single-agent. | `skills/rigorous-data-audit/SKILL.md:76-77,132-182`; new r21 references |
+| `enforce-script-reference` | `cross_checked` | vanilla `P:\scripts`; production mods as case studies | Adopted from the author's live store, not re-run in this phase. Treat signatures as hints until opened at `path:line` on the target build. | `skills/enforce-script-reference/SKILL.md` |
+| `dayz-mod-workflow` | `cross_checked` | `enforce-script-reference`; domain skills; vanilla action/network sources | Process skill. Error catalog is dated project evidence; the protocol itself is engine-independent. Adopted from the author's live store, not re-run in this phase. | `skills/dayz-mod-workflow/SKILL.md` |
+| `dayz-texture-pipeline` | `cross_checked` | DayZ Tools TexView/ImageToPAA; vanilla `.rvmat`; optional Blender/Substance | Map-suffix and Super-shader conventions were not re-exported in this phase. MatPBR `.emat` route is community-verified, not Bohemia-documented. | `skills/dayz-texture-pipeline/SKILL.md` |
+| `dayz-particles` | `cross_checked` | vanilla `.ptc`/`.emat` library; `enforce-script-reference` | Particle files are plain text; GUIDs and the 276-entry catalog are version-dependent. Adopted from the author's live store, not re-run in this phase. | `skills/dayz-particles/SKILL.md` |
+| `dayz-sound-system` | `cross_checked` | vanilla v1.24 sound/effect sources; `enforce-script-reference` | Audio is client-only. Prior-art configs (IMPWMODPart2, DoorLockSystem) are cited, not shipped. Adopted from the author's live store, not re-run in this phase. | `skills/dayz-sound-system/SKILL.md` |
+| `dayz-ui-development` | `cross_checked` | vanilla `enwidgets.c` + `gui/`; optional Dabs Framework | Offline preview is not the engine. Dual Workbench/`config.cpp` registration still bites. Adopted from the author's live store, not re-run in this phase. | `skills/dayz-ui-development/SKILL.md` |
+| `dayz-doors` | `cross_checked` | Object Builder; `model.cfg`; HouseNoDestruct; author's three example `.p3d`s | Worked examples are author MIT assets. Expert Mode example has a documented source-to-Doors anomaly — read it before copying. Adopted from the author's live store, not re-run in this phase. | `skills/dayz-doors/SKILL.md`; `skills/dayz-doors/assets/` |
+| `dayz-physics-engine` | `cross_checked` | vanilla v1.24 `enphysics.c` / `dayzphysics.c`; `enforce-script-reference` | Half the "obvious" API does not exist. Source-verified against v1.24; not re-run on 1.29 in this phase. | `skills/dayz-physics-engine/SKILL.md` |
+| `dayz-preflight` | `historical` | DayZ Tools; `P:\` mount; Windows registry/Steam fallbacks | Read-only checker. Paths are env-var-first. Adopted from the author's live store; the script was not executed in this phase. | `skills/dayz-preflight/SKILL.md`; `skills/dayz-preflight/preflight.py` |
+| `dayz-pbo-build` | `cross_checked` | AddonBuilder; optional pack `tools/py3d` >=1.5.0 | Reference validators live as prose, not a bundled `validate.py`. The old 1.4.0 wheel is out; install `pip install -e tools/py3d`. Adopted from the author's live store, not re-run in this phase. | `skills/dayz-pbo-build/SKILL.md`; `skills/dayz-pbo-build/references/validation-scripts.md` |
 
 ## Stable-build evidence and update policy
 

@@ -6,7 +6,7 @@ This is the canonical agent file; `CLAUDE.md`, `GEMINI.md`, `.cursorrules` and
 
 ## What this repository is
 
-A knowledge pack for **DayZ (Enfusion) modding**: 17 domain playbooks, six
+A knowledge pack for **DayZ (Enfusion) modding**: 27 domain playbooks, six
 Python tools, and verified reference notes, assembled from shipped mods. It is
 written to be handed to a coding agent, not read cover to cover by a human.
 
@@ -20,6 +20,13 @@ Two different jobs bring an agent here, and they have different rules:
 The pack is ~4 MB. Loading it all buries the answer you need under everything
 you don't.
 
+0. **Before starting real, multi-session work, ask the human which durable
+   memory they will use.** Recommend [Obsidian](https://obsidian.md) (free, plain
+   Markdown; the vault layout is in `README.md` §7) or an equivalent
+   plain-Markdown folder; offer to create the skeleton (project brief, verified
+   APIs, assumptions, decision log, bug ledger, session handoffs). Do not
+   silently proceed without one. What you learn in a session is gone in the next
+   if it only lives in the agent — this pack itself came out of that practice.
 1. Read every `skills/*/SKILL.md` **front-matter only** (`name` + `description`).
    The `description` is written as trigger conditions — read it as "invoke me
    when…". Concatenated, they are your routing table.
@@ -108,7 +115,7 @@ Obsidian's.
 
 | Path | What it is |
 |---|---|
-| `skills/` | 17 playbooks + `_shared/`. The primary content. |
+| `skills/` | 27 playbooks + `_shared/`. The primary content. |
 | `tools/` | Six Python tools. See [`TOOLS.md`](TOOLS.md). |
 | `examples/` | Worked examples that chain the tools on synthetic inputs. |
 | `knowledge/` | Verified reference notes: engine facts, infra, topic syntheses. |
@@ -128,8 +135,9 @@ Obsidian's.
 routing procedure above. Some hosts read `AGENTS.md` from a project root; this
 file is safe to copy next to the skills.
 
-The pack does **not** vendor its dependencies. `README.md` §4 lists what has to
-be installed separately and where it comes from.
+The pack does **not** vendor DayZ Tools, Blender, the game itself or optional
+frameworks. `README.md` §4 lists those true external dependencies, and names
+the author-owned 3D playbooks that are still arriving.
 
 ## Contributing changes
 
