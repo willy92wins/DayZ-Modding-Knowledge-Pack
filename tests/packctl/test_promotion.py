@@ -1328,6 +1328,7 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
         "skills/dayz-clothing/references/export_clothing_fbx.py",
         "skills/dayz-clothing/references/export_clothing_fbx.py",
         "skills/dayz-mcp-verify/references/drive_ladder.py",
+        "skills/dayz-preflight/preflight.py",
         "skills/dayz-test-ingame/templates/dayz-test.ps1",
         "skills/dayz-test-ingame/templates/dayz-test.ps1",
         "skills/dayz-test-ingame/templates/dayz-test.ps1",
