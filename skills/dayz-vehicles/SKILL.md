@@ -19,7 +19,7 @@ description: >
 ## Selector de familia — ruta crítica day-0 (CAMBIO-2)
 
 1. Identifica la familia por el origen y la arquitectura del asset; no por el síntoma.
-2. Si el asset es un coche source-game/Grub nuevo, proxy-split y con partes móviles, usa **familia B**.
+2. Si el asset es un coche source-game Grub nuevo, proxy-split y con partes móviles, usa **familia B**.
 3. Familia B → abre `../rip-vehicle-import/SKILL.md` y sigue únicamente su adaptador, golden y allowlist.
 4. Ese adaptador abre el `asset-contract.json` del asset como tercer y último fichero day-0; schema, export Blender y primitive son inputs de máquina, no documentos adicionales que el agente mantenga.
 5. Si ya existe un plan/runbook congelado para el asset, sigue ese contrato en vuelo; no lo migres aquí.
@@ -27,7 +27,7 @@ description: >
 
 | Señal de entrada | Adaptador | Ficheros day-0 |
 |---|---|---|
-| source-game/Grub, coche nuevo, proxy-split + puertas/partes móviles | Familia B | Este router → `../rip-vehicle-import/SKILL.md` → `<asset>\asset-contract.json` |
+| source-game Grub, coche nuevo, proxy-split + puertas/partes móviles | Familia B | Este router → `../rip-vehicle-import/SKILL.md` → `<asset>\asset-contract.json` |
 | Asset ya en vuelo | Runbook congelado del proyecto | El que cite su plan vigente |
 | Otra familia o datos insuficientes | Ninguno | **STOP** |
 
@@ -116,7 +116,7 @@ on the same asset: **1.301** on the Decimate-ratio export (0.26-0.6 per group) v
 source's own Medium LODs — 28 % apart, and enough to change how many sub-`.p3d` you plan for (2.43
 projected LODs against 1.75 measured). Rule: measure the ratio on the geometry you will SHIP, not on
 whatever export you have lying around. Corollary, and it is the bigger win: **if the source ships an
-authored LOD ladder (GTA `.yft` High/Medium/Low, source-game, Sollumz-imported `.blend` datablocks), use it
+authored LOD ladder (GTA `.yft` High/Medium/Low, ripped racing-game, Sollumz-imported `.blend` datablocks), use it
 instead of decimating** — swapping `obj.data` to the `<piece>_medium` datablock is usually better in
 triples AND satisfies the "the agent never decimates visual" clause of a product spec. Re-measure per
 model; never copy a ratio or a resolved ceiling between assets.
@@ -256,7 +256,7 @@ a pivot to a human artist. In both cases the ladder above would have branched aw
 
 ### Rip-specific rung 0 — a "paint" material in the source has NO diffuse; never substitute a livery sheet (added 2026-07-27)
 
-Before running the ladder on a **ripped** vehicle (GTA, source-game, any game rip), census which source
+Before running the ladder on a **ripped** vehicle (GTA, ripped racing-game, any game rip), census which source
 material each face carries and what the import mapped it to. Game rips colour the body through the
 host game's **paint system**, not through a texture: in GTA those materials are
 `vehicle_generic_smallspecmap*` / "primary" and their diffuse is legitimately **absent or a
@@ -350,7 +350,7 @@ means the bug is the gate, not the artifact; (b) name in one line the assumption
 with, and confirm the gate does not reuse it. A gate that has only ever been seen green is unmeasured,
 not verified.
 
-0. **Gate #0 — mesh + UV health BEFORE anything else (SP-052).** For ANY imported model (source-game or not),
+0. **Gate #0 — mesh + UV health BEFORE anything else (SP-052).** For ANY imported model (ripped or not),
    the FIRST step is a mesh+UV audit, because a broken mesh produces false downstream diagnostics (a
    "double wall" that was mirrored UV on a single wall; a "convexity" issue that was open design-boundary
    edges). (a) audit `mesh_health.py` (boundary / non-manifold / dup-verts / dup-faces / winding per
@@ -473,8 +473,8 @@ not verified.
    Bit MercedesAMGLF (stalled with SparkPlug+CarBattery+CarRadiator+fuel+coolant ALL present; SUB_BRZ ran
    only because it carried both zones). Verified vs `carscript.c` source + SUB_BRZ in-game parity.
 
-10. **Imported-car offline VISUAL gates that LIE — the #7 family (offline geometry heuristic != in-game truth).** The per-session changelog of sub-entries #10(a)-#10(o) (steering-axis fit, single-sided see-through, debug fluids, raycast oracle, source-game duplicate faces, per-piece winding uniformity, ViewPilot interior, bright-triangle shading seams, the import-orientation saga, glass occluder twins, foreign-LOD material transfer, gap skirts, hub-lift decoupling, get-in-preserving patches) lives in **`references/visual-gates-and-winding.md`** (s14->s23, SUPERSEDED entries archived there). The single operative winding rule stays here:
-   - **THE RULE (import orientation, #10j):** keep the raw glTF winding VERBATIM for ALL pieces (net rip->DayZ = `(-Fx, Fy+Y0, -Fz)`, det=+1, preserves the authored visible side end-to-end); stored MLOD normals = smooth(+cross) of the FINAL winding. NEVER orient winding to a normal oracle or to outward-of-centre. Repair ONLY source-inconsistent components by MAJORITY flood-fill per connected component (never minority-area). `glass*int_a` panes are legitimate cabin-side glass (do not delete as z-fight). Full mechanism, measurements, and the SUPERSEDED (h)/(i) history: `references/visual-gates-and-winding.md` #10(j)/(f).
+10. **Imported-car offline VISUAL gates that LIE — the #7 family (offline geometry heuristic != in-game truth).** The per-session changelog of sub-entries #10(a)-#10(o) (steering-axis fit, single-sided see-through, debug fluids, raycast oracle, rip duplicate faces, per-piece winding uniformity, ViewPilot interior, bright-triangle shading seams, the import-orientation saga, glass occluder twins, foreign-LOD material transfer, gap skirts, hub-lift decoupling, get-in-preserving patches) lives in **`references/visual-gates-and-winding.md`** (s14->s23, SUPERSEDED entries archived there). The single operative winding rule stays here:
+   - **THE RULE (import orientation, #10j):** keep the raw glTF winding VERBATIM for ALL pieces (net rip→DayZ = `(-Fx, Fy+Y0, -Fz)`, det=+1, preserves the authored visible side end-to-end); stored MLOD normals = smooth(+cross) of the FINAL winding. NEVER orient winding to a normal oracle or to outward-of-centre. Repair ONLY source-inconsistent components by MAJORITY flood-fill per connected component (never minority-area). `glass*int_a` panes are legitimate cabin-side glass (do not delete as z-fight). Full mechanism, measurements, and the SUPERSEDED (h)/(i) history: `references/visual-gates-and-winding.md` #10(j)/(f).
 
 11. **Vanilla forward convention is nose = −Z (ENGINE-NATIVE), and the "visual side" of an imported car
    is NOT one homogeneous block — measure EVERY body proxy separately before any bulk rotation
@@ -598,7 +598,7 @@ not verified.
     `class <Mod>_Wheel : CivSedanWheel { scope=2; tyreGrip=0.98; };` — it INHERITS the vanilla `inventorySlot[]`
     (`DZ\vehicles\wheeled\config.cpp:4761` lists CivSedanWheel_1_1.._2_2 + Spare) so it drops into the same
     `CivSedanWheel_*` slots and reuses the sedanwheel proxy; only tyreGrip changes. Then `OnDebugSpawn`/kit
-    create `<Mod>_Wheel`. Grip is DECOUPLED from the visual wheel model (custom source-game/rim = separate visual job). SUB_BRZ s28.
+    create `<Mod>_Wheel`. Grip is DECOUPLED from the visual wheel model (custom source-game rim = separate visual job). SUB_BRZ s28.
 
 18. **Diagnose "the car slides" BY AXIS — longitudinal (accelerating) vs lateral (cornering) need different
     fixes.** Sliding when you FLOOR it (power-oversteer, RWD) → tyreGrip + throttle/torque down. Sliding when
@@ -1048,9 +1048,9 @@ the provenance labels the references already use (`[Landrover ✓]`, `[QuadBike]
 `[TBD-verify]`). Anchor any new vehicle lesson to a real mod with `path:line`, never to memory.
 
 
-## source-game / source-game RIP IMPORT (added 2026-06-23)
+## RIPPED RACING-GAME IMPORT (added 2026-06-23)
 
-Importing a car ripped from a source-game game (source-game Motorsport / Horizon — the "Grub" container:
+Importing a car ripped from a racing game (the Grub container:
 `.modelbin` / `.swatchbin` / `.carbin`) into a DayZ `CarScript` vehicle is covered in
 `references/rip-import.md`. It documents Manifest.xml INCLUDE/EXCLUDE (the `__slod`, `bumperfcustom`,
 and stock-vs-widebody traps), RF right-side reconciliation (a LHD rip ships the driver side; passenger
@@ -2228,6 +2228,6 @@ Three rules, each of which cost a measurement to learn:
   not tolerate fragmentation.
 
 `PartUV` was piloted and **rejected as the default route**: 162 of 232 islands on
-the same meshes. Applies to any vehicle import, source-game or not; the implementation
+the same meshes. Applies to any vehicle import, ripped or not; the implementation
 lives in the `uv-clean-atlas` skill, which this pack does not ship. Cross-ref:
 `rip-vehicle-import`, same step after geometry.

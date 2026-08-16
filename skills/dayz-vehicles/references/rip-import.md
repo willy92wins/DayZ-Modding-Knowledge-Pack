@@ -1,6 +1,6 @@
-# source-game (source-game) rip → DayZ CarScript import
+# Ripped racing-game (source-game Grub format) → DayZ CarScript import
 
-How to turn a car ripped from a source-game game (source-game Motorsport / Horizon — the "Grub" container:
+How to turn a car ripped from a racing game (the Grub container:
 `.modelbin` meshes, `.swatchbin` textures, `.carbin` car definition) into a drivable DayZ `CarScript`
 vehicle. Companion to `vehicle-structural-parity.md` (parity-first method) and `external-obj-import.md`
 (generic OBJ import). Derived from the SUB_BRZ build (Subaru BRZ FE '22 widebody, 2026-06-23) — the first
@@ -16,7 +16,7 @@ Neither is caught by any offline gate, by G3, or by a Blender render — only th
    **Any geometry transplant MUST emit real, non-constant UVs** — and avoid seams with extreme derivative
    jumps (a cylindrical `atan2` UV with ×N tiling can still crash at the ±π seam). Check `uniqUV` per LOD vs
    a vanilla control (vanilla sedanwheel LOD0 = 1203, not 1).
-2. **Raw source-game body weight tumbles the client.** A full source-game body is ~400k+ visual faces; >~315k crashes
+2. **Raw rip body weight tumbles the client.** A full rip body is ~400k+ visual faces; >~315k crashes
    the render (vanilla Mercedes loads at 315k; SUB_BRZ at 417k did not). User-reported symptom = "lag at
    spawn" then crash. **Decimate before shipping** — see DECIMATION below.
 Diagnosis order when the client crashes ON the car (not the spawn-blocker): rule out weight, then geometry
@@ -24,7 +24,7 @@ corruption (NaN/overflow/UV-NaN health check), then a degraded environment (wipe
 storage causes FALSE load-crashes), then bisect render inputs ONE at a time (glass alpha, per-mesh
 materials, the wheel — never two at once).
 
-## DECIMATION — source-game bodies are too dense to render; planar-dissolve to ~200k (SUB_BRZ s14)
+## DECIMATION — rip bodies are too dense to render; planar-dissolve to ~200k (SUB_BRZ s14)
 (supersedes the "NO decimation" wording of the 2026-06-24 architecture section below)
 Pipeline `VehicleImport\scripts\decimate_{export,blender_batch,rebuild}.py` + `orchestrate_decimate.py`
 (py3d→Blender→py3d). Per chunk: export verts/faces/UV + slot=(material,texture,region-selection) → Blender
@@ -36,7 +36,7 @@ with an assembled 3-angle render), G3 4/4. Decimate ONLY the proxy chunks; leave
 (only near-coplanar faces collapse) — this is the "won't break the model" decimation to use, NOT aggressive
 collapse (which the user rightly rejected).
 
-Tooling: **Doliman100/source-game-extraction-tools** (`carbin_importer.py`, `modelbin_importer.py`).
+Tooling: **the community Grub-format extraction tools** (`carbin_importer.py`, `modelbin_importer.py`).
 `modelbin_importer.py` imports one `.modelbin` (geometry-only with `use_materials=False`, try/except per
 piece). `carbin_importer.py` assembles the whole car via the skeleton but needs the **GameDB SQLite**
 (`gamedbRC.slt`, `use_db=True`) for physics/dims. Run headless: `blender --background --factory-startup
@@ -114,8 +114,8 @@ authoring target.
   `DefinitionType=Vehicle`, `Mass=0.0`, inertia tensors zero/NaN, then a PointCloud. Exhaustive float32
   scan of all 404 slots = no value in curb-weight range. Mass is absent from the per-car file **by design**
   (delegated to the GameDB), not merely "unparseable". Do not mine it.
-- **Title of these rips: most likely source-game Horizon 6 (internal dev/RC build), NOT FM2023.** The build report
-  (`carscene_*_build_report.html`) shows Perforce branch `forte_main`, depot `source-game2\Main`, build agent
+- **Title of these rips: most likely the 2026 racing-game sequel (internal dev/RC build), NOT FM2023.** The build report
+  (`carscene_*_build_report.html`) shows Perforce branch `forte_main`, depot `the studio internal depot`, build agent
   `PGL-HNX026`, "restricted access" — an INTERNAL pre-release build (CarBuildTime 2026-04-20; `gamedbRC.slt`
   = Release Candidate; FH6 shipped 2026-05-19). `_fmnext` is the shared next-gen material library (FM2023 +
   FH6), NOT FM2023-exclusive; `.carbin` Root type = `07 00` (one gen past FH5 `06 00`). Not confirmable by
@@ -123,9 +123,9 @@ authoring target.
   namespace — the namespace is shared across the generation.
 - **`gamedbRC.slt` is whole-file encrypted** (entropy ~7.95 bits/byte, no SQLite/zlib/zstd magic; source-game
   pattern = Arxan TransformIT + CRC-32). Two community tools exist; neither is a clean fit for a dev/RC rip:
-  - `Doliman100/source-game-crypto-tool` — CLI, fully **local**, but supports only up to **FH5 v1.614.70.0**
+  - `the local community GameDB crypto CLI (FH5-era)` — CLI, fully **local**, but supports only up to **FH5 v1.614.70.0**
     (keys from the XeNTaX thread). Does NOT cover FH6/FM2023.
-  - `DVS-code/source-game-Crypto-Tool` — targets **FH6** and does GameDB→editable-SQLite, but the GameDB decrypt is
+  - `the server-side GameDB crypto client (2026-title)` — targets **FH6** and does GameDB→editable-SQLite, but the GameDB decrypt is
     **server-side**: closed-source .NET client that ships **no keys**, needs a reachable backend + a gated
     **application key**, and **uploads the file to the author's backend** to decrypt (verified from its
     README/release notes: *"All decrypt/encrypt runs server-side; the app ships no keys"*).
@@ -143,7 +143,7 @@ authoring target.
 - **Plan B when the GameDB is unavailable — public FH6 stat sites, no decrypt needed.** In-game curb weight /
   drivetrain / power / front-weight-% are published per car by community sites and cross-check cleanly.
   Verified for the 2022 BRZ (FH6): RWD, 2,835 lb = **1286 kg**, 228 hp, **53% front** (`game8` archives/600793
-  and `calculators.games/en/racing-horizon-6/cars/2022-subaru-brz` agree; `kudosprime.com/fh6/carlist.php`
+  and `calculators.games FH6 car pages (2022 Subaru BRZ)` agree; `kudosprime.com/fh6/carlist.php`
   gives weight already in **kg**, 614 models by make, but no weight-distribution). These are RETAIL FH6 values,
   not read from the encrypted RC GameDB — but mass/drivetrain don't change between builds, so they're a
   reliable authoring source for the whole fleet. Try these BEFORE chasing the encrypted GameDB; the GameDB
@@ -217,7 +217,7 @@ BLOCK), not optional steps — skippable verification is how the offline false-g
 Universality split: `verify_rip_car.py` (tier-U contract + per-car POLICY), `visual_gate.py` and
 `roundtrip_writer.py` are GENERIC for any DayZ car (see `vehicle-structural-parity.md` Addendum 2026-06-25b).
 `roundtrip_structural.py` and `fit_transform.py` are PATTERNS bound to the source-game builder/transform — for a
-non-ripped racing-game car, point the bisection at that car's `build_structural` and the fit at its transform. Shared
+non-ripped car, point the bisection at that car's `build_structural` and the fit at its transform. Shared
 helper: `_harness_util.py` (`clean_visual_shell` = reconstruct a runnable shell-only `.p3d` from a deployed one).
 
 Env: `python` 3.14.3 + py3d 1.2.0. A phase is CLOSED only with {positive-control OK + target hard-pass +
@@ -249,7 +249,7 @@ the geometry transform. Memory points MUST co-locate with the deployed geometry,
 map by **matching centroids**, not by assuming axes:
 
 1. Pick identifiable parts (headlights, taillights) and compute their centroid in the DEPLOYED DayZ geometry.
-2. Compare to the matching source-game locator. Solve the per-axis sign/offset.
+2. Compare to the matching source locator. Solve the per-axis sign/offset.
 
 SUB_BRZ result: **`DayZ = (−Fx, Fy + Y0, −Fz)`**, `Y0 = (wheel_radius − rip_wheel_center_y) + lift`
 (`(0.3587 − 0.19464) + 0.18 = 0.34406`). The `(−x, −z)` is a **180° rotation about vertical (det +1, proper,
@@ -561,7 +561,7 @@ inverted); the offline metric is a hint, not acceptance (false-green twice — s
 
 ### 2. Per-piece flip with NO per-piece selections → connected-component analysis, then select by spatial criterion
 
-source-game-built chunks carry only **material selections** (`color`/`glass`/`interior`), NOT per-piece named selections.
+rip-built chunks carry only **material selections** (`color`/`glass`/`interior`), NOT per-piece named selections.
 To flip ONE piece that shares a chunk with others you cannot select it by name. Use **connected-component analysis**:
 union-find over faces sharing a `point_index` → components; then select the target by a spatial criterion on each
 component's centroid/bbox. Worked example (SUB_BRZ engine-bay cavity): isolate front high-y components
@@ -712,7 +712,7 @@ The exact factory paint lives in the rip's `ManufacturerColors.bin` (per car). L
 Entry **[0] = the default color**. Parse: for each `Game:\Media…materialbin` string, the 3 floats are the 12
 bytes ending 1 byte before the path's `Game`. Non-vacuity check: run the whole table — white≈(0.99,…), black≈(0.08,…).
 SUB_BRZ default = `wrblue_pearl_sub` → (0.0157,0.290,0.639) = **#044AA3** (a prior pass GUESSED #105BAD = wrong).
-Reusable: `decode_color2.py`. Note: `DayZ_RipSpike\out` renders are CLAY (no color) and `_library` materials are
+Reusable: `decode_color2.py`. Note: `the clay-render output\out` renders are CLAY (no color) and `_library` materials are
 PROCEDURAL — there is **no painted-car bitmap to copy**; the DayZ target is solid-color-per-piece + AO.
 
 ### Black panels + see-through = WINDING, not texture — DECODE the `_co` before touching it
@@ -746,7 +746,7 @@ LOD0). The pilot LOD needs the car's own interior geometry. Separately, the LOD0
 fixed (it sees-through like the exterior).
 
 ### Paint finish — metallic/pearl is an APPROXIMATION; high specular AMPLIFIES normal-map artifacts
-source-game pearl paint (flake + clearcoat) is not reproducible in DayZ's Super shader — aim for an approximation:
+source pearl paint (flake + clearcoat) is not reproducible in DayZ's Super shader — aim for an approximation:
 a solid `_co` of the source color + the Super stages (specular / fresnel / env reflection). Two s12 findings:
 - Raising specularPower (180→300) + brighter SMDI made the reflection clearly better (user: "reflejo mucho mejor").
 - BUT high specular AMPLIFIES any per-part `_nohq` normal-map artifact (green-flip / DXT1 banding) into visible
@@ -770,7 +770,7 @@ TYPE (`_library\materials\_fmnext\<TYPE>\`). Extract it with the reusable `tools
 INTERIOR(leather/fabric), RUBBER, LIGHT(emitter), CARBON, MIRROR, BLACK(glass_edge/blackframe), PLATE, BADGE}.
 The naive pipeline ("paint every non-swatch face the body color") mis-assigns the body color to METAL parts
 (exhaust, wing, roll cage, undercarriage), and leaves the glass edge-trim + interiorLOD1 wrong. **Systematic
-builder (do this once, every ripped racing-game car inherits it):** parse mesh→material from the source-game `Model` blob
+builder (do this once, every ripped car inherits it):** parse mesh→material from the source-game `Model` blob
 (`carbin_importer.py` `Model`: `meshes_length`+`materials_length`, mesh carries a material index) STANDALONE
 (no Blender), classify each material, and assign a DayZ rvmat per TYPE from an author-once **TYPE→rvmat table**
 (PAINT→car-paint with the color, METAL→gunmetal/steel, CHROME/MIRROR→chrome, GLASS→glass, BLACK→opaque dark,
@@ -843,7 +843,7 @@ Order: `rip_material_map.py` → `rip_p2_group.py` (Blender) → `rip_p5_typemat
 
 ## VISUAL CORRECTNESS — single-sided interiors, glass, normals, materials (SUB_BRZ s15, 2026-06-30)
 
-The decimated source-game body drives and the exterior renders, but the cabin/glass need a visual pass. Five
+The decimated rip body drives and the exterior renders, but the cabin/glass need a visual pass. Five
 invariants, each verified in-game (the user's eye is the gate):
 
 1. **The MLOD face flag `0x20000` ("NoBackfaceCulling") does NOTHING in DayZ.** Flagging single-sided
@@ -864,7 +864,7 @@ invariants, each verified in-game (the user's eye is the gate):
    set back to +cross); shell-vs-chunks agreement only proves internal consistency, not correctness
    (reimport in-game gate pending).
 
-4. **source-game interior materials are near-BLACK** (brz_black diffuse 0.015, brz_interior 0.13, brz_trim 0.095) →
+4. **source interior materials are near-BLACK** (brz_black diffuse 0.015, brz_interior 0.13, brz_trim 0.095) →
    the cabin reads as an invisible void in DayZ lighting even when solid (geometry double-sided). Raise them
    (s15: 0.015→0.04 / 0.13→0.20 / 0.095→0.16). Note brz_black is shared interior+exterior trim, so
    brightening also greys the exterior black trim a little.
@@ -893,16 +893,16 @@ alpha → too opaque (s15 mistake, reverted). Keep glass single-sided; if it is 
 winding/orientation issue, not alpha. **Per-piece material correctness (wipers→plastic, bumper→metal) must
 come from the SOURCE part map, not spatial bounding boxes** — bboxes catch neighbour pieces (fender/hood).
 
-6. **Duplicate-face z-fight (body speckle "all over") = a source-game ASSEMBLY defect, NOT winding.** Every body face is emitted twice (coincident, same-winding, different UV channel), PREDATING decimation -- the s7-s15 "winding" red herring. Detect NON-tautologically by counting coincident faces per `(frozenset point_indices, winding-parity)` + per identical vertex positions (clean ~0, duplicated 10-70%); fix = de-dup keeping 1 per (position-set, normal-direction), preserving opposite-winding double-sides, never a `proxy:` face. `dedup_faces.py`+`position_dedup.py`. SUB_BRZ s16: -20320 faces, confirmed in-game. Add a de-dup pass to the importer. Full preflight entry: SKILL.md preflight #10(e).
+6. **Duplicate-face z-fight (body speckle "all over") = a source ASSEMBLY defect, NOT winding.** Every body face is emitted twice (coincident, same-winding, different UV channel), PREDATING decimation -- the s7-s15 "winding" red herring. Detect NON-tautologically by counting coincident faces per `(frozenset point_indices, winding-parity)` + per identical vertex positions (clean ~0, duplicated 10-70%); fix = de-dup keeping 1 per (position-set, normal-direction), preserving opposite-winding double-sides, never a `proxy:` face. `dedup_faces.py`+`position_dedup.py`. SUB_BRZ s16: -20320 faces, confirmed in-game. Add a de-dup pass to the importer. Full preflight entry: SKILL.md preflight #10(e).
 
 ## DOORS / movable parts — the rip ships them PRE-CUT with hinge locators (SUB_BRZ s36, 2026-07-17)
 
-source-game versions every movable part as its OWN model (source-game animates them: `MojoConfig.xml`
+source-game versions every movable part as its OWN model (the source game animates them: `MojoConfig.xml`
 `doorLF`/`doorRF` autovista events). BRZ Manifest: `scene\exterior\doors\doorlf_a.modelbin` (door
 sheet, authored-LOD bitmask) + `doorhandlelf_a` + `doorjamblf_a` + `scene\interior\doors\
 doorcardlf_a.modelbin` (interior card). Left side only (right = mirror, standard RF pattern).
 Hinge axes ship in `Locators.xml`: `carLocator_doorLF/RF` (BRZ: x ±0.884088, y 0.495741,
-z 0.006927, source-game frame) + `carLocator_doorHandleLF/RF` + `carLocator_entryDoorLF` — exactly the
+z 0.006927, source frame) + `carLocator_doorHandleLF/RF` + `carLocator_entryDoorLF` — exactly the
 axis `class Doors`/AnimationSources needs, same transform as the geometry.
 
 RCA (why this section exists): SUB_BRZ assembled the body WITH the doors fused into the proxy

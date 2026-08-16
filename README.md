@@ -130,7 +130,7 @@ back to it.
 |---|---|
 | `dayz-vehicles` | Authoring, importing or debugging a **drivable ground/water vehicle** (car, truck, quad/ATV, motorbike, boat) on the CarScript/Boat base. Owns the full `config.cpp` + `model.cfg` contract (SimulationModule drivetrain, Axles/Wheels, Crew, AnimationSources, `wheel_1_1..2_2`), structural parity vs a vanilla vehicle, and the packaging failures that pass local filepatching but break on a dedicated server (white/untextured, reversed wheel spin). **Invoke before writing any ground-vehicle entity/config.** |
 | `dayz-aviation` | **Planes, seaplanes, and helicopters** via the CarScript-as-aviation pattern. Real aerodynamics in Enforce Script (lift/drag/stall, ISA atmosphere), NaN-safe physics, PID auto-stabilization, flight-control AnimationSources, aviation memory points, script-driven dials, Buoyancy for seaplanes, retractable gear, RPM-band sound. Documents 5 flight-model implementations across 4 authors. |
-| `rip-vehicle-import` | Converting a **racing-game rip** (source-game 'Grub': `.modelbin`/`.carbin`) into a drivable, textured DayZ CarScript car. A 12-step pipeline + day-1 checklist + winding/glass/interior/material rules distilled from ~30 sessions on the first car. Pairs with `dayz-vehicles`. |
+| `rip-vehicle-import` | Converting a **racing-game rip** (source-game Grub: `.modelbin`/`.carbin`) into a drivable, textured DayZ CarScript car. A 12-step pipeline + day-1 checklist + winding/glass/interior/material rules distilled from ~30 sessions on the first car. Pairs with `dayz-vehicles`. |
 
 **Weapons, characters & animation**
 | Skill | Use when |

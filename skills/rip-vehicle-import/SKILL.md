@@ -1,11 +1,11 @@
 ---
 name: rip-vehicle-import
-description: "Use when importing a new source-game Grub vehicle into DayZ, resuming VehicleImport, or diagnosing a ripped racing-game vehicle import contract. Assets already in flight keep their frozen project runbooks."
+description: "Use when importing a new ripped racing-game Grub vehicle into DayZ, resuming the vehicle import pipeline, or diagnosing a ripped-vehicle import contract. Assets already in flight keep their frozen project runbooks."
 ---
 
-# source-game → DayZ — adaptador de familia B (CAMBIO-2)
+# Ripped racing-game vehicle → DayZ — adaptador de familia B (CAMBIO-2)
 
-> Ruta crítica day-0 para el próximo coche source-game/Grub nuevo, proxy-split y con partes móviles.
+> Ruta crítica day-0 para el próximo coche Grub del juego fuente, proxy-split y con partes móviles.
 > Si el asset está en vuelo, usa su runbook congelado. Si falta una entrada aplicable: **STOP**.
 > El runbook anterior está en `history/pre-cambio-1-family-b-runbook.md` y no es ejecutable.
 

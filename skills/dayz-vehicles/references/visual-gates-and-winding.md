@@ -51,7 +51,7 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    `C:\Users\<you>\VehicleImport\scripts\gate_car.py` (profile-driven `body_selections`/`exclude_selections`; raycast oracle
    `C:\Users\<you>\VehicleImport\tools\raycast_winding.py`). Verified by direct measurement on the deployed BRZ (2026-06-30).
 
-   (e) **The source-game ASSEMBLY emits every body face TWICE -> coincident same-winding DUPLICATES that z-fight into a
+   (e) **The source ASSEMBLY emits every body face TWICE -> coincident same-winding DUPLICATES that z-fight into a
    grey/black/blue triangle speckle "all over the body" -- the s7-s15 "winding" RED HERRING.** The faces are
    correctly wound, just DUPLICATED (same 3 verts, same normal, DIFFERENT UV channel: TEXCOORD0 tiling vs TEXCOORD2
    swatch); it PREDATES decimation (proven vs the pre-decimate backup -- identical exact-dup count), so every
@@ -156,7 +156,7 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
      was undoing it). RAW winding on the exterior: `body_a` 8.8% cross-outward ~= deployed approved shell
      14.3% ~= vanilla band (sedan `dmgzone_roof` **1.6%** cross-outward — the roof pins the engine
      convention: **the rendered/front side is the ANTI-cross side**).
-   - THE RULE: keep the raw glTF winding VERBATIM for ALL pieces (net rip->DayZ = `(-Fx, Fy+Y0, -Fz)`,
+   - THE RULE: keep the raw glTF winding VERBATIM for ALL pieces (net rip→DayZ = `(-Fx, Fy+Y0, -Fz)`,
      det=+1, preserves the authored visible side end-to-end); stored MLOD normals = smooth(+cross) of the
      FINAL winding (vanilla 96.2% stored.cross>0, brz_int 99.5% and in-game OK; the deployed BRZ exterior
      at 0.5% is the outlier -> prime candidate for the (h) bright-triangle class). NEVER orient winding to

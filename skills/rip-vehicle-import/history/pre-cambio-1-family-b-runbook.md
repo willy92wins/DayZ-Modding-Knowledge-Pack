@@ -3,7 +3,7 @@
 > HISTORY ONLY — NO AUTHORITY. Snapshot textual del body que CAMBIO-1 retiró del camino crítico. El adaptador vigente está en `../SKILL.md`; no se ejecutan comandos ni gates desde este historial.
 
 <!-- MOVED-EXACT source="rip-vehicle-import/SKILL.md:5" sha256="039EEFD740B4FC547DBAF02A978787E60EDD7BC0C7A0BB474244506CDE5ACF91" -->
-# source-game → DayZ: runbook con cutover CAMBIO-0 (2026-08-05)
+# rip → DayZ: runbook con cutover CAMBIO-0 (2026-08-05)
 
 > Destilado del build SUB_BRZ s2..s32 + research dual consolidado
 > (`VehicleImport\reviews\2026-07-11-research-metodo-import.md`). Reglas SOLO en su estado

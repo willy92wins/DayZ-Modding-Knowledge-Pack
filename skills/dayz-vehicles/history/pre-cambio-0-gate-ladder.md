@@ -4,7 +4,7 @@
 
 ## GATE LADDER — imported-model VISUAL correctness (run IN ORDER, cheap -> expensive)
 
-Every imported car (rip->DayZ) passes these gates IN THIS ORDER. Skipping a rung = re-work later:
+Every imported car (rip→DayZ) passes these gates IN THIS ORDER. Skipping a rung = re-work later:
 `gate_car` was built at rung 4 (see-through) while rung 2 (the most BASIC winding check) was missing,
 and the user caught the defect in-game (BRZ backlight mixed-winding, 2026-07-01). Rule: before building
 a "done" validator, enumerate the failure modes and name which rung covers each — if you can't, don't

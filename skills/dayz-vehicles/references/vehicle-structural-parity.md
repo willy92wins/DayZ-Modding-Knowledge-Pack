@@ -873,7 +873,7 @@ target hard-pass, `roundtrip_writer.py` (py3d write fidelity). Never close a pha
 
 ---
 
-## Addendum (2026-06-25b) — reusable verification harness for ANY car (generic vs source-game-specific split)
+## Addendum (2026-06-25b) — reusable verification harness for ANY car (generic vs import-specific split)
 
 The rip→DayZ build grew a verification harness in `VehicleImport\tools\`. The GENERIC pieces apply to ANY DayZ
 vehicle (procedural / OBJ / glTF too), the rest are PATTERNS to re-point. Use them as run-before-closed gates
@@ -894,7 +894,7 @@ GENERIC (wire these for any car, not just source-game):
 - `roundtrip_writer.py` — py3d read→save→read fidelity (the LFInfectedBig skinned-export corruption class).
 - `_harness_util.py:clean_visual_shell` — reconstruct a runnable shell-only `.p3d` from a deployed full one.
 
-PATTERN (bound to a builder/transform — re-point for a non-ripped racing-game car):
+PATTERN (bound to a builder/transform — re-point for a non-ripped car):
 - STRUCTURAL BISECTION (`roundtrip_structural.py`): feed YOUR structural builder the CONTROL (CivilianSedan
   shell + locators from its own memory points) and require the regenerated LODs to pass the UNIVERSAL subset.
   Run a NEGATIVE control too (break the invariant — e.g. disable the hub/seat componentNN dual-tag) and require
@@ -906,7 +906,7 @@ PATTERN (bound to a builder/transform — re-point for a non-ripped racing-game 
   self-built pair gives residual 0.000 by construction (R22 tell), so the discrimination test is what makes it
   real, not the residual.
 
-source-game-specific implementation + the MANDATORY-gates spec: `rip-import.md` §"Generalized harness".
+import-specific implementation + the MANDATORY-gates spec: `rip-import.md` §"Generalized harness".
 
 > Origen: rip→DayZ verification-harness session 2026-06-25 (`VehicleImport\tools\`; HARNESS_HANDOFF.md). Closes
 > the verifier-only gap: the harness now also bisects the BUILDER and rule-fits the transform, both proven

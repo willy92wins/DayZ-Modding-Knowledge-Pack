@@ -3,6 +3,16 @@
 All notable changes to the DayZ Modding Knowledge Pack are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Changed
+
+- Renamed the ripped-vehicle import skill from its previous directory to
+  `skills/rip-vehicle-import/` and the companion reference
+  `skills/dayz-vehicles/references/rip-import.md`. Public prose now uses
+  neutral import terminology; measured geometry, hashes, LODs and gates are
+  unchanged.
+
 ## [1.1.0] - 2026-08-15
 
 The first release shipped the author's project-management layer along with the
