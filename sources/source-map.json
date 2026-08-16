@@ -11029,15 +11029,15 @@
           "decision": "adopt",
           "decision_evidence": "Canonical agent entry file; the cross-tool convention several hosts read.",
           "license": "MIT",
-          "source_hash": "ae8ff248ddf53dc16cc611fe7bf36752eb2da4b61192cc8e1f6fae98ab6a07af",
+          "source_hash": "caf1754ed3b0f6a779e73eb84c056705275abf1ef92b745b41c60caed51d4d79",
           "source_id": "pack-r21-authored",
           "source_path": "AGENTS.md",
-          "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
+          "source_revision": "r22-tool-routing@2026-08-16",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ae8ff248ddf53dc16cc611fe7bf36752eb2da4b61192cc8e1f6fae98ab6a07af",
+      "output_hash": "caf1754ed3b0f6a779e73eb84c056705275abf1ef92b745b41c60caed51d4d79",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"

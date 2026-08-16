@@ -32,6 +32,42 @@ you don't.
 `knowledge/` is consulted, not routed: open a note when a skill points at it or
 when you need a fact the skill assumes.
 
+## Reaching for a tool
+
+The skills say how to build something; the tools say whether it survived. They
+are the part an agent forgets exists, so it reasons about a symptom it could
+have measured, or writes a one-off parser for a format that already has a
+reader. **Name the tool to the user when the work reaches one of these rows** —
+including when the answer is "install it first". Full descriptions, invocations
+and limits: [`TOOLS.md`](TOOLS.md).
+
+### By symptom — reach for this before theorising
+
+| What is observed | First instrument | What it settles |
+|---|---|---|
+| Model loads white, untextured or invisible | `python -m dayz_model_preflight check <p3d> --contract <json>` | Whether the selections, scale and winding the export needed are actually in the file |
+| `binarize` refuses the model | same, plus `py3d.validate()` | Which LOD breaks a budget, instead of bisecting by rebuild |
+| Animation never plays | `python -m dayz_animation_formats inspect <rtm> --output anatomy.json` | Whether the signature and bone track are what the engine expects |
+| Layout renders empty, or a widget is missing | `python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout> --check` | Broken references and structure, offline, with no build |
+| Two builds differ and nobody knows where | `python -m dayz_odol_strict diff <ref.json> <cand.json>` | The field that changed, not a visual impression |
+| A change looks right in Blender but wrong in game | the in-game bridge — `knowledge/dayz-mcp-bridge-protocol.md` | The engine's opinion, which is the only one that counts |
+| You are about to parse or emit a `.p3d` by hand | `py3d` | Do not write a bespoke codec; this one fails closed and verifies its own writes |
+
+### By task — what is in play before you start
+
+| Task | Tools | Note |
+|---|---|---|
+| Importing or authoring a model | `py3d` → `dayz-model-preflight` | Preflight is a gate, not a repair: it never guesses a mapping and never edits the model |
+| Comparing against a shipped asset | `dayz-odol-strict` | Read-only, and its backend is **not** redistributed — external and hash-pinned, so a consumer installs it separately |
+| Animation, RTM or SEAnim work | `dayz-animation-formats` | BMTR and `.anm` conversion are deliberately out of scope |
+| UI and `.layout` work | `dayz-ui-lab` | The offline render is a semantic model, not the engine; DayZDiag stays the golden reference |
+| Verifying anything in-game | the MCP bridge | Wiring example in `.mcp.example.json`, deliberately not auto-started |
+
+Two habits make the difference. Propose the tool **before** the expensive step,
+not after it fails — that is the whole point of a preflight. And when a tool
+reports clean, say which check ran clean; "preflight passed" without naming the
+contract is rule 4 with extra steps.
+
 ## The four rules
 
 These are the whole point. Keep them even if you adapt everything else.
