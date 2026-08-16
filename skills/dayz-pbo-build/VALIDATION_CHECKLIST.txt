@@ -1,0 +1,103 @@
+================================================================================
+DayZ PBO Build Validation Checklist
+================================================================================
+
+Use this checklist before running AddonBuilder to pack your DayZ mod addon.
+
+FOLDER STRUCTURE VALIDATION
+---------------------------
+[ ] config.cpp exists at addon root
+[ ] $PBOPREFIX$ file exists (not a folder, single-line text file)
+[ ] $PBOPREFIX$ content: mymod\myaddon (backslashes, no trailing slash)
+[ ] No spaces in folder or file names
+[ ] No uppercase file extensions (.PAA, .CPP, etc.)
+[ ] No stale files: .bak, .blend, .psd, .xcf, .tmp, .swp
+[ ] data/ folder contains textures and models
+[ ] scripts/ folder contains .c and .cpp files (if applicable)
+
+CONFIG.CPP SYNTAX VALIDATION
+----------------------------
+[ ] All braces { } are balanced
+[ ] Every property ends with semicolon ;
+[ ] CfgPatches class exists
+[ ] CfgPatches has at least one patch subclass
+[ ] Each patch has: units[], weapons[], requiredVersion, requiredAddons[]
+[ ] No duplicate class names
+[ ] Parent class names look correct (e.g., ItemBase, Clothing_Base)
+[ ] hiddenSelections[] count matches texture and material count
+
+MODEL.CFG VALIDATION (if model.cfg exists)
+-------------------------------------------
+[ ] Class names in CfgModels match .p3d filenames (case-sensitive)
+[ ] Skeleton bones in CfgSkeletons are all unique
+[ ] Animation selections exist as named selections in corresponding .p3d
+[ ] Animation axis memory points exist in .p3d (e.g., axis_lever, axis_lever_end)
+[ ] Animation sources in model.cfg match AnimationSources in config.cpp
+
+TEXTURE & MATERIAL PATH VALIDATION
+-----------------------------------
+[ ] All referenced .paa files exist
+[ ] All referenced .rvmat files exist
+[ ] Texture paths use correct capitalization (case-sensitive)
+[ ] No .png files (convert to .paa)
+[ ] No .dds files (convert to .paa)
+[ ] .rvmat files reference valid texture paths
+
+.P3D LOD STRUCTURE VALIDATION
+-----------------------------
+[ ] At least 1 Resolution LOD (LOD 0.0)
+[ ] Geometry LOD present
+[ ] Memory LOD present
+[ ] Memory LOD has ce_center point
+[ ] All geometry components have mass > 0
+[ ] Named selections consistent across LODs
+[ ] LOD0 vertex count reasonable (< 3000 for small items)
+[ ] No degenerate (zero-area) faces
+
+STRINGTABLE VALIDATION
+----------------------
+[ ] If #STR_ references exist, stringtable.xml is present
+[ ] All #STR_ keys used in code have entries in stringtable.xml
+[ ] stringtable.xml is well-formed XML
+[ ] All languages have entries for each key
+[ ] No orphaned keys (never referenced in code)
+
+SCRIPT VALIDATION
+-----------------
+[ ] No ternary operators (condition ? a : b)
+[ ] No ++/-- operators (use += 1 instead)
+[ ] No foreach loops (use for loops instead)
+[ ] No += with arrays (use .Insert() method)
+[ ] All #include paths point to existing files
+[ ] No GetGame() in destructors without null check
+[ ] No infinite loops without breaks
+[ ] All strings properly closed
+[ ] No stray tokens or unclosed braces
+
+FINAL CHECKS
+------------
+[ ] Run all validators:
+    python config_cpp_validator.py path/to/config.cpp
+    python texture_path_checker.py path/to/addon/root
+    python stringtable_validator.py path/to/addon/root
+    python p3d_lod_checker.py path/to/addon/root
+
+[ ] All validators return PASS status
+[ ] No FAIL errors remaining (WARN only is acceptable)
+
+READY FOR ADONBUILDER
+---------------------
+Once all checks pass, run AddonBuilder:
+
+  AddonBuilder.exe "source_folder" "output_folder" -clear
+
+This will:
+  1. Create PBO with $PBOPREFIX$ as filename
+  2. Binarize config.cpp (text -> binary format)
+  3. Optimize .p3d files
+  4. Pack all files into .pbo container
+  5. Generate PBO header with prefix
+
+Output: mymod\myaddon.pbo (place in @YourMod/addons/)
+
+================================================================================
