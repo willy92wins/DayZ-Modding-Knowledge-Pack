@@ -1,6 +1,6 @@
 # Tools
 
-Five Python tools ship in this pack. All are stdlib-first, offline and
+Six Python tools ship in this pack. All are stdlib-first, offline and
 deterministic; none of them phone home, and none of them guess.
 
 They exist because the DayZ asset pipeline fails *silently*: a `.p3d` written
@@ -16,6 +16,7 @@ one.
 | [`dayz-model-preflight`](#tools-dayz-model-preflight) | Gate a `.p3d` against a contract before export | No — read-only |
 | [`dayz-odol-strict`](#tools-dayz-odol-strict) | Inspect and diff binarized ODOL models | No — read-only |
 | [`dayz-ui-lab`](#tools-dayz-ui-lab) | Parse, compose, render and diff `.layout` UIs offline | Reports only |
+| [`dayz-3d-viewer`](#tools-dayz-3d-viewer) | Convert MLOD `.p3d`, PAA and RVMAT to glTF + HTML | **Yes** — `.glb`, PNG, HTML |
 
 ---
 
@@ -131,13 +132,35 @@ layout is redistributed with the pack.
 catch structural mistakes before a build; DayZDiag remains the golden reference
 for anything that depends on real rasterization, fonts or the live widget tree.
 
+## `tools/dayz-3d-viewer`
+
+Convert an MLOD `.p3d` plus optional `.paa` / `.rvmat` into a `.glb` and a
+standalone Three.js HTML viewer. Two HTML modes: `embedded` (typed arrays
+and base64 textures, no `fetch`) and `web` (external `.glb` via
+`GLTFLoader`).
+
+```bash
+python -m dayz_3d_viewer p3d-to-glb model.p3d model.glb
+python -m dayz_3d_viewer paa-to-png base_co.paa base_co.png
+python -m dayz_3d_viewer parse-rvmat housing.rvmat
+python -m dayz_3d_viewer build-viewer model.p3d --textures ./tex --mode embedded
+```
+
+Requires the pack py3d fork `>=1.5.0`. Pillow and LZO are optional extras
+(`[paa]`, `[lzo]`); a missing extra exits 2 with a one-line message.
+Generated HTML loads **three.js 0.160.0 from jsDelivr** — it is not
+bundled, so a render needs a network. Known converter gaps (SWIZ, proxy
+triangles, ViewPilot at resolution 1100) are listed in
+`tools/dayz-3d-viewer/KNOWN-ISSUES.md` and are not repaired here.
+
 ---
 
 ## What is deliberately absent
 
-The DayZ 3D pipeline needs more than this — Blender→`.p3d` assembly, `.paa`
-texture conversion, PBO packing. Those live in tooling that is not the author's
-to redistribute; `README.md` §4 lists what to install and where it comes from.
+The DayZ 3D pipeline still needs more than this — Blender→`.p3d` assembly,
+PNG→PAA encoding, PBO packing. Those live in tooling that is not the
+author's to redistribute; `README.md` §4 lists what to install and where
+it comes from. PAA *decoding* is now in `tools/dayz-3d-viewer`.
 
 The offline in-game verification bridge is described in
 [`knowledge/dayz-mcp-bridge-protocol.md`](knowledge/dayz-mcp-bridge-protocol.md).

@@ -5,6 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `tools/dayz-3d-viewer` — sixth pack tool. Converts an MLOD `.p3d` (and
+  optional PAA / RVMAT) to a deterministic `.glb` and a Three.js HTML
+  viewer (`python -m dayz_3d_viewer`). Pillow and LZO are optional extras;
+  three.js 0.160.0 is loaded from a CDN, not bundled.
+
 ### Changed
 
 - Renamed the ripped-vehicle import skill from its previous directory to

@@ -13,7 +13,7 @@ It contains three things:
 | Part | What it is |
 |---|---|
 | `skills/` | 16 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
-| `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export and ODOL parity tools. |
+| `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export, ODOL parity, UI lab and 3D-viewer tools. |
 | `knowledge/` | **Verified reference notes** — technical facts, infra, and cross-project pattern syntheses. |
 
 ---
@@ -79,7 +79,8 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── dayz-animation-formats/   ← strict RTM/SEAnim v1 reader/writer/inspect
 │   ├── dayz-model-preflight/     ← contract-driven MLOD export gate
 │   ├── dayz-odol-strict/         ← read-only ODOL v53-v55 anatomy/diff adapter
-│   └── dayz-ui-lab/              ← offline .layout parse / compose / render / diff
+│   ├── dayz-ui-lab/              ← offline .layout parse / compose / render / diff
+│   └── dayz-3d-viewer/           ← MLOD .p3d / PAA / RVMAT → glTF + HTML
 └── knowledge/
     ├── DAYZ_TECHNICAL_NOTES.md   ← py3d MLOD facts, LODs, winding, config, runtime
     ├── DAYZ_INFRA.md             ← drives, AddonBuilder, serverDZ.cfg, RPT triage, terrain
@@ -260,6 +261,20 @@ The adapter, schemas and three user-authorized first-party fixtures are
 redistributable. The compatible BisDLL-derived backend has no redistribution
 license and is therefore external, hash-pinned and loaded only in an isolated
 subprocess. No ODOL writer or partial-success mode is included.
+
+### `tools/dayz-3d-viewer`
+
+MLOD `.p3d` plus optional PAA/RVMAT to a `.glb` and a Three.js HTML viewer
+(`embedded` or `web`):
+
+```text
+python -m dayz_3d_viewer build-viewer model.p3d --textures ./tex --mode embedded
+```
+
+Requires the pack py3d fork `>=1.5.0`. Pillow and LZO are optional extras.
+Generated HTML loads three.js 0.160.0 from jsDelivr and is not self-contained
+offline. Documented converter gaps live in
+`tools/dayz-3d-viewer/KNOWN-ISSUES.md`.
 
 ---
 

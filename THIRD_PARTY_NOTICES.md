@@ -25,6 +25,12 @@ development from [github/spec-kit](https://github.com/github/spec-kit)
 (MIT). The DayZ workflow, Forward Contract and verification gates in this
 pack are original adaptations; no Spec Kit executable is bundled.
 
+### BI PAA LZSS variant
+
+`tools/dayz-3d-viewer` reimplements the Bohemia Interactive LZSS variant
+used on non-DXT PAA mipmaps (ring buffer 4096, init 0x20), as documented
+on the BI Community Wiki. No third-party C source is bundled.
+
 ### SE2Dev io_anim_seanim
 
 `tools/dayz-animation-formats/` implements a strict SEAnim v1 contract and
@@ -64,6 +70,7 @@ redistributed by this pack:
 | [ScripyZz/BisDLL-Arma-3](https://github.com/ScripyZz/BisDLL-Arma-3/tree/5600bad995c89154b4f6700ef087f86ef4c49315) | compatible ODOL parser backend; loaded externally through a pinned manifest | no license/redistribution grant observed |
 | DayZ Expansion, TraderPlus and TraderX | UI/layout comparison corpora | not redistributed; license not asserted here |
 | [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r128) | runtime dependency of the `rip-vehicle-import` classify viewer (`three.min.js`, `GLTFLoader.js`, `OrbitControls.js`, r128 UMD) | MIT; **not redistributed** — the viewer's README says where to fetch them |
+| [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r160) | runtime dependency of `tools/dayz-3d-viewer` generated HTML (`three.module.js`, `GLTFLoader.js`, `OrbitControls.js`, r160 ESM via jsDelivr `three@0.160.0`) | MIT; **not redistributed** — the tool README names the CDN URL |
 | DayZ game scripts, tools and data | API and runtime-contract evidence | Bohemia Interactive terms; not redistributed |
 
 The source map records pinned revisions and decisions. A link or citation is

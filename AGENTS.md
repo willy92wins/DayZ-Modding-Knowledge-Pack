@@ -6,7 +6,7 @@ This is the canonical agent file; `CLAUDE.md`, `GEMINI.md`, `.cursorrules` and
 
 ## What this repository is
 
-A knowledge pack for **DayZ (Enfusion) modding**: 16 domain playbooks, five
+A knowledge pack for **DayZ (Enfusion) modding**: 16 domain playbooks, six
 Python tools, and verified reference notes, assembled from shipped mods. It is
 written to be handed to a coding agent, not read cover to cover by a human.
 
@@ -49,6 +49,7 @@ and limits: [`TOOLS.md`](TOOLS.md).
 | `binarize` refuses the model | same, plus `py3d.validate()` | Which LOD breaks a budget, instead of bisecting by rebuild |
 | Animation never plays | `python -m dayz_animation_formats inspect <rtm> --output anatomy.json` | Whether the signature and bone track are what the engine expects |
 | Layout renders empty, or a widget is missing | `python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout> --check` | Broken references and structure, offline, with no build |
+| Need a 3D preview of an MLOD `.p3d` without launching DayZ | `python -m dayz_3d_viewer build-viewer <p3d>` | Whether the visual LOD, textures and materials survived the export |
 | Two builds differ and nobody knows where | `python -m dayz_odol_strict diff <ref.json> <cand.json>` | The field that changed, not a visual impression |
 | A change looks right in Blender but wrong in game | the in-game bridge — `knowledge/dayz-mcp-bridge-protocol.md` | The engine's opinion, which is the only one that counts |
 | You are about to parse or emit a `.p3d` by hand | `py3d` | Do not write a bespoke codec; this one fails closed and verifies its own writes |
@@ -61,6 +62,7 @@ and limits: [`TOOLS.md`](TOOLS.md).
 | Comparing against a shipped asset | `dayz-odol-strict` | Read-only, and its backend is **not** redistributed — external and hash-pinned, so a consumer installs it separately |
 | Animation, RTM or SEAnim work | `dayz-animation-formats` | BMTR and `.anm` conversion are deliberately out of scope |
 | UI and `.layout` work | `dayz-ui-lab` | The offline render is a semantic model, not the engine; DayZDiag stays the golden reference |
+| Preview an MLOD `.p3d` / PAA / RVMAT | `dayz-3d-viewer` | HTML loads three.js 0.160.0 from a CDN; SWIZ, proxies and ViewPilot 1100 are documented gaps |
 | Verifying anything in-game | the MCP bridge | Wiring example in `.mcp.example.json`, deliberately not auto-started |
 
 Two habits make the difference. Propose the tool **before** the expensive step,
@@ -107,7 +109,7 @@ Obsidian's.
 | Path | What it is |
 |---|---|
 | `skills/` | 16 playbooks + `_shared/`. The primary content. |
-| `tools/` | Five Python tools. See [`TOOLS.md`](TOOLS.md). |
+| `tools/` | Six Python tools. See [`TOOLS.md`](TOOLS.md). |
 | `knowledge/` | Verified reference notes: engine facts, infra, topic syntheses. |
 | `sources/` | Provenance: every distributed file's origin, licence and hash. |
 | `evals/` | Regression cases for the claims the skills make. |
