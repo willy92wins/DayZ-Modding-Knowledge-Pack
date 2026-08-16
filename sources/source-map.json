@@ -1905,6 +1905,28 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/pyproject.toml",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Packaging for the pack's own CLI. Without it `python -m packctl` fails with No module named packctl anywhere but the repository root; installed editable, it resolves from any directory and exposes a packctl entry point.",
+          "license": "MIT",
+          "source_hash": "dad9aa70dd1daba2a32b393e9aae3e26b2a81f68a5066170a2f32f7570d8cbf8",
+          "source_id": "pack-r21-authored",
+          "source_path": "pyproject.toml",
+          "source_revision": "r22-tool-routing@2026-08-16",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "dad9aa70dd1daba2a32b393e9aae3e26b2a81f68a5066170a2f32f7570d8cbf8",
+      "output_path": "pyproject.toml",
+      "routing_artifact_id": "root/packctl-packaging",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/pytest.ini",
       "distribution_reason": "Pytest collection policy is repository governance and is excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -11039,7 +11061,7 @@
           "decision": "adopt",
           "decision_evidence": "Canonical agent entry file; the cross-tool convention several hosts read.",
           "license": "MIT",
-          "source_hash": "0679de41dc4af730d86b5178abb515eabe70c22cb2c67513a754ce999aba4825",
+          "source_hash": "1eeb3bbe0c8cf6e86f55f806abba3ccf971f2be72424c15c14319c21af4e2879",
           "source_id": "pack-r21-authored",
           "source_path": "AGENTS.md",
           "source_revision": "r22-tool-routing@2026-08-16",
@@ -11047,7 +11069,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0679de41dc4af730d86b5178abb515eabe70c22cb2c67513a754ce999aba4825",
+      "output_hash": "1eeb3bbe0c8cf6e86f55f806abba3ccf971f2be72424c15c14319c21af4e2879",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"

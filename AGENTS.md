@@ -143,7 +143,16 @@ rejected most often:
 
 ### Gates
 
-Run from the repository root. All are offline and deterministic.
+Install the CLI once. Without it `python -m packctl` resolves only while the
+shell happens to be standing in the repository root, which is a precondition
+nothing states and nothing enforces:
+
+```bash
+pip install -e .
+```
+
+It is stdlib-only, so the install adds no dependency — it adds an importable
+module and a `packctl` entry point. The rest are offline and deterministic.
 
 ```bash
 python -m packctl validate --root . --report reports/validate.json
