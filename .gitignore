@@ -10,3 +10,4 @@ dist/
 reports/
 build/
 *.egg-info/
+examples/end-to-end/work/

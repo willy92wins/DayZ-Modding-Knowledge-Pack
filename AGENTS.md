@@ -110,6 +110,7 @@ Obsidian's.
 |---|---|
 | `skills/` | 17 playbooks + `_shared/`. The primary content. |
 | `tools/` | Six Python tools. See [`TOOLS.md`](TOOLS.md). |
+| `examples/` | Worked examples that chain the tools on synthetic inputs. |
 | `knowledge/` | Verified reference notes: engine facts, infra, topic syntheses. |
 | `sources/` | Provenance: every distributed file's origin, licence and hash. |
 | `evals/` | Regression cases for the claims the skills make. |

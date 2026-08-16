@@ -14,6 +14,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `skills/dayz-3d-viewer` — playbook for the viewer tool. Scripts and the
   old py3d 1.4.0 wheel stay out of the skill; invocations are
   `python -m dayz_3d_viewer`.
+- `examples/end-to-end` — synthetic MLOD walked through py3d, model
+  preflight and the 3D viewer. `run.py` executes steps 1–3. ODOL,
+  animation and UI tools are named and skipped: they do not fit this
+  asset.
 
 ### Changed
 

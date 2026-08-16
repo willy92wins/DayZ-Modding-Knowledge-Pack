@@ -82,6 +82,8 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── dayz-odol-strict/         ← read-only ODOL v53-v55 anatomy/diff adapter
 │   ├── dayz-ui-lab/              ← offline .layout parse / compose / render / diff
 │   └── dayz-3d-viewer/           ← MLOD .p3d / PAA / RVMAT → glTF + HTML
+├── examples/                     ← worked examples that chain the tools
+│   └── end-to-end/               ← synthetic MLOD through preflight + viewer
 └── knowledge/
     ├── DAYZ_TECHNICAL_NOTES.md   ← py3d MLOD facts, LODs, winding, config, runtime
     ├── DAYZ_INFRA.md             ← drives, AddonBuilder, serverDZ.cfg, RPT triage, terrain

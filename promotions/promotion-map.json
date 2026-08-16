@@ -519,6 +519,17 @@
       "vault_targets": [
         "obsidian_snapshots"
       ]
+    },
+    {
+      "applicability": "tooling",
+      "artifact_id": "examples",
+      "artifact_kind": "tree",
+      "not_applicable_reason": "Worked examples are distributed with the pack and archived in Obsidian, not copied into skill discovery roots.",
+      "repo_path": "examples",
+      "skill_target_ids": [],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
     }
   ],
   "schema_version": 1

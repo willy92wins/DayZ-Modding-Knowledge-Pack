@@ -97,7 +97,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "8d2711f0c2b9f7c338b2494d904a703b58eae699a2cbf849809f81a905447013",
+          "source_hash": "8a72313a5e888a6d7902e9247ea86b78102716e5e3a75dcec688150f7694e309",
           "source_id": "pack-r21-authored",
           "source_path": ".gitignore",
           "source_revision": "r21-phase04@2026-07-25",
@@ -105,7 +105,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8d2711f0c2b9f7c338b2494d904a703b58eae699a2cbf849809f81a905447013",
+      "output_hash": "8a72313a5e888a6d7902e9247ea86b78102716e5e3a75dcec688150f7694e309",
       "output_path": ".gitignore",
       "routing_artifact_id": "root/gitignore",
       "verification_level": "cross_checked"
@@ -141,7 +141,7 @@
           "decision": "adopt",
           "decision_evidence": "Canonical agent entry file; the cross-tool convention several hosts read.",
           "license": "MIT",
-          "source_hash": "dc855cadb2501473fc32e16a1ae190e8699f9770c25cf6d85d8f82f208306d59",
+          "source_hash": "55777d0120697dedddc78b60ecff0ffc623eec87479a3fc89f6e15cf99ac887c",
           "source_id": "pack-r21-authored",
           "source_path": "AGENTS.md",
           "source_revision": "r22-tool-routing@2026-08-16",
@@ -149,7 +149,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "dc855cadb2501473fc32e16a1ae190e8699f9770c25cf6d85d8f82f208306d59",
+      "output_hash": "55777d0120697dedddc78b60ecff0ffc623eec87479a3fc89f6e15cf99ac887c",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -173,7 +173,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "ee2921bec8e52233761026464a3449df5c45d9153a4fd709b7760cfa21122d18",
+          "source_hash": "be4a5078acf7eb41d0293bc94f67e80a75220b0848fe3c0d050e97b55f41089b",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -181,7 +181,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ee2921bec8e52233761026464a3449df5c45d9153a4fd709b7760cfa21122d18",
+      "output_hash": "be4a5078acf7eb41d0293bc94f67e80a75220b0848fe3c0d050e97b55f41089b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -345,7 +345,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "175a2711e302368917eeb5aa419600b598d9f8ebe06f5fd010c321d43a04e3db",
+          "source_hash": "e79e01c8fc7dadc6050b8122c73011cd52c496db33abba590cc61cec64ca1bd1",
           "source_id": "pack-r21-authored",
           "source_path": "README.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -353,7 +353,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "175a2711e302368917eeb5aa419600b598d9f8ebe06f5fd010c321d43a04e3db",
+      "output_hash": "e79e01c8fc7dadc6050b8122c73011cd52c496db33abba590cc61cec64ca1bd1",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -2044,7 +2044,7 @@
           "decision": "adopt",
           "decision_evidence": "The internal process layer (plans, specs, session handoff, root CLAUDE.md) stopped being published; its promotion entries were removed with it.",
           "license": "MIT",
-          "source_hash": "62498f0d3c79845c448cf964715a3eb6630b27900fa6315948eb922dbf790129",
+          "source_hash": "1119c73e4a51120ac8535a72e759c81f87a9d10ef505461408fa940aabd6fc94",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/promotion-map.json",
           "source_revision": "r21-unpublish-internal-layer@2026-08-15",
@@ -2052,7 +2052,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "62498f0d3c79845c448cf964715a3eb6630b27900fa6315948eb922dbf790129",
+      "output_hash": "1119c73e4a51120ac8535a72e759c81f87a9d10ef505461408fa940aabd6fc94",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -11935,6 +11935,50 @@
       "output_path": "skills/dayz-3d-viewer/references/states-animations-leds.md",
       "routing_artifact_id": "skill/dayz-3d-viewer",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/examples/end-to-end/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored synthetic end-to-end example that chains pack tools.",
+          "license": "MIT",
+          "source_hash": "6a5dbc779f188f4238a8d1b0635b4827b01cd150a5e8e5f775ca8474e27e0a55",
+          "source_id": "pack-r21-authored",
+          "source_path": "examples/end-to-end/README.md",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6a5dbc779f188f4238a8d1b0635b4827b01cd150a5e8e5f775ca8474e27e0a55",
+      "output_path": "examples/end-to-end/README.md",
+      "routing_artifact_id": "examples",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/examples/end-to-end/run.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored synthetic end-to-end example that chains pack tools.",
+          "license": "MIT",
+          "source_hash": "2cd26cedbfd2626d838b43b2f72e2624009b19a988d677fe159b42ae150a57de",
+          "source_id": "pack-r21-authored",
+          "source_path": "examples/end-to-end/run.py",
+          "source_revision": "r21-phase04@2026-07-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2cd26cedbfd2626d838b43b2f72e2624009b19a988d677fe159b42ae150a57de",
+      "output_path": "examples/end-to-end/run.py",
+      "routing_artifact_id": "examples",
+      "verification_level": "offline_tested"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
