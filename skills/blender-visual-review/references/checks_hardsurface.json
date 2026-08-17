@@ -1,0 +1,34 @@
+[
+  {
+    "q": "Is every part of the model physically connected, with no piece floating detached in mid-air?",
+    "view": "assembled__iso"
+  },
+  {
+    "q": "Do the edges look chamfered or beveled rather than perfectly sharp 90-degree primitive edges?",
+    "view": "zoom_receiver__right_iso"
+  },
+  {
+    "q": "Are cylindrical parts smooth and round rather than visibly faceted polygons?",
+    "view": "zoom_muzzle__front_iso"
+  },
+  {
+    "q": "Is the model free of visible holes or gaps where solid surface should be?",
+    "view": "assembled__iso"
+  },
+  {
+    "q": "Are there any black, inside-out or wrongly shaded faces visible?",
+    "view": "assembled__profile_R"
+  },
+  {
+    "q": "Does the object read as a finished object rather than a set of plain untextured boxes?",
+    "view": "assembled__iso"
+  },
+  {
+    "q": "Are the proportions of the parts consistent with each other, with nothing obviously oversized or undersized?",
+    "view": "assembled__profile_L"
+  },
+  {
+    "q": "Is the object sitting on the ground plane rather than floating above it or sunk into it?",
+    "view": "assembled__profile_L"
+  }
+]
