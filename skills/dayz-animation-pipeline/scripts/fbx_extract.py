@@ -1,0 +1,65 @@
+import bpy, json, sys
+from mathutils import Matrix
+
+bpy.ops.wm.read_factory_settings(use_empty=True)
+fbx = r"C:\Users\<you>\3dmodel\LFInfectedBig\_rig\animation_rig_character.fbx"
+bpy.ops.import_scene.fbx(filepath=fbx)
+
+def m2l(m):
+    return [[round(m[r][c], 6) for c in range(4)] for r in range(4)]
+
+arm = next(o for o in bpy.data.objects if o.type == 'ARMATURE')
+AW = arm.matrix_world
+
+bones = []
+for b in arm.data.bones:
+    mw = AW @ b.matrix_local          # rest, world (Blender Z-up, meters)
+    bones.append({
+        "name": b.name,
+        "parent": b.parent.name if b.parent else None,
+        "world": m2l(mw),
+        "length": round(b.length, 6),
+    })
+
+empties = []
+for o in bpy.data.objects:
+    if o.type == 'EMPTY':
+        empties.append({
+            "name": o.name,
+            "parent": o.parent.name if o.parent else None,
+            "parent_bone": (o.parent_bone or None),
+            "world": m2l(o.matrix_world),
+        })
+
+# Male_body mesh: world verts, triangulated faces, top-4 skin weights
+mo = bpy.data.objects["Male_body"]
+me = mo.data
+MW = mo.matrix_world
+vg_name = {vg.index: vg.name for vg in mo.vertex_groups}
+verts = []
+weights = []
+for v in me.vertices:
+    co = MW @ v.co
+    verts.append([round(co.x, 5), round(co.y, 5), round(co.z, 5)])
+    gw = sorted(((g.group, g.weight) for g in v.groups), key=lambda x: -x[1])[:4]
+    tot = sum(w for _, w in gw) or 1.0
+    weights.append([[vg_name.get(gi, "?"), round(w / tot, 5)] for gi, w in gw if w > 0])
+faces = []
+for p in me.polygons:
+    vs = list(p.vertices)
+    for k in range(1, len(vs) - 1):
+        faces.append([vs[0], vs[k], vs[k + 1]])
+
+data = {
+    "source": fbx,
+    "armature_world": m2l(AW),
+    "units": "blender_world_zup_meters",
+    "bones": bones,
+    "empties": empties,
+    "mesh": {"name": "Male_body", "verts": verts, "faces": faces, "weights": weights},
+}
+out = r"C:\Users\<you>\AppData\Local\Temp\claude\C--Users-guill-OneDrive-Documentos-DayZ-Projects\38e5dcec-fbce-4f5a-bb24-b65ca2e8ee83\scratchpad\rig_raw.json"
+with open(out, "w", encoding="utf-8") as f:
+    json.dump(data, f)
+print("WROTE", out)
+print("bones", len(bones), "empties", len(empties), "verts", len(verts), "faces", len(faces))
