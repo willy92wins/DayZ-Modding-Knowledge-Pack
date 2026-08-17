@@ -141,7 +141,7 @@
           "decision": "adopt",
           "decision_evidence": "Canonical agent entry file; the cross-tool convention several hosts read.",
           "license": "MIT",
-          "source_hash": "703cc6b82cfb43e043ecfb9d9227d13c8e9225cd4b05e36955be2f9318540fa2",
+          "source_hash": "bc931e5f04ebb514a3bbf61f596c892a2988dcf60b959fc70ba6132a6c8f9df1",
           "source_id": "pack-r21-authored",
           "source_path": "AGENTS.md",
           "source_revision": "r22-tool-routing@2026-08-16",
@@ -149,7 +149,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "703cc6b82cfb43e043ecfb9d9227d13c8e9225cd4b05e36955be2f9318540fa2",
+      "output_hash": "bc931e5f04ebb514a3bbf61f596c892a2988dcf60b959fc70ba6132a6c8f9df1",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -173,7 +173,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "91a7bc8627529ccf74f662cd32265eec0774a120d167d933cdefa0aa2454f4ba",
+          "source_hash": "1d018965c93c3f72975a0b5caea8da2e62cc0eefb5e5b632603be1cb10a83918",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -181,7 +181,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "91a7bc8627529ccf74f662cd32265eec0774a120d167d933cdefa0aa2454f4ba",
+      "output_hash": "1d018965c93c3f72975a0b5caea8da2e62cc0eefb5e5b632603be1cb10a83918",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -345,7 +345,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "e57634623b0f79a107b051b710f0532c347b9680c8e18f1cf1cecc92faf10518",
+          "source_hash": "404c99438effc2c3712b1e540dce97989e91f29a1a3b83c9f9b97a9e19676d85",
           "source_id": "pack-r21-authored",
           "source_path": "README.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -353,7 +353,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e57634623b0f79a107b051b710f0532c347b9680c8e18f1cf1cecc92faf10518",
+      "output_hash": "404c99438effc2c3712b1e540dce97989e91f29a1a3b83c9f9b97a9e19676d85",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -377,7 +377,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 04 bytes implement the user-approved F1-F4 scope and its F5 distribution contract.",
           "license": "MIT",
-          "source_hash": "78751d94df4f5e768e91fd34ea7bc7ad0440f6fee1decfa9a2b0a143c1abaf9f",
+          "source_hash": "82f2d35e7ca281f5c820beb9038a3d014c15acb70e576e3669c9481d08b5ba5c",
           "source_id": "pack-r21-authored",
           "source_path": "THIRD_PARTY_NOTICES.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -385,7 +385,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "78751d94df4f5e768e91fd34ea7bc7ad0440f6fee1decfa9a2b0a143c1abaf9f",
+      "output_hash": "82f2d35e7ca281f5c820beb9038a3d014c15acb70e576e3669c9481d08b5ba5c",
       "output_path": "THIRD_PARTY_NOTICES.md",
       "routing_artifact_id": "root/third-party-notices",
       "verification_level": "cross_checked"
@@ -421,7 +421,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "121d5bbe1e3c45665932db8be045f5a98b3e8116ac0fc55d6cb4887ddcf363e7",
+          "source_hash": "b95b03678303ba081036b6b43a7f78fa7aed45c98fc8bb77bb5e5bcdb7edeb14",
           "source_id": "pack-r21-authored",
           "source_path": "compatibility-matrix.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -429,7 +429,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "121d5bbe1e3c45665932db8be045f5a98b3e8116ac0fc55d6cb4887ddcf363e7",
+      "output_hash": "b95b03678303ba081036b6b43a7f78fa7aed45c98fc8bb77bb5e5bcdb7edeb14",
       "output_path": "compatibility-matrix.md",
       "routing_artifact_id": "root/compatibility-matrix",
       "verification_level": "cross_checked"
@@ -2044,7 +2044,7 @@
           "decision": "adopt",
           "decision_evidence": "The internal process layer (plans, specs, session handoff, root CLAUDE.md) stopped being published; its promotion entries were removed with it.",
           "license": "MIT",
-          "source_hash": "9e190fbb3718a12759283fa1f4c77af1cfb79b0bfd6468fd227d2e6473aad7c4",
+          "source_hash": "9169395eae9a9f47f10a53b0d90915a313a2fe6bfb64398e7f5dd64d2625d195",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/promotion-map.json",
           "source_revision": "r21-unpublish-internal-layer@2026-08-15",
@@ -2052,7 +2052,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9e190fbb3718a12759283fa1f4c77af1cfb79b0bfd6468fd227d2e6473aad7c4",
+      "output_hash": "9169395eae9a9f47f10a53b0d90915a313a2fe6bfb64398e7f5dd64d2625d195",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -6855,7 +6855,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "73b8ee39c805c141994730b6ca9b4fb0b2f57ee587e4ed33307a8c9aa37d947a",
+          "source_hash": "f3bd6260b513ce169ad5f21fd74d14d594074976270bcf9c18df25158e75c50d",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_promotion.py",
           "source_revision": "r21-phase01@2026-07-24",
@@ -6863,7 +6863,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "73b8ee39c805c141994730b6ca9b4fb0b2f57ee587e4ed33307a8c9aa37d947a",
+      "output_hash": "f3bd6260b513ce169ad5f21fd74d14d594074976270bcf9c18df25158e75c50d",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -13717,6 +13717,1766 @@
       "output_path": "skills/dayz-pbo-build/references/validation-scripts.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "b37ef2a9e768e2f07c6094427a11d938384e3779b9cc14dccc929ff81a32239a",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/SKILL.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "17facc2448d7ae642b87e676df6fb2bbadf2a5f9f62903cdb9b65fc1ae931667",
+      "output_path": "skills/dayz-model-pipeline/SKILL.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/animations.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "d8c2ac4574fa1add78ac1ceb638730dd6aef27094a36e2cef607e9166fc0c9c3",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/animations.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3530a20a0fcdeeccba47cf11a7c603b40cdd894193c2d14b3c53f83abfd80dca",
+      "output_path": "skills/dayz-model-pipeline/references/animations.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/answeroverflow-2026-05-17.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "4f788ae9357c25365368c619367989fabd839e6fae761e68f0496cc0bb827c0d",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/answeroverflow-2026-05-17.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4f788ae9357c25365368c619367989fabd839e6fae761e68f0496cc0bb827c0d",
+      "output_path": "skills/dayz-model-pipeline/references/answeroverflow-2026-05-17.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/blender-headless.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "0124d9bef2281cf723eb8fad7b1d8387121625c869d98b75a341584d6cef5cfa",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/blender-headless.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0124d9bef2281cf723eb8fad7b1d8387121625c869d98b75a341584d6cef5cfa",
+      "output_path": "skills/dayz-model-pipeline/references/blender-headless.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/blender-workflow.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "ceefb4c54aaac89d2e773bd8971766d0c8f8aaa1f133c0a050c665100cdf9415",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/blender-workflow.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ceefb4c54aaac89d2e773bd8971766d0c8f8aaa1f133c0a050c665100cdf9415",
+      "output_path": "skills/dayz-model-pipeline/references/blender-workflow.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/config-and-packing.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "da3ba497d6e37a4dd2171d9918c037b333dcd3913feab88b6b7475a5772794d8",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/config-and-packing.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "da3ba497d6e37a4dd2171d9918c037b333dcd3913feab88b6b7475a5772794d8",
+      "output_path": "skills/dayz-model-pipeline/references/config-and-packing.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/lfpg-recipes.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "a488a57658af90fc47b2b7b00d2762cbde22c8be7110fe01aa4f5d84e247b5b2",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/lfpg-recipes.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a488a57658af90fc47b2b7b00d2762cbde22c8be7110fe01aa4f5d84e247b5b2",
+      "output_path": "skills/dayz-model-pipeline/references/lfpg-recipes.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/lods-and-geometry.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "0d9402499d3992b57d0d4b9ad03f74f7ebeacded0c8850dcb92a7a0e3f17a8a1",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/lods-and-geometry.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "05300d296ac00d5b68e27465bba5944fd5be48c5bdad5e30ac5fb46014030b4f",
+      "output_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/memory-and-selections.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "6829fc57600956c6a9ea08322b25112b01f6513c0a9778d9e93160ccd2aa7b26",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/memory-and-selections.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6c5b9e767a54cd5a1faa2a6b3b8b615f944c18b3b2bb69326a4e195335cbe2d2",
+      "output_path": "skills/dayz-model-pipeline/references/memory-and-selections.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/multi-rvmat-section-texturing.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "91fe3d79853c954871670cfa32a6f5af24a0ddee4044bb7f043633fe28ed98d8",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/multi-rvmat-section-texturing.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "91fe3d79853c954871670cfa32a6f5af24a0ddee4044bb7f043633fe28ed98d8",
+      "output_path": "skills/dayz-model-pipeline/references/multi-rvmat-section-texturing.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/procedural-textures.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "79d0c45a23456770927fd20818eccd395b7f240d340c95f6d2191e274c09891c",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/procedural-textures.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "79d0c45a23456770927fd20818eccd395b7f240d340c95f6d2191e274c09891c",
+      "output_path": "skills/dayz-model-pipeline/references/procedural-textures.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "3a5f040503e4dce3ad9280095fb3d930d1e05e3068fdbfdcb2a8bf4c94950567",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1830c699106fb27a6e4909dd4b34ed1ffc113c77bf3c4e2102f3c1b39e98095c",
+      "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/vehicle-config-and-modelcfg.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "b3d8e89b4169eab106ea534cc56f4edc53bdc59a7b02c7d855d0fcb93f711aba",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/vehicle-config-and-modelcfg.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "646a1b6c288d104230376b7c2b69049570a0552afc10cc2e99b1f4ab54099819",
+      "output_path": "skills/dayz-model-pipeline/references/vehicle-config-and-modelcfg.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/vehicle-structural-parity.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "70e7783a92ab3a9bc571aa37a1f32c6e55dcdfb658f6c16495e56e730047b405",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/vehicle-structural-parity.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "78b77d560798ce36344a74f765b03e6a6931cce8115847c5593772ffad93be08",
+      "output_path": "skills/dayz-model-pipeline/references/vehicle-structural-parity.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-audit/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "263f86ae0dc742c04d28ebd1c24a1832c7d5f1afa6dd0619611fc9018f1a7041",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-audit/SKILL.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "46f42accacc28f134aac6714315eec8ba05c1b10612bb0d3811c4e9d6128bb05",
+      "output_path": "skills/dayz-p3d-audit/SKILL.md",
+      "routing_artifact_id": "skill/dayz-p3d-audit",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-audit/references/killers-detail.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "9cf61e0fa4224e94e7642906d761ecee81d5ad251e026b5cf1bc2ed234032c52",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9cf61e0fa4224e94e7642906d761ecee81d5ad251e026b5cf1bc2ed234032c52",
+      "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+      "routing_artifact_id": "skill/dayz-p3d-audit",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-audit/references/vehicle-killers.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "38db0084b58330bd1728f23bc2d3a2899ed5b09d444f819a3231f7b2b5e31c9b",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-audit/references/vehicle-killers.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2dd3d944c3dbbcd176cc79cb08cbd25016c20e5da04bc07e58d4fe174444f27b",
+      "output_path": "skills/dayz-p3d-audit/references/vehicle-killers.md",
+      "routing_artifact_id": "skill/dayz-p3d-audit",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-audit/references/winding-diagnostics.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "0225edab7ab843ac602a4c03267f209b1eabad859f43d4df193e3a53c11feb30",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-audit/references/winding-diagnostics.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0225edab7ab843ac602a4c03267f209b1eabad859f43d4df193e3a53c11feb30",
+      "output_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
+      "routing_artifact_id": "skill/dayz-p3d-audit",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-audit/scripts/audit_p3d.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "a36f9276933289f858c8041e355c5bebeafeb94214a3087f358beda300e40874",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-audit/scripts/audit_p3d.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f1cb401005d82bde13ffc3b6c351341403466d6181f933e8235f9f1beb475e67",
+      "output_path": "skills/dayz-p3d-audit/scripts/audit_p3d.py",
+      "routing_artifact_id": "skill/dayz-p3d-audit",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-debinarizer/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "1aa947e2e8ea3c3768f5c8d8de72c08dd373f4e525c0c34d2e16c9877a47f699",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-debinarizer/SKILL.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "405e327913e693126aa08bf16fe04bff3bd60445de8a29f3594f7a754130ea72",
+      "output_path": "skills/dayz-p3d-debinarizer/SKILL.md",
+      "routing_artifact_id": "skill/dayz-p3d-debinarizer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-debinarizer/references/format_notes.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "65304fada91b35c74557be9ed4825cd7e565e77f66df5417719809ec80a0a1f4",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-debinarizer/references/format_notes.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "65304fada91b35c74557be9ed4825cd7e565e77f66df5417719809ec80a0a1f4",
+      "output_path": "skills/dayz-p3d-debinarizer/references/format_notes.md",
+      "routing_artifact_id": "skill/dayz-p3d-debinarizer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-debinarizer/scripts/bis_reader.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "2b2efd277f238d7ac3ed18cfefdb342ced10236f6b296d40ccec6f25ab90b4f3",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-debinarizer/scripts/bis_reader.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2b2efd277f238d7ac3ed18cfefdb342ced10236f6b296d40ccec6f25ab90b4f3",
+      "output_path": "skills/dayz-p3d-debinarizer/scripts/bis_reader.py",
+      "routing_artifact_id": "skill/dayz-p3d-debinarizer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-debinarizer/scripts/lzo_decompress.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "5ecb852cca9f38258121e2b5246ff8ba438d672b04390442e2e536bc080b8658",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-debinarizer/scripts/lzo_decompress.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5ecb852cca9f38258121e2b5246ff8ba438d672b04390442e2e536bc080b8658",
+      "output_path": "skills/dayz-p3d-debinarizer/scripts/lzo_decompress.py",
+      "routing_artifact_id": "skill/dayz-p3d-debinarizer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-debinarizer/scripts/lzss_decompress.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "be3fdf6d38794494cc657639215823fb64035e8d0b26701a6fa0122b0f613898",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-debinarizer/scripts/lzss_decompress.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "be3fdf6d38794494cc657639215823fb64035e8d0b26701a6fa0122b0f613898",
+      "output_path": "skills/dayz-p3d-debinarizer/scripts/lzss_decompress.py",
+      "routing_artifact_id": "skill/dayz-p3d-debinarizer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-debinarizer/scripts/math_types.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "b6ac444ca190a5cb8a7e5c0f423fafeceb31ddc8a805f2374b466ae5da6fdd10",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-debinarizer/scripts/math_types.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b6ac444ca190a5cb8a7e5c0f423fafeceb31ddc8a805f2374b466ae5da6fdd10",
+      "output_path": "skills/dayz-p3d-debinarizer/scripts/math_types.py",
+      "routing_artifact_id": "skill/dayz-p3d-debinarizer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-debinarizer/scripts/odol_reader.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "3def55ed6482771799896fa44fae5423b4afe3b3ac956697488bfe426a42e12d",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-debinarizer/scripts/odol_reader.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3def55ed6482771799896fa44fae5423b4afe3b3ac956697488bfe426a42e12d",
+      "output_path": "skills/dayz-p3d-debinarizer/scripts/odol_reader.py",
+      "routing_artifact_id": "skill/dayz-p3d-debinarizer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-debinarizer/scripts/odol_to_mlod.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "5b129ac0ca802157527144f52c6ec1f46fb0c8105b59939aae180fcf72c81853",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-debinarizer/scripts/odol_to_mlod.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5b129ac0ca802157527144f52c6ec1f46fb0c8105b59939aae180fcf72c81853",
+      "output_path": "skills/dayz-p3d-debinarizer/scripts/odol_to_mlod.py",
+      "routing_artifact_id": "skill/dayz-p3d-debinarizer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-inspector/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "ea6cbf36da65cf9199dbab6e4d85ee68e880e10ce0c1031044f62c982ce33c00",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-inspector/SKILL.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2886b363726e6c1f41021b6d37d35507feb8a48c6233b3380cfdeb8ee779d1b4",
+      "output_path": "skills/dayz-p3d-inspector/SKILL.md",
+      "routing_artifact_id": "skill/dayz-p3d-inspector",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-inspector/scripts/p3d_inspector_build.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "8da29f4b90b056b3e31fb87c8cea8d42e6be31021329fae613ca703c9050af5b",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-inspector/scripts/p3d_inspector_build.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8da29f4b90b056b3e31fb87c8cea8d42e6be31021329fae613ca703c9050af5b",
+      "output_path": "skills/dayz-p3d-inspector/scripts/p3d_inspector_build.py",
+      "routing_artifact_id": "skill/dayz-p3d-inspector",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-inspector/scripts/p3d_inspector_extract.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "84155f7a6d50d4495eb45413576b22f141d37d206fb906aedf63bcfbb7dfcf49",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-inspector/scripts/p3d_inspector_extract.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f09922a438fc66186fa52f2e33d55b1e42420fd182e9d91fc3c49cdd05893ae5",
+      "output_path": "skills/dayz-p3d-inspector/scripts/p3d_inspector_extract.py",
+      "routing_artifact_id": "skill/dayz-p3d-inspector",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-inspector/scripts/p3d_inspector_viewer.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "b8f2e6f6a194ef58b9a2085ac65cfc9b30b0d2cd0439727b6e32562dec10c27d",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-inspector/scripts/p3d_inspector_viewer.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b8f2e6f6a194ef58b9a2085ac65cfc9b30b0d2cd0439727b6e32562dec10c27d",
+      "output_path": "skills/dayz-p3d-inspector/scripts/p3d_inspector_viewer.py",
+      "routing_artifact_id": "skill/dayz-p3d-inspector",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-proxy-align/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "2a75dda65921dfce7815a8270d2602724e5b200763718be70a249f3a802f4351",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/SKILL.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ca2be8452fe101fbeb255137626fd45e1de57ee0018a213bc9f04b82420bb48d",
+      "output_path": "skills/dayz-proxy-align/SKILL.md",
+      "routing_artifact_id": "skill/dayz-proxy-align",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-proxy-align/scripts/proxy_apply.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "cdca1074efefdef2535cde9c81dc701b8edec6d107f68bfd81a959355a96a89c",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/scripts/proxy_apply.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "cdca1074efefdef2535cde9c81dc701b8edec6d107f68bfd81a959355a96a89c",
+      "output_path": "skills/dayz-proxy-align/scripts/proxy_apply.py",
+      "routing_artifact_id": "skill/dayz-proxy-align",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-proxy-align/scripts/proxy_canon.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "0a6b6b456ff8f2a45080d9392252668cb033696e2751b1e7a4fcb84b3bdcd2d7",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/scripts/proxy_canon.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0a6b6b456ff8f2a45080d9392252668cb033696e2751b1e7a4fcb84b3bdcd2d7",
+      "output_path": "skills/dayz-proxy-align/scripts/proxy_canon.py",
+      "routing_artifact_id": "skill/dayz-proxy-align",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-proxy-align/scripts/proxy_extract.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "82c37235c67e63ecb378849d411c146584c0b6dc2e534025adda320eca435c2d",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/scripts/proxy_extract.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "82c37235c67e63ecb378849d411c146584c0b6dc2e534025adda320eca435c2d",
+      "output_path": "skills/dayz-proxy-align/scripts/proxy_extract.py",
+      "routing_artifact_id": "skill/dayz-proxy-align",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-proxy-align/scripts/proxy_frame.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "a12edadc29adf0f82e600c57b22746d8115c2fb67026ff912c193c4c4c10ce84",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/scripts/proxy_frame.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a12edadc29adf0f82e600c57b22746d8115c2fb67026ff912c193c4c4c10ce84",
+      "output_path": "skills/dayz-proxy-align/scripts/proxy_frame.py",
+      "routing_artifact_id": "skill/dayz-proxy-align",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-proxy-align/scripts/proxy_viewer.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "39ef7fd759210d1460cdabccfb7a7606e707298560bf03b81c0a9b945c365730",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/scripts/proxy_viewer.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "39ef7fd759210d1460cdabccfb7a7606e707298560bf03b81c0a9b945c365730",
+      "output_path": "skills/dayz-proxy-align/scripts/proxy_viewer.py",
+      "routing_artifact_id": "skill/dayz-proxy-align",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-proxy-align/scripts/test_proxy_frame.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "d59802e6066fd109b26e2a9d02979d421cafd7308b8421919dff4b63d58b3017",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/scripts/test_proxy_frame.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d59802e6066fd109b26e2a9d02979d421cafd7308b8421919dff4b63d58b3017",
+      "output_path": "skills/dayz-proxy-align/scripts/test_proxy_frame.py",
+      "routing_artifact_id": "skill/dayz-proxy-align",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-proxy-align/scripts/worn_overlay.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "6273066208e210b377a18a723215868f2dec37dc991cab2d4ae17412c8fc70f9",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/scripts/worn_overlay.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6273066208e210b377a18a723215868f2dec37dc991cab2d4ae17412c8fc70f9",
+      "output_path": "skills/dayz-proxy-align/scripts/worn_overlay.py",
+      "routing_artifact_id": "skill/dayz-proxy-align",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "be57d7ffad385f476f75efc12d802b557401aee91a4c838337dcd3c8e6999527",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/SKILL.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "618fabb391f6abe3afd075ad637e5c512432fc7fed2b5e00a750a811bf6d1a1f",
+      "output_path": "skills/dayz-animation-pipeline/SKILL.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/anim-graph.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "ee70ef2da626494b631b9cbfd2099a920948fd42f3bfd914c6a1172cc51ac54d",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/anim-graph.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ee70ef2da626494b631b9cbfd2099a920948fd42f3bfd914c6a1172cc51ac54d",
+      "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/blender-authoring.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "6cdbbba6bc2177b6545e2a8590f4bfb68f23a5acdbff012821e6357a6b6ecfa1",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/blender-authoring.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6cdbbba6bc2177b6545e2a8590f4bfb68f23a5acdbff012821e6357a6b6ecfa1",
+      "output_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/config-driven-animation.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "02293c15ed2beb5438ecfc8b35a0dd081dfda1881cccce126b0b69944c1bd200",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/config-driven-animation.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "02293c15ed2beb5438ecfc8b35a0dd081dfda1881cccce126b0b69944c1bd200",
+      "output_path": "skills/dayz-animation-pipeline/references/config-driven-animation.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/dual-entry-action-pattern.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "7136d78e84e36baf6dbd1056446fbe1a352ef57133a60b548e871e81908eb172",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/dual-entry-action-pattern.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7136d78e84e36baf6dbd1056446fbe1a352ef57133a60b548e871e81908eb172",
+      "output_path": "skills/dayz-animation-pipeline/references/dual-entry-action-pattern.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/handlebar-and-steering-config.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "a7ab0f0c6387a9a044aed9aedbf9e8e93163a68566bf2e88719be84f4cac46fd",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/handlebar-and-steering-config.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a7ab0f0c6387a9a044aed9aedbf9e8e93163a68566bf2e88719be84f4cac46fd",
+      "output_path": "skills/dayz-animation-pipeline/references/handlebar-and-steering-config.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "047a308b7432818f6e490f25f210571e321941e9f6a393c736aa7ce260b65a44",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/item-ik-and-hide.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5f55f77edc42e10fa91dcba1f1bd3d6e64c45e2cd4f402da763093686f5df154",
+      "output_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/player-skeleton.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "0d1ab7915f5b245f74d29ff469a9962a82265eee32c392a480f08e499566932b",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/player-skeleton.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0d1ab7915f5b245f74d29ff469a9962a82265eee32c392a480f08e499566932b",
+      "output_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "b0d2a791df6012c856321985026c8238779225f01c309ba2e94872d627949783",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3e82b9cc21a465a4dda4b8592791e2adccff95d8ca863d48ae1a26705896c04c",
+      "output_path": "skills/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/selection-painter-for-actions.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "fbdbe860c3688b1c00a3487520e39413b66c9b6f58b184b35e9d0b202654eef3",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/selection-painter-for-actions.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fbdbe860c3688b1c00a3487520e39413b66c9b6f58b184b35e9d0b202654eef3",
+      "output_path": "skills/dayz-animation-pipeline/references/selection-painter-for-actions.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/skeletal-anm-enfusion.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "a9c5598aec7a03c9ba131815635be325339b438cc652d9ae1176346abea01a88",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/skeletal-anm-enfusion.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a9c5598aec7a03c9ba131815635be325339b438cc652d9ae1176346abea01a88",
+      "output_path": "skills/dayz-animation-pipeline/references/skeletal-anm-enfusion.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/skeletal-rtm.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "d141fc2fee3201d1266cbc4134c8a1596f18824795c58342fb00470e2dc3ca6c",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/skeletal-rtm.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d141fc2fee3201d1266cbc4134c8a1596f18824795c58342fb00470e2dc3ca6c",
+      "output_path": "skills/dayz-animation-pipeline/references/skeletal-rtm.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/tooling-and-walls.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "bb029043617223681f4cb756b5e12e67c705cacf3797b6e51c3fb260657d1390",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/tooling-and-walls.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bb029043617223681f4cb756b5e12e67c705cacf3797b6e51c3fb260657d1390",
+      "output_path": "skills/dayz-animation-pipeline/references/tooling-and-walls.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "24a275558fdd576193d19a624d91a62b39a464647c3edd8830aff3eda6978247",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "24a275558fdd576193d19a624d91a62b39a464647c3edd8830aff3eda6978247",
+      "output_path": "skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "f131d4133cea393993944e1091a67c4d9b380ccc3737ae907dfccec033dbffba",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3c613e9c2b5be20a43cb756ce5aa349ff9996d55aa2dad6b6eac7157b93b0020",
+      "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/weapon-anim-blender-complete.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "7d3895723ca409fa9b2299ee2e5333d35a6d686f54881fa9be8491982bc8dc29",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/weapon-anim-blender-complete.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "830e3e9607870d22f53ada05f5ec34f326225f81c9ccd46fd2bd95297c43cc42",
+      "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-blender-complete.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/weapon-in-hands.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "4f8ed4a49b6236f7d62b5d427d86c4d275a557fe00cbd7587de07f2a6b322696",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/weapon-in-hands.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f7695e3c96e7ced894a765ad9640b5ab57027714f82e9abc28eba1e605e33034",
+      "output_path": "skills/dayz-animation-pipeline/references/weapon-in-hands.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/build_rig_dayz.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "641a2237c2c01a6fcf2822e95997021498b613601529a8afbb475b678c031c81",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/scripts/build_rig_dayz.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b30622bbcafd4c3355f06d3f46603c16f583e1b497bf568526869a660b8aec11",
+      "output_path": "skills/dayz-animation-pipeline/scripts/build_rig_dayz.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/build_viewer.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "575057de379fbb4d7d50f69825484e3b5d2d0cbdfff33e44255d98042105f93f",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/scripts/build_viewer.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c28d97e51e241782551663ec746992742627a6cb8bf8a149f9ae337877c37f74",
+      "output_path": "skills/dayz-animation-pipeline/scripts/build_viewer.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/extract_weapon.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "444d362b21816167e4dd8d1a77e03625228d0962c778e0f4e41fe0f3d4ffc9d6",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/scripts/extract_weapon.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8e1fb6752296f42588c208ad543443f982c1cf9d6aeb0bec0c4b70501069a9b8",
+      "output_path": "skills/dayz-animation-pipeline/scripts/extract_weapon.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/fbx_extract.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "e5ea93d00dcf8d291feb20f037c1de86d96a8f8eda50354c48f0035bffa44c9c",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/scripts/fbx_extract.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d4cc116e122238b581b3a5017bb72f0c8def7647e255886de60d75a9145fd230",
+      "output_path": "skills/dayz-animation-pipeline/scripts/fbx_extract.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/gen_model_cfg.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "d8fa726f3f832588ca2344d15e4f9187e7993c1c057558b82f4c12fe782bffd5",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/scripts/gen_model_cfg.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d8fa726f3f832588ca2344d15e4f9187e7993c1c057558b82f4c12fe782bffd5",
+      "output_path": "skills/dayz-animation-pipeline/scripts/gen_model_cfg.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/ik_pose_to_seanim.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "d9a3bd900c72848197003f4a44348a263ff9a5f1bb334c6e2d6d1e82a19c67ef",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/scripts/ik_pose_to_seanim.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d9a3bd900c72848197003f4a44348a263ff9a5f1bb334c6e2d6d1e82a19c67ef",
+      "output_path": "skills/dayz-animation-pipeline/scripts/ik_pose_to_seanim.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/seanim_export.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "39372926a7397688243ed954a113b6fc4d6872fbecff10c95504df84a4a5d309",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/scripts/seanim_export.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ee40083d0d534db0215d64ea77117b19d95e24df6cc9007d6b63e00562772acd",
+      "output_path": "skills/dayz-animation-pipeline/scripts/seanim_export.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/seanim_writer.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "60f790c35854836b0f936f4d91e67b569135e66d2e1872ded148e59895ee616e",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/scripts/seanim_writer.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "60f790c35854836b0f936f4d91e67b569135e66d2e1872ded148e59895ee616e",
+      "output_path": "skills/dayz-animation-pipeline/scripts/seanim_writer.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/weapon_grip_viewer.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "76fc718571374dfa1f9deb5b8ac7e09c523b240b64b291ddf16ca77a7a4372d2",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/scripts/weapon_grip_viewer.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "76fc718571374dfa1f9deb5b8ac7e09c523b240b64b291ddf16ca77a7a4372d2",
+      "output_path": "skills/dayz-animation-pipeline/scripts/weapon_grip_viewer.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/mixamo-retarget/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "4b411d0210f2c8d545eca2ea2ffcd6cefc20495e8d7a106afe9e0d9eec092664",
+          "source_id": "installed-skills",
+          "source_path": "mixamo-retarget/SKILL.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d650caeaab5c9c28e7ed8d01375fc31f3bc2134d16428d0608a7e32bee40175a",
+      "output_path": "skills/mixamo-retarget/SKILL.md",
+      "routing_artifact_id": "skill/mixamo-retarget",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/mixamo-retarget/references/bone-mapping-guide.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "7932c578589f061db361f1f9902c11b49dd27f441b0d747eeaaa7061a04076dd",
+          "source_id": "installed-skills",
+          "source_path": "mixamo-retarget/references/bone-mapping-guide.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7932c578589f061db361f1f9902c11b49dd27f441b0d747eeaaa7061a04076dd",
+      "output_path": "skills/mixamo-retarget/references/bone-mapping-guide.md",
+      "routing_artifact_id": "skill/mixamo-retarget",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/mixamo-retarget/scripts/bone_matching.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "f95ced13986529f254e0b9de6fbb8d6bf8e22290739a0b59628408da5ba1f5fd",
+          "source_id": "installed-skills",
+          "source_path": "mixamo-retarget/scripts/bone_matching.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f95ced13986529f254e0b9de6fbb8d6bf8e22290739a0b59628408da5ba1f5fd",
+      "output_path": "skills/mixamo-retarget/scripts/bone_matching.py",
+      "routing_artifact_id": "skill/mixamo-retarget",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/mixamo-retarget/scripts/retargeting.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "c58801162d16d6ca01b29fd86377b3b7f048ff7aeafb0a57858ceb758e56d800",
+          "source_id": "installed-skills",
+          "source_path": "mixamo-retarget/scripts/retargeting.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c58801162d16d6ca01b29fd86377b3b7f048ff7aeafb0a57858ceb758e56d800",
+      "output_path": "skills/mixamo-retarget/scripts/retargeting.py",
+      "routing_artifact_id": "skill/mixamo-retarget",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-assembly/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "abc19ba481766d46cfe54c8092de1c4006d2aa2deecd715ddc1b6edc1abdef63",
+          "source_id": "installed-skills",
+          "source_path": "blender-assembly/SKILL.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1c95c5ed56c4df4d7b86be995bbfecb6fb6248b2f3629730196e419091e6fd00",
+      "output_path": "skills/blender-assembly/SKILL.md",
+      "routing_artifact_id": "skill/blender-assembly",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-assembly/references/blender_helpers.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "84270e23915e89c0b592788f719b64138ce7e32e6fbcbf97b1c5a8000b51fb4c",
+          "source_id": "installed-skills",
+          "source_path": "blender-assembly/references/blender_helpers.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "84270e23915e89c0b592788f719b64138ce7e32e6fbcbf97b1c5a8000b51fb4c",
+      "output_path": "skills/blender-assembly/references/blender_helpers.py",
+      "routing_artifact_id": "skill/blender-assembly",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-visual-review/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "f186c1894d5f0042a026ff3ac13de9382a29bf08c08004252ce7d154e1016246",
+          "source_id": "installed-skills",
+          "source_path": "blender-visual-review/SKILL.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0916648d3ed241a194567fee450ab2d4ab7de481cd3ca693ad6a620be1de1067",
+      "output_path": "skills/blender-visual-review/SKILL.md",
+      "routing_artifact_id": "skill/blender-visual-review",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-visual-review/skill.md.append-2026-06-24.applied-2026-07-30",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "8c197f726ef919cf265c358a341d1e259a786cf7975efcaf04de29209271ce52",
+          "source_id": "installed-skills",
+          "source_path": "blender-visual-review/SKILL.md.append-2026-06-24.APPLIED-2026-07-30",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8e9cbd263f77113b123ce99cea1cdb31f8873465fd706db27a0079a066efeb0e",
+      "output_path": "skills/blender-visual-review/SKILL.md.append-2026-06-24.APPLIED-2026-07-30",
+      "routing_artifact_id": "skill/blender-visual-review",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-visual-review/references/formato-checklist.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "429405be87baea9255e7dfa096f50caf3613804ded4ed06c8ecaa99dcd0623a7",
+          "source_id": "installed-skills",
+          "source_path": "blender-visual-review/references/FORMATO-CHECKLIST.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "429405be87baea9255e7dfa096f50caf3613804ded4ed06c8ecaa99dcd0623a7",
+      "output_path": "skills/blender-visual-review/references/FORMATO-CHECKLIST.md",
+      "routing_artifact_id": "skill/blender-visual-review",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-visual-review/references/notice-img2threejs.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "98c05e44319f7097f562629598c200982819d1c70cbc28456806cd3de8d87c37",
+          "source_id": "installed-skills",
+          "source_path": "blender-visual-review/references/NOTICE-img2threejs.md",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "98c05e44319f7097f562629598c200982819d1c70cbc28456806cd3de8d87c37",
+      "output_path": "skills/blender-visual-review/references/NOTICE-img2threejs.md",
+      "routing_artifact_id": "skill/blender-visual-review",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-visual-review/references/checks_hardsurface.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "c064007377fdb084f2dbd0134b4afaf9a8e8d56b5e0b0dd33e87f8c843b23b2e",
+          "source_id": "installed-skills",
+          "source_path": "blender-visual-review/references/checks_hardsurface.json",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c064007377fdb084f2dbd0134b4afaf9a8e8d56b5e0b0dd33e87f8c843b23b2e",
+      "output_path": "skills/blender-visual-review/references/checks_hardsurface.json",
+      "routing_artifact_id": "skill/blender-visual-review",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-visual-review/references/correction_loop.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "c100a1c5c01b0a743afe7ddd41a7f9519a945321a4af3b6822ea235cf9d6a2df",
+          "source_id": "installed-skills",
+          "source_path": "blender-visual-review/references/correction_loop.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "16e3e8752324f28457810999c7d5d13920c846e1fdb1ed81d4ed7d57d2953547",
+      "output_path": "skills/blender-visual-review/references/correction_loop.py",
+      "routing_artifact_id": "skill/blender-visual-review",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-visual-review/references/vr_calibrate.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "54dbac61055e059bacffaee75cf39108d41cb55e373dcf1d66cf8ba68ce6c032",
+          "source_id": "installed-skills",
+          "source_path": "blender-visual-review/references/vr_calibrate.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "54dbac61055e059bacffaee75cf39108d41cb55e373dcf1d66cf8ba68ce6c032",
+      "output_path": "skills/blender-visual-review/references/vr_calibrate.py",
+      "routing_artifact_id": "skill/blender-visual-review",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-visual-review/references/vr_delta.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "3655fdb6178b4bd2cda048d8bc01721bdac60d4dafd092ae4e234b8672468c76",
+          "source_id": "installed-skills",
+          "source_path": "blender-visual-review/references/vr_delta.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3655fdb6178b4bd2cda048d8bc01721bdac60d4dafd092ae4e234b8672468c76",
+      "output_path": "skills/blender-visual-review/references/vr_delta.py",
+      "routing_artifact_id": "skill/blender-visual-review",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/blender-visual-review/references/vr_score.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "2f84a06603af3ecdb5d7d234e0d0fc279a5a52f09e33df6b2784d8bbdfd04e7d",
+          "source_id": "installed-skills",
+          "source_path": "blender-visual-review/references/vr_score.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2f84a06603af3ecdb5d7d234e0d0fc279a5a52f09e33df6b2784d8bbdfd04e7d",
+      "output_path": "skills/blender-visual-review/references/vr_score.py",
+      "routing_artifact_id": "skill/blender-visual-review",
+      "verification_level": "cross_checked"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
@@ -14457,6 +16217,54 @@
       "source_hash": "8043b796dd18fe3d949fde03031d51afa3759021936760953c0e6ec0d74f86c2",
       "source_id": "installed-skills",
       "source_path": "dayz-pbo-build/wheels/py3d-1.4.0-py3-none-any.whl",
+      "source_revision": "filesystem@2026-08-17"
+    },
+    {
+      "decision_evidence": "Vendored py3d 1.4.0 wheel is superseded by pack tools/py3d 1.5.0 and is not redistributed.",
+      "reason": "superseded",
+      "source_hash": "8043b796dd18fe3d949fde03031d51afa3759021936760953c0e6ec0d74f86c2",
+      "source_id": "installed-skills",
+      "source_path": "dayz-model-pipeline/wheels/py3d-1.4.0-py3-none-any.whl",
+      "source_revision": "filesystem@2026-08-17"
+    },
+    {
+      "decision_evidence": "Vendored py3d 1.4.0 wheel is superseded by pack tools/py3d 1.5.0 and is not redistributed.",
+      "reason": "superseded",
+      "source_hash": "8043b796dd18fe3d949fde03031d51afa3759021936760953c0e6ec0d74f86c2",
+      "source_id": "installed-skills",
+      "source_path": "dayz-p3d-audit/wheels/py3d-1.4.0-py3-none-any.whl",
+      "source_revision": "filesystem@2026-08-17"
+    },
+    {
+      "decision_evidence": "Vendored py3d 1.4.0 wheel is superseded by pack tools/py3d 1.5.0 and is not redistributed.",
+      "reason": "superseded",
+      "source_hash": "8043b796dd18fe3d949fde03031d51afa3759021936760953c0e6ec0d74f86c2",
+      "source_id": "installed-skills",
+      "source_path": "dayz-p3d-debinarizer/wheels/py3d-1.4.0-py3-none-any.whl",
+      "source_revision": "filesystem@2026-08-17"
+    },
+    {
+      "decision_evidence": "Vendored py3d 1.4.0 wheel is superseded by pack tools/py3d 1.5.0 and is not redistributed.",
+      "reason": "superseded",
+      "source_hash": "8043b796dd18fe3d949fde03031d51afa3759021936760953c0e6ec0d74f86c2",
+      "source_id": "installed-skills",
+      "source_path": "dayz-p3d-inspector/wheels/py3d-1.4.0-py3-none-any.whl",
+      "source_revision": "filesystem@2026-08-17"
+    },
+    {
+      "decision_evidence": "Vendored py3d 1.4.0 wheel is superseded by pack tools/py3d 1.5.0 and is not redistributed.",
+      "reason": "superseded",
+      "source_hash": "8043b796dd18fe3d949fde03031d51afa3759021936760953c0e6ec0d74f86c2",
+      "source_id": "installed-skills",
+      "source_path": "dayz-proxy-align/wheels/py3d-1.4.0-py3-none-any.whl",
+      "source_revision": "filesystem@2026-08-17"
+    },
+    {
+      "decision_evidence": "Vendored py3d 1.4.0 wheel is superseded by pack tools/py3d 1.5.0 and is not redistributed.",
+      "reason": "superseded",
+      "source_hash": "8043b796dd18fe3d949fde03031d51afa3759021936760953c0e6ec0d74f86c2",
+      "source_id": "installed-skills",
+      "source_path": "dayz-animation-pipeline/wheels/py3d-1.4.0-py3-none-any.whl",
       "source_revision": "filesystem@2026-08-17"
     }
   ],

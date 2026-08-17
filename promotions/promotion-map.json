@@ -640,6 +640,123 @@
       ]
     },
     {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-model-pipeline",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-model-pipeline",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-p3d-audit",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-p3d-audit",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-p3d-debinarizer",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-p3d-debinarizer",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-p3d-inspector",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-p3d-inspector",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-proxy-align",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-proxy-align",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/dayz-animation-pipeline",
+      "artifact_kind": "tree",
+      "repo_path": "skills/dayz-animation-pipeline",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/mixamo-retarget",
+      "artifact_kind": "tree",
+      "repo_path": "skills/mixamo-retarget",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/blender-assembly",
+      "artifact_kind": "tree",
+      "repo_path": "skills/blender-assembly",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/blender-visual-review",
+      "artifact_kind": "tree",
+      "repo_path": "skills/blender-visual-review",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
       "applicability": "tooling",
       "artifact_id": "tools",
       "artifact_kind": "tree",

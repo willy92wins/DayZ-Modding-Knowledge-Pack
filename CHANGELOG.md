@@ -7,6 +7,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Nine author-owned 3D/pipeline skills that the pack already cited but did not
+  ship: `dayz-model-pipeline`, `dayz-p3d-audit`, `dayz-p3d-debinarizer`,
+  `dayz-p3d-inspector`, `dayz-proxy-align`, `dayz-animation-pipeline`,
+  `mixamo-retarget`, `blender-assembly`, `blender-visual-review`. The vendored
+  py3d 1.4.0 wheel those six p3d skills used to carry is not included; use
+  pack `tools/py3d` 1.5.0 (`pip install -e tools/py3d`). Mixamo/Adobe assets
+  are not redistributed.
 - Ten author-owned skills that the pack already cited but did not ship:
   `enforce-script-reference`, `dayz-mod-workflow`, `dayz-texture-pipeline`,
   `dayz-particles`, `dayz-sound-system`, `dayz-ui-development`, `dayz-doors`

@@ -2,8 +2,9 @@
 
 Reviewed: **2026-07-24**. Rows for `dayz-clothing` and `dayz-persistence` were
 added on **2026-08-15** with their own evidence; ten author-owned skills were
-adopted on **2026-08-17** from the live store and were not re-run in this
-phase. The other rows were not re-reviewed on those dates.
+adopted on **2026-08-17** from the live store, and nine author-owned 3D
+playbooks were adopted later the same day. Neither adoption was re-run in
+this phase. The other rows were not re-reviewed on those dates.
 
 Target stable build: **DayZ PC 1.29.0.163451** (released 2026-07-15) — the build
 every row below was checked against.
@@ -60,6 +61,15 @@ workflow was run end-to-end on this build during r21 Phase 01.
 | `dayz-physics-engine` | `cross_checked` | vanilla v1.24 `enphysics.c` / `dayzphysics.c`; `enforce-script-reference` | Half the "obvious" API does not exist. Source-verified against v1.24; not re-run on 1.29 in this phase. | `skills/dayz-physics-engine/SKILL.md` |
 | `dayz-preflight` | `historical` | DayZ Tools; `P:\` mount; Windows registry/Steam fallbacks | Read-only checker. Paths are env-var-first. Adopted from the author's live store; the script was not executed in this phase. | `skills/dayz-preflight/SKILL.md`; `skills/dayz-preflight/preflight.py` |
 | `dayz-pbo-build` | `cross_checked` | AddonBuilder; optional pack `tools/py3d` >=1.5.0 | Reference validators live as prose, not a bundled `validate.py`. The old 1.4.0 wheel is out; install `pip install -e tools/py3d`. Adopted from the author's live store, not re-run in this phase. | `skills/dayz-pbo-build/SKILL.md`; `skills/dayz-pbo-build/references/validation-scripts.md` |
+| `dayz-model-pipeline` | `cross_checked` | Blender headless; pack `tools/py3d` >=1.5.0; OpenSimplex/Pillow for textures | The old 1.4.0 wheel is out; install `pip install -e tools/py3d`. Winding/mass rules are source-checked; no new object was assembled in this phase. | `skills/dayz-model-pipeline/SKILL.md`; `skills/dayz-model-pipeline/references/py3d-direct-generation.md` |
+| `dayz-p3d-audit` | `cross_checked` | pack `tools/py3d` >=1.5.0 | `scripts/audit_p3d.py` compiles and imports `py3d` normally. Version guard and install text now require 1.5.0; the silent-killer catalogue was not re-run on a live `.p3d` in this phase. | `skills/dayz-p3d-audit/SKILL.md`; `skills/dayz-p3d-audit/scripts/audit_p3d.py` |
+| `dayz-p3d-debinarizer` | `cross_checked` | pack `tools/py3d` >=1.5.0 | Converter writes MLOD via `mlod.write(f)` (1.5.0 still prefers `save()` for path writes). Character-body unpack (SP-034) remains a documented limit. Adopted, not re-run. | `skills/dayz-p3d-debinarizer/SKILL.md`; `skills/dayz-p3d-debinarizer/scripts/odol_to_mlod.py` |
+| `dayz-p3d-inspector` | `cross_checked` | pack `tools/py3d` >=1.5.0; Three.js r0.147 CDN | Recipe JSON is lossy in 1.5.0 (`to_dict`/`from_dict` — see pack `tools/py3d/KNOWN-ISSUES.md`). `p3d_inspector_build.py` binds `Selection(lod.points, lod.faces)` to the live lists. Viewer HTML is not bundled. Adopted, not re-run. | `skills/dayz-p3d-inspector/SKILL.md`; `tools/py3d/KNOWN-ISSUES.md` |
+| `dayz-proxy-align` | `cross_checked` | pack `tools/py3d` >=1.5.0; Three.js r0.147 CDN | `add_proxy` / `get_proxies` / `align_proxy` exist on 1.5.0. The 1.4.0 lifecycle facts stay as facts. Adopted, not re-run. | `skills/dayz-proxy-align/SKILL.md` |
+| `dayz-animation-pipeline` | `cross_checked` | pack `tools/py3d` >=1.5.0; `tools/dayz-animation-formats`; Blender; DayZATool/Workbench for `.anm` | `SKILL.md` still names `py3d.read_p3d` as a validation option; that API does not exist (use `py3d.P3D(open(...))`). Historical 1.0.0 quirks stay as history. Helper scripts carry placeholder paths. Adopted, not re-run. | `skills/dayz-animation-pipeline/SKILL.md`; `skills/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md` |
+| `mixamo-retarget` | `cross_checked` | Blender with `bpy`; Blender MCP | Experimental. Mixamo/Adobe FBX and characters are **not** redistributed. Scripts are Apache-2.0 adaptations of Dev-GOM blender-toolkit. Fixture validation is still pending. | `skills/mixamo-retarget/SKILL.md`; `THIRD_PARTY_NOTICES.md` |
+| `blender-assembly` | `cross_checked` | Blender with `bpy`; Blender MCP | Process skill. Detail-scan protocol is adapted from img2threejs v1.4.3 (Apache-2.0). No third-party meshes ship. Adopted, not re-run. | `skills/blender-assembly/SKILL.md`; `skills/blender-visual-review/references/NOTICE-img2threejs.md` |
+| `blender-visual-review` | `cross_checked` | Blender with `bpy`; optional local VLM | `correction_loop.py` is a verbatim img2threejs copy; `vr_delta.py` is an adaptation. A Blender render cannot judge DayZ winding. Adopted, not re-run. | `skills/blender-visual-review/SKILL.md`; `skills/blender-visual-review/references/NOTICE-img2threejs.md` |
 
 ## Stable-build evidence and update policy
 

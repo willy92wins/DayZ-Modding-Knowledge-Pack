@@ -72,6 +72,11 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── dayz-weapons/             ← custom firearms (entity side)
 │   ├── dayz-characters/          ← infected, survivors, NPCs (rig to OFP2_ManSkeleton)
 │   ├── dayz-clothing/            ← wearable items, custom skeletons, proxies
+│   ├── dayz-model-pipeline/      ← author .p3d + LODs + config from Blender/py3d
+│   ├── dayz-p3d-audit/           ← collision / winding / silent-killer audit
+│   ├── dayz-p3d-debinarizer/     ← ODOL → editable MLOD
+│   ├── dayz-p3d-inspector/       ← Recipe JSON + Three.js editor
+│   ├── dayz-proxy-align/         ← visual proxy gizmo + lossless write-back
 │   ├── dayz-basebuilding/        ← buildable structures (BaseBuildingBase)
 │   ├── dayz-persistence/         ← OnStoreSave/Load, schema migration, data safety
 │   ├── dayz-texture-pipeline/    ← .paa / .rvmat / native PBR maps
@@ -89,6 +94,10 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── rip-vehicle-import/            ← convert a ripped racing-game car into a drivable DayZ vehicle
 │   ├── rigorous-data-audit/      ← audit persistence/state-machine code before release
 │   ├── blender-animation/        ← author animations in Blender (via MCP) → DayZ
+│   ├── dayz-animation-pipeline/  ← model.cfg / RTM / SEAnim / weapon anim
+│   ├── mixamo-retarget/          ← Mixamo/FBX retarget (no Mixamo assets shipped)
+│   ├── blender-assembly/         ← build geometry in Blender via MCP
+│   ├── blender-visual-review/    ← render-and-look review loop
 │   ├── ai-3d-to-dayz/            ← AI-generated 3D (Hunyuan/Tripo/TRELLIS) → DayZ
 │   ├── ardy-motion-generation/   ← motion generation → DayZ integration
 │   └── dayz-3d-viewer/           ← MLOD .p3d / PAA / RVMAT → glTF + HTML viewer
@@ -159,6 +168,8 @@ back to it.
 | `dayz-weapons` | Custom **firearm** (entity side): the `.p3d` contract (bolt/trigger/magazine selections + memory points), weapon-selection→player-bone remap (`AddItemBoneRemap`), the `CfgWeapons`/`config.cpp` contract, inheritance base choice (Rifle_Base / BoltActionRifle_Base / Pistol_Base…), fire modes, dispersion, recoil, jam config, attachment/optics slots, muzzle-flash + ejection points. |
 | `dayz-characters` | **Humanoid characters** (custom infected/zombies, survivors, NPCs): mesh → retopo → rig to `OFP2_ManSkeleton` → UV + normal bake → character LODs → `config.cpp` inheritance (ZombieMaleBase / SurvivorBase…) → PBO. Owns baked scaling (runtime `SetScale` is broken), the one-anim-mod-at-a-time wall, canonical bind pose. |
 | `blender-animation` | Authoring or modifying **animations in Blender** (via the Blender MCP) and handing them off to DayZ (RTM / `.anm` / `.txa` / SEAnim). Includes physics-sim driven motion. |
+| `dayz-animation-pipeline` | **DayZ animation end-to-end**: config-driven object animation (`model.cfg` / AnimationSources), item carry IK, hide-on-attach, skeletal RTM / Enfusion `.anm` via SEAnim, anim-graph / weapon states, vehicle-rider IK. Use before writing any animation that has to play in-game. |
+| `mixamo-retarget` | **Retarget Mixamo (or any FBX/DAE) mocap** onto a custom Blender / DayZ rig through the Blender MCP. Ships the retargeting flow only — no Mixamo or Adobe assets. Experimental until the fixture at the bottom of the skill is recorded. |
 | `ardy-motion-generation` | **Motion generation** for characters/creatures and the plan to integrate generated motion into DayZ. |
 
 **Base building**
@@ -170,6 +181,13 @@ back to it.
 | Skill | Use when |
 |---|---|
 | `ai-3d-to-dayz` | Index/pointer skill for taking **AI-generated 3D** (Hunyuan, Tripo, TRELLIS) into DayZ: geometry-first, normal-bake into `_nohq`, and why AI-retopo output needs a manifold cleanup pass. |
+| `dayz-model-pipeline` | Author a complete DayZ object: Blender headless geometry, LODs, memory points, named selections, `.rvmat`, `model.cfg` / `config.cpp`, assembled through pack `tools/py3d` (>= 1.5.0). |
+| `dayz-p3d-audit` | Offline **silent-killer audit** of an MLOD `.p3d` (winding, Component01, FireGeo wheel slots, mass-on-the-wrong-LOD). The script is `scripts/audit_p3d.py`; it needs `pip install -e tools/py3d`. |
+| `dayz-p3d-debinarizer` | Convert a binarized **ODOL** `.p3d` (DayZ v54/v55, Fire Packer containers) to editable **MLOD** for Object Builder / py3d. |
+| `dayz-p3d-inspector` | Extract an MLOD to Recipe JSON, inspect/edit it in a Three.js viewer, rebuild a `.p3d`. Visual work — structural audits stay with `dayz-p3d-audit`. |
+| `dayz-proxy-align` | Visually **align and orient proxies** (clothing / attachments / crew) with a move/rotate gizmo and write the triangle back losslessly. |
+| `blender-assembly` | Build or assemble geometry **in Blender** via the Blender MCP: primitives, modifiers, booleans, the cube-size and bevel rules. |
+| `blender-visual-review` | **Render and look**: multi-angle captures, a typed stop policy, and winding that a Blender render cannot judge. Complements `blender-assembly`. |
 | `dayz-3d-viewer` | Convert an MLOD **`.p3d`**, **PAA** and **RVMAT** into a `.glb` and a Three.js HTML viewer (`embedded` or `web`). The executable is `tools/dayz-3d-viewer`; this playbook is how to invoke it. |
 | `dayz-texture-pipeline` | **Textures and materials**: `.paa` / `.rvmat` / native PBR (MatPBR `.emat`), the `_co/_nohq/_smdi/_as` suffixes, hiddenSelections, damage/destruct swaps, Multi shader masks. |
 
@@ -210,13 +228,11 @@ The ten skills listed in §3 that used to be described as "install the plugin" a
 `dayz-particles`, `dayz-sound-system`, `dayz-ui-development`, `dayz-doors`,
 `dayz-physics-engine`, `dayz-preflight`, `dayz-pbo-build`. Load them like any other skill here.
 
-### Arriving in a later batch
-
-Nine author-owned 3D/pipeline playbooks are MIT as well and are not in this tree yet:
-`dayz-model-pipeline`, `dayz-p3d-audit`, `dayz-p3d-debinarizer`, `dayz-p3d-inspector`,
-`dayz-proxy-align`, `dayz-animation-pipeline`, `mixamo-retarget`, `blender-assembly`,
-`blender-visual-review`. A cross-reference to one of those names is a pointer to a playbook
-that lands in the follow-up adoption, not a request to install a third-party plugin.
+The nine author-owned 3D/pipeline playbooks are in the same tree: `dayz-model-pipeline`,
+`dayz-p3d-audit`, `dayz-p3d-debinarizer`, `dayz-p3d-inspector`, `dayz-proxy-align`,
+`dayz-animation-pipeline`, `mixamo-retarget`, `blender-assembly`, `blender-visual-review`.
+Six of those used to vendor a py3d 1.4.0 wheel; the wheel is not in the pack. Install the
+pack fork with `pip install -e tools/py3d` (1.5.0, distribution `py3d-dayz`, import `py3d`).
 
 ### True external dependencies
 
