@@ -7,6 +7,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Four more author-owned skills from the live store: `dayz-ai-patterns`,
+  `dayz-realistic-animation-director`, `uv-clean-atlas`, `3d-generation-harness`.
+  Image-to-3D generators named by the harness (`hunyuan3d-local` and kin) are
+  optional/external and are not shipped. PartUV weights and Expansion eAI
+  source are cited, not redistributed.
 - Nine author-owned 3D/pipeline skills that the pack already cited but did not
   ship: `dayz-model-pipeline`, `dayz-p3d-audit`, `dayz-p3d-debinarizer`,
   `dayz-p3d-inspector`, `dayz-proxy-align`, `dayz-animation-pipeline`,

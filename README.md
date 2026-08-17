@@ -12,7 +12,7 @@ It contains three things:
 
 | Part | What it is |
 |---|---|
-| `skills/` | 27 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
+| `skills/` | 40 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
 | `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export, ODOL parity, UI lab and 3D-viewer tools. |
 | `knowledge/` | **Verified reference notes** — technical facts, infra, and cross-project pattern syntheses. |
 
@@ -66,6 +66,7 @@ DayZ-Modding-Knowledge-Pack/
 │   │   ├── dayz-conventions.md
 │   │   └── enscript-style.md
 │   ├── enforce-script-reference/ ← Enforce Script + config.cpp reference
+│   ├── dayz-ai-patterns/         ← Expansion eAI FSM / targeting / groups
 │   ├── dayz-mod-workflow/        ← implement/debug protocol (client/server, anti-confabulation)
 │   ├── dayz-vehicles/            ← cars, trucks, quads, bikes, boats (CarScript)
 │   ├── dayz-aviation/            ← planes, seaplanes, helicopters
@@ -95,9 +96,12 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── rigorous-data-audit/      ← audit persistence/state-machine code before release
 │   ├── blender-animation/        ← author animations in Blender (via MCP) → DayZ
 │   ├── dayz-animation-pipeline/  ← model.cfg / RTM / SEAnim / weapon anim
+│   ├── dayz-realistic-animation-director/ ← realistic motion gates + offline audit
 │   ├── mixamo-retarget/          ← Mixamo/FBX retarget (no Mixamo assets shipped)
 │   ├── blender-assembly/         ← build geometry in Blender via MCP
 │   ├── blender-visual-review/    ← render-and-look review loop
+│   ├── 3d-generation-harness/    ← research → plan → build → roast → ship
+│   ├── uv-clean-atlas/           ← legible UV atlases (SAT-zero overlap)
 │   ├── ai-3d-to-dayz/            ← AI-generated 3D (Hunyuan/Tripo/TRELLIS) → DayZ
 │   ├── ardy-motion-generation/   ← motion generation → DayZ integration
 │   └── dayz-3d-viewer/           ← MLOD .p3d / PAA / RVMAT → glTF + HTML viewer
@@ -169,6 +173,7 @@ back to it.
 | `dayz-characters` | **Humanoid characters** (custom infected/zombies, survivors, NPCs): mesh → retopo → rig to `OFP2_ManSkeleton` → UV + normal bake → character LODs → `config.cpp` inheritance (ZombieMaleBase / SurvivorBase…) → PBO. Owns baked scaling (runtime `SetScale` is broken), the one-anim-mod-at-a-time wall, canonical bind pose. |
 | `blender-animation` | Authoring or modifying **animations in Blender** (via the Blender MCP) and handing them off to DayZ (RTM / `.anm` / `.txa` / SEAnim). Includes physics-sim driven motion. |
 | `dayz-animation-pipeline` | **DayZ animation end-to-end**: config-driven object animation (`model.cfg` / AnimationSources), item carry IK, hide-on-attach, skeletal RTM / Enfusion `.anm` via SEAnim, anim-graph / weapon states, vehicle-rider IK. Use before writing any animation that has to play in-game. |
+| `dayz-realistic-animation-director` | **Realistic motion director**: contract, blocking, offline audit and in-game gate for player/hands/weapons/locomotion/creatures/vehicles. Orchestrates `blender-animation` and `dayz-animation-pipeline`; ships no third-party motion models. |
 | `mixamo-retarget` | **Retarget Mixamo (or any FBX/DAE) mocap** onto a custom Blender / DayZ rig through the Blender MCP. Ships the retargeting flow only — no Mixamo or Adobe assets. Experimental until the fixture at the bottom of the skill is recorded. |
 | `ardy-motion-generation` | **Motion generation** for characters/creatures and the plan to integrate generated motion into DayZ. |
 
@@ -181,6 +186,8 @@ back to it.
 | Skill | Use when |
 |---|---|
 | `ai-3d-to-dayz` | Index/pointer skill for taking **AI-generated 3D** (Hunyuan, Tripo, TRELLIS) into DayZ: geometry-first, normal-bake into `_nohq`, and why AI-retopo output needs a manifold cleanup pass. |
+| `3d-generation-harness` | **End-to-end 3D generation gates**: research dossier → plan with tests → per-part build → adversarial roast → ship. Orchestrates pack `blender-assembly`, `blender-visual-review`, `dayz-model-pipeline` and `dayz-p3d-audit`. Image-to-3D generators named in the playbook are optional/external and are not shipped here. |
+| `uv-clean-atlas` | **Legible UV atlases** for hard-surface meshes (vehicle/prop/weapon): artist-style charts, SAT-zero overlap, semantic shelf pack. Blender-headless scripts ship; PartUV/weights do not. |
 | `dayz-model-pipeline` | Author a complete DayZ object: Blender headless geometry, LODs, memory points, named selections, `.rvmat`, `model.cfg` / `config.cpp`, assembled through pack `tools/py3d` (>= 1.5.0). |
 | `dayz-p3d-audit` | Offline **silent-killer audit** of an MLOD `.p3d` (winding, Component01, FireGeo wheel slots, mass-on-the-wrong-LOD). The script is `scripts/audit_p3d.py`; it needs `pip install -e tools/py3d`. |
 | `dayz-p3d-debinarizer` | Convert a binarized **ODOL** `.p3d` (DayZ v54/v55, Fire Packer containers) to editable **MLOD** for Object Builder / py3d. |
@@ -195,6 +202,7 @@ back to it.
 | Skill | Use when |
 |---|---|
 | `enforce-script-reference` | **Any Enforce Script or `config.cpp` work.** Memory (`ref`/`autoptr`/Managed/GC), networking (ScriptRPC, SyncVars, `OnStoreSave/Load`), timers (the `CallLater` 4.5 h bug), type system, action system, side checks, verified API catalog. Load it before writing script. |
+| `dayz-ai-patterns` | **DayZ Expansion eAI**: FSM states, combat hysteresis, threat/targeting, LOS/FOV, pathfinding, group formation and NoiseSystem. Expansion scripts are cited, not shipped. |
 | `dayz-sound-system` | **Audio**: `CfgSoundShaders`/`CfgSoundSets`, client-only `EffectSound`/`SEffectManager`, server→client `StartItemSoundServer`, NoiseSystem, "sound not playing on dedicated server". |
 | `dayz-particles` | **Particles**: plain-text `.ptc`/`.emat`, GUID materials, `Particle`/`ParticleSource`/`ParticleManager`/`SEffectManager`. Consult before writing any particle code. |
 | `dayz-ui-development` | **UI / HUD / menus**: `.layout` brace format, `.styles`, vanilla widgets, Dabs MVC, Expansion menus. Especially when the UI does not match the design or breaks at other resolutions. |
@@ -223,16 +231,12 @@ upstream. They ship under the same MIT licence as the rest of the pack.
 
 ### Shipped in this pack
 
-The ten skills listed in §3 that used to be described as "install the plugin" are now under
-`skills/`: `enforce-script-reference`, `dayz-mod-workflow`, `dayz-texture-pipeline`,
-`dayz-particles`, `dayz-sound-system`, `dayz-ui-development`, `dayz-doors`,
-`dayz-physics-engine`, `dayz-preflight`, `dayz-pbo-build`. Load them like any other skill here.
+Every playbook listed in §3 lives under `skills/` and loads like any other skill here.
+That is the complete set the author chose to distribute.
 
-The nine author-owned 3D/pipeline playbooks are in the same tree: `dayz-model-pipeline`,
-`dayz-p3d-audit`, `dayz-p3d-debinarizer`, `dayz-p3d-inspector`, `dayz-proxy-align`,
-`dayz-animation-pipeline`, `mixamo-retarget`, `blender-assembly`, `blender-visual-review`.
-Six of those used to vendor a py3d 1.4.0 wheel; the wheel is not in the pack. Install the
-pack fork with `pip install -e tools/py3d` (1.5.0, distribution `py3d-dayz`, import `py3d`).
+Six of the p3d/pipeline playbooks used to vendor a py3d 1.4.0 wheel; the wheel is not
+in the pack. Install the pack fork with `pip install -e tools/py3d` (1.5.0, distribution
+`py3d-dayz`, import `py3d`).
 
 ### True external dependencies
 
@@ -450,6 +454,9 @@ are the real value; keep them even if you adapt everything else.
     skills feed into. The surface, the design invariants and the engine facts behind it are
     documented in [`knowledge/dayz-mcp-bridge-protocol.md`](knowledge/dayz-mcp-bridge-protocol.md);
     `.mcp.example.json` shows the client wiring the installer registers.
+- **Skills the author keeps private.** A handful of the author's other playbooks stay
+  unpublished (process/handoff helpers and some local-only tooling). They are not
+  dependencies of this pack and are not listed in §3 or §4.
 - **Placeholders.** Angle-bracket tokens like `<notes>`, `<research-notes>`, `<skills>`,
   `<claude-home>`, `<tmp>`, and `C:\Users\<you>\…` replace the author's private local paths. `P:\`
   is the standard DayZ work-drive convention, left as-is.

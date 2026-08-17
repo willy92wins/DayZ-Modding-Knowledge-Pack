@@ -2,9 +2,11 @@
 
 Reviewed: **2026-07-24**. Rows for `dayz-clothing` and `dayz-persistence` were
 added on **2026-08-15** with their own evidence; ten author-owned skills were
-adopted on **2026-08-17** from the live store, and nine author-owned 3D
-playbooks were adopted later the same day. Neither adoption was re-run in
-this phase. The other rows were not re-reviewed on those dates.
+adopted on **2026-08-17** from the live store, nine author-owned 3D playbooks
+later the same day, and four more (`dayz-ai-patterns`,
+`dayz-realistic-animation-director`, `uv-clean-atlas`, `3d-generation-harness`)
+in the closing batch. None of those adoptions were re-run in this phase. The
+other rows were not re-reviewed on those dates.
 
 Target stable build: **DayZ PC 1.29.0.163451** (released 2026-07-15) — the build
 every row below was checked against.
@@ -70,6 +72,10 @@ workflow was run end-to-end on this build during r21 Phase 01.
 | `mixamo-retarget` | `cross_checked` | Blender with `bpy`; Blender MCP | Experimental. Mixamo/Adobe FBX and characters are **not** redistributed. Scripts are Apache-2.0 adaptations of Dev-GOM blender-toolkit. Fixture validation is still pending. | `skills/mixamo-retarget/SKILL.md`; `THIRD_PARTY_NOTICES.md` |
 | `blender-assembly` | `cross_checked` | Blender with `bpy`; Blender MCP | Process skill. Detail-scan protocol is adapted from img2threejs v1.4.3 (Apache-2.0). No third-party meshes ship. Adopted, not re-run. | `skills/blender-assembly/SKILL.md`; `skills/blender-visual-review/references/NOTICE-img2threejs.md` |
 | `blender-visual-review` | `cross_checked` | Blender with `bpy`; optional local VLM | `correction_loop.py` is a verbatim img2threejs copy; `vr_delta.py` is an adaptation. A Blender render cannot judge DayZ winding. Adopted, not re-run. | `skills/blender-visual-review/SKILL.md`; `skills/blender-visual-review/references/NOTICE-img2threejs.md` |
+| `dayz-ai-patterns` | `cross_checked` | Expansion eAI source (not redistributed); `enforce-script-reference` | Expansion-specific. Cited commit is `8f75d554…`. Adopted from the live store, not re-run in this phase. | `skills/dayz-ai-patterns/SKILL.md` |
+| `dayz-realistic-animation-director` | `cross_checked` | Blender with `bpy`; `blender-animation`; `dayz-animation-pipeline`; optional DayZDiag for the in-game gate | Offline validators compile. No third-party motion models or ARDY weights ship. Adopted, not re-run. | `skills/dayz-realistic-animation-director/SKILL.md`; `skills/dayz-realistic-animation-director/scripts/` |
+| `uv-clean-atlas` | `cross_checked` | Blender 4.3+ headless; optional PartUV (not shipped) | Scripts compile; `sys.path` stays at the skill `scripts/` directory. One source-game brand token was neutralized. Adopted, not re-run. | `skills/uv-clean-atlas/SKILL.md`; `skills/uv-clean-atlas/scripts/` |
+| `3d-generation-harness` | `cross_checked` | `blender-assembly`; `blender-visual-review`; `dayz-model-pipeline`; `dayz-p3d-audit`; optional external image-to-3D skill (not in this pack) | Process harness. `hunyuan3d-local` and kin are optional/external — the pack does not include them. Adopted, not re-run. | `skills/3d-generation-harness/SKILL.md` |
 
 ## Stable-build evidence and update policy
 

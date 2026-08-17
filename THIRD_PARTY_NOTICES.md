@@ -87,6 +87,8 @@ redistributed by this pack:
 | [MrClock8163/Arma3ObjectBuilder](https://github.com/MrClock8163/Arma3ObjectBuilder) | proxy-frame and RTM external oracle | GPL-3.0-or-later |
 | [ScripyZz/BisDLL-Arma-3](https://github.com/ScripyZz/BisDLL-Arma-3/tree/5600bad995c89154b4f6700ef087f86ef4c49315) | compatible ODOL parser backend; loaded externally through a pinned manifest | no license/redistribution grant observed |
 | DayZ Expansion, TraderPlus and TraderX | UI/layout comparison corpora | not redistributed; license not asserted here |
+| [salutesh/DayZ-Expansion-Scripts](https://github.com/salutesh/DayZ-Expansion-Scripts) @ `8f75d554fda209b257c00deb8f01c181e67c980a` | eAI pattern evidence cited by `dayz-ai-patterns` | not redistributed |
+| PartUV / PartField ([EricWang12/PartUV](https://github.com/EricWang12/PartUV); NVIDIA-derived checkpoint) | UV-AI pilot cited by `uv-clean-atlas` | not redistributed; no weights or PartUV source shipped |
 | [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r128) | runtime dependency of the `rip-vehicle-import` classify viewer (`three.min.js`, `GLTFLoader.js`, `OrbitControls.js`, r128 UMD) | MIT; **not redistributed** — the viewer's README says where to fetch them |
 | [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r160) | runtime dependency of `tools/dayz-3d-viewer` generated HTML (`three.module.js`, `GLTFLoader.js`, `OrbitControls.js`, r160 ESM via jsDelivr `three@0.160.0`) | MIT; **not redistributed** — the tool README names the CDN URL |
 | [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r147) | runtime CDN of `dayz-p3d-inspector` and `dayz-proxy-align` generated HTML (UMD r0.147.0, last UMD examples build) | MIT; **not redistributed** |
