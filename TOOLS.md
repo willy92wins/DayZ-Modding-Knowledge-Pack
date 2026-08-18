@@ -1,7 +1,9 @@
 # Tools
 
-Six Python tools ship in this pack. All are stdlib-first, offline and
-deterministic; none of them phone home, and none of them guess.
+Eight Python tools ship in this pack. They are offline and deterministic;
+none of them phone home, and none of them guess. Most are stdlib-only;
+[`dayz-vehicle-proxy-contract`](#tools-dayz-vehicle-proxy-contract) also
+needs numpy, scipy, matplotlib and the pack py3d fork.
 
 They exist because the DayZ asset pipeline fails *silently*: a `.p3d` written
 with a stale selection loads white, a mistyped RTM signature produces an
@@ -18,6 +20,7 @@ one.
 | [`dayz-ui-lab`](#tools-dayz-ui-lab) | Parse, compose, render and diff `.layout` UIs offline | Reports only |
 | [`dayz-3d-viewer`](#tools-dayz-3d-viewer) | Convert MLOD `.p3d`, PAA and RVMAT to glTF + HTML | **Yes** — `.glb`, PNG, HTML |
 | [`dayz-script-validator`](#tools-dayz-script-validator) | Lint Enforce, `config.cpp`, `.layout` and `.rvmat` before packing | Reports only |
+| [`dayz-vehicle-proxy-contract`](#tools-dayz-vehicle-proxy-contract) | Audit vehicle proxy graph, fit, engine properties and PBO closure | Reports only; `repair` stages copies outside the addon |
 
 ---
 
@@ -135,6 +138,48 @@ linter does not parse the vanilla script tree at runtime. That trades false
 negatives for a guarantee of no false positives from that path. **A green run is
 not proof of absence**, and it predicts that the module compiles and the asset
 loads — never that the engine behaves. Behaviour is the online layer's job.
+
+## `tools/dayz-vehicle-proxy-contract`
+
+The **offline vehicle-proxy gate**: it checks that every declared proxy on a
+vehicle host is reachable, that the source OBJ still fits the assembled P3D
+within the manifest thresholds, that required engine properties such as
+`autocenter=0` are present, that animated selections do not steal a proxy
+triangle unless the manifest names that exact host/LOD/selection triple, and
+that the deployed PBO still hashes to the source bytes.
+
+```bash
+python tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy_contract.py audit \
+  --manifest <manifest.json> --out <outdir>
+python tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy_contract.py preview \
+  --manifest <manifest.json> --out <outdir>
+python tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy_contract.py repair \
+  --manifest <manifest.json> --staging <abs-staging-dir> \
+  --operation set-autocenter-zero|yaw180|affine-fit
+python tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy_contract.py self-test
+```
+
+Exit `0` PASS / `1` FAIL / `2` self-test control miss / `3` self-test broken /
+`4` input or internal error / `64` usage. `audit` publishes
+`report.json`, `summary.txt` and `lod-overview.json` into a new `--out`
+directory, or nothing at all on exit `4`. `preview` adds sampled point-cloud
+PNGs. `repair` stages copies under a new absolute directory outside the addon
+root; it does not rewrite the source tree and it does not pack a PBO.
+
+The manifest is the only place paths live. Every stored path
+(`addon_root`, `host_p3d`, `cfgconvert`, source scene, piece OBJ, deployed
+PBO) must already be absolute. The tool has no default `C:\...` converter
+or addon root.
+
+Needs the pack py3d fork, numpy, scipy and matplotlib. `CfgConvert` is an
+external adapter named by the manifest, not a bundled binary.
+
+**A green run is not proof the vehicle plays.** It predicts that the declared
+proxy graph, the source-to-assembly fit, the required properties and the
+deployed bytes match the contract. It does not predict look, animation, IK,
+damage zones, get-in points or physics. Deferred host-axis warnings
+(`P3D-AXIS-SELECTION-DEFERRED`) are explicit about that: steering and damper
+motion remain an online gate. Behaviour is the online layer's job.
 
 ## `tools/dayz-odol-strict`
 

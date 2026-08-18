@@ -28,6 +28,13 @@ def _param_name(param):
     param = param.strip()
     if not param:
         return None
+    # Default values (`bool updateCached = true`, `ActionData data = NULL`)
+    # are not the parameter name. Stripping them keeps the name-binding check
+    # aligned with Enforce and avoids treating `true`/`NULL` as names.
+    param = re.sub(r"=.*$", "", param).strip()
+    param = re.sub(r"\[\d*\]\s*$", "", param).strip()
+    if not param:
+        return None
     match = _PARAM_NAME_RE.search(param)
     return match.group("name") if match else None
 

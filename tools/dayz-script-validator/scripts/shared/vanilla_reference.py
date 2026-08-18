@@ -6,7 +6,26 @@ names / base override signatures WITHOUT mounting and parsing P:\\scripts at
 runtime. Coverage is intentionally partial — add entries only when verified
 against the vanilla tree. Partial coverage means false negatives (a real
 collision we don't yet know about), never false positives.
+
+An optional generated index (`vanilla_index.json`, produced by
+`scripts/build_vanilla_index.py`, not committed) extends these tables when
+present. Missing, corrupt, or schema-mismatched index files fall back to the
+curated tables with identical behaviour. On a key present in both, the curated
+entry wins (it carries a human-verified fix message).
 """
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+
+INDEX_SCHEMA_VERSION = 1
+INDEX_FILENAME = "vanilla_index.json"
+
+_index_path_override = None
+_index_loaded = False
+_index_data = None
 
 # Member variables declared in a vanilla base class. Used by
 # ES-MEMBER-REDECLARE-BASE (CANDIDATE-13): a mod class extending one of these
@@ -28,12 +47,84 @@ VANILLA_OVERRIDE_PARAMS = {
 }
 
 
+def default_index_path():
+    return Path(__file__).resolve().parent / INDEX_FILENAME
+
+
+def set_index_path_for_tests(path):
+    """Point the loader at a specific index file (or a missing path)."""
+    global _index_path_override
+    _index_path_override = path
+    reset_index_cache()
+
+
+def reset_index_cache():
+    global _index_loaded, _index_data
+    _index_loaded = False
+    _index_data = None
+
+
+def _index_path():
+    if _index_path_override is not None:
+        return Path(_index_path_override)
+    return default_index_path()
+
+
+def _load_index():
+    global _index_loaded, _index_data
+    if _index_loaded:
+        return _index_data
+    _index_loaded = True
+    path = _index_path()
+    try:
+        raw = path.read_text(encoding="utf-8")
+        data = json.loads(raw)
+    except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError):
+        _index_data = None
+        return None
+    if not isinstance(data, dict):
+        _index_data = None
+        return None
+    if data.get("schema_version") != INDEX_SCHEMA_VERSION:
+        _index_data = None
+        return None
+    _index_data = data
+    return _index_data
+
+
 def base_member_set(base_name):
-    return VANILLA_BASE_MEMBERS.get(base_name, set())
+    curated = VANILLA_BASE_MEMBERS.get(base_name, set())
+    index = _load_index()
+    if not index:
+        return curated
+    indexed = index.get("base_members", {}).get(base_name)
+    extra = set()
+    if isinstance(indexed, dict):
+        extra = set(indexed.keys())
+    elif isinstance(indexed, (list, set, tuple)):
+        extra = set(indexed)
+    if not extra:
+        return curated
+    return set(curated) | extra
 
 
 def override_param_names(method_name):
-    return VANILLA_OVERRIDE_PARAMS.get(method_name)
+    if method_name in VANILLA_OVERRIDE_PARAMS:
+        return VANILLA_OVERRIDE_PARAMS[method_name]
+    index = _load_index()
+    if not index:
+        return None
+    entry = index.get("override_params", {}).get(method_name)
+    if entry is None:
+        return None
+    if isinstance(entry, dict):
+        params = entry.get("params")
+        if isinstance(params, list):
+            return list(params)
+        return None
+    if isinstance(entry, list):
+        return list(entry)
+    return None
 
 
 # Global class names from the vanilla tree that BREAK when reused as a method
@@ -47,11 +138,28 @@ VANILLA_GLOBAL_CLASS_NAMES = {
 
 
 def is_vanilla_global_class_name(name):
-    return name in VANILLA_GLOBAL_CLASS_NAMES
+    if name in VANILLA_GLOBAL_CLASS_NAMES:
+        return True
+    index = _load_index()
+    if not index:
+        return False
+    names = index.get("global_class_names", {})
+    return isinstance(names, dict) and name in names
 
 
 def vanilla_global_class_citation(name):
-    return VANILLA_GLOBAL_CLASS_NAMES.get(name)
+    if name in VANILLA_GLOBAL_CLASS_NAMES:
+        return VANILLA_GLOBAL_CLASS_NAMES[name]
+    index = _load_index()
+    if not index:
+        return None
+    names = index.get("global_class_names", {})
+    if not isinstance(names, dict):
+        return None
+    citation = names.get(name)
+    if isinstance(citation, str) and citation:
+        return citation
+    return None
 
 
 # Method names verified ABSENT from the entire vanilla script tree (0
@@ -91,5 +199,22 @@ VANILLA_PLATFORM_GATED_METHODS = {
 
 
 def platform_gated_method(method_name):
-    return VANILLA_PLATFORM_GATED_METHODS.get(method_name)
+    if method_name in VANILLA_PLATFORM_GATED_METHODS:
+        return VANILLA_PLATFORM_GATED_METHODS[method_name]
+    index = _load_index()
+    if not index:
+        return None
+    entry = index.get("platform_gated_methods", {}).get(method_name)
+    if not isinstance(entry, dict):
+        return None
+    owner = entry.get("owner")
+    macro = entry.get("macro")
+    citation = entry.get("citation")
+    if not owner or not macro or not citation:
+        return None
+    return {
+        "owner": owner,
+        "macro": macro,
+        "citation": citation,
+    }
 

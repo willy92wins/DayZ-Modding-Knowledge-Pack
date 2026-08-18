@@ -407,7 +407,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "bd1ae2c9c31639bf3ae43c2956045ee3c0240c77d936391e68183902926b5843",
+      "output_hash": "5dd95ce3a82a08922d2efafca798b4b050a6551697999999c6f65f98c6b94923",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -16595,7 +16595,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ac5a071ed6b469a0baf91bbc8d20ed012bd9dee54f2191a924c692adb997fa56",
+      "output_hash": "e417f1084ca04013a6f5b37a7d7883a30bd41ceca85f11431cde80117fda076f",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_member_redeclare_base.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -16727,7 +16727,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d111a86910395ed73dc4865f3c5df9d179bc57b3baddcc8d13d9e65e271fab62",
+      "output_hash": "7e338c77cd460aad35f21c8ed00cc0b38e2089b68db0b7b4b256ce543aaccc1a",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_override_param_name_mismatch.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -16947,7 +16947,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cc83b7b9c8412fe1852f3814180d71d3aaee9122885a63c0cb984824c231340d",
+      "output_hash": "692bff2f4761d4f936077e80b1da1919e162532a836efad2afb1a4b444596d57",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -17057,7 +17057,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "578db1fe21a4aa52f36fbefdbcddbec506cac35f295a39b31883ed7187d38926",
+      "output_hash": "9a759963a10b15cef739e31af09e3fe6f3814129fc769792eb7b11dd038763b7",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20115,7 +20115,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cd9ea5a6e937d269f5dacefaeabce4a6ca05c6402b06a232c5c1d2b403d80d80",
+      "output_hash": "0bd5122fd6e4f0d730f4bd19b441c1687dce67f7ccd07a4bf2a4d26a8289dc73",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20159,7 +20159,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "77cab41591fb78691533c8dcacac9366c650c7d59feb8e6ec4baade1844c4632",
+      "output_hash": "d0719a5b5abe69796e76f06bbb214ab22178b9fb484b7514e7009556773d9547",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_c_style_cast.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20203,7 +20203,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2ad93d3b599c7cd9e1682d14d356f6c11ee468b276095ac1dd4732c3bf3e6cfc",
+      "output_hash": "7b0a07f149a746e9e881ccbc6dba529c25c14f8cd64dafa05dd19d707b0696aa",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_string_plus_bool.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20337,6 +20337,710 @@
       "license": "MIT",
       "output_hash": "642f37ab5c25bbdf68dc229821e9e87b652d886cbc4488e9c125a59049d42703",
       "output_path": "tools/dayz-script-validator/tests/fixtures/es/ok_string_plus_bool_variable.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/dayz_vehicle_proxy_contract/__init__.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "cb7099268cedf47f156e30986652c31200df55b4127902373fb084eefdec2eeb",
+          "source_id": "dayz-tooling",
+          "source_path": "dayz_vehicle_proxy_contract/__init__.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "cb7099268cedf47f156e30986652c31200df55b4127902373fb084eefdec2eeb",
+      "output_path": "tools/dayz-vehicle-proxy-contract/dayz_vehicle_proxy_contract/__init__.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/dayz_vehicle_proxy_contract/__main__.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "a395c70f2f02f2cbe7130d8d3063edcd702fff4a70c116712a172b5c17330a6c",
+          "source_id": "dayz-tooling",
+          "source_path": "dayz_vehicle_proxy_contract/__main__.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a395c70f2f02f2cbe7130d8d3063edcd702fff4a70c116712a172b5c17330a6c",
+      "output_path": "tools/dayz-vehicle-proxy-contract/dayz_vehicle_proxy_contract/__main__.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/pyproject.toml",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "db8e02ad3cb69b78c381ce6fb51cab136306362bcb797af517f590d796d2c390",
+          "source_id": "dayz-tooling",
+          "source_path": "pyproject.toml",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "db8e02ad3cb69b78c381ce6fb51cab136306362bcb797af517f590d796d2c390",
+      "output_path": "tools/dayz-vehicle-proxy-contract/pyproject.toml",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/README.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "70328bb98d973fafdfd6f338b3a2b90412a086da2aac77fdd72b8c47f24e35e4",
+          "source_id": "dayz-tooling",
+          "source_path": "README.md",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "70328bb98d973fafdfd6f338b3a2b90412a086da2aac77fdd72b8c47f24e35e4",
+      "output_path": "tools/dayz-vehicle-proxy-contract/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/__init__.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy/__init__.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/__init__.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/audit.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "346d20b371c971bf30352877c6c744664f9085bf696b28834cc1731871e4c33e",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy/audit.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "346d20b371c971bf30352877c6c744664f9085bf696b28834cc1731871e4c33e",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/audit.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/engine.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "b3937f256a4f6fcf2451637602dc625d6e68fc1497ff1f86aa72de65e887bed5",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy/engine.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b3937f256a4f6fcf2451637602dc625d6e68fc1497ff1f86aa72de65e887bed5",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/engine.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/geometry.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "f07aef6691a5c86bc5f75b8bb69e231913f658e6c3d9fb9b4c0e67d109f29e7e",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy/geometry.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f07aef6691a5c86bc5f75b8bb69e231913f658e6c3d9fb9b4c0e67d109f29e7e",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/geometry.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/manifest.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "ea25114277e3d64a80536193cf7218f1f3f03e277989aceb59d758860bf6a8cd",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy/manifest.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ea25114277e3d64a80536193cf7218f1f3f03e277989aceb59d758860bf6a8cd",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/manifest.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/model_cfg.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "7bb6409e653dc210c860090a0c43f9fab11458c15e4fbc63f84f74d5ae68923d",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy/model_cfg.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7bb6409e653dc210c860090a0c43f9fab11458c15e4fbc63f84f74d5ae68923d",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/model_cfg.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/p3d_graph.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "ee32efb7cfdc707ab0f95b168eed6a7b494cf8286202975ab211027c0938c4f0",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy/p3d_graph.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ee32efb7cfdc707ab0f95b168eed6a7b494cf8286202975ab211027c0938c4f0",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/p3d_graph.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/pbo.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "c8eee3a3b1e516f184c56e4adbaab60ef6cb861e623e2bf124dd93f0587d7b11",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy/pbo.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c8eee3a3b1e516f184c56e4adbaab60ef6cb861e623e2bf124dd93f0587d7b11",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/pbo.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/preview.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "102983e9c2fd07fabcf1fcb2612b9e1317458f0558e252a9320769697b67fe72",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy/preview.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "102983e9c2fd07fabcf1fcb2612b9e1317458f0558e252a9320769697b67fe72",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/preview.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/repair.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "3671ad275d9e2a456f792826159a3656d91ff9688b3c2ae0242cc4090f4d8acd",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy/repair.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3671ad275d9e2a456f792826159a3656d91ff9688b3c2ae0242cc4090f4d8acd",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/repair.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/reporting.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "c8552d2c538440f85d6393dab0c023eb20be8c4026b0b270fd1ba3a2bb47a683",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy/reporting.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c8552d2c538440f85d6393dab0c023eb20be8c4026b0b270fd1ba3a2bb47a683",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/reporting.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy_contract.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "0b4dc431f5a33c20aa279330fc7a2138cafd81c7719b5869e579d985fda89f8e",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/vehicle_proxy_contract.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0b4dc431f5a33c20aa279330fc7a2138cafd81c7719b5869e579d985fda89f8e",
+      "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy_contract.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_cli.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "22b2e691412d976caa82479940403353addb20a1e65dde187bf9d554806a873a",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/test_vehicle_proxy_cli.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "22b2e691412d976caa82479940403353addb20a1e65dde187bf9d554806a873a",
+      "output_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_cli.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_engine.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "b85201762f57c95fb7312aaa5aa826ab888a99c406c0ace132f6ff482cd58f2a",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/test_vehicle_proxy_engine.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b85201762f57c95fb7312aaa5aa826ab888a99c406c0ace132f6ff482cd58f2a",
+      "output_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_engine.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_geometry.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "92b32964c0a6cb2064cad8d9b53f29c8c38462e74d9bf45168a7f5cd349b40db",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/test_vehicle_proxy_geometry.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "92b32964c0a6cb2064cad8d9b53f29c8c38462e74d9bf45168a7f5cd349b40db",
+      "output_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_geometry.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_graph.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "6f344ae2f9640dd423fdd892d549a61f815000ce6a43461ea25667bac990f5c2",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/test_vehicle_proxy_graph.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6f344ae2f9640dd423fdd892d549a61f815000ce6a43461ea25667bac990f5c2",
+      "output_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_graph.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_manifest.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "9650b66756b49b12c965558757c5f719d35061bfee03d64cb5ef5ad861837b42",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/test_vehicle_proxy_manifest.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9650b66756b49b12c965558757c5f719d35061bfee03d64cb5ef5ad861837b42",
+      "output_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_manifest.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "25242e9a0ec33b2faa0b8510063e1ab1a8663f5bc34f21cd99fcde07af63abb9",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/test_vehicle_proxy_pbo.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "25242e9a0ec33b2faa0b8510063e1ab1a8663f5bc34f21cd99fcde07af63abb9",
+      "output_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_repair.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "8b586b75686c184e2124edb67667a87e62b7a4d2330ae56f632bae37c957b59e",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/test_vehicle_proxy_repair.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8b586b75686c184e2124edb67667a87e62b7a4d2330ae56f632bae37c957b59e",
+      "output_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_repair.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/tests/vehicle_proxy_fixtures.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Migrated 2026-08-18 from the DayZ_Tooling vehicle-proxy contract checker. The 20 scripts/ and tests/ modules are byte-identical to the source (sha256 verified file by file); README.md, pyproject.toml and the dayz_vehicle_proxy_contract/ console wrapper were authored during the migration to match the dayz-script-validator layout. 128 tests green from three different working directories, before and after the move.",
+          "license": "MIT",
+          "source_hash": "23f01a31bc871c74fd33e2a61c1135cfdc9e4be57b6c5a4da0776a13ff7ee89a",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/vehicle_proxy_fixtures.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "23f01a31bc871c74fd33e2a61c1135cfdc9e4be57b6c5a4da0776a13ff7ee89a",
+      "output_path": "tools/dayz-vehicle-proxy-contract/tests/vehicle_proxy_fixtures.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/.gitignore",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. build_vanilla_index.py parses a local vanilla script tree into scripts/shared/vanilla_index.json, which is gitignored and never redistributed. Without the index the detectors fall back to the curated tables and behave exactly as before. With it, the five index-backed rules measure ZERO findings over the whole 2805-file vanilla tree.",
+          "license": "MIT",
+          "source_hash": "c8a9bb37bcfd572258c7640b45cdc84d58fb3b9494dace2b046fc8dba372472e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/.gitignore",
+          "source_revision": "r21-vanilla-index@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c8a9bb37bcfd572258c7640b45cdc84d58fb3b9494dace2b046fc8dba372472e",
+      "output_path": "tools/dayz-script-validator/.gitignore",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/build_vanilla_index.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. build_vanilla_index.py parses a local vanilla script tree into scripts/shared/vanilla_index.json, which is gitignored and never redistributed. Without the index the detectors fall back to the curated tables and behave exactly as before. With it, the five index-backed rules measure ZERO findings over the whole 2805-file vanilla tree.",
+          "license": "MIT",
+          "source_hash": "903329f535a8663886250253f6da980ee603dfc4e2f0610b57e1d6fd42689987",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
+          "source_revision": "r21-vanilla-index@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "903329f535a8663886250253f6da980ee603dfc4e2f0610b57e1d6fd42689987",
+      "output_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/test_vanilla_index.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. build_vanilla_index.py parses a local vanilla script tree into scripts/shared/vanilla_index.json, which is gitignored and never redistributed. Without the index the detectors fall back to the curated tables and behave exactly as before. With it, the five index-backed rules measure ZERO findings over the whole 2805-file vanilla tree.",
+          "license": "MIT",
+          "source_hash": "b8e62ab760e7d726957935faf2d327ea3f8ac1f25a053f926e3da3a860f5c47f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
+          "source_revision": "r21-vanilla-index@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b8e62ab760e7d726957935faf2d327ea3f8ac1f25a053f926e3da3a860f5c47f",
+      "output_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/3_game/tools/alpha.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. build_vanilla_index.py parses a local vanilla script tree into scripts/shared/vanilla_index.json, which is gitignored and never redistributed. Without the index the detectors fall back to the curated tables and behave exactly as before. With it, the five index-backed rules measure ZERO findings over the whole 2805-file vanilla tree.",
+          "license": "MIT",
+          "source_hash": "3e208efe4248bdf6f3524ac860fa307410db62e738718115d18b8c5ed8d5b938",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/3_game/tools/alpha.c",
+          "source_revision": "r21-vanilla-index@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3e208efe4248bdf6f3524ac860fa307410db62e738718115d18b8c5ed8d5b938",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/3_game/tools/alpha.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/3_game/tools/logmanager.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. build_vanilla_index.py parses a local vanilla script tree into scripts/shared/vanilla_index.json, which is gitignored and never redistributed. Without the index the detectors fall back to the curated tables and behave exactly as before. With it, the five index-backed rules measure ZERO findings over the whole 2805-file vanilla tree.",
+          "license": "MIT",
+          "source_hash": "4a42e77cd743d586b5d6e98ba6fc59595d01e91ee2428ecedcb48a889dd01b80",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/3_game/tools/logmanager.c",
+          "source_revision": "r21-vanilla-index@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4a42e77cd743d586b5d6e98ba6fc59595d01e91ee2428ecedcb48a889dd01b80",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/3_game/tools/logmanager.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/4_world/beta.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. build_vanilla_index.py parses a local vanilla script tree into scripts/shared/vanilla_index.json, which is gitignored and never redistributed. Without the index the detectors fall back to the curated tables and behave exactly as before. With it, the five index-backed rules measure ZERO findings over the whole 2805-file vanilla tree.",
+          "license": "MIT",
+          "source_hash": "f73b389e064375a74608dda5d99c7e6c07fd0334e3393433ac9556e1a9adf950",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/4_world/beta.c",
+          "source_revision": "r21-vanilla-index@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f73b389e064375a74608dda5d99c7e6c07fd0334e3393433ac9556e1a9adf950",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/4_world/beta.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/4_world/carscript.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. build_vanilla_index.py parses a local vanilla script tree into scripts/shared/vanilla_index.json, which is gitignored and never redistributed. Without the index the detectors fall back to the curated tables and behave exactly as before. With it, the five index-backed rules measure ZERO findings over the whole 2805-file vanilla tree.",
+          "license": "MIT",
+          "source_hash": "ebb593bfcef40676ee3e8f890f7985366a97f3c4982f500578206f777ef12765",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/4_world/carscript.c",
+          "source_revision": "r21-vanilla-index@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ebb593bfcef40676ee3e8f890f7985366a97f3c4982f500578206f777ef12765",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/4_world/carscript.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/5_mission/inventory.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. build_vanilla_index.py parses a local vanilla script tree into scripts/shared/vanilla_index.json, which is gitignored and never redistributed. Without the index the detectors fall back to the curated tables and behave exactly as before. With it, the five index-backed rules measure ZERO findings over the whole 2805-file vanilla tree.",
+          "license": "MIT",
+          "source_hash": "2e2d55ef9796b2b440cfd4195479bce10a413795ac21b846637cee45ef0ace3c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/5_mission/inventory.c",
+          "source_revision": "r21-vanilla-index@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2e2d55ef9796b2b440cfd4195479bce10a413795ac21b846637cee45ef0ace3c",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/5_mission/inventory.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

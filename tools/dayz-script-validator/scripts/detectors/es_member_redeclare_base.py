@@ -76,7 +76,12 @@ def check_es_member_redeclare_base(stripped_source, rel_path):
             for line_no in range(brace_index + 2, end_line):  # body lines, 1-based
                 if inside_method(line_no):
                     continue
-                m = _MEMBER_RE.match(lines[line_no - 1])
+                body_line = lines[line_no - 1]
+                # Destructor bodies are not method-regions (`void ~Class()`),
+                # so `delete m_Root;` would otherwise look like a member decl.
+                if re.match(r"^\s*(?:delete|return|break|continue)\b", body_line):
+                    continue
+                m = _MEMBER_RE.match(body_line)
                 if m and m.group("name") in members:
                     name = m.group("name")
                     errors.append(
