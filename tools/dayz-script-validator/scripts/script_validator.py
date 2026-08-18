@@ -371,18 +371,58 @@ def validate_addon(addon_root):
     return build_result(addon_root, errors, warnings, len(files), elapsed_ms)
 
 
-def run(argv=None):
+def build_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("addon_root")
-    args = parser.parse_args(argv)
+    parser.add_argument(
+        "--terse",
+        action="store_true",
+        help=(
+            "Print the verdict on the first line, then one line per finding, "
+            "instead of the JSON report."
+        ),
+    )
+    return parser
+
+
+def run(argv=None):
+    args = build_parser().parse_args(argv)
 
     result = validate_addon(args.addon_root)
     return exit_code_for_status(result["status"]), result
 
 
+def format_terse(result):
+    """Verdict first, details after.
+
+    A reader that stops at line one still has the answer, which is the point:
+    the JSON report buries `status` three lines in, and a hook dumping the whole
+    document to stderr is noise rather than a signal. The exit code stays the
+    machine channel; this is the one humans and agents actually read.
+    """
+    errors = list(result.get("errors", []))
+    warnings = list(result.get("warnings", []))
+    counts = []
+    if errors:
+        counts.append("%d error%s" % (len(errors), "" if len(errors) == 1 else "s"))
+    if warnings:
+        counts.append("%d warning%s" % (len(warnings), "" if len(warnings) == 1 else "s"))
+    head = result.get("status", "UNKNOWN")
+    if counts:
+        head = "%s - %s" % (head, ", ".join(counts))
+    lines = [head]
+    for finding in errors + warnings:
+        lines.append("  %s  %s" % (finding.get("rule_id", "?"), finding.get("message", "")))
+    return "\n".join(lines)
+
+
 def main(argv=None):
+    args = build_parser().parse_args(argv)
     exit_code, result = run(argv)
-    print(json.dumps(result, indent=2))
+    if args.terse:
+        print(format_terse(result))
+    else:
+        print(json.dumps(result, indent=2))
     return exit_code
 
 

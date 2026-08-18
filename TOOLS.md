@@ -106,6 +106,16 @@ python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>
 Exit `0` PASS / `1` FAIL / `2` WARN, findings as JSON on stdout. Under a second
 over a full addon, so it belongs in every pass rather than at the end.
 
+`--terse` swaps the JSON report for a verdict on the **first line** and one line
+per finding. The exit code is the machine channel; this is the one a human or an
+agent actually reads, and it is what the editor hook surfaces.
+
+```
+PASS
+WARN - 1 warning
+  ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN  [WARN] scripts/4_World/Foo.c line 239: ...
+```
+
 Rules are one module per defect under `scripts/detectors/`, over a source
 stripped of comments and string literals by `scripts/stripper.py` so a pattern
 mentioned inside a literal never fires. Coverage today spans refcount misuse

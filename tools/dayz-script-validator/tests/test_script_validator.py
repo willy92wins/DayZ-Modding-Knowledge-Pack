@@ -1991,6 +1991,35 @@ class TestEsOverrideOfPlatformGatedMethod(unittest.TestCase):
         self.assertEqual([], result["errors"])
 
 
+
+class TerseOutputTests(unittest.TestCase):
+    """The verdict must be the FIRST line: a reader that stops there has the answer."""
+
+    def test_pass_is_a_single_line(self):
+        _code, result = script_validator.run([str(FIXTURES / "empty")])
+        terse = script_validator.format_terse(result)
+
+        self.assertEqual("PASS", terse)
+
+    def test_verdict_leads_and_counts_are_summarised(self):
+        result = {
+            "status": "FAIL",
+            "errors": [{"rule_id": "ES-NO-DELETE", "message": "boom"}],
+            "warnings": [{"rule_id": "ES-EMPTY-IFDEF", "message": "meh"}],
+        }
+        lines = script_validator.format_terse(result).split("\n")
+
+        self.assertEqual("FAIL - 1 error, 1 warning", lines[0])
+        self.assertEqual(3, len(lines))
+        self.assertIn("ES-NO-DELETE", lines[1])
+        self.assertIn("ES-EMPTY-IFDEF", lines[2])
+
+    def test_json_stays_the_default(self):
+        parser = script_validator.build_parser()
+
+        self.assertFalse(parser.parse_args(["some_root"]).terse)
+        self.assertTrue(parser.parse_args(["some_root", "--terse"]).terse)
+
 if __name__ == "__main__":
     unittest.main()
 
