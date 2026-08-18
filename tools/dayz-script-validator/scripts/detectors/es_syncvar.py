@@ -33,12 +33,14 @@ ES_SYNCVAR_REGISTER_CALL_RE = re.compile(
 
 
 ES_SYNCVAR_CLASS_HEADER_RE = re.compile(
-    r"^\s*(?:modded\s+)?class\s+(?P<class>\w+)(?:\s*:\s*\w+)?\s*\{"
+    r"^\s*(?:modded\s+)?class\s+(?P<class>\w+)"
+    r"(?:\s*(?::|extends)\s+\w+)?\s*\{"
 )
 
 
 ES_SYNCVAR_CLASS_HEADER_NEXT_LINE_RE = re.compile(
-    r"^\s*(?:modded\s+)?class\s+(?P<class>\w+)(?:\s*:\s*\w+)?\s*$"
+    r"^\s*(?:modded\s+)?class\s+(?P<class>\w+)"
+    r"(?:\s*(?::|extends)\s+\w+)?\s*$"
 )
 
 
@@ -176,6 +178,8 @@ def find_unknown_class_brace_line(lines, start_index):
         stripped = lines[index].strip()
         if stripped == "":
             continue
+        if stripped.startswith("#"):
+            continue
         if stripped.startswith("{"):
             return index
         return start_index
@@ -238,7 +242,12 @@ def find_es_syncvar_classes(stripped_source, registers, rel_path):
 def method_is_syncvar_registration_target(method, class_name):
     if method is None:
         return False
-    return method["name"] in (class_name, "Init", "InitItemSounds")
+    return method["name"] in (
+        class_name,
+        "Init",
+        "InitItemSounds",
+        "InitItemVariables",
+    )
 
 
 def compile_syncvar_assignment_re(var_name):
@@ -367,14 +376,22 @@ def check_es_syncvar_contract(source, stripped_source, rel_path):
                                 )
                             )
                             continue
-                        errors.append(
-                            build_es_syncvar_error(
-                                rel_path,
-                                line_number,
-                                var_name,
-                                ES_SYNCVAR_WRITE_NO_IFDEF_MESSAGE,
-                            )
-                        )
+                        # WRITE_NO_IFDEF quarantined 2026-08-18. The premise -
+                        # "a SyncVar write must sit under #ifdef SERVER" - is not
+                        # the contract vanilla implements. ItemBase writes
+                        # m_VarQuantity in SetQuantity (itembase.c:3377) guarded by
+                        # g_Game.IsServer() (:3379) and publishes with
+                        # SetVariableMask(VARIABLE_QUANTITY) (:3406); items register
+                        # in InitItemVariables (:254-270), not the constructor.
+                        # Measured over the vanilla tree this fired 122 times, and
+                        # once the class parser learned `extends` it rose to 317:
+                        # the better the parser, the more it invents. That is the
+                        # signature of a false premise, not of a near-miss detector.
+                        # To re-wire: a desync repro from an unguarded client write,
+                        # plus a check that accepts ctor / Init / InitItemVariables,
+                        # g_Game or GetGame().IsServer(), #ifdef SERVER, *Server
+                        # methods, and SetSynchDirty OR SetVariableMask in the same
+                        # method. The register-outside-ctor half stays live.
                         continue
 
                     if method is None:

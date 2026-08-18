@@ -64,12 +64,8 @@ from detectors.rvmat import (
     check_rvmat_normalmapmacro,
     strip_rvmat_line_comment,
 )
-from detectors.es_no_delete import (
-    ES_NO_DELETE_MESSAGE,
-    ES_NO_DELETE_RE,
-    ES_NO_DELETE_RULE_ID,
-    check_es_no_delete,
-)
+# ES-NO-DELETE quarantined 2026-08-18: vanilla ships 125 `delete` statements and
+# its own proto demands manual delete. See the detector module header.
 from detectors.es_empty_ifdef import (
     ES_EMPTY_IFDEF_MESSAGE,
     ES_EMPTY_IFDEF_RULE_ID,
@@ -152,10 +148,8 @@ from detectors.es_layout_path_pboprefix import (
     check_es_layout_path_pboprefix,
     parse_pboprefix,
 )
-from detectors.es_processdirectdamage_dt_alias import (
-    ES_DT_ALIAS_RULE_ID,
-    check_es_dt_alias,
-)
+# ES-PROCESSDIRECTDAMAGE-DT-ALIAS quarantined 2026-08-18: entityai.c:4103 calls
+# ProcessDirectDamage(DT_CUSTOM, ...). See the detector module header.
 from detectors.es_local_var_redeclare import (
     ES_LOCAL_VAR_REDECLARE_RULE_ID,
     check_es_local_var_redeclare,
@@ -283,7 +277,6 @@ def validate_addon(addon_root):
                 source, rel_path
             )
             warnings.extend(stripper_warnings)
-            errors.extend(check_es_no_delete(stripped, rel_path))
             empty_ifdef_errors, empty_ifdef_warnings = check_es_empty_ifdef(
                 stripped, rel_path
             )
@@ -305,7 +298,6 @@ def validate_addon(addon_root):
             warnings.extend(
                 check_es_onmouseleave_param_count(stripped, rel_path)
             )
-            errors.extend(check_es_dt_alias(stripped, rel_path))
             errors.extend(check_es_local_var_redeclare(stripped, rel_path))
             errors.extend(check_es_member_redeclare_base(stripped, rel_path))
             errors.extend(check_es_override_param_name_mismatch(stripped, rel_path))

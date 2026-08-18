@@ -19,7 +19,8 @@ ES_EMPTY_IFDEF_RE_UNSUPPORTED_DIRECTIVE = re.compile(r"^\s*#(?:if|elif|else)\b")
 
 SERVER_GUARD_IF_RE = re.compile(
     r"\bif\s*\(\s*"
-    r"(?:GetGame\(\)\.IsServer\(\)|!\s*GetGame\(\)\.IsClient\(\)|IsServer\(\))"
+    r"(?:GetGame\(\)\.IsServer\(\)|g_Game\.IsServer\(\)|"
+    r"!\s*GetGame\(\)\.IsClient\(\)|IsServer\(\))"
     r"\s*\)"
 )
 
@@ -154,6 +155,67 @@ def find_matching_endif_line(lines, ifdef_start_line):
                 return index + 1
 
     return len(lines)
+
+
+def compute_ifdef_then_else_path(lines, end_line_exclusive):
+    """Return [(macro, branch), ...] active at end_line_exclusive (0-based).
+
+    branch is 'then', 'else', or 'elif'. Used to decide whether two
+    declarations sit in mutually exclusive preprocessor arms.
+    """
+    stack = []
+    for index in range(end_line_exclusive):
+        line = lines[index]
+        open_match = ES_EMPTY_IFDEF_RE_OPEN.match(line)
+        if open_match:
+            stack.append(
+                {
+                    "macro": open_match.group("macro"),
+                    "branch": "then",
+                }
+            )
+            continue
+
+        if ES_EMPTY_IFDEF_RE_UNSUPPORTED_IFDEF.match(line):
+            stack.append({"macro": None, "branch": "then"})
+            continue
+
+        if ES_EMPTY_IFDEF_RE_UNSUPPORTED_DIRECTIVE.match(line):
+            if unsupported_directive_opens_block(line):
+                stack.append({"macro": None, "branch": "then"})
+            elif stack:
+                if re.match(r"^\s*#else\b", line):
+                    stack[-1] = {
+                        "macro": stack[-1]["macro"],
+                        "branch": "else",
+                    }
+                elif re.match(r"^\s*#elif\b", line):
+                    stack[-1] = {
+                        "macro": stack[-1]["macro"],
+                        "branch": "elif",
+                    }
+            continue
+
+        if ES_EMPTY_IFDEF_RE_CLOSE.match(line):
+            if stack:
+                stack.pop()
+
+    return [(frame["macro"], frame["branch"]) for frame in stack]
+
+
+def ifdef_paths_are_exclusive(path_a, path_b):
+    """True when the two paths split on then/else/elif of the same macro."""
+    limit = min(len(path_a), len(path_b))
+    index = 0
+    while index < limit and path_a[index] == path_b[index]:
+        index += 1
+    if index >= len(path_a) or index >= len(path_b):
+        return False
+    macro_a, branch_a = path_a[index]
+    macro_b, branch_b = path_b[index]
+    if macro_a is None or macro_a != macro_b:
+        return False
+    return branch_a != branch_b
 
 
 def find_server_ifdef_block_for_line(lines, line_number):

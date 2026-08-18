@@ -1,3 +1,21 @@
+# QUARANTINED 2026-08-18 - not imported by script_validator.py and not executed.
+# The premise is FALSE. `delete` is real Enforce API and vanilla uses it in code
+# that ships: 125 findings over the 2805-file vanilla tree, every one a false
+# positive by construction. Bohemia's own proto DEMANDS it:
+#   1_core/proto/envisual.c:47
+#     //! WARNING: Non-managed, needs manual delete call, should not be ref'd
+# and the tree does exactly that -
+#   4_world/classes/camerashake.c:44      delete this;
+#   2_gamelib/entities/rendertarget.c:46  delete m_RenderWidget;   (~RenderTarget)
+#   4_world/entities/manbase/playerbase.c:2512  delete m_HologramServer;
+# For a non-managed widget or BoneMask, `obj = null` is not a substitute: it
+# hides the symptom and keeps the leak.
+#
+# The real hazard, if there is one, is `delete` on a Managed/ref TYPE - not the
+# keyword. To re-wire: produce a segfault repro for one concrete Managed type and
+# write a detector that matches type x delete, not the word. A regex over the
+# keyword cannot separate the illegal case from the 125 legal ones.
+
 import re
 
 

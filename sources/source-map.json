@@ -16551,7 +16551,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f87465d7ef9278806acb50481c4a914a1828a45f732cabf0b0a94e0e451d4d47",
+      "output_hash": "458ae89f5ff29dce5851aea247ba917389c01fea0c49b27e206aa4d597d85c54",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_local_var_redeclare.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -16639,7 +16639,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d55c9abc49178929a7d3f1e5177bebe01d1583225536585ba3e20ae4cc70bdff",
+      "output_hash": "f3ecf478f19deaa84475a1c6cfef5fce5cf7ee856a5d0dba0a54d700bc5e56fc",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_no_delete.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -16727,7 +16727,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "703b4c150aa1efbaac2d086c4f4ff94bb9020232f47a3fd1246d11b6d0acab5e",
+      "output_hash": "2e15914f0904a198a4c5db7e5a4ae44737af9127d638c938e7492f302a75d5f3",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_processdirectdamage_dt_alias.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -16815,7 +16815,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2b1870ce41105b1f200921a15ea434a68d06e9278d489c48017f02b31c79fe31",
+      "output_hash": "6da3898c1c81068b2f508fdb4be54a4a5c720d21c210fad8ad884720a4d4d45f",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_syncvar.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -16925,7 +16925,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "692bff2f4761d4f936077e80b1da1919e162532a836efad2afb1a4b444596d57",
+      "output_hash": "ab2657bbc69920956a909a52acba833e0a6c02f86c6be102e17f6881fbed8206",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -16969,7 +16969,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e89b0d8ea41240c6144a46c9d8d6123b53b2658f39af469e05b93de4477d8a29",
+      "output_hash": "ef64797d3cae02f45389784bc6a170d5bcf41145df35c7fee9935d870a208551",
       "output_path": "tools/dayz-script-validator/scripts/shared/control_flow.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20093,7 +20093,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0bd5122fd6e4f0d730f4bd19b441c1687dce67f7ccd07a4bf2a4d26a8289dc73",
+      "output_hash": "20e943c68905fea98d45dec4ed729a9af4751b0734c9681ec7499cd52d98b0d8",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21019,6 +21019,94 @@
       "license": "MIT",
       "output_hash": "2e2d55ef9796b2b440cfd4195479bce10a413795ac21b846637cee45ef0ace3c",
       "output_path": "tools/dayz-script-validator/tests/fixtures/vanilla_index/mini_tree/5_mission/inventory.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/es/ok_local_var_ifdef_else.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. Triage of every rule that fired on the vanilla script tree: three checks quarantined for a false premise (ES-NO-DELETE, ES-PROCESSDIRECTDAMAGE-DT-ALIAS, and the write half of ES-SYNCVAR-CONTRACT), two parsing bugs fixed (class `extends` headers, mutually exclusive #ifdef/#else arms). Errors over the 2805-file tree fell from 274 to 12.",
+          "license": "MIT",
+          "source_hash": "096c440333d6ea85a89b8fbbf1523555026752421e1ff7466c0a0e2896becda7",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/es/ok_local_var_ifdef_else.c",
+          "source_revision": "r21-vanilla-rule-triage@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "096c440333d6ea85a89b8fbbf1523555026752421e1ff7466c0a0e2896becda7",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/es/ok_local_var_ifdef_else.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/es/ok_syncvar_extends_class.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. Triage of every rule that fired on the vanilla script tree: three checks quarantined for a false premise (ES-NO-DELETE, ES-PROCESSDIRECTDAMAGE-DT-ALIAS, and the write half of ES-SYNCVAR-CONTRACT), two parsing bugs fixed (class `extends` headers, mutually exclusive #ifdef/#else arms). Errors over the 2805-file tree fell from 274 to 12.",
+          "license": "MIT",
+          "source_hash": "97212f236cc9e8370ea969ff8bd2da4f6c5d6f406999410909d0cda00c449a8a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/es/ok_syncvar_extends_class.c",
+          "source_revision": "r21-vanilla-rule-triage@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "97212f236cc9e8370ea969ff8bd2da4f6c5d6f406999410909d0cda00c449a8a",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/es/ok_syncvar_extends_class.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/es/ok_syncvar_init_item_variables.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. Triage of every rule that fired on the vanilla script tree: three checks quarantined for a false premise (ES-NO-DELETE, ES-PROCESSDIRECTDAMAGE-DT-ALIAS, and the write half of ES-SYNCVAR-CONTRACT), two parsing bugs fixed (class `extends` headers, mutually exclusive #ifdef/#else arms). Errors over the 2805-file tree fell from 274 to 12.",
+          "license": "MIT",
+          "source_hash": "b5c96370e22b4bb6670f1e439d906531ebd8ad3dc6031e31faca9715b356554a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/es/ok_syncvar_init_item_variables.c",
+          "source_revision": "r21-vanilla-rule-triage@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b5c96370e22b4bb6670f1e439d906531ebd8ad3dc6031e31faca9715b356554a",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/es/ok_syncvar_init_item_variables.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/es/warn_syncvar_ggame_is_server.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-18. Triage of every rule that fired on the vanilla script tree: three checks quarantined for a false premise (ES-NO-DELETE, ES-PROCESSDIRECTDAMAGE-DT-ALIAS, and the write half of ES-SYNCVAR-CONTRACT), two parsing bugs fixed (class `extends` headers, mutually exclusive #ifdef/#else arms). Errors over the 2805-file tree fell from 274 to 12.",
+          "license": "MIT",
+          "source_hash": "bdd0a03828f2783bf23caf64daffbdd9cb844aa8e91c21b2e895698243530e89",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/es/warn_syncvar_ggame_is_server.c",
+          "source_revision": "r21-vanilla-rule-triage@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bdd0a03828f2783bf23caf64daffbdd9cb844aa8e91c21b2e895698243530e89",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/es/warn_syncvar_ggame_is_server.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

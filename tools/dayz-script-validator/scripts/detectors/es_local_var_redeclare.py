@@ -1,5 +1,9 @@
 import re
 
+from shared.control_flow import (
+    compute_ifdef_then_else_path,
+    ifdef_paths_are_exclusive,
+)
 from shared.method_recognition import find_method_regions
 
 
@@ -65,28 +69,37 @@ def check_es_local_var_redeclare(stripped_source, rel_path):
             if line_index == method["start_line"]:
                 continue
             line = lines[line_index - 1]
+            path = compute_ifdef_then_else_path(lines, line_index - 1)
 
             for_match = _FOR_INIT_RE.search(line)
             if for_match:
-                decls.append((for_match.group("name"), line_index, True))
+                decls.append((for_match.group("name"), line_index, True, path))
                 continue
 
             decl_match = _DECL_RE.match(line)
             if decl_match and _leading_type_is_real(decl_match):
-                decls.append((decl_match.group("name"), line_index, False))
+                decls.append((decl_match.group("name"), line_index, False, path))
 
         by_name = {}
-        for name, line_no, is_for in decls:
-            by_name.setdefault(name, []).append((line_no, is_for))
+        for name, line_no, is_for, path in decls:
+            by_name.setdefault(name, []).append((line_no, is_for, path))
 
         for name, occurrences in by_name.items():
             if len(occurrences) < 2:
                 continue
             # Conservative: only flag when at least one occurrence is a plain
             # (non-for-init) declaration. Pure for/for reuse is left untouched.
-            if all(is_for for _, is_for in occurrences):
+            if all(is_for for _, is_for, _ in occurrences):
                 continue
-            for line_no, _ in occurrences[1:]:
+            previous = [occurrences[0]]
+            for line_no, is_for, path in occurrences[1:]:
+                can_coexist = any(
+                    not ifdef_paths_are_exclusive(prev_path, path)
+                    for _, _, prev_path in previous
+                )
+                previous.append((line_no, is_for, path))
+                if not can_coexist:
+                    continue
                 errors.append(
                     {
                         "check": ES_LOCAL_VAR_REDECLARE_RULE_ID,

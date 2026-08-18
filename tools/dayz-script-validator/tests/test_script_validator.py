@@ -257,25 +257,6 @@ class TestEsNoDelete(unittest.TestCase):
         self.assertEqual([], result["errors"])
         self.assertEqual([], result["warnings"])
 
-    def test_delete_keyword_fails(self):
-        fixture = FIXTURES / "es" / "bad_delete_keyword.c"
-        exit_code, result = script_validator.run([str(fixture)])
-        expected_message = (
-            "[FAIL] bad_delete_keyword.c line 6: 'delete' keyword used. Enforce "
-            "Script uses ARC garbage collection; 'delete' on live object causes "
-            "segfault (SKILL.md rule 14, memory-management.md:82). Replace with "
-            "'obj = null;'."
-        )
-
-        self.assertEqual(1, exit_code)
-        self.assertEqual("FAIL", result["status"])
-        self.assertEqual(1, len(result["errors"]))
-        self.assertEqual([], result["warnings"])
-        self.assertEqual("ES-NO-DELETE", result["errors"][0]["rule_id"])
-        self.assertEqual("bad_delete_keyword.c", result["errors"][0]["file"])
-        self.assertEqual(6, result["errors"][0]["line"])
-        self.assertEqual(expected_message, result["errors"][0]["message"])
-
     def test_delete_in_string_literal_still_passes_end_to_end(self):
         fixture = FIXTURES / "es" / "ok_delete_in_string_literal.c"
         exit_code, result = script_validator.run([str(fixture)])
@@ -328,14 +309,21 @@ class TestEsNoDelete(unittest.TestCase):
     def test_directory_with_fail_and_warn_returns_fail(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = pathlib.Path(temp_dir)
-            (temp_path / "bad_delete_keyword.c").write_text(
+            (temp_path / "bad_local_var_redeclare.c").write_text(
                 "\n".join(
                     [
-                        "class BadDeleteFixture",
+                        "class BadLocalFixture",
                         "{",
-                        "    void Cleanup(Object obj)",
+                        "    void Check(bool c)",
                         "    {",
-                        "        delete obj;",
+                        "        if (c)",
+                        "        {",
+                        "            int x = 5;",
+                        "        }",
+                        "        else",
+                        "        {",
+                        "            int x = 10;",
+                        "        }",
                         "    }",
                         "}",
                     ]
@@ -362,7 +350,9 @@ class TestEsNoDelete(unittest.TestCase):
         self.assertEqual(1, exit_code)
         self.assertEqual("FAIL", result["status"])
         self.assertEqual(1, len(result["errors"]))
-        self.assertEqual("ES-NO-DELETE", result["errors"][0]["rule_id"])
+        self.assertEqual(
+            "ES-LOCAL-VAR-REDECLARE", result["errors"][0]["rule_id"]
+        )
         self.assertGreaterEqual(len(result["warnings"]), 1)
         warning_rule_ids = {warning["rule_id"] for warning in result["warnings"]}
         self.assertIn("ES-SOURCE-UNTERMINATED-STRING", warning_rule_ids)
@@ -789,6 +779,12 @@ class TestEsSyncvarContract(unittest.TestCase):
     def test_syncvar_class_brace_next_line_passes(self):
         self.assert_syncvar_passes("ok_syncvar_class_brace_next_line.c")
 
+    def test_syncvar_extends_class_passes(self):
+        self.assert_syncvar_passes("ok_syncvar_extends_class.c")
+
+    def test_syncvar_init_item_variables_passes(self):
+        self.assert_syncvar_passes("ok_syncvar_init_item_variables.c")
+
     def test_syncvar_other_prefix_does_not_trigger_write_rule(self):
         self.assert_syncvar_passes("ok_syncvar_other_prefix.c")
 
@@ -804,50 +800,6 @@ class TestEsSyncvarContract(unittest.TestCase):
 
         self.assert_syncvar_error(
             "bad_syncvar_register_outside_ctor.c", 6, expected_message
-        )
-
-    def test_syncvar_write_without_ifdef_fails(self):
-        expected_message = (
-            "[FAIL] bad_syncvar_write_no_ifdef.c line 11: SyncVar 'm_X' "
-            "assigned outside '#ifdef SERVER'. Write must be server-only "
-            "(SKILL.md rule 17, networking.md:59)."
-        )
-
-        self.assert_syncvar_error(
-            "bad_syncvar_write_no_ifdef.c", 11, expected_message
-        )
-
-    def test_syncvar_write_under_ifndef_server_fails(self):
-        expected_message = (
-            "[FAIL] bad_syncvar_write_under_ifndef_server.c line 12: SyncVar 'm_X' "
-            "assigned outside '#ifdef SERVER'. Write must be server-only "
-            "(SKILL.md rule 17, networking.md:59)."
-        )
-
-        self.assert_syncvar_error(
-            "bad_syncvar_write_under_ifndef_server.c", 12, expected_message
-        )
-
-    def test_syncvar_compound_assignment_without_ifdef_fails(self):
-        expected_message = (
-            "[FAIL] bad_syncvar_compound_assignment.c line 11: SyncVar 'm_X' "
-            "assigned outside '#ifdef SERVER'. Write must be server-only "
-            "(SKILL.md rule 17, networking.md:59)."
-        )
-
-        self.assert_syncvar_error(
-            "bad_syncvar_compound_assignment.c", 11, expected_message
-        )
-
-    def test_syncvar_unary_assignment_without_ifdef_fails(self):
-        expected_message = (
-            "[FAIL] bad_syncvar_unary_assignment.c line 11: SyncVar 'm_X' "
-            "assigned outside '#ifdef SERVER'. Write must be server-only "
-            "(SKILL.md rule 17, networking.md:59)."
-        )
-
-        self.assert_syncvar_error(
-            "bad_syncvar_unary_assignment.c", 11, expected_message
         )
 
     def test_syncvar_write_without_dirty_fails(self):
@@ -904,6 +856,13 @@ class TestEsSyncvarContract(unittest.TestCase):
             "warn_syncvar_alternative_guard.c",
             13,
             "alternative guard 'if (GetGame().IsServer())'",
+        )
+
+    def test_syncvar_ggame_is_server_warns_unsupported(self):
+        self.assert_syncvar_unsupported_warning(
+            "warn_syncvar_ggame_is_server.c",
+            13,
+            "alternative guard",
         )
 
     def test_syncvar_generic_return_method_warns_unsupported(self):
@@ -1339,7 +1298,7 @@ class TestFullCorpus(unittest.TestCase):
 
         self.assertEqual(1, exit_code)
         self.assertEqual("FAIL", result["status"])
-        self.assertEqual(99, result["info"]["files_scanned"])
+        self.assertEqual(103, result["info"]["files_scanned"])
         assert_standard_findings(self, result)
 
         observed_errors = {
@@ -1352,7 +1311,6 @@ class TestFullCorpus(unittest.TestCase):
         }
 
         expected_errors = {
-            ("ES-NO-DELETE", "bad_delete_keyword.c"),
             ("ES-EMPTY-IFDEF", "bad_empty_ifdef_with_comments.c"),
             ("ES-EMPTY-IFDEF", "bad_empty_ifndef_with_comments.c"),
             ("ES-CTX-READ-UNCHECKED", "bad_ctx_read_unchecked_in_rpc.c"),
@@ -1369,14 +1327,9 @@ class TestFullCorpus(unittest.TestCase):
                 "ES-CTX-READ-UNCHECKED",
                 "bad_ctx_read_unchecked_with_renamed_param.c",
             ),
-            ("ES-SYNCVAR-CONTRACT", "bad_syncvar_compound_assignment.c"),
             ("ES-SYNCVAR-CONTRACT", "bad_syncvar_dirty_in_other_method.c"),
             ("ES-SYNCVAR-CONTRACT", "bad_syncvar_register_outside_ctor.c"),
-            ("ES-SYNCVAR-CONTRACT", "bad_syncvar_unary_assignment.c"),
             ("ES-SYNCVAR-CONTRACT", "bad_syncvar_write_no_dirty.c"),
-            ("ES-SYNCVAR-CONTRACT", "bad_syncvar_write_no_ifdef.c"),
-            ("ES-SYNCVAR-CONTRACT", "bad_syncvar_write_under_ifndef_server.c"),
-            ("ES-PROCESSDIRECTDAMAGE-DT-ALIAS", "bad_dt_alias.c"),
             ("ES-LOCAL-VAR-REDECLARE", "bad_local_var_redeclare_sibling.c"),
             ("ES-LOCAL-VAR-REDECLARE", "bad_local_var_redeclare_nested_for.c"),
             ("ES-MEMBER-REDECLARE-BASE", "bad_member_redeclare_base.c"),
@@ -1441,40 +1394,6 @@ class TestFullCorpus(unittest.TestCase):
         self.assertTrue(expected_warnings.issubset(observed_warnings))
 
 
-class TestEsProcessDirectDamageDtAlias(unittest.TestCase):
-    def test_dt_alias_fails(self):
-        fixture = FIXTURES / "es" / "bad_dt_alias.c"
-        exit_code, result = script_validator.run([str(fixture)])
-
-        self.assertEqual(1, exit_code)
-        self.assertEqual("FAIL", result["status"])
-        self.assertEqual(1, len(result["errors"]))
-        error = result["errors"][0]
-        self.assertEqual("ES-PROCESSDIRECTDAMAGE-DT-ALIAS", error["rule_id"])
-        self.assertEqual("FAIL", error["severity"])
-        self.assertEqual("bad_dt_alias.c", error["file"])
-        self.assertEqual(5, error["line"])
-        self.assertIn("DamageType.FIRE_ARM", error["message"])
-        assert_standard_findings(self, result)
-
-    def test_damagetype_enum_passes(self):
-        fixture = FIXTURES / "es" / "ok_damagetype_enum.c"
-        exit_code, result = script_validator.run([str(fixture)])
-
-        self.assertEqual(0, exit_code)
-        self.assertEqual("PASS", result["status"])
-        self.assertEqual([], result["errors"])
-        self.assertEqual([], result["warnings"])
-
-    def test_dt_alias_with_local_define_passes(self):
-        fixture = FIXTURES / "es" / "ok_dt_alias_defined.c"
-        exit_code, result = script_validator.run([str(fixture)])
-
-        self.assertEqual(0, exit_code)
-        self.assertEqual("PASS", result["status"])
-        self.assertEqual([], result["errors"])
-
-
 class TestEsLocalVarRedeclare(unittest.TestCase):
     def test_sibling_redeclare_fails(self):
         fixture = FIXTURES / "es" / "bad_local_var_redeclare_sibling.c"
@@ -1526,6 +1445,18 @@ class TestEsLocalVarRedeclare(unittest.TestCase):
         self.assertEqual(0, exit_code)
         self.assertEqual("PASS", result["status"])
         self.assertEqual([], result["errors"])
+
+    def test_ifdef_else_same_name_is_not_redeclare(self):
+        fixture = FIXTURES / "es" / "ok_local_var_ifdef_else.c"
+        exit_code, result = script_validator.run([str(fixture)])
+
+        redeclare = [
+            error
+            for error in result["errors"]
+            if error["rule_id"] == "ES-LOCAL-VAR-REDECLARE"
+        ]
+        self.assertEqual([], redeclare)
+        assert_standard_findings(self, result)
 
 
 class TestEsMemberRedeclareBase(unittest.TestCase):
