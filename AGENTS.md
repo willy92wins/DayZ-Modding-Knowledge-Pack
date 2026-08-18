@@ -173,8 +173,16 @@ python -m packctl gate --root . --report-dir ../pack-gate-reports
 ```
 
 ```bash
-python -m pytest -q
+python -m pytest -q tests/packctl
 ```
+
+**Do not run `pytest` from the repository root.** The suites here are
+per-tool by design — each tool's README names its own invocation and expects
+to run from that tool's directory — and two of them share test-module
+basenames (`test_cli.py`, `_support.py`), so a root-level collection aborts
+before a single test runs. Measured 2026-08-19: `tests/packctl` 220 passed /
+3 skipped, `tools/py3d` 220 / 10, `tools/dayz-vehicle-proxy-contract` 128
+plus 239 subtests, `tools/dayz-script-validator` 157.
 
 The gate's report directory must sit **outside** the repository. `gate` builds
 the release twice to prove reproducibility, so writing reports into the tree

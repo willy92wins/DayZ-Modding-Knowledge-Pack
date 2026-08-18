@@ -378,11 +378,17 @@ def check_es_syncvar_contract(source, stripped_source, rel_path):
                             continue
                         # WRITE_NO_IFDEF quarantined 2026-08-18. The premise -
                         # "a SyncVar write must sit under #ifdef SERVER" - is not
-                        # the contract vanilla implements. ItemBase writes
-                        # m_VarQuantity in SetQuantity (itembase.c:3377) guarded by
-                        # g_Game.IsServer() (:3379) and publishes with
-                        # SetVariableMask(VARIABLE_QUANTITY) (:3406); items register
-                        # in InitItemVariables (:254-270), not the constructor.
+                        # the contract vanilla implements. ItemBase.SetQuantity
+                        # writes m_VarQuantity at itembase.c:3377 with NO side
+                        # guard at all, and publishes with
+                        # SetVariableMask(VARIABLE_QUANTITY) at :3406, also
+                        # unguarded. Corrected 2026-08-19: the quarantine note
+                        # first read the `if (g_Game.IsServer() || ...)` at :3379
+                        # as guarding that write. It does not - it sits AFTER the
+                        # assignment and wraps an inventory-sound block. Re-reading
+                        # the file makes the premise MORE clearly false, not less.
+                        # Items register in InitItemVariables (:254-270), not the
+                        # constructor.
                         # Measured over the vanilla tree this fired 122 times, and
                         # once the class parser learned `extends` it rose to 317:
                         # the better the parser, the more it invents. That is the

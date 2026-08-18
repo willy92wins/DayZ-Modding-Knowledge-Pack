@@ -35,4 +35,5 @@ for ax,dd in [((0,1,0),35),((1,0,0),20),((0,0,1),90),((1,1,0),60),((0,1,0),-50)]
 chk("round-trip canonical(R)->derive==R (5 rotations)", ok)
 
 print("\n%d failure(s)" % fails)
-sys.exit(1 if fails else 0)
+if __name__ == "__main__":
+    sys.exit(1 if fails else 0)

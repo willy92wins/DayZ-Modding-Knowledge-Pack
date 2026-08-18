@@ -141,7 +141,7 @@
           "decision": "adopt",
           "decision_evidence": "Canonical agent entry file; the cross-tool convention several hosts read.",
           "license": "MIT",
-          "source_hash": "09764af7b5daa5295061b7788001a398caed1b2f17dd2c60239c6663f55cd391",
+          "source_hash": "7bb3bbd176e475661937952358a41c84900a64fd7e52782adea3d0a4eaece76b",
           "source_id": "pack-r21-authored",
           "source_path": "AGENTS.md",
           "source_revision": "r22-tool-routing@2026-08-16",
@@ -149,7 +149,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "09764af7b5daa5295061b7788001a398caed1b2f17dd2c60239c6663f55cd391",
+      "output_hash": "7bb3bbd176e475661937952358a41c84900a64fd7e52782adea3d0a4eaece76b",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -250,6 +250,28 @@
       "output_hash": "ea4a9cc40a21e76945066cba1c2ea8a2ef0bb599623501d046adbd3058abdadb",
       "output_path": "GEMINI.md",
       "routing_artifact_id": "root/gemini",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/getting-started.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. Human-facing index at the repository root: prerequisites, one pass of the mod cycle, and a want-X-open-Y route table over the 40 skills. It routes and does not restate skill content. Every command in it was either executed or read at the file and line that documents it; the invocations that cannot run on a clean clone are named as such instead of being printed as working steps.",
+          "license": "MIT",
+          "source_hash": "13360338ab1854ae87285ef3b918a9a268058ad8c5fe895c056a1dd97db32e81",
+          "source_id": "pack-r21-authored",
+          "source_path": "GETTING-STARTED.md",
+          "source_revision": "r21-getting-started@2026-08-19",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "13360338ab1854ae87285ef3b918a9a268058ad8c5fe895c056a1dd97db32e81",
+      "output_path": "GETTING-STARTED.md",
+      "routing_artifact_id": "root/getting-started",
       "verification_level": "cross_checked"
     },
     {
@@ -407,7 +429,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5dd95ce3a82a08922d2efafca798b4b050a6551697999999c6f65f98c6b94923",
+      "output_hash": "aeb26ae0e8c0cff0d63dd40649a7d99baad4154bb5de22b782967b8f85ef8139",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -14541,7 +14563,7 @@
           "decision": "adopt",
           "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
           "license": "MIT",
-          "source_hash": "d59802e6066fd109b26e2a9d02979d421cafd7308b8421919dff4b63d58b3017",
+          "source_hash": "2f12140c7679f5d6aafd87ee58f2c4041bbf3e6b506dd33adf40873c05cc768d",
           "source_id": "installed-skills",
           "source_path": "dayz-proxy-align/scripts/test_proxy_frame.py",
           "source_revision": "filesystem@2026-08-17",
@@ -14549,7 +14571,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d59802e6066fd109b26e2a9d02979d421cafd7308b8421919dff4b63d58b3017",
+      "output_hash": "2f12140c7679f5d6aafd87ee58f2c4041bbf3e6b506dd33adf40873c05cc768d",
       "output_path": "skills/dayz-proxy-align/scripts/test_proxy_frame.py",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -16815,7 +16837,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6da3898c1c81068b2f508fdb4be54a4a5c720d21c210fad8ad884720a4d4d45f",
+      "output_hash": "cbff923d7f2a60f21869e5c789c14aa14a6c2f2c62a7add0bb089d46cf6e7bb0",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_syncvar.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

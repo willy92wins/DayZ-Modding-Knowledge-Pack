@@ -5,6 +5,13 @@ none of them phone home, and none of them guess. Most are stdlib-only;
 [`dayz-vehicle-proxy-contract`](#tools-dayz-vehicle-proxy-contract) also
 needs numpy, scipy, matplotlib and the pack py3d fork.
 
+**Install before invoking.** The `python -m <tool>` forms below resolve only
+once that tool is installed — `python -m pip install -e tools/<name>` from the
+repository root. On a fresh clone they fail with `No module named`, which
+reads like a broken tool and is a missing install. Tools that also ship a
+script path (`dayz-script-validator`, `dayz-ui-lab`) can be run from the tree
+without installing; each tool's section says which.
+
 They exist because the DayZ asset pipeline fails *silently*: a `.p3d` written
 with a stale selection loads white, a mistyped RTM signature produces an
 animation that never plays, a `.layout` typo yields an empty screen with no
