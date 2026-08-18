@@ -5072,7 +5072,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "030f66a6d80c4b5a696874ece38cd006b8fa301684551eace64b20cdbdb213ae",
+      "output_hash": "722e40fbe7ceba9d4ec9f86127b57071b6528239544306511a54c6f8202bf6ea",
       "output_path": "skills/dayz-vehicles/references/rip-geometry-and-winding.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -5198,7 +5198,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f7bd928546f0c8bd2d143f2294c2d91c863362ed747cb969cab19a91575528e0",
+      "output_hash": "2a6521381344595a568680c1693172e0e12b9f2a6b39c6d52c3bab6f5e4a4948",
       "output_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -16224,28 +16224,6 @@
       "output_hash": "d7788da3996e939d69033184aa2c5d6f0d968e706589ec9b137fb98885ce45d1",
       "output_path": "skills/3d-generation-harness/references/roast-rubric.md",
       "routing_artifact_id": "skill/3d-generation-harness",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-vehicles/references/forza-import.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Harvested 2026-08-18 from the installed skill copy, which held content absent from the repo.",
-          "license": "MIT",
-          "source_hash": "7ff6f920347ddd5946cde930faa10160916da029ed5f6eea5dea3436bb3481d0",
-          "source_id": "installed-skills",
-          "source_path": "dayz-vehicles/references/forza-import.md",
-          "source_revision": "filesystem@2026-08-18",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "7ff6f920347ddd5946cde930faa10160916da029ed5f6eea5dea3436bb3481d0",
-      "output_path": "skills/dayz-vehicles/references/forza-import.md",
-      "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
     },
     {

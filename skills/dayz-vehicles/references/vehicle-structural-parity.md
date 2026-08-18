@@ -915,14 +915,14 @@ import-specific implementation + the MANDATORY-gates spec: `rip-import.md` §"Ge
 
 ---
 
-## Addendum (2026-06-25b) — reusable verification harness for ANY car (generic vs Forza-specific split)
+## Addendum (2026-06-25b) — reusable verification harness for ANY car (generic vs rip-specific split)
 
-The Forza→DayZ build grew a verification harness in `ForzaDayZ\tools\`. The GENERIC pieces apply to ANY DayZ
+The rip→DayZ build grew a verification harness in `VehicleImport\tools\`. The GENERIC pieces apply to ANY DayZ
 vehicle (procedural / OBJ / glTF too), the rest are PATTERNS to re-point. Use them as run-before-closed gates
 that BLOCK, not optional steps — skippable verification is how the offline false-green happened. All green
 offline 2026-06-25; build-time wiring is HELD until the SUB_BRZ script-class Cowork session closes.
 
-GENERIC (wire these for any car, not just Forza):
+GENERIC (wire these for any car, not just a rip):
 - `verify_forza_car.py` — tier-**U** universal engine contract + per-car `POLICY` dict (dmgzone list,
   body-proxy naming, mod token). `--positive-control <CivilianSedan_mlod.p3d>` proves the contract is
   satisfiable; `--self-test` proves non-vacuity. Add a POLICY entry per new car instead of forking a
@@ -936,7 +936,7 @@ GENERIC (wire these for any car, not just Forza):
 - `roundtrip_writer.py` — py3d read→save→read fidelity (the LFInfectedBig skinned-export corruption class).
 - `_harness_util.py:clean_visual_shell` — reconstruct a runnable shell-only `.p3d` from a deployed full one.
 
-PATTERN (bound to a builder/transform — re-point for a non-Forza car):
+PATTERN (bound to a builder/transform — re-point for a non-rip car):
 - STRUCTURAL BISECTION (`roundtrip_structural.py`): feed YOUR structural builder the CONTROL (CivilianSedan
   shell + locators from its own memory points) and require the regenerated LODs to pass the UNIVERSAL subset.
   Run a NEGATIVE control too (break the invariant — e.g. disable the hub/seat componentNN dual-tag) and require
@@ -948,11 +948,11 @@ PATTERN (bound to a builder/transform — re-point for a non-Forza car):
   self-built pair gives residual 0.000 by construction (R22 tell), so the discrimination test is what makes it
   real, not the residual.
 
-Forza-specific implementation + the MANDATORY-gates spec: `forza-import.md` §"Generalized harness".
+Rip-specific implementation + the MANDATORY-gates spec: `rip-import.md` §"Generalized harness".
 
-> Origen: Forza→DayZ verification-harness session 2026-06-25 (`ForzaDayZ\tools\`; HARNESS_HANDOFF.md). Closes
+> Origen: rip→DayZ verification-harness session 2026-06-25 (`VehicleImport\tools\`; HARNESS_HANDOFF.md). Closes
 > the verifier-only gap: the harness now also bisects the BUILDER and rule-fits the transform, both proven
-> non-tautological. Cross-ref the Addendum 2026-06-25 above (positive control) and forza-import.md s7/s8 lessons.
+> non-tautological. Cross-ref the Addendum 2026-06-25 above (positive control) and rip-import.md s7/s8 lessons.
 
 
 ---
@@ -1022,7 +1022,7 @@ Measured (SUB_BRZ vs LFQuad positive control, headless probe): BRZ seat cubes we
 
 **Diagnostic (reusable, no manual aim):** a headless mission probe that spawns the car + a known-good control, dumps `CrewPositionIndex(0..79)`, and casts `DayZPhysics.RaycastRV` (FIRE+VIEW) at each seat — localizes "mapping vs raycast vs collidability" in one run. Pattern files: `C:\tmp\brz_crew_probe_init.c` + `brz-crew-probe-run.ps1` (SUB_BRZ 2026-06-28). Parse the raw `hit=1 comp=N crewIdx=N` lines, NOT a boolean verdict — a regex `-match '1'` also matches `-1` (false-green observed this session).
 
-> Origen: SUB_BRZ codriver get-in, root cause confirmed in-game 2026-06-28 (Claude diagnosis via headless crew-probe + Codex implementation). Applies to ALL Forza/py3d-built vehicle ViewGeo; same fix pending on MercedesAMGLF.
+> Origen: SUB_BRZ codriver get-in, root cause confirmed in-game 2026-06-28 (Claude diagnosis via headless crew-probe + Codex implementation). Applies to ALL rip/py3d-built vehicle ViewGeo; same fix pending on MercedesAMGLF.
 
 ### MercedesAMGLF CONFIRMATION + refinements (2026-06-28 s12) — the seat winding+flags fix CONFIRMED on a 2nd car
 
@@ -1155,7 +1155,7 @@ este Addendum (espina ocluyente + cubos de asiento limpios) ANTES de declararlo.
 **Supera lo de arriba (2026-06-27) y REFUTA LL-164 (NO necesita door system).** "Cubos de asiento limpios, todas las caras outward" es NECESARIO PERO NO SUFICIENTE: una caja py3d `outward winding + point flags 0` pasa todo gate offline (forma/winding/dual-tag) pero **NO es raycast-colisionable** → `DayZPhysics.RaycastRV(ObjIntersectView)` no la golpea → el cursor no resuelve ningún asiento → cae a component0 (el conductor "funciona" SOLO por ese fallback; el codriver NUNCA). El mapeo `CrewPositionIndex(comp)` SIEMPRE estuvo bien — irrelevante mientras la geometría no colisione. **FIX (copiar la convención del control positivo LFQuad/Croco, NO el default py3d): los ComponentNN de asiento = winding INWARD + cada point flag = `0x0000003F` (33554432).** Aplicarlo MÍNIMO: si los asientos ya enumeran como su ComponentNN con el mapeo correcto (verifica con el crew-probe/PROBE), voltea SOLO las caras de asiento a inward + setea sus point flags + recomputa la normal — NO rebuildees toda la ViewGeo, NO toques el cuerpo. Closed-car: NO necesita shell ni asientos índice-alto en la ViewGeo (red herring en MERCEDES s11). Gate = in-game o el **crew-probe headless** (`RaycastRV` por asiento desde la puerta, sin apuntar; ancla en `pos_driver`/`pos_codriver` si caen dentro del cubo). Mecanismo + tooling + caveat de anclaje del control: `references/vehicle-structural-parity.md` "CRITICAL EXTENSION 2026-06-28" + "MercedesAMGLF CONFIRMATION 2026-06-28 s12". **Estado: codriver RESUELTO — SUB_BRZ (in-game) + MERCEDES (headless).** Para cualquier coche source-game/py3d nuevo: aplica esto de entrada (no descubras el blocker in-game).
 
 ### ★ Blocker DECISIVO del codriver = ComponentNN de asiento INWARD-wound + point flags 0x0000003F (SP-130; SUB_BRZ s9 in-game + MERCEDES s12 headless `hit=1 comp=6 crewIdx=1`) — RESUELTO en ambos
-**Supera lo de arriba (2026-06-27) y REFUTA LL-164 (NO necesita door system).** "Cubos de asiento limpios, todas las caras outward" es NECESARIO PERO NO SUFICIENTE: una caja py3d `outward winding + point flags 0` pasa todo gate offline (forma/winding/dual-tag) pero **NO es raycast-colisionable** → `DayZPhysics.RaycastRV(ObjIntersectView)` no la golpea → el cursor no resuelve ningún asiento → cae a component0 (el conductor "funciona" SOLO por ese fallback; el codriver NUNCA). El mapeo `CrewPositionIndex(comp)` SIEMPRE estuvo bien — irrelevante mientras la geometría no colisione. **FIX (SP-130; copiar la convención del control vanilla sellado, NO el default py3d): los ComponentNN de asiento = winding INWARD + cada point flag = `0x0000003F`.** Control sellado `civiliansedan_mlod.p3d` SHA `823585B6EC9727F70C3ABCAD309ECBF7E87DBA1E66FA14A1ECAB9AB1FCA921DD`, ViewGeometry (res 6e15): 478 puntos / 422 caras; histograma `0x0000003F` → 478 puntos (100,0 %), `0x0000003F` → 0 puntos. El parche s9 cambió winding y flags a la vez y nunca aisló el flag como causa; la regla segura es la convención del control vanilla. Confirmaciones in-game (SUB_BRZ s9; MERCEDES s12 headless `hit=1 comp=6 crewIdx=1`) y dual-tag se conservan. Aplicarlo MÍNIMO: si los asientos ya enumeran como su ComponentNN con el mapeo correcto (verifica con el crew-probe/PROBE), voltea SOLO las caras de asiento a inward + setea sus point flags + recomputa la normal — NO rebuildees toda la ViewGeo, NO toques el cuerpo. Closed-car: NO necesita shell ni asientos índice-alto en la ViewGeo (red herring en MERCEDES s11). Gate = in-game o el **crew-probe headless** (`RaycastRV` por asiento desde la puerta, sin apuntar; ancla en `pos_driver`/`pos_codriver` si caen dentro del cubo). Mecanismo + tooling + caveat de anclaje del control: `references/vehicle-structural-parity.md` "CRITICAL EXTENSION 2026-06-28" + "MercedesAMGLF CONFIRMATION 2026-06-28 s12". **Estado: codriver RESUELTO — SUB_BRZ (in-game) + MERCEDES (headless).** Para cualquier coche Forza/py3d nuevo: aplica esto de entrada (no descubras el blocker in-game).
+**Supera lo de arriba (2026-06-27) y REFUTA LL-164 (NO necesita door system).** "Cubos de asiento limpios, todas las caras outward" es NECESARIO PERO NO SUFICIENTE: una caja py3d `outward winding + point flags 0` pasa todo gate offline (forma/winding/dual-tag) pero **NO es raycast-colisionable** → `DayZPhysics.RaycastRV(ObjIntersectView)` no la golpea → el cursor no resuelve ningún asiento → cae a component0 (el conductor "funciona" SOLO por ese fallback; el codriver NUNCA). El mapeo `CrewPositionIndex(comp)` SIEMPRE estuvo bien — irrelevante mientras la geometría no colisione. **FIX (SP-130; copiar la convención del control vanilla sellado, NO el default py3d): los ComponentNN de asiento = winding INWARD + cada point flag = `0x0000003F`.** Control sellado `civiliansedan_mlod.p3d` SHA `823585B6EC9727F70C3ABCAD309ECBF7E87DBA1E66FA14A1ECAB9AB1FCA921DD`, ViewGeometry (res 6e15): 478 puntos / 422 caras; histograma `0x0000003F` → 478 puntos (100,0 %), `0x02000000` → 0 puntos. El parche s9 cambió winding y flags a la vez y nunca aisló el flag como causa; la regla segura es la convención del control vanilla. Confirmaciones in-game (SUB_BRZ s9; MERCEDES s12 headless `hit=1 comp=6 crewIdx=1`) y dual-tag se conservan. Aplicarlo MÍNIMO: si los asientos ya enumeran como su ComponentNN con el mapeo correcto (verifica con el crew-probe/PROBE), voltea SOLO las caras de asiento a inward + setea sus point flags + recomputa la normal — NO rebuildees toda la ViewGeo, NO toques el cuerpo. Closed-car: NO necesita shell ni asientos índice-alto en la ViewGeo (red herring en MERCEDES s11). Gate = in-game o el **crew-probe headless** (`RaycastRV` por asiento desde la puerta, sin apuntar; ancla en `pos_driver`/`pos_codriver` si caen dentro del cubo). Mecanismo + tooling + caveat de anclaje del control: `references/vehicle-structural-parity.md` "CRITICAL EXTENSION 2026-06-28" + "MercedesAMGLF CONFIRMATION 2026-06-28 s12". **Estado: codriver RESUELTO — SUB_BRZ (in-game) + MERCEDES (headless).** Para cualquier coche rip/py3d nuevo: aplica esto de entrada (no descubras el blocker in-game).
 
 ### Ruedas al revés: medir el eje en el .p3d ANTES de fijar `angle1` (offline check, predice el bug sin in-game)
 `model.cfg` wheel `angle1` debe ser coherente con el `dir` de cada `wheel_X_Y_axis` (2 puntos en el Memory LOD):
