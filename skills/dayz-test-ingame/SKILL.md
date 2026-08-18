@@ -332,7 +332,7 @@ Caveats (honest scope — not yet verified):
 ### Headless autotest pattern (no client, scripted spawn)
 
 For automated physics/spawn testing without a human client, a dedicated harness lives at
-`LFQuad_dev\tools\dayz-autotest.ps1` (reuses this launcher's build+deploy). Three gotchas that
+`LFQuad_dev\tools\dayz-autotest.ps1` (reuses this launcher's build+deploy). Five gotchas that
 cost many iterations, recorded so the next headless harness works first try:
 1. **Historical detached pattern — superseded 2026-07-15.** A direct `Start-Process` avoided
    waiting on the DayZDiag grandchild but left it outside the registered lifecycle. Launch now
@@ -343,6 +343,27 @@ cost many iterations, recorded so the next headless harness works first try:
 3. **A `CarScript` vehicle only ticks `OnUpdate` / simulates with a player present.** A headless
    server with zero clients won't drive the vehicle's own script; spawn after a client connects
    (the harness has a `-WithClient` mode that connects a second diag instance to 127.0.0.1).
+4. **Cell infrastructure (spawn-on-connect, engine watcher, auto-test hooks) belongs INSIDE the
+   mod under `#ifdef DIAG` + a CLI param — never only in the mission `init.c`** (added 2026-08-17,
+   LFHeli). The mission lives under Steam (`DayZServer\mpmissions\<mission>\init.c`), which no
+   portable pack, backup or repo carries: the LFHeli cell infra written into `init.c` on
+   2026-08-12 (`CreateObjectEx` on `InvokeOnConnect` + `EngineStart()` pre-crew watcher) was
+   gone on the other machine five days later and had to be recovered from a transcript. In-tree
+   it travels with the PBO, is versioned, and stays inert in retail by absence of the flag
+   (pattern: `LFHeliCore\scripts\5_Mission\LFHeliFLIRMission.c` `modded class MissionServer`,
+   `-lfheliAutoGetIn=1` in `LFHeliPlayerBase.c`). Corollary measured the same day: start the
+   engine BEFORE the crew sits — a sleeping PARKED body rejects the injected get-in action.
+5. **PowerShell orchestrator traps that hang a cell silently** (measured 2026-08-17, LFHeli
+   `run_celda_scripted.ps1`): (a) never name a function parameter `$Args` — it is the automatic
+   variable, `@Args` splats EMPTY and `& python` with no argv opens the interactive REPL that
+   never returns (the cell sat at "flip DebugLog" for minutes with a `python.exe` child and no
+   arguments); (b) `& native 2>&1` under `$ErrorActionPreference='Stop'` turns any stderr line into
+   a terminating error (PS 5.1) — wrap native calls in a helper that switches to `Continue` and
+   returns text + `$LASTEXITCODE`; (c) the DayZ CLIENT needs a usable Steam
+   (`HKCU\Software\Valve\Steam\ActiveProcess` pid AND ActiveUser ≠ 0): a Steam restarted minutes
+   earlier sits at pid populated / ActiveUser=0 and the client dies at bootstrap with a ~1 KB RPT
+   and an `ErrorMessage_*.mdmp` while the SERVER (no Steam) boots fine — `steam.exe -shutdown` +
+   relaunch repopulated the key in ~20 s. Check the key in the pre-flight of every cell.
 
 ### Mission `init.c`: no extender tipos de módulos anteriores desde el fixture (SP-140)
 
