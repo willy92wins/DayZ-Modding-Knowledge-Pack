@@ -193,6 +193,17 @@ build; it is the one that must be green before publishing. `build` produces the
 release archive and refuses to run from a dirty tree — a release is built from
 a committed state or it is not a release.
 
+Before committing any change under `tools/dayz-script-validator/` — a new
+rule, a touched detector, a touched parser — run the vanilla control.
+Bohemia's tree compiles and ships; a new finding on it is a false positive
+by construction. A green control does **not** authorize the change: it only
+proves the rule is silent on correct code, not that it catches anything.
+Without a local vanilla tree the control SKIPs (exit 2).
+
+```bash
+python tools/dayz-script-validator/scripts/vanilla_control.py
+```
+
 ## What this file is not
 
 It carries no session state, no roadmap and no task list. Those are the

@@ -141,7 +141,7 @@
           "decision": "adopt",
           "decision_evidence": "Canonical agent entry file; the cross-tool convention several hosts read.",
           "license": "MIT",
-          "source_hash": "cdba027e074eb4371ba462dc9012327715d14e2aa07ba3f3457c91be47a1004c",
+          "source_hash": "09764af7b5daa5295061b7788001a398caed1b2f17dd2c60239c6663f55cd391",
           "source_id": "pack-r21-authored",
           "source_path": "AGENTS.md",
           "source_revision": "r22-tool-routing@2026-08-16",
@@ -149,7 +149,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cdba027e074eb4371ba462dc9012327715d14e2aa07ba3f3457c91be47a1004c",
+      "output_hash": "09764af7b5daa5295061b7788001a398caed1b2f17dd2c60239c6663f55cd391",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -16235,7 +16235,7 @@
           "decision": "adopt",
           "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
           "license": "MIT",
-          "source_hash": "6004fff9bc40f4dafe46591f6d848c1987ce70719556b0f87e23dfc404381324",
+          "source_hash": "82ade4e319c0d296dd432d09292a1de4d5c4404db8efbc23aab49ca19d67cd57",
           "source_id": "dayz-tooling",
           "source_path": "README.md",
           "source_revision": "dayz-tooling@2026-08-18",
@@ -16243,7 +16243,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6004fff9bc40f4dafe46591f6d848c1987ce70719556b0f87e23dfc404381324",
+      "output_hash": "82ade4e319c0d296dd432d09292a1de4d5c4404db8efbc23aab49ca19d67cd57",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20891,6 +20891,28 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/vanilla_control.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. vanilla_control.py gates the linter against a measured baseline of Bohemia's vanilla script tree (12 errors / 416 warnings over 2806 files); a finding on that tree is a false positive by construction.",
+          "license": "MIT",
+          "source_hash": "e99bda82afc0c6ac9de86f36a3aeaad5e6c3c1b2b06eb31ca84d56bc7b1cac85",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
+          "source_revision": "r21-vanilla-control@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e99bda82afc0c6ac9de86f36a3aeaad5e6c3c1b2b06eb31ca84d56bc7b1cac85",
+      "output_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/tools/dayz-script-validator/tests/test_vanilla_index.py",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -20909,6 +20931,50 @@
       "license": "MIT",
       "output_hash": "b8e62ab760e7d726957935faf2d327ea3f8ac1f25a053f926e3da3a860f5c47f",
       "output_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/test_vanilla_control.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. vanilla_control.py gates the linter against a measured baseline of Bohemia's vanilla script tree (12 errors / 416 warnings over 2806 files); a finding on that tree is a false positive by construction.",
+          "license": "MIT",
+          "source_hash": "92e38ca36b52f9922d9fcadfa84c4f82c8d685b61ac38113869959cfb9df8f72",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
+          "source_revision": "r21-vanilla-control@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "92e38ca36b52f9922d9fcadfa84c4f82c8d685b61ac38113869959cfb9df8f72",
+      "output_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. vanilla_control.py gates the linter against a measured baseline of Bohemia's vanilla script tree (12 errors / 416 warnings over 2806 files); a finding on that tree is a false positive by construction.",
+          "license": "MIT",
+          "source_hash": "d0570a0739995190afbe18bb939269464571550e1edf481c9e428ab4e0238a6d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
+          "source_revision": "r21-vanilla-control@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d0570a0739995190afbe18bb939269464571550e1edf481c9e428ab4e0238a6d",
+      "output_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
