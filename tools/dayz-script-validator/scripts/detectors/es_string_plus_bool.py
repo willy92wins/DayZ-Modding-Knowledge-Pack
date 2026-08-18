@@ -1,3 +1,23 @@
+# QUARANTINED 2026-08-18 - not imported by script_validator.py and not executed.
+# The premise is FALSE. `string + bool` compiles: vanilla concatenates
+# bool-returning calls into debug strings, outside any #ifdef -
+#   3_game/entities/entityai.c:3301  text += "Disabled: " + GetIsSimulationDisabled()
+#   3_game/entities/entity.c:6       proto native bool GetIsSimulationDisabled();
+# If that did not compile, the Game module would not load.
+#
+# Unlike ES-C-STYLE-CAST this detector measured ZERO findings over the vanilla
+# tree, because its scope was the LITERAL form only (`"x" + true`) and vanilla
+# never writes it - 0 occurrences of `+ true` / `+ false`. So there is no
+# measured false positive here; what is dead is the reason to have the rule.
+# Whether the literal form specifically compiles is undecided without a compile,
+# and shipping a rule whose stated rationale is known false teaches the falsehood
+# to whoever reads it.
+#
+# To re-wire: compile `Print("b=" + true);` in DayZDiag. If it fails, restore the
+# rule and cite the RPT line here. The claim's origin was a third-party tool's
+# guide (ZeripeDaniel/Lake-Dayz-MCP, GPLv3 - knowledge only, no code or text
+# adopted), adopted without a check.
+
 import re
 
 from detectors.pdrive_path import strip_comments_keep_strings

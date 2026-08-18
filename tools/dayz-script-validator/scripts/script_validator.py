@@ -216,14 +216,8 @@ from detectors.es_respawn_equip_onclientrespawn import (
     ES_RESPAWN_EQUIP_RULE_ID,
     check_es_respawn_equip_onclientrespawn,
 )
-from detectors.es_c_style_cast import (
-    ES_C_STYLE_CAST_RULE_ID,
-    check_es_c_style_cast,
-)
-from detectors.es_string_plus_bool import (
-    ES_STRING_PLUS_BOOL_RULE_ID,
-    check_es_string_plus_bool,
-)
+# ES-C-STYLE-CAST and ES-STRING-PLUS-BOOL were quarantined 2026-08-18: both rested
+# on claims the vanilla tree refutes. See the headers of their detector modules.
 from detectors.es_override_of_platform_gated_method import (
     ES_OVERRIDE_OF_PLATFORM_GATED_METHOD_RULE_ID,
     check_es_override_of_platform_gated_method,
@@ -335,8 +329,6 @@ def validate_addon(addon_root):
             warnings.extend(
                 check_es_respawn_equip_onclientrespawn(stripped, rel_path)
             )
-            errors.extend(check_es_c_style_cast(stripped, rel_path))
-            errors.extend(check_es_string_plus_bool(source, rel_path))
             errors.extend(
                 check_es_override_of_platform_gated_method(stripped, rel_path)
             )

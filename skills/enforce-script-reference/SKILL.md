@@ -665,18 +665,50 @@ Blast radius: `modded` on a `*Base` class applies to EVERY descendant at once.
 That is the right tool when a blanket change is the goal, and the wrong one when
 a single new item is.
 
-### Two related claims NOT yet verified (do not cite as fact)
+### Two claims from prior art, both FALSIFIED against the vanilla tree (2026-08-18)
 
-Both come from a third-party tool's guide (`ZeripeDaniel/Lake-Dayz-MCP`, GPLv3 —
-knowledge only, no code or text adopted) and could not be confirmed against the
-vanilla tree or a compile:
+Both came from a third-party tool's guide (`ZeripeDaniel/Lake-Dayz-MCP`, GPLv3 —
+knowledge only, no code or text adopted). They were carried here flagged as
+unverified, and a sweep of the whole vanilla tree killed both. The tree ships and
+compiles, so one live counterexample is conclusive.
 
-- **C-style casts `(int)x` / `(float)y` do not exist in Enforce**; the idiom would
-  be `Math.Floor` / `.ToInt`. Plausible and consistent with the type system section,
-  but a negative that source grep cannot settle.
-- **`string + bool` does not compile** while `string + int` and `string + float` do.
+**C-style casts DO exist and vanilla uses them.**
 
-Verify both with a one-line Diag compile before promoting them to Hard Rules.
+```c
+a = (int)h << 24;                                   // proto.c:312, h is float (:310)
+float r = (float)random_int / (float)max_range;     // enmath.c:110
+ctx.Write((int)GetIsFrozen());                      // entityai.c:3207
+int slot = (int)Math.Floor(x / ITEMS_IN_ROW);       // vicinityslotscontainer.c:262
+```
+
+`Math.Floor` returns **float** (`enmath.c:427`), so it is not itself the
+conversion — it is usually assigned to an `int` or wrapped in a cast. `.ToInt()`
+is a member of `class string` (`enstring.c:20`), i.e. string→int, **not**
+float→int. `class float` (`enconvert.c:109-116`) has only `ToString`.
+
+**`string + bool` compiles.** Vanilla concatenates bool-returning calls into debug
+strings outside any `#ifdef`:
+
+```c
+text += "Disabled: " + GetIsSimulationDisabled() + "\n";   // entityai.c:3301
+```
+
+with `proto native bool GetIsSimulationDisabled();` at `entity.c:6`. If that did
+not compile, the Game module would not load. `bool.ToString()` exists too
+(`enconvert.c:1-8`, returns `"true"`/`"false"`) but it is an alternative, not a
+requirement. There is no `BoolToString` helper anywhere in the tree.
+
+Consequence: **both rules were removed from our own linter** and are quarantined
+with the evidence in their module headers. `ES-C-STYLE-CAST` produced **73
+findings over the 2805-file vanilla tree** — every one a false positive by
+construction. `ES-STRING-PLUS-BOOL` measured zero, because its scope was the
+literal form (`"x" + true`) and vanilla never writes it; the rule went anyway,
+since a rule whose stated rationale is false teaches the falsehood.
+
+Still open, and only a compile settles it: what `"x" + someBool` actually prints
+(`"true"`/`"false"` or `"1"`/`"0"`), whether the literal form `"x" + true`
+compiles (0 usages in vanilla), and whether `(int)(-1.7)` truncates toward zero
+or toward −∞.
 
 ## Reglas promovidas del corpus de lecciones (added 2026-07-27)
 

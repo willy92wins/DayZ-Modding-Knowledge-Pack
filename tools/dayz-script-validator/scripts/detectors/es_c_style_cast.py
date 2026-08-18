@@ -1,3 +1,22 @@
+# QUARANTINED 2026-08-18 - not imported by script_validator.py and not executed.
+# The premise is FALSE. C-style casts DO exist in Enforce Script and vanilla uses
+# them in code that ships and compiles:
+#   1_core/proto/proto.c:312    a = (int)h << 24;        (h is float, set at :310)
+#   1_core/proto/enmath.c:110   (float)random_int / (float)max_range
+#   3_game/entities/entityai.c:3207   ctx.Write((int)GetIsFrozen());
+# Running this detector over the whole vanilla tree (2805 .c files) produced
+# 73 findings, every one of them a false positive by construction. That breaks
+# the project invariant: partial coverage may cost false negatives, never false
+# positives.
+#
+# The claim came from a third-party tool's guide (ZeripeDaniel/Lake-Dayz-MCP,
+# GPLv3 - knowledge only, no code or text adopted) and was adopted here without
+# being checked against the vanilla tree. Do NOT re-wire it. `Math.Floor` returns
+# float (enmath.c:427) and `.ToInt()` is string->int (enstring.c:20); neither is
+# "the" conversion idiom, and the cast is not an error.
+# Fixtures tests/fixtures/es/*c_style_cast* are kept as the record of what this
+# used to assert.
+
 import re
 
 
