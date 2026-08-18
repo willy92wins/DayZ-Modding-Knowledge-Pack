@@ -479,6 +479,10 @@ For the authoritative Enforce Script rule set, see the `enforce-script-reference
 
 ---
 
+## Offline script linter (pre-PBO)
+
+Offline Enforce/layout linter (pack tool): `python tools/dayz-script-validator/scripts/script_validator.py <addon_root>` (JSON on stdout; exit 0 PASS / 1 FAIL / 2 WARN). Reconcile UI names with `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>`. This is the OFFLINE gate; DayZ-MCP covers in-game.
+
 ## Integration with CI/CD
 
 For automated builds, run validation before packing. Note: the validators are

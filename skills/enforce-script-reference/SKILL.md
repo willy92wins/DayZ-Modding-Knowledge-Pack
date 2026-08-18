@@ -103,6 +103,10 @@ Project files cite Enforce rules by an OLD numbering (`ENF-R` namespace: DayZ Pr
 
 ---
 
+## Offline linter
+
+Offline Enforce/layout linter (pack tool): `python tools/dayz-script-validator/scripts/script_validator.py <addon_root>` (JSON on stdout; exit 0 PASS / 1 FAIL / 2 WARN). Reconcile UI names with `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>`. This is the OFFLINE gate; DayZ-MCP covers in-game.
+
 ## REFERENCE FILES — Read Before Building
 
 Pick the reference file matching your need:
@@ -573,6 +577,106 @@ Process pattern: one DbgLog marker per fix. Each in-game-cycle fix adds its own 
 ## Enforce has METHOD scope, not block scope - the same local in two `case` blocks = compile FATAL (SP-066, added 2026-07-14)
 
 Enforce treats local variables with METHOD scope, not block scope (like old-JS `var`). Declaring the same variable in two different `case`/blocks of the SAME method = `SCRIPT (E): Multiple declaration of variable 'X'` -> `Can't compile "World" script module!` -> server crash. DayZDiag strict rejects it; retail may tolerate it -> latent bug if only tested on retail (same diag-vs-retail split as SP-047, `ref` on a param). Fix: rename per block (e.g. `cgVel` / `cgVelRec`) or declare once at the top of the method. Origin: LFHeli rework v2 2026-07-14, `LFHeli_Base.c:789` (`vector cgVel` in both the FLIGHT and EMERGENCY_RECOVERY branches of one StepStateMachine); caught by the diag server compile-gate (`Multiple declaration of variable 'cgVel'`).
+
+## Boot-killers that only a symbol index catches (added 2026-08-18)
+
+Five failure modes that a `grep` of the vanilla tree does NOT catch and that only
+surface when the script module compiles at boot. Each is verified against the
+vanilla source on disk; the `path:line` are under `P:\scripts`.
+
+### Defined is not alive — BI ships deprecated classes inside `/* */`
+
+`modded class X` on a commented-out vanilla class = `Unknown type X` and the
+script module dies at boot. A plain text search finds the class and says nothing,
+because the corpse is syntactically present.
+
+Canonical case: the WHOLE of
+`4_World\Classes\UserActionsComponent\Actions\Continuous\ActionFishing.c:1`
+opens with `/*class ActionFishingCB : ActionContinuousBaseCB` and never closes
+before `class ActionFishing` — the live replacement is `ActionFishingNew.c` in
+the same folder. Anyone modding "the fishing action" by name lands on the dead one.
+
+Rule: before `modded class X`, confirm X is not inside a block comment. Grep for
+the declaration AND read the head of the file. A symbol index that tracks
+`commented_out` answers this in one query; without one, read the file.
+
+### `TextWidget` has no `GetText()` — and the two live signatures differ
+
+`1_Core\proto\EnWidgets.c:189` `class TextWidget extends Widget` declares
+`SetText`, `GetTextSize` (`:210`) and `GetTextProportion` (`:214`), but **no
+`GetText`**. Neither do its subclasses `MultilineTextWidget` (`:219`) and
+`RichTextWidget` (`:224`). Calling it compiles nothing and reads as a typo.
+
+`GetText` exists in exactly three places, and NOT with one signature:
+
+| class | decl | signature |
+|---|---|---|
+| `MultilineEditBoxWidget extends TextWidget` (`:313`) | `EnWidgets.c:318` | `proto void GetText(out string text)` |
+| `EditBoxWidget extends UIWidget` (`:347`) | `EnWidgets.c:349` | `proto string GetText()` — RETURNS the string |
+| `ButtonWidget extends UIWidget` (`:381`) | `EnWidgets.c:389` | `proto void GetText(out string text)` |
+
+So porting a read from an EditBox to a ButtonWidget silently changes the calling
+convention. To display text use `TextWidget.SetText`; to read it back the widget
+must be one of the three above.
+
+### Overriding a method vanilla only defines under an inactive `#ifdef`
+
+If vanilla declares a method inside `#ifdef PLATFORM_CONSOLE` (or any define not
+active in the PC/RELEASE build), overriding it from a mod yields
+`no function to override in base class` and the client hangs on the loading screen
+— no crash, no useful RPT line.
+
+Verified case: `5_mission\gui\inventorynew\inventory.c:1313` is
+`#ifdef PLATFORM_CONSOLE` and `:1314` is
+`protected string GetConsoleToolbarText(int mask)`. On a PC build that method does
+not exist, so `override string GetConsoleToolbarText(...)` is a loading freeze.
+
+Same family as the `DEVELOPER` vs `DIAG_DEVELOPER` trap in
+`references/pitfalls-advanced.md:568`: before overriding, check whether the vanilla
+declaration sits under a define, not just whether it exists.
+
+### A method named exactly like a vanilla class resolves to the TYPE
+
+Enforce identifiers are case-sensitive. Declaring a method whose name matches a
+vanilla class EXACTLY, then calling it as a discarded statement `Name(args);`,
+makes the compiler bind `Name` to the type (a cast/construct) instead of the
+method: `Types X and Y are unrelated`.
+
+`FoodStage` is the real collision: `4_world\classes\foodstage\foodstage.c:22`
+declares `class FoodStage`, so a helper `void FoodStage(int n)` called as
+`FoodStage(3);` fails. Using the result as an expression (`x = FoodStage(3);`,
+`FoodStage(3).Foo();`) binds to the method and compiles — it is the bare statement
+that breaks. Fix: rename the method (`FoodStageInfo`).
+
+### A new action needs registration, not just a class
+
+`extends ActionBase` alone is dead code: the action never reaches the player.
+Registration goes through
+`4_world\classes\useractionscomponent\actionconstructor.c:27`
+`void RegisterActions(TTypenameArray actions)`, called from `:6`.
+
+Decision split:
+- **Modify an existing action's behaviour** -> `modded` the action class. `extends`
+  is useless here, because the engine/mission instantiates the vanilla name.
+- **Add a NEW action** -> `extends ActionBase` + `modded ActionConstructor` to
+  `RegisterActions` + `AddAction` in the item's `SetActions()`.
+
+Blast radius: `modded` on a `*Base` class applies to EVERY descendant at once.
+That is the right tool when a blanket change is the goal, and the wrong one when
+a single new item is.
+
+### Two related claims NOT yet verified (do not cite as fact)
+
+Both come from a third-party tool's guide (`ZeripeDaniel/Lake-Dayz-MCP`, GPLv3 —
+knowledge only, no code or text adopted) and could not be confirmed against the
+vanilla tree or a compile:
+
+- **C-style casts `(int)x` / `(float)y` do not exist in Enforce**; the idiom would
+  be `Math.Floor` / `.ToInt`. Plausible and consistent with the type system section,
+  but a negative that source grep cannot settle.
+- **`string + bool` does not compile** while `string + int` and `string + float` do.
+
+Verify both with a one-line Diag compile before promoting them to Hard Rules.
 
 ## Reglas promovidas del corpus de lecciones (added 2026-07-27)
 

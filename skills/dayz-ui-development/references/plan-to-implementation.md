@@ -197,7 +197,7 @@ assembled from tools that already exist on this machine.
   also proves the engine re-reads the layout file on a fresh CreateWidgets call in a live session.
 
 ### 4.2 Tools on disk (use these; the skill never mentioned most of them)
-- **Pre-PBO linter** — `C:\Users\<you>\DayZ_Tooling\scripts\script_validator.py <addon_root>` (JSON
+- **Pre-PBO linter** — `tools/dayz-script-validator/scripts/script_validator.py <addon_root>` (JSON
   to stdout; exit 0 PASS / 1 FAIL / 2 WARN). Five UI detectors: layout leaf-brace, XML-format layout
   (crashes `CreateWidgets`), layout-file-missing (referenced from `.c` but absent → un-guardable CTD),
   `$PBOPREFIX$` path mismatch (→ crash + ghost menu), 3-param `OnMouseLeave` (compiles, never fires).
@@ -246,8 +246,8 @@ assembled from tools that already exist on this machine.
 
 ### 4.3 The loop, assembled
 1. Author `.layout` in **brace** format (Layout Editor for visual placement, or by hand).
-2. `python C:\Users\<you>\DayZ_Tooling\scripts\script_validator.py <addon_root>` → fix all findings.
-3. Reconciliation gate (§6.2): `python DayZ_Tooling\scripts\ui_reconcile.py <addon>` — FindAnyWidget
+2. `python tools/dayz-script-validator/scripts/script_validator.py <addon_root>` → fix all findings.
+3. Reconciliation gate (§6.2): `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon>` — FindAnyWidget
    names + `#STR` keys cross-checked against layouts + stringtable.
 4. Faithful-ish preview: `build_viewer.py <layout>` (v2 — respects `visible`, models `text_proportion`,
    resolution switcher exposes exact-flag breakage). Open the `*.preview.html`, flip through resolutions,
@@ -303,7 +303,7 @@ test (LFGungame BUG-004), so this is proven to catch real failures.
    https://www.answeroverflow.com/m/1497956336799977484)*
 
 ### 6.2 Name / key reconciliation (AUTOMATED 2026-07-03)
-Run `python C:\Users\<you>\DayZ_Tooling\scripts\ui_reconcile.py <addon_root>` (exit 0 clean / 1 FAIL
+Run `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>` (exit 0 clean / 1 FAIL
 typo-likely / 2 WARN verify; `--json` for machine output). It cross-checks the whole addon at once:
 4. Every string-literal `FindAnyWidget("X")` / `FindWidget("A/B/C")` in `.c` resolves to a widget
    present in some `.layout` of the addon (case-sensitive; a case-only diff is a FAIL — runtime lookup
@@ -397,7 +397,7 @@ Local ground truth (verified this session): `scripts/1_core/proto/enwidgets.c`, 
 `scripts/3_game/tools/uimanager.c` + `uiscriptedmenu.c`, `scripts/3_game/constants.c`,
 `scripts/3_game/gameplay.c`, `scripts/3_game/gui/spacers/spacerbase.c`, `gui/layouts/day_z_hud.layout`
 + `loading.layout`, `gui/imagesets/ccgui_enforce.imageset`, `gui/fonts/`; project tooling under
-`C:\Users\<you>\DayZ_Tooling\` and `<notes>\DayZ_UI_Research\`;
+`tools/dayz-script-validator/` and `<notes>\DayZ_UI_Research\`;
 project ledgers under `<vault>\AI\10_Projects\{LFGungame,DayZ_UI_Research}`.
 
 Web: DayZ Modders Discord via AnswerOverflow (URLs inline); DayZ-CommunitySamples (UISample);

@@ -52,6 +52,19 @@ Public library names are unchanged: `convert_paa_to_png`, `parse_rvmat`,
 `extract_geometry_for_viewer`, `generate_viewer_html`, `p3d_to_glb`,
 `run_pipeline`.
 
+## Scripts
+
+In the Cowork plugin projection these were `scripts/*.py`. In this pack they
+map to `python -m dayz_3d_viewer` (see Commands above). Historical names:
+
+| Script | Pack command |
+|--------|---------|
+| `paa_to_png.py` | `paa-to-png` |
+| `p3d_to_gltf.py` | `p3d-to-glb` |
+| `rvmat_parser.py` | `parse-rvmat` |
+| `viewer_template.py` / `pipeline.py` | `build-viewer` |
+| `install_lzo_shim.py` | `install-lzo-shim` |
+
 ## Two Viewer Modes
 
 ### Embedded (for Claude chat / sandboxed iframes)

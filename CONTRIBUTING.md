@@ -22,9 +22,9 @@ and privacy contracts.
 6. **Check licensing and privacy.** Do not add third-party payload until its
    license is known and compatible. Never commit secrets, personal identities,
    machine-specific absolute paths, private PBOs or proprietary game data.
-7. **Promote only a green commit.** Git is canonical. Obsidian snapshots and
-   installed skills are generated destinations, updated through the promotion
-   workflow with hash readback.
+7. **Promote only a green commit.** `~\.claude\skills\` is the working
+   copy (where agents edit and load). The public repo is a publication
+   snapshot harvested by UNION, never a wipe. Plugin trees are ephemeral.
 
 ## Evidence rules
 

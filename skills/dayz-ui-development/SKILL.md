@@ -41,9 +41,9 @@ truth; the date is provenance, not history you need.
    gradients/web fonts/border-radius — no `.layout` equivalent exists).
 2. **Author** the `.layout` in brace format (NEVER XML — native CTD), proportional units by default
    (Rule 3), anchors + `position 0 0` idiom, `#STR_` keys for all text.
-3. **Lint**: `python C:\Users\<you>\DayZ_Tooling\scripts\script_validator.py <addon_root>`
+3. **Lint**: `python tools/dayz-script-validator/scripts/script_validator.py <addon_root>`
    (braces, XML-format, layout-file-exists, $PBOPREFIX$ path, OnMouseLeave arity; exit 0/1/2).
-4. **Reconcile**: `python C:\Users\<you>\DayZ_Tooling\scripts\ui_reconcile.py <addon_root>`
+4. **Reconcile**: `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>`
    (every FindAnyWidget name ↔ layouts, every #STR ↔ stringtable.xml/csv; "did-you-mean" on typos).
 5. **Preview offline**: `python "<notes>\DayZ_UI_Research\renderer\build_viewer.py" <layout>`
    → self-contained `.preview.html`, switch resolutions 1080p/1440p/ultrawide/720p to SEE exact-flag
@@ -273,8 +273,8 @@ Supports ignore lists and variable→widget rename mappings.
 ## DELIVERY CHECKLIST (updated 2026-07-05 — aligned with corrected rules + tooling)
 
 ### Automated first (run both, fix all findings)
-- [ ] `python C:\Users\<you>\DayZ_Tooling\scripts\script_validator.py <addon_root>` → exit 0
-- [ ] `python C:\Users\<you>\DayZ_Tooling\scripts\ui_reconcile.py <addon_root>` → exit 0 (FAIL = typo)
+- [ ] `python tools/dayz-script-validator/scripts/script_validator.py <addon_root>` → exit 0
+- [ ] `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>` → exit 0 (FAIL = typo)
 
 ### Layout (.layout)
 - [ ] Brace format, NOT XML (`<?xml` / `<GUI>` = native CTD); braces balanced

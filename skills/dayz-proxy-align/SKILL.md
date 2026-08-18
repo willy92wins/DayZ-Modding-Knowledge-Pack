@@ -100,6 +100,14 @@ preserves point/face/selection identities; `remove_proxy` deletes exactly its
 selection, face and three points, remaps surviving point indices and sharp
 edges, and intentionally leaves the normal pool unchanged.
 
+## py3d 1.4.0 lifecycle (plugin projection, historical)
+
+The Cowork plugin projection vendored py3d 1.4.0 as a wheel and documented the
+same add/inspect/align/remove API under this heading. This pack uses the fork
+`>= 1.5.0` via `pip install -e tools/py3d` — see the lifecycle section above.
+The 1.4.0 conversion `engine_frame = P' × raw_frame` with
+`P' = ((-1,0,0),(0,0,1),(0,1,0))` is unchanged.
+
 ## Scripts
 
 | Script | Purpose |

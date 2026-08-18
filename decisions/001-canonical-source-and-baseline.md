@@ -1,3 +1,18 @@
+> **SUPERSEDED 2026-08-18.** This ADR declared the Git repository as the only
+> editable source. That is no longer the policy.
+>
+> - `~\.claude\skills\` is the **working copy**. It is where skills are
+>   edited. The copy the agent loads is the one that is written.
+> - The public MIT repository `DayZ-Modding-Knowledge-Pack` is the
+>   **publication snapshot**. It receives harvest by UNION, never a wipe of
+>   the destination.
+> - The Cowork skills-plugin tree is an ephemeral projection. Neither source
+>   nor destination.
+> - Layer split: the pack is the OFFLINE layer; DayZ-MCP is the ONLINE/in-game
+>   layer.
+>
+> The body below is kept for traceability.
+
 # ADR 001 — Fuente Git canónica y baseline inmutable
 
 - **Fecha:** 2026-07-24

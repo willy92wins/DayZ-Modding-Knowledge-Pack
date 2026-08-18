@@ -482,3 +482,26 @@ del lifecycle de test (`dayz_test_worker.py` y cia) y hace falta rebuild+CAS; aq
 ninguno, basta con que el proceso sea viejo.
 
 Origen: DayZ_MCP, gate in-game de `query_all_players` (2026-07-29).
+
+## Cadena «abrir UI de mod sin teclado» VERIFICADA in-game + tres trampas de uso (SP-292, added 2026-08-18)
+
+Gate del ciclo 1 de DayZ_MCP (2026-08-17, run `28f2e26f`, PBO `BCA758A1…`): la cadena completa funciona end-to-end.
+Receta medida (LFPowerGrid + @DayZ_MCP; adaptar nombres al mod):
+
+1. `dayz_test_run(project="LFPowerGrid", mode="all", extra_mods=["@DayZ_MCP"])` → `wait_for(log_matches, "OnStoreLoad SUCCESS")`
+   (77 s / 26 sondeos) → `wait_for(players_at_least, 1)` → `session_acquire_wait(purpose=…)`.
+2. `world_spawn(type="LFPG_BTCAtmAdmin", pos=[x,0,z])` a ~3 m del jugador → `action_use(action="LFPG_ActionOpenBTCAtm",
+   classname="LFPG_BTCAtmAdmin", radius=5)` → `started:1` (el lookup por `Type().ToString()` funciona en runtime).
+3. `wait_for(log_matches, "[BTCOpenResponse]", lookback_lines=200)` — **con lookback**: la respuesta aterriza ~200 ms tras el
+   disparo y con el cursor «desde ahora» se pierde SIEMPRE (BUG-086, 2/2 timeouts con la linea ya en el log).
+4. **`ui_tree(path="BTCAtmRoot")`** — con path vacio devuelve `no_menu` aunque la UI este ABIERTA: un panel Dabs/ScriptView es
+   un host pre-creado, no un `UIScriptedMenu`. Pasar el nombre del root del `.layout` (`grep -oE 'FrameWidgetClass \w+' gui/layouts/X.layout | head -1`).
+5. `ui_set_text("EditBtcAmount", "1")` con ENTERO (`GetBtcInput()` es int: "0.001" → 0 → `ShowStatus` sin RPC) →
+   `ui_click("BtnBuyBtc")` → `clicked:1 handler=LFPG_BTCAtmView user_id=100` (la rama `#ifdef DabsFramework` de `InvokeUiClick`
+   dispara con Dabs cargado por otro mod) → `wait_for(log_matches, "[BTCTxResult]", lookback_lines=200)` y leer `err=`.
+6. `session_release` → `dayz_test_stop`.
+
+Trampa de convivencia (medida 2026-08-18 00:01): `bridge_status` decia caja LIBRE (peers null, sin lease, sin runs) y 40 s
+despues arranco un run navprobe FUERA del lifecycle y SIN lease; una sonda hizo `player_teleport` y movio a SU jugador.
+Antes de cualquier mutacion sobre «el primer humano»: `bridge_status.coordination.active`, `server_peer.last_poll_age_s`
+y `Get-CimInstance Win32_Process -Filter "Name='DayZDiag_x64.exe'"`; si hay un servidor sondeando que no es tuyo, NO mutes.

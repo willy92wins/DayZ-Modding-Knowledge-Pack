@@ -476,11 +476,12 @@ are the real value; keep them even if you adapt everything else.
 
 ## 9. Updates and releases
 
-Git is the canonical editable source. A release is created only after
+`~\.claude\skills\` is the working copy (where agents edit and load).
+This repository is the publication snapshot: it receives harvest by UNION,
+never a wipe of the destination. A release is created only after
 `python -m packctl gate --root .` passes from a clean commit and two clean
-builds produce the same SHA-256. The resulting payload is then promoted to
-Obsidian and configured skill roots with hash readback; installed copies are
-never edited as independent sources.
+builds produce the same SHA-256. The Cowork plugin tree is ephemeral.
+The pack is the OFFLINE layer; DayZ-MCP is the ONLINE/in-game layer.
 
 For a DayZ stable update, first pin the exact build and diff the relevant
 vanilla contracts, then rerun offline validation and the smallest

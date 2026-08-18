@@ -615,7 +615,7 @@ MCP / admin spawn), or a "wheels missing / engine won't start" verdict is a fals
 ## 17. (added 2026-06-05) — Crew get-in resolution + proxy frame (verified in-game, LFQuad)
 > (Merged 2026-07-06 from the `dayz-model-pipeline` fork copy -- LL-110 dedup. Newer canonical
 > seat rules extend 17.1/17.2: `vehicle-structural-parity.md` Addendum 2026-06-27 + CRITICAL EXTENSION
-> 2026-06-28 -- seat ComponentNN cubes must ALSO be inward-wound with point flags `0x02000000` or they
+> 2026-06-28 -- seat ComponentNN cubes must ALSO be inward-wound with point flags `0x0000003F` or they
 > are not raycast-collidable.)
 
 > Extends §4 (Crew) with the part §4 did not cover: **how the engine actually resolves which seat a

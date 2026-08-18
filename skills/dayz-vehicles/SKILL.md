@@ -403,7 +403,7 @@ not verified.
 4. **Seats and wheel hubs must be `componentNN`-tagged (dual-tag) — AND each seat component must be raycast-collidable.** The engine enumerates collision
    components only by `componentNN`; a seat/hub that is a standalone island (0% componentNN overlap) is
    invisible → spawn blocker / no seat. Tag the SAME faces with a `componentNN` too. **Then the ViewGeo seat cube
-   must be INWARD-wound with every point flag = `0x02000000`:** a py3d box left outward + flags 0 passes every
+   must be INWARD-wound with every point flag = `0x0000003F`:** a py3d box left outward + flags 0 passes every
    offline shape/winding/dual-tag check yet `RaycastRV(ObjIntersectView)` does NOT hit it → the get-in cursor
    falls through to component0 → the driver "works" by fallback but the CODRIVER never resolves. The decisive,
    in-game-confirmed copilot blocker on BOTH SUB_BRZ (s9) and MercedesAMGLF (s12) — copy winding+flags from a
@@ -629,7 +629,7 @@ Cross-vehicle durable record (which project won each, links to the three): vault
 20. **Config inherits a vanilla car but your SCRIPT class does not extend that car's script = SWEEP every parent script override (SP-059).** If the config says `class X: OffroadHatchback` while the script is `class X extends MyBase` (with `MyBase extends CarScript`), the config->script binding does NOT drag in the parent car's script overrides - those live on the vanilla `inheritedcars\<parent>.c`, which your class never inherits. Every method with a hostile default in the base that ALL vanilla cars override then bites: `CrewCanGetThrough` (false in `Transport`, `transport.c:493` -> get-in impossible; see #1), `IsVitalGlowPlug` (true in `CarScript` -> engine won't start; see #8), `GetAnimInstance` / `GetSeatAnimationType` (`Error()` in `Transport`, `transport.c:465,475`), `Get3rdPersonCameraType` (`Error()`, `transport.c:483`). Procedure: diff method-by-method against the parent config's `.c` (`4_world\entities\vehicles\inheritedcars\<parent>.c`) and replicate EVERY runtime-contract override, not just the two pose ones - this is DZ-R7 (sweep the invariant to all call-sites) in config form. Origin: LFHeli R21-008 - `LFHeli_Placeholder: OffroadHatchback` (config) + `extends LFHeli_Base` (script) had no get-in and no engine start after passing two reviews; the first fix restored only the two pose methods.
 
 21. **REDIRECT CAMBIO-1 (familia B):** `../rip-vehicle-import/cookbooks/family-b/attach-invisible.md`.
-22. **An attached item with its OWN radial actions (CarDoor open/close, hood, trunk) needs a raycast-visible ViewGeometry — point flags 0x02000000 — or the action NEVER appears (SUB_BRZ s38).** The action chain resolves the TARGET by raycast: `ActionCarDoorsOutside.ActionCondition` casts `target.GetObject()` to CarDoor and reads the selections of the hit VG COMPONENT of the ITEM (`actioncardoorsoutside.c:34-46`); a VG whose points carry flags 0x0 is not hit by `RaycastRV(ObjIntersectView)` — the same mechanism as the seat-cube blocker (preflight #4, in-game verified SUB_BRZ s9 + MercedesAMGLF s12) — so the item under the cursor never resolves and the radial is silently filtered, with config, script overrides, slots, bones and anim sources all CORRECT. Contract for the item's VG: (a) componentNN dual-tagged with a selection named EXACTLY what the vehicle's `GetAnimSourceFromSelection` expects (e.g. `doors_driver`); (b) every VG point flags 0x02000000; (c) inward winding (copy a fixed seat cube as control). Symptom signature: attachment renders/attaches/damages fine, `GetCarDoorsState` works, but no open/close radial (and hence no get-in-through-door). Diagnose offline in seconds: census the item's VG point flags vs a working control BEFORE touching config or scripts. Origin: SUB_BRZ s38 D4e; the door fix's own in-game gate pending as of 2026-07-17, but the raycast mechanism is the twice-verified #4 one.
+22. **An attached item with its OWN radial actions (CarDoor open/close, hood, trunk) needs a raycast-visible ViewGeometry — point flags 0x0000003F — or the action NEVER appears (SUB_BRZ s38).** The action chain resolves the TARGET by raycast: `ActionCarDoorsOutside.ActionCondition` casts `target.GetObject()` to CarDoor and reads the selections of the hit VG COMPONENT of the ITEM (`actioncardoorsoutside.c:34-46`); a VG whose points carry flags 0x0 is not hit by `RaycastRV(ObjIntersectView)` — the same mechanism as the seat-cube blocker (preflight #4, in-game verified SUB_BRZ s9 + MercedesAMGLF s12) — so the item under the cursor never resolves and the radial is silently filtered, with config, script overrides, slots, bones and anim sources all CORRECT. Contract for the item's VG: (a) componentNN dual-tagged with a selection named EXACTLY what the vehicle's `GetAnimSourceFromSelection` expects (e.g. `doors_driver`); (b) every VG point flags 0x0000003F; (c) inward winding (copy a fixed seat cube as control). Symptom signature: attachment renders/attaches/damages fine, `GetCarDoorsState` works, but no open/close radial (and hence no get-in-through-door). Diagnose offline in seconds: census the item's VG point flags vs a working control BEFORE touching config or scripts. Origin: SUB_BRZ s38 D4e; the door fix's own in-game gate pending as of 2026-07-17, but the raycast mechanism is the twice-verified #4 one.
 
 23. **`componentNN` dual-tag is the confirmed fix for simultaneous seat/wheel selection failures; ascending LOD order is match-vanilla practice, not a proven cause (LFHeli OH-1 v2, 2026-07-17).** Sorted-without-dual-tag still failed; sorted-plus-dual-tag spawned; dual-tag-without-sort was never isolated. Therefore a py3d/hand-assembled model with `seat_* not found` / `wheel ... no proper selection` must be checked for collision-selection dual-tag first. `model.lods.sort(key=resolution)` may remain as deterministic authoring hygiene, but no gate may report that sorting fixed the defect. `binarize` accepts either order silently.
 > Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“Invariante 23”.
@@ -991,6 +991,130 @@ Vehicle config and model values are easy to half-remember. Before writing a clas
 named selection, grep it in vanilla (`P:\dz\vehicles\`) or in the references' cited sources, and keep
 the provenance labels the references already use (`[Landrover ✓]`, `[QuadBike]`, `[LFQuad ✓]`,
 `[TBD-verify]`). Anchor any new vehicle lesson to a real mod with `path:line`, never to memory.
+
+## LIGHTS — the five failures that look like "the material is broken" and are not (added 2026-08-17; SUB_BRZ B2-B6, all measured in-game)
+
+A car whose lights "do not work" almost never has a broken `.rvmat`. Five distinct causes were
+separated in one session by measurement; each has a cheap discriminator. Run them in this order,
+because the first one invalidates every test downstream.
+
+### 1. A leading backslash in a material path is rejected in SILENCE
+
+`SetObjectMaterial` accepts `MOD\data\x.rvmat` and **rejects** `\MOD\data\x.rvmat`. No error, no
+log line: the readback simply still shows the old material. Proven with an A/B that held the car,
+the selection, the index and the target file fixed and changed only the leading character:
+
+```
+asked \SUB_BRZ\data\brz_light_brake_on.rvmat  ->  got \sub_brz\data\brz_light_brake_off.rvmat   REJECTED
+asked  SUB_BRZ\data\brz_light_brake_on.rvmat  ->  got  SUB_BRZ\data\brz_light_brake_on.rvmat    APPLIED
+```
+
+Vanilla never writes the leading backslash on a material path — `CivilianSedan` has 25 of them,
+all starting at `dz\` (`DZ\vehicles\wheeled\config.cpp:5165-5195`). Neither does a working modded
+glowing item. **But `model=` paths keep their leading backslash and resolve fine**, which is why
+the inconsistency survives review: half the file uses one form, half the other, and only the
+material half breaks.
+
+Applies to `hiddenSelectionsMaterials[]` and to every `*MatOn` / `*MatOff` key.
+Grep before blaming anything else: `"\\MOD[^"]*\.rvmat"`.
+
+### 2. A lamp whose faces are in NO hiddenSelection can never light
+
+Rip-imported cars arrive with the lamp split in two: a large piece (`tail`, `light_left_static`,
+`light_right_static`, `light_dashboard_static`) that is absent from `hiddenSelections[]`, plus a
+small switchable insert that is in it. On SUB_BRZ that was **19.310 faces that nothing can ever
+switch** against inserts of 42 and 318 faces.
+
+The symptoms read as material bugs and are not:
+- "the red piece is always faintly lit and has no glass" -> the big piece wears a crude constant
+  emissive that no setter reaches.
+- "only one bulb of the two lights up" -> only the insert is in the selection.
+- "the position lamps do not light" -> they do; 42 lit faces against 1.555 unlit around them.
+
+Discriminator, before touching any material: count faces per selection and cross them with
+membership. A bounding box is NOT enough — `tail` spanned 3.788 mm of a 4.086 mm car and still was
+only the two rear clusters plus two corner markers. Plot every face centroid; the distribution
+answers what the box cannot.
+
+### 3. Engine-off and lights-off on driver exit are TWO different bugs
+
+**Engine** is script and is fixable. `CarScript.OnDriverExit` calls `EngineStop()` when the gear
+is not neutral (`carscript.c:1207-1215`); `Transport.OnDriverExit` is a no-op
+(`3_game/vehicles/transport.c:161`), so an override that does not call `super` loses nothing. Add
+`ShiftTo(GetNeutralGear())` (`car.c:271`, `:262`) or a running engine plus `Brake.driverless`
+makes the car creep. Measured working: `engine=ON` on client and server, at the event and at
++500 ms and +2 s.
+
+**Lights are NOT fixable that way.** The native forces `LightIsOn()` false on the CLIENT as soon
+as the driver seat empties, and vanilla's `m_Headlight` is slaved to it
+(`carscript.c:2116-2156`), so the beam is always destroyed and **re-asserting server-side cannot
+bring it back**. The working pattern decouples the beam from `LightIsOn()`:
+
+1. a synced `bool` intent + an own `CarLightBase` member;
+2. `RegisterNetSyncVariableBool` on the intent in the constructor;
+3. `ToggleHeadlights` override that records the intent and `SetSynchDirty()` on server — the
+   native exit-clear does NOT call `ToggleHeadlights`, which is exactly why the intent survives it;
+4. a `ManageExitLight()` that creates/destroys the own beam edge-triggered, attached at the
+   midpoint of the two headlight memory points, called from a `UpdateLightsClient` override;
+5. `EEDelete` cleanup so the beam cannot outlive the car.
+
+To make the parked beam appear promptly, copy vanilla's own line rather than inventing one:
+`ForceUpdateLightsStart(); g_Game.GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(ForceUpdateLightsEnd, 100, false);`
+(`carscript.c:535-536`; the pair is defined at `:2981` and `:2990`).
+
+Reference implementation in this tree: `P:\LFQuad\scripts\4_world\entities\vehicles\inherited\LFQuad.c`.
+
+### 4. No bulbs mounted = brake and tail never light, and it reads as a failed fix
+
+`m_HeadlightsState` stays `NONE` without HeadlightH7 in the reflector slots, and the rear beams
+are gated on it (`carscript.c:792-813`, `:2177`). Testing brake lights on a car whose bulbs sit in
+the cargo produces a confident false FAIL.
+
+Related and cheap: `OnDebugSpawn` must use **`CreateAttachment`**, not `CreateInInventory`.
+Vanilla's `SpawnUniversalParts` (`carscript.c:3121-3158`) drops everything into cargo, so every
+test cycle starts with manual assembly and one forgotten bulb poisons the run.
+
+### 5. Measure the setter against a VANILLA car spawned alongside
+
+`SetObjectMaterial` / `GetObjectMaterial` are `proto native` (`entityai.c:2896-2900`): whether they
+work is not decidable by reading source. Probing only the car under test cannot separate "our model
+is wrong" from "this build does not apply overrides at all". Spawn a stock `CivilianSedan` next to
+it and run the identical call, into the SAME log:
+
+| vanilla switches | ours switches | conclusion |
+|---|---|---|
+| yes | yes | no override fault; it was the bake |
+| yes | no  | the fault is in OUR model |
+| no  | no  | the environment does not apply overrides; the probe never measured the setter |
+| no  | yes | incoherent, repeat |
+
+Resolve the selection **by name** with `GetHiddenSelectionIndex` (`entityai.c:2792-2798`) and print
+the resolved index; never hardcode an index onto a vanilla car. If the resolve fails, SKIP — do not
+fall back to 0, which is the front-left light of the CarScript ABI (`carscript.c:293-301`) and
+corrupts both the car and the measurement.
+
+And adjudicate by photo: the `got=` of a readback is the setter's echo, not proof that the engine
+drew anything.
+
+### 6. `rotationFlags` is per SIDE, and the wrong one renders an empty preview
+
+Left-hand doors take `8`, right-hand doors take `4`. Vanilla applies this in every family —
+`Hatchback_02_Door_1_1`/`1_2` use 8 while `2_1`/`2_2` use 4 (`DZ\vehicles\wheeled\config.cpp:9006`,
+`:9130`, `:9141`, `:9265`), and `Truck_01_Door_2_1` overrides its left-hand parent purely to set 4
+(`:18301`). A mirrored door that inherits the left-hand value shows a **blank item-inspect preview**
+while its opposite renders normally, with everything else identical: same LOD table, same named
+properties, same bounding box, same distance to origin, same selections, same winding. Symmetric
+config plus symmetric geometry plus one side blank means look at `rotationFlags` before the model.
+
+## Get-out desync: one-shot bilateral OnDriverExit probe (SP-276, origen LFHeli LF-001)
+
+For "invisible/desync on exit" bugs, a one-shot probe in `OnDriverExit` that prints on BOTH
+sides `playerPos`, `heliPos`, `crewEntryWS`, `dPH`, `dPC` adjudicates in one flight what
+hypotheses do not: good exit = client == server; bad exit = client with the vehicle at the
+spawn pose (sunk) and the player underground, server correct. Align client/server clocks by
+PAIRS of twin events (the two EXIT lines gave a stable 33,99 s offset) and correlate with
+the owner's position series (FRAME p0) to date the divergence. Complements the Pawn ladder
+in `references/network-physics-ownership.md` (SP-188).
 
 ## ARCHIVO DE LECCIONES — leer por tema, no por fecha
 

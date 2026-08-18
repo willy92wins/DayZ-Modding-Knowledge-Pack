@@ -77,6 +77,10 @@ After each file, include:
 
 **HARD RULE: If >2 items are ASSUMED -> do NOT advance. Resolve first.**
 
+### 2b-linter. Offline Enforce/layout lint
+
+Offline Enforce/layout linter (pack tool): `python tools/dayz-script-validator/scripts/script_validator.py <addon_root>` (JSON on stdout; exit 0 PASS / 1 FAIL / 2 WARN). Reconcile UI names with `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>`. This is the OFFLINE gate; DayZ-MCP covers in-game.
+
 ### 2c. Run type-specific checklist (Section 4)
 
 ---

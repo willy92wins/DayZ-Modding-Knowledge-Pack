@@ -235,7 +235,7 @@ Setup notes: models live wherever `OLLAMA_MODELS` points (here `E:\Ollama\models
 
 Render into a folder you can also read (the helper defaults to a `_review/` folder next to the .blend, or the OS temp dir if the file is unsaved) and name files `<model>__<angle>__<iter>.png`. Keep the before/after pair for any angle you changed, so the diagnosis is auditable and you can prove the fix actually landed.
 
-## Pre-filtro: cinco preguntas ascendidas de sombra, dos excluidas (added 2026-08-16, SP-270)
+## Pre-filtro: cinco preguntas ascendidas de sombra, dos excluidas (added 2026-08-16, SP-277; datos de calibrado en SP-270)
 
 La sección de sombra de arriba manda para cualquier pregunta que no esté en esta tabla. Para las
 cinco de aquí, el ascenso está pagado con medidas y **cambia lo que hay que hacer en el bucle**.
