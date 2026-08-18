@@ -216,6 +216,18 @@ from detectors.es_respawn_equip_onclientrespawn import (
     ES_RESPAWN_EQUIP_RULE_ID,
     check_es_respawn_equip_onclientrespawn,
 )
+from detectors.es_c_style_cast import (
+    ES_C_STYLE_CAST_RULE_ID,
+    check_es_c_style_cast,
+)
+from detectors.es_string_plus_bool import (
+    ES_STRING_PLUS_BOOL_RULE_ID,
+    check_es_string_plus_bool,
+)
+from detectors.es_override_of_platform_gated_method import (
+    ES_OVERRIDE_OF_PLATFORM_GATED_METHOD_RULE_ID,
+    check_es_override_of_platform_gated_method,
+)
 
 
 def build_result(addon_root, errors, warnings, files_scanned, elapsed_ms):
@@ -322,6 +334,11 @@ def validate_addon(addon_root):
             errors.extend(check_es_nonexistent_method(stripped, rel_path))
             warnings.extend(
                 check_es_respawn_equip_onclientrespawn(stripped, rel_path)
+            )
+            errors.extend(check_es_c_style_cast(stripped, rel_path))
+            errors.extend(check_es_string_plus_bool(source, rel_path))
+            errors.extend(
+                check_es_override_of_platform_gated_method(stripped, rel_path)
             )
         elif suffix == ".rvmat":
             errors.extend(check_rvmat_normalmapmacro(source, rel_path))

@@ -17,6 +17,7 @@ one.
 | [`dayz-odol-strict`](#tools-dayz-odol-strict) | Inspect and diff binarized ODOL models | No — read-only |
 | [`dayz-ui-lab`](#tools-dayz-ui-lab) | Parse, compose, render and diff `.layout` UIs offline | Reports only |
 | [`dayz-3d-viewer`](#tools-dayz-3d-viewer) | Convert MLOD `.p3d`, PAA and RVMAT to glTF + HTML | **Yes** — `.glb`, PNG, HTML |
+| [`dayz-script-validator`](#tools-dayz-script-validator) | Lint Enforce, `config.cpp`, `.layout` and `.rvmat` before packing | Reports only |
 
 ---
 
@@ -88,6 +89,42 @@ python -m dayz_model_preflight check target.p3d \
 
 Requires the py3d fork `>=1.4.0`. Missing or ambiguous one-to-one lineage is
 reported `INVALID`: the tool never guesses a mapping and never repairs a model.
+
+## `tools/dayz-script-validator`
+
+The **offline gate**: a pre-PBO linter for Enforce Script, `config.cpp`,
+`.layout` and `.rvmat`. It catches the family of mistakes that compile-check
+clean in an editor and only surface when the script module compiles at boot —
+where the symptom is a dead module, a frozen loading screen or a ghost class,
+and the diagnosis costs a full in-game cycle.
+
+```bash
+python tools/dayz-script-validator/scripts/script_validator.py <addon_root>
+python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>
+```
+
+Exit `0` PASS / `1` FAIL / `2` WARN, findings as JSON on stdout. Under a second
+over a full addon, so it belongs in every pass rather than at the end.
+
+Rules are one module per defect under `scripts/detectors/`, over a source
+stripped of comments and string literals by `scripts/stripper.py` so a pattern
+mentioned inside a literal never fires. Coverage today spans refcount misuse
+(`delete`), preprocessor traps (empty `#ifdef`), method-scope locals, unchecked
+`ctx.Read`, the `SetSynchDirty` contract, `RegisterRecipies` (the vanilla hook
+really is spelled with the typo), config classes declared under the wrong
+`CfgXxx`, missing `.layout` files and `$PBOPREFIX$` mismatches.
+
+`ui_reconcile.py` is the companion cross-check: `FindAnyWidget`/`FindWidget`
+literals against the widgets a `.layout` actually declares, and `#STR_` keys
+against the stringtable. Both classes of bug compile fine and only appear when
+the menu opens.
+
+**Known coverage limit, stated up front.** Four detectors read curated tables in
+`scripts/shared/vanilla_reference.py` that are deliberately small, because the
+linter does not parse the vanilla script tree at runtime. That trades false
+negatives for a guarantee of no false positives from that path. **A green run is
+not proof of absence**, and it predicts that the module compiles and the asset
+loads — never that the engine behaves. Behaviour is the online layer's job.
 
 ## `tools/dayz-odol-strict`
 

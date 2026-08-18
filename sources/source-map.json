@@ -399,7 +399,7 @@
           "decision": "adopt",
           "decision_evidence": "Index of the bundled tools, what each one refuses to do, and how to run it.",
           "license": "MIT",
-          "source_hash": "46880f8db52a0bf76729a75a9dc14256838d32cc1f0e12418416862196044c92",
+          "source_hash": "b0e905fae747e679732455021e3441aecc0f4d6003bf386539cb011561e6f6c5",
           "source_id": "pack-r21-authored",
           "source_path": "TOOLS.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -407,7 +407,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "46880f8db52a0bf76729a75a9dc14256838d32cc1f0e12418416862196044c92",
+      "output_hash": "b0e905fae747e679732455021e3441aecc0f4d6003bf386539cb011561e6f6c5",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -12275,7 +12275,7 @@
           "decision": "adopt",
           "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
           "license": "MIT",
-          "source_hash": "a37c40a5a2955c5b8f4fe588b9ab8bfde1b67409e1bd5c93dea9161d29771ef6",
+          "source_hash": "26dd50d7308f9304c98a546772e33b9289493738fa4c4a38c9709c88a4e1742e",
           "source_id": "installed-skills",
           "source_path": "dayz-mod-workflow/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
@@ -12283,7 +12283,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "89455c3e50e0ff46f82a9ae6f108daef61d8d6fc574e98dcef65b82b5d28c1be",
+      "output_hash": "26dd50d7308f9304c98a546772e33b9289493738fa4c4a38c9709c88a4e1742e",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -13595,7 +13595,7 @@
           "decision": "adopt",
           "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
           "license": "MIT",
-          "source_hash": "311d26a5801710c713c2b6ff31ee7af2adc36dbe0035001b1995c03a7ab5a953",
+          "source_hash": "c6d47e545e603cdb5d46a4a53135e98cc62c9304caeed9d58770389cfffbd692",
           "source_id": "installed-skills",
           "source_path": "dayz-pbo-build/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
@@ -13603,7 +13603,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8e6f25b3edf48cb0c4c70170a8c1fcb68e6bb69b9d3a407f34dd76483759f11c",
+      "output_hash": "c6d47e545e603cdb5d46a4a53135e98cc62c9304caeed9d58770389cfffbd692",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -16939,7 +16939,7 @@
           "decision": "adopt",
           "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
           "license": "MIT",
-          "source_hash": "b3059d2630c5b63e4397e4eb60e1d40168f9e93445564350923fa7810a4b7109",
+          "source_hash": "f0a938fbdc6eac9bc9fa5b98d1cd65323d08771e7e4808e23240f11cc21e648b",
           "source_id": "dayz-tooling",
           "source_path": "scripts/script_validator.py",
           "source_revision": "dayz-tooling@2026-08-18",
@@ -16947,7 +16947,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b3059d2630c5b63e4397e4eb60e1d40168f9e93445564350923fa7810a4b7109",
+      "output_hash": "f0a938fbdc6eac9bc9fa5b98d1cd65323d08771e7e4808e23240f11cc21e648b",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -17049,7 +17049,7 @@
           "decision": "adopt",
           "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
           "license": "MIT",
-          "source_hash": "a78ffdc6b2655eddec522b8a377cc132c615223fe444e2c5b91e759ff2c84edd",
+          "source_hash": "578db1fe21a4aa52f36fbefdbcddbec506cac35f295a39b31883ed7187d38926",
           "source_id": "dayz-tooling",
           "source_path": "scripts/shared/vanilla_reference.py",
           "source_revision": "dayz-tooling@2026-08-18",
@@ -17057,7 +17057,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a78ffdc6b2655eddec522b8a377cc132c615223fe444e2c5b91e759ff2c84edd",
+      "output_hash": "578db1fe21a4aa52f36fbefdbcddbec506cac35f295a39b31883ed7187d38926",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20107,7 +20107,7 @@
           "decision": "adopt",
           "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
           "license": "MIT",
-          "source_hash": "6ceeb207ded9df90d5e8882a0eceaf612088d446ac76d7272e60650d6f3eff14",
+          "source_hash": "723162350b436677136a730e6e6e7c52ab1948303bfaec8b86e5869891498400",
           "source_id": "dayz-tooling",
           "source_path": "tests/test_script_validator.py",
           "source_revision": "dayz-tooling@2026-08-18",
@@ -20115,7 +20115,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6ceeb207ded9df90d5e8882a0eceaf612088d446ac76d7272e60650d6f3eff14",
+      "output_hash": "723162350b436677136a730e6e6e7c52ab1948303bfaec8b86e5869891498400",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20139,6 +20139,204 @@
       "license": "MIT",
       "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "output_path": "tools/dayz-script-validator/tests/fixtures/empty/.gitkeep",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_c_style_cast.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
+          "license": "MIT",
+          "source_hash": "77cab41591fb78691533c8dcacac9366c650c7d59feb8e6ec4baade1844c4632",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/detectors/es_c_style_cast.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "77cab41591fb78691533c8dcacac9366c650c7d59feb8e6ec4baade1844c4632",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_c_style_cast.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_override_of_platform_gated_method.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
+          "license": "MIT",
+          "source_hash": "d179e2ec130181ab2008daff70ed77a54cfc0bfe90a530aa3b6788d3fc9a4d00",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/detectors/es_override_of_platform_gated_method.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d179e2ec130181ab2008daff70ed77a54cfc0bfe90a530aa3b6788d3fc9a4d00",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_override_of_platform_gated_method.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_string_plus_bool.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
+          "license": "MIT",
+          "source_hash": "2ad93d3b599c7cd9e1682d14d356f6c11ee468b276095ac1dd4732c3bf3e6cfc",
+          "source_id": "dayz-tooling",
+          "source_path": "scripts/detectors/es_string_plus_bool.py",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2ad93d3b599c7cd9e1682d14d356f6c11ee468b276095ac1dd4732c3bf3e6cfc",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_string_plus_bool.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/es/bad_c_style_cast.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
+          "license": "MIT",
+          "source_hash": "5728eebb9464865312baa14048d93e0848cd11d4f5beb259559960e217ce087e",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/fixtures/es/bad_c_style_cast.c",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5728eebb9464865312baa14048d93e0848cd11d4f5beb259559960e217ce087e",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/es/bad_c_style_cast.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/es/bad_override_platform_gated.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
+          "license": "MIT",
+          "source_hash": "310524e6ca8b54de4df0158d350e5cd038ce5497e344ecb62dd5d14fc9586d65",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/fixtures/es/bad_override_platform_gated.c",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "310524e6ca8b54de4df0158d350e5cd038ce5497e344ecb62dd5d14fc9586d65",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/es/bad_override_platform_gated.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/es/bad_string_plus_bool.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
+          "license": "MIT",
+          "source_hash": "349a741ef2255eff8d5325ce539f7f34cb3b16c5bfb3218f38bda4c50f3fe534",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/fixtures/es/bad_string_plus_bool.c",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "349a741ef2255eff8d5325ce539f7f34cb3b16c5bfb3218f38bda4c50f3fe534",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/es/bad_string_plus_bool.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/es/ok_c_style_cast_param.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
+          "license": "MIT",
+          "source_hash": "93ca149b95286ccee644ce6dec0fb59a5eba1d1a5baa32de568c5076dbf8b108",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/fixtures/es/ok_c_style_cast_param.c",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "93ca149b95286ccee644ce6dec0fb59a5eba1d1a5baa32de568c5076dbf8b108",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/es/ok_c_style_cast_param.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/es/ok_override_platform_gated.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
+          "license": "MIT",
+          "source_hash": "50089132e5a06addcd06ed27c854d34c56d28077eb6e130c57f9b78c4c153400",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/fixtures/es/ok_override_platform_gated.c",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "50089132e5a06addcd06ed27c854d34c56d28077eb6e130c57f9b78c4c153400",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/es/ok_override_platform_gated.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/es/ok_string_plus_bool_variable.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted 2026-08-18 from the DayZ_Tooling pre-PBO linter. 135 offline tests green; three defects fixed before adoption (orphan detector quarantined, false LAYOUT-LEAF rule unwired, ENF-OP operator check removed).",
+          "license": "MIT",
+          "source_hash": "642f37ab5c25bbdf68dc229821e9e87b652d886cbc4488e9c125a59049d42703",
+          "source_id": "dayz-tooling",
+          "source_path": "tests/fixtures/es/ok_string_plus_bool_variable.c",
+          "source_revision": "dayz-tooling@2026-08-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "642f37ab5c25bbdf68dc229821e9e87b652d886cbc4488e9c125a59049d42703",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/es/ok_string_plus_bool_variable.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

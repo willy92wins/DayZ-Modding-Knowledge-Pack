@@ -71,3 +71,25 @@ VANILLA_NONEXISTENT_METHODS = {
         "DamageType.EXPLOSION)` (damagesystem.c:25)"
     ),
 }
+
+
+# Methods that vanilla declares only inside a preprocessor guard a PC+RELEASE
+# compile does not define. An unguarded override then fails with
+# `no function to override in base class`, the module is dropped, and the
+# client freezes on the loading screen (no crash, no useful RPT line).
+# Used by ES-OVERRIDE-OF-PLATFORM-GATED-METHOD. Curated; partial coverage
+# -> false negatives, never false positives. Keyed by method name. `owner`
+# is the vanilla class that declares the gated method.
+VANILLA_PLATFORM_GATED_METHODS = {
+    "GetConsoleToolbarText": {
+        "owner": "Inventory",
+        "macro": "PLATFORM_CONSOLE",
+        # declaration at :1314; #ifdef PLATFORM_CONSOLE is the previous line
+        "citation": "5_mission/gui/inventorynew/inventory.c:1314",
+    },
+}
+
+
+def platform_gated_method(method_name):
+    return VANILLA_PLATFORM_GATED_METHODS.get(method_name)
+

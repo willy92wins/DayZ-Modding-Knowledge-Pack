@@ -79,7 +79,7 @@ After each file, include:
 
 ### 2b-linter. Offline Enforce/layout lint
 
-Offline Enforce/layout linter (pack tool): `python tools/dayz-script-validator/scripts/script_validator.py <addon_root>` (JSON on stdout; exit 0 PASS / 1 FAIL / 2 WARN). Reconcile UI names with `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>`. This is the OFFLINE gate; DayZ-MCP covers in-game.
+Corre el **gate estructural obligatorio** (`script_validator.py`, y `ui_reconcile.py` si hay UI) — contrato completo, exit codes y limites en la seccion "Gates offline" mas abajo. Exit 1 bloquea. Es la capa OFFLINE; el comportamiento in-game lo cubre DayZ-MCP.
 
 ### 2c. Run type-specific checklist (Section 4)
 
@@ -400,6 +400,43 @@ criterio de éxito es COMPORTAMIENTO del engine.
   animación, render/winding visible, masa/CoM/colisión, get-in, convención de proxy
   aplicada, IK codo/muñeca. NO derivable offline ni por un sandbox que no sea el
   propio engine.
+
+### Gate estructural OBLIGATORIO antes de declarar nada listo
+
+No es una recomendación ni un "ver también": **si no lo has corrido, no está listo.**
+
+```
+python tools/dayz-script-validator/scripts/script_validator.py <addon_root>
+```
+
+Exit `0` = PASS · `1` = FAIL · `2` = WARN. **Exit 1 bloquea**: se arregla o se
+justifica por escrito en el handoff, con el rule id y el motivo. Un WARN se lee, no
+se ignora en silencio.
+
+Si el mod tiene UI, el gate incluye además:
+
+```
+python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>
+```
+
+que cruza `FindAnyWidget`/`FindWidget` contra los widgets reales del `.layout` y las
+claves `#STR_` contra el stringtable — dos fallos que compilan y solo aparecen al
+abrir el menú.
+
+Cuesta bajo un segundo sobre un addon completo, así que **no hay excusa de coste**:
+corre en cada pasada, no solo al final. Caza la familia de errores que solo se
+manifiesta al compilar el módulo en el boot (`Unknown type`, redeclaración de local,
+override de método ausente, `delete`, `#ifdef` vacío, override de item en el `CfgXxx`
+equivocado) y que de otro modo se paga con un ciclo in-game de minutos.
+
+**Lo que este gate NO autoriza**, y es el punto entero de esta sección: verde aquí
+predice que el módulo COMPILA y que el asset CARGA. No dice nada del comportamiento
+del engine. El gate de comportamiento sigue siendo obligatorio aparte.
+
+Cobertura conocida: las tablas de `scripts/shared/vanilla_reference.py` son
+deliberadamente pequeñas (el linter no parsea `P:\scripts` en runtime), así que hay
+falsos negativos por diseño y nunca falsos positivos por esa vía. Verde no es prueba
+de ausencia.
 
 **Regla**: antes de iterar sobre una métrica offline, pregunta "¿correlaciona con el
 criterio de comportamiento, o es un proxy que el engine puede ignorar?". Proxy sin

@@ -1339,7 +1339,7 @@ class TestFullCorpus(unittest.TestCase):
 
         self.assertEqual(1, exit_code)
         self.assertEqual("FAIL", result["status"])
-        self.assertEqual(93, result["info"]["files_scanned"])
+        self.assertEqual(99, result["info"]["files_scanned"])
         assert_standard_findings(self, result)
 
         observed_errors = {
@@ -1384,6 +1384,12 @@ class TestFullCorpus(unittest.TestCase):
             ("ES-METHOD-NAME-COLLIDES-VANILLA-CLASS", "bad_method_name_collides.c"),
             ("ES-REGISTERRECIPES-TYPO", "bad_registerrecipes_override.c"),
             ("ES-NONEXISTENT-METHOD", "bad_nonexistent_method_call.c"),
+            ("ES-C-STYLE-CAST", "bad_c_style_cast.c"),
+            ("ES-STRING-PLUS-BOOL", "bad_string_plus_bool.c"),
+            (
+                "ES-OVERRIDE-OF-PLATFORM-GATED-METHOD",
+                "bad_override_platform_gated.c",
+            ),
         }
         expected_warnings = {
             ("ES-SOURCE-UNTERMINATED-BLOCK-COMMENT", "bad_unterminated_block_comment.c"),
@@ -1856,5 +1862,135 @@ class TestEsMethodNameCollidesVanillaClass(unittest.TestCase):
         assert_standard_findings(self, result)
 
 
+class TestEsCStyleCast(unittest.TestCase):
+    def test_c_style_cast_fails(self):
+        fixture = FIXTURES / "es" / "bad_c_style_cast.c"
+        exit_code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual(1, exit_code)
+        self.assertEqual("FAIL", result["status"])
+        self.assertEqual([], result["warnings"])
+        self.assertEqual(1, len(result["errors"]))
+        error = result["errors"][0]
+        self.assertEqual("ES-C-STYLE-CAST", error["rule_id"])
+        self.assertEqual("FAIL", error["severity"])
+        self.assertEqual("bad_c_style_cast.c", error["file"])
+        self.assertEqual(5, error["line"])
+        self.assertIn("(int)", error["message"])
+        assert_standard_findings(self, result)
+
+    def test_parameter_declaration_passes(self):
+        fixture = FIXTURES / "es" / "ok_c_style_cast_param.c"
+        exit_code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], result["errors"])
+        self.assertEqual([], result["warnings"])
+
+    def test_cast_inside_string_literal_passes(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = pathlib.Path(temp_dir) / "ok_cast_in_string.c"
+            path.write_text(
+                'void Foo()\n{\n    string s = "use (int)value";\n}\n',
+                encoding="utf-8",
+            )
+            exit_code, result = script_validator.run([str(path)])
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], result["errors"])
+
+
+class TestEsStringPlusBool(unittest.TestCase):
+    def test_string_literal_plus_bool_fails(self):
+        fixture = FIXTURES / "es" / "bad_string_plus_bool.c"
+        exit_code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual(1, exit_code)
+        self.assertEqual("FAIL", result["status"])
+        self.assertEqual([], result["warnings"])
+        self.assertEqual(2, len(result["errors"]))
+        lines = {error["line"] for error in result["errors"]}
+        self.assertEqual({5, 6}, lines)
+        for error in result["errors"]:
+            self.assertEqual("ES-STRING-PLUS-BOOL", error["rule_id"])
+            self.assertEqual("FAIL", error["severity"])
+            self.assertEqual("bad_string_plus_bool.c", error["file"])
+        assert_standard_findings(self, result)
+
+    def test_variable_plus_bool_passes(self):
+        fixture = FIXTURES / "es" / "ok_string_plus_bool_variable.c"
+        exit_code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], result["errors"])
+        self.assertEqual([], result["warnings"])
+
+    def test_string_plus_bool_in_comment_passes(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = pathlib.Path(temp_dir) / "ok_string_plus_bool_comment.c"
+            path.write_text(
+                "void Foo()\n{\n    // string s = \"ready: \" + true;\n}\n",
+                encoding="utf-8",
+            )
+            exit_code, result = script_validator.run([str(path)])
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], result["errors"])
+
+
+class TestEsOverrideOfPlatformGatedMethod(unittest.TestCase):
+    def test_unguarded_override_fails(self):
+        fixture = FIXTURES / "es" / "bad_override_platform_gated.c"
+        exit_code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual(1, exit_code)
+        self.assertEqual("FAIL", result["status"])
+        self.assertEqual([], result["warnings"])
+        self.assertEqual(1, len(result["errors"]))
+        error = result["errors"][0]
+        self.assertEqual(
+            "ES-OVERRIDE-OF-PLATFORM-GATED-METHOD", error["rule_id"]
+        )
+        self.assertEqual("FAIL", error["severity"])
+        self.assertEqual("bad_override_platform_gated.c", error["file"])
+        self.assertEqual(3, error["line"])
+        self.assertIn("GetConsoleToolbarText", error["message"])
+        self.assertIn("PLATFORM_CONSOLE", error["message"])
+        assert_standard_findings(self, result)
+
+    def test_guarded_override_passes(self):
+        fixture = FIXTURES / "es" / "ok_override_platform_gated.c"
+        exit_code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], result["errors"])
+        self.assertEqual([], result["warnings"])
+
+    def test_other_class_override_passes(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = pathlib.Path(temp_dir) / "ok_other_class.c"
+            path.write_text(
+                "class WidgetHost\n"
+                "{\n"
+                "    override string GetConsoleToolbarText()\n"
+                "    {\n"
+                "        return \"\";\n"
+                "    }\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            exit_code, result = script_validator.run([str(path)])
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], result["errors"])
+
+
 if __name__ == "__main__":
     unittest.main()
+
