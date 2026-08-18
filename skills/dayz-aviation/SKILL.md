@@ -133,6 +133,13 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
   buffer or FSM-mutated state), `RewindState` (`super` first + ADDITIVE guard), solver ONCE in
   `EOnSimulate` gated `IsServerOrOwner`, tuning to the owner via a guaranteed RPC handshake (values +
   ACK + `ForceCorrection`). SIB/RFFS mirror and hookless owner-prediction are dead ends under PHYSICS.
+       `ForceCorrection` corrects the VEHICLE pawn's simulation, never a seated character's pose:
+       `pawn.c:205-206` reads "Force a correction to the owner as a server only event was called (called on
+       authority only)", the state it rewinds is `TransportOwnerState` transform/velocity/buoyancy
+       (`transport.c:11-23`), and vanilla NEVER calls it - one occurrence in the whole tree, the declaration.
+       Get-out pose is `HumanCommandVehicle.GetOutVehicle()`/`JumpOutVehicle()` (`actiongetouttransport.c:161-177`),
+       and `Transport.Synchronize()` (`transport.c:108-109`) only syncs car state while the sim is not running -
+       vanilla calls it on attach/detach only.
   Probe `GetNetworkMoveStrategy()` client-side before choosing the network model. (LFHeli 2026-07-14;
   Codex research + R22, plan `2026-07-14-lfheli-physics-pawn-final.md`.)
 - **The RFFS client pump is animations + input sync, NOT a smoothing mechanism** (added 2026-08-03,
@@ -239,6 +246,13 @@ force-based integrator on disk.
   RFFS `UARFFSCyclic*/Pedal*/Collective*` (`RFFSHeli_Core.c:549-583`), SIB `UASIBHeli*`, MH6 `UAKTHeli*`
   (`MH6_flightmodel.c:1434-1450`). Engine start/stop is action-driven — RFFS/SIB add custom start actions;
   MH6 reuses the vanilla `ActionStartEngine`/`ActionStopEngine` (only relabeled) and gates on `EngineIsOn()`.
+       That gate is a DRIVER/OWNER frame, not a passenger one: the vanilla condition also demands a local
+       `GetCommand_Vehicle()` and `CrewDriver() == player` (`actionstartengine.c:26-37`,
+       `actionstopengine.c:16-33`), and the driver becomes the pawn owner on sitting down
+       (`playerbase.c:4266-4280` `identity.Possess(pawn)` - itself inside `#ifdef FEATURE_NETWORK_RECONCILIATION`).
+       Vanilla only trusts `EngineIsOn()` for simulation behind `IsServerOrOwner()` (`carscript.c:3222`) and
+       reaches non-owners through the netsynced `m_CarEngineSoundState` instead (`carscript.c:355`, `:724-725`).
+       So do not read `EngineIsOn()` as the authority bit on a machine that does not own the pawn.
 - **Config framework**: RFFS uses a **typed named JSON** framework (server-wide `MasterConfig` + per-heli
   `HeliConfig`, `get*` accessors, `JsonFileLoader<T>` with auto-create + version-migrate) — the safest
   reusable pattern. SIB uses a **positional** `map<string,float>` from `$profile` JSON read back

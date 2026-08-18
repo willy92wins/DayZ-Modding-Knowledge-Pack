@@ -2734,7 +2734,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c9f0fe644b4989551c67d39971557af1bd20b37f3a5a25f33401dba60a368adc",
+      "output_hash": "535cc7d42bad8b3b45ac9b6f5772639bfd09631bf723cda0525c2381874727b7",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -4170,7 +4170,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d6113c12cabed57c193632780802780eb6622e8270219c5b80611f71464d9121",
+      "output_hash": "509ebd0876c0056b822145388c1ba5a28ff4ca80078eba1ab5cd8667104bcfa3",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"

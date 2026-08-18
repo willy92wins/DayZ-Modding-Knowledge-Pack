@@ -766,6 +766,26 @@ a pagarlos:
    devuelva el asiento buscado (transport.c:116). El éxito se observa con `GetCommand_Vehicle()`
    al tick siguiente (con retry), no marcando done al inyectar. OJO: `ActionCondition` es
    protected — no se puede pre-validar desde fuera; el manager valida en ambos lados.
+
+   **El marco que reconcilia esto con SP-295** (medido contra el arbol vanilla, 2026-08-18):
+   la pertenencia al crew y el comando de vehiculo son DOS cosas distintas, y solo la accion
+   real produce las dos. El crew es estado NATIVO del engine, no un netsync de script:
+   `Transport` registra una sola variable (`m_EngineZoneReceivedHit`, transport.c:73) y
+   `CrewMember`/`CrewDriver` son `proto native` (transport.c:111-128), legibles desde cualquier
+   cliente — por eso el cliente que quiere subir puede rechazar un asiento ya ocupado
+   (actiongetintransport.c:57-60). El `HumanCommandVehicle`, en cambio, lo crea
+   `StartCommand_Vehicle` en LA MAQUINA que lo llama, y en los 2.805 ficheros del arbol hay
+   exactamente tres call-sites: la propia accion (actiongetintransport.c:91), la reanudacion
+   tras inconsciente via `m_TransportCache` (dayzplayerimplement.c:2376) y un debug bajo
+   `#ifdef DEVELOPER` (playerbase.c:3287). **Ninguno arranca el comando al enterarse por red de
+   que uno ya va sentado.** De ahi salen las dos caras del mismo hecho: llamar
+   `StartCommand_Vehicle` a pelo desde el cliente da comando SIN crew de server (el fantasma de
+   arriba); sentar a alguien por script desde el servidor da crew SIN comando local, y entonces
+   cualquier `ActionCondition` que exija ir sentado NUNCA se cumple, porque piden
+   `GetCommand_Vehicle()` y no `CrewMember` — asi lo hacen get-out
+   (actiongetouttransport.c:68-74) y arrancar/parar motor (actionstartengine.c:26-37). Ojo con
+   `IsInVehicle()`: acepta las dos vias (comando O parent Transport,
+   dayzplayerimplement.c:465-468), asi que no sirve para distinguirlas.
 3. **Un body DORMIDO rechaza la acción get-in inyectada** (sleep gate de PARKED). Si el mod
    duerme el vehículo en reposo, la celda debe DESPERTARLO antes del get-in — lo más simple:
    arrancar el motor server-side desde la misión de test (`EngineStart`, car.c:244) NADA MÁS
