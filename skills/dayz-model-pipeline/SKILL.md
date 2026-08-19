@@ -336,7 +336,7 @@ Verificación end-to-end (post-binarize): `binarize.exe -always -addon=<dir> <sr
 
 LL-079 (bisección de LODs aisló el bug), LL-080 (la lección durable), check añadido a `dayz-p3d-audit` (Mass-only-Geometry, added 2026-06-02), tool de referencia `LFQuad_dev/tools/fix_firegeo_mass.py` (patch headless para .p3d con el bug).
 
-<!-- [merged 2026-06-05 from <claude-home>\skills user copy during plugin-canonical migration] -->
+<!-- [merged 2026-06-05 from <claude-home>\skills user copy during plugin-canonical migration; almacen: .claude\skills] -->
 ## Llama Mod Extraction Patterns (rvmat)
 
 Patterns extracted from LM_Planes mod (workshop 3730564764, Llama+Itspete-Here). Aviation-applied but generally reusable.

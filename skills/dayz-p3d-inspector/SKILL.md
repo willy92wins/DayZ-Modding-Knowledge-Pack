@@ -463,7 +463,7 @@ recipe. Antes de reportar un bug desde la vista del inspector:
 
 Origen: introspección 2026-06-01 §B-6; sesión kt_roadkill_armed Sprint G' 2026-05-31.
 
-<!-- [merged 2026-06-05 from <claude-home>\skills user copy during plugin-canonical migration] -->
+<!-- [merged 2026-06-05 from <claude-home>\skills user copy during plugin-canonical migration; almacen: .claude\skills] -->
 ## py3d `selections` API gotcha (OrderedDict, non-subscriptable points/faces)
 
 `lod.selections` is an **OrderedDict** keyed by selection name. Iterating it

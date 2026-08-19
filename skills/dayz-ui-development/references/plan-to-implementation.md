@@ -398,7 +398,7 @@ Local ground truth (verified this session): `scripts/1_core/proto/enwidgets.c`, 
 `scripts/3_game/gameplay.c`, `scripts/3_game/gui/spacers/spacerbase.c`, `gui/layouts/day_z_hud.layout`
 + `loading.layout`, `gui/imagesets/ccgui_enforce.imageset`, `gui/fonts/`; project tooling under
 `tools/dayz-script-validator/` and `<notes>\DayZ_UI_Research\`;
-project ledgers under `<vault>\AI\10_Projects\{LFGungame,DayZ_UI_Research}`.
+project ledgers under `<vault>\AI\10_Projects\{LFGungame,DayZ_UI_Research}` (`ObsidianVault\AI\10_Projects\{LFGungame,DayZ_UI_Research}`).
 
 Web: DayZ Modders Discord via AnswerOverflow (URLs inline); DayZ-CommunitySamples (UISample);
 stardz-team DayZ Modding Wiki (HUD overlay chapter) — **⚠️ WARNING (2026-07-05): its script-side

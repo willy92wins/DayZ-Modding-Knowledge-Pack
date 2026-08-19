@@ -1,6 +1,6 @@
 ---
 name: 3d-generation-harness
-description: "End-to-end disciplined harness for generating a complete 3D item: research → plan → build → roast → ship, with hard gates between phases. Forces multi-view reference research before any code (nothing modeled from memory), a plan with verifiable pass/fail criteria per part, per-component build checkpoints, an adversarial self-review ('roast') whose output is a defect list with evidence, and a scored ship gate. Use whenever the user asks to create/generate/design a full 3D object end-to-end, wants it validated against real references, says 'roast it', 'no des nada por supuesto', 'hazlo con el harness', 'compruébalo todo', asks for a production-ready / vanilla-parity model, or wants a disciplined rebuild after an in-game failure. Orchestrates blender-assembly, blender-visual-review, dayz-model-pipeline and dayz-p3d-audit — they own the HOW; this skill owns the gates. Triggers: harness 3D, genera un modelo 3D completo, roast del modelo, modelo desde referencias."
+description: "End-to-end disciplined harness for generating a complete 3D item: research → plan → build → roast → ship, with hard gates between phases. Forces multi-view reference research before any code (nothing modeled from memory), a plan with verifiable pass/fail criteria per part, per-component build checkpoints, an adversarial self-review ('roast') whose output is a defect list with evidence, and a scored ship gate. Use whenever the user asks to create/generate/design a full 3D object end-to-end, wants it validated against real references, says 'roast it', 'no des nada por supuesto', 'hazlo con el harness', 'compruébalo todo', asks for a production-ready / vanilla-parity model, or wants a disciplined rebuild after an in-game failure. Orchestrates blender-assembly, blender-visual-review, dayz-model-pipeline and dayz-p3d-audit, and optionally hunyuan3d-local (AI-generation ladder) if installed — they own the HOW; this skill owns the gates. Triggers: harness 3D, genera un modelo 3D completo, roast del modelo, modelo desde referencias."
 ---
 
 # 3D Generation Harness
@@ -12,7 +12,7 @@ This harness exists because the default failure mode of LLM-driven 3D generation
 - The review phase is adversarial by design: its output is a defect list, not a verdict.
 - Every phase ends in a gate. A gate that doesn't pass stops the pipeline; it is never "noted and continued past."
 
-The harness governs sequencing and gates. The construction techniques live in `blender-assembly`; the capture/diagnosis techniques in `blender-visual-review`; AI generation → optionally invoke the external `hunyuan3d-local` skill if installed (not shipped in this pack; it owns the local → fal → paid routing ladder); DayZ export and audit in `dayz-model-pipeline` and `dayz-p3d-audit`. Read each at the phase that needs it.
+The harness governs sequencing and gates. The construction techniques live in `blender-assembly`; the capture/diagnosis techniques in `blender-visual-review`; AI generation → optionally invoke the external `hunyuan3d-local` skill if installed (not shipped in this pack; it contains the canonical routing ladder: local → fal → paid APIs); DayZ export and audit in `dayz-model-pipeline` and `dayz-p3d-audit`. Read each at the phase that needs it.
 
 ## Pack surface
 
@@ -42,7 +42,7 @@ Answer these before anything else; ask the user only for what cannot be inferred
 
 1. **What item, exactly?** "A rifle" is not an answer; "an AKM-pattern rifle, wooden furniture, DayZ-era condition" is.
 2. **Target use:** DayZ mod (which slot/behavior), generic game asset, render-only? This sets the poly budget, LOD plan, and which export/audit skills apply.
-3. **Route:** parametric hard-surface → this harness with `blender-assembly`. Organic/sculpted → AI generation: optionally invoke the external `hunyuan3d-local` skill if it is installed on the machine (not shipped in this pack) for the base mesh, then this harness resumes at Phase 4 (the roast and ship gates apply to AI-generated meshes too — *especially* to them). For DayZ-bound AI-generated assets, the DayZ-specific pitfalls (retopo of non-manifold, _nohq bake, handoff) live in the skill `ai-3d-to-dayz` — this harness owns the generic gates/discipline.
+3. **Route:** parametric hard-surface → this harness with `blender-assembly`. Organic/sculpted → AI generation: optionally invoke the external `hunyuan3d-local` skill if it is installed on the machine (not shipped in this pack; it contains the canonical routing ladder: local → fal → paid APIs) for the base mesh, then this harness resumes at Phase 4 (the roast and ship gates apply to AI-generated meshes too — *especially* to them). For DayZ-bound AI-generated assets, the DayZ-specific pitfalls (retopo of non-manifold, _nohq bake, handoff) live in the skill `ai-3d-to-dayz` — this harness owns the generic gates/discipline.
 4. **Budget:** LOD0 tri range (for DayZ, anchor to the vanilla equivalent's counts, not to taste).
 
 Gate I passes when all four have explicit answers written down. An unanswered item is a question to the user, not an assumption.

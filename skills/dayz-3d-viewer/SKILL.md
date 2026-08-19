@@ -22,8 +22,13 @@ Battle-tested with real LFPG Push Button model (328 verts, 640 faces, 4 material
 
 The executable lives in the pack tool `tools/dayz-3d-viewer`. This skill is
 the playbook; do not look for `scripts/` or a vendored py3d wheel here.
+In the Cowork plugin projection these were `scripts/*.py` plus a vendored
+py3d wheel; in this pack they map to `python -m dayz_3d_viewer`
+(see Commands).
 
 ## Install Dependencies
+
+Pack (`tools/py3d` + `tools/dayz-3d-viewer`):
 
 ```bash
 pip install -e tools/py3d
@@ -34,6 +39,21 @@ pip install -e "tools/dayz-3d-viewer[all]"
 # CRITICAL: py3d = the pack DayZ fork >= 1.5.0 (tools/py3d).
 # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
 python -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,5,0), (py3d.__version__, py3d.__file__)"
+```
+
+Plugin projection (`scripts/` + wheel vendorizada en esta skill - D2=B):
+
+```bash
+apt-get install -y liblzo2-dev
+pip install pygltflib python-lzo pillow numpy opensimplex --break-system-packages
+# Preferred when python-lzo will not compile (Windows Py3.14+ / sandbox):
+#   pip install lzokay --break-system-packages
+#   python scripts/install_lzo_shim.py   # installs the lzokay-based shim (import lzo keeps working)
+# CRITICAL: py3d = the pack DayZ fork >= 1.5.0 (tools/py3d).
+# NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
+pip install --break-system-packages "$SKILL_DIR"/wheels/py3d-*-py3-none-any.whl 2>/dev/null \
+  || pip install --break-system-packages $(ls /sessions/*/mnt/*/_tools/py3d/dist/py3d-*-py3-none-any.whl 2>/dev/null | sort -V | tail -1)
+python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,5,0), (py3d.__version__, py3d.__file__)"
 ```
 
 ## Commands
@@ -65,6 +85,17 @@ map to `python -m dayz_3d_viewer` (see Commands above). Historical names:
 | `viewer_template.py` / `pipeline.py` | `build-viewer` |
 | `install_lzo_shim.py` | `install-lzo-shim` |
 
+All in this skill's `scripts/` directory (plugin projection):
+
+| Script | Purpose |
+|--------|---------|
+| `paa_to_png.py` | PAA → PNG converter (DXT1/5/3, RGBA, LumAlpha, with LZO/LZSS) |
+| `p3d_to_gltf.py` | P3D MLOD → glTF/GLB converter (geometry + textures + RVMAT materials) |
+| `rvmat_parser.py` | RVMAT parser (colors, specular, emissive, texture stage mapping) |
+| `viewer_template.py` | Three.js viewer generator (embedded + web modes) |
+| `pipeline.py` | Full orchestration (all of the above in sequence) |
+| `install_lzo_shim.py` | Installs an lzokay-based `lzo` shim — preferred route when `python-lzo` will not compile (Windows Py3.14+/sandbox) |
+
 ## Two Viewer Modes
 
 ### Embedded (for Claude chat / sandboxed iframes)
@@ -74,8 +105,19 @@ Uses raw `THREE.BufferGeometry` + `THREE.MeshStandardMaterial` — **NO GLTFLoad
 NO blob URLs**. This is critical because Claude's artifact sandbox blocks all network requests
 including `fetch()`, `XMLHttpRequest`, and `URL.createObjectURL()`.
 
+Pack:
+
 ```python
 from dayz_3d_viewer import extract_geometry_for_viewer, generate_viewer_html
+
+geo = extract_geometry_for_viewer('model.p3d', texture_map={'base_co': 'base_co.png'}, rvmat_data=rvmats)
+generate_viewer_html(model_name='My Model', mode='embedded', geometry_data=geo, output_path='viewer.html')
+```
+
+Plugin projection:
+
+```python
+from viewer_template import extract_geometry_for_viewer, generate_viewer_html
 
 geo = extract_geometry_for_viewer('model.p3d', texture_map={'base_co': 'base_co.png'}, rvmat_data=rvmats)
 generate_viewer_html(model_name='My Model', mode='embedded', geometry_data=geo, output_path='viewer.html')
@@ -95,6 +137,8 @@ a render needs a network. See `tools/dayz-3d-viewer/README.md`.
 ## Recommended Workflow (Chat)
 
 This is the proven workflow for when user uploads `.p3d` + `.paa` + `.rvmat` files:
+
+Pack:
 
 ```python
 from dayz_3d_viewer import convert_paa_to_png, parse_rvmat
@@ -122,12 +166,43 @@ generate_viewer_html(
 )
 ```
 
+Plugin projection:
+
+```python
+import sys, os
+sys.path.insert(0, '/path/to/skill/scripts')
+from paa_to_png import convert_paa_to_png
+from rvmat_parser import parse_rvmat
+from viewer_template import extract_geometry_for_viewer, generate_viewer_html
+
+# 1. Convert PAA textures to PNG
+convert_paa_to_png('base_co.paa', 'base_co.png', verbose=True)
+
+# 2. Parse RVMAT files
+rvmat_data = {}
+for f in ['housing.rvmat', 'button.rvmat', 'led_off.rvmat']:
+    rvmat_data[os.path.splitext(f)[0]] = parse_rvmat(f)
+
+# 3. Extract geometry with materials + textures baked in
+texture_map = {'base_co': 'base_co.png'}  # stem -> png_path
+geo = extract_geometry_for_viewer('model.p3d', texture_map=texture_map, rvmat_data=rvmat_data)
+
+# 4. Generate embedded viewer (works in Claude chat)
+generate_viewer_html(
+    model_name='LFPG Push Button',
+    mode='embedded',
+    geometry_data=geo,
+    output_path='/mnt/user-data/outputs/viewer.html',
+)
+```
+
 ## Pipeline Script (Alternative)
 
-For CLI or batch processing, `build-viewer` orchestrates everything:
+For CLI or batch processing, pack `build-viewer` / plugin `pipeline.py` orchestrates everything:
 
 ```bash
 python -m dayz_3d_viewer build-viewer model.p3d --textures ./textures --rvmats ./materials --name "My Model" --mode embedded -v
+python scripts/pipeline.py model.p3d --textures ./textures --rvmats ./materials --name "My Model" --mode embedded -v
 ```
 
 The pipeline auto-discovers assets: reads P3D → finds referenced texture/material paths →
@@ -182,9 +257,9 @@ The RVMAT parser extracts and maps to PBR:
 
 2. **GLTFLoader in sandbox**: Claude's artifact iframe blocks `fetch()` and `Request.clone()`. GLB loading via `loader.load()` or even `loader.parse()` fails because the loader internally resolves buffer/image URIs via fetch. Fix: bypass GLTFLoader entirely for embedded mode, build geometry from raw typed arrays.
 
-3. **PyPI py3d collision**: `pip install py3d` installs a point cloud visualization library, NOT the DayZ P3D library. Install the pack fork (`pip install -e tools/py3d`) and assert `py3d.IS_DAYZ_FORK`.
+3. **PyPI py3d collision**: `pip install py3d` installs a point cloud visualization library, NOT the DayZ P3D library. Install the pack fork (`pip install -e tools/py3d`) or the DayZ fork wheel vendored in the plugin projection (`wheels/py3d-*.whl`; fallback `_tools/py3d/dist/` if mounted) and assert `py3d.IS_DAYZ_FORK`.
 
-4. **LZO on DXT mipmaps**: Arma2+ PAA files compress large mipmaps (256+) with LZO. Indicated by top bit of width field. Requires `python-lzo` or `lzokay` plus `python -m dayz_3d_viewer install-lzo-shim`.
+4. **LZO on DXT mipmaps**: Arma2+ PAA files compress large mipmaps (256+) with LZO. Indicated by top bit of width field. Requires `liblzo2-dev` + `python-lzo`, or `lzokay` plus `python -m dayz_3d_viewer install-lzo-shim` (plugin projection: `python scripts/install_lzo_shim.py`).
 
 ## Viewer Features
 

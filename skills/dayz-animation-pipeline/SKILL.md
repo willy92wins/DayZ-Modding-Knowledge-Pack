@@ -142,7 +142,7 @@ Three operational gotchas that bit during the LFQuad work. Add to your context w
 
 ### LL-edit-tool-truncation (reproduced again)
 
-The Edit tool truncates `new_string` silently around 5–8 KB when the target path lives on OneDrive or under `LocalCache\Packages\Claude_*\…\<skills>\`. The file is written but the second half is cut off; no error is raised. Read-after-write looks normal in chat until you read the file from the host and see it ends mid-line.
+The Edit tool truncates `new_string` silently around 5–8 KB when the target path lives on OneDrive or under `LocalCache\Packages\Claude_*\…\<skills>\` (plugin mount: `skills-plugin`). The file is written but the second half is cut off; no error is raised. Read-after-write looks normal in chat until you read the file from the host and see it ends mid-line.
 
 Mitigation when patching this skill (or any skill in the plugin mount):
 
