@@ -343,6 +343,12 @@ def _scan_continuation(text: str, index: int) -> tuple[int, int, int] | None:
 # too (`Binding_Name`, `Relay_Command`, `Two_Way_Binding`, `Selected_Item`).
 # Inline form cannot use the physical line as a delimiter; parse_values
 # consumes this many tokens instead.
+MEASURED_ANCHORS = (
+    "anchor arithmetic read back from the engine 2026-08-19: ui_tree over "
+    "day_z_hud HudFrameWidget, DayZ 1.29.163709 at 1920x1080. center_ref adds "
+    "position; right_ref and bottom_ref subtract it."
+)
+
 ATTRIBUTE_ARITY: dict[str, int] = {
     "AlignChilds": 1,
     "Binding_Name": 1,
@@ -780,12 +786,10 @@ def resolve_geometry(
         x = offset_x
     elif halign in ("center_ref", "center", "1"):
         x = (parent_width * 0.5) - (width * 0.5) + offset_x
-        status = "assumed"
-        notes.append("center_ref semantics are carried as a phase-1 assumption")
+        notes.append(MEASURED_ANCHORS)
     elif halign in ("right_ref", "right", "2"):
         x = parent_width - width - offset_x
-        status = "assumed"
-        notes.append("right_ref offset sign is unverified until phase 2 discovery")
+        notes.append(MEASURED_ANCHORS)
     else:
         status = "unknown-anchor"
         notes.append(f"Unsupported halign {halign!r}; left_ref fallback used")
@@ -794,12 +798,10 @@ def resolve_geometry(
         y = offset_y
     elif valign in ("center_ref", "center", "1"):
         y = (parent_height * 0.5) - (height * 0.5) + offset_y
-        status = "assumed"
-        notes.append("center_ref semantics are carried as a phase-1 assumption")
+        notes.append(MEASURED_ANCHORS)
     elif valign in ("bottom_ref", "bottom", "2"):
         y = parent_height - height - offset_y
-        status = "assumed"
-        notes.append("bottom_ref offset sign is unverified until phase 2 discovery")
+        notes.append(MEASURED_ANCHORS)
     else:
         status = "unknown-anchor"
         notes.append(f"Unsupported valign {valign!r}; top_ref fallback used")

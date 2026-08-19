@@ -212,28 +212,38 @@ resolution-independent UI: e.g. `day_z_hud.layout` roots use `halign center_ref`
 background the same way. Misunderstood anchors are a classic source of "looks
 right in the mockup, lands elsewhere in-game".
 
-**[UNVERIFIED] offset sign of `halign right_ref` / `valign bottom_ref` (B5).**
-The keyword values themselves are real (see the property list above).
-The sign of a non-zero `position` offset against those anchors is not.
-Two implementations disagree:
+**Offset sign of `halign right_ref` / `valign bottom_ref` (B5) — CLOSED
+2026-08-19, read back from the engine.** The offset is **subtracted**: it is a
+distance measured inward from the reference edge, not a displacement added to
+it. The published resolver (`tools/dayz-ui-lab/dayz_ui_lab/parse.py`,
+`resolve_geometry`) had the right form and can drop its `status: "assumed"`;
+dossier §4.1's `parent_right - width + px` was wrong.
 
-- dossier §4.1: `widget_left = parent_right - width + px`
-- published resolver (`tools/dayz-ui-lab/dayz_ui_lab/parse.py`,
-  `resolve_geometry`): `x = parent_width - width - offset_x`, and the
-  same minus-offset form for `valign bottom_ref` on Y. It tags the
-  result `status: "assumed"`.
+Measured with `ui_tree` over `HudFrameWidget` on a live client (DayZ
+1.29.163709, 1920x1080), comparing each anchored widget's drawn edge against
+its parent's. Only `hexactpos` / `vexactpos == 1` rows are quoted, so the
+numbers are pixels and no unit conversion sits between the layout and the
+measurement:
 
-Neither formula has been read back from the engine. The assumption is
-still open (`AI/10_Projects/DayZ_UI_Research/assumptions.md`, 2026-05-14).
-The 2026-05-14 phase-1 review recorded the same discrepancy
-(`AI/10_Projects/DayZ_UI_Research/reviews/2026-05-14-phase1-parser-review.md`).
-The offline rect recipe later in this file only covers `center_ref`,
-deliberately.
+| widget | anchor | declared offset | drawn edge − parent edge |
+|---|---|---|---|
+| `BadgesPanel` | `right_ref` | 252 | −252 |
+| `BadgesSpacer` | `right_ref` | 213 | −213 |
+| `Blood` | `right_ref` | 43 | −43 |
+| `NotifierDivider` | `right_ref` | 86 | −86 |
+| `Hungry` | `right_ref` | 139 | −139 |
+| `Thirsty` | `right_ref` | 182 | −182 |
+| `BloodType` | `right_ref` | **−4** | **+4** |
+| `BadgesSpacer` | `bottom_ref` | 23.5 | −23.5 |
+| `NotifierDivider` | `bottom_ref` | 30 | −30 |
+| `VoiceLevelsPanel` | `bottom_ref` | 80 | −80 |
+| `TemperatureValueBottom` | `bottom_ref` | **−12** | **+12** |
 
-What would close it: one DayZDiag probe, a widget with `halign right_ref`
-and `position` offset != 0 (and the `valign bottom_ref` twin), then
-`GetScreenPos` / `GetScreenSize` (or `ui_tree`) against the parent box.
-Do not treat either formula as ground truth until that read-back exists.
+The two negative-offset rows are what make this a measurement rather than a
+coincidence. A widget declared at `-4` is drawn 4px **outside** its parent's
+right edge, and only the subtracting form predicts that; a table of positive
+offsets alone would have been satisfied by either rule with a sign flip. Both
+axes behave identically, so `bottom_ref` needs no separate treatment.
 
 ### Visibility & Interaction
 
@@ -1155,9 +1165,19 @@ x = px + position_x  if hexactpos  == 1   else px + position_x * pw
 y = py + position_y  if vexactpos  == 1   else py + position_y * ph
 ```
 
-`halign center_ref` REPLACES the horizontal term: `x = px + (pw - w) / 2`, and
-the widget's own `position_x` is ignored. `valign center_ref` does the same
-vertically. An absent `position` behaves as `0 0`.
+`halign center_ref` centres the widget and its `position_x` is then applied on
+top: `x = px + (pw - w) / 2 + position_term`, where `position_term` is the same
+pixel-or-fraction expression as the general case above. `valign center_ref`
+does the same vertically. An absent `position` behaves as `0 0`.
+
+**Corrected 2026-08-19.** This paragraph used to say `position_x` is *ignored*
+under `center_ref`. The engine adds it. Measured on the live HUD: `Zeroing`
+declares `halign center_ref` with `hexactpos 0` and a `position` of `0.06`, and
+is drawn with its centre **+103.7px** from its parent's centre — exactly
+`0.06 × 1728`, its parent's width. Its mirror `WeaponMode` declares `-0.06` and
+lands at **−103.7**. The two rules agree whenever `position` is `0 0`, which is
+the common case in vanilla layouts, and that is why the wrong one survived a
+calibration.
 
 **Calibration, not belief.** Predicted values matched a live `ui_tree` capture
 on 6 nodes across 3 nesting depths with a maximum delta of **3e-5**
