@@ -13031,7 +13031,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8b2325ccd87f79c8eb5484d25d0ef1f663b984ad40bafed1f15af15d81e9d47f",
+      "output_hash": "55b99792d754d921a61b323421b2c51c2f1bb3def5048cb8913826ec5f8d8e47",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -13365,6 +13365,28 @@
       "output_path": "skills/dayz-ui-development/references/widget-api.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/references/hot-iteration.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored in the pack from in-game measurements taken on 2026-08-19 (DayZ 1.29, runs 08343f0c and fdf07db7): $profile: is re-read on every load, rects match the offline prediction to 4,15e-05 px, the FileExist guard holds without killing the client, and textures resolve from the profile with a positive and a negative control in the same frame.",
+          "license": "MIT",
+          "source_hash": "8d356e5188dbd02948c12fda359ad922bf767ab6c47bb1ddd02206cfe10ec64a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/hot-iteration.md",
+          "source_revision": "hot-ui-iteration@2026-08-19",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8d356e5188dbd02948c12fda359ad922bf767ab6c47bb1ddd02206cfe10ec64a",
+      "output_path": "skills/dayz-ui-development/references/hot-iteration.md",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "runtime_verified"
     },
     {
       "artifact_id": "file/skills/dayz-doors/skill.md",

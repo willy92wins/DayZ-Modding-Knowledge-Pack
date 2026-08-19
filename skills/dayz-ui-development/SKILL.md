@@ -20,6 +20,7 @@ vanilla scripts at `<dayz-projects>\scripts\`, vanilla GUI data at
 | New menu opened by key / menu IDs / pause-style menu | `references/vanilla-menus-map.md` (§2 registration recipe, §4 strategies) | §3 contract |
 | Extending the HUD / hide-show HUD groups | `vanilla-menus-map.md §5` (HUD chain + IngameHudVisibility) | — |
 | Writing/debugging a `.layout` file | `references/layout-format.md` | Rules 1-4 below |
+| Iterating a design without repacking (edit the file, see it in the running game) | `references/hot-iteration.md` | Rules 1-4 below |
 | Styled chrome (borders, buttons w/ press feedback, 9-slice, theming a panel) | `references/styles-format.md` | — |
 | Dabs MVC (ScriptView, bindings, animations) | `references/dabs-framework.md` — **its §HEAD DEEP-DIVE supersedes older sections on conflicts** | Rules 15-18 below |
 | Expansion menus/HUD | `references/expansion-mvc-patterns.md` + `expansion-market-menu-pattern.md` | — |
@@ -93,6 +94,7 @@ Read the relevant file BEFORE writing code:
 - **.styles system — complete dissection (states, 9-slice item contracts, Colorable mechanism,
   custom-style recipe)** → `references/styles-format.md`
 - **Layout file format (.layout Enfusion)** → `references/layout-format.md`
+- **★ Hot iteration — edit a `.layout` on disk and reload it into the RUNNING client (measured 2026-08-19)** → `references/hot-iteration.md` — the addon prefix is served by the PBO and only the PBO, but `$profile:` is re-read on every load, so a design can be iterated in seconds instead of one repack-and-boot per change. Carries the guard that keeps `CreateWidgets` from killing the client, the fact that a second load STACKS instead of replacing, and the two silent failures (a missing texture paints flat WHITE and logs nothing; perfect rects say nothing about whether anything is drawn).
 - **Advanced UI patterns (toggles, anti-overlap, tabs, hover, drag)** → `references/advanced-patterns.md` — ⚠️ contains 3 confabulated APIs (see the CORRECTIONS banner at the top of that file before copying any code).
 - **Empirical layout corpus (widget/attribute frequency, HTML renderer, Dabs path fix)** → `references/layout-empirical-corpus.md`
 - **LFPG production knowledge base (80+ verified facts)** → `references/LFPG_UI_KnowledgeBase_v3.md`
@@ -809,6 +811,8 @@ Useful for feature flags across mod boundaries.
 | Half my UI is missing (widgets after some point never appear) | Parser stops at first syntax error, loads partially | Check brace balance at/before the first missing widget; `MissionBase.DumpCurrentUILayout()` shows what actually loaded |
 | Imageset/style renders in Workbench but blank in-game (or vice versa) | Dual registration missed | Register in BOTH `dayz.gproj` (editor) and `config.cpp class defs` (game) — plan-to-implementation.md §3 |
 | Scroll content doesn't scroll | No spacer child in ScrollWidget | Add WrapSpacerWidget or GridSpacerWidget as direct child |
+| A UI image comes out as a flat WHITE box | The texture path does not resolve | Check the path first, not the color or the style: a missing UI texture fills the slot with white (255,255,255, deviation 0,0) and writes **nothing** to the RPT (measured 2026-08-19) |
+| Reloading a layout at runtime draws two copies, or clicks land on nothing | `CreateWidgets` STACKS a second tree, it does not replace the first | `Unlink()` the previous root before every load (hot-iteration.md trap 2) |
 | ImageWidget invisible in script | No image loaded | `LoadImageFile(0, "#(argb,8,8,3)color(1,1,1,1,CO)")` then SetColor. ⚠️ this procedural texture FAILED on DayZ 1.29 ("Bad texture name", LFPowerGrid RPT) — if it fails, ship a 1×1 white .edds (or use a Colorable style, styles-format.md §5) |
 | ViewBinding not updating UI | Binding_Name mismatch | Verify ScriptParams Binding_Name matches controller property exactly |
 | CreateWidgets crashes | Called from RPC or early init | Pre-create views in MissionInit when GetWorkspace() is valid (Rule 9) |
