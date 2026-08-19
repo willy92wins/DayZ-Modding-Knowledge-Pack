@@ -57,7 +57,7 @@ Inline-format collapse into `position` was a measured defect of the format
 parser: grouping by physical line in `Parser.parse_values` turned
 `ImageWidgetClass Bg { position 0 0 size 1 1 stretch 1 ignorepointer 1 { } }`
 into a single `position` attribute holding the whole list. Fixed in commit
-REPLACE_WITH_COMMIT_SHA **for the vocabulary the parser knows**: `parse_values`
+df64e5f **for the vocabulary the parser knows**: `parse_values`
 consumes by measured key arity, and that input now yields four attributes. The
 bound is the point. An attribute missing from `ATTRIBUTE_ARITY` still falls back
 to line grouping, so two unknown keys written inline still collapse into one —

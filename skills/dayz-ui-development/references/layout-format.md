@@ -670,7 +670,7 @@ ImageWidgetClass ClickBlocker {
 8. **Comments are // style** (C++ line comments), NOT `<!-- -->` XML comments
 9. **No semicolons** after property values (unlike config.cpp)
 10. **Inline format is valid** but hard to verify: `ImageWidgetClass Bg { position 0 0 size 1 1 ... { } }`
-    **Parser contract (F1, fixed in commit REPLACE_WITH_COMMIT_SHA).** Grouping
+    **Parser contract (F1, fixed in commit df64e5f).** Grouping
     values by physical line collapsed that example into a single attribute
     `position: [0, 0, "size", 1, 1, "stretch", 1, "ignorepointer", 1]`.
     Grouping by key arity (`position` / `size` take two numbers; flags
