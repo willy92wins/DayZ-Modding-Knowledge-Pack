@@ -337,6 +337,147 @@ def _scan_continuation(text: str, index: int) -> tuple[int, int, int] | None:
     return cursor, 1, column
 
 
+# Value counts per attribute key. 127 keys were measured on the 214 vanilla
+# .layout files in this workspace: each key had a single arity under the old
+# line-grouping parser. Four ScriptParams keys used by tests/the IR are listed
+# too (`Binding_Name`, `Relay_Command`, `Two_Way_Binding`, `Selected_Item`).
+# Inline form cannot use the physical line as a delimiter; parse_values
+# consumes this many tokens instead.
+ATTRIBUTE_ARITY: dict[str, int] = {
+    "AlignChilds": 1,
+    "Binding_Name": 1,
+    "Caption": 1,
+    "Columns": 1,
+    "Default text color": 4,
+    "Gap": 1,
+    "Ignore invisible": 1,
+    "Margin": 1,
+    "Mask": 1,
+    "MinHeight": 1,
+    "Padding": 1,
+    "Progress": 1,
+    "Relay_Command": 1,
+    "Rows": 1,
+    "Scrollbar H": 1,
+    "Scrollbar V": 1,
+    "Scrollbar V Left": 1,
+    "SelectedTab": 1,
+    "Selected_Item": 1,
+    "Size To Content H": 1,
+    "Size To Content V": 1,
+    "Transition width": 1,
+    "Two_Way_Binding": 1,
+    "Use default text": 1,
+    "amount": 1,
+    "background color": 4,
+    "bold text": 1,
+    "border": 1,
+    "checked": 1,
+    "clamp mode": 1,
+    "clipchildren": 1,
+    "color": 4,
+    "colums": 1,
+    "condense whitespace": 1,
+    "content offset": 1,
+    "content_halign": 1,
+    "content_valign": 1,
+    "current": 1,
+    "disabled": 1,
+    "disabled text color": 4,
+    "draggable": 1,
+    "draw marker": 1,
+    "exact text": 1,
+    "exact text size": 1,
+    "fill in": 1,
+    "filter": 1,
+    "fixaspect": 1,
+    "flip u": 1,
+    "flip v": 1,
+    "flipped": 1,
+    "font": 1,
+    "force flip enable": 1,
+    "gap": 1,
+    "halign": 1,
+    "hexactpos": 1,
+    "hexactsize": 1,
+    "hide text": 1,
+    "highlight row": 1,
+    "ignoregloballv": 1,
+    "ignorepointer": 1,
+    "image0": 1,
+    "imageTexture": 1,
+    "inheritalpha": 1,
+    "italic text": 1,
+    "items": 1,
+    "keepsafezone": 1,
+    "layout": 1,
+    "limit visible": 1,
+    "lines": 1,
+    "listen to input": 1,
+    "m_ChildName": 1,
+    "m_HorizontalOffset": 1,
+    "m_IsDebugOutput": 1,
+    "m_ResizeHorizontal": 1,
+    "m_ResizeVertical": 1,
+    "m_VerticalOffset": 1,
+    "marker thickness": 1,
+    "maximum": 1,
+    "mode": 1,
+    "next down": 1,
+    "next left": 1,
+    "next right": 1,
+    "next up": 1,
+    "no focus": 1,
+    "no wrap": 1,
+    "nocache": 1,
+    "outline color": 4,
+    "outline size": 1,
+    "pivot": 2,
+    "position": 2,
+    "priority": 1,
+    "rotation": 3,
+    "scaled": 1,
+    "scriptclass": 1,
+    "shadow color": 4,
+    "shadow offset": 2,
+    "shadow opacity": 1,
+    "shadow size": 1,
+    "size": 2,
+    "size to text h": 1,
+    "size to text v": 1,
+    "speed": 1,
+    "src alpha": 1,
+    "start_rotation": 1,
+    "step": 1,
+    "stretch": 1,
+    "stretch mode": 1,
+    "strip newlines": 1,
+    "style": 1,
+    "switch": 1,
+    "text": 1,
+    "text background": 1,
+    "text color": 4,
+    "text halign": 1,
+    "text offset": 2,
+    "text outline color": 4,
+    "text shadow color": 4,
+    "text sharpness": 1,
+    "text spacing": 2,
+    "text valign": 1,
+    "text_halign": 1,
+    "text_offset": 2,
+    "text_proportion": 1,
+    "title visible": 1,
+    "userID": 1,
+    "valign": 1,
+    "vertical": 1,
+    "vexactpos": 1,
+    "vexactsize": 1,
+    "visible": 1,
+    "wrap": 1,
+}
+
+
 class Parser:
     def __init__(
         self,
@@ -420,7 +561,7 @@ class Parser:
             if token.kind in ("IDENT", "STR"):
                 key_token = self.consume()
                 key = str(key_token.value)
-                attrs[key] = self.parse_values(key_token.line)
+                attrs[key] = self.parse_values(key, key_token.line)
                 continue
 
             raise LayoutSyntaxError(
@@ -442,11 +583,32 @@ class Parser:
                 raise LayoutSyntaxError("Unclosed child block", token, self.source)
             children.append(self.parse_widget())
 
-    def parse_values(self, line: int) -> list[Scalar]:
+    def parse_values(self, key: str, line: int) -> list[Scalar]:
+        """Split attributes by measured key arity, not by physical line.
+
+        Line-grouping collapsed `position 0 0 size 1 1` into one attribute.
+        Unknown keys still consume the rest of their physical line, matching
+        the previous contract. A unary key whose value spelling collides with
+        another key (`"clamp mode" wrap`) still consumes that one token.
+        """
         values: list[Scalar] = []
-        while self.peek().kind in ("NUM", "STR", "IDENT") and self.peek().line == line:
-            token = self.consume()
-            values.append(token.value)  # type: ignore[arg-type]
+        arity = ATTRIBUTE_ARITY.get(key)
+        while self.peek().kind in ("NUM", "STR", "IDENT"):
+            token = self.peek()
+            token_is_key = (
+                token.kind in ("IDENT", "STR") and str(token.value) in ATTRIBUTE_ARITY
+            )
+            if arity is not None:
+                if len(values) >= arity:
+                    break
+                if token_is_key and not (arity == 1 and len(values) == 0):
+                    break
+            else:
+                if token.line != line:
+                    break
+                if token_is_key and len(values) > 0:
+                    break
+            values.append(self.consume().value)  # type: ignore[arg-type]
         return values
 
 

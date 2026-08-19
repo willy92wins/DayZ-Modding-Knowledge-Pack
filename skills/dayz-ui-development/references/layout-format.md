@@ -670,19 +670,23 @@ ImageWidgetClass ClickBlocker {
 8. **Comments are // style** (C++ line comments), NOT `<!-- -->` XML comments
 9. **No semicolons** after property values (unlike config.cpp)
 10. **Inline format is valid** but hard to verify: `ImageWidgetClass Bg { position 0 0 size 1 1 ... { } }`
-    **Parser contract (F1, still live).** Grouping values by physical line
-    collapses that example into a single attribute
+    **Parser contract (F1, fixed in commit REPLACE_WITH_COMMIT_SHA).** Grouping
+    values by physical line collapsed that example into a single attribute
     `position: [0, 0, "size", 1, 1, "stretch", 1, "ignorepointer", 1]`.
     Grouping by key arity (`position` / `size` take two numbers; flags
     take one) keeps `position`, `size`, `stretch` and `ignorepointer`
     apart. Finding F1
     (`AI/10_Projects/DayZ_UI_Research/reviews/2026-05-14-phase1-parser-review.md`,
     2026-05-14; ledger F1-B2) described this against the v2 parser. The
-    published pack parser still groups by `peek().line == line`
+    published pack parser used to group by `peek().line == line`
     (`tools/dayz-ui-lab/dayz_ui_lab/parse.py`, `Parser.parse_values`) and,
-    on that exact input, still emits only `position` with the collapsed
-    list (reproduced 2026-08-19 against this tree). Any new parser MUST
-    split by key arity, not by the physical line.
+    on that exact input, emitted only `position` with the collapsed
+    list (reproduced 2026-08-19 against this tree, then fixed the same
+    day). It now consumes `ATTRIBUTE_ARITY` tokens per key, which
+    fixes the 131 attributes that table lists and no others: a key absent
+    from it still falls back to the physical line, so two unknown keys
+    written inline still collapse into one (measured 2026-08-19). Any new
+    parser MUST split by key arity, not by the physical line.
 11. **`SetSort` is an ABSOLUTE set** *(corrected 2026-07-03 — the additive `//! ADDS` comment in
     `enwidgets.c:128` belongs to `SetFlags`, not `SetSort` at `:130`)*. `SetFlags` ADDS and
     `ClearFlags` SUBSTRACTS; `SetSort` replaces. Layout-side z-order = the `priority` attribute.

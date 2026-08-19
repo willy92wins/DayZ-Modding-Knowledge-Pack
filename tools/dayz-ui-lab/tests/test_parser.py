@@ -272,6 +272,63 @@ class ContinuationTests(unittest.TestCase):
                 self.assertIn("Unknown string escape", message)
 
 
+class InlineAttributeTests(unittest.TestCase):
+    # TOOLS.md and layout-format.md F1: grouping values by physical line
+    # collapsed this one-line widget into a single `position` attribute.
+
+    def test_inline_attributes_are_split_by_arity_not_by_physical_line(self) -> None:
+        text = (
+            "ImageWidgetClass Bg { position 0 0 size 1 1 stretch 1 ignorepointer 1 { } }"
+        )
+        doc = parse.parse_text(text, source_path="inline.layout")
+        attrs = doc.roots[0].attrs
+        self.assertEqual(list(attrs.keys()), ["position", "size", "stretch", "ignorepointer"])
+        self.assertEqual(attrs["position"], [0, 0])
+        self.assertEqual(attrs["size"], [1, 1])
+        self.assertEqual(attrs["stretch"], [1])
+        self.assertEqual(attrs["ignorepointer"], [1])
+
+    def test_inline_float_edges_stay_on_their_own_keys(self) -> None:
+        text = "ImageWidgetClass Inline { position 0 0 size .5 -0.5 { } }"
+        doc = parse.parse_text(text, source_path="ok_inline_widget.layout")
+        attrs = doc.roots[0].attrs
+        self.assertEqual(attrs["position"], [0, 0])
+        self.assertEqual(attrs["size"], [0.5, -0.5])
+        self.assertNotIn("size", attrs["position"])
+
+    def test_quoted_keys_on_one_line_stay_separate(self) -> None:
+        text = 'TextWidgetClass T { "text halign" center "text valign" center { } }\n'
+        doc = parse.parse_text(text, source_path="quoted-inline.layout")
+        attrs = doc.roots[0].attrs
+        self.assertEqual(attrs["text halign"], ["center"])
+        self.assertEqual(attrs["text valign"], ["center"])
+
+    def test_unary_value_that_collides_with_another_key_stays_a_value(self) -> None:
+        text = 'ImageWidgetClass Bg { "clamp mode" wrap wrap 1 { } }\n'
+        doc = parse.parse_text(text, source_path="clamp-inline.layout")
+        attrs = doc.roots[0].attrs
+        self.assertEqual(attrs["clamp mode"], ["wrap"])
+        self.assertEqual(attrs["wrap"], [1])
+
+    def test_unknown_keys_inline_still_collapse_which_is_the_documented_bound(self) -> None:
+        # Not an aspiration: the arity split covers ATTRIBUTE_ARITY and nothing
+        # else. A key the table does not list falls back to physical-line
+        # grouping, so two unknown keys on one line still merge. Pinned here so
+        # the bound stated in TOOLS.md cannot drift away from the code.
+        text = "ImageWidgetClass Bg { zzz_custom 0 0 yyy_other 1 1 { } }"
+        doc = parse.parse_text(text, source_path="unknown-inline.layout")
+        attrs = doc.roots[0].attrs
+        self.assertEqual(list(attrs.keys()), ["zzz_custom"])
+        self.assertEqual(attrs["zzz_custom"], [0, 0, "yyy_other", 1, 1])
+
+    def test_known_key_arity_ends_the_run_before_an_unknown_key(self) -> None:
+        text = "ImageWidgetClass Bg { position 0 0 zzz_custom 7 { } }"
+        doc = parse.parse_text(text, source_path="mixed-inline.layout")
+        attrs = doc.roots[0].attrs
+        self.assertEqual(attrs["position"], [0, 0])
+        self.assertEqual(attrs["zzz_custom"], [7])
+
+
 class Phase1ParserPathTests(unittest.TestCase):
     def test_out_dir_preserves_layout_root_relative_path(self) -> None:
         root = Path("C:/layouts")

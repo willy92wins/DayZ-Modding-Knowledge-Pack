@@ -53,10 +53,18 @@ A third, historical parser exists (`renderer/parse.py` from the DayZ_UI_Research
 project). It is **superseded**. On Windows paths it **silently strips the
 backslash** (`gui\layouts\foo.edds` → `guilayoutsfoo.edds`). Do not revive it.
 
-Measured defect of the format parser, declared until it is fixed: in inline
-format it **collapses attributes into `position`** (`ImageWidgetClass Bg { position 0 0
-size 1 1 stretch 1 ignorepointer 1 { } }` ends up as a single attribute holding
-the whole list). The geometry parser splits them by arity.
+Inline-format collapse into `position` was a measured defect of the format
+parser: grouping by physical line in `Parser.parse_values` turned
+`ImageWidgetClass Bg { position 0 0 size 1 1 stretch 1 ignorepointer 1 { } }`
+into a single `position` attribute holding the whole list. Fixed in commit
+REPLACE_WITH_COMMIT_SHA **for the vocabulary the parser knows**: `parse_values`
+consumes by measured key arity, and that input now yields four attributes. The
+bound is the point. An attribute missing from `ATTRIBUTE_ARITY` still falls back
+to line grouping, so two unknown keys written inline still collapse into one —
+measured, `{ zzz_custom 0 0 yyy_other 1 1 }` yields one attribute, while
+`{ position 0 0 zzz_custom 7 }` splits correctly because the known key's arity
+ends its run. Adding an attribute to the table is what extends the fix. The
+geometry parser splits by arity throughout.
 
 A screen-rectangle predictor (`ui_rects.py`: `predict` / `lint` / `centers`)
 sits on the geometry parser. It is **not published in this pack** — it lives
