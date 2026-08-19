@@ -33,6 +33,16 @@ CORRECTIONS banner first), `admin-ui-patterns.md` + `lbgroups-patterns.md` (zero
 treat code as pseudocode until re-verified). Anything marked "corrected 2026-XX-XX" states current
 truth; the date is provenance, not history you need.
 
+## Parser routing — which `.layout` reader
+
+If you need **where** a widget is (rectangle, click centre, reachability): the geometry
+parser (`layout_ast.py`) and `ui_rects.py`, both in DayZ_Tooling — not this pack. If you
+need **what** it says (text, color, image, any key): `dayz-ui-lab`
+(`python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout>`). Neither is a superset of the
+other. Contract, the format parser's inline-`position` collapse, and the superseded
+`DayZ_UI_Research/renderer/parse.py` (do not revive — it silently strips `\` from Windows
+paths): [`TOOLS.md`](../../TOOLS.md).
+
 ## STANDARD WORKFLOW — follow this for ANY UI implementation on this machine
 
 1. **Spec before layout**: fill the widget-tree spec table (`plan-to-implementation.md §5`) — every
@@ -45,9 +55,12 @@ truth; the date is provenance, not history you need.
    (braces, XML-format, layout-file-exists, $PBOPREFIX$ path, OnMouseLeave arity; exit 0/1/2).
 4. **Reconcile**: `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>`
    (every FindAnyWidget name ↔ layouts, every #STR ↔ stringtable.xml/csv; "did-you-mean" on typos).
-5. **Preview offline**: `python "<notes>\DayZ_UI_Research\renderer\build_viewer.py" <layout>`
-   → self-contained `.preview.html`, switch resolutions 1080p/1440p/ultrawide/720p to SEE exact-flag
-   breakage. Approximation: trust it for structure/positioning/text, NEVER for pixels/colors/fonts/styles.
+5. **Preview offline**: `python tools/dayz-layout-viewer/build_viewer.py <layout>` → a
+   self-contained `.preview.html` you switch between 1080p / 1440p / 21:9 / 720p to SEE
+   exact-flag breakage without a build. Structure and anchoring only: never pixels, colours,
+   fonts or styles — DayZDiag stays the golden reference. To read the file rather than draw it,
+   `python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout>` (Parser routing above). Do not call
+   `DayZ_UI_Research/renderer/parse.py`.
 6. **Deploy + verify in-game** via the `dayz-test-ingame` skill (DayZDiag + filePatching, no signing).
    Post-session gates: grep RPT for `Cannot open layout`; screenshot at 1080p AND one other
    resolution; diff against the calibrated mockup. Group ALL pending UI checks into one session (R5).
@@ -295,7 +308,7 @@ Supports ignore lists and variable→widget rename mappings.
 - [ ] No ternary operators; m_ prefix on members; variables hoisted
 
 ### Fidelity (the gate that was always missing)
-- [ ] Offline preview eyeballed vs mockup (`build_viewer.py`, labelled approximation)
+- [ ] Offline preview eyeballed vs mockup (`dayz-layout-viewer`, labelled approximation)
 - [ ] In-game screenshot at 1080p AND one non-1080p resolution vs calibrated mockup
 - [ ] Every spec-table row exists in the built layout with planned name/class/mode (parity gate §6)
 
@@ -792,7 +805,7 @@ Useful for feature flags across mod boundaries.
 | Relay_Command runs more than once | Handler returned false/void → re-invoked up the parent chain | Command handlers must `return true` when handled (Rule 16) |
 | EditBox text not updating | Binding not notified | Call `NotifyPropertyChanged("FieldName")` after changing value |
 | Layout crashes game on load | XML-format layout, or unbalanced braces, or MISSING layout file (CTD inside native CreateWidgets — null-check never runs) | Brace format only; run the linter (LAYOUT-XML-FORMAT + ES-LAYOUT-FILE-MISSING detectors). NOT caused by missing leaf `{ }` (Rule 1) |
-| UI right at 1080p, wrong at other resolutions | Exact flags = physical pixels | Proportional flags (0) + anchor idiom (Rule 3); verify with build_viewer.py resolution switch |
+| UI right at 1080p, wrong at other resolutions | Exact flags = physical pixels | Proportional flags (0) + anchor idiom (Rule 3); switch viewports in `dayz-layout-viewer` before spending a boot |
 | Half my UI is missing (widgets after some point never appear) | Parser stops at first syntax error, loads partially | Check brace balance at/before the first missing widget; `MissionBase.DumpCurrentUILayout()` shows what actually loaded |
 | Imageset/style renders in Workbench but blank in-game (or vice versa) | Dual registration missed | Register in BOTH `dayz.gproj` (editor) and `config.cpp class defs` (game) — plan-to-implementation.md §3 |
 | Scroll content doesn't scroll | No spacer child in ScrollWidget | Add WrapSpacerWidget or GridSpacerWidget as direct child |

@@ -141,7 +141,7 @@
           "decision": "adopt",
           "decision_evidence": "Canonical agent entry file; the cross-tool convention several hosts read.",
           "license": "MIT",
-          "source_hash": "7bb3bbd176e475661937952358a41c84900a64fd7e52782adea3d0a4eaece76b",
+          "source_hash": "870add2d6a69a571f0489a5900e27f0ceb771da992222b60e7429ef5ece39723",
           "source_id": "pack-r21-authored",
           "source_path": "AGENTS.md",
           "source_revision": "r22-tool-routing@2026-08-16",
@@ -149,7 +149,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7bb3bbd176e475661937952358a41c84900a64fd7e52782adea3d0a4eaece76b",
+      "output_hash": "870add2d6a69a571f0489a5900e27f0ceb771da992222b60e7429ef5ece39723",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -261,7 +261,7 @@
           "decision": "adopt",
           "decision_evidence": "Authored 2026-08-19. Human-facing index at the repository root: prerequisites, one pass of the mod cycle, and a want-X-open-Y route table over the 40 skills. It routes and does not restate skill content. Every command in it was either executed or read at the file and line that documents it; the invocations that cannot run on a clean clone are named as such instead of being printed as working steps.",
           "license": "MIT",
-          "source_hash": "13360338ab1854ae87285ef3b918a9a268058ad8c5fe895c056a1dd97db32e81",
+          "source_hash": "831bf779c8879db3ba5a03e0364a177479bc9b76c9cc6b437c53cbb05e47f2a1",
           "source_id": "pack-r21-authored",
           "source_path": "GETTING-STARTED.md",
           "source_revision": "r21-getting-started@2026-08-19",
@@ -269,7 +269,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "13360338ab1854ae87285ef3b918a9a268058ad8c5fe895c056a1dd97db32e81",
+      "output_hash": "831bf779c8879db3ba5a03e0364a177479bc9b76c9cc6b437c53cbb05e47f2a1",
       "output_path": "GETTING-STARTED.md",
       "routing_artifact_id": "root/getting-started",
       "verification_level": "cross_checked"
@@ -429,7 +429,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "aeb26ae0e8c0cff0d63dd40649a7d99baad4154bb5de22b782967b8f85ef8139",
+      "output_hash": "659ffce5ac96599ab312338b32965066e992d743c207061ef47f09c9860c7536",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -8227,6 +8227,226 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/tools/dayz-layout-viewer/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. HTML preview of a .layout at four viewports, ported into the pack from an unpublished research project whose skill this pack already told readers to use. It reads through the pack format parser (tools/dayz-ui-lab) instead of carrying a second lexer, and its README enumerates what it does not rasterize. Smoke: two production layouts rendered (106173 B and 241974 B, 4 viewports); 4 tests pass.",
+          "license": "MIT",
+          "source_hash": "e1d9826d436e0b84b391a87b15127cf33f3cabd25d1e48f85c3d1bab2068c5b4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-layout-viewer/README.md",
+          "source_revision": "r21-layout-viewer@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e1d9826d436e0b84b391a87b15127cf33f3cabd25d1e48f85c3d1bab2068c5b4",
+      "output_path": "tools/dayz-layout-viewer/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-layout-viewer/build_viewer.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. HTML preview of a .layout at four viewports, ported into the pack from an unpublished research project whose skill this pack already told readers to use. It reads through the pack format parser (tools/dayz-ui-lab) instead of carrying a second lexer, and its README enumerates what it does not rasterize. Smoke: two production layouts rendered (106173 B and 241974 B, 4 viewports); 4 tests pass.",
+          "license": "MIT",
+          "source_hash": "4f7c0a283e4f166dc6ca225eda3d053ab00b062f18da05475598472737baa04a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-layout-viewer/build_viewer.py",
+          "source_revision": "r21-layout-viewer@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4f7c0a283e4f166dc6ca225eda3d053ab00b062f18da05475598472737baa04a",
+      "output_path": "tools/dayz-layout-viewer/build_viewer.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-layout-viewer/dayz_layout_viewer/__init__.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. HTML preview of a .layout at four viewports, ported into the pack from an unpublished research project whose skill this pack already told readers to use. It reads through the pack format parser (tools/dayz-ui-lab) instead of carrying a second lexer, and its README enumerates what it does not rasterize. Smoke: two production layouts rendered (106173 B and 241974 B, 4 viewports); 4 tests pass.",
+          "license": "MIT",
+          "source_hash": "0e965faa4ae05826f1d98ec46d3bc1260c5ce0fd8124d9ead8535e15ff815f88",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-layout-viewer/dayz_layout_viewer/__init__.py",
+          "source_revision": "r21-layout-viewer@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0e965faa4ae05826f1d98ec46d3bc1260c5ce0fd8124d9ead8535e15ff815f88",
+      "output_path": "tools/dayz-layout-viewer/dayz_layout_viewer/__init__.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-layout-viewer/dayz_layout_viewer/__main__.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. HTML preview of a .layout at four viewports, ported into the pack from an unpublished research project whose skill this pack already told readers to use. It reads through the pack format parser (tools/dayz-ui-lab) instead of carrying a second lexer, and its README enumerates what it does not rasterize. Smoke: two production layouts rendered (106173 B and 241974 B, 4 viewports); 4 tests pass.",
+          "license": "MIT",
+          "source_hash": "56c7d21ba556ebfd6463dbaa49b92c6290f604b9437b31a0183e044f10afd733",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-layout-viewer/dayz_layout_viewer/__main__.py",
+          "source_revision": "r21-layout-viewer@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "56c7d21ba556ebfd6463dbaa49b92c6290f604b9437b31a0183e044f10afd733",
+      "output_path": "tools/dayz-layout-viewer/dayz_layout_viewer/__main__.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-layout-viewer/dayz_layout_viewer/html_template.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. HTML preview of a .layout at four viewports, ported into the pack from an unpublished research project whose skill this pack already told readers to use. It reads through the pack format parser (tools/dayz-ui-lab) instead of carrying a second lexer, and its README enumerates what it does not rasterize. Smoke: two production layouts rendered (106173 B and 241974 B, 4 viewports); 4 tests pass.",
+          "license": "MIT",
+          "source_hash": "da272edab4ae005d78c01550c65a687517a112ffdf06748962952af69e8ce77c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-layout-viewer/dayz_layout_viewer/html_template.py",
+          "source_revision": "r21-layout-viewer@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "da272edab4ae005d78c01550c65a687517a112ffdf06748962952af69e8ce77c",
+      "output_path": "tools/dayz-layout-viewer/dayz_layout_viewer/html_template.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-layout-viewer/dayz_layout_viewer/viewer.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. HTML preview of a .layout at four viewports, ported into the pack from an unpublished research project whose skill this pack already told readers to use. It reads through the pack format parser (tools/dayz-ui-lab) instead of carrying a second lexer, and its README enumerates what it does not rasterize. Smoke: two production layouts rendered (106173 B and 241974 B, 4 viewports); 4 tests pass.",
+          "license": "MIT",
+          "source_hash": "08d3648a4163e412b530a8fb0ea260efbc267a2fabafb8af27be7877858ad978",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-layout-viewer/dayz_layout_viewer/viewer.py",
+          "source_revision": "r21-layout-viewer@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "08d3648a4163e412b530a8fb0ea260efbc267a2fabafb8af27be7877858ad978",
+      "output_path": "tools/dayz-layout-viewer/dayz_layout_viewer/viewer.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-layout-viewer/pyproject.toml",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. HTML preview of a .layout at four viewports, ported into the pack from an unpublished research project whose skill this pack already told readers to use. It reads through the pack format parser (tools/dayz-ui-lab) instead of carrying a second lexer, and its README enumerates what it does not rasterize. Smoke: two production layouts rendered (106173 B and 241974 B, 4 viewports); 4 tests pass.",
+          "license": "MIT",
+          "source_hash": "c66a2208b83236b4a87b728bf47cd3447598b5ef6cf608db1727afb5e17910f4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-layout-viewer/pyproject.toml",
+          "source_revision": "r21-layout-viewer@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c66a2208b83236b4a87b728bf47cd3447598b5ef6cf608db1727afb5e17910f4",
+      "output_path": "tools/dayz-layout-viewer/pyproject.toml",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-layout-viewer/tests/conftest.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. HTML preview of a .layout at four viewports, ported into the pack from an unpublished research project whose skill this pack already told readers to use. It reads through the pack format parser (tools/dayz-ui-lab) instead of carrying a second lexer, and its README enumerates what it does not rasterize. Smoke: two production layouts rendered (106173 B and 241974 B, 4 viewports); 4 tests pass.",
+          "license": "MIT",
+          "source_hash": "f26b5045757fa87726ef480197dc2387e9c658fb895d3f6a18705e758c46ed67",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-layout-viewer/tests/conftest.py",
+          "source_revision": "r21-layout-viewer@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f26b5045757fa87726ef480197dc2387e9c658fb895d3f6a18705e758c46ed67",
+      "output_path": "tools/dayz-layout-viewer/tests/conftest.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-layout-viewer/tests/fixtures/visible-zero.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. HTML preview of a .layout at four viewports, ported into the pack from an unpublished research project whose skill this pack already told readers to use. It reads through the pack format parser (tools/dayz-ui-lab) instead of carrying a second lexer, and its README enumerates what it does not rasterize. Smoke: two production layouts rendered (106173 B and 241974 B, 4 viewports); 4 tests pass.",
+          "license": "MIT",
+          "source_hash": "32edeb9c43751819758b5215f0471bdbbbad8f4b50381fa93d9f7f30c7edd270",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-layout-viewer/tests/fixtures/visible-zero.layout",
+          "source_revision": "r21-layout-viewer@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "32edeb9c43751819758b5215f0471bdbbbad8f4b50381fa93d9f7f30c7edd270",
+      "output_path": "tools/dayz-layout-viewer/tests/fixtures/visible-zero.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-layout-viewer/tests/test_viewer.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-08-19. HTML preview of a .layout at four viewports, ported into the pack from an unpublished research project whose skill this pack already told readers to use. It reads through the pack format parser (tools/dayz-ui-lab) instead of carrying a second lexer, and its README enumerates what it does not rasterize. Smoke: two production layouts rendered (106173 B and 241974 B, 4 viewports); 4 tests pass.",
+          "license": "MIT",
+          "source_hash": "a2f2dd53172d2a839d1786fbac395142dd6c67ae86d3d33c962c00b156a77dbe",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-layout-viewer/tests/test_viewer.py",
+          "source_revision": "r21-layout-viewer@2026-08-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a2f2dd53172d2a839d1786fbac395142dd6c67ae86d3d33c962c00b156a77dbe",
+      "output_path": "tools/dayz-layout-viewer/tests/test_viewer.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/tools/dayz-model-preflight/readme.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -12811,7 +13031,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "42572bde78de6ba1df0f6f9a15e49e5dd3652784268e80566a3d3370e2262a6b",
+      "output_hash": "8b2325ccd87f79c8eb5484d25d0ef1f663b984ad40bafed1f15af15d81e9d47f",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -13023,7 +13243,7 @@
           "decision": "adopt",
           "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
           "license": "MIT",
-          "source_hash": "4488a49c9df27fb613ffebc55b5fa7f635d1ca890cf05a8a66e40ed6d6ae0744",
+          "source_hash": "b338c970fdd4233e2c017684cf7e25a06fb96fcecc5d1008ca6ed8a4e999a571",
           "source_id": "installed-skills",
           "source_path": "dayz-ui-development/references/layout-format.md",
           "source_revision": "filesystem@2026-08-17",
@@ -13031,7 +13251,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4488a49c9df27fb613ffebc55b5fa7f635d1ca890cf05a8a66e40ed6d6ae0744",
+      "output_hash": "b338c970fdd4233e2c017684cf7e25a06fb96fcecc5d1008ca6ed8a4e999a571",
       "output_path": "skills/dayz-ui-development/references/layout-format.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"

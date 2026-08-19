@@ -1,6 +1,6 @@
 # Tools
 
-Eight Python tools ship in this pack. They are offline and deterministic;
+Nine Python tools ship in this pack. They are offline and deterministic;
 none of them phone home, and none of them guess. Most are stdlib-only;
 [`dayz-vehicle-proxy-contract`](#tools-dayz-vehicle-proxy-contract) also
 needs numpy, scipy, matplotlib and the pack py3d fork.
@@ -25,9 +25,45 @@ one.
 | [`dayz-model-preflight`](#tools-dayz-model-preflight) | Gate a `.p3d` against a contract before export | No — read-only |
 | [`dayz-odol-strict`](#tools-dayz-odol-strict) | Inspect and diff binarized ODOL models | No — read-only |
 | [`dayz-ui-lab`](#tools-dayz-ui-lab) | Parse, compose, render and diff `.layout` UIs offline | Reports only |
+| [`dayz-layout-viewer`](#tools-dayz-layout-viewer) | Preview a `.layout` as HTML at four viewports | **Yes** — one `.preview.html` |
 | [`dayz-3d-viewer`](#tools-dayz-3d-viewer) | Convert MLOD `.p3d`, PAA and RVMAT to glTF + HTML | **Yes** — `.glb`, PNG, HTML |
 | [`dayz-script-validator`](#tools-dayz-script-validator) | Lint Enforce, `config.cpp`, `.layout` and `.rvmat` before packing | Reports only |
 | [`dayz-vehicle-proxy-contract`](#tools-dayz-vehicle-proxy-contract) | Audit vehicle proxy graph, fit, engine properties and PBO closure | Reports only; `repair` stages copies outside the addon |
+
+---
+
+## Two `.layout` parsers
+
+There are two readers. Neither is a superset of the other. Pick by the
+question you are asking, not by which file you already have open.
+
+Measured on 2026-08-19 over the 819 `.layout` files of the working tree:
+
+| | `layout_ast.py` (DayZ_Tooling) | `dayz-ui-lab` (this pack) |
+|---|---|---|
+| Job | GEOMETRY | FORMAT |
+| Keeps | 11 geometry and flag keys | all keys |
+| Exceptions over 819 | 0 | 57 (45 are copies of ONE first-party HUD, 12 are XML files) |
+| Continuation `\` + newline | does not reconstruct it | one LF — matches what was measured in DayZDiag |
+| Serves | rectangles, click centres, reachability | render, scenarios, and anything that reads text/color/image |
+
+Choice rule, in one line: **if you need where a widget IS, the geometry parser; if you need what it SAYS, the format parser. Neither is a superset of the other.**
+
+A third, historical parser exists (`renderer/parse.py` from the DayZ_UI_Research
+project). It is **superseded**. On Windows paths it **silently strips the
+backslash** (`gui\layouts\foo.edds` → `guilayoutsfoo.edds`). Do not revive it.
+
+Measured defect of the format parser, declared until it is fixed: in inline
+format it **collapses attributes into `position`** (`ImageWidgetClass Bg { position 0 0
+size 1 1 stretch 1 ignorepointer 1 { } }` ends up as a single attribute holding
+the whole list). The geometry parser splits them by arity.
+
+A screen-rectangle predictor (`ui_rects.py`: `predict` / `lint` / `centers`)
+sits on the geometry parser. It is **not published in this pack** — it lives
+in the unpublished DayZ_Tooling workbench, and this pack ships the format lab,
+not a second, partial geometry model. Unmodelled anchors (`halign left_ref` /
+`valign top_ref`, `hexactpos 1`) are refused, not guessed. Route:
+[`GETTING-STARTED.md`](GETTING-STARTED.md) §3.
 
 ---
 
@@ -146,6 +182,21 @@ negatives for a guarantee of no false positives from that path. **A green run is
 not proof of absence**, and it predicts that the module compiles and the asset
 loads — never that the engine behaves. Behaviour is the online layer's job.
 
+**Vanilla control — linter authors only, not a mod-cycle step.** Before
+committing a change under `tools/dayz-script-validator/` (a new rule, a
+touched detector, a touched parser), compare the linter's findings on
+Bohemia's vanilla tree against the pinned baseline:
+
+```bash
+python tools/dayz-script-validator/scripts/vanilla_control.py
+```
+
+A full run takes about 85 seconds (`tools/dayz-script-validator/README.md`;
+not re-timed here). Without a local vanilla tree the control SKIPs with
+exit 2. A green control only proves the linter is silent on that tree; it
+does not prove the new rule catches anything. Optional flags from
+`--help`: `--vanilla-root`, `--baseline`, `--update`, `--json`.
+
 ## `tools/dayz-vehicle-proxy-contract`
 
 The **offline vehicle-proxy gate**: it checks that every declared proxy on a
@@ -211,9 +262,12 @@ Inspecting a binarized model is a diagnostic; producing one is the engine's job.
 
 An offline lab for DayZ `.layout` UIs: parse a layout into a JSON IR, compose
 scenarios from shells and subviews, emit a deterministic semantic render at a
-given viewport, and diff two renders into actionable defects.
+given viewport, and diff two renders into actionable defects. This is the
+**format** parser in [Two `.layout` parsers](#two-layout-parsers). Geometry
+(rectangles, click centres) is a different reader, outside this pack.
 
 ```bash
+python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout>
 python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout> --check
 python tools/dayz-ui-lab/dayz_ui_lab/scenario.py --scenario s.json --viewport 1920x1080
 python tools/dayz-ui-lab/dayz_ui_lab/render.py --scenario s.json --viewport 1920x1080 --out render.json
@@ -230,6 +284,31 @@ layout is redistributed with the pack.
 **The offline render is not the engine.** It is a semantic model good enough to
 catch structural mistakes before a build; DayZDiag remains the golden reference
 for anything that depends on real rasterization, fonts or the live widget tree.
+
+## `tools/dayz-layout-viewer`
+
+Emits one self-contained `*.preview.html` for a `.layout`, with the same tree
+drawn at **four viewports** (1080p, 1440p, ultrawide 21:9, 720p) plus the
+parser's diagnostics. Switching between them is the whole point: exact-pixel
+widgets keep their pixels while proportional ones scale, which is the "looked
+right in the mockup, wrong in game" failure made visible without a build.
+
+```bash
+python tools/dayz-layout-viewer/build_viewer.py <layout> [-o out.html]
+```
+
+It reads through `dayz-ui-lab`'s format parser, so it inherits that contract —
+including the continuation and fail-closed escape behaviour — rather than
+carrying a second lexer. It is **not** `dayz-ui-lab/render.py`, which emits
+semantic scenario JSON and no HTML.
+
+**A structural approximation, not the rasterizer.** Its README enumerates what
+it does not do, and the list is the useful part: no font atlas, no `.paa` /
+`.edds` decode, no script-side `SetColor` / `SetText`, no spacer re-flow (the
+authored `position`/`size` are drawn, and the engine overwrites those), no
+`.styles`, and no claim about the `right_ref` / `bottom_ref` offset sign, which
+is still unverified. Trust it for structure and anchoring; for pixels, colour
+and fonts, DayZDiag.
 
 ## `tools/dayz-3d-viewer`
 
@@ -260,6 +339,10 @@ The DayZ 3D pipeline still needs more than this — Blender→`.p3d` assembly,
 PNG→PAA encoding, PBO packing. Those live in tooling that is not the
 author's to redistribute; `README.md` §4 lists what to install and where
 it comes from. PAA *decoding* is now in `tools/dayz-3d-viewer`.
+
+The screen-rectangle predictor (`ui_rects.py`) is also absent on purpose:
+it belongs to the unpublished DayZ_Tooling workbench, not this pack. See
+[Two `.layout` parsers](#two-layout-parsers).
 
 The offline in-game verification bridge is described in
 [`knowledge/dayz-mcp-bridge-protocol.md`](knowledge/dayz-mcp-bridge-protocol.md).

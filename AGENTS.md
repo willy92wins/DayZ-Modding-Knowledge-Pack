@@ -56,6 +56,9 @@ and limits: [`TOOLS.md`](TOOLS.md).
 | `binarize` refuses the model | same, plus `py3d.validate()` | Which LOD breaks a budget, instead of bisecting by rebuild |
 | Animation never plays | `python -m dayz_animation_formats inspect <rtm> --output anatomy.json` | Whether the signature and bone track are what the engine expects |
 | Layout renders empty, or a widget is missing | `python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout> --check` | Broken references and structure, offline, with no build |
+| Need a widget rectangle or click centre | geometry parser + `ui_rects.py` (outside this pack; [`TOOLS.md`](TOOLS.md)) | Absolute screen rect / centre; unmodelled anchors are refused, not guessed |
+| Need text, color or image from a `.layout` | `python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout>` | Full-key format parse — not geometry |
+| About to change a linter rule | `python tools/dayz-script-validator/scripts/vanilla_control.py` | Whether the new rule is silent on Bohemia's tree |
 | Need a 3D preview of an MLOD `.p3d` without launching DayZ | `python -m dayz_3d_viewer build-viewer <p3d>` | Whether the visual LOD, textures and materials survived the export |
 | Two builds differ and nobody knows where | `python -m dayz_odol_strict diff <ref.json> <cand.json>` | The field that changed, not a visual impression |
 | A change looks right in Blender but wrong in game | the in-game bridge — `knowledge/dayz-mcp-bridge-protocol.md` | The engine's opinion, which is the only one that counts |
@@ -69,6 +72,9 @@ and limits: [`TOOLS.md`](TOOLS.md).
 | Comparing against a shipped asset | `dayz-odol-strict` | Read-only, and its backend is **not** redistributed — external and hash-pinned, so a consumer installs it separately |
 | Animation, RTM or SEAnim work | `dayz-animation-formats` | BMTR and `.anm` conversion are deliberately out of scope |
 | UI and `.layout` work | `dayz-ui-lab` | The offline render is a semantic model, not the engine; DayZDiag stays the golden reference |
+| Need a widget rectangle or click centre | `layout_ast.py` + `ui_rects.py` (outside this pack) | Not published here; contract in [`TOOLS.md`](TOOLS.md) |
+| Need `.layout` text / color / image | `dayz-ui-lab` | Format parser; see the two-parser contract in [`TOOLS.md`](TOOLS.md) |
+| Changing a linter rule, detector or parser | `vanilla_control.py` | Gate for linter authors, not a mod-cycle step |
 | Preview an MLOD `.p3d` / PAA / RVMAT | `dayz-3d-viewer` | HTML loads three.js 0.160.0 from a CDN; SWIZ, proxies and ViewPilot 1100 are documented gaps |
 | Verifying anything in-game | the MCP bridge | Wiring example in `.mcp.example.json`, deliberately not auto-started |
 

@@ -11,6 +11,101 @@ loading: unbalanced braces and XML format. See SKILL.md Rule 1 for the full corr
 
 ---
 
+## File syntax the overview omits
+
+The grammar above is the common authored shape. Three syntax facts are
+missing from it; a new parser or tool that only implements the overview
+will mis-read real files.
+
+### A file may have more than one top-level widget (B9)
+
+A `.layout` is a **sequence** of widget declarations, not a single root.
+A parser that calls `parse_widget()` once and stops drops every sibling
+after the first — silent degradation, no exception. That was the v1
+renderer (`parse_layout` did one `parse_widget()`). The replacement
+collects roots until EOF (`LayoutDoc.roots`).
+
+How this was established: bug-ledger B9
+(`AI/10_Projects/DayZ_UI_Research/bug-ledger.md`, 2026-05-14). The
+2026-05-14 phase-1 review confirmed the loop-until-EOF fix
+(`AI/10_Projects/DayZ_UI_Research/reviews/2026-05-14-phase1-parser-review.md`).
+The published pack parser still loops
+(`tools/dayz-ui-lab/dayz_ui_lab/parse.py`, `Parser.parse_layout`) and
+its fixture asserts `rootCount == 2`
+(`tools/dayz-ui-lab/tests/test_parser.py`,
+`test_multiroot_bom_block_comments_and_float_edges`).
+
+This is a **parser / file-format** contract. The in-game LF_UIProbe
+fixtures are each a single root — `CreateWidgets` on a multi-root file
+was not probed.
+
+### Line continuation: `\` + newline inserts exactly one LF (B20)
+
+Measured **in-game**, DayZDiag `1.29.163451`, 2026-07-28.
+
+A quoted string may continue onto the next physical line by closing the
+quotes, writing a backslash, then a newline, then the next quoted
+fragment. The probe fixture
+(`tools/dayz-ui-lab/probe/LF_UIProbe/gui/layouts/continuation.layout.template`):
+
+```
+text "Alpha"\
+    "Beta"
+```
+
+`ButtonWidget.GetText(out string)` on that attribute returns `len=10`
+and the value `"Alpha\nBeta"` — five + one newline + four. Bare
+concatenation would be 9. The same length and the same value come back
+from an LF source and from a CRLF source: the engine normalizes the
+source EOL before the join.
+
+Primary: RPT segment
+`AI/10_Projects/DayZ_UI_Research/evidence/2026-07-28-b20-rpt-segment.txt`,
+the two `LF_UI_PROBE_RESULT` lines between `[LF_UI_PROBE_BEGIN]` and
+`[LF_UI_PROBE_END]`:
+
+- `case=continuation-lf|status=loaded|len=10|value=<Alpha` / `Beta>`
+- `case=continuation-crlf|status=loaded|len=10|value=<Alpha` / `Beta>`
+
+The probe writes those lines from `GetText`
+(`tools/dayz-ui-lab/probe/LF_UIProbe/scripts/5_Mission/LF_UIProbe_Mission.c`,
+`ProbeContinuation`). Closure:
+`AI/10_Projects/DayZ_UI_Research/assumptions.md` (resolved 2026-07-28).
+The RPT itself is written as CRLF; its 49,768 bytes contain neither a
+lone LF nor a lone CR, so a literal CR in the string would have shown
+up as a bare CR and a literal CRLF would have been `len=11`. The
+logical value is therefore one LF, identical for both sources.
+
+The published parser implements this join
+(`tools/dayz-ui-lab/dayz_ui_lab/parse.py`, `_scan_continuation`). A
+parser that treats `\` as an unexpected character cannot read the
+TraderX tooltip layouts that use the form (ledger B20:
+`BuyTooltip.layout`, `CustomizeTooltip.layout`, `SellTooltip.layout`,
+`testTooltip.layout`).
+
+### Block comments and leading/trailing-dot floats (B12)
+
+Gotcha 8 below documents `//` line comments. That is not the whole
+lexer. A tokenizer that only matches `//` and `-?\d+\.\d+` mis-reads:
+
+- block comments `/* … */`
+- floats with no digit before or after the point: `.5`, `1.`
+
+The published tokenizer accepts both (`tools/dayz-ui-lab/dayz_ui_lab/parse.py`,
+`NUMBER_RE` and the `/*` branch in `tokenize`). Phase-1 tests cover them
+(`tools/dayz-ui-lab/tests/test_parser.py`,
+`test_multiroot_bom_block_comments_and_float_edges`). A pack fixture
+already authors a leading-dot float:
+`tools/dayz-script-validator/tests/fixtures/layout_braces/ok_inline_widget.layout`
+(`size .5 -0.5`).
+
+How this was established: bug-ledger B12
+(`AI/10_Projects/DayZ_UI_Research/bug-ledger.md`, 2026-05-14) — the v1
+regex could not tokenize these forms. This is **offline syntax**, not
+an in-game measurement.
+
+---
+
 ## Complete Widget Class Catalog
 
 ### Container Widgets (no visual rendering)
@@ -117,6 +212,29 @@ resolution-independent UI: e.g. `day_z_hud.layout` roots use `halign center_ref`
 background the same way. Misunderstood anchors are a classic source of "looks
 right in the mockup, lands elsewhere in-game".
 
+**[UNVERIFIED] offset sign of `halign right_ref` / `valign bottom_ref` (B5).**
+The keyword values themselves are real (see the property list above).
+The sign of a non-zero `position` offset against those anchors is not.
+Two implementations disagree:
+
+- dossier §4.1: `widget_left = parent_right - width + px`
+- published resolver (`tools/dayz-ui-lab/dayz_ui_lab/parse.py`,
+  `resolve_geometry`): `x = parent_width - width - offset_x`, and the
+  same minus-offset form for `valign bottom_ref` on Y. It tags the
+  result `status: "assumed"`.
+
+Neither formula has been read back from the engine. The assumption is
+still open (`AI/10_Projects/DayZ_UI_Research/assumptions.md`, 2026-05-14).
+The 2026-05-14 phase-1 review recorded the same discrepancy
+(`AI/10_Projects/DayZ_UI_Research/reviews/2026-05-14-phase1-parser-review.md`).
+The offline rect recipe later in this file only covers `center_ref`,
+deliberately.
+
+What would close it: one DayZDiag probe, a widget with `halign right_ref`
+and `position` offset != 0 (and the `valign bottom_ref` twin), then
+`GetScreenPos` / `GetScreenSize` (or `ui_tree`) against the parent box.
+Do not treat either formula as ground truth until that read-back exists.
+
 ### Visibility & Interaction
 
 ```
@@ -127,6 +245,15 @@ clipchildren 0|1           // 1=children clipped to parent bounds (overflow hidd
 
 **CRITICAL**: `ignorepointer 1` on ALL background ImageWidgets.
 Without it, backgrounds steal mouse events from interactive children.
+
+**Tooling trap (B1 / B17), not a layout-semantics change.** `visible 0`
+is a legal authored value (hidden). In Python, `int(attr(...) or 1)`
+turns that 0 into 1 because 0 is falsy — the v1 renderer showed every
+hidden widget (`AI/10_Projects/DayZ_UI_Research/bug-ledger.md`, B1 and
+B17, 2026-05-14). Any reader of integer flags (`visible`, and the same
+pattern on any other 0-is-valid attribute) must use an explicit
+missing-value sentinel, not `x or default`. The published parser's
+`attr_int` does this (`tools/dayz-ui-lab/dayz_ui_lab/parse.py`).
 
 ### Visual Properties
 
@@ -543,6 +670,19 @@ ImageWidgetClass ClickBlocker {
 8. **Comments are // style** (C++ line comments), NOT `<!-- -->` XML comments
 9. **No semicolons** after property values (unlike config.cpp)
 10. **Inline format is valid** but hard to verify: `ImageWidgetClass Bg { position 0 0 size 1 1 ... { } }`
+    **Parser contract (F1, still live).** Grouping values by physical line
+    collapses that example into a single attribute
+    `position: [0, 0, "size", 1, 1, "stretch", 1, "ignorepointer", 1]`.
+    Grouping by key arity (`position` / `size` take two numbers; flags
+    take one) keeps `position`, `size`, `stretch` and `ignorepointer`
+    apart. Finding F1
+    (`AI/10_Projects/DayZ_UI_Research/reviews/2026-05-14-phase1-parser-review.md`,
+    2026-05-14; ledger F1-B2) described this against the v2 parser. The
+    published pack parser still groups by `peek().line == line`
+    (`tools/dayz-ui-lab/dayz_ui_lab/parse.py`, `Parser.parse_values`) and,
+    on that exact input, still emits only `position` with the collapsed
+    list (reproduced 2026-08-19 against this tree). Any new parser MUST
+    split by key arity, not by the physical line.
 11. **`SetSort` is an ABSOLUTE set** *(corrected 2026-07-03 — the additive `//! ADDS` comment in
     `enwidgets.c:128` belongs to `SetFlags`, not `SetSort` at `:130`)*. `SetFlags` ADDS and
     `ClearFlags` SUBSTRACTS; `SetSort` replaces. Layout-side z-order = the `priority` attribute.

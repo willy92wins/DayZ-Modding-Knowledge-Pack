@@ -271,6 +271,8 @@ plan.
 | A fence, gate, tent or other buildable | `dayz-basebuilding` |
 | Save/load, CF ModStorage, schema migration | `dayz-persistence` |
 | HUD, `.layout`, widgets, Dabs MVC | `dayz-ui-development`; offline parse: `python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout> --check` |
+| Widget rectangle or click centre | geometry parser + `ui_rects.py` (outside this pack; `TOOLS.md`) |
+| `.layout` text / color / image | `python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout>` |
 | Rigid bodies, raycasts, "I walk through it" | `dayz-physics-engine` |
 | `CfgSoundShaders` / sounds not playing on dedicated | `dayz-sound-system` |
 | `.ptc` / particle script | `dayz-particles` |
@@ -294,6 +296,7 @@ plan.
 | AI-generated mesh into DayZ | `ai-3d-to-dayz` |
 | See the pack tools on a synthetic `.p3d` | `examples/end-to-end/README.md` |
 | What is true of a skill on which build | [`compatibility-matrix.md`](compatibility-matrix.md) |
+| Touch a linter rule | `python tools/dayz-script-validator/scripts/vanilla_control.py` |
 | Change *this repository* | [§4](#4-what-this-file-is-not) |
 
 Forty playbooks sit under `skills/`. The table above is the frequent
