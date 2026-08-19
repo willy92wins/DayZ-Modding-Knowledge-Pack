@@ -152,6 +152,77 @@ el PBO y `@DayZ_MCP` como dependencia adicional:
    que no se ejercitaron desde entonces (2026-08-02: MERCEDES_AMGLF y LFPowerGrid con la vieja,
    SUB_BRZ/LFHeli/DayZ_MCP con la actual).
 
+   ⚠⚠ **El síntoma NO siempre es `version_blocked` / `last_poll_age_s=null`** — y creer que sí
+   cuesta la sesión igual (medido 2026-08-17 en LFPowerGrid, con este aviso ya escrito arriba y
+   pasado por alto). Con la key stale el peer puede leerse **`version_state: ok` con
+   `last_poll_age_s` de 1.485 s**: es el dato del ÚLTIMO sondeo bueno, que puede pertenecer a otra
+   corrida ya muerta. Un puente muerto se lee así como sano. La firma que no engaña está en el
+   script log del juego: `[MCP-POC] poll error=5` (server) / `[MCP-CLIENT] client poll error=5`
+   (cliente). Ese **5 es `EREST_ERROR_CLIENTERROR`** (`scripts\3_game\http\restapi.c:16-17`), o sea
+   el daemon devolvió 401 — el 401 NO aparece en ningún sitio del lado del juego.
+   Gate de dos comandos antes de culpar a nada:
+   - Comparar la key de **cada** `dayz_mcp.json` que el run vaya a usar contra el keyfile. Son dos
+     rutas y `$profile:` gana a `$mission:` (`MCPBridge.c:145-149`, `MCPClientBridge.c:234-237`);
+     si falta la de profiles, el bridge cae a la de la misión, que es la que suele quedar stale.
+     Mismo largo (43) NO es prueba: comparar los bytes.
+   - `Invoke-WebRequest "http://127.0.0.1:8765/poll?key=<contenido del keyfile>"` → 200
+     `{"commands":[]}` demuestra que daemon y key viva están bien, y acota el fallo al JSON del run.
+   **Y arreglarlo NO exige reiniciar el servidor**: `ReloadKeyAfterFailure` (`MCPBridge.c:373-398`)
+   relee la key cuando el backoff toca techo. Corriges el JSON, esperas ~20 s, sale
+   `[MCP-POC] poll key reloaded` y el peer vuelve a `last_poll_age_s` 0,2. Eso ahorra el boot.
+
+   ⚠ **La aguja de spawn del jugador no puede presuponer el género.** El ejemplo
+   `Create entity type 'SurvivorM_` —que sugiere la propia descripción de `wait_for`— **falla en
+   silencio** con un personaje femenino: 300 s de timeout con el jugador ya dentro del mundo y
+   `Create entity type 'SurvivorF_Helga'` escrito en el RPT. Usar `Create entity type 'Survivor`.
+
+## GOTCHAS DEL PUENTE QUE CUESTAN UNA CORRIDA CADA UNO (added 2026-08-18)
+
+Verificados in-game el 2026-08-18 durante una bateria de celdas de ATM. Los seis costaron al menos
+una corrida cada uno, y **cinco de los seis producen un veredicto que acusa al mod sin que el mod
+tenga nada** (6 corridas, 0 fallos reales del mod). Comprobalos ANTES de escribir la primera sonda.
+
+1. **`dayz_test_run` NO carga `@DayZ_MCP` por defecto, y devuelve `succeeded` igual.** Los dos
+   procesos arrancan vivos, el juego funciona, y el puente calla. El sintoma que recibes
+   (`server_poll_stale` / `client_not_polling` / `ready.reason=no_run`) apunta al puente o a la
+   clave, no al conjunto de mods, asi que se pierde el tiempo en el sitio equivocado.
+   **Gate**: pasa `extra_mods=["@DayZ_MCP"]` y confirma en el log del servidor que el define
+   `DayZ_MCP` aparece en los cuatro modulos, o busca lineas `[MCP-POC]`.
+
+2. **`logs_since` no acepta su propio `marker`.** Lo DEVUELVE como dict {ruta: [offsets]} y su
+   parametro lo exige string: ValidationError de Pydantic. El drenaje incremental es imposible.
+   **Rodeo**: lee el log entero al final de la secuencia y asigna las respuestas por orden,
+   verificando la alineacion con algun campo del propio evento (un tipo, un id). Si dos sondas
+   comparten ese campo, marca `ambiguous_alignment` en vez de adivinar.
+
+3. **`wait_for(log_matches)` no sirve para esperar TU respuesta.** Con el `lookback_lines=200` por
+   defecto, una linea de la sonda anterior satisface el patron al instante. Y con
+   `lookback_lines=0` se ha visto hacer timeout con la linea ya presente en el log del cliente,
+   devolviendo en `observed` una linea de otro flujo. Usalo como espera oportunista; el veredicto
+   sale del sondeo de `logs_since`.
+
+4. **El inventario del jugador NO se resetea entre corridas.** La segunda corrida encuentra lo que
+   dejo la primera, ya no cabe nada y el dotado falla en silencio (`create_failed`, o endow de 0
+   unidades). Para encadenar: `dayz_test_stop`, borrar
+   `<mision>\storage_1\players.db` con backup, y relanzar (~3 min).
+   **OJO**: `clean=true` NO hace esto — fuerza `Build=true` y pasa `-clear` a AddonBuilder, o sea
+   **reconstruye el PBO** y rompe la identidad de binario, que es justo lo que un A/B no puede
+   permitirse. El saldo/estado que el mod guarde en el perfil del servidor SOBREVIVE al borrado.
+
+5. **`inventory_give` devuelve `create_failed` tanto si el classname no existe como si no cabe.**
+   Son indistinguibles. Antes de culpar al inventario, verifica que el classname existe: grep en el
+   `types.xml` de la mision y una prueba con un item vanilla de control (`Apple` sirve). Y no
+   presupongas que los classnames de la config del mod existen: pueden apuntar a un mod que no esta
+   cargado, en cuyo caso el conteo por classname exacto da 0 para siempre y toda la feature parece
+   rota sin estarlo.
+
+6. **No te creas un veredicto sin mirar el log del cliente.** Muchos eventos de mod los escribe el
+   CLIENTE, no el servidor. En la bateria que origino esta seccion, el veredicto automatico dijo
+   FAIL o INCONCLUSIVE seis veces seguidas mientras el log del cliente mostraba las operaciones
+   ejecutandose correctamente. El modo de fallo peligroso de una celda no es "no mide": es
+   **"mide mal y acusa al mod"**, y eso se propaga a los documentos del proyecto. Si un veredicto
+   dice FAIL, abre el log del cliente antes de registrarlo.
+
 ## EL LAZO
 
 1. **Lanzar** vía `dayz-test.ps1 … -ExtraMods "@DayZ_MCP"` (espera a que cliente y server
@@ -433,7 +504,7 @@ Reglas:
 - Para juzgar alineación/aspecto CON ruedas: **CONDICIONAR** el coche (`wheel_count 0→4`) con `vehicle_enter(pos)` + micro-drive server-side (`OnDebugSpawn`; ver nota "Conditioning server-side (OnDebugSpawn real)" s37 arriba) y recapturar con las ruedas puestas.
 - Ante una pieza que "parece desplazada": **MEDIR antes de concluir** (bbox/centroide/simetría izq-der + bisección vs backup + containment en volumen de rueda) — no firmar "roto" ni "OK" por opinión.
 
-Verificado: SUB_BRZ 2026-07-22 — un susto de "piezas desalineadas" resultó ser frenos/suspensión al descubierto por spawn pelado; el forense (Codex, py3d) midió simetría ≤0.003 m, bisección 0-movimiento en 6 shells y containment en el volumen de rueda (`VehicleImport\work\reviews\2026-07-22-SUB_BRZ-misalign-forensic.md`). Costó 30 min de forense evitable. Cross-ref LL-209.
+Verificado: SUB_BRZ 2026-07-22 — un susto de "piezas desalineadas" resultó ser frenos/suspensión al descubierto por spawn pelado; el forense (Codex, py3d) midió simetría ≤0.003 m, bisección 0-movimiento en 6 shells y containment en el volumen de rueda (`ForzaDayZ\work\reviews\2026-07-22-SUB_BRZ-misalign-forensic.md`). Costó 30 min de forense evitable. Cross-ref LL-209.
 
 ## Reglas promovidas del corpus de lecciones (added 2026-07-27)
 

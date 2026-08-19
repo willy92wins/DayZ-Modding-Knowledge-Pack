@@ -174,8 +174,30 @@ Real case, cost a full in-game session to notice and a human to see it:
 
 - `<Widget Name="WindowWidget">` DOES declare `Colorable` (6 styles: Default,
   rover_sim_black, rover_sim_black_2, Colorable, Simple, debugUI).
-- `<Widget Name="PanelWidget">` declares 21 styles and **none** is `Colorable`;
-  its equivalent is `ColorablePanel`.
+- `<Widget Name="PanelWidget">` declares 21 styles and **none** is `Colorable`.
+
+### The obvious-looking replacement is a SECOND trap (measured the same night)
+
+`ColorablePanel` does exist for `PanelWidget`, so switching to it passes the
+name check above — and still paints nothing. Its `Normal` state is
+`<Item Name="Center" Image="" />`: an empty skin. The rename fixed the grep and
+not the pixel, and the panel stayed invisible through a full repack, deploy and
+relaunch. Two in-game cycles spent on a name.
+
+The real equivalent of `WindowWidget/Colorable` is
+**`PanelWidget/rover_sim_colorable`**: `Center="WhitePixel"` +
+`Color="4294967295"`, the identical mechanism — a white pixel tinted by the
+widget's own `color`. It is also the most-used panel style in all of vanilla
+(577x, section 6 above), in `day_z_hud.layout`,
+`day_z_connection_dialogue.layout`, `day_z_ingamemenu.layout` and ~10 more.
+
+**Pick a style by what it DRAWS, never by what it is called.** `ColorablePanel`
+sounds like the panel flavour of `Colorable` and is not; `rover_sim_colorable`
+sounds like simulation chrome and is exactly it. The mechanical query is one
+pass over the file: inside `<Widget Name="<YourType>">`, list the styles whose
+`<State Name="Normal">` carries a **non-empty** `Center` image. Anything with
+`Center=""` is a no-op skin however promising the name, and the engine will
+never tell you.
 
 So the name was real, the layout looked plausible, vanilla itself uses
 `style Colorable` on `gui\layouts\dialog.layout:1-16` — but that is a
