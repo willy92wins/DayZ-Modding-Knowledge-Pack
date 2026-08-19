@@ -158,3 +158,34 @@ Highlights per type (full inventory in the styles file itself):
   the ImageSet name (not filename) resolve? (4) for Workbench preview, is it in dayz.gproj?
 - The HTML renderer (`build_viewer.py`) does NOT resolve styles — styled widgets preview as
   invisible/plain. Note it in the spec and rely on in-game verification for styled chrome.
+
+
+---
+
+## Before writing `style X`, check the block of THAT widget type (measured 2026-08-19)
+
+The style namespace is **per widget type**, and a name borrowed from another
+type fails **silently**: no load error, no warning, no log line. The widget
+simply has no ImageSet to tint, so its `color` never paints and you get text
+floating over the game world.
+
+Real case, cost a full in-game session to notice and a human to see it:
+`MCPDialogPanel` is a `PanelWidgetClass` and declared `style Colorable`.
+
+- `<Widget Name="WindowWidget">` DOES declare `Colorable` (6 styles: Default,
+  rover_sim_black, rover_sim_black_2, Colorable, Simple, debugUI).
+- `<Widget Name="PanelWidget">` declares 21 styles and **none** is `Colorable`;
+  its equivalent is `ColorablePanel`.
+
+So the name was real, the layout looked plausible, vanilla itself uses
+`style Colorable` on `gui\layouts\dialog.layout:1-16` — but that is a
+`WindowWidgetClass`. Same word, different type, nothing painted.
+
+**The check is mechanical:** open `gui\looknfeel\dayzwidgets.styles`, find
+`<Widget Name="<YourWidgetType>">`, confirm the style name is inside THAT block.
+Having seen the name in another working layout proves nothing.
+
+**And grep the XML as XML.** This file is `<WidgetStyles><Widget Name=...>
+<Style Name=... ImageSet=.../>`. A grep written for the brace format returns
+zero hits and reads as "that style does not exist anywhere" — a false negative
+that sounds like an answer.

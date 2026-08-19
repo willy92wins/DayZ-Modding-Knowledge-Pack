@@ -12811,7 +12811,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "dfafa062e2984aab5258aa3bdf1c04c1700a2bab53413a9f845803371fa548ae",
+      "output_hash": "42572bde78de6ba1df0f6f9a15e49e5dd3652784268e80566a3d3370e2262a6b",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -13009,7 +13009,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7217fe1f461a89976b92029298d099df812f2d9092ecc1ee79fc78643ecf8250",
+      "output_hash": "495575da0199390b2498f8faf9103c84e52d4585e282bd1c8c3139dfdaebc37d",
       "output_path": "skills/dayz-ui-development/references/layout-empirical-corpus.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -13023,7 +13023,7 @@
           "decision": "adopt",
           "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
           "license": "MIT",
-          "source_hash": "d823420f7394021552207b243d257dda2d0cfe3943c665adaee7833e1d3ae473",
+          "source_hash": "4488a49c9df27fb613ffebc55b5fa7f635d1ca890cf05a8a66e40ed6d6ae0744",
           "source_id": "installed-skills",
           "source_path": "dayz-ui-development/references/layout-format.md",
           "source_revision": "filesystem@2026-08-17",
@@ -13031,7 +13031,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d823420f7394021552207b243d257dda2d0cfe3943c665adaee7833e1d3ae473",
+      "output_hash": "4488a49c9df27fb613ffebc55b5fa7f635d1ca890cf05a8a66e40ed6d6ae0744",
       "output_path": "skills/dayz-ui-development/references/layout-format.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -13089,7 +13089,7 @@
           "decision": "adopt",
           "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
           "license": "MIT",
-          "source_hash": "521dae0d52ff09269e1caf089d6f9e0cfdfaf571b7efc2f25dbe90ec1d3acb60",
+          "source_hash": "174318e616d9bd628b119fbaa25e9bc65ef64934d77518cd54977905ac7de450",
           "source_id": "installed-skills",
           "source_path": "dayz-ui-development/references/styles-format.md",
           "source_revision": "filesystem@2026-08-17",
@@ -13097,7 +13097,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "521dae0d52ff09269e1caf089d6f9e0cfdfaf571b7efc2f25dbe90ec1d3acb60",
+      "output_hash": "174318e616d9bd628b119fbaa25e9bc65ef64934d77518cd54977905ac7de450",
       "output_path": "skills/dayz-ui-development/references/styles-format.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"

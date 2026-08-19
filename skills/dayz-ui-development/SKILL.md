@@ -808,6 +808,19 @@ Useful for feature flags across mod boundaries.
 | ComboBox selection resets | Items cleared and re-added without saving selection | Save `GetCurrentItem()` before `ClearAll()`, restore with `SetCurrentItem()` after re-add |
 | Slider value not syncing with EditBox | One-directional binding | Implement bidirectional: slider OnChange → update editbox text, editbox OnChange → update slider current |
 
+On the "No word wrap in TextWidget" row above, two different claims are easy to
+confuse, and only one of them is measured. The 2026-08-19 census in
+`layout-format.md` proves that the `wrap` attribute **is written** on
+`TextWidgetClass` (4 occurrences) and on `RichTextWidgetClass` (236). It does not
+prove the engine **honours** it there: four occurrences in a 819-layout corpus is
+equally consistent with four layouts setting an attribute that does nothing. So:
+`wrap` on a TextWidget is not "impossible" or absent from the corpus — that part
+of the row was wrong — but whether it wraps at runtime is **[UNVERIFIED]** and a
+counting exercise cannot settle it. What settles it is one in-game probe: a
+TextWidget with `wrap 1` and a string longer than its box, read back with
+`GetTextSize()`. Until then, `MultilineTextWidget` remains the reliable choice
+for wrapping text, which is what the row's advice is really about.
+
 ## MOCKUP FIDELITY — calibrate to text_proportion; don't edit .layout off a mockup (added 2026-06-03)
 
 When building an HTML/preview mockup of a DayZ `.layout`, the mockup's CSS `font-size` (px) does
@@ -821,3 +834,45 @@ NOT represent the in-game render: DayZ TextWidget text size is driven by `text_p
   first; the in-game render may already be fine. Origin: a 25px mockup title wrapped + overlapped
   the subtitle and triggered a TitleText→MultilineTextWidget change that the calibrated
   (~18px ≈ text_proportion 0.34) render did not need. Cross-ref lessons-learned LL-086.
+
+
+---
+
+## A green automated UI gate says nothing about how the UI LOOKS (measured 2026-08-19)
+
+A full acceptance run of a modal dialog passed **11 API cases and then 10/10
+cases driven by real mouse clicks** — correct terminal states, values in
+declared order, unicode round-trip, no button overlap, rects matching the
+offline prediction to the decimal. While all of that was green, a human looking
+at the screen found three defects in under a minute:
+
+1. the panel background was not painting at all (white text over the game
+   world), because the style name was valid for another widget type;
+2. a 29-character title was clipped on both sides;
+3. most buttons needed two clicks, the first apparently spent gaining focus.
+
+None of the three is reachable from the automation path, and not by accident:
+
+- **`ui_tree` returns the color, and the color was CORRECT.** What fails is the
+  painting, and no verb reads pixels.
+- **Text is unreadable to the machine by contract.** `FillUiNode` fills `text`
+  only for `EditBoxWidget`, `MultilineEditBoxWidget` and `ButtonWidget`;
+  `TextWidget`/`MultilineTextWidget`/`RichTextWidget` report
+  `text_readable=false` with an empty string. A clipped title is invisible to
+  every gate you can write.
+- **`ui_click` is not a click.** It resolves the handler through
+  `GetScript`/`GetUserData` and calls `OnClick(target, 0, 0, mouseButton)` with
+  the coordinates hardcoded to zero, so it skips hit-testing, Z-order and
+  `IGNOREPOINTER` by construction.
+
+**Operational rule.** For any UI deliverable, a passing automated gate closes
+the CONTRACT and nothing else. Rendering and interaction need a human, or a
+screenshot that a human (or a vision model asked for a MEASUREMENT, not a
+verdict) inspects. Put `capture_screenshot` in the acceptance protocol as
+mandatory evidence rather than optional colour.
+
+**And when the human is the instrument, the harness text is part of the
+instrument.** A test dialog that said "No debe salir 'no'" — meaning the
+returned `choice` — was read as "the No button should not be there" and reported
+as a bug. Operator-facing text states what to DO and never what the expected
+result is.

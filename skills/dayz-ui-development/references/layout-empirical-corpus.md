@@ -9,6 +9,7 @@ This file complements (does not replace) `layout-format.md`, `widget-api.md`,
 - "What's actually used in production layouts?" → see §1 + §2.
 - Path/branch corrections vs the older clone snapshot → see §3.
 - The static HTML renderer for previewing layouts outside DayZ → see §4.
+- Second-sweep calibrations (819 files, 2026-08-19) → see §6.
 
 ---
 
@@ -94,11 +95,19 @@ This file complements (does not replace) `layout-format.md`, `widget-api.md`,
   756 filter              texture filtering
   694 content_valign      inside-spacer alignment
   591 content_halign
-  505 wrap                WrapSpacer wrap mode
+  505 wrap                word wrap on text widgets -- NOT a WrapSpacer mode
+  NOTE (2026-08-19): the "WrapSpacer wrap mode" label on this line was wrong, and
+  the 505 is a 300-layout sample. Two independent censuses over the full 819-layout
+  corpus -- one with the tooling tokenizer plus a widget stack, one with a separate
+  header rule -- agree that `wrap` sits on text widgets and on ZERO spacer widgets:
+  MultilineText ~355, RichText 236, Html 9, Text 4. Restricting the same census to
+  the `gui\` subtree reproduces this line's 505, which is what identifies the two
+  numbers as the same attribute over different populations.
   489 scriptclass         "ViewBinding" or custom controller class
   467 userID              int ID for script-side lookup
   461 fixaspect           image aspect ratio lock
   437 text_proportion     text size as fraction of widget height (0-1)
+  NOTE: 437 is this §2 sample (2026-05-13, 300 layouts). It is NOT the 1048 from the 819-file sweep (2026-08-19) in layout-format.md (679 Text + 361 Button + 5 RichText + 3 MultilineText). Keep both; they are different corpora.
   376 nocache             skip texture cache
   333 (other widget classes)
   317 disabled            DISABLED flag
@@ -265,3 +274,50 @@ For each expansion, follow the same discipline:
 ---
 
 *End. Append-only; do not edit existing references.*
+
+
+---
+
+## 6. Second sweep: 819 `.layout` files (2026-08-19)
+
+Plugin source numbered this heading as §5; the existing “When to expand v1 → v2”
+section already occupies §5, so the harvest uses §6. Body unchanged.
+
+Re-measured with a token parser over every `.layout` reachable from
+`<dayz-projects>\` (vanilla + third-party + ours), not only `P:\`. Purpose was
+calibrating a geometry gate, so the numbers below are about what is NORMAL in
+shipped layouts — which is what decides whether a rule is a detector or a
+false-positive generator.
+
+- **Corpus**: 819 files. A brace-format token parser reads **807 (98.5%)** with
+  zero exceptions; the 12 that yield no widget are the XML dialect that
+  `LAYOUT-XML-FORMAT` already owns. A naive line-based parser managed 469 (57%)
+  — the difference is `ScriptParamsClass` blocks (277 files), `{}` on one line
+  (45) and children opening on their own line.
+
+- **Two clickable siblings whose rects OVERLAP: 884 cases across 32 files,
+  vanilla included.** Stacking widgets that a script toggles is standard
+  authoring. Narrowing to "both declared `visible 1`" only drops it to 768, and
+  "identical rect" to 677. **Conclusion: overlap is not a file-level defect.**
+  It only means something with runtime `visible_hierarchy`, i.e. on a `ui_tree`
+  capture — never on the file alone.
+
+- **A child overflowing its parent's box: 18 cases / 12 files, deliberate.**
+  Vanilla's `compassimage` is 4.0 wide; `details_mode_result` is 6.0 tall
+  (scrollable content). Not a defect either.
+
+- **Duplicate widget name: 5 files (0.6%); duplicate name where at least one is
+  clickable: 1 file (0.1%)** — vanilla's `scene_editor`. Rare enough to be a
+  real signal, and it is the one that breaks automation, because
+  `FindAnyWidget` resolves by name and returns one match.
+
+- **Class identifier vs the `name` attribute: 0 mismatches in 819 files.** The
+  corpus keeps them equal without exception.
+
+These calibrations are wired as `LAYOUT-DUPLICATE-CLICKABLE-NAME`,
+`LAYOUT-CLICKABLE-ZERO-SIZE`, `LAYOUT-DUPLICATE-WIDGET-NAME` and
+`LAYOUT-NAME-ATTR-MISMATCH` in
+`<tooling>\scripts\detectors\layout_addressability.py`,
+on top of the shared parser `scripts\shared\layout_ast.py`. The rules that did
+NOT survive calibration (overlap, overflow, `ignorepointer` on a clickable) are
+documented in that detector's header as deliberately not implemented.

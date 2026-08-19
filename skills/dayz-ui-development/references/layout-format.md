@@ -67,6 +67,11 @@ text size as fraction of widget height; THE vanilla text-scaling mechanism), `sc
 `fixaspect` (461 — keyword values: `fixwidth`/`inside`/`outside`/`none`, NOT 0/1), `keepsafezone`
 (163). Full frequency table in `layout-empirical-corpus.md` §2.
 
+The counts in the paragraph above (`text_proportion` 437 and the rest) are the
+2026-05-13 300-layout sample in `layout-empirical-corpus.md` §2. They are not
+the 819-file 2026-08-19 counts later in this file (`text_proportion` 1048 =
+679+361+5+3). Keep both; different corpora.
+
 ---
 
 ## Widget Properties — Complete Reference
@@ -985,3 +990,89 @@ PanelWidgetClass myBorder {
 The style name must match one registered in a .styles file declared in config.cpp.
 Styles provide state-based rendering (Normal, Disabled, Focus, Pressed) with
 9-slice image support from ImageSets.
+
+
+---
+
+## Computing a widget's absolute screen rect offline (measured 2026-08-19)
+
+Everything below is arithmetic over the `.layout` alone: no game, no
+resolution-specific asset, no runtime. It is what lets a tool say "BtnOk is at
+(850.56, 812.16) 218.88x60.48 at 1920x1080" and then point at that spot in a
+screenshot.
+
+Walk the tree depth-first carrying the parent's absolute box `(px, py, pw, ph)`;
+the root's parent box is the screen. For each widget:
+
+```
+w = size_x           if hexactsize == 1   else size_x * pw
+h = size_y           if vexactsize == 1   else size_y * ph
+x = px + position_x  if hexactpos  == 1   else px + position_x * pw
+y = py + position_y  if vexactpos  == 1   else py + position_y * ph
+```
+
+`halign center_ref` REPLACES the horizontal term: `x = px + (pw - w) / 2`, and
+the widget's own `position_x` is ignored. `valign center_ref` does the same
+vertically. An absent `position` behaves as `0 0`.
+
+**Calibration, not belief.** Predicted values matched a live `ui_tree` capture
+on 6 nodes across 3 nesting depths with a maximum delta of **3e-5**
+(`MCPDialogPanel` predicted 595.20/162.00/729.60/756.00 vs engine
+595.2000122070312/162.0/729.5999755859375/756.0), and again in-flight on 5
+buttons at 1920x1080. The same arithmetic reproduced a hand-computed table at
+1280x720 exactly.
+
+### The exception that makes the rule useless if you skip it
+
+A child of a widget from the **spacer family** declares a box the PARENT then
+recomputes, so its `position`/`size` in the file carry no information. The
+family, verified in the engine proto: `SpacerBaseWidget`
+(`scripts\1_Core\proto\EnWidgets.c:460`), `SpacerWidget` (`:465`),
+`GridSpacerWidget` (`:473`), `WrapSpacerWidget` (`:477`) and `ScrollWidget`
+(`:481`). Corpus usage (this 819-file 2026-08-19 sweep, not the 459-file
+2026-05-13 table in `layout-empirical-corpus.md` §1): GridSpacer 1414,
+WrapSpacer 600, Spacer 17.
+
+Ignoring this produces confident nonsense: a geometry check that flagged
+"clickable widget with a zero box" fired 15 times across 4 shipped Expansion
+layouts (`option_accept_button`, `option_promote_button`, ... all `size 0.0 1.0`)
+and every single one was a `ButtonWidget` under a `GridSpacerWidget`, i.e. a
+normal authoring idiom, not a defect.
+
+## Which widget classes actually carry which text attribute (819 layouts, 2026-08-19)
+
+Guessing this from one example is how you invent an API. Measured distribution
+over the whole corpus (vanilla + third-party + ours):
+
+| Attribute | Where it actually appears |
+|---|---|
+| `wrap` (604) | MultilineTextWidget 355, RichTextWidget 236, HtmlWidget 9, TextWidget 4 |
+| `text_proportion` (1048) | TextWidget 679, ButtonWidget 361, RichTextWidget 5, MultilineTextWidget 3 |
+| `"exact text"` (2888) | TextWidget 2135, MultilineTextWidget 352, RichTextWidget 292, EditBox 87, HtmlWidget 13, MultilineEditBox 5 |
+
+Do not collapse these with `layout-empirical-corpus.md` §2 (2026-05-13, 300
+layouts): that sample lists `text_proportion` 437 and `wrap` 505. Same
+attributes, smaller population — resolved 2026-08-19 by re-counting the full
+corpus with two independent instruments, which agree that `wrap` hosts are text
+widgets and that **no spacer widget carries it**; §2's "WrapSpacer wrap mode"
+label was wrong and is corrected there. Restricting the new census to the `gui\`
+subtree reproduces §2's 505.
+
+Totals move by about 1% between instruments (`text_proportion` 1048–1055,
+`wrap` 604–616) because the population differs by a file or two and the rare
+hosts are attributed differently. **The hosts are what this table is for, and
+they reproduce exactly**: `text_proportion` is above all a TextWidget attribute
+(679), not a button one, and `wrap` does occur on RichTextWidget (236) and on
+TextWidget (4).
+
+Two consequences worth holding on to:
+
+- **`text_proportion` sizes the text as a fraction of the widget's HEIGHT.** It
+  does not make a long single-line string fit horizontally. Nothing does: the
+  only ways out are wrapping onto more lines (needs Multiline/RichText) or
+  capping the string length upstream.
+- Vanilla's own dialog text is a `RichTextWidgetClass` combining
+  `"exact text" 1` + `"exact text size" 20` + `"size to text h" 1` +
+  `"size to text v" 1` + `wrap 1` + `clipchildren 1`
+  (`gui\layouts\dialog.layout:95-113`). That is the canonical "text that fits"
+  recipe; copy it whole rather than cherry-picking one attribute.
