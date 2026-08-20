@@ -6291,7 +6291,7 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack. Extended 2026-08-21: stringtable_validator.py is labelled broken for DayZ where the skill lists it, and the stringtable section carries the measured caveat that an addon carrying only a stringtable is not a valid minimal test case - its PBO mounted and served a .layout loaded by addon prefix while a key defined by that same PBO printed as its own name, and adding prefix, dependencies[] or the full CfgMods shape of a shipping mod changed nothing, with a vanilla key resolving in the same frame as the positive control and every PBO re-extracted to confirm the csv was inside it.",
           "license": "MIT",
           "source_hash": "c6d47e545e603cdb5d46a4a53135e98cc62c9304caeed9d58770389cfffbd692",
           "source_id": "installed-skills",
@@ -6301,7 +6301,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "01cd2c1bbd5eafa7e0d36ec67f8f8707471b5dd491e45b7c3430aaea59cf26a1",
+      "output_hash": "a01ecdd93772ad336880581a73b7834e9b5047aca81ced04d64d4b61884a94ef",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -6335,7 +6335,7 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack. Corrected 2026-08-21: three checkboxes still told the reader to write and validate a stringtable.xml, the Arma 3 form. The prose elsewhere in this skill had been corrected to stringtable.csv the day before and this file was missed - and this is the file a builder follows box by box. The boxes now describe the csv (addon root, key in column 1 without the leading #, UTF-8 no BOM, LF), the final-checks block no longer tells anyone to run stringtable_validator.py because that script parses XML, and one box records that an addon carrying only a stringtable was measured on 2026-08-21 to mount and serve files while its own keys stayed unresolved.",
           "license": "MIT",
           "source_hash": "cf7bfbf20a230f556f235e87f64a35d3176cb509dd964ade50f18a631de3bb31",
           "source_id": "installed-skills",
@@ -6345,7 +6345,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cf7bfbf20a230f556f235e87f64a35d3176cb509dd964ade50f18a631de3bb31",
+      "output_hash": "b27895964ffafe57103bc6ea1f3cbef840b64e496b6e6579762d4f0572d7ed39",
       "output_path": "skills/dayz-pbo-build/VALIDATION_CHECKLIST.txt",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"

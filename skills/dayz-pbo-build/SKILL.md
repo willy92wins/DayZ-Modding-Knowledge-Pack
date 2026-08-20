@@ -199,6 +199,14 @@ its own name and logs **nothing** (measured: zero RPT lines for a missing key ac
 by one row per key. The key sits in column 1 **without the leading `#`** — the `#` belongs
 only to the reference in code, config or `.layout`. UTF-8, no BOM, LF.
 
+**A stringtable alone is not enough to test with.** Measured 2026-08-21 on a disposable
+addon: its PBO mounted and served a `.layout` loaded by addon prefix, and a key defined by
+that same PBO still printed as its own name. Adding `prefix`, `dependencies[]`, or the full
+`CfgMods` shape of a shipping mod changed nothing, with a vanilla key resolving in the same
+frame as the positive control and every PBO re-extracted to confirm the csv was inside it.
+Keys from real mods do resolve, so this is a caveat about minimal test addons, not about
+stringtables in general — but it means a two-file addon is the wrong thing to debug with.
+
 **Checks performed:**
 - **Scan all script files (.c, .cpp) for `#STR_` references**
 - **Scan config.cpp and every `.layout` for `#STR_` references** (displayName, description,
@@ -540,7 +548,8 @@ See `references/validation-scripts.md` for standalone Python validators that can
 
 - `config_cpp_validator.py` – Parse and check config.cpp syntax
 - `texture_path_checker.py` – Verify texture existence
-- `stringtable_validator.py` – Check string key coverage
+- `stringtable_validator.py` – Check string key coverage. **Broken for DayZ**: it
+  parses `stringtable.xml`. Do not run as-is; see `references/validation-scripts.md` section 3.
 - `p3d_lod_checker.py` – Validate .p3d LOD structure
 
 Each outputs machine-readable JSON for CI/CD integration.

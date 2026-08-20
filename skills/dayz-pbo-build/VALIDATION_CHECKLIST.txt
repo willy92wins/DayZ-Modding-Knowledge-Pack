@@ -56,11 +56,15 @@ TEXTURE & MATERIAL PATH VALIDATION
 
 STRINGTABLE VALIDATION
 ----------------------
-[ ] If #STR_ references exist, stringtable.xml is present
-[ ] All #STR_ keys used in code have entries in stringtable.xml
-[ ] stringtable.xml is well-formed XML
+[ ] If #STR_ references exist, stringtable.csv is present at the addon ROOT
+[ ] All #STR_ keys used in code have a row in stringtable.csv
+[ ] Key sits in column 1 WITHOUT the leading # (the # belongs only to the reference)
+[ ] stringtable.csv is UTF-8 with no BOM, LF endings, header row first
 [ ] All languages have entries for each key
 [ ] No orphaned keys (never referenced in code)
+[ ] Packed with -packonly: the binarizing pass DROPS .csv from the PBO, like .c
+[ ] The addon carries more than the stringtable - a stringtable-only addon was
+    measured 2026-08-21 to mount and serve files while its keys stayed unresolved
 
 SCRIPT VALIDATION
 -----------------
@@ -79,7 +83,8 @@ FINAL CHECKS
 [ ] Run all validators:
     python config_cpp_validator.py path/to/config.cpp
     python texture_path_checker.py path/to/addon/root
-    python stringtable_validator.py path/to/addon/root
+    (stringtable_validator.py is NOT listed here: it parses stringtable.xml,
+     which is the Arma 3 form. See references/validation-scripts.md section 3.)
     python p3d_lod_checker.py path/to/addon/root
 
 [ ] All validators return PASS status
