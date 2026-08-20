@@ -2066,7 +2066,7 @@
           "decision": "adopt",
           "decision_evidence": "The internal process layer (plans, specs, session handoff, root CLAUDE.md) stopped being published; its promotion entries were removed with it.",
           "license": "MIT",
-          "source_hash": "40921c7973ef084a14d5e1e189aa0435f38c1981a110f6d2917aab1952c9bdc3",
+          "source_hash": "7c476dd4d619800e5e6c6cbac1ec5d16981c7ab762aa1bacf9fb6daf469467c6",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/promotion-map.json",
           "source_revision": "r21-unpublish-internal-layer@2026-08-15",
@@ -2074,7 +2074,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "40921c7973ef084a14d5e1e189aa0435f38c1981a110f6d2917aab1952c9bdc3",
+      "output_hash": "7c476dd4d619800e5e6c6cbac1ec5d16981c7ab762aa1bacf9fb6daf469467c6",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
