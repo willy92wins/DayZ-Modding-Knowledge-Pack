@@ -12,9 +12,11 @@ A stringtable is addon-level: it is read from the PBO at load, so unlike a
 
 `Message` in `modal_panel.layout` renders with a very large glyph because its box is
 0.58 of a 0.70-tall panel — 292 px at 720p — and glyph height was measured to track the
-widget height. Six `text_proportion` values did not change it. Until that is settled
-(`references/hot-iteration.md` section 6), size the body box to the text you want rather
-than reaching for that attribute.
+widget height. `text_proportion` is honoured on `TextWidgetClass` and `ButtonWidgetClass`
+(glyph = 0.74 x value x box height, measured to within 2% on 2026-08-21) and **ignored on
+`MultilineTextWidgetClass`**, which is why the six-value sweep of 2026-08-20 moved nothing.
+On a multiline, size the box; the attribute is not the lever. Numbers and controls:
+`../references/hot-iteration.md` section 6.
 Iterate from `$profile:` with `ui_reload_layout` — the loop is in
 [`../references/hot-iteration.md`](../references/hot-iteration.md).
 

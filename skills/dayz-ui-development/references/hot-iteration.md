@@ -181,17 +181,87 @@ screen (measured 435x720 px at 720p) and it renders a single screen-filling lett
 — renders readable text. Nothing else was touched, `text_proportion` included. That is the
 mechanism behind an oversized body: the box, not the font.
 
-### OPEN: `text_proportion` did not move it
+### `text_proportion` works on `TextWidget`, and is ignored on `MultilineTextWidget`
 
-Six variants of `modal_panel.layout` were flown with `text_proportion` inserted into
-`Message` at 0.03 / 0.05 / 0.08 / 0.12 / 0.20 / 0.36. The glyph measured **104 px in all
-six** (bright-pixel bounding box over the message band), with the Title in the same frames
-constant at 21 px as a control. Either the attribute is inert on
-`MultilineTextWidgetClass`, or the parser ignored it at the position used — it was inserted
-immediately after `name`, whereas `Title` declares it after `wrap`. **This experiment does
-not separate those two**, so no `text_proportion` value is recommended here. If a body
-renders too large, change the box height, and treat any advice about this attribute as
-unverified until someone flies the other insertion position.
+Settled 2026-08-21. The 2026-08-20 sweep below this heading used to say the question was
+open; the null it measured was real, but the conclusion drawn from it was wrong. Two
+flights, five cells each, every cell differing from an in-frame control in exactly one
+thing. Glyph height read off the frame after removing the window chrome (the capture is
+1302x776 for a 1280x720 client) and after checking that the gaps between boxes contain no
+glyph rows — a band placed wrong shows up there first.
+
+On `TextWidgetClass` the attribute is honoured and linear. Box height 108 px:
+
+| Declared in the block | Glyph |
+|---|---|
+| nothing | 80 px |
+| `text_proportion 0.20` | 16 px |
+| `"exact text" 0` + `text_proportion 0.20` | 16 px |
+| `"exact text" 0` + `text_proportion 0.60` | 47 px |
+| `"exact text" 1` + `text_proportion 0.20` | 12 px |
+
+One line fits the first four: **glyph = 0.74 x `text_proportion` x box height**, the
+attribute defaulting to 1.0 when absent. Predicted 80 / 16.0 / 16.0 / 48.0 against measured
+80 / 16 / 16 / 47. The 0.74 is the cap height of `sdf_MetronBook24` inside its em box, so
+expect a different constant for a different font — the linearity is the transferable part,
+not the number.
+
+Two candidates that look like they should matter and do not:
+
+- **`"exact text" 0` is not a prerequisite.** It was the obvious suspect: across the 821
+  `.layout` files in this workspace, `"exact text"` sits in the *same widget block* as
+  `text_proportion` in 82.6% of cases against a 3.1% base rate — a 27x enrichment. The
+  frame refuted it. The cell with the flag and the cell without both measured 16 px.
+  Convention in a corpus is evidence of how people write, not of what the engine reads.
+  (`"exact text" 1` does do something: 12 px, which is the font's own size. That matches
+  `SetTextExactSize`, whose header says "Exact Text flag must be enabled" —
+  `P:\scripts\1_Core\proto\enwidgets.c:192`.)
+- **Where the attribute sits inside the block is irrelevant.** Declared immediately after
+  `name`, and declared last, both measured 16 px.
+
+On `MultilineTextWidgetClass` the attribute is **ignored**. Same box, same font, same
+`text_proportion 0.20`: **80 px** — indistinguishable from declaring nothing.
+`MultilineTextWidget extends TextWidget` (`enwidgets.c:219`), so it inherits
+`SetTextProportion` (`:216`) and the layout attribute still does nothing. An inherited
+method is not a working behaviour. `wrap 1` on a multiline does change the rendered size
+(80 -> 54 px, and 63 px once the text really splits across lines), but never toward the
+requested proportion.
+
+That is what the 2026-08-20 sweep hit: six values of `text_proportion` on
+`MultilineTextWidgetClass Message`, no response, correctly measured. The sweep also
+differed from today's cells in where the attribute was inserted, so at the time the two
+explanations could not be separated. They can now: position was tested and does not
+matter; class does.
+
+### A PBO can mount and serve layouts while its own stringtable stays unread
+
+Measured 2026-08-21 with a disposable addon. A `.layout` that exists **only inside the
+PBO**, loaded by its addon prefix (`UITplStrings/probe_mount.layout`), renders — so the PBO
+mounts and the engine serves files from it. In that same panel, a key defined by that same
+PBO's `stringtable.csv` printed as its own name **with the leading `#` stripped**: the
+engine recognised it as a localisation key, looked it up, and found nothing.
+
+Three `CfgMods` differences against a shipping mod whose keys do resolve were then tested,
+one per addon, with all five keys in one frame and a vanilla key as the positive control —
+it printed **Rueda**, so the path does resolve keys that exist:
+
+| Addon | Added to `CfgMods` | Its key on screen |
+|---|---|---|
+| baseline | — | raw |
+| +prefix | `prefix = "..."` | raw |
+| +deps | `dependencies[] = {"Game","World","Mission"}` | raw |
+| +full | prefix, dependencies, picture, action, author, authorID, version, non-empty `units[]` | raw |
+
+Every PBO was re-extracted after deployment to confirm its `stringtable.csv` was actually
+inside. A negative from an addon that never carried the file looks identical and means
+nothing.
+
+So none of those three is the missing piece. The remaining structural difference against
+the working mod is a `class defs` block declaring script modules — that is the next thing
+to test, not a conclusion. **Practical impact is small**: every real mod has scripts, and
+keys from real mods do resolve (see the table at the top of this section). What this does
+establish is that a stringtable-only addon is not a valid minimal test case, and that the
+failure is silent from end to end — zero RPT lines.
 
 ### A preview draws on top but receives no input
 
