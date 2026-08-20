@@ -13383,9 +13383,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored in the pack from in-game measurements taken on 2026-08-19 (DayZ 1.29, runs 08343f0c and fdf07db7): $profile: is re-read on every load, rects match the offline prediction to 4,15e-05 px, the FileExist guard holds without killing the client, and textures resolve from the profile with a positive and a negative control in the same frame.",
+          "decision_evidence": "Authored in the pack from in-game measurements taken on 2026-08-19 (DayZ 1.29, runs 08343f0c and fdf07db7): $profile: is re-read on every load, rects match the offline prediction to 4,15e-05 px, the FileExist guard holds without killing the client, and textures resolve from the profile with a positive and a negative control in the same frame. Extended 2026-08-20 with section 6 / the measurements from six flights against DayZ 1.29.163709 at 1280x720 and 1920x1080: #STR_ keys DO resolve in a $profile: preview (one frame carrying a vanilla key, another mod's key and an undefined one), GetText() returns the raw key even when the screen shows the resolved string, glyph height tracks the widget height (same file, root 1 1 vs 0.30 0.05), six text_proportion values left it at 104 px, and a preview draws above the inventory yet never receives a click. Every claim has a capture behind it; the text_proportion question is written as open, not as a recipe.",
           "license": "MIT",
-          "source_hash": "8d356e5188dbd02948c12fda359ad922bf767ab6c47bb1ddd02206cfe10ec64a",
+          "source_hash": "aa1adf6f0013b734dbc7087690ab17dfcd7119c4eba176fd9c4bb27c9232e2f5",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-ui-development/references/hot-iteration.md",
           "source_revision": "hot-ui-iteration@2026-08-19",
@@ -13393,7 +13393,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8d356e5188dbd02948c12fda359ad922bf767ab6c47bb1ddd02206cfe10ec64a",
+      "output_hash": "aa1adf6f0013b734dbc7087690ab17dfcd7119c4eba176fd9c4bb27c9232e2f5",
       "output_path": "skills/dayz-ui-development/references/hot-iteration.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "runtime_verified"
@@ -13405,9 +13405,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored in the pack on 2026-08-20. Routing table for the four templates plus the four construction traps (panel style, wrap, EmptyHighlight Focus, scroll spacer), each cited to vanilla gui/layouts, dayzwidgets.styles, or mcp_dialog.layout. Not an in-game measurement. Updated 2026-08-20 with the stringtable section: a rendered frame showed the keys printing verbatim, and the engine logged nothing about it (zero RPT lines for STR_UI_), so the README now says where the CSV goes and that a stringtable is addon-level and does not hot-reload like a $profile: layout.",
+          "decision_evidence": "Authored in the pack on 2026-08-20. Routing table for the four templates plus the four construction traps (panel style, wrap, EmptyHighlight Focus, scroll spacer), each cited to vanilla gui/layouts, dayzwidgets.styles, or mcp_dialog.layout. Not an in-game measurement. Updated 2026-08-20 with the stringtable section: a rendered frame showed the keys printing verbatim, and the engine logged nothing about it (zero RPT lines for STR_UI_), so the README now says where the CSV goes and that a stringtable is addon-level and does not hot-reload like a $profile: layout. Extended 2026-08-20 with section 6 / the measurements from six flights against DayZ 1.29.163709 at 1280x720 and 1920x1080: #STR_ keys DO resolve in a $profile: preview (one frame carrying a vanilla key, another mod's key and an undefined one), GetText() returns the raw key even when the screen shows the resolved string, glyph height tracks the widget height (same file, root 1 1 vs 0.30 0.05), six text_proportion values left it at 104 px, and a preview draws above the inventory yet never receives a click. Every claim has a capture behind it; the text_proportion question is written as open, not as a recipe.",
           "license": "MIT",
-          "source_hash": "6ae285f38a8b607f9b1d2c0e060b4994dbdb2f1721c7c6e870c7203e29c8d6b7",
+          "source_hash": "5f1d30819df72d6e9443acd31447a362df749d58da652042d8ac5656f8f3c518",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-ui-development/templates/README.md",
           "source_revision": "ui-templates@2026-08-20",
@@ -13415,7 +13415,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6ae285f38a8b607f9b1d2c0e060b4994dbdb2f1721c7c6e870c7203e29c8d6b7",
+      "output_hash": "5f1d30819df72d6e9443acd31447a362df749d58da652042d8ac5656f8f3c518",
       "output_path": "skills/dayz-ui-development/templates/README.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "offline_tested"
@@ -13559,9 +13559,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored in the pack on 2026-08-20 from the vanilla gui/layouts corpus (214 files), mcp_dialog.layout / dialog.layout / keybinding_container.layout, and dayzwidgets.styles. Offline geometry lint CLEAN at 1920x1080; rect JSON is the same predictor. Not loaded in-game in this session.",
+          "decision_evidence": "Authored in the pack on 2026-08-20 from the vanilla gui/layouts corpus (214 files), mcp_dialog.layout / dialog.layout / keybinding_container.layout, and dayzwidgets.styles. Offline geometry lint CLEAN at 1920x1080; rect JSON is the same predictor. Not loaded in-game in this session. Extended 2026-08-20 with section 6 / the measurements from six flights against DayZ 1.29.163709 at 1280x720 and 1920x1080: #STR_ keys DO resolve in a $profile: preview (one frame carrying a vanilla key, another mod's key and an undefined one), GetText() returns the raw key even when the screen shows the resolved string, glyph height tracks the widget height (same file, root 1 1 vs 0.30 0.05), six text_proportion values left it at 104 px, and a preview draws above the inventory yet never receives a click. Every claim has a capture behind it; the text_proportion question is written as open, not as a recipe.",
           "license": "MIT",
-          "source_hash": "06940aae9363c2cd1950bdafa41d80074d434daa6c7af72dfb1efd7ebd1f7f21",
+          "source_hash": "ce8d773852c14d783b5e4268c140a570666d9dacc701e55c0fe5022fc7243671",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-ui-development/templates/modal_panel.layout",
           "source_revision": "ui-templates@2026-08-20",
@@ -13569,7 +13569,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "06940aae9363c2cd1950bdafa41d80074d434daa6c7af72dfb1efd7ebd1f7f21",
+      "output_hash": "ce8d773852c14d783b5e4268c140a570666d9dacc701e55c0fe5022fc7243671",
       "output_path": "skills/dayz-ui-development/templates/modal_panel.layout",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "offline_tested"

@@ -9,6 +9,12 @@ Without them the layouts render the key verbatim — `STR_UI_YES` instead of `Ye
 without the leading `#`; the `#` belongs only to the reference in the layout.
 A stringtable is addon-level: it is read from the PBO at load, so unlike a
 `$profile:` layout it does not hot-reload.
+
+`Message` in `modal_panel.layout` renders with a very large glyph because its box is
+0.58 of a 0.70-tall panel — 292 px at 720p — and glyph height was measured to track the
+widget height. Six `text_proportion` values did not change it. Until that is settled
+(`references/hot-iteration.md` section 6), size the body box to the text you want rather
+than reaching for that attribute.
 Iterate from `$profile:` with `ui_reload_layout` — the loop is in
 [`../references/hot-iteration.md`](../references/hot-iteration.md).
 

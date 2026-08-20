@@ -57,10 +57,13 @@ FrameWidgetClass ModalRoot {
 					// wrap on TextWidget is 0x in the 214 vanilla files; runtime
 					// honour is [UNVERIFIED].
 					wrap 1
-					// Fraction of THIS widget's HEIGHT, not a fit-to-width. Rare on
-					// MultilineText (1x in the 214 vanilla files) but required so
-					// wrapped lines have a size; copied from mcp_dialog.layout:29
-					// (0.36; not distributed).
+					// Rare on MultilineText (1x in the 214 vanilla files); copied from
+					// mcp_dialog.layout:29 (0.36; not distributed). The earlier claim
+					// that it is "required so wrapped lines have a size" is NOT
+					// supported: on 2026-08-20 six values from 0.03 to 0.36 were flown
+					// on Message and the glyph measured 104 px in every one. What was
+					// measured to drive glyph size is the WIDGET HEIGHT — see
+					// references/hot-iteration.md section 6.
 					text_proportion 0.36
 					ignorepointer 1
 					color 1 1 1 1

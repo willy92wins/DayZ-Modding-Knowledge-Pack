@@ -134,3 +134,89 @@ exercise handlers, focus and hit-testing you still need the real menu.
 Two things remain unmeasured, both cheap to fold into a future run: whether a **custom font**
 and whether an **imageset** resolve from `$profile:`. Vanilla fonts and imagesets work
 because they come from the game's own PBOs.
+
+---
+
+## 6. Measured 2026-08-20: what a rendered frame settled
+
+Six flights and four probes against DayZ 1.29.163709, client at 1280x720 and 1920x1080,
+every claim below anchored to a capture.
+
+### `#STR_` keys DO resolve in a `$profile:` preview
+
+One frame, four widgets, three sources — the positive control is the whole point:
+
+| Widget | Text set in the layout | On screen |
+|---|---|---|
+| Title | `#STR_LFPG_ACTION_ADD_WAYPOINT` (another **mod**'s key) | **Add waypoint** |
+| Message | literal, no key | renders, and **wraps across two lines** |
+| BtnNo | `#STR_CfgWheel0` (**vanilla**) | **Rueda** |
+| BtnYes | a key defined by no stringtable | `STR_UI_YES`, verbatim |
+
+So the preview path is not the problem when a key prints raw: the key is simply not
+defined. A template that ships `#STR_` placeholders without a `stringtable.csv`
+reads as broken on first run, which is why one now ships beside these layouts.
+
+### `GetText()` cannot judge key resolution — only the frame can
+
+In that same frame, `ui_tree` reported `BtnNo.text == "#STR_CfgWheel0"` while the screen
+showed **Rueda**. The engine substitutes at draw time and hands back what was assigned.
+Any check of the form "read the widget text, see if it still starts with `#`" reports a
+failure that is not happening. Two of seven widgets were readable at all
+(`text_readable` was false for every `MultilineTextWidgetClass`), so the channel is both
+partial and misleading.
+
+### An unresolved key logs nothing, and cannot wrap
+
+Zero RPT lines matched `STR_UI_` across a 49,340-byte client log. And the classic
+"the title is clipped at both ends" symptom was the key, not the wrap: `STR_UI_MODAL_MESSAGE`
+is a single token with no spaces, and `wrap` breaks on spaces. The same widget with real
+prose wrapped correctly.
+
+### Glyph height tracks the WIDGET height
+
+`form_row.layout` loaded standalone has root `size 1 1`, so its `RowLabel` box is the whole
+screen (measured 435x720 px at 720p) and it renders a single screen-filling letter. The
+**same file**, with only the root changed to `size 0.30 0.05` — `RowLabel` becomes 130x36 px
+— renders readable text. Nothing else was touched, `text_proportion` included. That is the
+mechanism behind an oversized body: the box, not the font.
+
+### OPEN: `text_proportion` did not move it
+
+Six variants of `modal_panel.layout` were flown with `text_proportion` inserted into
+`Message` at 0.03 / 0.05 / 0.08 / 0.12 / 0.20 / 0.36. The glyph measured **104 px in all
+six** (bright-pixel bounding box over the message band), with the Title in the same frames
+constant at 21 px as a control. Either the attribute is inert on
+`MultilineTextWidgetClass`, or the parser ignored it at the position used — it was inserted
+immediately after `name`, whereas `Title` declares it after `wrap`. **This experiment does
+not separate those two**, so no `text_proportion` value is recommended here. If a body
+renders too large, change the box height, and treat any advice about this attribute as
+unverified until someone flies the other insertion position.
+
+### A preview draws on top but receives no input
+
+`ui_click` on a preview button does nothing, and neither does a real mouse click with the
+inventory open — the preview renders **above** the inventory and still never focuses.
+Measured: zero reddish pixels in the button band across four frames (unfocused, two timed
+bursts, post-click), while the same detector found 1,767 reddish pixels elsewhere in the
+frame. Draw order and input routing are separate; `CreateWidgets` gives the first without
+the second, because nothing calls `SetActiveWindow` on the new root
+(`P:\scripts\1_core\proto\EnWidgets.c:695`). Focus states, hover states and wheel
+scrolling are therefore **not observable** in this loop at all — not by an agent, and not
+by a human at the keyboard.
+
+### Name resolution is global — prefix your preview widgets
+
+`ui_click` / `ui_set_text` / `ui_tree` resolve by name through `FindAnyWidget`, which does
+not care which tree a name came from. A preview whose widgets are called `BtnYes` or
+`Title` collides with whatever else is loaded. Give hot-iteration layouts a prefix of their
+own.
+
+### Packaging note for the stringtable
+
+A stringtable is addon-level: read from the PBO at load, so unlike a `$profile:` layout it
+does not hot-reload. Two traps when building one: AddonBuilder's binarizing pass applies a
+file whitelist and **drops `.csv` from the PBO** (pack with `-packonly`, or add the
+extension to an include list), and in this workspace a `config.bin` produced by that same
+pass has been measured not to register at all, with the mod mounting silently broken.
+
