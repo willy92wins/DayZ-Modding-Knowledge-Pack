@@ -1,0 +1,125 @@
+{
+  "adjudications": [
+    {
+      "artifact_id": "skill/_shared",
+      "observed_digest": "2e3d198ec836a56db18c33eaf77e957d98cfbdc0d329088a3061bb17484298f1",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/_shared",
+      "observed_digest": "13307369426bfb864232918a3d91b6aeeb2d2591e4f66655cb331493cdaee9e0",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/ai-3d-to-dayz",
+      "observed_digest": "9ff2015ff9665388e7f524e45ab5db1c6a6d2ef520e42ef74ee56790f99e302d",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/ardy-motion-generation",
+      "observed_digest": "fe9c919c3c31f776830493f9ceccb7c4a86e2e911df4e17c6c2bd76f0901074b",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/blender-animation",
+      "observed_digest": "f91afd74eaf63679073fb18e49418ba9de555e27c6a13cb5c9deb3953f0ac425",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-aviation",
+      "observed_digest": "178bdf7bd305a05c6a98e273e8ddb45efccd3c1ff4e58047e6482c3544541835",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-basebuilding",
+      "observed_digest": "dd402e72dd13c9c0b39b00993f50fb20710740a35570d0ae5cdc87af2db9bc64",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-characters",
+      "observed_digest": "d77504378846823248692b2570508dbf419d3790d842ed8f76f14eadb67e3a8f",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-clothing",
+      "observed_digest": "df5db692b7ac422d77ae047b0228042416498688f21762cd36ad24b8b46fcf21",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-feature-spec",
+      "observed_digest": "e4e7e3d2e5412524ee758aa6a10aa8207fe0f37b7574eae38d959099bc91f938",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-mcp-verify",
+      "observed_digest": "c57cc8427bd7d77c4081795fdff0c976f0c59528b3c4399e33dcd61d66244065",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-pbo-reverse-engineering",
+      "observed_digest": "772bec0f8c598cb7f1f9e3b9b5f99329c3425d4a9ab2dd87cb7d6237bca6de9c",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-persistence",
+      "observed_digest": "da1b043891dcc3ce4045eb118e169dbd19ee987d6e2a31f1552680c5babf38d5",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-realistic-animation-director",
+      "observed_digest": "337200e0dd31d2faa080c46f90ce43f7472fedac84b35fcfe718184179eced8f",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-test-ingame",
+      "observed_digest": "54f0b608fc6ea6413485dddc282d4bdde50c25b3558c4c19068b392f2e121fca",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-vehicles",
+      "observed_digest": "774151d1c5c268794a566c9f5a9842b860022a3e4afd6f1db00b0c1751a2457c",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-weapons",
+      "observed_digest": "48f8260acb92461c64de7c43f71fff45d58e225a47e738e1a0810f52da88c4e1",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/enforce-script-reference",
+      "observed_digest": "82c7548a7793a345eac393abe9e375eb3a393c8cccdb02d906c0b0244d3758a3",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/rigorous-data-audit",
+      "observed_digest": "edc2a0cb7ffe5d74ce879b34f96bfc7c8c4d5d4a1446e09f8fe43ae5405a8d5c",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/rip-vehicle-import",
+      "observed_digest": "2efbd37aca7d1722c0481ddb988892dbcd02dcfff2c384e853720f637d849389",
+      "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
+      "target_id": "claude_user_skills"
+    }
+  ],
+  "schema_version": 1
+}
