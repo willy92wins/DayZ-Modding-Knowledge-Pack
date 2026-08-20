@@ -127,7 +127,6 @@ count directly — CRITICAL only when resolved unique vertices > 65535; raw poin
 emit a WARNING that includes the resolved count.
 
 > Origen: SUB_BRZ Fase 4 in-game debug 2026-06-24 (false-positive surfaced while diagnosing a non-spawning
-> vehicle). The real blocker was crew/wheel geometry rejection — root cause OPEN. CONTRADICE — the addendum
-> "FIRST IN-GAME SPAWN RESULT" is cited on two incompatible paths (neither chosen):
-> - repo `dayz-p3d-audit/references/vehicle-killers.md:131` → `dayz-vehicles/references/rip-import.md`
-> - store `dayz-p3d-audit/references/vehicle-killers.md:131` → `dayz-vehicles/references/forza-import.md`
+> vehicle). The real blocker was crew/wheel geometry rejection — root cause OPEN. The addendum
+> "FIRST IN-GAME SPAWN RESULT" lives in `dayz-vehicles/references/rip-import.md`. A working copy of these
+> skills may carry that document under a different filename; this pack cites the published one.

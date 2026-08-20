@@ -923,7 +923,8 @@ that BLOCK, not optional steps — skippable verification is how the offline fal
 offline 2026-06-25; build-time wiring is HELD until the SUB_BRZ script-class Cowork session closes.
 
 GENERIC (wire these for any car, not just a rip):
-- `verify_forza_car.py` — tier-**U** universal engine contract + per-car `POLICY` dict (dmgzone list,
+- **the universal car verifier** (lives in the import project's tools, not shipped here) — tier-**U**
+  universal engine contract + per-car `POLICY` dict (dmgzone list,
   body-proxy naming, mod token). `--positive-control <CivilianSedan_mlod.p3d>` proves the contract is
   satisfiable; `--self-test` proves non-vacuity. Add a POLICY entry per new car instead of forking a
   `verify_<mod>.py` (the per-car `verify_amglf.py`/`verify_brz.py` are superseded).

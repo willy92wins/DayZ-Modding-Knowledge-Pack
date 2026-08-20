@@ -146,7 +146,7 @@ frameworks. `README.md` §4 lists those true external dependencies.
 
 ## Contributing changes
 
-Full rules in [`CONTRIBUTING.md`](CONTRIBUTING.md). The three that get changes
+Full rules in [`CONTRIBUTING.md`](CONTRIBUTING.md). The four that get changes
 rejected most often:
 
 - **Every executable claim carries evidence.** A new API, signature or figure
@@ -156,6 +156,13 @@ rejected most often:
   check is part of the gate, not a review courtesy.
 - **Licences are load-bearing.** The pack is MIT; GPL, DPL-ND and CC-NC material
   does not enter it. Third-party attributions live in `THIRD_PARTY_NOTICES.md`.
+- **The source game is called `rip` here.** Importing vehicle geometry out of a
+  commercial racing game is a technique this pack documents; the publisher's name
+  and its engine's name are not part of the technique, and they do not ship. Write
+  `rip`, `rip-import`, `source-game`. A working copy of these skills may use the
+  original vocabulary and that is fine — the asymmetry is deliberate, so a merge
+  from a local store must not carry it back in. Checked with `\bForza(?![a-z])`,
+  which is the pattern that does not also match the Spanish `forzado`.
 
 ### Gates
 

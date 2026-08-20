@@ -504,7 +504,7 @@ Reglas:
 - Para juzgar alineación/aspecto CON ruedas: **CONDICIONAR** el coche (`wheel_count 0→4`) con `vehicle_enter(pos)` + micro-drive server-side (`OnDebugSpawn`; ver nota "Conditioning server-side (OnDebugSpawn real)" s37 arriba) y recapturar con las ruedas puestas.
 - Ante una pieza que "parece desplazada": **MEDIR antes de concluir** (bbox/centroide/simetría izq-der + bisección vs backup + containment en volumen de rueda) — no firmar "roto" ni "OK" por opinión.
 
-Verificado: SUB_BRZ 2026-07-22 — un susto de "piezas desalineadas" resultó ser frenos/suspensión al descubierto por spawn pelado; el forense (Codex, py3d) midió simetría ≤0.003 m, bisección 0-movimiento en 6 shells y containment en el volumen de rueda (`ForzaDayZ\work\reviews\2026-07-22-SUB_BRZ-misalign-forensic.md`). Costó 30 min de forense evitable. Cross-ref LL-209.
+Verificado: SUB_BRZ 2026-07-22 — un susto de "piezas desalineadas" resultó ser frenos/suspensión al descubierto por spawn pelado; el forense (Codex, py3d) midió simetría ≤0.003 m, bisección 0-movimiento en 6 shells y containment en el volumen de rueda (`<rip-import>\work\reviews\2026-07-22-SUB_BRZ-misalign-forensic.md`). Costó 30 min de forense evitable. Cross-ref LL-209.
 
 ## Reglas promovidas del corpus de lecciones (added 2026-07-27)
 

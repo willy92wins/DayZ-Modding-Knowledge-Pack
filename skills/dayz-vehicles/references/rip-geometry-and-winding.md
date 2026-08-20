@@ -19,7 +19,7 @@ GameDB-gated drivetrain/mass that the rip does not carry (mark `[UNVERIFIED]`, n
 binary), and the `verify_<mod>.py` parity-verifier pattern (synthetic self-test as the non-vacuity proof).
 Origin: the SUB_BRZ (Subaru BRZ FE '22) build, 2026-06-23.
 
-## FORZA / FORZATECH RIP IMPORT (added 2026-06-23)
+## SOURCE-GAME RIP IMPORT (added 2026-06-23)
 
 Importing a car ripped from a racing game (the Grub container:
 `.modelbin` / `.swatchbin` / `.carbin`) into a DayZ `CarScript` vehicle is covered in
