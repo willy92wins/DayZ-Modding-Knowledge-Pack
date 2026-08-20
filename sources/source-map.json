@@ -13028,6 +13028,16 @@
           "source_path": "dayz-ui-development/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Two discovery rows added on 2026-08-20 so the templates directory is reachable from the skill: a TASK ROUTER row and a Reference Files entry, both pointing at templates/README.md. The artifact output_hash is deliberately NOT refreshed: the file also carries an unadjudicated merge from another session, and refreshing would absorb it in silence. This input names our delta without adopting theirs.",
+          "license": "MIT",
+          "source_hash": "0de1973c2a07423a6624cfb1530dba703640c3ec7e362ae986c376a15d126667",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
@@ -13387,6 +13397,292 @@
       "output_path": "skills/dayz-ui-development/references/hot-iteration.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored in the pack on 2026-08-20. Routing table for the four templates plus the four construction traps (panel style, wrap, EmptyHighlight Focus, scroll spacer), each cited to vanilla gui/layouts, dayzwidgets.styles, or mcp_dialog.layout. Not an in-game measurement.",
+          "license": "MIT",
+          "source_hash": "fc281244d4da1f0ee50f3ee105f4af1094b6b1ae8b4a41c13bbabe4159eb2f77",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/README.md",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fc281244d4da1f0ee50f3ee105f4af1094b6b1ae8b4a41c13bbabe4159eb2f77",
+      "output_path": "skills/dayz-ui-development/templates/README.md",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/form_row.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored in the pack on 2026-08-20 from the vanilla gui/layouts corpus (214 files), mcp_dialog.layout / dialog.layout / keybinding_container.layout, and dayzwidgets.styles. Offline geometry lint CLEAN at 1920x1080; rect JSON is the same predictor. Not loaded in-game in this session.",
+          "license": "MIT",
+          "source_hash": "6b2f05fc1120479acdf28c5465d9c03af0ccb17fd8bf9bfb1b238ed5d0d8d468",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/form_row.layout",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6b2f05fc1120479acdf28c5465d9c03af0ccb17fd8bf9bfb1b238ed5d0d8d468",
+      "output_path": "skills/dayz-ui-development/templates/form_row.layout",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/form_row.rects.1280.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Offline ui_rect_lint predict of the sibling .layout at the resolution in the filename. Baseline for ui_reload_layout comparison. Not an in-game capture.",
+          "license": "MIT",
+          "source_hash": "a75a64c05941aaae3ae17b1de669de65bbff957a2dfa16c04889488fdc35b22d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/form_row.rects.1280.json",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a75a64c05941aaae3ae17b1de669de65bbff957a2dfa16c04889488fdc35b22d",
+      "output_path": "skills/dayz-ui-development/templates/form_row.rects.1280.json",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/form_row.rects.1920.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Offline ui_rect_lint predict of the sibling .layout at the resolution in the filename. Baseline for ui_reload_layout comparison. Not an in-game capture.",
+          "license": "MIT",
+          "source_hash": "305a11dd958573eedede68a85013b8e44496dfdd55315ffe2d6e0d162f87f359",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/form_row.rects.1920.json",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "305a11dd958573eedede68a85013b8e44496dfdd55315ffe2d6e0d162f87f359",
+      "output_path": "skills/dayz-ui-development/templates/form_row.rects.1920.json",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/hud_overlay.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored in the pack on 2026-08-20 from the vanilla gui/layouts corpus (214 files), mcp_dialog.layout / dialog.layout / keybinding_container.layout, and dayzwidgets.styles. Offline geometry lint CLEAN at 1920x1080; rect JSON is the same predictor. Not loaded in-game in this session.",
+          "license": "MIT",
+          "source_hash": "9bcf97ebe5584c076d443c2a516ae3b764ca411eacde11ec12925567f0494441",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/hud_overlay.layout",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9bcf97ebe5584c076d443c2a516ae3b764ca411eacde11ec12925567f0494441",
+      "output_path": "skills/dayz-ui-development/templates/hud_overlay.layout",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/hud_overlay.rects.1280.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Offline ui_rect_lint predict of the sibling .layout at the resolution in the filename. Baseline for ui_reload_layout comparison. Not an in-game capture.",
+          "license": "MIT",
+          "source_hash": "0b3f181da77b2859dc9a87fa8d18a04be572174b080b21d6568af77bb1da542b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/hud_overlay.rects.1280.json",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0b3f181da77b2859dc9a87fa8d18a04be572174b080b21d6568af77bb1da542b",
+      "output_path": "skills/dayz-ui-development/templates/hud_overlay.rects.1280.json",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/hud_overlay.rects.1920.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Offline ui_rect_lint predict of the sibling .layout at the resolution in the filename. Baseline for ui_reload_layout comparison. Not an in-game capture.",
+          "license": "MIT",
+          "source_hash": "c7e2950a54374415390294e0bb43dce747a44666e48ce9e0cda05e33d096d7b4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/hud_overlay.rects.1920.json",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c7e2950a54374415390294e0bb43dce747a44666e48ce9e0cda05e33d096d7b4",
+      "output_path": "skills/dayz-ui-development/templates/hud_overlay.rects.1920.json",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/modal_panel.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored in the pack on 2026-08-20 from the vanilla gui/layouts corpus (214 files), mcp_dialog.layout / dialog.layout / keybinding_container.layout, and dayzwidgets.styles. Offline geometry lint CLEAN at 1920x1080; rect JSON is the same predictor. Not loaded in-game in this session.",
+          "license": "MIT",
+          "source_hash": "06940aae9363c2cd1950bdafa41d80074d434daa6c7af72dfb1efd7ebd1f7f21",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/modal_panel.layout",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "06940aae9363c2cd1950bdafa41d80074d434daa6c7af72dfb1efd7ebd1f7f21",
+      "output_path": "skills/dayz-ui-development/templates/modal_panel.layout",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/modal_panel.rects.1280.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Offline ui_rect_lint predict of the sibling .layout at the resolution in the filename. Baseline for ui_reload_layout comparison. Not an in-game capture.",
+          "license": "MIT",
+          "source_hash": "0492f22e7b2b042e17e085dc02ac63774b00343c4d1749fca7d7da47039849d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/modal_panel.rects.1280.json",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0492f22e7b2b042e17e085dc02ac63774b00343c4d1749fca7d7da47039849d7",
+      "output_path": "skills/dayz-ui-development/templates/modal_panel.rects.1280.json",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/modal_panel.rects.1920.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Offline ui_rect_lint predict of the sibling .layout at the resolution in the filename. Baseline for ui_reload_layout comparison. Not an in-game capture.",
+          "license": "MIT",
+          "source_hash": "780c4dfc4ae03bab651f7bea61cb6f8a24f765c9819e45d40ee9c81322ecf9dc",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/modal_panel.rects.1920.json",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "780c4dfc4ae03bab651f7bea61cb6f8a24f765c9819e45d40ee9c81322ecf9dc",
+      "output_path": "skills/dayz-ui-development/templates/modal_panel.rects.1920.json",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/scroll_list.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored in the pack on 2026-08-20 from the vanilla gui/layouts corpus (214 files), mcp_dialog.layout / dialog.layout / keybinding_container.layout, and dayzwidgets.styles. Offline geometry lint CLEAN at 1920x1080; rect JSON is the same predictor. Not loaded in-game in this session.",
+          "license": "MIT",
+          "source_hash": "53623b9eaef47e775025e3aba64d76394525d788815fc00541d6bad705d3b13d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/scroll_list.layout",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "53623b9eaef47e775025e3aba64d76394525d788815fc00541d6bad705d3b13d",
+      "output_path": "skills/dayz-ui-development/templates/scroll_list.layout",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/scroll_list.rects.1280.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Offline ui_rect_lint predict of the sibling .layout at the resolution in the filename. Baseline for ui_reload_layout comparison. Not an in-game capture.",
+          "license": "MIT",
+          "source_hash": "5b8f0a34fd297ae19916259788dcb7a20ac0fbbc9900814bf918d5007252feeb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/scroll_list.rects.1280.json",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5b8f0a34fd297ae19916259788dcb7a20ac0fbbc9900814bf918d5007252feeb",
+      "output_path": "skills/dayz-ui-development/templates/scroll_list.rects.1280.json",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/scroll_list.rects.1920.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Offline ui_rect_lint predict of the sibling .layout at the resolution in the filename. Baseline for ui_reload_layout comparison. Not an in-game capture.",
+          "license": "MIT",
+          "source_hash": "38f95813cdd7696e34cdea8a67bc558394ff2c938ab8e700c283e1f20896220e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/scroll_list.rects.1920.json",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "38f95813cdd7696e34cdea8a67bc558394ff2c938ab8e700c283e1f20896220e",
+      "output_path": "skills/dayz-ui-development/templates/scroll_list.rects.1920.json",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-doors/skill.md",

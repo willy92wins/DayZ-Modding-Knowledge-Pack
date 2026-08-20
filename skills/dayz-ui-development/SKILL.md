@@ -20,6 +20,7 @@ vanilla scripts at `<dayz-projects>\scripts\`, vanilla GUI data at
 | New menu opened by key / menu IDs / pause-style menu | `references/vanilla-menus-map.md` (§2 registration recipe, §4 strategies) | §3 contract |
 | Extending the HUD / hide-show HUD groups | `vanilla-menus-map.md §5` (HUD chain + IngameHudVisibility) | — |
 | Writing/debugging a `.layout` file | `references/layout-format.md` | Rules 1-4 below |
+| Starting from a copy-paste layout (modal / HUD / form row / scroll list) | [`templates/README.md`](templates/README.md) | that template + Rules 1-4 |
 | Iterating a design without repacking (edit the file, see it in the running game) | `references/hot-iteration.md` | Rules 1-4 below |
 | Styled chrome (borders, buttons w/ press feedback, 9-slice, theming a panel) | `references/styles-format.md` | — |
 | Dabs MVC (ScriptView, bindings, animations) | `references/dabs-framework.md` — **its §HEAD DEEP-DIVE supersedes older sections on conflicts** | Rules 15-18 below |
@@ -97,6 +98,7 @@ Read the relevant file BEFORE writing code:
 - **.styles system — complete dissection (states, 9-slice item contracts, Colorable mechanism,
   custom-style recipe)** → `references/styles-format.md`
 - **Layout file format (.layout Enfusion)** → `references/layout-format.md`
+- **Starting layouts (modal, HUD overlay, form row, scroll list)** → [`templates/README.md`](templates/README.md#the-four-construction-traps) — four copy-paste `.layout` files and the four construction traps they exist to stop. Offline gate is `tools/dayz-ui-lab` (`parse.py --check`); `ui_rect_lint.py` is not distributed with this pack.
 - **★ Hot iteration — edit a `.layout` on disk and reload it into the RUNNING client (measured 2026-08-19)** → `references/hot-iteration.md` — the addon prefix is served by the PBO and only the PBO, but `$profile:` is re-read on every load, so a design can be iterated in seconds instead of one repack-and-boot per change. Carries the guard that keeps `CreateWidgets` from killing the client, the fact that a second load STACKS instead of replacing, and the two silent failures (a missing texture paints flat WHITE and logs nothing; perfect rects say nothing about whether anything is drawn).
 - **Advanced UI patterns (toggles, anti-overlap, tabs, hover, drag)** → `references/advanced-patterns.md` — ⚠️ contains 3 confabulated APIs (see the CORRECTIONS banner at the top of that file before copying any code).
 - **Empirical layout corpus (widget/attribute frequency, HTML renderer, Dabs path fix)** → `references/layout-empirical-corpus.md`
