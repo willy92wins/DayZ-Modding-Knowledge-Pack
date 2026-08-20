@@ -60,9 +60,24 @@ paths): [`TOOLS.md`](../../TOOLS.md).
 5. **Preview offline**: `python tools/dayz-layout-viewer/build_viewer.py <layout>`
    → a self-contained `.preview.html` you switch between 1080p / 1440p / 21:9 / 720p to SEE
    exact-flag breakage without a build.
-   **CONTRADICE** (no fusionado — dos afirmaciones incompatibles sobre qué se puede fiar del preview):
-   - repo `dayz-ui-development/SKILL.md:61-62`: Structure and anchoring only: never pixels, colours, fonts or styles — DayZDiag stays the golden reference.
-   - store `dayz-ui-development/SKILL.md:51`: Approximation: trust it for structure/positioning/text, NEVER for pixels/colors/fonts/styles.
+   **What it does and does not model, read out of the code 2026-08-20.** Two copies of this
+   skill used to disagree here — one said "structure and anchoring only", the other said to
+   trust it for text — and neither was right. It DOES model text layout: font size from
+   `text_proportion` (`html_template.py:110-112`), wrapping (`:116`), `text halign`/`valign`
+   (`:104-105`, `:115`), and it clips with `overflow:hidden` (`:117`).
+   What it cannot tell you is whether **your string** fits, for two measured reasons. The font
+   is a browser substitute — Bahnschrift / Roboto Condensed / Arial Narrow (`:73`) — where the
+   engine uses Metron bitmap atlases, so glyph widths differ. And a `#STR_` key is drawn
+   bracketed and unresolved (`:107`): running it on `dialog_input_text.layout` puts
+   `#STR_TextInputDialogRoot_MessageText0` on screen, not the translated sentence whose length
+   actually decides the fit. Since this skill requires `#STR_` keys for all production text,
+   that is the normal case, not an edge one.
+   So: trust it for **where a box is and whether text of that size would overflow it**; never
+   for whether the shipped string fits. That question is a build.
+   One trap worth knowing: `wrap` defaults to **1** in the preview (`:116`), so a widget that
+   never declared `wrap` still wraps here. If the engine turns out not to wrap `TextWidget` —
+   still open, see `layout-format.md` — the preview hides the overflow by showing two lines
+   where the game would clip one.
    To read the file rather than draw it,
    `python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout>` (Parser routing above). Do not call
    `DayZ_UI_Research/renderer/parse.py`.
