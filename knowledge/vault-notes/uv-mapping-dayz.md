@@ -210,7 +210,7 @@ Gotcha bpy #4: `bm.to_mesh(me)` invalida las refs RNA previas (`me.uv_layers[..]
 - source-game (.modelbin): trae **5 capas TEXCOORD0-4**; TEXCOORD2 = canal [0,1] per-part
   (swatch/AO), TEXCOORD0/1/4 = tiling absmax~30. `uv.active` coge la capa equivocada →
   capturar explícita: `bm.loops.layers.uv.get("TEXCOORD2")`
-  ([`30_Sessions/2026-06-28-SUB_BRZ-fase5-texturas.md:25-33`](../30_Sessions/2026-06-28-SUB_BRZ-fase5-texturas.md); `VehicleImport\scripts\rip_p2_group.py:129-156`).
+  ([`30_Sessions/2026-06-28-SUB_BRZ-fase5-texturas.md:25-33`](../30_Sessions/2026-06-28-SUB_BRZ-fase5-texturas.md); `<vehicle-import>\scripts\rip_p2_group.py:129-156`).
   En caras espejadas se invierten los corners UV junto con el winding (`rip_p2_group.py:203`).
 
 ## 3. RVMAT, shaders y UVs

@@ -1,11 +1,11 @@
 # profiles/<car>.json — schema legacy/en vuelo (estado 2026-07-11)
 
 > Fuente de verdad de un coche en el pipeline. Loader común: `load_profile()` en
-> `VehicleImport\scripts\rip_p3_structural.py`. El `brz.json` NO es plantilla limpia:
+> `<vehicle-import>\scripts\rip_p3_structural.py`. El `brz.json` NO es plantilla limpia:
 > mezcla contrato fleet con `exceptions` quirúrgicas aprobadas in-game (E_flip, C1_safe,
 > sunk_keep_z, paleta cabina) — para el coche #2 copiar SOLO el contrato, nunca las
 > excepciones. Campos marcados (s1) los introduce la spec
-> `VehicleImport\plans\2026-07-11-s1-frontend-intake.md` (verificar merge antes de usarlos).
+> `<vehicle-import>\plans\2026-07-11-s1-frontend-intake.md` (verificar merge antes de usarlos).
 
 >
 > **CAMBIO-0 (2026-08-05):** este schema conserva el wiring de coches ya iniciados y las

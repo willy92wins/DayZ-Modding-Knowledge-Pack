@@ -4,7 +4,7 @@
 
 ## Checklist DAY-1 (coche nuevo — todo offline, sin tocar geometría)
 
-1. Unzip a `VehicleImport\rip\media\cars\<car>\` (junction si viene de otro lado). La
+1. Unzip a `<vehicle-import>\rip\media\cars\<car>\` (junction si viene de otro lado). La
    `_library` de COCHES compartida ya está en `rip\media\cars\_library\` (verificar que
    los materialbins que el coche referencia resuelven — patrón 13/13 del BRZ).
 2. `profiles\<car>.json` desde la plantilla (ver `references/profile-schema.md`): bloque

@@ -26,7 +26,7 @@ materials, the wheel — never two at once).
 
 ## DECIMATION — rip bodies are too dense to render; planar-dissolve to ~200k (SUB_BRZ s14)
 (supersedes the "NO decimation" wording of the 2026-06-24 architecture section below)
-Pipeline `VehicleImport\scripts\decimate_{export,blender_batch,rebuild}.py` + `orchestrate_decimate.py`
+Pipeline `<vehicle-import>\scripts\decimate_{export,blender_batch,rebuild}.py` + `orchestrate_decimate.py`
 (py3d→Blender→py3d). Per chunk: export verts/faces/UV + slot=(material,texture,region-selection) → Blender
 `dissolve_limited` planar at 10° with `delimit={MATERIAL,UV,SEAM,SHARP}` (collapses source-game's flat
 oversubdivision, KEEPS boundaries/curves/material/UV) → triangulate → rebuild p3d recomputing smooth
@@ -174,7 +174,7 @@ Each imported vehicle gets a `verify_<mod>.py` asserting structural parity again
 
 ### Generalized harness + MANDATORY gates (2026-06-25) [VERIFIED: self-test PASS, positive-control OK on CivilianSedan, SUB_BRZ 24/24]
 
-`verify_rip_car.py` (in `VehicleImport\tools\`) SUPERSEDES per-car `verify_brz.py`: ONE parametrized
+`verify_rip_car.py` (in `<vehicle-import>\tools\`) SUPERSEDES per-car `verify_brz.py`: ONE parametrized
 verifier, a POLICY dict per car (`brz`, `amglf`), checks tiered **U** (universal engine contract) vs
 **P** (car-specific policy: dmgzone list, body-proxy naming, mod token). Run these as GATES (they
 BLOCK), not optional steps — skippable verification is how the offline false-green happened:
@@ -224,7 +224,7 @@ Env: `python` 3.14.3 + py3d 1.2.0. A phase is CLOSED only with {positive-control
 structural-bisection PASS + visual-gate captures reviewed}, never on internal asserts alone. Wiring into
 `dayz-test.ps1` (`Invoke-G3-StructuralVerify` = verify + `roundtrip_structural`; `Invoke-G7-OfflineDiff`;
 exit≠0 blocks the PBO) is the build-time gate — **HELD until the SUB_BRZ script-class Cowork session closes**
-(it shares the SUB_BRZ tree); the offline harnesses in `VehicleImport\tools\` are done and green.
+(it shares the SUB_BRZ tree); the offline harnesses in `<vehicle-import>\tools\` are done and green.
 
 ## PIPELINE PHASES (reusable front-end)
 
@@ -232,14 +232,14 @@ exit≠0 blocks the PBO) is the build-time gate — **HELD until the SUB_BRZ scr
 visual `.p3d` shell + LODs + winding-with-oracle · 3 structural (Geometry/Memory/View/Fire/Hitpoints, vanilla
 wheel reuse, mass) · 4 config.cpp + model.cfg · 5 textures. Phases 1–4 are the reusable rip→DayZ front-end.
 Per-car scripts to reuse: `_parse_manifest.py` (PartEnum inventory), `_classify_parts.py` (INCLUDE/EXCLUDE/
-SHADOW + RF `[ -f ]` probe) — in the SUB_BRZ workspace `C:\Users\<you>\VehicleImport\tools\`.
+SHADOW + RF `[ -f ]` probe) — in the SUB_BRZ workspace `<vehicle-import>\tools\`.
 
 ---
 
 ## PHASE 3 — STRUCTURAL AUTHORING (the drivable skeleton) — verified on SUB_BRZ 2026-06-24
 
 Phase 2 leaves a visual `.p3d` (shell + proxy chunks, or monolithic). Phase 3 ADDS the structural LODs
-WITHOUT touching the visual body geometry. Builder reference: `VehicleImport\scripts\rip_p3_structural.py`
+WITHOUT touching the visual body geometry. Builder reference: `<vehicle-import>\scripts\rip_p3_structural.py`
 (reads the deployed shell, writes a new full `.p3d`, deploy is a separate SHA-checked step).
 
 ### 3.0 Derive the locator→DayZ transform EMPIRICALLY (never assume) — and the DayZ axis convention
@@ -601,7 +601,7 @@ corroboration, not proof. The definitive gate remains the in-game render after t
 
 The reusable texturing pass for a ripped racing-game car. Core confirmed in-game (smoke green: painted body + glass +
 collision + stable spawn). Builders updated so car #2 is born textured. Pipeline scripts:
-`rip_p5_{materials,swatch,texture,gate,deploy}.py` + `_rip_p5_gate_blender.py` (in `VehicleImport`).
+`rip_p5_{materials,swatch,texture,gate,deploy}.py` + `_rip_p5_gate_blender.py` (in `<vehicle-import>`).
 
 ### Texture source — what the rip actually ships (verify, the STEP-0 premise was half-wrong)
 - **No single paint atlas.** Body paint = a constant carPaint color (BRZ ≈ linear `(0.005,0.105,0.420)`

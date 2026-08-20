@@ -6,10 +6,10 @@
 # rip → DayZ: runbook con cutover CAMBIO-0 (2026-08-05)
 
 > Destilado del build SUB_BRZ s2..s32 + research dual consolidado
-> (`VehicleImport\reviews\2026-07-11-research-metodo-import.md`). Reglas SOLO en su estado
+> (`<vehicle-import>\reviews\2026-07-11-research-metodo-import.md`). Reglas SOLO en su estado
 > FINAL verificado; el porqué histórico (RCA, red herrings, supersedidos) está en
 > `dayz-vehicles/references/rip-import.md` — consultarlo como historia, NO como
-> procedimiento. Workspace: `C:\Users\<you>\VehicleImport` (NON-OneDrive). Orquestador:
+> procedimiento. Workspace: `<vehicle-import>` (NON-OneDrive). Orquestador:
 > `scripts\import_car.py --car profiles\<car>.json` (orquestador legacy/en vuelo; no es el runner del nuevo carril B).
 
 ## CAMBIO-0 — cutover de familia B (solo asset nuevo)
@@ -49,7 +49,7 @@ un gate offline por build.
 
 No hay un runner único que materialice esta allowlist. `import_car.py` ejecuta el verifier legacy
 tras `struct`; `--to gate` ejecuta G0/Ga/Gb/Gb+; `--regression` ejecuta la suite extensa. Además,
-VehicleImport no contiene hoy una copia canónica del oráculo B1 y el gate disponible para B6 está
+<vehicle-import> no contiene hoy una copia canónica del oráculo B1 y el gate disponible para B6 está
 sellado a S42/SUB_BRZ. Por tanto, un B nuevo se detiene antes de geometría si B1 o B6 no están
 disponibles: no se sustituyen por documentos legacy ni por gates aproximados.
 
@@ -71,7 +71,7 @@ abajo no amplían la allowlist anterior.
 
 ## Ruta legacy — checklist DAY-1 pre-CAMBIO-0
 
-1. Unzip a `VehicleImport\rip\media\cars\<car>\` (junction si viene de otro lado). La
+1. Unzip a `<vehicle-import>\rip\media\cars\<car>\` (junction si viene de otro lado). La
    `_library` de COCHES compartida ya está en `rip\media\cars\_library\` (verificar que
    los materialbins que el coche referencia resuelven — patrón 13/13 del BRZ).
 2. `profiles\<car>.json` desde la plantilla (ver `references/profile-schema.md`): bloque
@@ -186,7 +186,7 @@ unknowns + `NEEDS_INGAME` explícito. Skill `codex-handoff-template` para el arm
 - `dayz-vehicles/references/rip-import.md` — historia/RCA (por qué cada regla).
 - `dayz-vehicles/references/vehicle-structural-parity.md` — contrato estructural motor.
 - `dayz-vehicles` SKILL.md preflight #1-#15 — checklist genérico de vehículo DayZ.
-- `VehicleImport\reviews\2026-07-11-research-metodo-import.md` — el research consolidado
+- `<vehicle-import>\reviews\2026-07-11-research-metodo-import.md` — el research consolidado
   que fija prioridades y este runbook.
 
 ## (added 2026-07-14 s34) Lift / traslacion de geometria: NO doble transformacion con chunks proxied
@@ -216,7 +216,7 @@ Reglas:
    handling; para un lift exacto usar geometria. La flotacion post-lift = NEEDS_INGAME (medir
    root/contacto/suspension en Diag; NO parchear bajando la Geometry).
 
-Ref: VehicleImport\work\s34_stance_audit_A.md (spec completa) + <notes>\AI\30_Sessions\2026-07-14-SUB_BRZ-s34.md.
+Ref: <vehicle-import>\work\s34_stance_audit_A.md (spec completa) + <notes>\AI\30_Sessions\2026-07-14-SUB_BRZ-s34.md.
 
 ## (added 2026-07-17 s36) Puertas y piezas móviles: el rip YA las trae cortadas — mirar Manifest ANTES de planificar recorte
 
@@ -271,7 +271,7 @@ in-game del usuario (equivalencia archivo=render=juego validada). Reglas:
 
 1. GATE OBLIGATORIO pre-deploy de toda pieza visual nueva/editada: render antes/despues
    del contenedor COMPLETO (no solo la pieza tocada). Pipeline reusable:
-   `VehicleImport\work\s39_f0_audit\render_all_chunks.py`.
+   `<vehicle-import>\work\s39_f0_audit\render_all_chunks.py`.
 2. Un diagnostico "archivos sanos" emitido solo con censos NO autoriza atribuir el
    defecto a runtime: renderiza antes de descartar datos.
 3. Matching de cobertura NUNCA contra una referencia derivada del propio artefacto a
@@ -320,7 +320,7 @@ eran las VENTANILLAS invisibles. Causa real unica de parabrisas + ventanillas + 
 ## Gate de linaje de winding
 
 [EXACT][CLAIM-R21-RIP-WINDING-LINEAGE]
-`VehicleImport/scripts/winding_lineage_gate.py` compara el winding por cara del
+`<vehicle-import>/scripts/winding_lineage_gate.py` compara el winding por cara del
 target contra el `source_face_id` sellado y deriva la relación esperada del
 determinante: positivo = `PRESERVE`, negativo = `REVERSE`. Emite
 `SOLID|INVERTED|MIXED` con exits `0|1|2`; manifiesto, linaje o determinante

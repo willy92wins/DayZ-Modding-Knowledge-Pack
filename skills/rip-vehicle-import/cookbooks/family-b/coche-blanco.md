@@ -12,7 +12,7 @@
     dedicated). Use `-include` with `*.c;*.asi;*.anm;*.paa;*.rvmat` for binarize builds, then
     diff the emitted PBO entry list against the source tree BY EXTENSION with explicit allowances
     (config.cpp→config.bin OK, model.cfg baked OK; all `.p3d/.paa/.rvmat/.c` REQUIRED). Wrapper
-    with that diff: `C:\Users\<you>\VehicleImport\scripts\rip_binarize_experiment.ps1`.
+    with that diff: `<vehicle-import>\scripts\rip_binarize_experiment.ps1`.
     Related fact (same experiment, verified against vanilla civiliansedan ODOL): **binarize drops
     the authored ShadowVolume res-1e4 LOD** — an authored shadow LOD only ships via
     MLOD/packonly; if you adopt ODOL, re-check shadows in-game before trusting the budget.

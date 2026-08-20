@@ -161,8 +161,17 @@ rejected most often:
   and its engine's name are not part of the technique, and they do not ship. Write
   `rip`, `rip-import`, `source-game`. A working copy of these skills may use the
   original vocabulary and that is fine — the asymmetry is deliberate, so a merge
-  from a local store must not carry it back in. Checked with `\bForza(?![a-z])`,
-  which is the pattern that does not also match the Spanish `forzado`.
+  from a local store must not carry it back in. Checked with
+  `(?i:\bforza)(?![dnr])`: case-insensitive on the name, and the `[dnr]` stays
+  case-sensitive so it drops the Spanish `forzado` / `forzar` / `forzando`
+  without also dropping `ForzaDayZ`. The obvious `\bForza(?![a-z])` is wrong —
+  being case-sensitive it never sees the lowercase slug `forza-to-dayz`, which
+  is the form that actually survived a full sweep.
+  One deliberate exception, and it does not get "fixed": the three publish
+  receipts under `tests/packctl/fixtures/receipt_history/` record
+  `skill/forza-to-dayz` as an artifact id. A receipt states what was published
+  on a given day under the name it had; rewriting it would falsify the record
+  and break the fixtures that assert on it.
 
 ### Gates
 

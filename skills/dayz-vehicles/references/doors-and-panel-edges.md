@@ -28,7 +28,7 @@ fold-over at the skin edge, not a band. Door thickness available at both ends:
 **Day-0 check for any vehicle with opening doors** - slice the door at its two
 extremes along its long axis, sum the area of faces whose geometric normal runs
 along that axis, and compare against `height x thickness`. Under ~30% means the
-caps are missing. `VehicleImport\work\s43_fixes\s49_probe_ends.py` is the probe.
+caps are missing. `<vehicle-import>\work\s43_fixes\s49_probe_ends.py` is the probe.
 
 **Why this hides for entire sessions, and the general lesson:** with the door
 SHUT the body covers that edge, so every closed-door measurement passes. SUB_BRZ
@@ -108,7 +108,7 @@ captura del defecto CON LA PUERTA ABIERTA antes de empezar — con la puerta cer
 verde (SP-198) y sin la captura no se distingue "veo a traves" de "el borde queda feo", que llevan
 a fixes distintos.
 
-Sondas reutilizables en `VehicleImport\work\s50_doorcaps\`: `s50_probe_freeedge.py` (la metrica del
+Sondas reutilizables en `<vehicle-import>\work\s50_doorcaps\`: `s50_probe_freeedge.py` (la metrica del
 gate, por LOD), `s50_compare_control.py` (control vs candidato, ejes normalizados),
 `s50_probe_bridge.py` (correspondencia de los dos bordes), `s50_render_front.py` (render A/B/C:
 actual con culling, sin culling, y el fix simulado).
@@ -126,7 +126,7 @@ Dos correcciones a SP-202, ambas con medida y la primera confirmada in-game por 
    alcanza paridad vanilla. El fix de 5 mm de s51 fallaba por PROFUNDIDAD (5 mm en un hueco de
    ~77 mm), no por orientación — sus quads sí se dibujaban (probe cull ON == cull OFF).
 
-**La receta que funciona** (`VehicleImport\work\s52_cantos\s52_close_perimeter.py`, ambas puertas,
+**La receta que funciona** (`<vehicle-import>\work\s52_cantos\s52_close_perimeter.py`, ambas puertas,
 LODs visuales + 1100):
 
 - **Filo libre VERDADERO**: contar el uso de cada arista sobre TODAS las caras del LOD y quedarse
@@ -204,7 +204,7 @@ la bisagra a un metro de donde va, en verde.
 7. **La masa del item no se hereda de la puerta.** Un `geometry_mass_kg` global le pone a un capo
    los kilos de una puerta.
 
-Origen: `VehicleImport\plans\2026-08-07-T6-detachables-rig-extension.md` (T6 del piloto CAMBIO-3),
+Origen: `<vehicle-import>\plans\2026-08-07-T6-detachables-rig-extension.md` (T6 del piloto CAMBIO-3),
 sondas en el scratchpad de la sesion. Los puntos 3 y 4 los levanto una revision R22 ciega sobre el
 plan, no la implementacion: son exactamente la clase de defecto que un gate offline no encuentra
 porque el gate estaba midiendo otra cosa.

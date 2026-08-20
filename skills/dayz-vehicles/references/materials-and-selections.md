@@ -54,4 +54,4 @@ Rules for a proxy-split car (day-1 for car #2, surgery for cars in flight):
    control: the instrument cluster).
 4. Reference surgery with asserts (component pick by aspect+centre, per-LOD face deltas,
    selection cardinality, proxies/bones untouched):
-   VehicleImport/work/lfvui_f2/surgery_screen_nav.py.
+   <vehicle-import>/work/lfvui_f2/surgery_screen_nav.py.

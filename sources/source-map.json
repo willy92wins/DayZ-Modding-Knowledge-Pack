@@ -141,7 +141,7 @@
           "decision": "adopt",
           "decision_evidence": "Canonical agent entry file; the cross-tool convention several hosts read.",
           "license": "MIT",
-          "source_hash": "870add2d6a69a571f0489a5900e27f0ceb771da992222b60e7429ef5ece39723",
+          "source_hash": "bfb211510cf4c722718d79215c610f416a834f5d44fa1c29d05b5e7106f1fd50",
           "source_id": "pack-r21-authored",
           "source_path": "AGENTS.md",
           "source_revision": "r22-tool-routing@2026-08-16",
@@ -149,7 +149,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "870add2d6a69a571f0489a5900e27f0ceb771da992222b60e7429ef5ece39723",
+      "output_hash": "bfb211510cf4c722718d79215c610f416a834f5d44fa1c29d05b5e7106f1fd50",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -421,7 +421,7 @@
           "decision": "adopt",
           "decision_evidence": "Index of the bundled tools, what each one refuses to do, and how to run it.",
           "license": "MIT",
-          "source_hash": "bd1ae2c9c31639bf3ae43c2956045ee3c0240c77d936391e68183902926b5843",
+          "source_hash": "1ea4be0e0c974d568f090830eeaa94262021c66721dbbcfb08689c8edc45ca79",
           "source_id": "pack-r21-authored",
           "source_path": "TOOLS.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
@@ -429,7 +429,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "659ffce5ac96599ab312338b32965066e992d743c207061ef47f09c9860c7536",
+      "output_hash": "1ea4be0e0c974d568f090830eeaa94262021c66721dbbcfb08689c8edc45ca79",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -443,7 +443,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "0115d6ba630ef0743f3af9bc2dc51ffe34cb03d1faa0175319673852286b208e",
+          "source_hash": "63866577eac6d272b2a7f55632def6b8b6a316b3174183ae476b1a78ba38bdea",
           "source_id": "pack-r21-authored",
           "source_path": "compatibility-matrix.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -451,7 +451,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0115d6ba630ef0743f3af9bc2dc51ffe34cb03d1faa0175319673852286b208e",
+      "output_hash": "63866577eac6d272b2a7f55632def6b8b6a316b3174183ae476b1a78ba38bdea",
       "output_path": "compatibility-matrix.md",
       "routing_artifact_id": "root/compatibility-matrix",
       "verification_level": "cross_checked"
@@ -1501,7 +1501,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "93cfb8729aa00ee9a2fb6898b49eca4224bd22f47edfa000fb66c670d68df849",
+          "source_hash": "0832366953a49510e712777bd95a8866a1dc47469b0b79a29be7bc17ad8dabf6",
           "source_id": "pack-r21-authored",
           "source_path": "knowledge/vault-notes/dayz-vehicles-crossproject.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -1509,7 +1509,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "93cfb8729aa00ee9a2fb6898b49eca4224bd22f47edfa000fb66c670d68df849",
+      "output_hash": "0832366953a49510e712777bd95a8866a1dc47469b0b79a29be7bc17ad8dabf6",
       "output_path": "knowledge/vault-notes/dayz-vehicles-crossproject.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1691,7 +1691,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "44f4cffa31b8940d00d7d3075b86872ecd614a90d924fad0f880b0c4ffa16d44",
+          "source_hash": "8b7f676a50691deae767f047d9357713a165c99021f5ade1cbd5268d29a2d529",
           "source_id": "pack-r21-authored",
           "source_path": "knowledge/vault-notes/uv-mapping-dayz.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -1699,7 +1699,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "44f4cffa31b8940d00d7d3075b86872ecd614a90d924fad0f880b0c4ffa16d44",
+      "output_hash": "8b7f676a50691deae767f047d9357713a165c99021f5ade1cbd5268d29a2d529",
       "output_path": "knowledge/vault-notes/uv-mapping-dayz.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -3824,7 +3824,7 @@
           "decision": "adopt",
           "decision_evidence": "Approved optional-companion authority boundary was added after an adversarial RED-to-GREEN evaluation.",
           "license": "MIT",
-          "source_hash": "ee41746fecc7e9a667bd8a028514bf1ba3e05b95494ea0af44386381fe114fa0",
+          "source_hash": "13c494943ec37e093baed5e6086b66ad1bc0b34ec3c71da53b32c775bdf8d61f",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -3832,7 +3832,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "57122f63fc0a35f8a7b8023b8bfa28a5aff35faccdaa7df9084acb9b4e95df1e",
+      "output_hash": "13c494943ec37e093baed5e6086b66ad1bc0b34ec3c71da53b32c775bdf8d61f",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -4436,7 +4436,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "428db588150d3f9b1f803819d2ed498b33094bb53114141a4c17f2480d2268b4",
+          "source_hash": "e4bbdedda0a7fe7482cb2641a3f3b90da07a0b6b7b214f0fbd3a77f2379b392b",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -4444,7 +4444,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c8f696bb36c70e2c32d1067a64cf14e97e7e7c12d353ea38fe1599380856305e",
+      "output_hash": "e4bbdedda0a7fe7482cb2641a3f3b90da07a0b6b7b214f0fbd3a77f2379b392b",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -4574,7 +4574,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "336e4c4c664bc41fc1511e54b6ad071e9b43bdf560249fcda77dbf908e730e9d",
+      "output_hash": "cae72563ba1b36b57ae4994aabc64017e1737991c0d7d6ab49b4b66eacd0d24b",
       "output_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -4680,7 +4680,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fbcaf9fdb943d573009a773ef9a89fef03a8b7ce9a6e7dd3142b22bd369d7ec8",
+      "output_hash": "12ead67c2b5901b069602f8869da2c8af1e34036a637912d04c6c230234ead34",
       "output_path": "skills/dayz-vehicles/references/doors-and-panel-edges.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -4756,7 +4756,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "354ea54a462578237afd70190cd60793d29d64e39b89ba7a0c9584a60434c630",
+          "source_hash": "e6581469eb6b3f4b31b7483ae3d4a18dd5361c9b54c321f04caae7c5af5dc803",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/references/external-obj-import.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -4764,7 +4764,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "354ea54a462578237afd70190cd60793d29d64e39b89ba7a0c9584a60434c630",
+      "output_hash": "e6581469eb6b3f4b31b7483ae3d4a18dd5361c9b54c321f04caae7c5af5dc803",
       "output_path": "skills/dayz-vehicles/references/external-obj-import.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -4922,7 +4922,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "937a73918e53a93d172be9eb31cf6187aa7bd9b56a77497fb3ca25516d5f192f",
+      "output_hash": "6491ffd4986b1e0467332edfcc8e560811a5e1b784e13d507e5a94d39dd06276",
       "output_path": "skills/dayz-vehicles/references/materials-and-selections.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -5094,7 +5094,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "722e40fbe7ceba9d4ec9f86127b57071b6528239544306511a54c6f8202bf6ea",
+      "output_hash": "f5cac5165c3a840d8994251e82c5bc3c678f66df3a14315ca11ac7a218bed4cd",
       "output_path": "skills/dayz-vehicles/references/rip-geometry-and-winding.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -5128,7 +5128,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "5cd5b8bd6873d35f20cac4cc95c37a12235d8402e5c6f83107683843b2168c2a",
+          "source_hash": "35939a8be1a55127f6c3bef322ed71054857292a0b44dc0fdb81434be15ef226",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/references/rip-import.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -5136,7 +5136,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5cd5b8bd6873d35f20cac4cc95c37a12235d8402e5c6f83107683843b2168c2a",
+      "output_hash": "35939a8be1a55127f6c3bef322ed71054857292a0b44dc0fdb81434be15ef226",
       "output_path": "skills/dayz-vehicles/references/rip-import.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -5212,7 +5212,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "75d6df631a28ce8b8397ac2f36579f4634fb46c6b5cc83e153e56081d5f37c9e",
+          "source_hash": "af86fef67466897428ebae47b04477ca36d75233cbbaa22798b7d56a4f00f07c",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -5220,7 +5220,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2a6521381344595a568680c1693172e0e12b9f2a6b39c6d52c3bab6f5e4a4948",
+      "output_hash": "af86fef67466897428ebae47b04477ca36d75233cbbaa22798b7d56a4f00f07c",
       "output_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -5296,7 +5296,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "345163869492a715c306fa62e47ea01826d486cdb88399a568a80fac6a96c5cd",
+          "source_hash": "6459b0b4331678fcc6eeb72867e6adadb1a228fec6d798c8015c4767e916b294",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/references/visual-gates-and-winding.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -5304,7 +5304,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "345163869492a715c306fa62e47ea01826d486cdb88399a568a80fac6a96c5cd",
+      "output_hash": "6459b0b4331678fcc6eeb72867e6adadb1a228fec6d798c8015c4767e916b294",
       "output_path": "skills/dayz-vehicles/references/visual-gates-and-winding.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -5326,7 +5326,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "48338c7c84c77c424269fa07cc75e7f63df9e64f2a4c2bd199d4c226b7c32d5c",
+      "output_hash": "7618971bd814c5c5ced6b9221e2993fe7540261c12f6a395bfb81881741ca63d",
       "output_path": "skills/dayz-vehicles/references/visual-metrics-and-viewer.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -6124,7 +6124,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "6a10006d3b1785e6c66cd65c77ff0c502f25c39b072c1fb5eb350d343275be14",
+          "source_hash": "85742e0d27aad278282d111e9ca9ef5c9b0b50cdfa98e013123203733c2ad368",
           "source_id": "pack-r21-authored",
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -6132,7 +6132,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6a10006d3b1785e6c66cd65c77ff0c502f25c39b072c1fb5eb350d343275be14",
+      "output_hash": "85742e0d27aad278282d111e9ca9ef5c9b0b50cdfa98e013123203733c2ad368",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -6220,7 +6220,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "876c92cd90a2fc312da1a788d6fe2af58072619a35101fc7da81ccef4c3c88d5",
+      "output_hash": "298d8fe63c35b43f5b0d8e28f202056034a99e3b6d06756f7923921f15ba061f",
       "output_path": "skills/rip-vehicle-import/cookbooks/family-b/attach-invisible.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -6242,7 +6242,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "31548b62a1504c4ceae415a05f2f318f1c500fa6aae795cdfd8eb3c9d1311632",
+      "output_hash": "8238f8b20348ad974592644c7c7bc77a16b268723a316b0e9072de71abdc254c",
       "output_path": "skills/rip-vehicle-import/cookbooks/family-b/coche-blanco.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -6330,7 +6330,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "61329d0e05d94dcde85d9e43b38304d93b67052ee9fe5bff00103ccc8ad9ed69",
+      "output_hash": "6c72b8e24cd2f270f371b34c204177aad8da301708c48c0b78b4da6808060368",
       "output_path": "skills/rip-vehicle-import/history/cambio-0-retired-family-b-artifacts.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -6352,7 +6352,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5d039e9c661ff382484a7f313aa38c6c976e937fd2216ac9da4b1a0de9923004",
+      "output_hash": "82db8da1c4f2110c6f0baef534d5a9dd9311d62d892d102fd1b8e1b4882d96e5",
       "output_path": "skills/rip-vehicle-import/history/pre-cambio-0-canonical-path.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -6374,7 +6374,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cfb2031ea2765bad841ba394431a74aa167d57ac34ccf6ed13792558c35ace6a",
+      "output_hash": "842d18abd087306a1b582c59383650f1c4225e80a79f501328bd9d41655ceefb",
       "output_path": "skills/rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -6418,7 +6418,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "8e20972bb7efac1d9214861d30ca07c309104f289cb722b46bb969f49f5f66ac",
+          "source_hash": "d205700342228b68d00c67e054b371090625cef60bc744526fb177ef9ad1f100",
           "source_id": "pack-r21-authored",
           "source_path": "skills/rip-vehicle-import/references/profile-schema.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -6426,7 +6426,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8e20972bb7efac1d9214861d30ca07c309104f289cb722b46bb969f49f5f66ac",
+      "output_hash": "d205700342228b68d00c67e054b371090625cef60bc744526fb177ef9ad1f100",
       "output_path": "skills/rip-vehicle-import/references/profile-schema.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -6441,7 +6441,7 @@
           "decision": "adopt",
           "decision_evidence": "Claim registry records the three approved evidence-backed contracts and their skill ranges.",
           "license": "MIT",
-          "source_hash": "399aa680b34ed45dffc93779bdd59e5093e1a61e56bd39ff0f0bd8036ef7f48c",
+          "source_hash": "23e432349b41fabdcefbbe04221d11d581f5af881e5e7a4e2cfa77c198117e5c",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -6449,7 +6449,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "399aa680b34ed45dffc93779bdd59e5093e1a61e56bd39ff0f0bd8036ef7f48c",
+      "output_hash": "23e432349b41fabdcefbbe04221d11d581f5af881e5e7a4e2cfa77c198117e5c",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -9421,7 +9421,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 removes the false missing-child-block diagnostic and strict mode after a RED-to-GREEN test cycle.",
           "license": "MIT",
-          "source_hash": "344b7edf8cc66ceb2b11efb13042824994e5a85368e16015e672355f6f3f28ca",
+          "source_hash": "09eb6bd6bee9d1f2fcdc9d1073cad54ab7f9e4f5ac24e66dc56d757eca253c1f",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/dayz_ui_lab/parse.py",
           "source_revision": "r21-phase02@2026-07-25",
@@ -9429,7 +9429,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "344b7edf8cc66ceb2b11efb13042824994e5a85368e16015e672355f6f3f28ca",
+      "output_hash": "09eb6bd6bee9d1f2fcdc9d1073cad54ab7f9e4f5ac24e66dc56d757eca253c1f",
       "output_path": "tools/dayz-ui-lab/dayz_ui_lab/parse.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -10087,7 +10087,7 @@
           "decision": "adopt",
           "decision_evidence": "Phase 02 asserts that valid leaves are warning-free and that the false strict-child-block API is absent.",
           "license": "MIT",
-          "source_hash": "8e2549c056c026bd7e6d5421803465c649bd50205bfc7068dd983b07e9f4854e",
+          "source_hash": "46f5779ed6ca0c076b913a039fcb7e8f6f06c7aeeef80ec328f932657961c001",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-ui-lab/tests/test_parser.py",
           "source_revision": "r21-phase02@2026-07-25",
@@ -10095,7 +10095,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8e2549c056c026bd7e6d5421803465c649bd50205bfc7068dd983b07e9f4854e",
+      "output_hash": "46f5779ed6ca0c076b913a039fcb7e8f6f06c7aeeef80ec328f932657961c001",
       "output_path": "tools/dayz-ui-lab/tests/test_parser.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -12143,7 +12143,7 @@
           "decision": "adopt",
           "decision_evidence": "Skill body retargeted to tools/dayz-3d-viewer; knowledge kept.",
           "license": "MIT",
-          "source_hash": "fb1d6d01698238623dc2d138c8d29a3c82f7bc185f7e4c5de47e141df9193cf2",
+          "source_hash": "08b2666eb1f087faff70ae454f0a6f83a332adddc555a57bf2671b8f84e4a9a8",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-3d-viewer/SKILL.md",
           "source_revision": "r21-phase04@2026-07-25",
@@ -12151,7 +12151,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "63f091b6cbac17deb8e25d14b74c76bcf7f16a328698e8b8f0b3f7b6b3ea0e5f",
+      "output_hash": "08b2666eb1f087faff70ae454f0a6f83a332adddc555a57bf2671b8f84e4a9a8",
       "output_path": "skills/dayz-3d-viewer/SKILL.md",
       "routing_artifact_id": "skill/dayz-3d-viewer",
       "verification_level": "cross_checked"
@@ -13033,7 +13033,7 @@
           "decision": "merge",
           "decision_evidence": "Two discovery rows added on 2026-08-20 so the templates directory is reachable from the skill: a TASK ROUTER row and a Reference Files entry, both pointing at templates/README.md. The artifact output_hash is deliberately NOT refreshed: the file also carries an unadjudicated merge from another session, and refreshing would absorb it in silence. This input names our delta without adopting theirs.",
           "license": "MIT",
-          "source_hash": "0de1973c2a07423a6624cfb1530dba703640c3ec7e362ae986c376a15d126667",
+          "source_hash": "8a09d6348e3cf08a2b7999913aa91cfc8992c6f06fd5e7664587bb6bce5c54dd",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "ui-templates@2026-08-20",
@@ -13041,7 +13041,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "55b99792d754d921a61b323421b2c51c2f1bb3def5048cb8913826ec5f8d8e47",
+      "output_hash": "8a09d6348e3cf08a2b7999913aa91cfc8992c6f06fd5e7664587bb6bce5c54dd",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -13261,7 +13261,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b338c970fdd4233e2c017684cf7e25a06fb96fcecc5d1008ca6ed8a4e999a571",
+      "output_hash": "135b4185308e8cdabe32653350f732525f9f136557ab7dac1fc746a1c1f0a7ef",
       "output_path": "skills/dayz-ui-development/references/layout-format.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -13305,7 +13305,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e50100ea029829734cb02df92fcb4fab48437b948b91c9b6c6879931c89398d0",
+      "output_hash": "cc8266cc4a2bd6f8a37a1843e342bbff75a72191f01ffffdbea0e41e0227cec2",
       "output_path": "skills/dayz-ui-development/references/plan-to-implementation.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -13327,7 +13327,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "174318e616d9bd628b119fbaa25e9bc65ef64934d77518cd54977905ac7de450",
+      "output_hash": "ce87a0b1e73f468a10086d1627a8194e10f59acebebb14ca0f2a545c3a362583",
       "output_path": "skills/dayz-ui-development/references/styles-format.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -14295,7 +14295,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "17facc2448d7ae642b87e676df6fb2bbadf2a5f9f62903cdb9b65fc1ae931667",
+      "output_hash": "81d9b74a5a4697b4f81780dd7b4802e3c57e3fc4e07a4178a8e4978441c1591b",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -14537,7 +14537,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1830c699106fb27a6e4909dd4b34ed1ffc113c77bf3c4e2102f3c1b39e98095c",
+      "output_hash": "2839d990fb0a9874f8ba2353892715bca5b9feceac878a94e9514de5e7d0fee5",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -14647,7 +14647,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2dd3d944c3dbbcd176cc79cb08cbd25016c20e5da04bc07e58d4fe174444f27b",
+      "output_hash": "5b21850f86c3ab788880283b042debe89a9aa21cd1778dc29ebfbce74bdbf31d",
       "output_path": "skills/dayz-p3d-audit/references/vehicle-killers.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -14889,7 +14889,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2886b363726e6c1f41021b6d37d35507feb8a48c6233b3380cfdeb8ee779d1b4",
+      "output_hash": "bd690e6afe3ef41ea6c38dcfd8710fff1accdf2c9ef23921e6e7d74c77a0e85f",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -15153,7 +15153,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "618fabb391f6abe3afd075ad637e5c512432fc7fed2b5e00a750a811bf6d1a1f",
+      "output_hash": "b258a751ca2aa66498778c3592e97a544761a269a81b984c03619db7b0b9f0e8",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -15329,7 +15329,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3e82b9cc21a465a4dda4b8592791e2adccff95d8ca863d48ae1a26705896c04c",
+      "output_hash": "c157d60aa98931bc36934221cdd991b36574aba82757d0975201d2394aa3e46d",
       "output_path": "skills/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -16737,7 +16737,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a79201dabab794ae2efb2644b4592a2b0490c5e4e23cea35a4d85b2d9f894a8f",
+      "output_hash": "865f17fa8c51d36c2b0fb0c62bfb59b27ec064e977ebfe4eb9c0f0dbc62137dd",
       "output_path": "skills/3d-generation-harness/SKILL.md",
       "routing_artifact_id": "skill/3d-generation-harness",
       "verification_level": "cross_checked"

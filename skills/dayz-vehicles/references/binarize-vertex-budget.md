@@ -70,5 +70,5 @@ and the ceiling would have been reported 7 units too high. Use a step that is un
 above the quantum (>= 3 deg for normals) and include a sample past the known-failing value as
 a self-check.
 
-Tool: `C:\Users\<you>\VehicleImport\scripts\p3d_vertex_gate.py` - `count` reports resolved per LOD
+Tool: `<vehicle-import>\scripts\p3d_vertex_gate.py` - `count` reports resolved per LOD
 as `INFORMATIVE_ONLY`; only `binarize` runs the authoritative three-state adjudication.

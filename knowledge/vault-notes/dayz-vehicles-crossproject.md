@@ -13,7 +13,7 @@
 
 - `[[10_Projects/LFQuad/project-brief|LFQuad]]` — quad (Banshee + física Croco). **Primero** en resolver
   get-in, wheel-sim, paridad estructural. La fuente de las invariantes 1, 3, 4.
-- **SUB_BRZ** (rip→DayZ pipeline; sin folder de vault, vive en `VehicleImport\` + auto-memory
+- **SUB_BRZ** (rip→DayZ pipeline; sin folder de vault, vive en `<vehicle-import>\` + auto-memory
   `rip-vehicle-import-pipeline`) — re-sufrió get-in + componentNN dual-tag + winding. Probó que la invariante 1
   es la MISMA en un coche importado, no algo del quad.
 - `[[10_Projects/MercedesAMGLF/project-brief|MercedesAMGLF]]` — Mercedes-AMG GT3 por proxys. Cerró la

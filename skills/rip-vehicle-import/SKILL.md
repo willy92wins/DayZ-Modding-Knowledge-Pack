@@ -13,11 +13,11 @@ description: "Use when importing a new ripped racing-game Grub vehicle into DayZ
 
 | Campo | Contrato de familia B |
 |---|---|
-| Ejes / unidades | Source `C:\Users\<you>\VehicleImport\rip\media\cars\<car>\`. Transform neto `DayZ=(-Fx, Fy+Y0, -Fz)`, metros, sin permutar ejes y `det=+1`; `Y0` se mide y se sella en la ficha, nunca se hereda de otro coche. Contrato verificado en `VehicleImport/tools/fit_transform.py:5-15,107-108`. |
+| Ejes / unidades | Source `<vehicle-import>\rip\media\cars\<car>\`. Transform neto `DayZ=(-Fx, Fy+Y0, -Fz)`, metros, sin permutar ejes y `det=+1`; `Y0` se mide y se sella en la ficha, nunca se hereda de otro coche. Contrato verificado en `<vehicle-import>/tools/fit_transform.py:5-15,107-108`. |
 | Monolítico vs proxy-split | Host/shell con LODs estructurales; piezas visuales que superen presupuesto y attachments se instancian como submodelos proxy. No usar un monolito como fallback silencioso. |
 | Partes móviles | Puertas, capó, maletero y rueda/item conservan identidad propia, pivote medido y wiring item↔slot↔proxy; no se funden en el shell. |
 | Autoridad de frame | El frame del donor/golden manda para estructura; el frame del source manda para visual importado. Toda conversión se prueba con anclas independientes. Nunca validar una pieza contra un punto producido por el mismo transform. |
-| Golden | `C:\Users\<you>\VehicleImport\goldens\family-b\civiliansedan\r1\q1-structure.json`, revisión `family-b-civiliansedan-r1`, 3.219.555 bytes, SHA-256 `3174D511F2761EE2F4E003694F566D7D92180BB30CE3479A8FA5F1EAA7C45AEB`; donor hashes en `golden-manifest.json`. Es estructural, no clone-ready: `mass_array` vacío y avisos de proxies obligan a STOP antes de copiar masa por vértice o declarar paridad completa. |
+| Golden | `<vehicle-import>\goldens\family-b\civiliansedan\r1\q1-structure.json`, revisión `family-b-civiliansedan-r1`, 3.219.555 bytes, SHA-256 `3174D511F2761EE2F4E003694F566D7D92180BB30CE3479A8FA5F1EAA7C45AEB`; donor hashes en `golden-manifest.json`. Es estructural, no clone-ready: `mass_array` vacío y avisos de proxies obligan a STOP antes de copiar masa por vértice o declarar paridad completa. |
 | Allowlist de checks | Solo B1-B7 de la tabla siguiente. Ningún gate legacy, snapshot o copia de workspace amplía el carril. |
 
 ## Inventario de puertas del source (medido 2026-08-06 sobre la biblioteca de 651 rips)
@@ -28,10 +28,10 @@ description: "Use when importing a new ripped racing-game Grub vehicle into DayZ
 
 ## Ficha única y checkpoint de identidad
 
-- Plantilla completa: `C:\Users\<you>\VehicleImport\contracts\asset-contract.json`; schema de revisión: `VehicleImport\contracts\asset-contract.schema.json`.
+- Plantilla completa: `<vehicle-import>\contracts\asset-contract.json`; schema de revisión: `<vehicle-import>\contracts\asset-contract.schema.json`.
 - La copia por asset se llama exactamente `asset-contract.json`; es el tercer y último fichero day-0. Sustituye inventario/decisiones paralelos: no produzcas `source_inventory.json`, `manifest_decisions.json`, tombstones aparte ni otra lista.
-- Export sentadas A/B: el humano ejecuta `C:\Users\<you>\VehicleImport\scripts\blender_export_asset_contract.py` sobre collections `DZ_INCLUDE` / `DZ_EXCLUDE` / `DZ_MOVABLE`. El JSON es evidencia de import; después manda la ficha.
-- Primitive única: `C:\Users\<you>\VehicleImport\scripts\asset_contract_checkpoint.py`, versión declarada en stdout. Está prohibido copiarla a una corrida.
+- Export sentadas A/B: el humano ejecuta `<vehicle-import>\scripts\blender_export_asset_contract.py` sobre collections `DZ_INCLUDE` / `DZ_EXCLUDE` / `DZ_MOVABLE`. El JSON es evidencia de import; después manda la ficha.
+- Primitive única: `<vehicle-import>\scripts\asset_contract_checkpoint.py`, versión declarada en stdout. Está prohibido copiarla a una corrida.
 - Sentada A/B se importa con `import-blender`; tras convertir, `check` es el único `capability=LINEAGE_CHECKPOINT`.
 - `PASS` permite continuar solo dentro de la capability emitida. `DECISION_REQUIRED` vuelve al humano. `TOOL_FAIL` bloquea y no autoriza tocar geometría ni se registra como fallo del asset.
 - La cobertura es N:M: todo `INCLUDE`/`MOVABLE` aparece en un `derived_from` dentro de una operación autorizada; cada `EXCLUDE` justificado es el tombstone. No se exige igualdad source/output.
@@ -40,13 +40,13 @@ description: "Use when importing a new ripped racing-game Grub vehicle into DayZ
 
 | ID | Contrato / ubicación | Estado para un B nuevo |
 |---|---|---|
-| `B1_BINARIZE_LOAD` | Oráculo de tres estados `PASS / CAPACITY_FAIL / OTHER_FAIL`: `VehicleImport\scripts\p3d_vertex_gate.py`. | Disponible; autoridad demostrada con known-good, `CAPACITY_FAIL`, `OTHER_FAIL` y ODOL residual. |
-| `B2_DEPLOY_IDENTITY` | `VehicleImport\scripts\rip_build_identity.py --stage` (`:420-442`). | Disponible. |
-| `B3_VEHICLE_PARITY` | `VehicleImport\tools\verify_rip_car.py` en modo contractual (`:1538-1546,1734-1736,1817`), nunca `build_checks()` legacy. | Disponible. |
-| `B4_CREW_ACTIONS` | `VehicleImport\scripts\rip_action_contract_gate.py` por su CLI real (`:732-742`). | Disponible. |
-| `B5_DOOR_ALIGNMENT` | `VehicleImport\scripts\rip_door_engine_alignment_gate.py` por su CLI real (`:513-515`). | Disponible. |
-| `B6_NATIVE_DOOR` | `VehicleImport\scripts\rip_native_door_contract_gate.py` por su CLI can?nica (`--profile`, `--mlod-stage`, `--odol-stage`, `--debinarizer-scripts`, `--out`); W2 (`--matrix-authority` + `--matrix-out`) es una extensi?n opcional, no la autoridad base. | Disponible; autoridad de familia B demostrada con perfil no BRZ, golden vanilla, mutaci?n estructural y aver?a instrumental. |
-| `B7_VISUAL_SIGNOFF` | Render: `VehicleImport\scripts\rip_assembled_viewer.py`. Veredicto: `VehicleImport\scripts\rip_visual_signoff.py` (`--render` / `--verdict` / check con `--out`). | Disponible; estrenado con sub_wrxsti_04 el 2026-08-16, cuando el ojo del usuario encontro en minutos cuatro defectos que B1-B6 habian dado por buenos. |
+| `B1_BINARIZE_LOAD` | Oráculo de tres estados `PASS / CAPACITY_FAIL / OTHER_FAIL`: `<vehicle-import>\scripts\p3d_vertex_gate.py`. | Disponible; autoridad demostrada con known-good, `CAPACITY_FAIL`, `OTHER_FAIL` y ODOL residual. |
+| `B2_DEPLOY_IDENTITY` | `<vehicle-import>\scripts\rip_build_identity.py --stage` (`:420-442`). | Disponible. |
+| `B3_VEHICLE_PARITY` | `<vehicle-import>\tools\verify_rip_car.py` en modo contractual (`:1538-1546,1734-1736,1817`), nunca `build_checks()` legacy. | Disponible. |
+| `B4_CREW_ACTIONS` | `<vehicle-import>\scripts\rip_action_contract_gate.py` por su CLI real (`:732-742`). | Disponible. |
+| `B5_DOOR_ALIGNMENT` | `<vehicle-import>\scripts\rip_door_engine_alignment_gate.py` por su CLI real (`:513-515`). | Disponible. |
+| `B6_NATIVE_DOOR` | `<vehicle-import>\scripts\rip_native_door_contract_gate.py` por su CLI can?nica (`--profile`, `--mlod-stage`, `--odol-stage`, `--debinarizer-scripts`, `--out`); W2 (`--matrix-authority` + `--matrix-out`) es una extensi?n opcional, no la autoridad base. | Disponible; autoridad de familia B demostrada con perfil no BRZ, golden vanilla, mutaci?n estructural y aver?a instrumental. |
+| `B7_VISUAL_SIGNOFF` | Render: `<vehicle-import>\scripts\rip_assembled_viewer.py`. Veredicto: `<vehicle-import>\scripts\rip_visual_signoff.py` (`--render` / `--verdict` / check con `--out`). | Disponible; estrenado con sub_wrxsti_04 el 2026-08-16, cuando el ojo del usuario encontro en minutos cuatro defectos que B1-B6 habian dado por buenos. |
 
 **Ubicación única:** cada primitive/gate se ejecuta solo desde su ruta canónica anterior. Está prohibido
 copiarlo a `work\`, `sNN\`, `_validation\`, `.superpowers\sdd\` o cualquier workspace de corrida.
@@ -80,13 +80,13 @@ propio docstring dice «renderiza, no juzga» — pero dibuja geometria GRIS y p
 que no podia enseñar ninguno de los cuatro. B7 es la otra mitad.
 
 **Como se corre**, en este orden y sin saltarse el medio. RUTAS ABSOLUTAS: este proyecto
-tiene DOS arboles — `C:\Users\<you>\VehicleImport` (scripts, profiles, work) y
+tiene DOS arboles — `<vehicle-import>` (scripts, profiles, work) y
 `C:\Users\<you>\OneDrive\Documentos\DayZ Projects` (= `P:\`, el mod desplegado) — y un
 comando relativo solo corre desde uno. El estreno real de B7 murio con
 `can't open file ... No such file or directory` justo por eso.
 
 ```
-set FZ=C:\Users\<you>\VehicleImport
+set FZ=<vehicle-import>
 
 python "%FZ%\scripts\rip_visual_signoff.py" --car "%FZ%\profiles\<car>.json" ^
        --render "%FZ%\work\<car>_viewer.html"

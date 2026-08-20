@@ -737,7 +737,7 @@ proxy index. The bone names must also exist in `model.cfg` `CfgSkeletons skeleto
 DISCRIMINATOR / verifier (add to `verify_<mod>.py`): for each attachment proxy, assert a same-points companion
 selection named after its bone exists. SUB_BRZ had **0** bone selections (only the 4 occlusion components + 2 seats);
 CivilianSedan/kt have the full set. Builder: `rip_p3_structural.py` must, after each crew/wheel `add_proxy`, create
-the bone selection (see `VehicleImport\tools\patch_proxyframes_crew.py` `_ap`, 2026-06-25: `add_proxy(rotation=R,
+the bone selection (see `<vehicle-import>\tools\patch_proxyframes_crew.py` `_ap`, 2026-06-25: `add_proxy(rotation=R,
 scale=1.0)` + point-flags 63 + bone selection from the proxy's faces/points).
 
 GATE: as with every proxy finding here, offline checks gave FALSE-GREEN 4 times on SUB_BRZ (occlusion / frame / scale
@@ -852,7 +852,7 @@ A verifier whose expected values are hardcoded (even when comments cite "sedan")
 risk: it asserts the producer's internal consistency, not the engine contract. Fix = a **positive
 control**: run the UNIVERSAL subset of checks against a known-good vanilla car (`CivilianSedan`
 debinarized MLOD) and require it to PASS. If the sedan fails a "universal" check, the contract is
-wrong, not the car. Tool: `VehicleImport\tools\verify_rip_car.py --positive-control <sedan_mlod.p3d>`.
+wrong, not the car. Tool: `<vehicle-import>\tools\verify_rip_car.py --positive-control <sedan_mlod.p3d>`.
 
 What the positive control CAUGHT and corrected — both `verify_amglf.py` and `verify_brz.py` had it:
 - They asserted `wheel_X_Y_damper` / `wheel_X_Y_damper_axis` and `wheel_X_1_steering` / `_steering_axis`
@@ -873,51 +873,9 @@ target hard-pass, `roundtrip_writer.py` (py3d write fidelity). Never close a pha
 
 ---
 
-## Addendum (2026-06-25b) — reusable verification harness for ANY car (generic vs import-specific split)
-
-The rip→DayZ build grew a verification harness in `VehicleImport\tools\`. The GENERIC pieces apply to ANY DayZ
-vehicle (procedural / OBJ / glTF too), the rest are PATTERNS to re-point. Use them as run-before-closed gates
-that BLOCK, not optional steps — skippable verification is how the offline false-green happened. All green
-offline 2026-06-25; build-time wiring is HELD until the SUB_BRZ script-class Cowork session closes.
-
-GENERIC (wire these for any car, not just source-game):
-- `verify_rip_car.py` — tier-**U** universal engine contract + per-car `POLICY` dict (dmgzone list,
-  body-proxy naming, mod token). `--positive-control <CivilianSedan_mlod.p3d>` proves the contract is
-  satisfiable; `--self-test` proves non-vacuity. Add a POLICY entry per new car instead of forking a
-  `verify_<mod>.py` (the per-car `verify_amglf.py`/`verify_brz.py` are superseded).
-- `visual_gate.py <p3d> <out_dir>` — Blender-headless N-angle render + `blender-visual-review` checklist +
-  unresolved-proxy inventory. CAVEAT (s20 2026-07-02): it does NOT reproduce the engine cull — the engine
-  renders the ANTI-cross side and shades with the STORED MLOD normals, while Blender no-normals + backface
-  culling shows the +cross side (the exact opposite); and it does NOT resolve body-split proxy chunks
-  (they are inventoried, not rendered). Use it only for geometry presence / silhouette / proxy inventory;
-  winding and see-through verdicts are IN-GAME ONLY. Works on any `.p3d`. Needs Blender 5.1 (`BLENDER` env).
-- `roundtrip_writer.py` — py3d read→save→read fidelity (the LFInfectedBig skinned-export corruption class).
-- `_harness_util.py:clean_visual_shell` — reconstruct a runnable shell-only `.p3d` from a deployed full one.
-
-PATTERN (bound to a builder/transform — re-point for a non-ripped car):
-- STRUCTURAL BISECTION (`roundtrip_structural.py`): feed YOUR structural builder the CONTROL (CivilianSedan
-  shell + locators from its own memory points) and require the regenerated LODs to pass the UNIVERSAL subset.
-  Run a NEGATIVE control too (break the invariant — e.g. disable the hub/seat componentNN dual-tag) and require
-  the bisection to CATCH it: that proves it tests the BUILDER and is non-tautological (would have caught the s7
-  0/12 blocker offline). Requires the builder exposed as `build_structural(profile)` (parametrized shell /
-  locators / mass / bbox-source / out), not a hardcoded script.
-- TRANSFORM FIT (`fit_transform.py`): fit the source→DayZ transform from anchor pairs, confirm it is a pure
-  sign-flip+offset, and PERTURB it (wrong sign / offset / scale) to prove the residual discriminates — a
-  self-built pair gives residual 0.000 by construction (R22 tell), so the discrimination test is what makes it
-  real, not the residual.
-
-import-specific implementation + the MANDATORY-gates spec: `rip-import.md` §"Generalized harness".
-
-> Origen: rip→DayZ verification-harness session 2026-06-25 (`VehicleImport\tools\`; HARNESS_HANDOFF.md). Closes
-> the verifier-only gap: the harness now also bisects the BUILDER and rule-fits the transform, both proven
-> non-tautological. Cross-ref the Addendum 2026-06-25 above (positive control) and rip-import.md s7/s8 lessons.
-
-
----
-
 ## Addendum (2026-06-25b) — reusable verification harness for ANY car (generic vs rip-specific split)
 
-The rip→DayZ build grew a verification harness in `VehicleImport\tools\`. The GENERIC pieces apply to ANY DayZ
+The rip→DayZ build grew a verification harness in `<vehicle-import>\tools\`. The GENERIC pieces apply to ANY DayZ
 vehicle (procedural / OBJ / glTF too), the rest are PATTERNS to re-point. Use them as run-before-closed gates
 that BLOCK, not optional steps — skippable verification is how the offline false-green happened. All green
 offline 2026-06-25; build-time wiring is HELD until the SUB_BRZ script-class Cowork session closes.
@@ -951,7 +909,7 @@ PATTERN (bound to a builder/transform — re-point for a non-rip car):
 
 Rip-specific implementation + the MANDATORY-gates spec: `rip-import.md` §"Generalized harness".
 
-> Origen: rip→DayZ verification-harness session 2026-06-25 (`VehicleImport\tools\`; HARNESS_HANDOFF.md). Closes
+> Origen: rip→DayZ verification-harness session 2026-06-25 (`<vehicle-import>\tools\`; HARNESS_HANDOFF.md). Closes
 > the verifier-only gap: the harness now also bisects the BUILDER and rule-fits the transform, both proven
 > non-tautological. Cross-ref the Addendum 2026-06-25 above (positive control) and rip-import.md s7/s8 lessons.
 
@@ -1001,23 +959,11 @@ source-game/regen builders create crew proxies via `add_proxy(..., scale=0.1)` -
 > corrected value replaces the number that was written down — not the finding
 > that an inward-wound ComponentNN with vanilla point flags is raycast-hittable.
 
-### CRITICAL EXTENSION (2026-06-28, SUB_BRZ — in-game CONFIRMED): seat ComponentNN cubes must be INWARD-wound + point flags `0x0000003F`, or they are NOT raycast-collidable
-
-The "2 dedicated clean cubes, all faces outward" rule above is NECESSARY BUT NOT SUFFICIENT for a py3d-authored vehicle. A seat cube with **OUTWARD winding + point flags 0** is **invisible to `DayZPhysics.RaycastRV(..., ObjIntersectView)`** — the get-in action-target raycast never resolves it, so `CrewPositionIndex` falls back to component0 and the **codriver radial never appears** (the driver "works" only by that fallback; even the driver cube isn't truly hit). The crew mapping `CrewPositionIndex(comp)->crewIdx` is already correct (comp0→driver, comp1→codriver) — irrelevant while the geometry isn't raycast-collidable.
-
-Measured (SUB_BRZ vs LFQuad positive control, headless probe): BRZ seat cubes were OUTWARD + flags 0 → `RaycastRV` `hit=0` from every direction at the exact cube center. The working LFQuad/Croco control seat ComponentNN are **INWARD-wound (every face) + every point flag = `0x0000003F` (63)**. After rebuilding the BRZ ViewGeo seat ComponentNN with **inward winding + point flags 0x0000003F copied from the positive control** (not just shape/name), `RaycastRV` returns `hit=1 comp=1 crewIdx=1` and the codriver get-in works **in-game (confirmed 2026-06-28)**.
-
-**Rule:** build ViewGeometry collision ComponentNN for vehicles (seats, and any cursor/action-targetable component) by COPYING the positive control's convention — **inward winding + point flags 0x0000003F** — not py3d's default outward+flags0. Outward py3d boxes pass every offline shape/winding/dual-tag check yet are NOT raycast-collidable. The MercedesAMGLF (same sparse outward-box ViewGeo) has the SAME open codriver blocker → apply this fix there too.
-
-**Diagnostic (reusable, no manual aim):** a headless mission probe that spawns the car + a known-good control, dumps `CrewPositionIndex(0..79)`, and casts `DayZPhysics.RaycastRV` (FIRE+VIEW) at each seat — localizes "mapping vs raycast vs collidability" in one run. Pattern files: `C:\tmp\brz_crew_probe_init.c` + `brz-crew-probe-run.ps1` (SUB_BRZ 2026-06-28). Parse the raw `hit=1 comp=N crewIdx=N` lines, NOT a boolean verdict — a regex `-match '1'` also matches `-1` (false-green observed this session).
-
-> Origen: SUB_BRZ codriver get-in, root cause confirmed in-game 2026-06-28 (Claude diagnosis via headless crew-probe + Codex implementation). Applies to ALL source-game/py3d-built vehicle ViewGeo; same fix pending on MercedesAMGLF.
-
 ### CRITICAL EXTENSION (2026-06-28, SUB_BRZ — in-game CONFIRMED): seat ComponentNN cubes must be INWARD-wound + point flags `0x0000003F` (SP-130), or they are NOT raycast-collidable
 
 The "2 dedicated clean cubes, all faces outward" rule above is NECESSARY BUT NOT SUFFICIENT for a py3d-authored vehicle. A seat cube with **OUTWARD winding + point flags 0** is **invisible to `DayZPhysics.RaycastRV(..., ObjIntersectView)`** — the get-in action-target raycast never resolves it, so `CrewPositionIndex` falls back to component0 and the **codriver radial never appears** (the driver "works" only by that fallback; even the driver cube isn't truly hit). The crew mapping `CrewPositionIndex(comp)->crewIdx` is already correct (comp0→driver, comp1→codriver) — irrelevant while the geometry isn't raycast-collidable.
 
-Measured (SUB_BRZ vs LFQuad positive control, headless probe): BRZ seat cubes were OUTWARD + flags 0 → `RaycastRV` `hit=0` from every direction at the exact cube center. After rebuilding the BRZ ViewGeo seat ComponentNN with **inward winding + point flags copied from the control** (not just shape/name), `RaycastRV` returns `hit=1 comp=1 crewIdx=1` and the codriver get-in works **in-game (confirmed 2026-06-28)**. The flag value to copy is `0x0000003F` (SP-130): sealed control `civiliansedan_mlod.p3d` SHA `823585B6EC9727F70C3ABCAD309ECBF7E87DBA1E66FA14A1ECAB9AB1FCA921DD`, ViewGeometry (res 6e15), 478 points / 422 faces, histogram `0x0000003F` → 478 points (100,0 %), `0x0000003F` → 0 points. The s9 patch changed winding and flags together and never isolated the flag as cause; the safe rule is the sealed vanilla convention.
+Measured (SUB_BRZ vs LFQuad positive control, headless probe): BRZ seat cubes were OUTWARD + flags 0 → `RaycastRV` `hit=0` from every direction at the exact cube center. After rebuilding the BRZ ViewGeo seat ComponentNN with **inward winding + point flags copied from the control** (not just shape/name), `RaycastRV` returns `hit=1 comp=1 crewIdx=1` and the codriver get-in works **in-game (confirmed 2026-06-28)**. The flag value to copy is `0x0000003F` (SP-130): sealed control `civiliansedan_mlod.p3d` SHA `823585B6EC9727F70C3ABCAD309ECBF7E87DBA1E66FA14A1ECAB9AB1FCA921DD`, ViewGeometry (res 6e15), 478 points / 422 faces, histogram `0x0000003F` → 478 points (100,0 %), `0x02000000` → 0 points. The s9 patch changed winding and flags together and never isolated the flag as cause; the safe rule is the sealed vanilla convention. Corroborated on a second vanilla model: `quadbike_mlod.p3d` carries `0x0000003F` on 482 of 482 ViewGeometry points. The `0x02000000` that earlier notes recorded as the requirement is what OUR OWN exporter emits — 290 of 296 points on `LFQuad_body_lights.p3d` — so the note that wrote it down had measured the product, not the control.
 
 **Rule:** build ViewGeometry collision ComponentNN for vehicles (seats, and any cursor/action-targetable component) by COPYING the sealed vanilla control's convention — **inward winding + point flags `0x0000003F` (SP-130)** — not py3d's default outward+flags0. The original s9 patch changed winding and flags at once, so the flag was never isolated as the cause. Outward py3d boxes pass every offline shape/winding/dual-tag check yet are NOT raycast-collidable. Dual-tag and the in-game confirmations stand: SUB_BRZ s9 and MercedesAMGLF s12 headless `hit=1 comp=6 crewIdx=1`.
 
@@ -1152,9 +1098,6 @@ LFQuad y el MERCEDES conductor dan la radial sin ellos). Estado: MERCEDES conduc
 MCP fuerza el asiento saltándose la ActionCondition; la radial nunca se observó → el SUB_BRZ debe aplicar/verificar
 este Addendum (espina ocluyente + cubos de asiento limpios) ANTES de declararlo. Ver LL-164.
 
-### ★ Blocker DECISIVO del codriver = ComponentNN de asiento INWARD-wound + point flags 0x0000003F (SUB_BRZ s9 in-game + MERCEDES s12 headless) — RESUELTO en ambos
-**Supera lo de arriba (2026-06-27) y REFUTA LL-164 (NO necesita door system).** "Cubos de asiento limpios, todas las caras outward" es NECESARIO PERO NO SUFICIENTE: una caja py3d `outward winding + point flags 0` pasa todo gate offline (forma/winding/dual-tag) pero **NO es raycast-colisionable** → `DayZPhysics.RaycastRV(ObjIntersectView)` no la golpea → el cursor no resuelve ningún asiento → cae a component0 (el conductor "funciona" SOLO por ese fallback; el codriver NUNCA). El mapeo `CrewPositionIndex(comp)` SIEMPRE estuvo bien — irrelevante mientras la geometría no colisione. **FIX (copiar la convención del control positivo LFQuad/Croco, NO el default py3d): los ComponentNN de asiento = winding INWARD + cada point flag = `0x0000003F` (63).** Aplicarlo MÍNIMO: si los asientos ya enumeran como su ComponentNN con el mapeo correcto (verifica con el crew-probe/PROBE), voltea SOLO las caras de asiento a inward + setea sus point flags + recomputa la normal — NO rebuildees toda la ViewGeo, NO toques el cuerpo. Closed-car: NO necesita shell ni asientos índice-alto en la ViewGeo (red herring en MERCEDES s11). Gate = in-game o el **crew-probe headless** (`RaycastRV` por asiento desde la puerta, sin apuntar; ancla en `pos_driver`/`pos_codriver` si caen dentro del cubo). Mecanismo + tooling + caveat de anclaje del control: `references/vehicle-structural-parity.md` "CRITICAL EXTENSION 2026-06-28" + "MercedesAMGLF CONFIRMATION 2026-06-28 s12". **Estado: codriver RESUELTO — SUB_BRZ (in-game) + MERCEDES (headless).** Para cualquier coche source-game/py3d nuevo: aplica esto de entrada (no descubras el blocker in-game).
-
 ### ★ Blocker DECISIVO del codriver = ComponentNN de asiento INWARD-wound + point flags 0x0000003F (SP-130; SUB_BRZ s9 in-game + MERCEDES s12 headless `hit=1 comp=6 crewIdx=1`) — RESUELTO en ambos
 **Supera lo de arriba (2026-06-27) y REFUTA LL-164 (NO necesita door system).** "Cubos de asiento limpios, todas las caras outward" es NECESARIO PERO NO SUFICIENTE: una caja py3d `outward winding + point flags 0` pasa todo gate offline (forma/winding/dual-tag) pero **NO es raycast-colisionable** → `DayZPhysics.RaycastRV(ObjIntersectView)` no la golpea → el cursor no resuelve ningún asiento → cae a component0 (el conductor "funciona" SOLO por ese fallback; el codriver NUNCA). El mapeo `CrewPositionIndex(comp)` SIEMPRE estuvo bien — irrelevante mientras la geometría no colisione. **FIX (SP-130; copiar la convención del control vanilla sellado, NO el default py3d): los ComponentNN de asiento = winding INWARD + cada point flag = `0x0000003F`.** Control sellado `civiliansedan_mlod.p3d` SHA `823585B6EC9727F70C3ABCAD309ECBF7E87DBA1E66FA14A1ECAB9AB1FCA921DD`, ViewGeometry (res 6e15): 478 puntos / 422 caras; histograma `0x0000003F` → 478 puntos (100,0 %), `0x02000000` → 0 puntos. El parche s9 cambió winding y flags a la vez y nunca aisló el flag como causa; la regla segura es la convención del control vanilla. Confirmaciones in-game (SUB_BRZ s9; MERCEDES s12 headless `hit=1 comp=6 crewIdx=1`) y dual-tag se conservan. Aplicarlo MÍNIMO: si los asientos ya enumeran como su ComponentNN con el mapeo correcto (verifica con el crew-probe/PROBE), voltea SOLO las caras de asiento a inward + setea sus point flags + recomputa la normal — NO rebuildees toda la ViewGeo, NO toques el cuerpo. Closed-car: NO necesita shell ni asientos índice-alto en la ViewGeo (red herring en MERCEDES s11). Gate = in-game o el **crew-probe headless** (`RaycastRV` por asiento desde la puerta, sin apuntar; ancla en `pos_driver`/`pos_codriver` si caen dentro del cubo). Mecanismo + tooling + caveat de anclaje del control: `references/vehicle-structural-parity.md` "CRITICAL EXTENSION 2026-06-28" + "MercedesAMGLF CONFIRMATION 2026-06-28 s12". **Estado: codriver RESUELTO — SUB_BRZ (in-game) + MERCEDES (headless).** Para cualquier coche rip/py3d nuevo: aplica esto de entrada (no descubras el blocker in-game).
 
@@ -1180,5 +1123,5 @@ c/u). Para una escalera de LODs visuales desde un modelo diezmado por el artista
   SÍ se mide contra el friend control estable (no contra la propia salida: encoge ~3%/rebuild).
 - Verificar resolved<65535 POR LOD y POR proxy antes de escribir; `verify_amglf.py` debe seguir 35/35.
 - El primer paso suave (p.ej. −20% LOD0→LOD1) preserva calidad cerca; acelerar después. Builder de referencia:
-  `C:\Users\<you>\VehicleImport\scripts\build_ladder.py` (MERCEDES_AMGLF 2026-06-27; rescatado de %TEMP%
+  `<vehicle-import>\scripts\build_ladder.py` (MERCEDES_AMGLF 2026-06-27; rescatado de %TEMP%
   2026-07-06, SHA256 verificado): 5 LODs 182k/145k/73k/23k/7k + shadow.

@@ -169,7 +169,7 @@ cross-outward, its roof 1.6%; a deployed-approved car shell 14-19%; an in-game-O
 "repair" a mesh to raise this number. Sanity-check instead:
 
 - (a) per-piece topological winding uniformity — every shared edge traversed in opposite directions by
-  its two faces (`VehicleImport\scripts\winding_consistency.py`);
+  its two faces (`<vehicle-import>\scripts\winding_consistency.py`);
 - (b) stored normals consistent with the final winding: stored·cross>0 ≈ 96-99% as in vanilla
   (see dayz-vehicles references/visual-gates-and-winding.md #10(j)).
 

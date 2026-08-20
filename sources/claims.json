@@ -186,7 +186,7 @@
     {
       "artifact_id": "file/skills/rip-vehicle-import/references/profile-schema.md",
       "claim_id": "CLAIM-R21-RIP-MATERIAL-OVERRIDE-SCHEMA",
-      "evidence_locator": "VehicleImport/scripts/rip_material_map.py:158-185,260-273",
+      "evidence_locator": "<vehicle-import>/scripts/rip_material_map.py:158-185,260-273",
       "license": "MIT",
       "line_end": 75,
       "line_start": 72,
@@ -199,7 +199,7 @@
     {
       "artifact_id": "file/skills/rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
       "claim_id": "CLAIM-R21-RIP-MATERIAL-OVERRIDE",
-      "evidence_locator": "VehicleImport/scripts/rip_material_map.py:158-185,260-273; focused material tests 13 passed",
+      "evidence_locator": "<vehicle-import>/scripts/rip_material_map.py:158-185,260-273; focused material tests 13 passed",
       "license": "MIT",
       "line_end": 345,
       "line_start": 336,
@@ -212,7 +212,7 @@
     {
       "artifact_id": "file/skills/rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
       "claim_id": "CLAIM-R21-RIP-WINDING-LINEAGE",
-      "evidence_locator": "VehicleImport/scripts/winding_lineage_gate.py:21-26,46-62,76-180; focused winding tests 16 passed",
+      "evidence_locator": "<vehicle-import>/scripts/winding_lineage_gate.py:21-26,46-62,76-180; focused winding tests 16 passed",
       "license": "MIT",
       "line_end": 332,
       "line_start": 322,

@@ -48,8 +48,8 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    good side), distinct from #10b double-side. Validated gate_car on a 2nd car here (AMGLF = body-in-shell +
    material-less `mb_*` proxies -> just a new profile, no code change). Still a HINT
    (method #2), NOT the final gate — in-game render decides. The pipeline tool that encapsulates this is
-   `C:\Users\<you>\VehicleImport\scripts\gate_car.py` (profile-driven `body_selections`/`exclude_selections`; raycast oracle
-   `C:\Users\<you>\VehicleImport\tools\raycast_winding.py`). Verified by direct measurement on the deployed BRZ (2026-06-30).
+   `<vehicle-import>\scripts\gate_car.py` (profile-driven `body_selections`/`exclude_selections`; raycast oracle
+   `<vehicle-import>\tools\raycast_winding.py`). Verified by direct measurement on the deployed BRZ (2026-06-30).
 
    (e) **The source ASSEMBLY emits every body face TWICE -> coincident same-winding DUPLICATES that z-fight into a
    grey/black/blue triangle speckle "all over the body" -- the s7-s15 "winding" RED HERRING.** The faces are
@@ -74,7 +74,7 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    faces traversing it the SAME way = a mixed-winding pair. Any visible piece with >0 mixed faces FAILS
    (this is Blender's "Make Normals Consistent" as a gate). Measured on the deployed BRZ: glass 18.2% of
    area mixed (the backlight), color 192 faces (hood + scattered), light 86, trim 12, tail 8;
-   interior/suspension uniform. Tool: `C:\Users\<you>\VehicleImport\scripts\winding_consistency.py --car <profile>`. Full
+   interior/suspension uniform. Tool: `<vehicle-import>\scripts\winding_consistency.py --car <profile>`. Full
    winding FIX (amended s20): de-dup first (#10e), then make each piece consistent (MAJORITY flood-fill per
    connected component, excluding >2-face edges); orientation then comes from the raw source winding
    VERBATIM (#10j) — do NOT add an orient-outward pass (raycast/centroid): a correct exterior is only
@@ -118,7 +118,7 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    paint shading = a full-car regression.** Also SCOPE make-consistent to the COMPLAINT region: a `light`/headlight
    selection is a multi-layer lens+reflector where forcing consistency can invert a legitimate inner layer -- do NOT
    flip a whole headlight to zero a metric the user never complained about (SUB_BRZ s18: `light` 86 mixed were ALL front
-   = 723-face flip, skipped; the complaint was rear reds -> only `tail`+`trim`). Tools `C:\Users\<you>\VehicleImport\s18\smooth_normals.py`
+   = 723-face flip, skipped; the complaint was rear reds -> only `tail`+`trim`). Tools `<vehicle-import>\s18\smooth_normals.py`
    (thresh sweep + heal) + `winding_fix_t4.py` (make-consistent scoped by selection). (SUB_BRZ s18 2026-07-01,
    offline faceted-positions 3347->1613; in-game gate = user's eye.)
 
@@ -140,7 +140,7 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    model-space, no companion bone). The interior geometry was structurally SANE (boundary edges ~8-10%,
    like vanilla) -- the defect was purely ORIENTATION. Do NOT patch normals piece-by-piece: the cause is
    the import's orientation step, common to every piece; the fix belongs in `rip_p2_*`. Tool:
-   `C:\Users\<you>\VehicleImport\s19\interior_design_gate.py` (toward-driver gate over orientation candidates:
+   `<vehicle-import>\s19\interior_design_gate.py` (toward-driver gate over orientation candidates:
    authored / raw / outward-of-component / inward-of-component). See LL-178. (SUB_BRZ s19 2026-07-01.)
 
    (j) **CORRECTION to (i)'s mechanism + the SINGLE import orientation rule (SUB_BRZ s20 2026-07-02 —
@@ -151,7 +151,7 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    `bm.normal_update()`, and bmesh drops custom split normals -> `__N` == smoothed(+cross) of the
    PRE-mirror winding. That is why "authored" and "raw" were exact complements (70.5+30.3~=100.8): the
    oracle was the mirror-flipped winding itself. Consequences, all measured (evidence + repro script:
-   `C:\Users\<you>\VehicleImport\s20\s20_measure.py` + `s20_measure_output.txt`):
+   `<vehicle-import>\s20\s20_measure.py` + `s20_measure_output.txt`):
    - `orient_authored` is wrong for EVERY piece, not only the interior (s12's near-global exterior flip
      was undoing it). RAW winding on the exterior: `body_a` 8.8% cross-outward ~= deployed approved shell
      14.3% ~= vanilla band (sedan `dmgzone_roof` **1.6%** cross-outward — the roof pins the engine
@@ -173,7 +173,7 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    **UPDATE 2026-07-06: the in-game Gd gate has since run — s23 cycle-1 deployed 2026-07-03, user-verdicted
    2026-07-05 (GdR7 ledger); remaining GdR7 issues are work-fixed offline awaiting one joint deploy
    (hardening Tasks 1-11). Live status: `SUB_BRZ_dev\HANDOFF.md` LIVE-STATE.**
-   Car #N starts from `C:\Users\<you>\VehicleImport\scripts\rip_p2_build_v2.py` (+ `rip_winding_core.py`,
+   Car #N starts from `<vehicle-import>\scripts\rip_p2_build_v2.py` (+ `rip_winding_core.py`,
    `rip_p2_interior.py`) and the `gates_v2.py` step gate — NEVER from rip_p2_shellproxy v1
    (fail-fast-guarded, and it EXECUTES its v1 build at module level, so its "helpers" are NOT
    importable; copy constants instead). Measured on the BRZ (ledger
@@ -206,15 +206,15 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    simulation but de-renders the rim from the cabin). Emit twins AFTER the R3 majority repair
    (pre-repair they make every band edge non-manifold and corrupt the flood-fill graph). Gate
    offline BEFORE burning the in-game cycle: orientation census dot(cross, outward) + occlusion
-   raycast — `C:\Users\<you>\VehicleImport\s21\wf2\occ01/occ02` (post-fix use the PAIR-aware census
-   `C:\Users\<you>\VehicleImport\s22\occ01b_band_pairs.py`: a 1-NN match always picks the original of a coincident
+   raycast — `<vehicle-import>\s21\wf2\occ01/occ02` (post-fix use the PAIR-aware census
+   `<vehicle-import>\s22\occ01b_band_pairs.py`: a 1-NN match always picks the original of a coincident
    pair and false-negatives the twin).
 
    (k-CORRECTION, s22 rebuild-2 — BLANKET double-siding is itself a regression class): twinning
    the WHOLE re-typed band blacked out 68-100% of every window view in-game (the inner pane sits
    0-1mm behind the outer glass; a 15cm BLACK band double-sided IS a painted-over window; the
    occlusion gate alone gave a false green because it measures coverage, not appearance). Twin
-   ONLY the LOAD-BEARING faces: `C:\Users\<you>\VehicleImport\scripts\rip_glass_twin_probe.py` (needy-ray probe:
+   ONLY the LOAD-BEARING faces: `<vehicle-import>\scripts\rip_glass_twin_probe.py` (needy-ray probe:
    ring + pane-bbox GRID verticals + oblique 60/30 from the pane's outward azimuth; twin = first
    double-sided hit of a ray that otherwise ends below floor_y). BRZ measured: 129 of 463 band
    faces (windshield 63, rear 66, sides 0). Two gate lessons that cost an offline iteration each:

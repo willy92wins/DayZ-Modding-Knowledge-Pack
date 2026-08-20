@@ -103,6 +103,6 @@ to skip - and separately excluded from the component census by material. When a
 defect outlives several passes, first check whether its faces are even in the set
 those passes adjudicate; rim/enclosed are blind spots, not clean bills of health.
 
-Toolkit, parametrised and reusable: `VehicleImport\work\s47_doors\` - p12 face
+Toolkit, parametrised and reusable: `<vehicle-import>\work\s47_doors\` - p12 face
 completeness, p18 exact surface gap, p17/p20 self-validating visibility oracle,
 p21 culling-correct seam raster, p7/p8 transform fit with abstention.
