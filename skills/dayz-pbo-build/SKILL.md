@@ -3,7 +3,7 @@ name: dayz-pbo-build
 description: >
   Pre-build validation and packaging pipeline for DayZ mod addons. Validates config.cpp
   syntax and class inheritance, checks all texture/material paths exist, verifies .p3d
-  LOD structure, validates model.cfg skeleton and animation references, checks stringtable.xml
+  LOD structure, validates model.cfg skeleton and animation references, checks stringtable.csv
   completeness, and generates correct $PBOPREFIX$ and folder structure for AddonBuilder.
   Use when user mentions: PBO, build, pack, addon, AddonBuilder, validate mod, pre-build check,
   deploy mod, release mod, config.cpp errors, missing textures, broken references, or
@@ -186,25 +186,38 @@ Only checked if py3d is available and .p3d files exist.
 
 ### 6. Stringtable Validation
 
-Checked if `stringtable.xml` exists or if `#STR_` references found.
+DayZ uses **`stringtable.csv`**, not the `stringtable.xml` of Arma 3. Corrected
+2026-08-21 after measuring this workspace: zero `stringtable.xml` anywhere in the DayZ
+project tree, 38 `stringtable.csv`, and the two deployed PBOs checked (`LFPowerGrid`,
+`LFGungame`) each carry `stringtable.csv` and no XML. Following the XML form produces a
+file the engine never reads, and the engine does not complain — an unresolved key prints
+its own name and logs **nothing** (measured: zero RPT lines for a missing key across a
+49,340-byte client log), so this fails silently all the way to the player's screen.
+
+**Format**, verified against two shipping mods (`AP_equipment_PUBLIC/stringtable.csv:1`,
+`lfhelicore/stringtable.csv:1`): a header row `"Language","original","english",…` followed
+by one row per key. The key sits in column 1 **without the leading `#`** — the `#` belongs
+only to the reference in code, config or `.layout`. UTF-8, no BOM, LF.
 
 **Checks performed:**
 - **Scan all script files (.c, .cpp) for `#STR_` references**
-- **Scan config.cpp for `#STR_` references** (displayName, description, etc.)
-- **Stringtable.xml existence:**
-  - If `#STR_` found but no stringtable.xml → FAIL
-  - If stringtable.xml exists, validate XML syntax
+- **Scan config.cpp and every `.layout` for `#STR_` references** (displayName, description,
+  and widget `text` alike)
+- **`stringtable.csv` existence:**
+  - If `#STR_` found but no `stringtable.csv` → FAIL
+  - If it exists, check the header row and that every data row has the same column count
 - **Key coverage:**
-  - Every `#STR_KEY` in code must have corresponding `<Key ID="STR_KEY">` in stringtable.xml
+  - Every `#STR_KEY` referenced must appear in column 1 of some `stringtable.csv`, minus the `#`
   - WARN about orphaned keys (defined in stringtable but never used)
+  - Prefer a mod-specific key prefix: names like `STR_UI_YES` invite collisions with other mods
 - **Language completeness:**
   - Check that all languages (English, Russian, etc.) have values for each key
   - WARN if translation is missing or empty
 
 **Example output:**
 ```
-[FAIL] stringtable.xml not found, but 5 #STR_ references in config.cpp
-[PASS] stringtable.xml syntax valid (XML well-formed)
+[FAIL] stringtable.csv not found, but 5 #STR_ references in config.cpp
+[PASS] stringtable.csv header valid (4 columns, every row matches)
 [FAIL] Missing key: #STR_MYMOD_DEVICE_NAME (used in config.cpp line 23)
 [WARN] Orphaned key: #STR_OLD_DESCRIPTION (defined in stringtable but never referenced)
 [WARN] Incomplete translation: Russian text missing for #STR_ITEM_DESC (only English present)
@@ -307,7 +320,7 @@ Date: 2026-03-28
   └─ Referenced in config.cpp line 45, class Item_Shirt
   └─ Expected at: C:\Mods\mymod\myaddon\data\textures\body_co.paa
 
-[FAIL] stringtable.xml: missing key #STR_MYMOD_DEVICE_NAME
+[FAIL] stringtable.csv: missing key #STR_MYMOD_DEVICE_NAME
   └─ Used in config.cpp line 23, class Item_Device displayName
   └─ Add entry: <Key ID="STR_MYMOD_DEVICE_NAME"><Original>Device Name</Original>...
 
@@ -327,7 +340,7 @@ Date: 2026-03-28
 
 Status: BLOCKED - Fix 2 critical errors before packing
   1. Add data\textures\body_co.paa
-  2. Add #STR_MYMOD_DEVICE_NAME to stringtable.xml
+  2. Add STR_MYMOD_DEVICE_NAME to stringtable.csv (column 1, no leading #)
 
 Next: Run AddonBuilder after corrections are complete
 ```
@@ -439,6 +452,13 @@ under binarize; `-packonly` produced the correct 124 KB PBO with all its `.c`.
 Pack mode by addon type:
 - **Scripts-only** (no `.p3d`/`.paa`): build with `-packonly` (copies everything as-is;
   `config.cpp` stays text, which DayZ loads fine).
+
+`.c` is not the only casualty of the include-list: **`.csv` is dropped too**. Measured
+2026-08-20 on a two-file addon — the binarizing pass produced a PBO with `config.bin` and
+**no `stringtable.csv`**, while `-packonly` on the same source kept it. An addon whose only
+job is to carry a stringtable therefore packs to something that mounts and translates
+nothing. Same silent shape as the scripts case: `Build Successful`, mod mounts, feature
+absent.
 - **Mixed — models + scripts** (vehicles, items): you still need binarize for the `.p3d`, so
   `-packonly` is wrong. Confirm AddonBuilder's include-list copies `*.c`/`*.h`, or the scripts
   vanish silently — a CarScript vehicle would then load but never simulate.

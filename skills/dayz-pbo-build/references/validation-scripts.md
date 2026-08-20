@@ -501,7 +501,17 @@ if __name__ == '__main__':
 
 ## 3. stringtable_validator.py
 
-Validates stringtable.xml completeness and checks all #STR_ references are covered.
+> **BROKEN FOR DAYZ — do not run as-is (flagged 2026-08-21).** The script below parses
+> `stringtable.xml`, which is the Arma 3 form. DayZ uses `stringtable.csv`: measured across
+> this workspace there are **zero** XML stringtables and 38 CSV ones, and the deployed PBOs
+> checked (`LFPowerGrid`, `LFGungame`) carry `stringtable.csv` and no XML. Run against a
+> DayZ addon it reports "stringtable not found" for every mod that has a perfectly good one.
+> It is kept here as the shape to port, not as a tool: the rewrite reads the CSV, takes
+> column 1 minus the leading `#` as the key set, and checks `.layout` files for `#STR_`
+> alongside `.c` and `config.cpp`. Not rewritten yet because it has not been run against a
+> real addon, and shipping an untested validator is the same mistake twice.
+
+Validates stringtable completeness and checks all #STR_ references are covered.
 
 **Usage:**
 ```bash

@@ -173,8 +173,8 @@ All 4 validators are in [references/validation-scripts.md](references/validation
 
 3. **stringtable_validator.py** (350 lines)
    - Scans #STR_ references
-   - Checks stringtable.xml entries
-   - XML syntax validation
+   - Checks stringtable.csv entries
+   - Header and column-count validation
    - Orphaned key detection
 
 4. **p3d_lod_checker.py** (400 lines)

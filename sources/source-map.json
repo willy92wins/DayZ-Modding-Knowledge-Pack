@@ -14119,7 +14119,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "96f73154fa613ac85827c6a9db9b21bcb1c4f2f833bea13332a0eac6b83c880a",
+      "output_hash": "12e34dbd947d2df1f4cdb061bf14885b367d07df6df428e2283e9046bac71ed9",
       "output_path": "skills/dayz-pbo-build/INDEX.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -14163,7 +14163,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c6d47e545e603cdb5d46a4a53135e98cc62c9304caeed9d58770389cfffbd692",
+      "output_hash": "01cd2c1bbd5eafa7e0d36ec67f8f8707471b5dd491e45b7c3430aaea59cf26a1",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -14251,7 +14251,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "401c0ec44f063bf4ad2d1511fbb56e49ea5ae9eae906b69bf6c5ac498ebc7d67",
+      "output_hash": "13fabfe942b7db463bdd1718f2dbed27ab3e6f610504228383c9c0ac302afacc",
       "output_path": "skills/dayz-pbo-build/references/common-validation-failures.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -14273,7 +14273,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "56efa9290e1caa1bdd188fc779aa7062a42637e895e47d023a0e23cce026506d",
+      "output_hash": "32ac924b4b2da3b496b2195da95c5df3a97c520262af477b1997dc42908241df",
       "output_path": "skills/dayz-pbo-build/references/validation-scripts.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"

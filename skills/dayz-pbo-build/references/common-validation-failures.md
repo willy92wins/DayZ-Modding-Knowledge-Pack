@@ -28,13 +28,17 @@ class MyClass {
 **Cause:** Referenced texture doesn't exist or path is wrong
 **Fix:** Check capitalization (DayZ is case-sensitive on servers). Ensure .paa file is in exact path.
 
-### FAIL: "#STR_KEY missing from stringtable.xml"
-**Cause:** Used `#STR_MYKEY` in code but didn't add it to stringtable
-**Fix:** Add entry to stringtable.xml:
-```xml
-<Key ID="STR_MYKEY">
-    <Original>My Item Name</Original>
-</Key>
+### FAIL: "#STR_KEY missing from stringtable.csv"
+**Cause:** Used `#STR_MYKEY` in code, config or a `.layout` but didn't add it to the
+stringtable. The engine says nothing about this: the key prints its own name on screen and
+logs zero RPT lines (measured 2026-08-20 over a 49,340-byte client log).
+**Fix:** Add a row to `stringtable.csv` at the addon root. DayZ uses CSV, not the
+`stringtable.xml` of Arma 3 — verified 2026-08-21 across this workspace: zero XML
+stringtables, 38 CSV ones, and the deployed PBOs carry only CSV. The key goes in column 1
+**without** the leading `#`:
+```csv
+"Language","original","english","spanish"
+"STR_MYKEY","My Item Name","My Item Name","Mi objeto"
 ```
 
 ### WARN: "Missing ce_center in Memory LOD"
