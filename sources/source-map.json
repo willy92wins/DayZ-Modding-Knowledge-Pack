@@ -6307,28 +6307,6 @@
       "verification_level": "cross_checked"
     },
     {
-      "artifact_id": "file/skills/dayz-pbo-build/skill.md.bak_pre_f3_section",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "efdac9b9e8829263c25fa585f25e985835b4df654c68ef2cfb7db5a7f4a9a1e7",
-          "source_id": "installed-skills",
-          "source_path": "dayz-pbo-build/SKILL.md.bak_pre_F3_section",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "efdac9b9e8829263c25fa585f25e985835b4df654c68ef2cfb7db5a7f4a9a1e7",
-      "output_path": "skills/dayz-pbo-build/SKILL.md.bak_pre_F3_section",
-      "routing_artifact_id": "skill/dayz-pbo-build",
-      "verification_level": "cross_checked"
-    },
-    {
       "artifact_id": "file/skills/dayz-pbo-build/validation_checklist.txt",
       "distribution_role": "payload",
       "hash_policy": "sha256",
