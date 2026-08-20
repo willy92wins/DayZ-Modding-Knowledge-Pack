@@ -1,6 +1,14 @@
 # UI layout templates
 
 Copy one of these, rename the widgets, put `#STR_` keys in your stringtable.
+`stringtable.csv` here defines the seven keys the templates reference; copy its
+rows into your addon's own `stringtable.csv` (addon root, next to `config.cpp`).
+Without them the layouts render the key verbatim — `STR_UI_YES` instead of `Yes`
+— which reads as a broken template, and the engine logs **nothing** about it
+(measured 2026-08-20: zero RPT lines for `STR_UI_`). Note the CSV carries the key
+without the leading `#`; the `#` belongs only to the reference in the layout.
+A stringtable is addon-level: it is read from the PBO at load, so unlike a
+`$profile:` layout it does not hot-reload.
 Iterate from `$profile:` with `ui_reload_layout` — the loop is in
 [`../references/hot-iteration.md`](../references/hot-iteration.md).
 

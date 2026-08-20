@@ -13405,9 +13405,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored in the pack on 2026-08-20. Routing table for the four templates plus the four construction traps (panel style, wrap, EmptyHighlight Focus, scroll spacer), each cited to vanilla gui/layouts, dayzwidgets.styles, or mcp_dialog.layout. Not an in-game measurement.",
+          "decision_evidence": "Authored in the pack on 2026-08-20. Routing table for the four templates plus the four construction traps (panel style, wrap, EmptyHighlight Focus, scroll spacer), each cited to vanilla gui/layouts, dayzwidgets.styles, or mcp_dialog.layout. Not an in-game measurement. Updated 2026-08-20 with the stringtable section: a rendered frame showed the keys printing verbatim, and the engine logged nothing about it (zero RPT lines for STR_UI_), so the README now says where the CSV goes and that a stringtable is addon-level and does not hot-reload like a $profile: layout.",
           "license": "MIT",
-          "source_hash": "fc281244d4da1f0ee50f3ee105f4af1094b6b1ae8b4a41c13bbabe4159eb2f77",
+          "source_hash": "6ae285f38a8b607f9b1d2c0e060b4994dbdb2f1721c7c6e870c7203e29c8d6b7",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-ui-development/templates/README.md",
           "source_revision": "ui-templates@2026-08-20",
@@ -13415,7 +13415,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fc281244d4da1f0ee50f3ee105f4af1094b6b1ae8b4a41c13bbabe4159eb2f77",
+      "output_hash": "6ae285f38a8b607f9b1d2c0e060b4994dbdb2f1721c7c6e870c7203e29c8d6b7",
       "output_path": "skills/dayz-ui-development/templates/README.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "offline_tested"
@@ -21734,6 +21734,28 @@
       "output_hash": "bdd0a03828f2783bf23caf64daffbdd9cb844aa8e91c21b2e895698243530e89",
       "output_path": "tools/dayz-script-validator/tests/fixtures/es/warn_syncvar_ggame_is_server.c",
       "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/templates/stringtable.csv",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored in the pack on 2026-08-20 after a rendered frame showed the templates printing STR_UI_YES verbatim in game: the keys are referenced by the four layouts and defined by nothing, in this repo or in the mod tree. Column format verified against two shipping mods (AP_equipment_PUBLIC/stringtable.csv:1 and lfhelicore/stringtable.csv:1), not from memory; the key carries no leading '#' in the CSV. Covers exactly the seven keys the layouts reference, checked by parsing them: none missing, none unused. NOT verified in game: a stringtable is read from the PBO at load, so nothing in a $profile: flight can exercise this file. What the flight measured is the defect it answers, not the fix.",
+          "license": "MIT",
+          "source_hash": "785c1b0656a6ec470f44176c071ad5b6d9185b82f1c70ba1e43666ed6379e53c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/stringtable.csv",
+          "source_revision": "ui-templates@2026-08-20",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "785c1b0656a6ec470f44176c071ad5b6d9185b82f1c70ba1e43666ed6379e53c",
+      "output_path": "skills/dayz-ui-development/templates/stringtable.csv",
+      "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "offline_tested"
     }
   ],
