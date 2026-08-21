@@ -223,6 +223,17 @@ tenga nada** (6 corridas, 0 fallos reales del mod). Comprobalos ANTES de escribi
    **"mide mal y acusa al mod"**, y eso se propaga a los documentos del proyecto. Si un veredicto
    dice FAIL, abre el log del cliente antes de registrarlo.
 
+- **`world_spawn` con `ok=1` NO prueba que el objeto se quede donde lo pediste** (added 2026-08-21,
+  council DayZ-MCP). `IsSpawnReady` (`MCPBridge.c:2729-2753`) toma la posicion ACTUAL del propio
+  objeto, busca objetos en esa posicion y se da por listo si se encuentra a si mismo. Un objeto
+  siempre esta donde esta: el gate es tautologico y se cumple para cualquier objeto vivo, aunque la
+  fisica ya lo este expulsando. No compara contra la posicion PEDIDA, no mide deriva y no exige
+  estabilidad entre ticks. Caso real: spawn en punto urbano con `ok=1` y el vehiculo terminando a
+  **Y = -40 km**. Distinto del fallo por coords invertidas de mas arriba, que da timeout: este da
+  PASS falso. **Regla: tras cualquier `world_spawn` que importe, confirmar con `object_inspect` o
+  `entities_query` que la distancia a la posicion pedida es la esperada, y repetir la lectura unos
+  segundos despues para descartar deriva.** Un veredicto de playbook que solo mire `ok` no vale.
+
 ## EL LAZO
 
 1. **Lanzar** vía `dayz-test.ps1 … -ExtraMods "@DayZ_MCP"` (espera a que cliente y server

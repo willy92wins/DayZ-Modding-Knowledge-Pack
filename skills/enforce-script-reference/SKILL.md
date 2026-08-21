@@ -82,6 +82,58 @@ crash, segfault, or silent failure in production.
 
 36. **`inputs.xml` root tag must be `<modded_inputs>`** — NOT `<modinfo>` (common mistake); structure: `<actions>` declares input names, `<preset>` assigns default keys
 37. **`config.cpp` must reference inputs file** — add `inputs = "ModName\\inputs.xml";` in CfgMods (backslash path)
+37b. **An `<exclude>` that includes `inventory` SILENTLY KILLS MOUSE-LOOK** — `inventory` pulls in
+    `aiming` (`P:/bin/specific.xml:243`->`:245`), and `aiming` IS exactly `UAAimLeft/UAAimRight/`
+    `UAAimUp/UAAimDown` (`:149-154`). Any custom camera, sight or scripted view that suppresses
+    `inventory` while active reads **0.0** from every look axis, with no error anywhere. The
+    symptom that identifies it: the camera answers WASD (raw `KeyState` bypasses excludes) but
+    ignores the mouse. Fix: expand to inventory's own contents MINUS `aiming` (`gestures`,
+    `stances`, `optics`, `actions`, `UAUIGesturesOpen`), and read the axes the way the vanilla
+    spectator does: `GetUApi().GetInputByID(UAAimLeft).LocalValue()` (`dayzspectator.c:39-44`).
+    Measured 2026-08-19 (LFHeli FLIR): the two halves are independent, so fixing one alone
+    changes nothing.
+    **And there is a THIRD lock most people re-arm on purpose:** `menu` also includes
+    `inventory` (`specific.xml:258`->`:259`), so keeping `menu` in the exclude set "as a safe
+    fallback" restores the exact suppression you just removed from your private group. Same
+    session, same mod: the private group was cleaned of `inventory` and the mouse stayed dead
+    for another two build cycles because `menu` was still in the array. If a sight needs the
+    look axes, NOTHING in the exclude set may transitively reach `aiming` — expand every group
+    you pass and check, do not trust its name.
+37c. **Taking the camera from a SEATED player destroys the `HumanCommandVehicle`** — the
+    `SelectPlayer(null)` + `SelectSpectator(...)` pattern (COT/CCTV lineage) was written for a
+    player on foot. From a vehicle seat, `SelectPlayer(identity, player)` on exit restores the
+    pawn but NOT the vehicle command: the player is left frozen while every cleanup log line
+    reports success. Rebuild it as vanilla does after unconsciousness:
+    `StartCommand_Vehicle(transport, CrewMemberIndex(p), GetSeatAnimationType(idx), true)`
+    (`dayzplayerimplement.c:2372-2377`; proto `human.c:1492`). Pair it with `ResetGameFocus()`
+    beside the `ChangeGameFocus(-1)` (`cameratoolsmenu.c:797-800`) — `HasGameFocus` is true only
+    at exactly 0 (`input.c:29-34`). And vanilla picks the camera from `m_Camera3rdPerson`
+    (`dayzplayerimplement.c:2849-2868`), so a sight must force 1pp via `SetIsInThirdPerson(false)`
+    (`:305`) and restore the previous value on exit, or entering in 3rd person leaves the operator
+    outside the aircraft.
+    **MEASURED OUTCOME 2026-08-19 — the rebuild is NECESSARY BUT NOT SUFFICIENT.** With the
+    vehicle command rebuilt, the probe read `vehCmd=true seat1=true parent=true inVeh=true`
+    and the operator was genuinely back in the seat — yet the CAMERA never came back: the view
+    stayed anchored where the sight was, no action was offered, and mouse input moved only the
+    head, as if free-look had stuck on. Repossessing the pawn does not re-create the player
+    camera. Do not spend cycles hardening this path; use 37d instead.
+37d. **A sight or turret on a SEATED player should never unpossess at all** — instead of
+    `SelectPlayer(null)` + `SelectSpectator`, mod vanilla's own vehicle camera and write its
+    transform. `CameraHandler` returns `DayZPlayerCameras.DAYZCAMERA_1ST_VEHICLE` (=30,
+    `dayzplayercameras.c:18`, registered `:60`) while the sight is up, and
+    `modded class DayZPlayerCamera1stPersonVehicle` (`dayzplayercameravehicles.c:4`) overrides
+    `OnUpdate` to fill `pOutResult.m_CameraTM` — built world-space with
+    `Math3D.DirectionAndUpMatrix(dir, hullTM[1], camWorld)`, then converted to PLAYER space
+    with `Math3D.MatrixInvMultiply4(playerTM, camWorld, camLocal)`, plus `m_fUseHeading = 0`
+    so the operator's head heading does not drag the view, and `StdFovUpdate`
+    (`dayzplayercamera_base.c:316`) for FOV (zoom = `m_fFovMultiplier`). Working reference on
+    disk: `kt_roadkill_armed/scripts/4_World/KT_TurretCamera.c:177-220`. The pawn is never
+    released, so there is nothing to restore: HIC stays enabled, no focus lock, and no input
+    exclude is needed at all — which also removes 37b's whole failure class. Verified
+    2026-08-19 (LFHeli FLIR) after the `SelectSpectator` route cost four build cycles.
+    Blocking the get-out while the sight is up is then one condition:
+    `modded class ActionGetOutTransport { override bool ActionCondition(...) }`
+    (`actiongetouttransport.c:68`), not an input exclude.
 38. **Three input detection patterns exist, all valid:**
     - Simple: `g_Game.GetInput().LocalPress("UAMyAction", false)` — one-line check
     - Direct: `GetUApi().GetInputByName("UAMyAction").LocalPress()` — per-frame
@@ -319,6 +371,9 @@ Before delivering ANY Enforce Script code, verify:
 - [ ] Placed objects have `RemoveAction(ActionTakeItem)` + `RemoveAction(ActionTakeItemToHands)`
 - [ ] `inputs.xml` uses `<modded_inputs>` root tag (not `<modinfo>`)
 - [ ] `config.cpp` CfgMods has `inputs = "ModName\\inputs.xml"` (backslash)
+- [ ] No custom `<exclude>` includes `inventory` while a camera/sight is active (it suppresses the four `UAAim*` axes - rule 37b)
+- [ ] No exclude in the set transitively reaches `aiming` — `menu` does, via `inventory` (rule 37b)
+- [ ] A seated sight/turret hijacks `DayZPlayerCamera1stPersonVehicle` instead of unpossessing (rule 37d); if legacy code still unpossesses, it rebuilds `StartCommand_Vehicle` AND is known not to restore the camera (rule 37c)
 - [ ] Vanilla inventorySlot overrides: use `=` for string-defined items, `+=` only for array-defined items
 
 ---

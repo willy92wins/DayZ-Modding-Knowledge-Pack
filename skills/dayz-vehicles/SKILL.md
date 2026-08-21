@@ -64,6 +64,114 @@ car: hook `EOnPostSimulate` for per-tick logic; `super.EOnSimulate` is the empty
 it "runs engine/fluids twice" as false. Custom solvers that add `SetEventMask(EntityEvent.SIMULATE)`
 and pump it by hand (aviation) → `dayz-aviation` preflight invariants.
 
+**Cockpit screen → live engine map (RTTextureWidget bridge) (invariant, added 2026-08-19, SUB_BRZ RT spike):**
+Any hiddenSelections screen can display the ENGINE's map renderer (what LBmaster's GPS uses) instead
+of baked tiles: create the RT via `CreateWidget(RTTextureWidgetTypeID, …)` (children render INTO its
+texture, `enwidgets.c:28` — they never paint to the viewport, so no HUD witness), hang a `MapWidget`
+under it with `CreateWidgets(layout, rt)`, then hook the entity **in this exact order**:
+`SetObjectMaterial(idx, "Mod\data\x.rvmat")` FIRST (no leading backslash), `SetObjectTexture(idx,
+"$rendertarget")` second, `proto native void SetGUIWidget(IEntity, int idx, RTTextureWidget)`
+(`enwidgets.c:637`) LAST. A later SetObjectMaterial rebinds the base texture slot and silently undoes
+the hook — a uniform light-grey screen means `$rendertarget` resolved to the white fallback texture.
+Zero call-sites exist on disk for SetGUIWidget/RTTextureWidget; verified in-game on 1.29 diag.
+MapWidget `GetScale()` defaults to 0.85; at 0.05–0.6 it draws line-work only (contours + roads, no
+urban/forest fill) — pick the zoom with the user's eye gate. If the hooked vehicle leaves the client
+streaming bubble its `GetPosition()` reads `<0,0,0>` and the map recenters to the map corner:
+production code must re-resolve the vehicle every tick, never cache the entity reference. MCP test
+flow that actually seats and starts: `vehicle_get_in_client` (ownership get-in; `vehicle_enter`
+answers seated:1 without sticking) → `engine_set`. Recipe, captures and gotchas:
+`LFVehicleUI_dev\HANDOFF.md` snapshot 2026-08-19.
+**Closed 2026-08-19b — RT unusable for a live GPS:** the RT freezes the FIRST composed frame
+(later `SetScale`/`SetMapPos`/vehicle movement never recompose it), and a MapWidget child only ever
+contributes the vector layers (roads + contours) — the raster fill (land, forest, buildings) never
+reaches the RT, even with a 24 s warm-up between widget creation and the entity hook. The bridge
+recipe above remains valid for STATIC screen content only. Live vehicle GPS goes through baked
+tiles on hiddenSelections instead (next invariant).
+
+**Vehicle screen tiles: terrain satmap, not navigation usermap — and apply server-side (invariant, added 2026-08-19, SUB_BRZ Plan B):**
+Two tile sources share the same `s_XXX_YYY_lco.paa` naming and the same 32×32 grid of 480 m tiles
+on chernarusplus, but look completely different: `dz\gear\navigation\data\usermap\` is the PAPER
+map art (light background, red roads, contour lines — what the ItemMap shows), while
+`dz\worlds\chernarusplus\data\layers\` is the colored aerial satmap (the real "GPS look").
+A GPS screen wants the layers path; world name must be parameterized per terrain. Second half of
+the invariant: `SetObjectTexture`/`SetObjectMaterial` called ONLY client-side is silently reverted
+to the config `hiddenSelectionsTextures[]` whenever the server pushes a visual-state resync —
+observed reproducibly on GEAR CHANGE. **Applying on the dedicated server does NOT fix it
+(refuted in-game 2026-08-19 afternoon): scripted SetObject* state does not replicate
+server→client.** The working pattern is the skin-mod one: re-assert the full scripted visual
+state client-side on EVERY `OnVariablesSynchronized` (no packed==applied early-out; gate only
+the diagnostics). Also force-hide every bank window on the first apply
+(`SetAnimationPhaseNow(name, 1.0)` loop): windows spawn with the config-default texture and
+their initial hide phase is not guaranteed applied. The force-hide only exists at runtime if
+the hide animations actually BAKED — see the skeletonBones invariant below. Satmap-in-bank
+verified in-game 2026-08-19 (SUB_BRZ, 1.29 diag, human driver gate).
+
+**Seated-view geometry lives in the View Pilot LOD (invariant, added 2026-08-19, SUB_BRZ v1.2):**
+A car with a View Pilot LOD (resolution 1100) renders THAT copy of the geometry for seated
+occupants, not LOD0. Any geometry/UV/selection patch that must be visible from the driver seat
+(screen UV remaps, marker quads, interior fixes) has to be applied to BOTH res 0 and res 1100 —
+patching only LOD0 looks fine from outside and unchanged from the seat, which reads as "the fix
+did nothing". Also from the same session: a tiny 8×8 DXT PAA is invalid (mip chain below 4 px →
+engine renders the grey fallback); for flat-color config slots use a procedural
+`#(argb,8,8,3)color(r,g,b,1,CO)` instead of a file.
+
+**Animations only bake for selections that are skeletonBones (invariant, added 2026-08-19, SUB_BRZ grey-screen root cause):**
+AddonBuilder silently DROPS every model.cfg animation whose `selection` is not declared in the
+model's `CfgSkeletons` `skeletonBones[]`: the build exits 0, the anim classes stay in the source
+model.cfg, the AnimationSources stay in config.cpp, and `SetAnimationPhaseNow` on their sources
+becomes a silent no-op. Measured differential (SUB_BRZ): `gps_marker` was a bone → its 4 anims
+baked into the ODOL; the 28 `nav_w*` windows were in CfgModels `sections[]` but NOT bones → all
+28 `type=hide` anims dropped, so the untextured bank could never be hidden and rendered as an
+opaque grey panel 0.5–1.85 mm in front of the real screen — a grey that reads as "my texture
+apply fails" while the apply is actually landing fine behind it. Two rules: (1) every animated
+selection — hide anims included — must be listed in skeletonBones[]; being in `sections[]` is
+NOT enough. (2) Verify the bake OFFLINE before deploying: extract the PBO and string-scan the
+binarized .p3d for the animation SOURCE names, which are plaintext in the ODOL (e.g.
+`re.findall(rb'nav_w\d\d_h', odol)` must yield all 28 distinct names). Zero hits = the animation
+does not exist at runtime, whatever model.cfg says. Debugging corollary: the engine grey
+fallback is per-SECTION (`texture_index=-1`); when a screen shows uniform grey, check for
+coplanar untextured geometry IN FRONT of the selection being textured before blaming the
+texture path or the apply call.
+
+**Verify new geometry by its ODOL SECTION, not by strings (invariant, added 2026-08-19, SUB_BRZ marker hunt):**
+Geometry added to a MLOD by tooling can be present in every string table of the binarized
+p3d — selection name, material, texture — and still never render, because whether the
+engine draws a section is decided by fields the strings do not show. Measured on the
+SUB_BRZ dash marker across seven builds:
+
+| Section `special` | Meaning | Renders? |
+|---|---|---|
+| `0x0002C000` | hidden-selection + opaque pass | yes (all working textured sections) |
+| `0x0002C100` | hidden-selection + alpha pass | alpha-dependent, unreliable for tiny quads |
+| `0x0000C000` | no hidden-selection bits | **never** |
+
+Two authoring rules follow. (1) A bone-skinned textured selection must ALSO be listed in
+`CfgModels.sections[]`, or binarize emits `is_sectional=0 / sections=[]` and there is no
+draw call for the bone — being a `skeletonBones` entry is necessary but not sufficient.
+(2) The face texture must be a real `.paa` FILE: a procedural `#(argb,...)` face texture
+on new geometry produces `0x0000C000`. Procedurals are fine in rvmat stages, not as the
+face texture of a section you need drawn.
+
+Gate before every deploy that adds geometry: extract the PBO and parse the ODOL section
+table, asserting `is_sectional==1`, non-empty `sections`, and the `0x20000` bit. The LOD
+address table is found by chaining (`lod_end[i] == lod_start[i-1]`, max end ≈ file size);
+a naive scan for the first plausible table hits a false positive. Reference implementation:
+`<vehicle-import>\work\navscreen_planb\gate_sections.py` (built on `dayz-p3d-debinarizer`'s
+`odol_reader`). String-only scans pass while the geometry is undrawable — that gate cost
+five wasted in-game cycles before it existed.
+
+**PAA files: always encode with ImageToPAA (added 2026-08-19):**
+A hand-rolled PAA whose mip chain runs below 4 px is invalid DXT. The failure mode depends
+on the pass: an 8x8 DXT1 `_co` renders as the engine grey fallback, while a `_ca` with
+2x2/1x1 mips renders as nothing at all on an alpha section. Encode every texture with
+`DayZ Tools\Bin\ImageToPAA\ImageToPAA.exe` from a >=64 px source and let it build the mips.
+
+**Reading a dark-art dash at night (added 2026-08-19):**
+Instrument-cluster art driven by `dashboardMatOff` (emissive 0) is invisible in an in-game
+night, which reads exactly like "the texture never applied". Pin server time
+(`serverTime="YYYY/M/D/12/0"` in serverDZ.cfg) before judging any interior art gate, and
+give the OFF material a faint emissive so the furniture stays readable after dark.
+
 **Crew / engine state on a non-owner occupant (SP-288, origen LFHeli LF-008):**
 `Car.EngineIsOn()` on a client that is not the Pawn owner returns **false** even when the
 authority has the engine running — no exception, no warning. Measured on the occupant of

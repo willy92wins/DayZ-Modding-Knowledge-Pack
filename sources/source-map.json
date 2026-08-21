@@ -2913,7 +2913,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f9bab06d4d0534fbfde2a24cdd8787d441dc764604dd36ded355a8a8fd2f4bc8",
+      "output_hash": "bb8f9ca126a68aa6f859f3177f4cce8d6bb48f5298c6211c2187b44532e3c9a7",
       "output_path": "skills/blender-visual-review/SKILL.md",
       "routing_artifact_id": "skill/blender-visual-review",
       "verification_level": "cross_checked"
@@ -3001,7 +3001,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c064007377fdb084f2dbd0134b4afaf9a8e8d56b5e0b0dd33e87f8c843b23b2e",
+      "output_hash": "a960a35011209705b0a98efd20512a2edecc9f25ce7c6ecffcace919367a4988",
       "output_path": "skills/blender-visual-review/references/checks_hardsurface.json",
       "routing_artifact_id": "skill/blender-visual-review",
       "verification_level": "cross_checked"
@@ -3815,7 +3815,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "c01b54a6fe043c78a7145bc9da78d7daca42d5dad017f7ead0be4c4ac56c92ef",
+          "source_hash": "d28b583d6cbecd09c9af7e1bcd00c53425d2ec48af8336f96d4a01913de986ee",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -3823,7 +3823,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "535cc7d42bad8b3b45ac9b6f5772639bfd09631bf723cda0525c2381874727b7",
+      "output_hash": "d28b583d6cbecd09c9af7e1bcd00c53425d2ec48af8336f96d4a01913de986ee",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -5177,7 +5177,7 @@
           "decision": "adopt",
           "decision_evidence": "Approved optional-companion authority boundary was added after an adversarial RED-to-GREEN evaluation.",
           "license": "MIT",
-          "source_hash": "13c494943ec37e093baed5e6086b66ad1bc0b34ec3c71da53b32c775bdf8d61f",
+          "source_hash": "11ff911a4b832caa7619d08443f71b3956ef66b70f0bbbd10e6e9f09be3d1e04",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
@@ -5185,7 +5185,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "13c494943ec37e093baed5e6086b66ad1bc0b34ec3c71da53b32c775bdf8d61f",
+      "output_hash": "11ff911a4b832caa7619d08443f71b3956ef66b70f0bbbd10e6e9f09be3d1e04",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -8483,7 +8483,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "e4bbdedda0a7fe7482cb2641a3f3b90da07a0b6b7b214f0fbd3a77f2379b392b",
+          "source_hash": "522f1217a5c5b6e24e9d238a1639d8d0bb2bd29e57e1731aef6efbf13713bc7d",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -8491,7 +8491,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e4bbdedda0a7fe7482cb2641a3f3b90da07a0b6b7b214f0fbd3a77f2379b392b",
+      "output_hash": "522f1217a5c5b6e24e9d238a1639d8d0bb2bd29e57e1731aef6efbf13713bc7d",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9605,7 +9605,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4fba755d00c6f07cf121a7e4bc78fc273b36fa7d8a9c1213a99922bff60c6ff5",
+      "output_hash": "3c763d1f829f281e69be6e7ef30d0fa0152d3fa5572bea946d5bd18c20e7fcd7",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"

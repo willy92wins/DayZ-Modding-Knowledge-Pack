@@ -203,6 +203,50 @@ Do NOT "verify" a suspected flip by running `normals_make_consistent` and re-ren
 
 When to run: any import from glTF/FBX/OBJ, any pipeline with a configurable `reverse_winding`, any build destined for a winding-culling engine (DayZ / Arma / BI). Absolute authority on the exported `.p3d` remains `dayz-p3d-audit`'s topology check; this is the free early warning that saves the in-game cycle.
 
+#### Quantified, and why checklist Q5 must never be scored by eye (measured 2026-08-21)
+
+The guardrail above was reproduced from the other direction, on a purpose-built probe whose
+winding is reversed by construction (`q5_normals_build.py` pattern: same object, same camera,
+same shading, only the winding differs):
+
+| capture | faces reversed | pixels changed |
+|---|---|---|
+| this skill's own settings (Workbench + `show_cavity`, culling **off**) | 62 (face-0 normal dot **-1.0001**) | **0.00%** |
+| identical, backface culling **on** | 62 | **36.92%** |
+
+Two variants at different severities came out byte-identical to each other. The defect is
+**absent from the pixels**, so no reviewer can answer from a lit render -- which is exactly
+what the section above says, now with a number.
+
+**Consequence for `references/checks_hardsurface.json`.** Its entry 4 -- *"Are there any black,
+inside-out or wrongly shaded faces visible?"* -- asks a VLM the one question this skill states
+a render cannot answer, over non-culled captures. It is marked `mechanical_only` and must be
+routed to the culling diff above, never scored perceptually. A gate that cannot go red for the
+cause it targets is decoration.
+
+**And it is not a local-model limitation.** Given the culled pair where the flip changes 36.92%
+of the image and the interior of the cylinder is plainly visible, `ornith-1.5:9b`,
+`qwen3-vl:30b` and `muse-glimmer:30b` each answered NO on **both** variants across 3 seeds --
+0/3 separation, all three -- and justified it fluently: *"the visible faces are the front cap
+and the exterior side of the cylinder"*, said of a render where the front cap is culled away
+and the interior is what is on screen. The failure mode is a confident green, not a refusal.
+
+#### What the local judges DO and DO NOT hold up on (same tanda)
+
+Whole shipped checklist, over a pair differing only in facet count (48 vs 6 sides), 3 seeds.
+Only the faceting question should move; everything else should hold still:
+
+| model | correct | the miss |
+|---|---|---|
+| `qwen3-vl:30b` | **8/8** | -- |
+| `ornith-1.5:9b` | 7/8 | calls the SMOOTH variant holed, 2 of 3 seeds |
+| `muse-glimmer:30b` | 7/8 | reads the FACETED variant as bevelled, 3 of 3 seeds |
+
+So the incumbent is the cleanest of the three, and a bigger or newer model did not beat it.
+Scope: one object, one pair, one framing where the round part fills the frame -- the condition
+where the faceting question is already known to work. It screens models; it does not rank them.
+
+
 ## Deterministic delta check (report-only; added 2026-07-30)
 
 Before judging a fix by eye, run the pixel-math comparator on the before/after pair of the SAME angle:

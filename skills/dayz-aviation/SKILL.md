@@ -721,3 +721,54 @@ for a measurement cell is a PARAMETER change, not a telemetry laboratory; do not
 instrumentation" boundary block it. And the reverse: never strip diagnostic probes from a build
 before the measurement campaign that consumes them has closed, or the campaign silently loses its
 instrument.
+
+## py3d reports this model's Z with the OPPOSITE sign to the engine (added 2026-08-19, LFHeli FLIR; cost 2 in-game cycles)
+
+Geometry measured out of an MLOD `.p3d` with py3d is internally consistent and **mirrored on Z**
+against the frame `ModelToWorld` uses. Feeding a py3d-derived offset straight into the engine puts
+the point at `-Z` of where it belongs — 5,6 m off on an OH-1-sized airframe, i.e. eye point on the
+tail boom instead of the sight.
+
+What made it expensive: every *offline* cross-check agreed with itself. Search light at py3d
+Z −5.933, landing-light beam running −5.885 → −6.626, canopy −5.44..−3.03, tail beacon +5.358,
+`tail_rotor_axis` +4.597 — and the same pattern in a second airframe in the same project. A
+confident, fully cited "the nose is at negative Z" came out of that, and it was wrong.
+
+**The arbiter is the engine, and it is one line.** `GetDirection()` returned `<-0.005, -0.019,
++0.9998>` with the aircraft pointing where the pilot calls forward, and `ModelToWorld("0 0 5")`
+landed 5 m toward the nose. Engine forward is `+Z` (yaw 0 → +Z, documented at
+`1_core/proto/enconvert.c:355-368`: `AnglesToVector` of yaw 45 returns `<0.707,0,0.707>`).
+
+**Rules.**
+1. NEVER hand a py3d-derived offset to `ModelToWorld` without one runtime probe first:
+   print `GetDirection()`, `ModelToWorld("0 0 5")` and `GetMemoryPointPos(<known landmark>)`, and
+   compare the memory point's engine coordinates against the same point read by py3d. If the Z
+   signs disagree, negate Z on everything derived from the file — eye points, gimbal centres, axis
+   fits, the lot.
+2. Look for an in-project constant that already crossed the boundary before deriving a new one.
+   This mod had `LFHELI_PIPPER_NOSE_MS = "0 0.383 +5.826"` in shipping HUD code
+   (`LFHeliHUD.c:6-7`) — engine frame, nose positive Z, hiding in plain sight the whole time.
+3. Geometric self-consistency is not evidence of frame correctness. Two independent p3d readings
+   agreeing tells you the READER is consistent, not that it matches the engine.
+
+## DayZ thermal cannot be done with post-processing (added 2026-08-19, LFHeli FLIR)
+
+A PPE requester operates on the assembled frame with no per-entity information, so it can grade,
+desaturate or tint — and that is all. A "thermal" mode built that way renders a zombie exactly like
+the terrain behind it. This is a ceiling, not a tuning problem: no parameter of
+`PPERequester_*`/`PPEGlow` will ever separate a warm body from cold ground.
+
+**The mechanism that works is per-entity texture + material swap.** Scan with
+`GetObjectsAtPosition(pos, radius, objects, cargos)` (`game.c:922`), filter to living entities,
+optionally raycast for line of sight (`RayCastBullet`, `dayzphysics.c:211`), then per hidden
+selection call `SetObjectTexture(i, tex)` / `SetObjectMaterial(i, mat)` — **both on `EntityAI`,
+NOT on `Object`** (`entityai.c:2896-2900`; `GetObjectTexture`/`GetObjectMaterial` alongside, which
+is how you save the originals). Colour comes from the rvmat `emmisive[]` with `diffuse[] = {0,0,0,1}`
+plus the swapped texture, so tiering by creature type needs BOTH pieces. Working reference on disk:
+`ThermalScripts/4_World/Thermal.c` (apply/restore :120-270, driver :424-560, tracking :700-860).
+
+**The invariant that decides whether this ships:** every painted entity must be restored — on mode
+change, on sight close, on leaving the scan radius, and when the entity dies or is deleted. Design
+it as restore-by-reaffirmation (mark all unseen at scan start, re-mark what the scan finds, restore
+the remainder) rather than as a list you remember to walk; that way a missed code path fails toward
+restoring, not toward an entity that glows forever.
