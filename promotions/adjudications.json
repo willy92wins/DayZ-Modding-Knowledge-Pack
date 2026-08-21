@@ -2,9 +2,21 @@
   "adjudications": [
     {
       "artifact_id": "skill/_shared",
+      "observed_digest": "2e3d198ec836a56db18c33eaf77e957d98cfbdc0d329088a3061bb17484298f1",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. Unlike the rest of this tree, this copy was already a real directory and was never materialised from .claude, so it drifted on its own. Measured before adjudicating: it lacks pack_skill.py, and the only content it holds that the repository does not is the twelve-line 'INITIAL RESPONSE DEPTH' section, which the repository carries recalibrated as 'PROFUNDIDAD DE RESPUESTA (added 2026-05-12, recalibrada 2026-08-05)'. Nothing is lost by replacing it; the transaction backs it up regardless.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/_shared",
       "observed_digest": "13307369426bfb864232918a3d91b6aeeb2d2591e4f66655cb331493cdaee9e0",
       "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
       "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/ai-3d-to-dayz",
+      "observed_digest": "9ff2015ff9665388e7f524e45ab5db1c6a6d2ef520e42ef74ee56790f99e302d",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
     },
     {
       "artifact_id": "skill/ai-3d-to-dayz",
@@ -15,8 +27,20 @@
     {
       "artifact_id": "skill/ardy-motion-generation",
       "observed_digest": "fe9c919c3c31f776830493f9ceccb7c4a86e2e911df4e17c6c2bd76f0901074b",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/ardy-motion-generation",
+      "observed_digest": "fe9c919c3c31f776830493f9ceccb7c4a86e2e911df4e17c6c2bd76f0901074b",
       "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
       "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/blender-animation",
+      "observed_digest": "f91afd74eaf63679073fb18e49418ba9de555e27c6a13cb5c9deb3953f0ac425",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
     },
     {
       "artifact_id": "skill/blender-animation",
@@ -27,8 +51,20 @@
     {
       "artifact_id": "skill/dayz-aviation",
       "observed_digest": "178bdf7bd305a05c6a98e273e8ddb45efccd3c1ff4e58047e6482c3544541835",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-aviation",
+      "observed_digest": "178bdf7bd305a05c6a98e273e8ddb45efccd3c1ff4e58047e6482c3544541835",
       "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
       "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-basebuilding",
+      "observed_digest": "dd402e72dd13c9c0b39b00993f50fb20710740a35570d0ae5cdc87af2db9bc64",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
     },
     {
       "artifact_id": "skill/dayz-basebuilding",
@@ -39,8 +75,20 @@
     {
       "artifact_id": "skill/dayz-characters",
       "observed_digest": "d77504378846823248692b2570508dbf419d3790d842ed8f76f14eadb67e3a8f",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-characters",
+      "observed_digest": "d77504378846823248692b2570508dbf419d3790d842ed8f76f14eadb67e3a8f",
       "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
       "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-clothing",
+      "observed_digest": "df5db692b7ac422d77ae047b0228042416498688f21762cd36ad24b8b46fcf21",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
     },
     {
       "artifact_id": "skill/dayz-clothing",
@@ -51,8 +99,20 @@
     {
       "artifact_id": "skill/dayz-feature-spec",
       "observed_digest": "e4e7e3d2e5412524ee758aa6a10aa8207fe0f37b7574eae38d959099bc91f938",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-feature-spec",
+      "observed_digest": "e4e7e3d2e5412524ee758aa6a10aa8207fe0f37b7574eae38d959099bc91f938",
       "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
       "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-mcp-verify",
+      "observed_digest": "95b217c4e8b9d9b6543706d0451021eeba2a23ef81ca672fec1fa4d1e9d6eedc",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
     },
     {
       "artifact_id": "skill/dayz-mcp-verify",
@@ -63,8 +123,20 @@
     {
       "artifact_id": "skill/dayz-pbo-reverse-engineering",
       "observed_digest": "772bec0f8c598cb7f1f9e3b9b5f99329c3425d4a9ab2dd87cb7d6237bca6de9c",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-pbo-reverse-engineering",
+      "observed_digest": "772bec0f8c598cb7f1f9e3b9b5f99329c3425d4a9ab2dd87cb7d6237bca6de9c",
       "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
       "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-persistence",
+      "observed_digest": "da1b043891dcc3ce4045eb118e169dbd19ee987d6e2a31f1552680c5babf38d5",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
     },
     {
       "artifact_id": "skill/dayz-persistence",
@@ -75,8 +147,20 @@
     {
       "artifact_id": "skill/dayz-realistic-animation-director",
       "observed_digest": "337200e0dd31d2faa080c46f90ce43f7472fedac84b35fcfe718184179eced8f",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-realistic-animation-director",
+      "observed_digest": "337200e0dd31d2faa080c46f90ce43f7472fedac84b35fcfe718184179eced8f",
       "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
       "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-test-ingame",
+      "observed_digest": "54f0b608fc6ea6413485dddc282d4bdde50c25b3558c4c19068b392f2e121fca",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
     },
     {
       "artifact_id": "skill/dayz-test-ingame",
@@ -87,8 +171,20 @@
     {
       "artifact_id": "skill/dayz-vehicles",
       "observed_digest": "78453e87f30f508f86872a6f8e51817f5f77724140ed5464bfe368e8f5ef203f",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-vehicles",
+      "observed_digest": "78453e87f30f508f86872a6f8e51817f5f77724140ed5464bfe368e8f5ef203f",
       "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. Re-pinned 2026-08-21 after the original pin was voided by edits made to this store copy the same night. Before re-pinning, the store-only residue was measured with path projection and source-name sanitisation applied: the one block the repository genuinely lacked was harvested into it first, and the rest resolved to the same content under different wording. The repository is the source of record; the transaction backs this copy up before replacing it.",
       "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/dayz-weapons",
+      "observed_digest": "48f8260acb92461c64de7c43f71fff45d58e225a47e738e1a0810f52da88c4e1",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
     },
     {
       "artifact_id": "skill/dayz-weapons",
@@ -99,14 +195,32 @@
     {
       "artifact_id": "skill/enforce-script-reference",
       "observed_digest": "82c7548a7793a345eac393abe9e375eb3a393c8cccdb02d906c0b0244d3758a3",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/enforce-script-reference",
+      "observed_digest": "82c7548a7793a345eac393abe9e375eb3a393c8cccdb02d906c0b0244d3758a3",
       "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
       "target_id": "claude_user_skills"
     },
     {
       "artifact_id": "skill/rigorous-data-audit",
       "observed_digest": "edc2a0cb7ffe5d74ce879b34f96bfc7c8c4d5d4a1446e09f8fe43ae5405a8d5c",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
+    },
+    {
+      "artifact_id": "skill/rigorous-data-audit",
+      "observed_digest": "edc2a0cb7ffe5d74ce879b34f96bfc7c8c4d5d4a1446e09f8fe43ae5405a8d5c",
       "reason": "First promotion into a store that predates the promotion contract: promote had never been configured on this machine, so every skill root was maintained by hand and no receipt can account for its bytes. The repository is the source of record for this artifact; this copy is superseded and the transaction backs it up before replacing it. Adjudicated 2026-08-21 against the digest observed that day.",
       "target_id": "claude_user_skills"
+    },
+    {
+      "artifact_id": "skill/rip-vehicle-import",
+      "observed_digest": "2efbd37aca7d1722c0481ddb988892dbcd02dcfff2c384e853720f637d849389",
+      "reason": "Second installed skill root, adjudicated 2026-08-21. This tree was materialised from the adjudicated .claude copy the same day -- byte-identical, verified by digest equality with the claude_user_skills entry for the same artifact -- so this is not a second judgement but the same one under the second key the contract requires, since a receipt explains exactly one (artifact, target) pair. The underlying reason is unchanged: promote had never been configured on this machine, so no receipt can account for these bytes; the repository is the source of record and the transaction backs this copy up before replacing it.",
+      "target_id": "agents_user_skills"
     },
     {
       "artifact_id": "skill/rip-vehicle-import",

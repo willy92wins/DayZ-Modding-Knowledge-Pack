@@ -2087,7 +2087,7 @@
           "decision": "adopt",
           "decision_evidence": "Written record of which pre-existing store copies the first promotion is authorised to replace, and why; the reasons must be reviewable, so the file is tracked rather than machine-local.",
           "license": "MIT",
-          "source_hash": "e5d6efc56567ede89a0d700a5b3efd1b6d84e94066b7c0e9b00d7ccb3bd3d7f3",
+          "source_hash": "de0b5118ba085237f0226bcc1e11ab706829576c35abc634c7a00d3879993aac",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion-first-run@2026-08-21",
@@ -2095,7 +2095,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e5d6efc56567ede89a0d700a5b3efd1b6d84e94066b7c0e9b00d7ccb3bd3d7f3",
+      "output_hash": "de0b5118ba085237f0226bcc1e11ab706829576c35abc634c7a00d3879993aac",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
