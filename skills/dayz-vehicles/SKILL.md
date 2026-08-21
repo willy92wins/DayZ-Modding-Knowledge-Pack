@@ -464,6 +464,17 @@ shapes, so they are recognizable on sight:
 - **A field read selectively.** `attachment_count=2` was signed PASS because that one field matched
   expectation; the regression sat in the same output 20 min before the user hit it in-game.
 
+**A fifth shape, and it fakes an ABSENCE rather than a green (added 2026-08-19, SUB_WRXSTI): matching
+a LOD by its nominal resolution.** LOD resolutions on disk are not the round numbers the docs use —
+FireGeometry reads `6999999976046592`, not `7e15`. A bucket keyed on `round(7e15)`, or any `==`
+against the nominal, comes back EMPTY, and a gate built on it reports "the selection is absent" about
+something that is present. Measured cost: a cross-check of the config's `componentNames[]` against the
+`.p3d` reported all six damage zones missing, and they were all there in FireGeo — the report reached
+the user as a red before the control against vanilla caught it. Always match with a RELATIVE tolerance
+(`abs(res - nominal) <= nominal * 1e-3`), and note the direction of the failure: this one does not
+show up as a suspicious green you might question, but as a confident red about missing data, which is
+the shape people act on fastest.
+
 **One minute, before trusting any gate:** (a) run it against a KNOWN-BAD case — green on a known-bad
 means the bug is the gate, not the artifact; (b) name in one line the assumption the artifact was BUILT
 with, and confirm the gate does not reuse it. A gate that has only ever been seen green is unmeasured,

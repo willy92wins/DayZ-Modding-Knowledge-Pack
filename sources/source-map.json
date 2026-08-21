@@ -2087,7 +2087,7 @@
           "decision": "adopt",
           "decision_evidence": "Written record of which pre-existing store copies the first promotion is authorised to replace, and why; the reasons must be reviewable, so the file is tracked rather than machine-local.",
           "license": "MIT",
-          "source_hash": "09a30d8c7ab79a621dea7f5ab798c74d72846607df53632574d3cf58d2bbc909",
+          "source_hash": "e5d6efc56567ede89a0d700a5b3efd1b6d84e94066b7c0e9b00d7ccb3bd3d7f3",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion-first-run@2026-08-21",
@@ -2095,7 +2095,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "09a30d8c7ab79a621dea7f5ab798c74d72846607df53632574d3cf58d2bbc909",
+      "output_hash": "e5d6efc56567ede89a0d700a5b3efd1b6d84e94066b7c0e9b00d7ccb3bd3d7f3",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -8483,7 +8483,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "a8a25cf4b3ee3439c0fc758a23f23f9e15beb1e89bfa9278dce041a159f4c01d",
+          "source_hash": "395dd82e0e57d1eb263c95944ad846944203fd884bfe2f6a2cd7d8b89bf53a89",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -8491,7 +8491,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a8a25cf4b3ee3439c0fc758a23f23f9e15beb1e89bfa9278dce041a159f4c01d",
+      "output_hash": "395dd82e0e57d1eb263c95944ad846944203fd884bfe2f6a2cd7d8b89bf53a89",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -8813,6 +8813,28 @@
       "license": "MIT",
       "output_hash": "e6581469eb6b3f4b31b7483ae3d4a18dd5361c9b54c321f04caae7c5af5dc803",
       "output_path": "skills/dayz-vehicles/references/external-obj-import.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/gate_odol_sections.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "keep_pack",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-21, the last file in that skill with no repo counterpart. Output differs from the source in the hardcoded user path only, which the pack carries as <you>.",
+          "license": "MIT",
+          "source_hash": "ca88c55290148d006c3266c3c0733f3c57b338e222608efe2cfb0135126cf4df",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/gate_odol_sections.py",
+          "source_revision": "filesystem@2026-08-21",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c35e6c71316dd0a51af17cea829f4c5aa625c56d6b9d132cff9848695137ba6d",
+      "output_path": "skills/dayz-vehicles/references/gate_odol_sections.py",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
     },
