@@ -11739,15 +11739,15 @@
           "decision": "adopt",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
-          "source_hash": "f3bd6260b513ce169ad5f21fd74d14d594074976270bcf9c18df25158e75c50d",
+          "source_hash": "2e66e919947d0573156d998c7c651280233c0f17dade9a9fceb21cc35467e2cb",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_promotion.py",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "filesystem@2026-08-21",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f3bd6260b513ce169ad5f21fd74d14d594074976270bcf9c18df25158e75c50d",
+      "output_hash": "2e66e919947d0573156d998c7c651280233c0f17dade9a9fceb21cc35467e2cb",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
