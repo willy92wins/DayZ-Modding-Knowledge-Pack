@@ -797,6 +797,19 @@ units, headroom accounting and what does NOT discriminate — is in
 
 33. **Un carril de gates que solo mide numeros es ciego al color y a la orientacion de un proxy, y el unico instrumento que los ve es un ojo delante de un render MONTADO (added 2026-08-16, SUB_WRXSTI).** Nombres que existen, caras que se conservan, hashes que cuadran y matrices plaza→puerta→slot completas: todo eso pasa en verde sobre un coche monocromo con las llantas del reves. Medido: el WRX llego al PBO con el 64% de sus caras en UN material y el interior entero en otro (la importacion registro `material_map: null` y mando 37 piezas con nombre — emblemas, espejos, escape, jambas, faldones, bajos, brazos — al cubo de pintura), con los cuatro proxies de rueda escritos con la matriz IDENTIDAD donde vanilla escribe DOS espejadas una por lado, y con la rueda de berlina vanilla de 176 mm en vez de la suya. Los cuatro defectos los encontro el usuario en minutos la primera vez que vio el coche montado; ninguno era visible a ningun gate. Tres riders. (a) El render tiene que ser ENSAMBLADO y con materiales: las piezas sueltas y en gris no enseñan ni un color mal ni una llanta invertida — un `visual_sheet` que dibuja geometria gris por piezas ya existia y no vio nada. (b) El veredicto humano se ata al sha256 de lo que se miro, o se pudre: tras un rebuild nadie puede decir si aprobo ESTE coche o el anterior, y el gate debe ponerse rojo por stale, no seguir en verde. (c) Calibra la quiralidad con TEXTO DE MARCA, no con la intuicion: DayZ es zurdo y los motores de visor suelen ser diestros, asi que pasar coordenadas tal cual es una reflexion, y un coche espejado se ve normal hasta que un emblema se lee al reves. Contrapartida honesta: esto NO sustituye al test in-game, solo mueve mas barato el hallazgo de lo que se ve.
 
+34. **An absent key in a config class is NOT a value — it is a question about the parent (added
+    2026-08-21, from a refutation that did not survive).** Reading `config.cpp` by grepping for a
+    key and treating "no hit" as "the default" gets the answer backwards whenever the class
+    extends another that sets it. Measured case: `CivSedanDoors_BackLeft` declares no
+    `rotationFlags` at all — four lines of body (`DZ\vehicles\wheeled\config.cpp:4923-4932`) —
+    and extends `CivSedanDoors_Driver`, which sets `8` (`:4798`). A note published on
+    2026-08-19 read the absence as `4` and concluded the sedan REFUTES the left-8/right-4 rule;
+    it does not, it is the rule's own prediction. The other five do declare `4` (CoDriver
+    `:4921`, BackRight `:4942`, Hood `:4957`, Trunk `:5034`), which is exactly what made the
+    sixth look like an outlier instead of an inheritance. **Resolve the chain before quoting a
+    value, and say which link you read it from.** The same trap applies to every inherited
+    config key, not just `rotationFlags`.
+
 ## NEW CAR — DAY-1 (run BEFORE the first in-game cycle; retro 2026-07-03)
 
 Retro of LFQuad→SUB_BRZ→MercedesAMGLF (~90-110 session-equivalents, ~180-220 in-game cycles across
