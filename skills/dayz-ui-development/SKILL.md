@@ -752,32 +752,44 @@ Keep consistent prefix for grep-ability and namespace isolation.
 ### Common Mistake
 Using raw text in `.layout` instead of `#STR_` keys works visually but is **NOT translatable** and **FAILS translation mods**. Always externalize UI strings to stringtable.xml.
 
-### Stringtable CSV: la FORMA del corpus decide si el motor lo registra (medido 2026-08-21)
+### Stringtable CSV: la CABECERA de columnas decide si el motor lo registra (medido 2026-08-21, dos vuelos)
 
-DayZ tambien acepta `stringtable.csv` en la raiz del addon (formato Arma:
-`"Language","original","english",...` — LFPowerGrid usa 7 columnas y 265 filas). Medido con un
-escalon descendente de 8 variantes del mod real en un mismo fotograma
-(`AI/10_Projects/DayZ_MCP/reviews/2026-08-19-ui-reload-layout/VERDICT-stringtable-ladder.md`):
+DayZ acepta `stringtable.csv` en la raiz del addon. Dos escalones volados el mismo dia
+(8 variantes estructurales + 9 variantes del propio CSV; evidencia y fotogramas en
+`AI/10_Projects/DayZ_MCP/reviews/2026-08-19-ui-reload-layout/VERDICT-stringtable-ladder.md`):
 
-- La resolucion **sobrevive a quitar todo lo estructural**: scripts + class defs, `data\`
-  completo, `gui\`, `model.cfg`, `include.lst`, el cuerpo del config y la riqueza de
-  CfgPatches/CfgMods. Un addon de TRES ficheros (`$PBOPREFIX$` + config minimo + csv) resuelve
-  su clave si el CSV es el completo.
-- Se rompe exactamente al **reducir el propio CSV** a forma degenerada (cabecera de 4 columnas
-  + 1 fila): la clave sale cruda AUNQUE el PBO cargue (probado con el census de addons del
-  crash report) y AUNQUE la columna del idioma del cliente este presente y con texto. Ni "una
-  fila" ni "cuatro columnas" por separado: la familia causal es la forma conjunta del corpus;
-  el miembro exacto (n de filas, n de columnas, registros vacios, interaccion) exige una
-  segunda biseccion aun no hecha.
+- La resolucion sobrevive a quitar TODO lo estructural (scripts + class defs, `data\`,
+  `gui\`, `model.cfg`, `include.lst`, cuerpo de config, riqueza de CfgPatches/CfgMods):
+  un addon de TRES ficheros (`$PBOPREFIX$` + config minimo + csv) resuelve.
+- **El interruptor es la cabecera de columnas.** Con las 7 de referencia
+  (`"Language","original","english","spanish","german","russian","chinesesimp"`) resuelve
+  incluso con DOS filas de datos; con 4 (sin german/russian/chinesesimp) sale cruda a
+  cualquier escala (263 filas o 8), aunque el PBO cargue (probado con census de addons
+  del crash report) y aunque la columna del idioma del cliente este presente con texto.
+  Numero de filas, tamano del corpus y lineas vacias fisicas: irrelevantes.
+- El empaquetador da igual (FileBank y MakePbo se comportan identico) y el dialecto de
+  `$PBOPREFIX$` (`prefix=...;product=...;` vs nombre pelado) es inocuo tambien bajo
+  MakePbo, que si consume el fichero.
+- Cual de las tres columnas eliminadas es la critica queda sin bisecar; la regla segura
+  es la cabecera completa de 7.
 
-**Regla practica**: las claves de UI viajan SIEMPRE en un CSV con forma de corpus completo —
-anadelas al stringtable real del mod, nunca en un CSV minimo de sonda. Una clave que no
-registro sale cruda SIN la `#` (el motor la reconocio como clave y no la encontro), identico a
-"clave inexistente". Y un `.layout` cargado por `$profile:` NO puede aportar stringtable: los
-stringtables solo entran por PBO de addon en el arranque. **Ojo con el propio
-`templates/stringtable.csv` de esta skill**: documenta las CLAVES de los templates, pero su
-forma (7 filas x 4 columnas) esta MEDIDA como no-registrante si se empaqueta tal cual como
-stringtable de un addon de sonda — fusiona esas filas en el CSV completo del mod real.
+**Regla practica**: todo `stringtable.csv` que empaquetes lleva la cabecera de 7 columnas
+(las columnas sin traduccion copian el ingles); filas, las que necesites — dos bastan.
+Una clave no registrada sale cruda SIN la `#` (el motor la reconocio como clave y no la
+encontro), identico a "clave inexistente". Un `.layout` cargado por `$profile:` NO aporta
+stringtables (solo entran por PBO de addon en el arranque) — para texto dinamico usa
+literales o `ui_set_text`, sin claves. El `templates/stringtable.csv` de esta skill lleva
+la cabecera de 7 columnas exactamente por esto.
+
+### Paneles de preview on-demand (generador incluido)
+
+`scripts/gen_panel_layout.py` genera layouts listos para el bucle
+`$profile:` + `ui_reload_layout` + `ui_set_text`: feed tipo chat/log, panel
+etiqueta/valor y HUD minimo, con nombres de widget contractuales (`TitleText`,
+`FeedLine0..N-1`, `LabelK`/`ValueK`) documentados en `scripts/CONTRACT.md`.
+Volado in-game 2026-08-21 (feed de 10 lineas inyectado en caliente con
+`ui_set_text`, sin stringtable). `--self-test` verifica llaves balanceadas y
+unicidad de nombres sin abrir el juego.
 
 
 ---
