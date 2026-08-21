@@ -96,6 +96,16 @@ $ServerCfg      = Join-Path $ServerWs 'serverDZ.cfg'
 $ServerProfiles = Join-Path $ServerWs 'profiles'
 $ClientProfiles = Join-Path $ClientWs 'profiles'
 
+# Refuse to run from inside a skill store. DevRoot is derived from the script's own
+# location, so an in-place run sprays server/client profiles, logs and VPP debug
+# missions into the installed skill (measured 2026-08-21: 108 runtime files seeded
+# into the dayz-test-ingame skill dir). Copy templates\ to the mod's _dev\tools\ first.
+foreach ($storeMarker in '*\.claude\skills\*', '*skills-plugin*', '*\.grok\skills\*', '*\.agents\skills\*') {
+    if ("$DevRoot\" -like $storeMarker) {
+        Die "Running from the skill store ($DevRoot). Copy this script to the mod's _dev\tools\ and run it from there."
+    }
+}
+
 $MissionMap = @{ chernarus = 'dayzOffline.chernarusplus'; livonia = 'dayzOffline.enoch'; sakhal = 'dayzOffline.sakhal' }
 
 # ---------------------------------------------------------------------------

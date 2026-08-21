@@ -7476,7 +7476,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6b5e7c2f31222f9db99d109711d3d63e952806fd4cfcf36c2722e63620afc52e",
+      "output_hash": "d6fd7a20e29a1820186d12f5e969217d7e4a441e821c835431f1b8fee9db802c",
       "output_path": "skills/dayz-test-ingame/templates/dayz-test.ps1",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
