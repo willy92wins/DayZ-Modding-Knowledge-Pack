@@ -3,10 +3,10 @@ name: dayz-test-ingame
 description: >
   Build, deploy and launch a DayZ mod locally to test it in-game with filepatching,
   using DayZDiag_x64.exe — server+client on one box, or single-exe offline. Operationalizes
-  DAYZ_INFRA.md: AddonBuilder PBO build, deploy to the P:\Mods junction (-> DayZ\!Workshop),
+  DAYZ_INFRA.md: AddonBuilder PBO build, deploy to the P:\Mods junction (to DayZ\!Workshop),
   serverDZ.cfg allowFilePatching, diag launch flags, mission resolution. Generates a
   parametrized dayz-test.ps1 orchestrator plus server/client/offline .bat wrappers in
-  <Mod>_dev\tools\. Use when the user wants to: "lanzar el juego con el mod", "probar el mod
+  the mod's _dev\tools\ folder. Use when the user wants to: "lanzar el juego con el mod", "probar el mod
   in-game", "test the mod in-game", "arrancar server local", "launch DayZ with my mod",
   "filepatching", "iterar scripts sin re-empaquetar", "probar HiddenBase/LFPowerGrid en local",
   "DayZ offline mode", run/start/launch the
@@ -745,6 +745,23 @@ lo que se conserva es la evidencia, no un estado al que puedas volver con CF pue
 Cross-ref `SP-062` (misma acción — renombrar `storage_1` — por un motivo distinto: entidades
 persistidas que re-disparan `EEInit`). Regla combinada: **cualquier cambio en el conjunto de mods
 que altere quién escribe `modstorage` exige storage limpio**, igual que un boot de medición.
+
+### La trampa es BIDIRECCIONAL y la regla se decide al LANZAR (medido 2026-08-21)
+
+La direccion inversa tambien muerde, y mas rapido: un server **sin** CF que arranca sobre un
+`storage_1` escrito **con** CF entra en tormenta de VME — `!!! Scripted variables corrupted upon
+"<entidad>"` por CADA entidad persistida (medido: **15.688 en ~3 min**, `-mod=@DayZ_MCP` a secas
+sobre un storage recien guardado por un server con CF) — y puede morir a mitad de escritura
+dejando el storage PEOR: las entidades reescritas pierden su modstorage de CF, y el siguiente
+server que SI lleva CF crashea con la firma de arriba. Asi se encadenan los cruces:
+server-sin-CF reescribe -> server-con-CF crashea -> rotacion.
+
+**Regla al lanzar sobre la mision compartida**: o el `-mod=` lleva CF, o se rota `storage_1`
+ANTES de levantar. No hay tercera opcion estable — el storage queda "CF-flavored" en cuanto un
+server con CF guarda una vez. Rotar = renombrar con motivo
+(`storage_1.bak-<YYYYMMDD>-<HHMM>-<motivo>`, con los procesos parados; ocurrencias 2026-08-21:
+`-1605-modstorage-corrupt`, `-1610-cfless-storm`). Que storage toca rotar lo dice el propio RPT
+del server: linea `[StorageDirs] :: Selected storage directory:`.
 
 ## (added 2026-08-12, LFHeli celda COM/pivot) Celda in-game AUTOMATIZADA sin piloto: los 4 muros medidos y sus salidas
 

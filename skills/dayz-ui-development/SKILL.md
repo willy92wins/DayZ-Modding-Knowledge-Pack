@@ -713,7 +713,7 @@ For admin UI patterns (floating windows, ESP, resize, DPI, widgets) → `referen
 
 ---
 
-## LOCALIZATION (stringtable.xml)
+## LOCALIZATION (stringtable.xml / stringtable.csv)
 
 ### File Format
 Place `stringtable.xml` at addon ROOT (same level as config.cpp). Structure:
@@ -751,6 +751,34 @@ Keep consistent prefix for grep-ability and namespace isolation.
 
 ### Common Mistake
 Using raw text in `.layout` instead of `#STR_` keys works visually but is **NOT translatable** and **FAILS translation mods**. Always externalize UI strings to stringtable.xml.
+
+### Stringtable CSV: la FORMA del corpus decide si el motor lo registra (medido 2026-08-21)
+
+DayZ tambien acepta `stringtable.csv` en la raiz del addon (formato Arma:
+`"Language","original","english",...` — LFPowerGrid usa 7 columnas y 265 filas). Medido con un
+escalon descendente de 8 variantes del mod real en un mismo fotograma
+(`AI/10_Projects/DayZ_MCP/reviews/2026-08-19-ui-reload-layout/VERDICT-stringtable-ladder.md`):
+
+- La resolucion **sobrevive a quitar todo lo estructural**: scripts + class defs, `data\`
+  completo, `gui\`, `model.cfg`, `include.lst`, el cuerpo del config y la riqueza de
+  CfgPatches/CfgMods. Un addon de TRES ficheros (`$PBOPREFIX$` + config minimo + csv) resuelve
+  su clave si el CSV es el completo.
+- Se rompe exactamente al **reducir el propio CSV** a forma degenerada (cabecera de 4 columnas
+  + 1 fila): la clave sale cruda AUNQUE el PBO cargue (probado con el census de addons del
+  crash report) y AUNQUE la columna del idioma del cliente este presente y con texto. Ni "una
+  fila" ni "cuatro columnas" por separado: la familia causal es la forma conjunta del corpus;
+  el miembro exacto (n de filas, n de columnas, registros vacios, interaccion) exige una
+  segunda biseccion aun no hecha.
+
+**Regla practica**: las claves de UI viajan SIEMPRE en un CSV con forma de corpus completo —
+anadelas al stringtable real del mod, nunca en un CSV minimo de sonda. Una clave que no
+registro sale cruda SIN la `#` (el motor la reconocio como clave y no la encontro), identico a
+"clave inexistente". Y un `.layout` cargado por `$profile:` NO puede aportar stringtable: los
+stringtables solo entran por PBO de addon en el arranque. **Ojo con el propio
+`templates/stringtable.csv` de esta skill**: documenta las CLAVES de los templates, pero su
+forma (7 filas x 4 columnas) esta MEDIDA como no-registrante si se empaqueta tal cual como
+stringtable de un addon de sonda — fusiona esas filas en el CSV completo del mod real.
+
 
 ---
 
