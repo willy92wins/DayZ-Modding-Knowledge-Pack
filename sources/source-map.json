@@ -7582,7 +7582,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b5fd981d80159622a03a5244296b885b715fcec131d17e2dd7eae6c812a5b821",
+      "output_hash": "2322aeaed6283d31f54806c837aa707dbdf00712629ae436f3fc94938563ed4f",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -8506,7 +8506,7 @@
           "decision": "adopt",
           "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
           "license": "MIT",
-          "source_hash": "395dd82e0e57d1eb263c95944ad846944203fd884bfe2f6a2cd7d8b89bf53a89",
+          "source_hash": "056bf59731b5ae56ce9a58acd9a672b8788aef815ec0672dbb5ba204079121eb",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
@@ -8514,7 +8514,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "395dd82e0e57d1eb263c95944ad846944203fd884bfe2f6a2cd7d8b89bf53a89",
+      "output_hash": "056bf59731b5ae56ce9a58acd9a672b8788aef815ec0672dbb5ba204079121eb",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

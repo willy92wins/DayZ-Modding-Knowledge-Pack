@@ -166,6 +166,30 @@ on the pass: an 8x8 DXT1 `_co` renders as the engine grey fallback, while a `_ca
 2x2/1x1 mips renders as nothing at all on an alpha section. Encode every texture with
 `DayZ Tools\Bin\ImageToPAA\ImageToPAA.exe` from a >=64 px source and let it build the mips.
 
+**Recycle existing faces instead of authoring new ones (invariant, added 2026-08-21, SUB_BRZ marker):**
+On an imported/ripped vehicle model, faces ADDED by tooling can be perfectly formed and still
+never render, while every modification of pre-existing faces shows up reliably. Measured over
+ten builds on SUB_BRZ: a static witness quad — no bone, no animation, bright file texture,
+section `0x0002C000`, winding/flags/normals identical to neighbouring faces that render, and
+nothing occluding it — stayed invisible in-game; a bank-window quad that already existed was
+shrunk, retextured and re-UV'd in the same file and rendered immediately. When a model needs a
+new visible element, look for geometry already in it that can be repurposed (an unused overlay
+quad, a hidden variant, a duplicate panel): you inherit its section, its bone and its proof of
+rendering. Reserve authored geometry for models you build from scratch, and if you must add
+faces to an imported model, prove one renders before building anything on top of it.
+
+**Translation offsets: make the memory axis exactly 1 m and the ambiguity disappears (added 2026-08-21):**
+For `type="translation"` in model.cfg, `offset0`/`offset1` are documented inconsistently: they
+behave as metres in some sources and as a fraction of the axis vector in others, and picking
+wrong is silent — the selection simply moves somewhere off the model, which reads exactly like
+"my geometry does not render". SUB_BRZ lost six build cycles to a marker translated with
+`offset1 = 1.0` against a 169 mm axis: under the metre reading each phase step threw it half a
+metre out of the cabin. Author the memory axis **1.0 m long** in the travel direction and set
+`offset1` to the travel in metres (0.169 for 169 mm of sweep). Both readings then produce the
+same displacement, so the question never has to be answered. When a hidden/animated selection
+is invisible, disconnect its animations and rebuild before blaming geometry or materials — a
+detached control build is one cycle and it splits the two causes cleanly.
+
 **Reading a dark-art dash at night (added 2026-08-19):**
 Instrument-cluster art driven by `dashboardMatOff` (emissive 0) is invisible in an in-game
 night, which reads exactly like "the texture never applied". Pin server time
