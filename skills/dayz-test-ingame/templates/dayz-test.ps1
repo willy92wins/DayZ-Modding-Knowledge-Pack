@@ -166,37 +166,64 @@ function Invoke-LifecycleCli {
         [string]$TargetRunId = ''
     )
     Assert-LifecycleEnvironment
-    $cliArgs = @('-m', 'dayz_mcp.lifecycle_cli', '--keyfile', $LifecycleKeyfile, '--port', [string]$LifecyclePort, $Command)
-    if ($Command -eq 'start') { $cliArgs += @('--request-file', $RequestPath) }
+    if ($Command -eq 'start' -and -not (Test-Path -LiteralPath $RequestPath -PathType Leaf)) {
+        Die 'Managed lifecycle start requires the finalized request file.'
+    }
+    # lifecycle_cli contract (lifecycle_cli.py:53-67): --daemon-policy is mandatory and
+    # the daemon endpoint/keyfile resolve inside load_daemon_policy('normal'); start
+    # reads its request from STDIN (--request-stdin), stop/adopt take --run-id.
+    $cliArgs = @('-m', 'dayz_mcp.lifecycle_cli', '--daemon-policy', 'normal', $Command)
+    if ($Command -eq 'start') { $cliArgs += @('--request-stdin') }
     if ($Command -in @('stop', 'adopt')) { $cliArgs += @('--run-id', $TargetRunId) }
 
-    $raw = @()
     $exitCode = 2
+    $stdoutText = ''
+    $stderrText = ''
+    $stamp = [guid]::NewGuid().ToString('N')
+    $outPath = Join-Path ([System.IO.Path]::GetTempPath()) ("dayz-mcp-lifecycle-out-{0}.txt" -f $stamp)
+    $errPath = Join-Path ([System.IO.Path]::GetTempPath()) ("dayz-mcp-lifecycle-err-{0}.txt" -f $stamp)
     $previousIdentity = [Environment]::GetEnvironmentVariable('DAYZ_MCP_CLIENT_ID_JSON', 'Process')
     $previousLease = [Environment]::GetEnvironmentVariable('DAYZ_MCP_LEASE_TOKEN', 'Process')
     [Environment]::SetEnvironmentVariable('DAYZ_MCP_CLIENT_ID_JSON', $script:LifecycleClientIdentityJson, 'Process')
     [Environment]::SetEnvironmentVariable('DAYZ_MCP_LEASE_TOKEN', $script:LifecycleLeaseToken, 'Process')
     try {
-        Push-Location $LifecycleTools
-        try {
-            $raw = @(& $LifecyclePython @cliArgs 2>&1)
-            $exitCode = $LASTEXITCODE
-        } finally {
-            Pop-Location
+        # Start-Process streams -RedirectStandardInput byte-for-byte from the file. A
+        # PowerShell string pipe is NOT equivalent: 5.1 prepends a UTF-8 BOM plus CRLF
+        # (measured 2026-08-21: EF BB BF + 0D 0A) and json.loads rejects the BOM.
+        $startArgs = @{
+            FilePath = $LifecyclePython
+            ArgumentList = $cliArgs
+            WorkingDirectory = $LifecycleTools
+            RedirectStandardOutput = $outPath
+            RedirectStandardError = $errPath
+            NoNewWindow = $true
+            Wait = $true
+            PassThru = $true
         }
+        if ($Command -eq 'start') { $startArgs.RedirectStandardInput = $RequestPath }
+        $proc = Start-Process @startArgs
+        $exitCode = $proc.ExitCode
+        $utf8Read = [System.Text.UTF8Encoding]::new($false)
+        if (Test-Path -LiteralPath $outPath) { $stdoutText = [System.IO.File]::ReadAllText($outPath, $utf8Read) }
+        if (Test-Path -LiteralPath $errPath) { $stderrText = ([System.IO.File]::ReadAllText($errPath, $utf8Read)).Trim() }
     } finally {
         [Environment]::SetEnvironmentVariable('DAYZ_MCP_CLIENT_ID_JSON', $previousIdentity, 'Process')
         [Environment]::SetEnvironmentVariable('DAYZ_MCP_LEASE_TOKEN', $previousLease, 'Process')
+        foreach ($tempFile in @($outPath, $errPath)) {
+            if (Test-Path -LiteralPath $tempFile) {
+                Remove-Item -LiteralPath $tempFile -Force -ErrorAction SilentlyContinue
+            }
+        }
     }
 
     $result = $null
     try {
-        $result = (($raw | ForEach-Object { [string]$_ }) -join [Environment]::NewLine) | ConvertFrom-Json
+        $result = $stdoutText | ConvertFrom-Json
     } catch {
         if ($exitCode -eq 0) { Die 'Managed lifecycle returned invalid JSON.' }
     }
     if ($exitCode -ne 0) {
-        $reason = if ($result -and $result.error) { [string]$result.error } else { 'request_failed' }
+        $reason = if ($result -and $result.error) { [string]$result.error } elseif ($stderrText) { $stderrText } else { 'request_failed' }
         Die "Managed lifecycle '$Command' failed (exit $exitCode, reason=$reason)."
     }
     if (-not $result) { Die 'Managed lifecycle returned no JSON result.' }
@@ -225,14 +252,44 @@ function Invoke-ManagedStart {
         mission = $MissionValue
     }
     if ($ExtendRunId) { $request.run_id = $ExtendRunId }
-    $requestPath = Join-Path ([System.IO.Path]::GetTempPath()) ("dayz-mcp-lifecycle-{0}.json" -f [guid]::NewGuid().ToString('N'))
+    # Launch identity contract (lifecycle_cli.py:81-116, process_lifecycle.py:1017-1044):
+    # a NEW run carries new_run_id + launch_operation_id (distinct UUID4) plus
+    # launch_request_sha256 = sha256 of the canonical JSON (sorted keys, compact
+    # separators, utf-8) without the sha field; the CLI then performs the /lifecycle/ack
+    # handshake itself. An extend request (run_id present) must NOT carry launch fields.
+    # ConvertTo-Json cannot reproduce Python's canonical form, so a Python finalizer
+    # stamps the three fields.
+    $stamp = [guid]::NewGuid().ToString('N')
+    $draftPath = Join-Path ([System.IO.Path]::GetTempPath()) ("dayz-mcp-lifecycle-draft-{0}.json" -f $stamp)
+    $finalizedPath = Join-Path ([System.IO.Path]::GetTempPath()) ("dayz-mcp-lifecycle-final-{0}.json" -f $stamp)
+    $finalizerPath = Join-Path ([System.IO.Path]::GetTempPath()) ("dayz-mcp-lifecycle-finalize-{0}.py" -f $stamp)
+    # The finalizer writes the finalized file itself: routing its stdout through a
+    # PowerShell redirection would re-encode the bytes (BOM), like the pipe above.
+    $finalizerLines = @(
+        'import hashlib, io, json, sys, uuid',
+        'req = json.load(io.open(sys.argv[1], encoding="utf-8"))',
+        'if not req.get("run_id"):',
+        '    req["new_run_id"] = str(uuid.uuid4())',
+        '    req["launch_operation_id"] = str(uuid.uuid4())',
+        '    body = {k: v for k, v in req.items() if k != "launch_request_sha256"}',
+        '    canonical = json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")',
+        '    req["launch_request_sha256"] = hashlib.sha256(canonical).hexdigest()',
+        'io.open(sys.argv[2], "w", encoding="utf-8").write(json.dumps(req, ensure_ascii=False, separators=(",", ":")))'
+    )
     try {
         $utf8 = [System.Text.UTF8Encoding]::new($false)
-        [System.IO.File]::WriteAllText($requestPath, ($request | ConvertTo-Json -Depth 5 -Compress), $utf8)
-        $result = Invoke-LifecycleCli -Command 'start' -RequestPath $requestPath
+        [System.IO.File]::WriteAllText($draftPath, ($request | ConvertTo-Json -Depth 5 -Compress), $utf8)
+        [System.IO.File]::WriteAllText($finalizerPath, (($finalizerLines -join "`n") + "`n"), $utf8)
+        $finalizerOut = @(& $LifecyclePython $finalizerPath $draftPath $finalizedPath 2>&1)
+        if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $finalizedPath)) {
+            Die ('Managed lifecycle request finalizer failed: ' + (($finalizerOut | ForEach-Object { [string]$_ }) -join ' '))
+        }
+        $result = Invoke-LifecycleCli -Command 'start' -RequestPath $finalizedPath
     } finally {
-        if (Test-Path -LiteralPath $requestPath) {
-            Remove-Item -LiteralPath $requestPath -Force -ErrorAction SilentlyContinue
+        foreach ($tempFile in @($draftPath, $finalizedPath, $finalizerPath)) {
+            if (Test-Path -LiteralPath $tempFile) {
+                Remove-Item -LiteralPath $tempFile -Force -ErrorAction SilentlyContinue
+            }
         }
     }
     if (-not $result.ok -or [string]::IsNullOrWhiteSpace([string]$result.run_id)) {

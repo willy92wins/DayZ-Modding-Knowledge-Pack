@@ -7448,10 +7448,10 @@
           "decision": "merge",
           "decision_evidence": "Installed delta was reviewed and selectively merged; private paths and local-only residue were not copied.",
           "license": "User-authored input",
-          "source_hash": "3ae0911f682f051c48fca398d7e6cf2896d2ecdcbd6e068fb3d72125216d8912",
+          "source_hash": "9a32f143deef378c5075587f12dd7ab5304a52f8e015a771938909347d049c67",
           "source_id": "installed-skills",
           "source_path": "dayz-test-ingame/templates/dayz-test.ps1",
-          "source_revision": "filesystem@2026-07-24",
+          "source_revision": "filesystem@2026-08-21",
           "verification_level": "cross_checked"
         },
         {
@@ -7476,7 +7476,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d6fd7a20e29a1820186d12f5e969217d7e4a441e821c835431f1b8fee9db802c",
+      "output_hash": "435f95d53262e18d500636b2fbd4c0126398e69483c80fe67204399689e9860d",
       "output_path": "skills/dayz-test-ingame/templates/dayz-test.ps1",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -11303,15 +11303,15 @@
           "decision": "adopt",
           "decision_evidence": "Claim registry records the three approved evidence-backed contracts and their skill ranges.",
           "license": "MIT",
-          "source_hash": "23e432349b41fabdcefbbe04221d11d581f5af881e5e7a4e2cfa77c198117e5c",
+          "source_hash": "d117d277ea9b1b95183606fb024a44c33a8d2a8c2f7d8bd7b69be1f452a4d13d",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
-          "source_revision": "r21-prior-art-approved@2026-07-24",
+          "source_revision": "filesystem@2026-08-21",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "23e432349b41fabdcefbbe04221d11d581f5af881e5e7a4e2cfa77c198117e5c",
+      "output_hash": "d117d277ea9b1b95183606fb024a44c33a8d2a8c2f7d8bd7b69be1f452a4d13d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
