@@ -199,13 +199,16 @@ its own name and logs **nothing** (measured: zero RPT lines for a missing key ac
 by one row per key. The key sits in column 1 **without the leading `#`** — the `#` belongs
 only to the reference in code, config or `.layout`. UTF-8, no BOM, LF.
 
-**A stringtable alone is not enough to test with.** Measured 2026-08-21 on a disposable
-addon: its PBO mounted and served a `.layout` loaded by addon prefix, and a key defined by
-that same PBO still printed as its own name. Adding `prefix`, `dependencies[]`, or the full
-`CfgMods` shape of a shipping mod changed nothing, with a vanilla key resolving in the same
-frame as the positive control and every PBO re-extracted to confirm the csv was inside it.
-Keys from real mods do resolve, so this is a caveat about minimal test addons, not about
-stringtables in general — but it means a two-file addon is the wrong thing to debug with.
+**An unresolved stringtable is a CSV-header problem, not an addon-size problem.** Two
+in-game bisection ladders (measured 2026-08-21) closed this: a three-file addon
+(`$PBOPREFIX$` + minimal config.cpp + stringtable.csv) resolves its keys, and two data
+rows are enough — provided the CSV carries the full 7-column reference header
+(`"Language","original","english","spanish","german","russian","chinesesimp"`). With a
+4-column header (no german/russian/chinesesimp) every key stays unresolved at any corpus
+size, even though the PBO mounts and serves files and the client's own language column is
+present with text. Fill untranslated columns with the english text. Earlier same-day probes
+that blamed addon minimality were measuring a degenerate CSV. Full rule and evidence:
+dayz-ui-development skill, LOCALIZATION section.
 
 **Checks performed:**
 - **Scan all script files (.c, .cpp) for `#STR_` references**

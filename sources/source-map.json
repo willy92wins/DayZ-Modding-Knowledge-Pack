@@ -6324,7 +6324,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a01ecdd93772ad336880581a73b7834e9b5047aca81ced04d64d4b61884a94ef",
+      "output_hash": "3e433d51e0d5de322c8f9983b5037c2781b956844a3a98d602d423cb69e71076",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -6346,7 +6346,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b27895964ffafe57103bc6ea1f3cbef840b64e496b6e6579762d4f0572d7ed39",
+      "output_hash": "2745fc9df9c274653bcb5028ba3def7aff3c6fc681b32f5515d4e21e53e5bafc",
       "output_path": "skills/dayz-pbo-build/VALIDATION_CHECKLIST.txt",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -7350,7 +7350,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "509ebd0876c0056b822145388c1ba5a28ff4ca80078eba1ab5cd8667104bcfa3",
+      "output_hash": "d34eab2c5234cd6647e0222d92fad77976b1285e23ea170424e8055ab3b856b1",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -7812,7 +7812,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8a09d6348e3cf08a2b7999913aa91cfc8992c6f06fd5e7664587bb6bce5c54dd",
+      "output_hash": "b377cd7f19096fd268209d761c16d7624c5c14b9e8ecb85c077cfbce8c31b2bd",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -8472,10 +8472,120 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "785c1b0656a6ec470f44176c071ad5b6d9185b82f1c70ba1e43666ed6379e53c",
+      "output_hash": "a381d5d89d4291b04121c4c6716ece239dfa954a8767b85ee5f3b2f6842a3afd",
       "output_path": "skills/dayz-ui-development/templates/stringtable.csv",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/scripts/CONTRACT.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Widget-name contract for gen_panel_layout.py output; authored by a delegated peer lane on 2026-08-21 and audited before adoption. Byte-identical in the live store.",
+          "license": "MIT",
+          "source_hash": "0fb7e80d1cfca4583559a141fbe83d832ddaf64747c5a5725c6cdd6ac5f7e5dd",
+          "source_id": "installed-skills",
+          "source_path": "dayz-ui-development/scripts/CONTRACT.md",
+          "source_revision": "filesystem@2026-08-21",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0fb7e80d1cfca4583559a141fbe83d832ddaf64747c5a5725c6cdd6ac5f7e5dd",
+      "output_path": "skills/dayz-ui-development/scripts/CONTRACT.md",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/scripts/chat_feed.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Sample emitted by gen_panel_layout.py --self-test; this variant was flown in-game 2026-08-21 via ui_reload_layout + ui_set_text. Byte-identical in the live store.",
+          "license": "MIT",
+          "source_hash": "c79aff3238976165e496b7f9e648d74fad7d6e2ff8470d986fa41550e60f189e",
+          "source_id": "installed-skills",
+          "source_path": "dayz-ui-development/scripts/chat_feed.layout",
+          "source_revision": "filesystem@2026-08-21",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c79aff3238976165e496b7f9e648d74fad7d6e2ff8470d986fa41550e60f189e",
+      "output_path": "skills/dayz-ui-development/scripts/chat_feed.layout",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/scripts/gen_panel_layout.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "On-demand preview panel generator; authored by a delegated peer lane on 2026-08-21, audited and its self-test re-run at adoption. Byte-identical in the live store.",
+          "license": "MIT",
+          "source_hash": "ffd9436baaef1c9475535f916318554481dddec610c7b071f1db6b69cd823578",
+          "source_id": "installed-skills",
+          "source_path": "dayz-ui-development/scripts/gen_panel_layout.py",
+          "source_revision": "filesystem@2026-08-21",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ffd9436baaef1c9475535f916318554481dddec610c7b071f1db6b69cd823578",
+      "output_path": "skills/dayz-ui-development/scripts/gen_panel_layout.py",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/scripts/info_panel.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Sample emitted by gen_panel_layout.py --self-test, committed for reference. Byte-identical in the live store.",
+          "license": "MIT",
+          "source_hash": "6a2af361a08c541fd3684bf2ef8836a8d7e0b0a9fc5177c4568e8cf6dfd86aaf",
+          "source_id": "installed-skills",
+          "source_path": "dayz-ui-development/scripts/info_panel.layout",
+          "source_revision": "filesystem@2026-08-21",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6a2af361a08c541fd3684bf2ef8836a8d7e0b0a9fc5177c4568e8cf6dfd86aaf",
+      "output_path": "skills/dayz-ui-development/scripts/info_panel.layout",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/scripts/mini_hud.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Sample emitted by gen_panel_layout.py --self-test, committed for reference. Byte-identical in the live store.",
+          "license": "MIT",
+          "source_hash": "fb6d79d50c2e7fa6d6e09748f052ca13cab5ddb183a9e2f745ad6dd27677bb26",
+          "source_id": "installed-skills",
+          "source_path": "dayz-ui-development/scripts/mini_hud.layout",
+          "source_revision": "filesystem@2026-08-21",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fb6d79d50c2e7fa6d6e09748f052ca13cab5ddb183a9e2f745ad6dd27677bb26",
+      "output_path": "skills/dayz-ui-development/scripts/mini_hud.layout",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "cross_checked"
     },
     {
       "artifact_id": "file/skills/dayz-vehicles/skill.md",
@@ -9420,6 +9530,28 @@
       "license": "MIT",
       "output_hash": "7618971bd814c5c5ced6b9221e2993fe7540261c12f6a395bfb81881741ca63d",
       "output_path": "skills/dayz-vehicles/references/visual-metrics-and-viewer.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/check_odol_bone_refs.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-21; companion probe to gate_odol_sections.py that reads which skeleton bone the marker vertices bind to in a deployed ODOL. Output differs from the source in the hardcoded user paths only, which the pack carries as <you>.",
+          "license": "MIT",
+          "source_hash": "2853169a0dc429bfc56817a87273b30c7b7e39626bdf6a2051e9d333fdac4d6e",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/check_odol_bone_refs.py",
+          "source_revision": "filesystem@2026-08-21",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "70d0d8f3f40d58caa9a7d6cf815eb2b060daae863e4d460fa94e366fd90f40cd",
+      "output_path": "skills/dayz-vehicles/references/check_odol_bone_refs.py",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
     },

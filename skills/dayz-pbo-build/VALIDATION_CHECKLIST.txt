@@ -63,8 +63,9 @@ STRINGTABLE VALIDATION
 [ ] All languages have entries for each key
 [ ] No orphaned keys (never referenced in code)
 [ ] Packed with -packonly: the binarizing pass DROPS .csv from the PBO, like .c
-[ ] The addon carries more than the stringtable - a stringtable-only addon was
-    measured 2026-08-21 to mount and serve files while its keys stayed unresolved
+[ ] Header row carries the full 7 reference columns (Language, original, english,
+    spanish, german, russian, chinesesimp) - a 4-column header was measured
+    2026-08-21 to leave every key unresolved while the PBO mounted and served files
 
 SCRIPT VALIDATION
 -----------------
