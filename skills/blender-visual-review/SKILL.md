@@ -300,9 +300,36 @@ real de `vr_score.py`. El checklist entero saca **77,8% contra un suelo de respu
 | huecos o agujeros en la superficie | 10/12 | **pre-filtro** |
 | caras negras, del revés o mal sombreadas | 10/12 | **pre-filtro** (tras moverla a `assembled__profile_R`) |
 | objeto acabado vs cajas peladas | 10/12 | **pre-filtro** |
-| proporciones consistentes | 10-12/12 | **pre-filtro** |
+| ~~proporciones consistentes~~ | ~~10-12/12~~ | **NO delegar** (retractado 2026-08-22) — ese 10-12/12 es una puntuación **infalsificada**: el par roto/arreglado con el que se midió no contenía ningún defecto de proporción, así que contestar «yes» siempre puntúa perfecto. Ver la nota de abajo |
 | **biseles / chamfered edges** | **6/12** | **NO delegar** — está en el suelo de la respuesta constante. Confirma el aviso de 2026-07-30: los dos modelos daban veredictos opuestos de bisel |
-| **cilindros facetados** | **al azar en los 8 encuadres** | **NO delegar** — la pregunta está rota de redacción, no mal enrutada: permite leer un guardamanos poligonal, plano por diseño, como un cilindro facetado |
+| **cilindros facetados** | **al azar en los 8 encuadres** | **NO delegar, y no la reescribas** — se probaron cuatro redacciones (2026-08-17) y la que ya está es la mejor: 6/6 en encuadres donde la pieza redonda llena el marco, 1-2 de 3 en el de objeto completo. **El encuadre pesa más que la redacción.** El fallo de fondo es que el objeto no puede contestarla, ver la nota de abajo |
+
+### Antes de creerte una puntuación alta de esta tabla (2026-08-22)
+
+Una pregunta sí/no tiene dos modos de fallo que su propia puntuación esconde, y la fila
+de proporciones cayó en los dos:
+
+1. **La constante.** Si el oro del conjunto de prueba **nunca cambia de valor**, la
+   respuesta constante puntúa perfecto y la métrica queda *infalsificada*, no validada.
+   La pregunta lucía 10-12/12 porque el par con el que se midió no tenía ningún defecto
+   de proporción. **La comprobación es una línea: ¿cambia el oro de valor en el
+   conjunto?** Si no, no has medido nada.
+2. **La confabulación.** Al pedirle motivo no duda, lo inventa. Ante una brida un 37 %
+   más ancha de lo debido, un modelo la declaró coherente con «standard fastener
+   geometry» y otro «appropriately scaled». Una nota segura y falsa es peor que un
+   «unsure».
+
+Medido el 2026-08-17 con `gemma4:26b`, `qwen3.8:27b` y `qwen3.5:27b`: con dos defectos
+construidos, la pregunta contestó **«yes» en las 9 celdas** (3 modelos × 3 variantes).
+Pedir en su lugar **la medida** —tamaño y posición de cada pieza como fracción del
+marco, puntuada por dirección de cambio— acertó **6/6 sobre los mismos renders**.
+
+El sustituto de medida **todavía no está implementado aquí**: `probe_truth.py` no existe
+en `references/` y la pregunta sigue en `checks_hardsurface.json:29` tal cual. Hasta que
+lo esté, esta fila se mira a ojo y no se delega. Y al implementarlo, la trampa que ya
+mordió: **declarar una convención de coordenadas no gana al prior arriba-abajo del
+modelo** — pedir y=0 abajo y espejar sus respuestas bajó el error vertical de 0,107 a
+0,017 de marco. Usa la convención de imagen o detecta el espejo antes de puntuar.
 
 ### Dónde entra en el bucle
 

@@ -98,5 +98,33 @@ Tres trampas que costaron una tanda entera y que hay que evitar al re-calibrar:
 
 **Q3 no está mal enrutada: está rota.** «¿Son lisos y redondos los cilindros?» queda al azar
 en los ocho encuadres (máximo 50%), porque su redacción permite leer el guardamanos
-poligonal —plano por diseño— como un cilindro facetado. Se arregla reescribiéndola, no
-moviéndola.
+poligonal —plano por diseño— como un cilindro facetado.
+
+> **RETRACTADO 2026-08-22 — no se arregla reescribiéndola.** Este párrafo cerraba con «se
+> arregla reescribiéndola, no moviéndola». Se probó y salió al revés (192 celdas sobre
+> `mk47_mutant` + sonda sintética con la verdad puesta por construcción, 2026-08-17):
+>
+> - **Cuatro redacciones medidas y gana la que ya está** (6/6 y 6/6 en encuadres donde la
+>   pieza redonda llena el marco). Umbral numérico 5/6, cláusula de exclusión 5/6, silueta
+>   angular 2/6. Sobre el encuadre de objeto completo **las cuatro** caen a 1-2 de 3: el
+>   encuadre pesa más que la redacción.
+> - **Un umbral dentro del enunciado no se aplica como cuenta**: preguntando «roughly six or
+>   fewer sides», los tres modelos dijeron «sí» a la variante de **12** lados.
+> - **El agrupado parte la sensibilidad por dos**: 6/6 preguntada sola, 3/6 dentro del lote de
+>   ocho que arma `vr_score.py`. Tercera confirmación del efecto lote en esta skill.
+> - **El objeto no puede contestarla.** `hg_tube` es un octógono REGULAR y es correcto — la
+>   foto de referencia manda sección octogonal (`dossier.md:18,49`). Los cilindros de verdad
+>   (`body_brake` 18-22 lados, `body_barrel` 14, `endplate` 24) tienen una sagitta
+>   `r*(1-cos(pi/N))` de 0,167-0,213 mm, **menos de 1 px** en cualquiera de los ocho
+>   encuadres, contra 1,91 mm y ~6,9 px del octógono. Lo único visiblemente facetado de esta
+>   arma es la pieza que debe estarlo.
+> - **8 de 12 celdas son falsas alarmas** bajo agrupado real, contra un oro derivado de la
+>   geometría. Una pregunta que marca geometría correcta dos tercios de las veces no puede ir
+>   en un gate automático, y menos en un pre-filtro que RECHAZA: ahí una falsa alarma tira
+>   trabajo bueno. Es el modo de fallo del gate de winding, rojo en el 73 % de lo publicado.
+>
+> **Qué hacer en su lugar**: sacarla del checklist VLM y de cualquier pre-filtro, y sustituirla
+> por un reporte determinista por pieza (lados, radio, desviación, sagitta) que **informe y no
+> juzgue** — el problema de Q3 era que exigía adivinar la intención del modelador, y una fila
+> «`hg_tube`, 8 lados, r=25,2 mm» devuelve esa decisión a quien puede tomarla. El prototipo
+> (`facet_report.py`) todavía **no está en esta skill**.
