@@ -125,7 +125,9 @@ sizes by **height**; it does not fit a long string horizontally.
 
 **Fix in these templates.** `MultilineTextWidgetClass` + `wrap 1`
 (329/331 vanilla MultilineText). `wrap` on `TextWidgetClass` is **0×** in the
-214 vanilla files and is **[UNVERIFIED]** at runtime — do not rely on it.
+214 vanilla files and is **inert** at runtime — `wrap 1` and `wrap 0` render the
+same clipped single line (measured in-game 2026-08-22, see SKILL.md). Never rely
+on it.
 
 ### 3. White button, white label
 

@@ -124,8 +124,15 @@ wrapping`), not a text-layout flag. The enum declares no text-wrap capability at
 all (26 entries, `enwidgets.c:57-85`); the only other `wrap` symbols in the file
 are `WrapSpacerWidgetTypeID` (`:48`) and `class WrapSpacerWidget` (`:477`) — a
 widget *type* (flow layout for children), unrelated to `TextWidget`. Consequence:
-text wrap cannot be enabled from script through any `WidgetFlags` value — a
-`.layout` file is the only channel that can set it.
+text wrap cannot be enabled from script through any `WidgetFlags` value.
+
+Nor from the `.layout`, on a `TextWidget`. Measured in-game 2026-08-22 (DayZDiag
+1.29.163709): in one box of 260x150, `TextWidgetClass` with `wrap 1` and with
+`wrap 0` render the identical clipped single line, while a
+`MultilineTextWidgetClass` with `wrap 1` in the same box wraps the same string to
+five lines. The attribute is **inert on TextWidget by both channels**; wrapping
+text means `MultilineTextWidgetClass`. Full setup and evidence hashes in
+`SKILL.md`, section "`wrap` is INERT on TextWidget".
 
 ---
 

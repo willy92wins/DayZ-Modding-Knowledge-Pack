@@ -892,21 +892,47 @@ confuse, and only one of them is measured. The 2026-08-19 census in
 prove the engine **honours** it there: four occurrences in a 819-layout corpus is
 equally consistent with four layouts setting an attribute that does nothing. So:
 `wrap` on a TextWidget is not "impossible" or absent from the corpus — that part
-of the row was wrong — but whether it wraps at runtime is **[UNVERIFIED]** and a
-counting exercise cannot settle it. What settles it is one in-game probe: a
-TextWidget with `wrap 1` and a string longer than its box, read back with
-`GetTextSize()`. Until then, `MultilineTextWidget` remains the reliable choice
-for wrapping text, which is what the row's advice is really about.
+of the row was wrong — but a counting exercise cannot settle whether the engine
+honours it. An in-game probe settled it on 2026-08-22: **it does not.**
 
-Engine-side constraint on that probe: the `WidgetFlags` enum contains no text-wrap
-flag (`enwidgets.c:57-85`, 26 entries). `NOWRAP` (`:63`) is a texture flag
-(`//< Do not do texture wrapping`), and the file's only other `wrap` symbol,
-`class WrapSpacerWidget` (`:477`), is a flow-layout container type — not a flag and
-not applicable to a `TextWidget`. There is therefore no script-side way to turn wrap
-on: `CreateWidget(TextWidgetTypeID, ...)` + `SetFlags(...)` cannot express it, and the
-probe must load a `.layout` file declaring `wrap 1` on the widget under test. This is
-consistent with (and does not prove) inertness of `wrap` on `TextWidget`; the
-[UNVERIFIED] verdict above is unchanged.
+### `wrap` is INERT on TextWidget — measured in-game (2026-08-22)
+
+DayZDiag 1.29.163709, live client. One `.layout` holding three widgets side by
+side with the **same** box (260x150, `hexactsize`/`vexactsize`), the same
+`text_proportion 0.14` and the same 12-token string
+`UNO DOS TRES CUATRO CINCO SEIS SIETE OCHO NUEVE DIEZ ONCE DOCE`:
+
+| Widget class | Declares | Renders |
+|---|---|---|
+| `TextWidgetClass` | `wrap 1` | ONE line, clipped mid-token at `SEIS S` |
+| `TextWidgetClass` | `wrap 0` | ONE line, clipped at the same token |
+| `MultilineTextWidgetClass` | `wrap 1` | FIVE lines, all 12 tokens visible |
+
+`wrap 1` and `wrap 0` on a TextWidget are indistinguishable in the frame. The
+MultilineTextWidget is the **positive control**, and it is what makes the negative
+admissible: five wrapped lines fit in that same 150 px box, so the TextWidget had
+the room and did not use it.
+
+Run twice by two independent routes — text assigned at runtime (`SetText`) and text
+written literally into the `.layout` — with the same verdict, so the inertness is
+not an artifact of the runtime setter. The instrument is the rendered frame, not
+`GetTextSize()`: with an exact size the box cannot grow, so wrap can only show up as
+line breaks inside it. Evidence:
+`20_Knowledge/capturas/wrap-textwidget-{1of2-settext,2of2-literal}-20260822.jpg`
+(sha256 `67C9D85D…` / `BDBEBCBB…`), probes `lf_wrap_probe.layout` (`7DAD7101…`) and
+`lf_wrap_probe2.layout` (`0CAD0F24…`).
+
+So the four corpus occurrences are exactly what the census could not rule out:
+layouts setting an attribute that does nothing. `MultilineTextWidget` is not merely
+the *reliable* choice for wrapping text — it is the only one.
+
+This is consistent with there being no script-side switch either: the `WidgetFlags`
+enum contains no text-wrap flag (`enwidgets.c:57-85`, 26 entries). `NOWRAP` (`:63`)
+is a texture flag (`//< Do not do texture wrapping`), and the file's only other
+`wrap` symbol, `class WrapSpacerWidget` (`:477`), is a flow-layout container type —
+not a flag and not applicable to a `TextWidget`. `CreateWidget(TextWidgetTypeID,
+...)` + `SetFlags(...)` cannot express wrap; the probe above shows the `.layout`
+attribute cannot either.
 
 ## MOCKUP FIDELITY — calibrate to text_proportion; don't edit .layout off a mockup (added 2026-06-03)
 

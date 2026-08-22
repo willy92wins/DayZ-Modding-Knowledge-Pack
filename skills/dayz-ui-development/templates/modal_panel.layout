@@ -54,8 +54,10 @@ FrameWidgetClass ModalRoot {
 					// wrap 1 on MultilineText: 329/331 vanilla. A TextWidget with
 					// "text halign" center and no wrap clips BOTH sides on overflow
 					// (mcp_dialog Title, measured 2026-08-19; not distributed).
-					// wrap on TextWidget is 0x in the 214 vanilla files; runtime
-					// honour is [UNVERIFIED].
+					// wrap on TextWidget is 0x in the 214 vanilla files, and the
+					// attribute is INERT there (measured in-game 2026-08-22:
+						// wrap 1 and wrap 0 render the same clipped single line).
+						// On a Multiline it works, which is why Title is one.
 					wrap 1
 					// text_proportion is deliberately NOT declared here. Measured
 					// 2026-08-21: the attribute is honoured on TextWidgetClass and on
