@@ -468,6 +468,24 @@ explícita: *«copia y pega la línea EXACTA que te devolvió la herramienta; qu
 reciba esto va a comparar ese texto contra el fichero en disco, y si no coincide
 el hallazgo cae»*.
 
+**El formato exacto que el gate parsea** — pídelo así de literal en el brief, un
+bloque por hallazgo, y **una sola línea** en el campo literal (un rango
+`:204-210` o un bloque multilínea lo deja vacío y sale `NO_LITERAL`):
+
+```
+### B-01
+- **fichero**: pkg/mod.py:627
+- **linea literal**: filePtr = open(fileName, "rb")
+```
+
+El nombre del campo puede ir decorado (`**fichero:linea**`, `**fichero:línea**`):
+desde 2026-08-22 el parser solo exige que **empiece** por `fichero` o `file`. Antes
+exigía igualdad exacta, y un informe cuyas 8 citas eran correctas salía con
+`NO_FILE` en las 8 — el gate acusaba de inventar por el nombre del encabezado. Peor:
+con el nombre desajustado devolvía `NO_FILE` **también a una línea fabricada**, así
+que no distinguía nada. Medido por mutación antes y después: **2/7 → 7/7**, con los
+controles negativos (línea fabricada, fichero inexistente) fallando en ambos.
+
 Por qué funciona: convierte una afirmación en algo **falsable mecánicamente**.
 Ya no hace falta creerle ni releer el fichero entero — un script compara el texto
 citado con esa línea y devuelve un veredicto. Y el modelo lo sabe mientras

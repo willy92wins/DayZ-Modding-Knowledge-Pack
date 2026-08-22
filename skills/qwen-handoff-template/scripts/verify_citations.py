@@ -56,8 +56,17 @@ def load_tree(root: Path, globs) -> dict:
 
 
 def field(block: str, *names) -> str:
+    """Read a report field, tolerating a decorated field name.
+
+    The name only has to START with what we ask for: `**fichero**`,
+    `**fichero:linea**` and `**fichero:línea**` are the same field. Demanding an
+    exact match returned NO_FILE on all 8 citations of a report whose 8 citations
+    were correct -- the brief said one name and the parser wanted another, and the
+    gate reported it as fabrication (SP-313, measured 2026-08-22 on two models,
+    neither of which had invented anything).
+    """
     for name in names:
-        m = re.search(r"^\s*[-*]?\s*\*\*%s\*\*\s*:\s*(.+)$" % re.escape(name),
+        m = re.search(r"^\s*[-*]?\s*\*\*%s[^*]*\*\*\s*:\s*(.+)$" % re.escape(name),
                       block, re.M | re.I)
         if m:
             return m.group(1).strip()
