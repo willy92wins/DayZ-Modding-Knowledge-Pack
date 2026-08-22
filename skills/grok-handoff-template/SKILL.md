@@ -185,11 +185,17 @@ consejero no toca el árbol.
   -m grok-4.6
 ```
 
-> **`--tools` es lo ÚNICO que separa a Grok de tu árbol.** Este host tiene
-> `permission_mode = "always-approve"` en `~/.grok/config.toml:17`, así que
-> **ninguna invocación pregunta nada**, ni en TUI ni en headless. El modo de
-> permiso no es el cortafuegos; el toolset sí. Omitir el allowlist no es «puede
-> que edite algo»: es «edita y ejecuta sin preguntar». Re-verificado en 1.0.4:
+> **`--tools` es lo ÚNICO que separa a Grok de tu árbol.** El config del host
+> (`~/.grok/config.toml:17`, leído 2026-08-22) está en `permission_mode =
+> "auto"`, y bajo `auto` una corrida headless **escribe sin preguntar aunque no
+> pases ningún flag de permiso**: A/B medido el 2026-08-22, mismo prompt y mismo
+> allowlist con `search_replace`, sin flag → `end_turn` en 2 turnos con el
+> fichero en disco; con `--always-approve` → idéntico. Las canónicas lo pasan
+> igualmente para FIJAR el modo pase lo que pase en el config, no porque haga
+> falta para escribir. El modo de permiso no es el cortafuegos; el toolset sí, y
+> esta medida lo refuerza: sin flag alguno tampoco hubo prompt. Omitir el
+> allowlist no es «puede que edite algo»: es «edita y ejecuta sin preguntar».
+> Re-verificado en 1.0.4:
 > con este allowlist informó de que no tiene herramienta de escritura y el
 > archivo pedido no apareció en disco.
 
@@ -491,13 +497,14 @@ que vuelve por stdout es solo un recibo.
    supone. Postura C, o mide tú.
 3. **Prompt abierto** («¿qué opinas del plan?»). Devuelve un ensayo. Especifica
    dimensiones, formato y qué es un hallazgo válido.
-4. **Lanzarlo sin `--tools`** en un rol de juicio. En este host eso es escritura
-   y shell auto-aprobadas, sin prompt que lo pare.
+4. **Lanzarlo sin `--tools`** en un rol de juicio. Aquí eso es escritura y shell
+   auto-aprobadas, sin prompt que lo pare, y **no hace falta ningún flag de
+   permiso para que lo sea** (A/B 2026-08-22).
 5. **Pedirle un documento con el allowlist de solo-lectura.** Cambia de
    postura, no de prompt.
-6. **`--permission-mode acceptEdits` para que escriba.** Degrada el
-   always-approve del host y la corrida muere en `cancelled` sin escribir nada,
-   sin error y sin warning. Medido 3/3.
+6. **`--permission-mode acceptEdits` para que escriba.** Pisa el
+   `--always-approve` del comando —gana incluso pasando ambos— y la corrida
+   muere en `cancelled` sin escribir nada, sin error y sin warning. Medido 3/3.
 7. **`-p` inline (o `--prompt-json` inline) desde PowerShell 5.1.** Se trocea
    por comillas/saltos y aborta con exit 2; y el inline con imágenes revienta
    el techo argv de 32.767. `--prompt-file`, y JSON inline solo desde Bash.

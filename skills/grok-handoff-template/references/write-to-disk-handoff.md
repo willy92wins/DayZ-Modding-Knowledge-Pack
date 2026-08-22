@@ -32,7 +32,8 @@ de que no puede y el archivo no aparece en disco (re-verificado en 1.0.4,
 
 **No mezclar.** Pedir un `.md` con allowlist read-only obliga al copiado por
 stdout. Pedir solo juicio sin allowlist expone el árbol a edición accidental —
-y en este host, sin ni siquiera preguntar (§siguiente).
+y en este host, sin ni siquiera preguntar — con flag de permiso o sin él
+(§siguiente).
 
 Reparto vigente: `G7` manda la ejecución a **Codex por defecto**; Grok es el
 suplente y se usa cuando Codex está bloqueado (cuota, filtro, runtime muerto) o
@@ -41,27 +42,32 @@ cuando el orquestador lo elige a propósito. El criterio de promoción está en 
 
 ---
 
-## Lo primero: en este host el permiso NO pregunta
+## Lo primero: aquí nada pregunta, y no es el flag lo que lo decide
 
 ```toml
-# %USERPROFILE%\.grok\config.toml:12-17
+# %USERPROFILE%\.grok\config.toml:12-17 — leído 2026-08-22
 [ui]
-permission_mode = "always-approve"
+permission_mode = "auto"
 ```
 
-Ese es el mecanismo de config documentado para always-approve, y la doc añade
-que «CLI overrides config for that process»
-(`22-permissions-and-safety.md:59-63`). Tres consecuencias que gobiernan todo lo
-demás:
+El config NO trae always-approve, y aun así **la escritura ocurre sin pasar
+ningún flag de permiso**. A/B medido el 2026-08-22, mismo prompt y mismo
+allowlist con `search_replace`: sin flag → `end_turn` en 2 turnos, fichero en
+disco, $0,0085; con `--always-approve` → idéntico. La doc añade que «CLI
+overrides config for that process» (`22-permissions-and-safety.md:59-63`). Tres
+consecuencias que gobiernan todo lo demás:
 
-1. **Toda invocación de Grok en este host arranca en always-approve**, headless
-   y TUI. No hay prompt que salve nada.
+1. **`--always-approve` no es load-bearing para escribir**, pero se pasa igual:
+   fija el modo con independencia del config del host —que ya cambió una vez sin
+   avisar— y la doc lo prescribe para scripts y CI (`22:20-21`). Lo que NO se
+   hace es sustituirlo por otro valor.
 2. **En las corridas de juicio, lo único que separa a Grok del árbol es
    `--tools`.** No el modo de permiso. Omitir el allowlist no es «puede que
    edite»: es «edita y ejecuta sin preguntar».
 3. **`--permission-mode acceptEdits` es una DEGRADACIÓN, no una salvaguarda.**
-   El modo es **uno**, no capas aditivas: pasar `acceptEdits` por CLI pisa el
-   always-approve de config y deja a Grok en un modo que solo auto-aprueba
+   El modo es **uno**, no capas aditivas: pasar `acceptEdits` por CLI pisa
+   incluso el `--always-approve` del propio comando (medido, tabla de abajo) y
+   deja a Grok en un modo que solo auto-aprueba
    ediciones (`22-permissions-and-safety.md:36`). Cualquier tool que no sea una
    edición cae en la «prompt policy», cuyos resultados documentados son
    «prompt you, auto-approve, **or auto-deny the call**»
@@ -151,7 +157,7 @@ fronteras del prompt.
 | **Sin `--tools`, o con `search_replace` dentro** | La diferencia que importa. Es lo que decide si puede escribir. |
 | `--prompt-file` | Prompt largo en un `.txt`. Evita el infierno de comillas de PowerShell y el mojibake de acentos. **Va solo: `-p` y `--prompt-file` son excluyentes** y combinarlos falla con exit 2 y 0 bytes. |
 | `--cwd` | Workspace y contexto cargado. En postura B, **siempre `%TEMP%`** (§Disciplina). |
-| `--always-approve` | Redundante en este host (ya viene de config) pero explícito y portable. **Nunca lo sustituyas por `--permission-mode acceptEdits`.** |
+| `--always-approve` | No es load-bearing: el config está en `permission_mode = "auto"` y bajo `auto` la escritura ocurre igual sin flag (A/B 2026-08-22). Se pasa para FIJAR el modo pase lo que pase en el config del host — que ya cambió una vez sin avisar. **Nunca lo sustituyas por `--permission-mode acceptEdits`.** |
 | `--no-memory` | La memoria cross-session está apagada por defecto y verificada apagada aquí, pero cuesta cero y blinda las lanes si algún día se enciende. |
 | `-m grok-4.6` | Pin de modelo: el default puede cambiar bajo tus pies y las comparativas de coste/calidad dejan de significar nada. |
 | `--disallowed-tools "Agent"` | Corta el spawn de subagentes. Se puede combinar con `--tools`: el denylist corre DESPUÉS del allowlist (`README.md:638`). |
@@ -342,8 +348,8 @@ la degradación en el artefacto (`SKILL.md` §Preflight 2).
 ## Anti-patrones
 
 1. **Allowlist read-only + «genera un documento»** → solo stdout → copiar a mano.
-2. **`--permission-mode acceptEdits`.** Degrada el always-approve del host y mata
-   la corrida en silencio. Es el fallo más caro de esta página.
+2. **`--permission-mode acceptEdits`.** Pisa el `--always-approve` del comando y
+   mata la corrida en silencio. Es el fallo más caro de esta página.
 3. **Nombrar `write` como herramienta.** Es `search_replace`.
 4. **Pedir el documento completo en la respuesta** aunque Grok pueda escribir.
 5. **Montar el brief en `-p` con comillas anidadas** en PowerShell. Usar
@@ -371,7 +377,7 @@ la degradación en el artefacto (`SKILL.md` §Preflight 2).
 | `--tools` | `read_file,grep,list_dir` | `+ run_terminal_cmd` | `+ search_replace` | omitido |
 | Shell | no | **sí (medir)** | no | sí |
 | Subagentes | no | no | no | `--disallowed-tools "Agent"` |
-| Permiso | always-approve | always-approve | always-approve | always-approve |
+| Permiso | `--always-approve` | `--always-approve` | `--always-approve` | `--always-approve` |
 | Workspace | el del proyecto | **copia en `%TEMP%`** | acotado en el prompt | **`%TEMP%`** |
 | Artefacto | `.text` | medidas + veredicto | archivo en disco | archivos + medidas |
 | stdout | ensayo / hallazgos | hallazgos (`--json-schema`) | RECEIPT JSON corto | RECEIPT JSON corto |

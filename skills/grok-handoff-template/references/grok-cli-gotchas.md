@@ -159,16 +159,22 @@ las apaga en bloque. Un allowlist que no las incluye ya las excluye.
 
 ## Permisos y contención
 
-### ★ Este host arranca en always-approve por config
+### ★ Aquí no pregunta nada, y el flag de permiso no es lo que lo decide
 
-**[V]** `~\.grok\config.toml:12-17` contiene `[ui] permission_mode =
-"always-approve"`. **[D]** «CLI overrides config for that process»
-(`22-permissions-and-safety.md:59-63`).
+**[V 2026-08-22]** `~\.grok\config.toml:12-17` NO trae always-approve: su
+bloque `[ui]` termina en `permission_mode = "auto"` (leído ese día). Y bajo
+`auto` **la escritura ocurre igual sin pasar ningún flag de permiso**: A/B
+medido el 2026-08-22 con el mismo prompt y el mismo allowlist incluyendo
+`search_replace` — sin flag, `end_turn` en 2 turnos y fichero en disco; con
+`--always-approve`, idéntico. Así que el flag **no es load-bearing para
+escribir**; se pasa para fijar el modo con independencia del config del host, y
+porque la doc lo prescribe para scripts y CI (`22-permissions-and-safety.md:20-21`).
+**[D]** «CLI overrides config for that process» (`22:59-63`).
 
 Consecuencias, que son el hecho más importante de esta página:
 
-1. **Ninguna invocación pregunta nada**, TUI o headless, salvo que se degrade a
-   mano. El modo de permiso **no es el cortafuegos**.
+1. **Ninguna invocación pregunta nada**, TUI o headless, con flag o sin él. El
+   modo de permiso **no es el cortafuegos**.
 2. **En los roles de juicio, lo único que separa a Grok del árbol es `--tools`**
    (más `--deny "MCPTool"`).
 3. **Pasar `--permission-mode acceptEdits` DEGRADA la corrida** y la mata en
@@ -221,10 +227,12 @@ no confina nada; comprobable en `~/.grok/sandbox-events.jsonl`
 **[D]** `--permission-mode` acepta `default`, `acceptEdits`, `auto`, `dontAsk`,
 `bypassPermissions`, `plan` (`22:33-40`).
 
-> **En este host solo hay un valor correcto para headless: no pasar el flag**
-> (heredar el always-approve de config), o `--always-approve` explícito.
-> Cualquier otro valor **degrada** el modo, y `acceptEdits` en concreto mata la
-> corrida. El modo es uno, no capas que se suman.
+> **Para headless con escritura hay dos valores que funcionan: `--always-approve`
+> explícito, o no pasar el flag** y dejar el `auto` del config — los dos escriben
+> (A/B 2026-08-22). Lo que NO vale es cualquier otro valor: **degrada** el modo, y
+> `acceptEdits` en concreto mata la corrida, incluso pasando además
+> `--always-approve`. El modo es uno, no capas que se suman. Pásalo explícito de
+> todos modos: cuesta cero y te independiza del config del host.
 
 - `bypassPermissions` es el nombre interno de always-approve (`--always-approve`,
   alias `--yolo`).
