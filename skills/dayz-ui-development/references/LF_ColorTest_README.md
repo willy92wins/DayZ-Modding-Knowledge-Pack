@@ -1,5 +1,11 @@
 # LF_ColorTest — Mini test de colores DayZ
 
+> **⚠️ Esto es un arnés de DIAGNÓSTICO, no un patrón a copiar.** Llama a
+> `Widget.SetLV(0)` a propósito, para medir. Un mod **no** debe hacerlo: esas APIs
+> son `proto static` y globales, y vanilla las usa para aplicar el brillo elegido por
+> el jugador (`dayzgame.c:3778-3782`). Si corres este test, deja el valor como estaba
+> al cerrarlo. Ver SKILL.md §COLOR SYSTEM.
+
 ## Qué hace
 - F7 abre un panel con 10 rectángulos de colores ARGB conocidos
 - Muestra el valor hex de cada color al lado

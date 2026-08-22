@@ -47,8 +47,11 @@ ultrawide, or console.
 
 ### 1.2 Colors are re-lit by the engine (global LV), and a script `SetColor` can override the layout
 Two things move color away from what you authored:
-- Global LV darkening. Fix once at init: `Widget.SetLV(0)` + `Widget.SetTextLV(0)`
-  (`enwidgets.c:114-117`; verified in-engine LFPG KB E7 2026-03-24). Do NOT also pre-boost values.
+- Global LV darkening — which is the PLAYER's HUD brightness, not an engine constant. There is
+  no fix to apply: `SetLV`/`SetTextLV` are `proto static` (`enwidgets.c:114-117`) and vanilla
+  drives them from `EDayZProfilesOptions.HUD_BRIGHTNESS` (`dayzgame.c:3778-3787`), so calling
+  them from a mod overwrites the player's choice. Author honest ARGB, verify at a dimmed HUD,
+  and do NOT pre-boost values either.
 - Most mods set final colors in **script** via `SetColor(ARGB)` AFTER `CreateWidgets`, not in the
   `.layout`. So a static preview of the `.layout` alone cannot know the real colors — the plan
   must record intended colors separately, and the renderer's colors are best-effort only.

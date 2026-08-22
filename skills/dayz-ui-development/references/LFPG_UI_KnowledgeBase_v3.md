@@ -110,7 +110,7 @@ Todos los V1-V34 se mantienen excepto:
 | A3 | GetScreenSize retorna 0 en constructor | **FALSO** — Dabs TooltipView lo usa post-constructor | TooltipView.c:51 |
 | A4 | Widget.Unlink() destruye widget | **CONFIRMADO** — enwidgets.c comment + ScriptView destructor | enwidgets.c:173 |
 | A5 | GetGame().IsServer() true en cliente durante carga | No UI-relevant | — |
-| A6 | DayZ colores 30-50% más oscuros | **RESUELTO** — `Widget.SetLV(0)` normaliza colores. Engine aplica LV negativo por defecto. Saturados apenas afectados, grises/pasteles muy oscurecidos. Una línea lo arregla. | enwidgets.c:116 + test E7 in-engine 2026-03-24 |
+| A6 | DayZ colores 30-50% más oscuros | **RETRACTADO 2026-08-22** — no es el motor por defecto, es el `HUD_BRIGHTNESS` del jugador, que vanilla aplica con esas mismas dos llamadas. `Widget.SetLV(0)` desde un mod le pisa el ajuste. Saturados apenas afectados, grises/pasteles muy oscurecidos: eso sigue siendo cierto. Ver §6. | `enwidgets.c:114-117` + `dayzgame.c:3778-3787` |
 | A7 | UIScaler ComputeScale | **PENDIENTE E12** — test visual multi-resolución | — |
 | A8 | SoundSets inválidos | **CONFIRMADO** — comentados como TODO | Producción |
 | A9 | UpdateInventoryMenu | No UI-relevant | — |
@@ -139,12 +139,21 @@ Cientos de mods lo usan. Abre la puerta al Widget Factory con map<string, ImageW
 Solo toca bindings del nombre específico. No escanea ni sobreescribe otros campos.
 El bug del sorter era FindAnyWidget devolviendo refs incorrectas dentro de ButtonWidget.
 
-### 6. Widget.SetLV(0) RESUELVE el oscurecimiento de colores (VERIFICADO)
-Testeado in-engine 2026-03-24. DayZ aplica LV negativo por defecto a widgets.
-`Widget.SetLV(0)` + `Widget.SetTextLV(0)` una vez en init normaliza todos los colores.
-Colores saturados puros (rojo, verde, azul) apenas afectados. Grises y pasteles
-(blanco, gris 50%, emerald, red400, blue400) significativamente más oscuros sin SetLV.
-**Una línea arregla el problema para siempre.**
+### 6. Widget.SetLV(0) — RETRACTADO 2026-08-22: NO lo llames desde un mod
+> **Retractación.** La medida de abajo es correcta; la receta que se dedujo de ella, no.
+> `SetLV`/`SetTextLV` son `proto static` y globales (`enwidgets.c:114-117`), y vanilla las usa
+> para aplicar el brillo que ha elegido el jugador: `SetHudBrightness()` es literalmente esas
+> dos llamadas (`dayzgame.c:3778-3782`), alimentada desde
+> `EDayZProfilesOptions.HUD_BRIGHTNESS` (`:3784-3787`) en `OnInitialize()` (`:2075`).
+> Llamarlas en el init de un mod **pisa la preferencia del usuario** en todo el HUD, también
+> el de vanilla. Y lo que midió el test no era una constante del motor: era el
+> `HUD_BRIGHTNESS` de esa máquina. El HUD de LFHeli retiró ambas llamadas y los gates de UI
+> dieron el mismo resultado.
+
+Testeado in-engine 2026-03-24. Con el brillo de HUD de aquella máquina, los colores
+saturados puros (rojo, verde, azul) apenas se veían afectados, y los grises y pasteles
+(blanco, gris 50%, emerald, red400, blue400) salían significativamente más oscuros.
+Eso sigue siendo cierto — y es el ajuste del jugador haciendo su trabajo.
 
 ### 7. ScrollWidget.VScrollToWidget(child) existe
 Auto-scroll a un hijo específico. Perfecto para SMS del Phone (scroll to latest).

@@ -530,11 +530,25 @@ surface worth knowing is the server-aware NotificationSystem.
 
 ## COLOR SYSTEM
 
-- **DayZ renders UI colors darker by default** — engine applies negative LV to widgets.
-- **FIX: call `Widget.SetLV(0)` and `Widget.SetTextLV(0)` once at mod init.**
-  This normalizes all widget colors to match expected ARGB values exactly.
-  Verified in-engine 2026-03-24: saturated colors barely affected, grays and
-  pastels significantly darker without SetLV(0). One line fixes everything.
+- **⚠️ NEVER call `Widget.SetLV()` or `Widget.SetTextLV()` from a mod.** They are
+  `proto static` — global, not per-widget (`enwidgets.c:114-117`, whose own comment
+  says "Set **global** LV of widgets"). Vanilla uses those exact two calls to apply
+  the player's brightness preference: `SetHudBrightness()` is
+  `Widget.SetLV(value); Widget.SetTextLV(value);` (`dayzgame.c:3778-3782`), fed from
+  `EDayZProfilesOptions.HUD_BRIGHTNESS` (`:3784-3787`) at `OnInitialize()` (`:2075`).
+  So `SetLV(0)` at mod init does not "normalize colors" — it **overwrites the
+  player's HUD brightness setting**, globally, for vanilla UI too.
+- If your colors look darker than their hex values, that is the player's brightness
+  setting doing its job. Design against it: pick colors that survive it, and check
+  them at a non-zero HUD brightness. Do not flatten it.
+- The 2026-03-24 measurement behind the old advice (saturated colors barely
+  affected, grays and pastels significantly darker) was real, but it measured **that
+  machine's HUD_BRIGHTNESS**, not an engine constant. `SetLV`'s documented default
+  is 0; a box that renders dark has a negative value in its profile.
+- This corrects advice this skill shipped until 2026-08-22, which said "one line
+  fixes everything" and prescribed the call at init. It was wrong in six places.
+  Origin: LFHeli adversarial round 1; the HUD removed both calls and the UI gates
+  held.
 - Low alpha is clamped invisible by the engine. Honest bracket from the only real data points
   (corrected 2026-07-04 — the old "below 0x30 invisible" contradicted its own "0x26 works" example):
   0x12 (18) rendered invisible, 0x26 (38) rendered visible → threshold lies in (0x12, 0x26].
@@ -862,7 +876,7 @@ Useful for feature flags across mod boundaries.
 | Text overlaps widget below | Absolute positioning + dynamic visibility | Use RecalculateLayout() pattern (see advanced-patterns.md) |
 | Button click doesn't fire | Missing `SetHandler(this)` in vanilla handler | Add SetHandler in constructor; not needed with Dabs ViewController |
 | OnMouseLeave never fires | Wrong parameter count (3 instead of 4) | Signature: `OnMouseLeave(Widget w, Widget enterW, int x, int y)` — 4 params |
-| Colors appear darker than expected | DayZ default LV darkening | Call `Widget.SetLV(0)` and `Widget.SetTextLV(0)` once at mod init |
+| Colors appear darker than expected | The player's HUD_BRIGHTNESS, applied globally by vanilla | Design against it. **Do NOT call `Widget.SetLV(0)`** — it is `proto static` and overwrites the player's setting (`dayzgame.c:3778-3782`). See COLOR SYSTEM |
 | Alpha below ~48 is invisible | Engine low-alpha clamp | Keep alpha ≥ 0x30 (48). Measured bracket: 0x12 invisible, 0x26 visible |
 | Relay_Command runs more than once | Handler returned false/void → re-invoked up the parent chain | Command handlers must `return true` when handled (Rule 16) |
 | EditBox text not updating | Binding not notified | Call `NotifyPropertyChanged("FieldName")` after changing value |

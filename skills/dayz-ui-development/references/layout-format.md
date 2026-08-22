@@ -665,12 +665,14 @@ ImageWidgetClass ClickBlocker {
 
 1. **FrameWidgetClass/PanelWidgetClass are INVISIBLE** — use ImageWidgetClass for backgrounds
 2. **Color 0.0-1.0 in layout, 0-255 in script** — mixing causes invisible or wrong-colored widgets
-3. **DayZ darkens widget colors via global LV — the FIX is `SetLV(0)`, NOT boosting values.**
-   *(Corrected 2026-07-03. The old "boost colors 30%+" advice is stale and, applied AFTER
-   `SetLV(0)`, makes UI ~30% too bright.)* Call `Widget.SetLV(0)` + `Widget.SetTextLV(0)` once at
-   mod init; that normalizes widget colors to match the ARGB you authored (saturated colors were
-   barely affected either way; grays/pastels were the ones darkened). Do not also pre-boost the
-   values. See SKILL.md COLOR SYSTEM + LFPG KB E7 (verified in-engine 2026-03-24).
+3. **Widget colors are darkened by the PLAYER's HUD brightness — do not fight it, and never
+   call `SetLV`.** *(Corrected twice. 2026-07-03 retired "boost colors 30%+". 2026-08-22 retired
+   its replacement, `SetLV(0)` at init: those setters are `proto static`/global
+   (`enwidgets.c:114-117`) and vanilla drives them from `EDayZProfilesOptions.HUD_BRIGHTNESS`
+   (`dayzgame.c:3778-3787`), so calling them from a mod overwrites the player's setting.)*
+   Author ARGB honestly, pick colors that survive a dimmed HUD, and verify at a non-zero
+   brightness. Saturated colors were barely affected; grays and pastels were the ones darkened.
+   See SKILL.md COLOR SYSTEM.
 4. **Low alpha clamps to invisible** — measured bracket: 0x12 invisible, 0x26 visible → threshold in
    (0x12, 0x26]. Keep alpha ≥ 0x30 (48) for must-see elements (corrected 2026-07-04; the old
    two-threshold claim here contradicted SKILL.md's own data points)

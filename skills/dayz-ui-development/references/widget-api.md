@@ -80,8 +80,9 @@ proto native bool IsControlClass();
 proto native string GetStyleName();
 proto native void Update();                // force update
 
-// Global luminance control (static) — VERIFIED IN-ENGINE 2026-03-24
-// SetLV(0) normalizes colors. Without it, DayZ darkens grays/pastels significantly.
+// Global luminance control — STATIC. These are the PLAYER's setting, not yours:
+// vanilla SetHudBrightness() is exactly these two calls (dayzgame.c:3778-3782),
+// fed from EDayZProfilesOptions.HUD_BRIGHTNESS. A mod must NOT call them.
 proto static void SetLV(float lv);         // widgets brightness [-15, 0], default 0
 proto static void SetTextLV(float lv);     // text brightness [-15, 0]
 proto static void SetObjectLighting(float lighting); // object brightness [0, 1]
