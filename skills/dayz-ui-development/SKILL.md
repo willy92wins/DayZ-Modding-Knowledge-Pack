@@ -898,6 +898,16 @@ TextWidget with `wrap 1` and a string longer than its box, read back with
 `GetTextSize()`. Until then, `MultilineTextWidget` remains the reliable choice
 for wrapping text, which is what the row's advice is really about.
 
+Engine-side constraint on that probe: the `WidgetFlags` enum contains no text-wrap
+flag (`enwidgets.c:57-85`, 26 entries). `NOWRAP` (`:63`) is a texture flag
+(`//< Do not do texture wrapping`), and the file's only other `wrap` symbol,
+`class WrapSpacerWidget` (`:477`), is a flow-layout container type — not a flag and
+not applicable to a `TextWidget`. There is therefore no script-side way to turn wrap
+on: `CreateWidget(TextWidgetTypeID, ...)` + `SetFlags(...)` cannot express it, and the
+probe must load a `.layout` file declaring `wrap 1` on the widget under test. This is
+consistent with (and does not prove) inertness of `wrap` on `TextWidget`; the
+[UNVERIFIED] verdict above is unchanged.
+
 ## MOCKUP FIDELITY — calibrate to text_proportion; don't edit .layout off a mockup (added 2026-06-03)
 
 When building an HTML/preview mockup of a DayZ `.layout`, the mockup's CSS `font-size` (px) does

@@ -119,6 +119,14 @@ NOCLEAR        // no clear
 DRAGGABLE      // can be dragged
 ```
 
+Note: `NOWRAP` (`enwidgets.c:63`) is a **texture** flag (`//< Do not do texture
+wrapping`), not a text-layout flag. The enum declares no text-wrap capability at
+all (26 entries, `enwidgets.c:57-85`); the only other `wrap` symbols in the file
+are `WrapSpacerWidgetTypeID` (`:48`) and `class WrapSpacerWidget` (`:477`) — a
+widget *type* (flow layout for children), unrelated to `TextWidget`. Consequence:
+text wrap cannot be enabled from script through any `WidgetFlags` value — a
+`.layout` file is the only channel that can set it.
+
 ---
 
 ## TextWidget (extends Widget)
