@@ -218,17 +218,21 @@ Get-ChildItem "<árbol intocable>" -Recurse -File |
    | Herramienta | Ruta verificada |
    |---|---|
    | Python 3.14.3 | `C:\Python314\python.exe` |
-   | py3d (import) | 1.2.0 en `%APPDATA%\Python\Python314\site-packages\py3d` |
-   | py3d fork (source of truth) | `P:\py3d` / GitHub `willy92wins/py3d-dayz` (1.4.x) |
+   | py3d (import) | **1.4.0, y ES el fork** (`IS_DAYZ_FORK True`) en `%APPDATA%\Python\Python314\site-packages\py3d` |
+   | py3d fork (source of truth) | `P:\py3d` / GitHub `willy92wins/py3d-dayz` |
    | AddonBuilder | `C:\Program Files (x86)\Steam\steamapps\common\DayZ Tools\Bin\AddonBuilder\AddonBuilder.exe` |
    | Mikero ExtractPbo | `C:\Program Files (x86)\Mikero\DePboTools\bin\ExtractPbo.exe` |
    | Blender | `C:\Program Files\Blender Foundation\Blender 5.1\blender.exe` (también 4.3) |
    | DayZDiag | `C:\Program Files (x86)\Steam\steamapps\common\DayZ\DayZDiag_x64.exe` — solo informativo, ver frontera |
 
-   Con py3d, di en el prompt CUÁL de las dos copias usar (divergen: la
-   instalada es 1.2.0, el fork va por 1.4.x), y recuerda que sus gates
-   `validate`/`verify`/`diff` son ciegos a la geometría — no valen como prueba
-   de winding.
+   **Ya NO divergen** (corregido 2026-08-22): la copia instalada es el fork,
+   medido en el propio host — `import py3d` → `1.4.0`, `IS_DAYZ_FORK True`, en
+   esa misma ruta de `%APPDATA%`. La skill mandaba hasta hoy gestionar en cada
+   handoff una divergencia inexistente y pegaba un `1.2.0` refutado. Antes de
+   volver a afirmar una versión, mídela:
+   `python -c "import py3d;print(py3d.__version__, py3d.IS_DAYZ_FORK)"`.
+   Lo que NO cambia: sus gates `validate`/`verify`/`diff` son ciegos a la
+   geometría y no valen como prueba de winding.
 
 4. **Frontera de procesos: Grok NUNCA lanza ni mata procesos DayZ** (ni
    DayZDiag ni DayZServer). El ciclo in-game pertenece al orquestador vía el

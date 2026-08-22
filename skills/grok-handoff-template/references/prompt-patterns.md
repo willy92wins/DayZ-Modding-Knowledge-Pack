@@ -406,7 +406,18 @@ Reglas de uso:
 - Effort **low** si el contrato es de un disparo; en multi-turno con tools el
   default va bien (verificado a low; high sin medir).
 - El schema no exime del receptor: cada `path_line` se abre igual (`G2`), y la
-  prosa del razonamiento se pierde — si quieres el porqué extenso, pide el
-  hallazgo en prosa en `.text` Y el resumen en el schema, o quédate en prosa.
+  prosa del razonamiento se pierde. **Si quieres el porqué extenso, quédate en
+  prosa y no pongas schema.**
+  > ⚠️ **Retractado 2026-08-22.** Esta línea decía «pide el hallazgo en prosa en
+  > `.text` Y el resumen en el schema». Con `--json-schema` activo eso son **dos
+  > canales en un brief**, y el ledger (SP-274) lo registra midiendo la
+  > decapitación que produce: bucle de objetos vacíos, 10 seguidos, 27 turnos y
+  > `end_turn` — es decir **verde falso**, el gate no lo caza. Coste de la
+  > corrida: 3,04 M de tokens tirados. **Un brief con schema pide UNA cosa.**
+  > Síntoma para el receptor: `num_turns` alto con `.structuredOutput` vacío =
+  > canal mal pedido, no modelo perezoso. (No he re-ejecutado esa corrida; lo
+  > verificado aquí es que el documento seguía recomendando el patrón. Es
+  > ortogonal a la otra decapitación ya documentada, la de effort `high`/`xhigh`
+  > en one-shot, `SKILL.md` §Modelo y esfuerzo.)
 - Cada finding arbitrado → fila del scorecard en el mismo paso
   (`SKILL.md` §Preflight 3).

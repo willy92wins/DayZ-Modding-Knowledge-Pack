@@ -230,6 +230,11 @@ Qué hace cada pieza y por qué:
 - **`--no-memory`**: la memoria cross-session está apagada por defecto y
   verificada apagada en este host, pero si alguien la enciende las lanes
   ciegas dejan de serlo sin aviso. Cuesta cero y es a prueba de futuro.
+  ⚠️ **Está OCULTO en `--help`, y funciona igual.** Medido 2026-08-22: de los
+  cinco flags de la invocación canónica, `--no-memory` es el único que no sale
+  en los 7.122 caracteres de `--help` (control negativo: un flag inventado
+  tampoco sale, así que la comprobación discrimina). No lo quites porque un grep
+  a la ayuda no lo encuentre — la ausencia ahí no es ausencia del flag.
 - **`-m grok-4.6`**: pin explícito (§Modelo y esfuerzo). El default del host
   ya es 4.6, pero un default puede cambiar bajo tus pies — el pin hace las
   corridas comparables.
