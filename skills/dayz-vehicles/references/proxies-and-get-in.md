@@ -272,6 +272,27 @@ originals + copied, bone companions cardinality unchanged, facenormals <=
 32768, resolved-verts printed vs the ~16k design budget. Binarize preserved
 the merge exactly (22,849 faces / 11 proxies in the ODOL).
 
-Applies to every car built by this pipeline (MercedesAMGLF has the same
-proxy-only 1100 — same latent defect). Day-1 check for car #2: census the
-shell 1100 vs civiliansedan BEFORE first in-game (b3_viewpilot_census.py).
+Applies to every car built by this pipeline — but **the defect has TWO shapes and
+they need different fixes**, so census before assuming which one you have.
+
+> **Corrected 2026-08-22.** This paragraph used to say «MercedesAMGLF has the same
+> proxy-only 1100 — same latent defect». It does not. Measured by opening the shell
+> with py3d 1.4.0: `mercedes_amglf.p3d` carries **10 LODs and none of them is 1100** —
+> resolutions 0, 1, 2, 3, 4, 10000, then the canonical 1e13 Geometry, 1e15 Memory,
+> 6e15 ViewGeometry and 7e15 FireGeometry. There is no ViewPilot LOD to be
+> proxy-only. Sending the next car to the merge fix on that sentence means merging
+> into a LOD that does not exist.
+
+Day-1 check for car #2: census the shell 1100 vs civiliansedan BEFORE first in-game
+(`b3_viewpilot_census.py`), and let the census have **three** outcomes, not two:
+
+| census | qué es | fix |
+|---|---|---|
+| poblado | 1100 con geometría propia | nada |
+| **proxy-only** | 1100 existe pero solo lleva proxies | el merge de arriba |
+| **AUSENTE** | no hay 1100 (MercedesAMGLF, medido) | **crear** el 1100; el merge no aplica |
+
+El procedimiento de creación —de qué LOD visual copiar, contra qué budget de
+facenormals, dónde insertarlo y en qué orden respecto al texturizado— está descrito
+en el ledger (SP-191) pero **no se ha validado aquí**, así que no se transcribe: si
+te toca el caso AUSENTE, léelo allí y mídelo antes de fiarte.
