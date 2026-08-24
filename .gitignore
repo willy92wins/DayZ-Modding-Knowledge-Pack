@@ -1,0 +1,14 @@
+.worktrees/
+__pycache__/
+.pytest_cache/
+sources/local-roots.json
+promotions/local-targets.json
+promotions/plans/
+promotions/journals/
+promotions/backups/
+dist/
+reports/
+build/
+*.egg-info/
+examples/end-to-end/work/
+skills/*/scripts/agent_calls.jsonl

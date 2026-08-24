@@ -1,0 +1,456 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from conftest import (
+    ZERO_COMMIT,
+    artifact,
+    make_source_map,
+    run_git,
+    source,
+    write_json,
+)
+
+from packctl.validation import (
+    validate_claims,
+    validate_licenses,
+    validate_links,
+    validate_moved_exact,
+    validate_privacy,
+    validate_skills,
+    validate_source_map,
+)
+
+
+def codes(findings: list[dict[str, object]]) -> list[str]:
+    return [str(finding["code"]) for finding in findings]
+
+
+def test_repository_checkout_contract_is_canonical_lf() -> None:
+    root = Path(__file__).resolve().parents[2]
+    assert (root / ".gitattributes").read_bytes() == (
+        b"* text eol=lf\n"
+        b"*.p3d binary\n"
+        b"*.rtm binary\n"
+        b"*.seanim binary\n"
+    )
+    source_map = json.loads(
+        (root / "sources/source-map.json").read_text(encoding="utf-8")
+    )
+    binary_suffixes = {".p3d", ".rtm", ".seanim"}
+    crlf_paths = [
+        str(item["output_path"])
+        for item in source_map["artifacts"]
+        if Path(str(item["output_path"])).suffix not in binary_suffixes
+        if b"\r\n" in (root / str(item["output_path"])).read_bytes()
+    ]
+
+    assert crlf_paths == []
+
+
+def test_source_clean_maps_every_tracked_file_once(repo_factory) -> None:
+    root = repo_factory()
+
+    assert validate_source_map(root) == []
+
+
+def test_source_unmapped_has_stable_code(repo_factory) -> None:
+    root = repo_factory()
+    extra = root / "tracked-extra.txt"
+    extra.write_text("unmapped\n", encoding="utf-8")
+
+    run_git(root, "add", "tracked-extra.txt")
+
+    assert codes(validate_source_map(root)) == ["SOURCE-UNMAPPED"]
+
+
+def test_source_receipt_on_disk_must_be_mapped(repo_factory) -> None:
+    root = repo_factory()
+    receipt_path = "promotions/receipts/untracked.json"
+    receipt = root / receipt_path
+    receipt.parent.mkdir(parents=True)
+    receipt.write_text("{}\n", encoding="utf-8")
+
+    assert validate_source_map(root) == [
+        {
+            "code": "SOURCE-RECEIPT-UNTRACKED",
+            "severity": "error",
+            "path": receipt_path,
+            "line": 0,
+            "message": "A promotion receipt has no source-map artifact.",
+            "evidence": receipt_path,
+        }
+    ]
+
+
+def test_source_conflict_with_two_adopted_hashes_is_undecided(
+    repo_factory,
+) -> None:
+    root = repo_factory()
+    source_map_path = root / "sources/source-map.json"
+    value = json.loads(source_map_path.read_text(encoding="utf-8"))
+    target = next(
+        item for item in value["artifacts"] if item["output_path"] == "README.md"
+    )
+    target["inputs"].append(
+        {
+            **target["inputs"][0],
+            "source_id": "other",
+            "source_hash": "f" * 64,
+            "decision_evidence": "Second source also marked authoritative.",
+        }
+    )
+    value["sources"].append(source("other"))
+    write_json(source_map_path, value)
+
+    assert "SOURCE-CONFLICT-UNDECIDED" in codes(validate_source_map(root))
+
+
+def test_excluded_input_cannot_overlap_an_artifact_input(repo_factory) -> None:
+    root = repo_factory()
+    source_map_path = root / "sources/source-map.json"
+    value = json.loads(source_map_path.read_text(encoding="utf-8"))
+    source_input = value["artifacts"][0]["inputs"][0]
+    value["excluded_inputs"].append(
+        {
+            "source_id": source_input["source_id"],
+            "source_revision": source_input["source_revision"],
+            "source_path": source_input["source_path"],
+            "source_hash": source_input["source_hash"],
+            "reason": "superseded",
+            "decision_evidence": "Deliberate overlap fixture.",
+        }
+    )
+    write_json(source_map_path, value)
+
+    assert "SOURCE-INPUT-DUPLICATE" in codes(validate_source_map(root))
+
+
+def test_source_map_rejects_private_physical_root(repo_factory) -> None:
+    root = repo_factory()
+    source_map_path = root / "sources/source-map.json"
+    value = json.loads(source_map_path.read_text(encoding="utf-8"))
+    value["sources"][0]["physical_path"] = "C:\\Users\\person\\private"
+    write_json(source_map_path, value)
+
+    assert "SOURCE-SCHEMA-INVALID" in codes(validate_source_map(root))
+
+
+def test_skill_clean_description_and_allowed_frontmatter(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "skills/demo/SKILL.md": (
+                "---\n"
+                "name: demo\n"
+                "description: Use for a clean fixture.\n"
+                "license: MIT\n"
+                "compatibility: DayZ 1.29\n"
+                "metadata:\n"
+                "  owner: fixture\n"
+                "allowed-tools: shell\n"
+                "---\n"
+                "# Demo\n"
+            )
+        }
+    )
+
+    assert validate_skills(root) == []
+
+
+def test_skill_description_1025_fails(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "skills/demo/SKILL.md": (
+                "---\nname: demo\ndescription: " + ("x" * 1025) + "\n---\n# Demo\n"
+            )
+        }
+    )
+
+    assert codes(validate_skills(root)) == ["SKILL-DESCRIPTION-TOO-LONG"]
+
+
+def test_skill_extra_frontmatter_fails(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "skills/demo/SKILL.md": (
+                "---\n"
+                "name: demo\n"
+                "description: Clean description.\n"
+                "invented-field: false\n"
+                "---\n"
+            )
+        }
+    )
+
+    assert codes(validate_skills(root)) == ["SKILL-FRONTMATTER-UNSUPPORTED"]
+
+
+def test_links_broken_but_fenced_example_is_ignored(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "docs/links.md": (
+                "[good](../README.md)\n\n"
+                "```markdown\n[fixture](does-not-exist.md)\n```\n"
+            )
+        }
+    )
+
+    assert validate_links(root) == []
+
+
+def test_links_broken_outside_fence_fails(repo_factory) -> None:
+    root = repo_factory({"docs/links.md": "[broken](does-not-exist.md)\n"})
+
+    assert codes(validate_links(root)) == ["LINK-BROKEN"]
+
+
+def test_exact_context_link_allowlist_suppresses_only_declared_target(
+    repo_factory,
+) -> None:
+    root = repo_factory(
+        {
+            "docs/links.md": (
+                "[private context](../private/session.md)\n"
+                "[still broken](other.md)\n"
+            ),
+            "sources/link-allowlist.json": (
+                '{\n'
+                '  "schema_version": 1,\n'
+                '  "entries": [\n'
+                '    {\n'
+                '      "path": "docs/links.md",\n'
+                '      "target": "../private/session.md",\n'
+                '      "reason": "Private context is intentionally not distributed."\n'
+                '    }\n'
+                '  ]\n'
+                '}\n'
+            ),
+        }
+    )
+
+    findings = validate_links(root)
+
+    assert codes(findings) == ["LINK-BROKEN"]
+    assert findings[0]["evidence"] == "other.md"
+
+
+def test_private_absolute_path_is_rejected(repo_factory) -> None:
+    root = repo_factory({"notes.md": "Open C:\\Users\\alice\\private\\file.txt\n"})
+
+    assert codes(validate_privacy(root)) == ["PRIVACY-PRIVATE-PATH"]
+
+
+def test_privacy_rejects_flattened_private_user_path_after_placeholder(
+    repo_factory,
+) -> None:
+    root = repo_factory(
+        {
+            "notes.md": (
+                "SCR=r'C:\\Users\\<you>\\AppData\\Local\\Temp\\claude\\"
+                "C--Users-alice-OneDrive-Documents-DayZ-Projects\\"
+                "<session-id>\\scratchpad'\n"
+            )
+        }
+    )
+
+    assert codes(validate_privacy(root)) == ["PRIVACY-PRIVATE-PATH"]
+
+
+def test_privacy_allows_public_user_placeholder(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "notes.md": (
+                "SCR=r'C:\\Users\\<you>\\AppData\\Local\\Temp\\claude\\"
+                "C--Users-<you>-Documents-DayZ-Projects\\"
+                "<session-id>\\scratchpad'\n"
+            )
+        }
+    )
+
+    assert validate_privacy(root) == []
+
+
+def test_private_path_in_repo_only_public_contract_is_rejected(
+    repo_factory,
+) -> None:
+    root = repo_factory(payload={"LICENSE", "README.md"})
+    source_map_path = root / "sources/source-map.json"
+    value = json.loads(source_map_path.read_text(encoding="utf-8"))
+    value["sources"][0]["notes"] = "C:\\Users\\alice\\private"
+    write_json(source_map_path, value)
+
+    assert codes(validate_privacy(root)) == ["PRIVACY-PRIVATE-PATH"]
+
+
+def test_secret_finding_redacts_the_value(repo_factory) -> None:
+    token = "ghp_" + ("a" * 36)
+    root = repo_factory({"notes.md": f"token={token}\n"})
+
+    findings = validate_privacy(root)
+
+    assert codes(findings) == ["PRIVACY-SECRET"]
+    assert token not in json.dumps(findings)
+    assert "[REDACTED]" in json.dumps(findings)
+
+
+@pytest.mark.parametrize(
+    "secret_line",
+    [
+        "-----BEGIN PRIVATE KEY-----",
+        'password = "this-is-a-real-literal-secret"',
+        "api_key: '0123456789abcdef0123456789abcdef'",
+    ],
+)
+def test_privacy_rejects_private_keys_and_literal_credentials(
+    repo_factory,
+    secret_line: str,
+) -> None:
+    root = repo_factory(
+        {"notes.md": secret_line + "\n"},
+        payload={"LICENSE", "README.md", "notes.md"},
+    )
+
+    findings = validate_privacy(root)
+
+    assert [item["code"] for item in findings] == ["PRIVACY-SECRET"]
+    assert findings[0]["evidence"] == "[REDACTED]"
+    assert secret_line not in json.dumps(findings)
+
+
+def test_license_missing_fails(repo_factory) -> None:
+    root = repo_factory()
+    (root / "LICENSE").unlink()
+
+    assert "LICENSE-MISSING" in codes(validate_licenses(root))
+
+
+def test_forbidden_payload_license_fails(repo_factory) -> None:
+    root = repo_factory()
+    source_map_path = root / "sources/source-map.json"
+    value = json.loads(source_map_path.read_text(encoding="utf-8"))
+    target = next(
+        item for item in value["artifacts"] if item["output_path"] == "README.md"
+    )
+    target["license"] = "GPL-3.0-only"
+    write_json(source_map_path, value)
+
+    assert "LICENSE-FORBIDDEN-PAYLOAD" in codes(validate_licenses(root))
+
+
+def test_claim_registry_requires_marker_and_exact_range(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "skills/demo/SKILL.md": (
+                "---\nname: demo\ndescription: Demo.\n---\n"
+                "[EXACT][CLAIM-DEMO-API] Call `Demo()`.\n"
+            )
+        }
+    )
+    claims = {
+        "schema_version": 1,
+        "claim_baseline_commit": ZERO_COMMIT,
+        "claims": [
+            {
+                "claim_id": "CLAIM-DEMO-API",
+                "artifact_id": "skills-demo-SKILL-md",
+                "line_start": 5,
+                "line_end": 5,
+                "source_id": "pack",
+                "source_revision": ZERO_COMMIT,
+                "evidence_locator": "fixture.c:1",
+                "license": "MIT",
+                "observed_at": "2026-07-24",
+                "verification_level": "source_verified",
+                "promotion_artifact_id": "fixture",
+            }
+        ],
+    }
+    write_json(root / "sources/claims.json", claims)
+
+    assert validate_claims(root) == []
+
+
+def test_claim_registry_ignores_repo_only_contract_examples(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "specs/example.md": (
+                "Example syntax: [EXACT][CLAIM-EXAMPLE-ONLY]\n"
+            )
+        },
+        payload={"LICENSE", "README.md"},
+    )
+
+    assert validate_claims(root) == []
+
+
+def test_unregistered_exact_claim_fails(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "skills/demo/SKILL.md": (
+                "---\nname: demo\ndescription: Demo.\n---\n"
+                "[EXACT][CLAIM-MISSING] Call `Missing()`.\n"
+            )
+        }
+    )
+
+    assert codes(validate_claims(root)) == ["CLAIM-UNREGISTERED"]
+
+
+SEAL_BODY = "1. **A moved passage.** Verbatim, byte for byte.\n"
+
+
+def _sha_of(body: str) -> str:
+    import hashlib
+
+    return hashlib.sha256(body.encode("utf-8")).hexdigest().upper()
+
+
+def _seal(tmp_path: Path, sha: str, body: str, close: bool = True) -> Path:
+    skill = tmp_path / "skills" / "demo"
+    skill.mkdir(parents=True)
+    text = (
+        "# Demo\n\n"
+        f'<!-- MOVED-EXACT source="other/SKILL.md:12" sha256="{sha}" -->\n'
+        f"{body}"
+    )
+    if close:
+        text += "<!-- END MOVED-EXACT -->\n"
+    target = skill / "notes.md"
+    target.write_bytes(text.encode("utf-8"))
+    return target
+
+
+def test_moved_exact_seal_that_matches_its_body_is_silent(tmp_path: Path) -> None:
+    _seal(tmp_path, _sha_of(SEAL_BODY), SEAL_BODY)
+    assert codes(validate_moved_exact(tmp_path)) == []
+
+
+def test_moved_exact_seal_reports_a_body_edited_after_sealing(tmp_path: Path) -> None:
+    # The measured failure: a rename sweep edited the body and the pin stayed put.
+    edited = SEAL_BODY.replace("moved", "renamed")
+    _seal(tmp_path, _sha_of(SEAL_BODY), edited)
+    findings = validate_moved_exact(tmp_path)
+    assert codes(findings) == ["SKILL-MOVED-EXACT-DRIFT"]
+    evidence = str(findings[0]["evidence"])
+    assert _sha_of(SEAL_BODY)[:12] in evidence
+    assert _sha_of(edited)[:12] in evidence
+    assert findings[0]["path"] == "skills/demo/notes.md"
+
+
+def test_moved_exact_missing_close_marker_is_reported_not_skipped(tmp_path: Path) -> None:
+    # Without this, deleting the closing marker would exempt a block instead of failing it.
+    _seal(tmp_path, _sha_of(SEAL_BODY), SEAL_BODY, close=False)
+    assert codes(validate_moved_exact(tmp_path)) == ["SKILL-MOVED-EXACT-UNCLOSED"]
+
+
+def test_moved_exact_pin_comparison_ignores_hex_case(tmp_path: Path) -> None:
+    _seal(tmp_path, _sha_of(SEAL_BODY).lower(), SEAL_BODY)
+    assert codes(validate_moved_exact(tmp_path)) == []
+
+
+def test_every_moved_exact_seal_in_this_repo_matches_its_body() -> None:
+    root = Path(__file__).resolve().parents[2]
+    assert codes(validate_moved_exact(root)) == []

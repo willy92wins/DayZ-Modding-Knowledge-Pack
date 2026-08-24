@@ -1,0 +1,4 @@
+interface:
+  display_name: "DayZ Realistic Animation Director"
+  short_description: "Author and validate realistic DayZ animation end to end"
+  default_prompt: "Use $dayz-realistic-animation-director to create or improve this DayZ animation through realistic motion gates, export, integration, and honest in-game verification."

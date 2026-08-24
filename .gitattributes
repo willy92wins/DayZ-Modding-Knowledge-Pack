@@ -1,0 +1,4 @@
+* text eol=lf
+*.p3d binary
+*.rtm binary
+*.seanim binary

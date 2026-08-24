@@ -1,0 +1,59 @@
+# APPEND propuesto a `blender-visual-review/SKILL.md` — caveat winding flip
+
+> Generado por introspección 2026-06-24 (CB-2). APPEND-only. El path real de la skill (`<skills>/...`) es read-only desde el sandbox — el usuario pega esta sección en la skill viva o la procesa con `skill-creator`.
+
+## Caveat — Winding flips no son detectables con render plano (added 2026-06-24)
+
+`blender-visual-review` renderiza con el shading estándar de Blender, que ilumina por las **normales declaradas** del vertex. El **winding** del triángulo (orden de vértices) no influye en el render salvo que se activen condiciones específicas. Esto significa que **un modelo con winding invertido pero normales correctas renderiza bien en Blender y mal en cualquier engine que culla por winding (DayZ, Arma 3, Arma Reforger, Unity con `Cull Off → Cull Back` por defecto)**.
+
+### Síntoma operativo
+
+- Render Blender de la skill = OK (siluetas, sombras, color).
+- Render in-game = caras frontales invisibles, caras traseras texturadas (textura "por dentro del objeto").
+
+### Caso reproducido — MercedesAMGLF Fase 2 (2026-06-24)
+
+Shell del coche pasó las 4 vistas de `blender-visual-review` con PASS. In-game: textura solo en caras traseras del cuerpo. Causa: el transform glTF→DayZ tiene `det=−1` (mirror); `reverse_winding=True` se eligió para compensar y dejar el normal apuntando hacia afuera, pero el winding quedó invertido. DayZ culla por winding → caras frontales invisibles. Detalle: `LL-162` en `20_Knowledge/lessons-learned.md`; handoff `30_Sessions/2026-06-24-MercedesAMGLF-fase2-smoke-winding-proxy.md`.
+
+### Detección offline (workflow propuesto)
+
+Cuando el modelo va a un engine que culla por winding, ANTES de aprobar con esta skill:
+
+1. **Forzar backface-cull en todos los materials**:
+   ```python
+   for mat in bpy.data.materials:
+       mat.use_backface_culling = True
+   ```
+2. **Derivar normales del winding** (sobreescribe las declaradas):
+   ```python
+   bpy.ops.object.mode_set(mode='EDIT')
+   bpy.ops.mesh.select_all(action='SELECT')
+   bpy.ops.mesh.normals_make_consistent(inside=False)
+   bpy.ops.object.mode_set(mode='OBJECT')
+   ```
+3. **Re-render las 4 vistas**. Si la silueta cambia respecto al PASS original (huecos donde antes había caras), **el winding estaba invertido**.
+
+Alternativa rápida: shader que coloree por `sign(dot(geometric_normal, viewdir))` — caras hacia atrás en rojo, hacia adelante en verde.
+
+### Cuándo aplicar este check
+
+- Importaciones desde glTF, FBX, OBJ con potencial flip de eje (transform `det=−1`).
+- Modelos que pasan por scripts con `reverse_winding=True/False` configurable.
+- Builds destinados a DayZ / Arma / Arma Reforger / engines BI.
+- No aplica a renders cinematic en Blender ni a modelos que no se van a culla.
+
+### Output adicional sugerido
+
+Reportar en el JSON de la skill un campo nuevo:
+
+```json
+{
+  "winding_check": {
+    "ran": true,
+    "delta_silhouette_pct": 0.0,
+    "verdict": "OK" | "FLIPPED_LIKELY"
+  }
+}
+```
+
+Si `delta_silhouette_pct > 5%` tras el re-render con normales-del-winding → `FLIPPED_LIKELY` → FAIL del check.

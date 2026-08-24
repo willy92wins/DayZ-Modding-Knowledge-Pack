@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "path_aliases": {
+    "<claude-appdata>": {
+      "kind": "path",
+      "value": "<absolute-claude-appdata-root>"
+    },
+    "<dayz-projects>": {
+      "kind": "path",
+      "value": "<absolute-dayz-projects-root>"
+    },
+    "<you>": {
+      "kind": "fragment",
+      "value": "<local-user-name>"
+    }
+  },
+  "allowed_physical_roots": [
+    "<absolute-user-owned-root>"
+  ],
+  "forbidden_physical_roots": [
+    "<absolute-plugin-or-cache-root>"
+  ],
+  "backup_root": "<absolute-local-backup-root>",
+  "targets": {
+    "claude_user_skills": {
+      "path": "<absolute-claude-skills-root>",
+      "ownership": "user_owned",
+      "writable": true
+    },
+    "agents_user_skills": {
+      "path": "<absolute-agents-skills-root>",
+      "ownership": "user_owned",
+      "writable": true
+    },
+    "obsidian_snapshots": {
+      "path": "<absolute-obsidian-snapshot-root>",
+      "ownership": "user_owned",
+      "writable": true
+    }
+  }
+}

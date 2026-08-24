@@ -1,0 +1,23 @@
+{
+  "_readme": [
+    "Client wiring for DayZ-MCP (https://github.com/willy92wins/dayz-mcp), the bridge described in",
+    "knowledge/dayz-mcp-bridge-protocol.md. Clone that repo and run tools/install-mcp.ps1",
+    "-Register; it creates tools/.venv-mcp and registers this exact shape. Copy to",
+    ".mcp.json in your own project and set 'command' to that venv's python.exe.",
+    "",
+    "Deliberately NOT named .mcp.json: agents auto-start servers declared there, and a",
+    "failed launch on every session is worse than no config.",
+    "",
+    "MAX_MCP_OUTPUT_TOKENS raises the per-tool output cap so screenshots come back at a",
+    "usable resolution; at the 25k default a frame lands around 580 px wide."
+  ],
+  "mcpServers": {
+    "dayz-mcp": {
+      "command": "C:/path/to/dayz-mcp/tools/.venv-mcp/Scripts/python.exe",
+      "args": ["-m", "dayz_mcp", "--client"],
+      "env": {
+        "MAX_MCP_OUTPUT_TOKENS": "75000"
+      }
+    }
+  }
+}

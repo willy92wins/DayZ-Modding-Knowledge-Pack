@@ -1,0 +1,37 @@
+{
+  "skill_name": "blender-animation",
+  "evals": [
+    {
+      "id": 1,
+      "name": "physics-wrecking-ball",
+      "prompt": "En Blender, móntame esta escena y anímala: una torre de 8 cajas de madera apiladas y una bola de demolición colgante que entra oscilando y derriba la torre. Simúlalo con física rigid body, bakea la simulación a keyframes, y déjame un preview MP4 y el .blend guardado. Que las cajas caigan con peso creíble, no a cámara lenta.",
+      "expected_output": "Escena con la sim configurada y BAKEADA a keyframes (el mundo rigid body puede haberse eliminado tras el bake — es el workflow correcto), péndulo real o kinematic, MP4 de preview y .blend guardado, caída con peso creíble (escala/gravedad reales).",
+      "assertions_note": "iteration-2 fix: rigidbody evidence = EITHER >=9 objects with live rigid_body OR >=8 objects with dense per-frame location bakes (>=20 keys each) and no rigidbody_world (bake-then-remove workflow). The iteration-1 literal check penalized best practice.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "robot-arm-ik-pickup",
+      "prompt": "Créame en Blender un brazo robótico de 3 segmentos con armature e IK apoyado en una mesa, y anima 4 segundos a 24fps: el brazo coge un cubo pequeño de la mesa, lo levanta y lo deposita en una plataforma más alta. Quiero movimiento natural con easing (nada lineal-robótico) y un pequeño overshoot al frenar. Renderiza un preview MP4 y guarda el .blend.",
+      "expected_output": "Armature 3+ huesos con IK, cubo acoplado al gripper, easing no-lineal con overshoot, 96 frames a 24fps, MP4 + .blend.",
+      "assertions_note": "iteration-2 hardening needed: baseline also passed 7/7 — raise the bar (require BACK easing or measured overshoot magnitude >2% of travel; require channel offset/stagger >=1 frame between arm segments; require a moving hold on the grip pause). Draft before next run.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "product-turntable-materials",
+      "prompt": "Hazme un turntable de producto de 6 segundos a 30fps en Blender: crea un objeto simple tipo botella, cámara orbitando alrededor con una pizca de imperfección humana (que no sea una órbita perfecta de robot), fade-in del objeto al principio animando el alpha del material, y un pulso de emisión del material hacia la mitad de la animación. Preview MP4 + .blend guardado.",
+      "expected_output": "Rig orbital con imperfección medible, fade de alpha en node_tree, pulso de emisión ~f90, 180 frames a 30fps, MP4 + .blend.",
+      "assertions_note": "iteration-2 hardening needed: baseline also passed 7/7 — quantify orbit non-uniformity (angular-velocity variance above a floor), require NOISE modifier or >=6 non-uniform orbit keys, and verify the MP4 was produced via the native media_type=VIDEO route (the skill's 5.x knowledge) rather than external ffmpeg.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "dayz-txa-wave-action",
+      "prompt": "Necesito una animación de acción DayZ: usando el rig del plugin DayZ Animation Tools (clonado en <downloads>\\DayZAnimationPlugin_MAINTAINED), posa el personaje _DayZ_Character y crea un saludo de 2 segundos a 30fps (levanta el brazo derecho y saluda con la mano; torso y cabeza acompañan ligeramente), y expórtalo como .txa listo para Workbench. Déjame el .txa y dime exactamente qué huesos incluiste y qué tipo de export usaste.",
+      "expected_output": ".txa ADD spine-up (sin EntityPosition/Pelvis/piernas/RightHand_Dummy/IK helpers/Ring/Pinky), cadena del brazo derecho presente, 60 frames a 30fps, sin scale, tipo ADD declarado.",
+      "assertions_note": "iteration-2 additions: (a) palm-orientation gate — angle(palm normal, measured character forward) <= 30 deg across the waving keyframes, computed from RightHand's world matrix; (b) review stills must include one rendered from the measured forward axis (on-axis camera discipline); (c) Ring/Pinky chains absent (carpal parents don't exist in vanilla skeleton).",
+      "files": []
+    }
+  ]
+}

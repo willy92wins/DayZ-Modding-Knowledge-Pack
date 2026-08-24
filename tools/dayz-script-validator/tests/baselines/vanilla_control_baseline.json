@@ -1,0 +1,92 @@
+{
+  "errors": [
+    {
+      "file": "4_world/entities/firearms/weaponfsm.c",
+      "note": "Accepted: vanilla is lax about checking read returns. That does not make a truncated save harmless in a mod, so the rule stays live and these six are allowed by name.",
+      "rule_id": "ES-CTX-READ-UNCHECKED"
+    },
+    {
+      "file": "4_world/entities/gardenbase.c",
+      "note": "Accepted: vanilla is lax about checking read returns. That does not make a truncated save harmless in a mod, so the rule stays live and these six are allowed by name.",
+      "rule_id": "ES-CTX-READ-UNCHECKED"
+    },
+    {
+      "file": "4_world/entities/itembase/bloodcontainerbase/bloodcontainerbase.c",
+      "note": "Accepted: vanilla is lax about checking read returns. That does not make a truncated save harmless in a mod, so the rule stays live and these six are allowed by name.",
+      "rule_id": "ES-CTX-READ-UNCHECKED"
+    },
+    {
+      "file": "4_world/entities/itembase/containerlocked.c",
+      "note": "Accepted: vanilla is lax about checking read returns. That does not make a truncated save harmless in a mod, so the rule stays live and these six are allowed by name.",
+      "rule_id": "ES-CTX-READ-UNCHECKED"
+    },
+    {
+      "file": "4_world/entities/itembase/containerlocked.c",
+      "note": "Accepted: vanilla is lax about checking read returns. That does not make a truncated save harmless in a mod, so the rule stays live and these six are allowed by name.",
+      "rule_id": "ES-CTX-READ-UNCHECKED"
+    },
+    {
+      "file": "4_world/entities/itembase/tentbase.c",
+      "note": "Accepted: vanilla is lax about checking read returns. That does not make a truncated save harmless in a mod, so the rule stays live and these six are allowed by name.",
+      "rule_id": "ES-CTX-READ-UNCHECKED"
+    },
+    {
+      "file": "3_game/entities/entityai.c",
+      "note": "Accepted: every hit is an empty '#ifdef DEVELOPER' block, which a release build never compiles. The rule stays live for mods; whether vanilla's DEVELOPER blocks should be excluded is open (A2).",
+      "rule_id": "ES-EMPTY-IFDEF"
+    },
+    {
+      "file": "3_game/gui/hints/uihintpanel.c",
+      "note": "Accepted: every hit is an empty '#ifdef DEVELOPER' block, which a release build never compiles. The rule stays live for mods; whether vanilla's DEVELOPER blocks should be excluded is open (A2).",
+      "rule_id": "ES-EMPTY-IFDEF"
+    },
+    {
+      "file": "3_game/ppemanager/materials/ppematclassesbase.c",
+      "note": "Accepted: every hit is an empty '#ifdef DEVELOPER' block, which a release build never compiles. The rule stays live for mods; whether vanilla's DEVELOPER blocks should be excluded is open (A2).",
+      "rule_id": "ES-EMPTY-IFDEF"
+    },
+    {
+      "file": "4_world/classes/useractionscomponent/actionbase.c",
+      "note": "Accepted: every hit is an empty '#ifdef DEVELOPER' block, which a release build never compiles. The rule stays live for mods; whether vanilla's DEVELOPER blocks should be excluded is open (A2).",
+      "rule_id": "ES-EMPTY-IFDEF"
+    },
+    {
+      "file": "4_world/plugins/pluginbase/plugintransmissionagents.c",
+      "note": "Accepted: every hit is an empty '#ifdef DEVELOPER' block, which a release build never compiles. The rule stays live for mods; whether vanilla's DEVELOPER blocks should be excluded is open (A2).",
+      "rule_id": "ES-EMPTY-IFDEF"
+    },
+    {
+      "file": "3_game/tools/input.c",
+      "note": "Accepted: the detector excludes #ifdef/#else arms, and these are two SIBLING arms - 'Mission mission' at input.c:266 under PLATFORM_PS4 and at :282 under PLATFORM_XBOX. Neither arm compiles in a PC build.",
+      "rule_id": "ES-LOCAL-VAR-REDECLARE"
+    }
+  ],
+  "measured": {
+    "date": "2026-08-18",
+    "elapsed_seconds": 86,
+    "roots": "OneDrive tree and a local copy - same 12/416 and same digest, so the result is path-independent",
+    "runs": 2
+  },
+  "schema": 1,
+  "totals": {
+    "errors": 12,
+    "warnings": 416
+  },
+  "tree": {
+    "dayz_build": "1.29.0.163451",
+    "dayz_build_note": "Value declared by sources/source-map.json (dayz_build). Identity of the control tree is the digest; set this deliberately when re-baselining after a patch.",
+    "digest": "bdbc7d5a4ba337758a3512db1764e719c77e7a36a1a83b3bfbaba2a368967706",
+    "digest_scope": "sha256 over (posix relpath, sha256 of contents) of every file the validator discovers under the vanilla root, in walk order. Not comparable to the vanilla_index digest, which covers .c only.",
+    "file_count": 2806,
+    "total_bytes": 12630470
+  },
+  "warning_counts": {
+    "ES-CTX-READ-UNCHECKED": 77,
+    "ES-CTX-READ-UNSUPPORTED-PATTERN": 22,
+    "ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN": 254,
+    "ES-GETTYPE-EXACT-MATCH": 40,
+    "ES-SYNCVAR-CLASS-UNKNOWN": 1,
+    "ES-SYNCVAR-UNSUPPORTED-PATTERN": 22
+  },
+  "what_this_is": "Expected findings of dayz-script-validator over Bohemia's vanilla script tree. The tree compiles and ships, so any finding on it is a false positive by construction: this file is the allowlist of the ones already triaged, each with the reason it is tolerated. A finding that is NOT here fails the control."
+}
