@@ -5806,10 +5806,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "gunracks-winding-minority@2026-08-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Round-2 amendment measured on GunRacks the same day (2026-08-28): the index line now also names the full-sphere back-dominance battery for inverted faces with no topological minority and the rule that residue is judged in visible pixels, never face counts.",
+          "license": "MIT",
+          "source_hash": "64b6a7d6c28fafc06cbcd533c0e94ef4008b0ba7506cb298e1fa3a28eeee0c68",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "gunracks-backdominance@2026-08-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e0ab36a04bd058615e647388d0f3b4dd431918c27c6d2b5782f19a0d6a688a9c",
+      "output_hash": "64b6a7d6c28fafc06cbcd533c0e94ef4008b0ba7506cb298e1fa3a28eeee0c68",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -5882,10 +5892,20 @@
           "source_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
           "source_revision": "gunracks-winding-minority@2026-08-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Round-2 amendment measured on GunRacks the same day (2026-08-28): the first pass dismissed 17 genuinely inverted edge/bevel faces as residue by counting faces instead of visible pixels (1 face = 636 px strip) and by trusting shipped-model parity; new point 5 adds the back-dominance criterion over a full-sphere view battery (back px >= 8 and >= 4x front px), the measured failure of positional and raycast oracles on overhangs and ~1 mm sheet sandwiches, and the pitch-sign trap that left the roof unaudited; point 2 rewritten accordingly.",
+          "license": "MIT",
+          "source_hash": "086423fdafa43ebb96da0b375abb45549502a105c273c15ac330388e14f77a46",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
+          "source_revision": "gunracks-backdominance@2026-08-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "062ef27a7e6acee78c91096ae36d56c02998d0ec0957394c6c145bd3caa5ef91",
+      "output_hash": "086423fdafa43ebb96da0b375abb45549502a105c273c15ac330388e14f77a46",
       "output_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"

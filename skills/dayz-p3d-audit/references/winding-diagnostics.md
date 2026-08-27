@@ -65,9 +65,12 @@ modelos de artista externo, reporte de jugador «las normales del tablón al rev
    con el signo CALIBRADO contra población (la mayoría de un modelo que se ve bien in-game
    debe salir front-facing; misma lección que el centroid-check de arriba). Grupo minoritario
    visible desde fuera = el defecto que reportan los jugadores; grupos interiores (cantos de
-   baldas) = mismo fix, menor urgencia. Motas de 1-7 px en cantos y reversos vistos por
-   rendijas de mallas abiertas son residuo normal — calibrarlo contra lo embarcado antes de
-   perseguirlo. El volumen con signo NO decide orientación en sábanas abiertas.
+   baldas) = mismo fix, menor urgencia. El volumen con signo NO decide orientación en sábanas
+   abiertas. **Al descartar «residuo», medir en PIXELES de reverso visible, no en caras** —
+   «pocas caras» puede ser una tira de cientos de píxeles (medido: 1 cara, 636 px); y
+   «idéntico a lo embarcado» NO exonera: lo embarcado puede llevar el defecto desde origen.
+   Residuo legítimo real: caras front-dominantes con reversos minoritarios por rendija
+   (patrón sano medido: 4335 px front / 59 back).
 3. **Fix acoplado**: invertir el orden de vértices (`v[:1] + reversed(v[1:])`) **y negar las
    stored normals de esos corners en la misma pasada** — SALVO que el pipeline recalcule
    normales en un paso posterior. Un fixer que solo invierte vértices (p.ej. el
@@ -82,3 +85,17 @@ modelos de artista externo, reporte de jugador «las normales del tablón al rev
    El check se corre en CADA reintegración de entrega, no solo en el import inicial; y el
    fixer se ancla fail-closed (centros de componente esperados + conteo exacto de caras)
    para que un despiece re-exportado distinto aborte en vez de voltear lo que no es.
+5. **Caras invertidas SIN minoría topológica** (cantos/biseles que no comparten aristas
+   manifold con su pieza — el flood-fill del punto 1 no las ve): el criterio operativo es
+   **back-dominancia en una batería de vistas que cubra la esfera entera** — por cara, píxeles
+   ganados en z-buffer como reverso ≥8 y ≥4× los ganados de frente. Segunda ronda GunRacks
+   (mismo día): 17 caras más así, con tiras de hasta 636 px, que la primera pasada descartó
+   como residuo. Dos trampas medidas del intento de arbitrarlas por geometría en vez de por
+   visibilidad: el gate posicional («cerca de ymax ⇒ exterior es +Y») se equivoca en caras
+   colgantes (sofitos, fondos de balda), y un raycast bidireccional no resuelve sándwiches de
+   chapa de ~1 mm (hit a épsilon contra la piel gemela en ambos sentidos). Y verificar la
+   batería misma: en la proyección yaw/pitch típica de estos rasterizadores el pitch positivo
+   BAJA la cámara — una «vista superior» que mira desde abajo deja el techo sin auditar
+   (medido: el defecto del techo que se buscaba no existía, pero la batería original no podía
+   saberlo). Cierre del lazo: re-render completo post-fix con 0 caras back-dominantes y
+   ninguna nueva.

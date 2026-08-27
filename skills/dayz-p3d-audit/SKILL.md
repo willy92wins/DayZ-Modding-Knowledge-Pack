@@ -309,7 +309,9 @@ Deep winding validation methodology (how NOT to verify — centroid/right-handed
 that false-positive on DayZ left-handed models; Check A winding-vs-averaged-normal, Check B
 edge-pair topology, Check C vs-vanilla; minority-group isolation per welded component and
 the coupled fix — flip vertex order AND negate the stored normals unless the pipeline
-recalculates them afterwards; known lessons learned incl. `flip_winding.py`
+recalculates them afterwards; full-sphere back-dominance battery for inverted faces with NO
+topological minority, judging residue in visible pixels, never face counts; known lessons
+learned incl. `flip_winding.py`
 idempotency and Crate_Wooden mixed winding tolerated in render) →
 `references/winding-diagnostics.md`. Complements killer #1.
 
