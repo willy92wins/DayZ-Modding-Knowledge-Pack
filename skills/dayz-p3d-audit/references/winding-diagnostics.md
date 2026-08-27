@@ -49,3 +49,36 @@ checklist completo de importación.
   ONLY in `face.flags` (`0`, `0x00000020`, `0x00020000`) binarize to a byte-identical model, while a
   moved point and a cleared texture on the same faces each change it (round-trip 2026-08-24). The
   `0x20000` vs `0x00000020` dispute is moot: no face-flag value reaches the game.
+
+#### Del Check B al fix: aislar el grupo minoritario y voltearlo ENTERO (winding + stored normals)
+
+Método verificado (GunRacks T1/T2/T3 2026-08-28: 156 caras invertidas en 11 piezas de tres
+modelos de artista externo, reporte de jugador «las normales del tablón al revés»):
+
+1. **Aislar**: soldar puntos por posición (5 decimales), partir el LOD visual en componentes
+   conexos (excluyendo caras de selecciones `proxy:*`), y dentro de cada componente hacer
+   flood-fill de orientación con la regla del Check B (dos caras manifold que recorren la
+   arista compartida en el MISMO sentido son opuestas). Un componente sano sale en UN grupo;
+   uno roto sale en dos, y **el minoritario es el invertido** — la referencia es la propia
+   mayoría de la pieza, nunca una convención absoluta de signo.
+2. **Severidad por visibilidad, no por conteo**: render con id-buffer y culling de pantalla,
+   con el signo CALIBRADO contra población (la mayoría de un modelo que se ve bien in-game
+   debe salir front-facing; misma lección que el centroid-check de arriba). Grupo minoritario
+   visible desde fuera = el defecto que reportan los jugadores; grupos interiores (cantos de
+   baldas) = mismo fix, menor urgencia. Motas de 1-7 px en cantos y reversos vistos por
+   rendijas de mallas abiertas son residuo normal — calibrarlo contra lo embarcado antes de
+   perseguirlo. El volumen con signo NO decide orientación en sábanas abiertas.
+3. **Fix acoplado**: invertir el orden de vértices (`v[:1] + reversed(v[1:])`) **y negar las
+   stored normals de esos corners en la misma pasada** — SALVO que el pipeline recalcule
+   normales en un paso posterior. Un fixer que solo invierte vértices (p.ej. el
+   `fix_winding.py` de GunRacks) es correcto ÚNICAMENTE porque su pipeline recalculaba
+   normales después; copiada esa mecánica a un pipeline sin recálculo, la cara queda visible
+   pero sombreada al revés (segundo ciclo perdido). Mecánica segura con el POOL global:
+   si los `normal_index` de las caras a voltear son exclusivos de ellas, negar en sitio;
+   si alguno lo comparte una cara que no se toca, añadir la negada como entrada nueva del
+   pool (budget 32768) y reindexar solo esos corners.
+4. **El defecto de artista REINCIDE**: medido idéntico en tres entregas consecutivas del
+   mismo modelo (16/08, 18/08, 19/08) — vive en su fichero de trabajo, reexportar no lo cura.
+   El check se corre en CADA reintegración de entrega, no solo en el import inicial; y el
+   fixer se ancla fail-closed (centros de componente esperados + conteo exacto de caras)
+   para que un despiece re-exportado distinto aborte en vez de voltear lo que no es.

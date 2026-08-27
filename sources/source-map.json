@@ -5796,10 +5796,20 @@
           "source_path": "dayz-p3d-audit/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Measured on GunRacks T1/T2/T3 2026-08-28 and merged into the winding-diagnostics index line: minority-group isolation per welded component plus the coupled fix - flip vertex order AND negate the stored normals unless the pipeline recalculates them afterwards. 156 inverted faces across 11 pieces of three external-artist models; the defect recurred identically across three consecutive re-exports.",
+          "license": "MIT",
+          "source_hash": "e0ab36a04bd058615e647388d0f3b4dd431918c27c6d2b5782f19a0d6a688a9c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "gunracks-winding-minority@2026-08-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "64cd1721cce2a36faa16cb3482756388ea2e721a5e38b6dc3bc32c9120431c19",
+      "output_hash": "e0ab36a04bd058615e647388d0f3b4dd431918c27c6d2b5782f19a0d6a688a9c",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -5862,10 +5872,20 @@
           "source_path": "dayz-p3d-audit/references/winding-diagnostics.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Measured on GunRacks T1/T2/T3 2026-08-28 and merged as the minority-group section: per-welded-component orientation flood-fill isolates the inverted minority with the piece's own majority as reference; an id-buffer render with population-calibrated cull sign separates player-visible groups from interior ones and from legitimate open-mesh back sightings; the fix must flip vertex order AND negate the stored normals in the same pass unless the pipeline recalculates normals afterwards - GunRacks fix_winding.py only flips vertices and is correct solely because its pipeline recalculated them later; artist-file defects recurred identically across the 16/18/19-Aug re-exports, so the check runs on every delivery reintegration and the fixer anchors fail-closed on expected component centers and face counts.",
+          "license": "MIT",
+          "source_hash": "062ef27a7e6acee78c91096ae36d56c02998d0ec0957394c6c145bd3caa5ef91",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
+          "source_revision": "gunracks-winding-minority@2026-08-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "fa8c50f1151f3f46a3d33c7583d792615fcc24f1aadadda4bf93bcdb311ea2e5",
+      "output_hash": "062ef27a7e6acee78c91096ae36d56c02998d0ec0957394c6c145bd3caa5ef91",
       "output_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"

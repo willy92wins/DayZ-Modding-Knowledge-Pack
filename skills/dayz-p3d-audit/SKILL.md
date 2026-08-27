@@ -307,7 +307,9 @@ These aren't P3D issues but commonly co-occur during debugging:
 
 Deep winding validation methodology (how NOT to verify — centroid/right-handed heuristics
 that false-positive on DayZ left-handed models; Check A winding-vs-averaged-normal, Check B
-edge-pair topology, Check C vs-vanilla; known lessons learned incl. `flip_winding.py`
+edge-pair topology, Check C vs-vanilla; minority-group isolation per welded component and
+the coupled fix — flip vertex order AND negate the stored normals unless the pipeline
+recalculates them afterwards; known lessons learned incl. `flip_winding.py`
 idempotency and Crate_Wooden mixed winding tolerated in render) →
 `references/winding-diagnostics.md`. Complements killer #1.
 
