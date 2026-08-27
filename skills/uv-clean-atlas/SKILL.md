@@ -23,6 +23,7 @@ professional game livery template (whole car side = ONE island, roof, hood, door
 2. **Zero overlap, proven.** Monte-Carlo overlap has a noise floor (~0.06–0.15%);
    "no overlap" may only be claimed from an exact SAT check with **0 pairs**
    (`scripts/sat_gate.py`). Never claim it from MC numbers.
+   **A SAT=0 is bounded by the triangles that entered the test - see 2b.**
 3. **Moderate stretch is acceptable.** Uniform texel density (p05/p95 within roughly
    0.8–1.5 of median) beats zero distortion. Chasing zero distortion is exactly what
    fragments atlases into confetti — that trade is the root failure this skill fixes.
@@ -31,6 +32,31 @@ professional game livery template (whole car side = ONE island, roof, hood, door
    not legibility — do not use it for the final pack.
 5. **The final judge is the user.** Render the layout and show it; "un humano lee el
    atlas" is the acceptance test. Expect 1–2 feedback rounds.
+
+### 2b. A SAT=0 is bounded by what entered the test (measured 2026-08-27, LFQuad material groups)
+
+`scripts/sat_gate.py:22` skips any triangle whose UV area is `<= 1e-14` before pairing it,
+because a degenerate triangle cannot overlap anything. So an unwrap that COLLAPSES faces to
+zero UV area does not fail the gate - it vanishes from it, and the worse the collapse the
+cleaner the verdict reads.
+
+Measured on the LFQuad material groups: a chrome group was shipped as "done, zero overlap
+proven by exact SAT, 17 islands, 14140 px/m" while **31.0% of its faces were collapsed**; the
+chassis read "96 islands, 1964 px/m" with **78.0%** collapsed and its px/m averaged over the
+surviving 22%. Re-solved honestly, that same chassis gives 1198 islands and **755 px/m** - the
+true number is 2.6x worse than the one reported as a win.
+
+**Do this**: report `collapsed / total` next to the SAT pair count, and treat any non-zero
+collapse as FAIL, not a footnote. Two cheap tells that it is happening:
+
+- criteria 1 and 3 move the WRONG way - island count DROPS and texel density RISES as the
+  defect grows, because both are computed over the survivors only. A gate metric that improves
+  while the mesh degrades is the signature.
+- a `mirrored%` that is neither 0 nor 100 may be collapse, not mixed handedness. DayZ's
+  `uv_audit.py` (`:280-283`) excludes degenerate triangles from the `mirrored` numerator but
+  not from its denominator, so a uniformly mirrored mesh with 31% collapsed reports 69%. Check
+  whether `non-degenerate` and `mirrored` are the same integer before calling it a chirality
+  defect - on three LFQuad groups they matched exactly.
 
 ## Preconditions
 
@@ -187,3 +213,28 @@ why each was descartado or shortlisted): `references/tool-research.md`.
   quoted python through PowerShell→bash — write a script file.
 - OneDrive: don't Write/Edit `.py` in the OneDrive tree (null-byte/truncation risk);
   work in a scratchpad and copy results in with a size check.
+- The fold guard's detector must be the gate's instrument. A Monte-Carlo estimate over a
+  percentage threshold can never clear an exact zero-tolerance gate: whatever sits below the
+  threshold survives every round, forever. Measured 2026-08-27 with exact per-island SAT as the
+  detector instead: engine 31481 -> 0 pairs, chassis 5839 -> 0.
+- "One guard round only" (above) is a COST rule, not a correctness rule. It bounds island
+  growth and it is right whenever one round already leaves the exact gate at zero. When it does
+  not, iterate until the gate is clean and pay the islands - measured 200->244, 546->1375, over
+  3-7 rounds, with texel density essentially unchanged. A mesh that still folds is not
+  shippable no matter how few islands it has. Pair counts are not monotone across rounds
+  (4 -> 2 -> 7 -> 10 -> 0 measured); do not stop on the first increase.
+- Sparse seams make SLIM fail silently. With a tree-cotree cut graph (133 seam edges for 42
+  shells over 45k tris) `MINIMUM_STRETCH` returned **78.3% of triangles collapsed straight out
+  of the unwrap**, median per-triangle UV extent exactly zero, and no warning. `ANGLE_BASED` on
+  the same seams left 15.8% collapsed and squeezed the whole layout into u in [0, 0.048] - 18
+  px/m. On another group both solvers returned an **all-NaN UV layer** (109086 NaN = 6 per
+  triangle x 18181): NaN fails an `area > eps` test, so every triangle got filtered out and the
+  downstream gate died in `min()` on an empty list. An `except TypeError` around
+  `bpy.ops.uv.unwrap` only catches a Blender that does not know the enum - check the returned
+  layer for NaN and for collapse instead.
+- `smart_project` stays unusable for partial selections (first trap above), but as a
+  whole-mesh seam generator it is the honest fallback when the topological cut collapses: on
+  four LFQuad groups it gave 0.0% collapsed and SAT 0 where the tree-cotree route gave
+  3.6-78.0% collapsed. Follow it with `seams_from_islands` so a later re-unwrap keeps the same
+  cuts. The price is island count (17 -> 214, 96 -> 1198); section 2b is why that price is the
+  correct one.

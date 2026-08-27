@@ -10936,10 +10936,20 @@
           "source_path": "uv-clean-atlas/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Measured on the LFQuad material groups 2026-08-27 and merged as section 2b plus four traps: scripts/sat_gate.py:22 drops triangles under 1e-14 UV area before pairing, so an unwrap that collapses faces passes the gate vacuously - 31.0% and 78.0% collapsed meshes were reported PASS with island count and texel density both improving as the defect grew; the fold guard's 2-sample Monte-Carlo over an 8% threshold cannot clear an exact zero-tolerance gate, and driving it with per-island exact SAT converged 31481 and 5839 residual pairs to 0; sparse tree-cotree seams made MINIMUM_STRETCH collapse 78.3% of triangles with no warning and return an all-NaN layer on another group.",
+          "license": "MIT",
+          "source_hash": "6cbad9f228a7c0d2458886bfe08e4451ed12fd028dab320a1ce455b4027c938b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/uv-clean-atlas/SKILL.md",
+          "source_revision": "uv-collapse-gate@2026-08-27",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "41c1af95aab70f65c1fa2d3791146f2e7581b7a7191633e347c778f5bf363b82",
+      "output_hash": "6cbad9f228a7c0d2458886bfe08e4451ed12fd028dab320a1ce455b4027c938b",
       "output_path": "skills/uv-clean-atlas/SKILL.md",
       "routing_artifact_id": "skill/uv-clean-atlas",
       "verification_level": "cross_checked"
