@@ -7742,10 +7742,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "ui-templates@2026-08-20",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "TEXT SIZING LAWS section added 2026-08-28 from a two-resolution in-game probe (flight F, run dbca698d, ui_matrix.md section 9): font-only default scales with viewport and ignores the box; exact-text-size laws diverge between TextWidget (viewport-scaled) and the RichText dialog recipe (physically constant); text_proportion non-monotonic; MultilineText needs wrap 1; size-to-text v grows over siblings; 1-2px glyph left bearing; layout color alpha ignored on texture-less ImageWidget. output_hash refreshed: the pre-edit file matched the adjudicated output_hash, so no foreign delta is absorbed.",
+          "license": "MIT",
+          "source_hash": "24347c2e0b146ae2a135d65f52b19719349324c9fbb568d4ffe66a0c9dc6426f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "ui-text-sizing-laws@2026-08-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "441f2ab0b05b651c837ece287cec28c5bcfc85944569d00bb78d8fa846e68479",
+      "output_hash": "24347c2e0b146ae2a135d65f52b19719349324c9fbb568d4ffe66a0c9dc6426f",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"

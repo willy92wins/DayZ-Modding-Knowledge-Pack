@@ -949,6 +949,45 @@ not a flag and not applicable to a `TextWidget`. `CreateWidget(TextWidgetTypeID,
 ...)` + `SetFlags(...)` cannot express wrap; the probe above shows the `.layout`
 attribute cannot either.
 
+## TEXT SIZING LAWS — measured across two live resolutions (2026-08-28)
+
+One probe layout (`$profile:` hot-reload, cases A-G), same strings, measured per-pixel on
+full-res captures at TWO viewports on the SAME running client (846x461, then 1600x900 via
+host-side SetWindowPos + reload — no reboot needed for a resolution sweep). Evidence:
+`dayz_re_scratch/ui_matrix.md` section 9 (flight F, run dbca698d). Rules to design by:
+
+- **The font-only default (a `font` attribute and no size key) SCALES with the viewport
+  and IGNORES the widget box.** Half-height box = same glyphs, clipped. Corollary that
+  closed a real bug: rects with exact flags scale by (height/1080) and so does the default
+  glyph size — they stay coupled across resolutions UNTIL a script calls SetSize on the
+  rects (a script-side scaler shrank rects x0.444 while glyphs stayed viewport-sized =
+  the guillotined-text panel). Skip the scaler and both scale together for free.
+- **`"exact text size" N` obeys a DIFFERENT law per widget class.** On `TextWidgetClass`
+  the rendered size scales with the viewport (N=20 was unreadable ~3px at 461-high, ~9px
+  cap at 900-high). Inside the canonical dialog recipe on `RichTextWidgetClass`
+  (`"exact text" 1` + `"exact text size" 20` + `"size to text h/v" 1` + `wrap 1` +
+  `clipchildren 1`) the glyphs stay PHYSICALLY CONSTANT across resolutions (cap ~10px at
+  both). Use the dialog recipe when constant physical legibility is wanted; accept that it
+  will not track panel size.
+- **`text_proportion` has NO clean monotonic law across boxes or resolutions.** Same 0.5
+  on a 40-high box rendered cap 9px@461 and 8px@900 (did not scale); on an 80-high box
+  13->21 (did scale). Treat it as a per-widget empirically-calibrated knob, never as a
+  predictable scaling mechanism.
+- **`MultilineTextWidgetClass` does NOT wrap unless `wrap 1` is declared.** The 2026-08-22
+  probe proved MultilineText+`wrap 1` wraps; this probe proved the attribute's default is
+  NO wrap (one giant clipped line). Always declare `wrap 1` on multiline text.
+- **`"size to text v" 1` really grows the box at runtime** (declared 60 -> engine-reported
+  36 while siblings scaled to 25.6) and the grown text paints OVER the next sibling: give
+  size-to-text widgets a clipping container or reserved room.
+- **Glyphs bleed ~1-2px LEFT of the widget rect** (first-glyph bearing/AA; caught by eye
+  on a live frame, confirmed per-pixel: background edge exactly on the rect, glyph 1px
+  outside). Never start text flush at a colored box edge — pad >=4-8px horizontally.
+- **The alpha channel of a layout `color R G B A` on a texture-less ImageWidget is IGNORED
+  by the compositor** (three 0.25-alpha panels rendered their source color pure, measured
+  per-pixel; the token itself DOES reach the engine — ui_tree reports it). Declared
+  translucent washes do not exist: pre-mix the wash into an opaque token, or SetColor at
+  runtime. (Texture-less ImageWidget does paint a flat opaque fill — twice confirmed.)
+
 ## MOCKUP FIDELITY — calibrate to text_proportion; don't edit .layout off a mockup (added 2026-06-03)
 
 When building an HTML/preview mockup of a DayZ `.layout`, the mockup's CSS `font-size` (px) does
