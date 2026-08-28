@@ -549,3 +549,4 @@ la entrada completa vive allí. No quites la cita: el índice detecta la promoci
 
 - **LL-024** — Para LODs de superficies curvas, usa Decimate COLLAPSE y protege las features críticas con un vertex group invertido. Mide tris y supervivencia de la feature; no uses planar dissolve como reductor sin verificar el conteo tras triangular.
 - **LL-134** — En attachments con bbox contractual, mide el grupo completo en el frame de exportación después de cada feature. Si el bbox está cerrado, crea relieve rebajando el entorno mediante escalón/recess en vez de añadir geometría proud.
+- **LL-372** — Phase 0 de procedencia también cubre licencia: un README/LICENSE empaquetado data del empaquetado, no de hoy. Fecha el anuncio vigente del publicador; si el interior del artefacto y la fuente actual discrepan, manda la fuente actual.

@@ -35,6 +35,8 @@ professional game livery template (whole car side = ONE island, roof, hood, door
 
 ### 2b. A SAT=0 is bounded by what entered the test (measured 2026-08-27, LFQuad material groups)
 
+**LL-371** — Todo gate que filtre parte de su entrada tiene que publicar total / evaluados / filtrados en el veredicto; un filtrado no cero acota el PASS a lo que entro. SAT=0 no es atlas-done si las caras colapsadas fueron saltadas.
+
 `scripts/sat_gate.py:22` skips any triangle whose UV area is `<= 1e-14` before pairing it,
 because a degenerate triangle cannot overlap anything. So an unwrap that COLLAPSES faces to
 zero UV area does not fail the gate - it vanishes from it, and the worse the collapse the

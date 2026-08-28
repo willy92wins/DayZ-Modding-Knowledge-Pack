@@ -141,3 +141,4 @@ de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de or
 la entrada completa vive allí. No quites la cita: el índice detecta la promoción por ella.
 
 - **LL-066** — En Blender 5.1 usa `RENDERED` + EEVEE + luz para materiales y captura el área `VIEW_3D`, no la ventana completa. Para Multi, conserva UV2/`tex1` y reproduce el blend por máscara; en Windows sin `python-lzo`, decodifica `.paa` con `lzokay` y el shim del viewer.
+- **LL-368** — Mapas de DATOS (normal, AO, curvatura, displacement, ID, máscaras): `colorspace_settings.name = 'Non-Color'`, vista `Standard` / look `None` / exposure 0 / gamma 1, y después releer el fichero escrito contra el búfer pretendido (error máx. dentro del paso de cuantización). Sin ese round-trip el defecto se entrega.
