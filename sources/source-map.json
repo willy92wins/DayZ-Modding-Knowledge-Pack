@@ -5274,10 +5274,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Resolution-sweep technique added 2026-08-28 from flight F (run dbca698d): dayz_test_run width/height do not set the client resolution; live SetWindowPos + ui_reload_layout re-measures without reboot; window frame measured 11/45/11 so full-res grabs map 1:1 to engine px; ui_tree root as viewport oracle; glyphs measured on frames because TextWidget text is unreadable by contract.",
+          "license": "MIT",
+          "source_hash": "297a11aa061d850aa428e010fb862300235d0dc6c5963bde4dc64bb7b4a39c2d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "ui-resolution-sweep@2026-08-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "76b5dcf86d0b3e76c0878ba4cd2c8a83375fc0e64ef1f26ebe9bae7daa328cd1",
+      "output_hash": "297a11aa061d850aa428e010fb862300235d0dc6c5963bde4dc64bb7b4a39c2d",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"

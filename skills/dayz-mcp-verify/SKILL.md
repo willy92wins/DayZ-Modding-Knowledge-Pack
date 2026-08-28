@@ -603,3 +603,23 @@ El bridge mide y discrimina sujetos; un verde solo vale si el comando obtuvo res
 
 - **Sitio canonico verificado**: la escalera con drive exige un punto con >=150 m despejados en la direccion de conduccion (protocolo pedido en ficha fb-20260824-025758-2509). El sitio historico del G0 congelaba el vehiculo (drivability posicional, LL-359) y el final de su linea bloqueaba el get-out contra estaticos. No reutilizar sitios sin evidencia de la propia sesion (surface_query + entities_query; el scene_raycast en `view` NO ve los estaticos que paran un coche).
 - **Vida de proceso unica**: el daemon spawneado y su secuencia mueren con el arbol del comando que los pario en este harness ("broke away" no sobrevive a la cosecha; la adopcion de un daemon externo esta ademas rota — fb-20260824-032050-9aed, LL-358). Toda la secuencia run -> verbos -> teardown va DENTRO de un solo proceso (patron `AI/10_Projects/DayZ_MCP/lanes/2026-08-24/g0_full_abba.py`: stop-preventivo, run, espera bridge-ready, espera jugador, teleport con lease, trabajo, dayz_test_stop).
+
+## (added 2026-08-28) Barrido de resoluciones UI sin reboot + calibracion window-grab<->engine
+
+Medido en el vuelo F del caso sorter (run dbca698d, ficha fb-20260828-160429-2899):
+
+- **`dayz_test_run` width/height NO fijan la resolucion del cliente** (pedidos 1280x720,
+  viewport real 846x461). No gastes un reboot en cambiar de resolucion.
+- **Tecnica validada**: SetWindowPos host-side (user32, SWP_NOZORDER) sobre la ventana viva
+  del cliente + `ui_reload_layout` -> el viewport re-mide al instante, el escenario y el run
+  se conservan. Un barrido de N resoluciones cuesta N reloads, no N boots.
+- **Marco de ventana medido (Win11)**: outer - client = 11 px izq/der + 45 titulo + 11 abajo.
+  El `capture_screenshot` fullres es 1:1 con el viewport: engine_px = imagen_px - (11, 45).
+- **El root de `ui_tree` con `size 1 1` proporcional ES el viewport real** — usalo como
+  oraculo de resolucion en vez de fiarte de lo pedido al launcher.
+- **Control del factor**: los widgets con exact flags renderizan a declarado x (alto/1080),
+  posiciones incluidas — si el panel de referencia no da ese factor exacto, la calibracion
+  esta mal, no el layout.
+- **TextWidget no expone su texto por `ui_tree`** (`text_readable=false` por contrato): para
+  medir GLIFOS el instrumento es el frame (fullres + crop + medicion per-pixel), nunca el
+  arbol. Etiqueta los casos DENTRO de las strings para reconocerlos en la captura.
