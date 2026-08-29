@@ -604,6 +604,40 @@ El bridge mide y discrimina sujetos; un verde solo vale si el comando obtuvo res
 - **Sitio canonico verificado**: la escalera con drive exige un punto con >=150 m despejados en la direccion de conduccion (protocolo pedido en ficha fb-20260824-025758-2509). El sitio historico del G0 congelaba el vehiculo (drivability posicional, LL-359) y el final de su linea bloqueaba el get-out contra estaticos. No reutilizar sitios sin evidencia de la propia sesion (surface_query + entities_query; el scene_raycast en `view` NO ve los estaticos que paran un coche).
 - **Vida de proceso unica**: el daemon spawneado y su secuencia mueren con el arbol del comando que los pario en este harness ("broke away" no sobrevive a la cosecha; la adopcion de un daemon externo esta ademas rota — fb-20260824-032050-9aed, LL-358). Toda la secuencia run -> verbos -> teardown va DENTRO de un solo proceso (patron `AI/10_Projects/DayZ_MCP/lanes/2026-08-24/g0_full_abba.py`: stop-preventivo, run, espera bridge-ready, espera jugador, teleport con lease, trabajo, dayz_test_stop).
 
+## Sitio canonico certificado + reglas de instrumentacion (added 2026-08-24 tarde)
+- **Sitio canonico de vehiculos: NWAF `[4200.0, 0.0, 10650.0]`** (certificado 2026-08-24,
+  PBO 28226C93B9B8, `docs/VEHICLE_TESTING.md` del repo): pasillo 160 m x +-25 m al norte
+  enumerado completo, drive delta_2s_xz 3,2 m, teardown verificado. Re-certificar con
+  `python tools/g0_site_gate.py --pbo-sha256 <sha> --out <verdict.json>` (juego ya corriendo,
+  bridge ready; el SHA es obligatorio). Suplentes y causas de degradacion en el doc.
+- **entities_query SOLO con el jugador dentro del area** (fb-20260824-123204-638e): lejos de
+  todo jugador contesta 0 o cap-128 (bimodal) y NO es un error visible. surface_query si es
+  global-fiable (terreno estatico). Pasillos: 3 esferas r=65 con `count_total` como indicador
+  de truncado y prueba de distancia de la ultima fila (nearest-first).
+- **Canopy gate antes de TODO teleport a coordenadas no verificadas**
+  (fb-20260824-115220-1bc1): scene_raycast geom y+30 -> y-5 debe pegar a <=0,05 m de la
+  superficie en el punto del JUGADOR y el del VEHICULO; detecta techos, copas y agua (pega
+  en la lamina sobre lecho marino con y negativa).
+## Bridge v9 + certificado multi-agente (added 2026-08-24 noche)
+
+- **Bridge v9** (commit d73da6c; el gate de version exige pareja daemon-PBO): `object_anim`
+  y `object_inspect` aceptan `object_id` (el de world_spawn) y resuelven contra el registro
+  del bridge - independiente de posicion, alcanza fixtures client-auth con la replica en el
+  spawn. `player_teleport` rechaza aterrizajes de superficie con columna cubierta
+  (`clearance_blocked`; `skip_clearance_check=true` para interiores). `entities_query`
+  trae `nearest_player_m` + `reliability` (player_in_bubble | remote_unverified).
+- **Caveat medido**: el write de `object_anim` APLICA (SetAnimationPhaseNow) pero el
+  `phase` del propio reply puede ir un tick por detras (0 -> write 1.0 -> reply 0.0 ->
+  lectura siguiente 0.599). Confirmar con una lectura posterior, no con el reply.
+- **La sonda de clearance ignora jugadores** (ignore='player'): un survivor plantado en la
+  columna daba dy=1.671 y rechazaba el punto (asi se "demoto" x4300 en r13 por error).
+- **Sesiones largas**: el cliente diag muere tras ~6 min sin comandos (client_not_polling).
+  Runner con keepalive (p.ej. vehicle_telemetry cada ~45 s) mientras dure la sesion.
+- **Certificado multi-agente 3/3 (2026-08-24)**: Grok 4.6 (solo-MCP), GPT-5.6 (codex) y
+  Ox Alpha (opencode) condujeron spawn->fixture->asiento->drive (100-163 m)->puerta por
+  object_id->delete->release con brief minimo. El claim "lo conducen agentes de 3
+  familias" tiene evidencia en lanes/2026-08-24/ma/ del vault.
+
 ## (added 2026-08-28) Barrido de resoluciones UI sin reboot + calibracion window-grab<->engine
 
 Medido en el vuelo F del caso sorter (run dbca698d, ficha fb-20260828-160429-2899):

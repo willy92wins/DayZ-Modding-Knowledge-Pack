@@ -5304,10 +5304,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "shared-box-and-effect-oracles@2026-08-29",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Thirty-four lines that existed only in the installed copy and had never reached the pack in any form (six probe patterns, all zero against the pack tree) were merged 2026-08-30 after an explicit publication decision by the owner. Adds the certified canonical vehicle site NWAF [4200.0, 0.0, 10650.0] with its g0_site_gate.py re-certification command; that entities_query is reliable only with the player inside the area and otherwise answers bimodally (0 or cap-128) with no visible error; the canopy gate required before any teleport to unverified coordinates; the bridge v9 caveats (object_anim applies the write but its own reply phase can lag one tick, the clearance probe ignores players, the diag client dies after ~6 min without commands); and the 3/3 multi-agent certificate of 2026-08-24, in which Grok 4.6, GPT-5.6 and Ox Alpha each drove the full spawn-to-release cycle from a minimal brief. The private keyfile path in references/drive_ladder.py stays obfuscated and was not touched.",
+          "license": "User-authored input",
+          "source_hash": "28cd361a95d471ae628b9e57433aa07cf78d4a7d24e76be9b631fc4b913bbf90",
+          "source_id": "installed-skills",
+          "source_path": "dayz-mcp-verify/SKILL.md",
+          "source_revision": "filesystem@2026-08-30",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "932eda24c4d748fecc5f8b582a0c94b404b4196073feb648b03cf6c6efd4f8e1",
+      "output_hash": "a1bd7ffa99857202776d1422c4778579c03f5b35ad2ac8c1bd19aef71712ff4f",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
