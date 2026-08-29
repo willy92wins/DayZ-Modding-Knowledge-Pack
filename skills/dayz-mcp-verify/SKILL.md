@@ -674,3 +674,64 @@ el brief no lo decia, y las dos lanes rellenaron el hueco con inferencia en vez 
 declaracion de ignorancia. **Un «no verificable» bien puesto vale mas que un hallazgo
 brillante y falso**, porque el falso viaja: cuando llego la refutacion, otra sesion ya
 habia aplicado un arreglo a algo que no estaba roto.
+
+## (added 2026-08-29, SP-351) La caja es compartida: entra en la FIFO, no esperes aviso — y el oraculo es el EFECTO
+
+### El `blocked_on` de `session_status` es una ORDEN, no decoracion
+
+Con la caja ocupada, `session_status` devuelve literalmente:
+
+    "blocked_on": "DayZ test box; next: call dayz_test_run(..., wait_for_box_s=<n>) to join the box FIFO"
+
+Medido el 2026-08-29: una sesion NOCTURNA AUTONOMA leyo esa linea en cada consulta durante
+**siete horas y tres cuartos** y se quedo esperando a que otra sesion le avisara de que
+soltaba. La cola existia, estaba nombrada en la respuesta, y no se uso.
+
+Cuando por fin se uso: `wait_for_box_s=600` -> `active_run_exists` con
+`hint: "stop it with dayz_test_stop(run_id=...)"`. Otra vez el siguiente paso servido en la
+respuesta. Y al poner un plazo de 15 min a la sesion vecina, solto en dos — llevaba horas
+defendiendo una fixture que **nunca se habia usado** (su propia captura daba
+`frame_client_all_black`, cero actividad de cableado en su server).
+
+**Reglas**:
+1. Si una tool te dice como desbloquearte, hazlo antes de esperar a nadie.
+2. **En una sesion autonoma no existe "esperar aviso".** O entras en la cola del recurso o
+   le pones un plazo a quien lo tiene. Esperar sin horizonte no es cortesia: es ceder el
+   encargo. Un horizonte del tipo «cuando el usuario termine» **no es un horizonte**: es
+   una dependencia sin plazo, y quien lo ofrece deberia soltar el recurso y volver a
+   pedirlo (relanzar cuesta minutos; una fixture se rehace en dos verbos).
+
+### El oraculo es el EFECTO, nunca la respuesta
+
+`ok` NO significa exito, y hay al menos cuatro codificaciones distintas conviviendo.
+Medido in-game el 2026-08-29, misma tool, misma respuesta, efecto opuesto:
+
+    object_delete(999999999) -> ok:1, deleted:0     <- no borro nada
+    object_delete(<id real>) -> ok:1, deleted:1     <- borro
+
+Receta verificada, un oraculo por verbo:
+
+| lo que quieres saber | NO mires | mira |
+|---|---|---|
+| ¿coloco donde pedi? | `ok` | `surface_query(x,z).y` contra `pos_real` de `world_spawn` |
+| ¿borro algo? | `ok` | `deleted` |
+| ¿respawneo? | `ok` / `requested` | `query_player_state.pos` ANTES y DESPUES |
+| ¿la espera se cumplio? | `ok` | `satisfied` |
+
+### `player_respawn` funciona headless, y SOLO desde la death screen
+
+Verificado 2026-08-29 (run `02524f97`): mata al jugador con dano externo
+(`world_spawn` de infectado vivo con `flags=3108` al lado; la caida NO sirve con un panel
+abierto), espera a que la captura pase por sus tres fases —normal, **desaturada con
+sangre** (inconsciente), **completamente negra** (muerto)— y entonces `player_respawn()`
+dispara la secuencia vanilla («Aparicion en 8 s»). Medido: la posicion salto ~1.878 m.
+
+**Trampa**: sobre un jugador VIVO devuelve exactamente lo mismo (`ok:1, requested:1`) y no
+hace NADA — posicion byte-identica. La respuesta no distingue los dos casos; la posicion si.
+
+### `key_press` entrega un DIK a la mission, no es input del sistema operativo
+
+`key_press(dik=1)` devuelve `delivered:1` y **no** abre el menu vanilla (`ui_tree` ->
+`no_menu`). No es un fallo: su descripcion dice «a mission callback, not OS input», y el
+menu vanilla no cuelga de `OnKeyPress`. Sirve para UIs modded que SI cuelgan de ahi. No lo
+uses como sustituto de ESC del sistema, y no declares el verbo roto por ese test.

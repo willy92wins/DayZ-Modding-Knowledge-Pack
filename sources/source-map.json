@@ -5294,10 +5294,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "three-layer-trap@2026-08-29",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Shared-box discipline and in-game oracles promoted 2026-08-29 from a night session that lost 7h45m waiting for a peer to announce it had freed the box, while session_status returned the FIFO call in its blocked_on field on every single query. Adds: blocked_on/hint is an order; an autonomous session queues or sets a deadline instead of waiting; the oracle is the effect, not the response (measured pair: object_delete returns ok:1 with deleted:0 and with deleted:1); player_respawn works headless but only from the death screen and reports identically when it does nothing; key_press is a mission callback, not OS input. Run 02524f97, inbox fb-20260829-103347-243b and resolved fb-20260828-210337-5030.",
+          "license": "MIT",
+          "source_hash": "932eda24c4d748fecc5f8b582a0c94b404b4196073feb648b03cf6c6efd4f8e1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "shared-box-and-effect-oracles@2026-08-29",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2617895bf47f542354e89b81d88dfc9a93d380a101cab249060cde4e64413420",
+      "output_hash": "932eda24c4d748fecc5f8b582a0c94b404b4196073feb648b03cf6c6efd4f8e1",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
