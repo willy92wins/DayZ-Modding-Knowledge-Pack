@@ -623,3 +623,115 @@ Medido en el vuelo F del caso sorter (run dbca698d, ficha fb-20260828-160429-289
 - **TextWidget no expone su texto por `ui_tree`** (`text_readable=false` por contrato): para
   medir GLIFOS el instrumento es el frame (fullres + crop + medicion per-pixel), nunca el
   arbol. Etiqueta los casos DENTRO de las strings para reconocerlos en la captura.
+
+## (added 2026-08-29, SP-350) TRES CAPAS que no se nombran entre si: no declares que un verbo NO hace algo leyendo solo el lado Python
+
+El servidor MCP tiene **tres capas** y ninguna nombra a las otras en su propio texto:
+
+    1. la tool en Python          `dayz_mcp/server.py`
+    2. el ingress HTTP            `loopback.py`, `session_coordination.py`
+    3. el puente en Enforce       `MCPBridge.c`, dentro del juego
+
+Muchas tools son un envoltorio delgado que termina en `runtime.call_bridge(...)`. **La
+semantica de verdad vive aguas abajo.** Por eso una lane que abre una sola capa cree
+tener el sistema entero delante, y firma sobre comportamiento que no ha visto.
+
+**Medido el 2026-08-29: dos revisores independientes cometieron el MISMO error la misma
+noche, sobre el mismo sistema.**
+
+- Un revisor declaro **FALSA** la afirmacion «`y=0` snaps to the ground» de `world_spawn`,
+  razonando que el Python pasa `pos` verbatim por `_require_vec3` sin tocarlo. La premisa
+  era correcta y la conclusion falsa: el snap ocurre en el puente. `MCPBridge.c`:
+  `ValidateSpawnArgs` pone `validation.flags = ECE_PLACE_ON_SURFACE` como default de
+  `flags=0`, y `IsAllowedSpawnFlags` **exige ese bit en toda combinacion aceptada salvo
+  una**, `ECE_CREATEPHYSICS|ECE_TRACE`. Ademas el vault ya tenia el hecho **medido cuatro
+  veces** (`dayz-control-plane-gotchas.md`: `pos=[7500,0,7500]` -> `pos_real y=313.14`).
+- Otro revisor declaro que **«ningun fichero produce `box_claimed`»** buscandolo en
+  `daemon.py`. El emisor vive dos saltos mas alla, en `session_coordination.py` dentro de
+  `box_wait_touch`, y se llega por `loopback.py`.
+
+Los dos abrieron ficheros y citaron `path:line`. Verificar no basta: hay que verificar en
+**la capa donde viviria el comportamiento**.
+
+### Reglas
+
+1. **Antes de declarar que un verbo NO hace algo**, mira si su cuerpo termina en
+   `call_bridge`. Si termina ahi, lo unico honesto es `no verificable desde el lado
+   Python`, y decir que habria que abrir `MCPBridge.c` para decidirlo.
+2. **Antes de declarar que un campo no se produce**, no te fies del modulo donde la
+   arquitectura supuesta lo colocaria. Grep del nombre del campo en TODO `tools/dayz_mcp/`.
+3. **Antes de contradecir un comportamiento documentado**, grep el vault. Es memoria de
+   MEDICIONES: contradecir una medicion exige refutar la medicion, no leer codigo de otra
+   capa. Cuesta cinco segundos.
+4. **Asimetria util**: para afirmar que algo SI ocurre basta verlo una vez. Para afirmar
+   que NO ocurre hay que haber mirado donde ocurriria.
+
+### Al escribir un brief de revision
+
+Si el workspace de la lane contiene **una sola capa**, dilo en el brief y exige que todo
+lo relativo a las otras vaya a `LO_NO_VERIFICADO`. En la corrida que origina esta seccion
+el brief no lo decia, y las dos lanes rellenaron el hueco con inferencia en vez de con una
+declaracion de ignorancia. **Un «no verificable» bien puesto vale mas que un hallazgo
+brillante y falso**, porque el falso viaja: cuando llego la refutacion, otra sesion ya
+habia aplicado un arreglo a algo que no estaba roto.
+
+## (added 2026-08-29, SP-351) La caja es compartida: entra en la FIFO, no esperes aviso — y el oraculo es el EFECTO
+
+### El `blocked_on` de `session_status` es una ORDEN, no decoracion
+
+Con la caja ocupada, `session_status` devuelve literalmente:
+
+    "blocked_on": "DayZ test box; next: call dayz_test_run(..., wait_for_box_s=<n>) to join the box FIFO"
+
+Medido el 2026-08-29: una sesion NOCTURNA AUTONOMA leyo esa linea en cada consulta durante
+**siete horas y tres cuartos** y se quedo esperando a que otra sesion le avisara de que
+soltaba. La cola existia, estaba nombrada en la respuesta, y no se uso.
+
+Cuando por fin se uso: `wait_for_box_s=600` -> `active_run_exists` con
+`hint: "stop it with dayz_test_stop(run_id=...)"`. Otra vez el siguiente paso servido en la
+respuesta. Y al poner un plazo de 15 min a la sesion vecina, solto en dos — llevaba horas
+defendiendo una fixture que **nunca se habia usado** (su propia captura daba
+`frame_client_all_black`, cero actividad de cableado en su server).
+
+**Reglas**:
+1. Si una tool te dice como desbloquearte, hazlo antes de esperar a nadie.
+2. **En una sesion autonoma no existe "esperar aviso".** O entras en la cola del recurso o
+   le pones un plazo a quien lo tiene. Esperar sin horizonte no es cortesia: es ceder el
+   encargo. Un horizonte del tipo «cuando el usuario termine» **no es un horizonte**: es
+   una dependencia sin plazo, y quien lo ofrece deberia soltar el recurso y volver a
+   pedirlo (relanzar cuesta minutos; una fixture se rehace en dos verbos).
+
+### El oraculo es el EFECTO, nunca la respuesta
+
+`ok` NO significa exito, y hay al menos cuatro codificaciones distintas conviviendo.
+Medido in-game el 2026-08-29, misma tool, misma respuesta, efecto opuesto:
+
+    object_delete(999999999) -> ok:1, deleted:0     <- no borro nada
+    object_delete(<id real>) -> ok:1, deleted:1     <- borro
+
+Receta verificada, un oraculo por verbo:
+
+| lo que quieres saber | NO mires | mira |
+|---|---|---|
+| ¿coloco donde pedi? | `ok` | `surface_query(x,z).y` contra `pos_real` de `world_spawn` |
+| ¿borro algo? | `ok` | `deleted` |
+| ¿respawneo? | `ok` / `requested` | `query_player_state.pos` ANTES y DESPUES |
+| ¿la espera se cumplio? | `ok` | `satisfied` |
+
+### `player_respawn` funciona headless, y SOLO desde la death screen
+
+Verificado 2026-08-29 (run `02524f97`): mata al jugador con dano externo
+(`world_spawn` de infectado vivo con `flags=3108` al lado; la caida NO sirve con un panel
+abierto), espera a que la captura pase por sus tres fases —normal, **desaturada con
+sangre** (inconsciente), **completamente negra** (muerto)— y entonces `player_respawn()`
+dispara la secuencia vanilla («Aparicion en 8 s»). Medido: la posicion salto ~1.878 m.
+
+**Trampa**: sobre un jugador VIVO devuelve exactamente lo mismo (`ok:1, requested:1`) y no
+hace NADA — posicion byte-identica. La respuesta no distingue los dos casos; la posicion si.
+
+### `key_press` entrega un DIK a la mission, no es input del sistema operativo
+
+`key_press(dik=1)` devuelve `delivered:1` y **no** abre el menu vanilla (`ui_tree` ->
+`no_menu`). No es un fallo: su descripcion dice «a mission callback, not OS input», y el
+menu vanilla no cuelga de `OnKeyPress`. Sirve para UIs modded que SI cuelgan de ahi. No lo
+uses como sustituto de ESC del sistema, y no declares el verbo roto por ese test.
