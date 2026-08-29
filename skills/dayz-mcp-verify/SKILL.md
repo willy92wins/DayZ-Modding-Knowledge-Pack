@@ -623,3 +623,54 @@ Medido en el vuelo F del caso sorter (run dbca698d, ficha fb-20260828-160429-289
 - **TextWidget no expone su texto por `ui_tree`** (`text_readable=false` por contrato): para
   medir GLIFOS el instrumento es el frame (fullres + crop + medicion per-pixel), nunca el
   arbol. Etiqueta los casos DENTRO de las strings para reconocerlos en la captura.
+
+## (added 2026-08-29, SP-350) TRES CAPAS que no se nombran entre si: no declares que un verbo NO hace algo leyendo solo el lado Python
+
+El servidor MCP tiene **tres capas** y ninguna nombra a las otras en su propio texto:
+
+    1. la tool en Python          `dayz_mcp/server.py`
+    2. el ingress HTTP            `loopback.py`, `session_coordination.py`
+    3. el puente en Enforce       `MCPBridge.c`, dentro del juego
+
+Muchas tools son un envoltorio delgado que termina en `runtime.call_bridge(...)`. **La
+semantica de verdad vive aguas abajo.** Por eso una lane que abre una sola capa cree
+tener el sistema entero delante, y firma sobre comportamiento que no ha visto.
+
+**Medido el 2026-08-29: dos revisores independientes cometieron el MISMO error la misma
+noche, sobre el mismo sistema.**
+
+- Un revisor declaro **FALSA** la afirmacion «`y=0` snaps to the ground» de `world_spawn`,
+  razonando que el Python pasa `pos` verbatim por `_require_vec3` sin tocarlo. La premisa
+  era correcta y la conclusion falsa: el snap ocurre en el puente. `MCPBridge.c`:
+  `ValidateSpawnArgs` pone `validation.flags = ECE_PLACE_ON_SURFACE` como default de
+  `flags=0`, y `IsAllowedSpawnFlags` **exige ese bit en toda combinacion aceptada salvo
+  una**, `ECE_CREATEPHYSICS|ECE_TRACE`. Ademas el vault ya tenia el hecho **medido cuatro
+  veces** (`dayz-control-plane-gotchas.md`: `pos=[7500,0,7500]` -> `pos_real y=313.14`).
+- Otro revisor declaro que **«ningun fichero produce `box_claimed`»** buscandolo en
+  `daemon.py`. El emisor vive dos saltos mas alla, en `session_coordination.py` dentro de
+  `box_wait_touch`, y se llega por `loopback.py`.
+
+Los dos abrieron ficheros y citaron `path:line`. Verificar no basta: hay que verificar en
+**la capa donde viviria el comportamiento**.
+
+### Reglas
+
+1. **Antes de declarar que un verbo NO hace algo**, mira si su cuerpo termina en
+   `call_bridge`. Si termina ahi, lo unico honesto es `no verificable desde el lado
+   Python`, y decir que habria que abrir `MCPBridge.c` para decidirlo.
+2. **Antes de declarar que un campo no se produce**, no te fies del modulo donde la
+   arquitectura supuesta lo colocaria. Grep del nombre del campo en TODO `tools/dayz_mcp/`.
+3. **Antes de contradecir un comportamiento documentado**, grep el vault. Es memoria de
+   MEDICIONES: contradecir una medicion exige refutar la medicion, no leer codigo de otra
+   capa. Cuesta cinco segundos.
+4. **Asimetria util**: para afirmar que algo SI ocurre basta verlo una vez. Para afirmar
+   que NO ocurre hay que haber mirado donde ocurriria.
+
+### Al escribir un brief de revision
+
+Si el workspace de la lane contiene **una sola capa**, dilo en el brief y exige que todo
+lo relativo a las otras vaya a `LO_NO_VERIFICADO`. En la corrida que origina esta seccion
+el brief no lo decia, y las dos lanes rellenaron el hueco con inferencia en vez de con una
+declaracion de ignorancia. **Un «no verificable» bien puesto vale mas que un hallazgo
+brillante y falso**, porque el falso viaja: cuando llego la refutacion, otra sesion ya
+habia aplicado un arreglo a algo que no estaba roto.

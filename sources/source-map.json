@@ -5284,10 +5284,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "ui-resolution-sweep@2026-08-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Three-layer trap promoted 2026-08-29 from the T1-T5 pre-landing review: the MCP has three layers (Python tool / HTTP ingress / Enforce bridge) and none names the others, so a reviewer holding one layer signs off on behaviour it never saw. Measured twice the same night on the same system: one lane declared world_spawn's y=0 snap FALSE reading only the Python (the snap is in MCPBridge.c ValidateSpawnArgs/IsAllowedSpawnFlags), another declared box_claimed unproduced looking in daemon.py (the emitter is in session_coordination.py via loopback.py). Vault already held the y=0 fact measured. Inbox fb-20260829-024747-55dd and fb-20260829-032121-fc6e.",
+          "license": "MIT",
+          "source_hash": "2617895bf47f542354e89b81d88dfc9a93d380a101cab249060cde4e64413420",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "three-layer-trap@2026-08-29",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "297a11aa061d850aa428e010fb862300235d0dc6c5963bde4dc64bb7b4a39c2d",
+      "output_hash": "2617895bf47f542354e89b81d88dfc9a93d380a101cab249060cde4e64413420",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
