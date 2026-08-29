@@ -752,6 +752,19 @@ module line and answers the question with old data.
 invisible to every byte-level PBO check, because the PBO faithfully contains the broken
 source.
 
+**And do not use mtime as the freshness signal.** `shutil.copy2`, `robocopy` and `xcopy`
+preserve the source timestamp by design, so a file that was synced into the build tree one
+minute ago can carry a timestamp from days earlier. Measured 2026-08-29: a source file fixed
+and copied into `P:` at 03:51 still reported an mtime of 24-Aug 18:29, identical to its
+origin, while its content and its byte size both proved the edit had landed.
+
+That breaks the obvious build-debt check. Comparing a deployed PBO's mtime against the newest
+source in the build tree can report NO DEBT while a freshly-synced source sits under a stale
+PBO, because the sync handed the source an old timestamp. Adjudicate build debt by CONTENT:
+sha256 the deployed PBO against a rebuild, or compare per-file hashes of the packed entries
+against the tree. Treat mtime as a hint that orders events, never as the fact that decides
+whether an artifact is current.
+
 ## Integration with CI/CD
 
 For automated builds, run validation before packing. Note: the validators are
