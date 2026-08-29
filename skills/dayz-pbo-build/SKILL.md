@@ -719,6 +719,39 @@ Exit `0` PASS / `1` FAIL / `2` WARN. **Do not build a PBO on exit 1**: the error
 
 Green here means the module should COMPILE and the asset should LOAD. It says nothing about engine behaviour — see `dayz-mod-workflow` §"Gates offline" for the full contract and the known coverage limits.
 
+### A deployed PBO with the right version does not prove it compiles
+
+Offline-green plus a correct deploy is still not a compile. Measured 2026-08-29: `@DayZ_MCP`
+was rebuilt and deployed with the source bumped v9 to v10, the deployed PBO byte-scanned
+clean (version string present, all new verbs present, negative control against the previous
+build), and the server still died with `Can't compile "Mission" script module!`.
+
+Cause: a **partial sync between the repo addon tree and the `P:\<Mod>` build tree**. The
+feature was two files -- a field in one, its consumer in the other. The sync copied the file
+that declares the field (dropping it, because that feature is deliberately unpublished) but
+not the file that reads it, leaving an orphaned consumer:
+
+    P:\<Mod>\scripts\5_Mission\Bridge.c:1340   if (a.dest == "hands" || a.hands)   <- consumer
+    <Mod>_dev\addon\...\Messages.c            string hands;  ABSENT               <- field
+
+Enforce fails the WHOLE module on one unresolved symbol, so the log also shows errors from
+unrelated mods loaded in the same run. The FIRST error names the real culprit; the rest are
+collateral. Do not debug the second error first.
+
+**Gate after any deploy:** boot the server with ONLY that mod and grep the fresh script log
+for its module line. Cheap, decisive, and it isolates the mod from co-loaded ones:
+
+    Module: Mission; loaded 217x files; 508x classes
+
+Zero `Can't compile` / `Can't find variable` / `Failed to load mission scripts` is the pass.
+Read the log from THIS boot: a stale `script_*.log` from an earlier day carries a green
+module line and answers the question with old data.
+
+**Diff the trees before packing** whenever a mod keeps a `_dev` repo tree beside a
+`P:\<Mod>` build tree: `diff -rq` over the addon subtree. One line of drift there is
+invisible to every byte-level PBO check, because the PBO faithfully contains the broken
+source.
+
 ## Integration with CI/CD
 
 For automated builds, run validation before packing. Note: the validators are
