@@ -5498,10 +5498,20 @@
           "source_path": "dayz-model-pipeline/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Cited LL-372 (commit 1082b5a) so packctl can promote that orphan lesson into the live skill: Phase 0 provenance also covers license — a packaged README/LICENSE dates from packaging, not today; if the artifact interior and the current publisher source disagree, the current source wins.",
+          "license": "MIT",
+          "source_hash": "dc14fb300b249d3f5c74e73a742c447e33562bf4df30f5c0ce93dbccae9937a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "ll-citations@2026-08-29",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1d854a55b32ed7be933a89e905068b6ca2b5b5030e9520bda5218d76ecde4949",
+      "output_hash": "dc14fb300b249d3f5c74e73a742c447e33562bf4df30f5c0ce93dbccae9937a5",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -6264,10 +6274,20 @@
           "source_path": "dayz-pbo-build/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Cited LL-367 (commit 1082b5a) so packctl can promote that orphan lesson into the live skill: a release artifact traces to the commit by hash of its entire source tree, not of the touched files; an incremental sync only verifies its own delta.",
+          "license": "MIT",
+          "source_hash": "35386aee70027641ed2a8ca3903590f00dec865d4c7be7220a2e5b67ae7a2b7e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "ll-citations@2026-08-29",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9a72ad042c459b2f3191cf0c58f9b14cf41494bfc1d00c1b6eb6ffa6a90817ea",
+      "output_hash": "35386aee70027641ed2a8ca3903590f00dec865d4c7be7220a2e5b67ae7a2b7e",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -7522,10 +7542,20 @@
           "source_path": "dayz-texture-pipeline/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Cited LL-368 (commit 1082b5a) so packctl can promote that orphan lesson into the live skill: data maps (normal, AO, curvature, displacement, ID, masks) use Non-Color colorspace and must round-trip the written file against the intended buffer.",
+          "license": "MIT",
+          "source_hash": "f25dd769ac1f7b26e1da556074b5206880b9c1c1acdfea2ce4a20d6fbaa8e39c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/SKILL.md",
+          "source_revision": "ll-citations@2026-08-29",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "826d63be0078225a2d81942167614a68f024fb41c34086a2f21dc121dfd0897a",
+      "output_hash": "f25dd769ac1f7b26e1da556074b5206880b9c1c1acdfea2ce4a20d6fbaa8e39c",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -11006,10 +11036,20 @@
           "source_path": "skills/uv-clean-atlas/SKILL.md",
           "source_revision": "uv-collapse-gate@2026-08-27",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Cited LL-371 (commit 1082b5a) so packctl can promote that orphan lesson into the live skill: any gate that filters part of its input must publish total / evaluated / filtered in the verdict; SAT=0 is not atlas-done if collapsed faces were skipped.",
+          "license": "MIT",
+          "source_hash": "b2b7ec16c33a65471c1947c1717359ab13614f5c892ffa2d3f1dc154ac031df7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/uv-clean-atlas/SKILL.md",
+          "source_revision": "ll-citations@2026-08-29",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6cbad9f228a7c0d2458886bfe08e4451ed12fd028dab320a1ce455b4027c938b",
+      "output_hash": "b2b7ec16c33a65471c1947c1717359ab13614f5c892ffa2d3f1dc154ac031df7",
       "output_path": "skills/uv-clean-atlas/SKILL.md",
       "routing_artifact_id": "skill/uv-clean-atlas",
       "verification_level": "cross_checked"
