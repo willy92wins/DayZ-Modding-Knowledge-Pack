@@ -8637,7 +8637,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1ee6aa1ca58d615652c19a1bdf5bab72dc5b541ecfad7a46c078381ba8f184fd",
+      "output_hash": "e14abe4637fc11576442d4ffcf93d28071595c8c4a77f0b9d641e90d5fdb1193",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9541,7 +9541,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6831f51b4527b300d30a9a76ede4ed71fde99863061a65977f0e5fce479b4d5d",
+      "output_hash": "6a4bd835912a6f2d008672c88f3d275d9722fdfc29f0c20780d7eef463f1ec1d",
       "output_path": "skills/dayz-vehicles/references/visual-metrics-and-viewer.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9927,7 +9927,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "53a46c66bdbf6cf04761023c55ef03d518f8066bac0e77447ffa2988a737743c",
+      "output_hash": "3f074ee44e32b5e0016a44d0ec0aaff502b83097a2bf5e49ad8ed0cfe8a42f6b",
       "output_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -10037,7 +10037,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b4ce4e7b9d743d2519ef2c1de2d1d95cc58df13d6a1571bfd751533943db78ff",
+      "output_hash": "a0bd0160b98005b3fa9c00642c2450fa2b59fbc1ae95a501dc8db4704a2a4b8a",
       "output_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -10189,7 +10189,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3763b629fd4a47ab727e4e9c7c69bbb1faac4a715fc8b299dac6a828d347c9bf",
+      "output_hash": "9af9b574a2f78d4ba5e8e9fecd0c17b3c1342e38063f0ab20bedd56e815c011e",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -10743,7 +10743,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "85742e0d27aad278282d111e9ca9ef5c9b0b50cdfa98e013123203733c2ad368",
+      "output_hash": "fe2b00410a0f52d8cdc5d6b75374e0a30366e8da1e44f1f4d2577faf7fcd805b",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
