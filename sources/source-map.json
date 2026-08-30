@@ -3005,7 +3005,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a4b3502fdb4dc0fd08d3010e57c793fe7c187afb7734779cbe2191e7b48fa103",
+      "output_hash": "5ef68ac73e6aa8563f14783429cd5ce524251ddab0fcf86e5adaa461176313ca",
       "output_path": "skills/blender-visual-review/SKILL.md",
       "routing_artifact_id": "skill/blender-visual-review",
       "verification_level": "cross_checked"
@@ -7869,7 +7869,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "bb0bf4dd323ab37ec108b97a27f25f0d8b0e4fbea6cc2c8a957a7c865490eabf",
+      "output_hash": "50ffdf7c82063397510f94e343339fb7edc2b1ee1f44e7fffc65e05bcb4ee349",
       "output_path": "skills/dayz-ui-development/references/LF_ColorTest_README.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9435,7 +9435,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6af2857a018cab3ff8fb57bd950444e185d1c654987e18c8bca0cef1f0cbe253",
+      "output_hash": "d4fe9eacb73ac7174d8b9afe14b47938699d04c9ae7dcf89450fcfb86bad6bee",
       "output_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
