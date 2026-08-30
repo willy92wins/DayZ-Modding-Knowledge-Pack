@@ -78,7 +78,7 @@ If a future task tempts you to re-add generic app cruft here, don't — that was
 - **R7 / R8 / R8-extended** — the analyze gate is the artifact-level layer above R7's code-level invariant tracing and R8's end-to-end walk; the Forward Contract section is R8-extended made explicit.
 - **rigorous-data-audit** — for data-critical mods, this skill precedes it; the spec's crash-recovery/admin scenarios feed that audit.
 - **dayz-mod-workflow** — consumes the approved spec and implements.
-- **pre-output-discipline** — the discovery→generation gate; writing the spec is a generation step, so validate discovery first.
+- **pre-output-discipline** — the discovery→generation gate; writing the spec is a generation step, so validate discovery first. Optional external skill, **not** included in this pack. Without it, apply the gate by hand: every discovery claim carries a verified `path:line` before any spec text is written.
 - **Pre-code ceremony routing (SP-050)** — which gate applies when is fixed by the single source: `<system-notes>\workflow.md` §Árbol de decisión pre-código. This skill is Step 2 of that tree; Grill A precedes it, Grill B and `dayz-mod-workflow` follow.
 
 ## Provenance

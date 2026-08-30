@@ -5089,7 +5089,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c9c6ab14c7af4928a9e1ad6050d1b51e54dbfbca9e8e2b03c3c5b6e9dba78c60",
+      "output_hash": "b8aacc233d2bef6fe37454f129c4f9a56cb71d31fb5bf9d11bda683d6de70c20",
       "output_path": "skills/dayz-feature-spec/SKILL.md",
       "routing_artifact_id": "skill/dayz-feature-spec",
       "verification_level": "cross_checked"
@@ -6447,7 +6447,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8d30a8dcd4d385ac6f0f931dae4554b900b492dc6fe5dec38a280d9facd393c9",
+      "output_hash": "eabb1397bd1db5535c484ac68472ce56c49e4a091aa948dbe7b6b4e150d7f2a8",
       "output_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-reverse-engineering",
       "verification_level": "cross_checked"
