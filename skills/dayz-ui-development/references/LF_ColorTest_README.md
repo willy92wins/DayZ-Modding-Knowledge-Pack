@@ -10,7 +10,7 @@
 - F7 abre un panel con 10 rectángulos de colores ARGB conocidos
 - Muestra el valor hex de cada color al lado
 - Prueba `Widget.SetLV(0)` al abrir para ver si normaliza colores
-- Guillermo: screenshot del panel y comparar con los hex esperados
+- El usuario: screenshot del panel y comparar con los hex esperados
 - Segundo test: comentar la línea SetLV(0), recargar, screenshot de nuevo
 - Comparando ambos screenshots sabremos el factor de oscurecimiento exacto
 
@@ -276,7 +276,7 @@ modded class MissionGameplay
 }
 ```
 
-## Instrucciones para Guillermo
+## Instrucciones para el usuario
 
 1. Crear estructura `@LF_ColorTest/Addons/LF_ColorTest/` con los archivos
 2. Cargar el mod en el servidor local
