@@ -92,6 +92,18 @@ The scheduler's payoff is that the **worst-case tick cost is bounded by `WORK_BU
 independent of population. It trades latency (an entity may wait a few ticks for its turn)
 for a flat frame time.
 
+### Fairness inside a priority budget (SP-088, added 2026-08-31)
+
+A budget limits cost but does not guarantee coverage. A deadline/near-first pass that restarts from the same end every tick can consume the whole budget repeatedly and starve later items forever.
+
+For every independently scheduled group:
+
+1. Keep a persistent rotating cursor as member state, initialized outside the tick.
+2. Reserve at least one budget slot for cursor-driven work; the priority pass must not consume that slot or reset the cursor.
+3. Advance the cursor even when the selected item produces no sample, so one ineligible item cannot pin the group.
+4. Re-read the current group count each tick and normalize the cursor with `% count`; membership and order can change.
+5. Measure per-item sample count or maximum age. A zero-sample tail item is a starvation failure even when the scheduler stays within budget.
+
 ---
 
 ## (c) FPS-adaptive interval + rolling average — scale work rate to headroom

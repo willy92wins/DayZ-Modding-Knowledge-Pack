@@ -624,3 +624,15 @@ foreach (string t : test) { Print(t); }
 // ALSO GOOD — direct member access doesn't recall
 foreach (string t : m_Test) { Print(t); }
 ```
+
+### `modded class` must live in the base class's script module; compile both peers (SP-208, added 2026-08-31)
+
+A `modded class X` declaration must be compiled in the same script module that defines `X`. This is stricter than merely referring to the type from a method in a higher module. `PPERequesterBank` is defined in `3_Game` (`3_game\ppemanager\pperequesterbank.c:4`): referring to it from `4_World` can compile, but declaring `modded class PPERequesterBank` under `Scripts/4_World/` fails with `Unknown type 'PPERequesterBank'` and kills the entire World module. Put that declaration under `Scripts/3_Game/<Mod>/`.
+
+Do not hide the declaration with `#ifndef SERVER`. That can make the dedicated-server compile pass only by excluding the failing code, while the client still compiles it and fails. The release gate must compile **both the dedicated-server and client views**. A server-only gate cannot cover UI, camera, or post-process code excluded by `#ifndef SERVER`; a client-only gate cannot cover `#ifdef SERVER` code. Keep rebuilding both views until neither reports a script-module failure.
+
+### Long concatenation diagnostic cascades (SP-080, added 2026-08-31)
+
+For a long concatenation or formatting expression, `Formula too complex` is the root parser/compiler error. An `Incompatible parameter` reported on the same line can be a cascade, not a second API defect. Split the build into incremental single-line assignments (`s = s + part;`). Extract vector or matrix indexing and function-call results into typed locals before formatting them.
+
+A physical expression longer than 400 characters is a useful offline lint signal, not a language boundary. Likewise, the roughly-ten-operands observation is empirical. The game compile remains the gate.

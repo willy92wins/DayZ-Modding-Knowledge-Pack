@@ -422,3 +422,24 @@ returns count=1, invalid id; `InventorySlots.GetSlotName(id)` (`inventoryslots.c
 Result: `[""]` — one empty element, no exception, no empty list. Looks like a data bug; is an API-pair bug.
 
 **Tell you picked the wrong pair**: `[""]` or empty slot names on an entity that clearly has attachments.
+
+### Hidden-selection texture and material getters (SP-210, added 2026-08-31)
+
+There is no Enforce method named `GetObjectTextures()` (plural). Runtime texture and material state is singular and index-based: `GetObjectTexture(int)` / `GetObjectMaterial(int)` (`3_game\entities\entityai.c:2895-2900`). Iterate from zero to `GetHiddenSelections().Count() - 1` when a per-selection snapshot is required.
+
+The config-array getters are `GetHiddenSelectionsTextures()` and `GetHiddenSelectionsMaterials()` (`3_game\entities\object.c:125-140`). For the embedded material list of a vobject, use `GetObjectMaterials(vobject, out string[])` (`1_core\proto\envisual.c:6-27`). Do not invent a plural runtime getter; an undefined call prevents the whole script module from compiling.
+
+### Reflection limits and fail-closed test fixtures (SP-175, added 2026-08-31)
+
+Correction to the broad `SetClassVar` guidance above: production use proves access to a `private bool`, but does **not** prove that reflection can replace a `ref` collection field. `EnScript.GetClassVar` and `EnScript.SetClassVar` return `1` on success. Eight runtime attempts to replace a `protected ref TManagedRefArray` returned `0`; there is no demonstrated reflection write for that field shape, so do not recommend it as a general test-hook technique.
+
+`Class.Cast` returns null when the runtime type does not match; it does not throw. Cast to a local and guard before dereferencing, especially for `array<ref Managed>` / `TManagedRefArray` collections.
+
+A reflection-based fixture is valid only when it is fail-closed:
+
+1. Require `SetClassVar == 1` **and** assert the injected state before calling the code under test. Otherwise report `SETUP_FAIL`, never PASS.
+2. Run the same fixture against the build without the guard and require RED first.
+3. Use one invocation per case, so one exception cannot hide the remaining cases.
+4. Hash the production PBO before and after qualification, and keep the fixture outside the publish set. Do not use `modded class` as the fixture: it changes the compiled hierarchy being qualified.
+
+A failed write is not harmless. When `SetClassVar` returns `0`, abort the oracle and quarantine the subject; do not continue using it or send it through its normal deletion path. In the measured ref-collection probe, eight failed writes were followed by 48 null-pointer exceptions during deletion, while a no-reflection control had zero and retained valid elements. The internal mechanism is undetermined; do not claim a specific partial mutation.

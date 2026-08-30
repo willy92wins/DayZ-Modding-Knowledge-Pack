@@ -462,6 +462,10 @@ DeleteFile(path);
 MakeDirectory(dirPath);
 ```
 
+### JSON file helpers return status (SP-136, added 2026-08-31)
+
+Treat the `JsonLoadFile` / `JsonSaveFile` calls in the preceding snippet as legacy API examples only, not as a recommendation for new code. Use `JsonFileLoader<T>.LoadFile(string filename, out T data, out string errorMessage)` and check both its `bool` result and error text. The legacy helpers return `void` and cannot signal failure. JSON file I/O is synchronous and blocks the main thread; never call it from `OnUpdate()`.
+
 **There is no `RenameFile`** in Enforce Script. Use CopyFile + DeleteFile.
 
 **Atomic save pattern** (battle-tested):

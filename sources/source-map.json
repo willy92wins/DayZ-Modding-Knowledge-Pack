@@ -9905,7 +9905,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "55f09f0298d54d2ea8ec287f62b851c85d5e5342a278beadfb186d97e9f09bde",
+      "output_hash": "cac47f8481cc2da626e8180067fcc48eb04fdcfa6861270ee8b2e1d551e14c06",
       "output_path": "skills/enforce-script-reference/references/networking.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -9927,7 +9927,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2e7eca93621d7a1bed379868b9e0e4929d5f92394db80974159aa5e35434919b",
+      "output_hash": "f401c2413604fcfd8da41b91ff0623e15ad579fa35cb4bebc60c4b08237fd84c",
       "output_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -9971,7 +9971,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "01f0df253eaade81bbe96204f35e454560b5bc8ccbba3e87f706b3493196fad1",
+      "output_hash": "99fbfd6bf8fba1d41f22c80c22df380d87c1efc8f68b2180d364997875ffe6bd",
       "output_path": "skills/enforce-script-reference/references/server-performance.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -10037,7 +10037,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a0bd0160b98005b3fa9c00642c2450fa2b59fbc1ae95a501dc8db4704a2a4b8a",
+      "output_hash": "2ce5be4c638cb73f589add5f8eb2de52b26810173766b7ce9e44d1f5085166cd",
       "output_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
