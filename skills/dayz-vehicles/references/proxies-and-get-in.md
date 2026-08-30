@@ -272,6 +272,14 @@ originals + copied, bone companions cardinality unchanged, facenormals <=
 32768, resolved-verts printed vs the ~16k design budget. Binarize preserved
 the merge exactly (22,849 faces / 11 proxies in the ODOL).
 
+> **Capacity correction (SP-182, added 2026-08-31).** The `facenormals <= 32768`
+> check above is superseded as a universal engine/load gate. Keep that number only
+> when it is declared as a local historical design budget. For a load verdict, first
+> count the known-good blob extracted from the deployed PBO on the same `MLOD`/`ODOL`
+> route, then use the candidate's three-state `binarize` verdict. A warning threshold
+> alone never authorizes geometry reduction, and the absent-1100 path below must not
+> choose its seed from this number.
+
 Applies to every car built by this pipeline — but **the defect has TWO shapes and
 they need different fixes**, so census before assuming which one you have.
 
@@ -296,3 +304,59 @@ El procedimiento de creación —de qué LOD visual copiar, contra qué budget d
 facenormals, dónde insertarlo y en qué orden respecto al texturizado— está descrito
 en el ledger (SP-191) pero **no se ha validado aquí**, así que no se transcribe: si
 te toca el caso AUSENTE, léelo allí y mídelo antes de fiarte.
+
+## Creating an absent ViewPilot is a lifecycle, not a blind LOD copy (SP-191, added 2026-08-31)
+
+**[OFFLINE VERIFIED; IN-GAME VALIDATION STILL REQUIRED]** Keep the three-way census
+above. For `AUSENTE` (`absent`), create resolution 1100 only through the authoritative assembler,
+or through an idempotent post-fix that is reapplied after texturing. A pre-texture copy
+can preserve `texture=(none)` and silently diverge from later visual edits.
+
+Use a complete visual LOD only as the seed. Choose it by the current curated ViewPilot
+contract in `SKILL.md`: preserve required structural faces, evaluate the complete
+assembled first-person scene, and enforce material ownership. Do not choose the source
+by a fixed facenormal ceiling. Copy geometry with remapped indexes; preserve proxy
+triangles and frames verbatim; preserve named selections, sharp edges and LOD
+properties. Never rebuild existing proxies with a convenience constructor that changes
+their frame.
+
+Fail before writing or backing up if 1100 already exists. Before save, require source
+parity for the selected seed, all expected proxies and selections, and a valid curated
+content verdict. After save, re-read the model, prove every other LOD byte/semantic
+snapshot unchanged, and require a second run to make no change. The final gate remains
+an in-game first-person cycle; this offline lifecycle does not claim that validation.
+
+## Detachable extraction is proved by material and space, not selection count (SP-129, added 2026-08-31)
+
+**[OFFLINE VERIFIED]** A shell can report only the proxy triangle under `door_1`
+and still retain the whole window because the window belongs to a global `glass`
+selection. For every visual LOD, count shell faces inside the detached part's
+footprint by material, place the submodel at its proxy anchor, and match candidate
+face twins in world/model space. A matched shell face is a duplicate; an unmatched
+face is legitimate shell. Derive the distance tolerance from the valley in the
+measured bimodal distance histogram rather than a round literal.
+
+Removing the duplicate can expose a pre-existing submodel placement error, so a
+more visible hole after cleanup is not proof of regression. A zero residual
+between the submodel and the volume used by its own authoring transform proves
+lineage only; it shares the producer's frame and does not adjudicate engine render.
+The final placement verdict remains in-game.
+
+## Continuous actions and input exclusion while seated (SP-218, added 2026-08-31)
+
+- **[IN-GAME VERIFIED]** A seated `ActionContinuousBase` must use a command modifier
+  whose progress callback runs in a vehicle. The vanilla precedent is
+  `CMD_ACTIONMOD_STARTENGINE` (`actionstartengine.c:14`); a walking/open-door
+  modifier can animate while never reaching `OnFinishProgress`.
+- For an interface that uses `AddActiveInputExcludes(...)`, interrupt any action
+  already in progress with `ActionManagerClient.RequestInterruptAction()`
+  (`actionmanagerclient.c:1280`). Excluding input first can swallow the release,
+  wedge the action manager, and suppress every later action. Record ownership and
+  remove only that interface's exclude idempotently on close, force-close, abort
+  and teardown; `SetDisabled(true)` alone does not block action input.
+- During an exclude, `UAInput.LocalValue()` reads zero. `KeyState`
+  (`ensystem.c:291`) and `GetMouseState` still read physical input, but `KeyState`
+  ignores user rebindings; treat it as a diagnostic or add binding-aware handling.
+- The preferred seated-camera path keeps the pawn possessed, overrides the vehicle
+  camera, and gates get-out in `ActionGetOutTransport.ActionCondition`. It needs no
+  broad input exclude, avoiding the transitive zeroing of bound aiming axes.

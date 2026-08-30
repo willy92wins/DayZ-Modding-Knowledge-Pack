@@ -8637,7 +8637,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "640297d71615fa82f35e42dd89ddfee9fe048b07750fdab9a97808fcca0a0bf8",
+      "output_hash": "18530eca613e4963d8531aa03216e95358d10c418d0e8acaa9a98fa85be80dec",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -8703,7 +8703,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "775bf060da2f7fb65ae461fda42d4911c2e6485bb30eb6b549b69126462f43bf",
+      "output_hash": "0b686439d0d87715589ec48e154a66b303438153be0af39da67896b04042635f",
       "output_path": "skills/dayz-vehicles/references/animation-sign-and-axis.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -8745,7 +8745,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f7241c417c1fd6e11c10e8f56dc3518502509b25bb537ae0b7cc7a63e4ced55a",
+      "output_hash": "1fb50360dda9474f88f16b43729b3de7c28ee7dd31ae25241150e34a68c386b1",
       "output_path": "skills/dayz-vehicles/references/audit_getin_wheels.py",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -8767,7 +8767,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cae72563ba1b36b57ae4994aabc64017e1737991c0d7d6ab49b4b66eacd0d24b",
+      "output_hash": "683d576f08a3c9e1b033b8986214aec2f254c28397176b8212d11029e2e2e0d3",
       "output_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9159,7 +9159,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9b2221c0356ef11691318fdac9bad68f912e7fa4a86404ba5daef64143d0905e",
+      "output_hash": "3540c1711c38fe9c934fce9ccefafbe72b128074349d84a4e6c1ca9c69183318",
       "output_path": "skills/dayz-vehicles/references/network-physics-ownership.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9265,7 +9265,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1d518e6982abc4af1b5e72f3e153dba60c9e5d9178f2143b87378c5f82891606",
+      "output_hash": "f5037fcc9c672c00aa3481659e1aa576eb809d0d962d09ab82ad54fe1c312787",
       "output_path": "skills/dayz-vehicles/references/process-gates.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9287,7 +9287,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "940138c2846c645eecbd9d0125ac798ec6433f3ba90c96d13fb33c7df201a320",
+      "output_hash": "6aeddc60cbe62efd98323ff8cb5accf8f086ebbb73f31c78b385d93b278f4436",
       "output_path": "skills/dayz-vehicles/references/proxies-and-get-in.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9351,7 +9351,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b4922bafb9f982de1629aac1d5c9b1fbbf05b52b67117ce301457f8d70bbdeb9",
+      "output_hash": "1a1cfc867e76deabea60eff0ee945a10ccb72ef99c4be394eb4bba7828e8b760",
       "output_path": "skills/dayz-vehicles/references/rip-import.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9393,7 +9393,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "028ccaee208b9bb458d6a85673b2680ba17a91e6654153cbc296e9a2227bb218",
+      "output_hash": "cf5c7ef901cc50c2723a6a73b18817779a95f1882418869db3b3c68eadad6de0",
       "output_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9435,7 +9435,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "518f05525727eabe6570f63a08878cebf5d7ee102e5ec67462fb31d1c5b9b74a",
+      "output_hash": "bec2deb7f60f85ed06c8566c5a47c89ed2b431efc76428f27874103179f2a499",
       "output_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9519,7 +9519,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "63d0393a07ad179a180ed5ea7a83239b7112ed622383748795558c7dd0b3b766",
+      "output_hash": "47f46a02919561e41909be9a19072c207c8a28fa90d79bb424f3c3abf5f3b2f1",
       "output_path": "skills/dayz-vehicles/references/visual-gates-and-winding.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

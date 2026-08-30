@@ -953,3 +953,69 @@ Method lesson: the cheap discriminator was measuring the visual proxies' FRAMES 
 control BEFORE touching the item's LODs — s36 spent its cycle on the item asset instead.
 Promoted: dayz-vehicles preflight #21 + rip-vehicle-import §attachment-render (2026-07-18).
 
+
+## Wheel proxy frames are a `(frame, referenced model)` pair (SP-156, added 2026-08-31)
+
+Do not promote an anchor-X frame literal across wheel models. The sedanwheel
+literal above is calibrated only for that referenced geometry. A working
+Landrover control measured the opposite pair for `Landrover_Wheel`: `x>0` uses
+`((-1,0,0),(0,0,1),(0,1,0))`, and `x<0` its mirror. Derive both sides with
+`py3d.derive_proxy_frame` from a known-good car that uses the same wheel item,
+then require the candidate to match. A negative fixture that swaps the two sides
+must fail.
+
+
+## Prove workspace identity before importing or auditing (SP-330, added 2026-08-31)
+
+A rip media tree may contain several vehicles. Before packaging a workspace,
+select 3-5 names from the intended `manifest`/`include.txt` and require them in
+the `Manifest.xml` under that exact vehicle directory. A work-folder name is not
+identity evidence. Missing names block the handoff instead of being explained as
+an incomplete export after the audit.
+
+## Route primitives by functional owner, never by material alone (SP-158, added 2026-08-31)
+
+Freeze import routing per source primitive with a stable key that includes the
+source node instance/breadcrumb and primitive index, or an adapter-defined equivalent;
+a mesh index alone is not unique for instancing or multi-primitive meshes. Require
+every included primitive exactly once. Material identifies a surface, not the object
+that must move it: a steering-wheel decal must stay in the steering proxy even when
+it shares `INT_DECALS` with the dashboard; door fasteners and decals must follow the
+door. Add negative fixtures for movable-part primitives so a material-only router
+must fail.
+
+## Wheel items are local; body proxy chunks are model-space (SP-159, added 2026-08-31)
+
+A glTF/FBX intermediate commonly holds wheel vertices in car world-space. Before
+emitting a separate wheel `.p3d`, derive its source hub deterministically, subtract
+that centre from points, and require `abs(bbox_center_axis) < 1e-4 m` on every axis.
+The host proxy then supplies the hub translation once. Without this step the source
+translation and proxy anchor are both applied. This bbox-centre gate is wheel-only:
+hinge-local doors, hoods and trunks are intentionally not centred. Pure body proxy
+chunks retain the model-space convention in `vehicle-structural-parity.md`.
+
+## Named selections can carry primitive identity through packonly (SP-162, added 2026-08-31)
+
+**[MEASURED OFFLINE ON ONE RAW PACKONLY TOOLCHAIN]** An MLOD with 170 selections,
+mixed case and names through 63 characters survived `AddonBuilder -packonly -> PBO ->
+ExtractPbo` byte-identical, including selection order and point/face membership. This
+is a capability canary for a route already declared raw packonly, not a recommendation
+to choose that build mode. Re-run generation, packing, extraction, SHA-256 and semantic
+name/order/membership comparison when the environment changes. This does not cover
+binarized ODOL; a binarized route needs its own preservation spike.
+
+## Label, decal and tiled-pattern UVs are semantic exceptions (SP-335, added 2026-08-31)
+
+The `TEXCOORD2` swatch rule above does not apply to every face. Measured bezel
+labels, decals and shifter graphics sample their atlas from `TEXCOORD0` without a
+V flip. Tiled patterns use `TEXCOORD1` multiplied by the material's MTPR factors.
+Do not substitute the pipeline unwrap: DayZ materials do not add the missing UV
+transform by default, so tiling must be baked into face UVs with sampler wrapping.
+Require an UV-over-atlas overlay before accepting either route.
+
+## Locate the build source through the build script, then prove it by data (SP-343, added 2026-08-31)
+
+Before basing a fix or audit on a mod tree, inspect `build_*.ps1` for its `$source`
+root and compare a content hash from that root with the corresponding blob in the
+deployed PBO. A display/archive copy can be complete and still be an old generation;
+folder recency and naming do not establish build ancestry.

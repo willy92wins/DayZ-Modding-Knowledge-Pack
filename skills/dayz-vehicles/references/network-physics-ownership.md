@@ -164,3 +164,28 @@ corpus Expansion). Receta verificada por fuente vanilla + compile gate (LFHeli 2
   Car.OnContact NO garantiza contactos suaves de asentado. Antes de construir logica sobre
   contactos de un vehiculo, mide primero que el callback dispare para TU caso (un print one-shot);
   la via robusta candidata es EntityEvent.CONTACT + EOnContact, pendiente de validar.
+
+## Attack/release state must read raw input (SP-201, added 2026-08-31)
+
+**[CODE-VERIFIED; in-game A/B pending]** A first-order command filter such as
+`cmd += (raw - cmd) * k` decays asymptotically and does not reach exact zero. A
+boolean derived from the filtered working value (`cmd != 0`) therefore remains
+active after release: attack constants stay selected and idle-only levelling or
+damping never starts. Capture `m_<axis>Raw` when the input is read, keep the
+filtered command separate, and derive activity only from the raw field on every
+simulation side. Owner and server must use the same source; mixing raw owner
+state with filtered server state creates a second disagreement.
+
+## Forced sleep needs registration warm-up and a settled-state gate (SP-153, added 2026-08-31)
+
+- **[IN-GAME VERIFIED]** Do not call `dBodyActive(this,
+  ActiveState.INACTIVE)` in the `EEInit` tick. The collider may not finish
+  registration, leaving visual and physical position split. Keep the body active
+  for a measured warm-up (about 3 s in the verified case) before the first sleep.
+- **[DESIGN REVIEWED; partial in-game gate]** Sleep only when speed is near zero
+  and AGL is at the local surface. Do not impose a lower AGL bound: a settled
+  pivot measured `-0.02 m`. Explicitly request `ACTIVE` while the body is not
+  settled; merely stopping the repeated `INACTIVE` call does not wake a body.
+- `ClampMinValue(name, value, minimum, fallback)` does not impose an upper cap;
+  the fourth argument handles non-finite input. Apply a safety maximum at the
+  consumer with `Math.Min(tuned, cap)`.

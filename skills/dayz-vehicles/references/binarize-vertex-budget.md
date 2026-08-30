@@ -72,3 +72,51 @@ a self-check.
 
 Tool: `<vehicle-import>\scripts\p3d_vertex_gate.py` - `count` reports resolved per LOD
 as `INFORMATIVE_ONLY`; only `binarize` runs the authoritative three-state adjudication.
+
+## Qualify a capacity warning on the deployed artifact first (SP-182, added 2026-08-31)
+
+Before changing geometry for a numerical warning, run the same counter on the
+known-good model extracted from the deployed PBO. If that artifact already exceeds
+the proposed threshold, the threshold does not govern that load route. Confirm the
+blob rather than the editable tree, and read its magic: `MLOD` proves the engine's
+packonly route, while `ODOL` proves a binarized route. Neither result automatically
+proves the other.
+
+A discrete tolerance sweep proves only the sampled grid. Powers-of-ten can jump over
+the usable interval; refine around the transition and, for unit normals, test an
+angular merge rather than only component-wise rounding. The refined instrument must
+first reproduce every previously published sample before any new intermediate point
+is accepted.
+
+## Read the verdict artifact, not the wrapper exit code (SP-220, added 2026-08-31)
+
+`p3d_vertex_gate.py binarize` and a Python import failure can both exit `1`. Read the
+per-model state from a newly written `_verdicts.json`; a missing report or missing
+row is `OTHER_FAIL`, never PASS or `CAPACITY_FAIL`. The child process needs the
+required module on `PYTHONPATH`, because an in-process `sys.path` edit is not
+inherited. Allow for the measured startup cost (about 68 s even for a four-point
+control); for a batch, set an explicit larger timeout and include a tiny known-good
+model in that same invocation. If the control does not PASS, no product red is
+attributable to capacity.
+
+Keep three units separate: a DCC estimator may split one source point by rounded
+corner normal/UV; py3d `resolved` counts `(point_index, normal value, uv)` on the
+assembled MLOD; the engine enforces post-split vertices. Budget in assembled py3d
+units and adjudicate with the three-state binarize result. Count after host proxies
+are present; each proxy contributes three points, one face normal, one face and
+three resolved entries.
+
+## Source geometry census is a planning bound, not engine authorization (SP-157, added 2026-08-31)
+
+Before sacrificing artist normals, decimating, or repartitioning, compose the source
+node world transforms and count `POSITION` accessor vertices per final frozen owner
+container. Count every emitted instance; a mesh definition referenced by three nodes
+has three costs after emission. The glTF accessor sum is a conservative planning bound
+for that routing and is useful before the MLOD exists.
+
+The count chooses where to measure next; it does not authorize a build. Do not compare
+it with a fixed 60,000, 65,535, or approximate 32,768 ceiling. Those literals mix
+source accessor vertices, assembled resolved triples and engine post-split vertices.
+The assembled py3d count remains informative and the three-state `binarize` verdict
+remains authoritative. This rule supersedes approximate fixed-ceiling planning advice
+elsewhere in this skill without weakening any measured product gate.

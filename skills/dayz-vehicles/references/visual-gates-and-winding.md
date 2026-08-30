@@ -332,5 +332,19 @@ Verificacion que si discrimina, en orden de coste:
    - **Cheap definitive discriminant = all-flipped A/B in-game (SP-070).** Reverse vertex order of ALL visual faces (~1 line in the assembler, or session `LFHeli_dev/model_src/work/helispy2_rffs/flip_variant.py` with py3d), binarize, A/B in-game with the user's eye (~40 min). EXCLUDE proxy triangles from the flip: their winding encodes the proxy frame (P′). Before the A/B, census the ODOL of BOTH variants: if they come out equal, the A/B is null (anti-nullity gate).
    - **Binarize PRESERVES source winding (SP-070).** Same reader, both variants' ODOL dot-neg census: 99.1% → 0.95%. Do not trust "binarize already normalises to the convention": it normalises nothing. Distinct from the debinarizer ODOL→MLOD inversion (`references/vehicle-structural-parity.md`). When pinning the flip in an assembler: recalibrate its winding gates (the expected fraction inverts) and exclude dots ≈0 from the census (merged symmetric normals give a null dot with no information; on OH-1 they were ~17% of the shell and sank the fraction). OH-1 assembler already ships reversed visual winding on purpose (`FLIP_VISUAL_WINDING = True`): `references/rip-geometry-and-winding.md`. Evidence: `30_Sessions/2026-07-19-lfheli-oh1-r2-winding-ab-flip.md`; `LFHeli_dev/model_src/work/helispy2_rffs/odol_census_report.json`. Cross-ref: `../rip-vehicle-import/SKILL.md`; `../dayz-p3d-audit/references/winding-diagnostics.md`.
 
+
+## A Blender culling render cannot adjudicate DayZ winding (SP-179, added 2026-08-31)
+
+Two sign changes can cancel. The common display mapping `(x,y,z)->(x,z,y)` swaps
+one axis pair and has determinant `-1`, so it reflects handedness and apparent
+winding; the proper-rotation alternative `(x,y,z)->(x,-z,y)` has determinant `+1`.
+Blender renders the `+cross` side while the measured DayZ chain renders the
+anti-cross side. A preview can therefore agree by accident. Use it for geometry
+and placement only; the winding verdict remains the in-game control/A-B.
+
+In Workbench, enable `scene.display.shading.show_backface_culling`.
+`material.use_backface_culling` controls EEVEE and is inert in Workbench. Pixel-
+identical "culling on/off" outputs are a null test, not confirmation.
+
 Detalle completo y el resto de defectos del fork: entrada `SP-227` en
 `AI/20_Knowledge/skill-patches-pending.md`.

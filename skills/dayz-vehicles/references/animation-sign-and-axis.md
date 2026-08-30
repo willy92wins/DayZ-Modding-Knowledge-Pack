@@ -70,3 +70,14 @@ offline, in-game only confirms" - which is the difference between one cycle and 
 ---
 
 > REDIRECT CAMBIO-1: SP-122 ocupa ahora el sitio del invariante #24 que corrige.
+
+## ODOL proxy selection indexes are not bone-selection indexes (SP-121, added 2026-08-31)
+
+After binarization, `Proxy.named_selection_index` resolves to the generated
+instance selection `proxy:<same-model>.<NNN>`, not to the role/bone selection.
+A measured door proxy used adjacent indexes for the generated instance and
+`doors_driver`; rejecting that layout as a role mismatch is a false positive.
+`Proxy.bone_index` resolves against the global skeleton directly. Together with
+the rules above: compare `anim_source` case-insensitively, and resolve
+`animations.anims2bones[lod][class]` against the global skeleton without applying
+`sub_skeletons_to_skeleton`.

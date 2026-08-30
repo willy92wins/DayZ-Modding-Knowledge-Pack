@@ -733,3 +733,21 @@ vehicle plus an auto-connecting client and probes each seat:
 > `RaycastRV` loop, then confirm posture by eye. Origin: LFQuad get-in resolution, in-game verified
 > 2026-06-05; cross-ref `lessons-learned.md` LL-089/LL-090/LL-072, handoff
 > `30_Sessions/2026-06-05-LFQuad-causa-copiloto-firegeo-plan-definitivo.md`.
+
+## Engine and script identifiers that fail silently (SP-137, added 2026-08-31)
+
+- The engine schema is the `torqueCurve[] = {rpm, torque, ...}` table documented
+  above. `torqueMax`, `torqueRpm`, `powerMax`, `powerRpm` and `rpmMax` have no
+  vanilla config occurrences and unknown properties are ignored without a log.
+  If a config edit has no effect, verify that the property exists before tuning it.
+- `VehicleAnimInstances` is fixed by
+  `scripts/4_world/entities/vehicles/vehicleaniminstances.c:1-13`:
+  `CIVVAN=0`, `V3S=1`, `SEDAN=2`, `HATCHBACK=3`, `BUS=4`, `S120=5`,
+  `MULTICAR=6`, `GOLF=7`, `HMMWV=8`, `ZODIAC=9`. Return the instance that matches
+  the model skeleton; a wrong value can fail as missing get-in pose or clipping,
+  not a crash.
+- Offroad Hatchback door slots are exactly `NivaDriverDoors`,
+  `NivaCoDriverDoors`, `NivaHood`, and `NivaTrunk`
+  (`offroadhatchback.c:133,147,176,196-206`). Slot lookup and SoundSet names are
+  case-sensitive; a mismatch returns no attachment or no sound without a clear
+  diagnostic.
