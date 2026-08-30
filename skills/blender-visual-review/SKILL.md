@@ -273,7 +273,7 @@ Prefer `ask` over `score`: concrete yes/no questions are measurably easier for a
 
 Measured 2026-07-30 (RTX 3090, n=2 renders — provisional): `gemma4:26b` ≈15 s warm per 8-question checklist, `qwen3.5:27b` ≈132 s for comparable quality, so gemma is the default. **⚠ Esa brecha de 9x quedó REFUTADA en su causa el 2026-08-16: no era el modelo, era el `num_ctx` de fábrica** tirando a qwen el 37% a CPU. Con `think:false` + `num_ctx=8192` son 8,3 s y 17,2 s — brecha de 2x, y qwen vuelve a ser viable como segunda opinión de otra familia. Ver §Pre-filtro más abajo. Both correctly flagged a faceted circle and both answered "unsure" rather than guessing when the view could not decide — but they gave **opposite** bevel verdicts on the same renders, so treat bevel/chamfer questions as agent-side until calibration says otherwise. Judge fine surface questions on a native-res crop, never a full-frame render (LL-153).
 
-Setup notes: models live wherever `OLLAMA_MODELS` points (here `E:\Ollama\models`); a 17 GB model fills a 24 GB card, so models load one at a time and compete with Blender for VRAM — unload before a heavy render. Always address the server as `127.0.0.1`, never `localhost`: on Windows that resolves to IPv6 first and a stray IPv6-bound `ollama serve` will answer from a different model library.
+Setup notes: models live wherever `OLLAMA_MODELS` points; a 17 GB model fills a 24 GB card, so models load one at a time and compete with Blender for VRAM — unload before a heavy render. Always address the server as `127.0.0.1`, never `localhost`: on Windows that resolves to IPv6 first and a stray IPv6-bound `ollama serve` will answer from a different model library.
 
 ## Output / evidence convention
 
