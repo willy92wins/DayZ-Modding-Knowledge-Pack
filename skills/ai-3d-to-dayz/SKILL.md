@@ -76,7 +76,7 @@ claims del canal @stefan_3d_ai marcados `❓ validar` hasta confirmarlos con tes
 | Hunyuan 2.1 (local) | generar **blockout** high-poly, poly control | disponible ✅ (skill externa `hunyuan3d-local`, no en este pack) |
 | Tripo / 3D AI Studio | generar malla low-poly, retopo, PBR | acceso ✅; **#1 en arena low-poly independiente (Top3D 71.8%)**; ⚠️ Smart Low-Poly tras paywall |
 | Blender + Retopoflow/Quad Remesher (o ZRemesher/InstaLOD) | retopo manifold, UV, bake | núcleo ✅ — **insalvable** (la IA no lo reemplaza) |
-| **Arma 3 Object Builder** (add-on Blender, MrClock8163) | `.p3d` MLOD nativo: LODs, proxies, named selections, RVMAT, RTM | ✅ **estándar de la comunidad DayZ** (Discord + dep. DayZ-LOD-Tools); **sustituto/complemento de py3d**. Ver [[arma3-object-builder]] |
+| **Arma 3 Object Builder** (add-on Blender, MrClock8163) | `.p3d` MLOD nativo: LODs, proxies, named selections, RVMAT, RTM | ✅ **estándar de la comunidad DayZ** (Discord + dep. DayZ-LOD-Tools); **sustituto/complemento de py3d**. Enlace oficial abajo, en «Externas clave» |
 | **Modddif** (ex-"Modif/Motif") | color (`_co`) + normal (`_nohq`) sobre UV existente | ✅ free; NO roughness/metallic |
 | 3D AI Studio / Meshy Texture | PBR completo (albedo+normal+rough+metal) sobre UV existente | ✅ confirmado; repackear a `_smdi` |
 | Sloyd (paramétrico) | props templados (barriles/cajas/armas) quad+UV+LOD out-of-box | ✅ menos cleanup que IA para props simples |
@@ -100,7 +100,7 @@ Al confirmar cada punto: sustituir el `❓` correspondiente por el dato verifica
 ## SOURCES
 
 - KB: `20_Knowledge/ai-3d-pipeline/index.md` (+ stage-00/01/04/05/07/08).
-- **Contrafactual + deep dives:** `counterfactual.md`, `arma3-object-builder.md`, `alternatives-deep-dive.md`.
+- **Contrafactual + deep dives:** `counterfactual.md`, `arma3-object-builder.md`, `alternatives-deep-dive.md`. Son notas de investigacion privadas y **no** viajan en este pack; lo que decidieron ya esta resumido arriba.
 - Externas clave: [Arma3 Object Builder](https://github.com/MrClock8163/Arma3ObjectBuilder) · [SubstanceToArma (preset `_smdi`)](https://github.com/MoonieFR/SubstanceToArma) · [Top3D low-poly arena](https://www.top3d.ai/leaderboard?type=low-poly).
 - Transcripciones: `30_Research/youtube/stefan_3d_ai/` (33 vídeos) + `_counterfactual/` (5 independientes).
 - Skill de extracción: `youtube-research`.

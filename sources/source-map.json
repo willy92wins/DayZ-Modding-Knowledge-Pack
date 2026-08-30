@@ -2581,7 +2581,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "431877e6e873d414ac53c25bebab8fbb2e7b869d67f64a5679567a68fae6cbb1",
+      "output_hash": "d5ca64f727f406934b33cbd211a9389e9e52a03269664a762cbdc1e125435a19",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
