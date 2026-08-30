@@ -903,7 +903,7 @@ the un-promoted get-in cost "decenas de iteraciones" on three cars):
    poison the mod-vs-control discriminator and add a confounded state variable to every symptom.
 6. **Fluids / DamageZones / vitals config from the proven shape** (preflight #8/#9) — copied, never invented.
 
-7. **Reference-frame MARKER pass, before anything is built on top** (added 2026-08-15,
+7. **Reference-frame MARKER pass, before anything is built on top** (SP-368, added 2026-08-15,
    MercedesAMGLF G1). Two blind spots compound: a face with an empty `texture` renders **WHITE**, and
    white masks every frame/UV defect underneath it; and a mirrored or 180-rotated parametrization is
    **invisible on any surface without legible text**. Together they hid the same defect here from June

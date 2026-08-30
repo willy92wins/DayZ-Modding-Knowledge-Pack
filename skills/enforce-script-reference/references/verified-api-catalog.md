@@ -406,7 +406,7 @@ AnimationSource. Full model/LOD side in `dayz-animation-pipeline` ->
 model.cfg AnimationSource wiring is [verify] against a vanilla two-model item (e.g. the flag).
 
 
-### Slot enumeration — which API pair to use (verified vs vanilla 2026-07-29)
+### Slot enumeration — which API pair to use (SP-361; verified vs vanilla 2026-07-29)
 Two `GameInventory` pairs look nearly identical but do the OPPOSITE:
 
 | Pair | What it answers | Cite |

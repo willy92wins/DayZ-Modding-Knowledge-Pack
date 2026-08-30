@@ -17,7 +17,7 @@ When the user reports "piece X sits N cm off / tilted" on an imported model (rot
 
 Measured case (LFHeli OH-1 round 3, AMENDED same day): user reported tail rotor "10 cm low" + interior "10 cm high, pokes through the canopy". First pass measured global bboxes and called it all perspective - WRONG on two counts: (a) "interior inside the glass" by global bbox missed a REAL 7.25 cm LOCAL protrusion through the canopy roof (per-cell interior-maxY vs glass-surface-Y grid found it; the user's eye was right); (b) the ring fit gave 9.7 mm misreported as 0.9 mm (units slip). CAVEAT the rule accordingly: bbox-vs-bbox NEVER proves containment - protrusion is LOCAL, measure per-cell surface-vs-surface before declaring a pose complaint perceptual. Complements the feel rule (subjective feel -> player data; measurable pose -> deployed-artifact measurement). Origin: LFHeli_dev/reviews/2026-07-20-LA-medicion-pose-fina.md.
 
-## HUD reticle/marker: anchor the ray at the CAMERA, never at the vehicle (SP-189, added 2026-08-07, LFHeli B-4)
+## HUD reticle/marker: anchor the ray at the CAMERA, never at the vehicle (SP-365, added 2026-08-07, LFHeli B-4)
 
 A direction reticle drawn by projecting vehicle_origin + GetDirection()*D reads laterally skewed
 against the airframe from any 3PP camera sitting off the symmetry plane: at D=300 the world point

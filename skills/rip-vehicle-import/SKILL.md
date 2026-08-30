@@ -144,7 +144,7 @@ No crear `INDEX.yaml`, un router de cookbooks ni otra tabla síntoma→cookbook.
 6. Ejecuta solo el allowlist; el test vivo final permanece separado del preflight.
 7. Si aparece uno de los cinco síntomas, abre solo su cookbook. Para otros síntomas, STOP y diagnóstico explícito.
 
-## Raíl de conversión del paso 5 (estrenado sub_wrxsti_04, 2026-08-06)
+## Raíl de conversión del paso 5 (SP-363; estrenado sub_wrxsti_04, 2026-08-06)
 
 El profile del coche declara `source.asset_contract` (ruta a la ficha) — eso activa el modo
 contract de `rip_p2_import.py`: listas INCLUDE/SHADOW proyectadas de la ficha por
