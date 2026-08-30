@@ -823,3 +823,82 @@ change, on sight close, on leaving the scan radius, and when the entity dies or 
 it as restore-by-reaffirmation (mark all unseen at scan start, re-mark what the scan finds, restore
 the remainder) rather than as a list you remember to walk; that way a missed code path fails toward
 restoring, not toward an entity that glows forever.
+
+
+## Sleeping a CarScript aviation body safely: init, settled-state and wake-up (added 2026-08-31, LFHeli sleep saga; SP-153)
+
+A vehicle that forces `dBodyActive(this, ActiveState.INACTIVE)` every frame to suppress ground
+jitter must satisfy all of these safeguards:
+
+1. **[VERIFIED in-game] Never sleep the body in the same tick as `EEInit`.** The collider can fail
+   to finish registration: the visible mesh is passable at its shown position, pushes from another
+   position, and get-in actions do not complete. The `EEInit`→first-frame delay varies by boot
+   (about 1.5 s while the world loads, but only 3-5 ms after connect with the frame loop running),
+   so this can appear or disappear with no code change. Keep physics active for a warm-up of about
+   3 s after `EEInit` before the first sleep. LFHeli v3.2 `59E425AD` restored collision with that
+   warm-up as the only delta.
+2. **[DESIGN approved; in-game gate partial] Sleep only when settled:** speed is near zero AND AGL
+   is near the terrain. A persisted aircraft can be restored in flight or in motion; sleeping it
+   there freezes it in the air and can separate physics from the visible shell. The mirror case is
+   just as important: a body born asleep does not wake merely because code stops forcing
+   `INACTIVE`. Explicitly request `ActiveState.ACTIVE` while the settled gate is false.
+3. **[MEASURED] Do not give the settled AGL gate a lower bound.** A grounded vehicle's pivot can
+   be below `SurfaceY` (OH-1 measured -0.02 m), so require only the safe upper proximity plus the
+   velocity condition; `0 <= AGL` rejects a valid settled body.
+4. **[VERIFIED] `ClampMinValue(name, value, minimum, fallback)` has no upper clamp.** Its fourth
+   argument is the fallback for non-finite values. Enforce a safety maximum at the consumer, for
+   example `Math.Min(tuned, CAP)`; do not assume the tuning loader capped it.
+
+## Fixed direct gear vs vanilla `OnDriverExit` (added 2026-08-31, LFHeli OH-1 AC-B18; SP-154)
+
+1. **[VERIFIED by source] Vanilla `CarScript.OnDriverExit` stops a healthy engine whenever the
+   gearbox is not neutral:** `if (GetGear() != GetNeutralGear()) EngineStop();`
+   (`carscript.c:1207-1215`). A CarScript-as-aviation design that forces one direct gear (for
+   example `ShiftTo(FIRST)` from `OnInput`) therefore stops the engine on every driver dismount,
+   without logging an error. Everything gated by `EngineIsOn()` can then close through
+   `OnEngineStop` as well, including cameras, FLIR sessions and HUD state.
+2. **[VERIFIED by source] The vanilla super implementation above `CarScript` is empty:**
+   `Transport.OnDriverExit(Human) {}` (`transport.c:161`). In the vanilla chain, omitting `super`
+   loses only the gear-triggered stop. Battery and plug detach handling (`carscript.c:826,845`),
+   fluids (`:989-992`), unconscious/dead handling (`:1893,1904`) and vitals (`:2523`) live in other
+   callbacks.
+3. **[DESIGN; in-game gate pending]** For the invariant "engine ON implies the fixed gear is
+   re-engaged by `OnInput`", the minimal override is:
+
+   ```c
+   override void OnDriverExit(Human player)
+   {
+       ShiftTo(GetNeutralGear());
+   }
+   ```
+
+   Do not call `super` in that override. The next pilot's input tick restores the direct gear.
+4. **[OPEN audit]** Keeping the engine alive without a driver changes the sleep case. Check that
+   keep-awake is not gated only by `CrewMember(0)`, and verify whether `EOnPostSimulate` fuel drain
+   continues while the body is `INACTIVE`.
+
+## Continuous in-seat actions and in-vehicle camera input (added 2026-08-31, LFHeli OH-1 FLIR F0; SP-218)
+
+1. **[VERIFIED in-game] `ActionContinuousBase` progress while seated depends on `m_CommandUID`.**
+   `CMD_ACTIONMOD_OPENDOORFW` can animate in a seat yet never advance progress, so
+   `OnFinishProgress` never runs and the action looks dead without an error. The only vanilla
+   precedent found for a continuous seated action that completes is `CMD_ACTIONMOD_STARTENGINE`
+   (`actionstartengine.c:14`). Use that compatible command-mod for this pattern.
+2. **[VERIFIED in-game] An interface that shares a key with seat actions must consume that input.**
+   `inputController.SetDisabled(true)` does not stop action input. On open, use
+   `AddActiveInputExcludes({"menu"})`; record whether this interface installed the exclude, and
+   restore it only under that flag on every exit path. Otherwise the same hold used to close the
+   interface can complete vanilla get-out and eject the player's body during spectate.
+3. **[VERIFIED in-game] Interrupt before excluding.** Installing an exclude while a continuous
+   action is active can hide its release and leave `ActionManager` permanently in progress, after
+   which no actions are offered until relog or interrupt. Before the exclude, call the vanilla
+   client path `ActionManagerClient.RequestInterruptAction()` (`actionmanagerclient.c:1280`).
+4. **[VERIFIED] All `UAInput` reads are gated during an exclude and return zero.** Raw
+   `KeyState(KeyCode.KC_X)` (`ensystem.c:291`) and `GetMouseState` still work, but `KeyState` reads
+   the physical key and ignores rebinding. Use it only as a coarse escape path; read the live
+   binding when rebinding correctness matters.
+5. **[VERIFIED in-game] Native `CarScript.EngineIsOn()` is not sufficient presentation state for
+   late joiners.** A client joining after the engine started can see it as OFF until a mount causes
+   resynchronization. For remote rotor or similar visuals, mirror engine state in a SyncVar written
+   by the server from `OnEngineStart`/`OnEngineStop`, and register that variable at the END of the
+   constructor's existing net-sync bank so bitstream order remains stable.
