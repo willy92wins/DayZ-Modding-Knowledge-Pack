@@ -296,6 +296,41 @@ trust client-supplied entities). Fail-closed on unknown/invalid payloads (`G6`).
 - **Do NOT derive mod RPC IDs from `ERPCs.RPC_END`.** The enum contains **96 lines conditioned on `#ifdef DIAG_DEVELOPER`** (`3_game\enums\erpcs.c:110-205`) **before** `RPC_END` (`:207`), so its numeric value **differs between diag and retail builds**. A derived ID mismatches in a client-diag / server-retail pair and fails **silently**: the RPC is sent, nobody handles it, no error. Use fixed high literals (`const int` with hex is vanilla idiom: `1_core\constants.c:35`, `:63-70`). Supporting fact: the `switch` in `DayZGame.OnRPC` has **no `default:`**, so an unknown `rpc_type` produces no engine error.
 - **Hooking `Event_OnRPC` does NOT require `modded class DayZGame`.** `Event_OnRPC` is `static` and accessed by class name — vanilla idiom: `DayZGame.MISSION_STATE_GAME` (`dayzplayerimplement.c:837`), `DayZGame.DeferredInit` (`ppemanager.c:83`) — which avoids collision with another mod that overrides `OnRPC`. The `Insert` must NOT copy vanilla's timing: `SyncEvents.RegisterEvents()` lives in the `MissionGameplay` constructor (`missiongameplay.c:76`), which is **client-side and late**; it can afford that because its RPCs fire in `ClientNew`. A document sent in `ClientPrepare` (`missionserver.c:307-313`) arrives **before** that mission exists and is lost without trace.
 
+### `Event_OnRPC`: filter before the first context read (SP-338, added 2026-08-31)
+
+The bus above is safe because it rejects the RPC id before `ctx.Read`. `ParamsReadContext` is a `Serializer` (`3_game\gameplay.c:15`), and a read consumes its stream even when the requested payload type is wrong; there is no seek or rewind (`1_core\proto\serializer.c:55-65`). `DayZGame.Event_OnRPC` receives every RPC on both processes (`3_game\dayzgame.c:3089-3103`), so the id and applicable side must be rejected before any read.
+
+```c
+// WRONG: this can consume another handler's payload.
+Param1<string> payload = new Param1<string>("");
+if (!ctx.Read(payload)) return;
+if (rpc_type != MY_RPC_ID) return;
+
+// RIGHT: filter id and side first, then touch ctx.
+if (rpc_type != MY_RPC_ID) return;
+if (GetGame().IsDedicatedServer()) return; // client-only handler; invert for server-only
+Param1<string> safePayload = new Param1<string>("");
+if (!ctx.Read(safePayload)) return;
+```
+
+Use `IsDedicatedServer()` / `!IsDedicatedServer()` for load-time side filters rather than relying on `IsClient()`. A wrong-order subscriber can break a different mod or a vanilla consumer with no warning; when multiple subscribers are wrong, load order decides which one consumes the stream first.
+
+### Server mutations observed to replicate without custom NetSync (SP-338, added 2026-08-31)
+
+The following results were measured from a dedicated server to an already connected client, with both peers alive for the mutation:
+
+| Server call | Observed on connected client without custom NetSync | Verified declaration |
+|---|---|---|
+| `SetObjectMaterial(int, string)` | Yes | `3_game\entities\entityai.c:2899` |
+| `SetObjectTexture(int, string)` | Yes | `3_game\entities\entityai.c:2896` |
+| `SetAnimationPhase(string, float)` | Yes, including fractional phases | `3_game\entities\entity.c:15` |
+| `SetPosition(vector)` | Yes | `3_game\entities\object.c:300` |
+| `SetScale(float)` | **No** | `1_core\proto\enentity.c:448` |
+
+Replicate scale explicitly, for example with `RegisterNetSyncVariableFloat` (`3_game\entities\entityai.c:2876`), then apply the synchronized value on the client. The earlier registration example labels `precision` as bits; that label is not the contract for this API. The argument is decimal digits and defaults to `1`. Raise it when values such as `1.25` must survive range quantization, or pass equal minimum and maximum values when the unbounded form is intended. Scale also affects collision: otherwise identical LFProbe boxes at scale `1` and `0.5` produced vertical ray distances of `0.2018 m` and `0.1018 m` (ratio `0.5045`).
+
+Measured replication does not establish late-join reconstruction or behavior for map-placed objects; both remain unverified. Animation state is also model-specific: `Barrel_ColorBase` drives its two caps from the phase (`4_world\entities\itembase\barrel_colorbase.c:148-154`), and phase `0.5` exposed both in the LFProbe measurement. `GetAnimationPhase` immediately after a write also returned the previous value in that probe. Verify the target model and the required observation timing.
+
 ---
 
 ## Persistence (OnStoreSave / OnStoreLoad)

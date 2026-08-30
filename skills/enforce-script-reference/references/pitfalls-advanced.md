@@ -82,6 +82,17 @@ int _placeholder;
 - The lexer splits an identifier that STARTS with a reserved keyword followed by a digit: `out vector out0` is tokenized as keyword `out` + type `vector` + keyword `out` + literal `0`, so the parser sees a stray `'0'` that "does not exist" on the line at first glance. Same family as SP-073 (keyword-as-name) but the trigger is keyword+digit, not keyword alone. Affected prefixes: `out`, `ref`, `new`, `auto`, `inout`. Vanilla contains zero `out<digit>` identifiers (full grep of `P:\scripts`)
 - Rename to a non-keyword prefix: `dst0`, `res0`, `val0`, etc. Diag: if the error names a digit token (`'0'`, `'1'`, …) you cannot find on the line, suspect a parameter or variable whose name starts with a reserved keyword. [VERIFIED LF-COM S2b 2026-08-07, run `02d2ee1a` fail 284/285/288; fix `out0..out3`→`dst0..dst3` compiles clean run 3]
 
+### Six recurring compile-fail families (SP-208, added 2026-08-31)
+
+1. **Opaque file handles are not integers.** `FileHandle` and `FindFileHandle` are `int[]` aliases (`1_core\proto\ensystem.c:390,503`). Declare the proper type without `= 0`; test `if (!handle)` and track open state separately. The directory API is `FindFile(pattern, out name, out attr, flags)`, `FindNextFile(handle, out name, out attr)`, then `CloseFindFile(handle)` (`:520-522`). `OpenFile` returns `FileHandle` (`:417`); `ReadFile(FileHandle, void, int)` (`:425`) is not a whole-file-by-path helper. Read text with `OpenFile(READ)` + repeated `FGets` + `CloseFile` (`5_mission\gui\controlsxbox.c:297-305`).
+2. **`ScriptRPC` has no `WriteString`.** The class adds only `Reset` and `Send` to `ParamsWriteContext` (`3_game\gameplay.c:104-118`); that context is a `Serializer`, whose payload API is generic `Write` / `Read` (`1_core\proto\serializer.c:57-58`). A class member that keeps the RPC object needs a strong `ref`.
+3. **`string.Replace` mutates and returns an `int`** (`1_core\proto\enstring.c:156`). Chaining `.Replace().Replace()` tries to call `Replace` on that integer. Copy to a local, call `Replace` once per step, then return the local.
+4. **Long formulas have a compiler limit.** A JSON-style expression with roughly 30 operands can fail with `Formula too complex`. Build it incrementally (`result = result + part;`); roughly ten operands per line was safe in the measured LF-COM compile gate, not a guaranteed language boundary.
+5. **Locals have method scope, not block scope.** Reusing one local name in sibling `if` or `switch` branches produces `Multiple declaration`; rename per branch or hoist once. Separate `#ifdef` / `#else` compile views may reuse a name because only one view exists at a time.
+6. **Brace-only balance is incomplete.** `Unmatched brackets detected!` can come from parentheses or square brackets. An offline checker must balance `()`, `[]`, and `{}` after stripping strings and comments, per file. It cannot replace the game compile gate; preprocessor views, encoding failures, and these API contracts remain outside that check.
+
+The compiler can stop after the first family and expose the next one only after a rebuild. Fix and re-run every required game compile view until all layers are clean.
+
 ---
 
 ## Runtime Crashes (Segfaults)

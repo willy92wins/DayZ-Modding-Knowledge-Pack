@@ -26,6 +26,14 @@ Canonical case: `ActionManagerClient.PerformAction(int user_action_id, ActionTar
 
 **`CCINone` does NOT mean "hands must be empty."** `CCINone.Can()` returns `true` unconditionally (`4_world\classes\useractionscomponent\itemconditioncomponents\ccinone.c`). It means "no item condition", not "the player's hands must be empty". Reading it as "hands empty" produces dead checks and chases a fault that does not exist.
 
+### Persistent time and player identity preflight (SP-207, added 2026-08-31)
+
+Before persisting or ordering data across restarts, verify both the clock and the identity source:
+
+- `CGame.GetTime()` is mission time in milliseconds (`3_game\global\game.c:1508-1510`). It resets on every boot. Use it for durations inside one session, never for a durable timestamp or cross-restart ordering.
+- Build wall-clock timestamps from `GetYearMonthDayUTC` and `GetHourMinuteSecondUTC` (`1_core\proto\ensystem.c:100,76`). Store all UTC components needed by the ordering contract.
+- `PlayerIdentity.GetId()` is the hashed identity intended for databases and logs (`3_game\gameplay.c:367-368`). `GetPlainId()` is explicitly not for databases or logs (`:369-370`), and `GetPlayerId()` is a reusable session ID (`:371-372`). Neither is a durable ownership key.
+
 ### Syntax Restrictions (compiler enforced or runtime crash)
 
 1. **NO ternary operators** — `condition ? a : b` does not compile
