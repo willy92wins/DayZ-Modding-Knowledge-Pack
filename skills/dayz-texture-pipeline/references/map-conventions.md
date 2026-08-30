@@ -21,12 +21,34 @@ Canon for this skill:
 - DayZ `_nohq` is DirectX/Y-.
 - Blender/Cycles and many baking workflows output OpenGL/Y+ by default.
 - If source is OpenGL/Y+, invert the green channel before final DayZ export.
-- Existing `.paa` `_nohq` can be DXT5nm-swizzled; do not audit it as a plain RGB normal until it has been converted/deswizzled correctly.
+- Shipped `_nohq` is **DXT5nm**, not an RGB normal sitting in a DXT5 container. Do not audit the raw DXT block as `(X,Y,Z)` in RGB.
+
+### DXT5nm packing `[MECHANISM VERIFIED]`
+
+Vanilla vehicle `_nohq` (`hatchback_02_rust_body_nohq.paa`, `sedan_02_rust_body_nohq.paa`) and two regenerated LFQuad2 maps (body + detail, 2026-08-30) all store:
+
+| Where | What |
+| --- | --- |
+| Type | `0xFF05` DXT5 |
+| `TAGG SWIZ` | `05 04 02 03` |
+| Raw mip (decoder does **not** apply SWIZ) | `(R,G,B,A)=(0,Y,Z,X)` — R is 0 on 100 % of pixels; **X lives in alpha** |
+| After `ImageToPAA.exe` with a `_nohq` filename | RGB `(X,Y,Z)` (deswizzled) |
+
+Measure amplitude `mean(sqrt((R-128)^2+(G-128)^2))` and relief (percent of pixels with amplitude >25) on the **ImageToPAA-decoded PNG**. Derive packing from the current file and a vanilla `_nohq`, not from the suffix.
+
+### Height-from-luminance (only if you have no baked normal)
+
+If height is albedo luma (`0.2126 R + 0.7152 G + 0.0722 B`), dark is low. Build the DayZ normal as `normalize((-s·dx, -s·dy, 1))` after a Sobel/8 so Y is already DirectX/Y−. Then:
+
+- Confirm the **sign** on a known dark seam with a 1D sweep. Horizontal groove: R>128 entering, R<128 leaving. Vertical groove: use G. Two opposing slopes into a height minimum = valley. The opposite is an inverted mold.
+- **Recalibrate `s` per atlas.** A gain that landed inside vanilla on a 1024 body map overshot on a 512 high-contrast detail map. Prefer the lower-middle of a vanilla envelope; an exaggerated normal looks worse than a weak one.
+- This method cannot tell painted dirt from a real groove. Do not treat it as a bake.
 
 Evidence:
 
 - Local lesson LL-123: `AI/20_Knowledge/lessons-learned.md:2111` to `:2123`.
 - BI RVMAT basics documents X+ Y- normal convention: https://community.bistudio.com/wiki/RVMAT_basics
+- Packing and sign: LFQuad2 body + detail regen 2026-08-30, raw mip 128 vs vanilla hatchback_02 / sedan_02 (`CODEX-SOL-NORMAL-20260830.md`, `GROK-DETAIL-20260830.md`).
 
 ## SMDI packing
 

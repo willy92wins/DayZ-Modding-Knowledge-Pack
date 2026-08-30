@@ -1043,3 +1043,75 @@ instrument.** A test dialog that said "No debe salir 'no'" — meaning the
 returned `choice` — was read as "the No button should not be there" and reported
 as a bug. Operator-facing text states what to DO and never what the expected
 result is.
+
+## Hot-loop S2 sorter — reglas nuevas medidas (added 2026-08-29)
+
+Origen: preview `$profile:` del layout integrado 820x600 del sorter V4 TEST
+(250 widgets, 1920x1080 y 1280x720). Evidencia: `dayz_re_scratch/ui_matrix.md` §11,
+capturas `capture_20260829_003222_408` / `_003807_235`.
+
+1. **`visible 0` declarado en el `.layout` FUNCIONA** (motor y preview): section
+   roots solapados, overlays y badges nacen ocultos sin script (`visible:0` +
+   `visible_hierarchy:0` en el arbol del motor). Patron para secciones swapeables:
+   N roots identicos solapados, el activo `visible 1`, el resto `visible 0`; el
+   script solo conmuta el root (mata el hueco de secciones apiladas, F-007).
+2. **Los glifos NO comprimen linealmente al bajar el factor**: una caja que cabe a
+   1080p puede guillotinar a 0.667 ("POWERED" perdio la D con caja de 62 px;
+   necesito 70). Dimensiona la caja de texto al PEOR factor soportado y verifica
+   alli; +10-15% de margen sobre el ancho medido a 1080p.
+3. **Jerarquia tipografica en modo default font-only = caras con tamano**:
+   `gui/fonts/Metron12/14/16` y `MetronBook12/14` existen y vanilla las usa
+   (`day_z_hud.layout:1965` Metron14). Las caras sin numero ("Metron",
+   "MetronBook") rinden ~22 y no dan jerarquia fina. `text_proportion` sigue
+   vetado (sin ley entre resoluciones).
+4. **Tokens pre-mezclados validados end-to-end en panel real**: el ARGB de
+   `ui_tree` devuelve byte-exacto el float declarado y el render pinta el color
+   PURO (alpha declarado ignorado). Receta: `c = base*(1-a) + wash*a`, siempre
+   A=1 en el layout. Tabla de tokens del caso: S2-LAYOUT-SPEC.md §2 (LFPG).
+5. **Resize host-side (SetWindowPos) NO es universal**: mato un cliente de
+   1942x1136 (proceso muerto, sin crash de script); funciono en el 846x461 del
+   vuelo F. Barrido seguro: relanzar con width/height — y VERIFICAR el viewport
+   en el arbol (una peticion 1280x720 dio 1280x720 exacto esta vez; el vuelo F
+   obtuvo 846x461 con la misma peticion: el mapeo no es estable).
+6. **La preview `$profile:` es pintura sin contexto de menu**: clickear la
+   ventana da el foco al juego y la camara CAPTURA el raton (el cursor
+   desaparece y no hay mas clicks). ESC (menu vanilla) lo devuelve. Ningun click
+   sobre widgets de preview funciona; la interaccion se prueba con el panel real.
+7. **Geometria de layouts 100% exact-flag**: `ui_rects.py predict` NO los modela
+   (su propia cabecera). Via valida: `DayZ_Tooling/scripts/shared/layout_ast.py`
+   — `parse_layout(SOURCE)` devuelve lista plana con `.parent/.children` y attrs
+   tipados (position/size = [float,float]); contencion, anidamiento, z-order y
+   visible-0 se chequean offline con aritmetica de suma de ancestros.
+8. **La generacion del layout es delegable**: spec-tabla exhaustiva (nombre/
+   clase/rect/flags/color/fuente por widget) + gate mecanico (nombres exactamente
+   una vez, cero legacy, bindings, fuentes permitidas, alpha=1, un atributo por
+   linea) permitio a una lane gratis (glm-5.3-flash) producir 3.4k lineas
+   correctas a la primera; los dos defectos reales los cazaron el gate visual
+   (clip de glifo) y el ojo, no el gate textual.
+
+
+## Los clics sobre ScriptViews no son automatizables por el MCP (added 2026-08-29)
+
+Medido in-game el 2026-08-29 con el puente DayZ-MCP **v10 sano** (`bridge_status ready=true`, los
+dos peers en `10~1.29.163709`, `version accepted`), sobre el panel del sorter de LFPowerGrid, que
+es un ScriptView de Dabs y no un `UIScriptedMenu`:
+
+- `ui_tree` con `path` vacio devuelve `no_menu`: el walker busca el *scripted menu* activo y un
+  ScriptView no lo es. Por esa via no hay arbol de widgets que inspeccionar.
+- `ui_click` devuelve `not_handled` sobre botones que existen y estan visibles en pantalla.
+
+**El control que hace concluyente lo segundo, y que hay que repetir siempre.** `not_handled` sobre
+un boton con guard de permisos es AMBIGUO: puede ser el harness sin alcanzar el handler, o el
+fail-closed del controlador rechazando la accion. Son conclusiones opuestas. Se distingue clicando
+ademas un widget SIN guard. Aqui el boton de cerrar (`BtnCloseX`), permitido siempre y sin depender
+de power ni link, dio tambien `not_handled`, y una captura posterior mostro el panel todavia
+abierto: el clic no hizo nada. Sin ese segundo clic, el resultado se podria haber apuntado como
+"fail-closed verificado", que habria sido falso.
+
+Consecuencias al planificar un ciclo: los nombres de widget se sacan del `.layout`
+(`ButtonWidgetClass <Nombre>`), no de un arbol en vivo; y **cualquier gate que dependa de pulsar,
+escribir en un EditBox, cambiar de tab o cerrar con ESC es del usuario con raton real**. Que un
+verbo viaje dentro del PBO desplegado no implica que sea invocable -el registro de tools del daemon
+se fija al ARRANCAR, asi que `key_press` y `player_respawn` estaban en el PBO v10 y no existian como
+tools-, ni que, siendo invocable, alcance el handler. Fichas del pipeline: `fb-20260828-212912-f6ac`
+(abierta), evidencia en `fb-20260829-022838-7743`.

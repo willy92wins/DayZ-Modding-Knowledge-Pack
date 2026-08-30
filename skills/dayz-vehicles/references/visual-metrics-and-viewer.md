@@ -11,7 +11,7 @@ vez de por fecha.
 
 When the user reports "piece X sits N cm off / tilted" on an imported model (rotor vs its housing ring, wheel vs arch, part vs socket), do NOT author a corrective offset/rotation from the capture:
 
-1. **Measure the DEPLOYED artifact, not the source**: debinarize the deployed ODOL (external ODOL→MLOD converter) and measure the piece against its geometric reference in engine frame - circle-fit (least-squares) of the ring/arch rim, plane-fit (PCA) of a blade/wheel disc, bbox of the socket. Compare piece center / disc normal against the fitted reference.
+1. **Measure the DEPLOYED artifact, not the source**: debinarize the deployed ODOL (an external ODOL→MLOD converter, not distributed with this pack) and measure the piece against its geometric reference in engine frame - circle-fit (least-squares) of the ring/arch rim, plane-fit (PCA) of a blade/wheel disc, bbox of the socket. Compare piece center / disc normal against the fitted reference.
 2. **If the measurement says centered (offset ~mm, tilt ~0 deg), the complaint is PERSPECTIVE**: a ring/aperture with depth along its axis projects obliquely, so a geometrically centered piece LOOKS off-center from an angle - and the apparent offset direction changes with camera angle. Confirm by reproducing the illusion: flat-color render (piece magenta / hull grey) from the user's capture angle vs an orthographic front-on render.
 3. **Apply an offset ONLY if the deployed-artifact measurement demands it.** An eyeballed offset on an already-centered model is a REGRESSION (it moves what was right) and burns an in-game cycle to discover it.
 

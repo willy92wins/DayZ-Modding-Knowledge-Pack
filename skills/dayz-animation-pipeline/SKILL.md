@@ -7,6 +7,19 @@ description: Produce and modify DayZ animations across the full spectrum — con
 
 Produce and modify DayZ animations end to end. DayZ has **two parallel animation systems**, and the single most common failure is conflating them. This skill keeps them straight, tells you exactly which parts run where, and refuses to confabulate the reverse-engineered formats.
 
+## Dependencies
+
+```bash
+# py3d = DayZ fork of the pack, >= 1.5.0 (sealed wheel vendored in this skill).
+# NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
+command -v python3 >/dev/null 2>&1 || { echo "ABORT: python3 is required to install the sealed DayZ py3d wheel" >&2; exit 1; }; python3 scripts/install_py3d.py
+python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,5,0), (py3d.__version__, py3d.__file__)"
+```
+
+Only the `.p3d` scripts need py3d; the SEAnim/RTM writers are pure Python. The assert
+is not decoration: without it a wrong `py3d` installs silently and every geometry read
+returns plausible garbage.
+
 ## The seam: what runs in the sandbox vs what needs Windows/GUI (anchor 1)
 
 This matters more than any config detail. Claude runs in a Linux sandbox with no `P:\`, no DayZ Tools, no Workbench, no Object Builder. Be honest about the boundary in every plan — promising work Claude cannot run is the worst outcome.
@@ -22,7 +35,7 @@ Additional layer-specific notes from the LFQuad rider-pipeline sprint (2026-05-2
 - **Layer 1.5 — scripted (Enforce Script)**: a `modded ActionGetInTransport` that snaps the player to the correct seat side using 4 memory points per seat (`pos_*_L/_R`) before `super.OnStartServer` runs. Fixes the >180° yaw spin from the wrong side. See `references/dual-entry-action-pattern.md`. Sandbox-deliverable.
 - **Layer 2 — IK pose from .p3d anchors → SEAnim**: 2-bone analytic IK on `OFP2_ManSkeleton` from 6 anchors (`scripts/ik_pose_to_seanim.py`). Produces SEAnim variants without a per-bone keyframer. **Critical caveat**: SEAnim rotations are rest-pose-relative, so the script needs `--rest-pose` extracted from a vanilla `.anm` via DayZATool to produce in-game-ready output; without it the output is positionally approximate. See `references/vehicle-rider-ik-pose.md`.
 
-**The `.p3d` geometry an animation needs is NOT Layer 3 — don't punt it to Object Builder.** A config-driven animation needs a named selection to drive and (for rotation/translation) an axis = a pair of memory points; a skeletal bone is also a named selection. Adding/editing those and rebuilding the `.p3d` is sandbox work via the sibling p3d skills: `dayz-p3d-inspector` (extract → Recipe JSON → edit memory points / axis endpoints / selections → rebuild `.p3d`) or `dayz-model-pipeline` (py3d assembly, or from scratch). Convert with an external ODOL→MLOD converter first if the model is binarized (ODOL, not editable), and `dayz-p3d-audit` to verify winding and `Component01` naming. Honest caveats: py3d edits an MLOD `.p3d`, and authoring a brand-new selection that groups specific geometry leans on the model-pipeline/inspector context (memory points and the axis pair are trivially addable). So when a plan needs a selection or an axis, offer to do it in-sandbox — interactive Object Builder is a *preference*, not a requirement. For Layer 1 work the only true Layer 3 remnants are PBO signing and the in-game test.
+**The `.p3d` geometry an animation needs is NOT Layer 3 — don't punt it to Object Builder.** A config-driven animation needs a named selection to drive and (for rotation/translation) an axis = a pair of memory points; a skeletal bone is also a named selection. Adding/editing those and rebuilding the `.p3d` is sandbox work via the sibling p3d skills: `dayz-p3d-inspector` (extract → Recipe JSON → edit memory points / axis endpoints / selections → rebuild `.p3d`) or `dayz-model-pipeline` (py3d assembly, or from scratch). Run an external ODOL→MLOD converter first if the model is binarized (ODOL, not editable), and `dayz-p3d-audit` to verify winding and `Component01` naming. Honest caveats: py3d edits an MLOD `.p3d`, and authoring a brand-new selection that groups specific geometry leans on the model-pipeline/inspector context (memory points and the axis pair are trivially addable). So when a plan needs a selection or an axis, offer to do it in-sandbox — interactive Object Builder is a *preference*, not a requirement. For Layer 1 work the only true Layer 3 remnants are PBO signing and the in-game test.
 
 When you produce a deliverable, say where it sits on this seam and what the user must run next.
 
@@ -207,7 +220,8 @@ Summary so a plan can flag them without re-reading the ref:
 When you produce a plan that writes a `.p3d` (selections, memory points,
 properties), name these six explicitly as criteria the script must satisfy
 (R26 fixtures). Validation gate after the write: round-trip the file with
-`py3d.read_p3d` or `dayz-p3d-inspector` `extract_recipe` and assert non-empty
+`py3d.P3D(open(path, "rb"))` (there is no `py3d.read_p3d`) or `dayz-p3d-inspector`
+`extract_recipe`, and assert non-empty
 selections, exact memory-point coords, and unchanged material count. If any
 check fails, restore from backup before iterating — the failure modes here
 cannot be "tweaked out" of a corrupted file.
@@ -225,7 +239,7 @@ Cross-references already covered in this skill:
   `crewdriver` / `crewcodriver` having been overwritten in place (Quirk 4).
   If the rebake step skipped that, the modded action silently sees vanilla
   positions and L/R routing degrades.
-- `dayz-p3d-inspector-memory-selection-bugs.md` (vault knowledge note)
+- `dayz-debinarizer-inspector-memory-selection-bugs.md` (vault knowledge note)
   covers an adjacent failure mode on the READ side: ODOL → MLOD round-trip can
   preserve selection names but lose membership (LL-018). py3d 1.0.0 Quirks 1,
   2 and 5 reproduce a *similar* symptom on the WRITE side: name present,

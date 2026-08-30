@@ -48,7 +48,7 @@ py3d 1.0.0 made the `Selection` constructor positional-argument-required.
 Calling the no-arg form returns an object whose `.set_face_weight(idx, w)` calls
 appear to succeed but write nothing into the LOD's stream. The selection ends
 up in the output `.p3d` with **zero membership**, same failure mode as the
-ODOL→MLOD converter Memory-LOD bug (cross-ref LL-018, `dayz-p3d-inspector-memory-selection-bugs.md`):
+debinarizer Memory-LOD bug (cross-ref LL-018, `dayz-debinarizer-inspector-memory-selection-bugs.md`):
 the name shows up, the body is empty.
 
 Apply once per LOD per selection. If you grow `lod.points` or `lod.faces`
@@ -231,6 +231,6 @@ implementation of LL-frame-of-reference.
   five quirks.
 - `dayz-p3d-audit` — its winding/Component01 checks run AFTER this write;
   pass the round-trip first.
-- `dayz-p3d-inspector-memory-selection-bugs.md` (vault) — adjacent
+- `dayz-debinarizer-inspector-memory-selection-bugs.md` (vault) — adjacent
   failure mode (LL-018) where selection names survive but membership is lost.
   py3d 1.0.0 Quirks 1, 2, 5 reproduce a *similar* symptom on the write side.

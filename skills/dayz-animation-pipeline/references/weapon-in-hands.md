@@ -63,7 +63,7 @@ python3 scripts/weapon_grip_viewer.py \
 ```
 
 - Inputs MUST both be MLOD and in final model space (offsets applied). If the
-  reference is binarized, convert it with an external ODOL→MLOD converter first.
+  reference is binarized, run an external ODOL→MLOD converter first.
 - CLI prints the checklist + findings (usable headless / in CI); HTML adds:
   custom mesh + translucent reference ghost, both memory-point sets, bore and
   ADS lines with deviations, world-origin axes (the hand anchor), and
@@ -185,7 +185,7 @@ full-res per-angle grab and LOOK. (See LL-153; the gate now auto-emits a full-re
 - `anim-graph.md` — ASI chain that picks the `.anm` per weapon and state.
 - `item-ik-and-hide.md` — `AddItemInHandsProfileIK` (the same reuse idea for
   heavy items).
-- external ODOL→MLOD converter / `dayz-p3d-inspector` — get MLOD + edit memory
+- an external ODOL→MLOD converter (not distributed with this pack) / `dayz-p3d-inspector` — get MLOD + edit memory
   points when the checker finds anomalies.
 
 ## [2026-06-28] The ASI binding path for a custom weapon anim [VERIFIED-vanilla]

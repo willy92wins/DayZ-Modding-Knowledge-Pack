@@ -6,7 +6,7 @@
 
 ---
 
-<!-- [merged 2026-06-05 from <claude-home>\skills user copy during plugin-canonical migration] -->
+<!-- [merged 2026-06-05 from .claude\skills user copy during plugin-canonical migration] -->
 ## 8. SEVERITY INFLATION IN AUDIT REPORTS (added 2026-05-15)
 
 Patrón observado en audits de LFPowerGrid: etiquetar como `P1 — crash`
@@ -40,7 +40,7 @@ R4 + R30 del `CLAUDE.md` global.
 
 ---
 
-<!-- [merged 2026-06-05 from <claude-home>\skills user copy during plugin-canonical migration] -->
+<!-- [merged 2026-06-05 from .claude\skills user copy during plugin-canonical migration] -->
 ## 9. AUDITORÍAS MULTI-AGENTE: AISLAMIENTO DE CONTEXTO OBLIGATORIO (added 2026-05-16)
 
 Post-mortem documentado en `LF_VStorage_dev/skills/rigorous-data-audit/postmortem.md`

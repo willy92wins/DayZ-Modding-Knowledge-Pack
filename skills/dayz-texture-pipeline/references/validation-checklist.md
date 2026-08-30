@@ -13,6 +13,8 @@ Use this checklist before handing off texture/material work.
 
 - Final game-facing paths reference `.paa`.
 - `_nohq` source orientation is known; OpenGL/Y+ sources were converted to DayZ DirectX/Y-.
+- Written `_nohq` packing was derived from the file (DXT5nm: raw R=0, X in alpha, SWIZ `05 04 02 03`) or from an `ImageToPAA` `_nohq` round-trip, not from the suffix. Amplitude/relief measured on the deswizzled PNG.
+- If the normal was built from albedo luminance: a known dark seam was swept as a **valley** (not a ridge), and Sobel gain was calibrated on this atlas, not copied from another map.
 - `_smdi` channels are intentional: R near white, G specular, B gloss/specular power.
 - Alpha usage is deliberate for `_ca` or transparent materials.
 - Source files are not accidentally referenced from `.rvmat` or config.

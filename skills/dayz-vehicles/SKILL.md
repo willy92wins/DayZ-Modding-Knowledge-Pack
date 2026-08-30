@@ -156,7 +156,7 @@ Gate before every deploy that adds geometry: extract the PBO and parse the ODOL 
 table, asserting `is_sectional==1`, non-empty `sections`, and the `0x20000` bit. The LOD
 address table is found by chaining (`lod_end[i] == lod_start[i-1]`, max end ≈ file size);
 a naive scan for the first plausible table hits a false positive. Reference implementation:
-`<vehicle-import>\work\navscreen_planb\gate_sections.py` (built on the external ODOL backend's
+`<vehicle-import>\work\navscreen_planb\gate_sections.py` (built on an external ODOL→MLOD converter's
 `odol_reader`). String-only scans pass while the geometry is undrawable — that gate cost
 five wasted in-game cycles before it existed.
 
@@ -865,6 +865,8 @@ units, headroom accounting and what does NOT discriminate — is in
     value, and say which link you read it from.** The same trap applies to every inherited
     config key, not just `rotationFlags`.
 
+35. **Missing DamageZone `memoryPoints[]` / Memory `dmgzone_*` points do NOT explain collision jerks or driving stutters (added 2026-08-30, LFQuad2).** `[MECHANISM VERIFIED]` The script contact path never reads `memoryPoints[]`. `CarScript.OnContact` caches the first PhysX impulse of the tick (`carscript.c:1454-1478`); `CheckContactCache` applies `ProcessDirectDamage(..., zoneName, "EnviroDmg", "0 0 0", dmg)` (`:1497`, `:1572`). `DamageSystem.GetDamageZoneMap` only `ConfigGetTextArray(... componentNames)` (`damagesystem.c:63-68`). Zero `memoryPoints` hits in `scripts/**/*.c`; the same grep finds them in vehicle configs. Vanilla OffroadHatchback `class Chassis` has `componentNames[]` and no `memoryPoints[]` (`DZ/vehicles/wheeled/config.cpp:1570-1579`). `GetMemoryPointPos("dmgZone_*")` in the ctor (`carscript.c:393-406`) feeds `GetEnginePointPosWS` / `GetFrontPointPosWS` / … (`:496-522`) which have **zero callers**. Geometry is the contact mesh; a working referent can carry `dmgzone_*` only in FireGeometry (+ Memory for config parity). Do not spend an in-game cycle adding Memory `dmgzone_*` as a jerk fix. DISTINCT from #9 (missing `class Engine`/`FuelTank` stalls a started engine). Native `OnContact.zoneName` / `GetDamageZonePos` remain C++-opaque — even if they used memory points, that would change which zone loses HP, not the impulse.
+
 ## NEW CAR — DAY-1 (run BEFORE the first in-game cycle; retro 2026-07-03)
 
 Retro of LFQuad→SUB_BRZ→MercedesAMGLF (~90-110 session-equivalents, ~180-220 in-game cycles across
@@ -1414,3 +1416,98 @@ Medidas en el stand dayz-mcp (DayZDiag 1.29.163709, CivilianSedan), sesion ABBA 
 - **Get-out**: `ActionGetOutTransport.ActionCondition` = `crewIndex >= 0 && CrewCanGetThrough && IsAreaAtDoorFree` (actiongetouttransport.c:68-77; `CCTNone` — el target no participa). Un coche detenido CONTRA estaticos deja la puerta bloqueada y la accion en `condition_failed`; la superficie de control del stand no tiene marcha atras (throttle 0..1) — el sitio queda irrecuperable. Disena el sitio con >=150 m despejados EN LA DIRECCION DE CONDUCCION y un cleanup degradable: borrar el fixture con el jugador dentro eyecta limpio (4/4 medido).
 - **Rumbo del spawn**: el 4o parametro de `CreateObjectEx` son flags `RF_*`, NO yaw; el vehiculo hereda la orientacion del terreno del punto (~11,6 grados entre dos puntos a 40 m). No hay setter de orientacion por tools: si el experimento exige rumbos comparables, se seleccionan sitios empiricamente (los trace samples dan el rumbo real conducido).
 - **Drivability posicional**: un vehiculo puede quedar CONGELADO (delta 2s ~0,12 m a throttle 1.0) por el SITIO — el mismo binario/config condujo 91 m en un punto y 0,12 m en otro a 40 m. Antes de culpar a config/ownership/codigo: ABBA de los sitios (LL-359).
+## Get-out del stand: la cadena real y el teardown sancionado (added 2026-08-24 tarde)
+
+Triangulado en 13 rondas sobre NWAF (evidencia: sesion 2026-08-24c + ficha
+fb-20260824-133301-ecf5). El `condition_failed` de ActionGetOutTransport en fixtures del
+stand NO depende del sitio (identico en 9 sitios, 7 pristinos):
+
+- La puerta del conductor spawnea CERRADA y `CrewCanGetThrough` la exige no-cerrada
+  (civiliansedan.c:214-222; fase <=0,5 = CLOSED, carscript.c:2801-2811).
+- Abrirla por accion NO funciona: la mitad server de las acciones inyectadas es inerte
+  (`OnStartServer`/SetAnimationPhase no se materializa, actioncardoors.c:92) - la accion
+  ARRANCA en el cliente (started=1) pero la fase sigue 0.0. Discriminador barato:
+  ActionCloseCarDoors devuelve condition_failed despues de "abrir" (su condicion exige
+  fase >0,5 y comparte IsAreaAtDoorFree con el get-out, que queda exculpada).
+- La replica SERVER del coche client-auth no sale del punto de spawn aunque el owner-peer
+  conduzca 70-100 m: object_anim/object_inspect (resuelven por posicion en el server,
+  radio 25, MCPBridge.c:20) hay que apuntarlos AL SPAWN o no usarlos.
+
+**Teardown sancionado**: object_delete del fixture con eyeccion verificada por telemetria
+(`not_seated`); 18/18 limpio acumulado. El get-out por accion NO es criterio de sitio.
+
+
+## Un buje `componentNN`-tagueado no sirve si esta en el LOD equivocado (added 2026-08-29, LFQuad2 port del ATV de Arma 2 OA)
+
+El preflight #4 de este fichero exige que asientos y bujes lleven dual-tag `componentNN`. Dice
+QUE tag, no DONDE. La otra mitad --que la seleccion tiene que vivir en el LOD **Geometry**-- es
+la que fallo hoy, y es la que un port arrastra del donante sin enterarse.
+
+Firma del motor, identica a la de 2026-07-17:
+
+    ENTITY       : Load entity type '<Clase>'
+    PHYSICS   (E): Won't simulate, wheel wheel_1_1_damper_land has no proper selection in geometry
+
+Consecuencia: `CreateObjectEx` devuelve **null**. El vehiculo **no nace**; no es que se vea mal.
+
+**Donde van los bujes, medido en TRES modelos que arrancan**, no en uno:
+
+| modelo | `*_damper_land` en Geometry | LOD LandContact |
+|---|---|---|
+| LFQuad (referente vivo) | 4, con caras y dual-tag `componentNN` | **no existe** |
+| `civiliansedan_mlod.p3d` (vanilla) | 4 | **no existe** |
+| quadbike de Crocodoc | 4 | **no existe** |
+| LFQuad2 (port, no nacia) | **0** | existe, y ahi estaban las 4, con 1 punto y 0 caras |
+
+**La trampa del port:** un MLOD de Arma 2 trae LOD LandContact, y el porteador deja ahi los
+puntos de contacto porque el nombre encaja. DayZ no lee el buje de ahi: el `wheelHub` del
+`config.cpp` se resuelve contra **Geometry**. Ojo a que los dos sintomas son el mismo error --
+una seleccion de 1 punto y 0 caras tampoco puede llevar `componentNN`, porque no hay caras que
+taguear.
+
+**Comprobacion de 5 s antes de cualquier ciclo in-game:** por cada `wheelHub` que nombre el
+config, que ese nombre exista en el LOD Geometry, con caras, y dual-tagueado. En forma
+complementaria y no enumerada: derivala del config del propio modelo, que es quien nombra los
+bujes, no de una lista escrita a mano.
+
+Y el aviso de proceso, que es la mitad cara de esta entrada: la firma de este error **ya estaba
+escrita**, en `history/cambio-1-superseded-family-b-rules.md:103`, un fichero cuya cabecera dice
+**HISTORY ONLY - NO AUTHORITY**. Volvio a morder seis semanas despues. Al archivar una regla,
+comprueba que la mitad viva conserva las DOS preguntas: que, y donde.
+
+**CONFIRMADO IN-GAME el mismo dia.** Tras mover las cuatro selecciones al LOD Geometry
+--nombres sobre geometria que YA existia, sin anadir una sola cara-- el vehiculo **nace**:
+
+    [LFQ2-TEST] LFQuad2 type=LFQuad2 pos=<13282.5, 7.27, 6883.2> wheels=4 fuel=1
+
+`CreateObjectEx` devuelve el objeto en vez de null, con sus cuatro ruedas acopladas. O sea
+que el hueco de Geometry no era solo necesario: era **suficiente** para que el motor
+construya la fisica. Util saberlo porque el motor para en el PRIMER error, asi que antes de
+probarlo no se podia descartar que hubiera mas bloqueos detras.
+
+**Contrapartida medida, y que hay que mirar al conducir:** en un port, la unica geometria que
+corresponde a cada rueda suele ser **la rueda entera** (aqui 0,198 x 0,599 x 0,599 m) frente a
+la cajita de buje del referente (0,20 x 0,22 x 0,22 m). Es la opcion honesta --inventar una
+caja pequena cambia la masa del LOD Geometry-- pero deja un componente de colision 3x mas
+grande en dos ejes. Si tras el arreglo la suspension va rara o el vehiculo se siente anclado,
+ese tamano es el primer sospechoso, no el config.
+
+## Paridad de port: tres huecos que ningun config delata (added 2026-08-29, LFQuad2)
+
+Un port copia lo que ve en el `config.cpp` del referente. Estos tres no viven en ningun config,
+asi que sobreviven intactos a cualquier revision que lea configs:
+
+- **El ancla `refill`.** Sin una seleccion `refill` en Memory y en ViewGeometry, la accion de
+  repostar **no aparece nunca** (`actionfillfuel.c:13,61-70`; `transport.c:75-78,313-315`).
+  Copiar el override `GetActionDistanceFuel()` del referente no basta: ajusta la distancia de
+  una accion que, sin ancla, no existe.
+- **`CfgSoundSets` propios.** Heredar la clase base deja el vehiculo **mudo**: cero soundsets de
+  motor en `soundSetsFilter[]` y ninguno propio. No emite error en ningun log.
+- **`modded class` sin rastro en config.** El referente traia `ActionGetInTransport` (corrige el
+  giro >180 grados al montar por el lado contrario) y `ModItemRegisterCallbacks` (ruedas a una
+  mano). Ningun config los menciona, asi que solo aparecen comparando **arboles de script**.
+
+Metodo que los encontro, y es lo transportable: no enumerar que mirar, sino **derivar el
+contrato del referente en ejecucion** --"toda familia de seleccion que el referente tiene, el
+port la tiene"-- con una lista corta de excepciones autorizadas. El port llevaba 17 puertas, 15
+en verde, y no nacia; el barrido complementario saco 22 huecos en una sola pasada.

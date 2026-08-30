@@ -3,7 +3,7 @@
 Research date: 2026-07-09. Scope: read-only extraction from existing skills + project handoffs. No files outside this report were modified.
 
 **Path aliases used throughout** (to keep citations readable — substitute before use):
-- `[SKILLS]` = `<claude-appdata>\local-agent-mode-sessions\skills-plugin\<plugin-id>\<install-id>\skills`
+- `[SKILLS]` = `<claude-appdata>\local-agent-mode-sessions\skills-plugin\d07d091e-4ce6-408d-9a98-a6b2afe12743\2e9b9ae7-571b-4eee-9a6c-075b7f119743\skills`
 - `[PROJ]` = `<dayz-projects>`
 
 All facts below were read directly from the cited `path:line` — none inferred from search snippets alone (R2.1 discipline).
@@ -199,7 +199,7 @@ Things the available files do not answer, or that this session could not verify 
 
 All paths below were opened directly with the Read/Grep tool this session (not inferred from search snippets). Alias definitions repeated here for standalone use of this section.
 
-`[SKILLS]` = `<claude-appdata>\local-agent-mode-sessions\skills-plugin\<plugin-id>\<install-id>\skills`
+`[SKILLS]` = `<claude-appdata>\local-agent-mode-sessions\skills-plugin\d07d091e-4ce6-408d-9a98-a6b2afe12743\2e9b9ae7-571b-4eee-9a6c-075b7f119743\skills`
 `[PROJ]` = `<dayz-projects>`
 
 **Skill files read (full or substantial partial read):**

@@ -274,6 +274,12 @@ that level (glass). Every `dmgZone_*` in `componentNames[]` MUST exist as a sele
 (FireGeometry component + Hitpoints/Memory). Without DamageZones + FireGeometry components there is no
 localized damage.
 
+`[MECHANISM VERIFIED 2026-08-30]` Enforce reads `componentNames[]` (`damagesystem.c:63-68`), not
+`memoryPoints[]`. Vanilla Chassis may omit `memoryPoints[]` entirely. Missing Memory `dmgzone_*`
+points are config/Memory parity, not a collision-jerk cause — see skill invariant 35. Keep the
+FireGeometry `dmgzone_*` selections; do not burn an in-game cycle adding the Memory half as a
+physics fix.
+
 ## 6b. Window / Glass damage (added 2026-07-07, cross-confirmed 3 real configs)
 
 Breakable glass is **not** a separate system — it is the same `DamageZones` + `healthLevels[]` rvmat-swap

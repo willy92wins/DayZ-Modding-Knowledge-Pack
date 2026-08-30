@@ -1,4 +1,4 @@
-<!-- [merged 2026-06-05: standalone predecessor particle reference from <claude-home>\skills user copy. Kept for content the main SKILL.md + refs do not cover: multi-emitter composition (PLANES_EX/IMPACT/BOOM), animated + Mast modulation curves, CfgCloudlets conversion.] -->
+<!-- [merged 2026-06-05: standalone predecessor particle reference from .claude\skills user copy. Kept for content the main SKILL.md + refs do not cover: multi-emitter composition (PLANES_EX/IMPACT/BOOM), animated + Mast modulation curves, CfgCloudlets conversion.] -->
 
 ---
 name: dayz-particles

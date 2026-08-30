@@ -1,4 +1,4 @@
-﻿# Audit a PartUV result with the same metrics as our pipeline, then re-pack its
+# Audit a PartUV result with the same metrics as our pipeline, then re-pack its
 # charts with the semantic shelf packer for an apples-to-apples comparison.
 # Usage: blender -b -P audit_partuv.py -- <in.obj> <out_dir> <tag> <out.blend>
 import bpy, sys, os

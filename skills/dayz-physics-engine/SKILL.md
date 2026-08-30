@@ -48,7 +48,9 @@ only when the task needs that depth:
 4. **Friction/restitution are material strings, not setters.** They come from the physics material
    assigned per-geometry (`PhysicsGeomDef.MaterialName`, e.g. `"material/default"` —
    `1_core/physics/physicsgeomdef.c:18-24`) and surface definitions (.bisurf / CfgSurfaces). There is
-   no `dBodySetFriction`-style API (0 matches in all of scripts/).
+   no `dBodySetFriction`-style API (0 matches in all of scripts/). Measured (BenchRE 2026-08-26):
+   .bisurf `restitution` does not translate into bounce on the native item path — SmallStone dropped
+   from 5 m onto open-field terrain rebounds 0.02-10 mm (apparent e = 0.009-0.046, n=6).
 5. **Transport replicates because it is a Pawn.** `Transport extends Pawn` with continuous
    `TransportOwnerState` (world transform + linear + angular velocity) streamed to all proxies
    (`3_game/vehicles/transport.c:13-30,52-53`; `3_game/entities/pawn.c:20-24`). `ItemBase` is not a
@@ -62,7 +64,9 @@ only when the task needs that depth:
 7. **Drop/throw physics is temporary by design.** It is governed by a lifetime:
    `StopItemDynamicPhysics()` kills it via `SetDynamicPhysicsLifeTime(0.01)`
    (`4_world/entities/itembase.c:4530-4534`). A long-rolling object must renew/extend the lifetime or
-   avoid depending on the drop path. Exact default/renewal semantics are engine-side: validate in-game.
+   avoid depending on the drop path. Measured (BenchRE 2026-08-26): the default lifetime is exactly
+   **15 s** (n=2, `dBodyIsDynamic` polled at 4 Hz flips at t=15.00); `SetDynamicPhysicsLifeTime(3600)`
+   is honored (still dynamic past a 300 s watchdog).
 8. **A player's EOnContact only reacts to Transport.** `DayZPlayerImplement.EOnContact` casts
    `Transport.Cast(other)` and ignores everything else (`4_world/entities/dayzplayerimplement.c:3814-3829`).
    A custom ItemBase that should hurt players must detect the contact itself and call
@@ -304,6 +308,27 @@ Origen: LFSlidingFloor spike B, test in-game 2026-06-10 (script logs con telemet
 - **OWNER CLIENT NO**: el avatar local nunca ragdollea — sigue de pie y controlable (movimiento client-authoritative). Desync total server-owner. Ragdoll-en-vivo solo es viable end-to-end con sync custom de posición (ver LL-138).
 - El toggle `PhysicsSetRagdoll(false)` NO rubber-bandea: la entidad queda exactamente donde terminó el cuerpo (pos pre == post, verificado).
 - **PELIGRO get-up**: `StartCommand_Unconscious(0)` + `WakeUp` a los 0.5 s dejó al player server-side 40 m BAJO el terreno, con caída al vacío, uncon real y muerte. La protección vanilla anti-wake-early es de 2 s (playerbase.c:3169-3172); no se re-iteró (el desync ya invalidaba el enfoque).
+
+## Cuerpos script sobre items vanilla — evidencia empírica BenchRE (added 2026-08-26)
+
+Corrida DayZDiag 1.29 server+cliente, mod BenchRE build 0004. Evidencia:
+`C:\Users\<you>\dayz_re_scratch\bench_results\` (CSVs + logs crudos); síntesis con las 7
+preguntas de la matriz en `C:\Users\<you>\dayz_re_scratch\physics_matrix.md` §6.
+
+- **`Physics.CreateDynamic` / `CreateDynamicEx` / `CreateStaticEx` devuelven falsy sobre
+  InventoryItem vanilla** (SmallStone/WoodenStick spawneados con `CreateObjectEx`): 7/7 intentos
+  server-side. El path NATIVO sobre los mismos items funciona (`ThrowPhysically` +
+  `SetDynamicPhysicsLifeTime` + `dBodyIsDynamic` leído 2402 ticks). Los items ya poseen cuerpo
+  nativo y la familia `Create*Ex` no se adhiere a ellos — coincide con sus 0 usos gameplay en
+  vanilla. Un host viable para cuerpos script debe carecer de física propia (sin validar aún:
+  entidad custom estilo `scriptmodel.c`).
+- **`DayZPhysics.GetHitSurfaceAndLiquid` no nombra superficies de TERRENO**: `RayCastBullet`
+  sobre campo abierto devuelve hit_pos válido, pero la vía exige un Object y el terreno no lo
+  es (6/6 sondas sin nombre). Para terreno: `CGame.SurfaceGetType(x, z, out type)`
+  (`3_game/global/game.c:1166`) / `SurfaceGetType3D` (`game.c:1168`).
+- **Cliente MP: `CreateObjectEx` sin `ECE_LOCAL` devuelve null** (n=2). Para geometría local de
+  test en cliente añadir `ECE_LOCAL` (`3_game/ce/centraleconomy.c:24`; patrón cliente:
+  `3_game/particles/particle.c:119`).
 
 ## Reglas promovidas del corpus de lecciones (added 2026-07-27)
 

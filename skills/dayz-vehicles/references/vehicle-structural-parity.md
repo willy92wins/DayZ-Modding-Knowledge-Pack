@@ -8,7 +8,7 @@
 
 ## Parity-first method (do this BEFORE baking a vehicle)
 
-1. Debinarize the civiliansedan (v54) with an external ODOL→MLOD converter whose reader handles v54.
+1. Debinarize the civiliansedan (v54) with an external ODOL→MLOD converter whose ODOL reader handles v54.
 2. Enumerate every LOD (resolution + `named_selections` + `proxies`) with the ODOL reader.
 3. Diff against your model's read-back (py3d) and your `config.cpp`.
 4. Build ALL missing pieces in one pass — do not discover them error-by-error in-game.
@@ -74,7 +74,7 @@ config wires them.
 
 - LFQuad F2 parity audit: `AI/10_Projects/LFQuad/research/2026-05-24-parity-audit-civiliansedan-claude.md`.
 - LL-030 (parity-first), LL-031 (gate by RPT post-deploy).
-- Skills/tools: an external ODOL→MLOD converter (debinarize the reference), `enforce-script-reference` (config blocks),
+- Tools: an external ODOL→MLOD converter (debinarize the reference; not distributed with this pack), skill `enforce-script-reference` (config blocks),
   `dayz-animation-pipeline` (model.cfg / AnimationSources), `dayz-particles` (damage effects).
 
 ---
@@ -138,7 +138,7 @@ script-side (no hay wreck= ni class Wrecked* en wheeled/config.cpp). healthLevel
 - Croco quadbike v53: NO full-debinarizable (desync en EmbeddedMaterial v53), pero la cabecera/ModelInfo
   SI (mass, COM, geometry_center, resoluciones de LOD) monkeypatcheando LOD.read para saltar el parse de
   geometria. Para su geometria real -> Object Builder (maneja v53).
-- El conversor ODOL->MLOD INVIERTE el winding -> un MLOD debinarizado NO es referencia de winding
+- El debinarizer INVIERTE el winding (ODOL->MLOD) -> un MLOD debinarizado NO es referencia de winding
   fiable. Para winding de colision usar Check C (cross vs centroide del componente).
 - LOD set de un quad que funciona (Croco): visual 0-6, shadow 1100, Geometry 1e13, Memory 1e15, ViewGeo
   6e15, FireGeo 7e15 (sin LandContact).
@@ -450,8 +450,8 @@ The Addendum 2026-05-26 note above says the Croco quadbike v53 is "NO full-debin
 
 Verified current state:
 - `AI/10_Projects/LFQuad/research/2026-05-27-croco-geometry-extracted-v53.md:76-82`: material v16 was resolved; all 12 LODs parse; a complete Croco MLOD was generated; Geometry LOD is OK with hubs + 27 convex components + `class=vehicle`.
-- `AI/30_Sessions/2026-05-30-LFQuad-round2-spec-y-debinarizer-verdict.md:7`: `croco_extracted/quadbike_mlod.p3d` is usable, with round-trip OK since 2026-05-27; the residual converter gap only affects visual LODs >16KB and has zero leverage for the bounce fix.
-- `AI/30_Sessions/2026-05-30-LFQuad-round2-spec-y-debinarizer-verdict.md:13,16`: ROUND-2 should use py3d on the Geometry LOD, mirroring the extracted Croco; do not improve the converter or fall back to Object Builder for this geometry task.
+- `AI/30_Sessions/2026-05-30-LFQuad-round2-spec-y-debinarizer-verdict.md:7`: `croco_extracted/quadbike_mlod.p3d` is usable, with round-trip OK since 2026-05-27; the residual debinarizer gap only affects visual LODs >16KB and has zero leverage for the bounce fix.
+- `AI/30_Sessions/2026-05-30-LFQuad-round2-spec-y-debinarizer-verdict.md:13,16`: ROUND-2 should use py3d on the Geometry LOD, mirroring the extracted Croco; do not improve the debinarizer or fall back to Object Builder for this geometry task.
 
 Operational rule: for car Geometry parity, use `croco_extracted\quadbike_mlod.p3d` / `croco_extracted\quadbike_mlod.p3d`-derived data as the quantitative reference. Treat the 2026-05-26 "Object Builder" sentence as historical context only, not current guidance.
 
