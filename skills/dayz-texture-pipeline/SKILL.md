@@ -303,12 +303,41 @@ quién la llama: vanilla la invoca desde `EEItemAttached`
 attach** y ella va de pasajera. Queda escrita como descartada **con el motivo**, no como pendiente:
 un pendiente lo hereda alguien dentro de un mes y se gasta la tarde en él.
 
-**El candidato vivo es `SetSimpleHiddenSelectionState`**
-(`P:/scripts/3_game/entities/entityai.c:2892`): `proto native` de verdad, y toca la visibilidad de
-**la misma selección** que lleva el override, así que apagarla y encenderla podría forzar al motor a
-re-evaluarla. Es además el único que queda: un barrido de `proto native` sobre `entityai.c` y
-`object.c` devuelve solo `SetObjectTexture`, `SetObjectMaterial` y ese. **No existe ningún
-`UpdateVisuals`** — si buscas una llamada de refresco genérica, no la hay, y eso ahorra la búsqueda.
+**Tampoco `SetSimpleHiddenSelectionState`, y por un motivo que conviene saber antes de llamarla:
+son DOS espacios de índices distintos, y mezclarlos crashea el cliente.**
+
+| API | indexa | comentario de vanilla |
+|---|---|---|
+| `SetObjectTexture` / `SetObjectMaterial` (`entityai.c:2895,2898`) | `hiddenSelections` | «Change texture/material **in hiddenSelections**» |
+| `SetSimpleHiddenSelectionState` / `IsSimpleHiddenSelectionVisible` (`entityai.c:2891-2892`) | `simpleHiddenSelections` | «**Simple** hidden selection state; 0 == hidden» |
+
+`GetHiddenSelectionIndex` (`entityai.c:2792`) devuelve un índice del **primer** array — su propio
+comentario lo dice: «index of the string found in cfg array `hiddenSelections`». Pasárselo a la API
+*simple* es indexar otro array. Medido: **crash nativo del cliente con minidump**, sin traza por
+debajo del script.
+
+Que son arrays distintos no es inferencia: `weapon_base.c:62` declara
+`m_weaponHideBarrelIdx` con el comentario «index in **simpleHiddenSelections** cfg array», y en
+**30 call-sites vanilla de la API simple, CERO** usan `GetHiddenSelectionIndex` — van con ordinales
+fijos (`SIMPLE_SELECTION_MELEE_RIFLE = 0` … `SHOULDER_MELEE = 3`, `dayzplayer.c:1160-1163`), con
+índices miembro (`weapon_base.c:391,2133,2141`) o con getters propios (`GetHairIndex()`,
+`GetBeardIndex()`, `playerbase.c:9055-9057`).
+
+**La guarda que usa vanilla, y que evita el crash**, está en `actionviewbinoculars.c:35`:
+
+```c
+if (item.ConfigIsExisting("simpleHiddenSelections")) { item.SetSimpleHiddenSelectionState(0, false); }
+```
+
+**Y para ropa de cuerpo la vía muere en la config, no en la llamada.** Censo de
+`simpleHiddenSelections` bajo `DZ\characters`, un `config.cpp` por categoría: heads 3, headgear 2,
+data 2, glasses 1 — y **tops, pants, vests, gloves, shoes, belts, backpacks y masks: CERO**. En una
+camiseta no hay array donde indexar, así que ningún índice vale. **Sigue disponible para gorros y
+gafas**, con la guarda delante: que no sirva para una camiseta no es lo mismo que que no sirva.
+
+Y no hay una cuarta vía: un barrido de `proto native` sobre `entityai.c` y `object.c` devuelve solo
+esos cuatro. **No existe ningún `UpdateVisuals`** — si buscas una llamada de refresco genérica, no
+la hay, y eso ahorra la búsqueda.
 
 Al medirlo, separa dos fallos que dan el mismo fotograma vanilla: «no hubo refresco» y «hubo
 refresco y el apagado se llevó el override por delante». Se distinguen re-estampando después del
