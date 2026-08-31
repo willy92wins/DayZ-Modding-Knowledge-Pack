@@ -113,3 +113,21 @@ class CfgModels
 - Side discipline: drive state on the side that owns it (server for authoritative state) and let it replicate; for a purely cosmetic local toggle, client is fine. See `enforce-script-reference` for the IsDedicatedServer guards and the EEItemAttached/Detached lifecycle (used by hide-on-attach in `item-ik-and-hide.md`).
 
 [TBD-verify: exact method signatures against `object.c` in the user's script module or DayZ Explorer — the source page was too large to line-read. Confirm before shipping if the phase semantics matter.]
+
+## Diagnóstico de sources `user`: una fase leída no prueba movimiento (SP-211, added 2026-08-31)
+
+`GetAnimationPhase(src) == 1.0` incluso antes del primer `SetAnimationPhase(src, 1)` no demuestra
+que la instancia esté en fase 1. También es compatible con un source `user` que no quedó
+registrado o actuable en esa instancia. Antes de culpar a la fase:
+
+1. Enumera los sources con `GetNumUserAnimationSourceNames()` y
+   `GetUserAnimationSourceName(int)` (`entity.c:17-19`) y confirma que `src` existe.
+2. Compara en el mismo modelo con un source que sí produzca movimiento, por ejemplo un proxy de
+   rotor. Una selección de caras propias en el bone puede no ser actuada donde un proxy en ese
+   bone sí lo es; para puertas, considera el patrón de submodelo proxied.
+
+La sonda de enumeración es **READ-ONLY**. No llames `SetAnimationPhase(door, 0)` para comprobar
+que el source existe: esa llamada modifica estado vivo. Si la puerta estaba abierta, el caché de
+`ApplyDoorAnim` puede no restaurarla y deja visual cerrado con lógica abierta hasta otro toggle.
+Limita la sonda a enumeración y `GetAnimationPhase`; prueba la escritura y la transición mediante
+la acción real open/close instrumentada.

@@ -391,3 +391,46 @@ la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita:
 `lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
 
 - **LL-153** — Juzga toda zona visual crítica en un crop a resolución nativa. Usa RMS y scores solo como filtro de cambio; nunca como veredicto de corrección, y conserva el crop full-res como evidencia.
+
+## Q3 cerrada: no reescribir ni delegar el facetado (SP-282, added 2026-08-31)
+
+La redacción actual de cilindros es la mejor de las cuatro medidas, pero eso no la vuelve un
+gate. Preguntada sola acertó 6/6; dentro del lote de ocho de `vr_score.py` cayó a 3/6. En el
+objeto real produjo 8 falsas alarmas de 12: la pieza octogonal visible es intencional y los
+cilindros auténticos, suavizados, tienen una sagitta subpíxel en esos encuadres. Por tanto:
+
+- conserva la pregunta sin reescribir, con `skip`; no entra en checklist activo ni pre-filtro;
+- no describas el resultado como azar: el fallo cambia con el encuadre y con el agrupado;
+- si se pide contar un perfil, encuadra la **sección** hasta que llene el marco. La distancia
+  genérica `max_dim * 2.2` de un objeto alargado hace que la vista axial no tenga información;
+- el sustituto correcto es determinista y **reporta, no juzga**: pieza, lados, radio, desviación
+  relativa y sagitta, con allowlist para prismas intencionales. La intención sigue siendo una
+  decisión del modelador.
+
+`facet_report.py` continúa sin distribuirse en esta skill. Esta sección fija su contrato y sus
+límites; no afirma que el ejecutable esté instalado.
+
+## Contrato calibrado del reporte de facetado (SP-284, added 2026-08-31)
+
+Si se incorpora `facet_report.py`, la regla calibrada de candidatos es `lados < 12` y
+`radio >= 6 mm`, nunca el umbral provisional de 4 mm. Además, exige una sección transversal casi
+cuadrada: relación entre lados del bbox transversal `<= 1.30`. Ese límite admite pentágonos y
+hexágonos, pero rechaza formas planas que el filtro del 20 % exterior confunde con un cilindro.
+Una allowlist silencia perfiles prismáticos deliberados.
+
+El reporte de **cobertura** es tan importante como las marcas. Debe publicar:
+
+- mallas visibles en render y piezas con perfil circular;
+- polígonos examinados y porcentaje sobre los visibles;
+- la mayor malla no examinada y su porcentaje.
+
+`0 marcadas` es **NO CONCLUYENTE** si no hay mallas visibles o si una sola malla no examinada
+concentra `>=30 %` de los polígonos. El porcentaje global cubierto no decide el veredicto: un
+asset compuesto principalmente por cajas y raíles puede tener cobertura baja y ser válido para
+las piezas examinadas.
+
+Calibración declarada: 0 falsas alarmas en 41 piezas de perfil circular de tres assets reales y
+las tres piezas del defecto sintético siguieron marcadas; las sondas de 12 y 48 lados quedaron
+limpias. Límites: trabaja por objeto, no ve tubos dentro de una malla fusionada, puede perder
+perfiles finos o muy ranurados y no certifica que lo no detectado sea redondo. El corpus no
+incluye un mod publicado y verificado in-game; no eleves este reporte a gate final.

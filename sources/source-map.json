@@ -2539,7 +2539,7 @@
         }
       ],
       "license": "User-authored input",
-      "output_hash": "19e7f1cb0e50207a0ddb1d35ee5642970e86e305a7d62212ab6d3192562d36bc",
+      "output_hash": "cc93b85d613b81069dc46238de9cad7d7a3319bcab96212fd25eca84b1bf85b0",
       "output_path": "skills/_shared/skill-resolution.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -3005,7 +3005,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5ef68ac73e6aa8563f14783429cd5ce524251ddab0fcf86e5adaa461176313ca",
+      "output_hash": "c3132a3b2263fee026f0abca46929828211f75e0dd444b0cf7bf20bd70207f22",
       "output_path": "skills/blender-visual-review/SKILL.md",
       "routing_artifact_id": "skill/blender-visual-review",
       "verification_level": "cross_checked"
@@ -3389,7 +3389,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "808b982d2d6322d4d1063659acba9b316ff875f80e0247a9ef38a0202caac6bd",
+      "output_hash": "255cbe22402b16382c2a3f91b1f128c7bb74511359700d34673dd18cfd1e50f0",
       "output_path": "skills/dayz-animation-pipeline/references/config-driven-animation.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5317,7 +5317,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a1bd7ffa99857202776d1422c4778579c03f5b35ad2ac8c1bd19aef71712ff4f",
+      "output_hash": "7cc834a5653ef8f032117b5739c0629fa26c96a0e7e9eb789217b3d57a22f95a",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
