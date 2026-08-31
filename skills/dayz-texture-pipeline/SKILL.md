@@ -323,11 +323,24 @@ fijos (`SIMPLE_SELECTION_MELEE_RIFLE = 0` … `SHOULDER_MELEE = 3`, `dayzplayer.
 índices miembro (`weapon_base.c:391,2133,2141`) o con getters propios (`GetHairIndex()`,
 `GetBeardIndex()`, `playerbase.c:9055-9057`).
 
-**La guarda que usa vanilla, y que evita el crash**, está en `actionviewbinoculars.c:35`:
+**Y sí hay una forma correcta de sacar el índice simple: la escribió Bohemia.** El equivalente de
+`GetHiddenSelectionIndex` para este espacio no es una función, es leer el array y buscar dentro.
+`weapon_base.c:94-105` hace las dos cosas —guarda y resolución— en el mismo bloque:
 
 ```c
-if (item.ConfigIsExisting("simpleHiddenSelections")) { item.SetSimpleHiddenSelectionState(0, false); }
+if ( ConfigIsExisting("simpleHiddenSelections") )              // 1. la guarda: sin array, no hay indices
+{
+    TStringArray selectionNames = new TStringArray;
+    ConfigGetTextArray("simpleHiddenSelections", selectionNames);   // 2. el array de ESTE espacio
+    m_weaponHideBarrelIdx        = selectionNames.Find("hide_barrel");  // 3. el indice, por nombre
+    m_magazineSimpleSelectionIndex = selectionNames.Find("magazine");
+}
 ```
+
+Mismo patrón en `bodyparts/head.c:20`, y la guarda sola aparece dos veces en
+`actionviewbinoculars.c:35` y `:56`. Regla práctica: **`GetHiddenSelectionIndex` para textura y
+material; `ConfigGetTextArray("simpleHiddenSelections", …)` + `Find()` para visibilidad simple.**
+Nunca el primero alimentando a la segunda.
 
 **Y para ropa de cuerpo la vía muere en la config, no en la llamada.** Censo de
 `simpleHiddenSelections` bajo `DZ\characters`, un `config.cpp` por categoría: heads 3, headgear 2,
