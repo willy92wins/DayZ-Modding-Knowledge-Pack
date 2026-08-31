@@ -5988,18 +5988,18 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "decision": "merge",
+          "decision_evidence": "Second install route added from the author's live store on 2026-08-31. Published as a projection, not verbatim: the pack's periphrasis for the external ODOL->MLOD converter is preserved throughout, and the route describing the vendored wheel states that the wheel is not shipped in this pack.",
           "license": "MIT",
-          "source_hash": "ea6cbf36da65cf9199dbab6e4d85ee68e880e10ce0c1031044f62c982ce33c00",
+          "source_hash": "0fb28965beda04dd44c32ed98c86b1c5d4b3241de883be99963e4a032693fb00",
           "source_id": "installed-skills",
           "source_path": "dayz-p3d-inspector/SKILL.md",
-          "source_revision": "filesystem@2026-08-17",
+          "source_revision": "filesystem@2026-08-31",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b7d4491df4d6a7abfc45191d8f38bcb615ce92b45513fb2f8d9de45b9751086a",
+      "output_hash": "6234d528a7f205a3c1920fbc40f6295bf6d926be4b4cdfdfe3fa7968bc9e4c7c",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -6033,17 +6033,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "decision_evidence": "Adopted from the author's live store; re-pinned on 2026-08-31 after the dependency comment was corrected to name this skill's own wheel. Published verbatim.",
           "license": "MIT",
-          "source_hash": "84155f7a6d50d4495eb45413576b22f141d37d206fb906aedf63bcfbb7dfcf49",
+          "source_hash": "15c3c82ec8589f4324e780a07d4d6cfbf71657b669e5aa88472c7d1192f03362",
           "source_id": "installed-skills",
           "source_path": "dayz-p3d-inspector/scripts/p3d_inspector_extract.py",
-          "source_revision": "filesystem@2026-08-17",
+          "source_revision": "filesystem@2026-08-31",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f09922a438fc66186fa52f2e33d55b1e42420fd182e9d91fc3c49cdd05893ae5",
+      "output_hash": "15c3c82ec8589f4324e780a07d4d6cfbf71657b669e5aa88472c7d1192f03362",
       "output_path": "skills/dayz-p3d-inspector/scripts/p3d_inspector_extract.py",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -21991,6 +21991,50 @@
       "output_path": "tools/py3d/tools/audit_p3d.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-inspector/scripts/install_py3d.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-31. Author-owned MIT content previously unpublished in this pack; published verbatim.",
+          "license": "MIT",
+          "source_hash": "8986d04e9a577ca1b6471bcbd5fd32ed8468c78e36b0e8a66ceb73c376247258",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-inspector/scripts/install_py3d.py",
+          "source_revision": "filesystem@2026-08-31",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8986d04e9a577ca1b6471bcbd5fd32ed8468c78e36b0e8a66ceb73c376247258",
+      "output_path": "skills/dayz-p3d-inspector/scripts/install_py3d.py",
+      "routing_artifact_id": "skill/dayz-p3d-inspector",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-inspector/tests/test_install_py3d.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-31. Author-owned MIT content previously unpublished in this pack; published verbatim.",
+          "license": "MIT",
+          "source_hash": "da765cafdc63341c5fb17416e17f79422b5762ab9ae2f77befc388ef33066954",
+          "source_id": "installed-skills",
+          "source_path": "dayz-p3d-inspector/tests/test_install_py3d.py",
+          "source_revision": "filesystem@2026-08-31",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "da765cafdc63341c5fb17416e17f79422b5762ab9ae2f77befc388ef33066954",
+      "output_path": "skills/dayz-p3d-inspector/tests/test_install_py3d.py",
+      "routing_artifact_id": "skill/dayz-p3d-inspector",
+      "verification_level": "cross_checked"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
