@@ -388,3 +388,34 @@ la entrada completa vive allí. No quites la cita: el índice detecta la promoci
 - **LL-068** — Audita por separado descomposición convexa y reparto de masa: reagrupar los mismos puntos no cambia CoM ni inercia. No conviertas CoM/Izz en gates duros si proceden de masas uniformes reconstruidas o son geométricamente inalcanzables.
 - **LL-092** — Construye el crew proxy como triángulo escaleno con frame inequívoco y calibra +Y/+Z contra el submodelo referenciado. Coloca el vértice ancla a la altura real del asiento; no copies vértices de otro tipo de proxy.
 - **LL-364** — Antes de citar «vanilla vale N» para un campo, pregunta POR QUÉ CANAL llegó ese N. Si el material se distribuye en formato derivado (ODOL) y el número lo produjo un conversor, la pregunta correcta no es cuánto vale sino si el campo sobrevive a la conversión: `odol_to_mlod.py` escribe `face.flags = 0` a pelo, así que cualquier «vanilla usa flags=N» medido por ahí es el instrumento contestándose. Medido 2026-08-24 por round-trip: `binarize.exe` DESCARTA el campo `flags` por cara del MLOD — tres MLOD que difieren solo en él binarizan a un modelo byte a byte idéntico, mientras dos controles positivos (un punto movido 1 cm, la textura vaciada en esas mismas caras) sí cambian la salida. Y un campo vecino del formato derivado que lleva el mismo bit (`Section.special`, por sección) NO es el mismo campo.
+
+
+## Vehicle get-in action contract gate (SP-086, added 2026-08-31)
+
+For every vehicle that declares `class Crew`, run a `contract_gate` over the complete action
+graph rather than checking each file independently:
+
+- identify the Memory LOD by resolution near `1e15` and require `actionSel`, `proxyPos`,
+  `getInPos`, and `getInDir` endpoints to resolve in the `.p3d`;
+- close those names through model.cfg `sections[]` and `SkeletonBones[]`, then through the
+  matching config.cpp `class Crew` fields;
+- require each get-in position/direction pair to be within 1 m of its intended proxy;
+- close config.cpp `AnimationSources` to model.cfg `Animations`.
+
+Report every broken edge with both endpoint files and names. Keep `actionSel in sections[]`
+as a calibration warning, not a hard failure, until it has passed a representative vanilla
+vehicle control. A project-local gate passed one known-good artifact and rejected one known
+bad artifact, but that single pair does not settle the membership rule.
+
+## Resolve every face index (SP-142, added 2026-08-31)
+
+Counts, selection names, proxy centroids, and material pairs live in a different space from
+face indices. A freshly assembled or surgically edited `.p3d` must have a gate that
+dereferences every face corner's `point_index` and `normal_index` against the live pools.
+Fail on the first out-of-range value and name the LOD, face, corner, index, and pool length.
+Do not treat matching cardinalities as an equivalent check.
+
+Run `binarize` as the authoritative serialization check, with the previous known-good model
+as a control in the same run. This separates a product failure from a broken test bench and
+makes pre-existing log noise comparable. A binarize pass proves that this index/serialization
+gate passed; it still does not replace the in-game spawn gate in SP-216.

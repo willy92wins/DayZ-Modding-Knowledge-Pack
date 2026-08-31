@@ -5869,7 +5869,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "64b6a7d6c28fafc06cbcd533c0e94ef4008b0ba7506cb298e1fa3a28eeee0c68",
+      "output_hash": "0a072d8c5ffc25a46c8a5e5d63aff898baa5e3c4345700d723488dfa2282548a",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -5955,7 +5955,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "086423fdafa43ebb96da0b375abb45549502a105c273c15ac330388e14f77a46",
+      "output_hash": "4138ca8402f8a47b417975d8fafaf1482289b0952c1e4d91ece0b807b5036575",
       "output_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
