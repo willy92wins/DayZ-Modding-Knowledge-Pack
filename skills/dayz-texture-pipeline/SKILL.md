@@ -272,6 +272,14 @@ Las ráfagas intermedias (0,5 / 1 / 2 s) no necesitan fotograma: son subconjunto
 patrón continuo sobre sujetos idénticos, así que el fallo del tratamiento máximo las cubre por
 monotonía.
 
+**El reset por prenda nueva no es comodidad, es NECESARIO, y si lo saltas el barrido mide su propia
+historia.** El override es pegajoso: una vez prende sobrevive ≥97 s sin una sola escritura y a
+través de un escalón de salud. Sin sujeto virgen, cada brazo arranca contaminado por el anterior —
+en la corrida previa el control positivo estaba en mitad del calendario y envenenó todos los brazos
+posteriores. Y la persistencia entre corridas muerde igual: un baseline puede llegar con
+`wetlevel=4 hplevel=2` de la sesión anterior y hacer pasar por «el control no dispara» lo que en
+realidad es un sujeto sucio. Normaliza el sujeto al empezar y compruébalo en el log, no de palabra.
+
 **Lo que sí lo hace prender** es que esté ocurriendo un cruce de umbral de salud: la misma escritura
 continua, en una corrida donde el servidor escalonaba la salud, sí renderizó. O sea que el
 `healthLevels[]` de la sección anterior no es solo lo que BORRA el override — es lo único que se ha
@@ -314,6 +322,13 @@ porque convierte el log en evidencia falsa y en verde:
 `GetObjectMaterial` solo informa del slot de script, que es una cosa distinta del render. Un gate
 que lea el getter puede firmar PASS sobre una prenda que se ve vanilla, y FAIL sobre una que se ve
 pintada.
+
+**Alcance, para que esto no se propague de más**: lo que queda invalidado es el GETTER como
+instrumento, **no** los veredictos que se apoyaron en píxeles. El PASS de G10 de LFThermalCore no
+usó ningún getter — se apoyó en ocho fotogramas con un rvmat binario a simple vista y en un par
+control (misma entidad, misma cámara: la humedad deja el override, un escalón de salud lo borra), y
+sigue en pie. La regla completa es **el getter no sirve de oráculo y los píxeles sí**, que es el
+instrumento que han usado las dos corridas.
 
 Dos hechos menores del mismo getter, útiles para leer un log: devuelve **cadena vacía** cuando el
 motor tiene el material (no una ruta vanilla normalizada, que era lo que cabía esperar), y en
