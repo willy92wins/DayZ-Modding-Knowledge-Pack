@@ -21975,6 +21975,94 @@
       "output_path": "tools/py3d/rollout/verify-wheel-restock.ps1",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/install_py3d.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-31, byte-identical to the copy this pack already publishes under dayz-p3d-inspector: sha256 verified equal across the pack copy and both stores. Published so the promotion mirror stops treating the py3d installer as store-only payload it would delete.",
+          "license": "MIT",
+          "source_hash": "8986d04e9a577ca1b6471bcbd5fd32ed8468c78e36b0e8a66ceb73c376247258",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/scripts/install_py3d.py",
+          "source_revision": "filesystem@2026-08-31",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8986d04e9a577ca1b6471bcbd5fd32ed8468c78e36b0e8a66ceb73c376247258",
+      "output_path": "skills/dayz-animation-pipeline/scripts/install_py3d.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/tests/test_install_py3d.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-31, byte-identical to the copy this pack already publishes under dayz-p3d-inspector: sha256 verified equal across the pack copy and both stores. Published so the promotion mirror stops treating the py3d installer as store-only payload it would delete.",
+          "license": "MIT",
+          "source_hash": "da765cafdc63341c5fb17416e17f79422b5762ab9ae2f77befc388ef33066954",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/tests/test_install_py3d.py",
+          "source_revision": "filesystem@2026-08-31",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "da765cafdc63341c5fb17416e17f79422b5762ab9ae2f77befc388ef33066954",
+      "output_path": "skills/dayz-animation-pipeline/tests/test_install_py3d.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-proxy-align/scripts/install_py3d.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-31, byte-identical to the copy this pack already publishes under dayz-p3d-inspector: sha256 verified equal across the pack copy and both stores. Published so the promotion mirror stops treating the py3d installer as store-only payload it would delete.",
+          "license": "MIT",
+          "source_hash": "8986d04e9a577ca1b6471bcbd5fd32ed8468c78e36b0e8a66ceb73c376247258",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/scripts/install_py3d.py",
+          "source_revision": "filesystem@2026-08-31",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8986d04e9a577ca1b6471bcbd5fd32ed8468c78e36b0e8a66ceb73c376247258",
+      "output_path": "skills/dayz-proxy-align/scripts/install_py3d.py",
+      "routing_artifact_id": "skill/dayz-proxy-align",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-proxy-align/tests/test_install_py3d.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-31, byte-identical to the copy this pack already publishes under dayz-p3d-inspector: sha256 verified equal across the pack copy and both stores. Published so the promotion mirror stops treating the py3d installer as store-only payload it would delete.",
+          "license": "MIT",
+          "source_hash": "da765cafdc63341c5fb17416e17f79422b5762ab9ae2f77befc388ef33066954",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/tests/test_install_py3d.py",
+          "source_revision": "filesystem@2026-08-31",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "da765cafdc63341c5fb17416e17f79422b5762ab9ae2f77befc388ef33066954",
+      "output_path": "skills/dayz-proxy-align/tests/test_install_py3d.py",
+      "routing_artifact_id": "skill/dayz-proxy-align",
+      "verification_level": "cross_checked"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
