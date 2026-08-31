@@ -5777,7 +5777,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0a072d8c5ffc25a46c8a5e5d63aff898baa5e3c4345700d723488dfa2282548a",
+      "output_hash": "9b2a05133a4207835924b62f174942db9b1a6b8cfd45a8fc49fcb9803eb30e9c",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -7251,7 +7251,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5481e7ad5c08152be9af0afe9539e4d4099e97f9930fed2b7dc26d6ca3208732",
+      "output_hash": "0654b93b1e4cf0bdd53ba9be55d6a6f2d1b9336dde875cb07b52b95394251fa6",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -11252,7 +11252,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cf8bbf8380b7a0fd3706c9e6d25b3449f45017104b14468d322c8f3fd8712f0b",
+      "output_hash": "d7e174ea46aeff56e4db4e313b5c563252ea37c4f200f7051c649008c5300fb1",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

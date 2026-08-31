@@ -80,6 +80,18 @@ Retail manual-only activa cuarentena retail: el usuario que lo abrió lo cierra 
 después ejecuta doctor/rescan. Sin acceso a esa UI, declarar `manual_cleanup_required`; otro
 agente no mata ni adopta el proceso.
 
+### Fallback unmanaged cuando el managed esta bloqueado (SP-084-unmanaged-fallback)
+
+`dayz-test.ps1` y `dayz_test_run` son la via managed. Si el registro `approved-launchers.json` no deja pasar el proyecto y el daemon MCP del puerto documentado cae (`session_status`=`daemon_unavailable`), esa via no lanza.
+
+Con la caja libre de procesos DayZ del run y autorizacion explicita del usuario, la via es launch UNMANAGED. No es el default.
+
+- No disparar el exe desde la shell del agente. [EXACT - esta skill, cross-ref SP-085] DayZDiag lanzado fuera del launcher registrado queda vivo con 0 CPU y 0 RPT. Firma: vivo + 0 CPU + 0 RPT => no es args/mod, es launch-desde-agente.
+- No usar `Start-Process -ArgumentList` para DayZDiag. [EXACT - esta skill, SP-167] En Windows PowerShell 5.1 el array no garantiza el quoting de cada elemento. [DESIGN - SP-228, no hay fuente citada en esta copia del pack] `cmd /c start` con comillas literales en cada valor con espacios es la via que arranca; `Start-Process -ArgumentList` puede arrancar y colgarse sin header de RPT.
+- Receta: el agente escribe `.bat` (argv de server/client, comillas literales en cada valor con espacios) y el usuario los ejecuta a doble-clic en su sesion interactiva. [EXACT - esta skill, SP-077] Leer script.log/RPT con `FileShare.ReadWrite`. Cierre por UI, no por PID, salvo zombie del propio agente (entonces `Stop-Process -Id` exacto).
+- [DESIGN] Server argv: `-server "-config=<serverDZ.cfg>" "-profiles=<server-profiles>" "-mission=<mission-abs>" "-mod=<mod-abs-semicolon-list>" -filePatching -port=2302`
+- [DESIGN] Client argv: `"-mod=<mod-abs-semicolon-list>" -connect=127.0.0.1 -port=2302 "-profiles=<client-profiles>" -name=Dev -window -filePatching`
+
 ## PREREQUISITES (preflight — runs automatically)
 
 The orchestrator checks these every run and fixes what it safely can. Verified on this box

@@ -23,6 +23,16 @@ correctly but had zero collision, missing animations, or broken textures.
 
 Per the L2 rule (`_shared/dayz-conventions.md`), every DayZ skill that does work gates on `/dayz-preflight` first. The audit reads `.p3d` files which can live anywhere, but the moment you point it at `P:\` paths or a built mod, an unmounted P-drive silently produces wrong results. Run `/dayz-preflight` before this skill.
 
+## The three py3d gates cannot go red for geometry (SP-227-py3d-gates-cannot-go-red)
+
+A clean `validate()`, a passing `save(verify=True)`, or a `diff` that reports equal is not evidence that the geometry is correct. Those checks only prove internal count consistency. When declaring a model verified, say whether vertex order was compared against debinarized vanilla or whether it was tested in-game.
+
+1. `validate()` does not detect GLOBAL winding inversion. The winding check is relative to the Visual LOD. If every LOD is inverted (Blender Z-up to Y-up; this skill, PART 5 item 1), `validate()` returns an empty list and exit 0. If only Visual is inverted, it accuses healthy collision LODs and suggests swapping vertices on every face; following that instruction reaches the silent-broken state.
+2. `save(verify=True)`: _verify_against does not compare geometry. It looks at counts, selection names and mass sum. Points `(0,0,0)` vs `(99,99,99)` still verify OK.
+3. `python -m py3d diff`: py3d diff total: 0 does not prove geometric equality. The same pair reports `total: 0`, exit 0.
+
+[DESIGN] Discriminating signal on a vanilla-scale LOD set: edge coherence (neighbors traverse the shared edge in opposite directions) and `cross(e1,e2) . declared_normal` in the same space.
+
 
 ## SP-221 — sibling-model frame parity (before copying rotation offsets)
 
