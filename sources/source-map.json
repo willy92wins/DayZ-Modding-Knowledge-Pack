@@ -4587,7 +4587,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8becff463308e40f2b12ff012bc164336916a2ca631a8278180251c18f393e28",
+      "output_hash": "fe1f94d3a24f4801df0e3d7da0a34d166af1ccf1805c71ea7572ab8c89a12c85",
       "output_path": "skills/dayz-characters/references/check_dayz_winding.py",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
