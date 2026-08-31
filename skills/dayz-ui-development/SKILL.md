@@ -1115,3 +1115,88 @@ verbo viaje dentro del PBO desplegado no implica que sea invocable -el registro 
 se fija al ARRANCAR, asi que `key_press` y `player_respawn` estaban en el PBO v10 y no existian como
 tools-, ni que, siendo invocable, alcance el handler. Fichas del pipeline: `fb-20260828-212912-f6ac`
 (abierta), evidencia en `fb-20260829-022838-7743`.
+
+## Scripted-camera exit lifecycle (added 2026-08-31)
+
+Use this checklist for a spectator, CCTV, drone, FLIR, or other scripted camera. The failure
+usually appears on exit, after the feature itself looked complete.
+
+1. **Reuse the engine camera.** Take `Camera.GetCurrentCamera()` and activate it. Do not create an
+   unmanaged `staticcamera` object: the author-owned production comparison found that route can
+   crash. Evidence: `<project>\scripts\4_World\CameraViewport.c:539-546`.
+2. **Keep that camera active through `SelectPlayer`.** Deactivating it first leaves the engine with
+   no active camera during player selection. Move `SetActive(false)` to post-selection cleanup
+   (`CameraViewport.c:825-869`).
+3. **Re-enable the `HumanInputController` before `SelectPlayer`, not after it.** The restored
+   third-person camera reads that input in `DayZPlayerCamera3rdPersonErc.UpdateUDAngleUnlocked`
+   (`VANILLA/scripts/4_world/.../dayzplayercamera3rdperson.c:54-55`). The diagnostic signature is
+   specific: first person works, while third person remains pinned to the former camera transform
+   and player actions are absent.
+4. **Do not reuse a continuous-action binding as the exit binding.** Use a separate key such as
+   SPACE or ESC. Otherwise the ActionManager can retain an action in progress, and vanilla blocks
+   third-person look while a non-freelook action is active
+   (`VANILLA/scripts/4_world/.../dayzplayercamera_base.c:157-177`).
+
+Verification boundary: rules 1-2 were checked against an author-owned production implementation.
+Rules 3-4 were source-checked and matched the observed 1PP/3PP asymmetry, but the originating
+2026-08-08 flight had not yet confirmed each cause in game. `Input.ChangeGameFocus(+1/-1)` was
+also observed around entry/exit, but its effect in this camera contract remains unverified.
+Absence from vanilla is not a reason to remove a working mechanism: `HumanInputController.SetDisabled`
+had no vanilla callers in that audit, yet removing it broke the working comparison.
+
+## Transparent ImageWidgets require blend state (added 2026-08-31)
+
+An alpha channel in a PNG/PAA is not enough. Every `ImageWidgetClass` that must composite
+transparency declares both lines in its `.layout`:
+
+```text
+mode blend
+"src alpha" 1
+```
+
+Without them, the canonical symptom is an opaque black rectangle the size of the widget with the
+art still visible inside. This was isolated by an in-game A/B and matches the vanilla projected
+crosshair (`VANILLA/gui/layouts/day_z_hud.layout:2263-2264`). Add this check during layout authoring
+and again at delivery. For a strip or tape that must be clipped by its parent, the real attribute is
+`clipchildren 1` (`day_z_hud.layout:555`), not `clipping`.
+
+## In-seat interfaces: interrupt before excluding input (added 2026-08-31)
+
+For an interface opened while the player is seated, `HumanInputController.SetDisabled(true)` does
+not by itself stop action input. If the interface shares a key with a seat action, the same hold can
+close the interface and complete the vanilla action underneath it.
+
+- Add the relevant mission input exclude (for example `{"menu"}`) on open. Restore it on **every**
+  exit path, guarded by a flag so a partial open cannot over-release another owner's exclude.
+- **Before adding an exclude, interrupt any continuous action already in progress** with
+  `ActionManagerClient.RequestInterruptAction()` (`actionmanagerclient.c:1280`). Excluding input
+  first can hide the release event and leave the ActionManager permanently in progress until relog.
+- While the exclude is active, `UAInput.LocalValue()` is gated to zero. Raw
+  `KeyState(KeyCode.KC_X)` (`ensystem.c:291`) and `GetMouseState` still read hardware state, but
+  `KeyState` ignores user rebinding. Treat it only as a coarse fallback.
+
+The command-mod that lets a continuous action progress while seated, and the server-owned mirror
+needed for late-join vehicle presentation, belong to `dayz-vehicles`/`dayz-aviation`, not this skill.
+
+## Loading-screen hook contract (added 2026-08-31)
+
+This section supersedes the timer/hand-written-`.edds` example in
+`references/answeroverflow-2026-05-17.md` §UI-1.
+
+- A loading-screen mod hooks `LoadingScreen`, `LoginQueueBase`, and `LoginTimeBase` with
+  `modded class X` and **no `extends` clause**. `LoadingScreen` is not a `UIScriptedMenu`;
+  `LoginQueueBase`/`LoginTimeBase` already inherit through `LoginScreenBase`
+  (`VANILLA/scripts/3_game/dayzgame.c:63,110,205,688`).
+- Do not add a `Timer` just to rotate backgrounds. Accumulate `timeslice` in
+  `LoadingScreen.OnUpdate(float)` (called every loading frame at `dayzgame.c:2990-2992`) and in the
+  inherited `LoginScreenBase.Update(float)` for the queue/time screens. Loading has no known total
+  duration, so rotate on a fixed period rather than trying to divide it in half.
+- Use a `.paa` produced by DayZ Tools `ImageToPAA.exe`; do not ship a hand-written `.edds`.
+  A decoder round-trip is an inspection gate, not evidence that the engine will render the writer's
+  output. See `dayz-texture-pipeline`.
+- Replacing the background does not reset `LoadMaskTexture`/`SetMaskProgress`. A black frame can be
+  the vanilla reveal mask at low progress, not a broken texture. For a diagnostic full reveal,
+  `SetMaskProgress(1.0)` alone is temporary because `ProgressAsync` writes it again every frame;
+  detach that updater with `ProgressAsync.SetUserData(null)` only for the controlled diagnostic.
+- Never apply a tone compensation from an offline transfer-function model. Measure a known texture
+  from an in-game screenshot first.

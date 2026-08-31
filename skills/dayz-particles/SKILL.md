@@ -32,6 +32,13 @@ not binary. Custom particles can be created programmatically without Workbench.
 All particles are CLIENT-ONLY. Server controls state via SyncVars; client
 creates/destroys particles in response.
 
+## EFFECT-AREA PREFLIGHT (added 2026-08-31)
+
+For `cfgeffectarea.json`, run **Effect areas: emitter budget and vertical band** plus its correction
+below **before** choosing a radius. Compute the exact per-ring upper budget, keep it below 1,000 with
+margin, measure the full elevation/underground band, and compare every global `SafePositions` entry
+against every area.
+
 ---
 
 ## .ptc FILE FORMAT (verified from 9 vanilla files)
@@ -332,3 +339,84 @@ Full catalog: `references/vanilla-particle-catalog.md` (276 entries; version-dep
 - `references/emat-format-reference.md` — .emat format, both shader types, all 12 properties
 - `references/script-api-reference.md` — Particle/ParticleSource/ParticleManager signatures
 - `references/answeroverflow-2026-05-17.md` — community snippets verified vs vanilla (PlayOnObject pattern with client guard)
+
+## Effect areas (`cfgeffectarea.json`): emitter budget and vertical band (added 2026-08-31)
+
+Run these gates **before** choosing a large contaminated-area radius.
+
+### Hard particle budget
+
+Each effect area has a hard cap of 1,000 emitters: `const int PARTICLES_MAX = 1000`
+(`VANILLA/scripts/4_world/classes/contaminatedarea/effectarea.c:84`), enforced while
+`SpawnParticles` fills the area (`:421`). Exceeding it does not shrink the damage radius. The area
+can remain lethal beyond the visible particle core and logs
+`Not enough particles in pool for EffectArea` (`:440`). A valid JSON and a booting server do not
+prove that the perimeter is visible.
+
+For the static `FillWithParticles` route, budget first with:
+
+```text
+N = ceil((Radius + OuterOffset - InnerPartDist/2) / InnerPartDist)
+emitters ~= 6.283 * N^2 * (VerticalLayers + 1)
+```
+
+Vanilla computes `circumference = 2 * Math.PI2 * ringRadius` (`effectarea.c:389`) while
+`Math.PI2` is already 6.28318530717958 (`VANILLA/scripts/1_core/proto/enmath.c:13`). That quirk
+uses approximately `4*pi*r`, twice the ordinary circumference. Budgeting with `2*pi*r` therefore
+under-counts. Increasing `InnerPartDist` lowers the ring count `N`; it does not reduce the emitter
+count within an existing ring.
+
+For static areas, only `InnerPartDist` and `OuterOffset` feed this route
+(`contaminatedarea.c:70`). `InnerRingCount`, `OuterPartDist`, and `OuterRingToggle` belong to
+`PlaceParticles` and are inert here. Do not tune them to solve a static-area density problem.
+
+### Damage and visibility are vertically bounded
+
+The trigger is a finite cylinder, built by
+`SetCollisionCylinderTwoWay(radius, -(NegHeight + c), PosHeight - c)` with
+`c = (PosHeight - NegHeight) * 0.5` (`effectarea.c:495-497`). Particle placement is culled against
+the same band after snapping to terrain (`:413,421`). Choose `PosHeight` and `NegHeight` from the
+actual elevation range inside the radius, not from a small vanilla zone. Underground spaces also
+count: particles snap to `SurfaceY` and are never spawned below terrain, so a bunker can be lethal
+inside the cylinder while showing no gas. That can be deliberate, but it must not be accidental.
+
+### Safe positions and schema
+
+`SafePositions` is global, not attached to one area. `GetClosestSafePos` searches the whole array in
+2D (`VANILLA/scripts/4_world/static/miscgameplayfunctions.c:1698,1717`) during the early-presence
+rescue path (`:1692`; caller `areaexposure.c:44`). After any radius change, measure every safe
+position against every area; a rescue point inside another cylinder can teleport a reconnecting
+player from gas to gas.
+
+Treat `JsonDataContaminatedArea` as the schema authority
+(`VANILLA/scripts/4_world/classes/contaminatedarea/jsondatacontaminatedarea.c:17-34`). Community
+fields named `InnerRingRatio` and `OuterRingRatio` are not in that schema. Large-radius height values
+remain `[VERIFY IN GAME]` until the real terrain and underground depth are measured.
+
+## Correction: effect-area budget and pool diagnostics (added 2026-08-31)
+
+This section supersedes the approximate `6.283 * N^2` budget and the RPT claim above. For the normal
+large-area branch (`R >= 1.25 * s`), use the same rounded ring spacing and per-ring floors as
+`FillWithParticles`:
+
+```text
+R = Radius + OuterOffset
+s = max(InnerPartDist, 1)
+N = ceil((R - s/2) / s)
+d = (R - s/2) / N
+XZ = 1 + sum(floor(2 * PI2 * d * k / s), k = 1..N)
+budget_max = XZ * (VerticalLayers + 1)
+```
+
+`PI2` is `2*pi`, so the source's `2 * PI2 * ringRadius` remains the intentional doubled
+circumference. The center emitter is the leading `1`. Small areas take separate one-ring/center
+branches in `effectarea.c:360-373`; use those branches directly rather than this large-area formula.
+As a check, `Radius=500`, `OuterOffset=20`, `InnerPartDist=70`, and `VerticalLayers=1` give
+`N=7`, `d=69.286`, `XZ=346`, and `budget_max=692`.
+
+Reaching `PARTICLES_MAX` truncates additional visual emitters in `SpawnParticles`
+(`effectarea.c:411-426`) but does **not** itself log `Not enough particles in pool`. That error is in
+`InsertParticles` and means `ParticleManager` returned fewer objects than the count requested
+(`:429-447`). Do not use the RPT message as the cap gate. Vertical culling can reduce the actual
+count, but an approximation that under-counts cannot authorize a radius; calculate the upper budget
+and confirm the visible perimeter in game.

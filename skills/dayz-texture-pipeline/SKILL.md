@@ -35,6 +35,13 @@ Use this skill to design, edit, validate, and package DayZ texture/material work
    - **Decoder is for INSPECTING a foreign `.edds`, not for writing one.** Six production files decoded with `max_diff=0` on mip 0 vs their source PNG. Runtime layout: 128-byte DDS header (loading-screen backgrounds were BGRA8 uncompressed: `pf.flags 0x41`, R=`0x00FF0000`, A=`0xFF000000`; mips = floor(log2(max(w,h)))+1); from offset 128, 8 bytes per mip = `tag`(4) + uint32 size, tag `'COPY'` (raw) or `'LZ4 '`, smallest mip first, then payloads in the same order. DayZ Tools has no CLI writer; production files come from Workbench PNG import (the `.meta` records it).
    - **LZ4 slices are linked blocks.** A `'LZ4 '` payload is `uint32` uncompressed mip size, then 65536-byte slices each prefixed by compressed size with `OR 0x80000000` on the last. Slice 0 decompresses alone; later slices fail with "corrupt input or insufficient space" unless the previous slice is passed as dictionary (`lz4.block.decompress(data, uncompressed_size=n, dict=prev)`). That error reads as a size bug and is not.
 
+### Material and atlas preflight (added 2026-08-31)
+
+Before workflow step 2 borrows any vanilla `.rvmat`, run **Ambient-shadow maps and borrowed RVMATs**
+below: measure `_as` per channel and verify Stage4, Stage5, and every `uvSource`. Before changing UV
+orientation or winding, run **Atlas identity before mapping diagnosis**: decode the selected atlas
+and overlay the affected faces first.
+
 ## Workflow
 
 1. Identify the asset type, selections, UV sets, and intended runtime behavior.
@@ -144,3 +151,44 @@ la entrada completa vive allí. No quites la cita: el índice detecta la promoci
 
 - **LL-066** — En Blender 5.1 usa `RENDERED` + EEVEE + luz para materiales y captura el área `VIEW_3D`, no la ventana completa. Para Multi, conserva UV2/`tex1` y reproduce el blend por máscara; en Windows sin `python-lzo`, decodifica `.paa` con `lzokay` y el shim del viewer.
 - **LL-368** — Mapas de DATOS (normal, AO, curvatura, displacement, ID, máscaras): `colorspace_settings.name = 'Non-Color'`, vista `Standard` / look `None` / exposure 0 / gamma 1, y después releer el fichero escrito contra el búfer pretendido (error máx. dentro del paso de cuantización). Sin ese round-trip el defecto se entrega.
+
+## Ambient-shadow maps and borrowed RVMATs (added 2026-08-31)
+
+Audit `_as` files **per channel, never as grayscale**. In the measured vanilla
+`pile_of_planks_as.paa`, the AO signal is in G (min 0, mean 53.1; 74% of pixels below 48) while
+R, B, and A are constant 255. A luminance conversion reports a bright image around 185 and hides the
+very shadows the shader consumes.
+
+Borrowing a vanilla `.rvmat` also borrows mesh-specific baked data. Its Stage4 `_as` can paint dark
+patches from the donor mesh onto a custom model and look like broken lighting or normals; Stage5
+`_smdi` carries the same reuse risk. Check the coordinate source too: the measured Stage4 uses
+`uvSource="tex1"`, a second UV set that many custom MLODs do not have. Measuring the map over the
+model's UV0 window does not prove what the shader samples. Engine behavior when UV1 is absent remains
+unverified.
+
+To remove donor AO, use the vanilla-proven neutral stage:
+
+```cpp
+texture="#(argb,8,8,3)color(1,1,1,1,AS)";
+```
+
+The source census found that form 4,262 times. If depth is wanted, bake an `_as` for the actual mesh
+and route it through `uvSource="tex"`. An offline renderer that omits Stage4 is structurally unable
+to detect this defect. Before trusting a visual bench, prove that the known-bad material makes it
+red. The adjudicating control was an in-game, one-variable A/B: donor `_as`, neutral `_as`, and
+self-shadow disabled.
+
+## Atlas identity before mapping diagnosis (added 2026-08-31)
+
+Before blaming mirrored UVs, winding, or the V convention:
+
+1. Decode the atlas to PNG and **look at it**. Pillow opens DXT1/DXT5 DDS inputs directly.
+2. Overlay the affected faces' UV polygons on that image with `image_y = (1 - v) * H`.
+3. Only then investigate mapping conventions or geometry.
+
+This two-minute preflight catches the expensive case where the selected atlas belongs to a different
+asset. It also prevents a source-game material resolver from inventing color data: materials named
+`*_[PRIMARY]` or `*_[SECONDARY]` intentionally have no diffuse atlas because their color comes from
+the source game's paint palette. Use a flat paint texture or author a `_co`; never bind “the largest
+atlas available”. Aircraft atlases can also contain a pre-mirrored copy of one side so markings read
+correctly on both sides. Mirrored text on both sides does not by itself justify a global U flip.

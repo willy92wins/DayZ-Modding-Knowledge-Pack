@@ -290,3 +290,19 @@ file whitelist and **drops `.csv` from the PBO** (pack with `-packonly`, or add 
 extension to an include list), and in this workspace a `config.bin` produced by that same
 pass has been measured not to register at all, with the mod mounting silently broken.
 
+## Mod layouts: vanilla GUID textures can render white (added 2026-08-31)
+
+A valid `{GUID}Gui/...edds` resource reference that works in a vanilla layout can still render as a
+solid white rectangle when the same `imageTexture` form is used from a **mod layout**. The measured
+case matched the vanilla `.meta` GUID and path byte-for-byte, painted 100% of the widget white, and
+wrote no useful log. The unresolved boundary is GUID resolution versus layout provenance; do not
+claim a bad asset from this symptom alone.
+
+Use one of the deterministic routes instead:
+
+- load a registered imageset through a supported `LoadImageFile("set:... image:...")` or RichText
+  path; or
+- ship a mod-owned `.paa` and reference it by the addon's packed prefix with normal path separators.
+
+The second route was the positive control. This is the GUID-specific form of trap 3 above: if a mod
+layout paints white, replace the resource route before changing color, alpha, or geometry.
