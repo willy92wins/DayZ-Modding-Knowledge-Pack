@@ -6447,7 +6447,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "eabb1397bd1db5535c484ac68472ce56c49e4a091aa948dbe7b6b4e150d7f2a8",
+      "output_hash": "2e0e5f915b519c853234545661255e44e3b99a15fa11279a27d7694f8dc8c265",
       "output_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-reverse-engineering",
       "verification_level": "cross_checked"
