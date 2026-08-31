@@ -85,3 +85,18 @@ STOP and ask the user when a source, interaction selection, axis, component, LOD
 - [Official DayZ doors reference](https://community.bistudio.com/wiki/DayZ:Doors_on_buildings)
 - [Official DayZ Samples](https://github.com/BohemiaInteractive/DayZ-Samples)
 - [Official LOD reference](https://community.bistudio.com/wiki/LOD)
+
+## Vehicle doors are out of scope (added 2026-08-31)
+
+Vehicle doors do **not** use the building `class Doors` contract documented here.
+
+- A detachable car door is a `CarDoor` attachment. `ActionCarDoorsOutside` resolves its target by
+  raycast against the **item's ViewGeometry**.
+- A door that stays part of the vehicle shell needs vehicle actions around
+  `SetDoorOpen`/`IsDoorOpen` plus `model.cfg` `AnimationSources`.
+
+Route vehicle work through `dayz-vehicles`: invariant #21 redirects to the public
+`rip-vehicle-import/cookbooks/family-b/radial-puerta-ausente.md` **DOOR MECHANISM SELECTOR**, and
+invariant #22 carries the attachment ViewGeometry rule. Applying building `class Doors` to a
+vehicle will not produce a working radial, even though both mechanisms use names such as `source`,
+`component`, and `axis`.
