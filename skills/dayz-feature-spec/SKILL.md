@@ -145,3 +145,20 @@ la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita:
 `lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
 
 - **LL-040** — No cierres ni descartes un criterio por silencio del log hasta ejecutar la interacción que puede revelar el fallo. Si la condición aún no es reproducible, conserva el gate o demuestra paridad estructural con un referente funcional.
+
+
+## (added 2026-08-31, SP-239) Separate raw producer records from canonical derived records
+
+When the runtime producer cannot derive a canonical output enum because an offline verifier
+owns that decision, the Forward Contract defines two record types from the start:
+
+- `X_RAW` is emitted by the runtime producer. Its fields and enums contain only facts that
+  actor can observe directly.
+- `X` is the canonical record emitted by the named offline derivation step. Its contract owns
+  the derived enum such as `GREEN`, `RED`, or `INCONCLUSIVE`.
+
+Name the emitter for both records and state the transformation from `X_RAW` to `X`. Never make
+the raw producer satisfy the canonical enum by inventing an out-of-contract sentinel such as
+`RAW-DATA-ONLY`; that guarantees an enum violation rather than representing a third verdict.
+The analyze gate treats one record name shared by two emitters, or a derived field assigned to
+the raw producer, as a Forward Contract contradiction.

@@ -5089,7 +5089,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b8aacc233d2bef6fe37454f129c4f9a56cb71d31fb5bf9d11bda683d6de70c20",
+      "output_hash": "11a5d0bab3a83f5f187d9d263cce1ae738dd0ae7cd2814d940c8c978c219f2c1",
       "output_path": "skills/dayz-feature-spec/SKILL.md",
       "routing_artifact_id": "skill/dayz-feature-spec",
       "verification_level": "cross_checked"
