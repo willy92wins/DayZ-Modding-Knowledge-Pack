@@ -980,3 +980,152 @@ Una celda solo emite `PASS` si demuestra que arrancó en el modo previsto, cubri
 3. **Recorrido completo y compile gate bilateral (LL-310, LL-312).** Dibuja cada transición crítica como `entrada → estado observable → salida → postestado` y ejecútala por software. Un autotest que solo entra tiene cobertura incompleta; busca primero el disparador de cierre entre watchers, cancelaciones y timeouts ya existentes. Extiende el gate de :811-814 (server) al log del cliente: escanea los logs de script de ambos peers por `Compile error` / `Can't compile` antes de esperar marcadores funcionales. `Cliente muerto / servidor vivo + Can't compile` es un fallo de compilación de código solo-cliente, no un timeout ni una regresión de runtime. El lint offline no acredita visibilidad `private`/`protected`; la compilación real de ambos peers es la autoridad.
 
 4. **Cierre acorde con la medida (LL-277).** SP-237 ("copiar/verificar antes de matar") conserva evidencia ya emitida, pero no acredita métricas que nacen al salir. Para informes de fugas, flushes, destructores o hooks finales, solicita cierre ordenado, espera un marcador explícito de que el informe o hook ejecutó y solo entonces recoge el resultado. Un kill forzado produce `SETUP_FAIL` para toda métrica de salida y también impide verificar un arreglo que vive en ese hook. "No apareció el problema" nunca equivale a `PASS` si la comprobación no llegó a ejecutarse.
+
+
+## Tres trampas medidas en el ciclo LFPG S2-B (added 2026-08-29)
+
+Las tres costaron tiempo la misma noche, con el puente MCP v10 sano. Ninguna era del mod.
+
+1. **`action_use` empareja por NOMBRE DE CLASE, no por el texto de la accion.** El bridge recorre
+   `ActionManagerBase.m_ActionsArray` y compara `candidate.Type().ToString() == wantedAction`
+   (`DayZ_MCP/scripts/5_Mission/MCPClientBridge.c:1806`). Pasar el texto visible -el que resuelve
+   `m_Text` desde el stringtable- devuelve `action_not_found` aunque la accion este disponible en
+   pantalla. La trampa se agrava con el cliente en otro idioma, porque invita a probar la traduccion:
+   el idioma es irrelevante, la llave es la clase. Saca el nombre del `class X : ActionInteractBase`
+   del propio mod, nunca del stringtable.
+
+2. **El gate de Steam de :99-103 solo AVISA, y ademas no corre por la via del MCP.** Esta
+   implementado en `templates/dayz-test.ps1:478-484`, que es el lanzador de ESTA skill;
+   `dayz_test_run` del MCP no pasa por ahi, asi que en la ruta que usan las sesiones con MCP el
+   check sencillamente no existe. Variante nueva observada 2026-08-29: `pid=0` **y** `ActiveUser=0`
+   con **cero procesos de Steam vivos** (la firma ya documentada era pid poblado / ActiveUser=0).
+   Mismo desenlace: RPT del cliente cortado justo tras el argv, sin una sola linea de script, y
+   servidor intacto porque no usa Steam. Comprobar la clave antes de lanzar cliente cuesta 10 s.
+
+3. **La CUENTA de Steam activa decide QUE PERSONAJE carga.** (Corregido el mismo dia: ver la
+   refutacion al final del punto — el estado del MOD no depende de la cuenta.) Reiniciar
+   Steam puede devolver OTRA cuenta sin avisar. Medido 2026-08-29: el cliente de las 03:55 entro
+   como `76561197995575711`, con su personaje persistido en el sitio de pruebas; el de las 04:17,
+   tras el reinicio, como `76561198141021937`, con personaje fresco en la costa. El sitio aparecia
+   sin sus dispositivos y **parecia un fallo de persistencia del mod**. La clave del registro lo
+   dice sin abrir el juego: `ActiveUser = steamID64 - 76561197960265728`. Corroborable desde fuera:
+   AddonBuilder imprime `Steam_SetMinidumpSteamID:  Caching Steam ID:  <steamID64>` en su salida.
+   Si el ciclo depende del personaje persistido, fija la CUENTA en el pre-flight, no solo el pid.
+
+   **REFUTACION MEDIDA EL MISMO DIA, y la distincion es fina y cara.** Volver a la cuenta correcta
+   devuelve el PERSONAJE (spawn en el sitio exacto, sin teleport) pero NO el estado del mod. Con
+   `...711` el server seguia diciendo `[VanillaWires] Loaded 0 entries from 0` y
+   `RebuildTrackedDevices: tracking 0 wired devices`: cero cables en las DOS cuentas. O sea que un
+   sitio de pruebas vacio NO se explica por la cuenta, y quien lo asuma perdera el tiempo cambiando
+   de login en vez de montar la fixture. La regla util es: la cuenta explica DONDE aparece tu
+   personaje; el estado del mod se monta o no esta.
+
+
+## El aviso de `modstorage` lleva 12 fallos: conviertelo en preflight, no en parrafo (added 2026-08-29)
+
+La seccion "Estrenar CF sobre una mision con persistencia escrita SIN CF = crash duro del
+servidor" (added 2026-08-02) es correcta y **ha vuelto a fallar**. Contado hoy host-direct en la
+carpeta de la mision compartida `DayZServer\mpmissions\dayzOffline.chernarusplus`:
+
+    12 carpetas storage_1*corrupt-modstorage*, del 2026-07-20 al 2026-08-29,
+    de al menos 5 proyectos distintos (subbrz, amglf, gunracks, nocf-gate, lfquad2).
+
+12 ocurrencias en 40 dias. Una nota que se ha saltado 12 veces no se arregla leyendola con mas
+cuidado la 13a: la precondicion es MECANICA y se esta pidiendo a mano.
+
+**Regla operativa: la persistencia pertenece al juego de mods que la escribio.** Antes de lanzar
+con un `-mod=` distinto al de la corrida anterior sobre esa misma mision, rota. No es "si
+sospechas": es **siempre que cambie la lista**, y anadir UN mod ya la cambia.
+
+    # con los procesos parados
+    $m = "<mision>"
+    Rename-Item -LiteralPath "$m\storage_1" -NewName "storage_1_corrupt-modstorage-$(Get-Date -f yyyyMMdd)_<proyecto>"
+
+Rename, no borrado: es reversible. Pero volver a arrancar con CF sobre ese storage vuelve a
+crashear, asi que lo que se conserva es la evidencia, no un estado al que puedas volver.
+
+**Aviso que hay que dar ANTES de rotar**: mundo y personaje de esa mision se resetean.
+
+Y el modo de fallo de proceso que lo dejo pasar esta vez, que es el que hay que saber reconocer:
+**la precondicion se comprobo contra el plan A, y el plan cambio.** Iba a usar una copia nueva y
+propia de la mision, asi que "mision limpia, sin storage" era CIERTO cuando lo despache. Entonces
+el tool rechazo la ruta absoluta --`dayz_test_run` valida el campo `mission` contra
+`_MISSION_ALIASES` y solo acepta `chernarus|livonia|sakhal`, ver `dayz_mcp\dayz_test_tool.py:135`--
+y me empujo a la mision COMPARTIDA. El descarte viajo con el plan viejo y nadie lo reevaluo.
+
+**Un descarte se apellida con el plan que lo justifico: si cambia la ruta, las precondiciones que
+despejaste vuelven a estar sin comprobar.** Vale para cualquier caveat de esta skill, no solo
+para este.
+
+
+## Tras un reinicio, `P:` NO existe -- y FileBank empaqueta el vacio con exit 0 (added 2026-08-29)
+
+`P:` es un `subst`, no un enlace en disco: **no sobrevive a un reinicio**, y menos a una caida
+dura. Todo lo que las herramientas BI y el launcher sellado tocan cuelga de ahi
+(`P:\Mods`, `P:\<Mod>`, `P:\<Mod>_dev\_server\profiles`, `P:\scripts`, `P:\DZ`).
+
+Lo caro no es que falte: es **como falla**. Medido hoy, con `P:` ausente:
+
+    FileBank.exe -property prefix=<Mod> -exclude <lst> -dst <staging> P:\<Mod>
+    exit=0
+    <staging>\<Mod>.pbo   ->   79 bytes
+
+**Exit 0 y un PBO de 79 bytes.** Ni un mensaje. Es el mismo modo de fallo que el
+`Build failed` con exit 0 de AddonBuilder que ya documenta esta skill: la herramienta BI
+considera que empaquetar cero ficheros es un exito.
+
+**Preflight, dos lineas, antes de cualquier build o launch:**
+
+    Test-Path -LiteralPath "P:\"          # si False:
+    subst P: "<dayz-projects>"
+
+Y comprueba las anclas, no solo la raiz: `P:\<Mod>\config.cpp`, `P:\Mods\@<Mod>\Addons`,
+`P:\scripts`, `P:\DZ`. **Valida el PBO por TAMANO y por numero de entradas** antes de
+publicarlo; un paquete de tres cifras de bytes es la firma de esto.
+
+## El `pid` de Steam en el registro puede estar MUERTO, y la comprobacion de esta skill no lo veia (added 2026-08-29)
+
+Esta skill ya pide que `HKCU\Software\Valve\Steam\ActiveProcess` tenga `pid != 0` y
+`ActiveUser != 0`. **Necesario, pero NO suficiente: un `pid` distinto de cero puede ser un pid
+muerto.** Tras una caida dura del PC la clave conserva el pid del Steam anterior; Steam
+arranca de nuevo con OTRO pid y **no siempre reescribe la clave a tiempo**. DayZ lee ese pid,
+va a buscar ese proceso, no lo encuentra, y muere.
+
+Medido hoy: registro `pid=25484`, `steam.exe` vivo `pid=13856`. La comprobacion "no es cero"
+daba VERDE sobre un sistema roto. La pregunta correcta no es "¿es cero?" sino **"¿existe ese
+proceso?"**:
+
+    $k  = Get-ItemProperty 'HKCU:\Software\Valve\Steam\ActiveProcess'
+    $st = Get-Process -Name steam -ErrorAction SilentlyContinue
+    $ok = $st -and ($st.Id -contains [int]$k.pid) -and $k.ActiveUser -ne 0
+
+**Firma del fallo, para reconocerla sin adivinar** (tres reproducciones identicas):
+
+| senal | valor |
+|---|---|
+| dialogo modal | `unable to locate running instance of Steam` |
+| excepcion del volcado | `0x80000003` **BREAKPOINT**, misma direccion exacta cada vez |
+| CPU del proceso cliente | **0 s** -- vivo pero parado en seco |
+| RPT del cliente | congelado en **847 B**, solo la cabecera |
+| modulos cargados | ~69, ultimos los de Steam (`gameoverlayrenderer64.dll`, `tier0_s64.dll`) |
+
+`0x80000003` **no es un crash**: es un `int 3` deliberado del exe diag al sacar su dialogo. Por
+eso el proceso queda vivo con 0 CPU en vez de desaparecer, y por eso no hay evento de fallo en
+el visor de sucesos de Windows: DayZ escribe su propio `.mdmp` y se planta.
+
+**Remedio** (conserva el login, ~20 s): `steam.exe -shutdown`, esperar a que el proceso muera,
+relanzar, y **esperar a que la clave vuelva a casar con un proceso vivo** antes de lanzar el
+cliente. No basta con que Steam "este abierto".
+
+**Como leer el volcado sin depurador**, que es lo que corto el bucle de hipotesis: un minidump
+trae `MINIDUMP_EXCEPTION_STREAM` (tipo 6) y `MODULE_LIST` (tipo 4); con ~60 lineas de Python se
+saca el codigo de excepcion y el modulo que contiene `ExceptionAddress`. Antes de teorizar
+sobre drivers o sobre el mod, **lee el instrumento**: aqui `0x80000003` descarto de un golpe
+"crash de render" y "mod corrupto", que eran las dos hipotesis en las que ya se habian gastado
+dos ciclos de arranque.
+
+**Y el corolario de metodo, que vale para cualquier fallo tras tocar el mod:** antes de buscar
+la causa en tu cambio, **despliega el artefacto ANTERIOR y reproduce**. Aqui el PBO
+pre-cirugia fallaba identico, lo que exonero el trabajo en un solo ciclo y mando a buscar en
+el entorno. Un A/B con el binario viejo cuesta lo mismo que una hipotesis, y a diferencia de
+ella, decide.
