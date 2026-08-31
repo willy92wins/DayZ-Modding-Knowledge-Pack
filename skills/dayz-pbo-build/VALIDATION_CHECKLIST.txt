@@ -106,4 +106,13 @@ This will:
 
 Output: mymod\myaddon.pbo (place in @YourMod/addons/)
 
+POST-BUILD CONTENT GATE (SP-177)
+--------------------------------
+[ ] List, count, and name entries in the built PBO; do not infer them from include.lst
+[ ] Native config.cpp/.p3d and face-referenced .rvmat may enter without a
+    matching -include suffix
+[ ] Ordinary .c/.paa/.ogg/.layout/.csv payload matches the source tree by count and name
+[ ] Every config-referenced .rvmat is present, including materials not referenced by p3d faces
+[ ] Treat include-list presence as intent only; the built PBO contents decide the gate
+
 ================================================================================

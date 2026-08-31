@@ -15,6 +15,13 @@ Checklist tras CADA build (exit 0 y "Build Successful" NO bastan):
 4. Staging local (fuera de OneDrive) para el source del build: el sync de AddonBuilder contra rutas OneDrive puede copiar 0 archivos sin marcar error.
 5. Gate de PROPIEDADES tras `ExtractPbo` — el SHA no basta: un manifiesto de hashes compara el mismo fichero a los dos lados, así que da verde aunque los `.p3d` empaquetados se construyeran ANTES de que la propiedad entrara en los generadores. Caso medido (LFHeli HH-60G, 2026-07-29): `autocenter=0` se añadió al LOD visual del casco en los dos generadores a las 01:52/02:07, el PBO se empaquetó a las 02:15 desde `.p3d` previos, y el manifiesto dio verde; al medir los 48 `.p3d` extraídos, los 8 sub-modelos la llevaban y **los 40 cascos no**. El gate tiene que leer la propiedad concreta **por LOD**, con las expectativas declaradas en tabla (propiedad, valor esperado, motivo, exclusiones explícitas — p.ej. los LOD de Memory, sin geometría que recentrar, quedan fuera). Un gate que solo compara hashes no puede salir en rojo por esta causa.
 
+### Property-gate controls (SP-133)
+
+The expectation table must also name controls that are expected not to change, such as the
+control arm of an A/B build or a byte-frozen copy. A blanket "all LODs" requirement rejects
+healthy controls and gets disabled; declare the expected value and reason for each control
+instead.
+
 ## (added 2026-06-11) Model-path resolution gate — validate what the engine will RESOLVE
 
 Origin: A6_MK47 2026-06-11 — `model=` pointed at the PBO root while the

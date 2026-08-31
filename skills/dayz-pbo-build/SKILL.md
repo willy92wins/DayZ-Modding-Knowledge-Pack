@@ -420,6 +420,23 @@ After validation passes, use AddonBuilder to pack and binarize.
 C:\Program Files (x86)\Steam\steamapps\common\DayZ Tools\Bin\AddonBuilder\
 ```
 
+### Locate the authoritative build source before validation (SP-343)
+
+Do not infer the source tree from the checkout that is easiest to find. Before basing a fix,
+audit, or rebuild on a mod tree:
+
+1. Read `build_*.ps1` and resolve the value assigned to `$source`; that is the tree the build
+   script actually feeds to AddonBuilder.
+2. Compare a known byte-stable payload artifact from that tree (for example, a `.c` entry),
+   by content hash, with the corresponding entry in the deployed PBO. A matching path or
+   timestamp is not evidence of identity.
+3. Reject trees marked as display-only, archived, or not-for-build, even when their folder
+   names look canonical.
+
+A matching artifact locates the candidate source; it does not prove release closure. Before
+release, apply the full-tree provenance gate in LL-367: canonical commit/source tree ->
+complete build tree -> PBO.
+
 **Command line (canonical invocation — see DAYZ_INFRA.md §Comandos de invocación canónicos):**
 ```batch
 AddonBuilder.exe P:\<ModName> P:\Mods\@<ModName>\Addons -prefix=<ModName> -temp=P:\temp\<ModName> [-clear]
@@ -535,6 +552,24 @@ absent.
 - **Mixed — models + scripts** (vehicles, items): you still need binarize for the `.p3d`, so
   `-packonly` is wrong. Confirm AddonBuilder's include-list copies `*.c`/`*.h`, or the scripts
   vanish silently — a CarScript vehicle would then load but never simulate.
+
+### `-include` is not the final PBO manifest (SP-177)
+
+AddonBuilder has two input paths. Its native binarization/discovery path handles `config.cpp`,
+`.p3d`, and face-referenced `.rvmat`; these can enter the PBO even when their suffix is absent
+from `-include`. The ordinary sync path carries `.c`, `.paa`, `.ogg`, `.layout`, and `.csv`;
+with a fresh temp, an omitted suffix is silently dropped. This scopes LL-213's "exclusive
+filter" rule to the ordinary sync pass, not the final PBO contents.
+
+Measured case: an `.rvmat` omitted from `include.lst` still entered and was binarized because
+three `.p3d` files referenced it. This does not override the config-only-rvmat rule above:
+an `.rvmat` referenced only by `config.cpp` may still be absent.
+
+Do not add material suffixes to `include.lst` as a precaution and treat that as proof.
+List, count, and name the built PBO entries. Compare ordinary payload against the source tree,
+and check the complete config-referenced rvmat set separately. Presence in the list does not
+prove that an entry was packed; absence from the list does not prove that a native input was
+dropped.
 
 Always verify after packing (cheap; catches it instantly):
 ```powershell
