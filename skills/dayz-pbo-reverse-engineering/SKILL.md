@@ -405,3 +405,27 @@ Specific algorithm cited, line ranges proven, novelty justified, skill destinati
 - **Vault notes are essential**: 20% of findings don't fit any skill but are valuable reference (style fingerprints, anti-patterns, jokes, decisiones reveladoras). Don't lose them.
 
 <!-- created from LM_Planes reverse-engineering project | 130 findings extracted | 2 passes | author: claude+the author | date: 2026-05-23 -->
+
+
+## (added 2026-08-31, SP-128) Prove that extraction decoded the payload before measuring it
+
+`ExtractPbo` is the required extractor in Steps 0-2. Do not substitute `PboViewer.exe` for an
+automated sweep: it can report `Pbo successful unpack`, return exit 0, and write entries marked
+`Cprs` under the correct filenames while leaving their payload bytes compressed. File existence
+and a success string therefore do not prove extraction.
+
+Use these checks before parsing the result:
+
+1. Extract to an explicit scratch destination with `ExtractPbo`. A fallback that writes beside
+   the input must never run against a read-only Workshop source; copy the PBO to scratch first.
+2. Compare representative output sizes with a trusted extraction. A layout expected at 6,444
+   bytes but emitted at 1,579 bytes is still compressed even though its name is correct.
+3. Do not replace the extractor with hand-written LZSS. Bohemia's variant uses a 4,096-byte ring
+   buffer preinitialized with spaces; a wrong decoder can produce text that starts plausibly and
+   then degrades, which is more dangerous than a hard failure.
+4. Run the existing parser against a known baseline before measuring improvements. In the
+   measured TraderX case, reproducing the previous 42/46 layouts first was the control that made
+   the later 46/46 result credible.
+
+Treat a baseline mismatch as an extraction failure. Stop the sweep instead of drawing findings
+from bytes whose decoding has not been proved.

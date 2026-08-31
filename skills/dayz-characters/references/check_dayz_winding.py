@@ -95,6 +95,16 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("p3d"); ap.add_argument("--py3d", default=None)
     a=ap.parse_args()
+    try:
+        with open(a.p3d, "rb") as stream:
+            signature = stream.read(4)
+    except OSError as exc:
+        print(f"invalid input: {exc}")
+        sys.exit(2)
+    if signature == b"ODOL":
+        print("invalid input: this file is ODOL; convert it to MLOD first with an external "
+              "ODOL->MLOD converter (not distributed with this pack).")
+        sys.exit(2)
     py3d=load_py3d(a.py3d)
     try:
         with open(a.p3d,"rb") as stream:

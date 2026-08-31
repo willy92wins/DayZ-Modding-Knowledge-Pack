@@ -644,3 +644,57 @@ campaign, which is what makes it a rule rather than an anecdote.
    one that was not embedded is the one the re-audit had to catch.
 3. **Budget 2-4 rounds for integrity bundles.** The closing signal is "a round
    with zero NEW critical/major", not "the old findings are closed".
+
+
+## (added 2026-08-31, SP-196 + SP-200) Repair-on-load constructors turn every reader into a writer
+
+A store constructor that prunes, migrates, compacts, normalizes, or repairs while loading is
+not read-only. Every call site that constructs it can write the same file, even when the
+caller's help text or docstring says "read-only". Treat that claim as unverified until the
+constructor and its callees have been read.
+
+**Step-1 caller census:**
+
+1. Grep every construction of the store class, including tests and alternate entry points.
+2. Classify each caller as intentional writer, required reader, or test. For each required
+   reader, trace constructor side effects through the persistence choke point.
+3. Check the lock's scope. `threading.RLock` excludes threads in one process; it does not
+   serialize two processes writing the same file. A shared file needs an inter-process lock
+   or a design that gives only one process write authority.
+4. Look for readers that discard exactly the records the loader repairs or prunes. That is a
+   mechanical signal that maintenance is an unwanted side effect, not part of the read.
+
+**Read-only must be structural.** A read-only mode loads without repair or checkpointing, and
+the persistence choke point plus every public mutator must raise if a future caller attempts
+to write. Pin the contract with a file that contains material the normal loader would repair,
+then compare its bytes before and after the read-only operation; an unchanged mtime is not
+enough evidence.
+
+**A pre-operation backup is not fail-closed merely because it uses `O_EXCL`.** The path
+`FileExistsError -> success` can reuse a stale, empty, or crash-truncated backup, and one fixed
+backup name protects only the first destructive operation. Use a fresh numbered slot per
+operation (`.bak`, `.bak.2`, ...), create it with `O_EXCL`, validate its bytes and size, never
+reuse it, and fail closed when the bounded slots are exhausted.
+
+A permanent fail-closed state must also be observable. Whenever a repair or destructive
+operation can stop because no valid backup slot remains, require the existing diagnostic
+surface to emit a finding. Always ask: **how does a human learn that this brake is engaged?**
+
+## (added 2026-08-31, SP-369) The super-chain walk also goes downward from a modded base
+
+The full-ancestry walk above protects an invariant while moving from a leaf toward its bases.
+A `modded class <Base>` needs the opposite walk too: inheriting from the base does not execute
+the modded hook when a descendant overrides that method without chaining `super`.
+
+Procedure:
+
+1. Enumerate every vanilla descendant of `<Base>`; include indirect descendants rather than
+   stopping at the first level.
+2. For each method modified on `<Base>`, inspect every descendant override and record whether
+   it calls `super.<Method>()` on every applicable path.
+3. Treat an override without that chain as a family-sized coverage hole. Add a dedicated hook
+   at the correct family boundary or document that the invariant does not cover that family.
+4. Treat comments such as "X and Y inherit this gate" as claims to audit, not evidence.
+
+Record both directions separately: leaf-to-base proves that a leaf reaches the hook, while
+base-to-descendants proves that no overriding child bypasses it.
