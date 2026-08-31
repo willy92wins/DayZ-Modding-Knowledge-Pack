@@ -378,6 +378,16 @@ this ladder first; each rung is minutes, the full audit is sessions.
 1. **Audit the UVs, not the textures.** Exact SAT overlap + island count + density
    (`uv-clean-atlas`, `uv_audit.py`). Overlap > 0, atomised islands (2-4 faces each) or wildly
    uneven density means the problem is upstream of any `.rvmat` — no material wiring fixes it.
+
+   **No-overlap means an exact `SAT=0` (SP-214, added 2026-08-31).** A Monte-Carlo
+   estimate has a measured nonzero floor, so its displayed `0%` is not proof. Route
+   vehicle UV repair to `uv-clean-atlas` and use its current chart/SLIM/fold/SAT and
+   semantic-packing contract; `PartUV` is not the vehicle default. One anti-fold
+   round is a cost target, not a correctness exception: run the same exact SAT
+   detector after every round, continue when it is nonzero, and block any mesh that
+   does not reach zero. This pack owns the routing and acceptance gate, not a second
+   copy of that implementation.
+
 2. **Ask where the mesh came from.** A decimated rip cannot yield game-ready UVs: the cause is
    topology, not the unwrap algorithm or the texture route. The fix is retopo (bake the high-poly
    onto a clean low-poly), and no amount of pipeline correction substitutes for it.
@@ -486,6 +496,16 @@ confirmation pending WRX live test #1): Memory `pos_cargo1(_dir)`, `pos_cargo2(_
 `:214-244`) — the base returns `false` (`transport.c:493-499`). Distinct `crew_cargo` proxy index
 and seat-box lead: invariants 28 and 30.
 
+**Four-seat completion rider (SP-205, added 2026-08-31).** Rear seats also need
+`seat_cargo1/2` boxes dual-tagged to their exact `componentNN` in Geometry and
+ViewGeometry; `crewcargo1/2` proxies in ViewGeometry and FireGeometry using one
+`crew_cargo` path with distinct instance indexes; `Crew.Cargo1/2` entries with
+`actionSel`, `proxyPos`, `getInPos`, and `getInDir`; and the two passenger cases
+in both `GetSeatAnimationType` and `CrewCanGetThrough`. `CarScript` already maps
+all four `seat_*` selections to `seat_con_1_1`, `seat_con_2_1`,
+`seat_con_1_2`, and `seat_con_2_2` (`carscript.c:2674-2689`), so an override of
+`GetDoorConditionPointFromSelection` that only repeats that table is dead code.
+
 **BEFORE any numbered gate below — calibrate the gate itself (SP-132, added 2026-07-29; LFHeli HH-60G + OH-1).**
 Two rules in this file already cover this — §"Calibration + scope (so a gate is trustworthy, not a false
 green)" and §METHOD habit 2 ("never close a phase on a tautological gate"). Both were live and **neither
@@ -562,6 +582,13 @@ not verified.
    one side. Match survivors on a ~1e-4 m grid, not 1e-6 — positions are written as float32 and a 1e-6
    grid drops about a third of the untouched vertices at random, which is why the samples looked tiny.
 
+**Position is a candidate bucket, not identity (SP-163, added 2026-08-31).**
+The grid above may find candidates, but a seam can place distinct normal/UV corners
+at the same coordinate. Pair intact data by a carried source vertex/corner and
+primitive ID. If that identity was lost and a bucket is non-unique, return
+`INCONCLUSIVE`, not PASS or FAIL. Run source against itself through the same matcher
+and require approximately zero residual before trusting any product comparison.
+
 1. **"Get in" radial needs a real SCRIPT CLASS, not a bare config class.** A `class <Mod>: CarScript`
    with no `.c` runs as bare `CarScript`, which inherits `Transport.CrewCanGetThrough()` → **`false`**
    (`scripts/3_game/vehicles/transport.c:493`) → the get-in action is filtered out and **never appears,
@@ -580,6 +607,13 @@ not verified.
    falls through to component0 → the driver "works" by fallback but the CODRIVER never resolves. The decisive,
    in-game-confirmed copilot blocker on BOTH SUB_BRZ (s9) and MercedesAMGLF (s12, headless `hit=1 comp=6 crewIdx=1`). The s9 patch changed winding and flags together and never isolated the flag as cause; the safe rule is to copy the sealed vanilla control's convention, never py3d's default. → "componentNN DUAL-TAG" + "CRITICAL EXTENSION 2026-06-28" (`vehicle-structural-parity.md`).
    positive control (LFQuad/Croco), never trust py3d's default. → "componentNN DUAL-TAG" + "CRITICAL EXTENSION 2026-06-28" (`vehicle-structural-parity.md`).
+   **Resolve the seat's `componentNN`; never hardcode its number (SP-079, added
+   2026-08-31).** Assembly order moves component numbers. For every `seat_*`
+   selection, compare both point and face membership against each `componentNN` in
+   the same LOD and require exactly one exact 1:1 match. Zero or multiple matches is
+   a hard failure. Re-run the equality after any transform or transfer so the
+   seat/component dual tag cannot be lost silently.
+
 5. **Crew/wheel proxies must exist in BOTH ViewGeometry AND FireGeometry**; the proxy triangle uses the
    engine identity frame (`R=((-1,0,0),(0,0,1),(0,1,0))`, model-space), NOT py3d `rotation=None`. → parity + rip-import.
 5b. **`wheelHub` names a GEOMETRY/MEMORY selection, not the visual `wheel_X_Y` — and the visual
@@ -611,6 +645,18 @@ not verified.
      the known-good artifact as a control. Run with `--negative-fixture` and the fixture's
      deliberate reds (yaw-180 families, stripped companions) interleave with the product rows and
      read as product failures.
+
+5c. **Owner-only driving hitch: audit hub-ground clearance and remove `LandContact`
+    before blaming scripts (SP-355, added 2026-08-31).** The driver owns the physics
+    solve while a passenger interpolates, so smooth passenger motion does not clear
+    collision geometry. Working DayZ car controls use the tyre's PhysX sphere plus a
+    small `wheel_*_damper_land` Geometry box (about 0.20×0.22×0.22 m) and no
+    `LandContact` LOD. Require `hub_y - mounted_tyre_radius` to exceed both
+    `Suspension.travelMaxUp` and `travelMaxDown`. A wheel-sized hub or retained legacy
+    `LandContact` points at the tyre plane can strike terrain every bump and make the
+    owner's solver hitch. `ObstacleGenerator { carve=1; }` and visual face count do
+    not discriminate this defect; a heavier known-good control refutes them.
+
 6. **Wheel `angle1` sign: measure the axle in the `.p3d` BEFORE setting it.** An offline check predicts
    reversed spin without an in-game cycle. → `build-packaging-and-debug.md` §2-3.
 7. **Imported-model winding: keep the RAW glTF winding VERBATIM — NEVER orient to a normal oracle
@@ -760,6 +806,16 @@ not verified.
     observed damper rest −4.3/−5.6 cm ("wheels slightly up"). Day-1 check: `WHEEL_R == mounted-wheel
     radius` or document why not.
 
+15b. **Wheel-mesh facing needs an asymmetric witness, not a symmetric bbox (SP-254,
+     added 2026-08-31).** Split wheel points by the sign of the mesh's shortest axis
+     and compare minimum radius in the perpendicular plane. The closed exterior face
+     reaches the hub (`rmin≈0`); the open interior begins near the rim. A negated bbox
+     range passes before and after a 180° turn and is therefore tautological. For
+     the measured x-axle wheel, correct a reversed side with the 180° Y rotation
+     `(x,y,z)→(-x,y,-z)` and rotate points and stored normals together. Calibrate the axis-to-side mapping on an independently
+     known-good mounted wheel, never on the candidate, then repeat the measurement on
+     the wheel blob extracted from the deployed PBO.
+
 16. **Drive-ready TEST KIT: fill ALL fluids + attach the radiator, not just FUEL (RECURRING: LFQuad + SUB_BRZ
     s28).** An admin/harness kit that only `Fill(CarFluid.FUEL,...)` leaves OIL/COOLANT/BRAKE empty → the oil
     gauge goes RED and the engine BREAKS while driving (looks like a physics/drivetrain bug, it is NOT). A
@@ -820,6 +876,23 @@ Cross-vehicle durable record (which project won each, links to the three): vault
 `AI/20_Knowledge/dayz-vehicles-crossproject.md`.
 
 20. **Config inherits a vanilla car but your SCRIPT class does not extend that car's script = SWEEP every parent script override (SP-059).** If the config says `class X: OffroadHatchback` while the script is `class X extends MyBase` (with `MyBase extends CarScript`), the config->script binding does NOT drag in the parent car's script overrides - those live on the vanilla `inheritedcars\<parent>.c`, which your class never inherits. Every method with a hostile default in the base that ALL vanilla cars override then bites: `CrewCanGetThrough` (false in `Transport`, `transport.c:493` -> get-in impossible; see #1), `IsVitalGlowPlug` (true in `CarScript` -> engine won't start; see #8), `GetAnimInstance` / `GetSeatAnimationType` (`Error()` in `Transport`, `transport.c:465,475`), `Get3rdPersonCameraType` (`Error()`, `transport.c:483`). Procedure: diff method-by-method against the parent config's `.c` (`4_world\entities\vehicles\inheritedcars\<parent>.c`) and replicate EVERY runtime-contract override, not just the two pose ones - this is DZ-R7 (sweep the invariant to all call-sites) in config form. Origin: LFHeli R21-008 - `LFHeli_Placeholder: OffroadHatchback` (config) + `extends LFHeli_Base` (script) had no get-in and no engine start after passing two reviews; the first fix restored only the two pose methods.
+
+20b. **A working control's skeleton is baked into its ODOL; inherited config must be
+     audited by EFFECTIVE value (SP-145, added 2026-08-31).** Shipped controls often
+     have no loose `model.cfg`. Read the baked skeleton and selection names through
+     an external ODOL→MLOD converter (not distributed with this pack), and validate
+     the reader first on a model whose `model.cfg` is available: name, `isDiscrete`,
+     bone count and every bone/parent pair must match. Binarized bone names are
+     lower-case. A uniform zero from both control and candidate is a tool-failure
+     signal; confirm known bytes directly before drawing a conclusion.
+     For a vehicle that inherits from the working vanilla control, an undeclared
+     property has the parent's effective value and cannot be a differential by
+     itself. Keep only differences where both independent controls agree and the
+     candidate differs, then inspect: candidate-only declarations; model-bound
+     skeleton/animation/selection data; and values both controls override but the
+     candidate neither declares nor inherits. Finally resolve every inherited model
+     name (`animDamper`, `wheelHub`, and peers) against the candidate `.p3d`; the
+     reference is inherited even when the named bone or selection is absent.
 
 21. **REDIRECT CAMBIO-1 (familia B):** `../rip-vehicle-import/cookbooks/family-b/attach-invisible.md`.
 22. **An attached item with its OWN radial actions (CarDoor open/close, hood, trunk) needs a raycast-visible ViewGeometry — point flags 0x0000003F — or the action NEVER appears (SUB_BRZ s38).** The action chain resolves the TARGET by raycast: `ActionCarDoorsOutside.ActionCondition` casts `target.GetObject()` to CarDoor and reads the selections of the hit VG COMPONENT of the ITEM (`actioncardoorsoutside.c:34-46`); a VG whose points carry flags 0x0 is not hit by `RaycastRV(ObjIntersectView)` — the same mechanism as the seat-cube blocker (preflight #4, in-game verified SUB_BRZ s9 + MercedesAMGLF s12) — so the item under the cursor never resolves and the radial is silently filtered, with config, script overrides, slots, bones and anim sources all CORRECT. Contract for the item's VG: (a) componentNN dual-tagged with a selection named EXACTLY what the vehicle's `GetAnimSourceFromSelection` expects (e.g. `doors_driver`); (b) every VG point flags 0x0000003F; (c) inward winding (copy a fixed seat cube as control). Symptom signature: attachment renders/attaches/damages fine, `GetCarDoorsState` works, but no open/close radial (and hence no get-in-through-door). Diagnose offline in seconds: census the item's VG point flags vs a working control BEFORE touching config or scripts. Origin: SUB_BRZ s38 D4e; the door fix's own in-game gate CLOSED 2026-08-24 (the radial action DOES appear on the attached panel), but the raycast mechanism is the twice-verified #4 one.
@@ -1209,6 +1282,17 @@ the provenance labels the references already use (`[Landrover ✓]`, `[QuadBike]
 ## LIGHTS — the five failures that look like "the material is broken" and are not (added 2026-08-17; SUB_BRZ B2-B6, all measured in-game)
 
 - **Light-selection preflight (LL-237).** Before reassigning a rear lamp, print every light hidden selection's face count and bbox. A lateral selection whose bbox crosses `x=0` owns centre geometry (e.g. `x=-0.12` to `0.65` = the tailgate bar); dozens of faces compressed into ~1 cm (here 44 faces in 0.01 m) are degenerate and draw nothing. Brake and tail must own disjoint faces; if they overlap the later `SetObjectMaterial` wins and the result is indeterminate.
+
+- **The `CarScript` light-selection ABI is positional (SP-178, added 2026-08-31).**
+  `carscript.c:293-301` fixes indices 0/1 front, 2/3 brake, 4/5 reverse, 6/7 rear
+  position and 8 dashboard. Names are free; list order is not. Indices `>=9` have
+  no native `CarScript` light meaning and require the mod's own driver. Indices 2/3
+  and 6/7 must resolve to disjoint face sets, or the later `SetObjectMaterial` wins.
+- **With both headlight bulbs active, `*_dir` does not steer the beam.**
+  `CarHeadlightBulbsState.BOTH` attaches one aggregated light at the midpoint of
+  `light_left` and `light_right` (`carscript.c:2136-2141`). Measure that midpoint
+  against the centre-line body surface; a point inside the shell traps the beam.
+  Apply the same check to `light_reverse` (`carscript.c:2182`).
 
 A car whose lights "do not work" almost never has a broken `.rvmat`. Five distinct causes were
 separated in one session by measurement; each has a cheap discriminator. Run them in this order,

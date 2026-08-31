@@ -1125,3 +1125,47 @@ c/u). Para una escalera de LODs visuales desde un modelo diezmado por el artista
 - El primer paso suave (p.ej. −20% LOD0→LOD1) preserva calidad cerca; acelerar después. Builder de referencia:
   `<vehicle-import>\scripts\build_ladder.py` (MERCEDES_AMGLF 2026-06-27; rescatado de %TEMP%
   2026-07-06, SHA256 verificado): 5 LODs 182k/145k/73k/23k/7k + shadow.
+
+## Occluder membership beats component granularity (SP-130 correction, added 2026-08-31)
+
+The closed-car rule above still stands: when no body ViewGeometry shell is needed,
+omit it and keep only the dedicated seat components. When an open vehicle intentionally
+needs a shell occluder, however, small components alone do not prove that the seats are
+reachable. A finely split cloud can still block every ray if detachable doors or
+interior pieces were assigned to the shell.
+
+Build that occluder from shell-owned surfaces. Exclude detachable panels and interior
+chunks that have their own functional owner. Gate two independent defects:
+
+1. Calibrate the largest component's bbox-volume / shell bbox-volume ratio against
+   a working control and a monolithic-body red fixture. This detects the single body envelope.
+2. Cast bilateral door-side ray fans toward every seat component. The first hit must be
+   that seat's exact one-to-one `componentNN`. Include separate red fixtures with door
+   surfaces and with interior surfaces left in the shell; both must fail.
+
+The ray fan is an offline geometric discriminator with two-sided triangles. It does not
+predict engine backface culling, so a green result still needs the in-game get-in cycle.
+This correction narrows the earlier closed-car-specific statement that body occlusion was
+a red herring; it does not change that measured root cause or restore a shell where none
+is required.
+
+
+## LOD frame parity uses area moments, not raw vertex PCA (SP-219, added 2026-08-31)
+
+**[HISTORICAL OFFLINE MEASUREMENT; CALIBRATE PER MODEL]** A decimator preserves
+surface while changing vertex density. Raw vertex centroid and PCA can therefore
+report a frame change on a correct LOD (measured false drift:
+about 0.035 m and 18°). Compare `LODn` with `LOD0` using area-weighted centroid and
+covariance, orient each principal axis with the area-weighted third moment, and
+return `INCONCLUSIVE` when an axis or its sign is degenerate. Calibrate angular and
+centroid tolerances on a working pair from the same model family; measured examples
+of 2° and 0.02 m are not universal defaults. Enumerate the LOD files from the host's
+`proxy:` selections rather than a hand list.
+
+## Modern `Car` ground-contact correction (SP-355, added 2026-08-31)
+
+This supersedes both earlier rows that call `LandContact` optional for a modern
+DayZ `Car`. Do not carry or add a `LandContact` LOD: ground contact uses the tyre's
+wheel collider plus the small `wheel_*_damper_land` component in Geometry. Treat a
+different vehicle archetype as a separate contract and calibrate it against a
+working control before introducing any contact LOD.

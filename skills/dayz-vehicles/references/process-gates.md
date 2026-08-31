@@ -58,3 +58,37 @@ la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita:
 
 - **LL-076** — Antes de diferir una feature, clasifica la severidad de su ausencia y valida los mínimos exigidos por el engine. Todo `CarScript` debe incluir al menos `DamageSystem.GlobalHealth`; su ausencia puede matar el proceso aunque el daño sea una feature posterior.
 - **LL-172** — Ante paneles negros o see-through, decodifica primero el `_co` desplegado y mide píxeles oscuros. Si la textura está limpia, trata el síntoma como winding y exige captura in-game antes de voltear regiones.
+
+## Match transformed data by identity, never rounded position (SP-163, added 2026-08-31)
+
+A glTF/FBX seam can hold several source vertices at the same position with different
+normal and UV values. Nearest/rounded-position matching can select the wrong twin
+and report 180° normal drift or UV drift of 1.0 on an unchanged mesh. Carry the
+source vertex/primitive identity through the operation. Before trusting the gate,
+run source against itself through the same correspondence and require approximately
+zero residual.
+
+## Copy the whole lifecycle of a paired mechanism (SP-206, added 2026-08-31)
+
+Before adopting a mechanism from a working reference, enumerate every call site.
+Paired state (`SetDisabled`, active input excludes, focus, active flags) is usually
+set on the happy path and cleared across normal exit, force-exit, watchdog, abort
+and rejected entry. Half an adoption creates the same lock on the least-tested
+path. Track ownership with a dedicated flag, make cleanup idempotent, and invoke it
+from every transition out of the state.
+
+## A control calibrated from the candidate is circular (SP-254, added 2026-08-31)
+
+A known-good artifact is not an independent control if the axis map, orientation or
+measurement chain used to read it was calibrated from the candidate. Derive the
+instrument convention independently and require an asymmetric witness that changes
+under the defect. Repeating the same circular chain across more controls does not
+add evidence.
+
+## Every executable gate has three outcomes (SP-294, added 2026-08-31)
+
+Reserve exit `0` for `PASS`, `1` for a confirmed product/contract defect, and `2`
+for `COULD_NOT_INSPECT`. Missing or wrong-format input, parser/import/tool failure,
+an absent report, or a missing target row is state 2. A deliberate product mutant
+must produce 1, and an unreadable-input fixture must produce 2. Never treat state 2
+as PASS or as evidence that product geometry or configuration needs repair.
