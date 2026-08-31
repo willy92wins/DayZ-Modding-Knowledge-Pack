@@ -87,10 +87,22 @@ agente no mata ni adopta el proceso.
 Con la caja libre de procesos DayZ del run y autorizacion explicita del usuario, la via es launch UNMANAGED. No es el default.
 
 - No disparar el exe desde la shell del agente. [EXACT - esta skill, cross-ref SP-085] DayZDiag lanzado fuera del launcher registrado queda vivo con 0 CPU y 0 RPT. Firma: vivo + 0 CPU + 0 RPT => no es args/mod, es launch-desde-agente.
-- No usar `Start-Process -ArgumentList` para DayZDiag. [EXACT - esta skill, SP-167] En Windows PowerShell 5.1 el array no garantiza el quoting de cada elemento. [DESIGN - SP-228, no hay fuente citada en esta copia del pack] `cmd /c start` con comillas literales en cada valor con espacios es la via que arranca; `Start-Process -ArgumentList` puede arrancar y colgarse sin header de RPT.
+- No usar `Start-Process -ArgumentList` para DayZDiag. [EXACT - esta skill, SP-167] En Windows PowerShell 5.1 el array no garantiza el quoting de cada elemento. [EXACT - SP-228, medido en LFPowerGrid P0.0, 6 intentos A/B el 2026-08-12] `cmd /c start` con comillas literales en cada valor con espacios es la via que arranca; `Start-Process -ArgumentList` arranca y queda colgado a ~0,06 s de CPU sin escribir NI el header del RPT.
 - Receta: el agente escribe `.bat` (argv de server/client, comillas literales en cada valor con espacios) y el usuario los ejecuta a doble-clic en su sesion interactiva. [EXACT - esta skill, SP-077] Leer script.log/RPT con `FileShare.ReadWrite`. Cierre por UI, no por PID, salvo zombie del propio agente (entonces `Stop-Process -Id` exacto).
 - [DESIGN] Server argv: `-server "-config=<serverDZ.cfg>" "-profiles=<server-profiles>" "-mission=<mission-abs>" "-mod=<mod-abs-semicolon-list>" -filePatching -port=2302`
 - [DESIGN] Client argv: `"-mod=<mod-abs-semicolon-list>" -connect=127.0.0.1 -port=2302 "-profiles=<client-profiles>" -name=Dev -window -filePatching`
+
+Tres gotchas que muerden en este mismo camino y no son del argv (SP-228, medidos):
+
+- **Workshop atascado.** `workshop_log.txt` con «No workshop depot defined, skipping non-legacy
+  item» en cada item (`NeedsDownload=1`) se destraba con `steam://validate/221100`, que refresca el
+  appinfo. Ni el launcher ni la página de descargas lo destraban.
+- **RPT por defecto.** Si `-profiles` no llega al exe, DayZDiag escribe el RPT y el script log en
+  `%LOCALAPPDATA%\DayZ`. Buscar ahí antes de declarar que no escribió nada.
+- **VPP superadmin.** Las versiones actuales leen
+  `<profiles>\VPPAdminTools\Permissions\SuperAdmins\SuperAdmins.txt` (solo IDs, una por línea);
+  `SuperAdmins.json` es formato viejo y se ignora. Con `vppDisablePassword=1` más la ID en el `.txt`
+  el menú abre directo. Corrige el hint que citaba solo el JSON.
 
 ## PREREQUISITES (preflight — runs automatically)
 
