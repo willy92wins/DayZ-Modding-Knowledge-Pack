@@ -3489,3 +3489,207 @@ def test_remove_artifact_does_not_mask_other_permission_errors(
     monkeypatch.setattr(Path, "unlink", deny_unlink)
     with pytest.raises(PermissionError, match="non-readonly denial"):
         promotion._remove_artifact(artifact)
+
+
+PHRASE_LONG = "an external ODOL->MLOD converter (not distributed with this pack)"
+PHRASE_SHORT = "external ODOL->MLOD converter"
+PHRASE_LOCAL = "`the-local-tool`"
+
+
+def configure_phrase_alias(
+    config_path: Path,
+    tmp_path: Path,
+    *,
+    phrase: str = PHRASE_SHORT,
+    value: str = PHRASE_LOCAL,
+    kind: str = "phrase",
+) -> None:
+    dayz_projects = tmp_path / "DayZ Projects"
+    dayz_projects.mkdir(exist_ok=True)
+    configure_path_aliases(
+        config_path,
+        {
+            "<dayz-projects>": {"kind": "path", "value": str(dayz_projects)},
+            "<you>": {"kind": "fragment", "value": "fixture-user"},
+            phrase: {"kind": kind, "value": value},
+        },
+    )
+
+
+def test_phrase_alias_localizes_markdown_on_promotion(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    configure_phrase_alias(config_path, tmp_path)
+    published = f"Pre-process the model with {PHRASE_SHORT} first.\n"
+    source = commit_demo_payload(root, "references/scope.md", published)
+
+    checked = check_promotion(root, map_path, config_path, plan_path)
+    assert "PROMOTION-CONFIG-INVALID" not in codes(checked)
+    applied = apply_promotion(plan_path)
+
+    assert applied["verdict"] == "PASS"
+    installed = (paths["claude"] / "demo/references/scope.md").read_text(
+        encoding="utf-8",
+    )
+    assert installed == f"Pre-process the model with {PHRASE_LOCAL} first.\n"
+    # the published wording is what stays in the repository
+    assert source.read_text(encoding="utf-8") == published
+
+
+def test_phrase_alias_localizes_executable_payload(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    configure_phrase_alias(config_path, tmp_path)
+    commit_demo_payload(
+        root,
+        "scripts/overlay.py",
+        f'"""Built on {PHRASE_SHORT} internals."""\n',
+    )
+
+    checked = check_promotion(root, map_path, config_path, plan_path)
+    assert "PROMOTION-CONFIG-INVALID" not in codes(checked)
+    applied = apply_promotion(plan_path)
+
+    assert applied["verdict"] == "PASS"
+    assert (
+        paths["claude"] / "demo/scripts/overlay.py"
+    ).read_text(encoding="utf-8") == f'"""Built on {PHRASE_LOCAL} internals."""\n'
+
+
+def test_longest_phrase_wins_over_contained_phrase(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    dayz_projects = tmp_path / "DayZ Projects"
+    dayz_projects.mkdir(exist_ok=True)
+    configure_path_aliases(
+        config_path,
+        {
+            "<dayz-projects>": {"kind": "path", "value": str(dayz_projects)},
+            "<you>": {"kind": "fragment", "value": "fixture-user"},
+            PHRASE_SHORT: {"kind": "phrase", "value": "SHORT"},
+            PHRASE_LONG: {"kind": "phrase", "value": "LONG"},
+        },
+    )
+    commit_demo_payload(root, "references/scope.md", f"Use {PHRASE_LONG}.\n")
+
+    check_promotion(root, map_path, config_path, plan_path)
+    applied = apply_promotion(plan_path)
+
+    assert applied["verdict"] == "PASS"
+    assert (
+        paths["claude"] / "demo/references/scope.md"
+    ).read_text(encoding="utf-8") == "Use LONG.\n"
+
+
+def test_phrase_alias_does_not_localize_path_placeholders_in_markdown(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    """Configuring a phrase must not drag markdown into path localisation.
+
+    Published documentation carries <vault>-style tokens on purpose; they are
+    part of the text a reader is meant to see.
+    """
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    configure_phrase_alias(config_path, tmp_path)
+    literal = f"Use <dayz-projects> with {PHRASE_SHORT}.\n"
+    commit_demo_payload(root, "references/policy.md", literal)
+
+    check_promotion(root, map_path, config_path, plan_path)
+    applied = apply_promotion(plan_path)
+
+    assert applied["verdict"] == "PASS"
+    assert (
+        paths["claude"] / "demo/references/policy.md"
+    ).read_text(encoding="utf-8") == f"Use <dayz-projects> with {PHRASE_LOCAL}.\n"
+
+
+def test_phrase_alias_declared_with_path_kind_fails_config(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    configure_phrase_alias(config_path, tmp_path, kind="path")
+    commit_demo_payload(root, "references/scope.md", f"Uses {PHRASE_SHORT}.\n")
+    backup_entries = list(paths["backups"].rglob("*"))
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    matches = [
+        item for item in report["findings"]
+        if item["code"] == "PROMOTION-CONFIG-INVALID"
+    ]
+    assert len(matches) == 1
+    assert matches[0]["evidence"] == PHRASE_SHORT
+    assert not plan_path.exists()
+    assert list(paths["backups"].rglob("*")) == backup_entries
+
+
+def test_path_placeholder_declared_with_phrase_kind_fails_config(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    configure_path_aliases(
+        config_path,
+        {
+            "<dayz-projects>": {"kind": "phrase", "value": "anything"},
+            "<you>": {"kind": "fragment", "value": "fixture-user"},
+        },
+    )
+    commit_demo_payload(root, "references/scope.md", "text\n")
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    matches = [
+        item for item in report["findings"]
+        if item["code"] == "PROMOTION-CONFIG-INVALID"
+    ]
+    assert matches
+    assert any(item["evidence"] == "<dayz-projects>" for item in matches)
+    assert not plan_path.exists()
+
+
+def test_phrase_outside_the_closed_list_fails_config(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    configure_phrase_alias(
+        config_path,
+        tmp_path,
+        phrase="some phrase nobody registered",
+    )
+    commit_demo_payload(root, "references/scope.md", "text\n")
+
+    report = check_promotion(root, map_path, config_path, plan_path)
+
+    matches = [
+        item for item in report["findings"]
+        if item["code"] == "PROMOTION-CONFIG-INVALID"
+    ]
+    assert matches
+    assert any(
+        item["evidence"] == "some phrase nobody registered" for item in matches
+    )
+    assert not plan_path.exists()

@@ -55,6 +55,18 @@ PROMOTION_PLACEHOLDER_SCANNER_EXCLUSIONS = frozenset(
         "tests/packctl/test_validation.py",
     }
 )
+# Prose that reads correctly in the published pack but names something different
+# on an installed tree. Unlike a path placeholder, the repository text is the
+# finished public wording, so nothing here has to be localised before a file is
+# usable and the placeholder scanner deliberately ignores these.
+PROMOTION_PHRASE_PLACEHOLDERS = (
+    "an external ODOL->MLOD converter (not distributed with this pack)",
+    "external ODOL->MLOD converter",
+)
+# Phrase aliases also reach documentation, which path aliases never do: 31
+# published .md files carry <vault>-style tokens on purpose, so widening the
+# path-alias suffix set would make the scanner reject them.
+PROMOTION_LOCALIZABLE_TEXT_SUFFIXES = {".md"}
 PathAliasMap = dict[str, dict[str, str]]
 
 
@@ -81,11 +93,12 @@ def _tracked_projection(root: Path, repo_path: str, kind: object) -> list[str]:
     ]
 
 
-def _is_localizable_payload(
+def _payload_localizable(
     source: Path,
     source_root: Path | None,
+    suffixes: set[str],
 ) -> bool:
-    if source.suffix.lower() not in PROMOTION_EXECUTABLE_SUFFIXES:
+    if source.suffix.lower() not in suffixes:
         return False
     if source_root is None:
         return True
@@ -95,6 +108,28 @@ def _is_localizable_payload(
         raise ValueError("projected source escapes repository")
     relative = resolved_source.relative_to(resolved_root).as_posix()
     return relative not in PROMOTION_PLACEHOLDER_SCANNER_EXCLUSIONS
+
+
+def _is_localizable_payload(
+    source: Path,
+    source_root: Path | None,
+) -> bool:
+    return _payload_localizable(
+        source,
+        source_root,
+        PROMOTION_EXECUTABLE_SUFFIXES,
+    )
+
+
+def _is_phrase_localizable_payload(
+    source: Path,
+    source_root: Path | None,
+) -> bool:
+    return _payload_localizable(
+        source,
+        source_root,
+        PROMOTION_EXECUTABLE_SUFFIXES | PROMOTION_LOCALIZABLE_TEXT_SUFFIXES,
+    )
 
 
 def _path_alias_has_valid_context(text: str, start: int, kind: str) -> bool:
@@ -109,15 +144,26 @@ def _localized_payload_bytes(
     source_root: Path | None,
 ) -> bytes:
     payload = source.read_bytes()
-    if not path_aliases or not _is_localizable_payload(source, source_root):
+    if not path_aliases:
         return payload
-    mapped = [
-        alias
-        for alias in PROMOTION_PATH_PLACEHOLDERS
-        if alias in path_aliases
-    ]
+    mapped: list[str] = []
+    if _is_localizable_payload(source, source_root):
+        mapped.extend(
+            alias
+            for alias in PROMOTION_PATH_PLACEHOLDERS
+            if alias in path_aliases
+        )
+    if _is_phrase_localizable_payload(source, source_root):
+        mapped.extend(
+            alias
+            for alias in PROMOTION_PHRASE_PLACEHOLDERS
+            if alias in path_aliases
+        )
     if not mapped:
         return payload
+    # Longest first: one configured phrase can contain another, and regex
+    # alternation would otherwise settle for the shorter prefix.
+    mapped.sort(key=len, reverse=True)
     pattern = re.compile("|".join(re.escape(alias) for alias in mapped))
     text = payload.decode("utf-8")
 
@@ -139,7 +185,10 @@ def _projected_file_hash(
     path_aliases: PathAliasMap | None,
     source_root: Path | None,
 ) -> str:
-    if path_aliases and _is_localizable_payload(source, source_root):
+    if path_aliases and (
+        _is_localizable_payload(source, source_root)
+        or _is_phrase_localizable_payload(source, source_root)
+    ):
         return sha256_bytes(
             _localized_payload_bytes(source, path_aliases, source_root)
         )
@@ -427,7 +476,13 @@ def _path_alias_config_findings(
     aliases: PathAliasMap = {}
     findings: list[dict[str, object]] = []
     for alias, item in value.items():
-        if not isinstance(alias, str) or alias not in PROMOTION_PATH_PLACEHOLDERS:
+        is_path_alias = (
+            isinstance(alias, str) and alias in PROMOTION_PATH_PLACEHOLDERS
+        )
+        is_phrase_alias = (
+            isinstance(alias, str) and alias in PROMOTION_PHRASE_PLACEHOLDERS
+        )
+        if not is_path_alias and not is_phrase_alias:
             findings.append(
                 finding(
                     "PROMOTION-CONFIG-INVALID",
@@ -451,8 +506,11 @@ def _path_alias_config_findings(
             continue
         kind = item.get("kind")
         alias_value = item.get("value")
+        # The two vocabularies do not mix: a path placeholder cannot claim to be
+        # prose, and a phrase cannot borrow the path-context rule.
+        allowed_kinds = {"phrase"} if is_phrase_alias else {"path", "fragment"}
         if (
-            kind not in {"path", "fragment"}
+            kind not in allowed_kinds
             or not isinstance(alias_value, str)
             or not alias_value.strip()
         ):
@@ -1827,7 +1885,10 @@ def _copy_projected_file(
     source_root: Path | None,
 ) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    if path_aliases and _is_localizable_payload(source, source_root):
+    if path_aliases and (
+        _is_localizable_payload(source, source_root)
+        or _is_phrase_localizable_payload(source, source_root)
+    ):
         destination.write_bytes(
             _localized_payload_bytes(source, path_aliases, source_root)
         )

@@ -1986,17 +1986,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
+          "decision_evidence": "Authored in this branch: phrase aliases localise published prose on promotion while the repository keeps the public wording.",
           "license": "MIT",
-          "source_hash": "fd4852e5df7030d3a63991eae901125991d6b0f5a6d87fe8001aa230bc75c254",
+          "source_hash": "133a6582bb30920d56feacee72abedfca25f3d85120c7469345baf4c32622db2",
           "source_id": "pack-r21-authored",
           "source_path": "packctl/promotion.py",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "promotions-phrase-aliases@2026-08-31",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "bd1c898f75fa771b7bdf91f2d76776bfdc5035bdb4ca7deadf095a63090b74e9",
+      "output_hash": "133a6582bb30920d56feacee72abedfca25f3d85120c7469345baf4c32622db2",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -2108,17 +2108,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
+          "decision_evidence": "Authored in this branch: phrase aliases localise published prose on promotion while the repository keeps the public wording.",
           "license": "MIT",
-          "source_hash": "f3da45fbce88ec173b561285993327178c089275c5848e96c811b2f11559ae98",
+          "source_hash": "384b1856ba96629922a6f0050b55080fc132ff309ce257902e4aea8222041814",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/local-targets.example.json",
-          "source_revision": "r21-phase01@2026-07-24",
+          "source_revision": "promotions-phrase-aliases@2026-08-31",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f3da45fbce88ec173b561285993327178c089275c5848e96c811b2f11559ae98",
+      "output_hash": "384b1856ba96629922a6f0050b55080fc132ff309ce257902e4aea8222041814",
       "output_path": "promotions/local-targets.example.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -11770,17 +11770,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
+          "decision_evidence": "Authored in this branch: phrase aliases localise published prose on promotion while the repository keeps the public wording.",
           "license": "MIT",
-          "source_hash": "2e66e919947d0573156d998c7c651280233c0f17dade9a9fceb21cc35467e2cb",
+          "source_hash": "31711630fa826865b0c22a0cab1be01e3c81bb8710cb348e611126437979d9e6",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_promotion.py",
-          "source_revision": "filesystem@2026-08-21",
+          "source_revision": "promotions-phrase-aliases@2026-08-31",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "21fc802526f37474e658008b7d18365f79f70c1c09eaf301d96091cb0f981ef8",
+      "output_hash": "31711630fa826865b0c22a0cab1be01e3c81bb8710cb348e611126437979d9e6",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"

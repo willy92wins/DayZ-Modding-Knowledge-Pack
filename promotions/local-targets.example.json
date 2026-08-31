@@ -12,6 +12,10 @@
     "<you>": {
       "kind": "fragment",
       "value": "<local-user-name>"
+    },
+    "external ODOL->MLOD converter": {
+      "kind": "phrase",
+      "value": "<local-tool-name>"
     }
   },
   "allowed_physical_roots": [
