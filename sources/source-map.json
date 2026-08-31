@@ -3389,7 +3389,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "808b982d2d6322d4d1063659acba9b316ff875f80e0247a9ef38a0202caac6bd",
+      "output_hash": "255cbe22402b16382c2a3f91b1f128c7bb74511359700d34673dd18cfd1e50f0",
       "output_path": "skills/dayz-animation-pipeline/references/config-driven-animation.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
