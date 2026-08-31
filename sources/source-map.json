@@ -2095,7 +2095,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "08366b5c6b3ed9163aa00575e21be610096766922cb657e19824d07edb5e60e7",
+      "output_hash": "338313319dc88eccb8a84c3a539a558b1b46f07f426c80a10325ba3849215a9f",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
