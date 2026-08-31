@@ -5465,7 +5465,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fc1ba610a71341abfbdd5f26073160b5e85beb6cab72ca056bf3bfca69b85a3f",
+      "output_hash": "d269d2f8d07218c0930bad69148b87d8a700bc7815dd774d4da9906868e89488",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"

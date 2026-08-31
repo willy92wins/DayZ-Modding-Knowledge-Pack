@@ -743,3 +743,96 @@ la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita:
 - **LL-147** — Para cualquier fallo de estado sincronizado, instrumenta cliente y servidor desde el primer ciclo y confirma el valor en el lado donde se observa el síntoma. Trata toda discrepancia entre lados como dato de primera clase antes de proponer el fix.
 - **LL-199** — En probes client-side, coloca primero `t`, posición y estado; deja raws y flags al final. Mantén cada payload útil por debajo de ~225 caracteres para absorber el wrapper del logger.
 - **LL-200** — Emite `t=GetTickTime()` al principio de cada línea de diagnóstico. Estima el offset server↔client con la mediana de pares RPC REQUEST/ACK, interpola una serie sobre la otra y descarta muestras con gaps excesivos.
+
+
+## Live bug-ledger closure protocol (SP-236, added 2026-08-31)
+
+Every new pilot-visible symptom gets a row in `<Mod>_dev/bugs.md` before the next debug
+cycle. Search the ledger's `alias` fields first. A regression of a known symptom updates the
+existing row; it is never archived as a new bug.
+
+A deployed fix records `F@<hash>`, but that token does **not** mean fixed. Close the row only
+with a named gate result or the user's verdict on that exact hash. Silence can adjudicate a
+previously reported symptom only when the relevant regime was exercised and the observation
+window is recorded. This keeps build identity, exercised behavior, and closure evidence in
+the same live ledger.
+
+## Compile gates cover both runtime sides (SP-208, added 2026-08-31)
+
+A server compile pass is not a build-wide script gate. Code below `#ifndef SERVER` can be
+absent from the server compilation while still breaking the client module. Before accepting
+a build, boot and inspect both server and client script compilation. Record a pass for each
+side separately. Wrapping a failing declaration in a side guard is not a fix unless the side
+that still compiles it also passes.
+
+The language rule for where a `modded class` declaration must live belongs to
+`enforce-script-reference`; this workflow section governs the two-sided compile gate.
+
+## Script-module capacity is calibrated by family (SP-209, added 2026-08-31)
+
+The `SCRIPT : Module: World; ... used X/33554 kB` line reports a shared roughly 32 MiB arena
+for vanilla and all loaded mods. Physical source lines, file bytes, and file count are not a
+capacity model. Comments can be free while declarations, generic materializations, and
+compiled method bodies consume structure and bytecode.
+
+Do not use a global `kB/class` constant. Measured generic specializations formed one
+5.6-6.6 kB family, while small shell classes measured 0-1 kB and two heavy source classes
+measured 139 kB. Size a reduction with same-family before/after engine pairs. Count class
+declarations case-sensitively so a variable such as `Class x` is not mistaken for a
+`class X` declaration.
+
+When a module approaches capacity, remove or parameterize repeated script declarations
+before minifying text. A public `config.cpp` classname does not require a homonymous script
+class; it can bind to the nearest scripted ancestor. Keep public config names and
+`types.xml` entries while collapsing redundant script subclasses, then remeasure the same
+module log on both sides.
+
+## Cross-process divergence shape (SP-215, added 2026-08-31)
+
+LL-199 and LL-200 already govern client payload length, `t=GetTickTime()`, clock-offset
+calibration, interpolation, and gap rejection. After that alignment, use the shape of the
+divergence series as a diagnostic: a sawtooth means correction arrives and the system then
+re-diverges, which points at replay determinism; a monotonic rise or plateau with no reset
+means the transform is not receiving correction, which points at mechanism gating. Do not
+interpret shape until both clocks and sample gaps have passed those existing gates.
+
+## Probe independence and time order (SP-357, added 2026-08-31)
+
+Before adjudicating a bug with a runtime probe, prove that the measured quantity is
+independent of the transform or constant against which it is compared. A world-space point
+computed by applying the entity transform to a fixed model point is not an independent
+observation of that transform.
+
+Treat an exactly round ratio, a value equal to a model constant, or a field that is zero in
+100% of samples as a probe-integrity alarm before using it as evidence. Verify selection and
+memory-point names in the source artifact. Time-series analyzers must preserve order:
+global minimum-to-maximum arithmetic can report a descent as an ascent when the maximum
+occurred first. Report ordered intervals and unrounded values.
+
+## Attribute engine-channel errors to their emitter (SP-135, added 2026-08-31)
+
+An RPT line in `RESOURCES`, `MATERIAL`, or `PHYSICS` can be emitted by a diagnostic call in
+the mod, not by the engine's original asset-load path. Before using such a line as root-cause
+evidence:
+
+1. Search the mod for every API that can open or inspect the named resource.
+2. Correlate the RPT with `script_*.log` from the same run. Matching counts, inputs, and
+   instance multiplicity are an emitter signature.
+3. Compare the delay with the mod's own `CallLater` intervals.
+4. Find a positive proof of load, such as a non-empty resolved `GetShapeName()` or a later
+   warning that requires traversing the shape.
+
+A probe that cannot complete must log an explicit inconclusive reason and its input. It must
+not leave an unexplained engine-channel error that can be mistaken for a product symptom.
+
+## Prove probe reachability before expanding it (SP-149, added 2026-08-31)
+
+When a probe has never emitted, do not add fields first. Walk upward from its call site to the
+function entry and evaluate every `return`, `continue`, side guard, and state guard in the
+actual scenario. Then search the probe marker in both server and client logs; a probe can be
+silent only on the side being inspected.
+
+Only expand instrumentation after the existing probe is shown to execute and its current
+fields fail to discriminate. If a guard exits first, fix the placement or exercise a state
+that reaches the call. A probe behind an incompatible guard fails because of where it is,
+not because of what it measures.
