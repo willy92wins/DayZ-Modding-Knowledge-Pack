@@ -3005,7 +3005,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5ef68ac73e6aa8563f14783429cd5ce524251ddab0fcf86e5adaa461176313ca",
+      "output_hash": "c3132a3b2263fee026f0abca46929828211f75e0dd444b0cf7bf20bd70207f22",
       "output_path": "skills/blender-visual-review/SKILL.md",
       "routing_artifact_id": "skill/blender-visual-review",
       "verification_level": "cross_checked"
