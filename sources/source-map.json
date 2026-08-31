@@ -22063,6 +22063,29 @@
       "output_path": "skills/dayz-proxy-align/tests/test_install_py3d.py",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/99c0cf65e815aeaabc7f6f24.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt written by promote --apply on 2026-09-01 for transaction 99c0cf65e815aeaabc7f6f24: the record of which bytes landed in which target, which is what explains those targets from now on instead of an adjudication. First full promotion of the governed set after the four receipts sealed against the abandoned map were retired in 40c8e2d.",
+          "license": "MIT",
+          "source_hash": "6d2b9f51585772cc7e4c0b4a0253db4591a477640069bcf60cd6aa5317ea9e42",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/99c0cf65e815aeaabc7f6f24.json",
+          "source_revision": "promotion-full-set@2026-09-01",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6d2b9f51585772cc7e4c0b4a0253db4591a477640069bcf60cd6aa5317ea9e42",
+      "output_path": "promotions/receipts/99c0cf65e815aeaabc7f6f24.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "cross_checked"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
