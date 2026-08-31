@@ -495,3 +495,21 @@ GetMousePos(mx, my);                            // mouse position in pixels
 int sw, sh;
 GetScreenSize(sw, sh);                          // screen resolution
 ```
+
+## Text readback and widget type IDs (added 2026-08-31)
+
+`TextWidget` has **no `GetText` method**. Its native block is
+`VANILLA/scripts/1_core/proto/enwidgets.c:189-218` and exposes `SetText`, but no text getter. A test
+criterion that says “read the native TextWidget and compare its text” therefore cannot compile.
+Reading a mod-owned wrapper only proves what the model wrote, not what the widget rendered.
+
+Choose a widget whose real signature supports readback when that is the contract:
+
+- `MultilineEditBoxWidget.GetText(out string)` (`enwidgets.c:318`);
+- `EditBoxWidget.GetText()` returning `string` (`:349`);
+- `ButtonWidget.GetText(out string)` (`:389`).
+
+The `*WidgetTypeID` constants are usable even though their declarations appear under
+`#ifdef DOXYGEN` (`enwidgets.c:12-49`): vanilla compiled code uses them, including
+`gameplayeffectwidgets.c:34` and `rendertarget.c:63`. There is no iterable widget-type enum.
+Data-driven factories map names to these constants; they do not invent integer IDs.

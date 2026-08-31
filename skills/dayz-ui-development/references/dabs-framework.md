@@ -523,3 +523,30 @@ File really lives at `Scripts/3_Game/DabsFramework/!Core/WidgetAnimator.c` (not 
   root's siblings — relevant when debugging 'binding not found'.
 - GitHub wiki is empty for UI; the 43-issue tracker has ZERO ViewBinding/ScriptView/WidgetAnimator
   reports — the MVC layer's known issues are only discoverable by reading source (as done here).
+
+## ScriptView click dispatch and external automation (added 2026-08-31)
+
+Dabs uses two different objects in its click path. Confusing them produces a silent “no handler”:
+
+1. `ScriptedViewBase` derives from `Managed`, not `ScriptedWidgetEventHandler`
+   (`ScriptedViewBase.c:4`). The actual event bridge is
+   `ScriptedViewBaseHandler : ScriptedWidgetEventHandler` (`ScriptedViewBaseHandler.c:2-13`), which
+   forwards `OnClick(Widget w, int x, int y, int button)` to its `ScriptedViewBase`.
+2. `ViewController` owns that bridge and installs it with
+   `m_LayoutRoot.SetHandler(m_ScriptedViewBaseHandler)` (`ViewController.c:56-63`). Separately,
+   `ScriptView` writes the **view** into root userdata with `m_LayoutRoot.SetUserData(this)`
+   (`ScriptView.c:86-87,149-150`). `SetHandler` does not make `GetScript()` return the handler.
+3. Event methods bubble `ViewController -> ScriptView`
+   (`ScriptedViewBase.c:148-151`). Always pass the widget that was actually clicked. A view that
+   dispatches on `w.GetUserID()` silently misses when automation substitutes the layout root.
+
+A generic handler search that walks parents and casts only `GetScript()`/`GetUserData()` to
+`ScriptedWidgetEventHandler` will therefore miss a valid Dabs view: root userdata is a
+`ScriptView`, while the bridge is held by the controller. This describes the framework's internal
+contract; it does **not** override `SKILL.md` §“Los clics sobre ScriptViews no son automatizables por
+el MCP”. An external harness still needs a way to discover the ScriptView root and target the real
+clicked widget, and the measured 2026-08-29 bridge did not provide that path.
+
+Visual dimming is not input gating. `DimButton`-style helpers only tint the widget; a dim button
+continues to receive clicks. Put the permission/state guard in the handler and return before any
+RPC or state change.
