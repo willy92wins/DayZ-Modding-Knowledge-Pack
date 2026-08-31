@@ -5465,7 +5465,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fc1ba610a71341abfbdd5f26073160b5e85beb6cab72ca056bf3bfca69b85a3f",
+      "output_hash": "d269d2f8d07218c0930bad69148b87d8a700bc7815dd774d4da9906868e89488",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -5541,7 +5541,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "dc14fb300b249d3f5c74e73a742c447e33562bf4df30f5c0ce93dbccae9937a5",
+      "output_hash": "86620ba8523cc44fa63b9a57f1317bcaac0c85a1f29943f1f12f44530c157bca",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -5869,7 +5869,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "64b6a7d6c28fafc06cbcd533c0e94ef4008b0ba7506cb298e1fa3a28eeee0c68",
+      "output_hash": "0a072d8c5ffc25a46c8a5e5d63aff898baa5e3c4345700d723488dfa2282548a",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -5955,7 +5955,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "086423fdafa43ebb96da0b375abb45549502a105c273c15ac330388e14f77a46",
+      "output_hash": "4138ca8402f8a47b417975d8fafaf1482289b0952c1e4d91ece0b807b5036575",
       "output_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -5999,7 +5999,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6234d528a7f205a3c1920fbc40f6295bf6d926be4b4cdfdfe3fa7968bc9e4c7c",
+      "output_hash": "f3d7fcffbf5790e3fd73cb0c5360a64314d9bf9be79e8e679e952e6099ee7838",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"

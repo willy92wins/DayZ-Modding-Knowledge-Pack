@@ -550,3 +550,171 @@ la entrada completa vive allí. No quites la cita: el índice detecta la promoci
 - **LL-024** — Para LODs de superficies curvas, usa Decimate COLLAPSE y protege las features críticas con un vertex group invertido. Mide tris y supervivencia de la feature; no uses planar dissolve como reductor sin verificar el conteo tras triangular.
 - **LL-134** — En attachments con bbox contractual, mide el grupo completo en el frame de exportación después de cada feature. Si el bbox está cerrado, crea relieve rebajando el entorno mediante escalón/recess en vez de añadir geometría proud.
 - **LL-372** — Phase 0 de procedencia también cubre licencia: un README/LICENSE empaquetado data del empaquetado, no de hoy. Fecha el anuncio vigente del publicador; si el interior del artefacto y la fuente actual discrepan, manda la fuente actual.
+
+
+## Sibling-model frame gate (SP-221, added 2026-08-31)
+
+Before reusing a rotation offset across related models, run the sibling-frame check in
+`dayz-p3d-audit`. Compare Memory LOD points and use the thin Geometry LOD axis as the
+mounting discriminator. A visual bbox or a shared family name does not establish frame
+parity. Treat any axis permutation as a different authoring frame.
+
+## FBX import preflight for Blender 5.x (SP-068, added 2026-08-31)
+
+Run these checks before Path A geometry work:
+
+1. A 3ds Max FBX with custom split normals can crash Blender 5.1.1 in
+   `mesh_set_custom_normals`. Import with `use_custom_normals=False`, then recalculate
+   normals from the intended smoothing. This is acceptable for a technical pipeline in
+   which py3d derives the final data.
+2. Blender 5.1 removed `apply_scale_options` and `apply_unit_scale` from the FBX importer.
+   `global_scale` and `bake_space_transform` do not repair per-node RSrs scale inheritance.
+   Census object families with world-space bboxes (`matrix_world @ vertex`) against the
+   root-frame reconstruction, and rebuild only families whose measured anchors validate
+   the transform. When a native `.blend` for the same asset exists, prefer its large parts
+   and reconstruct only the FBX-only moving families.
+3. Import into a factory-clean scene. The same FBX can produce different local axes after
+   `open_mainfile()`. Combine native `.blend` data with `bpy.data.libraries.load(..., link=False)`
+   instead of importing into an already loaded scene.
+4. Before every per-object OBJ export, set `hide_viewport=False` and call
+   `hide_set(False)`. With selected-object export, Blender can return `{'FINISHED'}` while
+   silently skipping a hidden object. Assert that every expected output file exists after
+   its export.
+
+## Generic DCC visual-winding profile (SP-071, added 2026-08-31)
+
+For a raw Blender, OBJ, glTF, or FBX import whose measured axis transform preserves the
+source winding, reverse the vertices of every **visual** MLOD face before binarization.
+Never include proxy triangles: their winding encodes the proxy frame. This is the generic
+DCC profile only. Imported vehicles continue to use the domain profile in Path A, where
+preserve-versus-flip is decided from the measured transform and source lineage.
+
+Use a pre-binarize census of `dot(cross(v1-v0, v2-v0), mean_stored_normal)` per visual
+LOD, excluding `abs(dot) < 1e-9`, as a cheap predictor. In the calibrated generic-DCC
+profile, at least 95% negative is `SOLID`, positive-dominant is `INVERTED`, and an
+intermediate result requires a per-piece mixed-winding check. Do not apply that threshold
+to ODOL, to MLOD produced by conversion from ODOL, or as a ratio comparison against a
+vanilla model: stored-normal conventions differ by origin. The final gate remains an
+in-game A/B of the candidate and an all-visual-faces-flipped variant.
+
+## Spawn remains an engine gate (SP-216, added 2026-08-31)
+
+A clean py3d reload, digest, index check, winding check, or Geometry LOD comparison does
+not prove that a generated `.p3d` will spawn. Run `binarize` first to classify capacity and
+other conversion failures, then require an in-game spawn before calling the model ready.
+If conversion passes but spawn still fails, use the batched LOD-variant method documented
+in `dayz-p3d-audit`; file patching does not reload binary `.p3d` files.
+
+## Vehicle proxy constructor preflight (SP-120, added 2026-08-31)
+
+`LOD.add_proxy(path, index, origin, rotation=None, scale=0.001)` defaults describe a tiny,
+upright worn-item proxy. They are not a verified vehicle proxy convention. For a scripted
+vehicle assembly, always pass `rotation` and `scale` explicitly, then measure the emitted
+triangle with `py3d.derive_proxy_frame()` against a known-good control. Three measured
+vehicle controls used frame rows `((-1,0,0),(0,0,1),(0,1,0))` and metre-scale triangles;
+the default identity frame differs by 180 degrees of yaw and its triangle is roughly
+1000 times smaller. This finding is offline-tested only: it does not replace the in-game
+seat-orientation gate.
+
+## Budget ratios use the geometry that ships (SP-134, added 2026-08-31)
+
+Do not extrapolate resolved-vertex or normal-triplet budgets from a decimated mesh to a
+different source mesh. Edge collapse breaks normal sharing and can inflate triplets per
+triangle. Measure the ratio on the exact geometry that will ship. When the source asset
+contains an authored LOD ladder, prefer and measure that ladder instead of planning splits
+from a decimated proxy; this also preserves the rule that visual decimation is user-gated.
+
+## Selection-safe py3d surgery (SP-362, added 2026-08-31)
+
+py3d selection membership follows `Point` and `Face` object identity. It is not a stored
+integer-index map. During section replacement:
+
+- mutate `lod.points[:]`, `lod.faces[:]`, and `lod.facenormals[:]` in place; do not rebind
+  those lists;
+- keep every surviving `Point` and `Face` object, and prune deleted objects from every
+  selection before writing;
+- remap the actual integer fields, `Vertex.point_index` and `Vertex.normal_index`;
+- append new normals directly to `lod.facenormals` after synchronization, rather than to a
+  detached temporary list.
+
+The writer's identity guard should fail loudly on a dead selection key. A successful write
+still requires an index-resolution gate and a zero-drift check for surviving proxies.
+
+## Orientation metrics for open geometry (SP-166, added 2026-08-31)
+
+Before trusting an aggregate orientation metric, translate the model by several metres and
+measure again. A changed verdict proves that the metric is not valid for that geometry.
+Classify closure before choosing the oracle: signed volume is valid for closed components;
+open sheets require a visibility test.
+
+For open geometry, render from a direction battery with and without culling and compare the
+nearest surface with the surface that is actually drawn. Count a defect only when the depth
+gap exceeds a calibrated distance. A useful report separates `<2 mm`, `2 mm-2 cm`,
+`2-10 cm`, and `>10 cm`; a zero-gap pixel count confuses thin sheet thickness with visible
+backfaces. Calibrate both green and inverted controls before acting on the result.
+
+A coincident-twin tolerance must be smaller than the thinnest sheet in the model, and the
+actual separation must be measured before labelling a pair as intentional double-sided
+geometry. Finally, flip a suspect component and remeasure it: if the defect disappears it
+was winding; if it moves to the other side, the sheet needs two-sided geometry rather than
+another flip.
+
+## Closed collision-LOD winding (SP-169, added 2026-08-31)
+
+For a closed collision component, use right-handed signed volume
+`sum(dot(v0, cross(v1, v2))) / 6` and calibrate against a known-good vanilla control. The
+measured DayZ convention is negative volume. Emit each face so
+`cross(v1-v0, v2-v0)` points inward, and store the negated exterior normal. A generator
+must measure its new box and fail closed unless the volume is negative.
+
+Do not infer this result from agreement between stored normals and geometric cross products,
+and do not treat a generic `py3d.validate()` result as the signed-volume gate. Proxy
+triangles and relative winding checks can make that aggregate non-discriminating. Closed
+collision volume and open-sheet visibility are separate profiles.
+
+## Three-point binary handoff identity (SP-172, added 2026-08-31)
+
+Every corrected binary handoff records SHA-256 for three points: the deployed artifact, the
+repair input, and the repair output. Require `deployed == repair input` before deployment;
+a small input-to-output delta says nothing about an undeclared deployed-to-input delta.
+Also compare per-model PBO size changes with untouched controls and stop when the size change
+does not fit the declared edit. Select backups by a stamped name or hash, not by mtime,
+because file copies can preserve the source timestamp.
+
+## Visual face texture/material contract (SP-195, added 2026-08-31)
+
+A py3d builder must populate both `face.material` and `face.texture` for visual faces. A
+material-only model can pass structural offline gates and still render white, especially in
+proxy-split models where `hiddenSelections` repaint the host but not its body proxies.
+
+Enforce this per-face biconditional only for visual LODs (`resolution < 1e4`):
+
+```text
+material != ""  <=>  texture == derive(material)
+material == ""  <=>  texture == ""
+derive(M) = replace \\materials\\ with \\textures\\ and .rvmat with _co.paa
+```
+
+Proxy triangles naturally occupy the empty/empty case. Non-visual penetration materials
+may legitimately have an empty texture and stay outside this gate. Preserve path casing in
+evidence, verify every referenced `.rvmat` and `_co.paa` exists on disk, and keep a negative
+fixture that renames one referenced texture and must turn the gate red.
+
+## Per-delivery artist-return amendment (SP-297, added 2026-08-31)
+
+This section narrows the reusable-script rule in SP-246. Never apply an involutive correction
+(rotation, mirror, or sign change) blindly to every file in an artist batch. Derive each
+proxy frame and classify it against the deployed artifact as `SAME`, `R*Ry(180)`, or
+`OTHER`; execute the correction only for the measured class and verify frame and anchor
+against the deployed model.
+
+An artist return can also retain the complete non-visual contract. In that case, a surgical
+reconstruction must fail closed instead of adding a second contract. Normalize selection and
+material-path casing from a canonical map read from the deployed artifact; do not invent
+canonical names. In particular, restore `Component01` exactly when the reference requires it.
+
+Reimport gates must express invariants, not freeze one delivery's topology. For symmetric
+parts, require both halves to match each other in component count, face count, and material
+distribution, plus minimum floors that reject an incomplete half. Treat optional structures
+as warnings. After changing the gate, rerun it on the previous delivery and require the
+previous production output to remain byte-identical.

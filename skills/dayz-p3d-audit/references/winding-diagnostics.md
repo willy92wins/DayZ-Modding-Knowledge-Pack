@@ -99,3 +99,23 @@ modelos de artista externo, reporte de jugador «las normales del tablón al rev
    (medido: el defecto del techo que se buscaba no existía, pero la batería original no podía
    saberlo). Cierre del lazo: re-render completo post-fix con 0 caras back-dominantes y
    ninguna nueva.
+
+
+#### Render-sign A/B and source-profile limits (SP-070/SP-071, added 2026-08-31)
+
+Edge-pair coherence and cross-product-versus-stored-normal ratios test internal consistency;
+they do not by themselves predict which side the engine will render. Normals and winding can
+be mutually coherent while both use the wrong sign for the target pipeline.
+
+When the absolute sign remains uncertain, generate an all-flipped variant by reversing every
+**visual** face, excluding proxy triangles because their winding encodes the proxy frame.
+Binarize the candidate and variant, then run an in-game A/B. Before spending that cycle,
+measure both derived outputs with the same census and require the results to differ; equal
+results make the A/B a null experiment. Binarization was measured preserving source winding,
+not normalizing it.
+
+A pre-binarize dot census can be a cheap predictor only inside a calibrated source profile.
+Exclude near-zero dots, do not compare ratios across vanilla ODOL, converted MLOD, and raw
+DCC MLOD, and do not generalize a generic-DCC flip rule to a vehicle profile with a different
+measured source transform. After adopting a flip, recalibrate every expected fraction in the
+assembler's gates. The in-game A/B remains the absolute render verdict.

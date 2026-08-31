@@ -503,3 +503,17 @@ Memory selections may not survive the extract → edit → rebuild cycle (SP-002
 membership after a rebuild, not just selection names.
 - **LL-010** — Antes de afirmar que falta una pieza, enumera los proxies del `.p3d`, inspecciona sus tamaños y abre los candidatos sustanciales. El config solo revela lo riggeado; debinariza y separa componentes conexos si la geometría vive en un proxy.
 - **LL-177** — Antes de extraer selecciones o geometría corregida, localiza el archivo realmente editado —incluidos backups que marquen la intervención— y haz que el pipeline lea esa copia. No valides procedencia solo porque el bbox parezca coherente.
+
+
+## Non-semantic MLOD face padding (SP-229, added 2026-08-31)
+
+An MLOD face record always reserves four vertex slots. A triangular face leaves the fourth
+slot unused, and Object Builder can leave non-zero bytes there after face reordering or
+editing. Those bytes carry no face data and binarization discards them. Source:
+`p3dtxt/README.md:11` and `p3dtxt/src/main.rs:38-42`.
+
+A changed `.p3d` hash after a rewrite therefore does not by itself prove data loss. For an
+MLOD round-trip, compare parsed fields while ignoring the unused fourth slot of triangles,
+or binarize both versions and compare the resulting ODOL semantics. Keep byte identity only
+for producers that explicitly promise canonical zero padding. This caveat is separate from
+the Memory-selection loss described in SP-002.
