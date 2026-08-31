@@ -121,3 +121,24 @@ la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita:
 `lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
 
 - **LL-154** — Prepara la referencia con rembg, autocrop, fondo blanco, margen y agujeros transparentes rellenados; usa cuerpo completo cuando el output lo requiera. Tras generar, valida `trimesh.extents`: un eje casi cero es un fallo plano aunque el render parezca plausible.
+
+
+## (added 2026-08-31, SP-071) Generic-DCC visual winding at MLOD emission
+
+For a raw Blender, OBJ, glTF, or FBX import whose measured axis transform preserves winding,
+reverse the vertex order of every **visual** face when emitting the authoring MLOD. Proxy
+triangles are exempt: their winding encodes the proxy frame. Keep this step in the generic-DCC
+profile handed to `dayz-model-pipeline`; do not generalize it to a vehicle or reconstructed
+source profile with a different measured lineage.
+
+A pre-binarize census of
+`dot(cross(v1-v0, v2-v0), mean_stored_normal)` can predict the result inside a calibrated
+source profile. Exclude `abs(dot) < 1e-9`. At the measured generic-DCC calibration, at least
+95% negative is `SOLID`, positive-dominant is `INVERTED`, and an intermediate result means
+mixed per-piece winding that must be isolated before a bulk fix.
+
+This census is a **profile signal, not a universal gate**. Do not compare its ratios across
+ODOL, MLOD produced from ODOL by an external ODOL->MLOD converter (not distributed with this
+pack), raw DCC MLOD, or vanilla references: stored-normal conventions differ by origin. Only
+enforce a threshold after an in-game A/B has calibrated that exact source pipeline. The final
+verdict remains the in-game A/B between the candidate and an all-visual-faces-flipped variant.
