@@ -20576,10 +20576,20 @@
           "source_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
           "source_revision": "r21-patch-only@2026-07-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed bytes take the vendored wheel name from wheel-manifest.json instead of deriving it, which had missed the py3d -> py3d_dayz distribution rename and made the rollout abort before it could restock anything.",
+          "license": "MIT",
+          "source_hash": "85ef398c4e8d31dbf65470d4be9889f66d9589325e896ce4d8f97801ea4c8265",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
+          "source_revision": "rollout-wheel-name@2026-08-31",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "dff11fa344db64aceb2845cc4e71edea4f3bfae863d59913fc667851644a8d64",
+      "output_hash": "85ef398c4e8d31dbf65470d4be9889f66d9589325e896ce4d8f97801ea4c8265",
       "output_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -22035,6 +22045,28 @@
       "output_path": "skills/dayz-p3d-inspector/tests/test_install_py3d.py",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/tools/py3d/rollout/verify-wheel-restock.ps1",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Executable gate authored for this fix: builds synthetic skill roots under a temporary directory, and its negative control requires a pre-fix copy of the rollout to fail, so a green run cannot come from a test that proves nothing.",
+          "license": "MIT",
+          "source_hash": "4d2c86b21a3291fc95a785bb7457621ddd42e6c6259933d9c4b9a0cf33a1350d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/verify-wheel-restock.ps1",
+          "source_revision": "rollout-wheel-name@2026-08-31",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4d2c86b21a3291fc95a785bb7457621ddd42e6c6259933d9c4b9a0cf33a1350d",
+      "output_path": "tools/py3d/rollout/verify-wheel-restock.ps1",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",

@@ -129,6 +129,22 @@ function Get-SourceVersion {
     return $CoreVersion
 }
 
+function Get-SkillWheelFiles(
+    [string]$WheelsDirectory,
+    [string]$PinnedFileName
+) {
+    if (-not (Test-Path -LiteralPath $WheelsDirectory -PathType Container)) {
+        return @()
+    }
+    return @(
+        Get-ChildItem -LiteralPath $WheelsDirectory -File |
+            Where-Object {
+                $_.Name -eq $PinnedFileName -or
+                $_.Name -like "py3d-*.whl"
+            }
+    )
+}
+
 function Invoke-GitApply([string[]]$Arguments) {
     $PreviousPreference = $ErrorActionPreference
     try {
@@ -211,8 +227,13 @@ $SourceVersion = Get-SourceVersion
 if ($WheelManifest.source_version -ne $SourceVersion) {
     throw "tracked wheel manifest version does not match source"
 }
-$ExpectedWheelName = "py3d-$SourceVersion-py3-none-any.whl"
-if ($WheelManifest.filename -ne $ExpectedWheelName) {
+# Manifest filename is the only source of the wheel name. Deriving
+# "py3d-<ver>-py3-none-any.whl" misses the pinned py3d_dayz rename.
+$ExpectedWheelName = [string]$WheelManifest.filename
+if (
+    [string]::IsNullOrWhiteSpace($ExpectedWheelName) -or
+    $ExpectedWheelName -notlike ("*-" + $SourceVersion + "-*.whl")
+) {
     throw "tracked wheel filename does not match source version"
 }
 $WheelPath = Join-Path $WheelRoot $WheelManifest.filename
@@ -408,12 +429,9 @@ if ($PresentEntryCount -eq 0 -and $PresentWheelSkills.Count -eq 0) {
 foreach ($SkillName in $PresentWheelSkills) {
     $WheelsDirectory = Join-Path (Join-Path $TargetRoot $SkillName) "wheels"
     Assert-UnderRoot $WheelsDirectory $TargetRoot "wheel directory"
-    $Existing = @()
-    if (Test-Path -LiteralPath $WheelsDirectory -PathType Container) {
-        $Existing = @(
-            Get-ChildItem -LiteralPath $WheelsDirectory -File -Filter "py3d-*.whl"
-        )
-    }
+    $Existing = @(
+        Get-SkillWheelFiles $WheelsDirectory $WheelManifest.filename
+    )
 
     $Pinned = @($Existing | Where-Object { $_.Name -eq $WheelManifest.filename })
     $PinnedExact = $false
@@ -551,13 +569,9 @@ foreach ($Plan in $PatchPlans) {
     }
 }
 foreach ($Plan in $WheelPlans) {
-    $Current = @()
-    if (Test-Path -LiteralPath $Plan.WheelsDirectory -PathType Container) {
-        $Current = @(
-            Get-ChildItem -LiteralPath $Plan.WheelsDirectory -File `
-                -Filter "py3d-*.whl"
-        )
-    }
+    $Current = @(
+        Get-SkillWheelFiles $Plan.WheelsDirectory $WheelManifest.filename
+    )
     if ($Current.Count -ne $Plan.Existing.Count) {
         throw "wheel set changed after preflight: $($Plan.SkillName)"
     }
@@ -621,8 +635,7 @@ foreach ($Plan in $WheelPlans) {
     }
 
     $Readback = @(
-        Get-ChildItem -LiteralPath $Plan.WheelsDirectory -File `
-            -Filter "py3d-*.whl"
+        Get-SkillWheelFiles $Plan.WheelsDirectory $WheelManifest.filename
     )
     if (
         $Readback.Count -ne 1 -or
