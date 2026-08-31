@@ -217,11 +217,16 @@ misma búsqueda: la ausencia está controlada, no supuesta.
 
 ## `SetObjectMaterial` sobre prenda vestida se RE-AFIRMA, no se llama una vez (added 2026-08-31)
 
+> **PARCIALMENTE CONTESTADA la misma tarde — lee antes «Escribir MÁS no hace que el material
+> prenda» más abajo.** Los datos de esta tabla se mantienen, pero la causa que sugieren (la
+> frecuencia) es falsa: 6648 escrituras continuas sobre una prenda sin cambios de nivel de salud
+> no renderizan nada. Aplicar solo la receta de esta sección hace perder corridas.
+
 Medido en la misma corrida, y es la parte accionable:
 
 | escrituras | resultado |
 |---|---|
-| 1, justo después de un cambio de nivel de salud | **renderiza** |
+| 1, justo después de un cambio de nivel de salud | **renderiza** — ⚠ no reproducido: ver la sección contestataria |
 | 1, ~50 s después del último cambio de estado | **no renderiza** — y la llamada se hizo, con índices válidos |
 | ~19/s sostenidas | renderiza a niveles de salud 0, 2 y 4, estable y sin parpadeo |
 | se deja de escribir | **se queda** puesto |
@@ -244,3 +249,72 @@ specular 2) sobre las selecciones camo: es binario a simple vista y quita el jui
 **El PASS no lo da el fotograma donde el override sigue: lo da el par** — un escalón de salud borra
 el mismo override, mismo entity y misma cámara. Sin ese control, «sigue ahí» es indistinguible de
 un instrumento ciego.
+
+## Escribir MÁS no hace que el material prenda: hace falta reconstruir el visual (added 2026-08-31, tarde)
+
+Corrección medida de las dos secciones anteriores. Aquella tabla describe bien lo que se vio, pero
+sugiere una causa equivocada —la frecuencia—, y el siguiente proyecto que la lea intentará escribir
+más rápido. No funciona, y cuesta dos corridas averiguarlo.
+
+**El negativo diseñado.** Sobre una prenda NUEVA en cada brazo (reset por `CreateAttachment`, para
+que ningún render anterior contamine el siguiente: el override, una vez prende, es pegajoso) y sin
+un solo cambio de nivel de salud:
+
+| tratamiento | escrituras | render |
+|---|---|---|
+| ninguna (control −) | 0 | vanilla |
+| ráfaga 0,1 s | ~6 | vanilla |
+| ráfaga 5 s | 291 | vanilla |
+| continuo 43 s | 2478 | vanilla |
+| continuo 128 s + cruce de umbral de humedad inyectado | 6648 | vanilla |
+
+Las ráfagas intermedias (0,5 / 1 / 2 s) no necesitan fotograma: son subconjuntos estrictos del
+patrón continuo sobre sujetos idénticos, así que el fallo del tratamiento máximo las cubre por
+monotonía.
+
+**Lo que sí lo hace prender** es que esté ocurriendo un cruce de umbral de salud: la misma escritura
+continua, en una corrida donde el servidor escalonaba la salud, sí renderizó. O sea que el
+`healthLevels[]` de la sección anterior no es solo lo que BORRA el override — es lo único que se ha
+visto INSTALARLO.
+
+**La humedad no vale como disparador, y se probó a propósito**: con el escritor continuo en marcha
+se inyectó lluvia y se cruzó `wetlevel` 0→1. El motor repintó de verdad —los pantalones cambian
+visiblemente al mojarse— y la prenda siguió sin tomar el override. Coherente con la sección
+anterior, y descarta el candidato obvio.
+
+**Consecuencia de diseño**: no se puede pintar una prenda vestida A DEMANDA escribiendo material. Si
+el efecto tiene que aparecer cuando el jugador lo activa, hay que forzar la reconstrucción por otra
+vía. Candidato SIN PROBAR: `SwitchItemSelectionTextureEx`
+(`P:/scripts/3_game/entities/entityai.c:1170`), método de script —no `proto native`— y la vía por la
+que vanilla re-aplica los visuales de selección de una prenda, llamada desde
+`P:/scripts/4_world/entities/manbase/playerbase.c:1471` con `ATTACHING` y `:1517` con `DETACHING`.
+
+**Y contesta la fila «1, justo después de un cambio de nivel de salud → renderiza»** de la tabla
+anterior: hoy, una escritura en el primer tick tras el cambio observado NO renderizó, con fotograma
+y con el log confirmando que la escritura se hizo con índices válidos. Las dos observaciones son de
+una muestra y se dejan las dos escritas. Lo que no depende del tamaño de muestra es el negativo de
+6648 escrituras.
+
+**El hook que parece la solución y no lo es**: `EEHealthLevelChanged` SÍ corre en cliente (medido;
+el cuerpo vanilla de `clothing_base.c:111-125` está guardado por `!IsDedicatedServer` y solo hace
+trabajo de cliente), pero **el motor escribe DESPUÉS del hook** — dentro del hook la lectura ya
+devuelve tu material, y al tick siguiente está vacía. Re-afirmar ahí dentro está perdido por orden.
+
+## `GetObjectMaterial` NO es oráculo de lo que se renderiza (added 2026-08-31, tarde)
+
+Falsado en las DOS direcciones dentro de una misma corrida. Es la trampa más cara de esta skill,
+porque convierte el log en evidencia falsa y en verde:
+
+| lo que devuelve el getter | lo que muestra el fotograma |
+|---|---|
+| `dz\data\data\mirror.rvmat` | camiseta vanilla negra — dice que tu override está puesto, y no se ve |
+| cadena vacía | camiseta con el material espejo — dice que no está, y se ve |
+
+**Regla**: para acreditar que un material se aplicó, el instrumento es el fotograma.
+`GetObjectMaterial` solo informa del slot de script, que es una cosa distinta del render. Un gate
+que lea el getter puede firmar PASS sobre una prenda que se ve vanilla, y FAIL sobre una que se ve
+pintada.
+
+Dos hechos menores del mismo getter, útiles para leer un log: devuelve **cadena vacía** cuando el
+motor tiene el material (no una ruta vanilla normalizada, que era lo que cabía esperar), y en
+**servidor devuelve vacío siempre** — el material de prenda es puramente de cliente.
