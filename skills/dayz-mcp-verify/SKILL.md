@@ -769,3 +769,64 @@ hace NADA — posicion byte-identica. La respuesta no distingue los dos casos; l
 `no_menu`). No es un fallo: su descripcion dice «a mission callback, not OS input», y el
 menu vanilla no cuelga de `OnKeyPress`. Sirve para UIs modded que SI cuelgan de ahi. No lo
 uses como sustituto de ESC del sistema, y no declares el verbo roto por ese test.
+
+## Smokes visuales: la burbuja sigue al jugador, no a la cámara (SP-082, added 2026-08-31)
+
+- Antes del spawn, lee `query_player_state.pos` y coloca el objeto junto al jugador. La cámara
+  libre a más de 1 km no fuerza streaming: puede fotografiar terreno aunque el servidor confirme
+  el objeto por raycast.
+- Tras varios `camera_set`, trata como cámara huérfana cualquier serie de frames idénticos desde
+  posiciones distintas. No existe `camera_release`; reinicia o reconecta el cliente antes de
+  diagnosticar el asset.
+- Algunos vehículos vanilla resisten `object_delete`. Comprueba siempre `deleted`; `deleted:0`
+  significa que no se limpió. Si ocurre, la limpieza es manual por el usuario mediante VPP.
+
+## Driver file-based embebido en la misión para lógica server-side (SP-074, added 2026-08-31)
+
+Cuando el test necesita APIs del mod que no tienen verbo MCP, usa un driver Enforce en el `init.c`
+de la misión workspace (`<dayz-projects>\<mod>_dev\_server\mpmissions\<mission>\`), no
+`exec_enforce`. `Resolve-Mission` de `dayz-test.ps1` prefiere esa misión frente al template.
+
+Patrón validado:
+
+1. Clase driver server-only, arrancada con `CallLater` a 250 ms.
+2. Protocolo file-based **write-once por secuencia**: `$profile:<caso>\cmd_<seq>.json` ->
+   `res_<seq>.json`, leído y escrito con `JsonFileLoader`. Nunca reescribas un `seq`.
+3. Un solo boot por run: la secuencia vive en memoria y vuelve a 1 al reiniciar. Entre runs,
+   archiva el directorio completo por **rename**; no muevas su contenido con wildcard.
+4. Imprime `MARK` en el script log para delimitar cada ventana. Todo fallo de una operación se
+   serializa dentro de su `res_<seq>.json`; el poll del driver no muere por un caso fallido.
+5. Los mission scripts ven las clases de todos los mods cargados y compilan server-side con
+   `#ifdef SERVER` visible. El runner host solo escribe comandos, lee resultados y recorta el log
+   entre marcas. Cruza este patrón con `dayz-test-ingame`.
+
+## Preflight de lease, telemetría capada y comandos zombie (SP-152, added 2026-08-31)
+
+- En la plataforma congelada, `telemetry_read(mode="object_at")` solo acepta
+  `type="MERCEDES_AMGLF"`: el límite está en el loopback Python, aunque el bridge Enforce sea
+  genérico. Para otro classname, planifica el diagnóstico con logs del servidor y pruebas del
+  usuario; no prometas telemetría de objeto.
+- `query_*`, telemetría, raycast y capturas atraviesan el bridge y requieren
+  `session_acquire`. Solo `dayz_test_run`/`dayz_test_stop` gestionan su propio lease; no extrapoles
+  esa gestión al resto de verbos.
+- Un timeout de `world_spawn` deja un comando zombie: puede ejecutarse después de perderse el
+  `object_id`. Antes de reintentar, reconcilia el efecto con la telemetría admitida para ese tipo;
+  si el cap de `object_at` lo impide, usa logs más inspección del usuario. No dupliques el spawn a
+  ciegas.
+
+## `inventory_give`: una llamada no equivale a una unidad (SP-300, added 2026-08-31)
+
+`inventory_give(classname)` usa `CreateInInventory`; un item apilable nace con su cantidad por
+defecto, que puede ser el stack completo. Nunca conviertas número de llamadas en unidades ni en
+valor nominal. Después de dotar, mide la `quantity` real del item con inspección de entidad o con
+el campo agregado que exponga el mod, y calibra contra esa medida todos los umbrales de coste,
+leftover y limpieza.
+
+## HUD con gate de cámara FPV: `camera_set` no puede fotografiarlo (SP-327, added 2026-08-31)
+
+`camera_set` instala una cámara scripted. Un HUD que gatea con
+`DayZPlayerCamera1stPersonVehicle.Cast(player.GetCurrentCamera())` se oculta bajo esa cámara; es
+comportamiento correcto del HUD, no un bug del HUD ni del MCP. Captúralo mediante freelook manual
+del usuario o mediante un modo headless propio del mod. El `RestoreGameplay()` interno recupera
+la cámara del jugador, pero no hay `camera_release` público: si el flujo no expone ese restore,
+reconecta o relanza como indica la sección anterior.

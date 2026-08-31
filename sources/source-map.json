@@ -5317,7 +5317,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a1bd7ffa99857202776d1422c4778579c03f5b35ad2ac8c1bd19aef71712ff4f",
+      "output_hash": "7cc834a5653ef8f032117b5739c0629fa26c96a0e7e9eb789217b3d57a22f95a",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
