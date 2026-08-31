@@ -1129,3 +1129,207 @@ la causa en tu cambio, **despliega el artefacto ANTERIOR y reproduce**. Aqui el 
 pre-cirugia fallaba identico, lo que exonero el trabajo en un solo ciclo y mando a buscar en
 el entorno. Un A/B con el binario viejo cuesta lo mismo que una hipotesis, y a diferencia de
 ella, decide.
+
+
+## Parches medidos del ciclo de test promovidos el 2026-08-31
+
+Las reglas siguientes se aplican sobre el estado posterior a la cosecha del 2026-08-29. Cuando
+corrigen una sección histórica, la corrección de este bloque manda; la sección anterior se conserva
+como evidencia de la evolución medida.
+
+### Build mixto: `-include` filtra el sync, no define el PBO (SP-083 / SP-168, corregidos por SP-177)
+
+Las afirmaciones históricas de :125-155 necesitan dos límites. AddonBuilder usa una ruta nativa
+para `config.cpp`, `.p3d` y los `.rvmat` descubiertos desde caras, y otra ruta de sincronización
+ordinaria para `.c`, `.paa`, `.ogg`, `.layout` y `.csv`. `-include` gobierna esta segunda ruta; no
+es el manifiesto final. Un `.rvmat` citado solo desde `config.cpp` todavía puede faltar.
+
+El template publicado de esta skill no pasa hoy una lista en
+`templates/dayz-test.ps1:531-534`. Por tanto, para un mod mixto no acredites el `-Build` genérico:
+usa un build que pase una lista adecuada para el payload ordinario y valida después las entradas
+reales del PBO. Exige al menos igualdad de rutas y conteos para los `.c` del fuente, y comprueba por
+separado los materiales citados por config. No añadas `*.rvmat` a una lista y lo tomes como prueba.
+La semántica de build autoritativa y el gate completo viven en
+`skills/dayz-pbo-build/SKILL.md`, sección SP-177.
+
+### Logs vivos y cierre de un run liberado (SP-077)
+
+DayZDiag mantiene abiertos el RPT y `script_*.log`. `Get-Content` o `ReadAllText` pueden fallar con
+`IOException` durante todo un waiter. Para monitorizar un peer vivo, abre con compartición explícita:
+
+```powershell
+$fs = [IO.File]::Open($path, [IO.FileMode]::Open, [IO.FileAccess]::Read,
+                     [IO.FileShare]::ReadWrite)
+try { $text = [IO.StreamReader]::new($fs).ReadToEnd() } finally { $fs.Dispose() }
+```
+
+En lifecycle gestionado, conserva el `run_id` y usa las herramientas públicas. Si una operación de
+bajo nivel encuentra un run `released`, la secuencia es `adopt` y después `stop`; `stop` solo puede
+devolver `run_not_adopted`. Si otra sesión ya lo limpió, `run_not_adoptable` + cero procesos del run
++ RPT terminado en `Termination successfully completed` describe cierre ordenado, no crash.
+
+### Binarize antes de gastar un boot (SP-125)
+
+Todo `.p3d` candidato necesita un veredicto PASS de binarize antes de entrar en un PBO, incluso si
+el empaquetado final usa `-packonly`: packonly conserva el MLOD, pero no hace que el motor acepte un
+modelo que binarize rechaza. Agrupa los modelos del cambio y paga este gate una vez antes del build;
+el censo post-build sigue siendo obligatorio y prueba otra frontera.
+
+### Identidad offline entre fuente y PBO desplegado (SP-144)
+
+Antes de planificar por citas `path:line` o gastar un ciclo in-game, prueba qué bytes va a compilar
+el juego:
+
+1. Extrae el PBO desplegado a un scratch con un extractor que expanda correctamente las entradas
+   `Cprs`; valida primero el extractor contra una baseline conocida.
+2. Calcula SHA-256 del fichero dentro del PBO y del fichero fuente citado por el plan.
+3. Exige igualdad para cada fichero que sostiene el cambio. Un mtime reciente del contenedor no
+   acredita sus entradas.
+
+Si los hashes difieren, el plan está citando un árbol distinto del runtime. Reconstruye y repite el
+gate antes de diagnosticar lógica. Este control offline es el discriminador barato que complementa
+el `srcprobe` de SP-078.
+
+### El guard de deploy protege el destino, no congela toda la caja (SP-150)
+
+En una caja compartida, «cero procesos DayZ» es demasiado amplio. Antes de reemplazar un PBO exige
+las dos condiciones que protegen ese destino:
+
+1. Ningún proceso vivo referencia el mod objetivo en su `CommandLine`/modline, medido con
+   `Win32_Process`; el nombre del ejecutable no basta.
+2. El PBO destino admite apertura exclusiva con `FileShare.None`.
+
+Registra el hash baseline justo antes de copiar y verifica el hash publicado después. Si una
+condición falla, no despliegues. Si ambas pasan, no cierres procesos de otras líneas que cargan otros
+mods.
+
+### Quoting y triage de un Diag que no llega a escribir logs (SP-167)
+
+Para argumentos `name=value` con espacios, entrecomilla el token entero:
+
+```text
+-profiles="<profiles-path>"      # NO: comillas solo alrededor del valor
+"-profiles=<profiles-path>"      # SÍ: un token completo
+```
+
+Aplica el mismo patrón a `-config=`, `-mission=` y `-mod=`. En Windows PowerShell 5.1, pasar un
+array a `Start-Process -ArgumentList` no garantiza el quoting de cada elemento; no uses ese
+resultado como prueba del argv recibido. La ruta gestionada de esta skill transporta un array
+estructurado y sigue siendo la vía normal.
+
+Para un cuelgue con 0 CPU y sin RPT, ejecuta primero el control mínimo autorizado
+`DayZDiag_x64.exe -server`, sin otros argumentos, y añade uno por uno. En la medida que fundó esta
+regla, ~53 módulos era «aún no llegó a UI» y 69-78 era arranque real; usa el delta como firma del
+build medido, no como constante universal. Obtén el argv real con `Win32_Process`: la línea truncada
+de cabecera del RPT no lo representa de forma fiable.
+
+### Cliente pelado: separar argumento, ruta nativa y mod (SP-174)
+
+Ante un cliente que no arranca, decide por forma antes de tocar el mod:
+
+- **Vivo, 0 CPU, sin RPT ni dump:** aplica el control mínimo y la bisección de argumentos anterior.
+- **Muere con RPT de solo cabecera + `ErrorMessage_*.mdmp`, sin `crash_*.log`, incluso sin mods:**
+  lanza el servidor del mismo build. Servidor estable con RPT grande y cliente pelado que cae apunta
+  a la ruta nativa/gráfica del cliente. Confirma con el perfil de otro proyecto en la misma ventana.
+- **Solo falla al añadir `-mod`:** entonces sí abre la investigación del mod y su orden de carga.
+
+«Se reinició» también se mide: compara `Win32_OperatingSystem.LastBootUpTime` y comprueba que no
+sobreviva un proceso anterior al instante declarado. Fast Startup puede conservar el kernel después
+de apagar; un reinicio completo cambia ese dato.
+
+### Spawn diagnóstico sin depender de la UI de VPP (SP-210, alcance de un solo uso)
+
+Si la UI administrativa bloquea un diagnóstico, una misión privada puede usar
+`CustomMission.InvokeOnConnect` para crear una fixture una vez por boot, a distancia fija del
+jugador, con `CreateObjectEx(..., ECE_PLACE_ON_SURFACE)`. Usa un booleano one-shot y storage limpio.
+
+Es un fallback desechable, no infraestructura de celda. La regla portable de :383-392 sigue
+mandando: cualquier spawner, watcher o control que deba sobrevivir al proyecto vive dentro del mod,
+gated por DIAG y por un parámetro explícito.
+
+### Parsers: primero extraer el payload real de `Print` (SP-234)
+
+Una variable string llega al script log con una forma equivalente a:
+
+```text
+SCRIPT       : string <var> = '<payload>'
+```
+
+La comilla simple de cierre queda pegada al último campo. Extrae primero lo comprendido entre
+`= '` y la última comilla; solo después tokeniza números y campos. Un gate de logs incluye siempre
+fixtures literales copiadas de un log real, además de casos sintéticos, y contrafixtures con wrapper
+truncado. Un self-test que nunca consumió una línea real solo valida el parser imaginado.
+
+### Teleport y readiness antes de inyectar una acción (SP-235)
+
+Para teletransportar al jugador en un harness usa X/Z del punto censado y
+`Y = GetGame().SurfaceY(x, z)`. La Y de un memory point puede dejarlo en
+`ACID_Human_Fall`; durante Fall, una acción inyectada puede abortar sin error mientras el servidor ya
+reservó el asiento.
+
+Antes de gastar un intento, exige un command ID admitido, ninguna acción en curso,
+`CanStoreInputUserData()` y `ActionBase.Can(...)`. Después observa la transición real; no marques
+éxito al enviar la acción. Un desync `server=Move, client=Fall` apunta primero al placement.
+
+### Servidor retail headless como término de paridad (SP-242)
+
+La obligación de `DayZDiag_x64.exe` en :89-90 está acotada a la iteración con `-filePatching` y al
+launcher oficial de esta skill. Un `DayZServer_x64.exe` retail headless puede cargar PBOs con
+`-mod`, compilar Enforce y ejecutar `RestApi` saliente sin ocupar la sesión Steam del cliente.
+La medida observó defines `RELEASE, SERVER, NO_GUI, SERVER_FOR_WINDOWS` y polling HTTP real.
+
+Úsalo como segundo término de un gate diag↔retail cuando el comportamiento server-side pueda
+depender de `RELEASE` o de APIs developer-only. No sustituye al cliente para captura visual ni para
+verbos que requieren un jugador conectado. Este servidor queda fuera del lifecycle oficial: solo
+un runner probe-gated que posea su PID exacto puede iniciarlo y cerrarlo.
+
+### Celdas multi-peer: reloj, replay y sondas bilaterales (SP-276 / SP-278)
+
+Para un fallo de salida o desync, instrumenta el callback equivalente a `OnDriverExit` en ambos
+peers y emite en una sola ventana `playerPos`, `vehiclePos`, `crewEntryWS` y sus distancias. Alinea
+los relojes cliente/servidor con pares del mismo evento; no compares timestamps crudos de peers.
+
+En una serie del owner con rewind/replay, varias muestras pueden compartir el mismo `t`. Conserva la
+primera muestra por tick —o colapsa un intervalo documentado menor de 20 ms— antes de evaluar los
+flancos. Convierte los eventos del servidor al reloj del owner, usa la serie autoritativa como
+oráculo principal y el owner como secundaria, y re-ejecuta el histórico después de cambiar el
+parser.
+
+El bridge no inyecta valores arbitrarios en `UAInput`. Si el mod neutraliza `CarController` y
+consume ejes propios, una celda necesita un guion DIAG en el owner antes de `WriteToMove`; esta rama
+solo se promueve para el mod cuando una corrida in-game demuestre que pilota.
+
+### Contrato de una celda scriptada repetible (SP-279)
+
+- Spawnea la fixture en un sitio fijo conocido y coloca al jugador en un offset fijo sobre
+  `SurfaceY`; un spawn aleatorio convierte obstáculos y puertas en ruido de entorno.
+- Después de una salida, rearma server-side el placement tras un cooldown con el jugador a pie.
+  La reentrada forma parte del test: una pose fantasma en cliente invalida reach y `Can()`.
+- `forces-off`, `clamp-abort`, `no-probes`, `no-pilot` y `not-owner` son **INCONCLUSO** y admiten
+  retries acotados. Un timeout después de satisfacer las precondiciones es **FAIL**.
+- El guion ejecuta; no adjudica. Sus gates son los mismos del preregistro. Detecta «posado» por AGL
+  sostenido o, mejor, por estado autoritativo, no por una velocidad owner aislada.
+
+### Aislamiento, settle y sondas de efecto en celdas (SP-285)
+
+Mientras el piloto scriptado está activo, un guard DIAG debe rechazar en `ActionCondition` las
+acciones humanas que rompen la celda, pero conservar una ruta programática separada. El settle se
+decide por estado autoritativo espejado (`GROUND_READY`/`PARKED`) y usa AGL solo como respaldo; el
+owner puede seguir rebotando después de que la autoridad esté posada.
+
+Instrumenta el callback del síntoma en ambos peers con una sonda gated y pila. En cliente imprime la
+pila línea a línea para evitar truncado y no llames APIs cuya validez sea solo server-side. Al
+arrancar, el runner censa otros DayZDiag vivos con PID, modline y puerto; si 2302 pertenece a otra
+sesión, elige un puerto acreditado distinto. Esto extiende el preflight de :976 sin tocar los peers
+ajenos.
+
+### Quien abre un proceso manual también lo cierra (SP-344)
+
+Los runs gestionados se cierran por su `run_id`. Para un proceso manual autorizado fuera del MCP,
+el agente que lo abrió conserva PID y `CommandLine`, solicita cierre ordenado con
+`CloseMainWindow()`, espera 8-10 s y usa `Stop-Process -Id <pid>` solo como fallback exacto. Nunca
+selecciona por nombre de ejecutable ni toca un peer de otra sesión.
+
+Si la ventana la abrió el usuario y está jugando, el cierre sigue siendo suyo por la UI. Si la abrió
+el agente, no se convierte al usuario en operador de limpieza; pedir continuar el ciclo autoriza a
+cerrar solo esos procesos propios.
