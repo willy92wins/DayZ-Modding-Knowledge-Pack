@@ -2085,17 +2085,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Written record of which pre-existing store copies the first promotion is authorised to replace, and why; the reasons must be reviewable, so the file is tracked rather than machine-local.",
+          "decision_evidence": "Re-pinned the adjudications of dayz-test-ingame, enforce-script-reference and dayz-texture-pipeline after the session that made those installed-tree edits authored the reasons. Digests recomputed and unchanged at write time; the junction and the six SKILL.md sizes those reasons cite were verified against disk before publishing.",
           "license": "MIT",
-          "source_hash": "db450cde3a277c2b6793dd4a1aa3d44458cae66e2637f4021c77bdc38d0ec9f8",
+          "source_hash": "a50a82bf25d39b34da1f50a0fae5926a256a89f478d8dafe1a6f157789af31cc",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/adjudications.json",
-          "source_revision": "promotion-first-run@2026-08-21",
+          "source_revision": "repin-three-skills@2026-08-31",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cba4a1f6506b9f7f1ad94a2cbd18f988b3d4c9427bf50500c959802d8b236127",
+      "output_hash": "a50a82bf25d39b34da1f50a0fae5926a256a89f478d8dafe1a6f157789af31cc",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
