@@ -9795,7 +9795,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1c69ee8211126925911fe930c9b7048be1e4ea9105af739afccdf6da37c474f8",
+      "output_hash": "a348a1ebc2b60ed9d0330f260ec9696b205bdbfbc7ab6fd18dcd88600afe6118",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -9905,7 +9905,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a07e37188eb91efcba85158ccb395b76b0999951dc79f6f9321af9c273eae843",
+      "output_hash": "cac47f8481cc2da626e8180067fcc48eb04fdcfa6861270ee8b2e1d551e14c06",
       "output_path": "skills/enforce-script-reference/references/networking.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -9927,7 +9927,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3f074ee44e32b5e0016a44d0ec0aaff502b83097a2bf5e49ad8ed0cfe8a42f6b",
+      "output_hash": "f401c2413604fcfd8da41b91ff0623e15ad579fa35cb4bebc60c4b08237fd84c",
       "output_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -9971,7 +9971,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "01f0df253eaade81bbe96204f35e454560b5bc8ccbba3e87f706b3493196fad1",
+      "output_hash": "99fbfd6bf8fba1d41f22c80c22df380d87c1efc8f68b2180d364997875ffe6bd",
       "output_path": "skills/enforce-script-reference/references/server-performance.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -10037,7 +10037,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a0bd0160b98005b3fa9c00642c2450fa2b59fbc1ae95a501dc8db4704a2a4b8a",
+      "output_hash": "2ce5be4c638cb73f589add5f8eb2de52b26810173766b7ce9e44d1f5085166cd",
       "output_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
