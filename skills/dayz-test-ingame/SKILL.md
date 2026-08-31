@@ -1333,3 +1333,55 @@ selecciona por nombre de ejecutable ni toca un peer de otra sesión.
 Si la ventana la abrió el usuario y está jugando, el cierre sigue siendo suyo por la UI. Si la abrió
 el agente, no se convierte al usuario en operador de limpieza; pedir continuar el ciclo autoriza a
 cerrar solo esos procesos propios.
+
+
+## Dos trampas del ciclo build-deploy-test que ponen verde una corrida inútil (added 2026-08-31)
+
+Las dos medidas el 2026-08-31 cerrando un gate de motor. Ninguna da error; las dos dejan que
+saques conclusiones de una corrida que no probó lo que crees.
+
+### 1. `DSSignFile` devuelve 0 después de un build fallido — y firma el PBO VIEJO
+
+`dayz_test_run` (y cualquier cliente/servidor vivo) deja el PBO **bloqueado**. Reconstruir con
+AddonBuilder mientras la corrida está en pie da `[ERROR]: Build failed`, y si el script encadena
+la firma, `DSSignFile` sale con **`EXIT=0`** tan contento: ha firmado el binario anterior.
+
+Encadenado en un `.ps1`, el resultado es un `SIGN=0` que parece confirmar el despliegue.
+
+**Parar la corrida antes de reconstruir**, y verificar el resultado por **la tabla del PBO contra
+el tamaño del fuente**, nunca por exit codes:
+
+```
+scripts\4_World\LFG10_Probe.c    3579     <- y en disco: 3579
+scripts\5_Mission\LFG10_Driver.c 4756     <- y en disco: 4756
+```
+
+Es la misma doctrina que ya está en `DAYZ_INFRA.md` («el veredicto de un build es la tabla de
+ficheros del PBO, no el exit code»), extendida a la firma: **el exit code de `DSSignFile` no dice
+nada sobre si el build entró.**
+
+### 2. La persistencia devuelve el sujeto como lo dejó la corrida anterior
+
+Un experimento que mide el estado de una entidad (salud, humedad, cantidad, temperatura) **no
+puede fiarse del loadout de spawn**. Medido: el personaje volvió con la prenda en `wetlevel=4
+hplevel=2`, exactamente donde la había dejado la corrida anterior, así que el control de la corrida
+nueva arrancaba **ya pasado el umbral que tenía que cruzar** — y habría dado «el control no
+dispara» siendo falso.
+
+El probe **normaliza el sujeto** antes de medir nada (`SetWet(0)`, `SetHealthLevel(0)`, lo que
+aplique) y lo registra en el log. Y si hay una parte cliente que depende de ese estado, se ata a
+**la condición, no a un temporizador**: esperar a observar el sujeto ya normalizado, porque la
+propia normalización es un cambio de estado que puede pisar lo que ibas a medir.
+
+### Bonus: un probe desechable no necesita darse de alta como proyecto del MCP
+
+`P:\Mods` es `mod_root` de los diez proyectos aprobados en `request-policy.json`, y
+`dayz_test_tool._valid_public_mod` acepta cualquier carpeta relativa dentro de esos roots. Así que:
+
+```
+dayz_test_run(project="DayZ_MCP", mode="all", extra_mods=["@MiProbe"])
+```
+
+sale con el bridge entero (`capture_screenshot`, `camera_set`, `query_player_state`, `wait_for`
+sobre `log_matches`) **más** tu probe, sin tocar la política sellada ni reconstruirla con
+`build_native_launcher.py`.

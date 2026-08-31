@@ -859,3 +859,52 @@ la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita:
 - **LL-141** — Antes de variar formatos de una API engine, reproduce el call-site vanilla exacto. Si también falla, detén el ajuste sintáctico y aísla el contexto de ejecución: server/client, headless/GUI, build y defines.
 - **LL-016** — Valida en el servidor `sender`, su identidad y la igualdad del ID con el `PlayerBase` objetivo; aplica además un rate-limit por jugador. Rechaza por defecto aunque el payload no contenga datos sensibles.
 - **LL-186** — No inicialices handles opacos Enfusion con literales (`FileHandle handle = 0`). Decláralos sin inicializar, asigna el retorno de la API y aplica la guardia según el valor documentado de esa API.
+
+
+## Tres formas de romper el compilador que no dan un error legible (added 2026-08-31)
+
+Las tres costaron una corrida de servidor diag cada una, y ninguna se adivina leyendo vanilla:
+el compilador señala la línea equivocada o inventa un `;` que falta.
+
+**1. La concatenación de strings NO puede partirse en varias líneas.** El compilador cierra la
+sentencia en el salto de línea, así que esto no compila:
+
+```c
+return "type=" + top.GetType()
+    + " wet=" + top.GetWet().ToString();      // Missing ';' at the end of line
+```
+
+El error sale en **cada** línea de la continuación (`Missing ';' at the end of line` ×N más un
+`Syntax error`), lo que hace pensar en un problema de comillas o de paréntesis. Se acumula en una
+variable, una sentencia por línea:
+
+```c
+string desc = "type=" + top.GetType();
+desc = desc + " wet=" + top.GetWet().ToString();
+```
+
+**2. `out` es palabra reservada** (los parámetros `out`, p. ej.
+`GetPlayers(out array<Man> players)` en `P:/scripts/3_game/global/game.c:947`). Usarla como nombre
+de variable local da **`Broken expression (missing ';'?)`**, que no menciona el identificador ni
+sugiere que el nombre sea el problema.
+
+**3. `Print(...)` a nivel de fichero no es Enforce válido** — `Syntax error` y
+`Can't compile "<Módulo>" script module!`. Importa más de lo que parece: **`CfgConvert -test`
+acepta el `config.cpp` y NO compila Enforce**, así que un laboratorio de probes puede pasar todas
+sus verificaciones offline y no haberse compilado nunca. Medido el 2026-08-31 sobre un define-lab
+cuyos tres probes tenían este defecto: los gates offline estaban verdes y ningún probe había
+llegado jamás al compilador.
+
+**Regla que se lleva de aquí**: el único gate que acredita Enforce es **arrancar un módulo**. Un
+`CfgConvert -test` verde, un linter propio o un grep de anchors acreditan forma, no compilación.
+
+### Y el que no es del compilador: la ruta con backslash que llega vacía
+
+`SetObjectMaterial(idx, "dz\\data\\data\\mirror.rvmat")` escrito desde un heredoc de bash llega al
+fichero con **una sola** barra. Enforce descarta los escapes que no conoce, así que al motor le
+llegó `dzdatadatamirror.rvmat` — **la llamada se ejecutó, el log dijo que sí, y no pintó nada**.
+Forma de fallo verde y silenciosa; la corrida entera fue inútil.
+
+Escribir esos literales componiendo la barra en Python (`chr(92)`) y verificar con `repr()`. Y si
+el valor lo consume el motor, **comprobar en su log que llegó entero** antes de fiarse de la
+corrida: aquí el propio log imprimía la ruta recibida, y ahí se veía sin barras.

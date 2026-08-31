@@ -7343,7 +7343,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1161e5a5603592162e892001e0c65fd68dc26ea2ccc5809b242eb191b16e29e8",
+      "output_hash": "5481e7ad5c08152be9af0afe9539e4d4099e97f9930fed2b7dc26d6ca3208732",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -7585,7 +7585,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "47bb4b7d8da2de443d485d2cc8ec6c461b8f2361eb67d6c4510bfcaf2928ab02",
+      "output_hash": "a7a4081b178b49a3b1569810a938a47fbf06f49bc45244e9ab001b44581cb023",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -9795,7 +9795,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a348a1ebc2b60ed9d0330f260ec9696b205bdbfbc7ab6fd18dcd88600afe6118",
+      "output_hash": "68dc4551b3e9ee683ee0a8bac2cd7a36d917aecb2f2d7d3ee04b9c0c1f4d83f5",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"

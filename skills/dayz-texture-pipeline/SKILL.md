@@ -192,3 +192,55 @@ asset. It also prevents a source-game material resolver from inventing color dat
 the source game's paint palette. Use a flat paint texture or author a `_co`; never bind “the largest
 atlas available”. Aircraft atlases can also contain a pre-mirrored copy of one side so markings read
 correctly on both sides. Mirrored text on both sides does not by itself justify a global U flip.
+
+
+## `healthLevels[]` es un writer NATIVO de material sobre prendas (added 2026-08-31)
+
+Medido con cliente real el 2026-08-31. Importa a cualquier mod que pinte ropa: vista térmica,
+camuflaje dinámico, marcado de equipo, resaltado de objetivos.
+
+**El hecho.** `DamageSystem.GlobalHealth.Health.healthLevels[]` mapea umbrales de salud a rvmat —
+en `DZ\characters\tops\config.cpp:2276-2333`, `1.0`/`0.7` → `tshirt.rvmat`, `0.5`/`0.3` →
+`tshirt_damage.rvmat`, `0` → `tshirt_destruct.rvmat`. **Lo aplica el motor**: `GetHealthLevel` es
+`proto native` (`P:/scripts/3_game/entities/object.c:1167`) y **ningún script de `P:/scripts` lee
+`healthLevels` para llamar a `SetObjectMaterial`**. Un audit estático de los scripts vanilla con
+cero hits NO descarta este writer, porque no está en los scripts.
+
+**Consecuencia**: cruzar un umbral de salud **borra cualquier override de material** en el
+fotograma siguiente. No hay hook que interceptarlo.
+
+**La humedad, en cambio, NO repinta prendas.** Cruzados los cuatro umbrales `EWetnessLevel`
+(`P:/scripts/3_game/constants.c:875-878`), el override sigue intacto. En vanilla el único swap de
+material por humedad está en `GardenBase` (`P:/scripts/4_world/entities/gardenbase.c:605,610`) y es
+**de script**. Bajo `DZ\characters\` hay **0** assets `*wet*` frente a 349 `*damage*.rvmat` con la
+misma búsqueda: la ausencia está controlada, no supuesta.
+
+## `SetObjectMaterial` sobre prenda vestida se RE-AFIRMA, no se llama una vez (added 2026-08-31)
+
+Medido en la misma corrida, y es la parte accionable:
+
+| escrituras | resultado |
+|---|---|
+| 1, justo después de un cambio de nivel de salud | **renderiza** |
+| 1, ~50 s después del último cambio de estado | **no renderiza** — y la llamada se hizo, con índices válidos |
+| ~19/s sostenidas | renderiza a niveles de salud 0, 2 y 4, estable y sin parpadeo |
+| se deja de escribir | **se queda** puesto |
+
+**El mecanismo NO está establecido.** «La escritura queda latente hasta que el motor reconstruye el
+visual» encaja con las cuatro observaciones y no está probado.
+
+**Cómo aplicarlo**: re-afirmar el override al activar el efecto y tras cada evento que repinte la
+prenda (cambio de nivel de salud, cambio de equipamiento), o mantenerlo por tick mientras el efecto
+esté activo. **No** llamarlo una vez y darlo por puesto.
+
+Y dejar fuera del lease la selección `personality`: ahí ya escribe vanilla
+(`P:/scripts/4_world/entities/itembase/clothing_base.c:154`), y pisarla convierte un repintado
+normal en un falso positivo de «me lo han robado».
+
+### Cómo se midió, por si hay que repetirlo
+
+Override con `dz\data\data\mirror.rvmat` (negro especular, `PixelShaderID="Super"`, diffuse 0.097 /
+specular 2) sobre las selecciones camo: es binario a simple vista y quita el juicio sobre el JPEG.
+**El PASS no lo da el fotograma donde el override sigue: lo da el par** — un escalón de salud borra
+el mismo override, mismo entity y misma cámara. Sin ese control, «sigue ahí» es indistinguible de
+un instrumento ciego.
