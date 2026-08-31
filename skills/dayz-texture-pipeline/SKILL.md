@@ -292,10 +292,28 @@ anterior, y descarta el candidato obvio.
 
 **Consecuencia de diseño**: no se puede pintar una prenda vestida A DEMANDA escribiendo material. Si
 el efecto tiene que aparecer cuando el jugador lo activa, hay que forzar la reconstrucción por otra
-vía. Candidato SIN PROBAR: `SwitchItemSelectionTextureEx`
-(`P:/scripts/3_game/entities/entityai.c:1170`), método de script —no `proto native`— y la vía por la
-que vanilla re-aplica los visuales de selección de una prenda, llamada desde
-`P:/scripts/4_world/entities/manbase/playerbase.c:1471` con `ATTACHING` y `:1517` con `DETACHING`.
+vía.
+
+**`SwitchItemSelectionTextureEx` NO es esa vía, y aquí estuvo publicada unas horas como si lo
+fuera.** Es una **declaración sin cuerpo** (`P:/scripts/3_game/entities/entityai.c:1170`): hook de
+script, no `proto native`, así que llamarla no reconstruye nada — solo corre los overrides que
+existan, y el de `Clothing_Base` sale por `return` temprano si `par` es null. Lo que engaña es
+quién la llama: vanilla la invoca desde `EEItemAttached`
+(`P:/scripts/4_world/entities/manbase/playerbase.c:1469-1471`), o sea que **la reconstrucción es el
+attach** y ella va de pasajera. Queda escrita como descartada **con el motivo**, no como pendiente:
+un pendiente lo hereda alguien dentro de un mes y se gasta la tarde en él.
+
+**El candidato vivo es `SetSimpleHiddenSelectionState`**
+(`P:/scripts/3_game/entities/entityai.c:2892`): `proto native` de verdad, y toca la visibilidad de
+**la misma selección** que lleva el override, así que apagarla y encenderla podría forzar al motor a
+re-evaluarla. Es además el único que queda: un barrido de `proto native` sobre `entityai.c` y
+`object.c` devuelve solo `SetObjectTexture`, `SetObjectMaterial` y ese. **No existe ningún
+`UpdateVisuals`** — si buscas una llamada de refresco genérica, no la hay, y eso ahorra la búsqueda.
+
+Al medirlo, separa dos fallos que dan el mismo fotograma vanilla: «no hubo refresco» y «hubo
+refresco y el apagado se llevó el override por delante». Se distinguen re-estampando después del
+ciclo y leyendo el getter en los tres momentos — para esa pregunta el getter **sí** sirve, porque
+testigo del slot y oráculo del render son cosas distintas y solo lo segundo está desacreditado.
 
 **Y contesta la fila «1, justo después de un cambio de nivel de salud → renderiza»** de la tabla
 anterior: hoy, una escritura en el primer tick tras el cambio observado NO renderizó, con fotograma
