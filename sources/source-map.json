@@ -2539,7 +2539,7 @@
         }
       ],
       "license": "User-authored input",
-      "output_hash": "19e7f1cb0e50207a0ddb1d35ee5642970e86e305a7d62212ab6d3192562d36bc",
+      "output_hash": "cc93b85d613b81069dc46238de9cad7d7a3319bcab96212fd25eca84b1bf85b0",
       "output_path": "skills/_shared/skill-resolution.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
