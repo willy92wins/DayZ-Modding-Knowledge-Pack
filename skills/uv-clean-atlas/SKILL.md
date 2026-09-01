@@ -240,3 +240,50 @@ why each was descartado or shortlisted): `references/tool-research.md`.
   3.6-78.0% collapsed. Follow it with `seams_from_islands` so a later re-unwrap keeps the same
   cuts. The price is island count (17 -> 214, 96 -> 1198); section 2b is why that price is the
   correct one.
+
+
+## Preceptos 2026-08-27 + noche 2026-09-01 — two tracks, do not mix
+
+Guillermo 2026-09-01: the live session (LFQuad_dev\\noche_20260901\\unwrap_blender.py) added rules on top of this skill. Mixing Track B into a paint mesh is how you get hundreds of islands and a layout nobody can paint.
+
+### Track A — paint atlas (DEFAULT for body, statue, prop, anything a human paints in Modddif)
+
+- Charts = **view sides** of each 3D shell (uv_view_charts.py). One island per camera-view of each physical piece (front of the coat, back, sides…), swallowing stretch on wrap edges.
+- Island floor = SHELLS. Target ~1–3 charts per shell. islands >> 3× SHELLS means you used the wrong track.
+- Vehicle body: ~15–45 islands (livery template). **A single-shell statue/prop: a handful of view islands, not hundreds.**
+- SAT pairs = 0 **and** collapsed = 0. SAT=0 with collapse is a fake pass (section 2b).
+- Final pack = shelf pack. pack_islands optimizes area, not legibility — not the final pack on Track A.
+- The user reading the atlas is the acceptance test.
+
+### Track B — smart_project fallback (ONLY when SLIM / tree-cotree COLLAPSES faces)
+
+- Validated 2026-08-27 (grupos_uv_20260827\\v2_ruta_angulo): G13 topological unwrap collapsed chrome 31% / chassis 78% with too-sparse tree-cotree seams. smart_project (66°) → seams_from_islands → SAT-exact fold loop → pack CONCAVE closed those groups at collapsed=0, SAT=0.
+- Price: more islands (17→214, 96→1198). That price is correct versus fake-few islands that were collapsed faces.
+- **Do not use Track B as the paint-atlas recipe.**
+
+### Added 2026-09-01 in 
+oche_20260901\\unwrap_blender.py
+
+- Default SEAM_MODE=matonly (material-boundary seams only, no smart_project). Reason measured that night: 66° smart_project on the body produced **8711 islands vs 495 3D shells (17× overcut)**, occupancy 18%, 530 px/m — below G5 floor **755 px/m @4096**.
+- Material boundaries are seams so no island contains two materials (G4). Mixed islands make per-material gates meaningless.
+- LOD1 does not unwrap. UV is transferred from LOD0 by nearest surface, **one material at a time**, BVH built only from that material's LOD0 faces.
+- Packer margin in **texels** (4 of 4096 = 0.000977), not a fixed UV 0.003: at 7760 islands, 0.003 threw away 90% of the sheet (occupancy 5.7% → 19.9% at 4 texels).
+- Fold-loop detector must be **exact SAT**, not Monte-Carlo %. Same trap as below.
+- smart_project headless still unwraps EVERYTHING; only acceptable as whole-mesh Track B.
+
+### Decision
+
+| Mesh | Track |
+|---|---|
+| Paint / Modddif / livery / statue / body panels | **A** view charts |
+| Group that Track A or SLIM collapses (zero UV area, NaN layer) | **B** smart_project + SAT fold loop |
+| Vehicle with materials + LODs | A or B **plus** noche additions (mat seams, LOD1 transfer, texel margin, G5) |
+
+Statue 2026-09-01 (1 shell, Quadriflow 5.7k): Track B at 80° gave SAT=0 / 215 islands / 65.7% occupancy. User rejected it: not minimize, not by views. Next unwrap of that mesh is Track A.
+
+
+## Sin deformar (HARD gate, restated 2026-09-01)
+
+Guillermo: few islands + by views does NOT license wrap-stretch. Density p05/p95 must stay within ~0.8-1.5 of median. A 1-shell statue that view-clusters to 25 charts and then dust-merges to 5 (p05=0.00, p95=3.95) is a FAIL even though island count looks like a livery.
+
+Do not dust-merge a view chart into its neighbor if that merge would make the island wrap past the density gate. Keep the extra view island. Minimize islands against Track B hundreds, not against this gate.

@@ -830,3 +830,26 @@ comportamiento correcto del HUD, no un bug del HUD ni del MCP. Captúralo median
 del usuario o mediante un modo headless propio del mod. El `RestoreGameplay()` interno recupera
 la cámara del jugador, pero no hay `camera_release` público: si el flujo no expone ese restore,
 reconecta o relanza como indica la sección anterior.
+
+## Un negativo de UNA muestra no es un negativo (LL-398, added 2026-09-01)
+
+Cerrando un gate se reescribio un override de material sobre una prenda vestida y la prenda no
+cambio. La prenda estaba en nivel de salud 4. Se escribio como hallazgo acotado —«a nivel de
+salud 4, un override nuevo no llega a renderizarse»—, con el mecanismo declarado como no
+establecido y con **dos capturas separadas por minutos**. Parecia prudente. Era falso.
+
+**Las dos capturas descartaban el artefacto de RENDERIZADO, no la muestra de tamano uno**, que
+era de lo que dependia toda la afirmacion. Repetir la observacion no aumenta la muestra del
+experimento; solo confirma que la observacion se leyo bien.
+
+**Y la variable estaba confundida.** Entre el estampado que funciono y el que no cambiaron DOS
+cosas: el nivel de salud (0 -> 4) y el momento de la escritura (justo tras un cambio de estado,
+frente a un instante arbitrario). El resultado se le colgo a la que se estaba mirando.
+
+Antes de escribir un negativo en el HANDOFF desde esta ruta:
+
+1. **Cuenta las muestras del experimento, no las capturas.** Una captura repetida es n=1.
+2. **Enumera todo lo que cambio entre el caso que funciona y el que no**, y si son dos o mas, el
+   negativo no nombra ninguna hasta que se cruce la matriz.
+3. Acotar el hallazgo a un eje **parece** cautela y es una afirmacion mas: el eje elegido puede
+   ser el equivocado, y entonces la cautela apunta al sitio contrario del mecanismo real.

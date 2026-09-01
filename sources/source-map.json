@@ -5235,7 +5235,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7cc834a5653ef8f032117b5739c0629fa26c96a0e7e9eb789217b3d57a22f95a",
+      "output_hash": "43ef9922cb939e69ee759991cba7a792164df6b871d2953edc650e3944d69488",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -5459,7 +5459,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "86620ba8523cc44fa63b9a57f1317bcaac0c85a1f29943f1f12f44530c157bca",
+      "output_hash": "4bc8e7a875ff0d3396dbd027b3776b49b1c1036998febd3445d6242ddada7341",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -10997,7 +10997,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b2b7ec16c33a65471c1947c1717359ab13614f5c892ffa2d3f1dc154ac031df7",
+      "output_hash": "d2d7710c9451a25b0f0eae21fcb2923e46eb12aae126066a7409f97ac5699198",
       "output_path": "skills/uv-clean-atlas/SKILL.md",
       "routing_artifact_id": "skill/uv-clean-atlas",
       "verification_level": "cross_checked"

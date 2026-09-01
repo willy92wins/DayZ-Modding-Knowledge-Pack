@@ -718,3 +718,24 @@ parts, require both halves to match each other in component count, face count, a
 distribution, plus minimum floors that reject an incomplete half. Treat optional structures
 as warnings. After changing the gate, rerun it on the previous delivery and require the
 previous production output to remain byte-identical.
+
+## Identify a derived artifact's source by fingerprint, not filename (LL-405, added 2026-09-01)
+
+To decide whether a UV unwrap reached the game, the question was which mesh feeds
+`LFQuad_body.p3d`. `obj\body_lod0.obj` was opened because it is named lod0, it did not match
+(82,266 verts against the p3d LOD0's 22,004), and the conclusion drawn was that the source was
+stale and the work had to be redone. Both halves were false.
+
+**LOD numbering was offset by two**: res=0 comes from `body_lod2.obj` (22,105 v / 38,960 f
+against 22,004 / 38,832) and res=1 from `body_lod3.obj`; `lod0` and `lod1` are higher-detail
+versions that are never shipped. And the file called stale was the **newer** of the two.
+
+One command settled it: count faces per material in each candidate and compare against the p3d —
+11 of 14 materials matched to the digit, and the three that did not were off by handfuls, which
+is the assembler cleaning up.
+
+Before deciding anything about a derived artifact, identify its input by a **content
+fingerprint** — per-material or per-selection face counts, class counts, a hash of a stable
+block — never by a filename that only encodes someone's intent. A name is a claim about
+provenance; a count is evidence. It is cheap enough that there is no reason to skip it, and the
+failure it prevents is redoing work that was already correct.
