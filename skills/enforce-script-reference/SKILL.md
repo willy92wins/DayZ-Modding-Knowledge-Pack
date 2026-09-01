@@ -1,6 +1,6 @@
 ---
 name: enforce-script-reference
-description: "Enforce Script reference for DayZ modding: memory (ref, autoptr, Managed, GC), networking (ScriptRPC, SyncVars, OnRPC, OnVariablesSynchronized, OnStoreSave/OnStoreLoad), timers (CallLater 4.5h bug, Timer), type system (typename, Cast, IsKindOf), pitfalls (IsDedicatedServer, segfaults, modded class), config.cpp (CfgVehicles, CfgPatches, custom CfgSlots, inventorySlot bug T148506, inputs.xml, hiddenSelections), action system (CCINonRuined vs CCINone, RemoveAction, IsTakeable), layout-path crash rules (full UI/layout/Dabs → skill dayz-ui-development). Also JsonFileLoader, EXTrace.Start, ScriptInvoker lifecycle, #ifdef SERVER vs IsServer/IsDedicatedServer side checks, custom RPC enums and server-authoritative input patterns, server-side performance patterns (budget scheduler, FPS-adaptive throttling, staggered scan, exponential backoff, ScriptInvoker bus vs polling). Use for ANY Enforce Script code, config.cpp, inputs.xml, or debugging crashes."
+description: "Use when: Enforce Script, config.cpp, ScriptRPC, SyncVars, OnStoreSave, CallLater, modded class, inputs.xml, crash/segfault. Language+config. Full UI/layout/Dabs: dayz-ui-development; persistence deep-dive: dayz-persistence."
 ---
 
 # Enforce Script Reference — Complete DayZ Modding Guide

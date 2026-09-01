@@ -1,6 +1,6 @@
 ---
 name: rip-vehicle-import
-description: "Use when importing a new ripped racing-game Grub vehicle into DayZ, resuming the vehicle import pipeline, or diagnosing a ripped-vehicle import contract. Assets already in flight keep their frozen project runbooks."
+description: "Use when: ripped racing-game Grub, rip vehicle import, non-Forza Grub rip. Same family-B template as forza-to-dayz (that name survives). Not ForzaTech/ForzaDayZ: forza-to-dayz; not vanilla CarScript: dayz-vehicles."
 ---
 
 # Ripped racing-game vehicle → DayZ — adaptador de familia B (CAMBIO-2)

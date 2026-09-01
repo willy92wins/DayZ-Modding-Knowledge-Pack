@@ -1,7 +1,6 @@
 ---
 name: dayz-pbo-reverse-engineering
-description: >
-  Reverse-engineer DayZ PBOs from another author to extract reusable patterns, learn techniques, or build understanding before forking/extending. Covers extraction (Mikero ExtractPbo), source-vs-deployable classification (config.bin emptiness), the dimensional sweep order (config.cpp → model.cfg → scripts → rvmats → particles → p3d), citation discipline (path:line before claiming an API exists in another mod), state tracking (findings.jsonl/seen.json/queue.md), p3d string-extraction fallback, and anti-confabulation rules. Use when: extracting patterns from another modder's PBO, studying a third-party DayZ mod, building understanding before forking, auditing a workshop mod, or cataloging available 3D assets. Triggers: extract patterns from mod, reverse engineer PBO, analyze third-party DayZ mod, study modder code, pattern extraction, mod archaeology, workshop study. Use alongside dayz-pbo-build (opposite direction: packing your own PBO).
+description: "Use when: reverse engineer PBO, extract patterns from mod, workshop study, third-party DayZ mod, mod archaeology, pattern extraction. Opposite of packing: dayz-pbo-build. Obfuscated JAPM first: japm-pbo-recovery."
 ---
 
 # DayZ PBO Reverse-Engineering

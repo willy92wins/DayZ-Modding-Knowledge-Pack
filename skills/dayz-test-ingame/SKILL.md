@@ -1,18 +1,6 @@
 ---
 name: dayz-test-ingame
-description: >
-  Build, deploy and launch a DayZ mod locally to test it in-game with filepatching,
-  using DayZDiag_x64.exe — server+client on one box, or single-exe offline. Operationalizes
-  DAYZ_INFRA.md: AddonBuilder PBO build, deploy to the P:\Mods junction (to DayZ\!Workshop),
-  serverDZ.cfg allowFilePatching, diag launch flags, mission resolution. Generates a
-  parametrized dayz-test.ps1 orchestrator plus server/client/offline .bat wrappers in
-  the mod's _dev\tools\ folder. Use when the user wants to: "lanzar el juego con el mod", "probar el mod
-  in-game", "test the mod in-game", "arrancar server local", "launch DayZ with my mod",
-  "filepatching", "iterar scripts sin re-empaquetar", "probar HiddenBase/LFPowerGrid en local",
-  "DayZ offline mode", run/start/launch the
-  mod, connect to 127.0.0.1, the build-deploy-launch loop. Also for BattlEye filePatching
-  kicks (0x00020005), stuck DayZDiag/DayZServer processes, "the mod doesn't load in-game".
-  Pairs with dayz-pbo-build (packaging) and dayz-mod-workflow (debug).
+description: "Use when: lanzar el juego con el mod, probar el mod in-game, filepatching, DayZDiag, arrancar server local, connect 127.0.0.1, the mod doesn't load. Not packaging-only: dayz-pbo-build; not env check: dayz-preflight."
 ---
 
 # DayZ test in-game (filepatching launch)

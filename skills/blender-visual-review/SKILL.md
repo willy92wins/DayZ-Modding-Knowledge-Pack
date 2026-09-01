@@ -1,6 +1,6 @@
 ---
 name: blender-visual-review
-description: 'Disciplined visual review of 3D models in Blender via the Blender MCP — render the model from several angles, actually look at the images, and catch what numbers miss. Use whenever you have built, imported, modified, or are about to export or finish a model and want to confirm it really looks right: wrong orientation, off proportions, inverted or black normals, shading artifacts, exploded or floating parts, scale drift, or mismatch against a reference image. Complements blender-assembly, which only checks bounding boxes and transforms numerically and never renders. Trigger it even when the user just says a model "looks off", or asks you to "check the model", "look at it", or "review the render", and before burning an in-game test cycle on a DayZ model (orientation, scale, and ride-height parity vs a vanilla reference). Invoke proactively after any non-trivial Blender geometry work — eyes catch what verify_bounds cannot.'
+description: "Use when: looks off, check the model, look at it, review the render, inverted normals, exploded parts, scale drift. Multi-angle Blender MCP render-and-look. Complements blender-assembly (numeric only). Not DayZ winding: dayz-p3d-audit."
 ---
 
 # Blender Visual Review

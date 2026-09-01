@@ -1,16 +1,6 @@
 ---
 name: dayz-p3d-inspector
-description: >
-  Interactive 3D inspector/editor AND builder for DayZ .p3d files. Full round-trip: extract .p3d to
-  Recipe JSON, visualize in Three.js with drag & drop editing, then rebuild a new .p3d from the edited
-  Recipe. Editor shows LOD wireframes, draggable memory points, animation axes, bounding boxes and
-  selections with snap-to-grid; builder handles visual/collision/memory LODs, mass by material density
-  and auto-fix for winding/UV issues. VISUAL and interactive work — for structural audits, path validation
-  or collision-LOD correctness use dayz-p3d-audit instead. Use when: inspecting p3d contents visually,
-  verifying or moving memory points, viewing collision LOD wireframes, building a .p3d from a Recipe,
-  applying interactive edits to a model. Also trigger from dayz-p3d-audit or dayz-model-pipeline.
-  Keywords: "inspect model", "show me the p3d", "view memory points", "move points", "check LODs visually",
-  "recipe json", "build p3d", "round-trip p3d".
+description: "Use when: inspect model, show me the p3d, view memory points, move points, recipe json, build p3d, round-trip p3d. Visual Recipe editor. Not structural/collision audits: dayz-p3d-audit; not textured PAA preview: dayz-3d-viewer."
 ---
 
 # DayZ P3D Inspector — Interactive 3D Model Viewer, Editor & Builder

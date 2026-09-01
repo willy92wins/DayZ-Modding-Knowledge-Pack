@@ -1,6 +1,6 @@
 ---
 name: 3d-generation-harness
-description: "End-to-end disciplined harness for generating a complete 3D item: research → plan → build → roast → ship, with hard gates between phases. Forces multi-view reference research before any code (nothing modeled from memory), a plan with verifiable pass/fail criteria per part, per-component build checkpoints, an adversarial self-review ('roast') whose output is a defect list with evidence, and a scored ship gate. Use whenever the user asks to create/generate/design a full 3D object end-to-end, wants it validated against real references, says 'roast it', 'no des nada por supuesto', 'hazlo con el harness', 'compruébalo todo', asks for a production-ready / vanilla-parity model, or wants a disciplined rebuild after an in-game failure. Orchestrates blender-assembly, blender-visual-review, dayz-model-pipeline and dayz-p3d-audit, and optionally hunyuan3d-local if installed — they own the HOW; this skill owns the gates. Triggers: harness 3D, genera un modelo 3D completo, roast del modelo, modelo desde referencias."
+description: "Use when: roast it, hazlo con el harness, genera un modelo 3D completo, no des nada por supuesto, production-ready 3D, vanilla-parity rebuild. Owns research→plan→build→roast→ship gates. Not a single mesh or static visual QA: blender-assembly / blender-visual-review."
 ---
 
 # 3D Generation Harness

@@ -1,18 +1,6 @@
 ---
 name: dayz-particles
-description: >
-  DayZ particle effects system for Enforce Script modding. Covers the FULL
-  pipeline: .ptc particle files (PLAIN TEXT, creatable programmatically),
-  .emat material files (PLAIN TEXT, Particle/ParticleSprite shaders),
-  .edds textures (standard DDS renamed), GUID reference system, vanilla material
-  library (11 materials with GUIDs). Script API: legacy Particle, ParticleSource
-  (native), ParticleManager (10k pool), SEffectManager wrapper, ParticleList
-  registration. 276 vanilla effects cataloged (count is version-dependent). Includes .ptc 56-property reference,
-  .emat 12-property reference, LFPG integration patterns (OnVarSync toggle,
-  cleanup, overload sparks, generator smoke, sprinkler). Use for: creating custom
-  particles WITHOUT Workbench, playing particles on objects, device lifecycle,
-  SyncVar-driven toggle, EmitorParam tuning, Wiggle API. Consult BEFORE writing
-  ANY particle code. Use alongside enforce-script-reference and dayz-model-pipeline.
+description: "Use when: particles, .ptc, .emat, ParticleSource, SEffectManager, PlayOnObject, cfgeffectarea, smoke/sparks without Workbench. Client-only .ptc/.emat. Not sound: dayz-sound-system."
 ---
 
 # DayZ Particle Effects — Complete Modding Reference

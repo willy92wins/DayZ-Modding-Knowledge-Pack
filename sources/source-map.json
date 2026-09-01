@@ -2231,7 +2231,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "865f17fa8c51d36c2b0fb0c62bfb59b27ec064e977ebfe4eb9c0f0dbc62137dd",
+      "output_hash": "a5f1867a65f778be074a1d936c48b380db213184fb9983c45d9159a9bedbfee1",
       "output_path": "skills/3d-generation-harness/SKILL.md",
       "routing_artifact_id": "skill/3d-generation-harness",
       "verification_level": "cross_checked"
@@ -2615,7 +2615,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d8c849ffba9df1cb60925ca74a3f87811d5b6e29e558a998fde2a16a01f84d00",
+      "output_hash": "bd7e6b3fd56dbdcc1accad514210671a898f62c4a3e2b50d14325114ca69138d",
       "output_path": "skills/blender-animation/SKILL.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -2913,7 +2913,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c3132a3b2263fee026f0abca46929828211f75e0dd444b0cf7bf20bd70207f22",
+      "output_hash": "cd766706aff3f359dd916c6cd908da5d6899b1bb661735b8090ba180722703dd",
       "output_path": "skills/blender-visual-review/SKILL.md",
       "routing_artifact_id": "skill/blender-visual-review",
       "verification_level": "cross_checked"
@@ -3131,7 +3131,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3d29f2599191adadc01255dd839632955b7cdcb2a004d4a9cbb20df85b3932e2",
+      "output_hash": "b11bdb725128c7adda4c85189199593a043f99ade4b6c631471cacd7682f8484",
       "output_path": "skills/dayz-3d-viewer/SKILL.md",
       "routing_artifact_id": "skill/dayz-3d-viewer",
       "verification_level": "cross_checked"
@@ -3241,7 +3241,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "df57261ec8fd037843f785fb6d5a7e0fc784b024212ad0fdf69ee77c8dff8842",
+      "output_hash": "2cf264a9bfdef4530fa5466f5b5ddc384f1a174203903c6ee23bb0bd993d334b",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4527,7 +4527,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cf55258ff3d0012367d9abbc65e9c3edf1162ad8264e900f9c16bb51c34a6396",
+      "output_hash": "644ff3e5c4cdde7a623b31c14d5c58998e30183f3c1b24995f813851c752260d",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -5917,7 +5917,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f3d7fcffbf5790e3fd73cb0c5360a64314d9bf9be79e8e679e952e6099ee7838",
+      "output_hash": "d8063e9f15b759df5af36775b91cd6c843144303304e42bf79e75a536b61b7a7",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -6005,7 +6005,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "de57b5965fb38a6607bb7e745de0fdf13883cd8e2541e666561761924b4026b6",
+      "output_hash": "4d0eb7c78bf6dd3acdf14e0b429343b8290b73df878dcb8dd49563ab620a4c3d",
       "output_path": "skills/dayz-particles/SKILL.md",
       "routing_artifact_id": "skill/dayz-particles",
       "verification_level": "cross_checked"
@@ -6365,7 +6365,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2e0e5f915b519c853234545661255e44e3b99a15fa11279a27d7694f8dc8c265",
+      "output_hash": "205190bada34fd5693a9096cd0ccb3b729465287a4df793524607d3902423280",
       "output_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-reverse-engineering",
       "verification_level": "cross_checked"
@@ -6497,7 +6497,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "68014cfb5a21ee1b97cc1f1b234712e9820ec8dadff2ec9a460ddda54368bbd6",
+      "output_hash": "a07d6aa8fac282239b29201f00ed698274dfc7732930b4b1691c9076b13e93bc",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -6585,7 +6585,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b59419e2c6a3f0affd939993d46718ebc814a11bcf19026a1bb8af85abfa9a1b",
+      "output_hash": "b9a9c7e896d56941c50d419a77db45381a3958725976844aca04db14b61ff4fd",
       "output_path": "skills/dayz-preflight/SKILL.md",
       "routing_artifact_id": "skill/dayz-preflight",
       "verification_level": "cross_checked"
@@ -6629,7 +6629,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "45caf7bb2304a2ff25b83257043080ccafd6e6ddb72d83b4ecb24030853aac81",
+      "output_hash": "888d93aed6bd757ac199f88a2685fb9bb6c59aa6c749196e29a8371460f42a07",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -7157,7 +7157,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1756e040c7b6ce36f3c28d2c1a16a4898276dc2b4a60fdb94fe400d7c597dd8f",
+      "output_hash": "1ae31b88cb32202d8406dfbca7babf77152eec5597275cdd31c655c428ffe9ad",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -7261,7 +7261,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "91a2e13fd704b00574bc0a20f248656acf32d1f919fda523288a839a0c97aadd",
+      "output_hash": "5676a8e65620dec2c104a1f42d72342d3505bc63307a7b9a2de387369e3b746b",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -7743,7 +7743,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "af1335bb5085e3bd632cb557c1c1fb2939237f37dfbb0eaa4c8ebf4a3bd31c37",
+      "output_hash": "6c86fc96d26691e763bb02df04782ac1cbe97a07f78a792149776a11a279f53f",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9713,7 +9713,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "68dc4551b3e9ee683ee0a8bac2cd7a36d917aecb2f2d7d3ee04b9c0c1f4d83f5",
+      "output_hash": "b86443cd1f39ec05d44f736b774f020f7e7c74733fd28804581113886bc641e7",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -10107,7 +10107,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b3f817a78119539d086993e536f7704eb94849d8fad3013e64c052aade2264a0",
+      "output_hash": "bab0e2853431ec317fb1c01eb1a200daaf80fe81a7a2b4bbe543ccfd48a3a13a",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -10661,7 +10661,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fe2b00410a0f52d8cdc5d6b75374e0a30366e8da1e44f1f4d2577faf7fcd805b",
+      "output_hash": "b6c363dbf9a7ead909de4fc2baf894b49cdcf63f6198f804a99cdfe4a634d557",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -11262,7 +11262,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "76d7ee14f6a57500f707eaeab7326760dd3fb7f3536e5556313177c53a3e882f",
+      "output_hash": "564e4424b4f4e1f38f8678604375dfde2018cfe73ff1b75e0408a8e2cfc4ec7d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -20063,7 +20063,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "38d34a7929a96fb565f1a7726e8f99c866b5c018f68cde449150448a5b527a26",
+      "output_hash": "89b9a18f92cedb66879667143b93f817d62e66a4071a3d2eb48426775e994bd7",
       "output_path": "tools/py3d/KNOWN-ISSUES.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20177,7 +20177,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1f1dbdcf9f22b68a4c61d51bf9d29ea12367e6605c81e87e2091db6549c03338",
+      "output_hash": "fbb8082fba95f51b3a095e15098d0e21e4c26bdcc28efd4d71df8f351b523af2",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20249,7 +20249,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2f1546310f9d8fcdc5348dce9dec338a84cc6e023cba9fdf250445c332f5ae6b",
+      "output_hash": "cc08e48bd6ceab4a976f0ff338c19cbeae13da32d1e065309ac21ccdea3ffb6b",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20301,7 +20301,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "bc88d2b11d257c244cc05942ef72f87aaf3b1b65609425132b7219881276000a",
+      "output_hash": "fffe70c5817424471a3d3ddc2bb1535c5daf2c32678fac63efe5f48f9700a87c",
       "output_path": "tools/py3d/py3d/__main__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20883,7 +20883,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d319ba93428e16aaae6fcbf79848a837dc7c2284ac6e8f309dfdd57d7d45d52b",
+      "output_hash": "d7bcc8be3469afc5abbd8a41389c8aec8dd62534a6834ad9a7b39dc27353bb7b",
       "output_path": "tools/py3d/rollout/wheel-manifest.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20997,7 +20997,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7f67509ca97413441443b796398531647c8d715df4994ba9129534d97c51d077",
+      "output_hash": "10af5a64d3c729e0ad4db68e980c19dfe8b3fe985bf501d5b45ba2c5bb7d452b",
       "output_path": "tools/py3d/setup.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21049,7 +21049,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ce121e9619d6945f8cd86925fd62b35504b1a55fbf6cff80b6cc1c64680dfacf",
+      "output_hash": "52d827af5420a1af1f609fe19a4b317852d3993a00f77f63ebded0934a3cc56a",
       "output_path": "tools/py3d/tests/builders.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21111,7 +21111,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ee41e486aa7dfb8243acc9d261f9e831e7edf6db48c7b1c2e8461a362f24ba02",
+      "output_hash": "6abb69bf5dc5ed643293dbd04fb79b8f3c5d1a5e5fb9ad0ce83f6b2aaefecd22",
       "output_path": "tools/py3d/tests/conftest.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21163,7 +21163,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ce8e5ab8945a950ce6b7f13f1c7428f768232c70854eccd5bc41560df03fe952",
+      "output_hash": "a0e6aafc35f9b9d503c6c6866362b014a4a2a7c7f4ae2c047b058c45fe4a2292",
       "output_path": "tools/py3d/tests/helpers.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21299,7 +21299,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6ead03c92c8f937c6dabe09f384a246125a4ecffbd42245c21d2a8ceef12c33d",
+      "output_hash": "4f1abec789bed35405ef3e3c6c015f4c870fbf5355291ca4f3b9731532a3544d",
       "output_path": "tools/py3d/tests/test_s1a_contract.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21559,7 +21559,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e9a1e909f997db2584482a22d9dfdb100a3d435781f4ac5dc601bf1c53f87b4b",
+      "output_hash": "cf5cf4c743c9a02804919cd769b4d04dbf168b01c5bd2872539e190948b5a262",
       "output_path": "tools/py3d/tests/test_s2_cli.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

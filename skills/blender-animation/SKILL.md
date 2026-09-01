@@ -1,18 +1,6 @@
 ---
 name: blender-animation
-description: >-
-  Author animations inside a live Blender instance via the Blender MCP (execute_blender_code)
-  or headless bpy — objects and cameras, characters/armatures (IK, walk cycles, poses),
-  physics sims (rigid body, cloth) baked to keyframes, materials/drivers — with a
-  blocking-spline-polish workflow, programmatic realism audits, rendered previews, and
-  direct DayZ handoff (.txa export by posing the JD rig). Use whenever the user asks to
-  animate anything in Blender, even a single keyframe — anima esto, hazme una animacion,
-  animate the camera, walk cycle, turntable, product shot, haz que caiga o rebote, simula
-  la tela, bakea la simulacion, camera shake, fade in the material, animacion para DayZ,
-  .txa, action anim, pose the rig — or on symptoms like se ve robotico, the animation
-  looks stiff or linear, arcs look broken. For mocap retargeting use mixamo-retarget; for
-  geometry use blender-assembly; for DayZ model.cfg config-driven animation use
-  dayz-animation-pipeline.
+description: "Use when: anima esto, walk cycle, turntable, bakea la simulacion, camera shake, animacion para DayZ, .txa. Author motion in live Blender (MCP/bpy). Not Mixamo retarget: mixamo-retarget; not geometry: blender-assembly; not DayZ model.cfg animation: dayz-animation-pipeline."
 ---
 
 # Blender Animation (via MCP)

@@ -1,6 +1,6 @@
 ---
 name: dayz-animation-pipeline
-description: Produce and modify DayZ animations across the full spectrum — config-driven object animation (model.cfg Animations, AnimationSources, CfgSkeletons, SetAnimationPhase), item carry IK, hide-on-attach, skeletal animation (RTM + Enfusion txa/anm via SEAnim and Blender), anim graph / state machine work for creatures and player (CMD_ commands, ASI, weapon states, player skeleton bones), and vehicle-rider IK pose from .p3d anchors plus the steering-geometry and dual-entry patterns that ship with it. Use for DayZ animations, model.cfg animation, AnimationSources, SetAnimationPhase, hide-on-attach, item-in-hands IK, RTM, .anm, .txa, SEAnim, DayZATool, anim graph, CMD_Death, CMD_Attack, FireCocked, ReloadMagazineDetach, RightHand_Dummy, EntityPosition, LookAt, drivingWheel, handlebar rotation, ActionGetInTransport, get-in spin, vehicle rider pose, weapon grip in hands (usti hlavne, eye, grip parity, ADS line), or animating a character, creature, weapon, vehicle or prop in DayZ.
+description: "Use when: DayZ animations, model.cfg AnimationSources, SetAnimationPhase, RTM, SEAnim, anim graph, CMD_Death, vehicle rider pose. Config-driven and skeletal. Not Blender .txa authoring: blender-animation; not Mixamo: mixamo-retarget."
 ---
 
 # DayZ Animation Pipeline

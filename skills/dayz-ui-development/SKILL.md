@@ -1,6 +1,6 @@
 ---
 name: dayz-ui-development
-description: "DayZ mod UI development in Enforce Script — planning, authoring, styling, debugging and verifying. Covers vanilla engine widgets (enwidgets.c protos), the .layout Enfusion brace format (units, exact flags, anchors, resolution independence), the .styles 9-slice system, vanilla menu/HUD architecture (UIScriptedMenu contract, menu-ID registration), ScriptedWidgetEventHandler, Dabs Framework MVC, Expansion MVC and the Market menu case, plus the plan→implementation fidelity playbook (offline lint/reconcile/preview toolchain, Workbench dual registration, parity gate). Use for DayZ UI, menu, layout, widget, HUD, panel, dialog, popup, overlay, CreateWidgets, FindAnyWidget, GetUIManager, ShowScriptedMenu, EnterScriptedMenu, floating window, animation, color theme, styles, imageset, font, scroll, drag, EditBox, RichText, gamepad focus — and ESPECIALLY when planning a new UI or when 'the UI doesn't look like the design / breaks at other resolutions'. Always consult this skill before writing ANY DayZ UI code."
+description: "Use when: DayZ UI, menu, .layout, widget, HUD, CreateWidgets, ShowScriptedMenu, UI doesn't look like the design. Full UI/layout/Dabs. Not general Enforce: enforce-script-reference; not in-game launch: dayz-test-ingame."
 ---
 
 # DayZ UI Development — Verified Reference (v3)

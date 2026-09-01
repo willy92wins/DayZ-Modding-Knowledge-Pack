@@ -1,18 +1,6 @@
 ---
 name: rigorous-data-audit
-description: >
-  Audit data-critical mod code (persistence, state machines, admin commands, async queues,
-  cross-tick flows) for invariant violations, race conditions, path inconsistencies,
-  flag-lifecycle bugs, and recovery-path defects before declaring a release safe.
-  Use this skill whenever the user says "audit X", "revisa a fondo", "release-safe?",
-  "esto puede romper progresión", "puede haber data loss", or asks for thorough
-  pre-release verification of a mod that touches player data, persistence, atomic file
-  flows, OnStoreSave/OnStoreLoad, EE* hooks gating, marker files, sidecars, recovery
-  paths, or quarantine. Trigger proactively whenever modifying LF_VStorage,
-  LFPowerGrid persistence, or any mod where a bug means lost player progression. This
-  is NOT for cosmetic/UI mods. The skill enforces a 7-step workflow including
-  mechanical pre-checks, multi-angle parallel audit, adversarial verification, and an
-  implementer-grade cross-actor pass that catches bugs reasoning-only audits miss.
+description: "Use when: audit X, revisa a fondo, release-safe?, esto puede romper progresión, data loss, OnStoreSave/OnStoreLoad. Persistence/state-machine pre-release audit. Not cosmetic/UI: dayz-ui-development; not output-discipline: pre-output-discipline."
 ---
 
 # Rigorous Data Audit

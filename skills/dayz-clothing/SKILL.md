@@ -1,6 +1,6 @@
 ---
 name: dayz-clothing
-description: Author, import, fix and ship DayZ WORN CLOTHING (wearable gear with ClothingTypes male/female — vests, armors, tops, pants, armbands, any body-worn piece). Covers the three silent killers verified in-game (config.bin not registering, wrong mesh frame, skeleton name != DayzTemporarySkeleton), the canonical worn frame, the 159-bone clothing model.cfg template, selections/weights contract, staged build, the config-vs-p3d bisection matrix, ODOL parity diagnosis vs vanilla, and the interactive alignment viewer + JSON applier for fitting plates to the body. Use for mod de ropa, prenda custom, chaleco, armadura corporal, clothing mod, worn model, ClothingTypes, la ropa flota / está rígida / girada / desmembrada al equiparla, item de ropa no aparece al spawnearlo, ajustar la prenda al cuerpo, slot Armband/Vest/Body clothing. Always invoke BEFORE authoring or debugging any wearable. Compose with dayz-characters (humanoids/rigging deep-dive), dayz-pbo-build, dayz-test-ingame.
+description: "Use when: clothing mod, worn model, ClothingTypes, chaleco, armadura, la ropa flota/rígida/girada, slot Vest/Body/Armband. Worn clothing (_m/_f). Not humanoids/rigging: dayz-characters; not proxy triangles: dayz-proxy-align."
 ---
 
 # DayZ Worn Clothing — the verified pipeline

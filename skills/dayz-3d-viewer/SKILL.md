@@ -1,18 +1,6 @@
 ---
 name: dayz-3d-viewer
-description: >
-  Convert DayZ .p3d models, .paa textures, and .rvmat materials into interactive
-  Three.js 3D viewers. Supports MLOD .p3d files (via py3d), PAA texture decoding
-  (DXT1/DXT5/DXT3/RGBA4444/RGBA5551/LuminanceAlpha/RGBA8888 with LZO/LZSS),
-  RVMAT material parsing with emissive/specular support, and outputs .glb (binary glTF)
-  + standalone HTML viewer. Two viewer modes: embedded (works in Claude chat sandbox —
-  no fetch, no GLTFLoader) and web (GLTFLoader + external .glb for deployment).
-  Use when user mentions: 3D viewer, p3d viewer, PAA to PNG, PAA converter, texture
-  conversion, model preview, model visualization, Three.js DayZ, glTF export, GLB
-  convert, interactive model, web 3D model, item display, wiki model viewer, or
-  any request to visualize/preview/display a DayZ .p3d model. Also trigger for
-  PAA↔PNG conversion requests even without a 3D model context. Always consult this
-  skill before attempting any DayZ 3D visualization or PAA texture work.
+description: "Use when: 3D viewer, p3d viewer, PAA to PNG, glTF export, GLB convert, model preview, texture conversion. P3D/PAA/RVMAT → Three.js HTML/GLB. Not structural audits: dayz-p3d-audit; not interactive Recipe edit: dayz-p3d-inspector."
 ---
 
 # DayZ 3D Viewer — P3D + PAA + RVMAT → Interactive Three.js

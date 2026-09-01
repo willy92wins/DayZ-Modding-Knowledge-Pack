@@ -1,16 +1,6 @@
 ---
 name: dayz-sound-system
-description: >
-  DayZ audio end-to-end for Enforce Script modding: CfgSoundShaders/CfgSoundSets config with real
-  working mod examples, the client-only script API (EffectSound, SEffectManager, AbstractWave),
-  the official server-to-client sync pattern (StartItemSoundServer + OnVariablesSynchronized),
-  DynamicMusicPlayer, and NoiseSystem (AI hearing, noise decoys). Use whenever a task involves
-  adding any sound to a mod, .ogg files, "sound not playing", "no sound on dedicated server",
-  looping sounds, weapon/alarm/door/ambient audio, music zones, making infected hear something,
-  or any PlaySoundSet/SEffectManager/CreateSoundOnObject call. Consult BEFORE writing sound code —
-  the #1 failure (silent on dedicated server) and several confabulated APIs are documented here,
-  verified against vanilla v1.24 and two real community mods with path:line citations. Triggers:
-  sonido DayZ, CfgSoundShaders, SoundSet, sonido no suena, audio del mod, música.
+description: "Use when: sonido DayZ, CfgSoundShaders, SoundSet, sound not playing, no sound on dedicated server, PlaySoundSet, NoiseSystem. Audio is client-only. Not particles: dayz-particles; not UI: dayz-ui-development."
 ---
 
 # DayZ Sound System (Enforce Script + config)

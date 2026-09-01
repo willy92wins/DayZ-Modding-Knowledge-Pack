@@ -1,17 +1,6 @@
 ---
 name: dayz-physics-engine
-description: >
-  DayZ engine-level physics for Enforce Script modding: the dBody*/dGeom*/dJoint* rigid-body API,
-  PhxInteractionLayers and the global layer matrix, raycasts (RaycastRV vs *Bullet, ObjIntersect
-  types), Contact/EOnContact events, the native dynamic-item path (ThrowPhysically/DYNAMICITEM),
-  the player character controller (CCT), physics materials/surfaces, and why Transport (Pawn)
-  netsyncs position while ItemBase does not. Use whenever a task touches rigid bodies,
-  impulses/forces, collision layers, "player walks through my object", "action/cursor does not
-  appear", rolling/thrown objects, EOnContact damage, TransportHit, or desync of a moving object.
-  Consult BEFORE calling any dBody*/DayZPhysics.* function — half of the "obvious" API
-  (SetFriction, per-body gravity, dBodySetVelocity) does not exist; everything here is verified
-  against vanilla v1.24 with path:line citations. Triggers: física DayZ, capa de colisión,
-  empujar, piedra rodante, atropello, impulso, body dinámico.
+description: "Use when: física DayZ, dBody, collision layers, player walks through my object, action/cursor does not appear, EOnContact, TransportHit, thrown/rolling objects. Not vehicle authoring: dayz-vehicles; not flight: dayz-aviation."
 ---
 
 # DayZ Engine Physics (Enforce Script)

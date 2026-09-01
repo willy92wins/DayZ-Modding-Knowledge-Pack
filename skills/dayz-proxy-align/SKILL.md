@@ -1,17 +1,6 @@
 ---
 name: dayz-proxy-align
-description: >
-  Visually align and orient DayZ .p3d proxies (clothing/attachment anchors) on a host
-  model with a Blender-style move/rotate gizmo, then write the result back into the .p3d
-  losslessly. Loads the host plus all its proxies, can overlay a translucent worn-clothing
-  reference per slot, and edits each proxy triangle until the item sits right. Use whenever
-  proxies are misplaced or mis-oriented: clothing on a static mannequin or Armor-Rack-style
-  object renders at the floor, floating or rotated; you need to set where each slot's item
-  shows; or you are tuning a proxy's FORWARD/UP by hand. Triggers: align proxy, proxy
-  position, proxy orientation, move proxy triangle, clothing shows at the floor, dressable
-  mannequin, worn vs ground (_m vs _g) model, proxy:\dz\characters\proxies\*_dz, alinear
-  proxy, ropa al suelo, maniquí vestible. Pairs with an external ODOL→MLOD backend (ODOL worn meshes)
-  and dayz-p3d-inspector.
+description: "Use when: align proxy, clothing shows at the floor, dressable mannequin, proxy orientation, ropa al suelo, worn vs ground (_m vs _g). Proxy triangles on a host. Not general LOD/memory edit: dayz-p3d-inspector; not clothing mesh/weights: dayz-clothing."
 ---
 
 # DayZ Proxy Align — visual proxy positioning + lossless write-back

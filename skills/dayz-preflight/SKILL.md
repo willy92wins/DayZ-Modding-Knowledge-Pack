@@ -1,6 +1,6 @@
 ---
 name: dayz-preflight
-description: Verify the DayZ modding environment is ready (P:\ mounted, DayZ Tools installed, vanilla data unpacked, workshop deploy folder accessible). Run this before any other DayZ skill. Hard-fails if P:\ is not mounted; warns on the rest.
+description: "Use when: P:\\ not mounted, DayZ Tools missing, workshop folder, vanilla data unpacked, before building/packing, AddonBuilder path, DayZDiag locatable. Read-only env check. Not launch/test: dayz-test-ingame."
 ---
 
 # /dayz-preflight
