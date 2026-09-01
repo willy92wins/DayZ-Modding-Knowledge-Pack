@@ -12119,7 +12119,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d05005c887845e6ac0e509280f92bf8ae6dbb3665fb910915d69bbbeb628d4d6",
+      "output_hash": "11be4caae78648d8c93cf8c5b93ed1ff66f2769dd85ea1a5942c7a1de47fb7ec",
       "output_path": "tools/dayz-3d-viewer/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

@@ -23,7 +23,7 @@ python -m pip install -e "tools/dayz-3d-viewer[all]"
 ```
 
 The imported `py3d` module must expose `IS_DAYZ_FORK is True` and a
-semantic version of at least `1.5.0`. The unrelated PyPI package named
+semantic version of at least `1.6.0`. The unrelated PyPI package named
 `py3d` is not compatible.
 
 ### LZO shim
