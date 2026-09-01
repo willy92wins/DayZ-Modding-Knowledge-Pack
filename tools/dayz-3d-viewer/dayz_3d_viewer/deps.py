@@ -7,7 +7,7 @@ import re
 
 from .errors import MissingDependencyError, ViewerError
 
-MINIMUM_PY3D_VERSION = (1, 5, 0)
+MINIMUM_PY3D_VERSION = (1, 6, 0)
 
 
 def require_dayz_py3d(module=None):
@@ -16,7 +16,7 @@ def require_dayz_py3d(module=None):
             module = importlib.import_module("py3d")
         except (ImportError, ModuleNotFoundError) as exc:
             raise MissingDependencyError(
-                "the DayZ py3d fork >=1.5.0 is required "
+                "the DayZ py3d fork >=1.6.0 is required "
                 "(pip install -e tools/py3d). The PyPI package named py3d "
                 "is a different library."
             ) from exc
@@ -25,7 +25,7 @@ def require_dayz_py3d(module=None):
     version = tuple(int(part) for part in match.groups()) if match else ()
     if getattr(module, "IS_DAYZ_FORK", False) is not True or version < MINIMUM_PY3D_VERSION:
         raise ViewerError(
-            "the DayZ py3d fork >=1.5.0 is required "
+            "the DayZ py3d fork >=1.6.0 is required "
             "(pip install -e tools/py3d). The PyPI package named py3d "
             "is a different library."
         )

@@ -29,7 +29,7 @@ py3d **emite el tagg `#Mass#` si ALGUNA `point.mass` del LOD es ≠ None**, aunq
 ### Detección headless (sin tocar el modelo)
 
 ```python
-import py3d  # fork DayZ >= 1.5.0 (py3d.read_p3d NO existe: API confabulada)
+import py3d  # fork DayZ >= 1.6.0 (py3d.read_p3d NO existe: API confabulada)
 with open(path, "rb") as f:
     m = py3d.P3D(f)
 for lod in m.lods:

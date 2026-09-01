@@ -3,7 +3,7 @@
 DayZ P3D Audit Script - Complete model validator (fork-delegated).
 
 S2 rollout (plan py3d-fork F2-12 + Paso 3.4): los checks de modelo viven
-ahora en py3d (fork DayZ >= 1.5.0) via P3D.validate(); este script
+ahora en py3d (fork DayZ >= 1.6.0) via P3D.validate(); este script
 conserva el CLI, el escaneo de LODs requeridos y los chequeos de archivos
 de texto. Depuracion aplicada (R22-P2-04):
   - ids LOD normalizados a DayZ: ViewGeo=6e15, FireGeo=7e15; el slot
@@ -18,7 +18,7 @@ Usage:
     python audit_p3d.py model.p3d --model-cfg path/to/model.cfg
     python audit_p3d.py --scan-dir path/to/mod/
 
-Requires: py3d DayZ fork >= 1.5.0 (`pip install -e tools/py3d`;
+Requires: py3d DayZ fork >= 1.6.0 (`pip install -e tools/py3d`;
 NUNCA `pip install py3d` - el paquete PyPI es otra libreria).
 """
 
@@ -32,9 +32,9 @@ except ImportError:
     sys.exit(1)
 
 if not getattr(py3d, "IS_DAYZ_FORK", False) or \
-        tuple(int(x) for x in py3d.__version__.split(".")) < (1, 5, 0):
+        tuple(int(x) for x in py3d.__version__.split(".")) < (1, 6, 0):
     print("ERROR: wrong py3d (%r, %s). This audit requires the DayZ fork "
-          ">= 1.5.0 - NEVER `pip install py3d` (PyPI = point-cloud lib). "
+          ">= 1.6.0 - NEVER `pip install py3d` (PyPI = point-cloud lib). "
           "Install the pack fork: pip install -e tools/py3d."
           % (getattr(py3d, "__version__", "?"),
              getattr(py3d, "__file__", "?")))

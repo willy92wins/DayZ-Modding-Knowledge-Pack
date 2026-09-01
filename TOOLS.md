@@ -332,7 +332,7 @@ python -m dayz_3d_viewer parse-rvmat housing.rvmat
 python -m dayz_3d_viewer build-viewer model.p3d --textures ./tex --mode embedded
 ```
 
-Requires the pack py3d fork `>=1.5.0`. Pillow and LZO are optional extras
+Requires the pack py3d fork `>=1.6.0`. Pillow and LZO are optional extras
 (`[paa]`, `[lzo]`); a missing extra exits 2 with a one-line message.
 Generated HTML loads **three.js 0.160.0 from jsDelivr** — it is not
 bundled, so a render needs a network. Known converter gaps (SWIZ, proxy

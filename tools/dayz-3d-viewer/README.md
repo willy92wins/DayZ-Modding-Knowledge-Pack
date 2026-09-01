@@ -4,7 +4,7 @@ Convert DayZ MLOD `.p3d` models, `.paa` textures and `.rvmat` materials
 into a binary glTF (`.glb`) and a standalone Three.js HTML viewer.
 
 The converter is the pack form of the `dayz-3d-viewer` skill. It reads
-the DayZ py3d fork from `tools/py3d` (1.5.0). It does not vendor a
+the DayZ py3d fork from `tools/py3d` (1.6.0). It does not vendor a
 wheel and it does not talk to the game.
 
 ## Requirements and install

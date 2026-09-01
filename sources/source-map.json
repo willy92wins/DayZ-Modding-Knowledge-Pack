@@ -429,7 +429,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1ea4be0e0c974d568f090830eeaa94262021c66721dbbcfb08689c8edc45ca79",
+      "output_hash": "c9802be9d17a6f94fc3587e235f7ad2104556aa3b8930419ce4e5ef67166ed4b",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -5853,7 +5853,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5b21850f86c3ab788880283b042debe89a9aa21cd1778dc29ebfbce74bdbf31d",
+      "output_hash": "4a8ceaf9b0c2ef4a57de6fe2b1461d43fd760cab8c4e58d153cd64e3026c6f23",
       "output_path": "skills/dayz-p3d-audit/references/vehicle-killers.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -5917,7 +5917,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f1cb401005d82bde13ffc3b6c351341403466d6181f933e8235f9f1beb475e67",
+      "output_hash": "f284d27347dbd620246f4f529ce3e872a424a7d6699f4ef488122154ed92795d",
       "output_path": "skills/dayz-p3d-audit/scripts/audit_p3d.py",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -12119,7 +12119,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b2788d4c784643302e3b77c4ec1c292695db2d820a132b6c705591b677f8186b",
+      "output_hash": "d05005c887845e6ac0e509280f92bf8ae6dbb3665fb910915d69bbbeb628d4d6",
       "output_path": "tools/dayz-3d-viewer/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -12185,7 +12185,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b10c7955b0193c1552af34a622145ee8bc786894cadd1aa6a137072219ac8e85",
+      "output_hash": "6d33ce707147f8212a959177107ae656da6280f9bf850184180934411fa967aa",
       "output_path": "tools/dayz-3d-viewer/dayz_3d_viewer/deps.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
