@@ -133,31 +133,69 @@ real, pero la respuesta correcta no es subir el default para todo: es **leer el 
 acumulado de la sesión**. Dominio complejo + historia previa de iteración pide profundidad;
 un prompt acotado en frío, no.
 
-## PROTOCOLO DE ENTREGA — una edición de skill se EMPAQUETA, no se aplica (added 2026-07-30)
+## PROTOCOLO DE ENTREGA — la sesión edita directo; el guardarraíl es el CENSO de raíces (reescrito 2026-09-01)
 
-Instrucción del usuario del 2026-07-30, y aplica **siempre**: cuando toque editar una skill, se
-edita usando `skill-creator` y se le entrega el `.skill` para descargar; **la instala él**. No se
-aplica la edición directamente sobre su árbol — tampoco cuando el árbol es escribible
-(`~/.claude/skills/`) y la escritura persistiría.
+**Sustituye a la instrucción del 2026-07-30** («una edición de skill se empaqueta, no se aplica;
+la instala él»). Desde el 2026-08-31 las skills **las actualizan las sesiones directamente**, sin
+empaquetar y sin pedir permiso por cada edición. Lo que NO desaparece son los guardarraíles
+mecánicos: cambian de sitio, del permiso al censo.
 
-Por qué, aunque el write funcione: la instalación es suya. Si yo escribo directo, la versión viva y
-la que él tiene registrada divergen sin que lo vea, y el reconciliador del `skills-plugin` puede
-revertir o borrar por su cuenta lo no registrado. Empaquetar deja una sola fuente de verdad y le
-devuelve la decisión de qué entra y cuándo.
+### El guardarraíl que sustituye al permiso: censa las raíces ANTES de editar
 
-Procedimiento:
+Escribir en UNA raíz deja **deriva invisible**: la copia que edita esta sesión y la que sirve al
+agente pueden ser distintas, y nadie lo ve hasta que alguien lee la vieja. Antes de tocar una
+skill, enumera dónde vive y **clasifica enlaces antes de contar** (regla de junctions):
 
-1. Editar la carpeta de la skill; si es la copia read-only del plugin, editar una copia en el
-   scratchpad. El ledger `skill-patches-pending.md` sigue siendo el REGISTRO de lo pendiente, no la
-   vía de entrega: aunque quede anotado ahí, lo que se entrega es el `.skill`.
-2. Empaquetar con `python C:\Users\<you>\.claude\skills\_shared\pack_skill.py <carpeta> <destino>`.
-   NO uses `skill-creator/scripts/package_skill.py`: su validador lee `SKILL.md` sin `encoding`, así
-   que en Windows cae a cp1252 y muere con `UnicodeDecodeError` ante cualquier em-dash, flecha o
-   acento (3 de 8 skills murieron ahí el 2026-07-27).
-3. Entregar el `.skill` con `SendUserFile`. El usuario pulsa "Save skill".
-4. Empaquetar la skill **entera** — `SKILL.md` + `references/` + `scripts/` + `assets/`. Un
+```
+~\.claude\skills\<name>                          <- lo lee Claude Code (CLI)
+~\.agents\skills\<name>                          <- muchas entradas son junction a la de .claude
+…\skills-plugin\<guid>\<guid>\skills\<name>      <- lo lee la app; hay N GUID y son plugins DISTINTOS
+~\.grok\skills\<name>                            <- proyección; medido 2026-09-01: junction al plugin
+```
+
+Escribe en **todas las copias reales**; las que sean enlace ya quedan cubiertas. Verifica al
+terminar por **sha256**, no por mtime. Ejemplo medido el 2026-09-01: `codex-handoff-template` y
+`grok-handoff-template` existían en una sola copia real (plugin) y `~\.grok\skills` era junction a
+ella, así que un solo write cubrió las dos vistas — pero eso **se comprueba, no se supone**.
+
+### Lo que decide quién te gobierna: el manifiesto, no la carpeta
+
+Una carpeta no dice qué la gobierna. `<plugin>\manifest.json` sí: trae por skill su `skillId`,
+`enabled`, `creatorType` y `updatedAt`. Antes de concluir que una skill está huérfana, ábrelo.
+El 2026-09-01 se dieron por huérfanas seis skills que estaban **registradas y habilitadas**, y el
+«rescate» acabó dejando el arreglo en la copia sin gobierno mientras la servida seguía rota.
+
+**Caveat medido:** editar la proyección del plugin **persiste** (host-direct, sha estable a los
+minutos), pero **no** mueve el `updatedAt` del registro. La edición vive en local; si la app
+re-sincroniza desde servidor, se pierde. Si el cambio tiene que sobrevivir a eso, dilo al usuario.
+
+### Guardarraíles mecánicos que siguen en pie
+
+1. **En el árbol del plugin, escribe host-direct con PowerShell**, nunca con Edit/Write del
+   harness: allí van a una vista overlay que diverge del disco real. Leer para empaquetar, sí.
+2. **Backup antes**, y **read-after-write** siempre.
+3. **Barre con control positivo.** Si tu comprobación final da cero, pásala por la versión previa
+   al arreglo: si allí también da cero, lo roto es tu detector, no el fichero que declaras limpio.
+
+### Cuándo SÍ se empaqueta un `.skill`
+
+Ya no es la vía de entrega por defecto. Queda para llevar una skill a una máquina o a un almacén
+que no tiene copia. Si empaquetas:
+
+1. `python C:\Users\<you>\.claude\skills\_shared\pack_skill.py <carpeta> <DIRECTORIO destino>` — el
+   segundo argumento es un **directorio**; pasarle un `.skill` muere con `FileExistsError`.
+   NO uses `skill-creator/scripts/package_skill.py`: lee `SKILL.md` sin `encoding`, cae a cp1252 en
+   Windows y muere con `UnicodeDecodeError` ante cualquier em-dash, flecha o acento (3 de 8 skills
+   murieron ahí el 2026-07-27).
+2. **Instalar REEMPLAZA la carpeta entera, no fusiona.** Empaqueta desde la copia **más completa**
+   —normalmente la del plugin, que puede vendorizar `scripts/` o `wheels/`— o instalar los borra.
+   Con `dayz-3d-viewer` habría tirado 6 scripts que su propio `SKILL.md:51` invoca.
+3. Empaqueta la skill **entera**: `SKILL.md` + `references/` + `scripts/` + `assets/`. Un
    `SKILL.md` suelto la instala mutilada, y un fragmento `.md` ni siquiera instala
    (`SKILL.md must start with YAML frontmatter (---)`).
+4. El script excluye `__pycache__`, `.git`, `.pyc` y `.pyo` (`pack_skill.py:22-23`) pero **no** los
+   `SKILL.md.bak*`: si la carpeta tiene backups, empaqueta desde una copia en scratchpad con el
+   mismo nombre de carpeta y bórralos allí.
 
 `pack_skill.py` ya valida que haya frontmatter y `name`, que el `description` no pase de 1024
 caracteres (recortar sacando lo que no dispara al body, nunca truncando), y reabre el zip para
