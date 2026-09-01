@@ -10,10 +10,10 @@ Produce and modify DayZ animations end to end. DayZ has **two parallel animation
 ## Dependencies
 
 ```bash
-# py3d = DayZ fork of the pack, >= 1.5.0 (sealed wheel vendored in this skill).
+# py3d = DayZ fork of the pack, >= 1.6.0 (sealed wheel vendored in this skill).
 # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
 command -v python3 >/dev/null 2>&1 || { echo "ABORT: python3 is required to install the sealed DayZ py3d wheel" >&2; exit 1; }; python3 scripts/install_py3d.py
-python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,5,0), (py3d.__version__, py3d.__file__)"
+python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 ```
 
 Only the `.p3d` scripts need py3d; the SEAnim/RTM writers are pure Python. The assert
@@ -187,7 +187,7 @@ Applies to any sandbox tooling this skill or its consumers produce. Cross-ref: `
 
 ## py3d 1.0.0 quirks for in-sandbox `.p3d` writes (anchor 6, added 2026-05-29)
 
-(historical — the pack fork is py3d 1.5.0 which supersedes these quirks; see
+(historical — the pack fork is py3d 1.6.0 which supersedes these quirks; see
 `references/py3d-1.0.0-quirks.md` header.)
 
 The Layer-1 scripts this skill ships (or this skill's consumers write on top

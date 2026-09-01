@@ -3131,7 +3131,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b11bdb725128c7adda4c85189199593a043f99ade4b6c631471cacd7682f8484",
+      "output_hash": "f4a671e9aab43de02bbb421ef48697618480414cecff8ba54c08b401b9c2f465",
       "output_path": "skills/dayz-3d-viewer/SKILL.md",
       "routing_artifact_id": "skill/dayz-3d-viewer",
       "verification_level": "cross_checked"
@@ -3241,7 +3241,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2cf264a9bfdef4530fa5466f5b5ddc384f1a174203903c6ee23bb0bd993d334b",
+      "output_hash": "495cf2ddab2961c5ac0581e548ac545a98abd689fd64ce47ac144e941a27e103",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3417,7 +3417,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c157d60aa98931bc36934221cdd991b36574aba82757d0975201d2394aa3e46d",
+      "output_hash": "11ddf11a6d8987e169c70e2846750428c6d4d7366707a890a19698c8cde7af3d",
       "output_path": "skills/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5481,7 +5481,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4bc8e7a875ff0d3396dbd027b3776b49b1c1036998febd3445d6242ddada7341",
+      "output_hash": "07b72fdf8129b811c5071d34c375948c29db8855e4dfa35249494d619ee9e54e",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -5723,7 +5723,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2e88f97fc5b8d6c5b13510885e2a392bac511c0436d339918d1b2e596b176fb0",
+      "output_hash": "15e6fa97f56b7f6838de6d85b0344051d1fe9697442298daa3b1070b7166fe7c",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -5939,7 +5939,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d8063e9f15b759df5af36775b91cd6c843144303304e42bf79e75a536b61b7a7",
+      "output_hash": "70c2e3b149e38b351a16c61a1a6b9c119916085b3d139d3de648081784b4b5ab",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -6651,7 +6651,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "888d93aed6bd757ac199f88a2685fb9bb6c59aa6c749196e29a8371460f42a07",
+      "output_hash": "01c1c02a28166b3be8135493e57b921c6063d09e7563ff9f517195013a9ee017",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"

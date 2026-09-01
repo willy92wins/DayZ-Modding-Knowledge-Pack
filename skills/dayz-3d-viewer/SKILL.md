@@ -53,9 +53,9 @@ pip install -e "tools/dayz-3d-viewer[all]"
 # Preferred when python-lzo will not compile (Windows Py3.14+ / sandbox):
 #   pip install lzokay
 #   python -m dayz_3d_viewer install-lzo-shim
-# CRITICAL: py3d = the pack DayZ fork >= 1.5.0 (tools/py3d).
+# CRITICAL: py3d = the pack DayZ fork >= 1.6.0 (tools/py3d).
 # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
-python -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,5,0), (py3d.__version__, py3d.__file__)"
+python -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 ```
 
 Plugin projection (`scripts/` + wheel vendorizada en esta skill - D2=B):
@@ -66,11 +66,11 @@ pip install pygltflib python-lzo pillow numpy opensimplex --break-system-package
 # Preferred when python-lzo will not compile (Windows Py3.14+ / sandbox):
 #   pip install lzokay --break-system-packages
 #   python scripts/install_lzo_shim.py   # installs the lzokay-based shim (import lzo keeps working)
-# CRITICAL: py3d = the pack DayZ fork >= 1.5.0 (tools/py3d).
+# CRITICAL: py3d = the pack DayZ fork >= 1.6.0 (tools/py3d).
 # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
 pip install --break-system-packages "$SKILL_DIR"/wheels/py3d-*-py3-none-any.whl 2>/dev/null \
   || pip install --break-system-packages $(ls /sessions/*/mnt/*/_tools/py3d/dist/py3d-*-py3-none-any.whl 2>/dev/null | sort -V | tail -1)
-python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,5,0), (py3d.__version__, py3d.__file__)"
+python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 ```
 
 ## Commands

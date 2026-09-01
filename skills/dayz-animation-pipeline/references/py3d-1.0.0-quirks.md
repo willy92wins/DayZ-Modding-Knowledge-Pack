@@ -4,7 +4,7 @@
 > HISTORICO. La verificacion R22 (plan py3d-fork, R22-P1-01) demostro que
 > varios de estos "quirks" describian APIs de WRAPPERS de proyecto
 > (`set_face_weight`, `add_memory_point`, `lod.materials`), NO la superficie
-> real de upstream 1.0.0. El **fork DayZ de py3d (>= 1.5.0, `pip install -e tools/py3d`)**
+> real de upstream 1.0.0. El **fork DayZ de py3d (>= 1.6.0, `pip install -e tools/py3d`)**
 > (plugin projection: wheel vendorizada por skill)
 > resuelve o supera cada caso:
 >

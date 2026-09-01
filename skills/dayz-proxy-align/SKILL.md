@@ -34,10 +34,10 @@ Symptoms: equipped clothing shows at the floor, floats, clips, or is rotated.
 ## Dependencies
 
 ```bash
-# py3d DayZ fork >= 1.5.0 (`pip install -e tools/py3d`).
+# py3d DayZ fork >= 1.6.0 (`pip install -e tools/py3d`).
 # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
 pip install -e tools/py3d
-python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,5,0), (py3d.__version__, py3d.__file__)"
+python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 pip install numpy --break-system-packages
 ```
 
@@ -46,9 +46,9 @@ Worn-mesh preview of vanilla clothing also needs an **external ODOL→MLOD backe
 or set `DAYZ_ODOL_BACKEND_ROOT`. The host model itself must be **MLOD** (binarized hosts:
 convert them externally first).
 
-## py3d lifecycle (pack fork >= 1.5.0, batch / non-visual)
+## py3d lifecycle (pack fork >= 1.6.0, batch / non-visual)
 
-For deterministic automation, the pack py3d fork (>= 1.5.0) owns the complete
+For deterministic automation, the pack py3d fork (>= 1.6.0) owns the complete
 add/inspect/align/remove lifecycle:
 
 ```python
@@ -93,7 +93,7 @@ edges, and intentionally leaves the normal pool unchanged.
 
 The Cowork plugin projection vendored py3d 1.4.0 as a wheel and documented the
 same add/inspect/align/remove API under this heading. This pack uses the fork
-`>= 1.5.0` via `pip install -e tools/py3d` — see the lifecycle section above.
+`>= 1.6.0` via `pip install -e tools/py3d` — see the lifecycle section above.
 The 1.4.0 conversion `engine_frame = P' × raw_frame` with
 `P' = ((-1,0,0),(0,0,1),(0,1,0))` is unchanged.
 

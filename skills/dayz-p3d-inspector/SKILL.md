@@ -45,7 +45,7 @@ and feed the source .p3d through `dayz-3d-viewer` separately.
 ## Install Dependencies
 
 ```bash
-# py3d DayZ fork >= 1.5.0. Pick ONE route; both end in the same assert below.
+# py3d DayZ fork >= 1.6.0. Pick ONE route; both end in the same assert below.
 # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
 #
 # Route A - this pack is checked out:
@@ -54,7 +54,7 @@ pip install -e tools/py3d
 # is placed by the local py3d rollout and is NOT shipped in this pack; the installer
 # fails closed when it is missing, and refuses to guess when legacy wheels sit beside it.
 #   python3 scripts/install_py3d.py
-python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,5,0), (py3d.__version__, py3d.__file__)"
+python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 pip install numpy --break-system-packages
 ```
 

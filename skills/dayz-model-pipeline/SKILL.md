@@ -110,16 +110,16 @@ Install: `apt-get install -y blender && pip install opensimplex --break-system-p
 
 > **CRITICAL: py3d installation** — Do NOT use `pip install py3d` (different
 > point-cloud library) and do NOT install upstream from GitHub anymore. Use the
-> **py3d DayZ fork >= 1.5.0** (codec KoffeinFlummi + guards anti-corrupcion,
+> **py3d DayZ fork >= 1.6.0** (codec KoffeinFlummi + guards anti-corrupcion,
 > constantes LOD DayZ, `validate()`, proxies, recipe y CLI `python -m py3d`),
 > pack distribution `py3d-dayz` via `pip install -e tools/py3d`:
 >
 > ```bash
 > SKILL_DIR=<dir de esta skill>
-> # py3d DayZ fork >= 1.5.0 (`pip install -e tools/py3d`).
+> # py3d DayZ fork >= 1.6.0 (`pip install -e tools/py3d`).
 > # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
 > pip install -e tools/py3d
-> python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,5,0), (py3d.__version__, py3d.__file__)"
+> python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 > ```
 
 **Step 1: Define the Object**

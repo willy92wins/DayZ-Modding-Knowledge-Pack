@@ -2,7 +2,7 @@
 
 ## Overview
 
-La lib `py3d` (fork DayZ >= 1.5.0 sobre el codec de KoffeinFlummi) lee y escribe Arma/DayZ `.p3d` en MLOD
+La lib `py3d` (fork DayZ >= 1.6.0 sobre el codec de KoffeinFlummi) lee y escribe Arma/DayZ `.p3d` en MLOD
 (unbinarized) format directly from Python. No Blender, no Object Builder, no external
 tools needed.
 
@@ -10,17 +10,17 @@ tools needed.
 - **Install:** pack `tools/py3d` + `pip install opensimplex --break-system-packages`:
 
 ```bash
-# py3d DayZ fork >= 1.5.0 (`pip install -e tools/py3d`).
+# py3d DayZ fork >= 1.6.0 (`pip install -e tools/py3d`).
 # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
 pip install -e tools/py3d
-python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,5,0), (py3d.__version__, py3d.__file__)"
+python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 ```
 - **License:** Open source
 - **Dependencies:** numpy, pillow, opensimplex
 
 > **CRITICAL: Do NOT use `pip install py3d`** — that installs a completely different
 > 3D visualization library (py3d 0.1.x), NOT the Arma/DayZ MLOD parser. The correct
-> package is the **DayZ fork >= 1.5.0** (`pip install -e tools/py3d`). It provides `P3D`, `LOD`,
+> package is the **DayZ fork >= 1.6.0** (`pip install -e tools/py3d`). It provides `P3D`, `LOD`,
 > `Face`, `Point`, `Selection`, `Vertex` + fork APIs (`get_lod`/`kind`, `bbox`,
 > `triangulate`, `set_selection`, `set_total_mass`, `add_proxy`/`get_proxies`,
 > `to_dict`/`from_dict`, `validate()`, `save(verify=True)`).
