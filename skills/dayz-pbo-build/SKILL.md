@@ -754,6 +754,50 @@ Exit `0` PASS / `1` FAIL / `2` WARN. **Do not build a PBO on exit 1**: the error
 
 Green here means the module should COMPILE and the asset should LOAD. It says nothing about engine behaviour — see `dayz-mod-workflow` §"Gates offline" for the full contract and the known coverage limits.
 
+### The linter scans the WHOLE addon_root and blames the mod for all of it
+
+It walks `<addon_root>` recursively and every finding is reported as the mod's,
+whatever subtree it came from. If anything that is not your shippable source
+lives under that root — a read-only copy of vanilla for reference, a `_source_*`
+rip, a `_recovered` tree, a vendored dependency, an isolated build scratch — its
+findings land in your numbers.
+
+Measured: mounting five vanilla files under an addon root for a delegate to read
+added **19 errors and 23 warnings** that belonged to Bohemia, not to the mod, and
+turned a clean tree into exit `1`. Vanilla legitimately uses `delete`,
+`ProcessDirectDamage` aliases and patterns this ruleset forbids for mods, so the
+errors are correct — they are just not yours.
+
+Both failure directions cost a cycle, and the second is the dangerous one:
+
+- **Inflated**: a clean mod reads FAIL, and the natural next move is to "fix"
+  code you must not touch. Editing a reference tree to make a gate go green
+  neutralises the instrument instead of passing it.
+- **Masked**: if the *baseline* of a before/after comparison was taken with the
+  contamination present, a real new finding can hide inside the noise. This is
+  the one that ships a defect.
+
+Rule: **attribute by path before believing any count.** Split findings into the
+mod's own source and everything else, compare only the mod's set against the
+mod's baseline, and quote both numbers when reporting. Never reduce a delta to
+the process exit code: the code is computed over the whole root, so it is red
+whenever any foreign subtree is dirty, and it cannot distinguish "my change
+broke something" from "the reference copy was always like that".
+
+Corollary for delegation: if you mount reference sources inside the workspace so
+a worker can read them, say in the brief that their findings are not the
+worker's and are not to be fixed. Without that line, a diligent worker will try
+to clean them.
+
+Two more traps around the same instrument:
+
+- More than one snapshot of the validator can be installed, and their rulesets
+  differ — two copies reproduced identical *warning* sets while disagreeing on
+  errors. Pin one path for baseline and delta, or the comparison is meaningless.
+- Do not capture its JSON with a PowerShell `>` redirect: PS 5.1 prepends a
+  UTF-8 BOM and `json.load` rejects the file. Read stdout via `subprocess`, or
+  decode `utf-8-sig`.
+
 ### A deployed PBO with the right version does not prove it compiles
 
 Offline-green plus a correct deploy is still not a compile. Measured 2026-08-29: `@DayZ_MCP`
