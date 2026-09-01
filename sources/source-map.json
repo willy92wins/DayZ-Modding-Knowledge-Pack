@@ -3118,10 +3118,20 @@
           "source_path": "skills/dayz-3d-viewer/SKILL.md",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Three.js loading-lane matrix measured 2026-09-01: UMD build/three.min.js 200 up to 0.160.0 and 404 from 0.161.0; examples/js 200 at 0.147.0 and 404 from 0.148.0; ESM+importmap against the https CDN renders from file:// with no browser flags (Chrome 151); three.module.js re-exports three.core.js; r160 to r185.1 behaviourally neutral for this skill's API surface (identical raycast distance and outputColorSpace, zero pageerrors).",
+          "license": "MIT",
+          "source_hash": "3d29f2599191adadc01255dd839632955b7cdcb2a004d4a9cbb20df85b3932e2",
+          "source_path": "skills/dayz-3d-viewer/SKILL.md",
+          "source_id": "pack-r21-authored",
+          "source_revision": "threejs-lane-audit@2026-09-01",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "08d5ffd94f394abef499068f6c0000b07c9a07b4d405633207d4f231e29b03c5",
+      "output_hash": "3d29f2599191adadc01255dd839632955b7cdcb2a004d4a9cbb20df85b3932e2",
       "output_path": "skills/dayz-3d-viewer/SKILL.md",
       "routing_artifact_id": "skill/dayz-3d-viewer",
       "verification_level": "cross_checked"

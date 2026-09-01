@@ -26,6 +26,35 @@ In the Cowork plugin projection these were `scripts/*.py` plus a vendored
 py3d wheel; in this pack they map to `python -m dayz_3d_viewer`
 (see Commands).
 
+## Three.js version lanes - READ BEFORE PINNING A VERSION
+
+Measured 2026-09-01 by HTTP probe and headless render (Chrome 151, no permissive flags).
+These are facts about the library, not preferences, and they apply to every viewer any DayZ
+skill emits - not only this one.
+
+| Loading lane | Works from `file://` (double-click) | Max three version |
+|---|---|---|
+| UMD `<script src=".../three.min.js">` | yes | **0.160.0** |
+| ESM + `importmap` -> https CDN | **yes** | **0.185.1** (latest) |
+| ESM + `importmap` -> local vendored files | **no** (CORS) | http only |
+
+- `build/three.min.js` (UMD): HTTP 200 up to 0.160.0, **404 from 0.161.0**. A viewer on the
+  UMD lane has no upgrade path at all - it is a dead branch, not merely an old version.
+- `examples/js/` (non-module OrbitControls / TransformControls): 200 at 0.147.0, **404 from
+  0.148.0**. That is why legacy viewers sit at 0.147 - a hard limit, not a preference.
+- ESM + importmap against the https CDN **does work from `file://`**, with no browser flags.
+  Notes claiming otherwise were wrong. What fails from `file://` is importing *local* module
+  files. Do not vendor three to make a viewer offline: vendored modules need http.
+- `three.module.js` is no longer a single bundle - it re-exports from `three.core.js`
+  (0.185.1 = 650 KB + 1.44 MB). Vendoring only the first gives a silent 404 and a blank page.
+- r160 -> r185.1 is behaviourally neutral for this skill's API surface (raw BufferGeometry,
+  MeshStandardMaterial, OrbitControls, Raycaster, shadowMap, tone mapping): identical raycast
+  distance, identical `outputColorSpace`, zero pageerrors, zero deprecation warnings. The only
+  deprecation that lands nearby is `PCFSoftShadowMap` (r182, use `PCFShadowMap`), still working.
+
+Emit new viewers on the **ESM + importmap -> CDN** lane. Drop to UMD only for a measured
+reason, knowing it caps that viewer at 0.160.0 permanently.
+
 ## Install Dependencies
 
 Pack (`tools/py3d` + `tools/dayz-3d-viewer`):
@@ -131,7 +160,8 @@ References external `.glb` file via `GLTFLoader.load()`. Separate files, cacheab
 generate_viewer_html(model_name='My Model', mode='web', glb_url='model.glb', output_path='viewer.html')
 ```
 
-Generated HTML loads **three.js 0.160.0 from jsDelivr**. It is not embedded;
+Generated HTML loads **three.js 0.160.0 from jsDelivr**. That pin is the current default,
+not a ceiling - see "Three.js version lanes" above before changing it. It is not embedded;
 a render needs a network. See `tools/dayz-3d-viewer/README.md`.
 
 ## Recommended Workflow (Chat)
