@@ -2095,7 +2095,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d062a5e12f07d3aa3d1b84a465161e2de006ee4774ddc2741a99fb4aeb9087e4",
+      "output_hash": "53ab3137e8d46815707d96ce3bd6bd35543aa8b4613cdc9bbc0321a71932fce6",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -4637,7 +4637,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "937a04d7d7fa58c2c83c085deda09f551b5230e9bf93efab2d6bd206513f34a7",
+      "output_hash": "0945d88484905b3bb32ff5bb1210cc0f435f0e51417afaa48845bfc3836fd7df",
       "output_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "offline_tested"

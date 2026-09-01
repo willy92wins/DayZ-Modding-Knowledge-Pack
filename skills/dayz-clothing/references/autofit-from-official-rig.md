@@ -93,7 +93,7 @@ the four rounds did validate: sections 3-5 and 7 as a pipeline, and (j) as a mem
   (PascalCase: `RightArm`, `Spine3`, `Pelvis`), max 4 influences per vertex, 0 zero-weight
   vertices.
 
-## 2. Axes: the rig frame is NOT the worn-export frame [EXACT + doctrine]
+## 2. Axes: the rig frame is NOT the worn-export frame [EXACT + doctrine; lesson LL-413]
 
 - Our worn tooling maps DayZ -> Blender with `(x, -z, y)` (`references/export_clothing_fbx.py:12-13`):
   the body stands Z-up FACING +Y with left at +X (SKILL.md, CANONICAL WORN FRAME: -Z chest,
