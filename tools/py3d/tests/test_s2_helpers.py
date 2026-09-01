@@ -1,5 +1,5 @@
-"""S2: F2-01 (constantes LOD/kind/get_lod), F2-02 (bbox), F2-03
-(triangulate), F2-04 (set_selection), F2-05 (set_total_mass)."""
+"""LOD constants with kind() and get_lod(), plus bbox, triangulate,
+set_selection and set_total_mass."""
 
 import pytest
 
@@ -8,16 +8,16 @@ from builders import (build_cube_lod, build_cube_p3d, build_multilod_p3d,
 from helpers import read_p3d, write_bytes
 
 
-# ---- LOD-POS / LOD-NEG (F2-01) -----------------------------------------------
+# ---- LOD-POS / LOD-NEG -----------------------------------------------
 
 def test_lod_pos_get_lod_four_kinds(fork):
-    """LOD-POS: multi-LOD -> get_lod x4 devuelve el LOD correcto."""
+    """On a multi-LOD model, get_lod returns the right LOD each time."""
     p3d = build_multilod_v2_p3d(fork)
     assert p3d.get_lod("geometry").resolution == 1.0e13
     assert p3d.get_lod("memory").resolution == 1.0e15
     assert p3d.get_lod("view_geometry").resolution == 6.0e15
     assert p3d.get_lod("fire_geometry").resolution == 7.0e15
-    # alias del pipeline
+    # short aliases
     assert p3d.get_lod("viewgeo") is p3d.get_lod("view_geometry")
     assert p3d.get_lod("firegeo") is p3d.get_lod("fire_geometry")
     assert p3d.get_lod("visual").resolution == 1.0
@@ -29,7 +29,7 @@ def test_lod_pos_get_lod_four_kinds(fork):
 def test_lod_pos_kind_tolerance_and_shadow(fork):
     """Tolerancia relativa unica + familia shadowvolume."""
     lod = fork.LOD()
-    lod.resolution = 1.04e13  # dentro del 5%
+    lod.resolution = 1.04e13  # within 5%
     assert lod.kind() == "geometry"
     lod.resolution = 10010.0  # ShadowVolume nivel 10
     assert lod.kind() == "shadowvolume"
@@ -38,8 +38,8 @@ def test_lod_pos_kind_tolerance_and_shadow(fork):
 
 
 def test_lod_neg_unknown_and_legacy_arma(fork):
-    """LOD-NEG: 5.5e14 -> kind()=None + WARN en validate(); los ids
-    legacy Arma 3 de la familia e13 tampoco clasifican (anti-drift)."""
+    """5.5e14 gives kind() == None plus a WARN from validate(); the legacy
+    Arma 3 e13-family ids do not classify either."""
     p3d = build_cube_p3d(fork)
     p3d.lods[0].resolution = 5.5e14
     assert p3d.lods[0].kind() is None
@@ -48,16 +48,16 @@ def test_lod_neg_unknown_and_legacy_arma(fork):
     assert fs[0].severity == "WARN" and fs[0].lod == 0
     for legacy in (2.0e13, 3.0e13, 7.0e13):
         assert fork.classify_lod_resolution(legacy) is None
-    assert p3d.get_lod("memory") is None  # sin match -> None
+    assert p3d.get_lod("memory") is None  # no match -> None
     with pytest.raises(ValueError):
         p3d.get_lod("geophys")  # kind inexistente -> ValueError
 
 
-# ---- BBOX-POS / BBOX-NEG (F2-02) ---------------------------------------------
+# ---- BBOX-POS / BBOX-NEG ---------------------------------------------
 
 def test_bbox_pos_unit_cube(fork):
-    """BBOX-POS: cubo unidad -> min/max/center exactos (tambien tras
-    round-trip f32)."""
+    """A unit cube gives exact min, max and centre, and still does after an
+    f32 round trip."""
     p3d = build_cube_p3d(fork)
     lo, hi, center = p3d.lods[0].bbox()
     assert lo == (-0.5, -0.5, -0.5)
@@ -73,11 +73,12 @@ def test_bbox_neg_empty_lod(fork):
         fork.LOD().bbox()
 
 
-# ---- TRI-POS (F2-03) ---------------------------------------------------------
+# ---- TRI-POS ---------------------------------------------------------
 
 def test_tri_pos_cube_with_selection(fork):
-    """TRI-POS: cubo 6 quads + selection de 3 quads -> 12 tris, la
-    selection pasa a 6 tris, UVs == num_vertices, sharp_edges intactos."""
+    """A cube of 6 quads with a 3-quad selection becomes 12 triangles, the
+    selection becomes 6 triangles, the UV count matches num_vertices, and
+    sharp_edges are untouched."""
     p3d = build_cube_p3d(fork)
     lod = p3d.lods[0]
     lod.sharp_edges = [(0, 1), (2, 3)]
@@ -88,22 +89,22 @@ def test_tri_pos_cube_with_selection(fork):
     assert lod.triangulate() == 6
     assert len(lod.faces) == 12
     assert all(len(fa.vertices) == 3 for fa in lod.faces)
-    # membership remapeada: 3 quads -> 6 tris, mismo peso fraccional
+    # membership remapped: 3 quads -> 6 triangles, same fractional weight
     half = lod.selections["half"]
     assert len(half.faces) == 6
     assert all(w == 0.5 for w in half.faces.values())
-    # Component01 cubria los 6 quads -> 12 tris
+    # Component01 covered all 6 quads -> 12 triangles
     assert len(lod.selections["Component01"].faces) == 12
-    # UVs preservadas por vertice (fan 0,1,2 / 0,2,3 del quad 0)
+    # per-vertex UVs preserved (fan 0,1,2 / 0,2,3 of quad 0)
     assert [v.uv for v in lod.faces[0].vertices] == \
         [quad0_uvs[0], quad0_uvs[1], quad0_uvs[2]]
     assert [v.uv for v in lod.faces[1].vertices] == \
         [quad0_uvs[0], quad0_uvs[2], quad0_uvs[3]]
     assert lod.faces[0].texture == lod.faces[1].texture == quad0_tex
     assert lod.sharp_edges == [(0, 1), (2, 3)]
-    assert lod.triangulate() == 0  # idempotente: ya no hay quads
+    assert lod.triangulate() == 0  # idempotent: there are no quads left
 
-    # el resultado escribe y re-lee con membership intacta
+    # the result writes and reads back with membership intact
     reread = read_p3d(fork, write_bytes(p3d))
     rlod = reread.lods[0]
     assert len(rlod.faces) == 12
@@ -113,10 +114,11 @@ def test_tri_pos_cube_with_selection(fork):
     assert all(abs(w - 0.5) < 0.51 / 255 for w in got)
 
 
-# ---- SETSEL-POS / SETSEL-NEG (F2-04) -----------------------------------------
+# ---- SETSEL-POS / SETSEL-NEG -----------------------------------------
 
 def test_setsel_pos_idempotent_overwrite(fork):
-    """SETSEL-POS: set_selection x2 mismo nombre -> overwrite, no duplica."""
+    """set_selection twice with the same name overwrites, it does not
+    duplicate."""
     p3d = build_cube_p3d(fork)
     lod = p3d.lods[0]
     lod.set_selection("zone", face_idx=[0, 1], point_idx=[0, 1, 2])
@@ -131,8 +133,8 @@ def test_setsel_pos_idempotent_overwrite(fork):
 
 
 def test_setsel_neg_bad_weight_and_index(fork):
-    """SETSEL-NEG: weight 2.0 -> ValueError (guard F1-02); indice fuera
-    de rango -> IndexError. Sin mutacion parcial."""
+    """A weight of 2.0 raises ValueError and an out-of-range index raises
+    IndexError, with no partial mutation."""
     p3d = build_cube_p3d(fork)
     lod = p3d.lods[0]
     with pytest.raises(ValueError, match="weight"):
@@ -144,11 +146,11 @@ def test_setsel_neg_bad_weight_and_index(fork):
     assert "bad" not in lod.selections
 
 
-# ---- MASS-POS (F2-05) --------------------------------------------------------
+# ---- MASS-POS --------------------------------------------------------
 
 def test_mass_pos_total_on_geometry(fork):
-    """MASS-POS: set_total_mass(200) -> suma 200 +-1e-3 sobre los puntos
-    del Geometry LOD, y sobrevive al round-trip (#Mass#)."""
+    """set_total_mass(200) sums to 200 to within 1e-3 over the Geometry LOD's
+    points, and survives the round trip as #Mass#."""
     p3d = build_multilod_v2_p3d(fork)
     geo = p3d.get_lod("geometry")
     geo.set_total_mass(200.0)
@@ -163,5 +165,5 @@ def test_mass_pos_total_on_geometry(fork):
 
 
 def test_s1_multilod_sigue_limpio(fork):
-    """Regresion: el fixture S1 sigue dando validate() == [] tras F2-12."""
+    """Regression: the fixture still gives validate() == []."""
     assert build_multilod_p3d(fork).validate() == []

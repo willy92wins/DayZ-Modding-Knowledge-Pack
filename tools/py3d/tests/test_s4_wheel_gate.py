@@ -1,4 +1,4 @@
-"""Contrato fail-closed del wheel reproducible de py3d."""
+"""The fail-closed contract of py3d's reproducible wheel."""
 
 import hashlib
 import json
@@ -129,7 +129,7 @@ def _snapshot_tree(root):
 
 
 def test_v2_manifest_contract_matches_builder_and_apply_validator(tmp_path):
-    """Rompe si producer y consumer dejan de compartir campos/schema v2."""
+    """Breaks if producer and consumer stop sharing the v2 fields and schema."""
     fields, schema = _builder_manifest_contract()
     assert fields == V2_FIELDS
     assert schema == SCHEMA_V2
@@ -140,7 +140,8 @@ def test_v2_manifest_contract_matches_builder_and_apply_validator(tmp_path):
 
 
 def test_v1_manifest_shape_is_rejected(tmp_path):
-    """Rompe si el rollout vuelve a aceptar el contrato v1 sin toolchain."""
+    """Breaks if the rollout starts accepting the v1 contract, which pins no
+    toolchain, again."""
     manifest = {
         "schema_version": "py3d-wheel-manifest-v1",
         "filename": "py3d-1.4.0-py3-none-any.whl",
@@ -153,7 +154,7 @@ def test_v1_manifest_shape_is_rejected(tmp_path):
 
 
 def test_non_v2_schema_is_rejected(tmp_path):
-    """Rompe si un schema desconocido llega al rollout."""
+    """Breaks if an unknown schema reaches the rollout."""
     result = _run_apply_manifest_validation(
         tmp_path,
         _v2_manifest(schema_version="py3d-wheel-manifest-v3"),
@@ -165,7 +166,8 @@ def test_non_v2_schema_is_rejected(tmp_path):
 
 
 def test_invalid_sha256_is_rejected(tmp_path):
-    """Rompe si el consumer acepta una identidad que no es SHA-256 lowercase."""
+    """Breaks if the consumer accepts an identity that is not a lower-case
+    SHA-256."""
     result = _run_apply_manifest_validation(
         tmp_path,
         _v2_manifest(sha256="NOT-A-SHA256"),
@@ -178,7 +180,7 @@ def test_invalid_sha256_is_rejected(tmp_path):
 
 @pytest.mark.parametrize("missing", [False, True])
 def test_empty_or_missing_build_requires_is_rejected(tmp_path, missing):
-    """Rompe si el manifiesto puede omitir el toolchain pineado."""
+    """Breaks if the manifest can omit the pinned toolchain."""
     manifest = _v2_manifest(build_requires=[])
     if missing:
         del manifest["build_requires"]
@@ -187,7 +189,7 @@ def test_empty_or_missing_build_requires_is_rejected(tmp_path, missing):
 
 
 def test_hash_mismatch_without_update_keeps_manifest_and_dist_exact(tmp_path):
-    """Rompe si un FAIL publica wheel o re-sella el manifiesto."""
+    """Breaks if a FAIL publishes a wheel or re-seals the manifest."""
     source_root = tmp_path / "py3d"
     rollout_root = source_root / "rollout"
     package_root = source_root / "py3d"

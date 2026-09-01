@@ -1,4 +1,4 @@
-"""S1B: F1-03 (materiales case-insensitive) y F1-04 (memory points upsert)."""
+"""Case-insensitive material lookup, and the memory-point upsert."""
 
 import pytest
 
@@ -6,20 +6,20 @@ from builders import build_cube_p3d, build_memory_lod, build_multilod_p3d
 from helpers import read_p3d, write_bytes
 
 
-# ---- F1-03 / MAT ------------------------------------------------------------
+# ---- materials ------------------------------------------------------------
 
 def test_mat_pos_case_insensitive_lookup(fork):
-    """MAT-POS: .p3d con materiales lowercase, query UPPER -> caras > 0."""
+    """A .p3d with lower-case materials, queried in UPPER case, returns faces."""
     p3d = build_cube_p3d(fork)
     lod = p3d.lods[0]
-    # tres materiales lowercase distintos (como los almacena DayZ)
+    # three distinct lower-case materials, as DayZ stores them
     for i, fa in enumerate(lod.faces):
         fa.material = "lf\\data\\b_chrome_2.rvmat" if i < 2 else \
                       "lf\\data\\b_black_1.rvmat"
     got = lod.faces_for_material("LF\\DATA\\B_CHROME_2.RVMAT")
     assert len(got) == 2
     assert all(fa.material == "lf\\data\\b_chrome_2.rvmat" for fa in got)
-    # el match exacto-sensible NO encuentra (documenta el quirk historico)
+    # the case-sensitive match finds nothing: the historical quirk
     assert [fa for fa in lod.faces
             if fa.material == "LF\\DATA\\B_CHROME_2.RVMAT"] == []
 
@@ -35,10 +35,11 @@ def test_mat_pos_faces_by_material_lower_keys(fork):
     assert "LF\\data\\MIXED_Case.rvmat" in raw
 
 
-# ---- F1-04 / MEM ------------------------------------------------------------
+# ---- memory points ------------------------------------------------------------
 
 def test_mem_pos_upsert_idempotent(fork):
-    """MEM-POS: set_memory_point x2 mismo nombre -> 1 entrada, posicion = ultima."""
+    """set_memory_point twice with the same name leaves one entry, at the last
+    position."""
     p3d = fork.P3D()
     lod = build_memory_lod(fork, [("pos_center", (0.0, 0.0, 0.0))])
     p3d.lods.append(lod)
@@ -47,12 +48,12 @@ def test_mem_pos_upsert_idempotent(fork):
     lod.set_memory_point("crewdriver", (1.0, 2.0, 3.0))
     lod.set_memory_point("crewdriver", (4.0, 5.0, 6.0))  # upsert, no duplica
 
-    assert len(lod.points) == n_points + 1  # solo se creo UNA vez
+    assert len(lod.points) == n_points + 1  # created only ONCE
     mps = lod.get_memory_points()
     assert mps["crewdriver"] == (4.0, 5.0, 6.0)
     assert len(lod.selections["crewdriver"].points) == 1
 
-    # y sobrevive el round-trip
+    # and it survives the round trip
     reread = read_p3d(fork, write_bytes(p3d))
     rmps = reread.lods[0].get_memory_points()
     assert rmps["crewdriver"] == (4.0, 5.0, 6.0)
@@ -64,7 +65,7 @@ def test_mem_neg_preexisting_duplicate_collapses(fork):
     p3d = fork.P3D()
     lod = build_memory_lod(fork, [])
     p3d.lods.append(lod)
-    # duplicado pre-existente: selection 'crewdriver' con DOS puntos
+    # a pre-existing duplicate: selection 'crewdriver' with TWO points
     a = fork.Point(); a.coords = (9.0, 9.0, 9.0); lod.points.append(a)
     b = fork.Point(); b.coords = (8.0, 8.0, 8.0); lod.points.append(b)
     dup = fork.Selection(lod.points, lod.faces)
@@ -83,7 +84,8 @@ def test_mem_neg_preexisting_duplicate_collapses(fork):
 
 
 def test_mem_get_excludes_non_point_selections(fork):
-    """get_memory_points ignora selections con caras (proxy) o multipunto."""
+    """get_memory_points ignores selections with faces (proxies) or with more
+    than one point."""
     p3d = build_multilod_p3d(fork)
     vis, geo, mem = p3d.lods
     assert "proxy:\\dz\\data\\proxies\\flag.001" not in vis.get_memory_points()

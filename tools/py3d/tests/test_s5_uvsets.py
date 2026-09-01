@@ -55,7 +55,7 @@ def test_two_uv_sets_survive_read_write(fork):
 
 
 def test_round_trip_is_byte_exact_with_the_expected_uvset_count_per_lod(fork):
-    """write -> read -> write is byte-identical, and the independent walker
+    """Write -> read -> write is byte-identical, and the independent walker
     finds the expected #UVSet# inventory: Visual [0, 1], Geometry [0],
     Memory [0] with the 4-byte payload, all placed last before #EndOfFile#."""
     p3d = build_two_uvsets_p3d(fork)

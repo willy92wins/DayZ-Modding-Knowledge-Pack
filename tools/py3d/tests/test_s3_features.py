@@ -1,9 +1,10 @@
-"""S3 (F3-01/02/03): mass-only-geometry (BUG-021), transform det-aware,
-make_double_sided. Plan: plans/2026-06-07-py3d-fork-s3.md (v2, R22 aplicado).
+"""#Mass# outside the Geometry LOD, determinant-aware transform, and
+make_double_sided.
 
-Helper local (D-S3-7, R22-P1-03): el signo cross(e1,e2)*declared por cara
-debe PRESERVARSE a traves de transform()/make_double_sided() - SEM-INV y
-save(verify=True) no comparan normales declaradas ni normal_index.
+Local helper: the sign of cross(e1,e2)*declared per face must be
+PRESERVED through transform() and make_double_sided(). Neither the
+round-trip invariants nor save(verify=True) compare declared normals or
+normal_index, so this is checked here.
 """
 
 import os
@@ -41,7 +42,7 @@ def normal_indices(lod):
 
 
 def winding_signs(lod):
-    """Signo de cross(e1,e2)*declared por cara (helper D-S3-7)."""
+    """The sign of cross(e1,e2)*declared, per face."""
     out = []
     for fa in lod.faces:
         a = fa.vertices[0].point.coords
@@ -77,21 +78,22 @@ def write_file(p3d, path):
 
 
 def sel_positions(lod, name):
-    """Indices posicionales de las caras de una selection (identidad)."""
+    """Positional indices of a selection's faces, by identity."""
     pos = {id(fa): i for i, fa in enumerate(lod.faces)}
     return sorted(pos[id(fa)] for fa in lod.selections[name].faces)
 
 
-# ---- F3-01: ERR_MASS_ONLY_GEOMETRY ------------------------------------------
+# ---- ERR_MASS_ONLY_GEOMETRY ------------------------------------------
 
 def test_mass_geo_pos(fork):
-    """MASS-GEO-POS: masa solo en Geometry -> sin finding de masa."""
+    """Mass only in the Geometry LOD produces no mass finding."""
     assert mass_findings(build_multilod_v2_p3d(fork).validate()) == []
 
 
 def test_mass_geo_neg_full(fork):
-    """MASS-GEO-NEG: FireGeo con point.mass=0.0 en todos los puntos (caso
-    literal LL-080) -> exactamente 1 ERROR con lod correcto y remedio."""
+    """A FireGeo LOD with point.mass=0.0 on every point - the case actually
+    observed - produces exactly one ERROR, with the right LOD index and a
+    remedy."""
     p3d = build_multilod_v2_p3d(fork)
     fg = p3d.get_lod("firegeo")
     idx = p3d.lods.index(fg)
@@ -108,9 +110,9 @@ def test_mass_geo_neg_full(fork):
 
 
 def test_mass_geo_partial_no_exception(fork):
-    """MASS-GEO-PARTIAL (R22-P1-01): masa PARCIAL (un 0.0, resto None) NO
-    lanza TypeError (el property LOD.mass habria reventado en sum) y
-    produce exactamente 1 finding con conteo 1."""
+    """PARTIAL mass - one 0.0, the rest None - does NOT raise TypeError, which
+    the LOD.mass property would have done inside sum(), and produces
+    exactly one finding with a count of 1."""
     p3d = build_multilod_v2_p3d(fork)
     fg = p3d.get_lod("firegeo")
     fg.points[0].mass = 0.0
@@ -120,8 +122,8 @@ def test_mass_geo_partial_no_exception(fork):
 
 
 def test_mass_geo_neg2_unknown_kind(fork):
-    """MASS-GEO-NEG2 (D-S3-3): LOD de resolucion desconocida con masa ->
-    ERR_MASS_ONLY_GEOMETRY ADEMAS de WARN_LOD_KIND_UNKNOWN."""
+    """A LOD of unknown resolution carrying mass produces
+    ERR_MASS_ONLY_GEOMETRY AS WELL AS WARN_LOD_KIND_UNKNOWN."""
     p3d = build_multilod_v2_p3d(fork)
     weird = build_cube_lod(fork, resolution=5.5e14, selection_name=None,
                            mass_per_point=0.0, texture="", material="")
@@ -135,7 +137,8 @@ def test_mass_geo_neg2_unknown_kind(fork):
 
 
 def test_mass_cli_exit1(fork, tmp_path):
-    """MASS-CLI: python -m py3d validate sobre el NEG -> exit 1 + linea."""
+    """python -m py3d validate on the negative fixture exits 1 and prints the
+    finding."""
     p3d = build_multilod_v2_p3d(fork)
     for p in p3d.get_lod("firegeo").points:
         p.mass = 0.0
@@ -147,8 +150,9 @@ def test_mass_cli_exit1(fork, tmp_path):
 
 
 def test_val_audit_mass_neg(fork, tmp_path):
-    """VAL-AUDIT-MASS: el audit parcheado (delegando en el fork) reporta
-    CRITICAL [ERR_MASS_ONLY_GEOMETRY] y exit 1 sobre el NEG."""
+    """The audit, delegating to this library, reports
+    CRITICAL [ERR_MASS_ONLY_GEOMETRY] and exits 1 on the negative
+    fixture."""
     p3d = build_multilod_v2_p3d(fork)
     for p in p3d.get_lod("firegeo").points:
         p.mass = 0.0
@@ -160,19 +164,18 @@ def test_val_audit_mass_neg(fork, tmp_path):
 
 
 def test_val_audit_mass_pos(fork, tmp_path):
-    """VAL-AUDIT-MASS (POS): el fixture limpio sigue ALL PASSED con el
-    check nuevo activo."""
+    """The clean fixture is still ALL PASSED with the new check active."""
     fx = write_file(build_multilod_v2_p3d(fork), tmp_path / "clean.p3d")
     r = run_audit(fx)
     assert r.returncode == 0, r.stdout
     assert "OVERALL: ALL PASSED" in r.stdout
 
 
-# ---- F3-02: P3D.transform ----------------------------------------------------
+# ---- P3D.transform ----------------------------------------------------
 
 def test_trans_pos_blender_to_dayz(fork):
     """TRANS-POS: (x,y,z)->(x,z,-y) exacto; normales M*n; winding y
-    normal_index INTACTOS (det=+1, LL-020); signos preservados."""
+    normal_index INTACTOS (det=+1); signos preservados."""
     p3d = fork.P3D()
     vis = build_cube_lod(fork, resolution=1.0)
     p3d.lods.append(vis)
@@ -192,8 +195,8 @@ def test_trans_pos_blender_to_dayz(fork):
 
 
 def test_trans_pos_multilod_validate_clean(fork):
-    """TRANS-POS: multilod_v2 rotado sigue validate() == [] (sin findings
-    de winding nuevos vs baseline [])."""
+    """A rotated multilod_v2 still gives validate() == [], with no new winding
+    findings against the empty baseline."""
     p3d = build_multilod_v2_p3d(fork)
     assert p3d.validate() == []
     p3d.transform(fork.BLENDER_TO_DAYZ)
@@ -201,9 +204,9 @@ def test_trans_pos_multilod_validate_clean(fork):
 
 
 def test_trans_neg_mirror(fork):
-    """TRANS-NEG: espejo det=-1 -> orden de vertices invertido en TODAS
-    las caras de TODOS los LODs; X negada; winding-vs-visual limpio;
-    signos cross*declared preservados."""
+    """A det=-1 mirror reverses the vertex order on EVERY face of EVERY LOD,
+    negates X, leaves winding-versus-visual clean, and preserves the
+    cross*declared signs."""
     p3d = build_multilod_v2_p3d(fork)
     orders_before = {i: vertex_orders(lod) for i, lod in enumerate(p3d.lods)}
     pts_before = {i: [p.coords for p in lod.points]
@@ -228,7 +231,7 @@ def test_trans_neg_mirror(fork):
     ZERO_COL,                               # TRANS-DET0 (norma cero)
 ], ids=["nonortho", "nonuniform", "zerocol"])
 def test_trans_rejects_contract(fork, matrix):
-    """TRANS-NONORTHO/NONUNIFORM/DET0 (D-S3-6): ValueError de contrato y
+    """TRANS-NONORTHO/NONUNIFORM/DET0: ValueError de contrato y
     modelo BYTE-intacto."""
     p3d = build_multilod_v2_p3d(fork)
     before = write_bytes(p3d)
@@ -255,8 +258,8 @@ def test_trans_rejects_shape(fork, matrix):
 
 
 def test_trans_roundtrip_mirror_twice(fork):
-    """TRANS-RT: espejo aplicado dos veces == identidad (coords +-1e-6,
-    winding neto sin cambio, normal_index intactos)."""
+    """The mirror applied twice is the identity: coordinates to within 1e-6,
+    net winding unchanged, normal_index intact."""
     p3d = build_multilod_v2_p3d(fork)
     pts_before = {i: [p.coords for p in lod.points]
                   for i, lod in enumerate(p3d.lods)}
@@ -272,9 +275,9 @@ def test_trans_roundtrip_mirror_twice(fork):
 
 
 def test_trans_sem_save_reopen(fork, tmp_path):
-    """TRANS-SEM (+R22-P1-03): transform -> save(verify=True) -> reopen.
-    Pool de normales por VALOR (f32), normal_index por vertice, memory
-    points y proxies M*p."""
+    """transform, then save(verify=True), then reopen. The normal pool is
+    compared BY VALUE (f32), normal_index per vertex, and memory points
+    and proxies as M*p."""
     p3d = build_multilod_v2_p3d(fork)
     mem_before = None
     for lod in p3d.lods:
@@ -314,11 +317,11 @@ def test_trans_sem_save_reopen(fork, tmp_path):
     assert close3(pa["anchor"], (old_a[0], old_a[2], -old_a[1]))
 
 
-# ---- F3-03: LOD.make_double_sided --------------------------------------------
+# ---- LOD.make_double_sided --------------------------------------------
 
 def test_ds_pos(fork):
-    """DS-POS: cubo visual triangulado (12 caras) + selection de 3 ->
-    24 caras, selection 6, twins exactos, 0 puntos nuevos."""
+    """A triangulated visual cube (12 faces) with a 3-face selection becomes
+    24 faces and a 6-face selection, with exact twins and no new points."""
     lod = build_cube_lod(fork, resolution=1.0, selection_name=None)
     lod.triangulate()
     assert len(lod.faces) == 12
@@ -341,14 +344,14 @@ def test_ds_pos(fork):
         assert twin.texture == orig.texture
         assert twin.material == orig.material
         assert twin.flags == orig.flags
-    # D-S3-7: el signo cross*declared del twin coincide con el original
+    # the twin's cross*declared sign matches the original's
     signs = winding_signs(lod)
     assert signs[12:] == signs[:12]
 
 
 def test_ds_dedup_pool(fork):
-    """DS-DEDUP: el cubo tiene los 6 normales en pares +-n -> las negadas
-    YA existen en el pool: crece 0 (dedup por valor exacto)."""
+    """The cube's six normals come in +-n pairs, so the negated ones ALREADY
+    exist in the pool and it grows by 0, deduplicated on exact value."""
     lod = build_cube_lod(fork, resolution=1.0, selection_name=None)
     lod.triangulate()
     pool_before = len(lod.facenormals)
@@ -357,8 +360,8 @@ def test_ds_dedup_pool(fork):
 
 
 def test_ds_grows_pool_when_needed(fork):
-    """DS-DEDUP (crecimiento): normal sin opuesta en el pool -> crece
-    exactamente en las negadas unicas nuevas."""
+    """A normal with no opposite in the pool: it grows by exactly the new
+    unique negated entries."""
     m = fork
     lod = m.LOD()
     lod.resolution = 1.0
@@ -398,8 +401,8 @@ def test_ds_neg_kind(fork):
 
 
 def test_ds_roundtrip(fork):
-    """DS-RT (+R22-P1-03): save/reopen preserva twins, membership y la
-    normal NEGADA por valor (f32) via normal_index."""
+    """save and reopen preserve the twins, the membership, and the NEGATED
+    normal by value (f32) through normal_index."""
     m = fork
     lod = build_cube_lod(m, resolution=1.0, selection_name=None)
     lod.triangulate()
@@ -423,9 +426,9 @@ def test_ds_roundtrip(fork):
 
 
 def test_ds_then_triangulate(fork):
-    """DS-TRI-POS (R22-P2-03): make_double_sided() sobre quads y DESPUES
-    triangulate(): 24 tris, selection 12, 0 puntos nuevos, signos
-    coherentes, membership persistente tras reopen."""
+    """make_double_sided() on quads and THEN triangulate(): 24 triangles, a
+    12-face selection, no new points, coherent signs, and membership that
+    persists after reopening."""
     m = fork
     lod = build_cube_lod(m, resolution=1.0, selection_name=None)
     assert len(lod.faces) == 6

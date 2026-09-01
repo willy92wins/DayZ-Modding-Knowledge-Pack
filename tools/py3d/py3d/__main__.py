@@ -1,30 +1,30 @@
 #!/usr/bin/env python3
-r"""CLI del fork py3d (S2: F2-09/F2-10/F2-11).
+r"""py3d command line.
 
-    python -m py3d info <p3d>          # readback de evidencia (Step-0)
-    python -m py3d validate <p3d>      # findings de P3D.validate()
-    python -m py3d diff <a> <b>        # verificacion de ediciones
+    python -m py3d info     <p3d>      # readback kept as evidence
+    python -m py3d validate <p3d>      # findings from P3D.validate()
+    python -m py3d diff     <a> <b>    # check what an edit changed
 
-Schema de salida ESTABLE (lineas "clave: valor"; los tests lo fijan):
-cambiarlo es un cambio de contrato y requiere bump de version.
-1.6.0: `info` anade `lod.N.uv_sets` (ids separados por ';') y `diff`
-compara los ids de UV set por LOD (`diff.lod.N.uv_sets`).
+The output schema is STABLE ("key: value" lines, pinned by the tests):
+changing it is a contract change and needs a version bump.
+1.6.0: `info` gained `lod.N.uv_sets` (ids separated by ';') and `diff`
+compares the UV set ids per LOD (`diff.lod.N.uv_sets`).
 
 Exit codes:
-    info:     0 ok                       | 2 input no legible
-    validate: 0 limpio (sin ERROR)       | 1 ERRORs | 2 no legible
-    diff:     0 iguales | 1 difieren     | 2 input no legible
+    info:     0 ok                     | 2 input not readable
+    validate: 0 clean (no ERROR)        | 1 ERRORs | 2 not readable
+    diff:     0 equal | 1 different     | 2 input not readable
 
-Trazabilidad (R22-P2-06): `info` cubre el readback que el pipeline exige
-como evidencia (LODs, resoluciones, conteos, Component01, materiales);
-`diff` cubre la verificacion de ediciones (fixtures R26, gates INTEG).
+`info` is the readback a pipeline can keep as evidence (LODs, resolutions,
+counts, Component01, materials); `diff` is for checking that an edit did
+what it was meant to - within the limits KNOWN-ISSUES.md documents.
 """
 
 import argparse
 import os
 import sys
 
-from . import P3D, LOD_RESOLUTIONS  # noqa: F401  (superficie estable)
+from . import P3D, LOD_RESOLUTIONS  # noqa: F401  (stable surface)
 
 
 def _fmt(x):
@@ -36,7 +36,7 @@ def _fmt3(c):
 
 
 def _load(path):
-    """(P3D, None) o (None, motivo)."""
+    """(P3D, None) or (None, reason)."""
     if not os.path.isfile(path):
         return None, "file not found: %s" % path
     try:
@@ -45,7 +45,7 @@ def _load(path):
                 return None, "not an MLOD .p3d (ODOL or other): %s" % path
             f.seek(0)
             return P3D(f), None
-    except Exception as e:  # parse roto = input no legible
+    except Exception as e:  # a broken parse means unreadable input
         return None, "unreadable MLOD: %s (%s)" % (path, e)
 
 
@@ -219,16 +219,16 @@ def cmd_diff(args):
 def main(argv=None):
     parser = argparse.ArgumentParser(
         prog="python -m py3d",
-        description="py3d DayZ fork - info/validate/diff de .p3d MLOD")
+        description="py3d DayZ fork - info/validate/diff for MLOD .p3d")
     sub = parser.add_subparsers(dest="cmd", required=True)
-    p_info = sub.add_parser("info", help="readback de evidencia")
+    p_info = sub.add_parser("info", help="readback kept as evidence")
     p_info.add_argument("file")
     p_val = sub.add_parser("validate", help="P3D.validate()")
     p_val.add_argument("file")
     p_val.add_argument("--normals-budget", type=int, default=32768)
     p_val.add_argument("--normals-severity", default="WARN",
                        choices=("WARN", "ERROR"))
-    p_diff = sub.add_parser("diff", help="compara dos .p3d")
+    p_diff = sub.add_parser("diff", help="compare two .p3d files")
     p_diff.add_argument("a")
     p_diff.add_argument("b")
     args = parser.parse_args(argv)

@@ -1,4 +1,4 @@
-"""S1C: F1-07 (normals budget) y F1-09 (validate(), 5 codigos 1:1)."""
+"""The facenormals budget, and one negative per validate() finding code."""
 
 import pytest
 
@@ -17,7 +17,7 @@ def test_val_pos_clean_models(fork):
     assert build_multilod_p3d(fork).validate() == []
 
 
-# ---- VAL-NEG: un fixture por codigo (1:1) ------------------------------------
+# ---- one fixture per finding code ------------------------------------
 
 def test_val_neg_selection_stale_replaced_list(fork):
     p3d = build_cube_p3d(fork)
@@ -48,12 +48,13 @@ def test_val_neg_weight_range(fork):
 
 
 def test_val_neg_property_truncation_fingerprint(fork):
-    """63 bytes exactos = WARN (huella de truncado por otro tooling)."""
+    """Exactly 63 bytes is a WARN: the fingerprint of truncation by other
+    tooling."""
     p3d = build_cube_p3d(fork)
     p3d.lods[0].properties["class"] = "v" * 63
     fs = p3d.validate()
     assert codes(fs) == ["WARN_PROPERTY_TRUNCATION"]
-    assert fs[0].severity == "WARN"  # WARN no bloquea el round-trip
+    assert fs[0].severity == "WARN"  # a WARN does not block the round trip
 
 
 def test_val_neg_unreadable_roundtrip(fork, monkeypatch):
@@ -71,10 +72,10 @@ def test_val_neg_unreadable_roundtrip(fork, monkeypatch):
     assert fs[0].lod is None and "membership" in fs[0].msg
 
 
-# ---- F1-07 / NORMALS ---------------------------------------------------------
+# ---- NORMALS ---------------------------------------------------------
 
 def test_normals_pos_at_budget_clean(fork):
-    """NORMALS-POS: exactamente 32768 facenormals -> sin findings."""
+    """Exactly 32768 facenormals produces no findings."""
     p3d = build_cube_p3d(fork)
     lod = p3d.lods[0]
     lod.facenormals += [(0.0, 0.0, 1.0)] * (32768 - len(lod.facenormals))
@@ -82,7 +83,7 @@ def test_normals_pos_at_budget_clean(fork):
 
 
 def test_normals_neg_over_budget_warn_default(fork):
-    """NORMALS-NEG: 32769 -> WARN_NORMALS_BUDGET con severity WARN (no ERROR)."""
+    """32769 produces WARN_NORMALS_BUDGET at severity WARN, not ERROR."""
     p3d = build_cube_p3d(fork)
     lod = p3d.lods[0]
     lod.facenormals += [(0.0, 0.0, 1.0)] * (32769 - len(lod.facenormals))

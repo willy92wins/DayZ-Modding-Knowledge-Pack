@@ -1,4 +1,5 @@
-"""S1A: contrato D4 — CANON-IDENT (nivel 1) y SEM-INV (nivel 2)."""
+"""The write contract: byte-identical output against upstream, and the
+semantic invariants that must survive a round trip."""
 
 import io
 
@@ -18,10 +19,11 @@ IDS = [c[0] for c in CANONICAL]
 
 @pytest.mark.parametrize("name,builder", CANONICAL, ids=IDS)
 def test_canon_ident(fork, upstream, name, builder):
-    """CANON-IDENT: mismo modelo, bytes identicos fork vs upstream, con la
-    unica excepcion deliberada de 1.6.0: en un LOD sin caras el fork emite el
-    #UVSet# vacio (4 bytes de id) que escribe Object Builder y upstream omite.
-    Se cuenta el tag (uno por LOD sin caras) y se compara el resto byte a byte.
+    """Same model, identical bytes from this fork and upstream, with the one
+    deliberate exception introduced in 1.6.0: in a LOD without faces this
+    fork emits the empty #UVSet# (a 4-byte id) that Object Builder writes
+    and upstream omits. The tag is counted - one per faceless LOD - and
+    the rest is compared byte for byte.
     """
     model = builder(fork)
     faceless = sum(1 for lod in model.lods if not lod.faces)
@@ -42,14 +44,15 @@ def test_sem_inv(fork, name, builder):
 
 @pytest.mark.parametrize("name,builder", CANONICAL, ids=IDS)
 def test_sem_inv_second_roundtrip_stable(fork, name, builder):
-    """SEM-INV: tras el primer round-trip, write(read(x)) == x (estabilidad)."""
+    """After the first round trip, write(read(x)) == x: the output is stable."""
     d1 = write_bytes(builder(fork))
     d2 = write_bytes(read_p3d(fork, d1))
     assert d1 == d2
 
 
 def test_fixture_files_roundtrip(fork, tmp_path):
-    """make_fixtures genera .p3d legibles que cumplen SEM-INV desde disco."""
+    """make_fixtures writes readable .p3d files that hold the invariants when
+    read back from disk."""
     import make_fixtures
     out = make_fixtures.main(str(tmp_path))
     import os

@@ -1,11 +1,12 @@
-"""S2: gates INTEG con los scripts de las skills SIN MODIFICAR.
+"""Integration gates, run against the companion scripts UNMODIFIED.
 
-INTEG-INSPECTOR  extract -> build -> extract idempotente (punto fijo)
-INTEG-AUDIT      audit_p3d.py pre-migracion sobre modelo sano: ALL PASS
-INTEG-VIEWER     p3d_to_gltf.py -> .glb que parsea con pygltflib
-RECIPE-COMPAT    extract.py vs P3D.to_dict() semanticamente iguales
+  inspector  extract -> build -> extract is a fixed point
+  audit      audit_p3d.py over a healthy model: ALL PASSED
+  viewer     p3d_to_gltf.py produces a .glb that pygltflib parses
+  recipe     extract.py and P3D.to_dict() agree semantically
 
-Se saltan (con motivo) si el mount de skills o las deps no estan:
+They skip, with a stated reason, when those scripts or their dependencies
+are not present:
     SKILLS_DIR=<...>/skills pytest tests/test_s2_integ.py
 """
 
@@ -29,7 +30,7 @@ VIEWER = os.path.join(SKILLS, "dayz-3d-viewer", "scripts",
                       "p3d_to_gltf.py")
 
 needs_skills = pytest.mark.skipif(
-    not os.path.isdir(SKILLS), reason="mount de skills no disponible")
+    not os.path.isdir(SKILLS), reason="the companion scripts are not mounted")
 def _run(argv, cwd=None):
     env = dict(os.environ, PYTHONPATH=REPO)
     return subprocess.run([sys.executable] + argv, capture_output=True,
@@ -44,8 +45,8 @@ def _fixture(fork, tmp_path, name="model.p3d"):
 
 
 def _semantic_equal(a, b, tol=1e-6, path="$"):
-    """Igualdad semantica: floats con tolerancia; wireframe.edges como
-    conjunto (el extractor emite orden de iteracion de set)."""
+    """Semantic equality: floats within a tolerance, and wireframe.edges as a
+    set, because the extractor emits the set's iteration order."""
     if path.endswith(".edges"):
         sa = {tuple(e) for e in a}
         sb = {tuple(e) for e in b}
@@ -70,7 +71,7 @@ def _semantic_equal(a, b, tol=1e-6, path="$"):
 
 @needs_skills
 def test_integ_inspector_roundtrip_idempotent(fork, tmp_path):
-    """INTEG-INSPECTOR: extract->build->extract es punto fijo, exit 0."""
+    """extract -> build -> extract is a fixed point, exit 0."""
     pytest.importorskip("numpy")
     extract = os.path.join(INSPECTOR, "p3d_inspector_extract.py")
     build = os.path.join(INSPECTOR, "p3d_inspector_build.py")
@@ -93,7 +94,7 @@ def test_integ_inspector_roundtrip_idempotent(fork, tmp_path):
         d2 = json.load(f)
     with open(r3) as f:
         d3 = json.load(f)
-    # meta lleva paths distintos por construccion
+    # meta carries different paths by construction
     d2.pop("meta")
     d3.pop("meta")
     _semantic_equal(d2, d3)
@@ -101,10 +102,10 @@ def test_integ_inspector_roundtrip_idempotent(fork, tmp_path):
 
 @needs_skills
 def test_integ_audit_premigracion_all_pass(fork, tmp_path):
-    """INTEG-AUDIT: el audit ORIGINAL de la skill, corriendo sobre el
-    fork, da OVERALL ALL PASSED (exit 0) en el modelo sano. (Las
-    WARNINGs legacy GeoPhys/autocenter-en-FireGeo son exactamente el
-    drift que F2-12 depura; no bloquean.)"""
+    """The ORIGINAL audit script, running on this fork, reports OVERALL ALL
+    PASSED (exit 0) on the healthy model. The legacy GeoPhys and
+    autocenter-on-FireGeo WARNINGs are exactly the drift the pruned parity
+    check removes; they do not block."""
     model = _fixture(fork, tmp_path)
     r = _run([AUDIT_ORIG, model])
     assert r.returncode == 0, (r.stdout, r.stderr)
@@ -113,8 +114,8 @@ def test_integ_audit_premigracion_all_pass(fork, tmp_path):
 
 @needs_skills
 def test_integ_viewer_glb_parses(fork, tmp_path):
-    """INTEG-VIEWER: p3d_to_gltf.py (sin modificar) produce un .glb que
-    pygltflib parsea con malla no vacia."""
+    """p3d_to_gltf.py, unmodified, produces a .glb that pygltflib parses with
+    a non-empty mesh."""
     pytest.importorskip("numpy")
     pygltflib = pytest.importorskip("pygltflib")
     model = _fixture(fork, tmp_path)
@@ -128,8 +129,8 @@ def test_integ_viewer_glb_parses(fork, tmp_path):
 
 @needs_skills
 def test_recipe_compat_extract_vs_to_dict(fork, tmp_path):
-    """RECIPE-COMPAT: extract.py y to_dict() son semanticamente iguales
-    (schema v1) sobre el mismo fixture."""
+    """extract.py and to_dict() agree semantically, under schema v1, on the
+    same fixture."""
     pytest.importorskip("numpy")
     extract = os.path.join(INSPECTOR, "p3d_inspector_extract.py")
     model = _fixture(fork, tmp_path)
@@ -141,6 +142,6 @@ def test_recipe_compat_extract_vs_to_dict(fork, tmp_path):
 
     with open(model, "rb") as f:
         d_fork = fork.P3D(f).to_dict(source_path=model)
-    # via JSON para normalizar tuplas->listas igual que el script
+    # through JSON, to normalise tuples to lists as the script does
     d_fork = json.loads(json.dumps(d_fork))
     _semantic_equal(d_script, d_fork, tol=1e-9)

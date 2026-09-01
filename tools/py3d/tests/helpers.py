@@ -1,14 +1,15 @@
-"""Helpers de contrato D4 para los tests (CANON nivel 1, SEM-INV nivel 2)."""
+"""Contract helpers for the tests: byte-identity against upstream, and
+the semantic invariants of a round trip."""
 
 import hashlib
 import io
 import struct
 
-FRAC = 1.0 / 255.0  # resolucion del encoding fraccional de weights
+FRAC = 1.0 / 255.0  # resolution of the fractional weight encoding
 
 
 def f32(x):
-    """Round-trip float64 -> float32 (lo que sobrevive a struct 'f')."""
+    """Round-trip float64 -> float32: what survives struct 'f'."""
     return struct.unpack("f", struct.pack("f", x))[0]
 
 
@@ -34,26 +35,29 @@ def _sel_indices(lod, sel):
 
 def _assert_weight(expected, got, ctx):
     if isinstance(expected, float) and expected in (0.0, 1.0):
-        expected = int(expected)  # coercion F1-02 esperada en el fork
+        expected = int(expected)  # the fork coerces these on write
     if isinstance(expected, int):
-        assert got == expected, "%s: weight int %r -> %r" % (ctx, expected, got)
+        assert got == expected, \
+            "%s: integer weight %r came back as %r" % (ctx, expected, got)
     else:
         assert abs(got - expected) <= FRAC + 1e-9, \
-            "%s: weight fraccional %r -> %r" % (ctx, expected, got)
+            "%s: fractional weight %r came back as %r" % (ctx, expected, got)
 
 
 def assert_sem_inv(m, model, data=None):
-    """D4 nivel 2: write -> reopen -> invariantes vs el modelo en memoria.
+    """Write -> reopen -> invariants against the in-memory model.
 
-    Counts por LOD, resolucion (f32), coords (f32), caras (vertices,
-    texture, material, uv), selections (nombres, membership POSICIONAL,
-    weights int exactos / fraccionales +-1/255), properties, masa S+-1e-3.
+    Per LOD: counts, resolution (f32), coordinates (f32), faces
+    (vertices, texture, material, uv), selections (names, POSITIONAL
+    membership, exact integer weights or fractional ones to +-1/255),
+    properties, and total mass to +-1e-3.
     """
     if data is None:
         data = write_bytes(model)
     reread = read_p3d(m, data)
 
-    assert len(reread.lods) == len(model.lods), "n LODs cambio en round-trip"
+    assert len(reread.lods) == len(model.lods), \
+        "the number of LODs changed across the round trip"
 
     for li, (a, b) in enumerate(zip(model.lods, reread.lods)):
         ctx = "LOD[%d]" % li
@@ -83,14 +87,14 @@ def assert_sem_inv(m, model, data=None):
             assert b.uv_set_ids() == a.uv_set_ids(), ctx + ": uv_set_ids"
 
         assert list(b.selections.keys()) == list(a.selections.keys()), \
-            ctx + ": nombres/orden de selections"
+            ctx + ": selection names or their order"
         for name in a.selections:
             sa, sb = a.selections[name], b.selections[name]
             pa_idx, fa_idx = _sel_indices(a, sa)
             pb_idx, fb_idx = _sel_indices(b, sb)
             sctx = "%s selection '%s'" % (ctx, name)
-            assert pb_idx == pa_idx, sctx + ": membership de puntos"
-            assert fb_idx == fa_idx, sctx + ": membership de caras"
+            assert pb_idx == pa_idx, sctx + ": point membership"
+            assert fb_idx == fa_idx, sctx + ": face membership"
             for p, w in sa.points.items():
                 w2 = sb.points[b.points[a.points.index(p)]]
                 _assert_weight(w, w2, sctx)
@@ -101,7 +105,7 @@ def assert_sem_inv(m, model, data=None):
         assert dict(b.properties) == dict(a.properties), ctx + ": properties"
 
         if a.mass is None:
-            assert b.mass is None, ctx + ": masa deberia ser None"
+            assert b.mass is None, ctx + ": mass should be None"
         else:
             assert b.mass is not None and abs(b.mass - a.mass) <= 1e-3, \
                 ctx + ": Smasa (%r vs %r)" % (a.mass, b.mass)

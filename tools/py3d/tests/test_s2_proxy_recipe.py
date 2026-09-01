@@ -1,5 +1,5 @@
-"""S2: F2-06 (proxies, frame angle-sort de dayz-proxy-align) y
-F2-07 (Recipe JSON v1 scoped al inspector, D7)."""
+"""Proxies with the angle-sorted frame, and the Recipe JSON v1 layer
+scoped to what the inspector defines."""
 
 import json
 
@@ -14,7 +14,7 @@ from helpers import read_p3d, write_bytes
 ROT_Y90 = ((0.0, 0.0, -1.0), (0.0, 1.0, 0.0), (1.0, 0.0, 0.0))
 
 
-# ---- PROXY-POS (F2-06) -------------------------------------------------------
+# ---- PROXY-POS -------------------------------------------------------
 
 def test_proxy_pos_roundtrip_exact(fork):
     """PROXY-POS: add_proxy -> save -> get_proxies: path/index exactos,
@@ -28,7 +28,7 @@ def test_proxy_pos_roundtrip_exact(fork):
 
     reread = read_p3d(fork, write_bytes(p3d))
     proxies = reread.get_lod("visual").get_proxies()
-    # el fixture v2 ya trae el proxy legacy flag.001 + el nuevo
+    # the v2 fixture already carries the legacy flag.001 proxy plus the new one
     byname = {p["name"]: p for p in proxies}
     got = byname[name]
     assert got["path"] == "\\dz\\weapons\\attachments\\suppressor"
@@ -41,7 +41,7 @@ def test_proxy_pos_roundtrip_exact(fork):
 
 
 def test_proxy_identity_frame_and_duplicate(fork):
-    """Frame identidad por defecto; nombre duplicado -> ValueError."""
+    """Identity frame by default; a duplicate name raises ValueError."""
     p3d = build_cube_p3d(fork)
     lod = p3d.lods[0]
     lod.add_proxy("\\dz\\data\\proxies\\flag", index=1)
@@ -57,8 +57,8 @@ def test_proxy_identity_frame_and_duplicate(fork):
 
 
 def test_proxy_legacy_isosceles_is_ambiguous(fork):
-    """El triangulo isosceles legacy (90/45/45) DEBE marcar ambiguous=True
-    (proxy_frame.py: empate de angulos -> frame dependiente del orden)."""
+    """The legacy isosceles triangle (90/45/45) MUST report ambiguous=True:
+    tied angles make the derived frame depend on vertex order."""
     p3d = build_cube_p3d(fork)
     add_proxy_triangle(fork, p3d.lods[0], "proxy:\\dz\\old\\style.001")
     got = p3d.lods[0].get_proxies()[0]
@@ -78,7 +78,7 @@ def test_proxy_derive_canonical_inverse(fork):
             assert abs(R[j][k] - ROT_Y90[j][k]) < 1e-9
 
 
-# ---- RECIPE-IDEM (F2-07) -----------------------------------------------------
+# ---- RECIPE-IDEM -----------------------------------------------------
 
 def _deep_equal(a, b, tol=1e-6, path="$"):
     if isinstance(a, dict) and isinstance(b, dict):
@@ -96,13 +96,15 @@ def _deep_equal(a, b, tol=1e-6, path="$"):
 
 
 def test_recipe_idem_multilod_v2(fork):
-    """RECIPE-IDEM (contrato D7 = lo que extract/build hacen HOY):
+    """Recipe idempotence, as extract and build behave today:
 
-    - PUNTO FIJO: to_dict(from_dict(d)) se estabiliza tras UNA vuelta
-      (el visual re-emite su pool de vertices deduplicado (pt,normal,uv);
-      la segunda vuelta es deep-equal +-1e-6, igual que el inspector);
-    - los LODs NO visuales (wireframe) y el Memory son estables YA en la
-      primera vuelta, igual que memory_points/axes/referenced_paths.
+    - FIXED POINT: to_dict(from_dict(d)) settles after ONE pass, because
+      the visual LOD re-emits its vertex pool deduplicated on
+      (point, normal, uv); the second pass is deep-equal to within 1e-6,
+      exactly as the inspector behaves;
+    - the non-visual (wireframe) LODs and the Memory LOD are already
+      stable on the first pass, as are memory_points, axes and
+      referenced_paths.
     """
     p3d = build_multilod_v2_p3d(fork)
     d1 = p3d.to_dict(source_path="multilod_v2.p3d")
@@ -110,26 +112,26 @@ def test_recipe_idem_multilod_v2(fork):
     d2 = fork.P3D.from_dict(d1).to_dict(source_path="multilod_v2.p3d")
     d3 = fork.P3D.from_dict(d2).to_dict(source_path="multilod_v2.p3d")
     _deep_equal(d2, d3)
-    # estabilidad primera-vuelta de todo lo que no es el pool del visual
+    # first-pass stability of everything that is not the visual's pool
     _deep_equal(d1["lods"][1:], d2["lods"][1:])
     _deep_equal(d1["memory_points"], d2["memory_points"])
     _deep_equal(d1["axes"], d2["axes"])
     _deep_equal(d1["bounding_box"], d2["bounding_box"])
     assert d1["referenced_paths"] == d2["referenced_paths"]
-    # y el P3D reconstruido es un MLOD valido y limpio
+    # and the rebuilt P3D is a valid, clean MLOD
     p2 = fork.P3D.from_dict(d2)
     reread = read_p3d(fork, write_bytes(p2))
-    # Decision 2026-06-07 (plan S3 v2, D-S3-8): from_dict conserva la
-    # politica de masa de build.py VERBATIM (geometry + fire_geometry, D7)
-    # -> el rebuilt dispara ERR_MASS_ONLY_GEOMETRY (LL-080) POR DISENO.
-    # Pin EXACTO: si la politica cambia, este assert falla y la decision
-    # se revisita conscientemente. Cualquier otro ERROR invalida el MLOD.
+    # from_dict keeps build.py's mass policy VERBATIM (geometry and
+    # fire_geometry), so the rebuilt model raises
+    # ERR_MASS_ONLY_GEOMETRY BY DESIGN. This is an EXACT pin: if the
+    # policy changes, this assert fails and the decision gets revisited
+    # deliberately. Any other ERROR means the MLOD is invalid.
     errors = [f for f in reread.validate() if f.severity == "ERROR"]
     assert [f.code for f in errors] == ["ERR_MASS_ONLY_GEOMETRY"]
 
 
 def test_recipe_schema_v1_shape(fork):
-    """El recipe cumple el shape del schema v1 del inspector."""
+    """The recipe matches the shape of the inspector's schema v1."""
     p3d = build_multilod_v2_p3d(fork)
     d = p3d.to_dict(source_path="/x/y/multilod_v2.p3d")
     assert d["meta"] == {"source": "multilod_v2.p3d",
@@ -146,39 +148,39 @@ def test_recipe_schema_v1_shape(fork):
     wf = d["lods"][1]["wireframe"]
     assert set(wf) == {"positions", "edges", "faces"}
     assert len(wf["positions"]) == 8 and len(wf["faces"]) == 6
-    assert len(wf["edges"]) == 12  # aristas unicas del cubo
+    assert len(wf["edges"]) == 12  # the cube's unique edges
     names = {mp["label"] for mp in d["memory_points"]}
     assert "pos center" in names and "box_placing_min" in names
     assert d["bounding_box"] is not None
     assert d["referenced_paths"]["textures"] == ["lf\\data\\stone_co.paa"]
     assert d["referenced_paths"]["materials"] == ["lf\\data\\stone.rvmat"]
-    # memory point de 2 selections-1-punto cada una: sin axes (extract
-    # solo detecta selections de exactamente 2 puntos)
+    # two single-point selections rather than one two-point selection, so
+    # no axes: extract only detects selections of exactly two points
     assert d["axes"] == {}
 
 
 def test_recipe_from_dict_mass_policy(fork):
-    """from_dict reasigna masa con la politica de build (perdida scoped
-    del schema v1): heuristica por densidad ('stone' -> 2600 kg/m3 sobre
-    bbox 1 m3 del cubo Geometry)."""
+    """from_dict reassigns mass with build's policy - a loss that belongs to
+    schema v1 - using the density heuristic: 'stone' at 2600 kg/m3 over
+    the Geometry cube's 1 m3 bounding box."""
     p3d = build_multilod_v2_p3d(fork)
     d = p3d.to_dict()
     p2 = fork.P3D.from_dict(d)
     geo = p2.get_lod("geometry")
-    assert abs(geo.mass - 2600.0) < 1e-6  # NO los 200 originales: scoped
-    # override por meta
+    assert abs(geo.mass - 2600.0) < 1e-6  # NOT the original 200: that is the schema's loss
+    # overridden by meta
     d["meta"]["point_mass_default"] = 12.5
     p3 = fork.P3D.from_dict(d)
     assert abs(p3.get_lod("geometry").mass - 12.5 * 8) < 1e-6
 
 
 def test_recipe_axes_two_point_selection(fork):
-    """Una selection de Memory con exactamente 2 puntos produce un axis
-    en el recipe (port de extract 292-308)."""
+    """A Memory selection with exactly two points produces an axis in the
+    recipe (ported from extract 292-308)."""
     p3d = build_multilod_v2_p3d(fork)
     mem = p3d.get_lod("memory")
     mem.set_selection("door_axis",
-                      point_idx=[0, 1])  # 2 puntos existentes
+                      point_idx=[0, 1])  # two existing points
     d = p3d.to_dict()
     assert "door_axis" in d["axes"]
     ax = d["axes"]["door_axis"]

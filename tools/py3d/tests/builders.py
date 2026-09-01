@@ -1,9 +1,10 @@
-"""Module-agnostic synthetic model builders (D6: sin assets BI).
+"""Module-agnostic synthetic model builders. No Bohemia Interactive
+assets are used or required.
 
-Cada builder recibe el modulo py3d `m` (fork, o upstream cargado via
-PY3D_UPSTREAM_PATH) de modo que el MISMO modelo en memoria pueda
-serializarse con ambos para el contrato CANON (D4 nivel 1). Solo usa
-superficie API que existe en upstream master 7acd58b.
+Every builder takes the py3d module `m` - this fork, or upstream loaded
+through PY3D_UPSTREAM_PATH - so the SAME in-memory model can be serialised
+by both for the byte-identity contract. It only uses API surface that
+exists in upstream master 7acd58b.
 """
 
 import math
@@ -73,7 +74,7 @@ def build_cube_lod(m, resolution=1.0, selection_name="Component01",
 
 
 def icosphere(subdiv=2):
-    """Icosaedro subdividido: subdiv=2 -> 162 vertices / 320 caras."""
+    """Subdivided icosahedron: subdiv=2 gives 162 vertices and 320 faces."""
     t = (1.0 + 5 ** 0.5) / 2.0
     verts = [(-1, t, 0), (1, t, 0), (-1, -t, 0), (1, -t, 0),
              (0, -1, t), (0, 1, t), (0, -1, -t), (0, 1, -t),
@@ -140,7 +141,8 @@ def build_icosphere_lod(m, resolution=1.0, selection_name="body"):
 
 
 def add_proxy_triangle(m, lod, proxy_name, origin=(0.0, 0.0, 0.0)):
-    """Proxy = triangulo de 3 puntos + selection 'proxy:...' (convencion MLOD)."""
+    """A proxy is a 3-point triangle plus a 'proxy:...' selection (MLOD
+    convention)."""
     base = len(lod.points)
     coords = [origin,
               (origin[0] + 0.1, origin[1], origin[2]),
@@ -170,7 +172,7 @@ def add_proxy_triangle(m, lod, proxy_name, origin=(0.0, 0.0, 0.0)):
 
 
 def build_memory_lod(m, named_points, resolution=1.0e15):
-    """Memory LOD: puntos con nombre via selections de 1 punto, 0 caras."""
+    """Memory LOD: named points as single-point selections, no faces."""
     lod = m.LOD()
     lod.resolution = resolution
     for name, xyz in named_points:
@@ -232,8 +234,8 @@ def build_icosphere_p3d(m):
 
 
 def build_multilod_p3d(m):
-    """Visual (icosfera + proxy) + Geometry (cubo, masa 200, autocenter=0)
-    + Memory (3 puntos con nombre)."""
+    """Visual (icosphere plus a proxy), Geometry (cube, mass 200,
+    autocenter=0) and Memory (3 named points)."""
     p3d = m.P3D()
     vis = build_icosphere_lod(m, resolution=1.0)
     add_proxy_triangle(m, vis, "proxy:\\dz\\data\\proxies\\flag.001")
@@ -251,10 +253,10 @@ def build_multilod_p3d(m):
 
 
 def build_multilod_v2_p3d(m):
-    """S2: modelo completo y LIMPIO para validate() v1.2.0 e INTEG:
-    Visual (icosfera + proxy) + Geometry (Component01, autocenter, class,
-    masa 200) + ViewGeo + FireGeo + Memory (pos center, box_placing_min/
-    max, dolly axis 2-puntos)."""
+    """A complete, CLEAN model for validate() and the integration tests:
+    Visual (icosphere plus a proxy), Geometry (Component01, autocenter,
+    class, mass 200), ViewGeo, FireGeo and Memory (pos center,
+    box_placing_min/max, and a two-point dolly axis)."""
     p3d = m.P3D()
     vis = build_icosphere_lod(m, resolution=1.0)
     add_proxy_triangle(m, vis, "proxy:\\dz\\data\\proxies\\flag.001")

@@ -136,7 +136,7 @@ def _add_unrelated_triangle_after_proxy(fork, lod):
 
 
 def test_proxy_engine_correction_squared_is_exact_identity(fork):
-    """Comparacion exacta: P' solo contiene 0 y +/-1."""
+    """Exact comparison: P' contains only 0 and +/-1."""
     assert _matrix_multiply(
         fork.PROXY_ENGINE_CORRECTION,
         fork.PROXY_ENGINE_CORRECTION,
@@ -144,7 +144,7 @@ def test_proxy_engine_correction_squared_is_exact_identity(fork):
 
 
 def test_proxy_engine_correction_twice_restores_proxy_triangle(fork):
-    """Comparacion exacta: P' solo permuta y niega componentes."""
+    """Exact comparison: P' only permutes and negates components."""
     triangle = (
         (1.0, 2.0, 3.0),
         (1.0, 2.01, 3.0),
@@ -157,7 +157,8 @@ def test_proxy_engine_correction_twice_restores_proxy_triangle(fork):
 
 
 def test_proxy_frame_conversion_uses_involutive_dayz_correction(fork):
-    """Rompe si raw↔engine omite o aplica por el lado incorrecto P'."""
+    """Breaks if the raw/engine conversion omits P' or applies it on the wrong
+    side."""
     assert fork.PROXY_ENGINE_CORRECTION == ENGINE_CORRECTION
     _matrix_close(fork.proxy_frame_to_engine(IDENTITY), ENGINE_CORRECTION)
     _matrix_close(fork.proxy_frame_from_engine(IDENTITY), ENGINE_CORRECTION)
@@ -183,7 +184,7 @@ def test_proxy_frame_conversion_uses_involutive_dayz_correction(fork):
     ],
 )
 def test_canonical_proxy_triangle_rejects_invalid_rotation(fork, rotation):
-    """Rompe si una matriz no-rotación puede llegar a geometría proxy."""
+    """Breaks if a non-rotation matrix can reach proxy geometry."""
     with pytest.raises(ValueError, match="rotation"):
         fork.canonical_proxy_triangle((0.0, 0.0, 0.0), rotation=rotation)
 
@@ -194,7 +195,7 @@ def test_canonical_proxy_triangle_rejects_invalid_rotation(fork, rotation):
 def test_canonical_proxy_triangle_rejects_invalid_or_f32_degenerate_scale(
     fork, scale
 ):
-    """Rompe si el scale produce un triángulo nulo tras serializar float32."""
+    """Breaks if the scale produces a null triangle once serialised to float32."""
     with pytest.raises(ValueError, match="scale"):
         fork.canonical_proxy_triangle((0.0, 0.0, 0.0), scale=scale)
 
@@ -215,7 +216,7 @@ def test_canonical_proxy_triangle_rejects_invalid_or_f32_degenerate_scale(
 def test_add_proxy_rejects_bad_path_or_index_without_mutation(
     fork, path, index, error_type, message
 ):
-    """Rompe si la validación ocurre después de tocar listas del LOD."""
+    """Breaks if validation happens after the LOD's lists are touched."""
     lod = build_cube_p3d(fork).lods[0]
     before = _lod_snapshot(lod)
     with pytest.raises(error_type, match=message):
@@ -228,7 +229,7 @@ def test_add_proxy_rejects_bad_path_or_index_without_mutation(
     ["\n", "\r", "\t", "\x1f", "\x7f", "\x85"],
 )
 def test_add_proxy_rejects_control_characters_without_mutation(fork, control):
-    """Rompe si una ruta de proxy puede contener controles no imprimibles."""
+    """Breaks if a proxy path can carry non-printable control characters."""
     lod = build_cube_p3d(fork).lods[0]
     before = _lod_snapshot(lod)
 
@@ -239,7 +240,7 @@ def test_add_proxy_rejects_control_characters_without_mutation(fork, control):
 
 
 def test_every_proxy_name_accepted_by_add_is_enumerated(fork):
-    """Rompe si add acepta un nombre que get_proxies omite."""
+    """Breaks if add accepts a name that get_proxies then omits."""
     alphabet = ("a", "Z", "0", "_", "-", ".", "\\", "/", " ", ":")
     candidates = [
         "".join(characters)
@@ -280,7 +281,8 @@ def test_every_proxy_name_accepted_by_add_is_enumerated(fork):
 def test_add_proxy_rejects_bad_transform_without_mutation(
     fork, rotation, scale
 ):
-    """Rompe si un transform inválido deja puntos/normales/caras parciales."""
+    """Breaks if an invalid transform leaves points, normals or faces partly
+    written."""
     lod = build_cube_p3d(fork).lods[0]
     before = _lod_snapshot(lod)
     with pytest.raises(ValueError):
@@ -294,7 +296,8 @@ def test_add_proxy_rejects_bad_transform_without_mutation(
 
 
 def test_raw_default_keeps_legacy_triangle_and_frame_descriptor(fork):
-    """Rompe si 1.4.0 cambia el significado del positional raw de 1.3.0."""
+    """Breaks if a later version changes what the positional raw argument
+    meant."""
     triangle = fork.canonical_proxy_triangle(
         (1.0, 2.0, 3.0),
         ROT_Y90,
@@ -318,7 +321,8 @@ def test_raw_default_keeps_legacy_triangle_and_frame_descriptor(fork):
 
 
 def test_get_proxies_exposes_both_frames_and_scale(fork):
-    """Rompe si el descriptor confunde raw con engine o pierde la escala."""
+    """Breaks if the descriptor confuses raw with engine space, or loses the
+    scale."""
     lod = build_cube_p3d(fork).lods[0]
     name = lod.add_proxy(
         "\\lf\\raw",
@@ -340,7 +344,7 @@ def test_get_proxies_exposes_both_frames_and_scale(fork):
 
 
 def test_get_proxies_returns_independent_frame_and_raw_frame_values(fork):
-    """Rompe si las dos claves publicas comparten la misma lista mutable."""
+    """Breaks if the two public keys share the same mutable list."""
     lod = build_cube_p3d(fork).lods[0]
     name = lod.add_proxy(
         "\\lf\\independent-frames",
@@ -363,7 +367,7 @@ def test_get_proxies_returns_independent_frame_and_raw_frame_values(fork):
 
 
 def test_engine_space_identity_roundtrips_as_engine_identity(fork):
-    """Rompe si add_proxy aplica la corrección DayZ cero o dos veces."""
+    """Breaks if add_proxy applies the DayZ correction zero times or twice."""
     lod = build_cube_p3d(fork).lods[0]
     name = lod.add_proxy(
         "\\lf\\engine",
@@ -378,7 +382,8 @@ def test_engine_space_identity_roundtrips_as_engine_identity(fork):
 
 
 def test_proxy_descriptors_survive_save_reload(fork):
-    """Rompe si los campos nuevos dependen de objetos en memoria no serializados."""
+    """Breaks if the new fields depend on in-memory objects that are never
+    serialised."""
     p3d = build_cube_p3d(fork)
     lod = p3d.lods[0]
     name = lod.add_proxy(
@@ -412,7 +417,7 @@ def test_proxy_descriptors_survive_save_reload(fork):
     ],
 )
 def test_strict_enumeration_rejects_each_malformed_proxy(fork, mutation):
-    """Rompe si strict=True filtra anatomía mala como el modo legacy."""
+    """Breaks if strict=True lets bad anatomy through, as the legacy mode did."""
     lod = build_cube_p3d(fork).lods[0]
     name = lod.add_proxy("\\lf\\strict", index=1)
     selection = lod.selections[name]
@@ -449,7 +454,8 @@ def test_strict_enumeration_rejects_each_malformed_proxy(fork, mutation):
 
 
 def test_align_proxy_mutates_only_exclusive_geometry_in_place(fork):
-    """Rompe si align recrea objetos/bindings o toca anatomia no relacionada."""
+    """Breaks if align recreates objects or bindings, or touches unrelated
+    anatomy."""
     lod = build_cube_p3d(fork).lods[0]
     lod.sharp_edges[:] = [(0, 1), (2, 3)]
     name = lod.add_proxy("\\lf\\aligned", index=7)
@@ -527,7 +533,7 @@ def test_align_proxy_mutates_only_exclusive_geometry_in_place(fork):
 
 
 def test_aligned_proxy_descriptor_survives_save_reload(fork):
-    """Rompe si align solo actualiza estado que MLOD no serializa."""
+    """Breaks if align only updates state that MLOD does not serialise."""
     p3d = build_cube_p3d(fork)
     lod = p3d.lods[0]
     name = lod.add_proxy("\\lf\\persist-align", index=8)
@@ -561,7 +567,7 @@ def test_aligned_proxy_descriptor_survives_save_reload(fork):
     ],
 )
 def test_align_proxy_rejects_shared_anatomy_atomically(fork, sharing):
-    """Rompe si align puede modificar datos que otro objeto tambien posee."""
+    """Breaks if align can modify data another object also owns."""
     lod = build_cube_p3d(fork).lods[0]
     name = lod.add_proxy("\\lf\\shared", index=1)
     selection, face, points, normal_index = _proxy_objects(lod, name)
@@ -609,7 +615,7 @@ def test_align_proxy_rejects_shared_anatomy_atomically(fork, sharing):
 def test_align_proxy_rejects_invalid_input_without_mutation(
     fork, name, origin, rotation, scale, space, message
 ):
-    """Rompe si la validacion de align sucede despues de la primera escritura."""
+    """Breaks if align validates after its first write."""
     lod = build_cube_p3d(fork).lods[0]
     lod.add_proxy("\\lf\\align", index=1)
     before = _lod_snapshot(lod)
@@ -625,7 +631,8 @@ def test_align_proxy_rejects_invalid_input_without_mutation(
 
 
 def test_remove_proxy_deletes_exact_anatomy_and_remaps_survivors(fork):
-    """Rompe si remove deja indices colgantes o reemplaza listas/bindings."""
+    """Breaks if remove leaves dangling indices, or replaces lists or
+    bindings."""
     lod = build_cube_p3d(fork).lods[0]
     name = lod.add_proxy("\\lf\\remove", index=9)
     proxy_selection, proxy_face, proxy_points, _normal_index = \
@@ -692,7 +699,8 @@ def test_remove_proxy_deletes_exact_anatomy_and_remaps_survivors(fork):
 
 
 def test_removed_proxy_stays_removed_after_save_reload(fork):
-    """Rompe si remove solo limpia objetos Python pero no el MLOD persistido."""
+    """Breaks if remove only cleans up Python objects and not the persisted
+    MLOD."""
     p3d = build_cube_p3d(fork)
     lod = p3d.lods[0]
     name = lod.add_proxy("\\lf\\persist-remove", index=2)
@@ -707,7 +715,7 @@ def test_removed_proxy_stays_removed_after_save_reload(fork):
 
 
 def test_remove_proxy_remaps_a_surviving_proxy_for_later_strict_use(fork):
-    """Rompe si el primer remove invalida indices del siguiente proxy."""
+    """Breaks if the first remove invalidates the next proxy's indices."""
     lod = build_cube_p3d(fork).lods[0]
     first = lod.add_proxy("\\lf\\first", index=1)
     second = lod.add_proxy(
@@ -738,7 +746,7 @@ def test_remove_proxy_remaps_a_surviving_proxy_for_later_strict_use(fork):
     ],
 )
 def test_remove_proxy_rejects_shared_anatomy_atomically(fork, sharing):
-    """Rompe si remove borra anatomia que tambien pertenece a otro objeto."""
+    """Breaks if remove deletes anatomy that also belongs to another object."""
     lod = build_cube_p3d(fork).lods[0]
     name = lod.add_proxy("\\lf\\shared-remove", index=1)
     selection, face, points, normal_index = _proxy_objects(lod, name)
@@ -775,7 +783,7 @@ def test_remove_proxy_rejects_shared_anatomy_atomically(fork, sharing):
 def test_remove_proxy_validates_complete_remap_plan_before_mutation(
     fork, mutation, message
 ):
-    """Rompe si un target de remap invalido provoca una eliminacion parcial."""
+    """Breaks if an invalid remap target causes a partial deletion."""
     lod = build_cube_p3d(fork).lods[0]
     name = lod.add_proxy("\\lf\\atomic-remove", index=1)
     selection, face, points, _normal_index = _proxy_objects(lod, name)
@@ -809,7 +817,7 @@ def test_remove_proxy_validates_complete_remap_plan_before_mutation(
 def test_remove_proxy_rejects_invalid_name_without_mutation(
     fork, name, message
 ):
-    """Rompe si validar el nombre sucede despues de tocar el LOD."""
+    """Breaks if the name is validated after the LOD is touched."""
     lod = build_cube_p3d(fork).lods[0]
     lod.add_proxy("\\lf\\remove", index=1)
     before = _lod_snapshot(lod)

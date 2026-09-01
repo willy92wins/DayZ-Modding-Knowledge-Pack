@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Genera los fixtures sinteticos .p3d en tests/fixtures/ (D6: sin assets BI).
+"""Write the synthetic .p3d fixtures into tests/fixtures/.
+No Bohemia Interactive asset is used.
 
-Determinista: misma salida en cada ejecucion. Los fixtures NO se commitean;
-este script es la fuente. Uso:  python3 tests/make_fixtures.py
+Deterministic: the same output on every run. The fixtures are NOT
+committed; this script is the source. Use: python3 tests/make_fixtures.py
 """
 
 import os

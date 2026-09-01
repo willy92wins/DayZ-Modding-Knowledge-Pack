@@ -1,5 +1,5 @@
-"""S2 (F2-12): validate() v1.2.0 — un negativo por codigo (1:1) y paridad
-VAL-AUDIT con tools/audit_p3d.py (audit depurado, scripts del fork)."""
+"""validate() 1.2.0: one negative per finding code, and parity with
+tools/audit_p3d.py."""
 
 import os
 import subprocess
@@ -17,14 +17,15 @@ def codes(findings):
     return sorted({f.code for f in findings})
 
 
-# ---- mutadores: cada uno produce exactamente los codigos esperados ----------
+# ---- mutators: each produces exactly the expected codes ----------
 
-# F4-01 (council 2026-08-12): estos tres mutantes ahora emiten TAMBIEN los
-# codigos del check absoluto (_check_winding_absolute). No es ruido
-# duplicado: el relativo dice "difiere del Visual" y el absoluto dice
-# "contradice sus propias normales", que se diagnostican y se arreglan
-# distinto. Y en el caso que motivo el fork -invertir TODOS los LODs- el
-# relativo calla y el absoluto es el unico que habla.
+# These three mutants now ALSO emit the absolute check's codes
+# (_check_winding_absolute). That is not duplicate noise: the
+# relative one says "differs from the Visual LOD" and the absolute
+# one says "contradicts its own normals", which are diagnosed and
+# fixed differently. And in the case that motivated the fork -
+# inverting EVERY LOD - the relative check stays quiet and the
+# absolute one is the only one that speaks.
 def mut_winding_inverted(m, p3d):
     for fa in p3d.get_lod("geometry").faces:
         fa.vertices.reverse()
@@ -39,8 +40,8 @@ def mut_winding_mixed(m, p3d):
 def mut_winding_lowconf(m, p3d):
     for fa in p3d.get_lod("visual").faces[:160]:
         fa.vertices.reverse()
-    # 1 por LOD de colision; el set colapsa. El visual medio invertido
-    # dispara ademas el check absoluto sobre el propio visual.
+    # one per collision LOD; the set collapses. A half-inverted
+    # visual LOD also trips the absolute check on the visual itself.
     return ["WARN_WINDING_LOWCONF", "WARN_WINDING_NORMAL_MISMATCH",
             "WARN_WINDING_EDGE_INCOHERENT"]
 
@@ -87,8 +88,8 @@ def mut_degenerate(m, p3d):
         fa.vertices.append(v)
     geo.faces.append(fa)
     geo.selections["Component01"].faces[fa] = 1
-    # la cara degenerada tambien cuenta como "no outward" en el check
-    # relativo (mismo comportamiento que el audit original)
+    # the degenerate face also counts as "not outward" in the
+    # relative check, matching the original audit's behaviour
     return ["WARN_DEGENERATE_FACES", "WARN_WINDING_MIXED"]
 
 def mut_memory_pos_center(m, p3d):
@@ -103,7 +104,7 @@ def mut_memory_box_placing(m, p3d):
 def mut_memory_axis_points(m, p3d):
     mem = p3d.get_lod("memory")
     mem.set_selection("flag_mast_axis", point_idx=[0])
-    # el eje exige ademas selection 'flag_mast' en el Visual
+    # the axis also requires a 'flag_mast' selection in the Visual LOD
     return ["ERR_MEMORY_AXIS_POINTS", "ERR_AXIS_SELECTION_MISSING"]
 
 def mut_memory_axis_short(m, p3d):
@@ -171,13 +172,13 @@ CASES = [
 
 
 def test_val_pos_v2_clean(fork):
-    """VAL-POS v1.2.0: el fixture v2 (completo) -> [] findings."""
+    """The complete v2 fixture produces no findings."""
     assert build_multilod_v2_p3d(fork).validate() == []
 
 
 @pytest.mark.parametrize("name,mutate", CASES, ids=[c[0] for c in CASES])
 def test_val_neg_code_1to1(fork, name, mutate):
-    """Cada negativo produce EXACTAMENTE los codigos esperados."""
+    """Each negative fixture produces EXACTLY the expected codes."""
     p3d = build_multilod_v2_p3d(fork)
     expected = sorted(set(mutate(fork, p3d)))
     assert codes(p3d.validate()) == expected
@@ -185,9 +186,9 @@ def test_val_neg_code_1to1(fork, name, mutate):
 
 @pytest.mark.parametrize("name,mutate", CASES, ids=[c[0] for c in CASES])
 def test_val_audit_parity(fork, name, mutate, tmp_path):
-    """VAL-AUDIT: el audit depurado (tools/audit_p3d.py, delegando en el
-    fork) reporta los MISMOS findings, con severidad mapeada
-    (ERROR->CRITICAL=exit 1, WARN->WARNING=exit 0)."""
+    """The pruned audit (tools/audit_p3d.py, delegating to this library)
+    reports the SAME findings, with severities mapped: ERROR to CRITICAL
+    and exit 1, WARN to WARNING and exit 0."""
     p3d = build_multilod_v2_p3d(fork)
     expected = sorted(set(mutate(fork, p3d)))
     fx = tmp_path / ("%s.p3d" % name)
@@ -206,7 +207,7 @@ def test_val_audit_parity(fork, name, mutate, tmp_path):
 
 
 def test_val_audit_parity_clean(fork, tmp_path):
-    """El modelo limpio pasa el audit depurado: ALL PASSED, exit 0."""
+    """The clean model passes the pruned audit: ALL PASSED, exit 0."""
     fx = tmp_path / "clean.p3d"
     with open(str(fx), "wb") as f:
         build_multilod_v2_p3d(fork).write(f)

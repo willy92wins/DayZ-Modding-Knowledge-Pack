@@ -1,6 +1,7 @@
-"""S2: CLI F2-09 (info), F2-10 (validate), F2-11 (diff).
+"""The command line: info, validate and diff.
 
-Schema de salida ESTABLE: estos tests SON el contrato (cambiarlo = bump).
+The output schema is STABLE: these tests ARE the contract, and changing
+it needs a version bump.
 Exit codes: info 0/2 - validate 0/1/2 - diff 0/1/2.
 """
 
@@ -25,10 +26,10 @@ def write(fork, p3d, path):
     return str(path)
 
 
-# ---- CLI-INFO (F2-09) --------------------------------------------------------
+# ---- CLI-INFO --------------------------------------------------------
 
 def test_cli_info_schema_cube(fork, tmp_path):
-    """CLI-INFO: schema estable linea a linea sobre el cubo."""
+    """The stable schema, line by line, on the cube."""
     fx = write(fork, build_cube_p3d(fork), tmp_path / "cube.p3d")
     r = run_cli("info", fx)
     assert r.returncode == 0
@@ -51,7 +52,7 @@ def test_cli_info_schema_cube(fork, tmp_path):
 
 
 def test_cli_info_evidence_fields_v2(fork, tmp_path):
-    """CLI-INFO: campos de evidencia Step-0 (Component01, masa, memoria)."""
+    """The evidence fields: Component01, mass, memory points."""
     fx = write(fork, build_multilod_v2_p3d(fork), tmp_path / "v2.p3d")
     out = run_cli("info", fx).stdout
     assert "lod.1.kind: geometry" in out
@@ -64,7 +65,7 @@ def test_cli_info_evidence_fields_v2(fork, tmp_path):
 
 
 def test_cli_info_unreadable(fork, tmp_path):
-    """CLI-INFO: no-p3d -> exit 2 (y archivo inexistente -> exit 2)."""
+    """A non-p3d file exits 2, and so does a file that does not exist."""
     bad = tmp_path / "bad.p3d"
     bad.write_bytes(b"ODOLnope")
     r = run_cli("info", str(bad))
@@ -72,7 +73,7 @@ def test_cli_info_unreadable(fork, tmp_path):
     assert run_cli("info", str(tmp_path / "no.p3d")).returncode == 2
 
 
-# ---- CLI-VAL (F2-10) ---------------------------------------------------------
+# ---- CLI-VAL ---------------------------------------------------------
 
 def test_cli_validate_clean_and_broken(fork, tmp_path):
     """CLI-VAL: limpio exit 0 / winding roto exit 1 / no legible exit 2."""
@@ -88,9 +89,10 @@ def test_cli_validate_clean_and_broken(fork, tmp_path):
     r = run_cli("validate", broken)
     assert r.returncode == 1
     lines = r.stdout.splitlines()
-    # F4-01: invertir el Geometry LOD dispara DOS errores, el relativo al
-    # Visual y el absoluto contra sus propias normales. Se comprueban por
-    # contenido y no por posicion: el orden de emision no es contrato.
+    # Inverting the Geometry LOD raises TWO errors: the one relative to
+    # the Visual LOD, and the absolute one against its own normals. They
+    # are checked by content, not position: emission order is not a
+    # contract.
     assert lines[0] == "findings: 2" and lines[-1] == "result: errors"
     emitted = [ln for ln in lines if ln.startswith("finding.")]
     assert any("ERROR ERR_WINDING_INVERTED lod=1 " in ln for ln in emitted), \
@@ -104,7 +106,7 @@ def test_cli_validate_clean_and_broken(fork, tmp_path):
 
 
 def test_cli_validate_warn_only_exit0(fork, tmp_path):
-    """CLI-VAL: WARNs sin ERROR -> exit 0, result: warnings."""
+    """WARNs without an ERROR exit 0 and report result: warnings."""
     p3d = build_multilod_v2_p3d(fork)
     del p3d.get_lod("geometry").properties["autocenter"]
     fx = write(fork, p3d, tmp_path / "warn.p3d")
@@ -114,11 +116,11 @@ def test_cli_validate_warn_only_exit0(fork, tmp_path):
     assert "WARN_AUTOCENTER_MISSING" in r.stdout
 
 
-# ---- CLI-DIFF (F2-11) --------------------------------------------------------
+# ---- CLI-DIFF --------------------------------------------------------
 
 def test_cli_diff_moved_memory_point(fork, tmp_path):
-    """CLI-DIFF: cubo vs cubo con 1 memory point movido -> exit 1 y la
-    salida lista EXACTAMENTE ese punto."""
+    """A cube against the same cube with one memory point moved exits 1, and
+    the output lists EXACTLY that point."""
     a = write(fork, build_multilod_v2_p3d(fork), tmp_path / "a.p3d")
     p3d = build_multilod_v2_p3d(fork)
     p3d.get_lod("memory").set_memory_point("pos center", (0.0, 0.5, 0.0))
@@ -132,17 +134,17 @@ def test_cli_diff_moved_memory_point(fork, tmp_path):
 
 
 def test_cli_diff_equal_and_categories(fork, tmp_path):
-    """CLI-DIFF: iguales exit 0; nLODs/kind/counts/selections/properties/
-    masa reportados con schema estable."""
+    """Identical files exit 0; LOD count, kind, counts, selections, properties
+    and mass are all reported in the stable schema."""
     a = write(fork, build_multilod_v2_p3d(fork), tmp_path / "a.p3d")
     r = run_cli("diff", a, a)
     assert r.returncode == 0 and r.stdout.splitlines() == ["total: 0"]
 
     p3d = build_multilod_v2_p3d(fork)
     p3d.lods.pop()                                # nLODs
-    p3d.get_lod("geometry").set_total_mass(180)   # masa
+    p3d.get_lod("geometry").set_total_mass(180)   # mass
     p3d.get_lod("geometry").properties["class"] = "vehicle"  # property
-    p3d.get_lod("visual").set_selection("extra", point_idx=[0])  # nombres
+    p3d.get_lod("visual").set_selection("extra", point_idx=[0])  # names
     b = write(fork, p3d, tmp_path / "b.p3d")
     out = run_cli("diff", a, b)
     assert out.returncode == 1
