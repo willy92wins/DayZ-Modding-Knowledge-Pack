@@ -2095,7 +2095,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "53ab3137e8d46815707d96ce3bd6bd35543aa8b4613cdc9bbc0321a71932fce6",
+      "output_hash": "cec4259dbdf492ab17a03851bac71a4f6cb86240bab2deb4559767b4f47b43e8",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -22140,6 +22140,29 @@
       "output_path": "promotions/receipts/99c0cf65e815aeaabc7f6f24.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/c009f9b7a1ee582c929f4173.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt written by promote --apply on 2026-09-02 for transaction c009f9b7a1ee582c929f4173: the promotion of 401f528 to claude_user_skills, agents_user_skills and the vault snapshots (128 operations, verdict PASS), run from the kp-recon worktree the previous receipt is bound to. Second full promotion of the governed set: it carries the 16 shortened descriptions and the 2026-09-01 reconciliation to the store, and from now on explains those targets instead of the adjudications re-pinned that day.",
+          "license": "MIT",
+          "source_hash": "18a1808ab120d015d6896da922b4315dc1da4995efbd1d5183deb4f9e98b94ab",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/c009f9b7a1ee582c929f4173.json",
+          "source_revision": "promotion-full-set@2026-09-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "18a1808ab120d015d6896da922b4315dc1da4995efbd1d5183deb4f9e98b94ab",
+      "output_path": "promotions/receipts/c009f9b7a1ee582c929f4173.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
