@@ -21869,6 +21869,28 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/tools/py3d/tests/test_s5_uvsets.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored in the pack for the 1.6.0 #UVSet# fidelity change; the published fork does not carry this file yet.",
+          "license": "MIT",
+          "source_hash": "096c2d45cc4aaeb84e38b8e428bfb77f927749289e7c3d2085b61debf33545ab",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/test_s5_uvsets.py",
+          "source_revision": "uvset-roundtrip@2026-09-01",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "096c2d45cc4aaeb84e38b8e428bfb77f927749289e7c3d2085b61debf33545ab",
+      "output_path": "tools/py3d/tests/test_s5_uvsets.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/tools/py3d/tools/audit_p3d.py",
       "distribution_role": "payload",
       "hash_policy": "sha256",

@@ -44,6 +44,7 @@ def test_cli_info_schema_cube(fork, tmp_path):
         "lod.0.properties: -",
         "lod.0.textures: lf\\data\\stone_co.paa",
         "lod.0.materials: lf\\data\\stone.rvmat",
+        "lod.0.uv_sets: 0",
         "summary.component01: no",
         "summary.mass_total: none",
     ]

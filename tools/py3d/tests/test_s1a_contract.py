@@ -5,7 +5,8 @@ import io
 import pytest
 
 from builders import build_cube_p3d, build_icosphere_p3d, build_multilod_p3d
-from helpers import assert_sem_inv, read_p3d, sha256, write_bytes
+from helpers import (EMPTY_UVSET_TAG, EOF_TAG, assert_sem_inv, read_p3d,
+                     sha256, write_bytes)
 
 CANONICAL = [
     ("cube", build_cube_p3d),
@@ -17,11 +18,20 @@ IDS = [c[0] for c in CANONICAL]
 
 @pytest.mark.parametrize("name,builder", CANONICAL, ids=IDS)
 def test_canon_ident(fork, upstream, name, builder):
-    """CANON-IDENT: mismo modelo, bytes identicos fork vs upstream."""
-    fork_bytes = write_bytes(builder(fork))
+    """CANON-IDENT: mismo modelo, bytes identicos fork vs upstream, con la
+    unica excepcion deliberada de 1.6.0: en un LOD sin caras el fork emite el
+    #UVSet# vacio (4 bytes de id) que escribe Object Builder y upstream omite.
+    Se cuenta el tag (uno por LOD sin caras) y se compara el resto byte a byte.
+    """
+    model = builder(fork)
+    faceless = sum(1 for lod in model.lods if not lod.faces)
+    fork_bytes = write_bytes(model)
     up_bytes = write_bytes(builder(upstream))
-    assert len(fork_bytes) == len(up_bytes)
-    assert sha256(fork_bytes) == sha256(up_bytes)
+    marker = EMPTY_UVSET_TAG + EOF_TAG
+    assert fork_bytes.count(marker) == faceless
+    stripped = fork_bytes.replace(marker, EOF_TAG)
+    assert len(stripped) == len(up_bytes)
+    assert sha256(stripped) == sha256(up_bytes)
 
 
 @pytest.mark.parametrize("name,builder", CANONICAL, ids=IDS)

@@ -22,9 +22,13 @@ What this fork adds on top of upstream's MLOD codec:
   `python -m py3d info|validate|diff`.
 - Recipe JSON (`to_dict` / `from_dict`) for inspection. See KNOWN-ISSUES:
   it is lossy and is NOT a safe persistence format yet.
+- Format fidelity for UV sets: every `#UVSet#` beyond the first survives a
+  read/write cycle (`Vertex.uv_sets`), and a LOD without faces gets the
+  empty `#UVSet#` tag Object Builder writes (Memory, LandContact).
 
-Write contract: byte-identical to upstream for valid canonical inputs; it
-raises where upstream would have corrupted the file or crashed later.
+Write contract: byte-identical to upstream for valid canonical inputs, with
+one deliberate exception - the empty `#UVSet#` tag in LODs without faces;
+it raises where upstream would have corrupted the file or crashed later.
 
 `IS_DAYZ_FORK = True` is provided so scripts can assert they imported this
 library and not the unrelated `py3d` from PyPI.
@@ -39,7 +43,7 @@ import struct
 import tempfile
 
 
-__version__ = "1.5.0"
+__version__ = "1.6.0"
 IS_DAYZ_FORK = True
 
 _REQUIRED = object()
@@ -1370,6 +1374,10 @@ class Vertex:
         self.point_index = None
         self.normal_index = None
         self.uv = (0, 0)
+        # Additional UV sets keyed by set id (1, 2, ...). Set 0 is `uv`,
+        # stored inline in the face record; the other sets only exist in the
+        # LOD's #UVSet# tags and are re-emitted by LOD.write in id order.
+        self.uv_sets = {}
         if f is not None:
             self.read(f)
 
@@ -1537,6 +1545,11 @@ class LOD:
         self.facenormals = []
         self.faces = []
         self.sharp_edges = []
+        # Ids of #UVSet# tags belonging to a LOD without faces (Memory,
+        # LandContact). There are no face vertices to hang them on, so they
+        # are kept here and written back as the bare 4-byte id. Set 0 is
+        # always written and is not listed.
+        self.faceless_uv_sets = []
         self.properties = collections.OrderedDict()
         self.selections = collections.OrderedDict()
         if f is not None:
@@ -1553,6 +1566,26 @@ class LOD:
     @property
     def num_vertices(self):
         return sum([len(x.vertices) for x in self.faces])
+
+    def uv_set_ids(self):
+        """Sorted ids of the UV sets write() emits for this LOD: always 0
+        (the uv carried by the face vertices) plus every id found in
+        `Vertex.uv_sets` and in `faceless_uv_sets`. Set 0 lives in
+        `Vertex.uv`; any other id must be an integer in 1..2**32-1,
+        otherwise ValueError.
+        """
+        ids = set(self.faceless_uv_sets)
+        for fa in self.faces:
+            for v in fa.vertices:
+                ids.update(v.uv_sets)
+        for uv_id in ids:
+            if isinstance(uv_id, bool) or not isinstance(uv_id, int) \
+                    or not 1 <= uv_id <= 0xFFFFFFFF:
+                raise ValueError(
+                    "Vertex.uv_sets: invalid UV set id %r (set 0 is "
+                    "Vertex.uv; other ids must be integers in 1..2**32-1)"
+                    % (uv_id,))
+        return [0] + sorted(ids)
 
     def new_selection(self, name):
         """F1-01 helper (fork API): get-or-create a selection correctly
@@ -1671,6 +1704,7 @@ class LOD:
                     nv.point_index = v[i].point_index
                     nv.normal_index = v[i].normal_index
                     nv.uv = v[i].uv
+                    nv.uv_sets = dict(v[i].uv_sets)
                     t.vertices.append(nv)
                 tris.append(t)
             quad_map[id(fa)] = tris
@@ -1741,6 +1775,7 @@ class LOD:
                 tv.point_index = v.point_index
                 tv.normal_index = negated_index(v.normal_index)
                 tv.uv = v.uv
+                tv.uv_sets = dict(v.uv_sets)
                 twin.vertices.append(tv)
             self.faces.append(twin)
             twins[id(face)] = twin
@@ -2311,13 +2346,59 @@ class LOD:
                     self.points[i].mass = struct.unpack("f", data[i*4:i*4+4])[0]
                 continue
 
+            if taggname == "#UVSet#":
+                self._read_uv_set(data)
+                continue
+
             #if taggname == "#Animation#": #not supported
             #    pass
 
-            #if taggname == "#UVSet#": #ignored, data from lod faces used
-            #    pass
-
         self.resolution = struct.unpack("f", f.read(4))[0]
+
+    def _read_uv_set(self, data):
+        """Store one #UVSet# payload: a 4-byte set id followed by one (u, v)
+        pair per face vertex, in face order.
+
+        Set 0 duplicates the uv already carried by every face vertex and is
+        ignored, as upstream does. Any other set is attached to the face
+        vertices as `Vertex.uv_sets[id]` so that write() can emit it again;
+        in a LOD without faces there is nothing to attach it to, so the id
+        alone is kept in `faceless_uv_sets`. A payload whose length does not
+        match the faces, or a set id that appears twice, is a corrupt LOD and
+        raises instead of being dropped in silence.
+        """
+        if len(data) < 4:
+            raise ValueError(
+                "#UVSet#: payload of %d bytes is shorter than the 4-byte "
+                "set id" % len(data))
+        uv_id = struct.unpack("<L", data[:4])[0]
+        if uv_id == 0:
+            return
+        num_vertices = self.num_vertices
+        if num_vertices == 0:
+            # No face vertices to attach it to: keep the id alone.
+            if uv_id in self.faceless_uv_sets:
+                raise ValueError(
+                    "#UVSet# id %d appears twice in the same LOD" % uv_id)
+            if len(data) != 4:
+                raise ValueError(
+                    "#UVSet# id %d: payload is %d bytes, expected 4 in a LOD "
+                    "without faces" % (uv_id, len(data)))
+            self.faceless_uv_sets.append(uv_id)
+            return
+        expected = 4 + num_vertices * 8
+        if len(data) != expected:
+            raise ValueError(
+                "#UVSet# id %d: payload is %d bytes, expected %d for %d face "
+                "vertices" % (uv_id, len(data), expected, num_vertices))
+        offset = 4
+        for fa in self.faces:
+            for v in fa.vertices:
+                if uv_id in v.uv_sets:
+                    raise ValueError(
+                        "#UVSet# id %d appears twice in the same LOD" % uv_id)
+                v.uv_sets[uv_id] = struct.unpack("ff", data[offset:offset + 8])
+                offset += 8
 
     def write(self, f):
         f.write(b"P3DM")
@@ -2384,14 +2465,26 @@ class LOD:
             for p in self.points:
                 f.write(struct.pack("f", p.mass))
 
-        if len(self.faces) > 0:
+        # One #UVSet# per set, in id order. Set 0 is the uv carried by the
+        # face vertices; the others come from Vertex.uv_sets, and a vertex
+        # that lacks a set present elsewhere in the LOD gets (0, 0), which is
+        # what Object Builder assigns to new faces. Object Builder also
+        # writes the tag for a LOD without faces (Memory, LandContact), with
+        # the 4-byte set id as its whole payload. Upstream omits it there;
+        # BI-authored MLOD files carry it, so it is emitted for parity.
+        num_vertices = self.num_vertices
+        for uv_id in self.uv_set_ids():
             f.write(b"\x01")
             f.write(b"#UVSet#\0")
-            f.write(struct.pack("<L", self.num_vertices * 8 + 4))
-            f.write(b"\0\0\0\0")
+            f.write(struct.pack("<L", num_vertices * 8 + 4))
+            f.write(struct.pack("<L", uv_id))
             for fa in self.faces:
                 for v in fa.vertices:
-                    f.write(struct.pack("ff", *v.uv))
+                    if uv_id == 0:
+                        uv = v.uv
+                    else:
+                        uv = v.uv_sets.get(uv_id, (0.0, 0.0))
+                    f.write(struct.pack("ff", *uv))
 
         f.write(b"\x01")
         f.write(b"#EndOfFile#\0")
@@ -2439,6 +2532,8 @@ class P3D:
                         % (name, i))
             if dict(b.properties) != dict(a.properties):
                 raise ValueError("verify: properties differ in LOD %d" % i)
+            if b.uv_set_ids() != a.uv_set_ids():
+                raise ValueError("verify: UV sets differ in LOD %d" % i)
             am, bm = a.mass, b.mass
             if (am is None) != (bm is None) or \
                     (am is not None and abs(am - bm) > 1e-3):

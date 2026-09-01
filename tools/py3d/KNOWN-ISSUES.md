@@ -30,7 +30,8 @@ what you wrote is what you meant.*
 ### `python -m py3d diff` reports "equal" for materially different models
 
 Same root cause. The same `(0,0,0)` vs `(99,99,99)` pair prints `total: 0` and
-exits 0.
+exits 0. Since 1.6.0 it does compare the UV set ids of every LOD, so a dropped
+UV set is no longer invisible to it; coordinates and UV values still are.
 
 *Do not use `diff` to verify that an edit did what you intended.*
 
@@ -58,6 +59,8 @@ for a file it could not open. Warnings also end in exit 0.
 - Selection membership is recorded as indices into the original arrays and
   re-applied to a rebuilt, deduplicated array, so named selections on visual
   LODs can end up pointing at different geometry.
+- Additional UV sets (`Vertex.uv_sets`) are not part of the Recipe schema;
+  `from_dict()` rebuilds a model with set 0 only.
 
 *Use Recipe for inspection. Use the `.p3d` itself for persistence.*
 
@@ -122,6 +125,16 @@ original, so a proxy selection goes from one face to two and
 
 ## Fixed
 
+- **Additional UV sets were dropped on save, and point-only LODs lost their
+  `#UVSet#` tag.** `LOD.read` discarded every `#UVSet#`, and `LOD.write`
+  emitted set 0 only, and only when the LOD had faces. Measured on a skinned
+  body with two UV sets: 4,761,261 → 4,409,836 bytes and the second set gone;
+  the Memory LOD of a BI-authored file lost its 4-byte `#UVSet#`. Sets beyond
+  the first now live in `Vertex.uv_sets` and are written back in id order; a
+  LOD without faces gets the empty tag Object Builder writes; a payload whose
+  length does not match the faces, or a set id declared twice, raises on
+  read. Still not preserved: the source file's tag order and editor-state
+  tags (`#Selected#`).
 - **Infinite hang on an unterminated string.** `_read_asciiz` looped forever
   when a file reached EOF without a NUL byte — the process hung with no
   traceback, which no caller could catch. Inherited from upstream; a truncated

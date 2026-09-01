@@ -183,6 +183,42 @@ def build_memory_lod(m, named_points, resolution=1.0e15):
     return lod
 
 
+def set_uv_set(m, lod, uv_id, fn=None):
+    """Attach UV set *uv_id* to every face vertex of *lod* (fork API 1.6.0:
+    `Vertex.uv_sets`). *fn*(face index, vertex index, uv0) -> (u, v); the
+    default derives a value that differs from set 0 per face and vertex, so
+    a dropped, duplicated or shuffled set is detectable."""
+    for fi, fa in enumerate(lod.faces):
+        for vi, v in enumerate(fa.vertices):
+            if fn is None:
+                uv = (0.5 * v.uv[0] + 0.25 + 0.001 * fi,
+                      0.5 * v.uv[1] + 0.125 + 0.001 * vi)
+            else:
+                uv = fn(fi, vi, v.uv)
+            v.uv_sets[uv_id] = uv
+    return lod
+
+
+def build_two_uvsets_p3d(m):
+    """1.6.0 fixture: Visual cube with UV sets 0 and 1, Geometry cube
+    (Component01, mass 200) and a Memory LOD without faces - the three shapes
+    whose #UVSet# tags 1.5.0 dropped or omitted."""
+    p3d = m.P3D()
+    vis = build_cube_lod(m, resolution=1.0)
+    set_uv_set(m, vis, 1)
+    geo = build_cube_lod(m, resolution=1.0e13, selection_name="Component01",
+                         mass_per_point=25.0,
+                         properties=(("autocenter", "0"), ("class", "house")),
+                         texture="", material="")
+    mem = build_memory_lod(m, [
+        ("pos center", (0.0, 0.0, 0.0)),
+        ("dolly_axis_start", (0.0, -1.0, 0.0)),
+        ("dolly_axis_end", (0.0, 1.0, 0.0)),
+    ])
+    p3d.lods += [vis, geo, mem]
+    return p3d
+
+
 def build_cube_p3d(m):
     p3d = m.P3D()
     p3d.lods.append(build_cube_lod(m))

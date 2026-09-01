@@ -75,6 +75,12 @@ def assert_sem_inv(m, model, data=None):
                 assert vb.point_index == va.point_index, fctx + ": point_index"
                 want_uv = tuple(f32(u) for u in va.uv)
                 assert vb.uv == want_uv, fctx + " v[%d]: uv" % vi
+                for k, uv in getattr(va, "uv_sets", {}).items():
+                    want = tuple(f32(u) for u in uv)
+                    assert vb.uv_sets.get(k) == want, \
+                        fctx + " v[%d]: uv set %r" % (vi, k)
+        if hasattr(a, "uv_set_ids"):
+            assert b.uv_set_ids() == a.uv_set_ids(), ctx + ": uv_set_ids"
 
         assert list(b.selections.keys()) == list(a.selections.keys()), \
             ctx + ": nombres/orden de selections"
@@ -101,3 +107,65 @@ def assert_sem_inv(m, model, data=None):
                 ctx + ": Smasa (%r vs %r)" % (a.mass, b.mass)
 
     return reread
+
+
+# ---- UV sets (1.6.0) ---------------------------------------------------------
+
+# The empty #UVSet# tag Object Builder writes for a LOD without faces: active
+# byte, name, 4-byte payload length, 4-byte set id 0.
+EMPTY_UVSET_TAG = b"\x01#UVSet#\0" + struct.pack("<L", 4) + struct.pack("<L", 0)
+EOF_TAG = b"\x01#EndOfFile#\0"
+
+
+def _asciiz(f):
+    out = bytearray()
+    while True:
+        b = f.read(1)
+        if not b:
+            raise EOFError("unterminated asciiz")
+        if b == b"\0":
+            return out.decode("utf-8")
+        out += b
+
+
+def scan_taggs(data):
+    """Independent MLOD walker (does not use py3d): per LOD, the ordered list
+    of (tag name, payload size, uv set id or None). The instrument that
+    counts #UVSet# tags must not share the reader under test."""
+    f = io.BytesIO(data)
+    assert f.read(4) == b"MLOD"
+    _, nlods = struct.unpack("<LL", f.read(8))
+    lods = []
+    for _ in range(nlods):
+        assert f.read(4) == b"P3DM"
+        _, _, npts, nnrm, nfaces = struct.unpack("<LLLLL", f.read(20))
+        f.seek(4, 1)
+        f.seek(16 * npts + 12 * nnrm, 1)
+        for _ in range(nfaces):
+            nv = struct.unpack("<L", f.read(4))[0]
+            f.seek(16 * nv + (16 if nv == 3 else 0) + 4, 1)
+            _asciiz(f)
+            _asciiz(f)
+        assert f.read(4) == b"TAGG"
+        taggs = []
+        while True:
+            f.read(1)
+            name = _asciiz(f)
+            size = struct.unpack("<L", f.read(4))[0]
+            payload = f.read(size)
+            uv_id = None
+            if name == "#UVSet#":
+                uv_id = struct.unpack("<L", payload[:4])[0]
+            taggs.append((name, size, uv_id))
+            if name == "#EndOfFile#":
+                break
+        f.read(4)  # resolution
+        lods.append(taggs)
+    assert f.read() == b"", "trailing bytes after the last LOD"
+    return lods
+
+
+def uvset_inventory(data):
+    """Per LOD: list of (uv set id, payload size) in file order."""
+    return [[(uv_id, size) for name, size, uv_id in taggs if name == "#UVSet#"]
+            for taggs in scan_taggs(data)]

@@ -7,6 +7,8 @@ r"""CLI del fork py3d (S2: F2-09/F2-10/F2-11).
 
 Schema de salida ESTABLE (lineas "clave: valor"; los tests lo fijan):
 cambiarlo es un cambio de contrato y requiere bump de version.
+1.6.0: `info` anade `lod.N.uv_sets` (ids separados por ';') y `diff`
+compara los ids de UV set por LOD (`diff.lod.N.uv_sets`).
 
 Exit codes:
     info:     0 ok                       | 2 input no legible
@@ -77,6 +79,8 @@ def cmd_info(args):
         materials = sorted({fa.material for fa in lod.faces if fa.material})
         out.append("lod.%d.textures: %s" % (i, ";".join(textures) or "-"))
         out.append("lod.%d.materials: %s" % (i, ";".join(materials) or "-"))
+        out.append("lod.%d.uv_sets: %s" % (
+            i, ";".join(str(u) for u in lod.uv_set_ids())))
         if k == "geometry" and "Component01" in lod.selections:
             has_component01 = True
         if k == "memory":
@@ -199,6 +203,11 @@ def cmd_diff(args):
             diffs.append("diff.lod.%d.mass: %s != %s"
                          % (i, _fmt(ma) if ma is not None else "none",
                             _fmt(mb) if mb is not None else "none"))
+        ua, ub = la.uv_set_ids(), lb.uv_set_ids()
+        if ua != ub:
+            diffs.append("diff.lod.%d.uv_sets: %s != %s"
+                         % (i, ";".join(map(str, ua)),
+                            ";".join(map(str, ub))))
         if ka == "memory":
             _diff_memory(la, lb, i, diffs)
     for line in diffs:

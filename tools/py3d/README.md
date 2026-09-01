@@ -89,10 +89,21 @@ python -m py3d diff     a.p3d b.p3d  # structural comparison
 - A full proxy lifecycle: `add_proxy` / `get_proxies(strict=True)` /
   `align_proxy` / `remove_proxy`, with explicit raw↔engine frame conversion.
 
+**Format fidelity**
+- Every `#UVSet#` beyond the first is read into `Vertex.uv_sets` and written
+  back in id order. Upstream dropped them on save: a skinned body that carried
+  two UV sets lost the second one (4,761,261 → 4,409,836 bytes).
+- A LOD without faces (Memory, LandContact) gets the empty `#UVSet#` tag that
+  Object Builder writes and BI-authored files carry; upstream omitted it.
+- `save(verify=True)`, `info` and `diff` compare the UV set ids of every LOD.
+
 **Write contract.** For valid canonical input the bytes written are identical to
-what upstream writes. Where upstream would have corrupted the file or crashed
-later, this fork raises instead. Do not assume `input_bytes == output_bytes` for
-input that was not canonical to begin with.
+what upstream writes, with one deliberate exception: a LOD without faces gets the
+empty `#UVSet#` tag (17 bytes) that upstream omits. Where upstream would have
+corrupted the file or crashed later, this fork raises instead. Do not assume
+`input_bytes == output_bytes` for input that was not canonical to begin with:
+tags are written in this library's order, not the source file's, and editor-state
+tags such as `#Selected#` are not preserved.
 
 ## Winding: read this before trusting any validator
 
