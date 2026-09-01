@@ -1,13 +1,13 @@
 # Auto-fit a garment on the OFFICIAL DayZ rig (joint landmarks + weight donor)
 
 Harvested 2026-09-01 from the Blender 3.6 pack "DayZ Model Tools CZ" 1.16.4 (triage note:
-`C:\Users\guill\ObsidianVault\AI\30_Sessions\2026-09-01-DayZ_Tooling-dayz-model-tools-pack-triage.md`).
+`<vault>\AI\30_Sessions\2026-09-01-DayZ_Tooling-dayz-model-tools-pack-triage.md`).
 Scope: headless Blender 5.1 driven through `execute_blender_code`; no panels, no operators of the
 pack. Labels: **[EXACT]** measured on this host; **[DESIGN]** logic read from the pack or written
 here, not yet run end-to-end on a real garment; **[ASSUMPTION]** stated, unverified;
 **[RUN 2026-09-01]** executed on a real jacket (Hunyuan3D shell, 1.35 M tris decimated to 100 k)
 in Blender 5.1.1 headless, two Grok rounds; evidence in
-`C:\Users\guill\ObsidianVault\AI\30_Sessions\reviews\2026-09-01-dayz-model-tools-pack\jacket-test\`.
+`<vault>\AI\30_Sessions\reviews\2026-09-01-dayz-model-tools-pack\jacket-test\`.
 
 **Read this first (result of the run).** Sections 3, 4, 5 and the corridor mask of 6 work as
 written and the mechanical gate (7) passes on the exported p3d. What the run REFUTED is the idea
@@ -55,7 +55,7 @@ the four rounds did validate: sections 3-5 and 7 as a pipeline, and (j) as a mem
 
 ## 1. The reference rig [EXACT: Blender 5.1.1 / Python 3.13.9, headless, 2026-09-01]
 
-- File: `C:\Users\guill\3dmodel\LFInfectedBig\_rig\animation_rig_character.fbx` (official,
+- File: `C:\Users\<you>\3dmodel\LFInfectedBig\_rig\animation_rig_character.fbx` (official,
   `BohemiaInteractive/DayZ-Misc` "Rig and Animations"; download recipe in
   dayz-characters/references/character-rigging.md:12-23).
 - Import: `bpy.ops.wm.fbx_import(filepath=FBX)` (5.x native importer; `import_scene.fbx` also
@@ -273,11 +273,11 @@ not the mechanics.
 
 ## 8. Provenance
 
-- Pack: `C:\Users\guill\Downloads\dayz_model_tools.rar` (v1.16.4, MIT code; its `resources\*.p3d`
+- Pack: `C:\Users\<you>\Downloads\dayz_model_tools.rar` (v1.16.4, MIT code; its `resources\*.p3d`
   reference Bohemia assets). Line numbers above are its `addon.py`.
 - Triage note and the three Grok lane reports with verified citations:
-  `C:\Users\guill\ObsidianVault\AI\30_Sessions\2026-09-01-DayZ_Tooling-dayz-model-tools-pack-triage.md`
-  and `C:\Users\guill\ObsidianVault\AI\30_Sessions\reviews\2026-09-01-dayz-model-tools-pack\`.
+  `<vault>\AI\30_Sessions\2026-09-01-DayZ_Tooling-dayz-model-tools-pack-triage.md`
+  and `<vault>\AI\30_Sessions\reviews\2026-09-01-dayz-model-tools-pack\`.
 - Rig measurements: `probe_rig_fbx.json` and `probe_rig_front.log` in that reviews folder
   (`rig-probes\`), produced by `blender.exe -b --python` on Blender 5.1.1.
 - Real-jacket run (two Grok rounds, 2026-09-01): `jacket-test\` in the same reviews folder:

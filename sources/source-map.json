@@ -2095,7 +2095,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "338313319dc88eccb8a84c3a539a558b1b46f07f426c80a10325ba3849215a9f",
+      "output_hash": "d062a5e12f07d3aa3d1b84a465161e2de006ee4774ddc2741a99fb4aeb9087e4",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -4619,6 +4619,28 @@
       "output_path": "skills/dayz-clothing/references/apply_alignment_json.py",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-clothing/references/autofit-from-official-rig.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Original note written in the installed skill on 2026-09-01 (triage of the Blender pack DayZ Model Tools CZ, three Grok lanes, one real-garment run in Blender 5.1 headless); adopted into the pack on 2026-09-02 with the author's private paths replaced by the documented placeholders. Third-party pack referenced by function name and line only; no code copied.",
+          "license": "MIT",
+          "source_hash": "efc5d122c6dcf5b62f208cc5177ab840d318a844f48b2db64ae268450e4fefc8",
+          "source_id": "installed-skills",
+          "source_path": "dayz-clothing/references/autofit-from-official-rig.md",
+          "source_revision": "installed-skills@2026-09-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "937a04d7d7fa58c2c83c085deda09f551b5230e9bf93efab2d6bd206513f34a7",
+      "output_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
+      "routing_artifact_id": "skill/dayz-clothing",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-clothing/references/export_clothing_fbx.py",
