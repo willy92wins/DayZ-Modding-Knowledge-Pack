@@ -12,3 +12,7 @@ build/
 *.egg-info/
 examples/end-to-end/work/
 skills/*/scripts/agent_calls.jsonl
+
+# Generated copy of skills/_shared/viewer_core.py (see packctl.generated). Like
+# manifest.json it is a build artifact: regenerate with tools/sync_generated.py.
+tools/dayz-3d-viewer/dayz_3d_viewer/viewer_core.py

@@ -8,9 +8,130 @@ Output: standalone HTML. Blender-style move/rotate gizmo per proxy; two clothing
         "Resultado final" (every slot attached to its proxy = assembled preview that
         follows your edits); exports edits JSON for proxy_apply.py.
 
-Three.js r0.147 UMD + OrbitControls + TransformControls via jsDelivr (file:// safe).
+Three.js 0.185.1 ESM + importmap (viewer_core) + OrbitControls + TransformControls via jsDelivr.
 """
 import sys, os, json
+
+
+def _load_viewer_core():
+    """Bounded locator; same rules as viewer_core.load_viewer_core."""
+    import ast as _ast
+    import importlib.util as _ilu
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    def _under(child, parent):
+        child = os.path.normcase(os.path.abspath(child))
+        parent = os.path.normcase(os.path.abspath(parent))
+        try:
+            return os.path.commonpath([child, parent]) == parent
+        except ValueError:
+            return False
+
+    def _boundary(d):
+        if os.path.isdir(os.path.join(d, "skills")):
+            return True
+        if os.path.isdir(os.path.join(d, "dayz_3d_viewer")):
+            return True
+        if os.path.isdir(os.path.join(d, ".git")):
+            return True
+        patched = os.path.join(d, "patched")
+        return os.path.isdir(patched) and _under(here, patched)
+
+    def _layout():
+        if os.path.normcase(os.path.basename(here)) == os.path.normcase("dayz_3d_viewer"):
+            return "package"
+        d = here
+        seen_l = set()
+        while d not in seen_l:
+            seen_l.add(d)
+            name = os.path.normcase(os.path.basename(d))
+            if name == os.path.normcase("skills"):
+                return "skills"
+            if name == os.path.normcase("patched"):
+                return "workspace"
+            parent = os.path.dirname(d)
+            if parent == d:
+                break
+            d = parent
+        return "standalone"
+
+    def _looks(path):
+        try:
+            with open(path, "r", encoding="utf-8") as fh:
+                src = fh.read()
+        except OSError:
+            return False
+        try:
+            tree = _ast.parse(src, filename=path)
+        except (SyntaxError, ValueError):
+            return False
+        assigned = {}
+        funcs = set()
+        for node in tree.body:
+            if isinstance(node, _ast.Assign) and isinstance(node.value, _ast.Constant):
+                for target in node.targets:
+                    if isinstance(target, _ast.Name):
+                        assigned[target.id] = node.value.value
+            elif (
+                isinstance(node, _ast.AnnAssign)
+                and isinstance(node.target, _ast.Name)
+                and isinstance(node.value, _ast.Constant)
+            ):
+                assigned[node.target.id] = node.value.value
+            elif isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                funcs.add(node.name)
+        return (
+            assigned.get("VIEWER_CORE_CONTRACT") == "dayz-viewer-core/1"
+            and assigned.get("THREE_VERSION") == "0.185.1"
+            and {"importmap_script", "module_imports", "boot_js", "loop_js"} <= funcs
+        )
+
+    def _cands(d, kind):
+        out = []
+        if d == here and kind in ("package", "standalone"):
+            out.append(os.path.join(d, "viewer_core.py"))
+        out.append(os.path.join(d, "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "skills", "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "dayz_3d_viewer", "viewer_core.py"))
+        if d != here and _boundary(d):
+            out.append(os.path.join(d, "viewer_core.py"))
+        return out
+
+    kind = _layout()
+    d = here
+    seen = set()
+    while d not in seen:
+        seen.add(d)
+        for path in _cands(d, kind):
+            if os.path.isfile(path) and _looks(path):
+                spec = _ilu.spec_from_file_location("viewer_core", path)
+                if spec is None or spec.loader is None:
+                    continue
+                mod = _ilu.module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                if getattr(mod, "VIEWER_CORE_CONTRACT", None) != "dayz-viewer-core/1":
+                    continue
+                if getattr(mod, "THREE_VERSION", None) != "0.185.1":
+                    continue
+                if not all(
+                    callable(getattr(mod, n, None))
+                    for n in ("importmap_script", "module_imports", "boot_js", "loop_js")
+                ):
+                    continue
+                return mod
+        if kind == "standalone" or _boundary(d):
+            break
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    raise ImportError(
+        "viewer_core.py not found within pack/workspace root walking parents of %s"
+        % os.path.abspath(__file__)
+    )
+
+
+vc = _load_viewer_core()
 
 HTML = r"""<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Proxy Align — __MODEL__</title>
@@ -82,32 +203,23 @@ HTML = r"""<!DOCTYPE html>
   <div style="margin-top:8px;text-align:right"><button onclick="document.getElementById('ta').select()">Seleccionar todo</button> <button onclick="document.getElementById('modal').style.display='none'">Cerrar</button></div>
 </div></div>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/TransformControls.js"></script>
-<script>
+__VC_IMPORTMAP__
+<script type="module">
+__VC_IMPORTS__
 const R = __RECIPE__;
-const T = THREE;
 
 const cv = document.getElementById('cv');
-const ren = new T.WebGLRenderer({canvas:cv, antialias:true});
-ren.setPixelRatio(devicePixelRatio);
-const scene = new T.Scene(); scene.background = new T.Color(0x1a1d21);
-const cam = new T.PerspectiveCamera(50, 1, 0.01, 100);
-
 const bb = R.bbox, ctr = [(bb.min[0]+bb.max[0])/2,(bb.min[1]+bb.max[1])/2,(bb.min[2]+bb.max[2])/2];
 const span = Math.max(bb.max[0]-bb.min[0], bb.max[1]-bb.min[1], bb.max[2]-bb.min[2]) || 2;
+__VC_BOOT__
 cam.position.set(ctr[0]+span*1.1, ctr[1]+span*0.4, ctr[2]+span*1.6);
-
-const orbit = new T.OrbitControls(cam, ren.domElement);
-orbit.target.set(ctr[0], ctr[1], ctr[2]); orbit.enableDamping=true; orbit.dampingFactor=0.08;
+orbit.target.set(ctr[0], ctr[1], ctr[2]);
 
 scene.add(new T.AmbientLight(0xffffff,0.55));
 const k=new T.DirectionalLight(0xffffff,0.8); k.position.set(2,4,3); scene.add(k);
 const f=new T.DirectionalLight(0x88aaff,0.4); f.position.set(-3,2,-2); scene.add(f);
 
-let grid = new T.GridHelper(Math.ceil(span*2), Math.ceil(span*2), 0x445566, 0x2c333d);
-grid.position.set(ctr[0],0,ctr[2]); scene.add(grid);
+grid.position.set(ctr[0],0,ctr[2]);
 
 const bg = new T.BufferGeometry();
 bg.setAttribute('position', new T.BufferAttribute(new Float32Array(R.body.positions.flat()),3));
@@ -155,8 +267,8 @@ R.proxies.forEach((px,i)=>{
   }
 });
 
-const giz = new T.TransformControls(cam, ren.domElement);
-giz.setSize(0.9); giz.setSpace('local'); scene.add(giz);
+__VC_GIZMO__
+giz.setSize(0.9); giz.setSpace('local');
 giz.addEventListener('dragging-changed', e=>{ orbit.enabled = !e.value; });
 giz.addEventListener('objectChange', ()=>{ if(selIdx>=0){ handles[selIdx].userData.moved=true; markMoved(selIdx); updateRead(); }});
 
@@ -233,18 +345,14 @@ $('bExport').onclick=()=>{
 };
 function rnd(x){return Math.round(x*1e6)/1e6;}
 
-function tick(){
-  requestAnimationFrame(tick); orbit.update();
+function __vcFrame(){
   const rect=ren.domElement.getBoundingClientRect();
   handles.forEach((h,i)=>{
     const v=h.position.clone().project(cam);
     const x=(v.x*0.5+0.5)*rect.width, y=(-v.y*0.5+0.5)*rect.height, lab=labels[i];
     if(v.z<1){ lab.style.display='block'; lab.style.left=x+'px'; lab.style.top=y+'px'; } else lab.style.display='none';
   });
-  ren.render(scene,cam);
 }
-function resize(){ const r=cv.parentElement.getBoundingClientRect(); ren.setSize(r.width,r.height,false); cam.aspect=r.width/r.height; cam.updateProjectionMatrix(); }
-addEventListener('resize',resize); resize(); tick();
 </script></body></html>
 """
 
@@ -252,6 +360,30 @@ def generate(recipe_path, out_path):
     with open(recipe_path) as f:
         recipe = json.load(f)
     html = HTML.replace("__RECIPE__", json.dumps(recipe)).replace("__MODEL__", recipe.get("model", "model"))
+    html = html.replace("__VC_IMPORTMAP__", vc.importmap_script())
+    html = html.replace("__VC_IMPORTS__", vc.module_imports(("OrbitControls", "TransformControls"), three_alias="T"))
+    html = html.replace("__VC_BOOT__", vc.boot_js(
+        three="T",
+        scene="scene",
+        camera="cam",
+        renderer="ren",
+        controls="orbit",
+        grid="grid",
+        canvas_expr="cv",
+        background="0x1a1d21",
+        fov=50,
+        near=0.01,
+        far=100,
+        grid_size="Math.ceil(span*2)",
+        grid_divisions="Math.ceil(span*2)",
+        grid_color1="0x445566",
+        grid_color2="0x2c333d",
+        resize="parent",
+        post_controls_hook="__vcFrame",
+    ))
+    html = html.replace("__VC_GIZMO__", vc.transform_controls_js(
+        var="giz", camera="cam", renderer="ren", scene="scene",
+    ))
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
     nworn = sum(1 for p in recipe["proxies"] if "worn" in p)

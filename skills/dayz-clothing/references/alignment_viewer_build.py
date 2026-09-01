@@ -1,7 +1,127 @@
 import os
 
+
+def _load_viewer_core():
+    """Bounded locator; same rules as viewer_core.load_viewer_core."""
+    import ast as _ast
+    import importlib.util as _ilu
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    def _under(child, parent):
+        child = os.path.normcase(os.path.abspath(child))
+        parent = os.path.normcase(os.path.abspath(parent))
+        try:
+            return os.path.commonpath([child, parent]) == parent
+        except ValueError:
+            return False
+
+    def _boundary(d):
+        if os.path.isdir(os.path.join(d, "skills")):
+            return True
+        if os.path.isdir(os.path.join(d, "dayz_3d_viewer")):
+            return True
+        if os.path.isdir(os.path.join(d, ".git")):
+            return True
+        patched = os.path.join(d, "patched")
+        return os.path.isdir(patched) and _under(here, patched)
+
+    def _layout():
+        if os.path.normcase(os.path.basename(here)) == os.path.normcase("dayz_3d_viewer"):
+            return "package"
+        d = here
+        seen_l = set()
+        while d not in seen_l:
+            seen_l.add(d)
+            name = os.path.normcase(os.path.basename(d))
+            if name == os.path.normcase("skills"):
+                return "skills"
+            if name == os.path.normcase("patched"):
+                return "workspace"
+            parent = os.path.dirname(d)
+            if parent == d:
+                break
+            d = parent
+        return "standalone"
+
+    def _looks(path):
+        try:
+            with open(path, "r", encoding="utf-8") as fh:
+                src = fh.read()
+        except OSError:
+            return False
+        try:
+            tree = _ast.parse(src, filename=path)
+        except (SyntaxError, ValueError):
+            return False
+        assigned = {}
+        funcs = set()
+        for node in tree.body:
+            if isinstance(node, _ast.Assign) and isinstance(node.value, _ast.Constant):
+                for target in node.targets:
+                    if isinstance(target, _ast.Name):
+                        assigned[target.id] = node.value.value
+            elif (
+                isinstance(node, _ast.AnnAssign)
+                and isinstance(node.target, _ast.Name)
+                and isinstance(node.value, _ast.Constant)
+            ):
+                assigned[node.target.id] = node.value.value
+            elif isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                funcs.add(node.name)
+        return (
+            assigned.get("VIEWER_CORE_CONTRACT") == "dayz-viewer-core/1"
+            and assigned.get("THREE_VERSION") == "0.185.1"
+            and {"importmap_script", "module_imports", "boot_js", "loop_js"} <= funcs
+        )
+
+    def _cands(d, kind):
+        out = []
+        if d == here and kind in ("package", "standalone"):
+            out.append(os.path.join(d, "viewer_core.py"))
+        out.append(os.path.join(d, "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "skills", "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "dayz_3d_viewer", "viewer_core.py"))
+        if d != here and _boundary(d):
+            out.append(os.path.join(d, "viewer_core.py"))
+        return out
+
+    kind = _layout()
+    d = here
+    seen = set()
+    while d not in seen:
+        seen.add(d)
+        for path in _cands(d, kind):
+            if os.path.isfile(path) and _looks(path):
+                spec = _ilu.spec_from_file_location("viewer_core", path)
+                if spec is None or spec.loader is None:
+                    continue
+                mod = _ilu.module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                if getattr(mod, "VIEWER_CORE_CONTRACT", None) != "dayz-viewer-core/1":
+                    continue
+                if getattr(mod, "THREE_VERSION", None) != "0.185.1":
+                    continue
+                if not all(
+                    callable(getattr(mod, n, None))
+                    for n in ("importmap_script", "module_imports", "boot_js", "loop_js")
+                ):
+                    continue
+                return mod
+        if kind == "standalone" or _boundary(d):
+            break
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    raise ImportError(
+        "viewer_core.py not found within pack/workspace root walking parents of %s"
+        % os.path.abspath(__file__)
+    )
+
+
+vc = _load_viewer_core()
+
 OUT = r"<tmp>\armorhneck_viewer"
-three = open(r"<dayz-projects>\WeaponAnimPipeline_dev\libs\three.min.js", encoding="utf-8").read()
 data = open(os.path.join(OUT, "align_data.json"), encoding="utf-8").read()
 
 html_head = """<!DOCTYPE html>
@@ -40,17 +160,14 @@ label.chk{display:block;margin:4px 0}
 </div>
 """
 
-html_js = """<script>
+html_js = """<script type="module">
+__VC_IMPORTS__
 const DATA = __DATA__;
 const REGIONS = DATA.armor.regions;
 const REGION_COLORS = {leftarm:[0.25,0.5,1], rightarm:[1,0.35,0.3], leftforearm:[0.3,0.9,1], rightforearm:[1,0.7,0.3]};
 const MIRROR_OF = {leftarm:"rightarm", leftforearm:"rightforearm"};
 
-const renderer = new THREE.WebGLRenderer({canvas:document.getElementById("c"),antialias:true});
-renderer.setPixelRatio(window.devicePixelRatio);
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x1a1a2e);
-const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 100);
+__VC_BOOT__
 scene.add(new THREE.AmbientLight(0xffffff, .55));
 const dl = new THREE.DirectionalLight(0xffffff, .8); dl.position.set(2,3,2); scene.add(dl);
 const dl2 = new THREE.DirectionalLight(0x8899ff, .3); dl2.position.set(-2,1,-2); scene.add(dl2);
@@ -88,7 +205,6 @@ ggeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(DATA.gh
 ggeo.setIndex(DATA.ghost.indices);
 const ghostMesh = new THREE.Mesh(ggeo, new THREE.MeshBasicMaterial({color:0x33ff77, wireframe:true, transparent:true, opacity:0.22}));
 scene.add(ghostMesh);
-const grid = new THREE.GridHelper(2, 20, 0x333344, 0x222233); scene.add(grid);
 
 const params = {};
 REGIONS.forEach(r=>{ params[r] = {rx:0, ry:0, rz:0, ox:0, oy:0, oz:0}; });
@@ -174,13 +290,51 @@ function exportJson(){
 }
 function copyJson(){ const t=document.getElementById("json"); t.select(); document.execCommand("copy"); }
 
-function doResize(){ const w=window.innerWidth, h=window.innerHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
-window.addEventListener("resize", doResize);
-doResize(); applyCam();
-(function loop(){ requestAnimationFrame(loop); renderer.render(scene,camera); })();
+__VC_RESIZE__
+applyCam();
+__VC_LOOP__
+window.setView=setView; window.exportJson=exportJson; window.resetAll=resetAll; window.copyJson=copyJson; window.ghostMesh=ghostMesh;
 </script></body></html>"""
 
-html = html_head + "<script>" + three + "</script>\n" + html_js.replace("__DATA__", data)
+html = html_head + vc.importmap_script() + "\n" + (
+    html_js.replace("__DATA__", data)
+    .replace("__VC_IMPORTS__", vc.module_imports(three_alias="THREE"))
+    .replace("__VC_BOOT__", vc.boot_js(
+        three="THREE",
+        scene="scene",
+        camera="camera",
+        renderer="renderer",
+        controls=None,
+        grid="grid",
+        canvas_expr='document.getElementById("c")',
+        background="0x1a1a2e",
+        fov=50,
+        near=0.01,
+        far=100,
+        pixel_ratio="window.devicePixelRatio",
+        grid_size=2,
+        grid_divisions=20,
+        grid_color1="0x333344",
+        grid_color2="0x222233",
+        resize=False,
+        loop=False,
+    ))
+    .replace("__VC_RESIZE__", vc.resize_js(
+        fn="doResize",
+        camera="camera",
+        renderer="renderer",
+        mode="window",
+        update_style=False,
+        listen=True,
+        call_now=True,
+    ))
+    .replace("__VC_LOOP__", vc.loop_js(
+        renderer="renderer",
+        scene="scene",
+        camera="camera",
+        controls=None,
+    ))
+)
 out_path = os.path.join(OUT, "armorhneck_align.html")
 with open(out_path, "w", encoding="utf-8") as f:
     f.write(html)

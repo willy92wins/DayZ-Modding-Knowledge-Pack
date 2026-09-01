@@ -1,9 +1,130 @@
 #!/usr/bin/env python3
 """Generate the DayZ weapon-animation authoring viewer (self-contained HTML).
 Embeds the OFP2_ManSkeleton rig (mesh+skin+bones, DayZ space) + a weapon mesh.
-Three.js r128 UMD (no ESM, per skill R1). SkinnedMesh + analytic 2-bone IK +
+Three.js 0.185.1 ESM + importmap via viewer_core. SkinnedMesh + analytic 2-bone IK +
 direct FK controls + keyframe timeline + JSON export."""
 import json, os, sys, tempfile
+
+
+def _load_viewer_core():
+    """Bounded locator; same rules as viewer_core.load_viewer_core."""
+    import ast as _ast
+    import importlib.util as _ilu
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    def _under(child, parent):
+        child = os.path.normcase(os.path.abspath(child))
+        parent = os.path.normcase(os.path.abspath(parent))
+        try:
+            return os.path.commonpath([child, parent]) == parent
+        except ValueError:
+            return False
+
+    def _boundary(d):
+        if os.path.isdir(os.path.join(d, "skills")):
+            return True
+        if os.path.isdir(os.path.join(d, "dayz_3d_viewer")):
+            return True
+        if os.path.isdir(os.path.join(d, ".git")):
+            return True
+        patched = os.path.join(d, "patched")
+        return os.path.isdir(patched) and _under(here, patched)
+
+    def _layout():
+        if os.path.normcase(os.path.basename(here)) == os.path.normcase("dayz_3d_viewer"):
+            return "package"
+        d = here
+        seen_l = set()
+        while d not in seen_l:
+            seen_l.add(d)
+            name = os.path.normcase(os.path.basename(d))
+            if name == os.path.normcase("skills"):
+                return "skills"
+            if name == os.path.normcase("patched"):
+                return "workspace"
+            parent = os.path.dirname(d)
+            if parent == d:
+                break
+            d = parent
+        return "standalone"
+
+    def _looks(path):
+        try:
+            with open(path, "r", encoding="utf-8") as fh:
+                src = fh.read()
+        except OSError:
+            return False
+        try:
+            tree = _ast.parse(src, filename=path)
+        except (SyntaxError, ValueError):
+            return False
+        assigned = {}
+        funcs = set()
+        for node in tree.body:
+            if isinstance(node, _ast.Assign) and isinstance(node.value, _ast.Constant):
+                for target in node.targets:
+                    if isinstance(target, _ast.Name):
+                        assigned[target.id] = node.value.value
+            elif (
+                isinstance(node, _ast.AnnAssign)
+                and isinstance(node.target, _ast.Name)
+                and isinstance(node.value, _ast.Constant)
+            ):
+                assigned[node.target.id] = node.value.value
+            elif isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                funcs.add(node.name)
+        return (
+            assigned.get("VIEWER_CORE_CONTRACT") == "dayz-viewer-core/1"
+            and assigned.get("THREE_VERSION") == "0.185.1"
+            and {"importmap_script", "module_imports", "boot_js", "loop_js"} <= funcs
+        )
+
+    def _cands(d, kind):
+        out = []
+        if d == here and kind in ("package", "standalone"):
+            out.append(os.path.join(d, "viewer_core.py"))
+        out.append(os.path.join(d, "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "skills", "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "dayz_3d_viewer", "viewer_core.py"))
+        if d != here and _boundary(d):
+            out.append(os.path.join(d, "viewer_core.py"))
+        return out
+
+    kind = _layout()
+    d = here
+    seen = set()
+    while d not in seen:
+        seen.add(d)
+        for path in _cands(d, kind):
+            if os.path.isfile(path) and _looks(path):
+                spec = _ilu.spec_from_file_location("viewer_core", path)
+                if spec is None or spec.loader is None:
+                    continue
+                mod = _ilu.module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                if getattr(mod, "VIEWER_CORE_CONTRACT", None) != "dayz-viewer-core/1":
+                    continue
+                if getattr(mod, "THREE_VERSION", None) != "0.185.1":
+                    continue
+                if not all(
+                    callable(getattr(mod, n, None))
+                    for n in ("importmap_script", "module_imports", "boot_js", "loop_js")
+                ):
+                    continue
+                return mod
+        if kind == "standalone" or _boundary(d):
+            break
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    raise ImportError(
+        "viewer_core.py not found within pack/workspace root walking parents of %s"
+        % os.path.abspath(__file__)
+    )
+
+
+vc = _load_viewer_core()
 
 # Working directory shared by every stage of this pipeline. Override with
 # DAYZ_ANIM_SCRATCH; the default is stable across runs so each stage finds the
@@ -88,15 +209,14 @@ HTML = r'''<!DOCTYPE html><html><head><meta charset="utf-8">
   </div>
  </div>
 </div>
-__LIBS__
-<script>
+__VC_IMPORTMAP__
+<script type="module">
+__VC_IMPORTS__
 const RIG = __RIG__;
 const WEAP = __WEAP__;
 const WXF = __WXF__;
-const T = THREE;
 function fail(m){var e=document.getElementById('err');if(e)e.textContent='ERROR: '+m;console.error(m);}
 window.addEventListener('error',e=>fail(e.message+' @'+e.lineno));
-let scene,cam,ren,orbit,tc;
 let bones={}, boneArr=[], rest={}, skinned, weaponGrp, boneLines, jointGrp;
 let targets={}, activeTarget='rhand', weaponFollow=false;
 let keyframes=[], curFrame=0, playing=false;
@@ -104,16 +224,12 @@ const D2R=Math.PI/180;
 const restLocalQ={}; RIG.bones.forEach(b=>restLocalQ[b.name]=new T.Quaternion(b.quat[0],b.quat[1],b.quat[2],b.quat[3]));
 
 const cv=document.getElementById('cv');
-ren=new T.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true});
-ren.setPixelRatio(devicePixelRatio);
-scene=new T.Scene(); scene.background=new T.Color(0x15171b);
-cam=new T.PerspectiveCamera(45,1,0.01,100);
+__VC_BOOT__
 cam.position.set(1.3,1.5,1.9);
-orbit=new T.OrbitControls(cam,ren.domElement); orbit.target.set(0,1.1,0); orbit.enableDamping=true;
+orbit.target.set(0,1.1,0);
 scene.add(new T.AmbientLight(0xffffff,0.7));
 const dl=new T.DirectionalLight(0xffffff,0.9); dl.position.set(2,4,3); scene.add(dl);
 const dl2=new T.DirectionalLight(0x90b0ff,0.35); dl2.position.set(-3,2,-2); scene.add(dl2);
-const grid=new T.GridHelper(3,30,0x445566,0x262c34); scene.add(grid);
 
 function buildSkeleton(){
   RIG.bones.forEach(b=>{
@@ -138,7 +254,7 @@ function buildSkinned(){
   g.setAttribute('skinIndex',new T.Uint16BufferAttribute(si,4));
   g.setAttribute('skinWeight',new T.Float32BufferAttribute(sw,4));
   g.computeVertexNormals();
-  const mat=new T.MeshStandardMaterial({color:0x9aa6b4,roughness:0.85,metalness:0.0,skinning:true,side:T.DoubleSide});
+  const mat=new T.MeshStandardMaterial({color:0x9aa6b4,roughness:0.85,metalness:0.0,side:T.DoubleSide});
   const m=new T.SkinnedMesh(g,mat);
   m.frustumCulled=false;
   roots.forEach(r=>m.add(r));
@@ -298,10 +414,9 @@ function applyPose(){
   updateBoneViz();
 }
 
-tc=new T.TransformControls(cam,ren.domElement);
+__VC_GIZMO__
 tc.addEventListener('dragging-changed',e=>orbit.enabled=!e.value);
 tc.addEventListener('objectChange',()=>{applyPose();});
-scene.add(tc);
 function setActive(name){activeTarget=name;tc.attach(name==='weapon'?weaponGrp:targets[name]);
   document.querySelectorAll('#targets .btn').forEach(x=>x.classList.toggle('on',x.dataset.t===name));}
 const tnames=[['rhand','R.Hand'],['lhand','L.Hand'],['rfoot','R.Foot'],['lfoot','L.Foot'],['head','Cabeza'],['weapon','Arma']];
@@ -415,26 +530,42 @@ window.__VIEWER__={buildExport,addKeyframe,gotoFrame,poseReady,poseIdle,poseRest
   setSlider:(k,v)=>{st[k]=v;syncSliders();applyPose();}};
 
 let last=0;
-function tick(ts){
-  requestAnimationFrame(tick);
+function __vcFrame(ts){
   if(playing&&keyframes.length>1){
     const fps=+document.getElementById('fps').value||30; const mx=keyframes[keyframes.length-1].frame;
     if(ts-last>1000/fps){last=ts;curFrame=(curFrame+1)%(mx+1);gotoFrame(curFrame);}
   }
-  orbit.update(); ren.render(scene,cam);
 }
-function resize(){const r=cv.parentElement.getBoundingClientRect();ren.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;cam.updateProjectionMatrix();}
-addEventListener('resize',resize); resize();
-poseIdle(); updateBoneViz(); tick(0);
+poseIdle(); updateBoneViz();
 document.getElementById('info').textContent='Rig OFP2_ManSkeleton + '+WEAP.name+' cargados. Arrastra los gizmos, ajusta sliders, marca keyframes.';
 </script></body></html>'''
 
-LIBDIR = os.path.join(SCR, 'libs')
-libs_html = ''
-for lib in ('three.min.js', 'OrbitControls.js', 'TransformControls.js'):
-    code = open(os.path.join(LIBDIR, lib), encoding='utf-8').read()
-    libs_html += '<script>\n' + code + '\n</script>\n'
-html = (HTML.replace('__LIBS__', libs_html)
+html = (HTML.replace('__VC_IMPORTMAP__', vc.importmap_script())
+            .replace('__VC_IMPORTS__', vc.module_imports(("OrbitControls", "TransformControls"), three_alias="T"))
+            .replace('__VC_BOOT__', vc.boot_js(
+                three="T",
+                scene="scene",
+                camera="cam",
+                renderer="ren",
+                controls="orbit",
+                grid="grid",
+                canvas_expr="cv",
+                background="0x15171b",
+                fov=45,
+                near=0.01,
+                far=100,
+                preserve_drawing_buffer=True,
+                grid_size=3,
+                grid_divisions=30,
+                grid_color1="0x445566",
+                grid_color2="0x262c34",
+                resize="parent",
+                orbit_damping_factor=0.05,
+                frame_hook="__vcFrame",
+            ))
+            .replace('__VC_GIZMO__', vc.transform_controls_js(
+                var="tc", camera="cam", renderer="ren", scene="scene",
+            ))
             .replace('__RIG__', json.dumps(rig))
             .replace('__WEAP__', json.dumps(weap))
             .replace('__WXF__', json.dumps(weap_xf))

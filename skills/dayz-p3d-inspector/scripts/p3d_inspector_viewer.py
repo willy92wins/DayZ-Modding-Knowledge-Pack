@@ -5,7 +5,127 @@ Pure HTML overlay labels, custom bounding boxes, drag & drop memory points,
 axis endpoint editing, bbox corner editing, snap-to-grid, recipe export.
 """
 import json, os, sys
-import numpy as np
+
+
+def _load_viewer_core():
+    """Bounded locator; same rules as viewer_core.load_viewer_core."""
+    import ast as _ast
+    import importlib.util as _ilu
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    def _under(child, parent):
+        child = os.path.normcase(os.path.abspath(child))
+        parent = os.path.normcase(os.path.abspath(parent))
+        try:
+            return os.path.commonpath([child, parent]) == parent
+        except ValueError:
+            return False
+
+    def _boundary(d):
+        if os.path.isdir(os.path.join(d, "skills")):
+            return True
+        if os.path.isdir(os.path.join(d, "dayz_3d_viewer")):
+            return True
+        if os.path.isdir(os.path.join(d, ".git")):
+            return True
+        patched = os.path.join(d, "patched")
+        return os.path.isdir(patched) and _under(here, patched)
+
+    def _layout():
+        if os.path.normcase(os.path.basename(here)) == os.path.normcase("dayz_3d_viewer"):
+            return "package"
+        d = here
+        seen_l = set()
+        while d not in seen_l:
+            seen_l.add(d)
+            name = os.path.normcase(os.path.basename(d))
+            if name == os.path.normcase("skills"):
+                return "skills"
+            if name == os.path.normcase("patched"):
+                return "workspace"
+            parent = os.path.dirname(d)
+            if parent == d:
+                break
+            d = parent
+        return "standalone"
+
+    def _looks(path):
+        try:
+            with open(path, "r", encoding="utf-8") as fh:
+                src = fh.read()
+        except OSError:
+            return False
+        try:
+            tree = _ast.parse(src, filename=path)
+        except (SyntaxError, ValueError):
+            return False
+        assigned = {}
+        funcs = set()
+        for node in tree.body:
+            if isinstance(node, _ast.Assign) and isinstance(node.value, _ast.Constant):
+                for target in node.targets:
+                    if isinstance(target, _ast.Name):
+                        assigned[target.id] = node.value.value
+            elif (
+                isinstance(node, _ast.AnnAssign)
+                and isinstance(node.target, _ast.Name)
+                and isinstance(node.value, _ast.Constant)
+            ):
+                assigned[node.target.id] = node.value.value
+            elif isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                funcs.add(node.name)
+        return (
+            assigned.get("VIEWER_CORE_CONTRACT") == "dayz-viewer-core/1"
+            and assigned.get("THREE_VERSION") == "0.185.1"
+            and {"importmap_script", "module_imports", "boot_js", "loop_js"} <= funcs
+        )
+
+    def _cands(d, kind):
+        out = []
+        if d == here and kind in ("package", "standalone"):
+            out.append(os.path.join(d, "viewer_core.py"))
+        out.append(os.path.join(d, "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "skills", "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "dayz_3d_viewer", "viewer_core.py"))
+        if d != here and _boundary(d):
+            out.append(os.path.join(d, "viewer_core.py"))
+        return out
+
+    kind = _layout()
+    d = here
+    seen = set()
+    while d not in seen:
+        seen.add(d)
+        for path in _cands(d, kind):
+            if os.path.isfile(path) and _looks(path):
+                spec = _ilu.spec_from_file_location("viewer_core", path)
+                if spec is None or spec.loader is None:
+                    continue
+                mod = _ilu.module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                if getattr(mod, "VIEWER_CORE_CONTRACT", None) != "dayz-viewer-core/1":
+                    continue
+                if getattr(mod, "THREE_VERSION", None) != "0.185.1":
+                    continue
+                if not all(
+                    callable(getattr(mod, n, None))
+                    for n in ("importmap_script", "module_imports", "boot_js", "loop_js")
+                ):
+                    continue
+                return mod
+        if kind == "standalone" or _boundary(d):
+            break
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    raise ImportError(
+        "viewer_core.py not found within pack/workspace root walking parents of %s"
+        % os.path.abspath(__file__)
+    )
+
+
+vc = _load_viewer_core()
 
 def generate_inspector_html(recipe, output_path=None, model_name=None):
     if model_name is None:
@@ -53,6 +173,35 @@ def generate_inspector_html(recipe, output_path=None, model_name=None):
     })
 
     html = _html(model_name, rj)
+    html = html.replace("__VC_IMPORTMAP__", vc.importmap_script())
+    html = html.replace("__VC_IMPORTS__", vc.module_imports(("OrbitControls",), three_alias="T"))
+    html = html.replace("__VC_BOOT__", vc.boot_js(
+        three="T",
+        scene="scene",
+        camera="cam",
+        renderer="ren",
+        controls="ctrl",
+        grid="grid",
+        canvas_expr=None,
+        insert_before=("vp", "vp.firstChild"),
+        container_expr="vp",
+        background="0x1a1a2e",
+        fov=50,
+        near=0.001,
+        far=200,
+        pixel_ratio="Math.min(devicePixelRatio,2)",
+        tone_mapping="ACESFilmicToneMapping",
+        tone_exposure=1.2,
+        grid_size=2,
+        grid_divisions=40,
+        grid_color1="0x333355",
+        grid_color2="0x222244",
+        grid_visible=False,
+        resize="container",
+        resize_pixel_ratio="Math.min(devicePixelRatio,2)",
+        loop=True,
+        post_controls_hook="__vcFrame",
+    ))
     if output_path:
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(html)
@@ -173,11 +322,9 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
-<script>
-const T=THREE;
-const OrbitControls=THREE.OrbitControls;
+__VC_IMPORTMAP__
+<script type="module">
+__VC_IMPORTS__
 
 const R=""" + rj + r""";
 
@@ -186,32 +333,14 @@ const CS={center:'#4fc3f7',interaction:'#ef5350',axis:'#7e57c2',placing:'#ffb74d
 const WC={geometry:0x00e676,fire_geometry:0xff5252,view_geometry:0x448aff,
   landcontact:0xcddc39,roadway:0x00bcd4,paths:0xe91e63,hitpoints:0xff9800};
 
-// Scene
 const vp=document.getElementById('viewport');
-const scene=new T.Scene(); scene.background=new T.Color(0x1a1a2e);
-const cam=new T.PerspectiveCamera(50,1,0.001,200);
-const ren=new T.WebGLRenderer({antialias:true});
-ren.toneMapping=T.ACESFilmicToneMapping; ren.toneMappingExposure=1.2;
-vp.insertBefore(ren.domElement,vp.firstChild);
-
-function resize(){
-  const w=vp.clientWidth,h=vp.clientHeight;
-  cam.aspect=w/h; cam.updateProjectionMatrix();
-  ren.setSize(w,h); ren.setPixelRatio(Math.min(devicePixelRatio,2));
-}
-resize();
-
-const ctrl=new OrbitControls(cam,ren.domElement);
-ctrl.enableDamping=true; ctrl.dampingFactor=0.08;
+__VC_BOOT__
 
 // Lights
 scene.add(new T.AmbientLight(0xffffff,0.45));
 const d1=new T.DirectionalLight(0xffffff,0.9);d1.position.set(2,3,2);scene.add(d1);
 const d2=new T.DirectionalLight(0x8888ff,0.25);d2.position.set(-2,1,-1);scene.add(d2);
 const d3=new T.DirectionalLight(0xffffcc,0.15);d3.position.set(0,-1,-2);scene.add(d3);
-
-// Grid
-const grid=new T.GridHelper(2,40,0x333355,0x222244); grid.visible=false; scene.add(grid);
 
 // Layers
 const L={visual:new T.Group(),geometry:new T.Group(),fire_geometry:new T.Group(),view_geometry:new T.Group(),
@@ -687,17 +816,11 @@ const badge=document.getElementById('mode-badge');
 if(R.meta.mode==='demo'){badge.textContent='DEMO';badge.style.background='#ffb74d';}
 else if(R.meta.mode==='propose'){badge.textContent='PROPOSAL';badge.style.background='#81c784';}
 
-// ── Render Loop ───────────────────────────────────────────────────
-(function anim(){
-  requestAnimationFrame(anim);
-  ctrl.update();
+function __vcFrame(){
   cam.updateMatrixWorld();
   cam.updateProjectionMatrix();
   updateLabels();
-  try{ren.render(scene,cam);}catch(e){if(!window._rErr){console.error('Render error:',e);window._rErr=true;}}
-})();
-
-window.addEventListener('resize',resize);
+}
 new ResizeObserver(resize).observe(vp);
 </script>
 </body></html>"""

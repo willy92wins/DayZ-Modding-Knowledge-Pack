@@ -25,9 +25,128 @@ Usage:
 
 Both files must be MLOD and already in final model space (offsets applied).
 """
-import argparse, json, math, os, sys
+import argparse, json, math, os
 
-import py3d
+
+def _load_viewer_core():
+    """Bounded locator; same rules as viewer_core.load_viewer_core."""
+    import ast as _ast
+    import importlib.util as _ilu
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    def _under(child, parent):
+        child = os.path.normcase(os.path.abspath(child))
+        parent = os.path.normcase(os.path.abspath(parent))
+        try:
+            return os.path.commonpath([child, parent]) == parent
+        except ValueError:
+            return False
+
+    def _boundary(d):
+        if os.path.isdir(os.path.join(d, "skills")):
+            return True
+        if os.path.isdir(os.path.join(d, "dayz_3d_viewer")):
+            return True
+        if os.path.isdir(os.path.join(d, ".git")):
+            return True
+        patched = os.path.join(d, "patched")
+        return os.path.isdir(patched) and _under(here, patched)
+
+    def _layout():
+        if os.path.normcase(os.path.basename(here)) == os.path.normcase("dayz_3d_viewer"):
+            return "package"
+        d = here
+        seen_l = set()
+        while d not in seen_l:
+            seen_l.add(d)
+            name = os.path.normcase(os.path.basename(d))
+            if name == os.path.normcase("skills"):
+                return "skills"
+            if name == os.path.normcase("patched"):
+                return "workspace"
+            parent = os.path.dirname(d)
+            if parent == d:
+                break
+            d = parent
+        return "standalone"
+
+    def _looks(path):
+        try:
+            with open(path, "r", encoding="utf-8") as fh:
+                src = fh.read()
+        except OSError:
+            return False
+        try:
+            tree = _ast.parse(src, filename=path)
+        except (SyntaxError, ValueError):
+            return False
+        assigned = {}
+        funcs = set()
+        for node in tree.body:
+            if isinstance(node, _ast.Assign) and isinstance(node.value, _ast.Constant):
+                for target in node.targets:
+                    if isinstance(target, _ast.Name):
+                        assigned[target.id] = node.value.value
+            elif (
+                isinstance(node, _ast.AnnAssign)
+                and isinstance(node.target, _ast.Name)
+                and isinstance(node.value, _ast.Constant)
+            ):
+                assigned[node.target.id] = node.value.value
+            elif isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                funcs.add(node.name)
+        return (
+            assigned.get("VIEWER_CORE_CONTRACT") == "dayz-viewer-core/1"
+            and assigned.get("THREE_VERSION") == "0.185.1"
+            and {"importmap_script", "module_imports", "boot_js", "loop_js"} <= funcs
+        )
+
+    def _cands(d, kind):
+        out = []
+        if d == here and kind in ("package", "standalone"):
+            out.append(os.path.join(d, "viewer_core.py"))
+        out.append(os.path.join(d, "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "skills", "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "dayz_3d_viewer", "viewer_core.py"))
+        if d != here and _boundary(d):
+            out.append(os.path.join(d, "viewer_core.py"))
+        return out
+
+    kind = _layout()
+    d = here
+    seen = set()
+    while d not in seen:
+        seen.add(d)
+        for path in _cands(d, kind):
+            if os.path.isfile(path) and _looks(path):
+                spec = _ilu.spec_from_file_location("viewer_core", path)
+                if spec is None or spec.loader is None:
+                    continue
+                mod = _ilu.module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                if getattr(mod, "VIEWER_CORE_CONTRACT", None) != "dayz-viewer-core/1":
+                    continue
+                if getattr(mod, "THREE_VERSION", None) != "0.185.1":
+                    continue
+                if not all(
+                    callable(getattr(mod, n, None))
+                    for n in ("importmap_script", "module_imports", "boot_js", "loop_js")
+                ):
+                    continue
+                return mod
+        if kind == "standalone" or _boundary(d):
+            break
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    raise ImportError(
+        "viewer_core.py not found within pack/workspace root walking parents of %s"
+        % os.path.abspath(__file__)
+    )
+
+
+vc = _load_viewer_core()
 
 MEMORY_LO, MEMORY_HI = 9e14, 2e15
 
@@ -43,6 +162,7 @@ REQUIRED = [
 ]
 
 def read_p3d(path):
+    import py3d
     with open(path, "rb") as f:
         return py3d.P3D(f)
 
@@ -250,25 +370,20 @@ HTML = r"""<!DOCTYPE html>
     <div id="read"></div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
-<script>
+__VC_IMPORTMAP__
+<script type="module">
+__VC_IMPORTS__
 const R = __DATA__;
-const T = THREE;
 const cv = document.getElementById('cv');
-const ren = new T.WebGLRenderer({canvas:cv, antialias:true});
-ren.setPixelRatio(devicePixelRatio);
-const scene = new T.Scene(); scene.background = new T.Color(0x1a1d21);
-const cam = new T.PerspectiveCamera(50,1,0.005,100);
 const bb=R.bbox, ctr=[(bb.min[0]+bb.max[0])/2,(bb.min[1]+bb.max[1])/2,(bb.min[2]+bb.max[2])/2];
 const span=Math.max(bb.max[0]-bb.min[0],bb.max[1]-bb.min[1],bb.max[2]-bb.min[2])||1;
+__VC_BOOT__
 cam.position.set(ctr[0]+span*0.35, ctr[1]+span*0.28, ctr[2]+span*0.95);
-const orbit=new T.OrbitControls(cam,ren.domElement);
-orbit.target.set(ctr[0],ctr[1],ctr[2]); orbit.enableDamping=true; orbit.dampingFactor=0.08;
+orbit.target.set(ctr[0],ctr[1],ctr[2]);
 scene.add(new T.AmbientLight(0xffffff,0.55));
 const k=new T.DirectionalLight(0xffffff,0.8); k.position.set(2,4,3); scene.add(k);
 const f2=new T.DirectionalLight(0x88aaff,0.4); f2.position.set(-3,2,-2); scene.add(f2);
-let grid=new T.GridHelper(2,20,0x445566,0x2c333d); grid.position.set(ctr[0],bb.min[1],ctr[2]); scene.add(grid);
+grid.position.set(ctr[0],bb.min[1],ctr[2]);
 
 function mesh(geo, mat){
   const g=new T.BufferGeometry();
@@ -392,9 +507,7 @@ bindToggle('bGrid',v=>grid.visible=v);
 bindToggle('bLbl',v=>labels.forEach(l=>l.el.style.display=v?'block':'none'));
 
 const wp=new T.Vector3();
-function tick(){
-  requestAnimationFrame(tick);
-  orbit.update();
+function __vcFrame(){
   labels.forEach(l=>{
     if(l.el.style.display==='none')return;
     const o=l.obj; (o.getWorldPosition?o.getWorldPosition(wp):wp.copy(o.position));
@@ -404,21 +517,63 @@ function tick(){
     l.el.style.top=((-wp.y*0.5+0.5)*r.height)+'px';
     l.el.style.opacity=(wp.z<1)?l.el.style.opacity||1:0;
   });
-  ren.render(scene,cam);
 }
-function resize(){const r=cv.parentElement.getBoundingClientRect();ren.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;cam.updateProjectionMatrix();}
-addEventListener('resize',resize); resize(); tick();
 </script></body></html>
 """
 
+def _fill_html(data):
+    html = (HTML.replace("__DATA__", json.dumps(data))
+                .replace("__MODEL__", data["model"])
+                .replace("__REFLABEL__", data["ref_label"]))
+    html = html.replace("__VC_IMPORTMAP__", vc.importmap_script())
+    html = html.replace("__VC_IMPORTS__", vc.module_imports(("OrbitControls",), three_alias="T"))
+    html = html.replace("__VC_BOOT__", vc.boot_js(
+        three="T",
+        scene="scene",
+        camera="cam",
+        renderer="ren",
+        controls="orbit",
+        grid="grid",
+        canvas_expr="cv",
+        background="0x1a1d21",
+        fov=50,
+        near=0.005,
+        far=100,
+        grid_size=2,
+        grid_divisions=20,
+        grid_color1="0x445566",
+        grid_color2="0x2c333d",
+        resize="parent",
+        post_controls_hook="__vcFrame",
+    ))
+    return html
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--weapon", required=True)
-    ap.add_argument("--ref", required=True)
+    ap.add_argument("--weapon")
+    ap.add_argument("--ref")
     ap.add_argument("--out", required=True)
     ap.add_argument("--ref-label", default=None)
     ap.add_argument("--report", default=None)
+    ap.add_argument("--data", default=None, help="prebuilt JSON fixture (skip .p3d)")
     a = ap.parse_args()
+
+    if a.data:
+        with open(a.data, encoding="utf-8") as f:
+            data = json.load(f)
+        html = _fill_html(data)
+        with open(a.out, "w", encoding="utf-8") as f:
+            f.write(html)
+        with open(a.out, encoding="utf-8") as f:
+            back = f.read()
+        assert back == html, "read-after-write mismatch"
+        assert back.rstrip().endswith("</html>"), "HTML truncated"
+        print("viewer -> %s (%d bytes) [from --data]" % (a.out, len(html)))
+        return
+
+    if not a.weapon or not a.ref:
+        ap.error("--weapon and --ref are required unless --data is set")
 
     w, r = read_p3d(a.weapon), read_p3d(a.ref)
     w_pos, w_faces = lod0_geo(w)
@@ -439,9 +594,7 @@ def main():
         "weapon_mp": w_mp, "ref_mp": r_mp,
         "checks": checks, "metrics": metrics, "findings": findings, "hands": hands,
     }
-    html = (HTML.replace("__DATA__", json.dumps(data))
-                .replace("__MODEL__", data["model"])
-                .replace("__REFLABEL__", data["ref_label"]))
+    html = _fill_html(data)
     with open(a.out, "w", encoding="utf-8") as f:
         f.write(html)
     with open(a.out, encoding="utf-8") as f:
