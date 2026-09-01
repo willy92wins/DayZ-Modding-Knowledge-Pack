@@ -129,9 +129,11 @@ turns a quad `[0,1,2,3]` into `[0,2,1,3]`, a crossed face.
 
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 213 tests pass. It has also
-been through a deliberately adversarial audit, and **not every problem it found
-is fixed yet**. Before relying on this for anything you cannot redo, read
+The library is used in a real modding pipeline, and 248 tests pass -- 241 of them
+on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
+upstream (see [Tests](#tests)). It has also been through a deliberately
+adversarial audit, and **not every problem it found is fixed yet**. Before
+relying on this for anything you cannot redo, read
 [KNOWN-ISSUES.md](KNOWN-ISSUES.md) — in particular the entries about
 `save(verify=True)`, `python -m py3d diff` and the Recipe JSON round-trip, which
 are weaker than their names suggest.
