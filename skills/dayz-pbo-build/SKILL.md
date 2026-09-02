@@ -895,3 +895,34 @@ la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita:
 - **LL-213** — Trata `-include` como filtro exclusivo y valida siempre desde un temp vacío. Separa el sync de `.p3d` del paso que los binariza a ODOL; falla si faltan entries o si el tamaño indica MLOD copiado as-is.
 - **LL-290** — Un pin por sha256 o por tamaño se rompe solo al pasar por git: con `core.autocrlf=true` (el default en Windows) `git add` normaliza a LF y `git checkout` reescribe con CRLF, así que el blob y el working tree dejan de coincidir con lo pineado (medido: LICENSE 1577 B pineado contra 1548 B en el blob, y 8 rojos en un clon Windows). Corre el gate sobre el **clon recién checked-out**, no sobre una copia exportada con robocopy: la copia conserva los bytes originales y da verde sobre un árbol que nadie recibe. Y pon `.gitattributes` con `* text=auto eol=lf` desde el primer commit, más `-text` en lo que se compare byte a byte. Es el mismo eje que la sección de identidad de bytes de AddonBuilder más arriba: antes de comparar hashes, asegura que comparas el árbol que se publica.
 - **LL-367** — Un artefacto de release se traza al commit por hash de TODO su árbol fuente, no de los ficheros tocados. Gate de procedencia pre-release: commit/fuente canónica ↔ árbol completo de build ↔ PBO. Un sync incremental «verificado» solo verifica su propio delta.
+
+## Un mod puede tener DOS PBO, y el que valida tu gate puede no ser el que carga el juego (added 2026-09-02)
+
+Medido sobre LFQuad el 2026-09-01, buscando por qué un gate de frescura daba una lectura
+que no cuadraba:
+
+| ruta | tamaño | fecha | modelo dentro |
+|---|---:|---|---|
+| `<Mod>\<Mod>.pbo` (en el árbol fuente) | 5,92 MB | 22-jun | `.p3d` **binarizado** (ODOL, 2.036.911 B) |
+| `P:\Mods\@<Mod>\Addons\<Mod>.pbo` (el desplegado) | 17,22 MB | 21-jun | **MLOD sin binarizar** (10.914.580 B) |
+
+Dos builds por dos rutas distintas, con **73 entradas, 5 `.c`, 36 `.paa` y 23 `.rvmat`
+los dos** — o sea los dos completos, ninguno obviamente roto. La diferencia visible es el
+tamaño, y el tamaño se explica por la binarización, no por que falte nada.
+
+**El que el juego carga es el de `Mods\@<Mod>\Addons\`, y era el más antiguo de los dos.**
+
+Consecuencia para cualquier gate de empaquetado: **comprueba todos los paquetes que
+existan para ese mod**, no uno elegido a mano. La forma complementaria evita tener que
+adivinar cuál pipeline es el autoritativo — si alguno de ellos no lleva lo que el modelo
+pide, o es más viejo que las fuentes, el veredicto es rojo. Un gate apuntado solo al del
+árbol fuente puede ponerse verde sobre un despliegue que nunca recibió el trabajo.
+
+Dos detalles de instrumento que salieron del mismo sitio:
+
+- **La presencia del `.p3d` se comprueba por NOMBRE, nunca por tamaño**: una ruta lo
+  binariza y la otra no, y el mismo modelo pesa 5,4x distinto en cada paquete.
+- Un gate de frescura que recorra el árbol fuente tiene que excluir `*.pbo`, `*.bisign`,
+  `*.bak*` y temporales. Una copia de seguridad se escribe **después** de aquello que
+  copia, así que contarla como fuente deja el gate rojo para siempre por un motivo que no
+  tiene nada que ver con que el paquete esté rancio.

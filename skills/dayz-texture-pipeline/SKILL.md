@@ -393,3 +393,66 @@ instrumento que han usado las dos corridas.
 Dos hechos menores del mismo getter, útiles para leer un log: devuelve **cadena vacía** cuando el
 motor tiene el material (no una ruta vanilla normalizada, que era lo que cabía esperar), y en
 **servidor devuelve vacío siempre** — el material de prenda es puramente de cliente.
+
+## Del PNG horneado al `.paa` y al rvmat de atlas (added 2026-09-02)
+
+Medido llevando un atlas propio por modelo desde Blender hasta el mod (LFQuad, 4096^2,
+`_nohq` + `_smdi`, 13 materiales reescritos). Cuatro cosas mordieron, y ninguna da un
+error que oriente.
+
+### ImageToPAA rechaza el PNG que escribe Blender
+
+`Error (Loading of img failed)` y nada mas. El PNG de Blender lleva EXIF, `gamma` y
+`chromaticity`; el mismo pixel guardado de nuevo con PIL (`Image.open(src).convert("RGB")
+.save(dst)`) entra a la primera. Medido: 23,95 MB de Blender fallan, 6,96 MB reguardados
+convierten a un `.paa` de 7,39 MB. Un `_smdi` escrito por PIL de origen no fallo nunca.
+
+La skill ya recoge el remedio generico ("re-save as a 32-bit PNG and re-import") para el
+import de Workbench; aqui la causa esta identificada y vale igual para el CLI.
+
+**El nombre del fichero fuente decide el tratamiento**: ImageToPAA aplica el manejo de
+normales por el sufijo, asi que el origen tiene que llamarse `*_nohq.png`. Un
+`*_nohq_DX.png` se convierte como una textura cualquiera.
+
+### `dir[]` del `uvTransform` NO tiene identidad canonica
+
+Censo sobre todos los `.rvmat` del arbol vanilla, 2026-09-02:
+
+| campo | valores |
+|---|---|
+| `dir[]` | `{0,0,0}` **65.495** · `{0,0,1}` **42.460** · y media docena mas |
+| `aside[]` | `{1,0,0}` **75.099** · `{10,0,0}` 43.045 · `{4,0,0}` 493 · ... |
+
+`aside` (y `up`) tienen identidad clara y sus otros valores son el factor de tileado;
+`dir` no tiene ninguna. Bohemia escribe `{0,0,0}` en
+`DZ\vehicles\parts\data\aircraft_battery.rvmat:17` y `{0,0,1}` en
+`DZ\vehicles\wheeled\van_01\data\van_01_wheel.rvmat:17`, los dos bajo `PixelShaderID="Super"`.
+
+Consecuencia para cualquier gate que compruebe "esta textura se muestrea 1:1": mira
+`aside`, `up` y `pos`, y **no** `dir`. Un gate que exigia `dir[]={0,0,1}` rechazo 26 stages
+copiados literalmente del fichero de Bohemia.
+
+### Plantilla Super de 7 stages, y de donde sacarla
+
+Copiar `DZ\vehicles\parts\data\aircraft_battery.rvmat` entero y sustituir. Stage1 `_nohq`,
+Stage2 `#(argb,8,8,3)color(0.5,0.5,0.5,1,DT)` **con `uvTransform` a ceros** (asi lo escribe
+vanilla, no es un descuido), Stage3 `...(0,0,0,0,MC)`, Stage4 `...(1,1,1,1,AS)`, Stage5
+`_smdi`, Stage6 `#(ai,64,64,1)fresnel(0.4,0.4)`, Stage7 entorno.
+
+Al migrar materiales existentes a Super, **conservar `ambient[]`/`diffuse[]`** si el modelo
+todavia no tiene `_co`: vanilla escribe `{1,1,1,1}` porque el color llega en la textura, y
+copiarlo deja el objeto blanco. Conservar tambien `specular[]`/`specularPower` en la primera
+pasada — el `_smdi` ya los modula por texel, y cambiar mapa y constantes a la vez hace
+inatribuible cualquier regresion in-game.
+
+Para Stage7 DayZ envia mapas de entorno dedicados en `DZ\data\data\`: **`env_land_chrome_co.paa`**
+y `env_chrome_co.paa` para cromo, `env_land_co.paa` para metal, ademas de `env_mirror_co.paa`,
+`env_land_plastic_co.paa` y una veintena mas. El negro plano `#(argb,8,8,3)color(0,0,0,1,CO)`
+es el default de vanilla, o sea sin reflexion.
+
+### `Image.save()` de Blender con ruta relativa escribe en otro sitio, sin avisar
+
+`img.filepath_raw = "carpeta\fichero.png"` se resuelve contra el `.blend` abierto, no contra
+el directorio de trabajo, y `save()` no lanza. Un horneado entero se dio por escrito y no
+estaba en ninguna parte. Ruta absoluta, y **comprobar `os.path.isfile()` antes de loguear
+"escrito"** — decirlo sin mirarlo es como se pierde.

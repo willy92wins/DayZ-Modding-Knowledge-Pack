@@ -13,6 +13,13 @@ retopo (54 islands / 30 panels, straightened outlines, exact-zero overlap) and a
 36.9k-tri decimated rip (65 islands, straightening auto-rolled-back, exact-zero
 overlap), where 16 previous methods had produced 500–2000 islands.
 
+**Re-unwrapping a model that already ships, or an atlas that must serve more than one
+visual LOD, is a different job** — the constraint is "UV and nothing else", the LOD
+chain and the material assignment are fixed, and the advice below about few large
+islands stops being available. Read `references/multi-lod-shared-atlas.md` first: it
+carries the measured seam trade-off, why a LOD transfer cannot work below a granularity
+ratio, the shared-sheet layout that replaces it, and how to align and judge the bake.
+
 ## The quality gate (what "done" looks like)
 
 Judge the atlas against these criteria, in priority order. The reference bar is a
@@ -170,8 +177,13 @@ METRICS[...] islands=54 overlap=0.09% density_p05/p50/p95=0.85/1.00/1.20
   from there. DayZ note: binarization quantizes UVs to int16 over the LOD's min/max —
   one face with huge tiling degrades the whole LOD; this pipeline keeps everything in
   [0,1] so it is safe.
-- Texel density reference: ~292 px/m @2048 was the healthy in-game reference measured
-  on LFQuad wheels; props ~512 px/m, first-person weapons ~1024 px/m.
+- Texel density reference: the LFQuad wheels, the closest shipped-and-accepted yardstick,
+  measure UV density 0,1307-0,1438 on a `_co` that decodes at **1024^2** — i.e.
+  **134-147 px/m** in game (re-measured 2026-09-01 by decoding the shipped `.paa`; the
+  ~292 px/m this line used to quote is that same density read against a 2048 texture the
+  asset does not use). Props ~512 px/m, first-person weapons ~1024 px/m.
+  Measure both halves when you derive a floor — the density from the model and the
+  texture side from the file — so nothing enters as a constant.
 
 ## AI alternative — PartUV (piloted, measured; read before recommending any "UV AI")
 
@@ -270,6 +282,35 @@ oche_20260901\\unwrap_blender.py
 - Packer margin in **texels** (4 of 4096 = 0.000977), not a fixed UV 0.003: at 7760 islands, 0.003 threw away 90% of the sheet (occupancy 5.7% → 19.9% at 4 texels).
 - Fold-loop detector must be **exact SAT**, not Monte-Carlo %. Same trap as below.
 - smart_project headless still unwraps EVERYTHING; only acceptable as whole-mesh Track B.
+
+### RETRACTACION 2026-09-02 — tres de las lineas de arriba se midieron y son falsas
+
+The subsection above was written from that session's mid-flight state, before the
+measurements that closed it. Its text is kept because it records why the hypothesis
+looked right; **do not follow it**. What the same night measured afterwards:
+
+- **`SEAM_MODE=matonly` is not a default, it destroys the mesh.** Material-boundary
+  seams alone gave 695 islands with a median of 19 faces — near the 495-shell floor,
+  exactly as hoped — and **100,0% of triangles collapsed to zero UV area**. The probe
+  that recommended it measured island count and NaN and not collapse, so over the
+  survivors it reported 1.308 px/m and 76% occupancy, better numbers than the correct
+  run's. `smart_project` remains the only seam family on this mesh with 0,0% collapse.
+  Full table of five strategies in `references/multi-lod-shared-atlas.md` §3.
+- **"LOD1 does not unwrap, UV is transferred from LOD0" does not work here.** Three
+  transfer strategies were measured; the best left **4.647 overlapping pairs and 167
+  collapsed faces**, and the one whose density came out right (ratio 0,97) still left
+  8.409 pairs. The cause is arithmetic and no care in the transfer fixes it: LOD0's
+  islands have a median of 2 faces while a LOD1 face is 2,5x the area of a LOD0 face.
+  Each LOD is unwrapped on its own and both are packed into disjoint regions of one
+  sheet — §2 and §4 of the same reference.
+- **The 755 px/m @4096 floor was miscalibrated.** It came from two earlier atlases
+  that each covered a *subset* of the same body, and packing less surface into the
+  same sheet buys density for free. Against it a whole-body atlas failed while being
+  denser than anything the mod ships. Re-derived from shipped work: the LFQuad wheel
+  `_co` is 1024^2 at density 0,1307-0,1438, i.e. **134-147 px/m**. §7.
+
+What the corrected recipe delivered on the same model: both visual LODs at **0,00%
+collapsed and 0 SAT pairs**, 0 cross-LOD pairs, a 75/25 sheet split, 349 and 204 px/m.
 
 ### Decision
 
