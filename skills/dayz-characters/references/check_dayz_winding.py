@@ -32,11 +32,11 @@ NORMALS_OUTWARD_MIN = 0.35
 
 def load_py3d(extra):
     for p in ([extra] if extra else []) + [
-        r"<dayz-projects>\py3d",
         os.path.join(os.path.dirname(__file__), "py3d")]:
         if p and os.path.isdir(p) and p not in sys.path:
             sys.path.insert(0, p)
     import py3d
+    assert getattr(py3d, "IS_DAYZ_FORK", False) and tuple(map(int, py3d.__version__.split("."))) >= (1, 6, 0), (py3d.__version__, py3d.__file__)
     return py3d
 
 def per_vertex_normal(lod):

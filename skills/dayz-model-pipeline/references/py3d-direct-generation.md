@@ -6,7 +6,7 @@ La lib `py3d` (fork DayZ >= 1.6.0 sobre el codec de KoffeinFlummi) lee y escribe
 (unbinarized) format directly from Python. No Blender, no Object Builder, no external
 tools needed.
 
-- **Repo:** fork local `P:\py3d` (upstream: https://github.com/KoffeinFlummi/py3d, muerto)
+- **Repo:** el fork vive en el pack (`tools/py3d`, 1.7.0) y en GitHub `willy92wins/py3d-dayz` (upstream https://github.com/KoffeinFlummi/py3d, muerto). `P:\py3d` es un clon de jun-2026 congelado en 1.3.0: no es fuente.
 - **Install:** pack `tools/py3d` + `pip install opensimplex --break-system-packages`:
 
 ```bash

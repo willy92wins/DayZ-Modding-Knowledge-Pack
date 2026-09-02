@@ -1,7 +1,7 @@
 import sys, json, os
-sys.path.insert(0, r"<dayz-projects>\py3d")
 sys.path.insert(0, r"<tmp>\armorhneck_research_ws\tools")
 import py3d
+assert getattr(py3d, "IS_DAYZ_FORK", False) and tuple(map(int, py3d.__version__.split("."))) >= (1, 6, 0), (py3d.__version__, py3d.__file__)
 from odol_reader import ODOL
 
 OUT = r"<tmp>\armorhneck_viewer"
