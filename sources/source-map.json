@@ -6314,10 +6314,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "ll-citations@2026-08-29",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "A mod can carry two divergent PBOs and the gate can be pointed at the wrong one. Measured on LFQuad: the source-tree package was 5.92 MB with a binarised model, the deployed one under Mods\\@<Mod>\\Addons was 17.22 MB with the raw MLOD and dated a day earlier, and both held 73 entries, 5 .c, 36 .paa and 23 .rvmat, so neither looked broken. The one the game loads was the older. A packaging gate therefore checks every package that exists for the mod rather than one chosen by hand, verifies the model by name and never by size, and excludes *.pbo, *.bisign, *.bak* and temporaries from a freshness walk - a backup is written after the thing it copies.",
+          "license": "MIT",
+          "source_hash": "d05f2aa21a2ba7b85192a93b7ad30a9064ddea2b632ea76f5434b4d5ebe03ba7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "two-pbos@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "12a1b363fa4e4e36b426f34249cbe2345ee5094fd9e391fcb6db0e0ed1317296",
+      "output_hash": "d05f2aa21a2ba7b85192a93b7ad30a9064ddea2b632ea76f5434b4d5ebe03ba7",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -7592,10 +7602,20 @@
           "source_path": "skills/dayz-texture-pipeline/SKILL.md",
           "source_revision": "ll-citations@2026-08-29",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Four measured traps carrying a per-model atlas from Blender into the mod. ImageToPAA rejects the PNG Blender writes with 'Error (Loading of img failed)' and nothing else, because of its EXIF, gamma and chromaticity chunks; a plain PIL re-save converts first try (23.95 MB failing, 6.96 MB re-saved becoming a 7.39 MB .paa). The source filename decides the normal handling, so it must end in _nohq. dir[] has no canonical identity in a vanilla uvTransform - census over every .rvmat in the DZ tree gives {0,0,0} 65495 against {0,0,1} 42460 - so a gate for 1:1 atlas sampling checks aside, up and pos and not dir; an earlier one rejected 26 stages copied verbatim from DZ\\vehicles\\parts\\data\\aircraft_battery.rvmat. Plus the Super seven-stage template with the chrome environment maps DayZ already ships, and Blender's Image.save() resolving a relative filepath_raw against the open .blend rather than the working directory, without raising.",
+          "license": "MIT",
+          "source_hash": "5aeafb9c5dfb0134a45376f4d21901835d9c33ebff7170619c871a174737c5d1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/SKILL.md",
+          "source_revision": "atlas-to-paa@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "618b4c07472145f6126647c2f3c360916e5ac97217bf2b96ccf97bf7561ab97f",
+      "output_hash": "5aeafb9c5dfb0134a45376f4d21901835d9c33ebff7170619c871a174737c5d1",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -11086,13 +11106,45 @@
           "source_path": "skills/uv-clean-atlas/SKILL.md",
           "source_revision": "ll-citations@2026-08-29",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Retracted three claims of the 2026-09-01 subsection after measuring them the same night: SEAM_MODE=matonly as a default collapses 100.0% of triangles (695 islands, median 19 faces, against 0.0% for smart_project at 8515 islands); the LOD0-to-LOD1 UV transfer leaves 4647 overlapping pairs and 167 collapsed faces in its best of three forms, because LOD0's islands have a median of 2 faces while a LOD1 face is 2.5x their area; and the 755 px/m floor was derived from two atlases each covering a subset of the same body, so it sat above everything the mod ships. Corrected the texel-density reference in the same pass: the LFQuad wheel _co decodes at 1024^2 with UV density 0.1307-0.1438, i.e. 134-147 px/m, not the ~292 that figure implied against a 2048 texture the asset does not use. Added the pointer to references/multi-lod-shared-atlas.md.",
+          "license": "MIT",
+          "source_hash": "3d5ef3f7682fd9e41d773a3920ab7a1052b988a466890302500acd98cfa85f68",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/uv-clean-atlas/SKILL.md",
+          "source_revision": "multi-lod-atlas@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d2d7710c9451a25b0f0eae21fcb2923e46eb12aae126066a7409f97ac5699198",
+      "output_hash": "3d5ef3f7682fd9e41d773a3920ab7a1052b988a466890302500acd98cfa85f68",
       "output_path": "skills/uv-clean-atlas/SKILL.md",
       "routing_artifact_id": "skill/uv-clean-atlas",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/uv-clean-atlas/references/multi-lod-shared-atlas.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "Authored in the pack from the LFQuad session of 2026-09-01/02, measured end to end on LFQuad_body.p3d (two visual LODs of 38831 and 15422 faces, 16 materials, 4 wheel proxies). Records how to re-unwrap a model that already ships: making 'UV-only' a fingerprint over points, topology, material assignment and selections and calibrating it by mutation; the seam trade-off with collapse reported next to island count (material-only seams give 695 islands at a median of 19 faces and collapse 100.0% of triangles, while smart_project gives 8515 at a median of 2 and 0.0%); why a transfer onto a decimated LOD cannot work below a granularity ratio (three strategies measured at 25114% occupancy, 8409 overlapping pairs, and 4647 pairs with 167 collapsed faces); the shared-sheet layout that replaces it (both LODs at 0.00% collapsed, 0 SAT pairs each, 0 cross-LOD pairs, a 75/25 split at 349 and 204 px/m); aligning the high-poly by searching 48 axis permutations re-centred on the bounding box (p50 0.47 mm for the winning frame against 163.71 mm for the identity) and gating on the fraction beyond the ray's reach rather than on deviation; and measuring the baked map inside the island cores, since 99.08% of the short normals sit in the packing gutter whose size tracks island count and not bake quality.",
+          "license": "MIT",
+          "source_hash": "35d905abca4744b6173165f1eacc0a4de9728b9a70dea9e17e020a2e12c40f9a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/uv-clean-atlas/references/multi-lod-shared-atlas.md",
+          "source_revision": "multi-lod-atlas@2026-09-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "35d905abca4744b6173165f1eacc0a4de9728b9a70dea9e17e020a2e12c40f9a",
+      "output_path": "skills/uv-clean-atlas/references/multi-lod-shared-atlas.md",
+      "routing_artifact_id": "skill/uv-clean-atlas",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/uv-clean-atlas/references/partuv-pilot.md",
