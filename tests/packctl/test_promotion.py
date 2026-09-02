@@ -1355,23 +1355,29 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
         for item in unmapped
         if item["code"] == "PROMOTION-CONFIG-INVALID"
     )
-    # Census of every executable payload carrying a placeholder, with no
-    # localisation configured. It is pinned so that adding one is a deliberate
-    # act: each entry is a file that will not run until an operator points it
-    # at their own machine, and silently growing this list is how a pack ends
-    # up shipping scripts nobody can execute. Shrinking it is the good
-    # direction and needs the same edit: a payload leaves when a refactor
-    # removes its last hardcoded path, not when the scanner stops looking.
+    # Census of every executable payload carrying a token from the closed alias
+    # list with no localisation configured. Pinned so that adding one is a
+    # deliberate act: each entry is a file that will not run until an operator
+    # points it at their own machine, and silently growing this list is how a
+    # pack ends up shipping scripts nobody can execute. It is only ever as good
+    # as PROMOTION_PATH_PLACEHOLDERS: a hardcoded path written with a token
+    # outside that tuple is invisible here AND unconfigurable, so an entry
+    # leaving is a fact about the scanner until someone runs the file.
     assert observed_paths == [
         "skills/dayz-animation-pipeline/scripts/extract_weapon.py",
         "skills/dayz-animation-pipeline/scripts/fbx_extract.py",
         "skills/dayz-animation-pipeline/scripts/seanim_export.py",
         "skills/dayz-characters/references/check_dayz_winding.py",
+        "skills/dayz-clothing/references/alignment_viewer_build.py",
         "skills/dayz-clothing/references/alignment_viewer_extract.py",
         "skills/dayz-clothing/references/alignment_viewer_extract.py",
+        "skills/dayz-clothing/references/alignment_viewer_extract.py",
+        "skills/dayz-clothing/references/alignment_viewer_extract.py",
+        "skills/dayz-clothing/references/alignment_viewer_extract.py",
         "skills/dayz-clothing/references/apply_alignment_json.py",
         "skills/dayz-clothing/references/apply_alignment_json.py",
         "skills/dayz-clothing/references/apply_alignment_json.py",
+        "skills/dayz-clothing/references/export_clothing_fbx.py",
         "skills/dayz-clothing/references/export_clothing_fbx.py",
         "skills/dayz-clothing/references/export_clothing_fbx.py",
         "skills/dayz-mcp-verify/references/drive_ladder.py",
@@ -1398,6 +1404,7 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
                 "kind": "path",
                 "value": str(root / "claude-appdata"),
             },
+            "<tmp>": {"kind": "path", "value": str(root / "tmp")},
         },
     )
 

@@ -9,6 +9,10 @@
       "kind": "path",
       "value": "<absolute-dayz-projects-root>"
     },
+    "<tmp>": {
+      "kind": "path",
+      "value": "<absolute-scratch-root>"
+    },
     "<you>": {
       "kind": "fragment",
       "value": "<local-user-name>"

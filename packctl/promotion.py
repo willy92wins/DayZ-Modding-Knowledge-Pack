@@ -35,6 +35,10 @@ REQUIRED_SKILL_TARGETS = {"claude_user_skills", "agents_user_skills"}
 ADJUDICATIONS_PATH = Path("promotions/adjudications.json")
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 PROMOTION_EXECUTABLE_SUFFIXES = {".ps1", ".psm1", ".bat", ".cmd", ".py"}
+# The closed alias list. It is closed in both directions: the scanner only
+# reports these tokens, and `_load_promotion_config` rejects a configured alias
+# that is not here -- so a payload whose hardcoded path uses a token missing
+# from this tuple is neither reported nor localisable, and ships unrunnable.
 PROMOTION_PATH_PLACEHOLDERS = (
     "<you>",
     "<runbooks>",
@@ -44,6 +48,7 @@ PROMOTION_PATH_PLACEHOLDERS = (
     "<vanilla>",
     "<cf-root>",
     "<claude-appdata>",
+    "<tmp>",
 )
 PROMOTION_PLACEHOLDER_SCANNER_EXCLUSIONS = frozenset(
     {

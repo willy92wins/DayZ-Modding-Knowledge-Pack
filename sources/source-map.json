@@ -2006,17 +2006,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored in this branch: phrase aliases localise published prose on promotion while the repository keeps the public wording.",
+          "decision_evidence": "The closed alias list gains <tmp>: it is a real path root in three executable payloads, and a token missing from the tuple is neither reported by the scanner nor configurable by an operator.",
           "license": "MIT",
-          "source_hash": "133a6582bb30920d56feacee72abedfca25f3d85120c7469345baf4c32622db2",
+          "source_hash": "0f02db69d4869fe6ecc2a6e253805eda41090303ff71405adf370dfd86afe793",
           "source_id": "pack-r21-authored",
           "source_path": "packctl/promotion.py",
-          "source_revision": "promotions-phrase-aliases@2026-08-31",
+          "source_revision": "packctl-tmp-alias@2026-09-02",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "133a6582bb30920d56feacee72abedfca25f3d85120c7469345baf4c32622db2",
+      "output_hash": "0f02db69d4869fe6ecc2a6e253805eda41090303ff71405adf370dfd86afe793",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -2148,17 +2148,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored in this branch: phrase aliases localise published prose on promotion while the repository keeps the public wording.",
+          "decision_evidence": "Documents <tmp> now that it is in the closed alias list: an operator copying this example without it fails promote check on five findings.",
           "license": "MIT",
-          "source_hash": "384b1856ba96629922a6f0050b55080fc132ff309ce257902e4aea8222041814",
+          "source_hash": "43e7fc5a4e81327d896218191c7e307b4aa2a0a3986da26f0a741f881b45e131",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/local-targets.example.json",
-          "source_revision": "promotions-phrase-aliases@2026-08-31",
+          "source_revision": "packctl-tmp-alias@2026-09-02",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "384b1856ba96629922a6f0050b55080fc132ff309ce257902e4aea8222041814",
+      "output_hash": "43e7fc5a4e81327d896218191c7e307b4aa2a0a3986da26f0a741f881b45e131",
       "output_path": "promotions/local-targets.example.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -11962,17 +11962,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored in this branch: phrase aliases localise published prose on promotion while the repository keeps the public wording. The pinned placeholder census drops alignment_viewer_build.py, whose last hardcoded path went away with the shared viewer scaffold.",
+          "decision_evidence": "The pinned placeholder census tracks <tmp>, which returns alignment_viewer_build.py to the list: verified 2026-09-02 that the script dies on the literal <tmp> path before it can build its viewer.",
           "license": "MIT",
-          "source_hash": "0e9c79c9d0de733f59900853a0fc34102bbf61775541b5c4d0eda4813ce2f090",
+          "source_hash": "b7d0421317d84ee5aa4458c08b1742392afbf305c2ceebb64cbc688eea3e5b71",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_promotion.py",
-          "source_revision": "packctl-gate-green@2026-09-02",
+          "source_revision": "packctl-tmp-alias@2026-09-02",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0e9c79c9d0de733f59900853a0fc34102bbf61775541b5c4d0eda4813ce2f090",
+      "output_hash": "b7d0421317d84ee5aa4458c08b1742392afbf305c2ceebb64cbc688eea3e5b71",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
