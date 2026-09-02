@@ -19,7 +19,7 @@ def fork():
         "the py3d module that got imported is NOT this fork "
         "(is site-packages shadowing it?): %r"
         % getattr(py3d, "__file__", None))
-    assert py3d.__version__ == "1.6.0"
+    assert py3d.__version__ == "1.7.0"
     return py3d
 
 

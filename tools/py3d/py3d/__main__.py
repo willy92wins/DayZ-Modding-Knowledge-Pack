@@ -9,6 +9,9 @@ The output schema is STABLE ("key: value" lines, pinned by the tests):
 changing it is a contract change and needs a version bump.
 1.6.0: `info` gained `lod.N.uv_sets` (ids separated by ';') and `diff`
 compares the UV set ids per LOD (`diff.lod.N.uv_sets`).
+1.7.0: `info` gained `lod.N.selected` (the editor's current selection as
+`Np/Mf`, or `-` when the LOD carries no `#Selected#`) and `diff` reports it
+under the same `diff.lod.N.selection.#Selected#.*` keys as a named one.
 
 Exit codes:
     info:     0 ok                     | 2 input not readable
@@ -73,6 +76,9 @@ def cmd_info(args):
         sels = ";".join("%s(%dp/%df)" % (n, len(s.points), len(s.faces))
                         for n, s in lod.selections.items())
         out.append("lod.%d.selections: %s" % (i, sels or "-"))
+        out.append("lod.%d.selected: %s" % (
+            i, "-" if lod.selected is None else "%dp/%df" % (
+                len(lod.selected.points), len(lod.selected.faces))))
         props = ";".join("%s=%s" % kv for kv in lod.properties.items())
         out.append("lod.%d.properties: %s" % (i, props or "-"))
         textures = sorted({fa.texture for fa in lod.faces if fa.texture})
@@ -132,11 +138,26 @@ def _diff_memory(a, b, i, diffs, tol=1e-4):
                          % (i, name, _fmt3(mb[name])))
 
 
+def _selection_map(lod):
+    """Named selections plus the editor's current one under its tag name.
+
+    `#Selected#` is anonymous on the model but has a named selection's
+    layout, so the diff treats it as one more entry: an edit that drops it
+    shows up as a missing name instead of being invisible.
+    """
+    sels = {}
+    if lod.selected is not None:
+        sels["#Selected#"] = lod.selected
+    sels.update(lod.selections)
+    return sels
+
+
 def _diff_selections(a, b, i, diffs):
-    na = list(a.selections.keys())
-    nb = list(b.selections.keys())
-    only_a = [n for n in na if n not in b.selections]
-    only_b = [n for n in nb if n not in a.selections]
+    a_sels, b_sels = _selection_map(a), _selection_map(b)
+    na = list(a_sels.keys())
+    nb = list(b_sels.keys())
+    only_a = [n for n in na if n not in b_sels]
+    only_b = [n for n in nb if n not in a_sels]
     if only_a or only_b:
         diffs.append("diff.lod.%d.selections.names: +a%r +b%r"
                      % (i, only_a, only_b))
@@ -145,9 +166,9 @@ def _diff_selections(a, b, i, diffs):
     pt_b = {id(p): j for j, p in enumerate(b.points)}
     fc_b = {id(f): j for j, f in enumerate(b.faces)}
     for n in na:
-        if n not in b.selections:
+        if n not in b_sels:
             continue
-        sa, sb = a.selections[n], b.selections[n]
+        sa, sb = a_sels[n], b_sels[n]
         ia = sorted(pt_a[id(p)] for p in sa.points if id(p) in pt_a)
         ib = sorted(pt_b[id(p)] for p in sb.points if id(p) in pt_b)
         if ia != ib:

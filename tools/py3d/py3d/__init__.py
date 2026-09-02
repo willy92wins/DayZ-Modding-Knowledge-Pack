@@ -25,6 +25,9 @@ What this fork adds on top of upstream's MLOD codec:
 - Format fidelity for UV sets: every `#UVSet#` beyond the first survives a
   read/write cycle (`Vertex.uv_sets`), and a LOD without faces gets the
   empty `#UVSet#` tag Object Builder writes (Memory, LandContact).
+- Format fidelity for the editor's current selection: `#Selected#` is read
+  into `LOD.selected` and written back with its payload intact, so a file
+  written by Object Builder survives a read/write cycle byte for byte.
 
 Write contract: byte-identical to upstream for valid canonical inputs, with
 one deliberate exception - the empty `#UVSet#` tag in LODs without faces;
@@ -36,6 +39,7 @@ library and not the unrelated `py3d` from PyPI.
 
 
 import collections
+import io
 import math
 import os
 import re
@@ -43,7 +47,7 @@ import struct
 import tempfile
 
 
-__version__ = "1.6.0"
+__version__ = "1.7.0"
 IS_DAYZ_FORK = True
 
 _REQUIRED = object()
@@ -1562,6 +1566,15 @@ class LOD:
         self.faceless_uv_sets = []
         self.properties = collections.OrderedDict()
         self.selections = collections.OrderedDict()
+        # The editor's current selection (`#Selected#`), or None when the
+        # LOD carries no such tag. It has the same on-disk layout as a
+        # named selection - one byte per point followed by one per face -
+        # so it is the same type, kept apart because it is anonymous and
+        # Object Builder writes it before the named ones. Its content is
+        # editor state, not model data: binarize.exe discards it (measured,
+        # see KNOWN-ISSUES), but Object Builder preserves it verbatim and a
+        # BI-authored file may carry it or not.
+        self.selected = None
         if f is not None:
             self.read(f)
 
@@ -2268,7 +2281,12 @@ class LOD:
         findings = []
         point_ids = set(map(id, self.points))
         face_ids = set(map(id, self.faces))
-        for name, sel in self.selections.items():
+        scanned = list(self.selections.items())
+        if self.selected is not None:
+            # The editor's current selection carries the same staleness and
+            # weight hazards as a named one, so it is scanned with them.
+            scanned.insert(0, ("#Selected#", self.selected))
+        for name, sel in scanned:
             if sel.all_points is not self.points or \
                     sel.all_faces is not self.faces:
                 findings.append(Finding(
@@ -2363,6 +2381,10 @@ class LOD:
                 self._read_uv_set(data)
                 continue
 
+            if taggname == "#Selected#":
+                self._read_selected(num_bytes, data)
+                continue
+
             #if taggname == "#Animation#": #not supported
             #    pass
 
@@ -2413,6 +2435,29 @@ class LOD:
                 v.uv_sets[uv_id] = struct.unpack("ff", data[offset:offset + 8])
                 offset += 8
 
+    def _read_selected(self, num_bytes, data):
+        """Store the `#Selected#` payload as an anonymous Selection.
+
+        The layout is a named selection's: one byte per point followed by
+        one per face, so it is parsed by the same code and the same weight
+        mapping applies. Unlike `Selection.read`, the declared length is
+        checked here - a payload that does not match the LOD's point and
+        face counts is a corrupt tag, and reading it anyway would bind
+        weights to the wrong elements. A second `#Selected#` in one LOD is
+        equally corrupt: Object Builder writes at most one.
+        """
+        expected = len(self.points) + len(self.faces)
+        if num_bytes != expected:
+            raise ValueError(
+                "#Selected#: payload is %d bytes, expected %d for %d "
+                "point(s) and %d face(s)"
+                % (num_bytes, expected, len(self.points), len(self.faces)))
+        if self.selected is not None:
+            raise ValueError("#Selected# appears twice in the same LOD")
+        self.selected = Selection(
+            self.points, self.faces,
+            io.BytesIO(struct.pack("<L", num_bytes) + data))
+
     def write(self, f):
         f.write(b"P3DM")
         f.write(struct.pack("<L", self.version_major))
@@ -2439,6 +2484,29 @@ class LOD:
             f.write(struct.pack("<L", len(self.sharp_edges) * 8))
             for se in self.sharp_edges:
                 f.write(struct.pack("<LL", *se))
+
+        # The editor's current selection goes after #SharpEdges# and before
+        # the named selections - the slot Object Builder writes it in, and
+        # the one BI-authored files carry it in. It is anonymous, so it can
+        # never also live in self.selections under that name: two tags with
+        # the same name would be written and only the first read back.
+        if self.selected is not None:
+            if "#Selected#" in self.selections:
+                raise RuntimeError(
+                    "both lod.selected and a named selection '#Selected#' "
+                    "are set; the editor's current selection is anonymous - "
+                    "keep it in lod.selected and remove the named one")
+            if self.selected.all_points is not self.points or \
+                    self.selected.all_faces is not self.faces:
+                raise RuntimeError(
+                    "lod.selected: stale binding - its all_points/all_faces "
+                    "are not this LOD's current lists (did you replace "
+                    "lod.points/lod.faces after reading the file?). Re-bind "
+                    "it with Selection(lod.points, lod.faces), or set "
+                    "lod.selected = None to drop the editor's selection.")
+            f.write(b"\x01")
+            f.write(b"#Selected#\0")
+            self.selected.write(f, name="#Selected#")
 
         for k, v in self.selections.items():
             # A selection must stay bound to the LOD's CURRENT lists;
@@ -2543,6 +2611,14 @@ class P3D:
                     raise ValueError(
                         "verify: selection %r membership differs in LOD %d"
                         % (name, i))
+            if (b.selected is None) != (a.selected is None):
+                raise ValueError(
+                    "verify: #Selected# presence differs in LOD %d" % i)
+            if a.selected is not None and \
+                    (len(b.selected.points), len(b.selected.faces)) != \
+                    (len(a.selected.points), len(a.selected.faces)):
+                raise ValueError(
+                    "verify: #Selected# membership differs in LOD %d" % i)
             if dict(b.properties) != dict(a.properties):
                 raise ValueError("verify: properties differ in LOD %d" % i)
             if b.uv_set_ids() != a.uv_set_ids():

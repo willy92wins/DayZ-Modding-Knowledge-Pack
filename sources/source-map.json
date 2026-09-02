@@ -20270,7 +20270,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "89b9a18f92cedb66879667143b93f817d62e66a4071a3d2eb48426775e994bd7",
+      "output_hash": "2e9eac642dcb8f58d5b4dc5633dd2c79a13020f534ea8eeda65251c69789ad04",
       "output_path": "tools/py3d/KNOWN-ISSUES.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20384,7 +20384,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1f5c72beda2aa16863a5c384dea5c29821150ea39d4b9db365de50d7dcc18b3d",
+      "output_hash": "5f6e3382138fbd39f993ca8561c29d41cbb55dad1403d36d81629cbbfbb86ca7",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20456,7 +20456,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b6b95232eecbcd855f9cbfcb55e01d7a2611945a578afdf7ed0fd4ac0ad2bcdb",
+      "output_hash": "df1a1774a7b67bf4fcc4c07b8aaf34f33a5ae51dab09a4c1ac536b6fb137fe1a",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20508,7 +20508,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a61f9aac17114b72682fc57a416ad680c57e7cac335ed9b6284c416e8ef95021",
+      "output_hash": "1b8e72e2da25680a88f763ffdc1d290f0bf058ded1b827ba80e582bdcf443322",
       "output_path": "tools/py3d/py3d/__main__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21100,7 +21100,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7deb363e96c7e916246efaf7344f2c67ab3fab3edba6b784850fe5e0415449e3",
+      "output_hash": "3969ea0c089ab7810f440b9afe36110b29699ff78f07c965fe0cd29e2632a663",
       "output_path": "tools/py3d/rollout/wheel-manifest.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21214,7 +21214,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "10af5a64d3c729e0ad4db68e980c19dfe8b3fe985bf501d5b45ba2c5bb7d452b",
+      "output_hash": "3dc2faf6d505ec51c62ffd874975b8e2b800fb875a3ead5eb3ad0638fff18d41",
       "output_path": "tools/py3d/setup.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21328,7 +21328,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f06e30f4f4c9975f02a3543387ac7f442b19835c701cf6102aa1e02e0354f705",
+      "output_hash": "4c90d8f39b8f2c2f4f563cac73e1b73b4977d948232e5a8adefb9080e2de4733",
       "output_path": "tools/py3d/tests/conftest.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21380,7 +21380,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b5c22397e3fe3f48d642a69bb83bbc8b246fc0242f7298221347d286211c8fc9",
+      "output_hash": "059bf8a30783633e1a99b91e5c169363ff6e706cd1a39a02b2298218c38d71ce",
       "output_path": "tools/py3d/tests/helpers.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21776,7 +21776,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "17ff7a4ab90cb1e2a315632e40e537a9c880acdcbcd6a1a32aed491eecd92d63",
+      "output_hash": "681aa423ccc2eeefe261a50550cc3802a5fb08ad70a2eea3960fbfd5225160c0",
       "output_path": "tools/py3d/tests/test_s2_cli.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -22104,6 +22104,28 @@
       "license": "MIT",
       "output_hash": "23ac15e8631ee676c3ce6cb37c37e3bbcd4b63b5d0745fa764b3b80c9242dcd3",
       "output_path": "tools/py3d/tests/test_s5_uvsets.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/py3d/tests/test_s6_selected.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored in the pack for the 1.7.0 #Selected# fidelity change; the published fork does not carry this file yet.",
+          "license": "MIT",
+          "source_hash": "2c6048cc8a26ee624fb4bb07b47209ea8034defd5832cb66643de628f20f0d06",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/test_s6_selected.py",
+          "source_revision": "selected-tag@2026-09-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2c6048cc8a26ee624fb4bb07b47209ea8034defd5832cb66643de628f20f0d06",
+      "output_path": "tools/py3d/tests/test_s6_selected.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },

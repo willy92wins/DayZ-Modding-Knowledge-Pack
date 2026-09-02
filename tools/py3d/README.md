@@ -95,15 +95,24 @@ python -m py3d diff     a.p3d b.p3d  # structural comparison
   two UV sets lost the second one (4,761,261 → 4,409,836 bytes).
 - A LOD without faces (Memory, LandContact) gets the empty `#UVSet#` tag that
   Object Builder writes and BI-authored files carry; upstream omitted it.
-- `save(verify=True)`, `info` and `diff` compare the UV set ids of every LOD.
+- The editor's current selection (`#Selected#`) is read into `LOD.selected` and
+  written back with its payload intact, in the slot Object Builder writes it in
+  (after `#SharpEdges#`, before the named selections). Upstream dropped it:
+  re-saving `WeaponSpecialLODs.p3d` lost 202 bytes and `InfectedSpecialLODs.p3d`
+  863. It is editor state, not model data -- `binarize.exe` discards it
+  (measured; see KNOWN-ISSUES) -- but Object Builder preserves it verbatim, so
+  dropping it silently discards the user's selection.
+- `save(verify=True)`, `info` and `diff` compare the UV set ids of every LOD and
+  the presence and membership of `#Selected#`.
 
 **Write contract.** For valid canonical input the bytes written are identical to
-what upstream writes, with one deliberate exception: a LOD without faces gets the
-empty `#UVSet#` tag (17 bytes) that upstream omits. Where upstream would have
-corrupted the file or crashed later, this fork raises instead. Do not assume
-`input_bytes == output_bytes` for input that was not canonical to begin with:
-tags are written in this library's order, not the source file's, and editor-state
-tags such as `#Selected#` are not preserved.
+what upstream writes, with two deliberate exceptions: a LOD without faces gets
+the empty `#UVSet#` tag (17 bytes) that upstream omits, and `#Selected#` is
+written back where upstream dropped it. Where upstream would have corrupted the
+file or crashed later, this fork raises instead. A file written by Object
+Builder survives a read/write cycle byte for byte; a file written by BI may not,
+because tags are written in this library's order -- which is the order Object
+Builder itself writes, and not always the source file's.
 
 ## Winding: read this before trusting any validator
 
@@ -129,7 +138,7 @@ turns a quad `[0,1,2,3]` into `[0,2,1,3]`, a crossed face.
 
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 248 tests pass -- 241 of them
+The library is used in a real modding pipeline, and 263 tests pass -- 256 of them
 on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
 upstream (see [Tests](#tests)). It has also been through a deliberately
 adversarial audit, and **not every problem it found is fixed yet**. Before

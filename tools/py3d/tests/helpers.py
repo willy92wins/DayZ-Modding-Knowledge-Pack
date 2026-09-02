@@ -102,6 +102,17 @@ def assert_sem_inv(m, model, data=None):
                 w2 = sb.faces[b.faces[a.faces.index(fc)]]
                 _assert_weight(w, w2, sctx)
 
+        sa, sb = getattr(a, "selected", None), getattr(b, "selected", None)
+        assert (sb is None) == (sa is None), ctx + ": #Selected# presence"
+        if sa is not None:
+            sctx = ctx + " #Selected#"
+            assert _sel_indices(b, sb) == _sel_indices(a, sa), \
+                sctx + ": membership"
+            for p, w in sa.points.items():
+                _assert_weight(w, sb.points[b.points[a.points.index(p)]], sctx)
+            for fc, w in sa.faces.items():
+                _assert_weight(w, sb.faces[b.faces[a.faces.index(fc)]], sctx)
+
         assert dict(b.properties) == dict(a.properties), ctx + ": properties"
 
         if a.mass is None:
@@ -136,6 +147,27 @@ def scan_taggs(data):
     """Independent MLOD walker (does not use py3d): per LOD, the ordered list
     of (tag name, payload size, uv set id or None). The instrument that
     counts #UVSet# tags must not share the reader under test."""
+    return [[(name, len(payload),
+              struct.unpack("<L", payload[:4])[0] if name == "#UVSet#"
+              else None)
+             for name, payload in taggs]
+            for taggs in walk_taggs(data)]
+
+
+def selected_payloads(data):
+    """Per LOD: the raw #Selected# payload, or None when the LOD has no such
+    tag. Content, not just presence - a codec that regenerates the tag as
+    zeroes of the right length passes a presence check and still loses the
+    editor's selection."""
+    out = []
+    for taggs in walk_taggs(data):
+        hit = [payload for name, payload in taggs if name == "#Selected#"]
+        out.append(hit[0] if hit else None)
+    return out
+
+
+def walk_taggs(data):
+    """Independent MLOD walker: per LOD, the ordered (tag name, payload)."""
     f = io.BytesIO(data)
     assert f.read(4) == b"MLOD"
     _, nlods = struct.unpack("<LL", f.read(8))
@@ -156,11 +188,7 @@ def scan_taggs(data):
             f.read(1)
             name = _asciiz(f)
             size = struct.unpack("<L", f.read(4))[0]
-            payload = f.read(size)
-            uv_id = None
-            if name == "#UVSet#":
-                uv_id = struct.unpack("<L", payload[:4])[0]
-            taggs.append((name, size, uv_id))
+            taggs.append((name, f.read(size)))
             if name == "#EndOfFile#":
                 break
         f.read(4)  # resolution

@@ -42,6 +42,7 @@ def test_cli_info_schema_cube(fork, tmp_path):
         "lod.0.faces: 6",
         "lod.0.mass: none",
         "lod.0.selections: Component01(8p/6f)",
+        "lod.0.selected: -",
         "lod.0.properties: -",
         "lod.0.textures: lf\\data\\stone_co.paa",
         "lod.0.materials: lf\\data\\stone.rvmat",
