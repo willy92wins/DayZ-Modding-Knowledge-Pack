@@ -98,9 +98,20 @@ def scan(root: Path) -> list[dict[str, str]]:
             problems.append({"code": "GENERATED-COPY-DRIFT", "path": rel,
                              "message": "A generated copy was edited by hand: its body differs from its source.",
                              "evidence": f"source={source_rel}"})
-    for _, target_rel in PAIRS:
-        if target_rel not in seen:
-            problems.append({"code": "GENERATED-COPY-UNMARKED", "path": target_rel,
-                             "message": "A declared generated copy is missing or lost its generated header.",
-                             "evidence": "expected the header marker on line 1"})
+    for source_rel, target_rel in PAIRS:
+        if target_rel in seen:
+            continue
+        if not (root / source_rel).is_file():
+            # PAIRS describes THIS pack, and `scan` runs against any root: the builder
+            # and gate fixtures are whole repositories as far as packctl is concerned.
+            # With no edited source in the tree there is nothing to be a copy of, so a
+            # missing copy is not drift and must not fail those roots. The two ways to
+            # actually lose a pair stay covered: drop the source alone and the copy keeps
+            # its header, so the loop above reports GENERATED-COPY-SOURCE-MISSING; drop
+            # both and the source map reports SOURCE-OUTPUT-MISSING, since it tracks each
+            # half as an artifact.
+            continue
+        problems.append({"code": "GENERATED-COPY-UNMARKED", "path": target_rel,
+                         "message": "A declared generated copy is missing or lost its generated header.",
+                         "evidence": "expected the header marker on line 1"})
     return problems

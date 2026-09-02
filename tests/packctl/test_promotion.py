@@ -1359,13 +1359,14 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
     # localisation configured. It is pinned so that adding one is a deliberate
     # act: each entry is a file that will not run until an operator points it
     # at their own machine, and silently growing this list is how a pack ends
-    # up shipping scripts nobody can execute.
+    # up shipping scripts nobody can execute. Shrinking it is the good
+    # direction and needs the same edit: a payload leaves when a refactor
+    # removes its last hardcoded path, not when the scanner stops looking.
     assert observed_paths == [
         "skills/dayz-animation-pipeline/scripts/extract_weapon.py",
         "skills/dayz-animation-pipeline/scripts/fbx_extract.py",
         "skills/dayz-animation-pipeline/scripts/seanim_export.py",
         "skills/dayz-characters/references/check_dayz_winding.py",
-        "skills/dayz-clothing/references/alignment_viewer_build.py",
         "skills/dayz-clothing/references/alignment_viewer_extract.py",
         "skills/dayz-clothing/references/alignment_viewer_extract.py",
         "skills/dayz-clothing/references/apply_alignment_json.py",

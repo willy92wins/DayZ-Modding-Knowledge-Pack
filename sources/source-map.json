@@ -11886,6 +11886,29 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/tests/packctl/test_generated.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored in this branch: packctl.generated shipped with no tests and its PAIRS backstop failed every synthetic root.",
+          "license": "MIT",
+          "source_hash": "fbe19dce3d1c2e45de7e750039ccda70ef1ff24d024384268b4542d0090aef86",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_generated.py",
+          "source_revision": "packctl-gate-green@2026-09-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fbe19dce3d1c2e45de7e750039ccda70ef1ff24d024384268b4542d0090aef86",
+      "output_path": "tests/packctl/test_generated.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/tests/packctl/test_gate.py",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -11939,17 +11962,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored in this branch: phrase aliases localise published prose on promotion while the repository keeps the public wording.",
+          "decision_evidence": "Authored in this branch: phrase aliases localise published prose on promotion while the repository keeps the public wording. The pinned placeholder census drops alignment_viewer_build.py, whose last hardcoded path went away with the shared viewer scaffold.",
           "license": "MIT",
-          "source_hash": "31711630fa826865b0c22a0cab1be01e3c81bb8710cb348e611126437979d9e6",
+          "source_hash": "0e9c79c9d0de733f59900853a0fc34102bbf61775541b5c4d0eda4813ce2f090",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_promotion.py",
-          "source_revision": "promotions-phrase-aliases@2026-08-31",
+          "source_revision": "packctl-gate-green@2026-09-02",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "31711630fa826865b0c22a0cab1be01e3c81bb8710cb348e611126437979d9e6",
+      "output_hash": "0e9c79c9d0de733f59900853a0fc34102bbf61775541b5c4d0eda4813ce2f090",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -22529,17 +22552,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Owns both halves of the generated-copy seal - writing a copy and checking one - so the rule that decides 'in sync' cannot drift between the writer and the checker.",
+          "decision_evidence": "Owns both halves of the generated-copy seal - writing a copy and checking one - so the rule that decides 'in sync' cannot drift between the writer and the checker. The PAIRS backstop is scoped to trees that carry the edited source, so a registry entry about this pack cannot fail a synthetic root.",
           "license": "MIT",
-          "source_hash": "7de2d48102052b50275c30305cb79d8c41ef29af22451dbf4d21ea10d651d7af",
+          "source_hash": "8905d79c0417f090e83b4f17263248b975c42d870ebe3bfc37343dfe7586f0d8",
           "source_id": "pack-r21-authored",
           "source_path": "packctl/generated.py",
-          "source_revision": "viewer-core@2026-09-02",
+          "source_revision": "packctl-gate-green@2026-09-02",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7de2d48102052b50275c30305cb79d8c41ef29af22451dbf4d21ea10d651d7af",
+      "output_hash": "8905d79c0417f090e83b4f17263248b975c42d870ebe3bfc37343dfe7586f0d8",
       "output_path": "packctl/generated.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested",
