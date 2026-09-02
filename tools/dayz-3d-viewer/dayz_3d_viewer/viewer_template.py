@@ -5,8 +5,8 @@ Two modes:
               Uses raw BufferGeometry — no GLTFLoader, no fetch.
   - web: references an external .glb via GLTFLoader.
 
-three.js is loaded from the jsDelivr CDN at version 0.160.0. Generated
-HTML therefore needs a network to render; the file itself is offline.
+three.js is loaded from the jsDelivr CDN at version 0.185.1 via viewer_core.
+Generated HTML therefore needs a network to render; the file itself is offline.
 """
 
 from __future__ import annotations
@@ -16,12 +16,151 @@ import json
 import os
 import struct
 
-from .deps import require_dayz_py3d
-from .errors import ViewerError
-from .p3d_to_gltf import extract_lod_geometry, find_best_visual_lod
+if __package__:
+    from .deps import require_dayz_py3d
+    from .errors import ViewerError
+    from .p3d_to_gltf import extract_lod_geometry, find_best_visual_lod
+else:
+    # Standalone fixture / script: no package, so no relative imports.
+    # A transitive ImportError from an installed package must not land here.
+    def require_dayz_py3d():
+        raise RuntimeError("dayz_3d_viewer package not installed")
 
-THREE_JS_VERSION = "0.160.0"
-THREE_CDN = "https://cdn.jsdelivr.net/npm/three@%s" % THREE_JS_VERSION
+    class ViewerError(Exception):
+        pass
+
+    def extract_lod_geometry(*_a, **_k):
+        raise RuntimeError("dayz_3d_viewer package not installed")
+
+    def find_best_visual_lod(*_a, **_k):
+        raise RuntimeError("dayz_3d_viewer package not installed")
+
+
+def _load_viewer_core():
+    """Bounded locator; same rules as viewer_core.load_viewer_core."""
+    import ast as _ast
+    import importlib.util as _ilu
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    def _under(child, parent):
+        child = os.path.normcase(os.path.abspath(child))
+        parent = os.path.normcase(os.path.abspath(parent))
+        try:
+            return os.path.commonpath([child, parent]) == parent
+        except ValueError:
+            return False
+
+    def _boundary(d):
+        if os.path.isdir(os.path.join(d, "skills")):
+            return True
+        if os.path.isdir(os.path.join(d, "dayz_3d_viewer")):
+            return True
+        if os.path.isdir(os.path.join(d, ".git")):
+            return True
+        patched = os.path.join(d, "patched")
+        return os.path.isdir(patched) and _under(here, patched)
+
+    def _layout():
+        if os.path.normcase(os.path.basename(here)) == os.path.normcase("dayz_3d_viewer"):
+            return "package"
+        d = here
+        seen_l = set()
+        while d not in seen_l:
+            seen_l.add(d)
+            name = os.path.normcase(os.path.basename(d))
+            if name == os.path.normcase("skills"):
+                return "skills"
+            if name == os.path.normcase("patched"):
+                return "workspace"
+            parent = os.path.dirname(d)
+            if parent == d:
+                break
+            d = parent
+        return "standalone"
+
+    def _looks(path):
+        try:
+            with open(path, "r", encoding="utf-8") as fh:
+                src = fh.read()
+        except OSError:
+            return False
+        try:
+            tree = _ast.parse(src, filename=path)
+        except (SyntaxError, ValueError):
+            return False
+        assigned = {}
+        funcs = set()
+        for node in tree.body:
+            if isinstance(node, _ast.Assign) and isinstance(node.value, _ast.Constant):
+                for target in node.targets:
+                    if isinstance(target, _ast.Name):
+                        assigned[target.id] = node.value.value
+            elif (
+                isinstance(node, _ast.AnnAssign)
+                and isinstance(node.target, _ast.Name)
+                and isinstance(node.value, _ast.Constant)
+            ):
+                assigned[node.target.id] = node.value.value
+            elif isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                funcs.add(node.name)
+        return (
+            assigned.get("VIEWER_CORE_CONTRACT") == "dayz-viewer-core/1"
+            and assigned.get("THREE_VERSION") == "0.185.1"
+            and {"importmap_script", "module_imports", "boot_js", "loop_js"} <= funcs
+        )
+
+    def _cands(d, kind):
+        out = []
+        if d == here and kind in ("package", "standalone"):
+            out.append(os.path.join(d, "viewer_core.py"))
+        out.append(os.path.join(d, "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "skills", "_shared", "viewer_core.py"))
+        out.append(os.path.join(d, "dayz_3d_viewer", "viewer_core.py"))
+        if d != here and _boundary(d):
+            out.append(os.path.join(d, "viewer_core.py"))
+        return out
+
+    kind = _layout()
+    d = here
+    seen = set()
+    while d not in seen:
+        seen.add(d)
+        for path in _cands(d, kind):
+            if os.path.isfile(path) and _looks(path):
+                spec = _ilu.spec_from_file_location("viewer_core", path)
+                if spec is None or spec.loader is None:
+                    continue
+                mod = _ilu.module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                if getattr(mod, "VIEWER_CORE_CONTRACT", None) != "dayz-viewer-core/1":
+                    continue
+                if getattr(mod, "THREE_VERSION", None) != "0.185.1":
+                    continue
+                if not all(
+                    callable(getattr(mod, n, None))
+                    for n in ("importmap_script", "module_imports", "boot_js", "loop_js")
+                ):
+                    continue
+                return mod
+        if kind == "standalone" or _boundary(d):
+            break
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    raise ImportError(
+        "viewer_core.py not found within pack/workspace root walking parents of %s"
+        % os.path.abspath(__file__)
+    )
+
+
+if __package__:
+    from . import viewer_core as _vc
+else:
+    _vc = _load_viewer_core()
+
+THREE_JS_VERSION = _vc.THREE_VERSION
+THREE_CDN = _vc.THREE_CDN
 
 
 def _pack_f32(values) -> bytes:
@@ -169,6 +308,33 @@ def _gen_embedded(geometry_data, model_name, bg):
         separators=(",", ":"),
         sort_keys=True,
     )
+    imap = _vc.importmap_script()
+    imports = _vc.module_imports(("OrbitControls",), three_alias="T")
+    boot = _vc.boot_js(
+        three="T",
+        scene="sc",
+        camera="cam",
+        renderer="r",
+        controls="ct",
+        grid="gr",
+        append_to="c",
+        background=json.dumps(bg),
+        fov=50,
+        aspect="c.clientWidth/c.clientHeight",
+        near=0.001,
+        far=100,
+        pixel_ratio="Math.min(devicePixelRatio,2)",
+        tone_mapping="ACESFilmicToneMapping",
+        tone_exposure=1.2,
+        orbit_auto_rotate_speed=1.5,
+        grid_size=2,
+        grid_divisions=20,
+        grid_color1="0x333355",
+        grid_color2="0x222244",
+        grid_visible=False,
+        resize="container",
+        container_expr="c",
+    )
     return f'''<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>{model_name}</title>
@@ -204,30 +370,20 @@ body{{background:{bg};overflow:hidden;font-family:'Segoe UI',system-ui,sans-seri
 <div id="ld"><div class="sp"></div></div>
 <div id="bb">LMB: Orbit | RMB: Pan | Scroll: Zoom</div>
 </div>
-<script type="importmap">{{"imports":{{"three":"{THREE_CDN}/build/three.module.js","three/addons/":"{THREE_CDN}/examples/jsm/"}}}}</script>
+{imap}
 <script type="module">
-import*as T from'three';
-import{{OrbitControls}}from'three/addons/controls/OrbitControls.js';
+{imports}
 
 const D=a=>{{const b=atob(a),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer}};
 const M={model_json};
 
 const c=document.getElementById('c');
-const sc=new T.Scene();sc.background=new T.Color("{bg}");
-const cam=new T.PerspectiveCamera(50,c.clientWidth/c.clientHeight,.001,100);
-const r=new T.WebGLRenderer({{antialias:true}});
-r.setSize(c.clientWidth,c.clientHeight);r.setPixelRatio(Math.min(devicePixelRatio,2));
-r.toneMapping=T.ACESFilmicToneMapping;r.toneMappingExposure=1.2;
-c.appendChild(r.domElement);
+{boot}
 
 sc.add(new T.AmbientLight(0xffffff,.5));
 const dl=new T.DirectionalLight(0xffffff,1);dl.position.set(2,3,2);sc.add(dl);
 const fl=new T.DirectionalLight(0x8888ff,.3);fl.position.set(-2,1,-1);sc.add(fl);
 const rl=new T.DirectionalLight(0xffffcc,.2);rl.position.set(0,-1,-2);sc.add(rl);
-
-const gr=new T.GridHelper(2,20,0x333355,0x222244);gr.visible=false;sc.add(gr);
-const ct=new OrbitControls(cam,r.domElement);
-ct.enableDamping=true;ct.dampingFactor=.08;ct.autoRotate=false;ct.autoRotateSpeed=1.5;
 
 const pos=new Float32Array(D(M.p));
 const nrm=new Float32Array(D(M.n));
@@ -285,32 +441,52 @@ window.tG=()=>{{gr.visible=!gr.visible;document.getElementById('bg2').classList.
 window.tR=()=>{{ct.autoRotate=!ct.autoRotate;document.getElementById('br').classList.toggle('a',ct.autoRotate)}};
 window.rC=()=>{{const b=new T.Box3().setFromObject(mg);const s=b.getSize(new T.Vector3());const d=Math.max(s.x,s.y,s.z)*2.5;cam.position.set(d*.6,d*.4,d*.7);ct.target.set(0,0,0)}};
 window.tB=()=>{{bi=(bi+1)%bgs.length;sc.background=new T.Color(bgs[bi])}};
-window.addEventListener('resize',()=>{{cam.aspect=c.clientWidth/c.clientHeight;cam.updateProjectionMatrix();r.setSize(c.clientWidth,c.clientHeight)}});
-(function a(){{requestAnimationFrame(a);ct.update();r.render(sc,cam)}})();
 </script></body></html>'''
 
 
 def _gen_web(url, model_name, bg):
+    imap = _vc.importmap_script()
+    imports = _vc.module_imports(("OrbitControls", "GLTFLoader"), three_alias="T")
+    boot = _vc.boot_js(
+        three="T",
+        scene="sc",
+        camera="cam",
+        renderer="r",
+        controls="ct",
+        grid="gr",
+        append_to="c",
+        background=json.dumps(bg),
+        fov=50,
+        aspect="c.clientWidth/c.clientHeight",
+        near=0.001,
+        far=100,
+        pixel_ratio="Math.min(devicePixelRatio,2)",
+        tone_mapping="ACESFilmicToneMapping",
+        tone_exposure=1.2,
+        grid_size=2,
+        grid_divisions=20,
+        grid_color1="0x333355",
+        grid_color2="0x222244",
+        grid_visible=False,
+        resize="container",
+        container_expr="c",
+    )
     return f'''<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>{model_name}</title>
 <style>*{{margin:0;padding:0;box-sizing:border-box}}body{{background:{bg};overflow:hidden;font-family:system-ui;color:#e0e0e0}}#c{{width:100vw;height:100vh;position:relative}}canvas{{display:block}}#h{{position:absolute;top:0;left:0;right:0;padding:12px 16px;display:flex;justify-content:space-between;pointer-events:none;z-index:10}}#h>*{{pointer-events:auto}}#mi{{background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border-radius:8px;padding:10px 14px;font-size:13px;line-height:1.5}}#mi h2{{font-size:15px;font-weight:600;color:#fff}}.s{{color:#aaa}}.s span{{color:#4fc3f7}}#ct{{background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border-radius:8px;padding:10px 14px;display:flex;gap:6px}}.b{{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#e0e0e0;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px}}.b:hover{{background:rgba(255,255,255,.2)}}.b.a{{background:rgba(79,195,247,.3);border-color:#4fc3f7;color:#4fc3f7}}#bb{{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);border-radius:8px;padding:8px 16px;font-size:11px;color:#666;z-index:10}}</style></head>
 <body><div id="c"><div id="h"><div id="mi"><h2>{model_name}</h2><div class="s">Vertices: <span id="sv">-</span></div><div class="s">Triangles: <span id="st">-</span></div><div class="s">Materials: <span id="sm">-</span></div></div><div id="ct"><button class="b" onclick="tG()" id="bg2">Grid</button><button class="b" onclick="tR()" id="br">Auto-Rotate</button><button class="b" onclick="rC()">Reset</button><button class="b" onclick="tB()">BG</button></div></div><div id="bb">LMB: Orbit | RMB: Pan | Scroll: Zoom</div></div>
-<script type="importmap">{{"imports":{{"three":"{THREE_CDN}/build/three.module.js","three/addons/":"{THREE_CDN}/examples/jsm/"}}}}</script>
+{imap}
 <script type="module">
-import*as T from'three';import{{OrbitControls}}from'three/addons/controls/OrbitControls.js';import{{GLTFLoader}}from'three/addons/loaders/GLTFLoader.js';
-const c=document.getElementById('c'),sc=new T.Scene();sc.background=new T.Color("{bg}");
-const cam=new T.PerspectiveCamera(50,c.clientWidth/c.clientHeight,.001,100);cam.position.set(.3,.25,.4);
-const r=new T.WebGLRenderer({{antialias:true}});r.setSize(c.clientWidth,c.clientHeight);r.setPixelRatio(Math.min(devicePixelRatio,2));r.toneMapping=T.ACESFilmicToneMapping;r.toneMappingExposure=1.2;c.appendChild(r.domElement);
+{imports}
+const c=document.getElementById('c');
+{boot}
+cam.position.set(.3,.25,.4);
 sc.add(new T.AmbientLight(0xffffff,.5));const dl=new T.DirectionalLight(0xffffff,1);dl.position.set(2,3,2);sc.add(dl);
-const gr=new T.GridHelper(2,20,0x333355,0x222244);gr.visible=false;sc.add(gr);
-const ct=new OrbitControls(cam,r.domElement);ct.enableDamping=true;ct.dampingFactor=.08;
 let mdl;new GLTFLoader().load("{url}",g=>{{mdl=g.scene;sc.add(mdl);const b=new T.Box3().setFromObject(mdl),ctr=b.getCenter(new T.Vector3()),s=b.getSize(new T.Vector3()),mx=Math.max(s.x,s.y,s.z);mdl.position.sub(ctr);const d=mx*2.5;cam.position.set(d*.6,d*.4,d*.7);cam.near=mx*.001;cam.far=mx*100;cam.updateProjectionMatrix();ct.target.set(0,0,0);ct.update();let v=0,t=0,m=new Set();mdl.traverse(c=>{{if(c.isMesh){{v+=c.geometry.attributes.position.count;t+=c.geometry.index?c.geometry.index.count/3:c.geometry.attributes.position.count/3;m.add(c.material?.name||'x')}}}});document.getElementById('sv').textContent=v;document.getElementById('st').textContent=Math.round(t);document.getElementById('sm').textContent=m.size}});
 let bi=0;const bgs=["{bg}","#0d0d0d","#2d2d2d","#f0f0f0"];
 window.tG=()=>{{gr.visible=!gr.visible;document.getElementById('bg2').classList.toggle('a',gr.visible)}};
 window.tR=()=>{{ct.autoRotate=!ct.autoRotate;document.getElementById('br').classList.toggle('a',ct.autoRotate)}};
 window.rC=()=>{{if(mdl){{const b=new T.Box3().setFromObject(mdl),s=b.getSize(new T.Vector3()),d=Math.max(s.x,s.y,s.z)*2.5;cam.position.set(d*.6,d*.4,d*.7);ct.target.set(0,0,0)}}}};
 window.tB=()=>{{bi=(bi+1)%bgs.length;sc.background=new T.Color(bgs[bi])}};
-window.addEventListener('resize',()=>{{cam.aspect=c.clientWidth/c.clientHeight;cam.updateProjectionMatrix();r.setSize(c.clientWidth,c.clientHeight)}});
-(function a(){{requestAnimationFrame(a);ct.update();r.render(sc,cam)}})();
 </script></body></html>'''

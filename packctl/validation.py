@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Iterable
 from urllib.parse import unquote
 
+from .generated import scan as scan_generated
 from .common import (
     finding,
     git_tracked_files,
@@ -1079,12 +1080,35 @@ def validate_moved_exact(root: Path) -> list[dict[str, object]]:
     return sort_findings(findings)
 
 
+def validate_generated(root: Path) -> list[dict[str, object]]:
+    """Check every file that declares itself generated against the source it names.
+
+    A copy exists because `dayz_3d_viewer` installs non-editable, so the package cannot
+    reach `skills/_shared/` by walking parents. The copy is therefore a build artifact:
+    editing it by hand, or changing the source without regenerating, is a build failure
+    rather than a divergence nobody notices. The rule lives in `packctl.generated` so the
+    writer and this checker cannot disagree about what "in sync" means.
+    """
+    return sort_findings(
+        [
+            finding(
+                item["code"],
+                path=item["path"],
+                message=item["message"],
+                evidence=item["evidence"],
+            )
+            for item in scan_generated(root)
+        ]
+    )
+
+
 def validate_repo(root: Path) -> dict[str, object]:
     root = Path(root).resolve()
     checks = {
         "source_map": validate_source_map(root),
         "skills": validate_skills(root),
         "moved_exact": validate_moved_exact(root),
+        "generated": validate_generated(root),
         "claims": validate_claims(root),
         "links": validate_links(root),
         "privacy": validate_privacy(root),
