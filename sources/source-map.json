@@ -20622,7 +20622,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "620b56d690b1ac1cb287ccd3a4e3604b841b34180dc1253ee57f23dc42102015",
+      "output_hash": "c22b6761da8f29f4754c4417e9d3194629ca97ab8be21bf9f74a5698529c046c",
       "output_path": "tools/py3d/rollout/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20711,10 +20711,20 @@
           "source_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
           "source_revision": "rollout-wheel-name@2026-08-31",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewed bytes add -WheelOnly so the vendored wheel restock no longer sits behind the patch preimage gate, and restock only where a skill already vendors a wheels/ directory instead of creating one.",
+          "license": "MIT",
+          "source_hash": "ca3b0cb502ce51f77dc0392223652a8933bc337a294f9829ce7794fb88a398e3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
+          "source_revision": "rollout-wheel-only@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "85ef398c4e8d31dbf65470d4be9889f66d9589325e896ce4d8f97801ea4c8265",
+      "output_hash": "ca3b0cb502ce51f77dc0392223652a8933bc337a294f9829ce7794fb88a398e3",
       "output_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21058,7 +21068,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6758dbfac0d05dfc82692f7bcb0b355f9401d9bfc09a6379c1e777c7b8e4db3d",
+      "output_hash": "53e8cd55103575fef9351f3aa3010be482a69d73a6825a94d09070407cd41b40",
       "output_path": "tools/py3d/rollout/preimage-manifest.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

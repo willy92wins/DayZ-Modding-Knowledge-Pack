@@ -6,7 +6,12 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$BackupRoot,
 
-    [switch]$NoWrite
+    [switch]$NoWrite,
+
+    # Restock the vendored wheel without reading the patch payload. Wheel
+    # correctness depends only on wheel-manifest.json and tools/py3d/dist;
+    # binding it to a prose preimage made every skill edit abort the restock.
+    [switch]$WheelOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -18,6 +23,9 @@ $WheelRoot = Join-Path $Py3dRoot "dist"
 $TargetRoot = (Resolve-Path -LiteralPath $TargetSkillRoot).Path
 $BackupBase = [IO.Path]::GetFullPath($BackupRoot)
 
+# Candidate set. A skill is restocked only where it ALREADY vendors a wheels/
+# directory: this script restocks, it never decides that a skill starts
+# vendoring. Three candidates install py3d editable instead.
 $WheelSkillNames = @(
     "dayz-model-pipeline",
     "dayz-3d-viewer",
@@ -176,7 +184,10 @@ if (
 if (-not (Test-Path -LiteralPath $WheelManifestPath -PathType Leaf)) {
     throw "tracked wheel manifest is missing"
 }
-if (-not (Test-Path -LiteralPath $PreimageManifestPath -PathType Leaf)) {
+if (
+    -not $WheelOnly -and
+    -not (Test-Path -LiteralPath $PreimageManifestPath -PathType Leaf)
+) {
     throw "tracked preimage manifest is missing"
 }
 
@@ -238,105 +249,109 @@ if (
 }
 $WheelPath = Join-Path $WheelRoot $WheelManifest.filename
 
-try {
-    $PreimageManifest = Get-Content -LiteralPath $PreimageManifestPath -Raw -Encoding UTF8 |
-        ConvertFrom-Json
-} catch {
-    throw "tracked preimage manifest is not valid JSON"
-}
-
-$ExpectedPreimageFields = @("entries", "schema_version", "snapshot_id")
-Assert-ExactFields (
-    $PreimageManifest
-) $ExpectedPreimageFields "tracked preimage manifest"
-if ($PreimageManifest.schema_version -ne "py3d-rollout-preimage-v1") {
-    throw "tracked preimage manifest schema is unsupported"
-}
-if ([string]::IsNullOrWhiteSpace($PreimageManifest.snapshot_id)) {
-    throw "tracked preimage manifest snapshot id is invalid"
-}
-$RawEntries = @($PreimageManifest.entries)
-if ($RawEntries.Count -eq 0) {
-    throw "tracked preimage manifest has no entries"
-}
-
 $ManifestEntries = New-Object System.Collections.Generic.List[object]
-$SeenRelatives = @{}
-foreach ($RawEntry in $RawEntries) {
-    $Status = $RawEntry.status
-    if ($Status -eq "patched") {
-        $ExpectedEntryFields = @(
-            "patch_path",
-            "preimage_sha256",
-            "relative_path",
-            "status"
-        )
-    } elseif ($Status -eq "not_applicable") {
-        $ExpectedEntryFields = @(
-            "preimage_sha256",
-            "reason",
-            "relative_path",
-            "status"
-        )
-    } else {
-        throw "tracked preimage manifest entry status is invalid"
+if ($WheelOnly) {
+    Write-Host "[INFO] wheel-only run: the patch preimage is not read"
+} else {
+    try {
+        $PreimageManifest = Get-Content -LiteralPath $PreimageManifestPath -Raw -Encoding UTF8 |
+            ConvertFrom-Json
+    } catch {
+        throw "tracked preimage manifest is not valid JSON"
     }
-    Assert-ExactFields $RawEntry $ExpectedEntryFields (
-        "tracked preimage manifest entry"
-    )
 
-    $Relative = Assert-SafeRelativePath (
-        $RawEntry.relative_path
-    ) "preimage relative_path"
-    $RelativeKey = $Relative.ToLowerInvariant()
-    if ($SeenRelatives.ContainsKey($RelativeKey)) {
-        throw "tracked preimage manifest has duplicate path: $Relative"
+    $ExpectedPreimageFields = @("entries", "schema_version", "snapshot_id")
+    Assert-ExactFields (
+        $PreimageManifest
+    ) $ExpectedPreimageFields "tracked preimage manifest"
+    if ($PreimageManifest.schema_version -ne "py3d-rollout-preimage-v1") {
+        throw "tracked preimage manifest schema is unsupported"
     }
-    $SeenRelatives[$RelativeKey] = $true
-    if (
-        $RawEntry.preimage_sha256 -isnot [string] -or
-        $RawEntry.preimage_sha256 -notmatch "^[0-9a-f]{64}$"
-    ) {
-        throw "tracked preimage SHA-256 is invalid: $Relative"
+    if ([string]::IsNullOrWhiteSpace($PreimageManifest.snapshot_id)) {
+        throw "tracked preimage manifest snapshot id is invalid"
     }
-    $SkillName = ($Relative -split "/", 2)[0]
-    $Destination = Join-Path $TargetRoot $Relative
-    Assert-UnderRoot $Destination $TargetRoot "patch destination"
+    $RawEntries = @($PreimageManifest.entries)
+    if ($RawEntries.Count -eq 0) {
+        throw "tracked preimage manifest has no entries"
+    }
 
-    $PatchPath = $null
-    $Reason = $null
-    if ($Status -eq "patched") {
-        $PatchRelative = Assert-SafeRelativePath (
-            $RawEntry.patch_path
-        ) "preimage patch_path"
-        $PatchPath = Join-Path $RolloutRoot $PatchRelative
-        Assert-UnderRoot $PatchPath $RolloutRoot "rollout patch"
-        if (-not (Test-Path -LiteralPath $PatchPath -PathType Leaf)) {
-            throw "rollout patch is missing: $PatchRelative"
+    $SeenRelatives = @{}
+    foreach ($RawEntry in $RawEntries) {
+        $Status = $RawEntry.status
+        if ($Status -eq "patched") {
+            $ExpectedEntryFields = @(
+                "patch_path",
+                "preimage_sha256",
+                "relative_path",
+                "status"
+            )
+        } elseif ($Status -eq "not_applicable") {
+            $ExpectedEntryFields = @(
+                "preimage_sha256",
+                "reason",
+                "relative_path",
+                "status"
+            )
+        } else {
+            throw "tracked preimage manifest entry status is invalid"
         }
-        $PatchHeader = @(Get-Content -LiteralPath $PatchPath -TotalCount 2)
+        Assert-ExactFields $RawEntry $ExpectedEntryFields (
+            "tracked preimage manifest entry"
+        )
+
+        $Relative = Assert-SafeRelativePath (
+            $RawEntry.relative_path
+        ) "preimage relative_path"
+        $RelativeKey = $Relative.ToLowerInvariant()
+        if ($SeenRelatives.ContainsKey($RelativeKey)) {
+            throw "tracked preimage manifest has duplicate path: $Relative"
+        }
+        $SeenRelatives[$RelativeKey] = $true
         if (
-            $PatchHeader.Count -ne 2 -or
-            $PatchHeader[0] -ne "--- a/$Relative" -or
-            $PatchHeader[1] -ne "+++ b/$Relative"
+            $RawEntry.preimage_sha256 -isnot [string] -or
+            $RawEntry.preimage_sha256 -notmatch "^[0-9a-f]{64}$"
         ) {
-            throw "rollout patch headers do not match target: $PatchRelative"
+            throw "tracked preimage SHA-256 is invalid: $Relative"
         }
-    } else {
-        $Reason = $RawEntry.reason
-        if ([string]::IsNullOrWhiteSpace($Reason)) {
-            throw "not_applicable entry requires a reason: $Relative"
+        $SkillName = ($Relative -split "/", 2)[0]
+        $Destination = Join-Path $TargetRoot $Relative
+        Assert-UnderRoot $Destination $TargetRoot "patch destination"
+
+        $PatchPath = $null
+        $Reason = $null
+        if ($Status -eq "patched") {
+            $PatchRelative = Assert-SafeRelativePath (
+                $RawEntry.patch_path
+            ) "preimage patch_path"
+            $PatchPath = Join-Path $RolloutRoot $PatchRelative
+            Assert-UnderRoot $PatchPath $RolloutRoot "rollout patch"
+            if (-not (Test-Path -LiteralPath $PatchPath -PathType Leaf)) {
+                throw "rollout patch is missing: $PatchRelative"
+            }
+            $PatchHeader = @(Get-Content -LiteralPath $PatchPath -TotalCount 2)
+            if (
+                $PatchHeader.Count -ne 2 -or
+                $PatchHeader[0] -ne "--- a/$Relative" -or
+                $PatchHeader[1] -ne "+++ b/$Relative"
+            ) {
+                throw "rollout patch headers do not match target: $PatchRelative"
+            }
+        } else {
+            $Reason = $RawEntry.reason
+            if ([string]::IsNullOrWhiteSpace($Reason)) {
+                throw "not_applicable entry requires a reason: $Relative"
+            }
         }
+        $ManifestEntries.Add([pscustomobject]@{
+            Relative = $Relative
+            SkillName = $SkillName
+            Status = $Status
+            PreimageSha256 = $RawEntry.preimage_sha256
+            PatchPath = $PatchPath
+            Reason = $Reason
+            Destination = $Destination
+        })
     }
-    $ManifestEntries.Add([pscustomobject]@{
-        Relative = $Relative
-        SkillName = $SkillName
-        Status = $Status
-        PreimageSha256 = $RawEntry.preimage_sha256
-        PatchPath = $PatchPath
-        Reason = $Reason
-        Destination = $Destination
-    })
 }
 
 Get-Command git -ErrorAction Stop | Out-Null
@@ -429,6 +444,10 @@ if ($PresentEntryCount -eq 0 -and $PresentWheelSkills.Count -eq 0) {
 foreach ($SkillName in $PresentWheelSkills) {
     $WheelsDirectory = Join-Path (Join-Path $TargetRoot $SkillName) "wheels"
     Assert-UnderRoot $WheelsDirectory $TargetRoot "wheel directory"
+    if (-not (Test-Path -LiteralPath $WheelsDirectory -PathType Container)) {
+        Write-Host "[SKIP] not vendored: $SkillName"
+        continue
+    }
     $Existing = @(
         Get-SkillWheelFiles $WheelsDirectory $WheelManifest.filename
     )
