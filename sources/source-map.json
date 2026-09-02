@@ -8733,7 +8733,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0b686439d0d87715589ec48e154a66b303438153be0af39da67896b04042635f",
+      "output_hash": "aa512142c8210e022b778cdf47793b493ead0ada69340d63444e253c2d704599",
       "output_path": "skills/dayz-vehicles/references/animation-sign-and-axis.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9423,7 +9423,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cf5c7ef901cc50c2723a6a73b18817779a95f1882418869db3b3c68eadad6de0",
+      "output_hash": "490154f8d47c11eb8ab46e698e106005e854b7e76b194d3be7a9ccc1e29035ca",
       "output_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

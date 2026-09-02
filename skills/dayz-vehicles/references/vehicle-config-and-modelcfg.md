@@ -540,6 +540,52 @@ matching 2-point `*_axis` selection in the Memory LOD or it silently does nothin
   steering-coupled visual; reserve `source="user"` for what the engine does not already drive (dampers, doors).
   (LFQuad LL-103.)
 
+### Dashboard needles: what the engine actually feeds `speed` / `rpm` (measured on vanilla ODOL, added 2026-09-02, LFQuad3)
+
+Read with the debinarizer skill's `odol_reader.py` from `DZehicles\wheeled\offroadhatchback\offroadhatchback.p3d`
+and `civiliansedan\civiliansedan.p3d` (ODOL v54, DayZ 1.29). These are the classes the vanilla cars ship with,
+not the Landrover template above:
+
+| car | class | source | type | minValue | maxValue | angle0 | angle1 | bone |
+|---|---|---|---|---|---|---|---|---|
+| offroadhatchback | IndicatorSpeed | `speed` | rotation | 0 | **120** | 0 | 190 deg | `dial_speed` (root) |
+| offroadhatchback | IndicatorRPM | `rpm` | rotation | 0 | **1.0** | 20 deg | 260 deg | `dial_rpm` (root) |
+| offroadhatchback | IndicatorFuel / IndicatorCoolant | `fuel` / `coolant` | rotation | 0 | 1.0 | 0 / 85 deg | 90 / 0 deg | `dial_fuel` / `dial_temp` |
+| civiliansedan | IndicatorSpeed | `speed` | **translation** | 0 | **200** | - | - | `dial_speed` |
+| civiliansedan | IndicatorRPM | `rpm` | rotation | 0 | 1.0 | 50 deg | -40 deg | `dial_rpm` |
+
+What this settles (the earlier `[Landrover]` template rows are consistent with it):
+
+1. `speed`, `rpm`, `fuel`, `coolant` are engine-provided sources; vanilla declares NO `AnimationSources` for them.
+2. `speed` arrives on the speedometer scale, i.e. km/h like `GetSpeedometer()` (`3_Gameehicles\car.c:113`):
+   `maxValue` is simply the top number painted on the dial (120 hatchback, 200 sedan).
+3. `rpm` arrives NORMALISED 0..1 (`maxValue = 1.0` on both cars). Which engine rpm maps to 1.0 (`EngineGetRPMMax`
+   = end of `torqueCurve[]`, or `rpmRedline`) is NOT settled by the ODOL; on LFQuad2 they differ by 1 rpm
+   (6400 vs 6399). Design the sweep as `angle1 = angle0 + painted_sweep x (D / painted_top)` and measure D once
+   in-game (log `EngineGetRPM/EngineGetRPMMax/EngineGetRPMRedline` + a photo of the needle at cut-off).
+4. Angles are stored in radians in the ODOL, but vanilla authors them as `"rad N"` with N in DEGREES: `rad` is the
+   config parser's degrees-to-radians function (3.3161 rad == "rad 190"). That is why LL-104 saw `"rad 0.45"`
+   frozen and `"rad 30"` sweep 30 deg. A bare number (`angle1 = -4.5361256`) is radians. Both syntaxes are valid;
+   never mix them in one model.cfg.
+5. `angle0` is applied at `minValue`, so the needle mesh does NOT have to rest on the painted zero: vanilla rests
+   the rpm needle 20 deg before its zero. Keeping the mesh at rest (e.g. 12 o'clock) and carrying the offset in
+   `angle0` also gives a free detector: with the engine off, a needle still at 12 o'clock means the animation did
+   not bake (bone missing from `skeletonBones[]`, selection empty, or the class dropped by binarize).
+6. The needle axis is a 2-point Memory selection on the pivot along the dial normal (Landrover MLOD: 1 mm apart;
+   1 m apart avoids a degenerate axis). Sign rule by pseudovector `angle1 x unit(axis_dir)` against the hatchback
+   control: axis pointing from the dial TOWARDS the driver + positive angle1 = clockwise for the driver. The
+   Landrover authors it the other way round (axis away from the driver, angle1 negative) and gets the same
+   pseudovector - so compare the pseudovector, never the raw sign (see `animation-sign-and-axis.md`).
+7. Bone parent: vanilla `dial_*` bones hang from the ROOT because the cluster sits on the dashboard. On a quad/bike
+   the cluster rides on the handlebar: the needle bones must be children of `drivewheel`, and `drivewheel` must
+   cover ALL the handlebar+cluster faces, or the needles stay behind when the bars turn.
+8. A needle animated on a PROXY sub-model is static in-game (SUB_BRZ s45): host the needle selections in the
+   main model.
+
+Cross-reference: the full measurement (with the Landrover MLOD memory points and the `odol_reader` invocation)
+lives in `DayZ Projects\LFQuad3_dev\HECHOS-MEDIDOS.md` sections "Agujas en VANILLA" and "Segundo referente
+legible". In-game confirmation of the sign and of D is pending on LFQuad3 (tanda 4).
+
 ## 13. The wiring chain (config ⇄ model.cfg ⇄ .p3d)
 
 ```

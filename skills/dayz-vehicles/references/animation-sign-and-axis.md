@@ -81,3 +81,21 @@ A measured door proxy used adjacent indexes for the generated instance and
 the rules above: compare `anim_source` case-insensitively, and resolve
 `animations.anims2bones[lod][class]` against the global skeleton without applying
 `sub_skeletons_to_skeleton`.
+
+## Dial needles have a vanilla homologue too: compare the pseudovector, not the sign (added 2026-09-02, LFQuad3)
+
+Measured from `offroadhatchback.p3d` (ODOL v54): `IndicatorSpeed` binds bone `dial_speed`, `source=speed`,
+`angle0=0`, `angle1=+190 deg`, axis position (0.4934, 1.1957, -0.4940) and direction (0, 0.4216, 0.9068) - the
+dial normal pointing UP and TOWARDS the driver (front is -Z, so +Z is towards the seat). Positive angle with the
+axis towards the viewer = clockwise for the viewer, which is how a speedometer reads.
+
+The Tyson89 Landrover MLOD (`SUB_BRZ_dev\_references\Tyson89-Landrover\Landrover.p3d`, readable with py3d)
+authors the same needle the OTHER way: `mph_axis` = (0.700, 1.492, -0.628) -> (0.700, 1.492, -0.629), i.e. the
+direction points to -Z, AWAY from the driver, and `angle1 = -4.5361256` (-260 deg). Both give the same
+pseudovector `angle1 x unit(axis_dir)` (towards the driver, positive): same rotation. A gate that compares raw
+`angle1` signs between the two would flag one of two working cars.
+
+Rule for a new dial: pick the hatchback `IndicatorSpeed` as the homologue, assert the pseudovector against it,
+and calibrate with the two fixtures of this file (flip only the axis or only the angle = must FAIL; flip both =
+must PASS). Sources and ranges (`speed` km/h, `rpm` 0..1, `"rad N"` = degrees) are in
+`vehicle-config-and-modelcfg.md` section 12, "Dashboard needles".
