@@ -242,10 +242,15 @@ Standard editing flow, with four specifics:
 > **Model** — Sonnet for the mechanical re-checks; Opus for the two re-run
 > angles.
 > **Done when** — mechanical pre-checks plus the two most-changed angles run
-> clean. A new finding loops back to step 5.
+> clean. A new finding loops back to step 5 **once**; a second reappearance stops
+> the loop (ORCHESTRATOR_NEEDED with backlog).
 
 Re-run mechanical pre-checks (cheap) plus the two angles whose code changed
-most. If a new finding appears, loop back to step 5.
+most. If a new finding appears, loop back to step 5 once. If a finding of the same
+family reappears, the defect is design, not patching: stop, file the remainder as
+numbered backlog and escalate. Stop rule (owner): `gates-ledger` §Cuándo para un
+bucle — the product gate closes the loop, a finding blocks only with an executable
+repro, the budget is two rounds (rev. 2026-09-02; replaces «until zero critical/major»).
 
 ## Phase B — In-game validation (step 7)
 
