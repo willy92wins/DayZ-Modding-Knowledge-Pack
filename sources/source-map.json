@@ -11273,10 +11273,20 @@
           "source_path": "skills/uv-clean-atlas/SKILL.md",
           "source_revision": "multi-lod-atlas@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Merged from the author's live store on 2026-09-03: the G12 photograph track for one-shell organics splits Track A into A-photo (organic) and the original view-charts (vehicle panels), and records that uv_view_charts.py + SLIM must not run on that class. Shipped on the Tripo statue 2026-09-02 (g12_arm, 15 islands, SAT=0). The three files it cites are published in the same commit.",
+          "license": "MIT",
+          "source_hash": "1a5c990ffe3025bd8c3e2efc7f89ca0d7ed4975825f5546acc3e056d5ce36f24",
+          "source_id": "installed-skills",
+          "source_path": "uv-clean-atlas/SKILL.md",
+          "source_revision": "g12-paint-photograph@2026-09-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3d5ef3f7682fd9e41d773a3920ab7a1052b988a466890302500acd98cfa85f68",
+      "output_hash": "1a5c990ffe3025bd8c3e2efc7f89ca0d7ed4975825f5546acc3e056d5ce36f24",
       "output_path": "skills/uv-clean-atlas/SKILL.md",
       "routing_artifact_id": "skill/uv-clean-atlas",
       "verification_level": "cross_checked"
@@ -11544,6 +11554,72 @@
       "output_path": "skills/uv-clean-atlas/scripts/uv_view_charts.py",
       "routing_artifact_id": "skill/uv-clean-atlas",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/uv-clean-atlas/references/g12-paint-photograph.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Ported from the author's live store on 2026-09-03: the G12 photograph track for one-shell organics (statue, coat, character), accepted by the user on the Tripo statue on 2026-09-02. Carried together with the SKILL.md that cites it, so the published copy has no dangling reference.",
+          "license": "MIT",
+          "source_hash": "ae56284f7b747be19d038a29e064e9955ebacc2efed52871ef902ad12449614e",
+          "source_id": "installed-skills",
+          "source_path": "uv-clean-atlas/references/g12-paint-photograph.md",
+          "source_revision": "g12-paint-photograph@2026-09-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ae56284f7b747be19d038a29e064e9955ebacc2efed52871ef902ad12449614e",
+      "output_path": "skills/uv-clean-atlas/references/g12-paint-photograph.md",
+      "routing_artifact_id": "skill/uv-clean-atlas",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/uv-clean-atlas/scripts/g12_paint_peel.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Ported from the author's live store on 2026-09-03 alongside the SKILL.md and the reference that cite it. The three absolute paths of the author's machine were rewritten to the pack placeholders (C:\\Users\\<you>\\... and <dayz-projects>\\...), so output_hash differs from source_hash by exactly that substitution.",
+          "license": "MIT",
+          "source_hash": "e4f8d2b1837b875fb43b7316adecece455b0cf02e4c309b31b57612aecdb7938",
+          "source_id": "installed-skills",
+          "source_path": "uv-clean-atlas/scripts/g12_paint_peel.py",
+          "source_revision": "g12-paint-photograph@2026-09-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0d524af4df69e57ae1cae9527adefe3a13e85d9e6dd3ed9073c6962db282fce6",
+      "output_path": "skills/uv-clean-atlas/scripts/g12_paint_peel.py",
+      "routing_artifact_id": "skill/uv-clean-atlas",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/uv-clean-atlas/scripts/project_atlas.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Ported from the author's live store on 2026-09-03. Orthographic paint-atlas projector (G9/G10 engine) that the G12 recipe drives; it is a copy, the canonical tree is not edited. Carries no absolute path.",
+          "license": "MIT",
+          "source_hash": "ea9a9e4b24801dfbd47ed1c0b738bd71627680de9eff4b6f0471e819c2c0e753",
+          "source_id": "installed-skills",
+          "source_path": "uv-clean-atlas/scripts/project_atlas.py",
+          "source_revision": "g12-paint-photograph@2026-09-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ea9a9e4b24801dfbd47ed1c0b738bd71627680de9eff4b6f0471e819c2c0e753",
+      "output_path": "skills/uv-clean-atlas/scripts/project_atlas.py",
+      "routing_artifact_id": "skill/uv-clean-atlas",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/sources/claims.json",

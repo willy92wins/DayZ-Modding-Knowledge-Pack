@@ -20,6 +20,8 @@ islands stops being available. Read `references/multi-lod-shared-atlas.md` first
 carries the measured seam trade-off, why a LOD transfer cannot work below a granularity
 ratio, the shared-sheet layout that replaces it, and how to align and judge the bake.
 
+**Paint organic (statue / coat / one-shell character, 2026-09-02):** do **not** run the view-chart + SLIM command below. Photograph (G12). Read `references/g12-paint-photograph.md` first.
+
 ## The quality gate (what "done" looks like)
 
 Judge the atlas against these criteria, in priority order. The reference bar is a
@@ -260,11 +262,18 @@ Guillermo 2026-09-01: the live session (LFQuad_dev\\noche_20260901\\unwrap_blend
 
 ### Track A — paint atlas (DEFAULT for body, statue, prop, anything a human paints in Modddif)
 
-- Charts = **view sides** of each 3D shell (uv_view_charts.py). One island per camera-view of each physical piece (front of the coat, back, sides…), swallowing stretch on wrap edges.
+**Organic / one-shell paint (statue, coat, character) — accepted 2026-09-02:** photograph, do **not** unwrap. Full recipe `references/g12-paint-photograph.md`. Engine `scripts/project_atlas.py` (copy; do not edit the Quad tree) + peel driver `scripts/g12_paint_peel.py`.
+
+- n+ / n− = two alzados (skin / lining), never stacked. L/R stay in the **same** frame if the bbox crosses X mid; tiny U nudge for midline SAT, never extra frames.
+- One global scale `a`. Peel overlapping **pieces** (legs = floor-reaching CC below the hem; limbs = front occluder in the photo) and rigid-translate them in that alzado until the ghost is gone. SAT = 0. Tube-thickness leftover ~0.03 was accepted.
+- Do **not** run `uv_view_charts.py` + SLIM on this class. Statue 2026-09-01: 25 charts, dust-merge 5 density 0.00–3.95; k=6 / Voronoi deformed; Track B 215 islands rejected.
+
+**Hard-surface vehicle panels (original Track A):** charts = view sides of each 3D shell (`uv_view_charts.py`). One island per camera-view of each physical piece, swallowing stretch on wrap edges.
+
 - Island floor = SHELLS. Target ~1–3 charts per shell. islands >> 3× SHELLS means you used the wrong track.
-- Vehicle body: ~15–45 islands (livery template). **A single-shell statue/prop: a handful of view islands, not hundreds.**
+- Vehicle body: ~15–45 islands (livery template).
 - SAT pairs = 0 **and** collapsed = 0. SAT=0 with collapse is a fake pass (section 2b).
-- Final pack = shelf pack. pack_islands optimizes area, not legibility — not the final pack on Track A.
+- Final pack = shelf pack. pack_islands optimizes area, not legibility — not the final pack on vehicle Track A.
 - The user reading the atlas is the acceptance test.
 
 ### Track B — smart_project fallback (ONLY when SLIM / tree-cotree COLLAPSES faces)
@@ -316,11 +325,12 @@ collapsed and 0 SAT pairs**, 0 cross-LOD pairs, a 75/25 sheet split, 349 and 204
 
 | Mesh | Track |
 |---|---|
-| Paint / Modddif / livery / statue / body panels | **A** view charts |
+| Paint organic / statue / coat / one-shell character | **A-photo** G12 photograph (`references/g12-paint-photograph.md`) |
+| Paint vehicle panels / livery | **A** view charts |
 | Group that Track A or SLIM collapses (zero UV area, NaN layer) | **B** smart_project + SAT fold loop |
 | Vehicle with materials + LODs | A or B **plus** noche additions (mat seams, LOD1 transfer, texel margin, G5) |
 
-Statue 2026-09-01 (1 shell, Quadriflow 5.7k): Track B at 80° gave SAT=0 / 215 islands / 65.7% occupancy. User rejected it: not minimize, not by views. Next unwrap of that mesh is Track A.
+Statue 2026-09-01 (1 shell, Quadriflow 5.7k): Track B at 80° gave SAT=0 / 215 islands / 65.7% occupancy. User rejected it: not minimize, not by views. `uv_view_charts` also failed (25 charts, density). **Shipped 2026-09-02:** G12 photograph + peel (`g12_arm`, 15 islands, SAT=0, autosolape 0.033). User: mejor, guardar receta. Modddif next.
 
 
 ## Sin deformar (HARD gate, restated 2026-09-01)
