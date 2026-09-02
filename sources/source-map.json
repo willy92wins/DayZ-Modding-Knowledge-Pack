@@ -12497,10 +12497,20 @@
           "source_path": "tools/dayz-3d-viewer/dayz_3d_viewer/pipeline.py",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "license": "MIT",
+          "source_hash": "1040ddf00c66166c94e054524eb93bb4b00d8d9bdd662e3a45b3880c74a13cd5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-3d-viewer/dayz_3d_viewer/pipeline.py",
+          "source_revision": "viewer-core@2026-09-02",
+          "verification_level": "offline_tested",
+          "decision_evidence": "Report paths the caller can open. glb_path, viewer_path and each converted texture reported only the basename while the files land under output_dir, so a consumer parsing this JSON looked where nothing was written; the verbose print on the adjacent line already showed the full path, so the human output was right and the machine-readable one was not. Found by a peer session running build-viewer from a clean clone. No test pinned the old shape and nothing in the tree consumed these fields."
         }
       ],
       "license": "MIT",
-      "output_hash": "466dfd00031122c5e9582e39cd4164428c7d0f3a6cec2926e6cee4dddc976b31",
+      "output_hash": "1040ddf00c66166c94e054524eb93bb4b00d8d9bdd662e3a45b3880c74a13cd5",
       "output_path": "tools/dayz-3d-viewer/dayz_3d_viewer/pipeline.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

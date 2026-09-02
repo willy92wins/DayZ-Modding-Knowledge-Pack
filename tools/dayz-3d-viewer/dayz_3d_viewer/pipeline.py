@@ -108,7 +108,7 @@ def run_pipeline(
                 convert_paa_to_png(src, png_out, verbose=verbose)
                 texture_map[stem] = png_out
                 results["converted_textures"].append(
-                    {"source": Path(src).name, "output": Path(png_out).name, "status": "ok"}
+                    {"source": Path(src).name, "output": os.path.abspath(png_out), "status": "ok"}
                 )
                 if verbose:
                     print("  + %s -> %s" % (basename, png_out))
@@ -121,7 +121,7 @@ def run_pipeline(
             shutil.copyfile(src, png_out)
             texture_map[stem] = png_out
             results["converted_textures"].append(
-                {"source": Path(src).name, "output": Path(png_out).name, "status": "copied"}
+                {"source": Path(src).name, "output": os.path.abspath(png_out), "status": "copied"}
             )
             if verbose:
                 print("  -> %s (PNG, copied)" % basename)
@@ -195,7 +195,9 @@ def run_pipeline(
             rvmat_data=rvmat_dict,
             verbose=verbose,
         )
-        results["glb_path"] = Path(glb_path).name
+        # Report a path the caller can open. The basename alone is unusable: the file
+        # lands under output_dir, so a consumer parsing this JSON looked in the wrong place.
+        results["glb_path"] = os.path.abspath(glb_path)
     except Exception as exc:
         results["errors"].append("P3D->GLB failed: %s" % exc)
         if verbose:
@@ -229,7 +231,7 @@ def run_pipeline(
                     geometry_data=geo_data,
                     output_path=viewer_path,
                 )
-            results["viewer_path"] = Path(viewer_path).name
+            results["viewer_path"] = os.path.abspath(viewer_path)
             if verbose:
                 print("  + %s" % viewer_path)
         except Exception as exc:
