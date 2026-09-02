@@ -22385,10 +22385,20 @@
           "source_path": "tools/viewer-gate/render_check.mjs",
           "source_revision": "viewer-core@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "license": "MIT",
+          "source_hash": "0fbb0ec2f56536e82cb13980ae6c69d61ca34c178af31fbc0e3b55ba19aeefe4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/viewer-gate/render_check.mjs",
+          "source_revision": "viewer-core@2026-09-02",
+          "verification_level": "offline_tested",
+          "decision_evidence": "Retract an overclaim in the header. It said parity IS established by visual comparison of screenshots; a calibration follow-up refuted that with a concrete attack - keep the render and the visible positions intact, swap two axes in the inverse conversion used when EXPORTING a memory point, and the screenshots stay identical while the exported value is wrong. Screenshots are a stronger and costlier projection, not a categorically different instrument. The header now names the blind spot (the exported number) and what vouches for it (a round-trip of the value, or real use downstream) instead of pointing at the pictures as the end of the argument."
         }
       ],
       "license": "MIT",
-      "output_hash": "8e465ec431dd157f76945209d4c919d2eb9eced68f824f7ccb17e4ecf6bdc120",
+      "output_hash": "0fbb0ec2f56536e82cb13980ae6c69d61ca34c178af31fbc0e3b55ba19aeefe4",
       "output_path": "tools/viewer-gate/render_check.mjs",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

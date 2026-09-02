@@ -3,16 +3,26 @@
 // What a green result means: the page loaded, mounted a canvas with real pixels, drew
 // geometry at some point, reported the three revision it actually imported, and produced
 // no page/request/console errors. It does NOT mean the content matches the baseline.
-// PARITY IS ESTABLISHED BY VISUAL COMPARISON of baseline/after screenshots, by a human or
-// a model that can look at them.
+// Comparing baseline/after screenshots is the strongest cheap check for that, and it is what
+// the migration behind this file leaned on. It is NOT proof either. A calibration round said
+// so with a concrete attack: keep the render and the visible positions intact and change the
+// inverse conversion used when EXPORTING a memory point or a proxy - swap Y/Z on the way back
+// from Three coordinates to DayZ. The screenshots come out identical and the exported value is
+// wrong. In an alignment tool the product is the coordinates, not the image.
 //
 // That boundary is not modesty, it is measured. Three review rounds killed three proxies:
 //   v1 counted draw calls   -> deleting the only mesh passed (the grid kept drawing).
 //   v2 counted TRIANGLES    -> a helper sphere alone passed; a line-drawn domain FALSE-FAILed.
 //   v3 counted post-settle  -> a legitimate one-shot viewer FALSE-FAILed, and a decoy
 //      frames + three URLs      network request forged the version.
-// Each fix replaced one proxy with a better proxy. Do not add a fourth. If you need to know
-// whether the content is right, look at the pictures.
+// Each fix replaced one proxy with a better proxy, and the screenshots are one more: a stronger
+// and more expensive projection carrying its own unobserved complement - depth, semantic
+// identity, hidden elements, hit targets, and numeric output. There is no undefeatable
+// instrument, so the useful question is not which one proves the content. It is: what does
+// the instrument I am using leave unobserved, and who looks there? For these viewers the blind
+// spot is the exported number, and only a round-trip of the value - export, re-import, compare
+// against the original - or real use downstream can vouch for it. Do not add a fourth counter,
+// and do not treat the pictures as the end of the argument either.
 //
 // v4 (2026-09-02):
 //   - VERSION IS NOW A FACT, not a proxy: viewer_core emits `window.__THREE_REVISION` from
