@@ -262,7 +262,7 @@ Guillermo 2026-09-01: the live session (LFQuad_dev\\noche_20260901\\unwrap_blend
 
 ### Track A — paint atlas (DEFAULT for body, statue, prop, anything a human paints in Modddif)
 
-**Organic / one-shell paint (statue, coat, character) — accepted 2026-09-02:** photograph, do **not** unwrap. Full recipe `references/g12-paint-photograph.md`. Engine `scripts/project_atlas.py` (copy; do not edit the Quad tree) + peel driver `scripts/g12_paint_peel.py`.
+**Organic / one-shell paint (statue, coat, character) — accepted 2026-09-02:** photograph, do **not** unwrap. Full recipe `references/g12-paint-photograph.md`. Engine `scripts/project_atlas.py` (copy of the Quad G12 projector; do not edit the Quad tree). The organic peel driver stays live-only under SKILL_SOURCE; it is not published here (machine-specific statue paths).
 
 - n+ / n− = two alzados (skin / lining), never stacked. L/R stay in the **same** frame if the bbox crosses X mid; tiny U nudge for midline SAT, never extra frames.
 - One global scale `a`. Peel overlapping **pieces** (legs = floor-reaching CC below the hem; limbs = front occluder in the photo) and rigid-translate them in that alzado until the ghost is gone. SAT = 0. Tube-thickness leftover ~0.03 was accepted.

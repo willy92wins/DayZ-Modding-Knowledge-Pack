@@ -2,7 +2,7 @@
 
 Photograph, do **not** unwrap. Accepted by Guillermo 2026-09-02 on the Tripo statue (`g12_arm`).
 
-Authority lives here plus `scripts/project_atlas.py` (G9/G10 engine, copy — do not edit the Quad tree) and `scripts/g12_paint_peel.py` (organic peel driver). Canonical Quad method: `LFQuad_dev/tools/shell_classify_20260824/` and the late-August PAINT groups (`grupos_uv_20260827`).
+Authority lives here plus `scripts/project_atlas.py` (G9/G10 engine, copy — do not edit the Quad tree). The organic peel driver stays live-only under SKILL_SOURCE; do not vendor statue-specific paths. Canonical Quad method: `LFQuad_dev/tools/shell_classify_20260824/` and the late-August PAINT groups (`grupos_uv_20260827`).
 
 Do **not** run `uv_view_charts.py` + SLIM on a one-shell organic (coat, statue, character). That clustering is vehicle-panel Track A. On the statue it produced 25 charts, dust-merge 5 with density 0.00–3.95, then k=6 / Voronoi / absorb deformations. Track B `smart_project` 215 islands was rejected: not few, not by views.
 
@@ -47,8 +47,6 @@ Mesh: `statue_remesh.blend` object `statue`, 5756 faces, 1 shell, identity world
 | `g12_arm` | 15 | 0 | 0.033 | 0.19 | peel front occluders; arms Δu ±0.27, arm2 Δv=+0.77. User: **mejor, guardar receta**. Modddif after |
 
 Leftover 0.033 is sleeve tube thickness + n<8 folds, not the arm-over-chest ghost.
-
-Paths: `DayZ Projects\_scratch_tripo2p\statue\retopo\g12_arm\`.
 
 ## Do not
 
