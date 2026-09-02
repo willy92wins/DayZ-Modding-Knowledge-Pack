@@ -2112,10 +2112,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "repin-three-skills@2026-08-31",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Re-pinned by promote --apply for transaction 1263c27ee99c879691e10941, on top of the manual re-pin of the four wheel-carrying skills that cleared the eight PROMOTION-TARGET-UNEXPLAINED pairs blocking the check. Verified before that manual step that the four unexplained skills were exactly the four holding py3d_dayz-1.6.0-py3-none-any.whl in the live tree, which the Pack does not ship, so the gap is structural rather than somebody's edit of the store.",
+          "license": "MIT",
+          "source_hash": "c0b30ae2742d474ee0a4fd5f254296d7f8c9a96c390f9f5bdbfefb0191151d30",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion-full-set@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e20b18f971bf3027768b626643013b4d63010f4f55c8c2838e3bf634c7108711",
+      "output_hash": "c0b30ae2742d474ee0a4fd5f254296d7f8c9a96c390f9f5bdbfefb0191151d30",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -2188,6 +2198,29 @@
       "output_path": "promotions/promotion-map.schema.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/1263c27ee99c879691e10941.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt written by promote --apply on 2026-09-02 for transaction 1263c27ee99c879691e10941: the promotion of 737c161 to claude_user_skills, agents_user_skills and the vault snapshots, 128 operations, run from the kp-recon worktree the previous receipt is bound to. It carries the multi-LOD shared-atlas reference and the retraction of the three refuted lines in uv-clean-atlas, the ImageToPAA and rvmat findings in dayz-texture-pipeline, the two-PBO finding in dayz-pbo-build, and the shared Three.js viewer scaffold merged as 19c0cde. From now on it explains those targets instead of the adjudications re-pinned in 737c161. The four wheel-carrying skills were restored from the pre-apply copy afterwards and verified byte-identical, 39.949 B each; ~/.agents/skills reaches them through junctions to ~/.claude/skills, so one restore covered both targets.",
+          "license": "MIT",
+          "source_hash": "dd107f498b1ee5bfd8844c8c8383cb0f70e52aaa0118d2d9196f8cbb2c7551fa",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/1263c27ee99c879691e10941.json",
+          "source_revision": "promotion-full-set@2026-09-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "dd107f498b1ee5bfd8844c8c8383cb0f70e52aaa0118d2d9196f8cbb2c7551fa",
+      "output_path": "promotions/receipts/1263c27ee99c879691e10941.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/pyproject.toml",
