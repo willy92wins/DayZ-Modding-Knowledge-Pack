@@ -4,7 +4,7 @@ Complete, runnable Python validators for DayZ mod addons. Each script outputs JS
 
 **Prerequisites:**
 - Python 3.7+
-- py3d (optional, for .p3d validation): fork DayZ >= 1.5.0 via `pip install -e tools/py3d` (NEVER `pip install py3d` — PyPI = point-cloud lib)
+- py3d (optional, for .p3d validation): fork DayZ >= 1.6.0 via `pip install -e tools/py3d` (NEVER `pip install py3d` — PyPI = point-cloud lib)
 - Standard library only for other validators
 
 ---
@@ -692,7 +692,7 @@ Validates .p3d LOD structure using py3d (optional). Requires py3d library.
 **Usage:**
 ```bash
 python p3d_lod_checker.py path/to/addon/root
-pip install -e tools/py3d  # pack DayZ fork >= 1.5.0 (if not installed)
+pip install -e tools/py3d  # pack DayZ fork >= 1.6.0 (if not installed)
 ```
 
 **Output:** JSON with LOD types, vertex counts, named selections, memory points.
@@ -703,7 +703,7 @@ pip install -e tools/py3d  # pack DayZ fork >= 1.5.0 (if not installed)
 DayZ .p3d LOD structure validator
 Checks: LOD types (Resolution, Geometry, Memory), vertex budgets, named selections,
 memory points, geometry mass
-Requires: py3d DayZ fork >= 1.5.0 (`pip install -e tools/py3d`; NEVER pip install py3d from PyPI)
+Requires: py3d DayZ fork >= 1.6.0 (`pip install -e tools/py3d`; NEVER pip install py3d from PyPI)
 """
 import json
 import sys
@@ -905,7 +905,7 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: python p3d_lod_checker.py <path/to/addon/root>")
         print()
-        print("Note: Requires the pack py3d DayZ fork (>= 1.5.0). Install with:")
+        print("Note: Requires the pack py3d DayZ fork (>= 1.6.0). Install with:")
         print("  pip install -e tools/py3d")
         sys.exit(1)
 

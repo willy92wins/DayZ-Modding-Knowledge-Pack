@@ -429,7 +429,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c9802be9d17a6f94fc3587e235f7ad2104556aa3b8930419ce4e5ef67166ed4b",
+      "output_hash": "f3f2255789c820de33ede62dacc414e7660b1b1a0c01d1f469edca5495f82b9a",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -6345,7 +6345,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "32ac924b4b2da3b496b2195da95c5df3a97c520262af477b1997dc42908241df",
+      "output_hash": "8e75a84bc29c914fcba3f9e82bc21259be4dcf4c2217e155422d4c614f4fb032",
       "output_path": "skills/dayz-pbo-build/references/validation-scripts.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -13321,7 +13321,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b2445b1e5242494c3535042fc0922667819fb61c0b34d2031d32d288ee061f52",
+      "output_hash": "25787e7bbc2731dfe4191a91ee2bf671316f0eb18ba073f1c55477c784f52f2e",
       "output_path": "tools/dayz-model-preflight/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -13387,7 +13387,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1c4f650a383278b9c4de799d60e89acfe7bd96921b18df2c17831d09d800a1af",
+      "output_hash": "4cabdca87eea37976f234686ec674278b5537b3ae831512c15d435cc8078115e",
       "output_path": "tools/dayz-model-preflight/dayz_model_preflight/contract.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -13585,7 +13585,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "87dc2a7b4ac0ce64f63ab271d7ff915b2faeb202bc18e7591bb412e74e3dd07f",
+      "output_hash": "6667859aaf3279a30bdd670fbaa70452adbff3499d0853527b6a7cdf57bede5b",
       "output_path": "tools/dayz-model-preflight/tests/test_contract.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

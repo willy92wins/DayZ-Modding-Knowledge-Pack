@@ -13,7 +13,7 @@ lineage from geometry. Those facts must be supplied by the caller.
 
 ## Requirements and install
 
-The DayZ py3d fork `>=1.4.0` is mandatory. The unrelated package named `py3d`
+The DayZ py3d fork `>=1.6.0` is mandatory. The unrelated package named `py3d`
 on PyPI is not compatible.
 
 ```powershell
@@ -22,7 +22,7 @@ python -m pip install -e tools/dayz-model-preflight
 ```
 
 At runtime the imported module must expose `IS_DAYZ_FORK is True` and a
-semantic version of at least `1.4.0`.
+semantic version of at least `1.6.0`.
 
 ## Command line
 

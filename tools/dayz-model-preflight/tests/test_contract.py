@@ -224,6 +224,7 @@ def test_dependency_gate_rejects_missing_py3d(monkeypatch):
     [
         SimpleNamespace(IS_DAYZ_FORK=False, __version__="1.4.0"),
         SimpleNamespace(IS_DAYZ_FORK=True, __version__="1.3.0"),
+        SimpleNamespace(IS_DAYZ_FORK=True, __version__="1.5.0"),
         SimpleNamespace(IS_DAYZ_FORK=True, __version__="not-a-version"),
     ],
 )
@@ -233,6 +234,6 @@ def test_dependency_gate_rejects_upstream_old_or_unversioned_py3d(module):
     assert raised.value.code == "PREFLIGHT_PY3D_UNAVAILABLE"
 
 
-def test_dependency_gate_accepts_dayz_fork_1_4_0():
-    module = SimpleNamespace(IS_DAYZ_FORK=True, __version__="1.4.0")
+def test_dependency_gate_accepts_dayz_fork_1_6_0():
+    module = SimpleNamespace(IS_DAYZ_FORK=True, __version__="1.6.0")
     assert require_dayz_py3d(module) is module

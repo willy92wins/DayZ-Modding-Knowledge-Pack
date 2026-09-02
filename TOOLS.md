@@ -141,7 +141,7 @@ python -m dayz_model_preflight check target.p3d \
   --contract preflight.json --json preflight-result.json
 ```
 
-Requires the py3d fork `>=1.4.0`. Missing or ambiguous one-to-one lineage is
+Requires the py3d fork `>=1.6.0`. Missing or ambiguous one-to-one lineage is
 reported `INVALID`: the tool never guesses a mapping and never repairs a model.
 
 ## `tools/dayz-script-validator`

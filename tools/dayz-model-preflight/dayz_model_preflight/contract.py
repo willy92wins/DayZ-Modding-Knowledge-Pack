@@ -9,7 +9,7 @@ from .errors import PreflightError
 
 
 CONTRACT_VERSION = "dayz-model-preflight-v1"
-MINIMUM_PY3D_VERSION = (1, 4, 0)
+MINIMUM_PY3D_VERSION = (1, 6, 0)
 
 
 def load_contract(path):
@@ -187,7 +187,7 @@ def require_dayz_py3d(module=None):
         except (ImportError, ModuleNotFoundError):
             raise PreflightError(
                 "PREFLIGHT_PY3D_UNAVAILABLE",
-                "the DayZ py3d fork >=1.4.0 is required",
+                "the DayZ py3d fork >=1.6.0 is required",
             )
     version_text = getattr(module, "__version__", "")
     match = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)", version_text)
@@ -196,7 +196,7 @@ def require_dayz_py3d(module=None):
             version < MINIMUM_PY3D_VERSION:
         raise PreflightError(
             "PREFLIGHT_PY3D_UNAVAILABLE",
-            "the DayZ py3d fork >=1.4.0 is required",
+            "the DayZ py3d fork >=1.6.0 is required",
         )
     return module
 
