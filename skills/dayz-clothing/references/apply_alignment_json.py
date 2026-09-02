@@ -1,6 +1,6 @@
 import sys, os, math, json, shutil, hashlib
-sys.path.insert(0, r"<dayz-projects>\py3d")
 import py3d
+assert getattr(py3d, "IS_DAYZ_FORK", False) and tuple(map(int, py3d.__version__.split("."))) >= (1, 6, 0), (py3d.__version__, py3d.__file__)
 
 ADJUST = {
     "leftarm":      {"pivot": [0.2067, 1.5152, 0.0092],  "rot_deg": [-8.5, -5, 12],   "offset": [-0.01, -0.025, 0]},

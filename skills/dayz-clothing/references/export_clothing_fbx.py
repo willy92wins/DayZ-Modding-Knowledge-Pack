@@ -1,6 +1,6 @@
 import sys, os
-sys.path.insert(0, r"<dayz-projects>\py3d")
 import py3d
+assert getattr(py3d, "IS_DAYZ_FORK", False) and tuple(map(int, py3d.__version__.split("."))) >= (1, 6, 0), (py3d.__version__, py3d.__file__)
 import bpy
 from mathutils import Vector
 

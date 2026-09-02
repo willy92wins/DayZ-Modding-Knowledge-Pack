@@ -4639,10 +4639,20 @@
           "source_path": "skills/dayz-characters/references/check_dayz_winding.py",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The reference scripts put the author's local py3d clone on sys.path at position 0, which shadows the installed fork. Measured 2026-09-02: with the insert, import py3d resolved 1.3.0 from that clone; without it, 1.7.0 from site-packages - four minor versions below the >= 1.6.0 these skills assert elsewhere, and the clone is a June-2026 snapshot (HEAD f862efd). The insert is removed and the house guard (IS_DAYZ_FORK and >= 1.6.0) added after the import. The only py3d symbol these scripts use is py3d.P3D, present in 1.7.0. Offline tested: py_compile clean, and load_py3d(None) now returns 1.7.0 from site-packages with the clone absent from sys.path.",
+          "license": "MIT",
+          "source_hash": "6c9488890bb7723675d6bef06ad279fd28673dd6ba9b97366335ba23d623df3a",
+          "source_id": "installed-skills",
+          "source_path": "dayz-characters/references/check_dayz_winding.py",
+          "source_revision": "filesystem@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "fe1f94d3a24f4801df0e3d7da0a34d166af1ccf1805c71ea7572ab8c89a12c85",
+      "output_hash": "6c9488890bb7723675d6bef06ad279fd28673dd6ba9b97366335ba23d623df3a",
       "output_path": "skills/dayz-characters/references/check_dayz_winding.py",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -4737,10 +4747,20 @@
           "source_path": "dayz-clothing/references/alignment_viewer_extract.py",
           "source_revision": "r21-phase02@2026-08-15",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The reference scripts put the author's local py3d clone on sys.path at position 0, which shadows the installed fork. Measured 2026-09-02: with the insert, import py3d resolved 1.3.0 from that clone; without it, 1.7.0 from site-packages - four minor versions below the >= 1.6.0 these skills assert elsewhere, and the clone is a June-2026 snapshot (HEAD f862efd). The insert is removed and the house guard (IS_DAYZ_FORK and >= 1.6.0) added after the import. The only py3d symbol these scripts use is py3d.P3D, present in 1.7.0. Offline tested: py_compile clean, and load_py3d(None) now returns 1.7.0 from site-packages with the clone absent from sys.path.",
+          "license": "MIT",
+          "source_hash": "81fcb6d324f0a5b83a93ea696435ed3806abb08699368d5997214ad5dc4ed83b",
+          "source_id": "installed-skills",
+          "source_path": "dayz-clothing/references/alignment_viewer_extract.py",
+          "source_revision": "filesystem@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "cff6f12129a60f75dabc933d5097f7bbd112c6bc6fa9f7ef69833a05182e4d56",
+      "output_hash": "81fcb6d324f0a5b83a93ea696435ed3806abb08699368d5997214ad5dc4ed83b",
       "output_path": "skills/dayz-clothing/references/alignment_viewer_extract.py",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -4759,10 +4779,20 @@
           "source_path": "dayz-clothing/references/apply_alignment_json.py",
           "source_revision": "r21-phase02@2026-08-15",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The reference scripts put the author's local py3d clone on sys.path at position 0, which shadows the installed fork. Measured 2026-09-02: with the insert, import py3d resolved 1.3.0 from that clone; without it, 1.7.0 from site-packages - four minor versions below the >= 1.6.0 these skills assert elsewhere, and the clone is a June-2026 snapshot (HEAD f862efd). The insert is removed and the house guard (IS_DAYZ_FORK and >= 1.6.0) added after the import. The only py3d symbol these scripts use is py3d.P3D, present in 1.7.0. Offline tested: py_compile clean, and load_py3d(None) now returns 1.7.0 from site-packages with the clone absent from sys.path.",
+          "license": "MIT",
+          "source_hash": "e07a203ad3550e25c13c9e3b653a0b53d5bd223f6439426e7ac8ef7e672038cf",
+          "source_id": "installed-skills",
+          "source_path": "dayz-clothing/references/apply_alignment_json.py",
+          "source_revision": "filesystem@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b6074ca9c466d2ff6ca70024d6324a674e271e98894a71014c7365cd17a2c628",
+      "output_hash": "e07a203ad3550e25c13c9e3b653a0b53d5bd223f6439426e7ac8ef7e672038cf",
       "output_path": "skills/dayz-clothing/references/apply_alignment_json.py",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -4803,10 +4833,20 @@
           "source_path": "dayz-clothing/references/export_clothing_fbx.py",
           "source_revision": "r21-phase02@2026-08-15",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The reference scripts put the author's local py3d clone on sys.path at position 0, which shadows the installed fork. Measured 2026-09-02: with the insert, import py3d resolved 1.3.0 from that clone; without it, 1.7.0 from site-packages - four minor versions below the >= 1.6.0 these skills assert elsewhere, and the clone is a June-2026 snapshot (HEAD f862efd). The insert is removed and the house guard (IS_DAYZ_FORK and >= 1.6.0) added after the import. The only py3d symbol these scripts use is py3d.P3D, present in 1.7.0. Offline tested: py_compile clean, and load_py3d(None) now returns 1.7.0 from site-packages with the clone absent from sys.path.",
+          "license": "MIT",
+          "source_hash": "ed2dd4f24969629ffd48dd1f9887944771b1cba82fba5f2bc722bcb68cc31908",
+          "source_id": "installed-skills",
+          "source_path": "dayz-clothing/references/export_clothing_fbx.py",
+          "source_revision": "filesystem@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "82cc4f3d26e0be533cddfa3fa5471d7e35bbe5625eef9f3e49edbbc77b37a789",
+      "output_hash": "ed2dd4f24969629ffd48dd1f9887944771b1cba82fba5f2bc722bcb68cc31908",
       "output_path": "skills/dayz-clothing/references/export_clothing_fbx.py",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -5867,10 +5907,20 @@
           "source_path": "dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The reference named the local clone as the repo of record. Measured 2026-09-02 that tree is a June-2026 clone frozen at 1.3.0 while the pack ships 1.7.0, so the line pointed readers at a stale source. Corrected to name the pack tree and the published fork, and to mark the clone as not a source.",
+          "license": "MIT",
+          "source_hash": "60949e68f4d222243dd0dbf2db6587d6b15b18cc0dcd8b0e80e24d2ee69b2fa1",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "filesystem@2026-09-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "15e6fa97f56b7f6838de6d85b0344051d1fe9697442298daa3b1070b7166fe7c",
+      "output_hash": "60949e68f4d222243dd0dbf2db6587d6b15b18cc0dcd8b0e80e24d2ee69b2fa1",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
