@@ -68,8 +68,10 @@ pip install pygltflib python-lzo pillow numpy opensimplex --break-system-package
 #   python scripts/install_lzo_shim.py   # installs the lzokay-based shim (import lzo keeps working)
 # CRITICAL: py3d = the pack DayZ fork >= 1.6.0 (tools/py3d).
 # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
-pip install --break-system-packages "$SKILL_DIR"/wheels/py3d-*-py3-none-any.whl 2>/dev/null \
-  || pip install --break-system-packages $(ls /sessions/*/mnt/*/_tools/py3d/dist/py3d-*-py3-none-any.whl 2>/dev/null | sort -V | tail -1)
+# The installer resolves wheels/py3d_dayz-*-py3-none-any.whl, falls back to
+# /sessions/*/mnt/*/_tools/py3d/dist/ when mounted, fails closed when neither is
+# present, and refuses to guess when legacy py3d wheels sit beside it.
+python3 scripts/install_py3d.py
 python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 ```
 
@@ -275,7 +277,7 @@ The RVMAT parser extracts and maps to PBR:
 
 2. **GLTFLoader in sandbox**: Claude's artifact iframe blocks `fetch()` and `Request.clone()`. GLB loading via `loader.load()` or even `loader.parse()` fails because the loader internally resolves buffer/image URIs via fetch. Fix: bypass GLTFLoader entirely for embedded mode, build geometry from raw typed arrays.
 
-3. **PyPI py3d collision**: `pip install py3d` installs a point cloud visualization library, NOT the DayZ P3D library. Install the pack fork (`pip install -e tools/py3d`) or the DayZ fork wheel vendored in the plugin projection (`wheels/py3d-*.whl`; fallback `_tools/py3d/dist/` if mounted) and assert `py3d.IS_DAYZ_FORK`.
+3. **PyPI py3d collision**: `pip install py3d` installs a point cloud visualization library, NOT the DayZ P3D library. Install the pack fork (`pip install -e tools/py3d`) or the DayZ fork wheel vendored in this skill via `python3 scripts/install_py3d.py` (`wheels/py3d_dayz-*.whl`; fallback `_tools/py3d/dist/` if mounted), which fails closed instead of installing the wrong py3d, and assert `py3d.IS_DAYZ_FORK`.
 
 4. **LZO on DXT mipmaps**: Arma2+ PAA files compress large mipmaps (256+) with LZO. Indicated by top bit of width field. Requires `liblzo2-dev` + `python-lzo`, or `lzokay` plus `python -m dayz_3d_viewer install-lzo-shim` (plugin projection: `python scripts/install_lzo_shim.py`).
 

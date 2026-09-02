@@ -3191,10 +3191,20 @@
           "source_id": "pack-r21-authored",
           "source_revision": "threejs-lane-audit@2026-09-01",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Route B rewritten 2026-09-02: the plugin-projection block installed the vendored wheel with an inline glob still spelled py3d-*-py3-none-any.whl, which stopped matching after the py3d -> py3d_dayz rename and failed silently behind 2>/dev/null; the same defect sat in the /sessions/*/mnt/*/_tools/py3d/dist/ fallback and in Known Gotcha 3. Replaced by scripts/install_py3d.py, the fail-closed installer the other three vendoring skills already use.",
+          "license": "MIT",
+          "source_hash": "51d3fb4731250aa2cb0e52e80a7bc446b8a92c4afd93cf796a0d3b80d1ce5109",
+          "source_id": "installed-skills",
+          "source_path": "dayz-3d-viewer/SKILL.md",
+          "source_revision": "filesystem@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f4a671e9aab43de02bbb421ef48697618480414cecff8ba54c08b401b9c2f465",
+      "output_hash": "51d3fb4731250aa2cb0e52e80a7bc446b8a92c4afd93cf796a0d3b80d1ce5109",
       "output_path": "skills/dayz-3d-viewer/SKILL.md",
       "routing_artifact_id": "skill/dayz-3d-viewer",
       "verification_level": "cross_checked"
@@ -3220,6 +3230,50 @@
       "output_path": "skills/dayz-3d-viewer/references/states-animations-leds.md",
       "routing_artifact_id": "skill/dayz-3d-viewer",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-3d-viewer/scripts/install_py3d.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "dayz-3d-viewer was the only wheel-vendoring skill still installing py3d through an inline glob; that glob still read py3d-*-py3-none-any.whl and stopped matching when the distribution was renamed py3d -> py3d_dayz, so the install failed silently on every run. Adopted verbatim on 2026-09-02 from the copy already published for dayz-animation-pipeline, dayz-p3d-inspector and dayz-proxy-align (sha256 identical). Offline tested in this skill: the 6 regression tests pass and _select_wheel() resolves wheels/py3d_dayz-1.7.0-py3-none-any.whl.",
+          "license": "MIT",
+          "source_hash": "8986d04e9a577ca1b6471bcbd5fd32ed8468c78e36b0e8a66ceb73c376247258",
+          "source_id": "installed-skills",
+          "source_path": "dayz-3d-viewer/scripts/install_py3d.py",
+          "source_revision": "filesystem@2026-09-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8986d04e9a577ca1b6471bcbd5fd32ed8468c78e36b0e8a66ceb73c376247258",
+      "output_path": "skills/dayz-3d-viewer/scripts/install_py3d.py",
+      "routing_artifact_id": "skill/dayz-3d-viewer",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-3d-viewer/tests/test_install_py3d.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "dayz-3d-viewer was the only wheel-vendoring skill still installing py3d through an inline glob; that glob still read py3d-*-py3-none-any.whl and stopped matching when the distribution was renamed py3d -> py3d_dayz, so the install failed silently on every run. Adopted verbatim on 2026-09-02 from the copy already published for dayz-animation-pipeline, dayz-p3d-inspector and dayz-proxy-align (sha256 identical). Offline tested in this skill: the 6 regression tests pass and _select_wheel() resolves wheels/py3d_dayz-1.7.0-py3-none-any.whl.",
+          "license": "MIT",
+          "source_hash": "da765cafdc63341c5fb17416e17f79422b5762ab9ae2f77befc388ef33066954",
+          "source_id": "installed-skills",
+          "source_path": "dayz-3d-viewer/tests/test_install_py3d.py",
+          "source_revision": "filesystem@2026-09-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "da765cafdc63341c5fb17416e17f79422b5762ab9ae2f77befc388ef33066954",
+      "output_path": "skills/dayz-3d-viewer/tests/test_install_py3d.py",
+      "routing_artifact_id": "skill/dayz-3d-viewer",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-ai-patterns/skill.md",
@@ -6761,10 +6815,20 @@
           "source_path": "dayz-proxy-align/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Dependencies block rewritten 2026-09-02: the skill vendors both the wheel and scripts/install_py3d.py but documented only `pip install -e tools/py3d`, which needs a pack checkout. Route A / Route B wording adopted verbatim from dayz-p3d-inspector; both cited paths verified present in the skill.",
+          "license": "MIT",
+          "source_hash": "28bcd0a1ef80030fb8cb541e20c7652cb5a0691341ffc2ccdb06b95a81a2871e",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/SKILL.md",
+          "source_revision": "filesystem@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "01c1c02a28166b3be8135493e57b921c6063d09e7563ff9f517195013a9ee017",
+      "output_hash": "28bcd0a1ef80030fb8cb541e20c7652cb5a0691341ffc2ccdb06b95a81a2871e",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
