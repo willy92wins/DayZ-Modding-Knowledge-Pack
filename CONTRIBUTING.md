@@ -22,9 +22,20 @@ and privacy contracts.
 6. **Check licensing and privacy.** Do not add third-party payload until its
    license is known and compatible. Never commit secrets, personal identities,
    machine-specific absolute paths, private PBOs or proprietary game data.
-7. **Promote only a green commit.** `~\.claude\skills\` is the working
-   copy (where agents edit and load). The public repo is a publication
-   snapshot harvested by UNION, never a wipe. Plugin trees are ephemeral.
+7. **Promote only a green commit, and edit at the source.** For any skill listed in
+   `promotions/promotion-map.json`, **this repo is the editable source**: edit
+   `skills/<name>/`, reseal `sources/source-map.json`, and land a commit with
+   `packctl validate` green. The live user tree and the plugin trees are promotion
+   TARGETS — a hand-edit there is exactly what `PROMOTION-TARGET-UNEXPLAINED` exists to
+   catch, and it blocks the next promotion for every session, not just yours. Skills
+   absent from the map are unaffected: edit those in the live tree.
+
+   *Direction fixed 2026-09-04.* This point used to call the live tree "the working copy
+   where agents edit", which contradicted the workflow doc and left every session to guess.
+   The tie-breaker is that `packctl` enforces this direction with executable gates
+   (`SOURCE-HASH-MISMATCH`, `PROMOTION-TARGET-UNEXPLAINED`) and nothing enforces the other:
+   a document without a gate loses to a gate. The public repo is still a publication
+   snapshot harvested by UNION, never a wipe; plugin trees remain ephemeral.
 
 ## Evidence rules
 

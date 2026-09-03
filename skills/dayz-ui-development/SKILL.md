@@ -1200,3 +1200,30 @@ This section supersedes the timer/hand-written-`.edds` example in
   detach that updater with `ProgressAsync.SetUserData(null)` only for the controlled diagnostic.
 - Never apply a tone compensation from an offline transfer-function model. Measure a known texture
   from an in-game screenshot first.
+
+## SP-365 — Script-driven render-to-texture is dead in DayZ 1.29
+
+`SetGUIWidget(IEntity, index, RTTextureWidget)` (`enwidgets.c:634-637`, "reference in shader as
+$rendertarget") and `RTTextureWidget` do not work in the 1.29 runtime: the render target is never
+filled from its child widgets. Do not spend cycles on it.
+
+Two in-game probes, both negative:
+
+- `SetObjectTexture(idx, "$rendertarget")` on a hidden selection paints EMPTY BLACK — the token
+  resolves, so this is not a typo; a non-existent texture would paint WHITE.
+- An `ImageWidget.SetImageTexture(0, rtt)` (`enwidgets.c:258`) mirroring the SAME render target
+  paints non-existent-texture WHITE. Producer dead for both consumers.
+
+Zero uses in vanilla scripts and layouts, and no community precedent. The opposite direction —
+world into UI, via `RenderTargetWidget` / `SetWidgetWorld` (`rendertarget.c:66`) — does work; it is
+the UI-onto-surface direction that is dead.
+
+Live content on a model surface goes the PHYSICAL way instead: `SetObjectTexture` /
+`SetObjectMaterial` per hidden selection (these do NOT replicate — server-authoritative int, apply
+on both sides, watchdog re-assert), bones driven by model.cfg rotation/translation anims
+(`SetAnimationPhase` replicates natively server-side), and hiding by transparent-texture override
+(`type="hide"` kills the whole baked Animations block).
+
+A screen-anchored 2D panel over the projected quad's AABB never matches a surface seen at an angle,
+in orientation or in size. That is structural, not a tuning problem. Full case: SUB_BRZ GPS
+(`SUB_BRZ_NavScreen.c`).

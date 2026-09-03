@@ -853,3 +853,24 @@ Antes de escribir un negativo en el HANDOFF desde esta ruta:
    negativo no nombra ninguna hasta que se cruce la matriz.
 3. Acotar el hallazgo a un eje **parece** cautela y es una afirmacion mas: el eje elegido puede
    ser el equivocado, y entonces la cautela apunta al sitio contrario del mecanismo real.
+
+### SP-124 — El lease libre NO implica caja libre
+
+`session_status` puede devolver `owner: null`, cola vacía y `claimable: true` mientras hay un
+servidor y un cliente DayZ vivos, lanzados fuera del lifecycle gestionado por otra línea del
+proyecto y ocupando el puerto 2302. El lease habla del lease, no de la caja.
+
+Antes de dar la caja por libre, leer el `-mod=` de los procesos vivos:
+
+```powershell
+Get-CimInstance Win32_Process -Filter "Name LIKE 'DayZ%'" |
+  Select-Object ProcessId, CommandLine
+```
+
+La línea de comandos dice de quién es la corrida y si carga tu mod.
+
+Corolario para el build: el guard «ningún proceso DayZ» se puede **estrechar** a las dos
+condiciones que de verdad representa —ningún proceso vivo carga tu mod, y el PBO destino abre en
+exclusiva— en vez de saltárselo o de esperar a que la otra línea termine.
+
+Cross-ref: `dayz-test-ingame` (misma regla, lado del launch).

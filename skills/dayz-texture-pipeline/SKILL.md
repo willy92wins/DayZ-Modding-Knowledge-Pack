@@ -456,3 +456,21 @@ es el default de vanilla, o sea sin reflexion.
 el directorio de trabajo, y `save()` no lanza. Un horneado entero se dio por escrito y no
 estaba en ninguna parte. Ruta absoluta, y **comprobar `os.path.isfile()` antes de loguear
 "escrito"** — decirlo sin mirarlo es como se pierde.
+
+### SP-376 — Decal con alfa sobre vehículo: `Super` + `renderFlags[]={"nozwrite"}`
+
+`PixelShaderID="Super"` a secas IGNORA el canal alfa del `_ca` de la sección. Refutado in-game: las
+etiquetas del SUB_BRZ con alfa real renderizaban opacas. El arreglo no es cambiar de shader, es
+completar el estado de render.
+
+El patrón vanilla para un decal con alfa sobre vehículo es `Super`/`Super` +
+`renderFlags[]={"nozwrite"}`, verificado en las pegatinas del Offroad
+(`DZ\vehicles\wheeled\offroad_02\data\offroad_02_decals.rvmat:7-12`).
+
+Lo que el flag NO cubre, y hay que declarar en el gate in-game: alpha sorting contra otras
+transparencias, z-fighting si el decal queda casi coplanar, y que sin `emmisive` el símbolo no
+autoilumina de noche. DXT5 conserva el alfa pero suaviza los bordes.
+
+Recomposición desde una fuente DECAL (icono en el canal alfa): RGB = color del swatch por píxel,
+ALFA = el alfa real. Nunca aplanar alfa sobre RGB — el bake de blanco-sobre-negro fue justo ese
+error, y produce el decal opaco que parece un problema de shader.

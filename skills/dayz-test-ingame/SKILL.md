@@ -1397,3 +1397,106 @@ dayz_test_run(project="DayZ_MCP", mode="all", extra_mods=["@MiProbe"])
 sale con el bridge entero (`capture_screenshot`, `camera_set`, `query_player_state`, `wait_for`
 sobre `log_matches`) **más** tu probe, sin tocar la política sellada ni reconstruirla con
 `build_native_launcher.py`.
+
+## El gate post-build del `dayz-test.ps1` generado comprueba EXISTENCIA, no frescura (added 2026-08-31)
+
+Complementa la sección anterior, no la repite: allí está la doctrina («el veredicto de un
+build es la tabla de ficheros del PBO, no el exit code»); aquí está **el instrumento que
+esta misma skill genera y que la incumple**, con su línea exacta y el arreglo.
+
+Origen: ficha `fb-20260830-011217-668f` del buzón del pipeline (`project: LFQuad2`,
+2026-08-30 01:12), archivada por otra sesión. La formulación «comprueba que el PBO EXISTE,
+no que sea el nuevo» es suya.
+
+### Lo que hace hoy el script generado
+
+Verificado el 2026-08-31 en **tres copias generadas independientemente**, no en una:
+
+```
+A6_MK47_dev\tools\dayz-test.ps1:422-429
+ExpandedBuilding_dev\tools\dayz-test.ps1:403-408
+LFGungame_dev\tools\dayz-test.ps1:353-354
+```
+
+La secuencia, tomada de `A6_MK47_dev\tools\dayz-test.ps1:422-429`:
+
+```powershell
+if ($p.ExitCode -ne 0) { Die "AddonBuilder failed (exit $($p.ExitCode)). ..." }
+$pbo = Join-Path $target "$Mod.pbo"
+if (-not (Test-Path $pbo)) { Die "Build reported success but $pbo is missing." }
+# Sanity: ... -lt 4096 ...
+Ok "deployed: $pbo ($((Get-Item $pbo).Length) b)"
+```
+
+Tres comprobaciones, y **ninguna de las tres mira si el PBO es el de ESTE build**:
+
+| Comprobación | Qué contesta | Qué NO contesta |
+|---|---|---|
+| `$p.ExitCode -ne 0` | si AddonBuilder devolvió != 0 | nada si devuelve 0 **y aun así falla** — medido en la ficha: `[ERROR]: Build failed` en su log con exit 0 |
+| `Test-Path $pbo` | si existe **un** PBO | si es el nuevo. El anterior también existe |
+| `Length -lt 4096` | si salió ridículamente pequeño | nada: un PBO viejo completo pesa megas y pasa holgado |
+
+Con el juego corriendo el PBO destino está **bloqueado**, la copia final de AddonBuilder
+falla, y el wrapper imprime `[ok] deployed` y sale con **exit 0** sobre el binario anterior.
+Es el mismo bloqueo de la sección de `DSSignFile`, un paso antes: allí se firma el PBO viejo,
+aquí se declara desplegado.
+
+### Los tres niveles, y por qué el gate tiene que estar en el tercero
+
+**Existencia** («hay un PBO») la satisface el build anterior. **Frescura** («este PBO es
+posterior al build») la satisface un PBO nuevo y vacío. Solo **contenido** («este PBO
+contiene estas fuentes») contesta la pregunta que hace el que va a probar el mod.
+
+El arreglo mínimo, que cuesta dos líneas y cierra el caso medido:
+
+```powershell
+$before = if (Test-Path $pbo) { (Get-Item $pbo).LastWriteTimeUtc } else { [datetime]::MinValue }
+# ... Start-Process AddonBuilder ...
+if (-not (Test-Path $pbo)) { Die "Build reported success but $pbo is missing." }
+if ((Get-Item $pbo).LastWriteTimeUtc -le $before) {
+    Die "PBO no cambio: AddonBuilder no lo reescribio (destino bloqueado por una corrida viva?). El desplegado sigue siendo el anterior."
+}
+```
+
+El arreglo bueno es el gate de contenido, y se escribe en **forma complementaria**: no una
+lista de lo que podría haberse quedado atrás, sino la afirmación positiva **«toda fuente
+actual está en el PBO desplegado con su tamaño/sha»**. La lista de fuentes es corta y la
+recorres; la de cosas que pueden quedarse rancias no tiene fin.
+
+Ese gate no es teórico: el 2026-08-31 dos puertas de esa forma —una de identidad byte a byte
+contra un snapshot, otra de «cada fuente presente en el PBO con su sha256»— detectaron en
+otro mod un PBO que había aparecido en el árbol y no estaba desplegado. Un `Test-Path` no
+habría visto nada.
+
+### Cuándo muerde esto
+
+Siempre que se reconstruya con el juego vivo, que es justo lo que invita a hacer el ciclo de
+filepatching. Antes de reconstruir, **para la corrida** (ver la sección de `DSSignFile`). Y si
+vas a encadenar build → firma → despliegue en una tanda desatendida o en lanes paralelas,
+mete el gate de frescura antes de la firma: firmar el binario anterior y desplegarlo produce
+un artefacto que parece correcto en todos los pasos y no contiene el cambio.
+
+**Señal barata de que te ha pasado**: el log de AddonBuilder dice `[ERROR]: Build failed` y
+tu wrapper dice `[ok] deployed` a continuación. Si esas dos líneas conviven en la misma
+corrida, el PBO que vas a probar es el de antes.
+
+### SP-124 — El lease libre NO implica caja libre
+
+`session_status` puede devolver `owner: null`, cola vacía y `claimable: true` mientras hay un
+servidor y un cliente DayZ vivos, lanzados fuera del lifecycle gestionado por otra línea del
+proyecto y ocupando el puerto 2302. El lease habla del lease, no de la caja.
+
+Antes de dar la caja por libre, leer el `-mod=` de los procesos vivos:
+
+```powershell
+Get-CimInstance Win32_Process -Filter "Name LIKE 'DayZ%'" |
+  Select-Object ProcessId, CommandLine
+```
+
+La línea de comandos dice de quién es la corrida y si carga tu mod.
+
+Corolario para el build: el guard «ningún proceso DayZ» se puede **estrechar** a las dos
+condiciones que de verdad representa —ningún proceso vivo carga tu mod, y el PBO destino abre en
+exclusiva— en vez de saltárselo o de esperar a que la otra línea termine.
+
+Cross-ref: `dayz-mcp-verify` (misma regla, lado del bridge).

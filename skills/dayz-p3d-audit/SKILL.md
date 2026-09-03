@@ -429,3 +429,20 @@ Run `binarize` as the authoritative serialization check, with the previous known
 as a control in the same run. This separates a product failure from a broken test bench and
 makes pre-existing log noise comparable. A binarize pass proves that this index/serialization
 gate passed; it still does not replace the in-game spawn gate in SP-216.
+
+## SP-359 — The audit does not check the resolved-vertex budget
+
+A `.p3d` can pass this entire audit with 0 CRITICAL and still be rejected by the engine when it
+loads the MLOD with `Too many vertices`, which surfaces in-game as
+`PHYSICS (E): Won't simulate, it has no geometry` even when the Geometry LOD is perfect.
+
+Add to the audit: a count of `(point, normal, uv)` triples per LOD, and a warning past 90% of the
+measured ceiling for that model.
+
+The ceiling is per-model, not a constant — `RESOLVED_LIMIT = 65535` is a false friend. Measured
+cliff on the HH-60G: 46.133 triples load, 46.134 do not (25 in-game verdicts, zero false).
+
+The authoritative gate is `binarize.exe`, not this count, and it has three states: PASS /
+CAPACITY_FAIL / OTHER_FAIL. CAPACITY_FAIL means do not go in-game to "fix" Geometry; OTHER_FAIL
+means do not touch geometry at all. Evidence and the measured cliff: SP-122 in
+`dayz-vehicles/SKILL.md` and `dayz-vehicles/references/binarize-vertex-budget.md`.

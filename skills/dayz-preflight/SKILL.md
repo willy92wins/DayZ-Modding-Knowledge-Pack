@@ -91,3 +91,29 @@ Exit 1, and downstream DayZ skills should refuse to run.
 ## SP-010 — Debug/diagnosis preflight extension
 
 For DEBUG/diagnosis tasks (not just builds), also verify/request mounted: (1) unpacked vanilla scripts (`P:\scripts`) — the authoritative source for engine/action/CarScript behavior; (2) the deployed mod tree (`P:\<Mod>`) to confirm WHAT is actually in the build; (3) the working reference mod. Without these, diagnosis degrades to memory/diff. [LL-075, LFQuad 2026-05-25]
+
+## SP-374 — Object Builder's external viewer points at a non-existent exe by default
+
+Buldozer is the cheap answer to "how does it look?" — materials, alpha and animations previewed
+without paying an in-game cycle. On a stock install the viewer is wired to a path that does not
+exist, so it silently never gets used and the question goes in-game instead.
+
+Check the registry value, and that the exe behind it is really there:
+
+```powershell
+$v = (Get-ItemProperty 'HKCU:\Software\Bohemia Interactive\Dayz Tools\Object Builder\CConfig').'%External Viewer'
+$exe = ($v -split ' -buldozer')[0].Trim('"')
+Test-Path $exe
+```
+
+FAIL with the real path as the suggestion: `<steamapps>\common\DayZ\DayZ_x64.exe`. The DayZ Tools
+installer writes `<steamapps>\common\DayZ_x64.exe` — without the `DayZ\` directory — which is why
+the default is broken out of the box.
+
+Measured on this box: configured path `Test-Path` = False, real path = True, `P:\Buldozer` present.
+Cost of not checking it: ~20 SUB_BRZ sessions paid in-game cycles for "does it show?" questions
+(label alpha, needle size, quad behind the screen) with zero mentions of Buldozer in the project
+handoff.
+
+Not verified yet: that Buldozer opens a *custom* `.p3d` with its rvmats. Do not promote this to
+`dayz-model-pipeline` / `dayz-vehicles` as a visual gate until that part is measured.
