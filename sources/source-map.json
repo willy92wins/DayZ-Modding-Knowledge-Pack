@@ -19984,8 +19984,8 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
-          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
+          "decision": "merge",
+          "decision_evidence": "Superseded as the selected output by pack-f1-10-tagg-fidelity; retained as ancestry for the bytes this file carried before that delta.",
           "license": "MIT",
           "source_hash": "38d34a7929a96fb565f1a7726e8f99c866b5c018f68cde449150448a5b527a26",
           "source_id": "py3d-canonical",
@@ -19994,18 +19994,28 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 02 bytes are the selected public output.",
+          "decision": "merge",
+          "decision_evidence": "Superseded as the selected output by pack-f1-10-tagg-fidelity; retained as ancestry for the bytes this file carried before that delta.",
           "license": "MIT",
           "source_hash": "38d34a7929a96fb565f1a7726e8f99c866b5c018f68cde449150448a5b527a26",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/KNOWN-ISSUES.md",
           "source_revision": "r21-phase02@2026-08-15",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "MLOD TAGG round-trip fidelity: extra #UVSet# channels and #Selected# were dropped, and #UVSet# was omitted on point-only LODs. Verified against vanilla MLOD tag layout; tools/py3d suite 227 passed / 10 skipped offline, 233 passed / 4 skipped with PY3D_UPSTREAM_PATH set.",
+          "license": "MIT",
+          "source_hash": "2f755cbc11d8c4bb2ffc64bc7c81d2aa18a8ef9046bddadce53b4abff0fbd198",
+          "source_id": "pack-f1-10-tagg-fidelity",
+          "source_path": "tools/py3d/KNOWN-ISSUES.md",
+          "source_revision": "f1-10-f1-11@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "38d34a7929a96fb565f1a7726e8f99c866b5c018f68cde449150448a5b527a26",
+      "output_hash": "2f755cbc11d8c4bb2ffc64bc7c81d2aa18a8ef9046bddadce53b4abff0fbd198",
       "output_path": "tools/py3d/KNOWN-ISSUES.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20088,8 +20098,8 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
+          "decision": "merge",
+          "decision_evidence": "Superseded as the selected output by pack-f1-10-tagg-fidelity; retained as ancestry for the bytes this file carried before that delta.",
           "license": "MIT",
           "source_hash": "1f1dbdcf9f22b68a4c61d51bf9d29ea12367e6605c81e87e2091db6549c03338",
           "source_id": "py3d-canonical",
@@ -20116,10 +20126,20 @@
           "source_path": "tools/py3d/README.md",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "MLOD TAGG round-trip fidelity: extra #UVSet# channels and #Selected# were dropped, and #UVSet# was omitted on point-only LODs. Verified against vanilla MLOD tag layout; tools/py3d suite 227 passed / 10 skipped offline, 233 passed / 4 skipped with PY3D_UPSTREAM_PATH set.",
+          "license": "MIT",
+          "source_hash": "960c8f7e9104f060423bbec3902f8c614834a86e5ddaa6e7eb1ea173b4978a92",
+          "source_id": "pack-f1-10-tagg-fidelity",
+          "source_path": "tools/py3d/README.md",
+          "source_revision": "f1-10-f1-11@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "1f1dbdcf9f22b68a4c61d51bf9d29ea12367e6605c81e87e2091db6549c03338",
+      "output_hash": "960c8f7e9104f060423bbec3902f8c614834a86e5ddaa6e7eb1ea173b4978a92",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -20150,8 +20170,8 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
+          "decision": "merge",
+          "decision_evidence": "Superseded as the selected output by pack-f1-10-tagg-fidelity; retained as ancestry for the bytes this file carried before that delta.",
           "license": "MIT",
           "source_hash": "2f1546310f9d8fcdc5348dce9dec338a84cc6e023cba9fdf250445c332f5ae6b",
           "source_id": "py3d-canonical",
@@ -20188,10 +20208,20 @@
           "source_path": "tools/py3d/py3d/__init__.py",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "MLOD TAGG round-trip fidelity: extra #UVSet# channels and #Selected# were dropped, and #UVSet# was omitted on point-only LODs. Verified against vanilla MLOD tag layout; tools/py3d suite 227 passed / 10 skipped offline, 233 passed / 4 skipped with PY3D_UPSTREAM_PATH set.",
+          "license": "MIT",
+          "source_hash": "3dcf6e714fa412150891ddc57bfac1289a09011d1d56757106131bb4b02b35c9",
+          "source_id": "pack-f1-10-tagg-fidelity",
+          "source_path": "tools/py3d/py3d/__init__.py",
+          "source_revision": "f1-10-f1-11@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2f1546310f9d8fcdc5348dce9dec338a84cc6e023cba9fdf250445c332f5ae6b",
+      "output_hash": "3dcf6e714fa412150891ddc57bfac1289a09011d1d56757106131bb4b02b35c9",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21012,8 +21042,8 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Bytes taken from the published fork willy92wins/py3d-dayz, which is ahead of the pack and already carries the depersonalised release text.",
+          "decision": "merge",
+          "decision_evidence": "Superseded as the selected output by pack-f1-10-tagg-fidelity; retained as ancestry for the bytes this file carried before that delta.",
           "license": "MIT",
           "source_hash": "ee41e486aa7dfb8243acc9d261f9e831e7edf6db48c7b1c2e8461a362f24ba02",
           "source_id": "py3d-canonical",
@@ -21040,10 +21070,20 @@
           "source_path": "tools/py3d/tests/conftest.py",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "MLOD TAGG round-trip fidelity: extra #UVSet# channels and #Selected# were dropped, and #UVSet# was omitted on point-only LODs. Verified against vanilla MLOD tag layout; tools/py3d suite 227 passed / 10 skipped offline, 233 passed / 4 skipped with PY3D_UPSTREAM_PATH set.",
+          "license": "MIT",
+          "source_hash": "f24891ddb801809f24dadcfae52b565da656dfb7b84d6d16f3b108cd4ca2d218",
+          "source_id": "pack-f1-10-tagg-fidelity",
+          "source_path": "tools/py3d/tests/conftest.py",
+          "source_revision": "f1-10-f1-11@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ee41e486aa7dfb8243acc9d261f9e831e7edf6db48c7b1c2e8461a362f24ba02",
+      "output_hash": "f24891ddb801809f24dadcfae52b565da656dfb7b84d6d16f3b108cd4ca2d218",
       "output_path": "tools/py3d/tests/conftest.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21200,8 +21240,8 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
-          "decision_evidence": "Reviewed Phase 01 bytes are the selected public output.",
+          "decision": "merge",
+          "decision_evidence": "Superseded as the selected output by pack-f1-10-tagg-fidelity; retained as ancestry for the bytes this file carried before that delta.",
           "license": "MIT",
           "source_hash": "6ead03c92c8f937c6dabe09f384a246125a4ecffbd42245c21d2a8ceef12c33d",
           "source_id": "pack-r21-authored",
@@ -21228,10 +21268,20 @@
           "source_path": "tests/test_s1a_contract.py",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "MLOD TAGG round-trip fidelity: extra #UVSet# channels and #Selected# were dropped, and #UVSet# was omitted on point-only LODs. Verified against vanilla MLOD tag layout; tools/py3d suite 227 passed / 10 skipped offline, 233 passed / 4 skipped with PY3D_UPSTREAM_PATH set.",
+          "license": "MIT",
+          "source_hash": "25b7eec78e58cd2b459045f4f68db169a9938ee4498d480bc893c12fbf26c117",
+          "source_id": "pack-f1-10-tagg-fidelity",
+          "source_path": "tools/py3d/tests/test_s1a_contract.py",
+          "source_revision": "f1-10-f1-11@2026-09-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6ead03c92c8f937c6dabe09f384a246125a4ecffbd42245c21d2a8ceef12c33d",
+      "output_hash": "25b7eec78e58cd2b459045f4f68db169a9938ee4498d480bc893c12fbf26c117",
       "output_path": "tools/py3d/tests/test_s1a_contract.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21797,6 +21847,28 @@
       "license": "MIT",
       "output_hash": "9d91d5f7eb6e101032537712146f9cff2877152267f081da4879d2d104c5e412",
       "output_path": "tools/py3d/tests/test_s4_wheel_gate.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/py3d/tests/test_s5_tagg_fidelity.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "MLOD TAGG round-trip fidelity: extra #UVSet# channels and #Selected# were dropped, and #UVSet# was omitted on point-only LODs. Verified against vanilla MLOD tag layout; tools/py3d suite 227 passed / 10 skipped offline, 233 passed / 4 skipped with PY3D_UPSTREAM_PATH set.",
+          "license": "MIT",
+          "source_hash": "2ae3747fe39c75a598811c064b224b13453a81379137b035ed1919bb3a785d87",
+          "source_id": "pack-f1-10-tagg-fidelity",
+          "source_path": "tools/py3d/tests/test_s5_tagg_fidelity.py",
+          "source_revision": "f1-10-f1-11@2026-09-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2ae3747fe39c75a598811c064b224b13453a81379137b035ed1919bb3a785d87",
+      "output_path": "tools/py3d/tests/test_s5_tagg_fidelity.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
@@ -22795,6 +22867,13 @@
       "notes": "Pre-PBO Enforce/config linter authored in the DayZ_Tooling project; adopted into the pack as the offline layer. Only the linter is adopted: the DayZ-MCP smoke and the vehicle-proxy contract stay out.",
       "revision": "dayz-tooling@2026-08-18",
       "source_id": "dayz-tooling"
+    },
+    {
+      "kind": "authored",
+      "license": "MIT",
+      "notes": "Authored fix for MLOD TAGG round-trip data loss in the py3d fork (extra UV sets, #Selected#, point-only #UVSet#).",
+      "revision": "f1-10-f1-11@2026-09-02",
+      "source_id": "pack-f1-10-tagg-fidelity"
     }
   ]
 }

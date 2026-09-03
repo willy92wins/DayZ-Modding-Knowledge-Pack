@@ -117,11 +117,42 @@ original, so a proxy selection goes from one face to two and
   accepted it and wrote byte-identical output. The guard tests list *identity*
   when the bug it targets is one of *length*. This is the fork's one true
   behavioural regression against upstream.
+- **Point-only LODs now carry a `#UVSet#` tag that upstream omits.** A Memory or
+  LandContact LOD gains 17 bytes (the tag plus its 4-byte set id), so
+  CANON-IDENT no longer holds for a model containing one. Deliberate: see the
+  `#UVSet#` entry under *Fixed*. The divergence is pinned exactly — not merely
+  tolerated — by `test_s5_tagg_fidelity.test_canon_divergence_is_only_point_only_uvset`,
+  which fails on any difference other than that one tag.
 
 ---
 
 ## Fixed
 
+- **A second UV set was destroyed on round-trip.** `#UVSet#` was ignored on read
+  ("data from lod faces used") and the writer emitted exactly one set, id 0,
+  rebuilt from `Vertex.uv`. Any channel beyond the first was therefore dropped
+  by a plain read-then-write — silently, since nothing in the file gets smaller
+  in a way a caller would notice. Sets with id != 0 are now kept verbatim as
+  face-loop lists in `LOD.extra_uv_sets` and re-emitted, padded or truncated to
+  the current loop count if the geometry changed meanwhile. Vanilla weapon and
+  clothing visual LODs ship id 0 *and* id 1, so this was reachable on the first
+  real asset anyone opened.
+- **`#Selected#` was dropped entirely.** Object Builder's editor selection state
+  was neither read nor written. It is now preserved in `LOD.selected`, and
+  re-emitted at its contractual size of `len(points) + len(faces)` — regenerated
+  zero-filled rather than written stale if the LOD was resized after reading,
+  because a mis-sized payload desynchronises every tag after it.
+- **Point-only LODs were written without a `#UVSet#` tag.** The writer guarded
+  the tag behind `len(self.faces) > 0`, so a Memory or LandContact LOD came out
+  with no special tags at all. BI-authored MLOD keeps the tag there with a
+  4-byte payload carrying just the set id. Verified against vanilla references:
+  `InfectedSpecialLODs.p3d` LOD1 is a 29-point, 0-face Memory LOD with
+  `#UVSet#[id=0]` of exactly 4 bytes. The tag is now always written.
+
+  Note that tag *order* is **not** part of this contract, and should not be
+  "fixed" to match some reference: BI's own files disagree with each other.
+  `WeaponSpecialLODs.p3d` emits `#UVSet#` last, `InfectedSpecialLODs.p3d` emits
+  it first. Presence, id and size are what matter.
 - **Infinite hang on an unterminated string.** `_read_asciiz` looped forever
   when a file reached EOF without a NUL byte — the process hung with no
   traceback, which no caller could catch. Inherited from upstream; a truncated

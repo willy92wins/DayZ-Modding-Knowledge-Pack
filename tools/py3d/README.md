@@ -135,6 +135,13 @@ python -m pytest -q
 PY3D_UPSTREAM_PATH=/path/to/KoffeinFlummi/py3d python -m pytest -q
 ```
 
+CANON-IDENT holds for every model **except** one containing a point-only LOD
+(Memory, LandContact). There the fork deliberately writes a 4-byte `#UVSet#`
+tag that upstream omits and that vanilla MLOD files do carry, so the output is
+17 bytes longer per such LOD. That single divergence is pinned exactly by
+`test_canon_divergence_is_only_point_only_uvset`; see
+[KNOWN-ISSUES.md](KNOWN-ISSUES.md) §Compatibility.
+
 Fixtures are synthetic — no Bohemia Interactive assets are included or required.
 
 ## License

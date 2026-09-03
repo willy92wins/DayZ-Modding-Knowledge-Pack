@@ -39,7 +39,7 @@ import struct
 import tempfile
 
 
-__version__ = "1.5.0"
+__version__ = "1.5.1"
 IS_DAYZ_FORK = True
 
 _REQUIRED = object()
@@ -1539,6 +1539,18 @@ class LOD:
         self.sharp_edges = []
         self.properties = collections.OrderedDict()
         self.selections = collections.OrderedDict()
+        # F1-10: UV sets with id != 0. UV set 0 stays authoritative on
+        # the faces (Vertex.uv); extra channels have no per-vertex home
+        # in this object model, so they are kept verbatim as face-loop
+        # lists and re-emitted on write. Without this a round-trip
+        # silently destroys them (BI weapon and clothing LODs routinely
+        # ship id=0 AND id=1).
+        self.extra_uv_sets = collections.OrderedDict()
+        # F1-11: Object Builder editor selection state. The payload is
+        # exactly len(points) + len(faces) bytes. Preserved so that a
+        # round-trip does not drop the tag; regenerated zero-filled if
+        # the LOD geometry was resized after read.
+        self.selected = None
         if f is not None:
             self.read(f)
 
@@ -2311,10 +2323,23 @@ class LOD:
                     self.points[i].mass = struct.unpack("f", data[i*4:i*4+4])[0]
                 continue
 
-            #if taggname == "#Animation#": #not supported
-            #    pass
+            if taggname == "#Selected#": #F1-11
+                self.selected = data
+                continue
 
-            #if taggname == "#UVSet#": #ignored, data from lod faces used
+            if taggname == "#UVSet#": #F1-10
+                # Payload: <L id> then one <ff> per face loop.
+                if num_bytes >= 4:
+                    uv_id = struct.unpack("<L", data[:4])[0]
+                    if uv_id != 0:
+                        # id 0 is redundant with the face UVs already
+                        # read into Vertex.uv.
+                        self.extra_uv_sets[uv_id] = [
+                            struct.unpack("<ff", data[i*8+4:i*8+12])
+                            for i in range(int((num_bytes - 4) / 8))]
+                continue
+
+            #if taggname == "#Animation#": #not supported
             #    pass
 
         self.resolution = struct.unpack("f", f.read(4))[0]
@@ -2345,6 +2370,20 @@ class LOD:
             f.write(struct.pack("<L", len(self.sharp_edges) * 8))
             for se in self.sharp_edges:
                 f.write(struct.pack("<LL", *se))
+
+        if self.selected is not None: #F1-11
+            # Size is a hard contract: points + faces. Reuse the original
+            # payload only while the geometry still matches it, otherwise
+            # emit a correctly sized empty selection instead of a stale
+            # one that would desynchronise the reader.
+            want = len(self.points) + len(self.faces)
+            data = self.selected
+            if len(data) != want:
+                data = b"\0" * want
+            f.write(b"\x01")
+            f.write(b"#Selected#\0")
+            f.write(struct.pack("<L", len(data)))
+            f.write(data)
 
         for k, v in self.selections.items():
             # F1-05: la selection debe seguir bindeada a LAS listas actuales
@@ -2384,14 +2423,30 @@ class LOD:
             for p in self.points:
                 f.write(struct.pack("f", p.mass))
 
-        if len(self.faces) > 0:
+        # F1-10: UV set 0 is written unconditionally. BI-authored MLOD
+        # keeps the tag even on point-only LODs (Memory, LandContact),
+        # where the payload is just the 4-byte set id. Omitting it makes
+        # the LOD differ structurally from every vanilla reference.
+        f.write(b"\x01")
+        f.write(b"#UVSet#\0")
+        f.write(struct.pack("<L", self.num_vertices * 8 + 4))
+        f.write(b"\0\0\0\0")
+        for fa in self.faces:
+            for v in fa.vertices:
+                f.write(struct.pack("ff", *v.uv))
+
+        for uv_id, loops in self.extra_uv_sets.items(): #F1-10
+            # Pad or truncate to the current loop count: the geometry may
+            # have been edited after read, and a mis-sized UV set makes
+            # the whole TAGG block unreadable.
+            want = self.num_vertices
+            loops = (list(loops) + [(0.0, 0.0)] * want)[:want]
             f.write(b"\x01")
             f.write(b"#UVSet#\0")
-            f.write(struct.pack("<L", self.num_vertices * 8 + 4))
-            f.write(b"\0\0\0\0")
-            for fa in self.faces:
-                for v in fa.vertices:
-                    f.write(struct.pack("ff", *v.uv))
+            f.write(struct.pack("<L", want * 8 + 4))
+            f.write(struct.pack("<L", uv_id))
+            for uv in loops:
+                f.write(struct.pack("ff", *uv))
 
         f.write(b"\x01")
         f.write(b"#EndOfFile#\0")

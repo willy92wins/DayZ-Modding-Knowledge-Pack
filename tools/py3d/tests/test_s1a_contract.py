@@ -14,8 +14,16 @@ CANONICAL = [
 ]
 IDS = [c[0] for c in CANONICAL]
 
+# F1-10 rompe CANON-IDENT a proposito, y solo para modelos con algun LOD sin
+# caras: el fork emite ahi el #UVSet# de 4 bytes que upstream omite y que los
+# MLOD de BI si traen. `multilod` tiene un Memory LOD, asi que su divergencia
+# es esperada y se verifica de forma exacta (no relajada) en
+# test_s5_tagg_fidelity.test_canon_divergence_is_only_point_only_uvset.
+CANON_IDENT = [c for c in CANONICAL if c[0] != "multilod"]
 
-@pytest.mark.parametrize("name,builder", CANONICAL, ids=IDS)
+
+@pytest.mark.parametrize("name,builder", CANON_IDENT,
+                         ids=[c[0] for c in CANON_IDENT])
 def test_canon_ident(fork, upstream, name, builder):
     """CANON-IDENT: mismo modelo, bytes identicos fork vs upstream."""
     fork_bytes = write_bytes(builder(fork))
