@@ -122,6 +122,60 @@ Tutorial sound list: **DZ\sounds\hpp\config.cpp** (**WELCOME TO novoGODS Shit Do
 
 **Verified: `initOpened` is a spawn probability.** BI Doors_on_buildings wiki: when `rand < initOpened` the door spawns opened, so `0` never spawns open and `0.5` spawns open ~half the time. The tutorial's description is correct. (Verified 2026-07-14 vs BI wiki.)
 
+### Verified door sound sets (enumerated 2026-09-02)
+
+The three shipped examples all use `doorMetalSmall`, which made it look like the only choice. It is
+one of **32** families that carry the full set of four suffixes a `class Doors` entry can name.
+A sound set is a **prefix**; the four properties append `Open`, `Close`, `Rattle` (for `soundLocked`)
+and `OpenABit`:
+
+```cpp
+soundOpen     = "doorMetalTwinBigOpen";
+soundClose    = "doorMetalTwinBigClose";
+soundLocked   = "doorMetalTwinBigRattle";
+soundOpenABit = "doorMetalTwinBigOpenABit";
+```
+
+Complete sets — every one of these has all four suffixes:
+
+| | | | |
+|---|---|---|---|
+| `doorMetalContainer` | `doorMetalFront` | `doorMetalGate` | `doorMetalGateBig` |
+| `doorMetalGateMesh` | `doorMetalJail` | `doorMetalJailHeavy` | `doorMetalJailSlide` |
+| `doorMetalLarge` | `doorMetalShed` | `doorMetalSlide` | `doorMetalSlideHeavy` |
+| `doorMetalSlideLarge` | `doorMetalSmall` | `doorMetalTwin` | `doorMetalTwinBig` |
+| `doorMetalTwinHeavy` | `doorMetalTwinLarge` | `doorWoodChurch` | `doorWoodChurchLarge` |
+| `doorWoodFront` | `doorWoodGate` | `doorWoodGateSmall` | `doorWoodGreenhouse` |
+| `doorWoodLarge` | `doorWoodNolatch` | `doorWoodSlide` | `doorWoodSlideBig` |
+| `doorWoodSmall` | `doorWoodTwin` | `doorWoodTwinBig` | `doorWoodTwinShed` |
+
+**Incomplete sets — do not name the missing suffix.** These nine prefixes exist but lack one or
+both of the rarer sounds. Naming a class that does not exist is the usual silent-failure shape:
+the config still loads and the door still works, only that one sound never plays.
+
+| Prefix | Has | Missing |
+|---|---|---|
+| `doorAirlock` | `Close`, `Open` | `Rattle`, `OpenABit` |
+| `doorCarSmall` | `Close`, `Open`, `OpenABit` | `Rattle` |
+| `doorCarWreck` | `Close`, `Open`, `OpenABit` | `Rattle` |
+| `doorHeavyMetalBunker` | `Close`, `Open` | `Rattle`, `OpenABit` |
+| `doorHeavyMetalSmallBunker` | `Close`, `Open` | `Rattle`, `OpenABit` |
+| `doorMetalBunker` | `Close`, `Open` | `Rattle`, `OpenABit` |
+| `doorMetalValve` | `Close`, `Open`, `Rattle` | `OpenABit` |
+| `doorPressurized` | `Close`, `Open` | `Rattle`, `OpenABit` |
+| `doorPressurizedMechanism` | `Close`, `Open` | `Rattle`, `OpenABit` |
+
+`doorCarSmall` and `doorCarWreck` are named here only because they are `door*` classes in the same
+file. Vehicle doors do not use this contract at all — see the SKILL's *Vehicle doors are out of
+scope* section.
+
+**Verification.** Enumerated by regex over `class door<Name>` declarations in
+`DZ\sounds\hpp\config.cpp` on an unpacked work drive, then grouped by stripping the four suffixes:
+149 `door*` classes, 41 prefixes, 32 complete. `source_verified` — the classes are declared in
+vanilla config, which is not the same as hearing each one in game. The tree is the pack's declared
+`dayz-vanilla` at `1.29.0.163451`; the build number of the drive read was not independently
+confirmed, so treat the exact revision as inherited rather than measured.
+
 ### One source to one Doors entry
 
 Preferred starting rule: create one **class Doors** subclass per unique **source**, with **component** equal to that source. Animated selections sharing the source do not get separate normal door entries. Simple and Button follow this.

@@ -58,7 +58,7 @@ Follow the debug order: config load -> entity spawn -> action location -> animat
 - [ ] **CfgPatches.requiredAddons[]** includes **"DZ_Data"**.
 - [ ] The object inherits from **HouseNoDestruct**.
 - [ ] **class Doors** maps each intended source through **component**.
-- [ ] Door sound names are verified in **DZ\sounds\hpp\config.cpp**.
+- [ ] Door sound names are verified in **DZ\sounds\hpp\config.cpp**. The 32 complete sound sets, and the nine that lack `Rattle` or `OpenABit`, are enumerated in [door-model-cfg-and-config.md](references/door-model-cfg-and-config.md) — `doorMetalSmall` is not the only option.
 - [ ] **DamageSystem** has GlobalHealth, GlobalArmor, and appropriate DamageZones.
 - [ ] In-game tests cover action position, motion, sounds, physical LODs, damage, spawn state, and RPT logs.
 
