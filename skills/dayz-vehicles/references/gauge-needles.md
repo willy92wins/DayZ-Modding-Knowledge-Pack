@@ -295,3 +295,51 @@ comparar la **zona roja pintada** con la punta MEDIDA del motor. En el LFQuad3 e
 rojo empieza en 5.000 y la punta sostenida son 5.805 rpm (medidas, 404 muestras
 con motor encendido), asi que a pleno gas la aguja esta **siempre** dentro del
 rojo. Es una decision legitima, pero es una decision.
+
+## Trampa 8 — el arco NO se mide del arte: se propone y se comprueba dibujando
+
+Medir el arco pintado por deteccion automatica parece lo obvio y **fallo cuatro
+veces seguidas** sobre un arte limpio, en negro y sin ruido:
+
+1. **Centroide del anillo.** El centroide de un arco parcial no es el centro del
+   circulo, asi que iterar centro-anillo-centro DIVERGE. Salio el centro en una
+   esquina, con radio mayor que la imagen.
+2. **Mayor hueco angular.** Con ticks discretos siempre hay hueco entre marcas;
+   el «mayor hueco» acaba siendo uno cualquiera. Peor: la etiqueta central
+   (`km/h`, `RPM x1000`) rellena los sectores de abajo y PARTE el hueco real, y
+   las marcas rojas de la zona roja desaparecen al pasar a gris (rojo puro =
+   luminancia 76, por debajo de cualquier umbral razonable) y FABRICAN un hueco
+   donde no lo hay.
+3. **Blobs de las etiquetas.** El centroide de `150` no cae al mismo radio ni con
+   el mismo sesgo que el de `0`: el ajuste lineal salio con +-8 grados de residuo.
+4. **Ticks mayores por profundidad radial.** El recuento no casaba (15 de 16, 9
+   de 7) y los pasos salian de 16 a 23 grados en una escala que es regular.
+
+**Lo que si funciona, y es barato:** proponer una escala y **dibujar una aguja
+sobre cada valor pintado**. La imagen dice sola si acierta. En el velocimetro las
+16 agujas cayeron sobre sus numeros a la primera; en el cuentavueltas el primer
+candidato fallo, se corrigio con los dos ticks aislados junto al hueco y a la
+segunda cayeron el 0 y el 6 en su sitio.
+
+**Y el cierre, que es el unico que no depende de ningun convenio:** rasterizar las
+**UV REALES del `.p3d` construido** sobre la textura —muestreando la V como el
+motor, `1-v`— y dibujar encima la aguja en `angle0` y en `angle1`. Si los puntos
+de UV caen sobre el anillo de ticks y las agujas sobre las marcas extremas, el
+mapeo, la textura y los angulos estan bien los tres a la vez. Nada de discos
+sinteticos: un render que no lleva las UV que el modelo escribio no prueba nada.
+
+## Trampa 9 — una isla de atlas por reloj cuesta la legibilidad
+
+Poner los relojes como islas dentro del atlas del cuerpo tiene dos costes que no
+se ven hasta el juego:
+
+- **Resolucion.** La altura de digito es el 2,8-4,5 % del diametro del reloj. Para
+  que un digito llegue a 12 px hace falta una isla de 270-430 px. Con islas de 80
+  px un digito son 2-4 pixeles: ilegible. Medido desde el asiento, el reloj ocupa
+  ~90 px de 1920 en pantalla.
+- **La ventana.** Con isla hay que medir centro y radio DENTRO del atlas, que es
+  justo la medida que falla (trampa 8).
+
+**Una textura por reloj** quita los dos de golpe: el arte va a resolucion entera y
+la ventana UV pasa a ser `[0,1]^2`, sin recorte que medir. Es ademas una
+convencion trivial de compartir entre vehiculos.
