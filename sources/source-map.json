@@ -8824,7 +8824,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "18530eca613e4963d8531aa03216e95358d10c418d0e8acaa9a98fa85be80dec",
+      "output_hash": "63e4eb8defae9ba40df338b730078aff2400824811c236627d4e7b32540de8eb",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9168,6 +9168,28 @@
       "license": "MIT",
       "output_hash": "a4c1fde72b807f955e7db460a5fae900c8a28c683a3fa8cdafd4123e041b4c12",
       "output_path": "skills/dayz-vehicles/references/gate_odol_sections.py",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/gauge-needles.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-09-04 for this pack. Needle geometry and gauge wiring measured on the project model; the dial rotation rule is reproduced from four shipped vanilla vehicle ODOLs, and the MLOD normal direction from a two-flank positive control.",
+          "license": "MIT",
+          "source_hash": "1fbe844c762d244a112e2fd7322b0e126113ee63d9dd32d541e1c29d0defc7e1",
+          "source_id": "installed-skills",
+          "source_path": "dayz-vehicles/references/gauge-needles.md",
+          "source_revision": "filesystem@2026-09-04",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1fbe844c762d244a112e2fd7322b0e126113ee63d9dd32d541e1c29d0defc7e1",
+      "output_path": "skills/dayz-vehicles/references/gauge-needles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
     },
