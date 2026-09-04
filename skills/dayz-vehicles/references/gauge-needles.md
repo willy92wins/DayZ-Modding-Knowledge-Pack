@@ -449,3 +449,55 @@ salieron a 9,0-9,4 grados de paso: control VERDE.
 cualquier umbral razonable). El extremo «vacio» de un reloj de combustible es justo una
 marca roja: sondea por **color**, no por brillo, o mediras un arco que se queda corto
 precisamente en el extremo que define `angle0`.
+
+
+## Three silent traps when deriving needle angles (added 2026-09-04, LFQuad3)
+
+All three were found by measuring the built `.p3d`, and each one produced a
+plausible number rather than an error.
+
+**1. The needle selection is not only the needle.** Taking "the farthest point of
+the needle selection" as the modelled rest direction returned a vertex of the
+**hub disc** — a 32-gon at the *same* radius as the printed dial face (measured:
+32 points at r=0.0209 with the face at r=0.0208; the blade only reaches 0.0184,
+88 % of it). The angle it returned was meaningless and depended on set iteration
+order. Discard any ring of points at near-constant radius spread over more than
+~90 degrees, then take the farthest of what is left.
+
+**2. Whether the texture is mirrored is a determinant, not a judgement call.**
+Fit the affine map (driver-screen x,y) -> (U,V) over the dial faces of the built
+model. Image V grows **down** and screen y grows **up**, so an unmirrored texture
+gives a **negative** determinant. Positive means mirrored, whatever the numbers
+"look like" in a small render. In LFQuad3 the two round dials measured +512 and
++491 while the fuel panel — authored through a different UV function — measured
+-1290; the panel read correctly and the dials read backwards, and the mismatch
+between the two functions was the whole bug.
+
+  ★ Corollary about evidence: two user reports of the same defect are not two
+  observations of two states. Check the **build timestamp** before inferring a
+  sign from a sequence of reports. Here "upside down" and "mirrored" both
+  described the same deployed PBO; the intermediate fix had never been built, and
+  reasoning as if it had produced a sign that the render then disproved.
+
+**3. Reading ticks off the art needs two limits and the right ink test.**
+
+- Ink by **max channel**, not luminance. A red tick (255,0,0) is 76 in
+  grayscale; an ink threshold of 110 drops the whole redline band and, with it,
+  the last major of the scale.
+- Measure how far ink reaches inward from the rim, and **stop early**: a hole
+  tolerance of ~2 samples and a scan depth of ~0.16 of the radius. With a looser
+  tolerance the scan jumps from the tick to the printed number beside it and
+  returns 6-10 degree plateaus centred on the numbers, dips and all. Measured on
+  this dial a minor tick reaches 0.07-0.11 of the radius and a major 0.15+, which
+  separates the two families cleanly.
+- Do **not** pick a ring "because it returns as many groups as there are
+  majors". A count that matches validates nothing: one ring returned exactly 16
+  groups spread over 62 degrees on a dial that sweeps 290.
+
+**And a fit rule when the printed scale is not regular.** The needle rotates
+linearly, so a printed scale that is compressed at one end cannot be matched
+everywhere. Fit the line to the regular part that is actually used (LFQuad3:
+0-100 km/h, residual 1.94 degrees over 11 majors) and let the error fall in the
+range the vehicle never reaches, rather than spreading it across the whole face.
+Gate it by drawing the needle on **every** printed value, not on the endpoints —
+a line fitted to two endpoints passes through both endpoints by construction.

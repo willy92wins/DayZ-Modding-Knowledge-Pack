@@ -9178,9 +9178,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored 2026-09-04 for this pack. Needle geometry and gauge wiring measured on the project model; the dial rotation rule is reproduced from four shipped vanilla vehicle ODOLs, and the MLOD normal direction from a two-flank positive control.",
+          "decision_evidence": "Authored 2026-09-04 for this pack. Needle geometry and gauge wiring measured on the project model; the dial rotation rule is reproduced from four shipped vanilla vehicle ODOLs, and the MLOD normal direction from a two-flank positive control. Extended the same day with three derivation traps measured on the built p3d: the needle selection carrying the hub ring, the mirror test being the sign of the screen-to-UV determinant, and tick detection needing max-channel ink plus a shallow scan.",
           "license": "MIT",
-          "source_hash": "8514997916a97d651d8d14a73c692df9f8c24710b48f970d9f47935b05aa8376",
+          "source_hash": "b5f3d7a933dacce57d3154e2f2ec4ef61dcd841e9a564071f99b3144ebf46ed2",
           "source_id": "installed-skills",
           "source_path": "dayz-vehicles/references/gauge-needles.md",
           "source_revision": "filesystem@2026-09-04",
@@ -9188,7 +9188,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8514997916a97d651d8d14a73c692df9f8c24710b48f970d9f47935b05aa8376",
+      "output_hash": "b5f3d7a933dacce57d3154e2f2ec4ef61dcd841e9a564071f99b3144ebf46ed2",
       "output_path": "skills/dayz-vehicles/references/gauge-needles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9486,17 +9486,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Reviewed 2026-08-16 adoption of skill knowledge written after the phase closed.",
+          "decision_evidence": "Authored for this pack from vanilla script sources read at path:line. Extended 2026-09-04 with the two-half config contract that makes HideSelection work on an attachment proxy (AnimationSources plus a model.cfg hide animation, name contract cross-checked against two mods that ship working in game) and with the CrewCanGetThrough gate used by ActionGetInTransport.",
           "license": "MIT",
-          "source_hash": "96c914823790de92848c7579601c2ad4456195c13b32f3a9ed8a9692fb8c5399",
+          "source_hash": "902791cf7aa7951c32f5dc88accb48cb007470535eb5cf3f72eadae71852dfbe",
           "source_id": "installed-skills",
           "source_path": "dayz-vehicles/references/proxies-and-get-in.md",
-          "source_revision": "filesystem@2026-08-16",
+          "source_revision": "filesystem@2026-09-04",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6aeddc60cbe62efd98323ff8cb5accf8f086ebbb73f31c78b385d93b278f4436",
+      "output_hash": "902791cf7aa7951c32f5dc88accb48cb007470535eb5cf3f72eadae71852dfbe",
       "output_path": "skills/dayz-vehicles/references/proxies-and-get-in.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

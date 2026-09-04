@@ -360,3 +360,88 @@ The final placement verdict remains in-game.
 - The preferred seated-camera path keeps the pawn possessed, overrides the vehicle
   camera, and gates get-out in `ActionGetOutTransport.ActionCondition`. It needs no
   broad input exclude, avoiding the transitive zeroing of bound aiming axes.
+
+
+## Hiding an attachment proxy from script: the two config halves (added 2026-09-04, LFQuad3)
+
+**[SOURCE-VERIFIED, not yet in-game]** A cargo/attachment proxy baked into the p3d
+is drawn whether or not its slot holds an item. `HideSelection(name)` looks like
+the fix and silently does nothing on its own:
+
+```c
+// scripts/3_game/entities/entityai.c:3356
+void HideSelection( string selection_name )
+{
+    if ( !ToDelete() )
+        SetAnimationPhase ( selection_name, 1 );   // 1 = hide, 0 = unhide!
+}
+```
+
+`SetAnimationPhase` addresses an **animation source**, not a bare selection. The
+engine says so in `entityai.c:1403`: *"making them INVISIBLE if they are
+configured in models.cfg in such way. These selections must also be defined in
+the entity's config class in 'AnimationSources'"*. Without both halves every
+call is a no-op — and a no-op that looks like a timing race, which is how a whole
+debugging round can be spent on `CallLater` retries that could never have helped.
+
+**Name contract, verified across two mods in this tree that work in game:** the
+string passed to `SetAnimationPhase` / `HideSelection` is the **class name in
+`AnimationSources`**, which is also the animation's **`source`** in model.cfg. It
+is NOT the animation's class name and NOT necessarily the selection name.
+
+| piece | file | example |
+|---|---|---|
+| source | config.cpp `AnimationSources` | `class rotor_static_hide { source="user"; animPeriod=0.001; initPhase=0; };` (`hh60g_pack_v19/config.cpp:74`) |
+| animation | model.cfg `Animations` | `class main_rotor_static_hide { type="hide"; source="rotor_static_hide"; selection="main_rotor"; minValue=0; maxValue=1; hideValue=0.5; }` (`LFHeli_HH60G/models/model.cfg:67`) |
+| call | script | `SetAnimationPhase("rotor_static_hide", staticHide)` (`LFHeliCore .../lfheli_base.c:3381`) |
+
+Naming the three the same also works (A6 base storage / GunRacks use `hideproxy`
+for all three), which is why the contract is easy to get wrong by accident: a
+mod that happens to use one name everywhere gives no evidence about which name
+the engine reads.
+
+- `initPhase = 1` -> hidden at spawn; `initPhase = 0` -> visible. Direction
+  verified in game in GunRacks (`GunRacks_mod_dev/GunRacks/config.cpp:611-613`)
+  and matching the engine comment above. For a cargo slot that starts empty,
+  `initPhase = 1` is the state you want.
+- `hideValue = 0.01` with `animPeriod = 0.01` is the near-instant swap copied
+  from A6's debinarized `singlegunrack.p3d`.
+- Both precedents also declare the hidden selection as a **skeleton bone**. Not
+  proven necessary here, but a hide animation that the engine ignores is
+  indistinguishable from the unfixed symptom, and each in-game cycle costs
+  minutes, so match the precedent unless you have a reason not to.
+- Refresh the phase in `DeferredInit` **and** `AfterStoreLoad`
+  (`entityai.c:1390`, "called when entity is being loaded from DB or Storage
+  (after all children loaded)"), plus `EEItemAttached`/`EEItemDetached`.
+
+## Gating a crew position on an attachment (added 2026-09-04, LFQuad3)
+
+**[SOURCE-VERIFIED, not yet in-game]** To make a seat unusable while something is
+mounted, override the gate `ActionGetInTransport` already consults; do not add a
+parallel condition.
+
+```c
+// scripts/3_game/vehicles/transport.c:493
+bool CrewCanGetThrough( int posIdx )
+
+// scripts/4_world/.../actiongetintransport.c:63
+if (!trans.CrewCanGetThrough(crew_index) || !trans.IsAreaAtDoorFree(crew_index))
+    return false;
+```
+
+Vanilla uses it for doors (`civiliansedan.c`). For an attachment gate:
+
+```c
+override bool CrewCanGetThrough(int posIdx)
+{
+    switch (posIdx)
+    {
+        case 0: return true;
+        case 1: return FindAttachmentBySlotName("MyMod_backpack") == null;
+    }
+    return false;
+}
+```
+
+The null-check idiom is vanilla's (`improvisedexplosive.c:215`,
+`return FindAttachmentBySlotName(slotName) != null;`).
