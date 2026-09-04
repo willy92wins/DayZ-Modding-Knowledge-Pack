@@ -67,8 +67,13 @@ negacion, que es una reflexion. **Ningun offset angular la quita.**
 w = normalizar(arriba - eje * dot(arriba, eje))   # el "arriba" del vehiculo
 u = normalizar(cross(w, eje))                     # derecha, si el eje mira al piloto
 u_uv = uc + k * dot(radial, u)
-v_uv = vc + k * dot(radial, w)
+v_uv = vc - k * dot(radial, w)     # el signo se MIDE; ver trampa 10
 ```
+
+> **El signo de la V de este fragmento NO es universal.** Aqui va con menos porque en
+> esta cadena V=0 es el borde superior de la imagen. Con `+` el arte del LFQuad3 salio
+> **espejado en vertical** dos ciclos seguidos. La trampa 10 da el procedimiento para
+> acreditar el signo en TU cadena y para distinguir un espejo de un giro.
 
 Sin `atan2`: el angulo solo servia para recomponer lo que ya son las dos
 coordenadas del punto, y al recomponerlo intercambiaba los ejes.
@@ -343,3 +348,104 @@ se ven hasta el juego:
 **Una textura por reloj** quita los dos de golpe: el arte va a resolucion entera y
 la ventana UV pasa a ser `[0,1]^2`, sin recorte que medir. Es ademas una
 convencion trivial de compartir entre vehiculos.
+
+## Trampa 10 — el marco de PANTALLA del conductor, y por que resuelve las dos cosas a la vez
+
+Medido en el LFQuad3 el 2026-09-04, tras dos ciclos con el arte al reves. Las dos
+quejas del usuario —«los indicadores estan boca abajo» y «las agujas no empiezan en
+el 0»— eran **un solo defecto**, y salen las dos de no tener un marco declarado.
+
+**El marco, derivado y no elegido.** El eje de la aguja de la Memory LOD apunta AL
+conductor (trampa 6), asi que:
+
+```
+vista   = -eje
+arriba  = normalizar(+Y del vehiculo - eje * dot(+Y, eje))    # el arriba del mundo, en el plano
+derecha = normalizar(cross(vista, arriba))
+```
+
+Control del signo de `derecha`, y es de una linea: con un reloj vertical que mira
+atras (eje = +z, y +z es ATRAS en DayZ) tiene que salir **+x**, que es la derecha del
+conductor porque el frente del vehiculo es -z. Si sale -x, el cross esta al reves.
+
+**El objetivo del mapeo, en ese marco:** `derecha -> +U` y `arriba -> -V`. El menos no
+es un convenio elegido: V=0 es el borde SUPERIOR de la imagen.
+
+**Como se acredita ese sentido sin creerselo: el control positivo es el propio modelo.**
+No hace falta arte de prueba. La carroceria del LFQuad3 escribe `(u, 1.0 - v)` desde un
+OBJ (que tiene v=0 abajo), o sea que V=0 es el borde superior — y esa carroceria lleva
+ciclos vista en juego sin que nadie diga que la textura este volteada. Ese es el ancla.
+En otra cadena (LFQuad2, MLOD de Arma 2 sin ese `1-v`) el ancla es otra: **se mira que
+hace el resto del modelo, no lo que dice esta pagina**.
+
+**Como se MIDE lo que hay hoy, en vez de discutirlo.** Se ajusta por minimos cuadrados
+la matriz 2x2 que lleva (derecha, arriba) a (U, V) usando **las UV reales del `.p3d`
+construido**. Con residuo ~1e-6 el ajuste describe el mapeo entero, y entonces:
+
+| lo que sale | lo que significa |
+|---|---|
+| `derecha->+U`, `arriba->-V` | correcto |
+| `derecha->+U`, `arriba->+V` | **espejo vertical** (el texto se lee como en un espejo) |
+| `derecha->-U`, `arriba->-V` | espejo horizontal |
+| `derecha->-U`, `arriba->+V` | giro de 180 |
+
+★ Esa tabla es la que distingue un ESPEJO de un GIRO, y hace falta: el usuario reporto
+«boca abajo, girar 180» y la medida decia espejo vertical. **No se aplica la correccion
+que describe el sintoma: se mapea al objetivo absoluto.** Asi el resultado es correcto
+sea cual sea la etiqueta con la que se describio el fallo.
+
+**Y los angulos salen del MISMO marco, por resta.** Con el barrido positivo horario
+para el conductor (trampa 5) y horario = angulo de pantalla DECRECIENTE:
+
+```
+angle0 = reposo - theta(minValue)
+angle1 = reposo - theta(maxValue)
+```
+
+donde `reposo` es el angulo de pantalla del vertice mas lejano de la seleccion de la
+aguja, y `theta(v)` el angulo de pantalla del valor pintado. Cierre: dibujar la aguja
+en `reposo - angle0` y en `reposo - angle1` sobre el render con las UV reales, y ver
+que caen en el minimo y en el maximo impresos.
+
+**Por que un espejo mueve el cero.** Bajo el espejo, `theta -> -theta`: el 0 pintado
+del velocimetro estaba en 213 y se veia en 147, asi que la aguja parada apuntaba a
+~120 km/h. Arreglado el mapeo, el mismo `angle0` cae en el 0. Una causa, dos sintomas
+— y por eso no hay que «corregir tambien los angulos» por separado.
+
+## Trampa 11 — no ESTIRES un arte que no es potencia de dos: RELLENALO
+
+El panel de combustible del LFQuad3 es 1536x1024 y la textura tiene que ser potencia
+de dos. Se redimensionaba a 2048x1024, o sea un estirado de 1,333 solo en x.
+
+Ese estirado convierte el arco de ticks —un **circulo** en el arte— en una **elipse**.
+El circulo ajustado deja de pasar por las marcas, el pivote de la aguja se coloca en un
+centro que ya no es el centro, y la aguja pasa por encima de la E y de la F sin tocarlas.
+
+**Rellena con negro a los lados** (el fondo del arte ya suele ser negro) y el arco sigue
+siendo un circulo. Las constantes se trasladan solas: `u_2048 = (pad + x_arte) / 2048`.
+
+★ Corolario general: **un angulo no sobrevive a un mapeo anisotropo.** Antes de usar un
+angulo medido en la textura como angulo en pantalla, comprueba que el mapeo es isotropo
+—en el ajuste 2x2, `|dU/dderecha|` y `|dV/darriba|` iguales—. Si no lo es, o el angulo
+se transforma, o el radio se expresa en las mismas unidades en los dos ejes para que las
+dos anisotropias se cancelen.
+
+## Trampa 12 — un control de regularidad rechaza una medida mala antes de que te cueste un ciclo
+
+Detectar los ticks del anillo para medir el arco falla de muchas maneras (trampa 8).
+Lo que hace la deteccion **usable** no es afinar el umbral: es un control que la propia
+escala regala. Una escala de reloj es **regular**, asi que:
+
+- si los ticks detectados no salen equiespaciados dentro de un margen estrecho, la
+  deteccion esta mal y **el numero no se usa**;
+- el hueco angular MAYOR si es fiable aunque el resto falle: acota el arco.
+
+Medido: sobre el anillo del velocimetro la deteccion daba 46 grupos con pasos de 1,5 a
+15,8 grados — control ROJO, numero descartado. Los tres ticks GRANDES, en cambio,
+definen el circulo exactamente, y con ese centro los diez ticks del panel de combustible
+salieron a 9,0-9,4 grados de paso: control VERDE.
+
+★ Y un umbral de LUMINANCIA se salta los ticks ROJOS (rojo puro = 76, por debajo de
+cualquier umbral razonable). El extremo «vacio» de un reloj de combustible es justo una
+marca roja: sondea por **color**, no por brillo, o mediras un arco que se queda corto
+precisamente en el extremo que define `angle0`.
