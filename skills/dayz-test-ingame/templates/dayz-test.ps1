@@ -505,12 +505,49 @@ function Invoke-Preflight {
 # ---------------------------------------------------------------------------
 # Build + deploy (DAYZ_INFRA.md seccion "Comandos de invocacion canonicos" - AddonBuilder)
 # ---------------------------------------------------------------------------
+
+# A live server/client holds the deployed PBO open, so AddonBuilder's final copy step fails
+# while STILL returning exit 0 - it only says so in its own log ("[ERROR]: Build failed").
+# Probe the target for exclusive write instead of matching process names: another session's
+# run can be live without loading this mod, and a stale handle can hold the file with no DayZ
+# process at all. Measured 2026-08-30: a rebuild with the game up printed "[ok] deployed" over
+# the PREVIOUS pbo and exited 0, so the next in-game verdict was about the wrong artifact.
+function Assert-PboWritable {
+    param([string]$Pbo)
+    if (-not (Test-Path -LiteralPath $Pbo)) { return }
+    try {
+        $fs = [IO.File]::Open($Pbo, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+        $fs.Close()
+    }
+    catch {
+        $why = $_.Exception.Message
+        $live = @(Get-CimInstance Win32_Process -Filter "Name LIKE 'DayZ%'" -ErrorAction SilentlyContinue |
+                    ForEach-Object { "pid=$($_.ProcessId) $($_.Name)" }) -join '; '
+        if (-not $live) { $live = '(no DayZ* process; another handle holds it)' }
+        Die "Deployed PBO does not open for exclusive write: $Pbo`n       $why`n       AddonBuilder would fail its copy step, still exit 0, and leave the OLD pbo deployed.`n       Live: $live`n       Stop the managed run first (-Kill -RunId <exact-id>), then rebuild."
+    }
+}
+
 function Invoke-Build {
     $src = if ($Source) { $Source } else { Join-Path $WorkDrive $Mod }
     if (-not (Test-Path $src)) { Die "Mod source not found: $src (pass -Source, or junction P:\$Mod -> your editable folder)." }
     $target = Join-Path $ModsDir "@$Mod\Addons"
     $temp   = Join-Path $WorkDrive "temp\$Mod"
     if (-not (Test-Path $target)) { New-Item -ItemType Directory -Force -Path $target | Out-Null }
+    $pbo = Join-Path $target "$Mod.pbo"
+    Assert-PboWritable -Pbo $pbo
+
+    # Snapshot BEFORE the build. Existence is satisfied by the PREVIOUS build, so the only
+    # cheap proof that THIS build wrote the file is that its mtime advanced. sha256 is taken
+    # to REPORT whether the bytes changed, never to gate: an unchanged source tree rebuilds
+    # to the same bytes and that is a legitimate no-op, not a failure.
+    $pboWasThere = Test-Path -LiteralPath $pbo
+    $mtimeBefore = [datetime]::MinValue
+    $shaBefore   = ''
+    if ($pboWasThere) {
+        $mtimeBefore = (Get-Item -LiteralPath $pbo).LastWriteTimeUtc
+        $shaBefore   = (Get-FileHash -LiteralPath $pbo -Algorithm SHA256).Hash
+    }
 
     # AddonBuilder's incremental sync to $temp can serve STALE source: a changed .c may
     # silently not be re-copied (observed 2026-06-18: a deviceinspector.c months out of date
@@ -531,15 +568,56 @@ function Invoke-Build {
     $abArgs = @("`"$src`"", "`"$target`"", "-prefix=$Mod", "`"-temp=$temp`"")
     if ($Clean) { $abArgs += '-clear' }
     if ($usePackOnly) { $abArgs += '-packonly' }
-    $p = Start-Process -FilePath $AddonBuilder -ArgumentList $abArgs -Wait -NoNewWindow -PassThru
-    if ($p.ExitCode -ne 0) { Die "AddonBuilder failed (exit $($p.ExitCode)). Check config.cpp / paths." }
-    $pbo = Join-Path $target "$Mod.pbo"
-    if (-not (Test-Path $pbo)) { Die "Build reported success but $pbo is missing." }
-    # Sanity: a mod with scripts that packs tiny means binarize dropped the .c (include-list).
-    if ((Test-Path (Join-Path $src 'scripts')) -and ((Get-Item $pbo).Length -lt 4096)) {
-        Warn "PBO is only $((Get-Item $pbo).Length) b but the mod has scripts\ - binarize likely dropped the .c. Re-run with -PackOnly."
+    # Capture AddonBuilder's own log: its exit code lies on some error paths (DAYZ_INFRA.md
+    # seccion "Gotchas de build verificados": "exit 0 en algunos paths de error - el log es la
+    # verdad, no el exit code"). The log is echoed back so the console still shows the build.
+    $buildLogDir = Join-Path $DevRoot '_build'
+    if (-not (Test-Path $buildLogDir)) { New-Item -ItemType Directory -Force -Path $buildLogDir | Out-Null }
+    $abOut = Join-Path $buildLogDir 'addonbuilder.log'
+    $abErr = Join-Path $buildLogDir 'addonbuilder.err.log'
+    $p = Start-Process -FilePath $AddonBuilder -ArgumentList $abArgs -Wait -NoNewWindow -PassThru -RedirectStandardOutput $abOut -RedirectStandardError $abErr
+    $abLog = @()
+    foreach ($abFile in @($abOut, $abErr)) {
+        if (Test-Path -LiteralPath $abFile) { $abLog += @(Get-Content -LiteralPath $abFile -ErrorAction SilentlyContinue) }
     }
-    Ok "deployed: $pbo ($((Get-Item $pbo).Length) b)"
+    $abLog | ForEach-Object { Write-Host "      $_" }
+
+    if ($p.ExitCode -ne 0) { Die "AddonBuilder failed (exit $($p.ExitCode)). Check config.cpp / paths. Log: $abOut" }
+
+    # Calibrated literals, read from real AddonBuilder 1.0.240639 logs: a good run ends in
+    # "[INFO ]: Build Successful" and a locked-target run in "[ERROR]: Build failed" - with
+    # exit 0 in both cases. Only these two literals are matched. A bare "[ERROR]" is NOT:
+    # benign lines at that level have not been calibrated and would block healthy builds.
+    $abFailed = @($abLog | Where-Object { $_ -match 'Build failed' })
+    $abOkLine = @($abLog | Where-Object { $_ -match 'Build Successful' })
+    if ($abFailed.Count -gt 0) {
+        Die "AddonBuilder exited 0 but its log reports failure - the deployed PBO was NOT replaced.`n       $($abFailed[0].Trim())`n       Log: $abOut"
+    }
+    if ($abOkLine.Count -eq 0) {
+        Warn "AddonBuilder log carries neither 'Build Successful' nor 'Build failed' ($abOut): its format may have changed. Falling back to the freshness check below."
+    }
+
+    if (-not (Test-Path -LiteralPath $pbo)) { Die "Build reported success but $pbo is missing." }
+
+    # FRESHNESS. Existence is satisfied by the PREVIOUS build; an advanced mtime is the proof
+    # that AddonBuilder rewrote THIS file in THIS run. Never gate on "sha changed" - see the
+    # snapshot comment above. This is a freshness gate, not a content gate: it proves the file
+    # was rewritten, not that its entries match the current sources.
+    $pboItem  = Get-Item -LiteralPath $pbo
+    $shaAfter = (Get-FileHash -LiteralPath $pbo -Algorithm SHA256).Hash
+    if ($pboItem.LastWriteTimeUtc -le $mtimeBefore) {
+        Die "PBO was NOT rewritten by this build: $pbo`n       mtime is still $($mtimeBefore.ToString('o')) and sha256 is still $shaBefore.`n       What is deployed is the PREVIOUS addon - do not test it. Stop the run, then rebuild."
+    }
+    $freshness = 'content changed'
+    if (-not $pboWasThere) { $freshness = 'new' }
+    elseif ($shaAfter -eq $shaBefore) { $freshness = 'unchanged bytes - deterministic rebuild of unchanged sources' }
+
+    # Sanity: a mod with scripts that packs tiny means binarize dropped the .c (include-list).
+    if ((Test-Path (Join-Path $src 'scripts')) -and ($pboItem.Length -lt 4096)) {
+        Warn "PBO is only $($pboItem.Length) b but the mod has scripts\ - binarize likely dropped the .c. Re-run with -PackOnly."
+    }
+    Ok "deployed: $pbo ($($pboItem.Length) b, $freshness)"
+    Ok "sha256: $shaAfter"
 }
 
 # ---------------------------------------------------------------------------
