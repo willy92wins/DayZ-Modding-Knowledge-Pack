@@ -1,14 +1,16 @@
 # Agujas y esferas del salpicadero
 
-Medido en el LFQuad3 del 2026-09-03 al 2026-09-06. Catorce trampas numeradas, tres
-trampas silenciosas de la derivacion (en ingles), un instrumento y una receta. El
-cuadro dado por bueno en juego el 2026-09-06: "el dashboard esta bien ya" (veredicto
-del usuario en chat, recogido en `LFQuad3_dev\HANDOFF.md`; build `5ac339d3`).
-Veredicto global; no desgloso por reloj. Sigue sin desglosar: que la aguja de
-gasolina se mueva con el deposito; que la esfera pintada no gire con las agujas (el
-disco original del objeto viaja en la seleccion animada; [SUPUESTO] queda ocluido);
-que el reposo caiga exactamente en el cero impreso (medido offline con el gate, no
-desglosado en juego).
+Medido en el LFQuad3 del 2026-09-03 al 2026-09-06. Quince trampas numeradas, tres
+trampas silenciosas de la derivacion (en ingles), un instrumento, una receta y
+el panel de gasolina desde cero. El cuadro del LFQuad3 dado por bueno en juego
+el 2026-09-06: "el dashboard esta bien ya" (veredicto del usuario en chat,
+recogido en `LFQuad3_dev\HANDOFF.md`; build `5ac339d3`). Veredicto global; no
+desgloso por reloj. Sigue sin desglosar: que la aguja de gasolina se mueva con
+el deposito; que la esfera pintada no gire con las agujas (el disco original
+del objeto viaja en la seleccion animada; [SUPUESTO] queda ocluido); que el
+reposo caiga exactamente en el cero impreso (medido offline con el gate, no
+desglosado en juego). LFQuad2 confirmado en juego el 2026-09-07 00:15 (agente,
+build `77303210b92d63bd`); tabla "Estado de confirmacion".
 
 ## La pieza: `_shared_parts/gauge_needles/`
 
@@ -17,8 +19,8 @@ cada una en `.p3d` (para soltar) y `.obj` (para editar), mas su README.
 
 | | largo | ancho | grosor | tris |
 |---|---|---|---|---|
-| `needle_large` | 0,02524 m | 0,00571 m | 0,00261 m | 86 |
-| `needle_small` | 0,01262 m | 0,00286 m | 0,00130 m | 86 |
+| `needle_large` | 0,02596 m | 0,00714 m | 0,00261 m | 182 |
+| `needle_small` | 0,01298 m | 0,00357 m | 0,00130 m | 182 |
 
 La pequena es la grande al 50 %. Medidas SIN escalar: si el vehiculo de destino
 aplica un escalado uniforme, multiplicar.
@@ -40,17 +42,24 @@ con el angulo y el sitio que le puso su OBJ no le sirve a otro modelo.
 El pivote es el centroide del submesh **Black**, no el del conjunto: ese es el
 buje sobre el que gira.
 
-**Estado de la biblioteca (censo 2026-09-06).** Se extraen con
-`build_needle_library.py` por ANCHURA ANGULAR (`THIN_DEG = 5.0`): 86 caras
-LOD0 = 32 quads del buje (64 tris) + 7 caras de pala (22 tris). Esa pala de 7
-caras no-Black es la ASTILLA de la forma 1 (trampas 1 y 14). Ademas queda
-DETRAS del plano del buje (z -0.00261..0 en `needle_large`, -0.00130..0 en
-`needle_small`; pivote en z = 0). **Pendientes de regenerar con
-`canonical_needle` antes de reutilizarlas.** Mala no es lo mismo que
-invisible: montadas tal cual en el LFQuad2, la pala queda +1.89 mm DELANTE
-del disco pintado (sonda de profundidad de esa sesion, 2026-09-06) y se ve,
-astilla incluida. Si se ve o no lo decide el `lift` del disco de cada cuadro,
-no la pieza; que se vea no la arregla.
+**Estado de la biblioteca (regenerada 2026-09-07).** `build_needle_library.py`
+extrae la aguja con la regla de `canonical_needle` (corte por RADIO, trampa
+14): 182 tris LOD0 = aro del buje 32 quads (64) + tapa 32-gono (30) +
+faldon del buje 32 quads (64) + pala de 2 octagonos (12) y 6 laterales
+(12); selecciones por radio `hub` (158) y `blade` (24); trasera de la pala
+en z = 0 y toda la pieza con z >= 0 (la tapa del buje queda un pelo por
+delante de la raiz de la pala). Conjunto de vertices IDENTICO al que
+devuelve `canonical_needle` sobre el OBJ (medido, 0 faltan, 0 sobran). La
+version del 2026-09-03 salia por ANCHURA ANGULAR (`THIN_DEG = 5.0`) y
+tenia 86 tris: los dos octagonos ENTEROS de la pala (punta real, a
+0.880 r_obj) mas 5 de sus 6 laterales, sin la tapa ni el faldon del buje, y
+con la pala DETRAS del plano del buje (z -0.00261..0): incompleta y mal
+puesta, no una astilla en la punta. Mala no es lo mismo que invisible:
+montada tal cual en el LFQuad2, la pala queda +1.89 mm DELANTE del disco
+pintado y se ve (sonda de profundidad de esa sesion, 2026-09-06); la
+visibilidad la decide el `lift` del disco de cada cuadro, no la pieza.
+LFQuad2 adopta la version nueva en una tanda propia con su gate; hasta
+entonces monta la vieja.
 
 ## Trampa 1 — el objeto que se llama «aguja» no es una aguja
 
@@ -60,11 +69,13 @@ marco del ensamblador (`needle_parts_probe.py`; dibujo `needle_parts.png`):
 | pieza | caras | r canonico | z respecto al buje |
 |---|---|---|---|
 | buje: anillo `Black` + tapa 32-gono | 32 + 1 | <= 0.0029 | 0 |
-| pala: 2 octogonos + 38 quads `Gauges` | 40 | 0.0029 .. 0.02239 | -0.0026 .. -0.0009 |
+| faldon del buje: 32 quads `Gauges` (collar cerrado de 360 grados) | 32 | 0.0029 .. 0.0036 | -0.0026 .. 0 |
+| pala: 2 octogonos + 6 quads laterales `Gauges` | 8 | 0.0029 .. 0.02239 | -0.0026 .. -0.0009 |
 | disco: 32 quads `Gauges` | 32 | 0.0036 .. 0.02544 | -0.00235 (plano) |
 
-El buje son 33 caras, la pala 40, el disco 32. Guardarlo entero mete un reloj
-en la biblioteca con nombre de aguja.
+El buje son 33 caras mas 32 de faldon, la pala 8, el disco 32 (el faldon iba
+contado como pala hasta que se midio su extension angular, 2026-09-07).
+Guardarlo entero mete un reloj en la biblioteca con nombre de aguja.
 
 Y los numeros no lo delatan: la caja del objeto sale `0,0509 x 0,0509 x 0,0026`,
 que parece razonable hasta que uno se fija en que 0,0509 es exactamente el
@@ -79,9 +90,10 @@ z canonica se desplaza para que la trasera de la pala quede en 0. El filtro
 por anchura angular (umbral 5 grados, "aro 32 + pala 7") es la forma 1: un
 triangulo de la pala pegado al pivote abarca mucho angulo POR ESTAR CERCA, no
 por ser un gajo, y deja 10 tris de astilla en la punta. Invisible en juego en
-el LFQuad3; la pieza de la biblioteca, hecha con la misma regla, asoma delante
-del disco en el LFQuad2 (censo, arriba): la visibilidad es del lift, la
-astilla es de la regla.
+el LFQuad3. La biblioteca del 2026-09-03 salia de esa misma regla con OTRO
+resto (los dos octagonos enteros y 5 laterales, sin tapa, pala detras del
+buje; censo, arriba): la regla da piezas distintas segun donde se aplique, y
+ninguna es la aguja.
 
 ## Trampa 2 — el marco de la esfera sale ARBITRARIO, y un giro no arregla un espejo
 
@@ -171,7 +183,14 @@ naive el render salia bien y el juego mal.
 > agujas clavadas en el numero correcto sobre una cara escrita al reves. Esa
 > sesion lo corrigio y desplego (UV de los 64 gajos reescritas en los tres LOD
 > con la derecha leida del modelo y guard fatal; det -164.81; `LFQuad2.pbo`
-> sha `77303210b92d63bd`). Lo que falta es el juego, no la medida.
+> sha `77303210b92d63bd`). Confirmado en juego el 2026-09-07 00:15 (agente,
+> ciclo con `@CF` + `@VPPAdminTools` + `@SurvivorAnims`): velocimetro 0-150
+> HORARIO, "km/h" legible, rojo a la DERECHA, aguja en el 0; cuentavueltas
+> 0-6 HORARIO, "RPM x1000" legible, rojo a la derecha, aguja en el 0. El
+> veredicto del usuario sobre ese build nombra otros tres defectos (gasolina
+> ausente, discos fuera de la seleccion animada, textura pixelada; trampas 9
+> y 15), ninguno del marco. Lo que discrimina el espejo es la medida contra
+> los faros.
 
 **Instrumento que cierra esto**: rasterizar las caras del reloj del `.p3d` YA
 CONSTRUIDO con sus UV reales, muestreando la textura con la V del motor. Eso
@@ -181,6 +200,19 @@ vale — no lleva las UV que el modelo escribio. En el LFQuad3 ese cierre es
 `dial_render_v5.py` (y su `view_all_fix.png` del 4-sep) montaba el marco con
 `cross(-axis, up)`, la misma expresion que el generador: reproducia el fallo y
 lo llamaba correcto (LL-464). No vale como cierre.
+
+**Regla de quiralidad para una pieza NUEVA** (medido 2026-09-07, LFQuad2).
+LFQuad2 reintrodujo el espejo de LL-464 en su propio codigo al montar el
+marco del panel: hacia `Up = cross(Np, Rp)` y, si Up salia invertido,
+volteaba Up Y recalculaba Rp, lo que arrastro Rp a la izquierda del
+conductor (`<Rp, der> = -1.0000`); lo cazo un guard, no un ojo. El marco
+de una pieza nueva se PROYECTA del marco anclado (Gram-Schmidt sobre la
+normal de la pieza), nunca se reconstruye con un producto vectorial ni se
+voltea por componentes. Se comprueba la QUIRALIDAD contra el marco de
+los relojes (`<u_pieza, derecha anclada>` > 0), porque de ella depende
+el signo de angle0 = reposo - theta. El marco anclado de arriba si sale
+de un `cross`, porque su unico grado de libertad se fija contra
+`MODEL_RIGHT` medido; la pieza nueva no tiene ancla propia y lo hereda.
 
 ## Trampa 3 — cambiar el marco INVALIDA `angle0`, y ademas invierte el giro
 
@@ -387,13 +419,18 @@ es el del cuadro dado por bueno en juego el 2026-09-06. Si un cuadro con esta
 regla descansa fuera del cero, el primer sospechoso es el marco (LL-464), no la
 regla de vanilla. Comprobacion barata: `light_left` y `light_right` de la Memory
 LOD y el signo de `<u_del_marco, light_right - light_left>`; negativo = marco
-espejado. LFQuad2 lo confirma por segunda vez (2026-09-06): velocimetro por
-debajo del 0 y cuentavueltas por encima, signo negado el 4-sep y desplegado
-sin confirmar; medido contra los faros, marco ESPEJADO (det +164.81) y
-corregido (trampa 5). Las dos lecturas del usuario ("-10", "1000") las
-predicen IGUAL el espejo (-13.5 km/h, +880 rpm) y el signo negado: dos
-observaciones que no discriminan entre dos modelos no eligen ninguno. Lo que
-discrimina es la medida contra los faros.
+espejado. LFQuad2 lo confirma por segunda vez, ahora en juego
+(2026-09-07 00:15, agente, build `77303210b92d63bd`, ciclo con
+`@SurvivorAnims`): velocimetro 0-150 HORARIO, "km/h" legible, rojo a la
+DERECHA, aguja en el 0; cuentavueltas 0-6 HORARIO. El 2026-09-06 el
+velocimetro iba por debajo del 0 y el cuentavueltas por encima, signo
+negado el 4-sep; medido contra los faros, marco ESPEJADO (det +164.81) y
+corregido. Las dos lecturas del usuario ("-10", "1000") las predicen
+IGUAL el espejo (-13.5 km/h, +880 rpm) y el signo negado: dos
+observaciones que no discriminan entre dos modelos no eligen ninguno.
+Lo que discrimina es la medida contra los faros. El veredicto del
+usuario sobre el build 00:15 nombra otros tres defectos, ninguno del
+marco.
 
 ## Trampa 6 — la normal cruda de una cara MLOD apunta hacia DENTRO
 
@@ -508,6 +545,18 @@ convencion trivial de compartir entre vehiculos. En el LFQuad3: `Dial_kmh`,
 `Dial_rpm`, `Dial_fuel` -> `LFQuad3_dial_*_co.paa`, rvmat compartido de gauges
 (el contrato pide uno plano propio; ver hallazgo de LFQuad2).
 
+El limite es la PANTALLA, no el atlas. Medido en LFQuad2 (2026-09-07): la
+queja "textura pixelada" NO era la textura. El reloj ocupaba 110 px en una
+pantalla de 1920 y la textura le daba 501 (4,6 texeles por pixel); un
+digito impreso es el 3 % del diametro, o sea 3,3 px, y sale basto por
+fuerza. Control: reducir el atlas a 110 px offline reproduce EXACTAMENTE
+el aspecto del juego, asi que ni DXT1 ni los mips degradan nada. Subir la
+textura no arregla nada; lo que arregla es agrandar el reloj (`R_DIAL`
+0.027 -> 0.038, +41 %, 110 -> ~150 px: los numeros se leen) o dibujar
+menos numeros y mas grandes. Los ~90 px en pantalla y los 12 px por digito
+(arriba) ya lo decian; el sintoma invita a subir la textura, y eso no
+cambia nada.
+
 ## Trampa 10 — el marco de PANTALLA del conductor, y por que resuelve las dos cosas a la vez
 
 Medido en el LFQuad3 el 2026-09-04 y cerrado el 2026-09-06, tras tres ciclos con
@@ -535,7 +584,11 @@ modelo.** No hace falta arte de prueba. La carroceria del LFQuad3 escribe
 superior — y esa carroceria lleva ciclos vista en juego sin que nadie diga que
 la textura este volteada. Ese es el ancla. En otra cadena (LFQuad2, MLOD de
 Arma 2 sin ese `1-v`) el ancla es otra: **se mira que hace el resto del modelo,
-no lo que dice esta pagina**.
+no lo que dice esta pagina**. Confirmado en juego el 2026-09-07 00:15
+(agente, build `77303210b92d63bd`): arte derecho y legible, horario, rojo
+a la derecha. El veredicto del usuario sobre ese build nombra otros tres
+defectos, ninguno del marco. Lo que discrimino el espejo previo fue la
+medida contra los faros.
 
 **Como se MIDE lo que hay, en vez de discutirlo.** Se ajusta por minimos
 cuadrados la matriz 2x2 que lleva (derecha, arriba) a (U, V) usando **las UV
@@ -640,6 +693,143 @@ angulo medido en la textura como angulo en pantalla, comprueba que el mapeo es i
 —en el ajuste 2x2, `|dU/dderecha|` y `|dV/darriba|` iguales—. Si no lo es, o el angulo
 se transforma, o el radio se expresa en las mismas unidades en los dos ejes para que las
 dos anisotropias se cancelen.
+
+## Panel de gasolina desde cero
+
+Para un modelo que NO trae cara rectangular donde mapear el arte. El LFQuad3
+REUTILIZA un quad `Screen` de la pieza 32 (trampa 11); esa receta no cubre
+construir el panel. Numeros del arte oficial `dial_fuel_official.png`
+(medido en `assemble_lfquad3.py:140-158` y `convert_textures.py:223-233`).
+
+**Arte y relleno.** El PNG es 1536x1024 y NO es potencia de dos. Se rellena a
+2048x1024 con negro y CENTRADO (256 px a cada lado), nunca estirado:
+`pad.paste(src_im, ((2048 - src_im.width) // 2, ...)` en
+`convert_textures.py:223-233`. Estirar convierte el arco en elipse (trampa 11).
+
+Constantes (`assemble_lfquad3.py:140-158`): FUEL_TEX_W/H 2048/1024,
+FUEL_ART_W/H 1536/1024, FUEL_PAD_X 256, FUEL_C_U = (256 + 940)/2048 = 0.58398,
+FUEL_C_V = 968.7/1024 = 0.94600 (fila contada desde ARRIBA),
+FUEL_R_U = 634.7/2048 = 0.30991 (fraccion del ancho de la textura),
+FUEL_E_DEG = 130.0 (marca ROJA del extremo vacio), FUEL_F_DEG = 48.5
+(ultimo tick del lleno). Centro y radio salen de un circulo ajustado a los
+ticks E..F y COMPROBADO dibujandolo encima (`assemble_lfquad3.py:945-949`),
+no de la caja de la cara. Barrido E->F: 81.5 grados, en HORARIO.
+
+**Los mismos numeros en fraccion del arte** (cara que mapea SOLO el arte,
+sin bandas de relleno):
+
+- cx = 940/1536 = 0.6120 del ancho
+- cy = 968.7/1024 = 0.9460 desde arriba (el pivote queda a 5,4 % del borde
+  INFERIOR: es un arco muy abierto)
+- r = 634.7/1536 = 0.4132 del ancho de la cara
+
+**Cara y tres ventanas limpias.** En LFQuad3 la cara es un quad `Screen` de
+proporcion 1.84:1, elegido por centroide (`FUEL_FACE_POS`,
+`assemble_lfquad3.py:164-167`). `fuel_face_uv` (`assemble_lfquad3.py:866-893`)
+abre una ventana con la proporcion de la PROPIA CARA centrada en la textura
+de 2:1: la ventana ocupa todo el ANCHO de la textura y su alto sale de la
+proporcion, asi que con 1.84:1 desborda 44 px por arriba y por abajo (V
+fuera de 0..1; se apoya en que el arte es negro ahi y en que el wrap cae
+en negro; comentario en `assemble_lfquad3.py:874-878`). V = fila/H
+directamente, sin `1 -` (`assemble_lfquad3.py:886-893`).
+
+Consecuencia para una cara NUEVA: con proporcion A la V va de
+0.5 - 1/A a 0.5 + 1/A; a 1.5:1 desbordaria 170 px y el wrap traeria a lo
+alto de la cara las filas del buje del arte. Por eso NO se copia el mapeo
+1.84:1 de LFQuad3. Tres ventanas limpias:
+
+- cara 2:1 (proporcion de la textura rellena): U 0..1, V 0..1; las bandas
+  negras de relleno (12,5 % por lado) quedan en la cara; centro y radio,
+  los de la TEXTURA (0.58398 / 0.94600 / 0.30991);
+- cara 1.5:1 (proporcion del arte): ventana SOLO del arte, U 0.125..0.875,
+  V 0..1; sin bandas; centro y radio, los del ARTE (0.6120 / 0.9460 /
+  0.4132). Forma rectangular para un pod que no trae cara.
+- cara del DIBUJO dentro del arte (medido 2026-09-07, LFQuad2): el arte
+  trae su propio borde negro; caja x 305..1742, y 149..875 = 1437x726 px
+  = 1.9793:1. Ventana U 0.1489..0.8506 (305/2048 .. 1742/2048), V
+  0.1455..0.8545 (149/1024 .. 875/1024); sin bandas ni del relleno ni del
+  arte; mapeo esquina a esquina, sin desbordar. Centro y radio referidos
+  a la caja del dibujo: cx = 0.6200 del ancho (0.6200 x 1437 + 305 = 1196
+  px de textura = 940 px de arte), r = 0.4417 del ancho (0.4417 x 1437 =
+  634.7 px). El mismo arco sale por dos reglas distintas (fraccion del
+  arte y fraccion del dibujo): es el control cruzado.
+
+En las tres, V = fila/H (sin `1 -`), u = derecha del conductor y w = arriba
+del marco ANCLADO (trampas 2 y 10). El arte no se estira ni se espeja.
+
+**Donde cae el pivote.** Con la ventana del dibujo (V hasta 875/1024 =
+0.8545) el centro del arco (fila 968.7, V 0.9460) cae POR DEBAJO del
+borde inferior de la cara (3,3 mm en el tamano del LFQuad2). Entonces la
+aguja no puede ser una aguja desde el buje: LFQuad2 la construyo como
+PUNTERO CORTO entre 0.55 y 0.96 del radio del arco; dibujada desde el
+pivote asomaria por debajo del panel. Con la ventana del arte entero
+(LFQuad3, V hasta 1.0) el pivote queda dentro (V 0.9460) y el buje se ve
+pegado al borde inferior.
+
+Un quad basta. En LFQuad3 la cara es del propio pod y no lleva lift; los
+discos pintados van a lift 0.0012 (`assemble_lfquad3.py:771`). Para una cara
+nueva sobre un pod: el lift que ya usen los discos de ese modelo. LFQuad2
+mide +1.89 mm de pala por delante de su disco y le funciona
+(medido 2026-09-06, LFQuad2).
+
+**Pivote, empuje, alcance y escala.** El pivote es el centro del arco
+invertido por el mismo mapeo de la cara (`assemble_lfquad3.py:955-960`),
+mas un empuje de 0.0004 m por delante de la cara a lo largo de su normal
+(`assemble_lfquad3.py:963`, "un pelo por delante de la cara, para que no
+pelee en z con ella"). El alcance es el radio en metros:
+`reach = FUEL_R_U * FUEL_TEX_W * m_per_px` (`assemble_lfquad3.py:961`),
+es decir r_fraccion x ancho de la ventana. La aguja canonica
+(`canonical_needle`, `assemble_lfquad3.py:972-1035`; trampa 14) se escala
+`reach/punta` (`assemble_lfquad3.py:1985-1988`; en LFQuad3 x0.665).
+
+Criterio de la aguja: r_obj = radio maximo en el plano de TODO el objeto;
+se DESCARTAN las caras no-Black con algun vertice a r > 0.95 * r_obj, y se
+EXIGE que sean exactamente 32 caras OBJ / 64 tris (`SystemExit` si no). Las
+piezas de `_shared_parts\gauge_needles\` estan regeneradas con ese corte
+desde el 2026-09-07 (censo, arriba: 182 tris, selecciones por radio `hub`
+158 / `blade` 24, z >= 0); `canonical_needle` vive en `assemble_lfquad3.py`.
+
+**Angulos: que viaja y que no.** Convenio:
+`angle0 = reposo - theta(min)`, `angle1 = reposo - theta(max)`
+(`dial_derive_final.py:282`; "El instrumento de derivacion"). Los dos
+theta (130.0 y 48.5) y el barrido (81.5) son del ARTE con una ventana
+sin estirar ni espejar: viajan. El reposo NO viaja: es la direccion de
+la punta de la seleccion `fuel` medida en el p3d CONSTRUIDO, en el marco
+anclado (`needle_rest`, `dial_derive_final.py:148`; impreso en
+`dial_derive_final.py:232-236`).
+
+En LFQuad3 el reposo de fuel es 0.90 y por eso salen -129.1 / -47.6
+(tabla del instrumento). Con la aguja canonica montada con la punta hacia
++u el reposo es ~0: saldria reposo - 130.0 y reposo - 48.5, o sea
+-130.0 / -48.5; con otra malla, se mide. LFQuad2 construyo la aguja
+apuntando ARRIBA (reposo = 90 en su marco anclado) y le salen angle0
+"rad -40.0", angle1 "rad 41.5", barrido +81.5: los theta del arte
+(130.0 / 48.5) viajan, el reposo no. Cableado identico al de LFQuad3 y
+hueso "fuel" colgando de "drivewheel". Los pares -129.1/-47.6 NO se
+copian a otro modelo.
+
+**Cableado.** `generated/model.cfg:238-247` (`IndicatorFuel`, source
+"fuel", selection `fuel`, axis `fuel_axis`, memory = 1, minValue 0,
+maxValue 1). El hueso cuelga del hueso del salpicadero o del manillar
+que corresponda (`skeletonBones[]`: en LFQuad3 `fuel` de `drivewheel`;
+contrato de cableado, mas arriba). La geometria nueva del panel Y sus
+puntos van en esa seleccion animada (trampa 15); si no, al girar la
+pieza el panel se queda atras.
+
+Comprobacion:
+
+- arco dibujado encima del arte (pasa por las marcas E..F)
+- V = fila/H, sin `1 -`
+- marco anclado (u = derecha del conductor, trampas 2 y 10)
+- quiralidad: marco de pieza nueva proyectado del anclado (Gram-Schmidt),
+  no reconstruido con cross ni volteado por componentes;
+  `<u_pieza, derecha anclada>` > 0 (trampa 2; medido 2026-09-07, LFQuad2)
+- donde cae el pivote: dentro de la cara (ventana del arte, V hasta 1.0)
+  o debajo (ventana del dibujo, V hasta 0.8545); si cae fuera, puntero
+  corto 0.55..0.96 del radio, no aguja desde el buje
+- reposo medido en el p3d construido (`needle_rest`); no se hereda
+- hueso animado: panel y aguja en la seleccion que gira (trampa 15)
+- det negativo en el marco anclado (`det < 0` = directo)
 
 ## Trampa 12 — un control de regularidad rechaza una medida mala antes de que te cueste un ciclo
 
@@ -792,10 +982,11 @@ corte en 5 grados. Un triangulo de la pala pegado al pivote abarca mucho angulo
 POR ESTAR CERCA: el filtro se comio el interior de la hoja y dejo 10 tris de
 astilla en la punta (r 0.01122..0.01217). Invisible en juego en el LFQuad3.
 ESA es la regla que esta referencia recomendo. Es falsa. La biblioteca
-compartida se extrae con esa regla: 7 caras de pala, astilla, pala detras del
-buje. Pendiente de regenerar. Al revisar a quien mas las usa, no buscar solo
-agujas ausentes: en el LFQuad2 la misma pieza asoma +1.89 mm delante del disco
-pintado (otro lift) y se ve, astilla incluida.
+compartida se extrajo con esa regla el 2026-09-03 (7 caras de pala: los dos
+octagonos enteros y 5 laterales, sin tapa, pala detras del buje) y se
+regenero el 2026-09-07 con `canonical_needle` (censo, arriba). Al revisar a
+quien mas las usa, no buscar solo agujas ausentes: en el LFQuad2 la pieza
+vieja asoma +1.89 mm delante del disco pintado (otro lift) y se ve.
 
 **Forma 2** (ronda 1 del 2026-09-06, "conservar todo"): el vertice mas lejano
 paso a ser uno del disco (0.02544), la escala bajo de x0.665 a x0.585, la pala
@@ -827,6 +1018,31 @@ hereda el criterio del brief; mide TODAS las dimensiones que el usuario ve (la
 profundidad respecto de lo que ocluye); mira la pieza (un dibujo de 60 KB valio
 mas que tres rondas de sondas).
 
+## Trampa 15 — la geometria nueva no hereda NINGUNA seleccion
+
+Medido en LFQuad2, build `77303210b92d63bd`, 2026-09-07 00:15. Las 64 caras
+de disco pintado anadidas como geometria nueva no estaban en NINGUNA
+seleccion; las agujas si (`dial_speed` / `dial_rpm`, que en `skeletonBones`
+cuelgan de "drivewheel"). Resultado en juego, literal del usuario: "al girar
+la pieza, el dash no gira con ella, los dos circulos quedan atras (las
+agujas si rotan)".
+
+Arreglo: meter las caras Y sus puntos en la seleccion animada (`drivewheel`)
+en TODOS los LOD que lleven esferas. Build `4034b2e35a9fbb96` (00:33): el
+agente ve las esferas girar CON el manillar.
+
+Generalizable: la geometria nueva no hereda ninguna seleccion, y el sintoma
+solo aparece al GIRAR; ninguna captura estatica lo delata. Es el simetrico
+del caso ya documentado (el disco original que viaja DENTRO de la seleccion
+animada y no deberia; tabla de confirmacion, fila LFQuad3): aqui es el que
+se queda FUERA y deberia entrar.
+
+Autocomprobacion barata (medido 2026-09-07, LFQuad2): escalar el reloj EN EL
+PLANO (no uniforme, para no comerse el margen de la aguja sobre el disco)
+no cambia ni las UV (`uv_disco` divide el radio entre `R_DIAL`: cambio
+maximo 0.000000 px) ni los angulos (102.55/405.45 y 71.95/315.16 antes y
+despues). Si al escalar cambian, el escalado y el mapa no son coherentes.
+
 ## Receta completa para un cuadro nuevo, en orden
 
 Pasos numerados. Cada uno con su gate offline y la funcion de LFQuad3 que lo
@@ -845,7 +1061,13 @@ ejemplo.
    `convert_textures.py`; el rvmat plano propio es hallazgo de LFQuad2.
 3. **Disco pintado + UV polar (+U, -V)** con la base anclada. Gate: `det < 0`
    en CADA disco por separado (trampa 10). LFQuad3: `add_dial_faces`,
-   `polar_uv`, `remap_gauge_discs`, `fuel_face_uv`.
+   `polar_uv`, `remap_gauge_discs`.
+   - **Panel de gasolina.** Si el modelo NO trae cara: seccion
+     `## Panel de gasolina desde cero`. Si reutiliza cara: trampa 11
+     (`fuel_face_uv`). No copiar el mapeo 1.84:1 de LFQuad3 a una cara nueva.
+   - **Seleccion animada** (trampa 15). Meter las caras Y sus puntos (discos,
+     panel) en la seleccion del hueso que gira, en TODOS los LOD que lleven
+     esferas. Gate: al girar, las esferas viajan con el pod.
 4. **Aguja:** pose canonica, pivote = buje Black, solo buje + pala (nunca el
    disco), por delante del panel, disco 1.2 mm detras (`lift = 0.0012`). Gate:
    sonda de profundidad en verde (`z < -0.0003` detras del panel = HIDDEN) y
@@ -877,4 +1099,6 @@ ejemplo.
 | | dado por bueno en juego | sin desglosar / abierto |
 |---|---|---|
 | LFQuad3 | "el dashboard esta bien ya" (2026-09-06, build `5ac339d3`) | movimiento de fuel; disco original en la seleccion animada; cero exacto (gate offline) |
-| LFQuad2 | — (falta el ciclo con `@SurvivorAnims` y `@CF`) | marco medido ESPEJADO contra los faros (det +164.81, 2026-09-06), signo negado del 4-sep = compensacion; corregido y desplegado (`LFQuad2.pbo` sha `77303210b92d63bd`, `model.cfg` sha `1a2df84507870fc8`); pendiente solo el juego |
+| LFQuad2 `77303210b92d63bd` | agente 2026-09-07 00:15, ciclo `@CF` + `@VPPAdminTools` + `@SurvivorAnims`, 1a persona: velocimetro 0-150 HORARIO, "km/h" legible, rojo a la DERECHA, aguja en el 0 impreso; cuentavueltas 0-6 HORARIO, "RPM x1000" legible, rojo a la derecha, aguja en el 0; las dos esferas visibles desde el asiento. Veredicto literal del usuario: "no se ve nada del indicador de gasolina, ademas al girar la pieza, el dash no gira con ella, los dos circulos quedan atras (las agujas si rotan). Por otro lado, como puedes ver, la textura esta pixelada, hay que arreglarlo". LL-464: segunda confirmacion en juego, en otro modelo. Lo que discrimino el espejo previo fue la medida contra los faros (det +164.81). Desplegado como `LFQuad2.pbo` `77303210b92d63bd` + `model.cfg` `1a2df84507870fc8`. | gasolina: no tiene; discos fuera de drivewheel (trampa 15); textura pixelada = limite de pantalla (trampa 9). Ninguno de los tres es del marco. |
+| LFQuad2 `4034b2e35a9fbb96` | agente 2026-09-07 00:33 (R 0.038 y discos en drivewheel): las esferas giran CON el manillar; numeros legibles; caras sin espejo; agujas en el 0. Veredicto del usuario: PENDIENTE. | veredicto del usuario pendiente; gasolina: no tiene. |
+| LFQuad2 tanda 2 (panel de gasolina + conductor 1 cm adelante; PBO 12.632.912 B; 2026-09-07) | puerta offline verde: UV reales del .p3d rasterizadas contra la textura con el marco anclado a los faros, aguja dibujada en E, 1/2 y F, det -231.92 directo, anisotropia 1.0049, residuo 5.0e-07; desplegado y verificado por contenido dentro del PBO. CONFIRMADO EN JUEGO por el agente (2026-09-07 01:16, ciclo limpio, storage ciclado, personaje nuevo, frame_stale=false): panel visible encima de los relojes, centrado, FUEL / E / 1-2 / F legibles y sin espejo; la aguja construida apuntando ARRIBA (reposo 90) apunta en juego a la F con fuel = 1.0: el motor la giro +41.5 = su angle1. Primera prueba de CABLEADO de la receta, no solo de dibujo. | veredicto del usuario sobre el LFQuad2 en esa ventana: manos y manillar se separan al girar ("el manillar se mueve ligeramente ascendente y la animacion de manos ligeramente descendente"), defecto ajeno al cuadro (eje del manillar con 3.4 grados de rake, en estudio); no consta objecion al panel ni al espejo. |
