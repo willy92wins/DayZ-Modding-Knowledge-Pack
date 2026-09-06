@@ -926,3 +926,66 @@ Dos detalles de instrumento que salieron del mismo sitio:
   `*.bak*` y temporales. Una copia de seguridad se escribe **después** de aquello que
   copia, así que contarla como fuente deja el gate rojo para siempre por un motivo que no
   tiene nada que ver con que el paquete esté rancio.
+
+## «Build Successful» no dice que haya empaquetado TUS fuentes: el árbol `-temp` puede sobrevivir (added 2026-09-06)
+
+Hermana de la sección anterior. Aquella dice que puedes estar validando el PBO
+equivocado; ésta, que puedes estar construyendo el PBO **correcto a partir de las
+fuentes equivocadas**. Medido sobre LFPowerGrid el 2026-09-06, tras una semana de
+medidas in-game hechas sobre un paquete fantasma.
+
+**El mecanismo.** AddonBuilder recibe `-temp=<dir>` y trabaja ahí. Es habitual que el
+envoltorio del proyecto lo limpie con `shutil.rmtree(temp, ignore_errors=True)`. Ese
+flag se traga el fallo: si algo retiene el directorio (el explorador, un antivirus, un
+juego abierto), el árbol viejo **sobrevive**. AddonBuilder regenera entonces solo lo que
+produce él mismo —`config.bin` a partir de tu `config.cpp`, y `texHeaders.bin`—,
+empaqueta el `gui/`, `scripts/` y `data/` que ya estaban ahí, y reporta
+**`Build Successful` con código 0**.
+
+**La huella que lo delata**, dentro del árbol `-temp`, es inconfundible:
+
+| fichero | mtime |
+|---|---|
+| `config.bin`, `texHeaders.bin` | de hace un minuto |
+| `gui/`, `scripts/`, `data/` | de hace días o semanas |
+
+En el caso medido, el paquete desplegado llevaba fuentes del 2026-08-29 mientras el repo
+iba una semana por delante: 14 ficheros distintos, un `.layout` entero ausente, ~8.500 B
+menos en una sola vista, y `config.cpp` sin copiar (sustituido por el `config.bin`
+regenerado). Cada «rebuild» movía el mtime del `.pbo` y no movía su contenido.
+
+**Dos trampas al comprobarlo, las dos medidas:**
+
+- **Contar menciones sueltas de la versión no discrimina.** El paquete viejo daba 80
+  apariciones de `"1.2.3"` y 1 de `"1.2.4"`, pero esos números mezclan comentarios,
+  changelogs y migraciones de legado. Lo que decide es el **literal exacto** de la
+  constante: `grep -c -a -F 'LFPG_VERSION_STR = "1.2.4"'`. Uno contra cero, sin ruido.
+- **Más grande no es más completo.** El paquete correcto salió **8,4 MB más pequeño**
+  que el fantasma (99,6 MB contra 108,0 MB), porque el árbol `-temp` nunca limpiado
+  había ido acumulando restos de builds anteriores que se empaquetaban con lo demás.
+  Un gate que vigile «que no encoja» habría bloqueado el paquete bueno.
+
+**La comprobación que sí lo caza** va con control positivo obligatorio: elige un marcador
+que exista **solo** en las fuentes nuevas y otro que deba existir en las dos. Si el
+segundo tampoco aparece, tu grep está roto y el primer resultado no significa nada.
+
+```bash
+grep -c -a -F "<marcador nuevo>"      <ruta>/Addons/<Mod>.pbo   # debe ser >= 1
+grep -c -a -F "<marcador de control>" <ruta>/Addons/<Mod>.pbo   # debe ser >= 1 siempre
+```
+
+**El arreglo en el envoltorio** son cuatro líneas y es fail-closed: borrar, **verificar
+que se borró**, y abortar con un código propio si sobrevive. Nunca dejar que un
+`ignore_errors=True` decida por ti qué se empaqueta.
+
+```python
+shutil.rmtree(temp, ignore_errors=True)
+if os.path.exists(temp):
+    print("ABORT: temp dir survived removal: %s" % temp)
+    raise SystemExit(4)
+```
+
+Verificado con control positivo: apuntando `--temp` a un fichero (así `rmtree` falla y el
+flag se lo traga), el guard aborta con `RC=4` sin llegar a invocar AddonBuilder, y el
+bloque `finally` del envoltorio sigue corriendo — importante si, como aquí, pone configs
+de otros proyectos en cuarentena mientras dura el build.
