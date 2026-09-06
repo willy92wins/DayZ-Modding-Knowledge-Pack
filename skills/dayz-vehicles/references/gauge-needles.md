@@ -1,6 +1,6 @@
 # Agujas y esferas del salpicadero
 
-Medido en el LFQuad3 del 2026-09-03 al 2026-09-06. Quince trampas numeradas, tres
+Medido en el LFQuad3 del 2026-09-03 al 2026-09-07. Dieciseis trampas numeradas, tres
 trampas silenciosas de la derivacion (en ingles), un instrumento, una receta y
 el panel de gasolina desde cero. El cuadro del LFQuad3 dado por bueno en juego
 el 2026-09-06: "el dashboard esta bien ya" (veredicto del usuario en chat,
@@ -1042,6 +1042,35 @@ PLANO (no uniforme, para no comerse el margen de la aguja sobre el disco)
 no cambia ni las UV (`uv_disco` divide el radio entre `R_DIAL`: cambio
 maximo 0.000000 px) ni los angulos (102.55/405.45 y 71.95/315.16 antes y
 despues). Si al escalar cambian, el escalado y el mapa no son coherentes.
+
+## Trampa 16 — un manillar con rake separa las manos de los punos al girar
+
+Medido en dos modelos (2026-09-07). El eje `drivewheel_axis` de LFQuad2 estaba 3.4 grados fuera
+de la vertical (direccion (0, +0.9982, -0.0599)); a +-30 grados de giro los punos, a 0.378 m del
+eje, suben y bajan +-11.5 mm con signo OPUESTO en cada lado (dz +-190 mm es lo dominante, dx
++-41..60). Con el eje EXACTAMENTE vertical ese termino es 0.00 por construccion. Las manos no lo
+siguen: en este modelo no hay IK (la Memory LOD solo lleva `crewdriver` y `drivewheel_axis`), la
+mano la pone la animacion relativa al asiento. Veredicto del usuario, literal, tras poner el eje
+vertical por el mismo punto: "mejor ahora el eje". LFQuad3 lo confirma por el otro lado: su eje
+es (0, 1, 0) exacto (Memory LOD, medido en el p3d desplegado `9499be34`), animacion
+`drivingwheel` con `angle0 "rad -30"` / `angle1 "rad 30"`, punos a 0.464 m.
+
+Lo que NO era: el barrido. LFQuad3 barre lo mismo (+-30) con los punos MAS lejos (0.464 frente a
+0.378 m; 232 mm de vaiven frente a 189) y no tiene el sintoma reportado; si el barrido fuera la
+causa, separaria mas al LFQuad3. Queda abierto si las manos siguen a los punos en los TOPES en
+LFQuad3 (no desglosado). La postura relativa asiento-puno difiere entre los dos modelos con la
+misma animacion: LFQuad2 tiene el manillar 22 cm mas adelante y 12 cm mas abajo respecto al
+asiento, y el conductor 16 cm mas alto y 12 cm mas atras respecto a la base del eje.
+
+Regla: el eje del manillar en la Memory LOD se escribe VERTICAL salvo medida que diga lo
+contrario, y se comprueba con la direccion del vector, no a ojo (3.4 grados no se ven).
+
+Trampa de metodo al tocar el barrido (LFQuad2, misma noche): el patron `minValue -1 / maxValue
+1 / angle0 "rad -30" / angle1 "rad 30"` casa con TRES bloques del `model.cfg`: `drivingwheel` y
+las dos ruedas delanteras (`turnfrontleft`, `turnfrontright`, el angulo REAL de direccion). Un
+replace por patron deja el quad girando la mitad de lo debido, y en juego se lee como "conduce
+raro", no como "el manillar esta mal". Lo caza un assert de unicidad del bloque editado, no un
+ojo.
 
 ## Receta completa para un cuadro nuevo, en orden
 
