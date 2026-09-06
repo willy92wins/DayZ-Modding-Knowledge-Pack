@@ -1227,3 +1227,389 @@ on both sides, watchdog re-assert), bones driven by model.cfg rotation/translati
 A screen-anchored 2D panel over the projected quad's AABB never matches a surface seen at an angle,
 in orientation or in size. That is structural, not a tuning problem. Full case: SUB_BRZ GPS
 (`SUB_BRZ_NavScreen.c`).
+
+---
+
+## Medido in-game el 2026-09-04 — colisión de nombres, escalado del motor y sondas que mienten (added 2026-09-04)
+
+Una ventana in-game de DayZ 1.29.163709 sobre LFPowerGrid (sorter V4 TEST + producción cargados
+a la vez) produjo ocho hechos que esta skill no tenía, y **tres de ellos rompen un método de
+verificación que parecía sensato**. Todo lo de abajo está medido, no inferido; las citas son
+`path:line` del árbol real.
+
+### 1. Dos layouts con los mismos nombres hacen INALCANZABLE al segundo
+
+Es el fallo estructural más caro y el más fácil de cometer: copiar un `.layout` para hacer una
+variante TEST/debug y no renombrar sus widgets.
+
+Medido sobre LFPowerGrid:
+
+```
+LFPG_Sorter.layout            185 widgets
+test/LFPG_Sorter_TEST.layout  213 widgets
+NOMBRES QUE COLISIONAN        124        <-- incluidos SorterRoot, SorterPanel,
+                                             HeaderFrame, BtnCloseX, BtnSave, todos
+                                             los CatBtnN, todos los Edit*...
+solo en TEST                   89        (Builder*, CatchAllRow*, BtnPreview*)
+```
+
+`LFPG_Sorter.layout:12 SorterRoot` · `:26 SorterPanel` · `:204 BtnCloseX`
+`test/LFPG_Sorter_TEST.layout:7 SorterRoot` · `:14 SorterPanel` · `:289 BtnCloseX`
+`LFPG_BTCAtm.layout:105 BtnCloseX` — tercera colisión, desde otra pantalla del mismo mod.
+
+Consecuencias medidas:
+
+- `FindAnyWidget("SorterPanel")` y el resolver por nombre del MCP **no pueden distinguirlos**.
+  El síntoma histórico fue un `ui_click` que devolvía `not_handled`: estaba resolviendo en
+  silencio al nodo de PRODUCCIÓN, cuyo `OnClick` no maneja nada porque su vista no está abierta.
+- **Acotar por un ancestro no siempre salva.** La cadena del `BtnCloseX` del TEST es
+  `SorterRoot → SorterPanel → HeaderFrame → BtnCloseX` y **los tres ancestros colisionan**: no
+  existe ningún ancestro exclusivo por el que scopear la búsqueda. El botón es literalmente
+  inalcanzable por nombre.
+- **Basta con que el otro root EXISTA, no con que esté abierto.** El patrón recomendado de
+  pre-crear la vista en `MissionInit` y luego `Show(false)` (Rule 9 de esta skill) deja el root
+  de producción instanciado toda la sesión. La ambigüedad es permanente, no situacional.
+
+**Regla**: los nombres de widget son el contrato de API (§5 de `plan-to-implementation.md`). Una
+variante TEST/debug **prefija todos sus nombres** (`TEST_`, `Dbg_`) o no es direccionable. En
+LFPowerGrid los 89 nombres exclusivos (`BuilderTabCategory` y compañía) son justo los únicos que
+funcionan; los 124 compartidos, ninguno.
+
+**Gate offline barato** — antes de dar por buena una variante de layout, cuenta la intersección:
+
+```python
+import re, io
+def names(p):
+    s = io.open(p, encoding="utf-8", errors="replace").read()
+    return set(re.findall(r'^\s*\w+WidgetClass\s+(\w+)\s*\{', s, re.M))
+print(sorted(names(PROD) & names(TEST)))   # debe ser vacio
+```
+
+### 1b. Cómo se arregla una colisión de nombres: renombrar el ROOT basta (measured 2026-09-04)
+
+Antes de prefijar 227 widgets, mira si te basta con **uno**. El contrato del resolver del puente
+lo dice literalmente (`DayZ_MCP/scripts/5_Mission/MCPClientBridge.c:2038-2043`):
+
+> `root` names a widget that must be unique in the whole workspace; `path` is then a name
+> resolved **inside that scope**. Without `root`, `path` is resolved over the whole workspace,
+> ScriptView roots included: 0 matches is `widget_not_found`, 2 or more is `ambiguous_path`, and
+> the first homonym is never chosen.
+
+Y `ResolveUniqueUiWidget(scope, name)` (`:2114-2131`) cuenta las coincidencias **bajo `scope`**.
+O sea: si el root del layout variante es único, todo su árbol vuelve a ser direccionable
+—`ui_tree/ui_click/ui_set_text` con `root: "TEST_SorterRoot"`— aunque los otros 135 nombres
+sigan colisionando.
+
+En LFPowerGrid eso fue **una línea**: `LFPG_Sorter_TEST.layout:7`,
+`FrameWidgetClass SorterRoot` → `TEST_SorterRoot`. Medido antes de tocar nada: `SorterRoot`
+aparecía **exactamente dos veces en todo el mod** (la declaración de producción y la del TEST),
+cero literales en `.c`, cero `Binding_Name`, cero miembros. +5 bytes, balance de llaves
+intacto, producción byte-idéntica.
+
+**Por qué importa el orden de esas dos comprobaciones.** El prefijo completo parecía la opción
+obvia y es la cara: en una vista Dabs MVC hay **tres sistemas de nombres que se solapan** y
+renombrar widgets los toca todos a la vez.
+
+| Sistema | En este mod | Renombrar el widget lo rompe si… |
+|---|---|---|
+| Nombre de widget en el `.layout` | 227 | — es el objetivo |
+| Miembro atado por `LoadWidgetsAsVariables` (miembro `X` ↔ widget `X`) | 139 | no renombras también el miembro |
+| `Binding_Name` de un `ViewBinding` | 15 | renombras el miembro (apunta a la PROPIEDAD del controlador, no al widget) |
+
+Los dos últimos tiran en direcciones opuestas: renombrar miembros arregla el auto-bind y rompe
+`Binding_Name`; no renombrarlos mata el auto-bind. Se puede resolver (aquí: 122 miembros tenían
+`FindAnyWidget` manual, 11 se resuelven por child-walk desde el botón o por concatenación
+`btnName + "Bg"` que sigue al renombrado sola, y solo 6 quedaban expuestos), pero el modo de
+fallo es **null silencioso** y el único gate real es otra ventana in-game con rebuild de PBO.
+
+**Regla**: ante `ambiguous_path`, la primera pregunta no es «¿cómo renombro todo?» sino
+**«¿hay un ancestro que pueda hacer único?»**. Si lo hay, el arreglo es O(1) y verificable
+offline. El prefijo completo sigue siendo lo correcto para un layout NUEVO — ahí no cuesta
+nada—, pero para uno vivo con MVC es un refactor con su propio ciclo de test.
+
+**Y ojo con dónde vive el `.layout`**: se sirve **desde el PBO**, no por filePatching (solo
+`$profile:` se relee de disco). Un renombrado en el layout de la carpeta compilable **no está
+vivo hasta el siguiente build**; hasta entonces el cliente sigue viendo el nombre viejo.
+
+**Comprobaciones que cierran un renombrado de root, todas offline:**
+
+```
+1. grep del nombre en TODO el mod (.layout + .c + config.cpp) -> cuenta las apariciones
+2. ¿es un Binding_Name?  ¿es un miembro?  -> si no, el cambio es de una linea
+3. tras editar: parser OK, roots y widgets con el MISMO recuento que antes,
+   balance de llaves igual, y el fichero de produccion byte-identico
+4. el nombre nuevo declarado UNA vez y ausente de produccion
+```
+
+### 2. Redimensionar la ventana NO prueba independencia de resolución
+
+Esto invalida el método que parece obvio para el dolor nº1 de esta skill («se ve distinto a otra
+resolución»).
+
+DayZDiag conserva la resolución de render que le dan `-x/-y` en la línea de comandos y **escala
+la superficie compuesta** hasta la ventana. **No recalcula el layout.** Medido con la misma
+sonda antes y después de un `SetWindowPos` a un client rect de 1280x720 real:
+
+| Campo del panel | ventana 1920x1080 | ventana 1280x720 | ratio |
+|---|---|---|---|
+| `size_w` | 820 | **546.667** | 2/3 |
+| `size_h` | 600 | **400** | 2/3 |
+| `pos_x` | 550 | **366.667** | 2/3 |
+| `pos_y` | 240 | **160** | 2/3 |
+
+**Todo** por el mismo factor, `1280/1920`. La firma inequívoca: un widget declarado con tamaño
+**exacto de 1 px** pasó a reportar `screen_w = 0.6666666865`. Si el motor hubiera re-maquetado,
+un tamaño exacto seguiría siendo 1.
+
+Dos corolarios que cuestan caro:
+
+- Para probar otra resolución de verdad hay que **relanzar el cliente con otros `-x/-y`**. No
+  hay atajo por ventana.
+- **La ausencia de un scaler en el código del mod no prueba que no haya escalado.** En este caso
+  se había medido correctamente que no hay ni una aparición de `UIScaler` ni de `ScaleWidget` en
+  la vista, y de ahí se dedujo —mal— que las cifras saldrían sin escalar. El escalado lo hace el
+  motor; ningún grep del mod puede verlo. Cuando una predicción dependa de «no hay scaler»,
+  el gate es una medida in-game, no un grep.
+
+### 3. Un helper host que no es DPI-aware miente, y el gate sale VERDE igual
+
+Con escalado de Windows al 150%, un proceso no-DPI-aware recibe coordenadas **virtualizadas**:
+
+```
+GetWindowRect  -> 1295 x 757     real 1943 x 1136
+GetClientRect  -> 1280 x 720     real 1921 x 1080
+posicion       -> (1080, 56)     real (1620, 84)
+```
+
+Lo peligroso no es la lectura, es el **gate**: se pidió `SetWindowPos` a «1280x720» (lógicos =
+1920x1080 físicos, o sea ningún cambio) y la comprobación `client_rect == pedido` comparó
+lógico contra lógico y **pasó en verde sin haber movido nada**. Un gate que compara dos valores
+del espacio equivocado no detecta nada.
+
+**Regla**: cualquier helper que mida o mueva la ventana del juego llama primero
+`ctypes.windll.shcore.SetProcessDpiAwareness(2)` (con fallback a `user32.SetProcessDPIAware()`).
+Y el contraste barato: `capture_screenshot` del MCP devuelve `window.rect` **y**
+`client_surface.rect_window` en píxeles físicos — si tu helper no coincide con eso, el que
+miente es tu helper.
+
+### 4. ESC no cierra si hay un EditBox enfocado — y tu sonda puede ser el EditBox
+
+Patrón de `HandleEscKey`, verificado en fuente (`LFPG_SorterView_TEST.c`):
+
+```cpp
+Widget focused = GetFocus();
+if (focused) {
+    EditBoxWidget editCheck = EditBoxWidget.Cast(focused);
+    if (editCheck) { SetFocus(null); return true; }   // consume el ESC, NO cierra
+}
+DoClose();
+```
+
+El comentario del propio código lo llama «Double-ESC: first clears EditBox focus, second closes
+panel». Es un patrón sano de UX. El problema es el efecto observador: **si tu hook de scripting
+es un `EditBoxWidget` invisible** —que es el patrón habitual para inyectar comandos sin
+teclado— y alguna llamada lo deja enfocado, el primer ESC se lo come y el panel no cierra. La
+sonda altera lo que mide.
+
+Mitigación: que el hook sea un widget sin foco (`ignore_pointer 1` no basta: hay que no
+enfocarlo), o `SetFocus(null)` explícito después de escribir en él, o probar el cierre con el
+botón real en vez de con ESC.
+
+### 5. Una sonda que escribe a fichero sin sello de frescura no distingue «no procesado» de «viejo»
+
+El hook del sorter responde escribiendo un JSON al perfil
+(`_client/profiles/lfpg_sorter_mcp.json`). El JSON lleva estado (`open`, `powered`, `paired`,
+`status`, `rule_count`) pero **ninguna marca de frescura**: ni timestamp, ni secuencia, ni eco
+del comando con id.
+
+Medido: con el panel **cerrado**, enviar un `dump` deja el fichero **byte-idéntico** (mismo
+mtime, mismo sha) porque el poll de la vista no corre mientras está cerrada. Un consumidor
+ingenuo lee el fichero, ve `"open": true` del dump ANTERIOR y concluye que el panel sigue
+abierto. Lo contrario de la verdad.
+
+**Reglas para cualquier sonda UI basada en fichero:**
+
+- El consumidor compara **mtime y hash antes y después** de cada comando. Sin cambio = comando
+  no procesado; el contenido no es una respuesta.
+- Mejor: que la sonda incluya un `seq` o el eco del comando recibido, para que la frescura viva
+  DENTRO del artefacto y no dependa del sistema de ficheros.
+- Y no escribas un gate que exija a la sonda un valor que **no puede emitir**: pedir un dump con
+  `"open": false` es imposible si al cerrarse la vista deja de sondear. Antes de fijar el valor
+  esperado, pregunta si el instrumento sigue vivo en ese estado.
+
+### 6. La textura procedural sigue rota en 1.29 (confirmado 2026-09-04)
+
+La Rule 2 de esta skill ya avisaba, con fecha vieja. Reconfirmado en 1.29.163709, en el RPT del
+cliente, 4-5 apariciones por arranque:
+
+```
+RESOURCES (E): Bad texture name '#(argb,8,8,3)color(1,1,1,1,CO)'
+GUI       (E): ImageWidget::LoadImageFile can't load '#(argb,8,8,3)color(1,1,1,1,CO)'
+```
+
+Los fallbacks (un `.edds` 1x1 blanco, o un `style` Colorable con WhitePixel Center) siguen
+siendo el camino. No es un warning inocuo: el `ImageWidget` se queda sin textura.
+
+### 7. Los verbos UI del MCP ya devuelven lo que enviaste, y la ruta resuelta
+
+Cambio de contrato respecto a lo que documentaban las notas de agosto. `ui_set_text` y
+`ui_click` devuelven ahora:
+
+```json
+"ui_request": {
+  "requested_path": "BuilderTabCategory",
+  "requested_root": "",
+  "requested_text": "",
+  "matched_path": "/@0/SorterRoot@1/SorterPanel@0/BuilderFrame@0/BuilderTabCategory@0"
+}
+```
+
+Dos ganancias: los recibos de evidencia ya no hay que anotarlos a mano, y **`matched_path`
+expone la decisión del resolver**, que es exactamente el dato que hacía falta para diagnosticar
+colisiones de nombre. El `@N` de cada segmento es el índice entre hermanos: un `SorterRoot@1`
+te está diciendo que hay al menos dos.
+
+Y cuando el nombre es ambiguo, el resolver **ya no adivina**: devuelve `ambiguous_path` en vez
+de resolver en silencio. Eso convierte un bug silencioso en un error legible — pero también
+significa que un `path` por nombre a secas deja de funcionar en cuanto exista un homónimo.
+
+### 8. Trampa del marcador de log
+
+`logs_since(max_lines=1)` para «marcar el ahora» devuelve un marcador cuyo offset cae al
+**principio** del fichero cuando el log está por debajo del tope de 256 KiB. Un gate que asuma
+«desde M0 no hay ruido de arranque» se traga el arranque entero. Los logs de DayZ ya son por-run
+(el nombre lleva la fecha de lanzamiento), así que para contar patrones lo fiable es **contar
+sobre los ficheros del run y fechar cada hit**, no confiar en el offset.
+
+Relacionado: la sonda del mod escribe en `script_<fecha>.log`, **no** en el `.RPT`. Un control
+positivo buscado solo en el RPT sale a cero y parece que la sonda no corrió.
+
+---
+
+## Medido in-game el 2026-09-05 — contrato de hot-iteration, control positivo del scope, y una corrección (added 2026-09-05)
+
+Segunda ventana sobre DayZ 1.29.163709. Toda esta sección se midió **sin repacar el mod**,
+cargando layouts de sonda por `$profile:` — que es justamente lo que hace útil el hot-reload.
+Las sondas están archivadas en
+`LFPowerGrid_dev/reviews/2026-08-30-uiclick-collision/round-s3b/probes/`.
+
+### CORRECCIÓN — `ui_reload_layout` REEMPLAZA; no apila (corrected 2026-09-05)
+
+Esta skill venía diciendo, en la entrada de `references/hot-iteration.md`, que «una segunda
+carga APILA en vez de reemplazar». **Medido: no.** Cargando el mismo layout dos veces seguidas
+y preguntando después por un widget del árbol:
+
+```
+ui_reload_layout($profile:uiprobe.layout, reload)   x2
+ui_tree(path="ProbeMarker")
+  -> UN solo nodo, matched_path "/@0/ProbeRoot@0/ProbeMarker@0"
+  -> NO ambiguous_path
+```
+
+Si apilara habría dos `ProbeMarker` y el resolver habría devuelto `ambiguous_path` — que es
+exactamente lo que devuelve cuando de verdad hay dos (ver §Control positivo abajo). Así que el
+discriminador es fiable y el veredicto es firme.
+
+Lectura más probable de la discrepancia: el aviso original describía `CreateWidgets` a mano,
+que sí deja el root anterior colgado. La **tool** `ui_reload_layout` desvincula antes de cargar.
+No mezcles las dos cosas: el peligro de apilar es del camino artesanal, no de esta tool.
+
+### Contrato completo de `ui_reload_layout`, verificado de punta a punta
+
+| Llamada | Resultado medido |
+|---|---|
+| `reload` con `$profile:<f>.layout` | carga desde disco **sin PBO**; devuelve los rects del motor de todo el árbol |
+| `reload` dos veces | **reemplaza** (un solo árbol) |
+| `close` | `ui.nodes: []`, y después el widget da `widget_not_found` — desvincula de verdad |
+| `reload` con fichero inexistente | `layout_not_found` y **el cliente sigue vivo** (`IsWindow` true) |
+
+Dos hechos de geometría que salieron de la misma sonda y conviene tener a mano:
+
+- El root de la preview reporta **`screen_w/h = 1920x1080`**, o sea el viewport del motor, no el
+  tamaño de la ventana del sistema (ver la sección del 2026-09-04 §2 y §3).
+- **Las posiciones hijas son relativas al padre**: un hijo con `position 110 110` dentro de un
+  padre en `position 100 100` reporta `screen_x/y = 210/210`. Obvio al decirlo, fácil de olvidar
+  al leer un `matched_path`.
+- Los `TextWidget` volvieron a reportar `text: ""` y `text_readable: 0`: **no tienen getter**, y
+  la tool no inventa una etiqueta falsa.
+
+### Control positivo del mecanismo `root` + `path` (y por qué importa)
+
+Antes de fiarte de que acotar por `root` resuelve una colisión de nombres, **pruébalo con un
+caso donde puedas distinguir el acierto del azar**. Sonda: dos subárboles hermanos con un hijo
+del mismo nombre y **tamaños distintos** — el tamaño es lo que convierte «eligió uno» en
+«eligió el correcto» (cardinalidad no es identidad).
+
+```
+ScopeProbeRoot
+├── ScopeAlpha  └── SharedChild   50x50  @ (210,210)   verde
+└── ScopeBeta   └── SharedChild   70x70  @ (1210,210)  rojo
+```
+
+| Llamada | Resultado |
+|---|---|
+| `path:"SharedChild"` sin root | `ambiguous_path` |
+| `root:"ScopeAlpha", path:"SharedChild"` | **50x50 @ (210,210)** · `.../ScopeAlpha@0/SharedChild@0` |
+| `root:"ScopeBeta",  path:"SharedChild"` | **70x70 @ (1210,210)** · `.../ScopeBeta@0/SharedChild@0` |
+
+El mecanismo funciona y elige bien. Eso valida la receta de §1b: **un root único devuelve la
+direccionabilidad a todo su árbol**, aunque los hijos sigan compartiendo nombre con otro árbol.
+
+### El A/B que prueba cuándo aparece la colisión
+
+Misma llamada, misma sesión, lo único que cambia entre las dos es abrir el panel variante:
+
+| Estado | `ui_tree(root:"SorterRoot", path:"BtnCloseX")` |
+|---|---|
+| variante CERRADA | resuelve → **producción**: 26x26 @ x=688, `visible_hierarchy: 0`, `SorterRoot@0` |
+| variante ABIERTA | **`ambiguous_path`** |
+
+Tres cosas que se leen de ahí:
+
+1. El root de **producción existe siempre** (pre-creado y oculto), aunque su pantalla nunca se
+   haya abierto. El de la variante se crea al abrirla.
+2. Por eso la colisión no es «a veces»: en cuanto la variante abre, **todos** los nombres
+   compartidos —y el propio root— se vuelven irresolubles.
+3. `visible_hierarchy: 0` con `visible: 1` es la firma de un root pre-creado y oculto. Útil para
+   saber a cuál de los dos estás mirando cuando el resolver te devuelve uno.
+
+### La textura procedural: falla por script, calla por layout
+
+Reconfirmado y **acotado**. En el mismo RPT, mismo build, misma cadena
+`#(argb,8,8,3)color(1,1,1,1,CO)`:
+
+- declarada por **script** (`ImageWidget.LoadImageFile`): **5** `Bad texture name` +
+  **4** `LoadImageFile can't load`, todas en el arranque del mod
+- declarada por **layout** (`image0` en un `ImageWidgetClass`): **0 líneas nuevas** en el RPT
+
+El control de que el log fluía en ese momento: el script log del cliente sí crecía (entradas
+`[MCP-CLIENT]` frescas, incluido el `ok=0` de un `layout_not_found` provocado a propósito).
+
+**Caveat que no se puede saltar**: esto prueba que la vía layout **no emite error**, no que la
+textura se dibuje. Distinguir «carga bien» de «falla en silencio» exige mirar píxeles, y esa
+mitad quedó sin hacer. No lo cuentes como fallback validado.
+
+### `frame_client_all_black` puede no ser del juego
+
+`capture_screenshot` devolvió `frame_client_all_black` tres veces seguidas con el cliente
+**perfectamente sano**: `camera_get` daba `player_camera_active` con posición y dirección
+reales, la ventana estaba visible, sin minimizar, en su rect y era la foreground. Descartado
+que fuera la hora del mundo (`world_time_set` a las 12:00 no cambió nada). Hipótesis más
+probable: monitor apagado o sesión bloqueada — era de madrugada.
+
+**Regla**: antes de diagnosticar el juego por un frame negro, comprueba con un verbo de cliente
+que NO dependa de píxeles (`camera_get` sirve) si el cliente está vivo y renderizando. Si lo
+está, el problema es del host, no del mod. Y da por perdida esa noche cualquier pregunta cuyo
+árbitro sean los píxeles.
+
+### Preguntas que siguen abiertas por falta de píxeles
+
+Se montaron las sondas y quedaron sin leer, listas en `round-s3b/probes/uiprobe.layout`:
+
+- **¿Hace wrap un `TextWidget` por defecto?** La sonda trae tres filas con el mismo texto largo
+  y solo cambia el atributo (`sin wrap`, `wrap 1`, `wrap 0`) más un `MultilineTextWidget` de
+  comparación. Los rects no responden: el widget mide lo declarado tanto si el texto envuelve
+  como si desborda. **El árbitro es el ojo.**
+- **¿Se dibuja la textura procedural declarada por layout?** Ver el caveat de arriba.
+
+Para retomarlas basta con el display encendido: cargar `$profile:uiprobe.layout` y capturar.
