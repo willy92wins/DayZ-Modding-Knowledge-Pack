@@ -386,6 +386,8 @@ void UpdatePreview() {
 }
 ```
 
+> **If the mod already depends on LBmaster_Core, do not build this dialog.** `LBColorPicker` is a finished, reusable component; see section 31 for its API, its two lifetime traps and the redraw it does not trigger.
+
 ---
 
 ## 12. SCRIPTINVOKER — Global Event Bus
@@ -905,3 +907,69 @@ float max = Math.Clamp(addedMessages / LINE_COUNT, 0, 1.0);
 if (pos > max)
     scroll.VScrollToPos01(1.0 - max);
 ```
+
+---
+
+## 31. LBColorPicker REUSE — ownership, lifetime, and the redraw it does not trigger
+
+Measured 2026-09-03 adding a configurable route colour to LBGroups_GPS. Three traps, each found
+only after the code was written; one of them by an independent review pass, not by the author.
+
+**Do not build a colour dialog when the mod already depends on LBmaster_Core.** `LBColorPicker`
+is finished: A/R/G/B sliders each paired with an EditBox, a hex field and a live swatch, layout
+already registered as `"ColorPicker"` (`LBmaster_Core/scripts/3_Game/LBmaster_Core/LBLayoutManager.c:50`).
+Section 11 above is for the case where LBmaster_Core is not a dependency.
+
+```
+LBColorPicker(Widget parent, ScriptCaller selectCallback, int color_ = -1,
+              LBColorConfig colorCfg_ = null, bool allowAlpha_ = true)
+// LBmaster_Core/scripts/3_Game/LBmaster_Core/GUI/Helper/LBColorPicker.c:21
+```
+
+- `allowAlpha_ = false` hides the alpha panel and `GetColor()` returns `ARGB(255, r, g, b)`
+  (`LBColorPicker.c:217`) — the three-channel RGB picker most features actually want.
+- `parent` must not be null: the constructor calls `parent.GetScreenPos()` unguarded.
+- Callback signature is `void OnColorPicked(int color)`.
+
+### Trap 1 — never release the owning `ref` inside the picker's own callback
+
+The component self-destructs: `callback.Invoke(GetColor())` and only **then** `delete this`
+(`LBColorPicker.c:194-196`), with a destructor that unlinks its root widget. Clearing the owner's
+`ref` from inside the callback drops the last strong reference while the object is still running,
+and the `delete this` that follows operates on an already-invalidated object — a crash shape at
+the exact moment the player confirms.
+
+The production pattern keeps the member and never touches it in the callback. In LBmaster's only
+call site the sole assignments are the declaration and the three `new`
+(`GUI/Helper/WidgetLinker/LBWidget_Linked_Var.c:12`, `:221`, `:225`, `:245`; callback at `:179`).
+Let the next `new` overwrite it.
+
+### Trap 2 — the picker outlives the menu that opened it
+
+Its root is created with **no parent** (`LBLayoutManager.Get().CreateLayout("ColorPicker")`) and
+is merely positioned against the caller's widget, so it is a workspace-level overlay, not a child
+of the menu. Closing the map leaves it on screen with a callback pointing at a hidden owner.
+Release the reference in the owner's `OnHide()`. The same assignment that is unsafe inside the
+callback is correct here, because none of the picker's code is on the stack.
+
+### Trap 3 — a colour change does not repaint a dirty-checked overlay
+
+A canvas overlay guarded by a dirty-check (section 9) compares map position, scale, path revision,
+player position and canvas size — never style. A new colour therefore stays invisible until the
+player happens to move the map, which reads as "the setting does nothing".
+
+Give the shared style object a revision counter, bump it wherever the cached style is invalidated,
+and add the comparison to the dirty chain **at every draw site**. A mod that draws the same route
+on the big map and on the HUD has two of them, and fixing one leaves the other stale — grep the
+draw call, do not rely on memory of where it is used.
+
+### Persisting the choice, and one visual trap
+
+Persistence is plain vanilla: a flat DTO plus
+`JsonFileLoader<T>.SaveFile("$profile:<Mod>/client_settings.json", ...)`, preceded by
+`MakeDirectory("$profile:<Mod>")` so the first save succeeds on a clean profile. Treat an absent,
+unparseable or out-of-range value as "use the default" rather than as an error.
+
+A swatch stretched across the whole button looks right in orange and becomes unreadable the moment
+the player picks white, because the label sits on top of it. Keep the button's own background and
+put the swatch in a small fixed square beside the label.
