@@ -445,3 +445,45 @@ override bool CrewCanGetThrough(int posIdx)
 
 The null-check idiom is vanilla's (`improvisedexplosive.c:215`,
 `return FindAttachmentBySlotName(slotName) != null;`).
+
+
+## El LOD de piloto se monta a mano: censalo por CLASES y contra la LOD0 (added 2026-09-05)
+
+Un ViewPilot (res 1100/1200) no es un diezmado de la LOD0: es una vista **curada**, y lo que
+quien la monto dejo fuera no aparece en ningun sitio. Medido el 2026-09-05 sobre dos mods
+hermanos del mismo arbol, con resultados **opuestos**:
+
+| | LFQuad3 | LFQuad2 |
+|---|---|---|
+| cuerpo | 25.234 caras (LOD0: 76.044) | 2.294 caras (LOD0: 9.011) |
+| salpicadero | **completo**: `light_dashboard` 744 caras, las mismas de la LOD0 | `light_dashboard` **0** caras (LOD0: 12) |
+| proxies de acople | **0 de 7** (solo interior y los dos de crew) | 3 de 17 |
+
+Las dos consecuencias son gates que mienten, y mienten en direcciones contrarias:
+
+- **Falso VERDE**: "comprueba que con los slots vacios no se ve ningun proxy" sale bien desde el
+  asiento este arreglado o no, porque ahi no hay proxies de acople. Esa comprobacion va **desde
+  fuera, en tercera persona**.
+- **Falso ROJO**: "sientate y mira si el salpicadero se ilumina" sale mal siempre en un modelo
+  cuyo `light_dashboard` no llego a la vista, aunque el material y el script esten perfectos.
+
+**El censo se hace contra la LOD0, no en absoluto.** "0 caras en el 1100" no distingue *la vista
+lo tiro* de *no existia nunca*; solo la pareja LOD0/1100 separa las dos clases. En el caso medido,
+cuatro de nueve selecciones de luz se habrian leido mal mirando solo el 1100 — estaban a 0 en
+TODAS las LOD (defecto de origen, no de la vista).
+
+Antes de gastar un ciclo in-game en una prueba que dependa del asiento, censa por clases:
+
+```python
+for L in sorted(p3d.lods, key=lambda l: getattr(l, "resolution", 0)):
+    if getattr(L, "resolution", 0) not in (1.0, 1100.0, 1200.0):
+        continue
+    # por cada clase que la prueba necesite: luces, proxies, texturas del cuadro
+    lights = {n: len(s.faces) for n, s in L.selections.items() if n.startswith("light_")}
+    prox = [n for n in L.selections if n.lower().startswith("proxy:")]
+```
+
+y clasifica cada seleccion en tres cubos: **presente sentado** (>0 en LOD0 y en 1100),
+**la vista la tira** (>0 en LOD0, 0 en 1100) y **defecto de origen** (0 ya en LOD0). La pregunta
+util no es "esta el LOD entero" sino "que CLASE de cosa falta", porque dos vistas del mismo arbol
+pueden faltar de cosas distintas.

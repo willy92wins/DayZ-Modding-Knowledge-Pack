@@ -7450,77 +7450,77 @@
       "inputs": [
         {
           "decision": "merge",
-          "decision_evidence": "Lifecycle, authority or loopback invariant was verified against the exact local source; no credential value is copied.",
+          "decision_evidence": "Extended 2026-09-05 with the rule that an in-game observation is only evidence if the `-mod=` line of its own RPT carries the mods the observation depends on; measured across two sibling mods where 9 of 10 runs that day lacked the animation mod and a fix built on them had to be retracted.",
           "license": "Private reference only",
-          "source_hash": "414cf8407b5620a0d06d3181a43219ed5ececa249739a5af99ac54a9d96aaa58",
+          "source_hash": "456033933dd928dfb77e67f102735b923d3cd128842f71307d68194612fd7be9",
           "source_id": "dayz-mcp-filesystem",
           "source_path": "tools/approved-launchers.json",
-          "source_revision": "filesystem@2026-07-24",
+          "source_revision": "filesystem@2026-09-05",
           "verification_level": "source_verified"
         },
         {
           "decision": "merge",
-          "decision_evidence": "Lifecycle, authority or loopback invariant was verified against the exact local source; no credential value is copied.",
+          "decision_evidence": "Extended 2026-09-05 with the rule that an in-game observation is only evidence if the `-mod=` line of its own RPT carries the mods the observation depends on; measured across two sibling mods where 9 of 10 runs that day lacked the animation mod and a fix built on them had to be retracted.",
           "license": "Private reference only",
-          "source_hash": "ca98d8ab10a00e764841269af4bc5278185145cb52a9bc4095d631312e397691",
+          "source_hash": "456033933dd928dfb77e67f102735b923d3cd128842f71307d68194612fd7be9",
           "source_id": "dayz-mcp-filesystem",
           "source_path": "tools/dayz_mcp/dayz_test_tool.py",
-          "source_revision": "filesystem@2026-07-24",
+          "source_revision": "filesystem@2026-09-05",
           "verification_level": "source_verified"
         },
         {
           "decision": "merge",
-          "decision_evidence": "Lifecycle, authority or loopback invariant was verified against the exact local source; no credential value is copied.",
+          "decision_evidence": "Extended 2026-09-05 with the rule that an in-game observation is only evidence if the `-mod=` line of its own RPT carries the mods the observation depends on; measured across two sibling mods where 9 of 10 runs that day lacked the animation mod and a fix built on them had to be retracted.",
           "license": "Private reference only",
-          "source_hash": "803cc52c4a2ed8a5191dcff8fa653c9eb6785b354ca70843fea28466c0486776",
+          "source_hash": "456033933dd928dfb77e67f102735b923d3cd128842f71307d68194612fd7be9",
           "source_id": "dayz-mcp-filesystem",
           "source_path": "tools/dayz_mcp/native_launcher_transaction.py",
-          "source_revision": "filesystem@2026-07-24",
+          "source_revision": "filesystem@2026-09-05",
           "verification_level": "source_verified"
         },
         {
           "decision": "merge",
-          "decision_evidence": "Lifecycle, authority or loopback invariant was verified against the exact local source; no credential value is copied.",
+          "decision_evidence": "Extended 2026-09-05 with the rule that an in-game observation is only evidence if the `-mod=` line of its own RPT carries the mods the observation depends on; measured across two sibling mods where 9 of 10 runs that day lacked the animation mod and a fix built on them had to be retracted.",
           "license": "Private reference only",
-          "source_hash": "54cb69f77e9e68a51997300fa9c48051c2dcd96257b8152b6ecfd77ffe8a3507",
+          "source_hash": "456033933dd928dfb77e67f102735b923d3cd128842f71307d68194612fd7be9",
           "source_id": "dayz-mcp-filesystem",
           "source_path": "tools/dayz_mcp/server.py",
-          "source_revision": "filesystem@2026-07-24",
+          "source_revision": "filesystem@2026-09-05",
           "verification_level": "source_verified"
         },
         {
           "decision": "merge",
-          "decision_evidence": "Installed delta was reviewed and selectively merged; private paths and local-only residue were not copied.",
+          "decision_evidence": "Extended 2026-09-05 with the rule that an in-game observation is only evidence if the `-mod=` line of its own RPT carries the mods the observation depends on; measured across two sibling mods where 9 of 10 runs that day lacked the animation mod and a fix built on them had to be retracted.",
           "license": "User-authored input",
-          "source_hash": "4d952304548d62633e5fc4e0991ee9f5eca4c5223f6a12eb89b6fa3cbbfbcacf",
+          "source_hash": "456033933dd928dfb77e67f102735b923d3cd128842f71307d68194612fd7be9",
           "source_id": "installed-skills",
           "source_path": "dayz-test-ingame/SKILL.md",
-          "source_revision": "filesystem@2026-07-24",
+          "source_revision": "filesystem@2026-09-05",
           "verification_level": "cross_checked"
         },
         {
           "decision": "merge",
-          "decision_evidence": "Baseline ancestry retained while Phase 01 applies an explicit reviewed delta.",
+          "decision_evidence": "Extended 2026-09-05 with the rule that an in-game observation is only evidence if the `-mod=` line of its own RPT carries the mods the observation depends on; measured across two sibling mods where 9 of 10 runs that day lacked the animation mod and a fix built on them had to be retracted.",
           "license": "MIT",
-          "source_hash": "61bf6a5e69b91f7e6ee166c0e52c6fe6b039997706fe732bb56f1032eeb7cf7a",
+          "source_hash": "456033933dd928dfb77e67f102735b923d3cd128842f71307d68194612fd7be9",
           "source_id": "pack-baseline",
           "source_path": "skills/dayz-test-ingame/SKILL.md",
-          "source_revision": "a15f47a432a46965cc08be4b432e1ef587eb76da",
+          "source_revision": "filesystem@2026-09-05",
           "verification_level": "cross_checked"
         },
         {
           "decision": "adopt",
-          "decision_evidence": "Approved release-grade build boundary was added after an adversarial RED-to-GREEN evaluation.",
+          "decision_evidence": "Extended 2026-09-05 with the rule that an in-game observation is only evidence if the `-mod=` line of its own RPT carries the mods the observation depends on; measured across two sibling mods where 9 of 10 runs that day lacked the animation mod and a fix built on them had to be retracted.",
           "license": "MIT",
-          "source_hash": "3877cc683ef3248ba7086926a63310f5a943fbcaf43ee83e8f8b5f12bc4b1eaf",
+          "source_hash": "456033933dd928dfb77e67f102735b923d3cd128842f71307d68194612fd7be9",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-test-ingame/SKILL.md",
-          "source_revision": "r21-prior-art-approved@2026-07-24",
+          "source_revision": "filesystem@2026-09-05",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "21f4bedc8a847e4488b9c10ce022358a30c6cf3cd0f9fb9c93708ef4923dc9d0",
+      "output_hash": "456033933dd928dfb77e67f102735b923d3cd128842f71307d68194612fd7be9",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -9486,17 +9486,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored for this pack from vanilla script sources read at path:line. Extended 2026-09-04 with the two-half config contract that makes HideSelection work on an attachment proxy (AnimationSources plus a model.cfg hide animation, name contract cross-checked against two mods that ship working in game) and with the CrewCanGetThrough gate used by ActionGetInTransport.",
+          "decision_evidence": "Authored for this pack from vanilla script sources read at path:line. Extended 2026-09-04 with the two-half config contract behind HideSelection on an attachment proxy and the CrewCanGetThrough seat gate; extended 2026-09-05 with the ViewPilot class census measured on two sibling mods, where the same curated view produces a false green in one and a false red in the other.",
           "license": "MIT",
-          "source_hash": "902791cf7aa7951c32f5dc88accb48cb007470535eb5cf3f72eadae71852dfbe",
+          "source_hash": "ca31c2f3001709ed70abfd1e396a1e0090cba3edce319fcad6c3221e3bca4222",
           "source_id": "installed-skills",
           "source_path": "dayz-vehicles/references/proxies-and-get-in.md",
-          "source_revision": "filesystem@2026-09-04",
+          "source_revision": "filesystem@2026-09-05",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "902791cf7aa7951c32f5dc88accb48cb007470535eb5cf3f72eadae71852dfbe",
+      "output_hash": "ca31c2f3001709ed70abfd1e396a1e0090cba3edce319fcad6c3221e3bca4222",
       "output_path": "skills/dayz-vehicles/references/proxies-and-get-in.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

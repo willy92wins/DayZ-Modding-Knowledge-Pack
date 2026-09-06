@@ -1500,3 +1500,46 @@ condiciones que de verdad representa —ningún proceso vivo carga tu mod, y el 
 exclusiva— en vez de saltárselo o de esperar a que la otra línea termine.
 
 Cross-ref: `dayz-mcp-verify` (misma regla, lado del bridge).
+
+
+## Una observacion in-game vale lo que valga la linea `-mod=` de SU corrida (added 2026-09-05)
+
+Distinta de la seccion anterior, que lee el `-mod=` para saber **de quien es la caja**. Esta lo
+lee para saber **si la observacion sirve como evidencia**, y se hace ANTES de usarla, no al
+lanzar.
+
+Medido el 2026-09-04 en dos mods a la vez. De seis corridas con `@LFQuad3`, **una** llevaba
+`@SurvivorAnims`; de las cuatro de LFQuad2, **ninguna**. `LFQuad3.c:86-88` (y su gemelo en
+LFQuad2) hace `GetAnimInstance` -> devuelve 22 solo si existe `CfgPatches SurvivorAnims`, y si no
+cae a `VehicleAnimInstances.V3S`, que es la pose de CAMION sobre un quad. Con la pose equivocada
+**la camara del conductor no esta donde estaria de verdad**, y eso mueve tanto lo que se ve desde
+el asiento como que LOD elige el motor. LFQuad2 habia diagnosticado y "arreglado" un sintoma de
+LOD sobre esas corridas y tuvo que retirar el arreglo: la causa no estaba comprobada.
+
+El fallo es silencioso por construccion: el mod ausente no da error, el juego arranca, la
+observacion parece normal y el usuario la reporta de buena fe.
+
+**Al recibir una observacion in-game que vaya a decidir codigo o geometria:**
+
+1. Localiza el RPT de ESA corrida (servidor y cliente) y lee su primera linea `-mod=`.
+2. Comprueba que estan los mods de los que depende lo observado. Los tres que mas callan:
+   - un mod de **animaciones** consultado por `ConfigIsExisting` desde `GetAnimInstance` u
+     otro hook -> sin el, pose y camara son otras;
+   - un **framework** (CF y compania) que escriba modstorage por entidad;
+   - el propio mod de contenido cuyos objetos hay que ver.
+3. Si falta alguno, la observacion no se descarta: **se reclasifica**. Lo que no dependa de la
+   pose ni del LOD sigue valiendo (una textura espejada lo esta desde cualquier angulo); lo que
+   dependa de donde esta el ojo, no.
+
+Trampa de nombre en este arbol: `@Survivor Animations` **con espacio** parte la linea de
+comandos (en el RPT se ve cortada en `-mod=...;P:\Mods\@Survivor`). La junction buena es
+`@SurvivorAnims`.
+
+Auditoria barata de toda una jornada, para saber que corridas valen:
+
+```bash
+for f in _server/profiles/*.RPT _client/profiles/*.RPT; do
+  m=$(grep -m1 -oE '\-mod=[^ ]*' "$f")
+  printf "%-52s %s\n" "$(basename $f)" "$m"
+done
+```
