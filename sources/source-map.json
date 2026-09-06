@@ -9180,15 +9180,15 @@
           "decision": "adopt",
           "decision_evidence": "Authored 2026-09-04 for this pack. Needle geometry and gauge wiring measured on the project model; the dial rotation rule is reproduced from four shipped vanilla vehicle ODOLs, and the MLOD normal direction from a two-flank positive control. Extended the same day with three derivation traps measured on the built p3d: the needle selection carrying the hub ring, the mirror test being the sign of the screen-to-UV determinant, and tick detection needing max-channel ink plus a shallow scan.",
           "license": "MIT",
-          "source_hash": "b5f3d7a933dacce57d3154e2f2ec4ef61dcd841e9a564071f99b3144ebf46ed2",
+          "source_hash": "d62db781fb748f3c271cb72614c545030ffc349a4c9c576a3e4706a62edcc580",
           "source_id": "installed-skills",
           "source_path": "dayz-vehicles/references/gauge-needles.md",
-          "source_revision": "filesystem@2026-09-04",
+          "source_revision": "filesystem@2026-09-05",
           "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b5f3d7a933dacce57d3154e2f2ec4ef61dcd841e9a564071f99b3144ebf46ed2",
+      "output_hash": "d62db781fb748f3c271cb72614c545030ffc349a4c9c576a3e4706a62edcc580",
       "output_path": "skills/dayz-vehicles/references/gauge-needles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

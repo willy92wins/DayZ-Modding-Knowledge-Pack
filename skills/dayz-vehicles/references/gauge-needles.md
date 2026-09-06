@@ -473,7 +473,7 @@ gives a **negative** determinant. Positive means mirrored, whatever the numbers
 -1290; the panel read correctly and the dials read backwards, and the mismatch
 between the two functions was the whole bug.
 
-  ★ Corollary about evidence: two user reports of the same defect are not two
+  ★ Corollary about evidence (LL-456): two user reports of the same defect are not two
   observations of two states. Check the **build timestamp** before inferring a
   sign from a sequence of reports. Here "upside down" and "mirrored" both
   described the same deployed PBO; the intermediate fix had never been built, and
