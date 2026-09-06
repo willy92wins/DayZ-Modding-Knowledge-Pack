@@ -7492,10 +7492,10 @@
           "decision": "merge",
           "decision_evidence": "Installed delta was reviewed and selectively merged; private paths and local-only state stay out of the payload. Extended 2026-09-05 with the rule that an in-game observation is only evidence if the `-mod=` line of its own RPT carries the mods the observation depends on; measured across two sibling mods where 9 of 10 runs that day lacked the animation mod and a fix built on them had to be retracted.",
           "license": "User-authored input",
-          "source_hash": "456033933dd928dfb77e67f102735b923d3cd128842f71307d68194612fd7be9",
+          "source_hash": "552fb38bf42735d53c996529365db1bae2c5f4d5048aa46b16bd7218c89c3071",
           "source_id": "installed-skills",
           "source_path": "dayz-test-ingame/SKILL.md",
-          "source_revision": "filesystem@2026-09-05",
+          "source_revision": "filesystem@2026-09-06",
           "verification_level": "cross_checked"
         },
         {
@@ -7520,7 +7520,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "456033933dd928dfb77e67f102735b923d3cd128842f71307d68194612fd7be9",
+      "output_hash": "552fb38bf42735d53c996529365db1bae2c5f4d5048aa46b16bd7218c89c3071",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -11631,7 +11631,7 @@
           "decision": "adopt",
           "decision_evidence": "Claim registry records the three approved evidence-backed contracts and their skill ranges.",
           "license": "MIT",
-          "source_hash": "d117d277ea9b1b95183606fb024a44c33a8d2a8c2f7d8bd7b69be1f452a4d13d",
+          "source_hash": "de9ce416199bf5a735ccd8f357e66d61d6416c695db140fd02e0f88a049e56b8",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "filesystem@2026-08-21",
@@ -11639,7 +11639,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "564e4424b4f4e1f38f8678604375dfde2018cfe73ff1b75e0408a8e2cfc4ec7d",
+      "output_hash": "de9ce416199bf5a735ccd8f357e66d61d6416c695db140fd02e0f88a049e56b8",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

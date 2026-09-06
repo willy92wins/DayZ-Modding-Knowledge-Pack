@@ -112,7 +112,32 @@ The orchestrator checks these every run and fixes what it safely can. Verified o
   `HKCU\Software\Valve\Steam\ActiveProcess` must have both `pid != 0` and
   `ActiveUser != 0`. The script warns without aborting; run `steam.exe -shutdown`, then relaunch
   Steam (the login is preserved, no re-login is required, and the key repopulates in ~20 s).
-  See `SKILL.md:362-366` for the measured failure signature and details. [EXACT — SKILL.md:362-366]
+  See `SKILL.md:387-391` for the measured failure signature and details. [EXACT — SKILL.md:387-391]
+
+- **El conjunto de mods está SELLADO, y cambiarlo BORRA el mundo de pruebas** (desde 2026-09-06,
+  medido in-game). Cada arranque de servidor sella su lista efectiva de mods en
+  `<mission>\storage_1.modset.json` (campo `seal`, sha256). Si el sello cambia respecto al arranque
+  anterior, el arranque **archiva `storage_1`** en `storage_1.modset-<ts>-<sello8>` (con su
+  `.marker.json` y un recibo `…rotation.<hash>.completed.json`) y empieza de cero: **mundo, bases y
+  personajes de pruebas, fuera**. Medido: repetir el mismo conjunto NO rota y el sello no se mueve;
+  cambiarlo rota **exactamente una vez**; repetir el nuevo no rota; y `mode=client` sobre un run vivo
+  tampoco rota — la rotación vive en el arranque del SERVIDOR.
+  - **Consecuencia para quien alterna stacks** (probar tu mod, luego el de al lado, luego el tuyo):
+    pierdes la persistencia de pruebas en cada salto. Si te hace falta conservarla, **copia
+    `storage_1` a mano antes**; los archivados quedan todos como hermanos en el directorio de misión.
+  - **La rotación NO deja fila en el registro de auditoría** (defecto conocido, el emisor traga sus
+    excepciones en silencio). Si un día pierdes el mundo y buscas el porqué, míralo por las carpetas
+    `storage_1.modset-*` y por el campo `seal`, no por el audit.
+  - **Es deliberado y arregla algo peor**: antes, ese mismo salto de conjunto corrompía la partida.
+    Medido el 2026-09-04 con el bundle anterior, un salto A→B produjo **43 197** líneas de
+    `Scripted variables corrupted`; con el sello, las dos firmas (`Failed to read modstorage` y
+    `Scripted variables corrupted`) salen a **0**. Ojo al diagnosticar: en aquel repro la firma que
+    aparecía NO era la que la ficha del incidente proponía vigilar; vigila **las dos**.
+  - **Trampa de forma**: `extra_mods` es una **lista**, no una cadena con `;`. Un
+    `["@CF;@VPPAdminTools"]` pasa la validación y luego no existe como carpeta: rojo mudo.
+  - Por la ruta MCP, la sesión de Steam caducada del punto anterior se manifiesta como
+    `dayz_test_run` muriendo en fase `validating` a ~1,3 s con `error_code: "steam_session_stale"`;
+    el remedio es el mismo (reiniciar Steam, el login se conserva).
 
 Path resolution is env-var-first, Steam-default fallback (`DAYZ_GAME_PATH`, `DAYZ_DIAG_PATH`,
 `DAYZ_TOOLS_PATH`, `DAYZ_WORK_DRIVE`). [EXACT — DAYZ_INFRA.md §Variables de entorno opcionales (resolvers)]
