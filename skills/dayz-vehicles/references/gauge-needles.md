@@ -46,7 +46,11 @@ LOD0 = 32 quads del buje (64 tris) + 7 caras de pala (22 tris). Esa pala de 7
 caras no-Black es la ASTILLA de la forma 1 (trampas 1 y 14). Ademas queda
 DETRAS del plano del buje (z -0.00261..0 en `needle_large`, -0.00130..0 en
 `needle_small`; pivote en z = 0). **Pendientes de regenerar con
-`canonical_needle` antes de reutilizarlas.**
+`canonical_needle` antes de reutilizarlas.** Mala no es lo mismo que
+invisible: montadas tal cual en el LFQuad2, la pala queda +1.89 mm DELANTE
+del disco pintado (sonda de profundidad de esa sesion, 2026-09-06) y se ve,
+astilla incluida. Si se ve o no lo decide el `lift` del disco de cada cuadro,
+no la pieza; que se vea no la arregla.
 
 ## Trampa 1 — el objeto que se llama «aguja» no es una aguja
 
@@ -74,7 +78,10 @@ vertice a r > 0.95 * r_obj, y se EXIGE que sean exactamente 32 caras OBJ /
 z canonica se desplaza para que la trasera de la pala quede en 0. El filtro
 por anchura angular (umbral 5 grados, "aro 32 + pala 7") es la forma 1: un
 triangulo de la pala pegado al pivote abarca mucho angulo POR ESTAR CERCA, no
-por ser un gajo, y deja 10 tris de astilla en la punta. Invisible en juego.
+por ser un gajo, y deja 10 tris de astilla en la punta. Invisible en juego en
+el LFQuad3; la pieza de la biblioteca, hecha con la misma regla, asoma delante
+del disco en el LFQuad2 (censo, arriba): la visibilidad es del lift, la
+astilla es de la regla.
 
 ## Trampa 2 — el marco de la esfera sale ARBITRARIO, y un giro no arregla un espejo
 
@@ -155,9 +162,16 @@ naive el render salia bien y el juego mal.
 > esta bien ya", build `5ac339d3`): marco anclado, caras recien convertidas y
 > aguja de gasolina nueva. No se desgloso por reloj. Sigue sin desglosar el
 > movimiento de `fuel`, el disco original dentro de la seleccion animada, y el
-> cero exacto (gate offline). LFQuad2 nego `angle0`/`angle1` sin confirmar; su
-> marco sale por producto vectorial y no se ha comprobado contra los faros
-> (LL-464). Caso abierto.
+> cero exacto (gate offline). LFQuad2: su marco por producto vectorial SI se
+> comprobo contra los faros el 2026-09-06 (`light_left` x +0.3011,
+> `light_right` x -0.3131, derecha = -X; `<u, light_right - light_left>` =
+> -0.6142; det +164.81 en los dos discos): ESPEJADO, la misma raiz que aqui, y
+> LL-464 pasa de una observacion a dos, en modelos y cadenas distintos. Negar
+> `angle0`/`angle1` el 4-sep fue una compensacion coherente consigo misma:
+> agujas clavadas en el numero correcto sobre una cara escrita al reves. Esa
+> sesion lo corrigio y desplego (UV de los 64 gajos reescritas en los tres LOD
+> con la derecha leida del modelo y guard fatal; det -164.81; `LFQuad2.pbo`
+> sha `77303210b92d63bd`). Lo que falta es el juego, no la medida.
 
 **Instrumento que cierra esto**: rasterizar las caras del reloj del `.p3d` YA
 CONSTRUIDO con sus UV reales, muestreando la textura con la V del motor. Eso
@@ -373,8 +387,13 @@ es el del cuadro dado por bueno en juego el 2026-09-06. Si un cuadro con esta
 regla descansa fuera del cero, el primer sospechoso es el marco (LL-464), no la
 regla de vanilla. Comprobacion barata: `light_left` y `light_right` de la Memory
 LOD y el signo de `<u_del_marco, light_right - light_left>`; negativo = marco
-espejado. LFQuad2 es el caso abierto: velocimetro por debajo del 0 y
-cuentavueltas por encima; se nego el signo y se desplego sin confirmar.
+espejado. LFQuad2 lo confirma por segunda vez (2026-09-06): velocimetro por
+debajo del 0 y cuentavueltas por encima, signo negado el 4-sep y desplegado
+sin confirmar; medido contra los faros, marco ESPEJADO (det +164.81) y
+corregido (trampa 5). Las dos lecturas del usuario ("-10", "1000") las
+predicen IGUAL el espejo (-13.5 km/h, +880 rpm) y el signo negado: dos
+observaciones que no discriminan entre dos modelos no eligen ninguno. Lo que
+discrimina es la medida contra los faros.
 
 ## Trampa 6 — la normal cruda de una cara MLOD apunta hacia DENTRO
 
@@ -771,10 +790,12 @@ distintas, y ninguna era una aguja (LL-466). Topologia: ver trampa 1.
 **Forma 1** (build del 4-sep): filtro por anchura angular vista desde el buje,
 corte en 5 grados. Un triangulo de la pala pegado al pivote abarca mucho angulo
 POR ESTAR CERCA: el filtro se comio el interior de la hoja y dejo 10 tris de
-astilla en la punta (r 0.01122..0.01217). Invisible en juego. ESA es la regla
-que esta referencia recomendo. Es falsa. La biblioteca compartida se extrae
-con esa regla: 7 caras de pala, astilla, pala detras del buje. Pendiente de
-regenerar.
+astilla en la punta (r 0.01122..0.01217). Invisible en juego en el LFQuad3.
+ESA es la regla que esta referencia recomendo. Es falsa. La biblioteca
+compartida se extrae con esa regla: 7 caras de pala, astilla, pala detras del
+buje. Pendiente de regenerar. Al revisar a quien mas las usa, no buscar solo
+agujas ausentes: en el LFQuad2 la misma pieza asoma +1.89 mm delante del disco
+pintado (otro lift) y se ve, astilla incluida.
 
 **Forma 2** (ronda 1 del 2026-09-06, "conservar todo"): el vertice mas lejano
 paso a ser uno del disco (0.02544), la escala bajo de x0.665 a x0.585, la pala
@@ -856,4 +877,4 @@ ejemplo.
 | | dado por bueno en juego | sin desglosar / abierto |
 |---|---|---|
 | LFQuad3 | "el dashboard esta bien ya" (2026-09-06, build `5ac339d3`) | movimiento de fuel; disco original en la seleccion animada; cero exacto (gate offline) |
-| LFQuad2 | — | signo negado sin confirmar; marco por producto vectorial sin comprobar contra los faros |
+| LFQuad2 | — (falta el ciclo con `@SurvivorAnims` y `@CF`) | marco medido ESPEJADO contra los faros (det +164.81, 2026-09-06), signo negado del 4-sep = compensacion; corregido y desplegado (`LFQuad2.pbo` sha `77303210b92d63bd`, `model.cfg` sha `1a2df84507870fc8`); pendiente solo el juego |
