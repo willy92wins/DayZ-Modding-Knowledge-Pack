@@ -73,6 +73,37 @@ identifica por `run_id`: compartir mod no concede ownership. Con cuarentena
 retail solo se permiten lecturas; si quien abrió retail no puede cerrarlo por
 la UI, declarar `manual_cleanup_required`.
 
+**Secuencia de arranque del puente (rev. 2026-09-06): `dayz_test_run` → `session_acquire_wait` →
+verbos. Nunca sondear antes de adoptar.** «No envolver el launch en otro lease» no significa que el run
+quede tuyo: al terminar, `dayz_test_run` SUELTA su lease de dueño (audit del daemon:
+`session_release_finished reason=owner_release` justo tras el launch) y el run pasa a `RUNNING_IDLE`
+sin dueño (`release_owner`, `process_lifecycle.py:958-976`). Desde ese instante la valla de run ocioso
+rechaza TODO `/enqueue` sobre ese run, **lecturas incluidas**: `_enqueue_run_rejection` descarta el flag
+`mutation` (`loopback.py:1293-1296`) y para `RUNNING_IDLE` devuelve `run_not_owned` (`:1317-1318`) con el
+hint «This run has no owner (RUNNING_IDLE). Adopt the existing run before dispatching.» (`:99-102`,
+`:1323-1329`). Lo contraintuitivo: el contador de `bridge_status` se llama
+`fence.mutation_rejects_by_code` (`:2821-2822`) y cuenta también las lecturas. Cae ahí todo verbo que
+atraviese el bridge (`query_*`, telemetría, raycast, capturas, `world_spawn`…) y también
+`wait_for(players_at_least|players_at_most)`, que sondea con `query_all_players` (`server.py:2645-2650`).
+`wait_for(log_matches)` NO cae: lee los ficheros de log sin tocar el bridge (`server.py:2603-2637`,
+`:2686-2697`).
+
+1. `dayz_test_run(...)` → conserva `run_id`.
+2. Opcional y sin adoptar: `wait_for(log_matches, "…")` para esperar el arranque por el RPT.
+3. `session_acquire_wait(purpose=…)`: el grant adopta el ÚNICO run `RUNNING_IDLE` sin dueño y lo
+   declara en `adopted_run` (`_adopt_on_grant`, `loopback.py:3119-3120`, `:3193-3230`). Comprueba
+   `adopted_run.ok` antes del primer verbo. Con varios ociosos responde
+   `adopted_run.error = "multiple_idle_runs"` y no adopta ninguno (`:3202-3208`): `dayz_test_stop`
+   del sobrante y repetir.
+4. `wait_for(players_at_least, 1)` y el resto de verbos.
+5. `session_release` → `dayz_test_stop(run_id)`.
+
+Con un cliente MCP anterior al `8f5727f` de DayZ_MCP (2026-09-06) el rechazo llegaba como un
+`remote_error` DESNUDO, sin código ni hint (ficha `fb-20260906-193626-f45d`, atribuida primero a un
+cliente sin sondear); con el cliente actual llega `run_not_owned: This run has no owner
+(RUNNING_IDLE)…`. En los dos casos el remedio es adoptar, no reintentar ni relanzar. Esta regla corrige
+el paso 1 de la receta SP-292 y precisa la primera viñeta de SP-152, más abajo.
+
 ### Companion externo: dayz-labs
 
 [EXACT][CLAIM-R21-MCP-COMPANION-AUTHORITY]
@@ -571,7 +602,9 @@ Gate del ciclo 1 de DayZ_MCP (2026-08-17, run `28f2e26f`, PBO `BCA758A1…`): la
 Receta medida (LFPowerGrid + @DayZ_MCP; adaptar nombres al mod):
 
 1. `dayz_test_run(project="LFPowerGrid", mode="all", extra_mods=["@DayZ_MCP"])` → `wait_for(log_matches, "OnStoreLoad SUCCESS")`
-   (77 s / 26 sondeos) → `wait_for(players_at_least, 1)` → `session_acquire_wait(purpose=…)`.
+   (77 s / 26 sondeos) → `session_acquire_wait(purpose=…)` (adopta el run: mira `adopted_run`) → `wait_for(players_at_least, 1)`.
+   (rev. 2026-09-06: el orden anterior de esta receta sondeaba `players_at_least` ANTES de adoptar; ese sondeo atraviesa el
+   bridge y la valla de run ocioso lo rechaza con `run_not_owned` — §COMPOSICIÓN, «Secuencia de arranque del puente».)
 2. `world_spawn(type="LFPG_BTCAtmAdmin", pos=[x,0,z])` a ~3 m del jugador → `action_use(action="LFPG_ActionOpenBTCAtm",
    classname="LFPG_BTCAtmAdmin", radius=5)` → `started:1` (el lookup por `Type().ToString()` funciona en runtime).
 3. `wait_for(log_matches, "[BTCOpenResponse]", lookback_lines=200)` — **con lookback**: la respuesta aterriza ~200 ms tras el
@@ -808,7 +841,9 @@ Patrón validado:
   usuario; no prometas telemetría de objeto.
 - `query_*`, telemetría, raycast y capturas atraviesan el bridge y requieren
   `session_acquire`. Solo `dayz_test_run`/`dayz_test_stop` gestionan su propio lease; no extrapoles
-  esa gestión al resto de verbos.
+  esa gestión al resto de verbos. (rev. 2026-09-06: «requieren `session_acquire`» incluye ADOPTAR el
+  run que el launch dejó `RUNNING_IDLE`; el grant de `session_acquire_wait` lo hace y lo declara en
+  `adopted_run` — §COMPOSICIÓN, «Secuencia de arranque del puente».)
 - Un timeout de `world_spawn` deja un comando zombie: puede ejecutarse después de perderse el
   `object_id`. Antes de reintentar, reconcilia el efecto con la telemetría admitida para ese tipo;
   si el cap de `object_at` lo impide, usa logs más inspección del usuario. No dupliques el spawn a

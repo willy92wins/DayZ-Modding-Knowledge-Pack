@@ -5444,7 +5444,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ce85896f677364eb6f8c854ebcc16e25d5e919ea5fadcc0020cfe32b7445e1f9",
+      "output_hash": "a3e0f7387aa28c108bc178d7371d8cc97cc86cf2fb9e060cde53f7c46b67189f",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -7520,7 +7520,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "552fb38bf42735d53c996529365db1bae2c5f4d5048aa46b16bd7218c89c3071",
+      "output_hash": "2179aa4c9d9f25e8a5bdf6cfec97e63400a9f4238ecc2fbe7adf05b02acdbc52",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -11639,7 +11639,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "de9ce416199bf5a735ccd8f357e66d61d6416c695db140fd02e0f88a049e56b8",
+      "output_hash": "1525f6f50af23295ea9289d15b9bdcaf10a798d310e32e72538d2c5095ee003b",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

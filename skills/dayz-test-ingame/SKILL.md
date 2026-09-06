@@ -53,7 +53,11 @@ El launcher oficial es Diag-only y aplica esta matriz:
    pre-adquieras otro lease alrededor de ellas.
 3. `session_acquire`/`session_wait`/`session_heartbeat`/`session_release` quedan
    para mutaciones de bajo nivel que no estén encapsuladas por las herramientas
-   públicas.
+   públicas. (rev. 2026-09-06) Y para ADOPTAR el run: al terminar, `dayz_test_run`
+   suelta su lease y el run queda `RUNNING_IDLE` sin dueño; cualquier verbo del bridge
+   sobre él, lecturas incluidas, se rechaza con `run_not_owned` hasta que
+   `session_acquire_wait` lo adopte (mira `adopted_run`). Secuencia y citas:
+   `dayz-mcp-verify` §COMPOSICIÓN, «Secuencia de arranque del puente».
 4. [EXACT][CLAIM-R21-TEST-CREDENTIAL-SCOPE] El launcher aprobado recibe
    `DAYZ_MCP_CLIENT_ID_JSON` y `DAYZ_MCP_LEASE_TOKEN` solo en el entorno de
    proceso. La plantilla los captura, los retira del entorno padre y los
