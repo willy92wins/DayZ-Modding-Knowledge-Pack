@@ -2135,7 +2135,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "888f419476d0684029b608a46ac6d6be7cc0eda7001b09109f5cafb5b6fea6e0",
+      "output_hash": "4159439c429a61953c42fd5749e0eb5073892237baefa080e1b9cce8e9f00acc",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -22591,6 +22591,29 @@
       "license": "MIT",
       "output_hash": "18a1808ab120d015d6896da922b4315dc1da4995efbd1d5183deb4f9e98b94ab",
       "output_path": "promotions/receipts/c009f9b7a1ee582c929f4173.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/84b669e401cad45bb761d315.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt written by promote --apply on 2026-09-07 for transaction 84b669e401cad45bb761d315: the promotion of 78bd120 to claude_user_skills, agents_user_skills and the vault snapshots (128 operations, verdict PASS), run from the kp-recon worktree the previous receipt is bound to. Reconciliation of the 17 governed skills whose stores had drifted since 2026-09-02 (harvest to the Pack first, adjudication with the checker's digests, then apply); from now on this receipt explains those targets.",
+          "license": "MIT",
+          "source_hash": "239e251424446dfa8a4029ef4f3cc443adcfebafa75f9914a587d29b0ad149a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/84b669e401cad45bb761d315.json",
+          "source_revision": "promotion-full-set@2026-09-07",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "239e251424446dfa8a4029ef4f3cc443adcfebafa75f9914a587d29b0ad149a5",
+      "output_path": "promotions/receipts/84b669e401cad45bb761d315.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
