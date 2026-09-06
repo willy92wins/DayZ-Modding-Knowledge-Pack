@@ -8824,7 +8824,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "63e4eb8defae9ba40df338b730078aff2400824811c236627d4e7b32540de8eb",
+      "output_hash": "b1c72223ee20b21eb9d4fce9ab62b328eb1768bcba3883483775256a8f6499f2",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9188,7 +9188,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d62db781fb748f3c271cb72614c545030ffc349a4c9c576a3e4706a62edcc580",
+      "output_hash": "9ef26194a60661d0e91c9d18b728c411e02976dadbacd60d6d545d5036e22aef",
       "output_path": "skills/dayz-vehicles/references/gauge-needles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

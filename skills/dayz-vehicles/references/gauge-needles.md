@@ -1,7 +1,14 @@
 # Agujas y esferas del salpicadero
 
-Medido en el LFQuad3 el 2026-09-03. Cuatro trampas, todas caras, y una pieza
-reutilizable para no volver a modelar una aguja.
+Medido en el LFQuad3 del 2026-09-03 al 2026-09-06. Catorce trampas numeradas, tres
+trampas silenciosas de la derivacion (en ingles), un instrumento y una receta. El
+cuadro dado por bueno en juego el 2026-09-06: "el dashboard esta bien ya" (veredicto
+del usuario en chat, recogido en `LFQuad3_dev\HANDOFF.md`; build `5ac339d3`).
+Veredicto global; no desgloso por reloj. Sigue sin desglosar: que la aguja de
+gasolina se mueva con el deposito; que la esfera pintada no gire con las agujas (el
+disco original del objeto viaja en la seleccion animada; [SUPUESTO] queda ocluido);
+que el reposo caiga exactamente en el cero impreso (medido offline con el gate, no
+desglosado en juego).
 
 ## La pieza: `_shared_parts/gauge_needles/`
 
@@ -33,20 +40,41 @@ con el angulo y el sitio que le puso su OBJ no le sirve a otro modelo.
 El pivote es el centroide del submesh **Black**, no el del conjunto: ese es el
 buje sobre el que gira.
 
+**Estado de la biblioteca (censo 2026-09-06).** Se extraen con
+`build_needle_library.py` por ANCHURA ANGULAR (`THIN_DEG = 5.0`): 86 caras
+LOD0 = 32 quads del buje (64 tris) + 7 caras de pala (22 tris). Esa pala de 7
+caras no-Black es la ASTILLA de la forma 1 (trampas 1 y 14). Ademas queda
+DETRAS del plano del buje (z -0.00261..0 en `needle_large`, -0.00130..0 en
+`needle_small`; pivote en z = 0). **Pendientes de regenerar con
+`canonical_needle` antes de reutilizarlas.**
+
 ## Trampa 1 — el objeto que se llama «aguja» no es una aguja
 
-`aguja_derecha` del OBJ del LFQuad3 son **105 caras**, de las cuales **66 son un
-disco de 32 gajos** — la cara del reloj — con la aguja encima. Guardarlo entero
-mete un reloj en la biblioteca con nombre de aguja.
+`aguja_derecha` del OBJ del LFQuad3 son **105 caras**. Topologia medida en el
+marco del ensamblador (`needle_parts_probe.py`; dibujo `needle_parts.png`):
+
+| pieza | caras | r canonico | z respecto al buje |
+|---|---|---|---|
+| buje: anillo `Black` + tapa 32-gono | 32 + 1 | <= 0.0029 | 0 |
+| pala: 2 octogonos + 38 quads `Gauges` | 40 | 0.0029 .. 0.02239 | -0.0026 .. -0.0009 |
+| disco: 32 quads `Gauges` | 32 | 0.0036 .. 0.02544 | -0.00235 (plano) |
+
+El buje son 33 caras, la pala 40, el disco 32. Guardarlo entero mete un reloj
+en la biblioteca con nombre de aguja.
 
 Y los numeros no lo delatan: la caja del objeto sale `0,0509 x 0,0509 x 0,0026`,
 que parece razonable hasta que uno se fija en que 0,0509 es exactamente el
-DIAMETRO del disco. **Lo destapo dibujar la silueta**, no medirla.
+DIAMETRO del disco. **Lo destapo dibujar la silueta**, no medirla. La punta de
+la pala esta al 0.88 del r_max del objeto; el vertice mas lejano es del DISCO.
 
-Separacion barata y robusta: **anchura angular de cada cara vista desde el
-buje**. Cada gajo del disco abarca `360/32 = 11,25` grados; la pala de la aguja,
-menos de uno. Con un umbral de 5 grados quedan las 39 buenas — aro del buje (32)
-y pala (7).
+Separacion: **corte por radio**, no por anchura angular. `r_obj` = radio maximo
+en el plano de todo el objeto; se DESCARTAN las caras no-Black con algun
+vertice a r > 0.95 * r_obj, y se EXIGE que sean exactamente 32 caras OBJ /
+64 tris (`SystemExit` si no: `canonical_needle` en `assemble_lfquad3.py`). La
+z canonica se desplaza para que la trasera de la pala quede en 0. El filtro
+por anchura angular (umbral 5 grados, "aro 32 + pala 7") es la forma 1: un
+triangulo de la pala pegado al pivote abarca mucho angulo POR ESTAR CERCA, no
+por ser un gajo, y deja 10 tris de astilla en la punta. Invisible en juego.
 
 ## Trampa 2 — el marco de la esfera sale ARBITRARIO, y un giro no arregla un espejo
 
@@ -61,52 +89,84 @@ verse **espejado**. Media vuelta es una rotacion y no puede deshacer una
 reflexion. El mapeo era `u <- -b`, `v <- -a`: un intercambio de ejes MAS una
 negacion, que es una reflexion. **Ningun offset angular la quita.**
 
+El producto vectorial solo tampoco basta. El generador del LFQuad3 construia
+`u = cross(w, axis)` y afirmaba que eso es la derecha de pantalla "cuando el
+eje apunta al observador". En este modelo ese `u` sale +X y la derecha del
+conductor es -X: lo dice el propio modelo, que escribe `light_left` en x +0.373
+y `light_right` en x -0.374 (`memory_lod`, `assemble_lfquad3.py`). Eso es la
+raiz del espejo que sobrevivio tres ciclos (LL-464): el render de verificacion
+montaba su marco con la MISMA expresion, reproducia el fallo y lo llamaba
+correcto.
+
 **El arreglo es anclar, no compensar:**
 
 ```python
-w = normalizar(arriba - eje * dot(arriba, eje))   # el "arriba" del vehiculo
-u = normalizar(cross(w, eje))                     # derecha, si el eje mira al piloto
+MODEL_RIGHT = (-1.0, 0.0, 0.0)   # from light_right - light_left
+w = normalizar(arriba - eje * dot(arriba, eje))   # vehicle-up, in plane
+u = normalizar(cross(w, eje))
+if dot(u, MODEL_RIGHT) < 0:
+    u = -u
+# fatal if the markers disagree with MODEL_RIGHT (memory_lod writes both)
 u_uv = uc + k * dot(radial, u)
-v_uv = vc - k * dot(radial, w)     # el signo se MIDE; ver trampa 10
+v_uv = vc - k * dot(radial, w)     # sign is MEASURED; see trap 10
 ```
 
-> **El signo de la V de este fragmento NO es universal.** Aqui va con menos porque en
-> esta cadena V=0 es el borde superior de la imagen. Con `+` el arte del LFQuad3 salio
-> **espejado en vertical** dos ciclos seguidos. La trampa 10 da el procedimiento para
-> acreditar el signo en TU cadena y para distinguir un espejo de un giro.
+`dial_basis` orienta `u` contra `MODEL_RIGHT`. `memory_lod` lanza `SystemExit`
+si el signo de `light_right - light_left` en x deja de concordar. El mapeo
+final es `(uc + k*<radial,u>, vc - k*<radial,w>)`: +U a la derecha del
+conductor, -V hacia arriba porque V=0 es el borde SUPERIOR de la imagen
+(`polar_uv`).
+
+> **El signo de la V de este fragmento NO es universal.** Aqui va con menos
+> porque en esta cadena V=0 es el borde superior de la imagen. Con `+` el arte
+> del LFQuad3 salio **espejado en vertical** dos ciclos seguidos. La trampa 10
+> da el procedimiento para acreditar el signo en TU cadena y para distinguir
+> un espejo de un giro.
 
 Sin `atan2`: el angulo solo servia para recomponer lo que ya son las dos
 coordenadas del punto, y al recomponerlo intercambiaba los ejes.
 
-**El sentido de la V se MIDE en tu propia cadena; no se hereda de aqui.** Lo que se
-midio en el LFQuad3: escribiendo la V complementada, el render del atlas reproducia
-EXACTAMENTE el espejado que reportaba el usuario; con la V naive el render salia bien
-y el juego mal.
+**El sentido de la V se MIDE en tu propia cadena; no se hereda de aqui.** Lo
+que se midio en el LFQuad3: escribiendo la V complementada, el render del
+atlas reproducia EXACTAMENTE el espejado que reportaba el usuario; con la V
+naive el render salia bien y el juego mal.
 
-> **Acotacion 2026-09-04.** Este parrafo decia antes "porque el motor la invierte al
-> muestrear", como si fuera un hecho del motor. No lo es: **el complemento vive en el
-> ensamblador**. `assemble_lfquad3.py:1811` hace `uv.append((u, 1.0 - v))` sobre TODA
-> UV que toma del OBJ, de modo que la V que acaba en el `.p3d` es `1 - v_obj`, y las
-> esferas solo tienen que ser coherentes con ella.
+> **Acotacion 2026-09-04.** Este parrafo decia antes "porque el motor la
+> invierte al muestrear", como si fuera un hecho del motor. No lo es: **el
+> complemento vive en el ensamblador**. `assemble_lfquad3.py:1971` hace
+> `uv.append((u, 1.0 - v))` sobre TODA UV que toma del OBJ, de modo que la V
+> que acaba en el `.p3d` es `1 - v_obj`, y las esferas solo tienen que ser
+> coherentes con ella.
 >
-> Contramedida de otra sesion sobre el LFQuad2, cuyas UV son del artista de Bohemia en
-> un MLOD de Arma 2 y nunca pasan por ese `1-v`: con la V tal cual el arte sale derecho
-> y legible, y con `1-v` el modelo muestrea **otra region del atlas**, no un espejo. No
-> se contradicen: son cadenas distintas, y el motor solo tiene un convenio.
+> Contramedida de otra sesion sobre el LFQuad2, cuyas UV son del artista de
+> Bohemia en un MLOD de Arma 2 y nunca pasan por ese `1-v`: con la V tal cual
+> el arte sale derecho y legible, y con `1-v` el modelo muestrea **otra region
+> del atlas**, no un espejo. No se contradicen: son cadenas distintas, y el
+> motor solo tiene un convenio.
 >
-> **La regla operativa no es un signo, es un procedimiento:** la V de las esferas se
-> escribe en el MISMO sentido que ya usan las demas UV del modelo, y ese sentido se
-> averigua con un **control positivo** -- una pieza de arte cuya orientacion no admita
-> discusion (un texto, una pegatina legible), renderizada con las UV reales del `.p3d`.
-> Equivocarse produce o un espejo o una traslacion, los dos "plausibles": sin ese ancla
-> no se distinguen.
+> **La regla operativa no es un signo, es un procedimiento:** la V de las
+> esferas se escribe en el MISMO sentido que ya usan las demas UV del modelo,
+> y ese sentido se averigua con un **control positivo** -- una pieza de arte
+> cuya orientacion no admita discusion (un texto, una pegatina legible),
+> renderizada con las UV reales del `.p3d`. Equivocarse produce o un espejo o
+> una traslacion, los dos "plausibles": sin ese ancla no se distinguen.
 >
-> Ninguna de las dos medidas esta confirmada EN JUEGO todavia.
+> El cuadro del LFQuad3 se dio por bueno en juego el 2026-09-06 ("el dashboard
+> esta bien ya", build `5ac339d3`): marco anclado, caras recien convertidas y
+> aguja de gasolina nueva. No se desgloso por reloj. Sigue sin desglosar el
+> movimiento de `fuel`, el disco original dentro de la seleccion animada, y el
+> cero exacto (gate offline). LFQuad2 nego `angle0`/`angle1` sin confirmar; su
+> marco sale por producto vectorial y no se ha comprobado contra los faros
+> (LL-464). Caso abierto.
 
 **Instrumento que cierra esto**: rasterizar las caras del reloj del `.p3d` YA
-CONSTRUIDO con sus UV reales, muestreando la textura con la V del motor. Eso es
-lo que se vera en el juego. Un render sintetico sobre un disco inventado no
-vale — no lleva las UV que el modelo escribio.
+CONSTRUIDO con sus UV reales, muestreando la textura con la V del motor. Eso
+es lo que se vera en el juego. Un render sintetico sobre un disco inventado no
+vale — no lleva las UV que el modelo escribio. En el LFQuad3 ese cierre es
+`dial_gate_final.py`, que toma la derecha de `LIGHT_RIGHT_MINUS_LEFT`.
+`dial_render_v5.py` (y su `view_all_fix.png` del 4-sep) montaba el marco con
+`cross(-axis, up)`, la misma expresion que el generador: reproducia el fallo y
+lo llamaba correcto (LL-464). No vale como cierre.
 
 ## Trampa 3 — cambiar el marco INVALIDA `angle0`, y ademas invierte el giro
 
@@ -120,15 +180,18 @@ relacion entre el marco viejo y el nuevo es una **reflexion**
 (`theta_nuevo = C - theta_viejo`), tambien se invierte el sentido de giro: lo
 que el motor movia en antihorario pasa a leerse horario.
 
-Como se rederiva sin adivinar:
+Como se rederiva sin adivinar (instrumento, mas abajo):
 
 1. Medir el **arco pintado** en el atlas (los extremos del anillo de ticks).
 2. Medir el **angulo de la malla** de la aguja en el marco nuevo, del `.p3d`
-   construido: del pivote al vertice mas lejano de la pala.
-3. Sacar `C` de un reloj cuyo cero viejo se conozca, y **comprobarla contra el
-   otro**. En el LFQuad3: `C = 443` del velocimetro (225 viejo -> 218 medido),
-   que predice el cero del cuentavueltas en 290,3 donde el tick extremo medía
-   298 — la etiqueta cae por dentro del primer tick, asi que cuadra.
+   construido: del pivote al vertice mas lejano de la pala (no del objeto).
+3. `angle0 = reposo - theta(minValue)` y `angle1 = reposo - theta(maxValue)`
+   en el marco anclado. El gate dibuja la aguja sobre CADA valor impreso.
+
+Los numeros del 2026-09-03 (`C = 443` del velocimetro, 225 viejo -> 218
+medido, prediccion 290.3 contra 298) se dedujeron en el marco espejado: estan
+**superados**. Los valores que lleva el mod dado por bueno estan en la
+seccion del instrumento y en `generated/model.cfg`.
 
 **Ojo con medir el arco por los extremos del anillo**: puede haber ticks de
 entrada y salida mas alla de la ultima etiqueta. En el cuentavueltas del LFQuad3
@@ -137,9 +200,11 @@ los ticks abarcan 299 grados y la escala impresa 240.
 **Si el tope del vehiculo pasa del ultimo numero impreso**, no se estira
 `maxValue` dejando los angulos: eso hace que la aguja mienta en todo el
 recorrido. Se alarga el barrido en proporcion y se aprovecha el hueco sin
-pintar. LFQuad3: 270 grados para 0-120 son 2,25 grados por km/h; con tope 150 el
-barrido es 337,5 y los 67,5 de mas caben en los 90 grados de hueco. **Los
-numeros impresos siguen siendo verdad a cualquier velocidad.**
+pintar. Ejemplo con el arte viejo del ATV (impreso 0-120): 270 grados son 2,25
+por km/h; con tope 150 el barrido seria 337,5 y los 67,5 de mas cabrian en los
+90 grados de hueco. Con la cara oficial (impresa 0-150, recta ajustada a 0-100 y
+extrapolada) el barrido es 302,8: seccion del instrumento. **Los numeros
+impresos siguen siendo verdad a cualquier velocidad.**
 
 ## Trampa 4 — la posicion de reserva del eje apunta al reloj equivocado en silencio
 
@@ -150,13 +215,32 @@ si algun dia el calculo no encuentra la aguja, la aguja gira sobre la esfera
 equivocada. **Una constante que solo se usa cuando algo falla hay que cambiarla
 con lo demas.**
 
+Caso medido (intercambio kmh/rpm del 2026-09-04): toco dos sitios y dejo un
+tercero (etiquetas de seleccion de la aguja en `build_visual`). Resultado:
+`kmh_axis` en x +0.046 y la seleccion `kmh` en x -0.045 — la aguja girando
+sobre un pivote del otro lado del salpicadero. Eje, malla de la aguja y
+textura cambian JUNTOS, y la reserva cableada del eje tambien.
+
 ## El contrato de cableado
 
 1. La geometria en una seleccion con nombre propio (p. ej. `kmh`).
-2. En la Memory LOD, dos puntos: el pivote y el pivote mas la normal de la
-   esfera, con el nombre `<seleccion>_axis`.
-3. El hueso en `sections[]` y en el skeleton, colgando del salpicadero.
-4. En `CfgModels`:
+2. En la Memory LOD, dos puntos: el pivote (centroide del cubo Black de la
+   aguja) y el pivote mas la normal HACIA el conductor, alineada contra una
+   referencia fija (`n_pilot` en el LFQuad3), con el nombre `<seleccion>_axis`.
+3. El hueso en el skeleton (`skeletonBones[]`), colgando del salpicadero
+   (`kmh`/`rpm`/`fuel` de `drivewheel` en el LFQuad3). `sections[]` solo si la
+   seleccion cambia de textura o material; las agujas del LFQuad3 no estan en el.
+4. Esfera pintada 1.2 mm detras de la aguja (`lift = 0.0012` a lo largo de
+   `ring_n`, que apunta lejos del conductor) y delante del panel. Aguja entera
+   por delante del panel (z >= 0 en pose canonica; pivote de fuel 0.0004 m
+   adelantado). Un `lift` de -0.0003 dejo las agujas invisibles desde todas
+   las vistas.
+5. Una textura por reloj, potencia de dos (relleno, no estirado). rvmat PROPIO
+   con normal y especular planos (`#(argb,8,8,3)color(0.5,0.5,1,1,NOHQ)` y
+   `color(1,0,1,1,SMDI)`, atestados en vanilla; hallazgo de LFQuad2). Discos y
+   agujas FUERA de las `hiddenSelections` de color (`camo1`): si no, la
+   variante les pisa la textura.
+6. En `CfgModels`, las tres clases. Valores del LFQuad3 (medido 2026-09-06):
 
 ```
 class IndicatorSpeed
@@ -167,9 +251,33 @@ class IndicatorSpeed
     axis = "kmh_axis";
     memory = 1;
     minValue = 0;
-    maxValue = 150;          // el tope REAL del vehiculo
-    angle0 = "rad 176.4";    // cero pintado - angulo de la malla
-    angle1 = "rad 513.9";    // angle0 + recorrido
+    maxValue = 150;
+    angle0 = "rad 232.5";
+    angle1 = "rad 535.3";
+};
+class IndicatorRPM
+{
+    type = "rotation";
+    source = "rpm";
+    selection = "rpm";
+    axis = "rpm_axis";
+    memory = 1;
+    minValue = 0;
+    maxValue = 1;
+    angle0 = "rad 213.1";
+    angle1 = "rad 456.4";
+};
+class IndicatorFuel
+{
+    type = "rotation";
+    source = "fuel";
+    selection = "fuel";
+    axis = "fuel_axis";
+    memory = 1;
+    minValue = 0;
+    maxValue = 1;
+    angle0 = "rad -129.1";
+    angle1 = "rad -47.6";
 };
 ```
 
@@ -181,9 +289,9 @@ grados.
 declara `proto native float GetSpeedometer()` y
 `4_World/classes/useractionscomponent/actions/interact/actiongetouttransport.c:33`
 documenta la unidad al comparar contra `GetSpeedometerAbsolute()`. `rpm` viene
-normalizada 0..1 sobre `rpmMax`, asi que el recorrido se escala por
-`rpmMax / tope_impreso` (LFQuad3: esfera de 240 grados impresa a 8000 con motor
-de 6400 -> 192 grados).
+normalizada 0..1 sobre `rpmMax` (en el LFQuad3 el ultimo punto de `torqueCurve`
+es 6400; la esfera imprime hasta 6000, asi que `maxValue 1.0` son 6.4 unidades
+impresas y `angle1` sale de theta(6.4)).
 
 `speed`, `rpm`, `fuel` y `coolant` **son fuentes nativas del motor**, medido en el
 ODOL de dos coches vanilla de 1.29 -- `offroadhatchback` (35 clases de animacion) y
@@ -197,6 +305,17 @@ de sus animaciones de cuadro pasa por `AnimationSources` de script.
 > **Ausencia en el lado de script no es ausencia en el motor**: las fuentes de
 > `model.cfg` son nativas y no tienen por que asomar en Enforce. El aviso ya costo una
 > retractacion en otra sesion, que lo repitio al usuario antes de comprobarlo.
+
+El LFQuad3 lleva `source = "fuel"` y el usuario dio el cuadro por bueno, pero el
+movimiento de esa aguja **no esta desglosado** en juego.
+
+`dashboardMatOn`/`dashboardMatOff` es el material de la luz del cuadro; no tiene
+que ver con las agujas.
+
+Al montar una aguja desde un objeto que trae disco, el disco **NO entra** en la
+seleccion animada. En el LFQuad3 el disco original de cada aguja viaja dentro
+de `kmh`/`rpm` ([SUPUESTO] queda ocluido por la esfera nueva; el usuario no lo
+desgloso).
 
 ## Nombres
 
@@ -249,6 +368,14 @@ de antemano.
 Reproducible en dos minutos sobre
 `DZ\vehicles\wheeled\{offroadhatchback,civiliansedan,hatchback_02,sedan_02}\*.p3d`.
 
+En el LFQuad3 este convenio (eje hacia el conductor, `angle0 = reposo - theta(min)`)
+es el del cuadro dado por bueno en juego el 2026-09-06. Si un cuadro con esta
+regla descansa fuera del cero, el primer sospechoso es el marco (LL-464), no la
+regla de vanilla. Comprobacion barata: `light_left` y `light_right` de la Memory
+LOD y el signo de `<u_del_marco, light_right - light_left>`; negativo = marco
+espejado. LFQuad2 es el caso abierto: velocimetro por debajo del 0 y
+cuentavueltas por encima; se nego el signo y se desplego sin confirmar.
+
 ## Trampa 6 — la normal cruda de una cara MLOD apunta hacia DENTRO
 
 Corolario de la 5, y es el que muerde al aplicarla. Para clasificar un eje como
@@ -285,6 +412,10 @@ Dos advertencias sobre el control, las dos pagadas:
    y=0,964) y por debajo de los ojos, con el pivote a y=1,200 — el signo se
    voltea segun el ancla, +0,142 con la pelvis y -0,994 con el ojo. En un coche
    con salpicadero bajo no pasa; en una moto o un quad, si.
+
+En el LFQuad3 la normal de `<sel>_axis` se ALINEA (no se niega a secas) contra
+`n_pilot = (0, 0.82162, 0.57004)`, que apunta al conductor: una negacion
+incondicional dependeria del orden de los triangulos del OBJ (`apply_needle_axis`).
 
 ## Trampa 7 — `rpm` esta normalizada sobre `rpmMax`, no sobre el numero pintado
 
@@ -326,12 +457,19 @@ sobre cada valor pintado**. La imagen dice sola si acierta. En el velocimetro la
 candidato fallo, se corrigio con los dos ticks aislados junto al hueco y a la
 segunda cayeron el 0 y el 6 en su sitio.
 
+El instrumento final (`dial_derive_final.py`) deja la asignacion valor<->tick
+ESCRITA en `DIALS` y la re-mide con guard (`TOL = 0.5` grados): si un tick se
+movio, falla en vez de derivar angulos de otro dibujo. Es la forma auditable de
+proponer y comprobar dibujando.
+
 **Y el cierre, que es el unico que no depende de ningun convenio:** rasterizar las
 **UV REALES del `.p3d` construido** sobre la textura —muestreando la V como el
 motor, `1-v`— y dibujar encima la aguja en `angle0` y en `angle1`. Si los puntos
 de UV caen sobre el anillo de ticks y las agujas sobre las marcas extremas, el
 mapeo, la textura y los angulos estan bien los tres a la vez. Nada de discos
 sinteticos: un render que no lleva las UV que el modelo escribio no prueba nada.
+Eso es `dial_gate_final.py`: aguja sobre CADA valor impreso, no solo los
+extremos — una recta ajustada a dos extremos pasa por los dos siempre.
 
 ## Trampa 9 — una isla de atlas por reloj cuesta la legibilidad
 
@@ -347,40 +485,43 @@ se ven hasta el juego:
 
 **Una textura por reloj** quita los dos de golpe: el arte va a resolucion entera y
 la ventana UV pasa a ser `[0,1]^2`, sin recorte que medir. Es ademas una
-convencion trivial de compartir entre vehiculos.
+convencion trivial de compartir entre vehiculos. En el LFQuad3: `Dial_kmh`,
+`Dial_rpm`, `Dial_fuel` -> `LFQuad3_dial_*_co.paa`, rvmat compartido de gauges
+(el contrato pide uno plano propio; ver hallazgo de LFQuad2).
 
 ## Trampa 10 — el marco de PANTALLA del conductor, y por que resuelve las dos cosas a la vez
 
-Medido en el LFQuad3 el 2026-09-04, tras dos ciclos con el arte al reves. Las dos
-quejas del usuario —«los indicadores estan boca abajo» y «las agujas no empiezan en
-el 0»— eran **un solo defecto**, y salen las dos de no tener un marco declarado.
+Medido en el LFQuad3 el 2026-09-04 y cerrado el 2026-09-06, tras tres ciclos con
+el arte al reves. Las quejas del usuario —«los indicadores estan boca abajo» y
+«las agujas no empiezan en el 0»— eran **un solo defecto**, y salen las dos de no
+tener un marco declarado. El marco se LEE, no se deduce.
 
-**El marco, derivado y no elegido.** El eje de la aguja de la Memory LOD apunta AL
-conductor (trampa 6), asi que:
+**El marco, anclado al modelo.** El eje de la aguja de la Memory LOD apunta AL
+conductor (trampa 6). El "arriba" es +Y del vehiculo proyectado al plano. La
+derecha NO es `cross(vista, arriba)` ni "tiene que salir +X": en el LFQuad3 la
+derecha del conductor es -X, y el propio fichero lo sabia por los faros. La
+derecha se proyecta al plano del reloj desde los marcadores del modelo
+(`light_right` menos `light_left`, o `wheel_1_1`/`wheel_2_1`, o un `*_dir`).
+Guard `SystemExit` si discrepan (en el LFQuad3 los escribe `memory_lod`; si se
+leen de fuera, tambien si faltan). El instrumento
+(`dial_derive_final.py`) usa `LIGHT_RIGHT_MINUS_LEFT` y para si esa derecha
+coincide con la base vieja `cross(-axis, up)`.
 
-```
-vista   = -eje
-arriba  = normalizar(+Y del vehiculo - eje * dot(+Y, eje))    # el arriba del mundo, en el plano
-derecha = normalizar(cross(vista, arriba))
-```
+**El objetivo del mapeo, en ese marco:** `derecha -> +U` y `arriba -> -V`. El
+menos no es un convenio elegido: V=0 es el borde SUPERIOR de la imagen.
 
-Control del signo de `derecha`, y es de una linea: con un reloj vertical que mira
-atras (eje = +z, y +z es ATRAS en DayZ) tiene que salir **+x**, que es la derecha del
-conductor porque el frente del vehiculo es -z. Si sale -x, el cross esta al reves.
+**Como se acredita ese sentido sin creerselo: el control positivo es el propio
+modelo.** No hace falta arte de prueba. La carroceria del LFQuad3 escribe
+`(u, 1.0 - v)` desde un OBJ (que tiene v=0 abajo), o sea que V=0 es el borde
+superior — y esa carroceria lleva ciclos vista en juego sin que nadie diga que
+la textura este volteada. Ese es el ancla. En otra cadena (LFQuad2, MLOD de
+Arma 2 sin ese `1-v`) el ancla es otra: **se mira que hace el resto del modelo,
+no lo que dice esta pagina**.
 
-**El objetivo del mapeo, en ese marco:** `derecha -> +U` y `arriba -> -V`. El menos no
-es un convenio elegido: V=0 es el borde SUPERIOR de la imagen.
-
-**Como se acredita ese sentido sin creerselo: el control positivo es el propio modelo.**
-No hace falta arte de prueba. La carroceria del LFQuad3 escribe `(u, 1.0 - v)` desde un
-OBJ (que tiene v=0 abajo), o sea que V=0 es el borde superior — y esa carroceria lleva
-ciclos vista en juego sin que nadie diga que la textura este volteada. Ese es el ancla.
-En otra cadena (LFQuad2, MLOD de Arma 2 sin ese `1-v`) el ancla es otra: **se mira que
-hace el resto del modelo, no lo que dice esta pagina**.
-
-**Como se MIDE lo que hay hoy, en vez de discutirlo.** Se ajusta por minimos cuadrados
-la matriz 2x2 que lleva (derecha, arriba) a (U, V) usando **las UV reales del `.p3d`
-construido**. Con residuo ~1e-6 el ajuste describe el mapeo entero, y entonces:
+**Como se MIDE lo que hay, en vez de discutirlo.** Se ajusta por minimos
+cuadrados la matriz 2x2 que lleva (derecha, arriba) a (U, V) usando **las UV
+reales del `.p3d` construido**. Con residuo ~1e-6 el ajuste describe el mapeo
+entero, y entonces:
 
 | lo que sale | lo que significa |
 |---|---|
@@ -389,28 +530,72 @@ construido**. Con residuo ~1e-6 el ajuste describe el mapeo entero, y entonces:
 | `derecha->-U`, `arriba->-V` | espejo horizontal |
 | `derecha->-U`, `arriba->+V` | giro de 180 |
 
-★ Esa tabla es la que distingue un ESPEJO de un GIRO, y hace falta: el usuario reporto
-«boca abajo, girar 180» y la medida decia espejo vertical. **No se aplica la correccion
-que describe el sintoma: se mapea al objetivo absoluto.** Asi el resultado es correcto
-sea cual sea la etiqueta con la que se describio el fallo.
+`det > 0` = ESPEJO. Negativo = sin espejo **SOLO si el +U del marco es la
+derecha REAL del modelo**. Un +U derivado por producto vectorial sin comprobar
+contra los marcadores puede ser la izquierda real (LFQuad3: +X), y entonces el
+determinante se lee en un marco espejado y la conclusion se invierte. Medido
+con el instrumento anclado sobre los dos builds del LFQuad3: el espejado
+(`LFQuad3_body.p3d.pre-mirrorfix-20260906`) da +513 / +491 / +1290 y el
+corregido -513 / -491 / -1290; ese MISMO build espejado, medido el 4-sep con el
+marco del generador, daba los tres negativos y el cuadro seguia espejado en
+juego. El signo solo es evidencia en el marco anclado. Acotar
+el ajuste a UN disco: mezclar dos esferas y un swatch da anisotropia 6.9 y
+residuo 780 px (LFQuad2); un disco solo, anisotropia 1.000000 y residuo 0.0000
+px.
 
-**Y los angulos salen del MISMO marco, por resta.** Con el barrido positivo horario
-para el conductor (trampa 5) y horario = angulo de pantalla DECRECIENTE:
+★ Esa tabla es la que distingue un ESPEJO de un GIRO, y hace falta: el usuario
+reporto «boca abajo, girar 180» y la medida decia espejo vertical. **No se aplica
+la correccion que describe el sintoma: se mapea al objetivo absoluto.** Asi el
+resultado es correcto sea cual sea la etiqueta con la que se describio el fallo.
+
+Calibracion del instrumento contra dos estados conocidos (LFQuad3):
+
+| mapeo | base | render | observacion en juego |
+|---|---|---|---|
+| (+U,+V) | espejada (cross) | boca abajo | build 14:32 del 4-sep: "boca abajo, rotar 180" |
+| (+U,-V) | espejada (cross) | espejado, rojo a la IZQUIERDA | build 16:28, visto el 6-sep: "siguen espejadas" |
+| (+U,-V) | anclada a los faros | 0 abajo-izq, horario, rojo a la derecha | arreglo; en juego solo el veredicto global del 6-sep |
+
+Los mapeos se nombran en el marco de su `u`: (+U,-V) con la base espejada y
+(+U,-V) con la anclada son mapeos DISTINTOS (el HANDOFF del LFQuad3 los llama
+(+U,-V) y (-U,-V) en el marco sin voltear). Por eso la base es una columna.
+
+Reproducir los DOS estados conocidos convierte al instrumento en autoridad; uno
+solo distingue alcanzable de no alcanzable, no bueno de malo. Hipotesis
+descartadas CON su medida: la textura NO llega volteada (diferencia media 0.20
+en identidad contra 9.00 en espejo horizontal; rpm 1.80 contra 8.08); el
+conductor NO ve la cara trasera del disco (88 caras a +Y contra 16); el eje NO
+apunta hacia dentro (`<conductor - p0, axis>` = +0.0210 kmh y +0.0203 rpm); el
+winding invertido al binarizar es convencion de formato, no un fallo.
+
+Tres reglas de LL-464:
+
+1. El marco se ANCLA a algo que el artefacto diga de si mismo, no se deduce de
+   una convencion de handedness que haya que argumentar.
+2. El instrumento no comparte con el codigo la expresion que fija el marco.
+3. Se calibra contra estados conocidos antes de creer un veredicto nuevo.
+
+**Y los angulos salen del MISMO marco, por resta.** Con el barrido positivo
+horario para el conductor (trampa 5) y horario = angulo de pantalla DECRECIENTE:
 
 ```
 angle0 = reposo - theta(minValue)
 angle1 = reposo - theta(maxValue)
 ```
 
-donde `reposo` es el angulo de pantalla del vertice mas lejano de la seleccion de la
-aguja, y `theta(v)` el angulo de pantalla del valor pintado. Cierre: dibujar la aguja
-en `reposo - angle0` y en `reposo - angle1` sobre el render con las UV reales, y ver
-que caen en el minimo y en el maximo impresos.
+donde `reposo` es el angulo de pantalla de la PALA (trampa silenciosa 1 /
+`needle_rest`: descarta corona a radio casi constante, banda > 0.97*rmax con
+>= 10 puntos repartidos en mas de 90 grados), y `theta(v)` el angulo de
+pantalla del valor pintado. Cierre: `dial_gate_final.py` dibuja la aguja sobre
+cada valor impreso en el render de las UV reales.
 
-**Por que un espejo mueve el cero.** Bajo el espejo, `theta -> -theta`: el 0 pintado
-del velocimetro estaba en 213 y se veia en 147, asi que la aguja parada apuntaba a
-~120 km/h. Arreglado el mapeo, el mismo `angle0` cae en el 0. Una causa, dos sintomas
-— y por eso no hay que «corregir tambien los angulos» por separado.
+**Por que un espejo mueve el cero.** Bajo el espejo, `theta -> -theta`: el 0
+pintado del velocimetro estaba en 213 y se veia en 147, asi que la aguja parada
+apuntaba a ~120 km/h. Arreglado el mapeo, el mismo `angle0` cae en el 0. Una
+causa, dos sintomas — y por eso no hay que «corregir tambien los angulos» por
+separado. Los angulos viejos (-115.1/188.0 y -157.2/86.1) se dedujeron en el
+marco espejado: apuntaban a los numeros en su posicion espejada. El barrido se
+conservo: el arreglo mueve el origen, no la escala.
 
 ## Trampa 11 — no ESTIRES un arte que no es potencia de dos: RELLENALO
 
@@ -423,6 +608,13 @@ centro que ya no es el centro, y la aguja pasa por encima de la E y de la F sin 
 
 **Rellena con negro a los lados** (el fondo del arte ya suele ser negro) y el arco sigue
 siendo un circulo. Las constantes se trasladan solas: `u_2048 = (pad + x_arte) / 2048`.
+
+En el LFQuad3 el panel es un QUAD `Screen` de la pieza 32 elegido por su centroide
+(`FUEL_FACE_POS`). `fuel_face_uv` mapea una ventana con la proporcion de la propia
+cara centrada en la textura, V = fila/H directamente (sin `1 -`). Pivote y alcance
+salen del arco del arte (`FUEL_C_U/V`, `FUEL_R_U`) invirtiendo el mismo mapeo. La
+aguja se escala `reach / punta` (`FUEL_INFO["scale"]`; x0.665 en el p3d final:
+punta construida 0.01220 / escala 0.82 / punta canonica 0.02239).
 
 ★ Corolario general: **un angulo no sobrevive a un mapeo anisotropo.** Antes de usar un
 angulo medido en la textura como angulo en pantalla, comprueba que el mapeo es isotropo
@@ -448,7 +640,8 @@ salieron a 9,0-9,4 grados de paso: control VERDE.
 ★ Y un umbral de LUMINANCIA se salta los ticks ROJOS (rojo puro = 76, por debajo de
 cualquier umbral razonable). El extremo «vacio» de un reloj de combustible es justo una
 marca roja: sondea por **color**, no por brillo, o mediras un arco que se queda corto
-precisamente en el extremo que define `angle0`.
+precisamente en el extremo que define `angle0`. Tinta por canal MAXIMO (`INK = 110`,
+`max(r,g,b)`).
 
 
 ## Three silent traps when deriving needle angles (added 2026-09-04, LFQuad3)
@@ -468,16 +661,27 @@ order. Discard any ring of points at near-constant radius spread over more than
 Fit the affine map (driver-screen x,y) -> (U,V) over the dial faces of the built
 model. Image V grows **down** and screen y grows **up**, so an unmirrored texture
 gives a **negative** determinant. Positive means mirrored, whatever the numbers
-"look like" in a small render. In LFQuad3 the two round dials measured +512 and
-+491 while the fuel panel — authored through a different UV function — measured
--1290; the panel read correctly and the dials read backwards, and the mismatch
-between the two functions was the whole bug.
+"look like" in a small render. That sign is valid only in a frame whose +right
+is the model's real right (LL-464). In LFQuad3 the instrument first shared the
+generator's frame (`u = cross(w, axis)`, pointing +X while the driver's right is
+-X): on 4-sep it read +512/+491 for the round dials with the (-U,-V) mapping and
+-1290 for the fuel panel, and once the mapping went to (+U,-V) it read all three
+negative -- on a build that was still mirrored in game. Measured again with the
+frame anchored to `light_left`/`light_right`, that same mirrored build reads
++513 / +491 / +1290 and the fixed build -513 / -491 / -1290. The sign became
+evidence only once the frame was anchored; the bug was the frame.
 
   ★ Corollary about evidence (LL-456): two user reports of the same defect are not two
   observations of two states. Check the **build timestamp** before inferring a
   sign from a sequence of reports. Here "upside down" and "mirrored" both
-  described the same deployed PBO; the intermediate fix had never been built, and
-  reasoning as if it had produced a sign that the render then disproved.
+  described the same deployed PBO (14:32); at that moment the intermediate fix
+  had not been built yet, and reasoning as if it had produced a sign that the
+  render then disproved. The 16:28 build shipped later and was seen on 6-sep
+  ("still mirrored"): that is the second calibration point of trap 10, not a
+  second observation of the 14:32 build.
+  LL-464 amends the ending: that lesson stands, but the sign taken from the
+  determinant was measured in a mirrored frame, so the correction that followed
+  from it was wrong.
 
 **3. Reading ticks off the art needs two limits and the right ink test.**
 
@@ -489,7 +693,8 @@ between the two functions was the whole bug.
   tolerance the scan jumps from the tick to the printed number beside it and
   returns 6-10 degree plateaus centred on the numbers, dips and all. Measured on
   this dial a minor tick reaches 0.07-0.11 of the radius and a major 0.15+, which
-  separates the two families cleanly.
+  separates the two families cleanly. Instrument: `INK = 110`, `KMAX = 160`
+  samples at 0.001 r, `holes > 2` cuts, majors with depth >= `MAJOR_MIN = 0.13`.
 - Do **not** pick a ring "because it returns as many groups as there are
   majors". A count that matches validates nothing: one ring returned exactly 16
   groups spread over 62 degrees on a dial that sweeps 290.
@@ -497,7 +702,158 @@ between the two functions was the whole bug.
 **And a fit rule when the printed scale is not regular.** The needle rotates
 linearly, so a printed scale that is compressed at one end cannot be matched
 everywhere. Fit the line to the regular part that is actually used (LFQuad3:
-0-100 km/h, residual 1.94 degrees over 11 majors) and let the error fall in the
+0-100 km/h, residual 1.53 degrees over 11 majors) and let the error fall in the
 range the vehicle never reaches, rather than spreading it across the whole face.
 Gate it by drawing the needle on **every** printed value, not on the endpoints —
 a line fitted to two endpoints passes through both endpoints by construction.
+Fuel E and F are NOT re-measured: the depth centroid of those long marks lies 8
+degrees off (130.0 and 48.5 come from the arc fit, checked by drawing).
+
+## El instrumento de derivacion
+
+`dial_derive_final.py` lee el `.p3d` YA CONSTRUIDO: los dos puntos de
+`<sel>_axis` de la Memory LOD, las UV reales de las caras cuya textura es la
+del reloj, y el arte oficial. Auxiliares: `dial_gate_final.py` (render de las
+UV reales con el marco anclado, aguja sobre cada valor impreso), `fit_gauge.py`
+(ajuste de circulo, ventana y escala; validado contra control positivo),
+`needle_draw.py`. `dial_render_v5.py` es anterior al anclaje del marco y no se
+usa como cierre.
+
+Numeros finales (medido 2026-09-06, LFQuad3; `dial_angles_final.json`;
+`generated/model.cfg`):
+
+| reloj | minValue | maxValue | angle0 | angle1 | barrido | gate |
+|---|---|---|---|---|---|---|
+| kmh | 0 | 150 | "rad 232.5" | "rad 535.3" | 302.8 | 11 verdes (0..100) |
+| rpm | 0 | 1 | "rad 213.1" | "rad 456.4" | 243.3 | 7 verdes (0..6) |
+| fuel | 0 | 1 | "rad -129.1" | "rad -47.6" | 81.5 | 3 (E, medio, F) |
+
+Determinantes con el marco anclado: kmh -512.5, rpm -491.2, fuel -1290
+(`det < 0` = directo). Tramo de ajuste: velocimetro SOLO 0..100; cuentavueltas
+sus 7 mayores; deposito E y F.
+
+Centro y radio de la esfera en la textura (`DIAL_UV`): centro por dos vias que
+concuerdan (centroide de lo no-negro y circulo por minimos cuadrados sobre los
+mayores, a 12.7 px kmh y 6.4 px rpm); radio = borde REAL del disco (r_max).
+Mover el centro MUEVE los angulos: se rederivan cuando cambia. Disco pintado:
+32 segmentos, `DISC_R = 0.0254`, centrado en p0 desplazado `lift`, `add_dial_faces`. Cada aguja
+con SU disco: `remap_gauge_discs` asigna por x (`aguja_izquierda` en x +0.056 =
+velocimetro; `aguja_derecha` en x -0.055 = cuentavueltas; los nombres del OBJ
+van al reves de su posicion).
+
+Pila medida a lo largo del eje, en mm desde el ojo: -0.3 el disco pintado con
+el `lift` malo de -0.0003 (tapaba todo), +0.0 la pala, +0.8..+2.5 el buje, +1.5
+el panel original. Con `lift` 0.0012 el disco pintado va ENTRE la pala y el
+panel.
+
+## Trampa 13 — la cache de PAA que no mira el contenido
+
+`convert_textures.py` `emit` se saltaba CUALQUIER `.paa` que existiera en disco,
+sin mirar fecha ni contenido. Medido: las caras de reloj empaquetadas eran del
+4-sep 03:44 y el arte del 4-sep 15:39; la correccion del cuentavueltas y la
+reversion del velocimetro NUNCA llegaron al juego y cada ciclo miraba la
+textura vieja. Ahora: sello sha256 del PNG que se le pasa a ImageToPAA,
+guardado como `<paa>.src.sha256`; si la fuente cambia, se reconvierte.
+
+La cache NO causaba el espejo, y por un rato lo parecio: dos defectos reales en
+el mismo camino, y el primero que aparece no tiene por que ser el que explica
+el sintoma.
+
+Los sellos y las copias de seguridad que viven dentro del arbol del mod viajan
+en el PBO si el empaquetado copia el arbol entero (95.7 MB en vez de 21.8, con
+"Build Successful"); `pack_lfquad3.py` filtra con `ignore_patterns` (LL-467).
+
+## Trampa 14 — un conteo no es una forma: tres agujas de gasolina falsas
+
+La aguja de gasolina del LFQuad3 paso tres veces por las sondas con tres formas
+distintas, y ninguna era una aguja (LL-466). Topologia: ver trampa 1.
+
+**Forma 1** (build del 4-sep): filtro por anchura angular vista desde el buje,
+corte en 5 grados. Un triangulo de la pala pegado al pivote abarca mucho angulo
+POR ESTAR CERCA: el filtro se comio el interior de la hoja y dejo 10 tris de
+astilla en la punta (r 0.01122..0.01217). Invisible en juego. ESA es la regla
+que esta referencia recomendo. Es falsa. La biblioteca compartida se extrae
+con esa regla: 7 caras de pala, astilla, pala detras del buje. Pendiente de
+regenerar.
+
+**Forma 2** (ronda 1 del 2026-09-06, "conservar todo"): el vertice mas lejano
+paso a ser uno del disco (0.02544), la escala bajo de x0.665 a x0.585, la pala
+quedo al 88 % del arco y el disco entero planto sobre el arco. PASO las sondas
+de conteo (182 caras, "del orden de las de kmh") y la revision cruzada. Lo cazo
+OTRO observable: el instrumento de derivacion (reposo 0.90 -> 5.63 y 32 puntos
+de anillo descartados donde antes habia 0) y el dibujo de la pieza.
+`fuel_needle_probe.R1.out`: 182 caras y r_min 0.00111 — verde, y mal.
+
+**Forma 3, comun a las dos:** la pala esta DETRAS del plano del buje (z
+negativa) y el pivote solo se adelanta 0.0004 respecto de la cara del panel
+(`add_fuel_gauge`): 360 de 546 vertices quedaban detras del panel. Ninguna
+sonda media la profundidad hasta que se anadio (`fuel_needle_probe.py`:
+"blade vertices behind the panel face (z < -0.0003)" -> OK/HIDDEN).
+
+**Correcta** (`canonical_needle`): r_obj = radio maximo en el plano de todo el
+objeto; se DESCARTAN las caras no-Black con algun vertice a r > 0.95 * r_obj, y
+se EXIGE que sean exactamente 32 caras OBJ / 64 tris (`SystemExit` si no);
+punta = vertice mas lejano de lo que queda; pose canonica (pivote en el origen,
+punta +X, eje +Z); z canonica desplazada para que la trasera de la pala quede
+en 0. Resultado sobre el p3d final (`fuel_needle_probe.R2.out`): 118 tris
+`Gauges` (tapa 30 + octogonos 12 + 76 de quads), punta en r 0.0122 sobre el
+arco, 0 vertices detras del panel, reposo 0.90 con 0 puntos de anillo, angulos
+-129.1/-47.6 sin cambio.
+
+Cuatro lecciones de LL-466: un conteo no es una forma (pregunta que otra cosa da
+ese numero; si es "el objeto entero", el criterio no discrimina); el revisor
+hereda el criterio del brief; mide TODAS las dimensiones que el usuario ve (la
+profundidad respecto de lo que ocluye); mira la pieza (un dibujo de 60 KB valio
+mas que tres rondas de sondas).
+
+## Receta completa para un cuadro nuevo, en orden
+
+Pasos numerados. Cada uno con su gate offline y la funcion de LFQuad3 que lo
+implementa. Otra cadena (LFQuad2 u otra) sigue el orden, no los numeros del
+ejemplo.
+
+1. **Anclar el marco.** Derecha = marcadores del modelo proyectados al plano
+   del reloj (`light_left`/`light_right`, o equivalente). Guard fatal si
+   discrepan (y si faltan, cuando se leen de fuera). Gate: signo de `<u, light_right - light_left>`
+   (negativo = marco espejado); el instrumento para si la base vieja y la del
+   modelo coinciden. LFQuad3: `MODEL_RIGHT`, `dial_basis`, guard en
+   `memory_lod`; `LIGHT_RIGHT_MINUS_LEFT` en `dial_derive_final.py`.
+2. **Una textura por reloj**, potencia de dos por relleno (trampa 11), rvmat
+   propio plano, fuera de las selecciones de color. Gate: el PAA es del arte
+   actual; 0 caras de esfera en `camo1`. LFQuad3: `MAT_TEX` `Dial_*`,
+   `convert_textures.py`; el rvmat plano propio es hallazgo de LFQuad2.
+3. **Disco pintado + UV polar (+U, -V)** con la base anclada. Gate: `det < 0`
+   en CADA disco por separado (trampa 10). LFQuad3: `add_dial_faces`,
+   `polar_uv`, `remap_gauge_discs`, `fuel_face_uv`.
+4. **Aguja:** pose canonica, pivote = buje Black, solo buje + pala (nunca el
+   disco), por delante del panel, disco 1.2 mm detras (`lift = 0.0012`). Gate:
+   sonda de profundidad en verde (`z < -0.0003` detras del panel = HIDDEN) y
+   DIBUJO de la pieza. LFQuad3: `canonical_needle`, `add_fuel_gauge` (pivote
+   0.0004), `needle_parts_probe.py`, `fuel_needle_probe.py`, `needle_draw.py`.
+5. **`<sel>_axis`** = pivote y pivote + normal hacia el conductor; huesos;
+   clases Indicator con `"rad"`. Gate: los dos puntos existen en Memory; el
+   hueso cuelga del salpicadero. LFQuad3: `apply_needle_axis`, `memory_lod`,
+   `generated/model.cfg`.
+6. **Angulos con el instrumento:** pares valor<->tick escritos y re-medidos
+   (`TOL = 0.5`), ajuste al tramo regular, `angle0 = reposo - theta(min)`, rpm
+   sobre `rpmMax`. Gate = aguja sobre CADA valor impreso (`dial_gate_final.py`).
+   LFQuad3: `dial_derive_final.py` -> `dial_angles_final.json`.
+7. **Cache de texturas por contenido** (`<paa>.src.sha256`) y PBO del tamano
+   esperado (los sellos no viajan; trampa 13). LFQuad3: `emit` en
+   `convert_textures.py`, `ignore_patterns` en `pack_lfquad3.py`.
+8. **Antes de creer un render nuevo**, reproducir dos estados conocidos
+   (trampa 10, LL-464). Un solo verde no distingue bueno de malo.
+9. **En juego**, mirar: los tres relojes sin espejo y con las caras nuevas; la
+   aguja de gasolina visible y entre E y F, y que se mueva con el deposito; con
+   el motor encendido, que kmh/rpm se muevan y que la esfera pintada NO gire
+   con ellas; que el reposo caiga en el cero. Anotar el veredicto **literal**,
+   con build y fecha, y lo que queda sin desglosar. El LFQuad3 se cerro con
+   "el dashboard esta bien ya" (2026-09-06, `5ac339d3`); movimiento de fuel,
+   disco original y cero exacto siguen sin desglosar.
+
+## Estado de confirmacion
+
+| | dado por bueno en juego | sin desglosar / abierto |
+|---|---|---|
+| LFQuad3 | "el dashboard esta bien ya" (2026-09-06, build `5ac339d3`) | movimiento de fuel; disco original en la seleccion animada; cero exacto (gate offline) |
+| LFQuad2 | — | signo negado sin confirmar; marco por producto vectorial sin comprobar contra los faros |

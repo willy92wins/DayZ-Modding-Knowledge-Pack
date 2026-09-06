@@ -1271,7 +1271,7 @@ dropped them in the 2026-06-05 migration):
 - `references/materials-and-selections.md` - materiales y selecciones: dos diagnosticos que enganan.
 - `references/animation-sign-and-axis.md` - el signo de una animacion no se juzga sin su eje.
 - `references/process-gates.md` - gates de proceso: fixtures negativas y reglas promovidas.
-- `references/gauge-needles.md` - agujas y esferas del salpicadero: piezas reutilizables, caras de reloj oficiales, y las siete trampas (marco, sentido de giro medido en vanilla, normal MLOD hacia dentro, rpm normalizada sobre rpmMax).
+- `references/gauge-needles.md` - agujas y esferas del salpicadero: marco anclado a los marcadores del modelo, sentido de giro medido en vanilla, cuadro dado por bueno en juego (veredicto global), aguja = buje + pala sin disco y delante del panel, cache de PAA por contenido, instrumento de derivacion con guard, receta completa.
 
 ## CITE-THEN-VERIFY
 
