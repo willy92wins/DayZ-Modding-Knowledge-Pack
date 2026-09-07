@@ -972,6 +972,18 @@ sequence that never occurs in a log. Measured against a synthetic log containing
 by construction. Same trap: `-Raw`, `-Literal*`, `[Regex]::Escape` on a pattern you meant as regex,
 and `-match` vs `-like` mixups.
 
+**1-bis. La simétrica: un patrón que NO puede salir verde — `not closed` es un falso rojo.**
+(medido 2026-09-07, LFPowerGrid). Si al gate le añades `not closed` pensando en el
+`CParser: quoted string not closed` de Enforce (§:626), vas a encontrarlo en arranques **sanos**:
+CommunityFramework escribe
+`File "$mission:storage_1/communityframework/modstorageplayers.bin" was not closed. Always shut
+down the server gracefully to prevent data loss.` cada vez que el servidor anterior no cerró con
+gracia — que es SIEMPRE si lo paraste por herramienta. Medido en la misma caja: 1 aparición en un
+arranque verde y 0 en el siguiente, con `CParser` a 0 en los dos, o sea que la diferencia era el
+modo de apagado, no el código. **Ancla el patrón a `CParser`, no a la frase suelta**, y si de
+verdad quieres la frase, exige también `CParser` en la misma línea. Un gate que grita rojo en
+arranques buenos se desactiva solo: a la tercera, alguien lo ignora.
+
 **2. An analyzer whose input does not depend on the experiment.** Hardcoded log paths
 (`$clientPath = ...client_script_2026-08-12_11-25-05.log`) mean every future A/B re-analyses the
 same old flight and reports "no change" tautologically. Its sibling: a script that only prints

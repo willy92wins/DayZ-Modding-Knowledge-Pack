@@ -368,6 +368,23 @@ Claves:
   MakeScreenshot) — no apoyarse en él para "ejecutar lógica arbitraria de verificación".
 - **`telemetry_read`** se expone tal cual (BUG-010/011/012, hardening pendiente): no certifica
   fixtures JSONL grandes ni rangos extremos.
+- **Acciones CONTINUAS (con barra de progreso): `action_use` las ARRANCA pero NO las COMPLETA**
+  (medido 2026-09-07, LFPowerGrid, ficha `fb-20260907-184749-3fc1`). Devuelve `ok=1, started=1` y el
+  efecto de servidor **nunca llega**: `OnFinishProgressServer` no se dispara y el objetivo sigue en
+  el mundo (`entities_query` a 0.003 m tras dos intentos con esperas de 60 s y 45 s). `key_press`
+  **no** es la salida: documenta ella misma "not OS input, key-up, hold", y una acción continua
+  necesita la entrada SOSTENIDA. Esto tumba de golpe **desmontar, desplegar/deploy y craftear**, que
+  es justo por donde un mod mueve dinero y objetos persistentes.
+  - **Lo que SÍ se puede afirmar, y no es poco**: la CONDICIÓN se evalúa de verdad, así que
+    `started=1` significa "candidata válida" y sirve como medida de que el mod **ofrece** la acción
+    sobre ese objetivo en ese estado. Compruébalo siempre con un control negativo que deba salir
+    rojo (un objetivo excluido devuelve `condition_failed`), o el `started=1` no prueba nada.
+  - **Corolario que muerde aparte**: como desplegar desde un kit es una acción continua, **no hay
+    forma por MCP de crear un objeto persistente de verdad** — `world_spawn` usa banderas por
+    defecto y no sobrevive al reinicio. Súmale que `dayz_test_stop` no cierra con gracia (el
+    arranque siguiente imprime `... was not closed. Always shut down the server gracefully`) y
+    **ninguna prueba de `OnStoreSave`/`OnStoreLoad` entre reinicios es concluyente por MCP hoy**.
+    Si el resultado sale "no persistió", eso es el arnés, NO el mod: no lo reportes como bug.
 
 ## REPORTING
 
