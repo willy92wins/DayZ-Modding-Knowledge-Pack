@@ -698,6 +698,19 @@ angulo medido en la textura como angulo en pantalla, comprueba que el mapeo es i
 se transforma, o el radio se expresa en las mismas unidades en los dos ejes para que las
 dos anisotropias se cancelen.
 
+★ Corolario 2: **la anisotropia se puede absorber en el ARTE**, y suele ser lo barato. Si
+la cara ya trae un UV bueno (ventana [0,1] exacta, sin espejo, det negativo) y lo unico que
+sobra es que el mapeo no sea isotropo, NO hay que reasignar las UV del modelo anfitrion:
+basta componer el arte ya deformado por el factor INVERSO y las dos anisotropias se cancelan
+sobre la cara. SUB_BRZ s77: el panel real mide 264.78 x 105.61 mm (2.5072:1) contra una
+textura 2:1, asi que el arte se compuso PRE-COMPRIMIDO en horizontal por 0.797711; gate de
+isotropia sobre la cara 1.0000 / 1.0053 / 0.9947. Eso evita reasignar las UV de un `.p3d` de
+20 MB que no es tuyo: mismo resultado con un orden de magnitud menos de alcance.
+
+Condicion para usarlo: la anisotropia tiene que ser CONSTANTE en la cara (ajuste 2x2 con
+residuo ~0; en el SUB_BRZ, 5e-07). Si varia a lo largo de la cara, deformar el arte solo la
+cancela en un punto y hay que volver al remapeo.
+
 ## Panel de gasolina desde cero
 
 Para un modelo que NO trae cara rectangular donde mapear el arte. El LFQuad3
@@ -1131,6 +1144,24 @@ la normal suavizada contra su cross (LFQuad2, LOD 1-3: 5-7 caras cada uno).
 `carscript.c:2481-2497`): el defecto de normal solo asoma con poca luz. El de winding se
 ve a cualquier hora, pero solo si se mira ESA pieza: un veredicto global no lo desglosa.
 
+**Y el instrumento de winding tiene un modo de fallo propio: la metrica radial no decide en
+una carcasa.** Contar que fraccion de caras tiene el cross apuntando hacia FUERA del
+centroide de la malla vale en un solido convexo y no significa nada en una cabina. En el
+interior del SUB_BRZ (s77) esa metrica dio **0.0% de caras "hacia el conductor"** y parecia
+un modelo entero al reves. No lo era. Una cabina es una carcasa que se mira desde DENTRO y
+un cuadro es casi un toro: el centroide cae fuera del material, asi que el radio no es
+referencia de nada. El volumen con signo tampoco arbitro: salio negativo en las DOS
+variantes, y ninguna de las dos mallas era ESTANCA, condicion sin la cual ese numero
+tampoco significa nada.
+
+**Lo que decide es una superficie PLANA que ya se sabe visible, en el MISMO fichero.**
+`light_dashboard` (el salpicadero, que obviamente se ve) dio `<cross, eje> = -1.0000` y
+`screen_nav` -0.9858; las 100 caras casi paralelas de la aguja nueva llevaban ese mismo
+signo. Falsa alarma retirada sin voltear nada: voltear por la metrica radial habria METIDO
+el defecto que se creia estar arreglando. Regla: el testigo de winding es una cara vecina
+VISIBLE de normal conocida; la estadistica sobre el centroide solo vale en un convexo, y el
+volumen con signo solo en una malla estanca, que hay que comprobar ANTES de citarla.
+
 ## Receta completa para un cuadro nuevo, en orden
 
 Pasos numerados. Cada uno con su gate offline y la funcion de LFQuad3 que lo
@@ -1194,3 +1225,4 @@ ejemplo.
 | LFQuad2 `77303210b92d63bd` | agente 2026-09-07 00:15, ciclo `@CF` + `@VPPAdminTools` + `@SurvivorAnims`, 1a persona: velocimetro 0-150 HORARIO, "km/h" legible, rojo a la DERECHA, aguja en el 0 impreso; cuentavueltas 0-6 HORARIO, "RPM x1000" legible, rojo a la derecha, aguja en el 0; las dos esferas visibles desde el asiento. Veredicto literal del usuario: "no se ve nada del indicador de gasolina, ademas al girar la pieza, el dash no gira con ella, los dos circulos quedan atras (las agujas si rotan). Por otro lado, como puedes ver, la textura esta pixelada, hay que arreglarlo". LL-464: segunda confirmacion en juego, en otro modelo. Lo que discrimino el espejo previo fue la medida contra los faros (det +164.81). Desplegado como `LFQuad2.pbo` `77303210b92d63bd` + `model.cfg` `1a2df84507870fc8`. | gasolina: no tiene; discos fuera de drivewheel (trampa 15); textura pixelada = limite de pantalla (trampa 9). Ninguno de los tres es del marco. |
 | LFQuad2 `4034b2e35a9fbb96` | agente 2026-09-07 00:33 (R 0.038 y discos en drivewheel): las esferas giran CON el manillar; numeros legibles; caras sin espejo; agujas en el 0. Veredicto del usuario: PENDIENTE. | veredicto del usuario pendiente; gasolina: no tiene. |
 | LFQuad2 tanda 2 (panel de gasolina + conductor 1 cm adelante; PBO 12.632.912 B; 2026-09-07) | puerta offline verde: UV reales del .p3d rasterizadas contra la textura con el marco anclado a los faros, aguja dibujada en E, 1/2 y F, det -231.92 directo, anisotropia 1.0049, residuo 5.0e-07; desplegado y verificado por contenido dentro del PBO. CONFIRMADO EN JUEGO por el agente (2026-09-07 01:16, ciclo limpio, storage ciclado, personaje nuevo, frame_stale=false): panel visible encima de los relojes, centrado, FUEL / E / 1-2 / F legibles y sin espejo; la aguja construida apuntando ARRIBA (reposo 90) apunta en juego a la F con fuel = 1.0: el motor la giro +41.5 = su angle1. Primera prueba de CABLEADO de la receta, no solo de dibujo. | veredicto del usuario sobre el LFQuad2 en esa ventana: manos y manillar se separan al girar ("el manillar se mueve ligeramente ascendente y la animacion de manos ligeramente descendente"), defecto ajeno al cuadro (eje del manillar con 3.4 grados de rake, en estudio); no consta objecion al panel ni al espejo. |
+| SUB_BRZ s77 `AF365A3C` (2026-09-07) | nada: el cliente no se ha lanzado nunca con este build. | TODO el cuadro. Construido offline: tres esferas propias (km/h 0-220, rpm 0-8, gasolina E-F) en `brz_cluster_co.paa` DXT1 2048x1024 sobre las 42 caras de `light_dashboard`, que ya traian ventana UV [0,1] exacta y el swap emisivo nativo `dashboardMatOn/Off`; tres agujas canonicas de 182 tris en los DOS LOD visuales del proxy de interior (1.0 y 1100 = primera persona); `mph` -> `kmh`; `IndicatorSpeed maxValue` 60 -> 220, que era un defecto REAL (la aguja se clavaba a 60 km/h y el resto de la escala estaba muerta). Verificado DENTRO del PBO: el ODOL binarizado del interior lleva `kmh`/`kmh_axis`/`rpm`/`rpm_axis`/`fuel_1`/`fuel_1_axis` y cero `mph`. **El SIGNO del giro es DERIVADO** (mano derecha + el `DrivingWheel` del mismo fichero), no medido: si barre al reves, es un signo. Trampa R7 heredada: el CUERPO (`sub_brz.p3d`, byte a byte igual que antes de s77) conserva puntos de memoria `mph`/`rpm`/`fuel_1` obsoletos con ejes +-Z PUROS frente a los inclinados del interior; `model.cfg` no los referencia, pero el coche #2 puede cablearse al par equivocado. |
