@@ -6067,10 +6067,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "lfsecure-winding-engine-verdict@2026-09-07",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Engine confirmation of the negate-normals fix (LFSecure L4 PBO, DayZDiag 1.29, 2026-09-07 22:13, I-0): both exports render right side out from outside and inside and RaycastRVProxy view/fire hit door and room from both sides, while the face-reversed L3 build missed every ray. Replaces the 'pending' sentence of rule 5 with the measured result (P:/LFSecure_dev/evidence/i0/i0_result.json).",
+          "license": "MIT",
+          "source_hash": "e755983e90c7fded809320e2a18193b1607fc790199bc223006f7aa92db27c70",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "lfsecure-winding-engine-confirmed@2026-09-07",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "9fbb203c70e6d2c7ea718f52a0cec5c58d153d73afca526e02539a6b34559715",
+      "output_hash": "e755983e90c7fded809320e2a18193b1607fc790199bc223006f7aa92db27c70",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
