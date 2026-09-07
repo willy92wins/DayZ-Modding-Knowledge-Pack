@@ -1,6 +1,6 @@
 # Agujas y esferas del salpicadero
 
-Medido en el LFQuad3 del 2026-09-03 al 2026-09-07. Dieciseis trampas numeradas, tres
+Medido en el LFQuad3 del 2026-09-03 al 2026-09-07. Diecisiete trampas numeradas, tres
 trampas silenciosas de la derivacion (en ingles), un instrumento, una receta y
 el panel de gasolina desde cero. El cuadro del LFQuad3 dado por bueno en juego
 el 2026-09-06: "el dashboard esta bien ya" (veredicto del usuario en chat,
@@ -281,6 +281,10 @@ textura cambian JUNTOS, y la reserva cableada del eje tambien.
    por delante del panel (z >= 0 en pose canonica; pivote de fuel 0.0004 m
    adelantado). Un `lift` de -0.0003 dejo las agujas invisibles desde todas
    las vistas.
+   - **Dos signos por cara nueva, copiados de las vecinas** (trampa 17): winding con
+     el mismo `sign(<cross, eje>)` que los discos visibles, y normal almacenada con
+     `<normal, cross> >= 0` en cada vertice. Gate: `normal_sign.py`, 0 caras marcadas
+     y la misma columna de signo en todas las selecciones del cuadro.
 5. Una textura por reloj, potencia de dos (relleno, no estirado). rvmat PROPIO
    con normal y especular planos (`#(argb,8,8,3)color(0.5,0.5,1,1,NOHQ)` y
    `color(1,0,1,1,SMDI)`, atestados en vanilla; hallazgo de LFQuad2). Discos y
@@ -1072,6 +1076,45 @@ replace por patron deja el quad girando la mitad de lo debido, y en juego se lee
 raro", no como "el manillar esta mal". Lo caza un assert de unicidad del bloque editado, no un
 ojo.
 
+## Trampa 17 — dos signos por cara nueva, los dos copiados de las vecinas
+
+Una cara nueva lleva DOS signos independientes: el winding (orden de vertices: decide el
+culling) y la normal ALMACENADA por vertice (decide la iluminacion). Ninguno se deduce de
+"tiene que mirar al conductor": los dos se LEEN de las caras vecinas que ya se ven bien y
+se comprueban POR SEPARADO. La misma noche (2026-09-07) fallo uno en cada modelo, y en los
+dos el otro signo estaba bien:
+
+- **LFQuad2, la normal almacenada.** Winding correcto en las cuatro piezas (`<cross, eje>`
+  = -1.000, como los discos), pero panel y aguja de gasolina con la normal almacenada a
+  +1.000, escrita "hacia el conductor". De dia se veian igual que las esferas; de NOCHE no
+  brillaban con el mismo rvmat. Medido por LFQuad2 sobre su `.p3d`; reproducido aqui con
+  otro instrumento sobre el `.p3d` de su PBO desplegado (`3670fe455648c1ac`: 1 + 1 caras
+  con `<normal, cross> < 0` en cada LOD visual) y sobre su arbol corregido
+  (`5f49257c4380280d`: 0). Confirmacion en juego del arreglo: pendiente (el PBO no lo
+  llevaba al cerrar su sesion).
+- **LFQuad3, el winding.** Normal almacenada = cross en todas las caras del cuadro (el
+  generador guarda en `add_tri` la `n` del cross): 0 invertidas. Pero `add_fuel_needle`
+  forzaba `<cross, axis> > 0` con `axis` hacia el conductor, y TODO lo demas del cuadro
+  lleva `<cross, axis> < 0`: discos, coronas, numeros, panel de gasolina y las agujas
+  kmh/rpm del OBJ (el cross crudo apunta hacia dentro, trampa 6). 182 tris al reves del
+  resto: la aguja de gasolina queda culled desde el asiento en el build `5ac339d3` que se
+  dio por bueno (veredicto global; esa aguja no estaba desglosada). Ningun render offline
+  lo vio: dibujan las dos caras. Corregido en el generador (la condicion de volteo pasa a
+  `> 0`); confirmacion en juego pendiente.
+
+**Regla.** Para cada seleccion nueva del cuadro: `sign(<cross, eje>)` igual al de los
+discos ya visibles, y `<normal_almacenada, cross> >= 0` en cada vertice (el suavizado de
+60 grados nunca baja de 0.5). Las dos columnas salen de `normal_sign.py` (herramientas de
+medida del LFQuad3): agrupa las caras del cuadro por seleccion + textura contra el eje de
+Memory mas cercano. Control positivo propio: `--control <sel>` niega en memoria las
+normales de una seleccion y todas sus caras deben salir marcadas. Control independiente:
+el PBO de LFQuad2 de arriba, que es un defecto real de otra mano.
+
+**Y en juego, mirar el cuadro tambien de NOCHE** o con la luz del cuadro encendida
+(`dashboardMatOn`, el material que `DashboardShineOn` pone sobre `light_dashboard`,
+`carscript.c:2481-2497`): el defecto de normal solo asoma con poca luz. El de winding se
+ve a cualquier hora, pero solo si se mira ESA pieza: un veredicto global no lo desglosa.
+
 ## Receta completa para un cuadro nuevo, en orden
 
 Pasos numerados. Cada uno con su gate offline y la funcion de LFQuad3 que lo
@@ -1102,6 +1145,8 @@ ejemplo.
    sonda de profundidad en verde (`z < -0.0003` detras del panel = HIDDEN) y
    DIBUJO de la pieza. LFQuad3: `canonical_needle`, `add_fuel_gauge` (pivote
    0.0004), `needle_parts_probe.py`, `fuel_needle_probe.py`, `needle_draw.py`.
+   Gate 2: `normal_sign.py`, winding y normal almacenada de la aguja con el signo de
+   los discos (trampa 17): un render sin culling no lo ve.
 5. **`<sel>_axis`** = pivote y pivote + normal hacia el conductor; huesos;
    clases Indicator con `"rad"`. Gate: los dos puntos existen en Memory; el
    hueso cuelga del salpicadero. LFQuad3: `apply_needle_axis`, `memory_lod`,
@@ -1121,13 +1166,15 @@ ejemplo.
    con ellas; que el reposo caiga en el cero. Anotar el veredicto **literal**,
    con build y fecha, y lo que queda sin desglosar. El LFQuad3 se cerro con
    "el dashboard esta bien ya" (2026-09-06, `5ac339d3`); movimiento de fuel,
-   disco original y cero exacto siguen sin desglosar.
+   disco original y cero exacto siguen sin desglosar. Mirarlo tambien de NOCHE o
+   con la luz del cuadro encendida: una normal almacenada invertida solo asoma con
+   poca luz, y una pieza culled solo si se mira esa pieza (trampa 17).
 
 ## Estado de confirmacion
 
 | | dado por bueno en juego | sin desglosar / abierto |
 |---|---|---|
-| LFQuad3 | "el dashboard esta bien ya" (2026-09-06, build `5ac339d3`) | movimiento de fuel; disco original en la seleccion animada; cero exacto (gate offline) |
+| LFQuad3 | "el dashboard esta bien ya" (2026-09-06, build `5ac339d3`) | movimiento de fuel; disco original en la seleccion animada; cero exacto (gate offline); aguja de gasolina: en `5ac339d3` sus 182 tris llevan el winding al reves del resto del cuadro (culled desde el asiento, medido 2026-09-07, trampa 17), corregido en el generador y SIN confirmar en juego |
 | LFQuad2 `77303210b92d63bd` | agente 2026-09-07 00:15, ciclo `@CF` + `@VPPAdminTools` + `@SurvivorAnims`, 1a persona: velocimetro 0-150 HORARIO, "km/h" legible, rojo a la DERECHA, aguja en el 0 impreso; cuentavueltas 0-6 HORARIO, "RPM x1000" legible, rojo a la derecha, aguja en el 0; las dos esferas visibles desde el asiento. Veredicto literal del usuario: "no se ve nada del indicador de gasolina, ademas al girar la pieza, el dash no gira con ella, los dos circulos quedan atras (las agujas si rotan). Por otro lado, como puedes ver, la textura esta pixelada, hay que arreglarlo". LL-464: segunda confirmacion en juego, en otro modelo. Lo que discrimino el espejo previo fue la medida contra los faros (det +164.81). Desplegado como `LFQuad2.pbo` `77303210b92d63bd` + `model.cfg` `1a2df84507870fc8`. | gasolina: no tiene; discos fuera de drivewheel (trampa 15); textura pixelada = limite de pantalla (trampa 9). Ninguno de los tres es del marco. |
 | LFQuad2 `4034b2e35a9fbb96` | agente 2026-09-07 00:33 (R 0.038 y discos en drivewheel): las esferas giran CON el manillar; numeros legibles; caras sin espejo; agujas en el 0. Veredicto del usuario: PENDIENTE. | veredicto del usuario pendiente; gasolina: no tiene. |
 | LFQuad2 tanda 2 (panel de gasolina + conductor 1 cm adelante; PBO 12.632.912 B; 2026-09-07) | puerta offline verde: UV reales del .p3d rasterizadas contra la textura con el marco anclado a los faros, aguja dibujada en E, 1/2 y F, det -231.92 directo, anisotropia 1.0049, residuo 5.0e-07; desplegado y verificado por contenido dentro del PBO. CONFIRMADO EN JUEGO por el agente (2026-09-07 01:16, ciclo limpio, storage ciclado, personaje nuevo, frame_stale=false): panel visible encima de los relojes, centrado, FUEL / E / 1-2 / F legibles y sin espejo; la aguja construida apuntando ARRIBA (reposo 90) apunta en juego a la F con fuel = 1.0: el motor la giro +41.5 = su angle1. Primera prueba de CABLEADO de la receta, no solo de dibujo. | veredicto del usuario sobre el LFQuad2 en esa ventana: manos y manillar se separan al girar ("el manillar se mueve ligeramente ascendente y la animacion de manos ligeramente descendente"), defecto ajeno al cuadro (eje del manillar con 3.4 grados de rake, en estudio); no consta objecion al panel ni al espejo. |
