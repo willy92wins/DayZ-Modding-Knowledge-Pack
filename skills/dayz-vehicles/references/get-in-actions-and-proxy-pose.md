@@ -140,3 +140,39 @@ different offsets mean somebody moved one copy and not the others. On LFQuad2 th
 18.9 mm of X disagreement on the codriver after a centring edit, and the user reported it as the
 camera jumping for an instant on mounting: the engine seats you with one anchor and corrects to
 the other.
+
+## A model proxy is a HOLE the engine fills from the attached item's `model=` (added 2026-09-07)
+
+The section above is about preserving the authored pose of a `.p3d` instantiated by proxy. This
+one is about a prior question that is easy to get backwards: **the proxy baked into the vehicle
+does not fix which mesh appears there.** It reserves the slot and the transform; the mesh comes
+from the `model=` of whatever item is attached, exactly the way fitting a ruined wheel changes
+the wheel you see.
+
+Vanilla states it plainly — same proxy on the car, different `model=` per item:
+
+    class Hatchback_02_Wheel: CarWheel
+        model = "\DZ\vehicles\wheeled\Hatchback_02\proxy\Hatchback_02_Wheel.p3d";
+    class Hatchback_02_Wheel_Ruined: Hatchback_02_Wheel
+        model = "\DZ\vehicles\wheeled\Hatchback_02\proxy\Hatchback_02_Wheel_ruined.p3d";
+
+and every door is its own file, one per side, in a directory literally called `proxy\`:
+`Hatchback_02_Door_1_1.p3d` (driver), `Hatchback_02_Door_2_1.p3d` (codriver),
+`Hatchback_02_Door_1_2.p3d`. Source anchors: `DZ/vehicles/wheeled/config.cpp:8965,8987,9001,9123,9134`;
+the same pattern holds for the Niva (`:858,883,905,1026`) and the CivilianSedan (`:4760,4781,4793,4916`).
+
+**The consequence that costs a deployment.** That one `model=` governs BOTH the fitted part and
+the loose inventory item, because they are the same entity in two states. So it cannot be used to
+fix an inventory preview, a loose-item icon or a mounted mesh in isolation: change it and both
+move together. Pointing a codriver door item at the driver door's `.p3d` puts a left-hand door on
+the right-hand side of the car — measured in a deployed build of a custom vehicle (SUB_BRZ s79,
+reverted in s80 with a negative gate; the failing case was reported by the user as the door on the
+wrong side, not as a config error).
+
+**Before changing a part's `model=`, name both consumers.** Write down what the fitted part should
+look like and what the loose item should look like. If the answer differs, `model=` is the wrong
+lever and the fix belongs in the part's own `.p3d`, in a separate item class, or in the
+`hiddenSelections` of the host — not in a path swap.
+
+Origin: cross-checked against vanilla config here; the deployed regression and its revert are
+recorded in the SUB_BRZ project ledger, entry `S79-DOOR-MODEL-SWAP`.
