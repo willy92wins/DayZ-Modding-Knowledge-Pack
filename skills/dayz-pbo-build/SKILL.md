@@ -989,3 +989,14 @@ Verificado con control positivo: apuntando `--temp` a un fichero (así `rmtree` 
 flag se lo traga), el guard aborta con `RC=4` sin llegar a invocar AddonBuilder, y el
 bloque `finally` del envoltorio sigue corriendo — importante si, como aquí, pone configs
 de otros proyectos en cuarentena mientras dura el build.
+
+<!-- corpus-stardz-2026-09-07 -->
+
+### Cross-link: load order + thin lower layers (historical)
+
+
+equiredAddons[] dependency graph orders cross-mod compile within each script module layer (see dayz-mod-workflow). Prefer not inventing 1_Core/2_GameLib content unless you truly need that surface — default shared data to 3_Game.
+
+Source: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/02-mod-structure/01-five-layers.md
+
+

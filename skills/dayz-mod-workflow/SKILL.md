@@ -156,6 +156,35 @@ Corre el **gate estructural obligatorio** (`script_validator.py`, y `ui_reconcil
 
 ### 4.1 config.cpp
 
+<!-- corpus-stardz-2026-09-07 -->
+
+### Script compile order vs -mod= path order (historical)
+
+Mod **script/config load order** is driven by 
+equiredAddons[] in each PBO’s config.cpp CfgPatches dependency graph — not by -mod= path order alone. The engine compiles **all mods’** scripts for layer N (ordered by that graph) before layer N+1. Unrelated mods may fall back to ASCII order of CfgMods class names (community note in StarDZ — historical).
+
+- [ ] 
+equiredAddons[] lists the **CfgPatches class names** you actually depend on (scripts + config parents), not Steam folder names
+- [ ] Soft deps: omit from 
+equiredAddons and feature-detect at runtime when optional
+
+Source: CLAIM-STARDZ-REQUIREDADDONS-ORDER — https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/02-mod-structure/01-five-layers.md
+
+
+
+### Professional mod scaffold patterns (StarDZ — historical; patterns only)
+
+When starting a non-trivial script mod, prefer this layer split (do **not** vendor StarDZ file bodies into the Pack):
+
+- **3_Game:** constants, config data class, RPC ID enums
+- **4_World:** manager singleton, player/event handlers, entity logic
+- **5_Mission only:** modded MissionServer / MissionGameplay, HUD/UI, boot hooks
+- Ship mod.cpp, Scripts config.cpp with correct CfgMods.defs module keys, stringtable.csv, inputs.xml, build script
+- Habit when expanding: RPC endpoint → config field → UI panel → keybind → stringtable entry
+
+Source: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/08-tutorials/09-professional-template.md (CC BY-SA 4.0; Pack paraphrase).
+
+
 - [ ] `CfgPatches` class name matches addon folder name
 - [ ] `requiredAddons` uses CfgPatches class names:
   - CommunityFramework: `"JM_CF_Scripts"` (NOT `"CommunityFramework"`)
@@ -260,6 +289,15 @@ Run for ANY feature with collections, state, or lifecycle:
 - [ ] **Concurrent ops**: Two players acting on same entity simultaneously.
 
 ---
+
+<!-- corpus-stardz-2026-09-07 -->
+
+### External symptom index (pointer only)
+
+For “mod won’t load / works offline but not dedi / UI broken” flowcharts, see StarDZ troubleshooting (historical community guide). Prefer this skill’s error catalog + diagnostic hierarchy first.
+
+https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/troubleshooting.md
+
 
 ## 5. RECURRING ERROR CATALOG
 

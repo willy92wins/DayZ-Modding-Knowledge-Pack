@@ -2157,7 +2157,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "25b1813046aea1ec3b3c8d4daddb36f3539fe89a163544d0fefb51be33664fa6",
+      "output_hash": "f512ffda29f1ed6ae746f5830073bc73d20f96ca413cfd8d0fc10b754fc842fc",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -5636,7 +5636,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d269d2f8d07218c0930bad69148b87d8a700bc7815dd774d4da9906868e89488",
+      "output_hash": "b1d1e9c9667ace4ece6d6c9725ed831fc83e71c0c0490040799519d92e04e9da",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -6528,7 +6528,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ff4dc4c0c74a71fc190dbd31c54198ec068bab45adefbf25e2b0892122522716",
+      "output_hash": "33231ca82c59eb6f403bd169d4290ad6eb070c55df257381bb62d47219ece1ca",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -9314,7 +9314,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0df2c1f7a1ac9d0ec7a9edbdba2b02c4245ea717c11f35ceec51e570766f44f0",
+      "output_hash": "bafe956edb25fd37cdda7363a656d14e06f4881aaf7a9e3da4151e6169181d0b",
       "output_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10058,7 +10058,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b86443cd1f39ec05d44f736b774f020f7e7c74733fd28804581113886bc641e7",
+      "output_hash": "59df2c11a24f1ab51ddcdbcd6b528d7ca1445ed4d829588ebffe266c42c9f935",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"

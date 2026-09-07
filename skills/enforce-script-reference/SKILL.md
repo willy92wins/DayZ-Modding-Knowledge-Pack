@@ -48,6 +48,32 @@ Before persisting or ordering data across restarts, verify both the clock and th
 10. **Variables hoisted before loops and conditionals**
 11. **Inline string concat WORKS** — `"Count: " + val + " items"` is valid (verified LBmaster production)
 
+<!-- corpus-stardz-2026-09-07 -->
+
+### Additional Enforce absences / traps (StarDZ — historical unless noted)
+
+Community traps **not** already covered by the hard rules above (skip ternary; IsDedicatedServer@load; sibling if/else redeclare; multiline args). Paraphrase only — do not vendor StarDZ chapter bodies.
+
+| Trap | Rule of thumb | Claim / note |
+|---|---|---|
+| No do…while | Use while / or | CLAIM-STARDZ-ENFORCE-SYNTAX-ABSENCES |
+| No 	ry/catch/	hrow | Fail-closed returns; don’t invent exception flow | same |
+| switch/case **falls through** without reak | Always reak unless intentional | same |
+| No 
+ullptr | Use 
+ull / NULL | same |
+| No #include / no namespaces | Modules come from config.cpp CfgMods.defs | same |
+| Default params must be literals or NULL | No call expressions as defaults | same |
+| GetGame().GetPlayer() is **null on dedicated server** | Local player only; server: GetGame().GetPlayers(...) (distinct from client-preload null) | CLAIM-STARDZ-GETPLAYER-SERVER-NULL (cross_checked) |
+| sealed types/methods (1.28+) | Cannot extend/override | StarDZ gotchas 31 |
+| Method arity hard-cap **16** params (1.28+) | Split args into structs/helpers | StarDZ gotchas 32 |
+| rray.Remove is **unordered** (swaps with last) | Don’t assume stable order after Remove — confirm ordered API on P:\scripts if order matters | StarDZ gotchas 23 |
+
+More one-liners (historical): string methods may mutate in-place; empty #ifdef/#ifndef blocks can crash compile; crash_*.log filename ≠ proof of engine crash; compile errors sometimes cite the wrong file; parenthesize bitwise vs comparison tests; Obsolete (1.28+) warnings deserve cleanup; StarDZ says JsonFileLoader.JsonLoadFile returns void — reconcile with Pack SP-136 before treating as a hard rule.
+
+Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-enforce-script/12-gotchas.md (CC BY-SA 4.0).
+
+
 ### Memory Management Rules
 
 12. **`ref` ONLY on class member fields** — never on function params, local vars, or return types. DayZDiag STRICT compiler makes `ref` on a method param a FATAL compile error while retail tolerates it (see TROUBLESHOOTING, SP-047 row)
@@ -199,6 +225,25 @@ Pick the reference file matching your need:
 
 ## SCRIPT LAYER ARCHITECTURE — 3_Game / 4_World / 5_Mission
 
+<!-- corpus-stardz-2026-09-07 -->
+
+### Five modules (1_Core → 5_Mission) — historical ladder + Pack 3/4/5
+
+DayZ compiles script modules in order (StarDZ; treat as **historical** until matched on your P:\scripts / CfgMods.defs):
+
+| Folder | Module key | Typical mod use |
+|---|---|---|
+| 1_Core | engineScriptModule | Engine utilities/enums; rarely needed by content mods |
+| 2_GameLib | gameLibScriptModule | Rarely used by mods |
+| 3_Game | gameScriptModule | DayZGame, RPC IDs, constants, shared data |
+| 4_World | worldScriptModule | PlayerBase / ItemBase / entities / actions |
+| 5_Mission | missionScriptModule | MissionServer / MissionGameplay, HUD, boot hooks |
+
+**Critical rule:** a lower layer cannot name types that exist only in a higher layer (compile-time). Symptom: Undefined type 'PlayerBase' when referencing PlayerBase (4_World) from 3_Game. Workaround: accept a lower base (Man / Object) in the lower layer and Class.CastTo in 4_World+.
+
+Source: CLAIM-STARDZ-FIVE-LAYER-MODULES, CLAIM-STARDZ-LOWER-LAYER-REF-BAN — https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/02-mod-structure/01-five-layers.md (CC BY-SA 4.0 prose; Pack paraphrase; historical).
+
+
 DayZ loads scripts in order: 3 → 4 → 5. Each layer can reference classes from
 its own layer and ALL lower layers, but NEVER higher layers.
 
@@ -344,6 +389,17 @@ typename wt = ItemBase.StaticGetType(); // class, no instance needed
 Moved to `references/verified-api-catalog.md` — reflection/introspection API (GetClassVar, CallFunction, typename introspection, ToType/Spawn, ScriptCaller, load-time attributes).
 
 ## ENTITY LIFECYCLE QUICK REFERENCE
+
+<!-- corpus-stardz-2026-09-07 -->
+
+### Entity root pointer (StarDZ — historical)
+
+World objects descend IEntity → Object → … → EntityAI, then branch to items (ItemBase), players (PlayerBase), infected, animals, buildings, transport. Prefer Pack ECE / CreateObjectEx patterns already in this skill; use StarDZ entity + quick-ref as secondary cite, not signature authority — match on P:\scripts.
+
+Server iteration: do not assume GetGame().GetPlayer(); use GetPlayers (see gotcha table above).
+
+Source: CLAIM-STARDZ-ENTITY-ROOT — https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/06-engine-api/01-entity-system.md
+
 
 ```
 Constructor      → Called on object creation (both client/server)
