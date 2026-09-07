@@ -5488,7 +5488,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8f343871453aa1576b965708b24eba753c701076938fccb23aa18a0e4ad45ff5",
+      "output_hash": "9e4f266caa3ad095feed1dfa11be73d91ea0b48d92babd4a33579790d0828296",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -10068,7 +10068,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "59df2c11a24f1ab51ddcdbcd6b528d7ca1445ed4d829588ebffe266c42c9f935",
+      "output_hash": "3714e587cf09ea0cc00a318135234d09d187d95bc65e16cfff40ab44f67f1dac",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"

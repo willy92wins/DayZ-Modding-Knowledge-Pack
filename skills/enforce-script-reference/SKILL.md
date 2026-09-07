@@ -482,6 +482,25 @@ The client CAN create local-only entities with `CreateObjectEx(cls, pos, ECE_LOC
 
 `GetGame().CreateObjectEx(type, pos, ECE_PLACE_ON_SURFACE|ECE_INITAI|ECE_CREATEPHYSICS)` (= 3108; `3_game/ce/centraleconomy.c:9-38`: CREATEPHYSICS 1024, INITAI 2048, PLACE_ON_SURFACE 1060). Without `ECE_INITAI` it is a statue; with all three it walks and attacks (12.7 m in ~16 s, player health 0.695→0.483 — delete as soon as measured). **Surface placement of the AI is DEFERRED**: `GetPosition()` immediately after creation returns the REQUESTED y (0), not the surface y; if you need an honest coordinate, resolve `SurfaceY` BEFORE creating.
 
+### Placement/ground raycasts — `RaycastRVProxy` does NOT flag terrain with `entry` and `dir` is NOT a unit normal (SP-LFS-1, added 2026-09-07)
+
+[IN-GAME MEASURED, DayZDiag 1.29.163709, LFSecure I-1] `DayZPhysics.RaycastRVProxy(params, results, excluded)` with
+`params.type = ObjIntersectFire` (or Geom) against natural ground returns a `RaycastRVResult` with `obj == null`,
+`entry == false`, `exit == false` and `surface` set (`cp_grass`, `cp_concrete2`); against an object it returns
+`entry == true`. A loop that skips `!hit.entry` therefore drops EVERY terrain hit: the hologram never snaps to the
+ground and the server ground check fails with "no ground" for any wall standing on terrain (LFSecure
+`LFS_HologramMod.c:116`, `LFS_Door_Kit.c:144`). Skip only object exit points: `if (!hit) continue; if (hit.obj &&
+!hit.entry) continue;`, and treat `hit.obj == null` as terrain. `RaycastRVResult.dir` is documented as "direction
+outside ... or (in case of line-object collision) direction and size of the intersection"
+(`3_game/global/dayzphysics.c:104`): measured magnitudes 0.16-0.42, so `dot(dir, fwd) >= 0.9` never passes and
+`sqrt(dir.x^2 + dir.z^2) >= 0.2` is a coin flip. Use it for sign/axis only. For a real surface normal use
+`DayZPhysics.RaycastRV(beg, end, hitPos, hitNormal, contactComponent, results, with, ignore, sorted, groundOnly,
+ObjIntersectFire, radius)` as `P:\LFPowerGrid\scripts\4_World\LFPG_HologramMod.c:542,829` does, with
+`g_Game.SurfaceY(x, z)` as the ground fallback (`:843`); vanilla `hologram.c:1438` builds
+`RaycastRVParams(from, to, m_Projection)` and leaves `with` unset. `RaycastRVParams.with` is documented only as
+"ignore object with this object, otherwise collision hits" (`dayzphysics.c:55`): do not rely on it to restrict or
+select targets.
+
 ### Safe Inventory Operations
 ```
 PlayerBase player = PlayerBase.Cast(GetGame().GetPlayer());
