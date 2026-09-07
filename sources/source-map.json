@@ -9314,7 +9314,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "895045eecf7362bf8d9971eccbea5c34454517c0fe5c9b65f345a0e4bec2bac1",
+      "output_hash": "0df2c1f7a1ac9d0ec7a9edbdba2b02c4245ea717c11f35ceec51e570766f44f0",
       "output_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9782,7 +9782,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "47f46a02919561e41909be9a19072c207c8a28fa90d79bb424f3c3abf5f3b2f1",
+      "output_hash": "468c8c2e1b321dbe966796cd9e8945ee667604abfb9aba055c8fa376eeb5575e",
       "output_path": "skills/dayz-vehicles/references/visual-gates-and-winding.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
