@@ -999,4 +999,10 @@ equiredAddons[] dependency graph orders cross-mod compile within each script mod
 
 Source: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/02-mod-structure/01-five-layers.md
 
+## Binarize is not byte-deterministic (added 2026-09-08)
 
+Measured 2026-09-07 on LFSecure with AddonBuilder 1.29 (`build_pbo.py`, staging outside `P:\`, `-temp` under `P:\`): two consecutive builds of the SAME assembled tree (MLOD `lfs_door.p3d` and `lfs_room.p3d` byte-identical by sha256) produced different ODOL entries — door 339,554 vs 339,551 B, room 2,597,078 vs 2,598,395 B — while every script, config, rvmat, paa and csv entry hashed the same. Consequences for a release or A/B gate:
+
+- **Per-entry PBO hashes are an identity gate for scripts, config, materials and textures only.** A changed `.p3d` entry between two builds proves nothing by itself.
+- **A binarized model is accredited by the hash of its MLOD input plus the engine check** (render + raycast), never by ODOL bytes. Keep the MLOD hashes next to the PBO hash in the evidence.
+- **Do not chase a byte diff in a `.p3d` entry** when the MLOD did not change; rebuild twice and compare before opening a debinarizer.

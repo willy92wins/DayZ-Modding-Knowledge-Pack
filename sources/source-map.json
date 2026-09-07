@@ -6077,10 +6077,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "lfsecure-winding-engine-confirmed@2026-09-07",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Third correction of the winding rules after the L7 engine verdict (LFSecure, 2026-09-07 23:56, Guillermo in-game): a production-like winding sign plus 0 % agreement can be a mirrored export; the negate-normals build rendered right side out but mirrored (handle and bed opposite to the vendor renders). Rule 8 added: compare one asymmetric feature against the vendor render before choosing the fix; full fix = reflect x, reverse face order, normals (nx,-ny,-nz).",
+          "license": "MIT",
+          "source_hash": "c11448837be9fcbe59d718a7d04b208ed30ede7c96fc43f1a6ad1153516fcf00",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "lfsecure-mirror-export@2026-09-08",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "e755983e90c7fded809320e2a18193b1607fc790199bc223006f7aa92db27c70",
+      "output_hash": "c11448837be9fcbe59d718a7d04b208ed30ede7c96fc43f1a6ad1153516fcf00",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -6545,10 +6555,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "two-pbos@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Measured 2026-09-07 on LFSecure: two builds of the same assembled tree (MLOD sha256 identical) produce different ODOL p3d entries while every other entry hashes the same. Added the section on PBO identity: per-entry hashes for non-p3d entries; binarized models accredited by MLOD hash plus engine check.",
+          "license": "MIT",
+          "source_hash": "71d6d1804fc415b44b522d73f9c7f3d56e76d6ae14d322be405237935a570d59",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "binarize-nondeterministic@2026-09-08",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "33231ca82c59eb6f403bd169d4290ad6eb070c55df257381bb62d47219ece1ca",
+      "output_hash": "71d6d1804fc415b44b522d73f9c7f3d56e76d6ae14d322be405237935a570d59",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
