@@ -797,3 +797,67 @@ vehicle plus an auto-connecting client and probes each seat:
   (`offroadhatchback.c:133,147,176,196-206`). Slot lookup and SoundSet names are
   case-sensitive; a mismatch returns no attachment or no sound without a clear
   diagnostic.
+
+
+## A ruined wheel needs script, not only a config class (added 2026-09-08)
+
+Declaring `<Mod>_Wheel_Ruined` in `CfgVehicles` and shipping the destroyed `.p3d` changes
+nothing in game: the wheel reaches 0 health still wearing its healthy model. The swap is done
+by `CarWheel.EEHealthLevelChanged` (`inventoryitem.c:250-279`), which asks
+`GetRuinedReplacement()`; that method (`:214-248`) is a `switch` over **seven hardcoded vanilla
+classnames** - HatchbackWheel, CivSedanWheel, Hatchback_02_Wheel, Sedan_02_Wheel,
+Truck_01_Wheel, Truck_01_WheelDouble, Offroad_02_Wheel. Anything else returns `""`, and an
+empty name makes the handler do nothing at all. The fix is four leaf classes. Do NOT
+`modded class CarWheel`: that reaches the wheels of every vehicle on the server.
+
+    class <Mod>_Wheel_Front extends CarWheel
+    { override string GetRuinedReplacement() { return "<Mod>_Wheel_Front_Ruined"; } }
+    class <Mod>_Wheel_Front_Ruined extends CarWheel_Ruined
+    { override string GetReplacement() { return "<Mod>_Wheel_Front"; } }
+
+Keep the override on the LEAF, never on a shared base. The ruined class inherits
+`GetRuinedReplacement` from `CarWheel`, whose switch does not match it either, and that is
+what stops a ruined wheel from swapping itself forever.
+
+- **The ruined model needs its own `CfgNonAIVehicles` proxy.** A proxy binds one model file to
+  the slots it may fill, so without it the engine has no route to draw the new mesh once the
+  attachment is replaced. Vanilla declares one per destroyed wheel, `inventorySlot[]` copied
+  verbatim from the healthy proxy and only `model=` changed
+  (`DZ\vehicles\wheeled\config.cpp:22265, :22287, :22325`). The class name must mirror the
+  proxy file basename - `ProxySedanWheel_destroyed` <-> `sedanWheel_destroyed.p3d`. Breaking
+  that pair is the B5 native client crash on the swap at speed, in `rip-import.md`.
+- **Repair needs no config work.** `PluginRepairing.CanRepair` opens with
+  `state != GameConstants.STATE_RUINED` (`pluginrepairing.c:96`) and every repair route - kit
+  in hands, the crafting recipes, `ItemBase.CanRepair` - goes through that one function, so an
+  inherited `repairableWithKits[]` on the ruined class is harmless. Do not invent a mechanic to
+  block what the engine already refuses.
+- **`GetReplacement()` is diagnostic only.** Its single consumer is under `#ifdef
+  DIAG_DEVELOPER` (`inventoryitem.c:375-392`, the debug "fix the whole car"): live in
+  DayZDiag, compiled out of retail. Implement it for parity, never describe it as repair.
+- **Register the heavy in-hands IK for the ruined leaf classes too**, or a destroyed wheel
+  taken in hands falls back to the one-handed profile - the profile is looked up by exact leaf
+  class. Vanilla registers all seven (`dayzplayercfgbase.c:852, :869, :879, :889, :899`) and
+  reuses the healthy `.anm` where no destroyed pose exists.
+
+**The physical radius comes from the envelope, not from one distance.** A modelled flat tyre is
+usually collapsed over a sector, not all round: on LFQuad2 the axis-to-lowest-point figure was
+0.276 m, but the outer envelope sampled every 10 degrees had median 0.3275 and peak 0.3588, so
+that single number would have buried the intact rubber up to 83 mm at other rotations. Measure
+`max(hypot(y,z))` per angular bin and pick from the upper middle of that distribution; the
+minima are the rips, where no rubber reaches the ground anyway. Flatten `radiusByDamage[]` to
+the same value, or the inherited healthy curve resolves the ruined wheel to its bottom entry.
+
+**Geometry inherited from the healthy wheel is single-sided, and the tear exposes its back.**
+The rim lives sealed inside an intact tyre, so nothing ever sees its reverse; open the tyre and
+the player looks straight through the wheel. Do not reach for `face.flags` - `binarize.exe`
+discards the MLOD per-face flags entirely (`dayz-p3d-audit/references/winding-diagnostics.md`).
+Double-side only the exposed component: on LFQuad2, `radio < 0.18` isolated exactly 302 faces in
+BOTH the healthy and the ruined mesh, which is what made the cut a boundary of the mesh instead
+of a guess. `py3d.LOD.make_double_sided()` duplicates the whole LOD; copy its normal-pool dedup
+with a face filter. Gate it with a first-hit raycast that culls before the depth test - if two
+coincident twins tie on `t` and either faces the camera, the pixel is drawn, and an instrument
+that picks the nearest hit by `argmin` alone reports the FIX as a regression.
+
+Origin: LFQuad2 destroyed wheels, 2026-09-08. Swap, model, slots, in-hands and driving verified
+in game; the double-sided rim was verified offline (14 directions, healthy control 0,
+delivered-model control 1361, patched 0) with the in-game look pending at the time of writing.
