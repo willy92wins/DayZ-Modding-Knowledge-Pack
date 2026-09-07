@@ -6057,10 +6057,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "lfsecure-winding-calibration@2026-09-07",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Engine verdict 2026-09-07 (LFSecure I-0, DayZDiag 1.29) on the same calibration: the build that reversed every face on the 0 % reading rendered both exports inside-out and RaycastRVProxy missed the door from 2 m; a normal-free instrument (signed volume by winding, LOD0 visual, raw MLOD space) shows the exports carry the SAME sign as production (lf_kit_box -0.1145, lf_solarpanel -0.0691, door export -0.1967, room export +25.19 = interior), so the stored normals were the inverted element. Rewrote the reading rules: 0 % = disagreement, not direction; decide with the signed volume against production; negate the normal pool in place when the sign matches production, reverse faces only when it does not; py3d ERR_WINDING_INVERTED flags the production kit box (fork sign inverted); collision LODs of vanilla wind like the exports. Engine confirmation of the negate-normals build was pending when written (LFSecure HANDOFF, I-0 with the L4 PBO).",
+          "license": "MIT",
+          "source_hash": "9fbb203c70e6d2c7ea718f52a0cec5c58d153d73afca526e02539a6b34559715",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "lfsecure-winding-engine-verdict@2026-09-07",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "80fff4130758801db8190bdb4c578808d7c0a80045afa01394959843c110dd8c",
+      "output_hash": "9fbb203c70e6d2c7ea718f52a0cec5c58d153d73afca526e02539a6b34559715",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
