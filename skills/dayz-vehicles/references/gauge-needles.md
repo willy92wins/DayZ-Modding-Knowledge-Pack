@@ -1066,6 +1066,14 @@ LFQuad3 (no desglosado). La postura relativa asiento-puno difiere entre los dos 
 misma animacion: LFQuad2 tiene el manillar 22 cm mas adelante y 12 cm mas abajo respecto al
 asiento, y el conductor 16 cm mas alto y 12 cm mas atras respecto a la base del eje.
 
+Estado a las 02:30 del 2026-09-07 (LFQuad2, tras su cierre): barrido a +-22.5 (era +-15) y
+conductor 125 mm adelante del original, con el alcance asiento-puno en 588.7 mm, el mismo
+que LFQuad3. Contradiccion abierta: LFQuad3 lleva +-30 con 232 mm de vaiven y esta dado
+por bueno, asi que si sus manos aguantan eso, el +-30 de LFQuad2 no "sobraba" y la
+horquilla del usuario mide otra cosa; hipotesis de LFQuad2: la ALTURA del puno sobre el
+asiento (+210 mm en LFQuad3, +118 en LFQuad2). Lo decide mirar las manos de LFQuad3 en los
+dos topes (sin hacer).
+
 Regla: el eje del manillar en la Memory LOD se escribe VERTICAL salvo medida que diga lo
 contrario, y se comprueba con la direccion del vector, no a ojo (3.4 grados no se ven).
 
@@ -1090,8 +1098,8 @@ dos el otro signo estaba bien:
   brillaban con el mismo rvmat. Medido por LFQuad2 sobre su `.p3d`; reproducido aqui con
   otro instrumento sobre el `.p3d` de su PBO desplegado (`3670fe455648c1ac`: 1 + 1 caras
   con `<normal, cross> < 0` en cada LOD visual) y sobre su arbol corregido
-  (`5f49257c4380280d`: 0). Confirmacion en juego del arreglo: pendiente (el PBO no lo
-  llevaba al cerrar su sesion).
+  (`5f49257c4380280d`: 0). Su PBO lo lleva desde las 02:10 (`bea1b889b3ecedae`, body
+  `5f47e2cbf8ea323f`, 0 con este instrumento); la mirada de NOCHE sigue pendiente.
 - **LFQuad3, el winding.** Normal almacenada = cross en todas las caras del cuadro (el
   generador guarda en `add_tri` la `n` del cross): 0 invertidas. Pero `add_fuel_needle`
   forzaba `<cross, axis> > 0` con `axis` hacia el conductor, y TODO lo demas del cuadro
@@ -1108,7 +1116,15 @@ discos ya visibles, y `<normal_almacenada, cross> >= 0` en cada vertice (el suav
 medida del LFQuad3): agrupa las caras del cuadro por seleccion + textura contra el eje de
 Memory mas cercano. Control positivo propio: `--control <sel>` niega en memoria las
 normales de una seleccion y todas sus caras deben salir marcadas. Control independiente:
-el PBO de LFQuad2 de arriba, que es un defecto real de otra mano.
+el PBO de LFQuad2 de arriba, que es un defecto real de otra mano. El instrumento da ademas
+el veredicto de winding: cada grupo de reloj (selecciones de aguja, texturas de esfera,
+numeros y agujas) contra el signo medio de los discos pintados. Los LOD funcionales
+(Geometry 1e13, ViewGeometry 6e15, FireGeometry 7e15) quedan fuera salvo `--all-lods`:
+llevan 1-2 caras sin textura con la normal a +0.6 que no se renderizan y que un contador
+ciego lee como "5 discrepancias" en un modelo limpio (ruido fichado por LFQuad2). Y el
+contador de normales solo suma los grupos de reloj: el resto del cluster sale aparte,
+informativo, porque los LOD diezmados de un modelo base traen de fabrica alguna cara con
+la normal suavizada contra su cross (LFQuad2, LOD 1-3: 5-7 caras cada uno).
 
 **Y en juego, mirar el cuadro tambien de NOCHE** o con la luz del cuadro encendida
 (`dashboardMatOn`, el material que `DashboardShineOn` pone sobre `light_dashboard`,
