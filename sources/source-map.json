@@ -1117,6 +1117,28 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/knowledge/public-wiki-harvest-2026-09.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack-authored MIT harvest index (hubs + staging pointers). Reconciles with vault-notes/dayz-wiki-systems-reference.md; does not vendor wiki HTML. Wiki-derived hints marked historical until live-verified.",
+          "license": "MIT",
+          "source_hash": "37664c775b564a7077593b9fda7c9ec97f1fe9b511a4578a0ff33e0dc761cc36",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/public-wiki-harvest-2026-09.md",
+          "source_revision": "public-wiki-harvest@2026-09-07",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "37664c775b564a7077593b9fda7c9ec97f1fe9b511a4578a0ff33e0dc761cc36",
+      "output_path": "knowledge/public-wiki-harvest-2026-09.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "historical"
+    },
+    {
       "artifact_id": "file/knowledge/vault-notes/dayz-animations-creatures-weapons.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -9220,7 +9242,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "aa6b384bc95a86ab0ef5f426bba69556f46de0ee6717de906ad46711c8b95059",
+      "output_hash": "9d5d12df9b25d7945936712f8befdcb89627577c766188d02143ced4e1af2394",
       "output_path": "skills/dayz-vehicles/references/gauge-needles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -11663,7 +11685,7 @@
           "decision": "adopt",
           "decision_evidence": "Claim registry records the three approved evidence-backed contracts and their skill ranges.",
           "license": "MIT",
-          "source_hash": "de9ce416199bf5a735ccd8f357e66d61d6416c695db140fd02e0f88a049e56b8",
+          "source_hash": "858612b6cfc43947fad8945c3b8be1771f30746be981ab6c91a3397a7f486e0f",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "filesystem@2026-08-21",
@@ -11671,7 +11693,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1525f6f50af23295ea9289d15b9bdcaf10a798d310e32e72538d2c5095ee003b",
+      "output_hash": "858612b6cfc43947fad8945c3b8be1771f30746be981ab6c91a3397a7f486e0f",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -22770,6 +22792,28 @@
       "output_path": "tools/dayz-3d-viewer/dayz_3d_viewer/viewer_core.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/knowledge/vault-notes/dayz-stardz-dzconfig-distill-2026-09.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack-authored MIT distill of StarDZ Enforce gotchas/layers + DZconfig CE/loot/events from 2026-09-07 staging harvest. Numbered facts with [EXACT] claim markers; URLs cited; no vendored HTML.",
+          "license": "MIT",
+          "source_hash": "19c216031711d651c7dbb50169213dc7023b2798fd3a8dcdc393cecc2b895972",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-stardz-dzconfig-distill-2026-09.md",
+          "source_revision": "stardz-dzconfig-distill@2026-09-07",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "19c216031711d651c7dbb50169213dc7023b2798fd3a8dcdc393cecc2b895972",
+      "output_path": "knowledge/vault-notes/dayz-stardz-dzconfig-distill-2026-09.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "historical"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
@@ -23714,6 +23758,38 @@
       "notes": "Pre-PBO Enforce/config linter authored in the DayZ_Tooling project; adopted into the pack as the offline layer. Only the linter is adopted: the DayZ-MCP smoke and the vehicle-proxy contract stay out.",
       "revision": "dayz-tooling@2026-08-18",
       "source_id": "dayz-tooling"
+    },
+    {
+      "kind": "archive",
+      "license": "Bohemia Interactive Community Wiki; cite only — do not redistribute scraped HTML in MIT payload",
+      "notes": "BI DayZ wiki harvested via Wayback Machine id_ captures into local staging markdown (2026-09-07). Live community.bohemia.net often Cloudflare-blocked. Facts are historical until live-verified. Do not vendor full wiki HTML into the Pack zip. Staging: ObsidianVault/AI/30_Research/dayz-public-corpus-2026-09-07/harvested/wiki/.",
+      "public_locator": "https://community.bohemia.net/wiki/Category:DayZ",
+      "revision": "wayback-harvest@2026-09-07",
+      "source_id": "bi-community-wiki-wayback"
+    },
+    {
+      "kind": "web",
+      "license": "Per-repo upstream licenses; index/READMEs are pointers only — no verbatim README redistribution in MIT payload",
+      "notes": "Public GitHub DayZ org/author index + README harvest (2026-09-07). Prefer link+summarize; promote durable facts only via claims with evidence. Staging: ObsidianVault/AI/30_Research/dayz-public-corpus-2026-09-07/harvested/github/GITHUB-INDEX.md.",
+      "public_locator": "https://github.com/BohemiaInteractive",
+      "revision": "github-index-harvest@2026-09-07",
+      "source_id": "dayz-public-github-index-2026-09"
+    },
+    {
+      "kind": "web",
+      "license": "CC-BY-SA-4.0 (wiki prose); code examples MIT — cite/attribute; do not vendor scraped HTML in MIT payload",
+      "notes": "StarDZ DayZ-Modding-Wiki harvested 2026-09-07 into staging harvested/other/stardz/ (chapters + github.io hub). Distinct from Pack source_id stardz (Dayz-Modding-Skills git). Facts historical until live-verified on P:/scripts.",
+      "public_locator": "https://github.com/StarDZ-Team/DayZ-Modding-Wiki",
+      "revision": "stardz-wiki-harvest@2026-09-07",
+      "source_id": "stardz-dayz-modding-wiki-2026-09"
+    },
+    {
+      "kind": "web",
+      "license": "DZconfig.com wiki; cite URL only — do not redistribute scraped HTML in MIT payload",
+      "notes": "DZconfig CE/server wiki harvested 2026-09-07 into staging harvested/other/dzconfig/ (~40 MD pages). Facts historical until live-verified against mission CE samples.",
+      "public_locator": "https://dzconfig.com/wiki",
+      "revision": "dzconfig-wiki-harvest@2026-09-07",
+      "source_id": "dzconfig-wiki-2026-09"
     }
   ]
 }
