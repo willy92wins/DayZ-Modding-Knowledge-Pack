@@ -3358,7 +3358,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "495cf2ddab2961c5ac0581e548ac545a98abd689fd64ce47ac144e941a27e103",
+      "output_hash": "421b268721ee13d68bfcd93532643b77566c5cc958729ab2d8397ad9699c535e",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3512,10 +3512,32 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0d1ab7915f5b245f74d29ff469a9962a82265eee32c392a480f08e499566932b",
+      "output_hash": "6fb9b4488c497f4b120db797d9838b7d131c877925c352ed4cfb279e279e13d4",
       "output_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/ofp2-manskeleton-parents.txt",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Measured 2026-09-07 from DZ/characters/bodies/player_testing.xob via DayZATool v1.3 --extract-mdl (SEModel, 148 bones, one root; 73-byte bone stride is the only one yielding in-range parents and a single root). Author-owned, written by the author's sessions; adopted from the live store.",
+          "license": "MIT",
+          "source_hash": "7fd3f3f8c8b7c09a5d7a5eda63bfb8268852d15e4d061493a22e9f4219693e90",
+          "source_id": "installed-skills",
+          "source_path": "dayz-animation-pipeline/references/ofp2-manskeleton-parents.txt",
+          "source_revision": "filesystem@2026-09-07",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7fd3f3f8c8b7c09a5d7a5eda63bfb8268852d15e4d061493a22e9f4219693e90",
+      "output_path": "skills/dayz-animation-pipeline/references/ofp2-manskeleton-parents.txt",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "source_verified"
     },
     {
       "artifact_id": "file/skills/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",

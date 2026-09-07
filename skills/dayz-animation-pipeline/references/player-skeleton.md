@@ -41,6 +41,39 @@ finger leaves the trigger). Bit the WeaponAnimPipeline viewer for 2 sessions, mi
 quat" — the fix was found by RENDERING the in-game bone positions as overlay points, not by theorizing
 about quat conventions. Cross-ref `weapon-in-hands.md` §"READ it off the live skeleton".
 
+### Twist bones sit at EVERY joint, and the parent table is measurable (added 2026-09-07)
+
+SP-039 above covers the wrist only. The production rig has a roll bone inside every limb joint,
+so any forward kinematics that walks `Arm -> ForeArm` or `UpLeg -> Leg` skips a bone and leaks
+its rotation, exactly like skipping `ForeArmRoll` did:
+
+```
+Arm   -> ArmRoll   -> ForeArm -> ForeArmRoll -> Hand
+UpLeg -> UpLegRoll -> Leg     -> LegRoll     -> Foot
+```
+
+Three more facts that a guessed hierarchy gets wrong (measured 2026-09-07 while fitting the
+rider of a quad; 5 of 77 guessed parents were wrong, the worst put `Pelvis` under
+`EntityPosition` and would have lifted the pelvis 0.95 m): **`Pelvis` hangs off `Scene_Root`**,
+and `EntityPosition` (the movement bone) is its SIBLING, not its parent; `*ElbowExtra` hangs
+off `*ArmRoll`; `*HipExtra` hangs off `Pelvis`.
+
+Where the table comes from, because the obvious sources do not carry it: `DZ/anims/cfg/
+skeletons.anim.xml` has **no `parent` attribute at all** (0 occurrences in 38,078 B; only
+`index` and `lod`) although it names its source `hermit_newbindpose.xob`, and a SEAnim written
+by DayZATool `--extract-anim` carries names and keys but no parents either. The bind pose model
+does: `DayZATool.exe --extract-mdl DZ\characters\bodies\player_testing.xob` writes
+`player_testing.semodel` (16,659 B, 148 bones, one root). SEModel header as read from the bytes:
+`magic[7]="SEModel"`, `version` uint16 at 7, `headerSize` uint16 at 9 (=20), presence flags at
+11..13, `boneCount` uint32 at 14 (=148), `meshCount` at 18, `matCount` at 22, 3 reserved, names
+from offset 29 (`b.find(b"Scene_Root") == 29`); bone records are 73 B each with the parent index
+as int32 right after one flags byte. The control that makes that read trustworthy: 73 is the
+ONLY stride that yields in-range parents AND exactly one root. The full 148-bone table is
+`references/ofp2-manskeleton-parents.txt` (measured by the LFQuad2 session with a bounded parser;
+recipe and the roll-bone warning are in its header). DayZATool runs headless from a shell but
+throws `InvalidOperationException` on `Console.ReadKey` when stdin is redirected — AFTER writing
+the output file; ignore the exception and check the file exists.
+
 ### `RightHand_Dummy` / `LeftHand_Dummy` — what they are
 
 - `RightHand_Dummy` is at `skeletons.anim.xml:100,115,525` (lod=2 helper). Distinct from `RightHand` (lod=1, the real hand bone).
