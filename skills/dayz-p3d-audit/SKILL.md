@@ -33,6 +33,8 @@ A clean `validate()`, a passing `save(verify=True)`, or a `diff` that reports eq
 
 [DESIGN] Discriminating signal on a vanilla-scale LOD set: edge coherence (neighbors traverse the shared edge in opposite directions) and `cross(e1,e2) . declared_normal` in the same space.
 
+Update 2026-09-07: the fork (1.7.0) ships that absolute signal as `_check_winding_absolute` → `ERR_WINDING_VS_NORMALS`, and it is calibrated against shipped MLOD (100 % on two production models; 0 % across every LOD = real global inversion). Item 1 above describes the relative check only. See "Absolute winding check is calibrated against shipped MLOD" under WINDING DIAGNOSTICS.
+
 
 ## SP-221 — sibling-model frame parity (before copying rotation offsets)
 
@@ -330,6 +332,24 @@ idempotency and Crate_Wooden mixed winding tolerated in render) →
 The measured SUB_BRZ path paired source MLOD and published ODOL triangles by centroid and found opposite orientation in 12,784 of 12,784 pairs. For that Binarize path, a cull/winding predicate calibrated on MLOD must invert its sign when auditing the published ODOL; for a different toolchain or build, recalibrate the boundary instead of assuming the sign.
 
 Qualify the release gate with a known MLOD/ODOL pair and prove it separates a healthy build from an intentionally broken one. An identical zero count across materially different inputs is evidence of an instrument failure, not a clean artifact — measured `0 of 2367` on three distinct builds; with the sign inverted, ODOL and MLOD agreed cell by cell (637 → 0 and 636 → 0). Verify the published ODOL, but never port the MLOD predicate by memory.
+
+### Absolute winding check is calibrated against shipped MLOD (added 2026-09-07)
+
+py3d fork 1.7.0 implements the absolute signal: `_pct_normal_agreement(lod)` = % of faces with `dot(cross(v1−v0, v2−v0), declared_normal_v0) > 0`, both vectors in raw MLOD space; `_check_winding_absolute` raises `ERR_WINDING_VS_NORMALS` (CRITICAL) near 0 % and `WARN_WINDING_NORMAL_MISMATCH` when mixed. Calibration measured 2026-09-07 with that same function on the visual LOD:
+
+| MLOD | Status | Agreement |
+|---|---|---|
+| `P:\LFPowerGrid\data\solarpanel\lf_solarpanel.p3d` (2,944 faces) | in production, seen in game | 100.0 % |
+| `P:\LFPowerGrid\data\kits\lf_kit_box.p3d` (12 faces) | in production | 100.0 % |
+| SUB_BRZ co-driver door MLOD (double-sided glass twins with negated normals) | verified in game | 26 % |
+| Two third-party Blender exports (LFSecure door and room, 11 and 12 LODs) | untested | 0 % in every visual and collision LOD |
+
+Reading rules that follow from the table:
+
+1. Healthy single-sided MLOD reads ≈ 100 %, so **0 % across every LOD is a real global inversion** (the Z-up → Y-up handedness signature), not a convention of the format. The relative check (item 1 of "The three py3d gates") cannot see a global inversion; this one can.
+2. A **mixed** percentage on a double-sided model is the twins voting, not an inversion: isolate the minority group per welded component (`references/winding-diagnostics.md`) instead of flipping everything.
+3. Measure in **raw MLOD coordinates**. A frame that already flips Z (an OBJ export, `parse_obj` helpers) inverts the sign; one session concluded "healthy = cross opposite normal" from such a frame and doubted a true CRITICAL for a round.
+4. Fix with `face.vertices.reverse()` on every face of every LOD (visual, shadow, Geometry/ViewGeo/FireGeo), never by swapping `vertices[1]`/`[2]` (a quad becomes a crossed face); keep the stored normals; re-run the audit expecting ≈ 100 % and no `WINDING_MIXED`; then confirm in the engine (outside render + raycast) before building on top.
 
 ---
 

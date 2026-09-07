@@ -6025,10 +6025,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "gunracks-backdominance@2026-08-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Calibration of the fork 1.7.0 absolute winding check (_pct_normal_agreement, dot(cross, declared normal) in raw MLOD space) measured 2026-09-07: two in-production MLOD (lf_solarpanel.p3d 2944 faces, lf_kit_box.p3d) read 100 %, a double-sided door verified in game reads 26 %, and two third-party Blender exports (LFSecure door and room) read 0 % in every LOD, i.e. a real global inversion. Added the reading rules (0 % = real, mixed = twins, measure in raw MLOD space, fix with face.vertices.reverse never [1]/[2] swap) and a pointer from the py3d-gates section.",
+          "license": "MIT",
+          "source_hash": "80fff4130758801db8190bdb4c578808d7c0a80045afa01394959843c110dd8c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "lfsecure-winding-calibration@2026-09-07",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e4d2dee21c37c0252e1a4ecb3e38b688e1a8c26e95dea8921378537ae19801cf",
+      "output_hash": "80fff4130758801db8190bdb4c578808d7c0a80045afa01394959843c110dd8c",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
