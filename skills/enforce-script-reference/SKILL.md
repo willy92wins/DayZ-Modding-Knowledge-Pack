@@ -124,6 +124,15 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
 21. **`CallLater` loses precision after ~4.5 hours** (32-bit float overflow) — known engine bug
 22. **Per-device `CallLater` repeat timers fragment heap** → crash after hours
 23. **Centralize all periodic ticks** in a single manager (Register/Unregister pattern)
+    - A singleton manager is not enough on its own: its `Reset()` on reconnect orphans the
+      repeat timer, because the `Remove()` lives in the destructor of the instance being
+      dropped - the queue keeps firing into the dead object (duplicate ticks, crash). Drive
+      those ticks from the mission's `OnUpdate` with a `timeslice` accumulator and re-resolve
+      the singleton via `Get()` each frame: nothing is registered, so nothing can be orphaned.
+      Reset the accumulator to zero on fire (do not subtract the period) so a long hitch fires
+      once, not in a burst. Do NOT gate the maintenance call on "is there anything to draw":
+      retry/reconcile ticks exist to build what is not drawn yet. Measured in LFPowerGrid
+      2026-09-08: 5 repeating CALL_CATEGORY_GUI chains -> 1 MaintenanceTick(timeslice) per renderer.
 
 ### Override Rules
 
