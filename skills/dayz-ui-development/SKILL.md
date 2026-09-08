@@ -58,6 +58,16 @@ paths): [`TOOLS.md`](../../TOOLS.md).
    (braces, XML-format, layout-file-exists, $PBOPREFIX$ path, OnMouseLeave arity; exit 0/1/2).
 4. **Reconcile**: `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>`
    (every FindAnyWidget name ↔ layouts, every #STR ↔ stringtable.xml/csv; "did-you-mean" on typos).
+
+⚠ **La ruta `tools/dayz-script-validator/...` es relativa a la raiz del Knowledge Pack.**
+Desde un proyecto (`P:\<Mod>\`) no existe y el comando muere con `No such file or directory`, que
+se lee como «no esta instalado». Forma que funciona desde cualquier sitio:
+`python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>`.
+⚠ **Y su exit code es 0 PASS / 1 FAIL / 2 WARN**: un arbol limpio con warnings sale con **2**,
+asi que `if rc != 0` lo rechaza. Gatea por `len(errors)` del JSON, o trata el 2 como aprobado.
+Companero: `ui_reconcile.py <addon_root>` reconcilia `FindAnyWidget` ↔ layouts y `#STR` ↔
+stringtable, que es lo que ningun compilador ve; `--strict` convierte sus WARN en fallo.
+
 5. **Preview offline**: `python tools/dayz-layout-viewer/build_viewer.py <layout>`
    → a self-contained `.preview.html` you switch between 1080p / 1440p / 21:9 / 720p to SEE
    exact-flag breakage without a build.

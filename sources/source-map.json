@@ -1117,6 +1117,28 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/knowledge/public-wiki-harvest-2026-09.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack-authored MIT harvest index (hubs + staging pointers). Reconciles with vault-notes/dayz-wiki-systems-reference.md; does not vendor wiki HTML. Wiki-derived hints marked historical until live-verified.",
+          "license": "MIT",
+          "source_hash": "37664c775b564a7077593b9fda7c9ec97f1fe9b511a4578a0ff33e0dc761cc36",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/public-wiki-harvest-2026-09.md",
+          "source_revision": "public-wiki-harvest@2026-09-07",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "37664c775b564a7077593b9fda7c9ec97f1fe9b511a4578a0ff33e0dc761cc36",
+      "output_path": "knowledge/public-wiki-harvest-2026-09.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "historical"
+    },
+    {
       "artifact_id": "file/knowledge/vault-notes/dayz-animations-creatures-weapons.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -2135,7 +2157,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "25b1813046aea1ec3b3c8d4daddb36f3539fe89a163544d0fefb51be33664fa6",
+      "output_hash": "f512ffda29f1ed6ae746f5830073bc73d20f96ca413cfd8d0fc10b754fc842fc",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -2380,7 +2402,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4c4209f47e1b95c7c5e274b413e8aa456038127bea5561579bffd758443d5be0",
+      "output_hash": "30908083d67a83ec4bfa730e0af1e4b8e4220b158f49db003f0cb4ebc65d8650",
       "output_path": "skills/_shared/dayz-conventions.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -5466,7 +5488,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a3e0f7387aa28c108bc178d7371d8cc97cc86cf2fb9e060cde53f7c46b67189f",
+      "output_hash": "9e4f266caa3ad095feed1dfa11be73d91ea0b48d92babd4a33579790d0828296",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -5614,7 +5636,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d269d2f8d07218c0930bad69148b87d8a700bc7815dd774d4da9906868e89488",
+      "output_hash": "b1d1e9c9667ace4ece6d6c9725ed831fc83e71c0c0490040799519d92e04e9da",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -6025,10 +6047,40 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "gunracks-backdominance@2026-08-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Calibration of the fork 1.7.0 absolute winding check (_pct_normal_agreement, dot(cross, declared normal) in raw MLOD space) measured 2026-09-07: two in-production MLOD (lf_solarpanel.p3d 2944 faces, lf_kit_box.p3d) read 100 %, a double-sided door verified in game reads 26 %, and two third-party Blender exports (LFSecure door and room) read 0 % in every LOD, i.e. a real global inversion. Added the reading rules (0 % = real, mixed = twins, measure in raw MLOD space, fix with face.vertices.reverse never [1]/[2] swap) and a pointer from the py3d-gates section.",
+          "license": "MIT",
+          "source_hash": "80fff4130758801db8190bdb4c578808d7c0a80045afa01394959843c110dd8c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "lfsecure-winding-calibration@2026-09-07",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Engine verdict 2026-09-07 (LFSecure I-0, DayZDiag 1.29) on the same calibration: the build that reversed every face on the 0 % reading rendered both exports inside-out and RaycastRVProxy missed the door from 2 m; a normal-free instrument (signed volume by winding, LOD0 visual, raw MLOD space) shows the exports carry the SAME sign as production (lf_kit_box -0.1145, lf_solarpanel -0.0691, door export -0.1967, room export +25.19 = interior), so the stored normals were the inverted element. Rewrote the reading rules: 0 % = disagreement, not direction; decide with the signed volume against production; negate the normal pool in place when the sign matches production, reverse faces only when it does not; py3d ERR_WINDING_INVERTED flags the production kit box (fork sign inverted); collision LODs of vanilla wind like the exports. Engine confirmation of the negate-normals build was pending when written (LFSecure HANDOFF, I-0 with the L4 PBO).",
+          "license": "MIT",
+          "source_hash": "9fbb203c70e6d2c7ea718f52a0cec5c58d153d73afca526e02539a6b34559715",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "lfsecure-winding-engine-verdict@2026-09-07",
+          "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Engine confirmation of the negate-normals fix (LFSecure L4 PBO, DayZDiag 1.29, 2026-09-07 22:13, I-0): both exports render right side out from outside and inside and RaycastRVProxy view/fire hit door and room from both sides, while the face-reversed L3 build missed every ray. Replaces the 'pending' sentence of rule 5 with the measured result (P:/LFSecure_dev/evidence/i0/i0_result.json).",
+          "license": "MIT",
+          "source_hash": "e755983e90c7fded809320e2a18193b1607fc790199bc223006f7aa92db27c70",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "lfsecure-winding-engine-confirmed@2026-09-07",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "e4d2dee21c37c0252e1a4ecb3e38b688e1a8c26e95dea8921378537ae19801cf",
+      "output_hash": "e755983e90c7fded809320e2a18193b1607fc790199bc223006f7aa92db27c70",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -6496,7 +6548,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ff4dc4c0c74a71fc190dbd31c54198ec068bab45adefbf25e2b0892122522716",
+      "output_hash": "33231ca82c59eb6f403bd169d4290ad6eb070c55df257381bb62d47219ece1ca",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -7542,7 +7594,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2179aa4c9d9f25e8a5bdf6cfec97e63400a9f4238ecc2fbe7adf05b02acdbc52",
+      "output_hash": "1a88138cbc6bba0825fbf08ac4a0c8abb8a902e10cfafa8d103bbabd0093bc10",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -8034,7 +8086,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "620323edd169bb1e6a60c34898057f973bdf019985c68f6617873d2b05864b51",
+      "output_hash": "0e2866c7a24e4d0bf4b016865f3c0a3d8b76e3e405af9c400fd2dd3e56860f5c",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9210,7 +9262,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "aa6b384bc95a86ab0ef5f426bba69556f46de0ee6717de906ad46711c8b95059",
+      "output_hash": "9d5d12df9b25d7945936712f8befdcb89627577c766188d02143ced4e1af2394",
       "output_path": "skills/dayz-vehicles/references/gauge-needles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9282,7 +9334,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "895045eecf7362bf8d9971eccbea5c34454517c0fe5c9b65f345a0e4bec2bac1",
+      "output_hash": "bafe956edb25fd37cdda7363a656d14e06f4881aaf7a9e3da4151e6169181d0b",
       "output_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9750,7 +9802,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "47f46a02919561e41909be9a19072c207c8a28fa90d79bb424f3c3abf5f3b2f1",
+      "output_hash": "468c8c2e1b321dbe966796cd9e8945ee667604abfb9aba055c8fa376eeb5575e",
       "output_path": "skills/dayz-vehicles/references/visual-gates-and-winding.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10026,7 +10078,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b86443cd1f39ec05d44f736b774f020f7e7c74733fd28804581113886bc641e7",
+      "output_hash": "3a95baa0537a15c26122357b9e9619bcdcebc19a69162dcf59f286b624cd1ebb",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -11653,7 +11705,7 @@
           "decision": "adopt",
           "decision_evidence": "Claim registry records the three approved evidence-backed contracts and their skill ranges.",
           "license": "MIT",
-          "source_hash": "de9ce416199bf5a735ccd8f357e66d61d6416c695db140fd02e0f88a049e56b8",
+          "source_hash": "858612b6cfc43947fad8945c3b8be1771f30746be981ab6c91a3397a7f486e0f",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "filesystem@2026-08-21",
@@ -11661,7 +11713,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1525f6f50af23295ea9289d15b9bdcaf10a798d310e32e72538d2c5095ee003b",
+      "output_hash": "b8debb922ffb3d03aef8324f2ff17da344377d42c6a51507f17cc55181932e51",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -22760,6 +22812,28 @@
       "output_path": "tools/dayz-3d-viewer/dayz_3d_viewer/viewer_core.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/knowledge/vault-notes/dayz-stardz-dzconfig-distill-2026-09.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack-authored MIT distill of StarDZ Enforce gotchas/layers + DZconfig CE/loot/events from 2026-09-07 staging harvest. Numbered facts with [EXACT] claim markers; URLs cited; no vendored HTML.",
+          "license": "MIT",
+          "source_hash": "19c216031711d651c7dbb50169213dc7023b2798fd3a8dcdc393cecc2b895972",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-stardz-dzconfig-distill-2026-09.md",
+          "source_revision": "stardz-dzconfig-distill@2026-09-07",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "19c216031711d651c7dbb50169213dc7023b2798fd3a8dcdc393cecc2b895972",
+      "output_path": "knowledge/vault-notes/dayz-stardz-dzconfig-distill-2026-09.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "historical"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
@@ -23704,6 +23778,38 @@
       "notes": "Pre-PBO Enforce/config linter authored in the DayZ_Tooling project; adopted into the pack as the offline layer. Only the linter is adopted: the DayZ-MCP smoke and the vehicle-proxy contract stay out.",
       "revision": "dayz-tooling@2026-08-18",
       "source_id": "dayz-tooling"
+    },
+    {
+      "kind": "archive",
+      "license": "Bohemia Interactive Community Wiki; cite only — do not redistribute scraped HTML in MIT payload",
+      "notes": "BI DayZ wiki harvested via Wayback Machine id_ captures into local staging markdown (2026-09-07). Live community.bohemia.net often Cloudflare-blocked. Facts are historical until live-verified. Do not vendor full wiki HTML into the Pack zip. Staging: ObsidianVault/AI/30_Research/dayz-public-corpus-2026-09-07/harvested/wiki/.",
+      "public_locator": "https://community.bohemia.net/wiki/Category:DayZ",
+      "revision": "wayback-harvest@2026-09-07",
+      "source_id": "bi-community-wiki-wayback"
+    },
+    {
+      "kind": "web",
+      "license": "Per-repo upstream licenses; index/READMEs are pointers only — no verbatim README redistribution in MIT payload",
+      "notes": "Public GitHub DayZ org/author index + README harvest (2026-09-07). Prefer link+summarize; promote durable facts only via claims with evidence. Staging: ObsidianVault/AI/30_Research/dayz-public-corpus-2026-09-07/harvested/github/GITHUB-INDEX.md.",
+      "public_locator": "https://github.com/BohemiaInteractive",
+      "revision": "github-index-harvest@2026-09-07",
+      "source_id": "dayz-public-github-index-2026-09"
+    },
+    {
+      "kind": "web",
+      "license": "CC-BY-SA-4.0 (wiki prose); code examples MIT — cite/attribute; do not vendor scraped HTML in MIT payload",
+      "notes": "StarDZ DayZ-Modding-Wiki harvested 2026-09-07 into staging harvested/other/stardz/ (chapters + github.io hub). Distinct from Pack source_id stardz (Dayz-Modding-Skills git). Facts historical until live-verified on P:/scripts.",
+      "public_locator": "https://github.com/StarDZ-Team/DayZ-Modding-Wiki",
+      "revision": "stardz-wiki-harvest@2026-09-07",
+      "source_id": "stardz-dayz-modding-wiki-2026-09"
+    },
+    {
+      "kind": "web",
+      "license": "DZconfig.com wiki; cite URL only — do not redistribute scraped HTML in MIT payload",
+      "notes": "DZconfig CE/server wiki harvested 2026-09-07 into staging harvested/other/dzconfig/ (~40 MD pages). Facts historical until live-verified against mission CE samples.",
+      "public_locator": "https://dzconfig.com/wiki",
+      "revision": "dzconfig-wiki-harvest@2026-09-07",
+      "source_id": "dzconfig-wiki-2026-09"
     }
   ]
 }

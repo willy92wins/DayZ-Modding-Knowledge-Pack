@@ -33,6 +33,8 @@ A clean `validate()`, a passing `save(verify=True)`, or a `diff` that reports eq
 
 [DESIGN] Discriminating signal on a vanilla-scale LOD set: edge coherence (neighbors traverse the shared edge in opposite directions) and `cross(e1,e2) . declared_normal` in the same space.
 
+Update 2026-09-07 (corrected the same day by the engine): the fork (1.7.0) ships that absolute signal as `_check_winding_absolute` → `ERR_WINDING_VS_NORMALS`. Calibrated against shipped MLOD it reads 100 % on production models and 0 % on two Blender exports whose STORED NORMALS were inverted, so **0 % means winding and normals disagree, not that the winding is wrong**: the build that reversed every face on that reading rendered both models inside-out in DayZDiag. Item 1 above describes the relative check only. See "Absolute winding check: what 0 % means" under WINDING DIAGNOSTICS for the direction test (signed volume against production) and the fix rule.
+
 
 ## SP-221 — sibling-model frame parity (before copying rotation offsets)
 
@@ -330,6 +332,30 @@ idempotency and Crate_Wooden mixed winding tolerated in render) →
 The measured SUB_BRZ path paired source MLOD and published ODOL triangles by centroid and found opposite orientation in 12,784 of 12,784 pairs. For that Binarize path, a cull/winding predicate calibrated on MLOD must invert its sign when auditing the published ODOL; for a different toolchain or build, recalibrate the boundary instead of assuming the sign.
 
 Qualify the release gate with a known MLOD/ODOL pair and prove it separates a healthy build from an intentionally broken one. An identical zero count across materially different inputs is evidence of an instrument failure, not a clean artifact — measured `0 of 2367` on three distinct builds; with the sign inverted, ODOL and MLOD agreed cell by cell (637 → 0 and 636 → 0). Verify the published ODOL, but never port the MLOD predicate by memory.
+
+### Absolute winding check: what 0 % means (added 2026-09-07, corrected the same day with the engine verdict)
+
+py3d fork 1.7.0 implements the absolute signal: `_pct_normal_agreement(lod)` = % of faces with `dot(cross(v1−v0, v2−v0), declared_normal_v0) > 0`, both vectors in raw MLOD space; `_check_winding_absolute` raises `ERR_WINDING_VS_NORMALS` (CRITICAL) near 0 % and `WARN_WINDING_NORMAL_MISMATCH` when mixed. Calibration measured 2026-09-07 with that same function on the visual LOD:
+
+| MLOD | Status | Agreement |
+|---|---|---|
+| `P:\LFPowerGrid\data\solarpanel\lf_solarpanel.p3d` (2,944 faces) | in production, seen in game | 100.0 % |
+| `P:\LFPowerGrid\data\kits\lf_kit_box.p3d` (12 faces) | in production | 100.0 % |
+| SUB_BRZ co-driver door MLOD (double-sided glass twins with negated normals) | verified in game | 26 % |
+| LFSecure door export (third-party Blender, 11 LODs) | engine verdict 2026-09-07: normals inverted, winding correct | 0 % in every visual and collision LOD |
+| LFSecure room export (third-party Blender, 12 LODs) | engine verdict 2026-09-07: normals inverted, winding correct | 0 % in every visual and collision LOD |
+
+Engine verdict (LFSecure I-0, DayZDiag 1.29, 2026-09-07 21:20): the build that followed the first version of this section (`face.vertices.reverse()` on every face of every LOD) rendered BOTH exports inside-out (textures visible only from inside the object; the room's Roadway faces flipped too), and `RaycastRVProxy` (view, fire and geom) from 2 m in front of the door returned no hit while a terrain control hit. The 0 % came from the exports' STORED NORMALS, not from their winding: a second instrument that ignores normals (signed volume by winding of the visual LOD0, divergence sum over fan triangles in raw MLOD space) reads −0.1145 on `lf_kit_box`, −0.0691 on `lf_solarpanel`, −0.1967 on the door export (same sign as production) and +25.19 on the room export (a room seen from inside: faces toward the interior); the reversed builds carried the opposite signs.
+
+Reading rules, corrected:
+
+1. Healthy single-sided MLOD reads ≈ 100 %. **0 % means winding and stored normals DISAGREE; it does not say which side is wrong.** Never derive the fix direction from this number alone. The relative check (item 1 of "The three py3d gates") cannot see a global disagreement; this one can.
+2. A **mixed** percentage on a double-sided model is the twins voting, not an inversion: isolate the minority group per welded component (`references/winding-diagnostics.md`) instead of flipping everything.
+3. Measure in **raw MLOD coordinates**. A frame that already flips Z (an OBJ export, `parse_obj` helpers) inverts the sign; one session concluded "healthy = cross opposite normal" from such a frame and doubted a true CRITICAL for a round.
+4. Decide the direction with the **signed volume by winding**, calibrated on shipped MLOD: a solid seen from outside reads NEGATIVE on production models (a convex box also winds 0 % of its faces "outward" from its centroid); a room meant to be seen from inside reads POSITIVE; Roadway faces walkable from above read `cross_Y < 0` (same side as the kit box's top face). Export sign equal to production → the winding is right and the normals are wrong.
+5. Fix the side that is wrong. Normals wrong → keep the winding and negate the normal pool in place (`lod.facenormals[j] = (-x, -y, -z)`; never through the `Vertex.normal` setter, which re-indexes into the pool); the audit then reads ≈ 100 % with every face order identical to the source. Winding wrong (sign opposite to production) → `face.vertices.reverse()` on every face of every LOD, never a `vertices[1]`/`[2]` swap (a quad becomes a crossed face). Either way confirm in the engine (outside render, inside render, raycast, walk the Roadway) BEFORE promoting the rule: the first version of this section was promoted before that check and cost one build. Engine confirmation of the negate-normals build on the LFSecure pair: PASS, 2026-09-07 22:13, DayZDiag 1.29, I-0 with the L4 PBO (door and room render right side out from outside and from inside; `RaycastRVProxy` view/fire hit the door from the front and the back and the room wall from both sides, while the face-reversed L3 build missed every ray; `P:\LFSecure_dev\evidence\i0\i0_result.json`).
+6. `_check_winding_absolute` / `ERR_WINDING_INVERTED` in the fork flags the production `lf_kit_box.p3d`: the fork's absolute sign convention is inverted. Read that finding as "disagreement", never as a direction.
+7. Geometry / Fire / View LODs of shipped models carry mixed signs (kit box +, solar panel −; seven debinarized vanilla models and four LFPG models wind 0 % "outward per component", i.e. the same orientation as the Blender exports): do not "fix" collision LODs to match the visual LOD, keep the export's orientation.
 
 ---
 

@@ -33,6 +33,8 @@ up a local server+client. Do NOT use to author the mod (that is `dayz-model-pipe
 `enforce-script-reference`), to validate/pack only (`dayz-pbo-build`), or to configure a
 production server. The retail `DayZ_x64.exe` is for final pre-release validation only —
 default to the diag exe. Retail es manual-only y externo a este launcher.
+En esta caja el retail no carga misión (LL-479): B-4 acredita 3_Game+4_World y 5_Mission
+solo se compila en el diag; la cobertura se escribe por módulo en la matriz, nunca «B-4 verde».
 
 ## PROTOCOLO DE SESIÓN COMPARTIDA
 
@@ -97,6 +99,41 @@ Tres gotchas que muerden en este mismo camino y no son del argv (SP-228, medidos
   el menú abre directo. Corrige el hint que citaba solo el JSON.
 
 ## PREREQUISITES (preflight — runs automatically)
+
+### Paso 0 — el linter offline, ANTES de gastar un arranque
+
+Un ciclo de arranque cuesta minutos; el linter cuesta ~60 s y caza en frio lo que si no descubres
+leyendo un RPT:
+
+```
+python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>
+```
+
+Gatea por **`len(errors)`**, nunca por `status` (vale `WARN` con cero errores).
+ La ruta es **relativa a la raiz del Knowledge Pack**, no a tu proyecto: desde el directorio
+de un mod hay que dar la ruta absoluta de TU checkout del pack, o el comando muere con
+`No such file or directory` y se lee como «no esta instalado».
+ Compara contra la
+base para saber si el error es tuyo. **No sustituye el arranque** — Enforce solo compila al cargar
+el mundo, y este linter no ve eso — pero un `errors > 0` significa que el arranque va a fallar y
+no hace falta lanzarlo para averiguarlo. Obligatorio si el cambio borra clases, ficheros o
+entradas de `config.cpp`.
+
+⚠ **Punto ciego MEDIDO, y cuesta un arranque entero: el linter NO ve una variable no
+declarada.** Un `obj.m_Campo` donde el tipo de `obj` no declara `m_Campo` sale con **0 errores**
+y delta cero, y al cargar el mundo el modulo muere con `Cant compile "World" script module!` +
+`ACCESS_VIOLATION`. Medido el 2026-09-08 en LFPowerGrid: el MISMO arbol paso este gate en **12
+lanes** y otra vez sobre el `main` fusionado; una revision adversarial de otra familia tampoco
+lo vio, porque leido en un diff un contador que se incrementa parece razonable. El caso:
+`tRnd.m_Projections` sobre un `LFPG_RenderMetrics`, campo que existe en `LFPG_PreviewMetrics`
+— la clase de al lado en el mismo fichero. **Asimetria util**: el SERVIDOR arranco bien porque
+ese codigo era del camino de render; un gate que mire solo su log da verde a esto.
+
+Barrido barato que si lo caza, antes de gastar el arranque cuando tocas muchos ficheros: por
+cada local tipada `Tipo obj = ...` del diff, comprobar que cada `obj.m_Campo` este declarado en
+`Tipo` o en sus padres, resolviendo la herencia con un censo por regex de `class X : BASE {...};`
+sobre todo `scripts/`. Medido: 145 clases y 32 ficheros en ~2 s. Solo cubre locales con tipo
+explicito — no ve accesos sobre miembros, retornos de funcion ni `this` — pero cubre este patron.
 
 The orchestrator checks these every run and fixes what it safely can. Verified on this box
 2026-05-30: missions present in DayZServer, AddonBuilder present, `P:\` mounted, but
@@ -972,6 +1009,18 @@ sequence that never occurs in a log. Measured against a synthetic log containing
 by construction. Same trap: `-Raw`, `-Literal*`, `[Regex]::Escape` on a pattern you meant as regex,
 and `-match` vs `-like` mixups.
 
+**1-bis. La simétrica: un patrón que NO puede salir verde — `not closed` es un falso rojo.**
+(medido 2026-09-07, LFPowerGrid). Si al gate le añades `not closed` pensando en el
+`CParser: quoted string not closed` de Enforce (§:626), vas a encontrarlo en arranques **sanos**:
+CommunityFramework escribe
+`File "$mission:storage_1/communityframework/modstorageplayers.bin" was not closed. Always shut
+down the server gracefully to prevent data loss.` cada vez que el servidor anterior no cerró con
+gracia — que es SIEMPRE si lo paraste por herramienta. Medido en la misma caja: 1 aparición en un
+arranque verde y 0 en el siguiente, con `CParser` a 0 en los dos, o sea que la diferencia era el
+modo de apagado, no el código. **Ancla el patrón a `CParser`, no a la frase suelta**, y si de
+verdad quieres la frase, exige también `CParser` en la misma línea. Un gate que grita rojo en
+arranques buenos se desactiva solo: a la tercera, alguien lo ignora.
+
 **2. An analyzer whose input does not depend on the experiment.** Hardcoded log paths
 (`$clientPath = ...client_script_2026-08-12_11-25-05.log`) mean every future A/B re-analyses the
 same old flight and reports "no change" tautologically. Its sibling: a script that only prints
@@ -1572,3 +1621,60 @@ for f in _server/profiles/*.RPT _client/profiles/*.RPT; do
   printf "%-52s %s\n" "$(basename $f)" "$m"
 done
 ```
+
+## (added 2026-09-08) Tres muros del arranque gestionado que no nombran su causa
+
+Medidos en un arranque de verificacion de LFPowerGrid. Los tres devuelven un codigo que no
+describe lo que pasa, y los tres se resuelven en un minuto si sabes cual es.
+
+### 1. `launcher_root_identity_drift` — el sello fija el DIRECTORIO, no solo el binario
+
+El registro sellado pinea la identidad NTFS **del directorio** que contiene el lanzador
+(`launcher_registry.py` `_open_validated_entry`: compara `root_file_id` = `file_id` +
+`volume_serial_number` contra `os.stat(root)`). Si ese directorio se **recrea** —y esta bajo
+OneDrive, que lo hace— el `file_id` cambia y **todo** el camino gestionado muere, `preflight`
+incluido. El binario puede ser byte-identico y da igual.
+
+**Diagnostico antes de tocar un sello de seguridad**, porque distingue deriva benigna de
+manipulacion: compara los dos campos del `root_file_id` por separado y **el sha256 del PE**.
+Volumen igual + `file_id` distinto + **PE con el hash pinneado** = el directorio se recreo y el
+binario no cambio.
+
+**Remedio** (es del dueno autorizarlo, no tuyo decidirlo):
+
+    cd <DayZ_MCP_dev>\tools
+    .venv-mcp\Scripts\python.exe -m dayz_mcp.launcher_registry_update         replace-dayz-test-v1 --expected-sha256 <SHA256 DEL REGISTRO, EN MAYUSCULAS>
+
+- Es `replace-*`, no `install-*`: `install` se niega mientras exista la entrada.
+- El token CAS es el sha256 **de los bytes de `approved-launchers.json`**, no del PE.
+- ⚠ **VA EN MAYUSCULAS.** `_HEX = frozenset("0123456789ABCDEF")`, asi que un sha en minusculas
+  —lo que produce `sha256sum`— falla con `invalid_launcher_registry_update`, que no dice nada
+  del formato y manda a buscar el problema donde no esta.
+- Devuelve el sha del registro NUEVO, que es el token CAS de la siguiente operacion.
+
+### 2. La ocupacion es de CAJA, no de puerto: `port=` no esquiva a un ajeno
+
+Con un DayZ ajeno vivo, `dayz_test_run` devuelve `active_run_exists` / `port_in_use_foreign`
+**aunque pases otro `port=`**, y sigue nombrando el 2302 en el error. El primer hint dice
+«pass another port=»; el segundo, ya con la caja leida como ocupada, dice «retry with
+wait_for_box_s». **El que sirve es el segundo**: `wait_for_box_s` mete la peticion en el FIFO.
+`port=` solo vale para convivir cuando la caja YA es tuya.
+
+Antes de esperar, comprueba que el ocupante esta vivo y no es un zombi: `Get-Process` sobre los
+`DayZ*` y mira **CPU y hora de arranque**. CPU creciendo = corrida real de otra linea, se
+respeta. Y mira su `-mod=`: te dice de quien es.
+
+### 3. `mode=client` exige repetir `extra_mods`, o rechaza el reattach
+
+Complemento de SP-323 medido hoy: en el reattach del cliente, omitir `extra_mods` no hereda los
+del arranque del servidor — falla con `bridge_mod_missing: add extra_mods=['@DayZ_MCP']`. Pasa la
+**misma lista** que en `mode=server`, o el sello del conjunto cambia ademas de perderse el puente.
+
+### Bonus: `condition_failed` vs `action_not_found` es un discriminador, con su control
+
+`action_use` distingue las dos cosas, y eso convierte una sonda barata en prueba: `action_not_found`
+= la clase de accion no esta en el array del jugador; `condition_failed` = **si esta y se resolvio
+contra el objetivo**, y la rechazo su `ActionCondition`. Sirve para acreditar que una accion
+alcanza a un tipo de entidad sin montar la fixture que satisfaria su guard. **Con control
+negativo**: lanza tambien un nombre de accion inventado sobre el mismo objeto y comprueba que da
+`action_not_found`; sin ese control no sabes si los dos codigos se distinguen de verdad.

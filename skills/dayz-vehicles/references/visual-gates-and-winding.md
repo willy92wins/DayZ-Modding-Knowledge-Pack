@@ -348,3 +348,47 @@ identical "culling on/off" outputs are a null test, not confirmation.
 
 Detalle completo y el resto de defectos del fork: entrada `SP-227` en
 `AI/20_Knowledge/skill-patches-pending.md`.
+
+## Choosing the sign for a face you are ADDING or MOVING: copy the visible neighbours (added 2026-09-07)
+
+The invariants above are about detecting faces that are already wrong. The complementary
+question — which winding a face should have when a script creates or relocates it — has a
+cheaper answer than any absolute rule: **match the sign of the faces beside it that are known to
+render**, in the same file and the same LOD, so both sides cross whatever format boundary
+follows (MLOD to ODOL included).
+
+Measured on LFQuad2 (2026-09-07). A redesigned dash panel did not draw at all; only a stray
+needle remained visible. The panel's Newell normal dotted with the line of sight gave **+0.951**
+while all **64** disc faces sitting next to it, which render correctly, gave negative dots
+(mean -0.952, 0 of 64 positive). Flipping the panel to agree fixed it. No absolute claim about
+which way a normal "should" point was needed, and none would have been portable: the same
+predicate inverts across binarisation.
+
+Three practical consequences:
+
+- **Calibrate the gate on geometry that is drawing, not on a rule.** Reversing the vertex order
+  and re-checking the sign against the neighbours is a two-line assertion.
+- **Restrict the gate to comparable shapes.** Applying it to the whole dash flagged 12 of 173
+  needle faces as discordant, which is normal: needles are solids and legitimately face both
+  ways. The panel and the discs are flat and coplanar, so only they belong in the comparison.
+  Proving those 12 were pre-existing needed a set comparison of face centroids before and after,
+  not a count.
+- **A translation cannot change winding, but assert it anyway.** It costs nothing and it caught
+  nothing only because the earlier bug had already been found.
+
+## A sort tiebreak that never fires: 0.1 mm mirrored the quad (added 2026-09-07)
+
+The panel above came out mirrored because of the script that repositioned it, not because of the
+model. Corners were assigned from `sorted(range(4), key=lambda k: (-y[k], -x[k]))`, on the
+assumption that the primary key would tie within a row and let the X tiebreak order left from
+right. The two top corners differed by **0.1 mm** in Y (1.2663 vs 1.2664), so the primary key
+never tied, the X tiebreak never ran, and the quad was mirrored in X — which reverses the
+winding.
+
+The failure is silent: positions and UVs are still a valid rectangle, the texture is not
+mirrored (because the UV is a function of the final position), and the only symptom is a face
+that vanishes under culling. **When a sort is meant to group by rows or columns, quantise the
+key** (`round(y, 3)`, or bucket by a tolerance wider than the model's noise), or assign corners
+by quadrant relative to the centroid, which is exact regardless of noise. And add the winding
+sign to the acceptance gate of any script that reassigns vertex positions: a gate that only
+checks coordinates and UVs passes this bug.

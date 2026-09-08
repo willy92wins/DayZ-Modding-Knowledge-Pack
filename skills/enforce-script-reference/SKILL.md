@@ -47,6 +47,61 @@ Before persisting or ordering data across restarts, verify both the clock and th
 9. **Explicit typing always; `m_` prefix on all member fields**
 10. **Variables hoisted before loops and conditionals**
 11. **Inline string concat WORKS** — `"Count: " + val + " items"` is valid (verified LBmaster production)
+12. **Class constant read from a `static` method → `static const` (LL-478)** — plain `const`
+    is fatal in retail (only the engine compiles); the "compiles" gate is a retail boot
+    with `SERVER` before any review, and cascade errors are diagnosed fixing the first only
+
+<!-- corpus-stardz-2026-09-07 -->
+
+### Additional Enforce absences / traps (StarDZ — historical unless noted)
+
+Community traps **not** already covered by the hard rules above (skip ternary; IsDedicatedServer@load; sibling if/else redeclare; multiline args). Paraphrase only — do not vendor StarDZ chapter bodies.
+
+| Trap | Rule of thumb | Claim / note |
+|---|---|---|
+| No do…while | Use while / or | CLAIM-STARDZ-ENFORCE-SYNTAX-ABSENCES |
+| No 	ry/catch/	hrow | Fail-closed returns; don’t invent exception flow | same |
+| switch/case **falls through** without reak | Always reak unless intentional | same |
+| No 
+ullptr | Use 
+ull / NULL | same |
+| No #include / no namespaces | Modules come from config.cpp CfgMods.defs | same |
+| Default params must be literals or NULL | No call expressions as defaults | same |
+| GetGame().GetPlayer() is **null on dedicated server** | Local player only; server: GetGame().GetPlayers(...) (distinct from client-preload null) | CLAIM-STARDZ-GETPLAYER-SERVER-NULL (cross_checked) |
+| sealed types/methods (1.28+) | Cannot extend/override | StarDZ gotchas 31 |
+| Method arity hard-cap **16** params (1.28+) | Split args into structs/helpers | StarDZ gotchas 32 |
+| rray.Remove is **unordered** (swaps with last) | Don’t assume stable order after Remove — confirm ordered API on P:\scripts if order matters | StarDZ gotchas 23 |
+
+More one-liners (historical): string methods may mutate in-place; empty #ifdef/#ifndef blocks can crash compile; crash_*.log filename ≠ proof of engine crash; compile errors sometimes cite the wrong file; parenthesize bitwise vs comparison tests; Obsolete (1.28+) warnings deserve cleanup; StarDZ says JsonFileLoader.JsonLoadFile returns void — reconcile with Pack SP-136 before treating as a hard rule.
+
+Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-enforce-script/12-gotchas.md (CC BY-SA 4.0).
+
+
+<!-- corpus-stardz-2026-09-07 -->
+
+### Additional Enforce absences / traps (StarDZ — historical unless noted)
+
+Community traps **not** already covered by the hard rules above (skip ternary; IsDedicatedServer@load; sibling if/else redeclare; multiline args). Paraphrase only — do not vendor StarDZ chapter bodies.
+
+| Trap | Rule of thumb | Claim / note |
+|---|---|---|
+| No do…while | Use while / or | CLAIM-STARDZ-ENFORCE-SYNTAX-ABSENCES |
+| No 	ry/catch/	hrow | Fail-closed returns; don’t invent exception flow | same |
+| switch/case **falls through** without reak | Always reak unless intentional | same |
+| No 
+ullptr | Use 
+ull / NULL | same |
+| No #include / no namespaces | Modules come from config.cpp CfgMods.defs | same |
+| Default params must be literals or NULL | No call expressions as defaults | same |
+| GetGame().GetPlayer() is **null on dedicated server** | Local player only; server: GetGame().GetPlayers(...) (distinct from client-preload null) | CLAIM-STARDZ-GETPLAYER-SERVER-NULL (cross_checked) |
+| sealed types/methods (1.28+) | Cannot extend/override | StarDZ gotchas 31 |
+| Method arity hard-cap **16** params (1.28+) | Split args into structs/helpers | StarDZ gotchas 32 |
+| rray.Remove is **unordered** (swaps with last) | Don’t assume stable order after Remove — confirm ordered API on P:\scripts if order matters | StarDZ gotchas 23 |
+
+More one-liners (historical): string methods may mutate in-place; empty #ifdef/#ifndef blocks can crash compile; crash_*.log filename ≠ proof of engine crash; compile errors sometimes cite the wrong file; parenthesize bitwise vs comparison tests; Obsolete (1.28+) warnings deserve cleanup; StarDZ says JsonFileLoader.JsonLoadFile returns void — reconcile with Pack SP-136 before treating as a hard rule.
+
+Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-enforce-script/12-gotchas.md (CC BY-SA 4.0).
+
 
 ### Memory Management Rules
 
@@ -175,6 +230,16 @@ Project files cite Enforce rules by an OLD numbering (`ENF-R` namespace: DayZ Pr
 
 Offline Enforce/layout linter (pack tool): `python tools/dayz-script-validator/scripts/script_validator.py <addon_root>` (JSON on stdout; exit 0 PASS / 1 FAIL / 2 WARN). Reconcile UI names with `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>`. This is the OFFLINE gate; DayZ-MCP covers in-game.
 
+⚠ **La ruta `tools/dayz-script-validator/...` es relativa a la raiz del Knowledge Pack.**
+Desde un proyecto (`P:\<Mod>\`) no existe y el comando muere con `No such file or directory`, que
+se lee como «no esta instalado». Forma que funciona desde cualquier sitio:
+`python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>`.
+⚠ **Y su exit code es 0 PASS / 1 FAIL / 2 WARN**: un arbol limpio con warnings sale con **2**,
+asi que `if rc != 0` lo rechaza. Gatea por `len(errors)` del JSON, o trata el 2 como aprobado.
+Companero: `ui_reconcile.py <addon_root>` reconcilia `FindAnyWidget` ↔ layouts y `#STR` ↔
+stringtable, que es lo que ningun compilador ve; `--strict` convierte sus WARN en fallo.
+
+
 ## REFERENCE FILES — Read Before Building
 
 Pick the reference file matching your need:
@@ -198,6 +263,25 @@ Pick the reference file matching your need:
 ---
 
 ## SCRIPT LAYER ARCHITECTURE — 3_Game / 4_World / 5_Mission
+
+<!-- corpus-stardz-2026-09-07 -->
+
+### Five modules (1_Core → 5_Mission) — historical ladder + Pack 3/4/5
+
+DayZ compiles script modules in order (StarDZ; treat as **historical** until matched on your P:\scripts / CfgMods.defs):
+
+| Folder | Module key | Typical mod use |
+|---|---|---|
+| 1_Core | engineScriptModule | Engine utilities/enums; rarely needed by content mods |
+| 2_GameLib | gameLibScriptModule | Rarely used by mods |
+| 3_Game | gameScriptModule | DayZGame, RPC IDs, constants, shared data |
+| 4_World | worldScriptModule | PlayerBase / ItemBase / entities / actions |
+| 5_Mission | missionScriptModule | MissionServer / MissionGameplay, HUD, boot hooks |
+
+**Critical rule:** a lower layer cannot name types that exist only in a higher layer (compile-time). Symptom: Undefined type 'PlayerBase' when referencing PlayerBase (4_World) from 3_Game. Workaround: accept a lower base (Man / Object) in the lower layer and Class.CastTo in 4_World+.
+
+Source: CLAIM-STARDZ-FIVE-LAYER-MODULES, CLAIM-STARDZ-LOWER-LAYER-REF-BAN — https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/02-mod-structure/01-five-layers.md (CC BY-SA 4.0 prose; Pack paraphrase; historical).
+
 
 DayZ loads scripts in order: 3 → 4 → 5. Each layer can reference classes from
 its own layer and ALL lower layers, but NEVER higher layers.
@@ -345,6 +429,17 @@ Moved to `references/verified-api-catalog.md` — reflection/introspection API (
 
 ## ENTITY LIFECYCLE QUICK REFERENCE
 
+<!-- corpus-stardz-2026-09-07 -->
+
+### Entity root pointer (StarDZ — historical)
+
+World objects descend IEntity → Object → … → EntityAI, then branch to items (ItemBase), players (PlayerBase), infected, animals, buildings, transport. Prefer Pack ECE / CreateObjectEx patterns already in this skill; use StarDZ entity + quick-ref as secondary cite, not signature authority — match on P:\scripts.
+
+Server iteration: do not assume GetGame().GetPlayer(); use GetPlayers (see gotcha table above).
+
+Source: CLAIM-STARDZ-ENTITY-ROOT — https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/06-engine-api/01-entity-system.md
+
+
 ```
 Constructor      → Called on object creation (both client/server)
 EEInit()         → Called after entity is fully initialized in world
@@ -425,6 +520,25 @@ The client CAN create local-only entities with `CreateObjectEx(cls, pos, ECE_LOC
 ### Infected alive from script — full ECE flag set (SP-287)
 
 `GetGame().CreateObjectEx(type, pos, ECE_PLACE_ON_SURFACE|ECE_INITAI|ECE_CREATEPHYSICS)` (= 3108; `3_game/ce/centraleconomy.c:9-38`: CREATEPHYSICS 1024, INITAI 2048, PLACE_ON_SURFACE 1060). Without `ECE_INITAI` it is a statue; with all three it walks and attacks (12.7 m in ~16 s, player health 0.695→0.483 — delete as soon as measured). **Surface placement of the AI is DEFERRED**: `GetPosition()` immediately after creation returns the REQUESTED y (0), not the surface y; if you need an honest coordinate, resolve `SurfaceY` BEFORE creating.
+
+### Placement/ground raycasts — `RaycastRVProxy` does NOT flag terrain with `entry` and `dir` is NOT a unit normal (SP-LFS-1, added 2026-09-07)
+
+[IN-GAME MEASURED, DayZDiag 1.29.163709, LFSecure I-1] `DayZPhysics.RaycastRVProxy(params, results, excluded)` with
+`params.type = ObjIntersectFire` (or Geom) against natural ground returns a `RaycastRVResult` with `obj == null`,
+`entry == false`, `exit == false` and `surface` set (`cp_grass`, `cp_concrete2`); against an object it returns
+`entry == true`. A loop that skips `!hit.entry` therefore drops EVERY terrain hit: the hologram never snaps to the
+ground and the server ground check fails with "no ground" for any wall standing on terrain (LFSecure
+`LFS_HologramMod.c:116`, `LFS_Door_Kit.c:144`). Skip only object exit points: `if (!hit) continue; if (hit.obj &&
+!hit.entry) continue;`, and treat `hit.obj == null` as terrain. `RaycastRVResult.dir` is documented as "direction
+outside ... or (in case of line-object collision) direction and size of the intersection"
+(`3_game/global/dayzphysics.c:104`): measured magnitudes 0.16-0.42, so `dot(dir, fwd) >= 0.9` never passes and
+`sqrt(dir.x^2 + dir.z^2) >= 0.2` is a coin flip. Use it for sign/axis only. For a real surface normal use
+`DayZPhysics.RaycastRV(beg, end, hitPos, hitNormal, contactComponent, results, with, ignore, sorted, groundOnly,
+ObjIntersectFire, radius)` as `P:\LFPowerGrid\scripts\4_World\LFPG_HologramMod.c:542,829` does, with
+`g_Game.SurfaceY(x, z)` as the ground fallback (`:843`); vanilla `hologram.c:1438` builds
+`RaycastRVParams(from, to, m_Projection)` and leaves `with` unset. `RaycastRVParams.with` is documented only as
+"ignore object with this object, otherwise collision hits" (`dayzphysics.c:55`): do not rely on it to restrict or
+select targets.
 
 ### Safe Inventory Operations
 ```
@@ -542,6 +656,12 @@ selections (`actiongetintransport.c:49-91`). The mount uses a SINGLE getInPos pe
 (`pos_driver`) + a one-sided get-in anim. For "enter from either side", give the seat two entry
 components/door selections mapping to the same crew index → the action is reachable from both
 sides; a truly mirrored mount, though, needs a mirrored get-in animation.
+Antes de cambiar un valor que consume codigo nativo, lista que argumentos has VISTO y cuales
+vas supuesto (LL-477): un default de firma no es el valor del llamante; instrumenta primero
+(override que loguee) o declara la apuesta y pruebala sola. Por cada campo de un resultado
+del motor en un predicado, enumerar clases de entrada y medir norma/signo/rango con sonda
+viva antes del umbral (LL-482): sin signo medido, invariante sin signo; definicion del tipo
+mas precedente no es verificacion.
 
 ### Vital parts gate engine start — override IsVital* when cloning a reference vehicle (LL-026)
 A drivable `CarScript` decides which parts are required to run via `IsVital*()` methods, all

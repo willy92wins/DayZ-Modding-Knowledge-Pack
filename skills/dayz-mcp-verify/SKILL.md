@@ -368,6 +368,52 @@ Claves:
   MakeScreenshot) — no apoyarse en él para "ejecutar lógica arbitraria de verificación".
 - **`telemetry_read`** se expone tal cual (BUG-010/011/012, hardening pendiente): no certifica
   fixtures JSONL grandes ni rangos extremos.
+- **Acciones CONTINUAS (con barra de progreso): `action_use` las ARRANCA pero NO las COMPLETA**
+  (medido 2026-09-07, LFPowerGrid, ficha `fb-20260907-184749-3fc1`). Devuelve `ok=1, started=1` y el
+  efecto de servidor **nunca llega**: `OnFinishProgressServer` no se dispara y el objetivo sigue en
+  el mundo (`entities_query` a 0.003 m tras dos intentos con esperas de 60 s y 45 s). `key_press`
+  **no** es la salida: documenta ella misma "not OS input, key-up, hold", y una acción continua
+  necesita la entrada SOSTENIDA. Esto tumba de golpe **desmontar, desplegar/deploy y craftear**, que
+  es justo por donde un mod mueve dinero y objetos persistentes.
+  - **Lo que SÍ se puede afirmar, y no es poco**: la CONDICIÓN se evalúa de verdad, así que
+    `started=1` significa "candidata válida" y sirve como medida de que el mod **ofrece** la acción
+    sobre ese objetivo en ese estado. Compruébalo siempre con un control negativo que deba salir
+    rojo (un objetivo excluido devuelve `condition_failed`), o el `started=1` no prueba nada.
+  - **Corolario que muerde aparte**: como desplegar desde un kit es una acción continua, **no hay
+    forma por MCP de crear un objeto persistente de verdad** — `world_spawn` usa banderas por
+    defecto y no sobrevive al reinicio. Súmale que `dayz_test_stop` no cierra con gracia (el
+    arranque siguiente imprime `... was not closed. Always shut down the server gracefully`) y
+    **ninguna prueba de `OnStoreSave`/`OnStoreLoad` entre reinicios es concluyente por MCP hoy**.
+    Si el resultado sale "no persistió", eso es el arnés, NO el mod: no lo reportes como bug.
+
+- **Puertas de `class Doors` (`Building`) NO se abren por MCP** (medido 2026-09-07, LFSecure I-0/I-4, PBO L4):
+  `action_use(ActionOpenDoors, classname=<puerta>)` devuelve `condition_failed` aunque el jugador este a 1,4 m,
+  porque el bridge construye el `ActionTarget` con `componentIndex=-1` y `Building.GetDoorIndex(-1)` (nativa,
+  `3_game/entities/building.c:17`, "index of the door based on the view geometry component index") no resuelve
+  ninguna puerta. `object_anim(source=<fuente de la puerta>, phase=1.0)` responde `phase=1` pero el controlador de
+  puertas del motor la devuelve a su fase "wanted" (relectura `phase=0`) y `IsDoorOpen(index)` sigue en falso, asi que
+  toda accion condicionada a puerta abierta tambien da `condition_failed`. Abrir/cerrar, sonido y sync son test
+  MANUAL (F del usuario); lo unico verificable por MCP es "arranca cerrada" (`object_anim` lee `phase=0`).
+- **`setup_failed` es un FALSO NEGATIVO para acciones locales instantaneas** (`IsLocal() && IsInstant()`:
+  `ActionTogglePlaceObject`, `ActionDropItemSimple`; medido 2026-09-07): el bridge comprueba
+  `GetRunningAction()==null` justo despues de `PerformActionStart`, y una accion instantanea ya ha terminado.
+  El holograma aparecio y el objeto cayo al suelo en los dos casos. Regla: con `setup_failed` en una accion
+  instantanea, verifica el EFECTO (captura, `entities_query` del objeto soltado) antes de dar la accion por fallida.
+- **`scene_raycast`: `entry=0` es el TERRENO y `normal` NO es una normal unitaria** (medido 2026-09-07 con
+  `intersect=fire` y `geom`): un rayo vertical contra el suelo devuelve `hit=1`, `object_type=""`,
+  `surface_type=cp_grass|cp_concrete2`, `entry=0`, `exit=0`; contra un objeto devuelve `entry=1`. El campo
+  `normal` es `RaycastRVResult.dir` tal cual, que en colision linea-objeto es "direction AND SIZE of the
+  intersection" (`3_game/global/dayzphysics.c:104`): modulos medidos 0,16-0,42. Usalo solo como direccion
+  (signo/eje), nunca como normal unitaria ni como umbral (`dot >= 0.9` no se alcanza jamas). Un mod que filtre
+  `!hit.entry` descarta el suelo natural (holograma que nunca se pega al suelo: LFSecure I-1).
+- **Sonda de colision con CONTROL vanilla antes de culpar a la malla** (medido 2026-09-07, LFSecure L3 -> L4):
+  si `scene_raycast` no impacta en un estatico del mod, repite el MISMO rayo (view, fire y geom; desde fuera Y
+  desde dentro) contra un estatico vanilla spawneado al lado (`world_spawn(type="Land_Container_1Aoh")`: paredes
+  planas, `House`, `IsBuilding()` true, util tambien como pared para hologramas). Control HIT + mod MISS en todos los
+  modos y por los dos lados = componentes convexos de colision del reves (winding invertido en Geometry/View/Fire:
+  el ODOL los conserva, el motor no los ve); control HIT + mod HIT solo desde dentro = caras al reves solo en
+  visuales. Con el winding de la fuente restaurado (L4) el mismo rayo dio la cara frontal a +0,079 m y una pared
+  de 0,42 m. La regla de correccion vive en `dayz-p3d-audit` (0 % de acuerdo = discrepancia, no direccion).
 
 ## REPORTING
 

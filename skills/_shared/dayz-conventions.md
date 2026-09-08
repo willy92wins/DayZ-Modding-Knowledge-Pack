@@ -91,6 +91,24 @@ DayZ Tools is the only per-machine install needed. There's no per-clone API key.
 
 ## Testing
 
+- **Antes de cualquier prueba in-game, pasa el linter offline. Existe y casi nadie lo usa:**
+  `python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>`.
+  Cubre Enforce `.c`, `.layout`, `config.cpp`, `inputs.xml` y `.rvmat`, y saca **JSON**. Medido
+  2026-09-08 sobre LFPowerGrid: 271 ficheros en ~60 s.
+  - **Las claves del informe son `errors` y `warnings` en la raiz**, no `findings`.
+  - **Y su exit code es 0 PASS / 1 FAIL / 2 WARN.** Un arbol limpio con warnings sale con **2**:
+    `if rc != 0` lo rechaza. Verificado 2026-09-08 (0 errores, 47 warnings, `exit=2`).
+  - Companero **`ui_reconcile.py`**: reconcilia `FindAnyWidget` <-> layouts y `#STR` <-> stringtable,
+    lo que ningun compilador ve. Obligatorio si borras o renombras un layout.
+  - ⚠ **`status` vale `WARN` aunque `errors` sea 0.** Gatea por `len(errors)`, nunca por `status`,
+    o daras por roto un arbol limpio.
+  - **Su valor real es el DELTA, no el numero absoluto.** Correlo sobre la base y sobre el arbol
+    cambiado y compara: es la unica forma barata de atribuir un error nuevo a tu cambio. Asi se
+    acredito el borrado de la V3 del sorter (271->263 ficheros, 0 errores en los dos lados, y 5
+    warnings MENOS, todos en el codigo retirado).
+  - **No es un compilador.** Enforce solo compila al cargar el mundo: cero errores aqui no
+    sustituye el arranque, pero una referencia colgando tras un borrado si la caza, y eso es
+    justo lo que un grep de simbolos se deja.
 - **DayZ cannot be tested standalone for mod work.** A local server MUST be loaded with the same mod set as the client. Every test/launch skill MUST start a local server alongside the client — never client-only.
 - **Both client and server MUST be `DayZDiag_x64.exe`, not the retail binaries.** Retail `DayZ_x64.exe` (client) and `DayZServer_x64.exe` (server) both block past the loading screen when `-filePatching` is enabled, but `-filePatching` is required for live source iteration (so the engine reads raw `.cpp`/`.c` from the `P:\<ModName>\` junction). The same `DayZDiag_x64.exe` runs in either mode — pass `-server` for server mode.
 - DayZ Diag lives in the DayZ game install dir alongside the retail exe. The DayZ Server Steam install (appid 223350) is NOT required for diag-mode testing; it's only relevant for retail-server testing (which is a separate skill if/when added).
