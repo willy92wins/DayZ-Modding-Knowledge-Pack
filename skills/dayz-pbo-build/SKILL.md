@@ -239,6 +239,33 @@ dayz-ui-development skill, LOCALIZATION section.
 
 ### 7. Script Validation (Basic)
 
+**Corre el linter REAL primero: existe, vive en este mismo pack, y no es opcional antes de
+empaquetar un PBO.**
+
+```
+python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>
+```
+
+Cubre Enforce `.c`, `.layout`, `config.cpp`, `inputs.xml` y `.rvmat`, y saca JSON. La ruta es
+**relativa a la raiz del Knowledge Pack**, no a tu proyecto: desde el directorio de un mod hay que
+dar la ruta absoluta de TU checkout, o el comando muere con `No such file or directory` y se lee
+como «no esta instalado».
+
+- Las claves del informe son **`errors` y `warnings` en la raiz**, no `findings`.
+- ⚠ **`status` vale `WARN` aunque `errors` sea 0**, y el exit code es `0 PASS / 1 FAIL / 2 WARN`:
+  un arbol limpio con warnings sale con **2**. Gatea por `len(errors)`, nunca por `status` ni por
+  el exit del wrapper.
+- **Compara contra una base** (el commit base en un worktree): el delta es lo que atribuye un error
+  nuevo a tu cambio; un numero absoluto no.
+- **No es un compilador.** Enforce solo compila al cargar el mundo. Si caza referencias colgando
+  tras un borrado, que es lo que un grep de simbolos se deja. Medido 2026-09-08 en LFPowerGrid:
+  271 ficheros en ~60 s; retirar 8 los dejo en 263, con 0 errores en ambos lados.
+- ⚠ **Y tiene un punto ciego que cuesta un arranque: no ve una variable no declarada.** Detalle,
+  caso medido y el barrido que si lo caza, en `dayz-test-ingame` §Paso 0.
+
+Las heuristicas de abajo son el respaldo cuando el validador no esta disponible, y una segunda
+pasada util cuando si lo esta.
+
 Checked if scripts exist in `scripts/` folder.
 
 **Checks performed:**
