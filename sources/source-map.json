@@ -10078,7 +10078,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3a95baa0537a15c26122357b9e9619bcdcebc19a69162dcf59f286b624cd1ebb",
+      "output_hash": "d5b7dd8c88e20a646b156e04a57568e67aea0f7aefe7fcfe8b6361f8751ab529",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
