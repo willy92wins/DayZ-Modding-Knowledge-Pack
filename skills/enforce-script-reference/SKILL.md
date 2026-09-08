@@ -47,6 +47,35 @@ Before persisting or ordering data across restarts, verify both the clock and th
 9. **Explicit typing always; `m_` prefix on all member fields**
 10. **Variables hoisted before loops and conditionals**
 11. **Inline string concat WORKS** — `"Count: " + val + " items"` is valid (verified LBmaster production)
+12. **Class constant read from a `static` method → `static const` (LL-478)** — plain `const`
+    is fatal in retail (only the engine compiles); the "compiles" gate is a retail boot
+    with `SERVER` before any review, and cascade errors are diagnosed fixing the first only
+
+<!-- corpus-stardz-2026-09-07 -->
+
+### Additional Enforce absences / traps (StarDZ — historical unless noted)
+
+Community traps **not** already covered by the hard rules above (skip ternary; IsDedicatedServer@load; sibling if/else redeclare; multiline args). Paraphrase only — do not vendor StarDZ chapter bodies.
+
+| Trap | Rule of thumb | Claim / note |
+|---|---|---|
+| No do…while | Use while / or | CLAIM-STARDZ-ENFORCE-SYNTAX-ABSENCES |
+| No 	ry/catch/	hrow | Fail-closed returns; don’t invent exception flow | same |
+| switch/case **falls through** without reak | Always reak unless intentional | same |
+| No 
+ullptr | Use 
+ull / NULL | same |
+| No #include / no namespaces | Modules come from config.cpp CfgMods.defs | same |
+| Default params must be literals or NULL | No call expressions as defaults | same |
+| GetGame().GetPlayer() is **null on dedicated server** | Local player only; server: GetGame().GetPlayers(...) (distinct from client-preload null) | CLAIM-STARDZ-GETPLAYER-SERVER-NULL (cross_checked) |
+| sealed types/methods (1.28+) | Cannot extend/override | StarDZ gotchas 31 |
+| Method arity hard-cap **16** params (1.28+) | Split args into structs/helpers | StarDZ gotchas 32 |
+| rray.Remove is **unordered** (swaps with last) | Don’t assume stable order after Remove — confirm ordered API on P:\scripts if order matters | StarDZ gotchas 23 |
+
+More one-liners (historical): string methods may mutate in-place; empty #ifdef/#ifndef blocks can crash compile; crash_*.log filename ≠ proof of engine crash; compile errors sometimes cite the wrong file; parenthesize bitwise vs comparison tests; Obsolete (1.28+) warnings deserve cleanup; StarDZ says JsonFileLoader.JsonLoadFile returns void — reconcile with Pack SP-136 before treating as a hard rule.
+
+Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-enforce-script/12-gotchas.md (CC BY-SA 4.0).
+
 
 <!-- corpus-stardz-2026-09-07 -->
 
@@ -200,6 +229,16 @@ Project files cite Enforce rules by an OLD numbering (`ENF-R` namespace: DayZ Pr
 ## Offline linter
 
 Offline Enforce/layout linter (pack tool): `python tools/dayz-script-validator/scripts/script_validator.py <addon_root>` (JSON on stdout; exit 0 PASS / 1 FAIL / 2 WARN). Reconcile UI names with `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>`. This is the OFFLINE gate; DayZ-MCP covers in-game.
+
+⚠ **La ruta `tools/dayz-script-validator/...` es relativa a la raiz del Knowledge Pack.**
+Desde un proyecto (`P:\<Mod>\`) no existe y el comando muere con `No such file or directory`, que
+se lee como «no esta instalado». Forma que funciona desde cualquier sitio:
+`python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>`.
+⚠ **Y su exit code es 0 PASS / 1 FAIL / 2 WARN**: un arbol limpio con warnings sale con **2**,
+asi que `if rc != 0` lo rechaza. Gatea por `len(errors)` del JSON, o trata el 2 como aprobado.
+Companero: `ui_reconcile.py <addon_root>` reconcilia `FindAnyWidget` ↔ layouts y `#STR` ↔
+stringtable, que es lo que ningun compilador ve; `--strict` convierte sus WARN en fallo.
+
 
 ## REFERENCE FILES — Read Before Building
 
@@ -617,6 +656,12 @@ selections (`actiongetintransport.c:49-91`). The mount uses a SINGLE getInPos pe
 (`pos_driver`) + a one-sided get-in anim. For "enter from either side", give the seat two entry
 components/door selections mapping to the same crew index → the action is reachable from both
 sides; a truly mirrored mount, though, needs a mirrored get-in animation.
+Antes de cambiar un valor que consume codigo nativo, lista que argumentos has VISTO y cuales
+vas supuesto (LL-477): un default de firma no es el valor del llamante; instrumenta primero
+(override que loguee) o declara la apuesta y pruebala sola. Por cada campo de un resultado
+del motor en un predicado, enumerar clases de entrada y medir norma/signo/rango con sonda
+viva antes del umbral (LL-482): sin signo medido, invariante sin signo; definicion del tipo
+mas precedente no es verificacion.
 
 ### Vital parts gate engine start — override IsVital* when cloning a reference vehicle (LL-026)
 A drivable `CarScript` decides which parts are required to run via `IsVital*()` methods, all
