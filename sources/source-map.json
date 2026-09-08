@@ -201,7 +201,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8bf21f51303f716b12036fbb811bde254c7b9308f2e194448c9347049b3fae1d",
+      "output_hash": "ae32fe792003b954220e3dcbbc4aa072aa40463b9f76b741d0d7779f9b4cc390",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -10492,7 +10492,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b7150431c610ed1cb8d9843c5ce4e8abfef42b31c8dac6170457fa71f7ce8a01",
+      "output_hash": "02fc109188c448e6a2eb581dee3db2e2361e24de6c490e6b2c91f57ac618bbf1",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"

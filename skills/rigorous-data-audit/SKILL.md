@@ -74,7 +74,7 @@ do not advance until it holds).
 
 ### Step 1 — Mechanical pre-checks (cheap, deterministic, fast)
 
-> **Model** — Sonnet; Haiku is fine for the pure grep + table-walk checks.
+> **Assignment** — run deterministic checks directly; delegate only if assigned and useful.
 > **Done when** — a written list of mechanical findings exists (zero items if
 > clean), each citing `path:line_start-line_end`, ready to paste into step 2.
 
@@ -102,17 +102,18 @@ Plus the existing structural check:
 This list goes into step 2's agent prompts as known-context so agents do not
 waste cycles re-finding.
 
-### Step 2 — Eight parallel reasoning auditors
+### Step 2 — Cover the relevant audit angles
 
-> **Model** — Opus. Sonnet is tolerable per-angle for cost, but the step 4
-> cross-actor pass must stay Opus.
-> **Done when** — eight angle reports are in; every finding pastes the literal
+> **Assignment** — the orchestrator chooses reviewer family, effort and lane count
+> from risk and available budget; this skill does not authorize extra agents.
+> **Done when** — relevant angles are covered; every finding pastes the literal
 > code snippet it is about (not just a line citation) plus severity. A
 > "finding" that only describes code without pasting it is bounced back as
 > SUSPECT, not accepted.
 
-Eight angles, one subagent per angle, all spawned in the same turn so they run
-concurrently. Bound each agent's report (≤700 words, no narrative).
+The eight angles below are coverage dimensions, not eight required agents or reports.
+Use one reviewer for a bounded audit; distribute independent angles only when delegated
+and useful. Bound delegated reports (≤700 words, no narrative).
 
 **Show, don't tell.** A claim of the form "this code has bug X" must include a
 copy-paste of the actual code, with `path:line`. A description without the
@@ -120,7 +121,7 @@ snippet is a hypothesis, not a finding — the next step cannot verify it and it
 will be dropped. This requirement is what makes "verified" something grep-able
 rather than narrative.
 
-The angles, in the order they should appear in the parallel batch:
+Coverage dimensions; mark non-applicable angles with a reason:
 
 1. **Persistence & atomic flow** — write barriers, fsync semantics, `.tmp`/`.bak1`/`.bak2` rotation, header/footer verification, partial-write recovery
 2. **State machine** — every transition, every gate, every "should never happen" branch
@@ -136,8 +137,8 @@ prompt for step 4 is also there.
 
 ### Step 3 — Adversarial verification + consolidate
 
-> **Model** — Sonnet. The independent verifier subagent and the citation
-> checks are file-reading work, not deep reasoning.
+> **Assignment** — follow the orchestrator's review budget. Citation checking and
+> judging whether an inference follows are different checks; neither model brand proves them.
 > **Done when** — every row in the deduped table has been confirmed against
 > the real file (by the independent verifier or by you); the 20% self-sample
 > passed (<10% confabulation); each row is labelled defect vs improvement.
@@ -152,8 +153,9 @@ Reasoning agents drift on line numbers, copy citations from sibling files, and
 occasionally invent plausible ranges wholesale. A finding whose snippet does
 not match the file is not a finding — re-derive it or drop it.
 
-**3b — Independent verifier pass.** Spawn one subagent with a **fresh context
-that has not seen the angle reports**. Hand it only the bare list of claims
+**3b — Independent verifier pass.** When an independent pass is assigned, use a
+reviewer from another family with a **fresh context that has not seen the angle reports**.
+If it is unavailable, declare that limitation; do not silently claim independence. Hand it only the bare list of claims
 (claim + location, no reasoning, no severity). Its task: for each
 claim, open the cited file and return TWO separate verdicts — "does the
 file actually say this" (`snippet_matches_file`) and "does the conclusion
@@ -190,15 +192,15 @@ Then build the single deduped table:
 
 ### Step 4 — Implementer-grade cross-actor pass
 
-> **Model** — Opus, no substitution. The cross-actor reasoning is exactly
-> where smaller models drop bugs.
-> **Done when** — the fresh-context agent returns clean. If it found
-> something, fix it and re-run step 4 with fresh context; repeat until clean.
+> **Assignment** — an independently assigned reviewer capable of cross-actor reasoning.
+> **Done when** — the agreed product checks and review budget are satisfied. A new
+> finding needs executable evidence to block. The single stop-rule owner is
+> `gates-ledger` §Cuándo para un bucle; do not create an until-clean loop here.
 
 This is the step that, in retrospect, would have caught the 12 VULNs.
 
-Spawn **one** Opus agent with a fresh context — no audit history, no agent
-output, no priors. Hand it the codebase, the README/spec, and this single
+Give the assigned reviewer a fresh context — no audit history, no agent output,
+no priors. Hand it the codebase, the README/spec, and this single
 prompt: *"Find every way this code can lose, corrupt, or silently misroute
 player data. Trace each writer to every reader, each sidecar to every cleanup
 site, each admin flag to every consumer. Where any of those triples is
@@ -211,12 +213,12 @@ look within the layer; they do not chase across actors. The implementer-grade
 prompt explicitly says "trace across actors".
 
 If this agent finds nothing, that is the signal that the audit is converging.
-If it finds one thing, fix it and re-run step 4 with fresh context (it may
-unblock a chain of further findings).
+If it finds a defect, reproduce it, classify its impact, and recheck the affected
+path within the agreed budget. Escalate remaining work when that budget is exhausted.
 
 ### Step 5 — Apply fixes
 
-> **Model** — Opus. This is code editing.
+> **Assignment** — use the execution route authorized by the orchestrator.
 > **Done when** — every applied fix names the check or angle that caught it;
 > a re-grep confirms the pattern is gone everywhere; no fix exceeds the
 > minimum verified change.
@@ -239,8 +241,8 @@ Standard editing flow, with four specifics:
 
 ### Step 6 — Re-audit subset
 
-> **Model** — Sonnet for the mechanical re-checks; Opus for the two re-run
-> angles.
+> **Assignment** — mechanical checks directly; targeted reasoning under the
+> same review budget and family-independence contract.
 > **Done when** — mechanical pre-checks plus the two most-changed angles run
 > clean. A new finding loops back to step 5 **once**; a second reappearance stops
 > the loop (ORCHESTRATOR_NEEDED with backlog).
@@ -298,7 +300,7 @@ Watching for these saves rounds:
   contagion, not confirmation. The step 3 verifier must have fresh context.
 - **Re-running the same audit after fixes.** Step 6 changes the cheap checks
   plus the two layers most edited — full 8-angle re-runs waste budget.
-- **Spawning step 2 agents serially.** They are independent; spawn in one turn
+- **Serializing independent work after parallel delegation was authorized.** If multiple lanes are assigned, dispatch them together
   so they run concurrently.
 - **Shipping a `.skill` / release / patch file from un-reverified findings.**
   Cheap to apply, expensive to walk back.
@@ -635,8 +637,9 @@ campaign, which is what makes it a rule rather than an anecdote.
    them as part of RED->GREEN. Treat the arbitration's design as unaudited input.
    In the case above, the counter-scenarios that were embedded got verified; the
    one that was not embedded is the one the re-audit had to catch.
-3. **Budget 2-4 rounds for integrity bundles.** The closing signal is "a round
-   with zero NEW critical/major", not "the old findings are closed".
+3. **Use the single loop budget established before review.** Follow `gates-ledger`
+   §Cuándo para un bucle: executable product criteria, bounded rounds and an explicit
+   escalation outcome. Do not substitute a zero-new-findings requirement.
 
 
 ## (added 2026-08-31, SP-196 + SP-200) Repair-on-load constructors turn every reader into a writer

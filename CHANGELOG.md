@@ -3,6 +3,15 @@
 All notable changes to the DayZ Modding Knowledge Pack are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Changed
+
+- Audit procedure: coverage angles no longer require eight agents or a fixed model.
+  Review assignment and the bounded product-based stop rule belong to the orchestrator.
+  The evidence checks and domain coverage remain; unavailable independent review must
+  be declared. No game API, artifact format or runtime behavior changed.
+
 ## [1.3.0] - 2026-08-25
 
 ### Removed
