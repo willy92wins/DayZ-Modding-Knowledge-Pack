@@ -844,6 +844,33 @@ re-diverges, which points at replay determinism; a monotonic rise or plateau wit
 means the transform is not receiving correction, which points at mechanism gating. Do not
 interpret shape until both clocks and sample gaps have passed those existing gates.
 
+## Fit the clock offset on the axis you are NOT investigating (SP-385, added 2026-09-09)
+
+LL-200 says to estimate the server↔client offset and interpolate one series onto the
+other. It does not say which components to fit on, and the obvious choice is wrong:
+minimising the full 3-D distance **absorbs a real single-axis divergence into the
+fitted offset** and removes it from the residual. The measurement then reports "the
+two sides agree" for a defect that is present, with no symptom that anything failed.
+
+Restrict the fit to the axes NOT under investigation, and leave the axis in question
+as a measurement rather than a fit parameter.
+
+Measured 2026-09-04 on LFHeli: fitting horizontal X/Z only gave a 6 mm median
+residual over 405 cells and left a post-landing height divergence of 0.169 m p50,
+0.833 m max, standing. A full 3-D fit would have spent that height on the offset.
+
+Two corollaries:
+
+- **Where the reference side is CONSTANT the residual is immune to offset error.**
+  With the airframe resting and the server reporting `|vy| <= 0.05`, height on that
+  side does not move, so any clock error contributes zero. Prefer that window when
+  it exists: the result then does not depend on the fit at all.
+- **Validate the fit with a second estimator that shares nothing with it.** A paired
+  handshake line logged with `t=` on both sides is independent of the trajectory;
+  agreement bounds the alignment error. Measured: the two estimators differed by a
+  constant 0.180 s, with 356 of 405 cells within ±0.05 s of that median — which also
+  identifies the residual as send→apply latency rather than error.
+
 ## Probe independence and time order (SP-357, added 2026-08-31)
 
 Before adjudicating a bug with a runtime probe, prove that the measured quantity is

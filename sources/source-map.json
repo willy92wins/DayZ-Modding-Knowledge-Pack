@@ -5896,10 +5896,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "integrate-publish@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Side commit 4ffa6e5 replayed onto the integration branch; the file also changed on the integrated line, so the replayed bytes are a merge of both.",
+          "license": "MIT",
+          "source_hash": "145cbdaddafb6976ec20ce2f3d5ca12f125bf5cc1677ee18375a72fec8378910",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "integrate-publish@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2c90e0bd86084f759985d6affd448b9f15de24c8e512298c159482c679f5effe",
+      "output_hash": "145cbdaddafb6976ec20ce2f3d5ca12f125bf5cc1677ee18375a72fec8378910",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
