@@ -142,3 +142,27 @@ VertexShaderID="Basic";
 
 Source: `P:\DZ\data\data\penetration\wood_desk.rvmat:1` to `:9`.
 
+
+## A root-level `uvTransform` does not reach a texture set by `SetObjectTexture` (SP-385)
+
+Measured in-game 2026-09-10 (DayZ 1.29, SUB_BRZ s90). Single-variable A/B on one selection.
+
+Two materials identical in every photometric field -- `ambient`, `diffuse`,
+`emmisive[]={0.10,0.10,0.11,16}`, Stage1 NOHQ, Stage2 SMDI -- differing ONLY by a root-level
+`uvSource="tex"` plus `class uvTransform` with `pos[]={0.5,0.5,0}`. Same selection, same code
+path, same hardcoded terrain-layer texture applied with `SetObjectTexture`. The texture
+rendered in exactly the same place under both. Half a tile of displacement would have
+rearranged the image; nothing moved.
+
+Cause: the material declares no `Stage0`. Its diffuse is not owned by the material at all --
+it is the FACE texture, supplied by the `hiddenSelectionsTextures[]` slot or by
+`SetObjectTexture`. The root `uvSource`/`uvTransform` governs the stages the material itself
+declares, and the face-texture path does not pass through them.
+
+Consequence: a material cannot pan, crop or window a texture that a script assigns. Any design
+that plans to show a moving window over one large texture by swapping rvmats that carry
+different transforms is dead in this form.
+
+Untested, and it is the experiment that decides whether a bank of cheap rvmats over ONE texture
+is viable: whether the transform bites when the material declares its own `Stage0` carrying the
+texture, with no `SetObjectTexture` at all.

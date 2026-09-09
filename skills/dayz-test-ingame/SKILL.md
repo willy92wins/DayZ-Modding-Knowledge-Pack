@@ -742,6 +742,45 @@ logs NOTHING useful. The real message is only inside the minidump: extract strin
 because the engine handles it itself. Check `Get-Process steam` BEFORE launching a client, and start
 it with `steam.exe -silent` if missing.
 
+**1-bis. If that message appears while Steam IS running, stop reading the message and run the
+discriminator.** Measured 2026-09-08 on SUB_BRZ: the client died on 5 consecutive launches with
+exactly the string above, plus `[API loaded no]` in the same dump, while `Get-Process steam`
+returned a live process, `HKCU\Software\Valve\Steam\ActiveProcess` held a non-zero `ActiveUser`
+whose `pid` matched it, and steam.exe, DayZDiag_x64 and the daemon all ran as the same unelevated
+user. Restarting Steam (`steam.exe -shutdown`, then relaunch) changed nothing, twice. Point 1's
+advice ends at "check Steam is running"; when it IS, the reader has nowhere to go.
+
+**The asymmetry is the clue: the server lives and the client dies.** Point 1 already says why - only
+the client needs the Steam API - so the split names the suspect on its own, and the experiment that
+separates the two causes is to launch the dead half YOURSELF, from your own user shell, with the
+same command line (lift it from the RPT header or the dump). Two minutes, and it answers completely:
+
+- **the hand-launched client dies too** -> the host or Steam really is broken, and that fix belongs
+  to the user.
+- **the hand-launched client lives** -> the DAEMON'S SPAWN CONTEXT is what breaks it, not the host.
+  Different owner, different fix, and no amount of restarting Steam will touch it.
+
+On that date it lived: it booted, connected, and reached the in-game HUD. `capture_screenshot` works
+on it, because capture is host-side rather than a bridge verb. Filed as `fb-20260908-190943-5073`.
+
+**Caveat that bounds the workaround**: a client you launched yourself is FOREIGN to the run record,
+so the instance fence rejects its polls (`unaccredited_polls_by_class.instance_unknown` climbs) and
+no client verb reaches it. Without `camera_set` there is no framing. It is good for putting a HUMAN
+in front of the screen, not for automating a reading.
+
+**The general rule, worth more than this case**: when one half of a client/server pair dies and the
+other lives, their differing requirements already shortlist the cause. Run the by-hand launch of the
+dead half BEFORE believing whatever subsystem the error message happens to name. Here the message
+named Steam, and Steam was the one thing that could not help.
+
+**And when it IS the daemon, re-measure before treating the wall as permanent.** Confirmed on
+SUB_BRZ 2026-09-10, the day after: the same launch succeeded on the first try -- `client_alive=true`
+at 17 s, player in game at 51 s, no Steam intervention, and `auto_remediate_steam` not even
+requested. The only thing that had changed was `session_status.daemon_generation`. The wall was
+daemon STATE, not the host, and a daemon restart cleared it. So record `daemon_generation` when you
+file the finding, compare it when you retry, and give a freshly restarted daemon one clean launch
+before spending a session on the workaround.
+
 **2. The request JSON must not carry a UTF-8 BOM.** `Out-File -Encoding utf8` in Windows PowerShell
 5.1 writes a BOM and the parser rejects the whole request with `invalid_dayz_test_request`. Write it
 with `[IO.File]::WriteAllText($path, $json, (New-Object Text.UTF8Encoding($false)))`, or copy a

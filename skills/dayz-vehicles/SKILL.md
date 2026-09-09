@@ -1640,3 +1640,38 @@ Metodo que los encontro, y es lo transportable: no enumerar que mirar, sino **de
 contrato del referente en ejecucion** --"toda familia de seleccion que el referente tiene, el
 port la tiene"-- con una lista corta de excepciones autorizadas. El port llevaba 17 puertas, 15
 en verde, y no nacia; el barrido complementario saco 22 huecos en una sola pasada.
+
+## El estado visual por script NO se aplica a un vehiculo recien spawneado, y el default del config parece un resultado (SP-384, added 2026-09-10, SUB_BRZ s90)
+
+El codigo visual que corre desde `OnVariablesSynchronized` **no se ejecuta nunca** en un
+vehiculo creado con un spawn pelado: todavia no ha sincronizado nada. El coche pinta las
+entradas de `hiddenSelectionsTextures[]` y `hiddenSelectionsMaterials[]` del `config.cpp` y
+nada mas, asi que todos los `SetObjectTexture` / `SetObjectMaterial` del script faltan.
+
+Es una trampa silenciosa porque **el default del config suele ser una version plausible de lo
+que el script habria pintado**: una pantalla casi negra, un piloto apagado, un panel en blanco.
+Leer esos pixeles como el resultado de la rama con script da un veredicto seguro y falso.
+
+**Lo que si sincroniza, medido:** montar piezas. Un fixture de debug-spawn que engancha bateria,
+bujia, radiador, cuatro ruedas y puertas es una sincronizacion grande de adjuntos y dispara la
+actualizacion visual. Sentar a un jugador y arrancar el motor tambien vale, con el coste de
+abajo.
+
+**El discriminante: lleva un control EN EL MISMO FOTOGRAMA.** Elige una SEGUNDA seleccion cuyo
+estado por script se distinga a simple vista de su default de config, y leela en la misma
+captura que el sujeto:
+
+- cuadro de instrumentos: el config le da el material OFF, el script le pone el ON.
+- cualquier piloto: OFF en config, ON solo desde script.
+
+Asi el fotograma responde dos preguntas a la vez. Control encendido => la rama con script
+corrio, luego el aspecto del sujeto **es** el resultado. Control apagado => el script no corrio
+y el sujeto no dice nada, tenga el aspecto que tenga.
+
+Compara los `emmisive[]` de los dos materiales antes de fiarte del ojo: una diferencia de escala
+0,3 frente a 1,1 es inconfundible a plena luz; 0,9 frente a 1,0 no lo es.
+
+**Coste de la via alternativa (arnes DayZ-MCP, medido 2026-09-10):** arrancar el motor exige
+propiedad del vehiculo en cliente, y tomarla deja la camara libre inutilizable durante toda la
+vida del proceso cliente. Encuadrar el salpicadero y tener el motor en marcha pasan a ser
+excluyentes en un mismo cliente. Prefiere la sincronizacion por adjuntos.

@@ -7594,7 +7594,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1a88138cbc6bba0825fbf08ac4a0c8abb8a902e10cfafa8d103bbabd0093bc10",
+      "output_hash": "ba07d4b44513e36b225198aae96f7c7c5c7922acff531b511f0970e112ee1e85",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -7956,7 +7956,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "77a7857a4c7a0b27a36be1492aff7cb4df206175c1b78c7664e7143266b5c4bf",
+      "output_hash": "cfce1cbec31ce7b1607ef4af4cfec911a3bcee816ad1b69a6e2f292a2c29d939",
       "output_path": "skills/dayz-texture-pipeline/references/rvmat-cookbook.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -8898,7 +8898,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "bf8be1f777179276082c3644015f5b0881aaad1cd3c9a296b6a66e4cba6bbb6f",
+      "output_hash": "f38a4891421ed9c52ab06fd6723f644b53c05274eef49b6a896d83445f7abd3f",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
