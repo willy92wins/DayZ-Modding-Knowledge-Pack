@@ -822,6 +822,26 @@ and require approximately zero residual before trusting any product comparison.
      Confirm the config `radius` against the wheel MESH before touching the body — measure the
      outer radius in the plane perpendicular to the spin axis (here 0.3501/0.3502, so the config was
      right and the hub was wrong).
+
+15b. **A ported vehicle that "drifts on its own, even on flat ground" is a `tyreRollResistance`
+     defect, and the roll-away threshold is `tan(slope) > tyreRollResistance` (measured
+     2026-09-09, Arma2Quad; closed by telemetry).** The quad's healthy wheels carried
+     **0.0015** against **0.008-0.015 on every vanilla wheel**
+     (`DZ\vehicles\wheeled\config.cpp:876, 4775, 8985, 13403, 18077`), and its ruined ones
+     0.03 against 0.2-0.75. That moves the threshold from 0.86 deg to **0.086 deg**: no DayZ
+     terrain is that flat, so the vehicle creeps everywhere and the report reads as a physics
+     or sync bug. Three things this invariant exists to stop, all of which cost cycles here:
+     **(a) mass is irrelevant** - gravity and rolling resistance both scale with weight and
+     cancel, so "it is too heavy / too light" explains nothing; **(b) vanilla vehicles do not
+     hold still through friction, they hold still because they are BRAKED** - every vanilla
+     config carries `Brake.driverless = 0.1` and `Car.c:223` declares
+     `SetBrakesActivateWithoutDriver`, which `actionpushcar.c:95` disables to push a car, so a
+     vanilla car with a driver seated and the engine off ALSO rolls downhill; **(c) the
+     ground is never flat** - `surface_query` returns the normal, and spots that look level
+     measured 0.72-4.8 deg. Day-1 check on any port: diff the whole wheel class against the
+     nearest vanilla wheel, not just `radius`. Discriminating rolling from sliding is one
+     line of telemetry: rolling satisfies `omega == v / r` (here 0.051 measured against 0.048
+     predicted, 6 %); a mismatch means slip or a decoupled animation.
      **Fix the ORIGIN, not the hubs.** Translating the whole model leaves every body-to-hub relation
      intact, so the settled pose is unchanged and only the spawn pose moves; raising the hubs alone
      changes ride height by the same amount and breaks a pose the user already accepted.
