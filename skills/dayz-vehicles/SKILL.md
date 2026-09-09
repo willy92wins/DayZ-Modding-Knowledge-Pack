@@ -783,11 +783,14 @@ and require approximately zero residual before trusting any product comparison.
     (`storedN-outward` high, i.e. it reads transparent not black), a GLOBAL vertex-order flip
     (`face.vertices.reverse()` on every face, do NOT touch normals — they ride the vertices) suffices — census
     98%→2%, matching LOD0. Reach for make-consistent+orient (`rip_winding_core.repair_winding_majority`) ONLY
-    when the far-LOD is topologically MIXED (low interior-edge consistency), not merely globally inverted (G5
-    simple-first). Root cause on SUB_BRZ: the in-line s26 ladder assembler took the dissolve winding VERBATIM +
-    raw +cross normals and skipped make-consistent (which the shell's `rip_winding_core` runs) → res=2 shipped
-    see-through, `outward=38.9%` was printed and ignored, no offline gate. GATE any baked far-LOD by census-vs-LOD0
-    BEFORE deploy — Blender cannot judge DayZ winding (right- vs left-handed cull).
+     when the far-LOD is topologically MIXED (low interior-edge consistency), not merely globally inverted (G5
+     simple-first). Root cause on SUB_BRZ: the in-line s26 ladder assembler took the dissolve winding VERBATIM +
+     raw +cross normals and skipped make-consistent (which the shell's `rip_winding_core` runs) → res=2 shipped
+     see-through, `outward=38.9%` was printed and ignored, no offline gate. GATE any baked far-LOD by census-vs-LOD0
+     BEFORE deploy — Blender cannot judge DayZ winding (right- vs left-handed cull). El instrumento
+     replica el ORDEN del consumidor: el culling va ANTES del test de profundidad (LL-485); agrupar
+     impactos a t_min+epsilon y preguntar si ALGUNO mira a camara, y releer los controles cuando el
+     arreglo cambie la clase de geometria que el instrumento resuelve.
 14. **Steering wheel vs hands: measure rim-center delta AND plane tilt vs the control BEFORE moving
     anything — the seat anim is the control's, so hands land on ITS wheel plane.** (added 2026-07-07,
     SUB_BRZ s25 measured) SUB_BRZ: rim-center delta vs crew anchor already in parity (1-1.6 cm) but rim
@@ -805,6 +808,27 @@ and require approximately zero residual before trusting any product comparison.
     (`DZ\vehicles\wheeled\config.cpp:4755-4772`) → 2.4 cm hub-vs-radius mismatch, same order as the
     observed damper rest −4.3/−5.6 cm ("wheels slightly up"). Day-1 check: `WHEEL_R == mounted-wheel
     radius` or document why not.
+
+15a. **The symptom of a wrong hub level is "it spawns sunk and corrects itself once a player
+     mounts" — and vanilla parks the hub ABOVE the tyre radius, not level with it (measured
+     2026-09-09, Arma2Quad ex-LFQuad2; offline, in-game pending).** Invariant 15 says to match the
+     mounted wheel's radius but gives no control value and no way to recognise the defect from a
+     user report. Both, measured: the quad's four `wheel_*_damper_land` sat at `cy=+0.3231` with a
+     mounted wheel of `radius=0.350149`, i.e. **hub_y − radius = −0.0271**; the control
+     `civiliansedan_mlod.p3d` sits at `+0.3627` against `CivSedanWheel radius=0.34`
+     (`DZ\vehicles\wheeled\config.cpp:4771`), i.e. **+0.0227**. Sign is the whole diagnosis:
+     negative puts the wheels under the terrain at spawn and the settling suspension lifts the body,
+     which reads to a player as a sync bug; vanilla's positive margin spawns slightly clear and drops.
+     Confirm the config `radius` against the wheel MESH before touching the body — measure the
+     outer radius in the plane perpendicular to the spin axis (here 0.3501/0.3502, so the config was
+     right and the hub was wrong).
+     **Fix the ORIGIN, not the hubs.** Translating the whole model leaves every body-to-hub relation
+     intact, so the settled pose is unchanged and only the spawn pose moves; raising the hubs alone
+     changes ride height by the same amount and breaks a pose the user already accepted.
+     **And measure `autocenter` instead of fearing it:** the warning that the engine re-centres a LOD
+     lacking `autocenter=0` did NOT apply here — 10 of 12 LODs lacked it, with bbox centres 0.62–1.63 m
+     off origin, and the model renders aligned in-game, so a global translation survives. If it were
+     re-centring, those LODs would already be scattered by up to a metre relative to Geometry.
 
 15b. **Wheel-mesh facing needs an asymmetric witness, not a symmetric bbox (SP-254,
      added 2026-08-31).** Split wheel points by the sign of the mesh's shortest axis
