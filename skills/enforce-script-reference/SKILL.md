@@ -152,6 +152,7 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
 31. **Use `IsKindOf()` not `GetType() ==` for tool checks** — `GetType()` exact match fails on inherited/modded variants; `IsKindOf()` checks full inheritance chain
 32. **Match client-side and server-side tool checks** — if ActionCondition uses `IsKindOf`, the server RPC handler must also use `IsKindOf`, not `GetType() !=`
 33. **`RemoveAction(ActionTakeItem)` + `RemoveAction(ActionTakeItemToHands)`** — prevents item pickup/drag on placed objects; combine with `IsTakeable()` returning false and `CanPutInCargo()` returning false
+34. **Cursor component → selection membership goes through the engine's name list, in LOWER CASE** — `GetActionComponentNameList(idx, list, "")` (`object.c:198`) returned `component14`, `component19`, `door1` for a runtime `House` (LFSecure room, in-game 2026-09-09): names are lower-cased and the cursor index is 0-based while Object Builder auto-names are 1-based (`comp 13 → component14`, `comp 18 → component19`, `comp 8 → door1`). `IsActionComponentPartOfSelection(idx, "Component14", LOD.NAME_VIEW)` never matched, so three actions (bed, sink, exit) were dead for a whole test cycle with no error anywhere. Compare `list.Get(i)` after `ToLower()` against lower-case names in the default geometry, and while diagnosing log `idx` + the name list once per distinct index.
 
 ### Layout & UI Path Rules
 
@@ -541,13 +542,31 @@ ground and the server ground check fails with "no ground" for any wall standing 
 !hit.entry) continue;`, and treat `hit.obj == null` as terrain. `RaycastRVResult.dir` is documented as "direction
 outside ... or (in case of line-object collision) direction and size of the intersection"
 (`3_game/global/dayzphysics.c:104`): measured magnitudes 0.16-0.42, so `dot(dir, fwd) >= 0.9` never passes and
-`sqrt(dir.x^2 + dir.z^2) >= 0.2` is a coin flip. Use it for sign/axis only. For a real surface normal use
-`DayZPhysics.RaycastRV(beg, end, hitPos, hitNormal, contactComponent, results, with, ignore, sorted, groundOnly,
-ObjIntersectFire, radius)` as `P:\LFPowerGrid\scripts\4_World\LFPG_HologramMod.c:542,829` does, with
-`g_Game.SurfaceY(x, z)` as the ground fallback (`:843`); vanilla `hologram.c:1438` builds
+`sqrt(dir.x^2 + dir.z^2) >= 0.2` is a coin flip. Use it for sign/axis only. **SUPERSEDED 2026-09-09 (SP-LFS-2
+below): `DayZPhysics.RaycastRV(... contactDir ...)` is NOT a surface normal either; the earlier advice to take the
+normal from it, as `LFPowerGrid/scripts/4_World/LFPG_HologramMod.c:542,829` does, was wrong and LFPG carries the
+same latent defect.** `g_Game.SurfaceY(x, z)` as the ground fallback (`:843`) stays valid; vanilla `hologram.c:1438` builds
 `RaycastRVParams(from, to, m_Projection)` and leaves `with` unset. `RaycastRVParams.with` is documented only as
 "ignore object with this object, otherwise collision hits" (`dayzphysics.c:55`): do not rely on it to restrict or
 select targets.
+
+### Surface normals: neither `RaycastRVResult.dir` nor `RaycastRV.contactDir` is one — use `RayCastBullet` (SP-LFS-2, added 2026-09-09)
+
+[IN-GAME MEASURED, DayZDiag 1.29.163709, LFSecure placement cycles 1-2, 2026-09-09] For object hits BOTH fields
+carry the ray direction, not the face normal: `RaycastRVProxy` `dir` on a dozen vertical wall components of
+`Land_House_1W09_Yellow` had Y between 0.25 and 0.45 (the camera pitch), and `RaycastRV` `contactDir` on
+`Land_House_1W02` pointed the same way with magnitudes 0.01-3.3 ("direction and size of the intersection",
+`dayzphysics.c:104`; the doc example at `dayzphysics.c:170-181` prints a `contactDir` equal to the ray direction). A
+hologram yaw derived from either FACES THE CAMERA: it looks aligned only when the player faces the wall squarely,
+and at any other angle the ghost's box collides with the wall it is supposed to hug (the "grey hologram, no
+action" symptom). `LFPG_HologramMod.c:542,711` inherits this; its floor/wall/ceiling split works only because
+camera pitch correlates with the surface aimed at. For a physics normal use
+`DayZPhysics.RayCastBullet(beg, end, PhxInteractionLayers.BUILDING, ignoreObj, hitObject, hitPos, hitNormal,
+hitFraction)` (`dayzphysics.c:211`; layers `dayzphysics.c:14-40`; vanilla users `environment.c:408`,
+`actiontargets.c:330`, `undergroundhandlerclient.c:146`), keep the fire-geometry ray for identity and `entry`,
+accept the normal only when both contacts lie within ~15 cm, and log which source the pose used (`src phx|ray`).
+The physics path shipped in LFSecure R6 and was NOT yet exercised in-game; its fallback (face the camera) is the
+behaviour accepted in V1/R5. Verification: `dir`/`contactDir` claims = runtime_verified; `RayCastBullet` = source_verified.
 
 ### Safe Inventory Operations
 ```
@@ -694,7 +713,7 @@ Five measured facts (LFHeli LF-007 / LF-001; evidence `evidence-2026-08-17/cell-
 
 3. **`Object.GetHealth01(zone,type)` (`object.c:997`) is not callable on client.** Throws `Virtual Machine Exception ... cannot be called on client` (non-fatal, returns 0).
 
-4. **`DumpStackString(out string)` (`endebug.c:50`) gives the multiline script stack, but the client log truncates the string to ~255 chars.** Print line by line instead of the whole block.
+4. **The script log truncates EVERY `Print` line at 255 characters**, not only `DumpStackString(out string)` (`endebug.c:50`): measured 2026-09-09, 172 of 193 LFSecure diagnostic lines cut at exactly 255, losing the fields that mattered. Write diagnostics as several short lines sharing an event tag (`Hologram#12 wall …`, `Hologram#12 ground …`), clip variable-length fields, and print stacks line by line.
 
 5. **`ActionStopEngine.OnExecute` (`actionstopengine.c:35-59`) with PHYSICS executes the stop ONLY on client.** The server sees it via replication (its stack shows only `OnEngineStop`).
 

@@ -167,6 +167,19 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
   cannot regress its siblings. The ghost material comes from `hologramMaterial` + `hologramMaterialPath`
   (`hologram.c:1554-1557`) plus the suffixes `_deployable.rvmat` / `_undeployable.rvmat` (`:14-16`); declare
   both keys or the hologram renders untextured.
+- **A custom wall-placement hologram (modded `Hologram.UpdateHologram`) needs four things vanilla does not
+  hand you.** (1) The wall normal: neither `RaycastRVProxy.dir` nor `RaycastRV.contactDir` is a face normal for
+  object hits — both are the ray direction, so a yaw taken from them faces the camera and the ghost's box
+  collides with the wall at any angle. Take it from `DayZPhysics.RayCastBullet` on
+  `PhxInteractionLayers.BUILDING` and keep the fire-geometry ray for identity (`enforce-script-reference`
+  SP-LFS-2). (2) The ground: pick the nearest support at or BELOW the aimed point (Y ≤ aimY + 2 mm); a ray
+  started 2 m above the point selects sills, ledges and the floor above. (3) The collision box: lift its
+  bottom 5 cm like `IsCollidingBBox` (`hologram.c:547,556`) or every building floor blocks placement, and trim
+  the back so the support wall does not count. (4) One diagnostic line per cause bit (wall/ground/spacing/
+  player/water/box), emitted on change and rate-limited, each line under 255 chars, with the unlifted box
+  queried only when logging — that is what turned "the hologram is grey" into a named cause in one cycle.
+  Origin: LFSecure, 2026-09-09, three in-game cycles and two Codex rounds
+  (`LFSecure_dev/plans/2026-09-09-colocacion-fix-diag.md`); (1) shipped but not yet exercised in-game.
 
 ## PERSISTENCE — one synced bitmask is BOTH netsync AND save (data-critical)
 

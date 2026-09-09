@@ -4350,7 +4350,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cadba8df859b30e661a81dee04c4387fd623b797e170a102f991b2df03bc1b69",
+      "output_hash": "e6602d34ec6561bc36fea6612f9034b4fd5c4ff90b6347021b3219cf3e0bfbb4",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -10078,7 +10078,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d5b7dd8c88e20a646b156e04a57568e67aea0f7aefe7fcfe8b6361f8751ab529",
+      "output_hash": "a4d66fe960e17dd16bc967f2f0639318f5c52752331438b1e3ab61840803e467",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
