@@ -43,3 +43,33 @@ Landrover. Antes de creer que la constante está mal:
 La fixture mecánica que acompaña a la invariante solo exige que el frame identidad FALLE.
 Una fixture que intercambie los lados y exija fallo sigue **pendiente**, y es la que
 convertiría «invertido» en un rojo automático en vez de en una discusión.
+
+## «Adjunto pero invisible» tiene una SEGUNDA causa, y su comprobacion va ANTES
+
+Anadido 2026-09-09, fuera del bloque MOVED-EXACT para no romper su sha de procedencia.
+
+El caso: LFQuad3, proxies de acople a huecos de INVENTARIO (`Shoulder`, `Melee`, `Back`), no
+ruedas. Los tres dibujaban NADA: ni el item, ni un placeholder, ni una linea en el RPT. Seis
+recetas probadas en partida tocaron la propiedad del slot, la animacion `hide`, `initPhase`, el
+indice del proxy y el LOD; **ninguna toco el nombre de la clase**. La causa era exactamente la
+regla (d) de arriba. Medido con el checker de GunRacks: ese mod **18/18** conformes, el nuestro
+**0/4**; tras renombrar, **3/3** y los items dibujan, verificado en partida.
+
+Dos correcciones al bloque de arriba:
+
+1. **El sintoma de (d) no es solo el crash de B5.** La misma violacion produce tambien
+   **no-render total y silencioso**, modo de fallo mucho mas caro porque no deja rastro que
+   investigar: sin error, sin log, sin nada que buscar.
+2. **El orden del atajo de diagnostico esta al reves para este caso.** El bloque dice, ante
+   «attached but invisible», medir primero los FRAMES. Emparejar el nombre de clase con el
+   basename del `.p3d` es una comprobacion de TEXTO sobre el `config.cpp` -- por cada clase de
+   `CfgNonAIVehicles`, `clase.lower() == "proxy" + basename(model).lower()` --, cuesta segundos
+   y no tiene falsos positivos: **hazla antes de medir ningun frame.** No hacerla costo aqui
+   seis ciclos de partida.
+
+Y un tercer dato de la misma sesion: `ProxyVehiclePart` y `ProxyAttachment` NO son
+intercambiables para un hueco que deba mostrar lo que le cuelgues. `ProxyVehiclePart`
+(`simulation = "ProxyInventory"`) dibuja el modelo de LA CLASE -- medido en partida como un
+fusil gris de placeholder sobre la parrilla --; `ProxyAttachment` pone ahi la ENTIDAD acoplada.
+Para una rueda, cuyo modelo de proxy ES la rueda, el primero es lo correcto; para un hueco de
+inventario es el fallo.

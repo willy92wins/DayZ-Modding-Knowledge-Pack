@@ -358,3 +358,40 @@ servir el HTML con un `http.server` estático + el **preview MCP**: `preview_sta
 Verifica render + consola limpia + estado sin descargar Chromium. Caveat: el screenshot puede
 flakear (timeout) con el loop rAF -> el `preview_eval` del estado es la verificacion robusta.
 Origen: SP-024, LFQuad wheel-well tuner 2026-06-01. Cross-ref `cowork-entorno-y-tooling-gotchas`.
+
+## Fit editor: los dos defectos que destruyen la colocacion del usuario (added 2026-09-09)
+
+Los dos golpean al patron "fit editor" de SP-006 de arriba, los dos se entregaron, y cada uno
+costo un ciclo entero de colocacion en LFQuad3. Cablea sus gates ANTES de entregar el visor.
+
+**1. La lectura copiable tiene que regenerarse en CADA cambio, y solo en los que tocan.**
+Defecto entregado: `dump()` estaba cableado al arranque, al reset y a un boton de espejo, pero
+NO al manejador de los deslizadores. El usuario coloco todo, lo vio correcto en pantalla, copio
+el cuadro de texto... y el cuadro seguia con los valores del MOMENTO DE CARGAR. Nada avisa, y la
+colocacion es irrecuperable porque nunca llego a escribirse en ningun sitio. Peor: el sello de
+tiempo se imprimia DENTRO de `dump()`, asi que el texto rancio llevaba la hora de apertura de la
+pagina y se leia como recien generado. Gate en las dos direcciones: (a) mueve un control por
+codigo, comprueba que el texto CAMBIO y trae el valor nuevo, restaura y comprueba que vuelve
+identico; (b) cambia un control que NO debe alterar la colocacion (que malla se previsualiza, la
+camara) y comprueba que la lectura queda IGUAL. La direccion (b) no es opcional: un visor que
+reescribe los numeros al cambiar de malla es el mismo fallo con el signo cambiado.
+
+**2. `THREE.BoxHelper` se desacopla por DOS motivos independientes que se ven igual.**
+(a) Trabaja en coordenadas de MUNDO: colgarlo del holder transformado le aplica esa
+transformacion por segunda vez. Va a la ESCENA. (b) `update()` lee `object.matrixWorld`, que
+three solo recalcula durante `render()`; llamarlo justo despues de mover el objeto usa la matriz
+del fotograma ANTERIOR, asi que el recuadro se queda un paso por detras de forma permanente --
+el sintoma visible es una caja que va rezagada mientras arrastras. Llama a
+`object.updateMatrixWorld(true)` ANTES de `helper.update()`, y haz pasar todo movimiento y todo
+giro por esa unica funcion para que ningun sitio pueda saltarsela. **Arreglar solo (a) deja el
+visor visiblemente roto igual**, que es como se entrego la primera vez.
+Gate que caza los dos a la vez: toma las esquinas DIBUJADAS del helper (su atributo `position`
+transformado por su propio `matrixWorld`, asi la prueba no depende de quien sea su padre) y
+comparalas con la bbox de mundo de la malla. Controles negativos, los dos obligatorios: el
+camino viejo tiene que dar una desviacion igual a lo que moviste (medido 0,55 m para un
+movimiento de 0,55 m) y colgarlo del holder una grande (1,13 m).
+**No nulo ESPERADO, no lo persigas:** `BoxHelper` dibuja la AABB de la AABB local transformada,
+no la de los vertices transformados, asi que con giros que no son multiplos de 90 grados queda
+legitimamente MAS HOLGADO que la malla (medido +5 a +16 mm en nueve piezas). Comprueba que
+ENVUELVE la malla, nunca que coincida.
+Origen: visor de colocacion de LFQuad3, 2026-09-08/09.

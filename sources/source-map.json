@@ -3226,7 +3226,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "51d3fb4731250aa2cb0e52e80a7bc446b8a92c4afd93cf796a0d3b80d1ce5109",
+      "output_hash": "159a7a98bcb1ba8a147dedc0cb9ccab940a207c749c7a3ca0a400d41cb43b448",
       "output_path": "skills/dayz-3d-viewer/SKILL.md",
       "routing_artifact_id": "skill/dayz-3d-viewer",
       "verification_level": "cross_checked"
@@ -11114,7 +11114,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c0448b4a614a4691a145d5bdeea0dc34605befbf20fc2e0ff0fab65383cba828",
+      "output_hash": "c87ff5fe7b342f69899789542f1da6e5db1a27eb6dab7eac90b3a9d761e2417a",
       "output_path": "skills/rip-vehicle-import/cookbooks/family-b/attach-invisible.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
