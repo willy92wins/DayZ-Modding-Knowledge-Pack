@@ -823,7 +823,7 @@ and require approximately zero residual before trusting any product comparison.
      outer radius in the plane perpendicular to the spin axis (here 0.3501/0.3502, so the config was
      right and the hub was wrong).
 
-15b. **A ported vehicle that "drifts on its own, even on flat ground" is a `tyreRollResistance`
+15c. **A ported vehicle that "drifts on its own, even on flat ground" is a `tyreRollResistance`
      defect, and the roll-away threshold is `tan(slope) > tyreRollResistance` (measured
      2026-09-09, Arma2Quad; closed by telemetry).** The quad's healthy wheels carried
      **0.0015** against **0.008-0.015 on every vanilla wheel**
@@ -859,6 +859,56 @@ and require approximately zero residual before trusting any product comparison.
      `(x,y,z)→(-x,y,-z)` and rotate points and stored normals together. Calibrate the axis-to-side mapping on an independently
      known-good mounted wheel, never on the candidate, then repeat the measurement on
      the wheel blob extracted from the deployed PBO.
+
+15d. **Two hidden selections cannot own the same face: a hiddenSelection that overlaps
+     another one never gets a material slot, and `SetObjectMaterial(index, ...)` on it is a
+     SILENT no-op (measured 2026-09-10, Arma2Quad; closed in game).** The quad's third bulb
+     (`light_dashboard`, `hiddenSelections[8]`, which is `SELECTION_ID_DASHBOARD_LIGHT` at
+     `scripts/4_world/entities/vehicles/carscript.c:301`) never lit, while `light_1_1` and
+     `light_2_1` lit from the SAME rvmat pair through the SAME call
+     (`carscript.c:2487`). The only difference lived in the model: the bulb's 12 faces were
+     also claimed by `camo1`, which is `hiddenSelections[9]`. camo1 won the faces, so index 8
+     addressed nothing.
+     **The diagnostic is a face-ownership census INSIDE the same file**, listing for every
+     `sections[]` entry which OTHER selections claim its faces. Every light that worked came
+     back exclusive; the dead one was the only shared one. That is a relative measurement
+     through one reader, so it holds regardless of how your p3d library reports conventions.
+     **Overlap with an ANIMATION selection is fine and must be preserved** - here the same 12
+     faces are also in `drivewheel`, the handlebar bone, because the bulb has to turn with the
+     bars. Only hiddenSelections compete for a material slot.
+     **Being listed in model.cfg `sections[]` is necessary but NOT sufficient**:
+     `light_dashboard` was in `sections[]` the whole time.
+     Fix by removing the faces from the other hiddenSelection, and drop a point from it only
+     when no REMAINING face of that selection still uses it, so shared border vertices survive.
+     Three hypotheses were checked and refuted BEFORE this one, each worth a build+test cycle:
+     (a) "the faces need their own material" - given to 48 faces across LODs 0-4, still dead;
+     (b) "the selection is empty in the ViewPilot LOD" - every light selection is empty there,
+     including the ones that work; (c) "the engine renumbers by real sections so index 8 is
+     lost" - malformed, because `hiddenSelections[]` and `sections[]` agree on indices 0-8 and
+     only diverge at 9. Confirmation is cheap and does not need the light to work: with the
+     lights OFF the bulb switched from the body material to the lights material, which alone
+     proves index 8 now reaches those faces.
+     Corollary that removes a suspect: `UpdateLightsServer` is NOT server-only - `carscript.c:2095-2101`
+     guards only the CLIENT half with `#ifndef SERVER`, so `SetObjectMaterial` runs on the client
+     too and replication is never the explanation for a light material that fails to apply.
+
+15e. **Through dayz-mcp, a client-side get-in is not enough for any action the SERVER
+     validates (measured 2026-09-10).** `vehicle_get_in_client` establishes the client
+     ownership that `engine_set`, `vehicle_control` and `vehicle_trace` need, but
+     `ActionSwitchLights` checks `car.CrewMemberIndex(player) == VEHICLESEAT_DRIVER` in
+     `ActionCondition` on the server
+     (`scripts/4_world/classes/useractionscomponent/actions/interact/vehicles/actionswitchlights.c`),
+     so it was rejected silently: `action_use` kept answering `started: 1` and nothing lit, three
+     times. Calling `vehicle_enter` (server-side seat) as well made the very next identical
+     `action_use` work. Rule: for a server-validated action use BOTH verbs, and never read
+     `started: 1` as evidence - verify the effect. Two related bounds cost a round trip each:
+     `engine_set` takes `start`/`stop`, not `on`/`off`, and `vehicle_control.hold_ttl_s` is
+     capped low (900 and 120 rejected, 30 accepted), so a vehicle parked on a slope starts
+     rolling again the moment the hold expires.
+     Also: `camera_set` refuses with `camera_unavailable_vehicle` while
+     `GetCommand_Vehicle()` is non-null, and a moving vehicle cannot be exited, so a scene that
+     rolls away traps the camera. Set the static camera BEFORE getting in - it survives the
+     get-in and gives the external view of a seated rider.
 
 16. **Drive-ready TEST KIT: fill ALL fluids + attach the radiator, not just FUEL (RECURRING: LFQuad + SUB_BRZ
     s28).** An admin/harness kit that only `Fill(CarFluid.FUEL,...)` leaves OIL/COOLANT/BRAKE empty → the oil
