@@ -463,6 +463,8 @@ Destructor       → Object being garbage collected
 
 **Registration timing**: `RegisterNetSyncVariableInt/Bool/Float` MUST be called in the **constructor**, not in `EEInit`. SyncVar registration after construction is ignored.
 
+**Storage load order and attachments at creation (SP-LFS-3, measured 2026-09-10, DayZDiag 1.29)**: persisted entities are created AFTER `MissionServer.OnMissionStart` returns (three `Print`s: the `OnMissionStart` dump came at server script log line 33, the stored entities' `EEInit`/`AfterStoreLoad` at 49-61), and `EEInit` runs BEFORE `OnStoreLoad`/`AfterStoreLoad`. Consequences: (a) a registry that reconciles persisted entities must run after `AfterStoreLoad` (self-register there, reconcile deferred), never inside `OnMissionStart`; (b) an attachment created with `GetInventory().CreateAttachmentEx(type, slotId)` inside `EEInit` — or in the same tick as `CreateObjectEx` of the parent — is counted by the server but NEVER reaches clients (invisible, absent from the vicinity panel) and on a stored entity collides with the restored one; created 1 s later via `g_Game.GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(fn, 1000, false)` it renders immediately. Stock new entities from their creator with a deferred call and a persisted "stocked" flag. Origin: LFSecure V3 armory probes (`P:/LFSecure_dev/evidence/v3/l0-proxy-probe/README.md`).
+
 ---
 
 ## MANDATORY CODE REVIEW CHECKLIST
@@ -496,6 +498,7 @@ Before delivering ANY Enforce Script code, verify:
 - [ ] No exclude in the set transitively reaches `aiming` — `menu` does, via `inventory` (rule 37b)
 - [ ] A seated sight/turret hijacks `DayZPlayerCamera1stPersonVehicle` instead of unpossessing (rule 37d); if legacy code still unpossesses, it rebuilds `StartCommand_Vehicle` AND is known not to restore the camera (rule 37c)
 - [ ] Vanilla inventorySlot overrides: use `=` for string-defined items, `+=` only for array-defined items
+  - `+=` appends to the class's OWN current list, not to the parent's (measured 2026-09-10 with `ConfigGetTextArray` at the end of `OnMissionStart`: with GunRacks re-listing `Shoulder`,`Melee` and LFSecure adding `LFS_Gun_1..3`, `Rifle_Base` = `Shoulder,Melee,LFS_Gun_1..3,Shoulder,Melee,GunRack_Gun_1..6`; `Pot` patched by LFPowerGrid kept `CookingEquipment`). Add only the new values; two mods' patches stack in load order. A class that redefines the array (70 of 139 `Edible_Base` descendants do) does NOT inherit a base-class patch: generate per-class patches with the exact parent (SP-LFS-4).
 
 ---
 
@@ -567,6 +570,29 @@ hitFraction)` (`dayzphysics.c:211`; layers `dayzphysics.c:14-40`; vanilla users 
 accept the normal only when both contacts lie within ~15 cm, and log which source the pose used (`src phx|ray`).
 The physics path shipped in LFSecure R6 and was NOT yet exercised in-game; its fallback (face the camera) is the
 behaviour accepted in V1/R5. Verification: `dir`/`contactDir` claims = runtime_verified; `RayCastBullet` = source_verified.
+
+### Ambient temperature falls with ABSOLUTE height — elevated structures freeze players (SP-LFS-5, added 2026-09-10)
+
+`WorldData.GetBaseEnvTemperatureAtPosition(vector pos)` (`3_game/worlddata.c:217-221`) subtracts `pos[1] * m_TemperaturePerHeightReductionModifier` (0.02 °C/m, `:78`) using the absolute Y, and `GetBaseEnvTemperatureAtObject` delegates to it (`:212-215`; used by `Environment` for players, `ItemBase` for items, fireplaces). A room at 3900 m is ~78 °C colder than ground level: the player died of hypothermia within minutes (LFSecure, 2026-09-10). Fix measured in-game («temperatura normal en la sala»):
+
+```c
+modded class WorldData
+{
+	override float GetBaseEnvTemperatureAtPosition(vector pos)
+	{
+		float surface = g_Game.SurfaceY(pos[0], pos[2]);
+		if (pos[1] - surface > 1000.0)   // far above the terrain: use the ground under it
+		{
+			vector ground = pos;
+			ground[1] = surface;
+			return super.GetBaseEnvTemperatureAtPosition(ground);
+		}
+		return super.GetBaseEnvTemperatureAtPosition(pos);
+	}
+}
+```
+
+Restrict the condition to your own structure (class name check from 3_Game via `GetType()`) before shipping; put the override in the contract of any elevated room/platform design.
 
 ### Safe Inventory Operations
 ```

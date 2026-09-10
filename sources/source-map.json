@@ -5888,7 +5888,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c329a77e97a49971709ce0aa9919eca0996839f64fee25027f7d9c5513229327",
+      "output_hash": "1a79e2f948d35de6c6980edfe0822ab029781be77514bb7bf724df5dbaf89d11",
       "output_path": "skills/dayz-model-pipeline/references/memory-and-selections.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -10078,7 +10078,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a4d66fe960e17dd16bc967f2f0639318f5c52752331438b1e3ab61840803e467",
+      "output_hash": "1b3f18b56f1807035be16da8ec6f52899102c9b08fdb1f28a9610828833c7c04",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
