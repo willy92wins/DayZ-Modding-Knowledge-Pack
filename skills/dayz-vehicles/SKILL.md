@@ -909,6 +909,55 @@ and require approximately zero residual before trusting any product comparison.
      `GetCommand_Vehicle()` is non-null, and a moving vehicle cannot be exited, so a scene that
      rolls away traps the camera. Set the static camera BEFORE getting in - it survives the
      get-in and gives the external view of a seated rider.
+     **And it can be worse than a refusal: `camera_set` can leave the client RENDER frozen while
+     simulation, audio and input keep running** (measured again 2026-09-10, this time on a user's
+     live session). The player walks, hears their own footsteps, and their server position
+     advances, but the picture never changes. The signal is in `capture_screenshot`:
+     `distinct_frames: 1` with `max_adjacent_delta: 0` over several frames, while
+     `query_player_state` shows the position moving. There is NO recovery short of
+     `dayz_test_stop` + a full `dayz_test_run`: `restore_gameplay` has no path to green in that
+     state (it always answers `restore_unverified`, because `camera_get` returns
+     `camera_unavailable_no_scripted_camera` - which IS the released state - and its "Retry"
+     advice cannot ever succeed), and `dayz_test_run(mode="client")` refuses with
+     `client_already_polling`, because polling is taken as proof of health and it is not. Do NOT
+     try to force a repaint by moving the window host-side with SetWindowPos: it does not restore
+     the render, and under a 150% display scale it leaves the window oversized and black.
+     Practical rule: use a scripted camera only when nothing else will do, and before handing the
+     game back to a human, confirm the render is alive with `distinct_frames`.
+     Two more traps from the same session: deleting a vehicle a player was put into with
+     `vehicle_enter`, without taking them out first, desynchronises client and server - the client
+     draws them seated while the server has them on foot with no vehicle within 40 m, and holding
+     the get-out key does nothing because the prompt is client-side and the action is validated
+     server-side. And once a player is bound to a vehicle, `vehicle_get_in_client` on ANOTHER one
+     answers `not_seated`; neither `vehicle_release` nor `player_teleport` nor
+     `ActionGetOutTransport` frees them. Only deleting the vehicle does. That makes "measure ours,
+     then measure a vanilla control in the same session" impossible without a relaunch.
+
+15f. **Raising `maxSteeringAngle` without scaling `increaseSpeed[]` makes the vehicle turn LESS
+     in practice, not more (measured 2026-09-10, Arma2Quad; caught by the user, not by me).**
+     `increaseSpeed[]` and `decreaseSpeed[]` inside `class Steering` are {km/h, deg/s} pairs: the
+     RATE at which the steering ramps toward the requested lock. Time to full lock is
+     `angle / rate`, so the ramp only makes sense relative to the angle it was written for.
+     Arma2Quad carried `{0,40,30,20,100,5}` - byte-identical to vanilla `OffroadHatchback`
+     (`DZ/vehicles/wheeled/config.cpp:636`), whose `maxSteeringAngle` is **30**. Taking ours from
+     50 to 60 while leaving 20 deg/s at 30 km/h moved time-to-lock from 2.5 s to **3.0 s**, against
+     the donor car's 1.5 s. In a real corner nobody holds the key that long, so the ceiling went up
+     and the usable steering went DOWN. The user's report was exactly right and worth quoting as
+     the symptom: *"sigue sin girar tanto como esperaria y ya no creo que sea por el radio de giro
+     de las ruedas"* - it still does not turn as much as expected, and it is no longer the wheels'
+     angle. Rule: whenever you copy a vanilla `Steering` block, the ramp belongs to the DONOR's
+     lock angle; rescale it with the angle, and state the resulting time-to-lock in the commit so
+     the next reader can check it in one division.
+     **Before blaming the steering at all, check the MASS - and it is not in config.cpp.** In DayZ
+     the vehicle mass lives in the **Geometry LOD of the p3d** (`resolution 1e13`), readable with
+     py3d as `lod.mass`. A placeholder shows up as the whole mass on a SINGLE point. Arma2Quad
+     carried **1500 kg on one point** against 250-320 kg for a real ATV: four to five times the yaw
+     inertia the tyres must overcome, which no steering rate can compensate and which makes the
+     vehicle feel like a truck however far the wheels point. Fixing it is coordinated work, not a
+     tweak: the suspension is dimensioned to the mass through `u = -travelMaxDown + F/k`, so
+     dropping the mass without re-tuning stiffness and travel leaves the vehicle riding high and
+     bouncy. What survives a mass change is the front/rear weight SPLIT, which is a proportion.
+     What does not change either way is the roll-away threshold: mass cancels there (15c).
 
 16. **Drive-ready TEST KIT: fill ALL fluids + attach the radiator, not just FUEL (RECURRING: LFQuad + SUB_BRZ
     s28).** An admin/harness kit that only `Fill(CarFluid.FUEL,...)` leaves OIL/COOLANT/BRAKE empty → the oil
