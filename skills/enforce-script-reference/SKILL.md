@@ -1097,3 +1097,46 @@ Bodies, `[EXACT]` blocks, and the full migration list: `references/dayz-1-30-enf
 **What breaks.** A 1.29 `override OnCEUpdate`, `modded ProcessInputData`, `AddAction(ActionFillBottleBase)`, `ItemBase.m_ItemActionOverrides`, hardcoded `UA_AM_*` ints, or `Is3rdPersonDisabled()` as a bool. Recipe replace no longer overwrites result health. Fill/drink CCT copied from `CCTWaterSurfaceEx` misses vanilla liquid.
 
 **Checklist.** `OnCEIterate` + `super`. Split inventory Validate/Execute*. Target* takes. `ActionObtainLiquidBase`. `OverrideActionAnimation` on the entity. `CanBeStarted` for info actions. `CCTLiquid` + `GetPlayerHeadPosition`. `ThirdPersonMode.ENABLED`. Storage `144`. Never hardcode `UA_AM_*`. Do not treat `GetNoiseReductionByWeatherEx` as the AI damper (native AIParams; Ex is kept for HUD).
+
+## El salto de linea cierra la sentencia TAMBIEN en una condicion (SP-386, added 2026-09-10)
+
+Ampliacion de **Tres formas de romper el compilador** (mismo fichero). Su punto 1 ya dice
+que el compilador cierra la sentencia en el salto de linea, pero lo ilustra **solo** con
+concatenacion de strings. La regla es del PARSER, no del operador `+`, y quien busca el
+sintoma bajo `if` no lo encuentra donde esta archivado.
+
+Medido el 2026-09-10 sobre `LFHeli_Base.c`: una condicion partida en dos lineas
+
+```c
+if (m_RestProbeArmed && startVel.Length() < REST_PROBE_SPEED_MPS
+    && m_RestProbeLines < REST_PROBE_MAX_LINES)
+```
+
+da `Expected ')', not a 'REST_PROBE_SPEED_MPS'` mas `Missing ';' at the end of line`, y
+detras `Invalid statement ')'`, `Unexpected scope` y `Syntax error` en las lineas
+siguientes. El error apunta a un parentesis y el defecto es el salto de linea.
+
+**Senal barata y decisiva antes de escribir:** contar las condiciones multilinea que ya
+existen en el fichero. En este eran **0 de ~4.700 lineas** — todas en una sola linea,
+incluidas las de seis clausulas. Esa uniformidad no era estilo, era el parser. Cuando un
+fichero entero evita una construccion comoda, la explicacion por defecto es que no compila.
+
+### Un cuarto gate falso: "Build Successful" de AddonBuilder
+
+La seccion ya avisa de que `CfgConvert -test`, un linter propio o un grep de anchors
+acreditan forma y no compilacion. Falta el que esta **dentro del pipeline de build**, que es
+el que mas enganya: AddonBuilder **empaqueta**, no compila Enforce. En esa misma corrida:
+
+| gate | veredicto | lo que acredita |
+|---|---|---|
+| linter offline del addon | `WARN=6 ERROR=0`, identico a la base | forma |
+| AddonBuilder | `exit=0`, `Build Successful` | que el PBO se empaqueto |
+| content gate del PBO | la cadena nueva esta dentro | que el texto viajo |
+| **arranque del servidor** | **`Can't compile "World" script module!`** | **compilacion** |
+
+Los tres primeros en verde y el modulo sin compilar. Cuesta el arranque entero de un lote:
+aqui, un servidor y una caja compartida que otras sesiones estaban esperando.
+
+**Corolario operativo:** cuando la caja es un recurso en cola, el arranque de servidor no es
+solo el gate, es el gate MAS BARATO que existe — falla en ~20 s. Gastar 20 s en arrancar
+antes de encolar un lote de 30 min no es prudencia, es aritmetica.

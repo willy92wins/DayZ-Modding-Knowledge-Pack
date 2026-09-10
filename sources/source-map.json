@@ -5886,10 +5886,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "integrate-publish@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Side commit 21976f4 replayed onto the integration branch; the file also changed on the integrated line, so the replayed bytes are a merge of both.",
+          "license": "MIT",
+          "source_hash": "2c90e0bd86084f759985d6affd448b9f15de24c8e512298c159482c679f5effe",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "integrate-publish@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c78bff7c401680b67b8eb04e23f8a9091e1f1f63d79760bc6dfa3a2b3ff8576b",
+      "output_hash": "2c90e0bd86084f759985d6affd448b9f15de24c8e512298c159482c679f5effe",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -10380,10 +10390,20 @@
           "source_path": "enforce-script-reference/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Side commit 21976f4 replayed onto the integration branch; the file also changed on the integrated line, so the replayed bytes are a merge of both.",
+          "license": "MIT",
+          "source_hash": "862a6667e77096ca9e5037b3ec9b029d97b9cb6b0c78db9b8f6ad95dc2a3dfee",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "integrate-publish@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "878f2a223b18749015e27922ea83bbcf5a8547bc7d4b976241ec6618c27af8a0",
+      "output_hash": "862a6667e77096ca9e5037b3ec9b029d97b9cb6b0c78db9b8f6ad95dc2a3dfee",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"

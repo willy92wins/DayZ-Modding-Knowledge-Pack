@@ -884,3 +884,76 @@ Only expand instrumentation after the existing probe is shown to execute and its
 fields fail to discriminate. If a guard exits first, fix the placement or exercise a state
 that reaches the call. A probe behind an incompatible guard fails because of where it is,
 not because of what it measures.
+
+
+## Un gate sobre un RANGO puntua la duracion de la observacion (SP-387, added 2026-09-10)
+
+`p2p` (max menos min), el maximo, y cualquier extremo crecen de forma monotona con el numero
+de muestras. Un gate escrito sobre uno de ellos puntua, sin decirlo, **cuanto duro la
+ventana**, y una variante que simplemente acorte las celdas lo pasa sin arreglar nada.
+
+Medido el 2026-09-10 sobre 405 celdas archivadas de LFHeli. Dentro de un solo grupo
+—celdas erguidas, un unico proceso— el `p2p` de altura por estratos de numero de muestras:
+
+| muestras en reposo | p2p mediano |
+|---|---|
+| [0,5) | 0,0000 m |
+| [5,8) | 0,0000 m |
+| [8,12) | 0,0031 m |
+| [12,18) | 0,1729 m |
+| [18,25) | 0,2619 m |
+| [25,+) | 0,4726 m |
+
+**El recorrido del artefacto (0,0000 -> 0,4726 m) es mayor que el efecto que se estaba
+midiendo con el.** La conclusion que dependia de el —"las celdas volcadas botan menos",
+0,0023 vs 0,2434— no sobrevive al emparejar por numero de muestras: dentro de un estrato el
+signo cambia segun el estrato y en el mejor poblado los dos grupos coinciden (0,2247 vs
+0,2619). Las volcadas tenian 7 muestras y las erguidas 21, y esa era toda la diferencia.
+
+**Como se escribe el gate en su lugar:**
+
+1. **Ventana de duracion FIJA** (p. ej. los primeros 3 s de reposo), no "toda la ventana".
+   Asi cada celda aporta la misma longitud de observacion y el rango vuelve a ser comparable.
+2. **Estadisticos que no crecen con n**: una TASA (eventos por segundo), un cuantil (p90),
+   o el RMS respecto a la mediana de la propia ventana.
+3. Si se conserva el rango, se conserva **junto a su n**, y nunca se comparan dos rangos con
+   n distinto.
+
+**Senal generica:** antes de comparar dos grupos con un estadistico, preguntar si ese
+estadistico es funcion del tamano muestral. Si lo es, la comparacion mide el diseno del
+muestreo. Emparentado con SP-357 (independencia de sondas): alli el problema es que dos
+instrumentos comparten origen, aqui que un estadistico comparte destino con el reloj.
+
+## Una tasa de defecto agregada sobre variantes MUTADAS describe el experimento (SP-388, added 2026-09-10)
+
+Un corpus de campana de tuning contiene, por diseno, configuraciones deliberadamente
+estropeadas. Promediar el defecto sobre todo el corpus produce un numero que no describe lo
+que hace el producto, y ese numero acaba citado como si lo hiciera.
+
+Medido el 2026-09-10, misma corrida. El vuelco al aterrizar del LFHeli:
+
+| configuracion | celdas | erguida | inclinada | de lado |
+|---|---|---|---|---|
+| **incumbente (la que se envia)** | 114 | **95,6 %** | 2,6 % | **1,8 %** |
+| candidatos mutados | 291 | 49,1 % | 21,3 % | 29,6 % |
+| **corpus entero (lo que se citaba)** | 405 | 62,2 % | 16,0 % | **21,7 %** |
+
+El 21,7 % era la cifra en circulacion. La configuracion enviada vuelca **1,8 %**, y
+desglosada por fecha sale 100 % erguida en seis de nueve raices de evidencia. El corpus
+media, sobre todo, cuantos candidatos malos se probaron.
+
+Y el efecto que lo genera merece quedar registrado: entre el incumbente y el peor candidato
+solo cambian **tres campos**, ninguno mas de un 13 % —`AttitudeAlphaMaxRadS2` -5,3 %,
+`GroundEffectBonus` +12,6 %, `StabSoftDeg` -4,6 %— y la tasa de vuelco pasa de 1,8 % a
+66,7 %. Los tres se movieron a la vez, asi que **no se puede atribuir a uno**: es una lista
+de sospechosos para una corrida de un campo cada vez, no una causa.
+
+**Como se reporta:** toda tasa de defecto lleva pegada la configuracion sobre la que se
+midio. "El X % de las celdas" sin decir cuales es una cifra sin universo (SP-149 y la regla
+de declarar el censo). Y antes de abrir un plan de rediseno por una tasa alta, comprobar
+que la tasa describe la configuracion enviada y no la cola de experimentos.
+
+**Limite que hay que decir en voz alta:** que el banco no lo reproduzca no significa que no
+pase. Estas celdas son aterrizajes guionizados, en un solo sitio y **sin tocar el ciclico**;
+lo unico que autorizan a decir es que el banco, tal como esta, no reproduce el defecto en la
+configuracion enviada.
