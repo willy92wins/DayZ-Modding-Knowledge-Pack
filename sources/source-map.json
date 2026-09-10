@@ -234,7 +234,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
           "source_hash": "86317285dc15585eb93240d8177a285d212526cac81e10fef031fdfd2d7e4c6e",
@@ -242,10 +242,20 @@
           "source_path": "CONTRIBUTING.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "2026-09-10 concurrent governed-skill maintenance: full-map promote as version rollback, recover as incomplete-transaction restore, session pin via immutable commit snapshot.",
+          "license": "MIT",
+          "source_hash": "0650a0d1817c1165bbb738ef309d51fff723630980239d9e0ab245f968ca1be4",
+          "source_id": "pack-r21-authored",
+          "source_path": "CONTRIBUTING.md",
+          "source_revision": "concurrent-skills-pilot@2026-09-10",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "502804dee4dd1a56ec2a19d2642ae93b44587300f67e6bd3062afcd50d832cae",
+      "output_hash": "0650a0d1817c1165bbb738ef309d51fff723630980239d9e0ab245f968ca1be4",
       "output_path": "CONTRIBUTING.md",
       "routing_artifact_id": "root/contributing",
       "verification_level": "cross_checked"
@@ -5625,7 +5635,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
           "license": "MIT",
           "source_hash": "26dd50d7308f9304c98a546772e33b9289493738fa4c4a38c9709c88a4e1742e",
@@ -5633,10 +5643,20 @@
           "source_path": "dayz-mod-workflow/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "2026-09-10 concurrent-session trigger and pointer to references/concurrent-session-snapshot.md; procedure stays out of the YAML description.",
+          "license": "MIT",
+          "source_hash": "64b624dbb9817db607021f49233ecb8021e95f9aa879989a4d6563f91eb5fdb3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "concurrent-skills-pilot@2026-09-10",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b1d1e9c9667ace4ece6d6c9725ed831fc83e71c0c0490040799519d92e04e9da",
+      "output_hash": "64b624dbb9817db607021f49233ecb8021e95f9aa879989a4d6563f91eb5fdb3",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -5662,6 +5682,28 @@
       "output_path": "skills/dayz-mod-workflow/references/audit-escalation.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-mod-workflow/references/concurrent-session-snapshot.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-09-10 for concurrent session pins of this governed skill. Consumer procedure only; contribution authority stays in CONTRIBUTING.md.",
+          "license": "MIT",
+          "source_hash": "2139b31affc8a97e168b2af2f5a377ad1469a30c93cd29ffa2a8b5baa5896728",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/references/concurrent-session-snapshot.md",
+          "source_revision": "concurrent-skills-pilot@2026-09-10",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2139b31affc8a97e168b2af2f5a377ad1469a30c93cd29ffa2a8b5baa5896728",
+      "output_path": "skills/dayz-mod-workflow/references/concurrent-session-snapshot.md",
+      "routing_artifact_id": "skill/dayz-mod-workflow",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-mod-workflow/references/error-catalog.md",
