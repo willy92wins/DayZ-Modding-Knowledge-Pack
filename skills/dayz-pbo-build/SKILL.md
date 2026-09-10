@@ -1036,3 +1036,43 @@ Measured 2026-09-07 on LFSecure with AddonBuilder 1.29 (`build_pbo.py`, staging 
 - **Per-entry PBO hashes are an identity gate for scripts, config, materials and textures only.** A changed `.p3d` entry between two builds proves nothing by itself.
 - **A binarized model is accredited by the hash of its MLOD input plus the engine check** (render + raycast), never by ODOL bytes. Keep the MLOD hashes next to the PBO hash in the evidence.
 - **Do not chase a byte diff in a `.p3d` entry** when the MLOD did not change; rebuild twice and compare before opening a debinarizer.
+
+## Una cadena de content gate que la BASE tambien contiene no puede ponerse roja (SP-390, added 2026-09-10)
+
+`core-build-deploy.ps1 -RequireString <cadena>` comprueba que el texto esta dentro del
+PBO empaquetado y del desplegado, y es un buen gate: caza el build que empaqueto una
+version vieja del arbol. Falla en silencio cuando la cadena elegida **no es exclusiva
+del cambio**.
+
+Medido el 2026-09-10 sobre LFHeliCore. Para probar una variante que activaba el
+suavizado del cliente solo con `ClientPresentMode == 1`, el gate se cerro con:
+
+```
+core-build-deploy.ps1 -RequireString "ClientPresentMode == 1"
+```
+
+y paso. Pero la BASE ya contenia esa subcadena, en una funcion que no tiene nada que
+ver con la variante:
+
+```c
+// LFHeliOwnerWakeEnabled(), presente desde antes del cambio
+return m_Tuning.ClientPresentMode == 0 || m_Tuning.ClientPresentMode == 1;
+```
+
+O sea que el gate **habria pasado igual sobre el build sin la variante**. No podia
+ponerse rojo, y por tanto no acreditaba nada: durante toda la corrida parecio que
+verificaba que el cambio viajaba al PBO, y solo verificaba que el fichero seguia ahi.
+
+**Como se elige la cadena.** Que sea unica del cambio, no del area del cambio. Un
+nombre de constante nueva (`REST_PROBE_ARM_MPS`) o un tag de log nuevo
+(`[LFHELI-REST]`) son buenos: no existen antes. Un fragmento de expresion sobre un
+campo que ya se usaba, no.
+
+**Y la comprobacion que lo cierra, que cuesta un minuto**: antes de fiarte del gate,
+**correrlo contra el artefacto SIN el cambio y ver que FALLA**. Un gate del que solo
+has visto el verde no esta calibrado; probar que puede ponerse rojo es la mitad que
+casi nunca se hace. En la misma corrida, dos cadenas sobre simbolos nuevos si
+discriminaban y una sobre un simbolo preexistente no, con el mismo comando.
+
+Hermano de lo que esta seccion ya dice sobre gates que acreditan forma y no
+compilacion: alli el gate mide lo que no toca, aqui mide algo que ya estaba.

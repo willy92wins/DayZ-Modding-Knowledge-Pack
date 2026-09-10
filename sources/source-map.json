@@ -6850,10 +6850,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "binarize-nondeterministic@2026-09-08",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Side commit cbfa135 replayed onto the integration branch; the file also changed on the integrated line, so the replayed bytes are a merge of both.",
+          "license": "MIT",
+          "source_hash": "76687469bbd9f7f834f5f531ebbf0f0403bb37d8d52e7cc2eed26a579fb5cfa6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "integrate-publish@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7c795739aeaae6551d67a7fa740a0e7c42361a2b3a08c32ece5b5f2beba319bc",
+      "output_hash": "76687469bbd9f7f834f5f531ebbf0f0403bb37d8d52e7cc2eed26a579fb5cfa6",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
