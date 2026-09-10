@@ -955,3 +955,8 @@ condiciones que de verdad representa —ningún proceso vivo carga tu mod, y el 
 exclusiva— en vez de saltárselo o de esperar a que la otra línea termine.
 
 Cross-ref: `dayz-test-ingame` (misma regla, lado del launch).
+
+## Lesson LL-494 — widen closed allowlists in readers before writers (2026-09-10)
+
+When a config is validated against a *closed* option set and long-lived readers re-validate every request, order is: (1) add the new token to the allowlist in code, (2) ship that code to every reader, (3) restart those readers, (4) only then write the value. Writing first invalidates the whole file for old readers (`daemon_provenance_conflict` / fail-closed). Not every resident process is a reader — measure which ones read the file and when. Cheap check: run the validator in a fresh process right after write and revert on failure.
+
