@@ -267,7 +267,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "2026-09-10 concurrent governed-skill maintenance: full-map promote as version rollback, recover as incomplete-transaction restore, session pin via immutable commit snapshot.",
           "license": "MIT",
           "source_hash": "0650a0d1817c1165bbb738ef309d51fff723630980239d9e0ab245f968ca1be4",
@@ -275,10 +275,20 @@
           "source_path": "CONTRIBUTING.md",
           "source_revision": "concurrent-skills-pilot@2026-09-10",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Documented isolated schema-2 bootstrap (UUIDv4, empty targets/backup), full-map check/inspect/apply, owner source-map registration, and rollback as a new commit that keeps receipts and installation_id.",
+          "license": "MIT",
+          "source_hash": "dec6697d2737cb94cc903ddb87e2d97720eeeacbbdbb5379b7809cc8ad506846",
+          "source_id": "pack-r21-authored",
+          "source_path": "CONTRIBUTING.md",
+          "source_revision": "operations-integration@2026-09-11",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0650a0d1817c1165bbb738ef309d51fff723630980239d9e0ab245f968ca1be4",
+      "output_hash": "dec6697d2737cb94cc903ddb87e2d97720eeeacbbdbb5379b7809cc8ad506846",
       "output_path": "CONTRIBUTING.md",
       "routing_artifact_id": "root/contributing",
       "verification_level": "cross_checked"
@@ -1932,7 +1942,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
           "source_hash": "435c1b6f038de45245b56c6b93d16eeb5a3f576e41c8c352795f7ea282631d68",
@@ -1940,10 +1950,20 @@
           "source_path": "packctl/cli.py",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted the portable promotion history bytes from fbec75f9825565074bd79776da4d5dd4152ad370: v2 plans and receipts carry installation_id and a bootstrap flag so a moved checkout can reseal against git ancestry instead of physical paths. Working-tree SHA-256 matches that commit.",
+          "license": "MIT",
+          "source_hash": "e48cb6750aad29ecc7062368191306f1867fb3d0141da8e15a4513494788710b",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/cli.py",
+          "source_revision": "fbec75f9825565074bd79776da4d5dd4152ad370",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8e5f0e70e2de83a669a5d92cc966fe2d39a4d0be6330cd4fa10777e8107d9b66",
+      "output_hash": "e48cb6750aad29ecc7062368191306f1867fb3d0141da8e15a4513494788710b",
       "output_path": "packctl/cli.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -2070,7 +2090,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "The closed alias list gains <tmp>: it is a real path root in three executable payloads, and a token missing from the tuple is neither reported by the scanner nor configurable by an operator.",
           "license": "MIT",
           "source_hash": "0f02db69d4869fe6ecc2a6e253805eda41090303ff71405adf370dfd86afe793",
@@ -2078,10 +2098,50 @@
           "source_path": "packctl/promotion.py",
           "source_revision": "packctl-tmp-alias@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Adopted the portable promotion history bytes from fbec75f9825565074bd79776da4d5dd4152ad370: v2 plans and receipts carry installation_id and a bootstrap flag so a moved checkout can reseal against git ancestry instead of physical paths. Working-tree SHA-256 matches that commit.",
+          "license": "MIT",
+          "source_hash": "0a603d7bb63f7d032895ab50b7d0aa98459f00f7fd83848a893a47e0116ce4b9",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/promotion.py",
+          "source_revision": "fbec75f9825565074bd79776da4d5dd4152ad370",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "G5-FIX1: walk logical target and backup bindings to the containing allowed root, and share dest/backup lock keys so outer vs inner allowlists cannot apply the same physical trees concurrently.",
+          "license": "MIT",
+          "source_hash": "c70764143664e36fe8fa637f5f48852f19bf27775f293fbcd0cc6601c451d5a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/promotion.py",
+          "source_revision": "portable-promotion-fix1@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "G5-CI ronda 2: parent-binding walk starts at the logical parent so a governed leaf alias to an allowed destination stays coalesced; nested links and parent junctions still fail PROMOTION-TARGET-LINKED.",
+          "license": "MIT",
+          "source_hash": "4c08d07a9e6960d666182b8e9f30ac95d4b93390b1696bbb51e5c676537779f3",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/promotion.py",
+          "source_revision": "g5-ci-leaf-alias@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "G5 completion: restore root-inclusive _logical_chain_linked and _contains_links; confine the governed leaf-alias exception to _destination_findings so residue/recovery still reject a root junction whose digest is allowed.",
+          "license": "MIT",
+          "source_hash": "6c021bf191e8dbaeae12a959e8cd2bfe9e52d6a12de27b25da3513a9dbec4239",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/promotion.py",
+          "source_revision": "g5-root-inclusive-residue@2026-09-11",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0f02db69d4869fe6ecc2a6e253805eda41090303ff71405adf370dfd86afe793",
+      "output_hash": "6c021bf191e8dbaeae12a959e8cd2bfe9e52d6a12de27b25da3513a9dbec4239",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -2212,7 +2272,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Documents <tmp> now that it is in the closed alias list: an operator copying this example without it fails promote check on five findings.",
           "license": "MIT",
           "source_hash": "43e7fc5a4e81327d896218191c7e307b4aa2a0a3986da26f0a741f881b45e131",
@@ -2220,10 +2280,20 @@
           "source_path": "promotions/local-targets.example.json",
           "source_revision": "packctl-tmp-alias@2026-09-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted the portable promotion history bytes from fbec75f9825565074bd79776da4d5dd4152ad370: v2 plans and receipts carry installation_id and a bootstrap flag so a moved checkout can reseal against git ancestry instead of physical paths. Working-tree SHA-256 matches that commit.",
+          "license": "MIT",
+          "source_hash": "c1958c8197600111f5ef52eb88367e62916ea145cc9df27e87f76584ef92928d",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/local-targets.example.json",
+          "source_revision": "fbec75f9825565074bd79776da4d5dd4152ad370",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "43e7fc5a4e81327d896218191c7e307b4aa2a0a3986da26f0a741f881b45e131",
+      "output_hash": "c1958c8197600111f5ef52eb88367e62916ea145cc9df27e87f76584ef92928d",
       "output_path": "promotions/local-targets.example.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -2235,7 +2305,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "The internal process layer (plans, specs, session handoff, root CLAUDE.md) stopped being published; its promotion entries were removed with it.",
           "license": "MIT",
           "source_hash": "7c476dd4d619800e5e6c6cbac1ec5d16981c7ab762aa1bacf9fb6daf469467c6",
@@ -2243,10 +2313,20 @@
           "source_path": "promotions/promotion-map.json",
           "source_revision": "r21-unpublish-internal-layer@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Integration of the reviewed GitHub CI artifact adds its existing source-map route to the complete promotion map; an isolated bootstrap exposed PROMOTION-UNROUTED before any apply. Skill target routing remains unchanged.",
+          "license": "MIT",
+          "source_hash": "e8e1a912a17e994f0ebd6cd768d94f0b3fd9cfa621804bc4397bd74ab3801409",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/promotion-map.json",
+          "source_revision": "ci-promotion-route-integration@2026-09-11",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ab8c72f0bf1b45884fe559ea2a641e921078d1167c518a3a0be79fa376601736",
+      "output_hash": "e8e1a912a17e994f0ebd6cd768d94f0b3fd9cfa621804bc4397bd74ab3801409",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -12098,7 +12178,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
           "source_hash": "4e27c297f4171f948331f4e2d57e9e68b3cb175be4dcf93e20daef2663fbfc46",
@@ -12106,10 +12186,20 @@
           "source_path": "tests/packctl/test_cli.py",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted the portable promotion history bytes from fbec75f9825565074bd79776da4d5dd4152ad370: v2 plans and receipts carry installation_id and a bootstrap flag so a moved checkout can reseal against git ancestry instead of physical paths. Working-tree SHA-256 matches that commit.",
+          "license": "MIT",
+          "source_hash": "1de425faa4440f11a4cf13846e14c786cd5a19049208f8a2e20c36c89371f7e3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_cli.py",
+          "source_revision": "fbec75f9825565074bd79776da4d5dd4152ad370",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "83f837138f37bd153df3d4a4e31353875ff3d9390b7e51cdf795e76165859afb",
+      "output_hash": "1de425faa4440f11a4cf13846e14c786cd5a19049208f8a2e20c36c89371f7e3",
       "output_path": "tests/packctl/test_cli.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -12246,7 +12336,7 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Placeholder census pinned to the scanner's 25 tokens in 5f22363839f3f569651d8a952be2b83e8806ca7d; the same bytes remain at 34e33343e117ba384d7da3f698ee70db48fdf66a. Four stale PROMOTION-CONFIG-INVALID rows were removed; the detector was not changed.",
           "license": "MIT",
           "source_hash": "3c8c4701472f4ae307a89b9044f5a1ebf908ca592deb909c64202c87fcf8074b",
@@ -12254,10 +12344,50 @@
           "source_path": "tests/packctl/test_promotion.py",
           "source_revision": "5f22363839f3f569651d8a952be2b83e8806ca7d",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Adopted the portable promotion history bytes from fbec75f9825565074bd79776da4d5dd4152ad370: v2 plans and receipts carry installation_id and a bootstrap flag so a moved checkout can reseal against git ancestry instead of physical paths. Working-tree SHA-256 matches that commit.",
+          "license": "MIT",
+          "source_hash": "17c598cc2e6f786cebadb059036b1d7acec428a0bc155d2b1c389caedd44b563",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "fbec75f9825565074bd79776da4d5dd4152ad370",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "G5-FIX1 negatives: parent binding inside an allowed root must fail PROMOTION-TARGET-LINKED, and two allowlists that share dest/backup must collide on one OS lock.",
+          "license": "MIT",
+          "source_hash": "93883350df3fe78d91bf8c3bff067da30483e01c93eb5d483b9aa7c88fda6566",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "portable-promotion-fix1@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "G5-CI ronda 2: leaf-alias check/apply cases use try_dir_link so they execute on Windows without Developer Mode; asserts and fail-closed parent-binding/retarget checks are unchanged.",
+          "license": "MIT",
+          "source_hash": "2acc6cf9ba3606075c42665023224ee04a92f88b7e351e6e723b9313d791a178",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "g5-ci-leaf-alias@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "G5 completion: add the root-junction residue negative that fails closed through _ensure_known_residue with an allowed digest, using try_dir_link without skipping.",
+          "license": "MIT",
+          "source_hash": "4afd0bed1efd2d534e9dcfdb828d1edf856da8dffc0bf2da31d064c31c7e944b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "g5-root-inclusive-residue@2026-09-11",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3c8c4701472f4ae307a89b9044f5a1ebf908ca592deb909c64202c87fcf8074b",
+      "output_hash": "4afd0bed1efd2d534e9dcfdb828d1edf856da8dffc0bf2da31d064c31c7e944b",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
