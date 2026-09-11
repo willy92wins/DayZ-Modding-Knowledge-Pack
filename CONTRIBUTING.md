@@ -70,3 +70,63 @@ Keep each change traceable to a product criterion and avoid adjacent
 refactors. Update `CHANGELOG.md`, the compatibility matrix and durable
 evidence when the change affects them. A release candidate must build twice
 to a byte-identical ZIP before promotion.
+
+## Concurrent governed-skill maintenance
+
+This section is the unique authority for authoring, validating, promoting,
+session versioning and rolling back skills listed in
+`promotions/promotion-map.json`. It does not repeat the seven required-workflow
+steps above; those still apply.
+
+Governed skills have one editable source: this repository. Skills present in a
+user tree but absent from the promotion map are non-governed. They keep their
+own authority. Do not add them to this pack silently.
+
+### Isolate the change
+
+Give each skill change its own branch and Git worktree. Do not share a dirty
+index across concurrent edits of governed skills.
+
+### Review, validate, then commit
+
+Review the branch, run `python -m packctl validate --root <repo> --report
+<report-outside-the-repo>` on that worktree, and commit. `python -m packctl
+gate --root <repo> --report-dir <dir-outside-the-repo>` is the publish gate;
+its report directory must sit outside the repository. Promotion reads a clean
+commit. A dirty tree fails `promote --check` with `PROMOTION-DIRTY`. Confirm
+the current flags with `python -m packctl promote --help`.
+
+### Check, then apply
+
+Run `python -m packctl promote --check` with `--promotion-map` and
+`--local-targets` set to explicit paths before `--apply`. `--apply` requires
+`--plan` from a green check of that same commit. After apply, read the receipt
+under `promotions/receipts/` and confirm destination bytes match the plan
+`after_digest`.
+
+`--recover` (requires `--transaction-root`) restores a failed or interrupted
+apply to the preimage recorded in that transaction. It is not a rollback to a
+previous skill version.
+
+### Session pin
+
+A promote that overwrites a live skill target does not freeze sessions already
+running, and it does not rewrite context the agent has already loaded.
+
+Per session, record the source commit and consume a copy of the **whole**
+governed skill tree taken from an immutable snapshot of that commit. A hash
+without those files is not a pin. A copy does not make an agent load it.
+Consumer procedure for `dayz-mod-workflow`:
+`skills/dayz-mod-workflow/references/concurrent-session-snapshot.md`.
+
+### Version rollback
+
+`python -m packctl promote` walks the full `promotions/promotion-map.json`.
+There is no per-artifact selector, so a version rollback is a full-map
+`--check` then `--apply` of an older commit. Inspect every destination in that
+plan. Destinations whose planned `after_digest` equals their current bytes
+must keep that digest. Do not claim a per-skill rollback.
+
+`--recover` (requires `--transaction-root`) finishes or aborts one
+incomplete apply back to that transaction's recorded preimage. It is not
+version rollback.
