@@ -986,7 +986,7 @@ and require approximately zero residual before trusting any product comparison.
      the steering axle, which works against turning.
 
 15h. **To change the fuel a vehicle spawns with, override `EEOnCECreate`, not `EEInit`
-     (source-verified 2026-09-10; the CE path itself not yet observed in game).** Vanilla
+     (source-verified; a script spawn does NOT reach it - measured, see below).** Vanilla
      `CarScript.EEOnCECreate` fills a random 0-35 % of `GetFluidCapacity(CarFluid.FUEL)`
      (`scripts/4_world/entities/vehicles/carscript.c:2967-2974`). It runs when the entity is
      created as new by CE/debug (`scripts/3_game/entities/entityai.c:1385-1388`), while a load
@@ -995,7 +995,14 @@ and require approximately zero residual before trusting any product comparison.
      (`scripts/3_game/vehicles/car.c:375-376`), so top up rather than pour the whole capacity into
      a tank that may not be empty:
      `Fill(CarFluid.FUEL, GetFluidCapacity(CarFluid.FUEL) * (1.0 - GetFluidFraction(CarFluid.FUEL)))`.
-     `OnDebugSpawn` is a separate path and fills on its own.
+     `OnDebugSpawn` is a separate path and fills on its own. **Measured 2026-09-11 with a vanilla
+     `Hatchback_02` as the control**, which must land in 0-35 % if the path runs: neither a plain
+     script spawn (`ECE_PLACE_ON_SURFACE`) nor the debug spawner's own flags
+     (`ECE_PLACE_ON_SURFACE|ECE_INITAI|ECE_EQUIP_ATTACHMENTS`, the ones
+     `4_World/plugins/pluginbase/plugindeveloper.c:405` uses) fire `EEOnCECreate`: both controls
+     read `fuel_fraction` 0, and so did the modded vehicle. Only a real Central Economy spawn
+     exercises the override, so observing it needs a `types.xml` entry plus an event. Without a
+     vanilla control in the same run, that zero reads as "my override is broken".
 
 16. **Drive-ready TEST KIT: fill ALL fluids + attach the radiator, not just FUEL (RECURRING: LFQuad + SUB_BRZ
     s28).** An admin/harness kit that only `Fill(CarFluid.FUEL,...)` leaves OIL/COOLANT/BRAKE empty → the oil
@@ -1812,3 +1819,72 @@ Compara los `emmisive[]` de los dos materiales antes de fiarte del ojo: una dife
 propiedad del vehiculo en cliente, y tomarla deja la camara libre inutilizable durante toda la
 vida del proceso cliente. Encuadrar el salpicadero y tener el motor en marcha pasan a ser
 excluyentes en un mismo cliente. Prefiere la sincronizacion por adjuntos.
+
+
+## Every axle must be listed in an `Axles` override: what the engine ENUMERATES is not inherited (added 2026-09-11, Arma2Quad)
+
+A derived vehicle class that redeclares `class Axles: Axles` and lists only one axle loses the
+other one entirely - not its values, the axle itself. Measured on three drivetrain variants that
+declared only `class Rear: Rear`: in game all three reported `wheel_count` 2 against 4 on the
+control, sat nose-down (pitch -7 to -10 deg against -0.3) and would not move. The user saw it
+before the diagnosis did: *"the front wheels are buried and they do not turn"*. The fix is one
+line per variant: `class Front: Front {};`.
+
+The discriminator, which is what makes this reusable: in the SAME override `Clutch`, `Engine`,
+`Gearbox` and `Steering` were inherited without being declared, and those variants kept engine,
+gearbox and steering. Inheritance works for children the engine looks up BY NAME; it does not
+for children the engine ENUMERATES because their names are free - the axles under `Axles`.
+Vanilla never exercises the hole: every vanilla car lists both `Front` and `Rear` in every
+override (`DZ\vehicles\wheeled\config.cpp:494-530`, `:1424-1489`), so copying vanilla hides it.
+
+Nothing offline catches it: CfgConvert parses the config without a complaint and the script
+linter says nothing. The cheap tell is to count in the engine what should be there -
+`telemetry_read(mode="object_at").wheel_count` on the prepared fixture - before handing a build
+to a human. A bare `fixture_not_ready` from `vehicle_prepare_fixture` is usually exactly this.
+
+## config.cpp syntax has one offline gate, CfgConvert, and it only counts with canaries (added 2026-09-11, Arma2Quad)
+
+`-packonly` does NOT rapify, so the config ships as text and the first parser that reads it is
+the game's. The DayZ script validator does not check syntax either. What works:
+
+    "...\DayZ Tools\Bin\CfgConvert\CfgConvert.exe" -bin -dst <tmp>.bin <config.cpp>
+
+Gate it with two canaries that MUST fail, or a green proves nothing:
+
+| canary | what CfgConvert answers |
+|---|---|
+| remove the brace that closes `CfgVehicles` | `line NNN: /CfgVehicles/: Missing '}'` |
+| misspell a base class inside the new block | `Undefined base class 'ClutchTypo'` |
+
+The second is worth more than it looks: it proves the parser RESOLVES the nested `class X: X`
+chains, which is the real risk when writing variant classes. And one thing that does NOT work as
+a canary: dropping the `;` after a closing `}` - CfgConvert accepts it, so it is not a syntax
+error in that grammar and a gate built on it declares itself vacuous for the wrong reason.
+
+## "It slides" is almost never fixed by lowering grip: weigh wheel force against grip (added 2026-09-11, Arma2Quad)
+
+A first-order Coulomb estimate is not a simulation, but it RANKS layouts, and the ranking is the
+decision. First gear asks `clutch cap x gear x final drive / tyre radius` at the wheels; the
+driven axle holds `mass x 9.81 x its share of the weight x tyreGrip`. On a 750 kg quad with a
+180 Nm cap, 4.3 x 3.667 / 0.35 m, front/rear split 65.2/34.8:
+
+| layout | asked | held | over | what the driver said |
+|---|---|---|---|---|
+| RWD | 8109 N | 2535 N | 3.2x | "they slide a lot" |
+| AWD, open diffs | 8109 N | 7284 N, less in a corner: the inner wheel spins first | - | "they slide a lot" |
+| AWD, locked rear | 8109 N | 7284 N | 1.11x | "least bad, but it cannot go straight at full throttle without skidding" |
+| FWD (shipped) | 8109 N | 4749 N | 1.7x | stable, but "it turns less" |
+
+That arithmetic predicted the exact order the driver reported. Lowering `tyreGrip` moves every
+row the wrong way: at 0.85 the locked-rear AWD goes from 1.11x to 1.30x and the FWD from 1.7x to
+2.0x. It agrees with invariant 18 from the other side - the SUB_BRZ accel-slide was fixed with
+grip UP and throttle DOWN.
+
+Vanilla `tyreGrip` census for healthy wheels, so no one calls a value "too high" again without
+one: 0.80 (`:875`), 0.82 (`:13402`), 0.85 (`:4774`), 0.89 (`:8984`), 0.95 (`:18076`, `:20508`),
+1.0 (`:18104`); ruined wheels sit at 0.2-0.5. A 0.99 is inside the vanilla band.
+
+Corollary for a wheel-driven steering axle: on `DRIVE_FWD` the wheels that spin are the wheels
+that steer, so excess torque reaches the driver as "it will not turn", never as "wheelspin".
+Halving a vehicle's mass halves the grip budget while leaving the torque where it was, which on
+its own turns a vehicle that steered into one that pushes - the trap behind 15g(a).
