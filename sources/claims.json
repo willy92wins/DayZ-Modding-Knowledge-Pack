@@ -498,7 +498,7 @@
     {
       "artifact_id": "file/contributing.md",
       "claim_id": "CLAIM-PACKCTL-PORTABLE-PROMOTION-V2",
-      "evidence_locator": "Inspected git revision ab2f53d583ff50574bd336a88737c12d99234694 (absent from this worktree HEAD): packctl/cli.py:69,155-163; packctl/promotion.py:82-83,695-722,1176,1858-1912,2097-2139,2230-2274,2668,3333; tests/packctl/test_cli.py:246-319; tests/packctl/test_promotion.py:3848-4377",
+      "evidence_locator": "Inspected git revision ab2f53d583ff50574bd336a88737c12d99234694 (absent from this worktree HEAD): packctl/cli.py:69,155-163; packctl/promotion.py:82-83,695-722,733,737-746,837-848,1176,1858-1912,2097-2139,2230-2274,2668,3333; tests/packctl/test_cli.py:246-319; tests/packctl/test_promotion.py:1949-1970,3848-4377",
       "license": "MIT",
       "line_end": 140,
       "line_start": 101,

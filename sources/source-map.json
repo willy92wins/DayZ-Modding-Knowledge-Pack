@@ -287,7 +287,7 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Added [EXACT][CLAIM-PACKCTL-PORTABLE-PROMOTION-V2] beside the isolated schema-2 bootstrap contract restored from ab2f53d583ff50574bd336a88737c12d99234694. Registry-only; does not assert G5 runtime on this worktree HEAD.",
           "license": "MIT",
           "source_hash": "4f4c5a927e63cecc979199dfb4aefff41340f88dd5a81af01e972f316df2655d",
@@ -295,10 +295,20 @@
           "source_path": "CONTRIBUTING.md",
           "source_revision": "g5-portable-claim-registry@2026-09-11",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Corrected isolated schema-2 bootstrap step 3: create backup_root and each targets.*.path as existing empty directories; routed artifact destinations may be absent or empty.",
+          "license": "MIT",
+          "source_hash": "810ea1a3ad65dc3a5452ac6760958cd90ede4c89451a67479d2e28304b0e0f13",
+          "source_id": "pack-r21-authored",
+          "source_path": "CONTRIBUTING.md",
+          "source_revision": "g5-root-precondition-docs@2026-09-11",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "4f4c5a927e63cecc979199dfb4aefff41340f88dd5a81af01e972f316df2655d",
+      "output_hash": "810ea1a3ad65dc3a5452ac6760958cd90ede4c89451a67479d2e28304b0e0f13",
       "output_path": "CONTRIBUTING.md",
       "routing_artifact_id": "root/contributing",
       "verification_level": "cross_checked"
@@ -11887,7 +11897,7 @@
           "verification_level": "cross_checked"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Registered CLAIM-PACKCTL-PORTABLE-PROMOTION-V2 for promote --bootstrap / schema_version 2 / installation_id. Evidence inspected at ab2f53d583ff50574bd336a88737c12d99234694; not present on this worktree HEAD.",
           "license": "MIT",
           "source_hash": "2844e474e2fc9ad4a2c9a38000e3cdd315925625090d5ad906d832a64427d86e",
@@ -11895,10 +11905,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "g5-portable-claim-registry@2026-09-11",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added ab2 backup_root.resolve(strict=True) and PROMOTION-TARGET-MISSING anchors to CLAIM-PACKCTL-PORTABLE-PROMOTION-V2 evidence_locator.",
+          "license": "MIT",
+          "source_hash": "17a1b3e39c32e77097f78a83ce9bd90c113f71ca4c971f3ee78d51e353f15148",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "g5-root-precondition-docs@2026-09-11",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "2844e474e2fc9ad4a2c9a38000e3cdd315925625090d5ad906d832a64427d86e",
+      "output_hash": "17a1b3e39c32e77097f78a83ce9bd90c113f71ca4c971f3ee78d51e353f15148",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

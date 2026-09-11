@@ -107,10 +107,10 @@ Confirm the current flags with `python -m packctl promote --help`.
 2. Set `installation_id` to a new canonical lowercase UUID v4 (version nibble
    `4`, variant `8`, `9`, `a` or `b`; `uuid.UUID(value)` must round-trip to the
    same string). Do not reuse an id that already has a receipt.
-3. Point `backup_root` and every `targets.*.path` at directories you own that
-   are absent or empty for the routed artifact kind. `--bootstrap` refuses a
-   non-empty backup (`PROMOTION-BACKUP-NONEMPTY`) and a non-empty or
-   type-mismatched destination (`PROMOTION-TARGET-NONEMPTY` /
+3. Create `backup_root` and each `targets.*.path` as existing empty directories
+   you own. Routed artifact destinations may be absent or empty. `--bootstrap`
+   rejects non-empty backups (`PROMOTION-BACKUP-NONEMPTY`) and non-empty or
+   type-mismatched artifact destinations (`PROMOTION-TARGET-NONEMPTY` /
    `PROMOTION-TARGET-TYPE-MISMATCH`). Linked parents fail closed.
 4. `--bootstrap` requires `--plan` and local-target contract v2. It also
    requires zero receipts for that `installation_id`
