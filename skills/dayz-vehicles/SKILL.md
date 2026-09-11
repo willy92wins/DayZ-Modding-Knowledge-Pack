@@ -949,15 +949,53 @@ and require approximately zero residual before trusting any product comparison.
      lock angle; rescale it with the angle, and state the resulting time-to-lock in the commit so
      the next reader can check it in one division.
      **Before blaming the steering at all, check the MASS - and it is not in config.cpp.** In DayZ
-     the vehicle mass lives in the **Geometry LOD of the p3d** (`resolution 1e13`), readable with
-     py3d as `lod.mass`. A placeholder shows up as the whole mass on a SINGLE point. Arma2Quad
-     carried **1500 kg on one point** against 250-320 kg for a real ATV: four to five times the yaw
-     inertia the tyres must overcome, which no steering rate can compensate and which makes the
-     vehicle feel like a truck however far the wheels point. Fixing it is coordinated work, not a
-     tweak: the suspension is dimensioned to the mass through `u = -travelMaxDown + F/k`, so
-     dropping the mass without re-tuning stiffness and travel leaves the vehicle riding high and
-     bouncy. What survives a mass change is the front/rear weight SPLIT, which is a proportion.
-     What does not change either way is the roll-away threshold: mass cancels there (15c).
+     the vehicle mass lives in the **Geometry LOD of the p3d** (`resolution 1e13`) as a PER-POINT
+     table: py3d exposes it as `Point.mass` on every point of that LOD, and `lod.mass` is only
+     their SUM. Read the table before saying anything about how the mass is distributed. This
+     invariant first shipped (03ba883) claiming Arma2Quad carried "1500 kg on one point"; the
+     per-point read refuted it in one line - all 214 points carried mass (1.2-46.2 kg), with the
+     centre of mass centred laterally (X -0.0001) and low (23 % of the hull height). The
+     distribution was sound; only the TOTAL was wrong: 1500 kg against 250-320 kg for a real ATV,
+     four to five times the yaw inertia the tyres must overcome. Changing it is coordinated work,
+     not a tweak - see 15g. What does not change either way is the roll-away threshold: mass
+     cancels there (15c).
+
+15g. **Changing a vehicle's mass: scale every `Point.mass` by one factor, and scale `stiffness`,
+     `damping` and `compression` by the SAME factor - never `travelMaxUp/Down` (measured
+     2026-09-10, Arma2Quad 1500 -> 750 kg).** A uniform factor leaves the centre of mass and the
+     front/rear split exactly where they were, so the only thing that changes is inertia. Ride
+     height comes out of `u = -travelMaxDown + F/k`: holding `k/F` holds the stance, so
+     `stiffness` scales with the mass. `damping` and `compression` scale the same way because the
+     damping ratio is `c / (2*sqrt(k*m))`, and halving both k and m halves `sqrt(k*m)`. Travel is
+     geometry and stays. Result: front `u` -0.00005 m before and after, rear -0.00470 vs -0.00469,
+     and in game a freshly prepared quad settled at `y = 139.97918701171875` at BOTH masses, bit
+     for bit. Gate the mass INSIDE the PBO, not in the source: pull the packed `.p3d` out and sum
+     `Point.mass` with py3d. Keep `.p3d` backups out of the addon folder - AddonBuilder packs them.
+     Traps surfaced by halving the mass. (a) The user reported *"gira menos que antes, sin mas"* -
+     it turns less, with no slide and no bounce, and the lock angle had not changed. Suspected
+     cause, NOT confirmed: the same corner is now taken faster, where `increaseSpeed[]` is lower.
+     Flattening the ramp above the speed the driver had already approved (35 -> 60 deg/s at
+     60 km/h) drew "aun mejorable", not a clean yes. (b) Do NOT read `centeringSpeed >
+     increaseSpeed` at speed as the defect: in `DZ/vehicles/wheeled/config.cpp` centering is
+     higher at 60 km/h in 8 of the 10 `Steering` blocks (up to 6.5x, `:14054-14056`) and equal in
+     the other 2 (`:741-743`, `:18466-18468`) - it is the vanilla norm. (c) Check
+     `Clutch.maxTorqueTransfer` against the `torqueCurve` peak before adding torque: Arma2Quad had
+     140 against a 320 peak, below every vanilla car (165 at `:14094` to 720 at `:779`). On
+     `DRIVE_FWD`, a first-order Coulomb estimate (not measured in game) says first gear was already
+     asking 6307 N of the 4749 N of front grip at 750 kg, so torque past that becomes wheelspin on
+     the steering axle, which works against turning.
+
+15h. **To change the fuel a vehicle spawns with, override `EEOnCECreate`, not `EEInit`
+     (source-verified 2026-09-10; the CE path itself not yet observed in game).** Vanilla
+     `CarScript.EEOnCECreate` fills a random 0-35 % of `GetFluidCapacity(CarFluid.FUEL)`
+     (`scripts/4_world/entities/vehicles/carscript.c:2967-2974`). It runs when the entity is
+     created as new by CE/debug (`scripts/3_game/entities/entityai.c:1385-1388`), while a load
+     from storage goes through `AfterStoreLoad` (`:1390-1393`) - so a fill there cannot turn into
+     free fuel on every restart, which the same code in `EEInit` would. `Fill` ADDS
+     (`scripts/3_game/vehicles/car.c:375-376`), so top up rather than pour the whole capacity into
+     a tank that may not be empty:
+     `Fill(CarFluid.FUEL, GetFluidCapacity(CarFluid.FUEL) * (1.0 - GetFluidFraction(CarFluid.FUEL)))`.
+     `OnDebugSpawn` is a separate path and fills on its own.
 
 16. **Drive-ready TEST KIT: fill ALL fluids + attach the radiator, not just FUEL (RECURRING: LFQuad + SUB_BRZ
     s28).** An admin/harness kit that only `Fill(CarFluid.FUEL,...)` leaves OIL/COOLANT/BRAKE empty → the oil
