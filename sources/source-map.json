@@ -78,6 +78,29 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/.github/workflows/ci.yml",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored pack-contract workflow committed at 34e33343e117ba384d7da3f698ee70db48fdf66a: windows-latest, Python 3.12, contents:read, pinned actions/checkout and actions/setup-python, packctl validate and tests/packctl as separate steps. MIT-authored CI governance; not release payload.",
+          "license": "MIT",
+          "source_hash": "6274966cd25922e98df3f81b50626253226310a87bb5fda85bc06017436b1366",
+          "source_id": "pack-r21-authored",
+          "source_path": ".github/workflows/ci.yml",
+          "source_revision": "34e33343e117ba384d7da3f698ee70db48fdf66a",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6274966cd25922e98df3f81b50626253226310a87bb5fda85bc06017436b1366",
+      "output_path": ".github/workflows/ci.yml",
+      "routing_artifact_id": "root/github-workflows-ci",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/.gitignore",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -12203,7 +12226,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "The pinned placeholder census tracks <tmp>, which returns alignment_viewer_build.py to the list: verified 2026-09-02 that the script dies on the literal <tmp> path before it can build its viewer.",
           "license": "MIT",
           "source_hash": "b7d0421317d84ee5aa4458c08b1742392afbf305c2ceebb64cbc688eea3e5b71",
@@ -12211,10 +12234,20 @@
           "source_path": "tests/packctl/test_promotion.py",
           "source_revision": "packctl-tmp-alias@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Placeholder census pinned to the scanner's 25 tokens in 5f22363839f3f569651d8a952be2b83e8806ca7d; the same bytes remain at 34e33343e117ba384d7da3f698ee70db48fdf66a. Four stale PROMOTION-CONFIG-INVALID rows were removed; the detector was not changed.",
+          "license": "MIT",
+          "source_hash": "3c8c4701472f4ae307a89b9044f5a1ebf908ca592deb909c64202c87fcf8074b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "5f22363839f3f569651d8a952be2b83e8806ca7d",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b7d0421317d84ee5aa4458c08b1742392afbf305c2ceebb64cbc688eea3e5b71",
+      "output_hash": "3c8c4701472f4ae307a89b9044f5a1ebf908ca592deb909c64202c87fcf8074b",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
