@@ -200,17 +200,6 @@
     },
     {
       "applicability": "governance",
-      "artifact_id": "root/github-workflows-ci",
-      "artifact_kind": "file",
-      "not_applicable_reason": "GitHub workflow governance is archived with the repository snapshot and is not installed as a skill.",
-      "repo_path": ".github/workflows/ci.yml",
-      "skill_target_ids": [],
-      "vault_targets": [
-        "obsidian_snapshots"
-      ]
-    },
-    {
-      "applicability": "governance",
       "artifact_id": "root/gitignore",
       "artifact_kind": "file",
       "not_applicable_reason": "Git exclusion policy is repository governance, not skill content.",

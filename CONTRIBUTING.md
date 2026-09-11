@@ -96,57 +96,13 @@ its report directory must sit outside the repository. Promotion reads a clean
 commit. A dirty tree fails `promote --check` with `PROMOTION-DIRTY`. Confirm
 the current flags with `python -m packctl promote --help`.
 
-### Isolated schema-2 bootstrap
-
-A first promotion into empty destinations uses `--bootstrap`, not `--check`.
-`--bootstrap` is mutually exclusive with `--check`, `--apply` and `--recover`.
-Confirm the current flags with `python -m packctl promote --help`.
-
-1. Copy `promotions/local-targets.example.json` to a gitignored contract
-   (default path `promotions/local-targets.json`). Keep `schema_version` `2`.
-2. Set `installation_id` to a new canonical lowercase UUID v4 (version nibble
-   `4`, variant `8`, `9`, `a` or `b`; `uuid.UUID(value)` must round-trip to the
-   same string). Do not reuse an id that already has a receipt.
-3. Point `backup_root` and every `targets.*.path` at directories you own that
-   are absent or empty for the routed artifact kind. `--bootstrap` refuses a
-   non-empty backup (`PROMOTION-BACKUP-NONEMPTY`) and a non-empty or
-   type-mismatched destination (`PROMOTION-TARGET-NONEMPTY` /
-   `PROMOTION-TARGET-TYPE-MISMATCH`). Linked parents fail closed.
-4. `--bootstrap` requires `--plan` and local-target contract v2. It also
-   requires zero receipts for that `installation_id`
-   (`PROMOTION-INSTALLATION-EXISTS` otherwise). Historical v1 receipts for other
-   installations are not that set.
-
-```text
-python -m packctl promote --bootstrap --root <repo> --promotion-map promotions/promotion-map.json --local-targets <local-targets.json> --plan <plan.json>
-```
-
-Inspect the written plan before apply: `schema_version` `2`, the same
-`installation_id`, `bootstrap` true, the full map, and each operation's
-`after_digest`. Then apply that same plan of that same commit:
-
-```text
-python -m packctl promote --apply --plan <plan.json>
-```
-
-`--apply` takes the plan; it does not take a second copy of the map. After
-apply, read the new receipt under `promotions/receipts/` and confirm destination
-bytes match each `after_digest`. Register that receipt (and any other new
-tracked file) in `sources/source-map.json` and land a commit. There is no
-`packctl reseal` command; the owner writes the source-map entry.
-
-Later promotions of that installation use `--check` of the full map, then
-inspect the plan, then `--apply`. `--bootstrap` is only the genesis of an
-installation with no receipts for that UUID.
-
 ### Check, then apply
 
 Run `python -m packctl promote --check` with `--promotion-map` and
 `--local-targets` set to explicit paths before `--apply`. `--apply` requires
 `--plan` from a green check of that same commit. After apply, read the receipt
 under `promotions/receipts/` and confirm destination bytes match the plan
-`after_digest`. Register the receipt in `sources/source-map.json` and commit;
-there is no `packctl reseal` command.
+`after_digest`.
 
 `--recover` (requires `--transaction-root`) restores a failed or interrupted
 apply to the preimage recorded in that transaction. It is not a rollback to a
@@ -167,14 +123,9 @@ Consumer procedure for `dayz-mod-workflow`:
 
 `python -m packctl promote` walks the full `promotions/promotion-map.json`.
 There is no per-artifact selector, so a version rollback is a full-map
-`--check` then `--apply` of an older commit, recorded as a **new commit**.
-Keep the installation's receipts and the same `installation_id`. Do not
-`git reset` the promotion history or delete receipts to pretend an apply did
-not happen.
-
-Inspect every destination in that plan. Destinations whose planned
-`after_digest` equals their current bytes must keep that digest. Do not claim
-a per-skill rollback.
+`--check` then `--apply` of an older commit. Inspect every destination in that
+plan. Destinations whose planned `after_digest` equals their current bytes
+must keep that digest. Do not claim a per-skill rollback.
 
 `--recover` (requires `--transaction-root`) finishes or aborts one
 incomplete apply back to that transaction's recorded preimage. It is not

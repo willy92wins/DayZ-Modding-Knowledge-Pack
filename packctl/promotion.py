@@ -4,8 +4,6 @@ import json
 import os
 import re
 import shutil
-import subprocess
-import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -17,7 +15,6 @@ from .common import (
     finding,
     git_commit,
     git_is_dirty,
-    git_output,
     git_tracked_files,
     is_relative_contract_path,
     is_within,
@@ -76,114 +73,6 @@ PROMOTION_PHRASE_PLACEHOLDERS = (
 # path-alias suffix set would make the scanner reject them.
 PROMOTION_LOCALIZABLE_TEXT_SUFFIXES = {".md"}
 PathAliasMap = dict[str, dict[str, str]]
-_UUID_V4_PATTERN = re.compile(
-    r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-)
-_RECEIPT_V2_EXTRA = frozenset({"installation_id", "bootstrap"})
-_PLAN_V2_EXTRA = frozenset({"installation_id", "bootstrap"})
-
-
-def _is_canonical_uuid_v4(value: object) -> bool:
-    if not isinstance(value, str) or _UUID_V4_PATTERN.fullmatch(value) is None:
-        return False
-    try:
-        parsed = uuid.UUID(value)
-    except ValueError:
-        return False
-    return parsed.version == 4 and str(parsed) == value
-
-
-def _path_is_link(path: Path) -> bool:
-    try:
-        return path.is_symlink() or _is_junction(path)
-    except OSError:
-        return False
-
-
-def _abspath_is_within(path: Path, root: Path) -> bool:
-    path_abs = os.path.normcase(os.path.abspath(str(path)))
-    root_abs = os.path.normcase(os.path.abspath(str(root)))
-    return path_abs == root_abs or path_abs.startswith(root_abs + os.sep)
-
-
-def _logical_chain_linked(path: Path, ceiling: Path) -> bool:
-    # Parent bindings only. A governed leaf alias that points at an allowed
-    # destination is coalesced, not a linked parent.
-    current = Path(os.path.abspath(str(path))).parent
-    ceiling_abs = Path(os.path.abspath(str(ceiling)))
-    while True:
-        if _path_is_link(current):
-            return True
-        if os.path.normcase(str(current)) == os.path.normcase(str(ceiling_abs)):
-            return False
-        parent = current.parent
-        if parent == current or not _abspath_is_within(current, ceiling_abs):
-            return False
-        current = parent
-
-
-def _bindings_linked_within_allowed(
-    logical: Path,
-    allowed: list[Path],
-    *,
-    resolved: Path | None = None,
-) -> bool:
-    try:
-        resolved_path = (
-            resolved
-            if resolved is not None
-            else Path(os.path.abspath(str(logical))).resolve(strict=False)
-        )
-    except OSError:
-        resolved_path = Path(os.path.abspath(str(logical)))
-    return any(
-        _logical_chain_linked(logical, root)
-        for root in allowed
-        if is_within(resolved_path, root)
-    )
-
-
-def _directory_is_empty(path: Path) -> bool:
-    if _path_is_link(path) or not path.is_dir():
-        return False
-    try:
-        return next(path.iterdir(), None) is None
-    except OSError:
-        return False
-
-
-def _target_absent_or_typed_empty(path: Path, kind: object) -> str | None:
-    if _path_is_link(path):
-        return "linked"
-    try:
-        exists = path.exists()
-    except OSError:
-        return "nonempty"
-    if not exists:
-        return None
-    if kind == "tree":
-        if not path.is_dir() or path.is_symlink():
-            return "type-mismatch"
-        try:
-            return None if next(path.iterdir(), None) is None else "nonempty"
-        except OSError:
-            return "nonempty"
-    if kind == "file":
-        try:
-            if not path.is_file() or path.is_symlink() or path.stat().st_size != 0:
-                return "type-mismatch" if path.is_dir() or not path.is_file() else "nonempty"
-        except OSError:
-            return "nonempty"
-        return None
-    return "invalid-kind"
-
-
-def _git_is_ancestor(root: Path, commit: str) -> bool:
-    try:
-        git_output(root, "merge-base", "--is-ancestor", commit, "HEAD")
-    except (OSError, subprocess.CalledProcessError):
-        return False
-    return True
 
 
 def _route_contains(repo_path: str, kind: object, output_path: str) -> bool:
@@ -677,7 +566,6 @@ def _target_config_findings(
     list[Path],
     Path | None,
     PathAliasMap,
-    str | None,
     list[dict[str, object]],
 ]:
     findings: list[dict[str, object]] = []
@@ -689,37 +577,21 @@ def _target_config_findings(
         "targets",
     }
     fields = set(config)
-    version = config.get("schema_version")
-    v1_fields = fields == required or fields == required | {"path_aliases"}
-    v2_fields = (
-        fields == required | {"installation_id"}
-        or fields == required | {"path_aliases", "installation_id"}
-    )
-    if (version == 1 and not v1_fields) or (version == 2 and not v2_fields) or version not in {1, 2}:
-        return {}, [], [], None, {}, None, [
+    if (
+        fields != required
+        and fields != required | {"path_aliases"}
+    ) or config.get("schema_version") != 1:
+        return {}, [], [], None, {}, [
             finding(
                 "PROMOTION-CONFIG-INVALID",
                 path="local-targets.json",
                 line=1,
-                message="The local target configuration does not match schema v1 or v2.",
+                message="The local target configuration does not match schema v1.",
                 evidence="Invalid top-level fields.",
             )
         ]
     path_aliases, alias_findings = _path_alias_config_findings(config)
     findings.extend(alias_findings)
-    installation_id: str | None = None
-    if version == 2:
-        if not _is_canonical_uuid_v4(config.get("installation_id")):
-            return {}, [], [], None, path_aliases, None, [
-                finding(
-                    "PROMOTION-CONFIG-INVALID",
-                    path="local-targets.json",
-                    line=1,
-                    message="installation_id must be a canonical lowercase UUID v4.",
-                    evidence="installation_id",
-                )
-            ]
-        installation_id = str(config["installation_id"])
     try:
         allowed = [
             Path(item).resolve(strict=True)
@@ -729,10 +601,9 @@ def _target_config_findings(
             Path(item).resolve(strict=False)
             for item in config["forbidden_physical_roots"]
         ]
-        backup_logical = Path(str(config["backup_root"]))
-        backup_root = backup_logical.resolve(strict=True)
+        backup_root = Path(str(config["backup_root"])).resolve(strict=True)
     except (OSError, TypeError) as error:
-        return {}, [], [], None, path_aliases, installation_id, [
+        return {}, [], [], None, path_aliases, [
             finding(
                 "PROMOTION-CONFIG-INVALID",
                 path="local-targets.json",
@@ -741,35 +612,6 @@ def _target_config_findings(
                 evidence=type(error).__name__,
             )
         ]
-    for raw_root in config["allowed_physical_roots"]:
-        if _path_is_link(Path(str(raw_root))):
-            findings.append(
-                finding(
-                    "PROMOTION-TARGET-LINKED",
-                    path="allowed_physical_roots",
-                    line=0,
-                    message="A configured allowed root is a symlink or junction.",
-                    evidence=str(raw_root),
-                )
-            )
-    if (
-        _path_is_link(backup_logical)
-        or _contains_links(backup_logical)
-        or _bindings_linked_within_allowed(
-            backup_logical,
-            allowed,
-            resolved=backup_root,
-        )
-    ):
-        findings.append(
-            finding(
-                "PROMOTION-BACKUP-LINKED",
-                path="backup_root",
-                line=0,
-                message="The configured backup root is linked or contains a link.",
-                evidence="backup_root",
-            )
-        )
     if any(is_within(backup_root, blocked) for blocked in forbidden):
         findings.append(
             finding(
@@ -807,7 +649,6 @@ def _target_config_findings(
             forbidden,
             backup_root,
             path_aliases,
-            installation_id,
             sort_findings(findings),
         )
     for target_id, item in config["targets"].items():
@@ -823,17 +664,6 @@ def _target_config_findings(
             )
             continue
         target_path = Path(os.path.abspath(Path(str(item["path"]))))
-        if _path_is_link(target_path):
-            findings.append(
-                finding(
-                    "PROMOTION-TARGET-LINKED",
-                    path=str(target_id),
-                    line=0,
-                    message="A configured target root is a symlink or junction.",
-                    evidence=str(target_id),
-                )
-            )
-            continue
         if not target_path.exists() or not target_path.is_dir():
             findings.append(
                 finding(
@@ -868,21 +698,6 @@ def _target_config_findings(
                 )
             )
             continue
-        if _bindings_linked_within_allowed(
-            target_path,
-            allowed,
-            resolved=resolved,
-        ):
-            findings.append(
-                finding(
-                    "PROMOTION-TARGET-LINKED",
-                    path=str(target_id),
-                    line=0,
-                    message="A configured target root is a symlink or junction.",
-                    evidence=str(target_id),
-                )
-            )
-            continue
         if item["ownership"] != "user_owned" or item["writable"] is not True:
             findings.append(
                 finding(
@@ -901,7 +716,6 @@ def _target_config_findings(
         forbidden,
         backup_root,
         path_aliases,
-        installation_id,
         sort_findings(findings),
     )
 
@@ -1165,28 +979,13 @@ def _receipt_claimed_pairs(
     return pairs
 
 
-def _receipt_schema_version(receipt: dict[str, object]) -> int | None:
-    fields = set(receipt)
-    version = receipt.get("schema_version")
-    if fields == _RECEIPT_FIELDS and version == 1:
-        return 1
-    if (
-        fields == _RECEIPT_FIELDS | _RECEIPT_V2_EXTRA
-        and version == 2
-        and _is_canonical_uuid_v4(receipt.get("installation_id"))
-        and isinstance(receipt.get("bootstrap"), bool)
-    ):
-        return 2
-    return None
-
-
 def _receipt_contract_is_canonical(
     path: Path,
     receipt: dict[str, object],
 ) -> bool:
-    schema = _receipt_schema_version(receipt)
     if (
-        schema is None
+        set(receipt) != _RECEIPT_FIELDS
+        or receipt.get("schema_version") != 1
         or receipt.get("verdict") != "PASS"
         or not isinstance(receipt.get("transaction_id"), str)
         or re.fullmatch(r"[0-9a-f]{24}", receipt["transaction_id"]) is None
@@ -1298,8 +1097,6 @@ def _sealed_receipt_transitions(
     backup_root: Path,
     path: Path,
     receipt: dict[str, object],
-    *,
-    portable: bool = False,
 ) -> tuple[
     list[tuple[tuple[str, str], str, str, str]],
     str | None,
@@ -1329,23 +1126,7 @@ def _sealed_receipt_transitions(
         return [], "PROMOTION-RECEIPT-UNSEALED", "commit-payload-invalid"
     expected_receipt = _receipt_value(plan, completed_at)
     expected_path = Path(str(plan["receipt_path"])).resolve(strict=False)
-    if portable:
-        if (
-            receipt != expected_receipt
-            or str(receipt.get("source_commit")) != str(plan.get("source_commit"))
-        ):
-            return (
-                [],
-                "PROMOTION-RECEIPT-JOURNAL-MISMATCH",
-                "receipt-does-not-match-sealed-plan",
-            )
-        if not _git_is_ancestor(root, str(receipt["source_commit"])):
-            return (
-                [],
-                "PROMOTION-RECEIPT-COMMIT-NOT-ANCESTOR",
-                str(receipt["source_commit"]),
-            )
-    elif (
+    if (
         receipt != expected_receipt
         or os.path.normcase(str(expected_path))
         != os.path.normcase(str(path.resolve(strict=False)))
@@ -1487,9 +1268,7 @@ def _latest_receipt_digests(
     backup_root: Path,
     adjudications: dict[tuple[str, str], str],
     observed_digests: dict[tuple[str, str], str],
-    *,
-    installation_id: str | None = None,
-) -> tuple[dict[tuple[str, str], str], list[dict[str, object]], dict[str, int]]:
+) -> tuple[dict[tuple[str, str], str], list[dict[str, object]]]:
     receipts_root = root / "promotions" / "receipts"
     transitions_by_key: dict[
         tuple[str, str], list[tuple[str, str, str]]
@@ -1502,11 +1281,8 @@ def _latest_receipt_digests(
         ]
     ] = []
     findings: list[dict[str, object]] = []
-    matching = 0
-    genesis = 0
-    empty_meta = {"matching": 0, "genesis": 0}
     if not receipts_root.exists():
-        return {}, findings, empty_meta
+        return {}, findings
     for path in receipts_root.glob("*.json"):
         if path.is_symlink() or _is_junction(path):
             findings.append(
@@ -1532,27 +1308,15 @@ def _latest_receipt_digests(
                 findings,
                 code="PROMOTION-RECEIPT-INVALID",
                 path=path.name,
-                message="A promotion receipt is not canonical.",
+                message="A promotion receipt is not canonical schema v1.",
                 evidence=path.name,
                 pairs=pairs,
                 adjudications=adjudications,
                 observed_digests=observed_digests,
             )
             continue
-        schema = _receipt_schema_version(receipt)
-        foreign = installation_id is not None and (
-            schema != 2 or str(receipt.get("installation_id")) != installation_id
-        )
-        if foreign:
-            continue
-        if installation_id is not None:
-            matching += 1
         transitions, issue_code, issue_evidence = _sealed_receipt_transitions(
-            root,
-            backup_root,
-            path,
-            receipt,
-            portable=installation_id is not None,
+            root, backup_root, path, receipt
         )
         if issue_code is not None:
             _append_scoped_receipt_finding(
@@ -1581,8 +1345,6 @@ def _latest_receipt_digests(
                 transitions,
             )
         )
-        if receipt.get("bootstrap") is True:
-            genesis += 1
 
     for _, _, transitions in sorted(
         sealed_receipts,
@@ -1619,7 +1381,7 @@ def _latest_receipt_digests(
             continue
         if head is not None:
             history[key] = head
-    return history, sort_findings(findings), {"matching": matching, "genesis": genesis}
+    return history, sort_findings(findings)
 
 def _target_is_empty(path: Path) -> bool:
     try:
@@ -1719,33 +1481,10 @@ def _destination_findings(
     artifact_id: str,
     allowed: list[Path],
     forbidden: list[Path],
-    *,
-    ceiling: Path | None = None,
 ) -> list[dict[str, object]]:
-    findings: list[dict[str, object]] = []
     resolved = destination.resolve(strict=False)
-    if (
-        (ceiling is not None and _logical_chain_linked(destination, ceiling))
-        or _bindings_linked_within_allowed(
-            destination,
-            allowed,
-            resolved=resolved,
-        )
-    ):
-        findings.append(
-            finding(
-                "PROMOTION-TARGET-LINKED",
-                path=artifact_id,
-                line=0,
-                message=(
-                    "A routed destination or parent binding is a symlink "
-                    "or junction."
-                ),
-                evidence=artifact_id,
-            )
-        )
     if any(is_within(resolved, blocked) for blocked in forbidden):
-        findings.append(
+        return [
             finding(
                 "PROMOTION-TARGET-FORBIDDEN",
                 path=artifact_id,
@@ -1753,9 +1492,9 @@ def _destination_findings(
                 message="A routed destination resolves inside a forbidden root.",
                 evidence=artifact_id,
             )
-        )
-    elif not any(is_within(resolved, root) for root in allowed):
-        findings.append(
+        ]
+    if not any(is_within(resolved, root) for root in allowed):
+        return [
             finding(
                 "PROMOTION-TARGET-ESCAPE",
                 path=artifact_id,
@@ -1763,9 +1502,9 @@ def _destination_findings(
                 message="A routed destination resolves outside all allowlisted roots.",
                 evidence=artifact_id,
             )
-        )
+        ]
     if _contains_links(destination):
-        findings.append(
+        return [
             finding(
                 "PROMOTION-TARGET-LINKED",
                 path=artifact_id,
@@ -1776,8 +1515,8 @@ def _destination_findings(
                 ),
                 evidence=artifact_id,
             )
-        )
-    return findings
+        ]
+    return []
 
 
 def _unlink_plan(plan_path: Path | None) -> None:
@@ -1785,77 +1524,11 @@ def _unlink_plan(plan_path: Path | None) -> None:
         plan_path.unlink(missing_ok=True)
 
 
-def _bootstrap_bound_findings(
-    backup_root: Path | None,
-    operations: list[dict[str, object]],
-) -> list[dict[str, object]]:
-    findings: list[dict[str, object]] = []
-    if backup_root is None:
-        findings.append(
-            finding(
-                "PROMOTION-CONFIG-INVALID",
-                path="backup_root",
-                line=0,
-                message="Bootstrap requires a resolved backup root.",
-                evidence="backup_root",
-            )
-        )
-        return findings
-    if _path_is_link(backup_root) or _contains_links(backup_root):
-        findings.append(
-            finding(
-                "PROMOTION-BACKUP-LINKED",
-                path="backup_root",
-                line=0,
-                message="Bootstrap requires an unlinked backup root.",
-                evidence="backup_root",
-            )
-        )
-    elif not _directory_is_empty(backup_root):
-        findings.append(
-            finding(
-                "PROMOTION-BACKUP-NONEMPTY",
-                path="backup_root",
-                line=0,
-                message="Bootstrap requires a completely empty backup root.",
-                evidence="backup_root",
-            )
-        )
-    for operation in operations:
-        kind = operation["artifact_kind"]
-        for target_id, logical_value in operation["logical_target_paths"].items():
-            reason = _target_absent_or_typed_empty(Path(str(logical_value)), kind)
-            if reason is None:
-                continue
-            code = (
-                "PROMOTION-TARGET-TYPE-MISMATCH"
-                if reason == "type-mismatch"
-                else "PROMOTION-TARGET-LINKED"
-                if reason == "linked"
-                else "PROMOTION-TARGET-NONEMPTY"
-            )
-            findings.append(
-                finding(
-                    code,
-                    path=str(operation["artifact_id"]),
-                    line=0,
-                    message=(
-                        "Bootstrap requires each destination to be absent "
-                        "or empty with the routed artifact kind."
-                    ),
-                    evidence=f"target={target_id} reason={reason}",
-                )
-            )
-    return sort_findings(findings)
-
-
 def check_promotion(
     root: Path,
     promotion_map_path: Path,
     local_targets_path: Path,
     plan_path: Path | None,
-    *,
-    bootstrap: bool = False,
 ) -> dict[str, object]:
     root = Path(root).resolve()
     promotion_map_path = Path(promotion_map_path).resolve()
@@ -1889,30 +1562,9 @@ def check_promotion(
         forbidden,
         backup_root,
         path_aliases,
-        installation_id,
         target_findings,
     ) = _target_config_findings(config)
     findings.extend(target_findings)
-    if bootstrap and installation_id is None:
-        findings.append(
-            finding(
-                "PROMOTION-BOOTSTRAP-UNSUPPORTED",
-                path="local-targets.json",
-                line=1,
-                message="promote --bootstrap requires local target contract v2.",
-                evidence="schema_version",
-            )
-        )
-    if bootstrap and plan_path is None:
-        findings.append(
-            finding(
-                "PROMOTION-BOOTSTRAP-PLAN-REQUIRED",
-                path=".",
-                line=0,
-                message="promote --bootstrap requires --plan.",
-                evidence="plan",
-            )
-        )
     if any(item["severity"] == "error" for item in findings):
         _unlink_plan(plan_path)
         return make_report("promote check", root, findings)
@@ -2007,11 +1659,10 @@ def check_promotion(
             destination = logical_destination.resolve(strict=False)
             findings.extend(
                 _destination_findings(
-                    logical_destination,
+                    destination,
                     artifact_id,
                     allowed,
                     forbidden,
-                    ceiling=target_root,
                 )
             )
             raw_operations.append(
@@ -2049,11 +1700,10 @@ def check_promotion(
             destination = logical_destination.resolve(strict=False)
             findings.extend(
                 _destination_findings(
-                    logical_destination,
+                    destination,
                     artifact_id,
                     allowed,
                     forbidden,
-                    ceiling=target_root,
                 )
             )
             raw_operations.append(
@@ -2082,67 +1732,16 @@ def check_promotion(
             observed_digests[(str(operation["artifact_id"]), target_id)] = str(
                 operation["before_digest"]
             )
-    receipt_digests, receipt_findings, receipt_meta = _latest_receipt_digests(
+    receipt_digests, receipt_findings = _latest_receipt_digests(
         root,
         backup_root,
         adjudications,
         observed_digests,
-        installation_id=installation_id,
     )
     findings.extend(receipt_findings)
     if any(item["severity"] == "error" for item in findings):
         _unlink_plan(plan_path)
         return make_report("promote check", root, findings)
-
-    if installation_id is not None:
-        if bootstrap:
-            if receipt_meta["matching"] > 0:
-                findings.append(
-                    finding(
-                        "PROMOTION-INSTALLATION-EXISTS",
-                        path="promotions/receipts",
-                        line=1,
-                        message=(
-                            "promote --bootstrap requires zero receipts for "
-                            "this installation_id."
-                        ),
-                        evidence=installation_id,
-                    )
-                )
-        elif receipt_meta["genesis"] == 0:
-            findings.append(
-                finding(
-                    "PROMOTION-INSTALLATION-UNINITIALIZED",
-                    path="promotions/receipts",
-                    line=1,
-                    message=(
-                        "A v2 installation requires exactly one sealed "
-                        "genesis receipt."
-                    ),
-                    evidence=installation_id,
-                )
-            )
-        elif receipt_meta["genesis"] != 1:
-            findings.append(
-                finding(
-                    "PROMOTION-INSTALLATION-GENESIS-CONFLICT",
-                    path="promotions/receipts",
-                    line=1,
-                    message="A v2 installation has more than one genesis receipt.",
-                    evidence=f"genesis={receipt_meta['genesis']}",
-                )
-            )
-        if any(item["severity"] == "error" for item in findings):
-            _unlink_plan(plan_path)
-            return make_report("promote check", root, findings)
-
-    if bootstrap:
-        findings.extend(
-            _bootstrap_bound_findings(backup_root, raw_operations)
-        )
-        if any(item["severity"] == "error" for item in findings):
-            _unlink_plan(plan_path)
-            return make_report("promote check", root, findings)
 
     findings.extend(
         _target_preimage_findings(
@@ -2227,8 +1826,6 @@ def check_promotion(
         "source_commit": commit,
         "promotion_map_hash": sha256_file(promotion_map_path),
         "local_targets_hash": sha256_file(local_targets_path),
-        "installation_id": installation_id,
-        "bootstrap": bool(bootstrap),
         "operations": [
             {
                 "artifact_id": item["artifact_id"],
@@ -2248,7 +1845,7 @@ def check_promotion(
     )[:24]
     receipt_path = root / "promotions" / "receipts" / f"{transaction_id}.json"
     plan = {
-        "schema_version": 2 if installation_id is not None else 1,
+        "schema_version": 1,
         "transaction_id": transaction_id,
         "source_root": str(root),
         "source_commit": commit,
@@ -2270,9 +1867,6 @@ def check_promotion(
         ),
         "operations": operations,
     }
-    if installation_id is not None:
-        plan["installation_id"] = installation_id
-        plan["bootstrap"] = bool(bootstrap)
     plan["plan_digest"] = _plan_digest(plan)
     artifacts: dict[str, object] = {
         "operation_count": len(operations),
@@ -2435,12 +2029,9 @@ def _is_junction(path: Path) -> bool:
 
 
 def _contains_links(path: Path) -> bool:
-    try:
-        if not path.exists():
-            return False
-        if not path.is_dir():
-            return False
-    except OSError:
+    if path.is_symlink() or _is_junction(path):
+        return True
+    if not path.is_dir():
         return False
     for current, directories, files in os.walk(path, followlinks=False):
         current_path = Path(current)
@@ -2656,21 +2247,6 @@ _PLAN_FIELDS = {
     "operations",
     "plan_digest",
 }
-
-
-def _plan_contract_is_canonical(plan: dict[str, object]) -> bool:
-    fields = set(plan)
-    version = plan.get("schema_version")
-    if fields == _PLAN_FIELDS and version == 1:
-        return True
-    if fields == _PLAN_FIELDS | _PLAN_V2_EXTRA and version == 2:
-        return (
-            _is_canonical_uuid_v4(plan.get("installation_id"))
-            and isinstance(plan.get("bootstrap"), bool)
-        )
-    return False
-
-
 _EVENT_FIELDS = {
     "schema_version",
     "sequence",
@@ -2713,15 +2289,6 @@ def _exception_evidence(error: BaseException) -> str:
 
 def _lock_path_for_root(root: Path) -> Path:
     return root.parent / f".{root.name}.packctl.lock"
-
-
-def _lock_anchor(path: Path) -> Path:
-    current = Path(os.path.abspath(str(path)))
-    while True:
-        parent = current.parent
-        if parent.exists() or parent == current:
-            return current
-        current = parent
 
 
 class _RootLocks:
@@ -2841,8 +2408,6 @@ def _lock_roots_for_plan(plan: dict[str, object]) -> list[Path]:
             )
         root = max(candidates, key=lambda candidate: len(candidate.parts))
         selected[os.path.normcase(str(root))] = root
-        anchor = _lock_anchor(path)
-        selected[os.path.normcase(str(anchor))] = anchor
     return sorted(
         selected.values(),
         key=lambda path: os.path.normcase(str(path)),
@@ -3116,7 +2681,8 @@ def _load_transaction(
         ) from error
     if (
         not isinstance(plan, dict)
-        or not _plan_contract_is_canonical(plan)
+        or set(plan) != _PLAN_FIELDS
+        or plan.get("schema_version") != 1
         or plan.get("transaction_id") != transaction_root.name
         or _plan_digest(plan) != plan.get("plan_digest")
     ):
@@ -3310,8 +2876,8 @@ def _receipt_value(
     plan: dict[str, object],
     completed_at: str,
 ) -> dict[str, object]:
-    receipt: dict[str, object] = {
-        "schema_version": plan["schema_version"],
+    return {
+        "schema_version": 1,
         "transaction_id": plan["transaction_id"],
         "source_commit": plan["source_commit"],
         "artifact_ids": plan["artifact_ids"],
@@ -3329,17 +2895,11 @@ def _receipt_value(
         "verdict": "PASS",
         "completed_at": completed_at,
     }
-    if plan.get("schema_version") == 2:
-        receipt["installation_id"] = plan["installation_id"]
-        receipt["bootstrap"] = plan["bootstrap"]
-    return receipt
 
 
 def _publish_or_verify_receipt(
     plan: dict[str, object],
     commit_event: dict[str, object],
-    *,
-    receipt_path: Path | None = None,
 ) -> Path:
     completed_at = commit_event["payload"].get("completed_at")
     receipt_hash = commit_event["payload"].get("receipt_hash")
@@ -3358,8 +2918,7 @@ def _publish_or_verify_receipt(
             "PROMOTION-JOURNAL-INVALID",
             "commit-receipt-hash-invalid",
         )
-    if receipt_path is None:
-        receipt_path = Path(str(plan["receipt_path"]))
+    receipt_path = Path(str(plan["receipt_path"]))
     if receipt_path.exists() or receipt_path.is_symlink():
         try:
             existing = receipt_path.read_bytes()
@@ -3624,8 +3183,6 @@ def _validate_terminal_transaction(
 
 def _scan_transactions(
     backup_root: Path,
-    *,
-    live_root: Path | None = None,
 ) -> None:
     try:
         transaction_roots = sorted(
@@ -3650,19 +3207,7 @@ def _scan_transactions(
                     "PROMOTION-RECOVERY-REQUIRED",
                     f"{transaction_root.name}:pending",
                 )
-            historical_path = Path(str(prior_plan["receipt_path"]))
-            if (
-                prior_plan.get("schema_version") == 2
-                and live_root is not None
-            ):
-                receipt_path = (
-                    Path(live_root)
-                    / "promotions"
-                    / "receipts"
-                    / f"{transaction_root.name}.json"
-                )
-            else:
-                receipt_path = historical_path
+            receipt_path = Path(str(prior_plan["receipt_path"]))
             if terminal["event_type"] == "COMMIT":
                 if (
                     not receipt_path.exists()
@@ -3672,11 +3217,7 @@ def _scan_transactions(
                         "PROMOTION-RECOVERY-REQUIRED",
                         f"{transaction_root.name}:receipt-missing",
                     )
-                _publish_or_verify_receipt(
-                    prior_plan,
-                    terminal,
-                    receipt_path=receipt_path,
-                )
+                _publish_or_verify_receipt(prior_plan, terminal)
             elif receipt_path.exists() or receipt_path.is_symlink():
                 raise _PromotionIntegrityError(
                     "PROMOTION-RECEIPT-CONFLICT",
@@ -3788,13 +3329,13 @@ def _load_apply_plan(
     if plan is None:
         return None, plan_path.parent, findings
     root = Path(str(plan.get("source_root", "."))).resolve()
-    if not _plan_contract_is_canonical(plan):
+    if set(plan) != _PLAN_FIELDS or plan.get("schema_version") != 1:
         return None, root, [
             finding(
                 "PROMOTION-PLAN-INVALID",
                 path=plan_path.name,
                 line=1,
-                message="The promotion plan does not match the sealed schema.",
+                message="The promotion plan does not match schema v1.",
                 evidence="Invalid plan fields.",
             )
         ]
@@ -3828,15 +3369,6 @@ def _load_apply_plan(
                 )
             )
     contract_findings.extend(_validate_plan_paths(plan))
-    live_config, live_load_findings = _load_object(
-        Path(str(plan["local_targets_path"])),
-        "PROMOTION-CONFIG-INVALID",
-    )
-    if live_config is None:
-        contract_findings.extend(live_load_findings)
-    else:
-        *_, live_findings = _target_config_findings(live_config)
-        contract_findings.extend(live_findings)
     return plan, root, sort_findings(contract_findings)
 
 
@@ -3895,18 +3427,7 @@ def apply_promotion(
                         )
                     ],
                 )
-            if plan.get("bootstrap") is True:
-                locked_findings = _bootstrap_bound_findings(
-                    Path(str(plan["backup_root"])),
-                    list(plan["operations"]),
-                )
-                if locked_findings:
-                    return make_report(
-                        "promote apply",
-                        root,
-                        locked_findings,
-                    )
-            _scan_transactions(backup_base, live_root=root)
+            _scan_transactions(backup_base)
             locked_findings = _promotion_state_findings(
                 plan,
                 root,

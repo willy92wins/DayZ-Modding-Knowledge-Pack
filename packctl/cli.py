@@ -66,7 +66,6 @@ def _parser() -> argparse.ArgumentParser:
     action = promote.add_mutually_exclusive_group(required=True)
     action.add_argument("--check", action="store_true")
     action.add_argument("--apply", action="store_true")
-    action.add_argument("--bootstrap", action="store_true")
     action.add_argument("--recover", action="store_true")
     promote.add_argument("--root", type=Path, default=Path("."))
     promote.add_argument(
@@ -152,15 +151,12 @@ def main(argv: list[str] | None = None) -> int:
                 case_path = root / "evals" / "cases" / f"{args.case}.json"
             report = run_eval_case(case_path, args.variant, args.out)
             report_path = args.out / "report.json"
-        elif args.command == "promote" and (args.check or args.bootstrap):
-            if args.bootstrap and args.plan is None:
-                parser.error("promote --bootstrap requires --plan")
+        elif args.command == "promote" and args.check:
             report = check_promotion(
                 args.root,
                 args.promotion_map,
                 args.local_targets,
                 args.plan,
-                bootstrap=bool(args.bootstrap),
             )
             sys.stdout.write(
                 json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2)
