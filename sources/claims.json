@@ -494,6 +494,19 @@
       "source_id": "dzconfig-wiki-2026-09",
       "source_revision": "dzconfig-wiki-harvest@2026-09-07",
       "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/contributing.md",
+      "claim_id": "CLAIM-PACKCTL-PORTABLE-PROMOTION-V2",
+      "evidence_locator": "Inspected git revision ab2f53d583ff50574bd336a88737c12d99234694 (absent from this worktree HEAD): packctl/cli.py:69,155-163; packctl/promotion.py:82-83,695-722,1176,1858-1912,2097-2139,2230-2274,2668,3333; tests/packctl/test_cli.py:246-319; tests/packctl/test_promotion.py:3848-4377",
+      "license": "MIT",
+      "line_end": 140,
+      "line_start": 101,
+      "observed_at": "2026-09-11",
+      "promotion_artifact_id": "root/contributing",
+      "source_id": "pack-r21-authored",
+      "source_revision": "ab2f53d583ff50574bd336a88737c12d99234694",
+      "verification_level": "source_verified"
     }
   ],
   "schema_version": 1

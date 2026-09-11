@@ -277,7 +277,7 @@
           "verification_level": "offline_tested"
         },
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Documented isolated schema-2 bootstrap (UUIDv4, empty targets/backup), full-map check/inspect/apply, owner source-map registration, and rollback as a new commit that keeps receipts and installation_id.",
           "license": "MIT",
           "source_hash": "dec6697d2737cb94cc903ddb87e2d97720eeeacbbdbb5379b7809cc8ad506846",
@@ -285,10 +285,20 @@
           "source_path": "CONTRIBUTING.md",
           "source_revision": "operations-integration@2026-09-11",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added [EXACT][CLAIM-PACKCTL-PORTABLE-PROMOTION-V2] beside the isolated schema-2 bootstrap contract restored from ab2f53d583ff50574bd336a88737c12d99234694. Registry-only; does not assert G5 runtime on this worktree HEAD.",
+          "license": "MIT",
+          "source_hash": "4f4c5a927e63cecc979199dfb4aefff41340f88dd5a81af01e972f316df2655d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CONTRIBUTING.md",
+          "source_revision": "g5-portable-claim-registry@2026-09-11",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "dec6697d2737cb94cc903ddb87e2d97720eeeacbbdbb5379b7809cc8ad506846",
+      "output_hash": "4f4c5a927e63cecc979199dfb4aefff41340f88dd5a81af01e972f316df2655d",
       "output_path": "CONTRIBUTING.md",
       "routing_artifact_id": "root/contributing",
       "verification_level": "cross_checked"
@@ -11857,7 +11867,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Claim registry records the three approved evidence-backed contracts and their skill ranges.",
           "license": "MIT",
           "source_hash": "858612b6cfc43947fad8945c3b8be1771f30746be981ab6c91a3397a7f486e0f",
@@ -11865,10 +11875,30 @@
           "source_path": "sources/claims.json",
           "source_revision": "filesystem@2026-08-21",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Claim registry as published on d0fd531fae96d3e0bc5d0d37cd91e53b836aced3 before G5 portable claim registration.",
+          "license": "MIT",
+          "source_hash": "b8debb922ffb3d03aef8324f2ff17da344377d42c6a51507f17cc55181932e51",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "d0fd531fae96d3e0bc5d0d37cd91e53b836aced3",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Registered CLAIM-PACKCTL-PORTABLE-PROMOTION-V2 for promote --bootstrap / schema_version 2 / installation_id. Evidence inspected at ab2f53d583ff50574bd336a88737c12d99234694; not present on this worktree HEAD.",
+          "license": "MIT",
+          "source_hash": "2844e474e2fc9ad4a2c9a38000e3cdd315925625090d5ad906d832a64427d86e",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "g5-portable-claim-registry@2026-09-11",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "b8debb922ffb3d03aef8324f2ff17da344377d42c6a51507f17cc55181932e51",
+      "output_hash": "2844e474e2fc9ad4a2c9a38000e3cdd315925625090d5ad906d832a64427d86e",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

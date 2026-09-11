@@ -98,7 +98,7 @@ the current flags with `python -m packctl promote --help`.
 
 ### Isolated schema-2 bootstrap
 
-A first promotion into empty destinations uses `--bootstrap`, not `--check`.
+[EXACT][CLAIM-PACKCTL-PORTABLE-PROMOTION-V2] A first promotion into empty destinations uses `--bootstrap`, not `--check`.
 `--bootstrap` is mutually exclusive with `--check`, `--apply` and `--recover`.
 Confirm the current flags with `python -m packctl promote --help`.
 
