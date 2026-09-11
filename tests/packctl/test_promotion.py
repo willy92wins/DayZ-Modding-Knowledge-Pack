@@ -2500,10 +2500,8 @@ def test_check_revalidates_destination_after_child_link_resolution(
     forbidden = paths["targets"] / "plugins"
     forbidden.mkdir()
     linked = paths["agents"] / "demo"
-    try:
-        os.symlink(forbidden, linked, target_is_directory=True)
-    except OSError as error:
-        pytest.skip(f"directory symlink unavailable: {error}")
+    if not try_dir_link(forbidden, linked):
+        pytest.skip("directory symlink/junction unavailable")
 
     report = check_promotion(root, map_path, config_path, plan_path)
 
@@ -2522,10 +2520,8 @@ def test_apply_revalidates_every_logical_alias(
     physical.mkdir()
     (physical / "old.txt").write_text("old\n", encoding="utf-8")
     logical = paths["agents"] / "demo"
-    try:
-        os.symlink(physical, logical, target_is_directory=True)
-    except OSError as error:
-        pytest.skip(f"directory symlink unavailable: {error}")
+    if not try_dir_link(physical, logical):
+        pytest.skip("directory symlink/junction unavailable")
     observed_digest = tree_digest(physical)
     commit_test_adjudications(
         root,
@@ -2550,10 +2546,14 @@ def test_apply_revalidates_every_logical_alias(
     )
     assert set(aliased["logical_target_paths"]) == set(REQUIRED_SKILL_TARGETS)
 
-    logical.unlink()
+    if logical.is_symlink():
+        logical.unlink()
+    else:
+        os.rmdir(logical)
     replacement = paths["targets"] / "replacement"
     replacement.mkdir()
-    os.symlink(replacement, logical, target_is_directory=True)
+    if not try_dir_link(replacement, logical):
+        pytest.skip("directory symlink/junction unavailable")
 
     report = apply_promotion(plan_path)
 

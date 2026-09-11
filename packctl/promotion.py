@@ -107,7 +107,9 @@ def _abspath_is_within(path: Path, root: Path) -> bool:
 
 
 def _logical_chain_linked(path: Path, ceiling: Path) -> bool:
-    current = Path(os.path.abspath(str(path)))
+    # Parent bindings only. A governed leaf alias that points at an allowed
+    # destination is coalesced, not a linked parent.
+    current = Path(os.path.abspath(str(path))).parent
     ceiling_abs = Path(os.path.abspath(str(ceiling)))
     while True:
         if _path_is_link(current):
@@ -2433,9 +2435,12 @@ def _is_junction(path: Path) -> bool:
 
 
 def _contains_links(path: Path) -> bool:
-    if path.is_symlink() or _is_junction(path):
-        return True
-    if not path.is_dir():
+    try:
+        if not path.exists():
+            return False
+        if not path.is_dir():
+            return False
+    except OSError:
         return False
     for current, directories, files in os.walk(path, followlinks=False):
         current_path = Path(current)
