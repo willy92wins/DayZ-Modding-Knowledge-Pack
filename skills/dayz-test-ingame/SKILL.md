@@ -1242,9 +1242,18 @@ proceso?"**:
 eso el proceso queda vivo con 0 CPU en vez de desaparecer, y por eso no hay evento de fallo en
 el visor de sucesos de Windows: DayZ escribe su propio `.mdmp` y se planta.
 
-**Remedio** (conserva el login, ~20 s): `steam.exe -shutdown`, esperar a que el proceso muera,
-relanzar, y **esperar a que la clave vuelva a casar con un proceso vivo** antes de lanzar el
-cliente. No basta con que Steam "este abierto".
+**Remedio** (revisado 2026-09-12): el fiable es **copiar el pid del `steam.exe` vivo a la clave**,
+con guardas: clave estable entre dos lecturas, `ActiveUser` valido, un solo `steam.exe` vivo en tu
+sesion y en su ruta, recomprobado justo antes de escribir y verificado despues. Reiniciar Steam
+(`steam.exe -shutdown` y relanzar) conserva el login pero **puede no reescribir la clave**: medido
+ese dia, Steam arranco con pid 34316, la clave siguio en 50968 sin tocarse desde la noche anterior
+y el pid nuevo solo aparecio en `HKLM\SOFTWARE\Valve\Steam\SteamPID`. Si reinicias, **comprueba que
+la clave case con un proceso vivo** antes de lanzar el cliente; no basta con que Steam "este abierto".
+
+**La sonda que discrimina es `SteamAPI_IsSteamRunning`, no `SteamAPI_Init`.** Con la clave rancia,
+la `steam_api64.dll` del propio DayZ devolvio `Init` OK e `IsSteamRunning` FALSO, y el cliente murio
+igual; tras copiar el pid salieron las dos verdaderas y el cliente entro. Una puerta que solo llama
+a `Init` da verde sobre el estado roto.
 
 **Como leer el volcado sin depurador**, que es lo que corto el bucle de hipotesis: un minidump
 trae `MINIDUMP_EXCEPTION_STREAM` (tipo 6) y `MODULE_LIST` (tipo 4); con ~60 lineas de Python se
