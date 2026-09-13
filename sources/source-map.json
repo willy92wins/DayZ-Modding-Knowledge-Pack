@@ -7886,10 +7886,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Side commit 35f0454 replayed onto the integration branch; the file also changed on the integrated line, so the replayed bytes are a merge of both.",
+          "license": "MIT",
+          "source_hash": "17bc8eb9e613572056f41b6ac205b633aed3fcb6a0996df0dd89697d1095e4f0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "integrate-publish@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4df5f1e887782de1222bfc87fa6635ee7161584edd32457c99b4cd3aae73adff",
+      "output_hash": "17bc8eb9e613572056f41b6ac205b633aed3fcb6a0996df0dd89697d1095e4f0",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"

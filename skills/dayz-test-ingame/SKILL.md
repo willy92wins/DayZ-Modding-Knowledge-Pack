@@ -1728,3 +1728,35 @@ contra el objetivo**, y la rechazo su `ActionCondition`. Sirve para acreditar qu
 alcanza a un tipo de entidad sin montar la fixture que satisfaria su guard. **Con control
 negativo**: lanza tambien un nombre de accion inventado sobre el mismo objeto y comprueba que da
 `action_not_found`; sin ese control no sabes si los dos codigos se distinguen de verdad.
+
+## Un cliente DayZDiag sin foco va a ~20 fps: lo que mide el cliente depende de quien tiene el primer plano (SP-391, added 2026-09-13)
+
+Medido en el banco F1 de LFHeli (DayZDiag, cliente en ventana y servidor en la misma maquina),
+**con manipulacion**, no por correlacion:
+
+- Con su ventana en primer plano, el cliente va a **25,0 ms** por frame (40 fps); sin foco, a
+  **51-52 ms** (~20 fps). Dentro de una misma celda, poner y quitar el foco movio la mediana
+  26 <-> 53 ms.
+- No es la GPU compartida ni el reparto de CPU: 0 de 10 celdas lentas coincidieron con
+  inferencia LLM local, y fijar el cliente a 2 nucleos con prioridad alta dejo 4 de 4 celdas en
+  51-52 ms. Las lentas forman un tope estrecho (91 % de los frames a +-3 ms), no una cola de
+  contencion.
+- Lo que arrastra: el bote en reposo del heli **seguia al foco**. Con el foco sujeto, 6 de 6
+  reposos quietos; con el foco quitado, bota. Cualquier medida del lado cliente
+  (presentacion, fisica del owner, `vehicle_trace`) hereda el estado del foco.
+- En una maquina con varias sesiones, el primer plano lo roban cada pocos segundos otras
+  aplicaciones: medidos Discord, OpenCode, Cursor, el AddonBuilder de otra sesion y explorer.
+
+Reglas:
+
+1. Un banco que mide el cliente **sujeta el primer plano durante toda la corrida** (reafirmarlo
+   cada 0,25 s basta) y **registra el cumplimiento** cada segundo junto a los datos.
+2. Si el diseno necesita quitar el foco, lo aparca en una **ventana visible y activable de un
+   proceso propio** (una ventana Tk sirve). Dos destinos medidos que fallan: la consola del
+   servidor DayZ (Windows devuelve el foco al cliente al instante: cumplimiento 1,00 con ~430
+   intentos por celda) y `Start-Process notepad.exe` en Windows 11 (el PID devuelto es un
+   lanzador que sale enseguida; la ventana vive en otro proceso).
+3. Un archivo de celdas corrido con el foco al azar mezcla dos regimenes de frame: antes de
+   comparar variantes, estratificar por tiempo de frame o repetir con el foco sujeto.
+
+Evidencia y recetas: `<vault>\30_Sessions\2026-09-13-LFHeli-el-bote-sigue-al-foco-del-cliente.md`.
