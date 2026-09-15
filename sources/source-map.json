@@ -2713,7 +2713,7 @@
         }
       ],
       "license": "User-authored input",
-      "output_hash": "0b96e9163fa15dc6b6a081e3f9822d5cc369b910711bc91870024b99793e6a7e",
+      "output_hash": "b9439117d125791b70dc2d10e97ff8bab7377f9f732459fb5fc8186ea243d58b",
       "output_path": "skills/_shared/prompt-conventions.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
