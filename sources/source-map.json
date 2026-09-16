@@ -2154,10 +2154,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion-full-set@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Re-pinned the 25 PROMOTION-TARGET-UNEXPLAINED pairs of 13 governed skills on 2026-09-16 against the digests promote --check observed from the kp-recon worktree at 6d7433a, after classifying every store file against packctl's projection: two stores harvested (d617cc8), one closed by the merge of port/linter-pbo-build-2026-09-08 (84335c9), three absolute-path localisations and four duplicate lesson summaries discarded with the reason on the pair, six stores where the Pack is ahead, one identical store, and uv-clean-atlas carrying only caches plus the deliberate live-only g12 driver.",
+          "license": "MIT",
+          "source_hash": "146f5d1b160fd18645c9465937189b72baf2ac95447af2083956365d1a5cfcc5",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "repin-reconciliation@2026-09-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f512ffda29f1ed6ae746f5830073bc73d20f96ca413cfd8d0fc10b754fc842fc",
+      "output_hash": "146f5d1b160fd18645c9465937189b72baf2ac95447af2083956365d1a5cfcc5",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
