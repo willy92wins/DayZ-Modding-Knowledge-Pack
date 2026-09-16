@@ -44,9 +44,9 @@ The two gates are where this skill earns its place: nothing goes to the expensiv
 Fill `references/spec-template.md`. It is deliberately short. Four sections carry the DayZ-specific weight:
 
 - **Acceptance Scenarios** — Given/When/Then, each with concrete **in-game repro steps** (spawn what, do what, observe what). "It works" is not a scenario.
-- **Success Criteria** — measurable and, where possible, technology-agnostic. DayZ examples: "cerrojo se desplaza al disparar", "0 `Error` lines in `script_*.log` post-test", "manos a <0.5 cm del grip", "coche alcanza ≥X km/h en llano". Vague adjectives ("se ve bien", "funciona") are not criteria.
+- **Success Criteria** — measurable and, where possible, technology-agnostic. DayZ examples: "cerrojo se desplaza al disparar", "0 `Error` lines in `script_*.log` post-test", "manos a <0.5 cm del grip", "coche alcanza ≥X km/h en llano". Vague adjectives ("se ve bien", "funciona") are not criteria. La posición del evento es covariable obligatoria del spec (LL-427): se registra y reporta con el resultado, y la prueba de mecanismo es estratificar por ella y comprobar que dentro del estrato el tratamiento deja de importar.
 - **Assumptions** — every guess marked `ASSUMED`. If an assumption decides whether the work is correct (path, classname, version, format), resolve it with `AskUserQuestion` **now**, not after coding (G1: verbalizing a risk is not managing it).
-- **Forward Contract** (R8-extended) — list every symbol the *next* phase or consumer reads: `config.cpp` classnames, `model.cfg` selections/bones, `.p3d` proxy paths, `hiddenSelections`, stringtable keys, layout names. Each MUST carry a verify status — `path:line` (verified per G2/R2) or `[UNVERIFIED]`. An `[UNVERIFIED]` ref is a coverage gap the analyze gate treats as CRITICAL. This is exactly the LFQuad Fase B P1 class of bug (proxy path to a non-existent file, missing selections model.cfg needs).
+- **Forward Contract** (R8-extended) — list every symbol the *next* phase or consumer reads: `config.cpp` classnames, `model.cfg` selections/bones, `.p3d` proxy paths, `hiddenSelections`, stringtable keys, layout names. Each MUST carry a verify status — `path:line` (verified per G2/R2) or `[UNVERIFIED]`. An `[UNVERIFIED]` ref is a coverage gap the analyze gate treats as CRITICAL. This is exactly the LFQuad Fase B P1 class of bug (proxy path to a non-existent file, missing selections model.cfg needs). Antes de gastar un brazo en un campo, grep de lectores descontando declaración/default/clamp/serialización (LL-428): sin lectores es placebo, y si el lector es condicional hay que probar en datos volados que la condición se alcanza.
 
 ## Step 2 — Spec quality checklist ("unit tests for English")
 
@@ -92,6 +92,9 @@ that replaces another implementation (planner, bridge, transport, repository),
 the Forward Contract MUST enumerate every field and method the consumer reads,
 not only the field that motivates the test double. Grep all accesses on the
 injected value and prefer the existing result type over a partial look-alike.
+El generador aplica las reglas de clamp del consumidor antes de declarar el
+tratamiento, y el manifiesto registra el valor efectivo, no el pedido (LL-429):
+lo que colapsa al control es control mal etiquetado.
 
 The failure mode is concrete: a consumer can read `.status.value`, `.proposal`
 and `.source` even when a plan mentions only `.proposal`; the partial object

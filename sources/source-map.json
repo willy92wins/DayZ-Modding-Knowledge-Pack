@@ -5257,10 +5257,20 @@
           "source_path": "skills/dayz-feature-spec/SKILL.md",
           "source_revision": "r21-prior-art-approved@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Three lessons that existed only in the installed copy (edited there 2026-09-08) were harvested verbatim on 2026-09-16: LL-427 (event position is a mandatory covariate of the spec; stratify by it to test the mechanism), LL-428 (grep the readers of a field, discounting declaration/default/clamp/serialization, before spending effort on it) and LL-429 (the generator applies the consumer's clamp rules before declaring the treatment; the manifest records the effective value). Each is recorded in the vault lessons corpus (lessons-learned.md, entries LL-427..LL-429 dated 2026-09-02); no private path or local residue was copied.",
+          "license": "User-authored input",
+          "source_hash": "e285b5e712cb6d0eae7aaa10806d1700243f874b09cb1b9b28b2ff871b79f7a3",
+          "source_id": "installed-skills",
+          "source_path": "dayz-feature-spec/SKILL.md",
+          "source_revision": "filesystem@2026-09-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "11a5d0bab3a83f5f187d9d263cce1ae738dd0ae7cd2814d940c8c978c219f2c1",
+      "output_hash": "e285b5e712cb6d0eae7aaa10806d1700243f874b09cb1b9b28b2ff871b79f7a3",
       "output_path": "skills/dayz-feature-spec/SKILL.md",
       "routing_artifact_id": "skill/dayz-feature-spec",
       "verification_level": "cross_checked"
@@ -5488,7 +5498,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d1355ea5781dcef56b1935258895fa003ccf590c0dec922dfa1c79b37822f2cd",
+      "output_hash": "32f138db24be5aca961d292dd0fa43c35ce37a6d33a7ee11f57d00d205d1dc9d",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -10489,10 +10499,20 @@
           "source_path": "skills/rigorous-data-audit/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Six lessons that existed only in the installed copy (edited there 2026-09-08) were harvested verbatim on 2026-09-16 onto the reviewed text of f553180: LL-414 (a cause in durable memory carries file+pattern+match count, n>0), LL-473 (one test exercises both layers of every seam without doubles), LL-481 (a gate skipped on precondition looks like a pass; count exit codes), LL-469 (a fixture composes the request the way the producer does, never the most complete one), LL-446 (a fixture never assigns ownership fields) and LL-438 (the positive control of an oracle is the real artifact through load->evaluate with mutants as files). The store's remaining delta (per-step model prescriptions) is the pre-f553180 text and was not taken.",
+          "license": "User-authored input",
+          "source_hash": "510d05c327722bd00aa523469bdc963c2f31e0e22b9b81acad66866a5a1e4381",
+          "source_id": "installed-skills",
+          "source_path": "rigorous-data-audit/SKILL.md",
+          "source_revision": "filesystem@2026-09-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "02fc109188c448e6a2eb581dee3db2e2361e24de6c490e6b2c91f57ac618bbf1",
+      "output_hash": "ce80caa8a5ab23174790f2311ad646a5274bd0cb8126f339b08aa60d740dc992",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"

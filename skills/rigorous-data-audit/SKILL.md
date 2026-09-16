@@ -151,7 +151,10 @@ Three sub-steps, in order:
 the cited range and confirm it says what the agent's pasted snippet claims.
 Reasoning agents drift on line numbers, copy citations from sibling files, and
 occasionally invent plausible ranges wholesale. A finding whose snippet does
-not match the file is not a finding — re-derive it or drop it.
+not match the file is not a finding — re-derive it or drop it. Toda causa en memoria
+durable trae fichero+patrón+nº de coincidencias con n>0 (LL-414); sin el trío es
+hipótesis, y la adjudicación entre mecanismos rivales exige una predicción que solo
+el mecanismo nuevo obligue.
 
 **3b — Independent verifier pass.** When an independent pass is assigned, use a
 reviewer from another family with a **fresh context that has not seen the angle reports**.
@@ -253,6 +256,9 @@ family reappears, the defect is design, not patching: stop, file the remainder a
 numbered backlog and escalate. Stop rule (owner): `gates-ledger` §Cuándo para un
 bucle — the product gate closes the loop, a finding blocks only with an executable
 repro, the budget is two rounds (rev. 2026-09-02; replaces «until zero critical/major»).
+Por cada valor que cruza N capas, un test ejecuta las dos capas de cada junta SIN dobles
+(LL-473); la mutacion a probar borra el ACOPLAMIENTO, y el arreglo solo se acepta cuando
+el RECEPTOR repite la mutacion exacta y ve morir el control.
 
 ## Phase B — In-game validation (step 7)
 
@@ -304,6 +310,10 @@ Watching for these saves rounds:
   so they run concurrently.
 - **Shipping a `.skill` / release / patch file from un-reverified findings.**
   Cheap to apply, expensive to walk back.
+- **Reading a short-circuit finding as green (LL-481).** A gate skipped on PRECONDITION
+  (dirty tree, unreadable config) wears the same face as a pass: verify the gate evaluated
+  what changed, and count exit codes, not findings. Verification on a dirty tree is not
+  verification.
 
 ## References
 
@@ -412,7 +422,7 @@ de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de or
 la entrada completa (síntoma, origen, evidencia) vive allí.
 
 - **LL-045** — Acota toda afirmación de no-causalidad al tamaño, versión, fixture y condiciones donde se verificó. No promociones «X no importa» como conclusión universal si el corpus no cubre otros regímenes.
-- **LL-139** — Haz que todo fake/stub remoto emita los mismos tipos que el wire real, no solo valores equivalentes. No uses `is True`/`is False` con datos serializados; prueba explícitamente `0/1`, bool y valores ausentes según contrato.
+- **LL-139** — Haz que todo fake/stub remoto emita los mismos tipos que el wire real, no solo valores equivalentes. No uses `is True`/`is False` con datos serializados; prueba explícitamente `0/1`, bool y valores ausentes según contrato. La fixture compone la petición como la compone el productor, nunca la más completa «por comodidad» (LL-469): ante defecto in-game con suite verde, buscar primero el test que ya cubría el caso y comparar entradas campo a campo.
 - **LL-140** — Verifica toda exclusión de recurso con dos adquisiciones reales en el SO objetivo y exige que la segunda falle. Inspecciona defaults de socket, file-sharing y mutex de la stdlib; configura el lock fail-closed.
 - **LL-190** — Para todo verificador que afirme deleted/moved/repaired/restored, exige un count afectado mayor que cero o un pre-check independiente que demuestre que no había trabajo. No aceptes `{ok:true, count:0}` como prueba por sí sola.
 
@@ -443,6 +453,9 @@ quien lo genera y con que contador · ese contador se reinicia (proceso, sesion,
 quien mantiene el mapa que lo resuelve y cuando lo limpia · pueden desincronizarse esos dos ciclos de
 vida · que pasa si el id ya no significa lo que significaba. Si alguna no tiene respuesta citada,
 **la operacion destructiva no se hace**: registrar y reportar, nunca borrar a ciegas.
+Un fixture nunca asigna campos de propiedad (LL-446): grep de asignaciones a `owner_*` en
+helpers debe dar cero; el unico camino a dueno en tests es la operacion del producto con
+lease real.
 
 Corolario del mismo caso: comprobar tambien el **orden de ejecucion** en el otro actor. Alli, un
 `spawn` siempre se difiere a una cola y un `delete` de un lote sin spawn se despacha inmediato, asi
@@ -470,6 +483,8 @@ de cuatro fixes; el par culpable rara vez es el que uno sospecha.
 **Y usar mutantes en el Step 6, no solo tests verdes.** En este caso la re-auditoria con mutantes
 mato 12 de 14 y los 2 supervivientes eran precisamente tests que "probaban" un fix sin poder
 distinguirlo de su ausencia. Un test que pasa con y sin el fix no es cobertura: es decorado.
+El control positivo de un oraculo es el artefacto REAL por la ruta completa load→evaluate,
+con mutantes como ficheros (LL-438); lo sintetico en memoria solo mide consistencia del autor.
 ## (SP-367, added 2026-08-07) Cuando el arbol auditado es OUTPUT de un generador, el Step 5 no edita el arbol
 
 Origen: LFPowerGrid F4-S2 (2026-08-07). La auditoria produjo 3 fixes de 3 lineas dentro de un
