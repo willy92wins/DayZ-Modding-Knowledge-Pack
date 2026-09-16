@@ -201,7 +201,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8bf21f51303f716b12036fbb811bde254c7b9308f2e194448c9347049b3fae1d",
+      "output_hash": "ae32fe792003b954220e3dcbbc4aa072aa40463b9f76b741d0d7779f9b4cc390",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6077,10 +6077,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "lfsecure-winding-engine-confirmed@2026-09-07",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Third correction of the winding rules after the L7 engine verdict (LFSecure, 2026-09-07 23:56, Guillermo in-game): a production-like winding sign plus 0 % agreement can be a mirrored export; the negate-normals build rendered right side out but mirrored (handle and bed opposite to the vendor renders). Rule 8 added: compare one asymmetric feature against the vendor render before choosing the fix; full fix = reflect x, reverse face order, normals (nx,-ny,-nz).",
+          "license": "MIT",
+          "source_hash": "c11448837be9fcbe59d718a7d04b208ed30ede7c96fc43f1a6ad1153516fcf00",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "lfsecure-mirror-export@2026-09-08",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "e755983e90c7fded809320e2a18193b1607fc790199bc223006f7aa92db27c70",
+      "output_hash": "c11448837be9fcbe59d718a7d04b208ed30ede7c96fc43f1a6ad1153516fcf00",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -6545,10 +6555,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "two-pbos@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Measured 2026-09-07 on LFSecure: two builds of the same assembled tree (MLOD sha256 identical) produce different ODOL p3d entries while every other entry hashes the same. Added the section on PBO identity: per-entry hashes for non-p3d entries; binarized models accredited by MLOD hash plus engine check.",
+          "license": "MIT",
+          "source_hash": "71d6d1804fc415b44b522d73f9c7f3d56e76d6ae14d322be405237935a570d59",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "binarize-nondeterministic@2026-09-08",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "33231ca82c59eb6f403bd169d4290ad6eb070c55df257381bb62d47219ece1ca",
+      "output_hash": "092f8268f9f2ba4bf4416499a61f9923e8d0bfc17e26b849c803d516f6ce30d4",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -9676,7 +9696,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "490154f8d47c11eb8ab46e698e106005e854b7e76b194d3be7a9ccc1e29035ca",
+      "output_hash": "7f7d0409493ef90aac866a9ca7e2ec487eae683a377aa4e8820170a00e97ed7a",
       "output_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10472,7 +10492,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b7150431c610ed1cb8d9843c5ce4e8abfef42b31c8dac6170457fa71f7ce8a01",
+      "output_hash": "02fc109188c448e6a2eb581dee3db2e2361e24de6c490e6b2c91f57ac618bbf1",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
