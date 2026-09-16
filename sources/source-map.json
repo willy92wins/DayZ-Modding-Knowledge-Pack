@@ -2164,10 +2164,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "repin-reconciliation@2026-09-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Advanced by promote --apply for transaction 7e82b0465c58b1f977d6d4bc (the 36 pairs whose store changed on write moved to their after digests), then re-pinned by hand for the ten pairs that differ from the projection on purpose: the vendored py3d 1.7.0 wheel in dayz-3d-viewer, dayz-animation-pipeline, dayz-p3d-inspector and dayz-proxy-align, and the live-only g12_paint_peel.py of uv-clean-atlas, all restocked from the transaction preimage with their sha256 verified (wheel against wheel-manifest.json).",
+          "license": "MIT",
+          "source_hash": "e967993fe493d8cfec6819e1e364327b7441feed9bc34d7dd23a3215afbba255",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "repin-after-apply@2026-09-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "146f5d1b160fd18645c9465937189b72baf2ac95447af2083956365d1a5cfcc5",
+      "output_hash": "e967993fe493d8cfec6819e1e364327b7441feed9bc34d7dd23a3215afbba255",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -22738,6 +22748,29 @@
       "license": "MIT",
       "output_hash": "239e251424446dfa8a4029ef4f3cc443adcfebafa75f9914a587d29b0ad149a5",
       "output_path": "promotions/receipts/84b669e401cad45bb761d315.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/7e82b0465c58b1f977d6d4bc.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt written by promote --apply on 2026-09-16 for transaction 7e82b0465c58b1f977d6d4bc: the promotion of 713def5 to claude_user_skills, agents_user_skills and the vault snapshots (110 operations, verdict PASS), run from the kp-recon worktree the previous receipts are bound to. Reconciliation of the 13 governed skills whose stores had drifted since 2026-09-07 (merge of port/linter-pbo-build-2026-09-08, harvest d617cc8, adjudication with the checker's digests, then apply); a first attempt (transaction 662388573cc4a3082a4a1662) aborted and rolled back cleanly on a PermissionError while swapping dayz-mcp-verify, caused by leaked read handles of a cursor-agent worker on SKILL.md files, closed with the owner's authorisation before this run. From now on this receipt explains those targets.",
+          "license": "MIT",
+          "source_hash": "a94be71229a0088034204549213cb9e647b3a049a44efbf4ddd70f8a41715d59",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/7e82b0465c58b1f977d6d4bc.json",
+          "source_revision": "promotion-full-set@2026-09-16",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a94be71229a0088034204549213cb9e647b3a049a44efbf4ddd70f8a41715d59",
+      "output_path": "promotions/receipts/7e82b0465c58b1f977d6d4bc.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
