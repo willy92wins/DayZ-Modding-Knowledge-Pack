@@ -8,9 +8,11 @@ All `[VERIFIED-vanilla]` items below were greped directly against the unpacked v
 
 | Topic | Vanilla path | Format |
 |---|---|---|
-| Player commands + transitions | `SurvivorAnims/animgraph/player_main/*.agr` | text |
+| Player master graph index (1.30 Exp) | `DZ/anims/workspaces/player/player_main/player_main.agr` (added 2026-09-16, DayZ 1.30 Exp) [EXACT] | text (`AnimSrcGraph` with `GraphFilesResourceNames` at `player_main.agr:1587`) |
+| Player sub-graphs (Locomotion, Vehicles, Actions, Combat...) | `DZ/anims/workspaces/player/player_main/*.agf` (added 2026-09-16, DayZ 1.30 Exp) [EXACT] | text Enfusion Config (`AnimSrcGraphFile`); in 1.29 these were binary `.agr` |
+| Player commands + transitions (pre-1.30 source) | `SurvivorAnims/animgraph/player_main/*.agr` | text |
 | Animal/infected/predator graphs | `DZ/animals/animations/!graph_files/<species>/*_graph.agr` | text |
-| Skeleton bone catalog | `DZ/anims/cfg/skeletons.anim.xml` | XML |
+| Skeleton LOD and missing bones | `DZ/anims/cfg/skeletons.anim.xml` (added 2026-09-16, DayZ 1.30 Exp) [CHANGELOG] | XML (`lod` attribute only; 250 bone limit removed) |
 | ASIs (player + props + weapons) | `DZ/anims/workspaces/player/player_main/` | text (`$animsetinstance`) |
 | Event table | `DZ/anims/workspaces/player/Player_EventTable.ae` | text |
 | Workspaces | `DZ/anims/workspaces/player/player_main/*.aw` (compiled), `SurvivorAnims/animgraph/player_main/*.aw` (source) | text |
@@ -124,6 +126,36 @@ Real state names corrected from community/video tutorial naming:
 | "mag remove" | `ReloadMagazineDetach` | the `.anm` filename has `_mag_remove_` but the state name is `ReloadMagazineDetach` |
 | "bullet in chamber" | **no such state** | chambering uses commands (`CMD_Reload_Chambering`, `CMD_Reload_ChamberingFast`), not a state name |
 
+## Vehicles.agf & Enfusion .agf format (added 2026-09-16, DayZ 1.30 Exp) [EXACT]
+
+Starting with DayZ 1.30 Exp, the player sub-graphs live in `.agf` text files (`AnimSrcGraphFile`) referenced by `GraphFilesResourceNames` in `player_main.agr:1587`. The vehicle graph `DZ/anims/workspaces/player/player_main/Vehicles.agf` (3654 lines) is the reference implementation. Extraction root for the citations below: `E:\DayZ-Exp-Extract\1.30.164014\exp\anims_workspaces\DZ\anims\workspaces\player\player_main\`.
+
+```
+// Vehicles.agf:1564-1576
+AnimSrcNodeBlendT MotorBikeB {
+ EditorPos 4 -18.3
+ BlendTime "0.3"
+ BlendFn S
+ Condition "VehicleType == 10 || VehicleType == 11"
+ Child0 "VehicleSTM"
+ Child1 "MotorBikeSTM"
+ OptimizeMin 1
+ OptimizeMax 1
+ SelectMainPath 0
+}
+```
+
+Node types seen in the file (each with the line where the first instance starts):
+- `AnimSrcNodeBlendN`: multi-input threshold blend (`BlendWeight "VehicleSpeed"`, `Thresholds { 3.5 8 }`, `Vehicles.agf:5-16`).
+- `AnimSrcNodeBlendT`: conditional transition selector (`Condition`, `BlendTime`, `Child0`/`Child1`, `Vehicles.agf:1564`).
+- `AnimSrcNodeBlend`: continuous 2-input formula blend (`MotoYIntertiaB`, `Vehicles.agf:1556`).
+- `AnimSrcNodePose`: 1D static pose evaluated along its timeline by a variable (`Vehicles.agf:47-51`).
+- `AnimSrcNodeStateMachine`: hierarchical state machine with `states { AnimSrcNodeState ... }` and `transitions { AnimSrcNodeTransition ... }` (`MotorBikeSTM`, `Vehicles.agf:1582-1750`).
+- `AnimSrcNodeIK2Target` and `AnimSrcNodeIK2`: two-bone IK pinning the driver's hands to the handlebar (`AnimNodeIK2Target0` at `Vehicles.agf:17`, `AnimNodeIK2hands` at `:31`).
+- `AnimSrcNodeSourceSync`: clip playback bound to a sync line (`Vehicles.agf:69-80`).
+
+`MotorBikeSTM` rider states: `Idle`, `GetIn_L`, `GetIn_R`, `GetOut_L`, `GetOut_R`, `JumpOut_L`, `JumpOut_R`, `Death`, `GettingInDeath` (`Vehicles.agf:1582-1750`); transitions test integer direction flags (`GetCommandI(CMD_Vehicle_GetIn) == 0` left, `== 1` right). The `.agr` of 1.29 was binary; diffing a 1.30 `.agf` against a 1.29 graph is therefore not possible in text.
+
 ## Reload is NOT additive in vanilla [REFUTED-vanilla]
 
 Some community tutorials say "reload is an additive animation: only torso/shoulders, the rest is handled by another layer". Vanilla does not confirm this:
@@ -146,6 +178,8 @@ Tutorials say "to load the Player Animation Editor in Workbench you have to edit
 
 To edit the player graph in Workbench Animation Editor: take a `.aw` that has `#eventtable`, delete that line, and the editor will open. Workbench/Workshop re-binds the `.ae` on export/compile.
 
+(added 2026-09-16, DayZ 1.30 Exp) [CHANGELOG] In 1.30 the Workbench Animation Editor moved to the 2021 Enfusion editor with live editing of a running graph and a "Show In Explorer" context action; `Buffer Save` / `Buffer Use` nodes and the default unnamed group of animation set templates were removed. [EXACT] The 1.30 `player_main.aw:15` declares its event table directly: `EventTable "{3037156104937B91}DZ/anims/workspaces/player/Player_EventTable.ae"`. [UNVERIFIED] Whether the `#eventtable` deletion trick is still needed with the 2021 editor has not been tried on this host.
+
 ## Building a creature anim graph — minimal-first workflow
 
 1. Create the graph + state machine with **one state** (idle) and **one anim source** (one `.anm`).
@@ -160,6 +194,17 @@ See `references/player-skeleton.md` for the full bone catalog. The two creature-
 
 - `EntityPosition` (`skeletons.anim.xml:4`, `movement="true"`) — the bone the engine reads for predicted entity displacement. Animal graphs reference it explicitly, e.g. wolf uses `"PredictionTurn" "EntityPosition"`.
 - `LookAt` (`skeletons.anim.xml:18`) — head/look tracking. The name is literally `LookAt`, not `Pin Look At` or `PinLookAt`.
+
+## Animation tags and HumanAnimInterface.IsTag (added 2026-09-16, DayZ 1.30 Exp) [EXACT]
+
+DayZ 1.30 lets script query the active animation-graph tags on the fixed tick via `HumanAnimInterface.IsTag` (`3_Game/human.c:318-319`):
+```c
+// E:\DayZ-Exp-Extract\1.30.164014\exp\scripts\scripts\3_Game\human.c:318-319
+proto native TAnimGraphTag 			BindTag(string pTagName);
+proto native bool                   IsTag(TAnimGraphTag iTag);
+```
+
+In the graph, states declare tags with a `Tags { "TagName" }` block. In `Vehicles.agf`: `TagVehicleGetIn` in `GetIn_L` / `GetIn_R` (`Vehicles.agf:1594, 1614`) and `TagVehicleGetOut` in the get-out / jump-out states (`:1604, 1624, 1634, 1651`). Transitions consume them, e.g. the driver death animation is blocked while boarding is in progress: `Condition "IsCommand(CMD_Death) && !IsTag(\"TagVehicleGetIn\")"` (`Vehicles.agf:1719`). [DESIGN] Script can cache the handle with `BindTag("TagVehicleGetIn")` and poll `IsTag(handle)` on the fixed tick to sync gameplay with an animation phase; no vanilla script caller was found in this extraction, so treat the usage pattern as a proposal.
 
 ## What this reference does NOT cover
 

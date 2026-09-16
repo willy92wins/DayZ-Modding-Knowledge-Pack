@@ -52,7 +52,13 @@ or imported (Blender / OBJ) from another game.
 (`car.c:98` / `boat.c:31`) — NOT parent/child. `Transport` owns crew/get-in/flip/fuel; `Car` owns
 wheels/brakes/`CarFluid`; `Boat` owns propeller/buoyancy/`BoatFluid`(fuel-only). A truck is a plain
 `CarScript` config with 3 axles + double wheels, NOT a new class. Boats, truck double-wheels, ATV and
-the motorbike gap → `references/vehicle-types-boat-truck.md`.
+the motorbike gap → `references/vehicle-types-boat-truck.md` (historical: since DayZ 1.30 Exp motorbikes are a vanilla family, see the `dayz-motorbikes` skill).
+
+**DayZ 1.30 Exp (build 1.30.164014) changes the matrix (added 2026-09-16, source_verified on the extraction at `E:\DayZ-Exp-Extract\1.30.164014\exp`):**
+- [EXACT] A third sibling exists: `class Motorbike: Transport` with `simulation = "motorbike"` (`dta\bin\config.cpp:1054-1059`; engine proto `3_Game\Vehicles\Motorbike.c:30`), scripted by `MotorbikeScript` (`4_World\Entities\Vehicles\MotorbikeScript.c:53`), which does NOT inherit `CarScript`. Two-wheel work goes to the `dayz-motorbikes` skill; this atlas stays for cars, trucks, quads and boats.
+- [EXACT] `CarScript` was refactored around components owned by `Transport`: `VehicleLightsComponent` (`CarScript.c:187, 229-233`), `VehicleHornComponent` and `VehicleVFXComponent` (`CarScript.c:189, 343-368`). The old overrides are marked `[Obsolete]`: `CreateRearLight`/`CreateFrontLight` (`CarScript.c:2937-2945`), `IsVitalCarBattery`/`IsVitalTruckBattery` (`:2811-2817`, replaced by `Transport.NeedElectricitySourceDevice()` at `Transport.c:821`), `CarPartsHealthCheck` (`:2976-2979`, replaced by `Transport.PartsHealthCheck()` at `Transport.c:437` / override at `CarScript.c:2121`). The horn actions are `ActionVehicleHornShort/Long` (`CarScript.c:2319-2320`). Contact data is `VehicleContactData.m_Impulse` (`Transport.c:1144-1148`, used at `CarScript.c:1291-1292`). Wheel classes gained `tyreRoughness`, `tyreLongitudinalFriction`, `tyreLateralFriction` (`DZ\vehicles\wheeled\config.cpp:749-751`; absent in 1.29).
+- [DESIGN] A 1.29 car mod that overrides any of the obsolete members compiles against the attribute but its override is no longer called; re-verify each override against the 1.30 `CarScript.c` before shipping. Migration checklist and the "1.29 statements that are now false" table: `dayz-motorbikes/references/vehicle-1.30-refactor.md`. Sections of this atlas that predate 1.30 (lights via `CarLightBase`, `CarPartsHealthCheck`, `data[0].impulse`) describe 1.29 and are not yet rewritten.
+
 
 **Per-tick event asymmetry (invariant, added 2026-07-29, LFHeli OH-1):** `CarScript` has NO
 `EOnSimulate` — its ctor registers only `POSTSIMULATE`/`POSTFRAME` (`carscript.c:325-326`) and ALL
@@ -1417,7 +1423,7 @@ references.
 - **Boats, trucks, and the ATV / motorbike gaps** → `references/vehicle-types-boat-truck.md`:
   the `Transport`→Car/Boat sibling hierarchy and the per-type deltas — boat propeller/buoyancy/
   BoatFluid + always-free get-in, truck 3-axle DRIVE_642 + single-classname double wheels, ATV
-  slots on `Chassis`, and the honest motorbike gap. All source-verified against vanilla `P:\scripts`.
+  slots on `Chassis`, and the honest motorbike gap (pre-1.30; for DayZ 1.30 motorbikes use the `dayz-motorbikes` skill). All source-verified against vanilla `P:\scripts`.
 - **Get-in prompt, cursor actions and proxied-sub pose** →
   `references/get-in-actions-and-proxy-pose.md`: the four-link get-in condition
   chain, the `ActionConstructor` + `PlayerBase` registration contract, and the

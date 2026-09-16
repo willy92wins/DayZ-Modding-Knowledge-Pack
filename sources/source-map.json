@@ -3380,7 +3380,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "421b268721ee13d68bfcd93532643b77566c5cc958729ab2d8397ad9699c535e",
+      "output_hash": "50f2b6c5061c5566243d21cb50143342e2faf04383a1c04ce55af87b60ebf0bd",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3402,7 +3402,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ee70ef2da626494b631b9cbfd2099a920948fd42f3bfd914c6a1172cc51ac54d",
+      "output_hash": "66ef5c0e864eb4b5eda792ec6ec2c8130939c0a99c84f28cebedf11ed845f240",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3688,7 +3688,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "24a275558fdd576193d19a624d91a62b39a464647c3edd8830aff3eda6978247",
+      "output_hash": "da6a380f58ede02b87f1843d2d49b4b7c3cf64100b2e1572024c48563177202d",
       "output_path": "skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -8898,7 +8898,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "97259f0ffcf495500c43f81e521e500e2efaf78424e71ad03ffeb58ae8fa9798",
+      "output_hash": "8715b97380153ebbd0498bc1144d6e13619527928e2df75ab065acbb1eb3fc5d",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9760,7 +9760,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "759aac2dabb533a537bdd0d92f0b39a2b3f3839cb178ee0fc5db80088d0c3a20",
+      "output_hash": "8c6b88d35760965f69e7092bb419a75a489b0653a018ae7784976098d8d9fce0",
       "output_path": "skills/dayz-vehicles/references/vehicle-types-boat-truck.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

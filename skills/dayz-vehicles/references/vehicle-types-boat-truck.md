@@ -222,6 +222,9 @@ observed in the heli/RaG research pass.) Everything else is the standard
 
 ## 6. Motorbikes — honest gap
 
+> (updated 2026-09-16) This gap closed with DayZ 1.30 Experimental (build 1.30.164014): the engine ships `class Motorbike: Transport` with `simulation = "motorbike"` (`dta\bin\config.cpp:1054-1059`), `MotorbikeScript` (`4_World\Entities\Vehicles\MotorbikeScript.c:53`, not a `CarScript`), two vanilla bikes (`Motorbike_01` = Jawa_05, `Motorbike_02` = Jawa_Bitrak in `vehicles_singletrack.pbo`) and a 2-wheel `SimulationModule` (`Wheels{Front,Rear}` instead of `Axles`, `Steering.maxLeanAngle[]`/`tipoverAngle`, `Brakes{Front input=1, Rear input=0}`; `DZ\vehicles\singletrack\config.cpp:228-343`). The contract, script API, actions, sounds and rider animation live in the `dayz-motorbikes` skill. The paragraph below is the pre-1.30 state and is kept for history; its "do not derive from Axles" warning still holds.
+
+
 No vanilla motorbike and no community source on disk; the 2-wheel physics pattern
 is an open gap (needs a real project or a community PBO to reverse-engineer).
 Do not fabricate a `SimulationModule` for two wheels from the car pattern — a
