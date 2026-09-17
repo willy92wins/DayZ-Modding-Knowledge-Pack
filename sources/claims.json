@@ -494,6 +494,32 @@
       "source_id": "dzconfig-wiki-2026-09",
       "source_revision": "dzconfig-wiki-harvest@2026-09-07",
       "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_external_consumer_missing.py",
+      "claim_id": "CLAIM-ENFORCE-EXTERNAL-CONSUMER-SURFACE",
+      "evidence_locator": "LFPowerGrid boot 2026-09-17: \"Undefined function 'LFPG_ElecGraph.GetOutgoing'\" and \"Can't compile mission init script!\" after 62 facade methods were removed with zero in-addon references; 9 of them had 69 call sites in the mission tree",
+      "license": "MIT",
+      "line_end": 33,
+      "line_start": 7,
+      "observed_at": "2026-09-17",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "lfpowergrid-memory",
+      "source_revision": "filesystem@2026-09-17",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_protected_cross_module.py",
+      "claim_id": "CLAIM-ENFORCE-PROTECTED-CROSS-MODULE",
+      "evidence_locator": "LFPowerGrid probe boot 2026-09-17, dedicated server script log: \"Variable 'm_LFPG_ProbeValue' is protected\" then \"Can't compile \\\"Mission\\\" script module!\"; World compiled at 11776/33554 kB in the same boot",
+      "license": "MIT",
+      "line_end": 33,
+      "line_start": 7,
+      "observed_at": "2026-09-17",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "lfpowergrid-memory",
+      "source_revision": "filesystem@2026-09-17",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1

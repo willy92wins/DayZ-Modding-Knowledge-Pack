@@ -5,6 +5,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `dayz-script-validator`: two tree-level checks, both derived from failures
+  observed on a running server on 2026-09-17 rather than from review opinion.
+  - `ES-PROTECTED-CROSS-MODULE` (FAIL). Enforce enforces `protected` across
+    script modules: a class compiled into `5_Mission` cannot read a protected
+    member declared by a `4_World` class, and the whole Mission module aborts.
+    Verified at runtime with a disposable probe built into a PBO and booted
+    (claim `CLAIM-ENFORCE-PROTECTED-CROSS-MODULE`). The check resolves the
+    receiver's declared type before firing; a first version matched on the
+    member name alone and produced 164 false positives on a tree that compiles
+    clean, because one name was protected on an entity and public on an
+    unrelated data class.
+  - `ES-EXTERNAL-CONSUMER-MISSING` (FAIL), enabled by the new repeatable
+    `--external-scripts DIR`. Script that lives outside the addon -- a mission
+    `init.c`, another mod -- can call an addon class's methods, and no in-addon
+    check sees it. A refactor removed 62 facade methods after proving no file
+    under the addon's own `scripts/` called them; the offline linter, the
+    implementer's gates and an independent review were all green, and the
+    server then refused to compile the mission
+    (claim `CLAIM-ENFORCE-EXTERNAL-CONSUMER-SURFACE`). The check only judges a
+    receiver whose whole base chain is declared inside the addon, so
+    vanilla-inherited and `modded class` methods stay silent. Measured against
+    the real trees: 69 errors on the broken one, zero on the fixed one.
+  - Paths are never hardcoded: external roots arrive by argument.
+
 ### Changed
 
 - Audit procedure: coverage angles no longer require eight agents or a fixed model.

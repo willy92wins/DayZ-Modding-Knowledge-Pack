@@ -1869,6 +1869,100 @@ class TerseOutputTests(unittest.TestCase):
         self.assertFalse(parser.parse_args(["some_root"]).terse)
         self.assertTrue(parser.parse_args(["some_root", "--terse"]).terse)
 
+class TestProtectedCrossModule(unittest.TestCase):
+    """ES-PROTECTED-CROSS-MODULE — verified at runtime 2026-09-17.
+
+    A disposable probe was built into a PBO and booted on a dedicated server:
+    World compiled, Mission did not, with "Variable 'm_LFPG_ProbeValue' is
+    protected" / "Can't compile \"Mission\" script module!".
+    """
+
+    def test_mission_reading_world_protected_fails(self):
+        fixture = FIXTURES / "protected_cross_module" / "bad"
+        exit_code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual(1, exit_code)
+        self.assertEqual("FAIL", result["status"])
+        self.assertEqual(1, len(result["errors"]))
+        error = result["errors"][0]
+        self.assertEqual("ES-PROTECTED-CROSS-MODULE", error["rule_id"])
+        self.assertEqual("FAIL", error["severity"])
+        self.assertIn("m_FxHidden", error["message"])
+        self.assertIn("4_World", error["message"])
+        assert_standard_findings(self, result)
+
+    def test_public_accessor_passes(self):
+        fixture = FIXTURES / "protected_cross_module" / "ok_accessor"
+        _exit_code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual([], result["errors"])
+        assert_standard_findings(self, result)
+
+    def test_same_module_access_passes(self):
+        """`protected` within one module is legal and must not fire."""
+        fixture = FIXTURES / "protected_cross_module" / "ok_same_module"
+        _exit_code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual([], result["errors"])
+        assert_standard_findings(self, result)
+
+
+class TestExternalConsumerMissing(unittest.TestCase):
+    """ES-EXTERNAL-CONSUMER-MISSING — observed 2026-09-17.
+
+    A refactor deleted facade methods after proving no file under the addon's
+    own scripts/ called them. The mission init.c did, and the server refused to
+    compile it. The deleted names still existed on a subclass, so a plain
+    "declared somewhere" search stays silent: the receiver's declared type is
+    what decides.
+    """
+
+    def test_external_call_to_deleted_method_fails(self):
+        fixture = FIXTURES / "external_consumer"
+        exit_code, result = script_validator.run(
+            [str(fixture / "bad"),
+             "--external-scripts", str(fixture / "bad_external")]
+        )
+
+        self.assertEqual(1, exit_code)
+        self.assertEqual("FAIL", result["status"])
+        self.assertEqual(1, len(result["errors"]))
+        error = result["errors"][0]
+        self.assertEqual("ES-EXTERNAL-CONSUMER-MISSING", error["rule_id"])
+        self.assertIn("FX_GetOutgoing", error["message"])
+        self.assertIn("FX_GraphImpl", error["message"])
+        assert_standard_findings(self, result)
+
+    def test_method_declared_on_receiver_passes(self):
+        fixture = FIXTURES / "external_consumer"
+        _exit_code, result = script_validator.run(
+            [str(fixture / "ok_declared"),
+             "--external-scripts", str(fixture / "ok_external")]
+        )
+
+        self.assertEqual([], result["errors"])
+        assert_standard_findings(self, result)
+
+    def test_vanilla_method_not_declared_in_addon_passes(self):
+        """The addon declares the name nowhere, so it comes from vanilla."""
+        fixture = FIXTURES / "external_consumer"
+        _exit_code, result = script_validator.run(
+            [str(fixture / "ok_vanilla_method"),
+             "--external-scripts", str(fixture / "ok_vanilla_external")]
+        )
+
+        self.assertEqual([], result["errors"])
+        assert_standard_findings(self, result)
+
+    def test_check_is_inert_without_external_roots(self):
+        """Without --external-scripts there is nothing to compare against."""
+        fixture = FIXTURES / "external_consumer" / "bad"
+        _exit_code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual([], result["errors"])
+        assert_standard_findings(self, result)
+
+
 if __name__ == "__main__":
     unittest.main()
 
