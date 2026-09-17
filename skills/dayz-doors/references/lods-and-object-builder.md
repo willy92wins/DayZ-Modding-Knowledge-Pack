@@ -11,6 +11,7 @@
 - [Pattern matrices](#pattern-matrices)
 - [Object Builder validation](#object-builder-validation)
 - [Pre-export checklist](#pre-export-checklist)
+- [DayZ 1.30 Exp: Memory points and lock slots](#dayz-130-exp-memory-points-and-lock-slots)
 - [Sources](#sources)
 
 ## Cross-LOD rule
@@ -88,6 +89,8 @@ Simple lists door/handle axes, door action/sound position, and interaction point
 
 The broader **dayz-animation-pipeline** skill describes a rotation axis as a pair of Memory points. Use it for general axis authoring; this skill stays on Doors mapping.
 
+(since 1.30 Exp) If the door is one-sided or takes an inventory lock, also add the Memory names listed in [DayZ 1.30 Exp: Memory points and lock slots](#dayz-130-exp-memory-points-and-lock-slots).
+
 ## Pattern matrices
 
 ### Simple Door
@@ -153,6 +156,26 @@ Menu paths/tips: **Simple_Door Readme.txt:12-14**. The tutorial warns about non-
 - [ ] Interaction point is where action should appear.
 - [ ] Static button omitted from skeleton; animated lever included.
 - [ ] Cross-file names compared character for character.
+- [ ] (since 1.30 Exp, lockable building door) Memory includes slot selections matching `CfgSlots` (`att_combinationlock`, `att_codelock`, or the numbered wood/metal variants).
+- [ ] (since 1.30 Exp, one-sided door) Memory includes the pair named by `interactPositionPoint` / `interactDirPoint`.
+- [ ] (since 1.30 Exp, bunker-style inside bypass) Memory includes `{DoorsSubclass}_action` and `{doorType}_inside` if you copy the `Bunker` pattern.
+
+## DayZ 1.30 Exp: Memory points and lock slots
+
+Tutorial Memory LOD (axes, `soundPos`, interaction) is unchanged. 1.30 adds extra named points consumed by script, not by `class Animations`.
+
+| Role | Config / script name | Memory name(s) verified | Source |
+|---|---|---|---|
+| Lock attachment proxy | `CfgSlots` `selection` | `att_combinationlock`, `att_codelock` (and numbered `_wood` / `_metal` variants) | `exp/scripts/scripts/config.cpp:2325-2330,2777-2782` |
+| One-sided open/close | `interactPositionPoint` + `interactDirPoint` on the Doors child | Whatever strings you put there; empty/missing → `MemPointDirectionalCheck` returns true | `AdditionalDoorsInfo.c:34-38`, `MiscGameplayFunctions.c:911-936` |
+| Bunker inside vs outside | `Bunker.CanDoorBeOpened` formats `"%1_action"` and `"%1_inside"` from `doorInfo.m_DoorType` | Example: Doors subclass `Door1` → `Door1_action` and `Door1_inside` | `exp/scripts/scripts/4_World/Entities/Building/Bunker.c:47-54` |
+| Code lock facing | `DigitalCodeLock.MEMPOINT_CENTER` / `MEMPOINT_INSIDE` on the **item** P3D | `ce_center`, `inside` | `exp/scripts/scripts/4_World/Entities/ItemBase/CodeLock.c:3-4,221` |
+| Combination lock faces | item selections | `lock_attached_outside`, `lock_attached_inside` | `exp/scripts/scripts/4_World/Entities/ItemBase/CombinationLock.c:27-30` |
+| Bunker crate spawn | `BroadcastedBunker` | `storagecratepos`, `storagecratedir` | `exp/scripts/scripts/4_World/Entities/Building/Bunker.c:174-176,264-274` |
+
+**[DESIGN]** A custom building that should accept vanilla `CombinationLock` / `DigitalCodeLock` needs the slot selection in Memory (and usually a proxy in Resolution) whose name matches `CfgSlots.selection`. Fence already lists both slots at entity level (`exp/gear_camping/DZ/gear/camping/config.cpp:2683`).
+
+Rebuildable doors: `doorConstructionPhysicsSource` is an **AnimationSource** name, not a Memory point. `Rebuilding` sets its phase to 1.0 on open start and 0.0 on close start (`Rebuilding.c:440-464`).
 
 ## Sources
 

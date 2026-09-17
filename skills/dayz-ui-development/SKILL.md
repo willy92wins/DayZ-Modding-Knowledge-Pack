@@ -19,6 +19,7 @@ vanilla scripts at `<dayz-projects>\scripts\`, vanilla GUI data at
 | "It looks different in-game than designed / at other resolutions" | `plan-to-implementation.md §1` (root causes) | Rule 3 below |
 | New menu opened by key / menu IDs / pause-style menu | `references/vanilla-menus-map.md` (§2 registration recipe, §4 strategies) | §3 contract |
 | Extending the HUD / hide-show HUD groups | `vanilla-menus-map.md §5` (HUD chain + IngameHudVisibility) | — |
+| Action info panels / construction cursor grids (1.30 Exp) | `references/hud-action-info-panels.md` | `vanilla-menus-map.md §5` |
 | Writing/debugging a `.layout` file | `references/layout-format.md` | Rules 1-4 below |
 | Starting from a copy-paste layout (modal / HUD / form row / scroll list) | [`templates/README.md`](templates/README.md) | that template + Rules 1-4 |
 | Iterating a design without repacking (edit the file, see it in the running game) | `references/hot-iteration.md` | Rules 1-4 below |
@@ -113,6 +114,10 @@ Read the relevant file BEFORE writing code:
   a SIBLING branch of TextWidget (whose getters are GetOutlineSize/GetShadowSize, no "Text" prefix).
   Also missing there: the UIWidget SETTERS — `SetTextColor(int)` (THE way to color a button/editbox
   LABEL; `Widget.SetColor` colors the body), `SetTextOutline`, `SetTextShadow`, `SetTextItalic/Bold`.
+  Includes DayZ 1.30 Exp native `PreviewWidget`, `ItemPreviewWidget` (`SetForceFlipEnable`, `SetForceFlip`),
+  and `PlayerPreviewWidget` native APIs, plus verification desmintiendo tickets de changelog no expuestos en scripts.
+- **HUD Action Info Panels & Cursor Construction Grids (DayZ 1.30 Exp modular cursor pipeline)** → `references/hud-action-info-panels.md` —
+  modular target action info architecture (`ActionTargetsCursor.c`, `ActionInfoPanels.c`, `ActionInfoGrids.c`, `ConstructionInfoIcons.c`, `action_info_spacer.layout`, `SimpleIconTemplate.layout`), tool/material requirement grids, action dimming (`SetAlpha(0.149)`), universal gamepad controller icon binding via RichText (`SetControllerIcon`).
 - **Dabs Framework deep dive (MVC + Animator + Color + Menu)** → `references/dabs-framework.md` —
   now includes a HEAD DEEP-DIVE (2026-07-05, production=Workshop-identical MVC): ScriptViewMenu real
   contract (no OnShow/OnHide; ESC NOT handled), LoadWidgetsAsVariables mechanism + dot-naming,
@@ -122,7 +127,7 @@ Read the relevant file BEFORE writing code:
   contract, HUD chain + IngameHudVisibility flags, inventory architecture, focus model)** →
   `references/vanilla-menus-map.md`
 - **.styles system — complete dissection (states, 9-slice item contracts, Colorable mechanism,
-  custom-style recipe)** → `references/styles-format.md`
+  custom-style recipe, ActionWidget 9-slice gradient in 1.30)** → `references/styles-format.md`
 - **Layout file format (.layout Enfusion)** → `references/layout-format.md`
 - **Starting layouts (modal, HUD overlay, form row, scroll list)** → [`templates/README.md`](templates/README.md#the-four-construction-traps) — four copy-paste `.layout` files and the four construction traps they exist to stop. Offline gate is `tools/dayz-ui-lab` (`parse.py --check`); `ui_rect_lint.py` is not distributed with this pack.
 - **★ Hot iteration — edit a `.layout` on disk and reload it into the RUNNING client (measured 2026-08-19)** → `references/hot-iteration.md` — the addon prefix is served by the PBO and only the PBO, but `$profile:` is re-read on every load, so a design can be iterated in seconds instead of one repack-and-boot per change. Carries the guard that keeps `CreateWidgets` from killing the client, the fact that a second load STACKS instead of replacing, and the two silent failures (a missing texture paints flat WHITE and logs nothing; perfect rects say nothing about whether anything is drawn).
@@ -190,8 +195,10 @@ Every rule below caused a real crash or visual failure in production.
    every widget of the current menu with visibility totals — use it for "half my UI is missing".
 
 2. **`FrameWidgetClass`/`PanelWidgetClass` are INVISIBLE** (unless a `style` gives Panel a 9-slice
-   — see styles-format.md). For visible backgrounds use `ImageWidgetClass` with `ignorepointer 1`
-   and `stretch 1`. In script: `LoadImageFile(0, "#(argb,8,8,3)color(1,1,1,1,CO)")` then
+   — see styles-format.md).
+   *(hasta 1.29: For visible backgrounds use ImageWidgetClass with ignorepointer 1 and stretch 1; desde 1.30 Exp: vanilla systematically uses styled `PanelWidgetClass` (`style ActionWidget` in `dayzwidgets.styles:3700`) with parametric gradient slices across all interaction prompts in `day_z_hud.layout:2294, 2477, 2755, 3033, 3311`, replacing `ImageWidgetClass` with `linear_gradient.edds` / `card_drop.edds`).*
+   ⚠️ **Breaking change 1.30:** `ImageWidget.Cast(m_Root.FindAnyWidget("interact"))` or `"item"` returns `null` in 1.30 (causing Null Pointer Exception when calling `LoadImageFile`/`SetColor`). Migrate to `PanelWidget.Cast(...)` or generic `Widget`.
+   For procedural textures: In script `LoadImageFile(0, "#(argb,8,8,3)color(1,1,1,1,CO)")` then
    `SetColor(ARGB(...))`. ⚠️ The procedural texture FAILED on DayZ 1.29 ("Bad texture name" /
    "LoadImageFile can't load", observed on LFPowerGrid) — fallbacks: ship a 1×1 white `.edds` and
    LoadImageFile that, or use a `Colorable` style (WhitePixel Center, styles-format.md §5).
@@ -536,7 +543,6 @@ of an existing mod, stay scoped to the specific element. Also verified: Communit
 ships NO MVC/UI layer (its changelog: MVC added deprecated in 1.1, removed in 1.3.1) — its only UI
 surface worth knowing is the server-aware NotificationSystem.
 
-
 ---
 
 ## COLOR SYSTEM
@@ -625,6 +631,9 @@ widget.Update();
 | HtmlWidgetClass | HtmlWidget | YES | — | extends RichTextWidget + LoadFile(path); vanilla note/book UIs — long scrollable documents |
 | WindowWidgetClass | WindowWidget | style | — | Titled window chrome (Title* 9-slice via style) |
 | SimpleProgressBarWidgetClass | SimpleProgressBarWidget | YES | — | Bar*-only style set; base of ProgressBarWidget |
+| PreviewWidgetClass | PreviewWidget | 3D render | — | Base class for in-UI 3D entity renders (ApplyToCamera, SetModelOrientation/Pos) |
+| ItemPreviewWidgetClass | ItemPreviewWidget | 3D item | — | 3D item render; SetItem, GetItem, SetView, GetView, SetForceFlipEnable, SetForceFlip |
+| PlayerPreviewWidgetClass | PlayerPreviewWidget | 3D player | — | 3D player render; UpdateItemInHands, SetPlayer, GetDummyPlayer, Refresh |
 
 ---
 
@@ -816,7 +825,6 @@ Volado in-game 2026-08-21 (feed de 10 lineas inyectado en caliente con
 `ui_set_text`, sin stringtable). `--self-test` verifica llaves balanceadas y
 unicidad de nombres sin abrir el juego.
 
-
 ---
 
 ## LAYOUT REGISTRY PATTERN (from LBmaster)
@@ -899,6 +907,7 @@ Useful for feature flags across mod boundaries.
 | A UI image comes out as a flat WHITE box | The texture path does not resolve | Check the path first, not the color or the style: a missing UI texture fills the slot with white (255,255,255, deviation 0,0) and writes **nothing** to the RPT (measured 2026-08-19) |
 | Reloading a layout at runtime draws two copies, or clicks land on nothing | `CreateWidgets` STACKS a second tree, it does not replace the first | `Unlink()` the previous root before every load (hot-iteration.md trap 2) |
 | ImageWidget invisible in script | No image loaded | `LoadImageFile(0, "#(argb,8,8,3)color(1,1,1,1,CO)")` then SetColor. ⚠️ this procedural texture FAILED on DayZ 1.29 ("Bad texture name", LFPowerGrid RPT) — if it fails, ship a 1×1 white .edds (or use a Colorable style, styles-format.md §5) |
+| FindAnyWidget returns null for interact / item in HUD (1.30 Exp) | Interaction widgets in day_z_hud.layout mutated from ImageWidgetClass to PanelWidgetClass with style ActionWidget | Cast to PanelWidget instead of ImageWidget: `PanelWidget.Cast(m_Root.FindAnyWidget("interact"))` |
 | ViewBinding not updating UI | Binding_Name mismatch | Verify ScriptParams Binding_Name matches controller property exactly |
 | CreateWidgets crashes | Called from RPC or early init | Pre-create views in MissionInit when GetWorkspace() is valid (Rule 9) |
 | Widget z-order wrong | Children overlap in wrong order | Use `Widget.SetSort(int)` — higher value renders later (on top). SetSort(1000 - priority) for priority ordering |
@@ -1012,7 +1021,6 @@ NOT represent the in-game render: DayZ TextWidget text size is driven by `text_p
   the subtitle and triggered a TitleText→MultilineTextWidget change that the calibrated
   (~18px ≈ text_proportion 0.34) render did not need. Cross-ref lessons-learned LL-086.
 
-
 ---
 
 ## A green automated UI gate says nothing about how the UI LOOKS (measured 2026-08-19)
@@ -1098,7 +1106,6 @@ capturas `capture_20260829_003222_408` / `_003807_235`.
    linea) permitio a una lane gratis (glm-5.3-flash) producir 3.4k lineas
    correctas a la primera; los dos defectos reales los cazaron el gate visual
    (clip de glifo) y el ojo, no el gate textual.
-
 
 ## Los clics sobre ScriptViews no son automatizables por el MCP (added 2026-08-29)
 
@@ -1623,3 +1630,56 @@ Se montaron las sondas y quedaron sin leer, listas en `round-s3b/probes/uiprobe.
 - **¿Se dibuja la textura procedural declarada por layout?** Ver el caveat de arriba.
 
 Para retomarlas basta con el display encendido: cargar `$profile:uiprobe.layout` y capturar.
+
+---
+
+## DayZ 1.30 Exp (build 1.30.164014) — UI Architecture & Breaking Changes
+
+### Qué cambia en DayZ 1.30
+
+1. **Mutación de tipos de widgets en el HUD de interacción (`day_z_hud.layout`)**:
+   - `item` (`day_z_hud.layout:2294`), `interact` (:2477), `continuous_interact` (:2755), `single` (:3033), `continuous` (:3311), `ia_interact` (:4083), `ia_continuous_interact` (:4306) mutaron de `ImageWidgetClass` a `PanelWidgetClass`.
+   - Adoptan el nuevo estilo `style ActionWidget` (`looknfeel/dayzwidgets.styles:3700`), que renderiza un marco 9-slice paramétrico mediante texturas `ActionWidgetGradient*` del imageset `dayz_gui`.
+2. **Sistema modular de información de acciones y construcción en el cursor (`ActionTargetsCursor.c`)**:
+   - `ActionTargetsCursor` incorpora un pipeline desacoplado de paneles suplementarios (`TargetActionInfoPanelBase` y `ConstructionActionInfoPanel` en `ActionInfoPanels.c:82`) sobre `new_ui/hud/action_info_spacer.layout:1`.
+   - Renderiza dinámicamente grids de herramientas requeridas (`ConstructionActionInfoToolsGrid`) comparando la máscara `build_action_type` del item en manos contra `part.GetBuildIndicationTypeMask()`, y materiales requeridos (`ConstructionActionInfoMaterialsGrid`) con formato RichText (`<color hex="...">X</color><color hex="...">/Y</color>`).
+   - Iconos desacoplados del árbol de inventario mediante `GenericIconBase: SlotsIconBase` (`GenericIcon.c:1`) sobre `new_ui/hud/SimpleIconTemplate.layout:1`.
+3. **Atenuación visual de acciones no iniciables**:
+   - Cuando `!action.CanBeStarted()`, los iconos de botón (`*_btn_icon` y `*_btn_icon_xbox`) reducen su opacidad a `0.149` (`ActionTargetsCursor.c:1120-1121`).
+4. **Deprecación de métodos de mando específicos de Xbox**:
+   - `SetInteractXboxIcon`, `SetContinuousInteractXboxIcon`, `SetSingleXboxIcon`, `SetContinuousXboxIcon`, `SetXboxIcon` marcados como `[Obsolete("no replacement")]` (`ActionTargetsCursor.c:1368-1377`).
+   - Sustituidos por `SetControllerIcon(string pWidgetName, string pInputName)` (`:146`), que renderiza glifos RichText dinámicos para cualquier mando vía `InputUtils.GetRichtextButtonIconFromInputAction(...)`.
+5. **Desacoplamiento arquitectónico de `SlotsIconBase`**:
+   - `SlotsIconBase: LayoutHolder` (`ContainedItems/SlotsIconBase.c:1`) absorbe 744 líneas de lógica genérica de slots de inventario, reduciendo `SlotsIcon.c:1` a 217 líneas de registro de eventos.
+6. **APIs de preview 3D en UI (`gameplay.c:276-314`)**:
+   - `ItemPreviewWidget` incorpora `SetForceFlipEnable(bool)` y `SetForceFlip(bool)` (`gameplay.c:300-301`).
+   - **Ticket T181406 desmentido en script**: `WorldToScreen` y `ScreenToWorld` NO existen en scripts de 1.30 (`[CHANGELOG]` / nativo no expuesto). Tampoco la deshabilitación de partículas en previews.
+7. **Actualizaciones de Enfusion**:
+   - Layout Editor actualizado a Enfusion 2023 (`changelog-1.30-exp-modding.md:64`).
+   - Parsing de configs de Enfusion actualizado para `*.layout`, `*.emat` (`:23`).
+
+### Qué se rompe y cómo migrar
+
+| Ruptura | Severidad | Causa técnica | Cómo migrar |
+|---|---|---|---|
+| `ImageWidget.Cast(m_Root.FindAnyWidget("interact"))` retorna `null` | **CRÍTICA** | Widgets de interacción cambiaron de `ImageWidgetClass` a `PanelWidgetClass` en `day_z_hud.layout:2294, 2477...` | Migrar variables y casting a `PanelWidget.Cast(...)` o `Widget`. Para fondos personalizados usar `w.SetStyle(...)` o modificar el estilo `ActionWidget`. |
+| Warnings de compilación por métodos Xbox obsoletos | **MEDIA** | `SetInteractXboxIcon` etc. marcados `[Obsolete]` en `ActionTargetsCursor.c:1368` | Sustituir por `SetControllerIcon(widgetName, inputName)` (`ActionTargetsCursor.c:146`). |
+| Modificaciones de slots no afectan a nuevos iconos de cursor/HUD | **MEDIA** | `SlotsIcon` ya no es la clase base monolítica; se extrajo `SlotsIconBase` y se creó `GenericIconBase` | Moddear/extender `SlotsIconBase` para lógica de slots o `GenericIconBase` para iconos genéricos. |
+| Suposición de disponibilidad de `WorldToScreen` en previews | **BAJA** | Ticket T181406 no está expuesto en Enforce Script (`gameplay.c:276-314`) | No intentar invocar `WorldToScreen`/`ScreenToWorld` sobre `ItemPreviewWidget`/`PlayerPreviewWidget` desde script. |
+
+### Checklist de migración 1.30 para desarrolladores de UI
+
+- [ ] Buscar en todo el código del mod `FindAnyWidget("interact")`, `"item"`, `"continuous_interact"`, `"single"`, `"continuous"`, `"ia_interact"` y reemplazar `ImageWidget` por `PanelWidget`.
+- [ ] Eliminar llamadas a `Set*XboxIcon` en scripts que extiendan o modifiquen `ActionTargetsCursor`, adoptando `SetControllerIcon`.
+- [ ] Si el mod decoraba slots de inventario, verificar que las extensiones apunten a `SlotsIconBase` y mantengan las llamadas a `super.InitIconWidgets` y `super.InitIcon`.
+- [ ] Para nuevos paneles de inspección en cursor, consultar la arquitectura modular en `references/hud-action-info-panels.md`.
+- [ ] Verificar compatibilidad de estilos 9-slice con el nuevo estilo `ActionWidget` en `references/styles-format.md`.
+
+### References detalladas de DayZ 1.30 Exp
+- **Paneles modulares de cursor y grids de construcción**: `references/hud-action-info-panels.md`
+- **Mapeo de HUD y arquitectura de inventario**: `references/vanilla-menus-map.md`
+- **Catálogo y verificación de APIs de widgets**: `references/widget-api.md`
+- **Especificación del sistema de estilos (.styles)**: `references/styles-format.md`
+
+
+

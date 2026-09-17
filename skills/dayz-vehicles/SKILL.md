@@ -58,6 +58,11 @@ the motorbike gap → `references/vehicle-types-boat-truck.md` (historical: sinc
 - [EXACT] A third sibling exists: `class Motorbike: Transport` with `simulation = "motorbike"` (`dta\bin\config.cpp:1054-1059`; engine proto `3_Game\Vehicles\Motorbike.c:30`), scripted by `MotorbikeScript` (`4_World\Entities\Vehicles\MotorbikeScript.c:53`), which does NOT inherit `CarScript`. Two-wheel work goes to the `dayz-motorbikes` skill; this atlas stays for cars, trucks, quads and boats.
 - [EXACT] `CarScript` was refactored around components owned by `Transport`: `VehicleLightsComponent` (`CarScript.c:187, 229-233`), `VehicleHornComponent` and `VehicleVFXComponent` (`CarScript.c:189, 343-368`). The old overrides are marked `[Obsolete]`: `CreateRearLight`/`CreateFrontLight` (`CarScript.c:2937-2945`), `IsVitalCarBattery`/`IsVitalTruckBattery` (`:2811-2817`, replaced by `Transport.NeedElectricitySourceDevice()` at `Transport.c:821`), `CarPartsHealthCheck` (`:2976-2979`, replaced by `Transport.PartsHealthCheck()` at `Transport.c:437` / override at `CarScript.c:2121`). The horn actions are `ActionVehicleHornShort/Long` (`CarScript.c:2319-2320`). Contact data is `VehicleContactData.m_Impulse` (`Transport.c:1144-1148`, used at `CarScript.c:1291-1292`). Wheel classes gained `tyreRoughness`, `tyreLongitudinalFriction`, `tyreLateralFriction` (`DZ\vehicles\wheeled\config.cpp:749-751`; absent in 1.29).
 - [DESIGN] A 1.29 car mod that overrides any of the obsolete members compiles against the attribute but its override is no longer called; re-verify each override against the 1.30 `CarScript.c` before shipping. Migration checklist and the "1.29 statements that are now false" table: `dayz-motorbikes/references/vehicle-1.30-refactor.md`. Sections of this atlas that predate 1.30 (lights via `CarLightBase`, `CarPartsHealthCheck`, `data[0].impulse`) describe 1.29 and are not yet rewritten.
+- [EXACT] `Transport.GetWeightCoef()` default `1.0` (`Transport.c:475-478`); vanilla `Truck_01_Base` `2.0` (`Truck_01_Base.c:120-123`), `Offroad_02` `1.5` (`Offroad_02.c:133-136`), `Motorbike_01` `0.5` (`Motorbike_01.c:87-90`), `Motorbike_02` `0.75` (`Motorbike_02.c:77-80`). Digest M's claim that `MotorbikeScript.c:646` *returns* `0.25` is false: that line *uses* `GetWeightCoef()`, it does not define it.
+- [EXACT] `CarScript.HasGangedTailAndBrakeLights()` default `false` (`CarScript.c:468-471`); `true` on Offroad_02 (`Offroad_02.c:68-71`) so reverse/position swaps do not kill the brake selection (`CarScript.c:2061-2094`).
+- [EXACT] Vehicle light toggle is `UAToggleVehicleLights` / `ToggleVehicleLightsActionInput` (`ActionInput.c:849-855`, `ActionSwitchLights.c:16-18`); `UAToggleHeadlight` is headgear (`ActionInput.c:776-782`). `ForceUpdateLightsStart`/`End` are `[Obsolete("1.30: no replacement")]` (`CarScript.c:2805-2809`).
+- [EXACT] Get-in calls `CanGetIn()` then `IsAreaAtDoorFreeDiag` and **does** call `CanReachSeatFromDoors(..., 1.0)` from script (`ActionGetInTransport.c:36,54,64`).
+- Lights, horn, fluids, boats, wreck cisterns-as-Well, `speedGeoms`, and the motorbike 3PP camera pointer: `references/dayz-1-30-vehicles.md`. Motorbike camera ID 32 lives in `dayz-motorbikes/references/rider-animation.md`.
 
 
 **Per-tick event asymmetry (invariant, added 2026-07-29, LFHeli OH-1):** `CarScript` has NO
@@ -69,6 +74,7 @@ car: hook `EOnPostSimulate` for per-tick logic; `super.EOnSimulate` is the empty
 `enentity.c:201-203`, so calling or skipping it does nothing either way — treat any comment claiming
 it "runs engine/fluids twice" as false. Custom solvers that add `SetEventMask(EntityEvent.SIMULATE)`
 and pump it by hand (aviation) → `dayz-aviation` preflight invariants.
+(hasta 1.29: those `carscript.c` line numbers.) (desde 1.30 Exp: `SetEventMask` is `CarScript.c:207-208`; `EOnPostSimulate` is `CarScript.c:807`. Full line-drift table: `references/dayz-1-30-vehicles.md`.)
 
 **Cockpit screen → live engine map (RTTextureWidget bridge) (invariant, added 2026-08-19, SUB_BRZ RT spike):**
 Any hiddenSelections screen can display the ENGINE's map renderer (what LBmaster's GPS uses) instead
@@ -622,6 +628,7 @@ and require approximately zero residual before trusting any product comparison.
 
 5. **Crew/wheel proxies must exist in BOTH ViewGeometry AND FireGeometry**; the proxy triangle uses the
    engine identity frame (`R=((-1,0,0),(0,0,1),(0,1,0))`, model-space), NOT py3d `rotation=None`. → parity + rip-import.
+
 5b. **`wheelHub` names a GEOMETRY/MEMORY selection, not the visual `wheel_X_Y` — and the visual
    `wheel_X_Y` IS the proxy's own triangle under a second name (added 2026-08-07, MercedesAMGLF).**
    `class Wheels { class Left { wheelHub="wheel_1_1_damper_land"; } }` resolves to a selection that
@@ -682,6 +689,7 @@ and require approximately zero residual before trusting any product comparison.
    SparkPlug already attached = the un-overridden GlowPlug, **NOT** a removed requirement — `IsVitalGlowPlug→false`
    IS the vanilla petrol pattern (the car still requires its SparkPlug). Bit SUB_BRZ (petrol car defaulted
    to needing a GlowPlug it had no slot for; a "remove the check" framing got it backwards). → `vehicle-config-and-modelcfg.md` §engine parts.
+
 9. **Engine STARTS then immediately STALLS (eng=1 for one tick → eng=0 rpm=0) with fuel + ALL vital parts
    attached → the car is missing its `Engine` (and `FuelTank`) DamageZone.** `CarScript` stops a running
    engine EVERY tick when `m_EngineHealth <= 0` (`carscript.c:991`), and `m_EngineHealth =
@@ -717,6 +725,7 @@ and require approximately zero residual before trusting any product comparison.
      proxies sit mirrored (−X,−Z) off their hubs, BOTH at once. Diagnose by comparing
      `dmgZone_front`/hubs (sim) vs headlights/wheel-proxies (visual) against nose=−Z.
    > Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“Invariante 11”.
+
    - **CORRECTION to THE TRAP (added 2026-08-01, adjudicated from the applied fix's dated backups +
      in-game outcome — supersedes the "interior/dash/steering/occlusion correctly sim-aligned" claim
      above):** on the Mercedes those `mb_` contents were VISUAL-aligned (coherent with the yaw-180
@@ -1894,3 +1903,4 @@ Corollary for a wheel-driven steering axle: on `DRIVE_FWD` the wheels that spin 
 that steer, so excess torque reaches the driver as "it will not turn", never as "wheelspin".
 Halving a vehicle's mass halves the grip budget while leaving the torque where it was, which on
 its own turns a vehicle that steered into one that pushes - the trap behind 15g(a).
+

@@ -313,4 +313,8 @@ If migrating from old class-based DayZ particles to Enfusion:
 
 Full migration usually means rewriting; structure is too different for mechanical translation.
 
+## DayZ 1.30 Exp
+
+Runtime vehicle/dust retune (`ParticleParamsOverrideData`) and the `IsHeadlessOrDedicatedServer` PlayOnObject gate are documented in `dayz-1-30-particles.md`. They do not change EffectDef / EmitorDef syntax.
+
 <!-- llama-mod-extraction: findings f_060, f_061, f_062, f_063, f_064, f_065 | pbo: LM_Planes | pass: 1 | date: 2026-05-23 | source: workshop 3730564764 graphics/PLANES_EX.ptc + PLANES_IMPACT.ptc + PLANES_BOOM.ptc -->

@@ -61,3 +61,16 @@ The tool table lists `jdfnc24/DayZAnimationPluginDemo` (original) which needs **
 ### `.txa` → Workbench is the canonical PLAYER weapon route [VERIFIED]
 
 For a playable-character weapon animation use Route A (`.txa` via the DayZAnimationPlugin → Workbench compiles `.anm`), as the JD demo and community do. SEAnim/DayZATool (Route B) is a fallback — its extracted rig is a reference, NOT a clean round-trip (community: extracted rigs "always wrong" for empties/IK-helper bones). RTM is the #1 wrong turn — never use it for a player weapon anim.
+
+## DayZ 1.30 Exp Tooling and Architectural Updates [EXACT]
+
+### Workbench Animation & Ragdoll Editors (Enfusion 2021)
+- **Live Editing Support [CHANGELOG]**: The Animation Editor in Workbench 1.30 supports Live Editing against a running game client (`changelog:48, 62`), enabling hot-reloading of animation states.
+- **Ragdoll Editor [CHANGELOG]**: Workbench introduces a dedicated editor for `.ragdoll` files (`changelog:47`), configured data-driven in `DZ/characters/bodies/human.ragdoll`.
+- **Native Event Table (`.ae`) Support**: Animation Editor opens `.ae` event tables directly without requiring deletion of the `#eventtable` directive (`player_main.aw:15`).
+
+### Named Filesystems for Mods & Text Merging
+In DayZ 1.30 Exp, mods have dedicated named filesystems (`-resolveFilePatchingUsingEnfusion=1`, `changelog:25`). Because sub-graphs are modular text files (`.agf`), mods can patch individual sub-graphs without replacing the entire workspace hierarchy.
+
+### Vehicles as Plain-Text Graphs
+Vehicles are no longer an opaque binary exception. DayZ 1.30 Exp provides the full vehicle animation graph as plain-text Enfusion Config in `DZ\anims\workspaces\player\player_main\Vehicles.agf` (3654 lines), allowing inspection and extension of vehicle state machines like `MotorBikeSTM`.

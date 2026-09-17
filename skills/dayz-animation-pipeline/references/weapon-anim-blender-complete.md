@@ -715,7 +715,7 @@ Aggregated from all seven dimensions. Every item below is **unverified or single
 21. **Per-grip ASI swap (foregrip branch)** — community technique (`answeroverflow.com/m/917810289293029407`), not verified.
 22. **Reload/charge/chamber/jam frame-range conventions** — the demo ships those as `.anm` only (no `.txa`), so per-state frame counts beyond fire(7)/states(3) are not primary-verified.
 23. **`Weapon_Bone_01..06` semantics per weapon family** — configurable, not standardized; only the SVD mapping (`charging`/`mag_release`/`boltrelease`) is confirmed.
-24. **Whether a new `inputs.xml` action is ever needed for a weapon-only anim** (e.g. custom "inspect") — demo proves NOT needed for reload/fire/chamber; the inspect path is untested.
+24. **Whether a new `inputs.xml` action is ever needed for a weapon-only anim** (e.g. custom "inspect" action) — demo proves NOT needed for reload/fire/chamber; the inspect path is untested.
 25. **Blender→DayZ unit/scale factor for translations** — `fUnitScale` default 1.0; demo uses 1.0; not independently confirmed against vanilla.
 26. **Whether ADD additive player anims escape the "one graph mod" wall** — unconfirmed; needs in-game test.
 27. **Exact current Workbench Resource-Browser menu wording** ("Register resource and import" vs "Register & Import") — from 2019-2023 community posts; confirm the live label per Tools version.
@@ -903,3 +903,77 @@ programmatic pose extraction — complements §3.1 (interactive import):
 5. Reusable scripts: `WeaponAnimPipeline_dev/tools/txa/apply_txa_plugin.py` + `txa_plugin_to_pose.py`
    (transform `Rf=[[1,0,0],[0,0,1],[0,-1,0]]`); `apply_txa_jd.py`/`pose_convert.py`/`pose_from_txa.py`
    are DEPRECATED (hardcoded scratchpad paths + dropped root translation).
+
+---
+
+## [2026-09-16] DayZ 1.30 Exp Updates: AnimSetInstanceSource, Dynamic ASI Switching & Workbench 2021 [EXACT]
+
+### 1.30 Enfusion Workspace Schema: `AnimSetInstanceSource` & `AnimSetTemplateSource`
+
+In DayZ 1.30 Exp (build 1.30.164014), Enfusion workspace animation declarations transition to class-based source definitions.
+
+#### Verified `.asi` Class Syntax: `AnimSetInstanceSource`
+Legacy `$animsetinstance` blocks can now be authored using the structured `AnimSetInstanceSource` class syntax:
+```
+AnimSetInstanceSource {
+ Template "{9B08F908A7C93C68}DZ/anims/workspaces/player/player_main/player_main.ast"
+ Parents {
+  "{F01DA9A3F1F41029}DZ/anims/workspaces/player/player_main/player_main.asi"
+ }
+ IKPoses {
+  AnimSetInstanceIKPoseSource "{68C794D99D4FE45C}" {
+   Pose "dz/anims/anm/player/ik/weapons/player_rifle_ik.anm"
+  }
+ }
+ Runtimes {
+ }
+ Animations {
+```
+*(Verified in `exp/anims_workspaces/DZ/anims/workspaces/player/player_main/player_main_rifle.asi:1-15`)*
+
+#### Verified `.ast` Animation Groups: `AnimSetTemplateSource_AnimationGroup`
+In `player_main.ast`, animation groups are defined with explicit `GroupNames`:
+```
+  AnimSetTemplateSource_AnimationGroup "{5506E1B6727DE429}" {
+   Name "WeaponOperations"
+   GroupNames {
+    "ErcRas"
+    "PneRas"
+   }
+   Animations {
+    "ChamberingBulletL"
+```
+*(Verified in `exp/anims_workspaces/DZ/anims/workspaces/player/player_main/player_main.ast:1216-1224`)*
+
+### Resolution to SP-042: Dynamic Per-Item ASI Switching at Runtime
+
+Prior to 1.30, swapping weapon animation stances or grip IK dynamically without respawning the entity was unsupported (§4.9, SP-042). DayZ 1.30 Exp introduces native dynamic animation instance switching in Enforce Script:
+
+```c
+// In 3_Game/human.c
+proto native void SetAnimationInstanceByName(string asiName);
+```
+*(Verified in `exp/scripts/scripts/3_Game/human.c:1383-1384`)*
+
+Along with player item behavior camera configurations:
+```c
+// In 3_Game/humanitems.c
+int m_iPerItemCameraUserInt;
+```
+*(Verified in `exp/scripts/scripts/3_Game/humanitems.c:115`)*
+
+And dynamic notification callbacks on item transitions:
+```c
+void OnItemInHandsChanged()
+{
+}
+```
+*(Verified in `exp/scripts/scripts/3_Game/DayZPlayerCfgBase.c:1537`)*
+
+This enables mods to swap character weapon profiles dynamically when grips or attachments are mounted/unmounted at runtime without class hot-swapping hacks.
+
+### Workbench 2021 & Filepatching Workflow Updates
+
+- **Named File System Routing**: Workbench 2021 resolves filepatching using the new `-resolveFilePatchingUsingEnfusion=1` switch, avoiding PBO packing loops during `.anm` iterations when loading loose workspace and meta resources.
+- **GUID Integrity**: In DayZ 1.30 Exp, `{GUID}` prefixes in `.asi` and `.ast` files must be strictly maintained for engine asset tracking and Animation Editor stability.
+

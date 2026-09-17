@@ -11,11 +11,13 @@ description: >
   ladder (spawn→render→get-in→drive→wheel direction). Covers static objects,
   items/weapons, buildings without doors and vehicle placement/drivability.
   Player UI, door interaction, inventory use and firing remain manual.
+  Also: ScriptConsoleTabRegistry, IsHeadless roboclient, UA_AM_INIT action inject.
 ---
 
 # DayZ MCP verify — auto-test in-game vía tools MCP
 
 ## GATE 0 — preguntar QUIÉN conduce, antes de tocar nada (added 2026-08-07)
+(until 1.29: managed `dayz_test_run` / `dayz_test_stop` and Mode=all capture still hold.) (since 1.30 Exp: Diag Script Console tabs register via `ScriptConsoleTabRegistry`; `IsHeadless()` names roboclients; SP `PerformActionStart` no-ops while pending. Details: [dayz-1-30-mcp-verify.md](references/dayz-1-30-mcp-verify.md) and ## DayZ 1.30 Exp.)
 
 **Antes de la primera tool de `dayz-mcp` en una tanda de verificación, preguntar al usuario si
 conduce él o el MCP.** No se asume ninguno de los dos. Una sola pregunta por tanda, no por

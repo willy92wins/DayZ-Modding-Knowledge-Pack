@@ -43,6 +43,9 @@ class LM_TigermothFrontLight extends CarLightBase
 }
 ```
 
+(hasta 1.29: community CarScript aircraft subclass `CarLightBase` as above and override `CreateFrontLight`.)
+(desde 1.30 Exp: vanilla vehicle headlights are `VehicleLightBase` configured by `VehicleLightProfileBase`, registered with `m_LightsComponent.RegisterLight(...)`. `CivilianSedanFrontLight` is `[Obsolete("use VehicleLightBase and VehicleLightProfileBase instead")]` at `exp\scripts\scripts\4_World\Entities\ScriptedLightBase\SpotLightBase\CarLightBase\CivilianSedanFrontLight.c:1`. Nav lights that subclass `PointLightBase` are unchanged. Full migration: `dayz-1-30-aviation.md`.)
+
 ## Effects
 
 ### Seaplane water effects

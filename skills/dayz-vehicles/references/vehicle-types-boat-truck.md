@@ -20,6 +20,9 @@ Pawn (FEATURE_NETWORK_RECONCILIATION) / EntityAI
      └─ Boat             boat.c:31           → BoatScript  boatscript.c:41
 ```
 
+(hasta 1.29: the diagram above is complete — `Transport` has two scripted children.)
+(desde 1.30 Exp: a third native sibling `Motorbike` with `simulation = "motorbike"` sits next to `Car` and `Boat`. Engine proto `class Motorbike extends Transport` at `exp\scripts\scripts\3_Game\Vehicles\Motorbike.c:30`; config `exp\bin\bin\config.cpp:1054-1059`. Scripted layer `MotorbikeScript` does **not** inherit `CarScript`. Two-wheel contract: `dayz-motorbikes`. Full 1.30 vehicle deltas: `dayz-1-30-vehicles.md`.)
+
 - `class Transport extends Pawn` (with `FEATURE_NETWORK_RECONCILIATION`) /
   `extends EntityAI` (without) — `scripts\3_game\vehicles\transport.c:53-56`.
 - `class Car extends Transport` — `scripts\3_game\vehicles\car.c:98`.
@@ -40,6 +43,8 @@ lives:
 | Crew / get-in / flip / fuel plumbing / lights / physics helpers | **Transport** | shared by cars AND boats |
 | Wheels / brakes / handbrake / `CarFluid` (OIL/BRAKE/COOLANT) | **Car** | boat has NONE of these |
 | Propeller / buoyancy / `BoatFluid` (fuel only) | **Boat** | car has none of these |
+
+(desde 1.30 Exp: `enum ETransportFluid` on `Transport` (`exp\scripts\scripts\3_Game\Vehicles\Transport.c:52-63`) is the shared fluid enum. `BoatFluid : ETransportFluid {}` (`Boat.c:13`) and `MotorbikeFluid : ETransportFluid {}` (`Motorbike.c:14`) inherit it; fuel plumbing is no longer a Boat-only isolated enum.)
 
 A **truck is just a `CarScript` config** with more axles and double wheels — no
 new class (see §4).
@@ -72,11 +77,14 @@ new class (see §4).
   SetBrakesActivateWithoutDriver` — `car.c:211-223`. **Boat has NO brake API.**
 - Fluids: `CarFluid` = FUEL/OIL/BRAKE/COOLANT (+USER1-4) — `car.c:18-29`.
   Speedometer `GetSpeedometer` — `car.c:113`.
+  (desde 1.30 Exp: `GetSpeedometer` is **not** Car-only. `Boat` implements `GetSpeedometer()` and `GetSpeedometerAbsolute()` at `exp\scripts\scripts\3_Game\Vehicles\Boat.c:42-56`.)
 - Flip via wheels: `DetectFlippedUsingWheels` (all wheels must have contact) —
   `car.c:168-189`.
 - Scripted get-in actions: `SetActions()` adds `ActionOpenCarDoorsOutside,
   ActionCloseCarDoorsOutside, ActionGetInTransport, ActionSwitchLights,
   ActionCarHornShort/Long, ActionPushCar` — `carscript.c:2871-2880`.
+  (hasta 1.29: `ActionCarHornShort/Long` as listed.)
+  (desde 1.30 Exp: `CarScript.SetActions()` at `exp\scripts\scripts\4_World\Entities\Vehicles\CarScript.c:2313-2321` adds `ActionVehicleHornShort`/`ActionVehicleHornLong`. `ActionCarHornShort`/`Long` are `[Obsolete]` (`ActionCarHorn.c:69-70,213-214`). Empty aliases `CarHornShortActionInput : VehicleHornShortActionInput {}` at `ActionInput.c:757-758`.)
 
 ---
 
@@ -96,6 +104,9 @@ Do NOT copy a car's `Axles`/brakes/`CarFluid` blocks into a boat.
 | Anim | `GetAnimInstance()` = `VehicleAnimInstances.ZODIAC` — `boatscript.c:207-210` | Car uses its own instance |
 | Actions | `SetActions()` = only `ActionGetInTransport` + `ActionPushBoat` — `boatscript.c:748-752` | Car adds doors/lights/horn |
 | Type | `GetVehicleType()` = `"VehicleTypeBoat"` — `boatscript.c:187-190` | Car returns its own |
+
+(hasta 1.29: `BoatFluid` listed as an isolated enum at `boat.c:13-16`.)
+(desde 1.30 Exp: `enum BoatFluid : ETransportFluid {}` at `exp\scripts\scripts\3_Game\Vehicles\Boat.c:13` — still fuel-only in practice, but it **inherits** the shared `ETransportFluid` base. Speedometer rows above are no longer Car-exclusive.)
 
 ### 2.1 Get-in is ALWAYS free on a boat
 
@@ -172,6 +183,8 @@ anywhere in a boat's `SimulationModule`.
 - `ActionRepairBoatChassis/Engine extends ActionRepairVehiclePartBase` — repairs
   non-`Engine` zones between WORN and RUINED — `actionrepairboatchassis.c:1-47`.
 
+(desde 1.30 Exp: `BoatScript.GetHeatComfortOverride()` at `exp\scripts\scripts\4_World\Entities\Vehicles\BoatScript.c:256-259`. Config AI noise `class NoiseBoatEngine { type = "sound"; strength = 30; }` at `exp\vehicles_water\DZ\vehicles\water\config.cpp:59-63`.)
+
 ---
 
 ## 3. (reserved — see §4 for the truck deltas)
@@ -208,6 +221,8 @@ classname each, (c) 3 axle blocks with a locked central differential, (d) 4-seat
 crew. Nothing about get-in, DamageZones, or the vital-igniter chain changes — it
 is still `CarScript`.
 
+(desde 1.30 Exp: abandoned cistern wrecks `Land_Wreck_Truck01_Aban1_Cistern` and `Land_Wreck_Truck01_Aban2_Cistern` extend `Well` — they are drinkable, not vehicle entities. `exp\scripts\scripts\4_World\Entities\Building\Wrecks\Wreck_Truck01_Aban1_Cistern.c:1-2`.)
+
 ---
 
 ## 5. ATV (quad) — community pattern, one line
@@ -225,7 +240,7 @@ observed in the heli/RaG research pass.) Everything else is the standard
 > (updated 2026-09-16) This gap closed with DayZ 1.30 Experimental (build 1.30.164014): the engine ships `class Motorbike: Transport` with `simulation = "motorbike"` (`dta\bin\config.cpp:1054-1059`), `MotorbikeScript` (`4_World\Entities\Vehicles\MotorbikeScript.c:53`, not a `CarScript`), two vanilla bikes (`Motorbike_01` = Jawa_05, `Motorbike_02` = Jawa_Bitrak in `vehicles_singletrack.pbo`) and a 2-wheel `SimulationModule` (`Wheels{Front,Rear}` instead of `Axles`, `Steering.maxLeanAngle[]`/`tipoverAngle`, `Brakes{Front input=1, Rear input=0}`; `DZ\vehicles\singletrack\config.cpp:228-343`). The contract, script API, actions, sounds and rider animation live in the `dayz-motorbikes` skill. The paragraph below is the pre-1.30 state and is kept for history; its "do not derive from Axles" warning still holds.
 
 
-No vanilla motorbike and no community source on disk; the 2-wheel physics pattern
+(hasta 1.29:) No vanilla motorbike and no community source on disk; the 2-wheel physics pattern
 is an open gap (needs a real project or a community PBO to reverse-engineer).
 Do not fabricate a `SimulationModule` for two wheels from the car pattern — a
 motorbike's lean/balance model is not derivable from the 4-wheel `Axles` blocks

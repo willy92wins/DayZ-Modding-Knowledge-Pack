@@ -21,6 +21,7 @@ Source-verified vs vanilla v1.24 + real mods: recipes/crafting (PluginRecipesMan
   armas/items con accesorios.
 - `m_ResultToInventory`: solo `-1` (a inventario) funciona; la rama swap `>= 0` esta comentada en
   `SpawnItems`. `SetIsCacheable` no existe.
+- (hasta 1.29: `TransferItemProperties` sobre un resultado con `m_ResultReplacesIngredient` podia pisar la salud de `m_ResultInheritsHealth`). (desde 1.30 Exp: se llama `TransferItemProperties(ingr, res, true, true, false, false)` — `transfer_health = false` — `RecipeBase.c:353`. Firma: `MiscGameplayFunctions.c:269`. Nuevo: `PluginRecipesManager.GetRecipeClassName(int recipe_id)` en `:84`, no en `:54`.)
 
 ### ComponentEnergyManager (quick facts)
 - `MAX_SOCKETS_COUNT = 4` hardcodeado (`componentenergymanager.c:77`).
@@ -37,6 +38,7 @@ Source-verified vs vanilla v1.24 + real mods: recipes/crafting (PluginRecipesMan
 - `CCTCursor` mide desde el hit-pos del raycast `ObjIntersectView` (exige View Geometry LOD);
   `CCTObject` mide desde `GetPosition()` del target. Si una accion no aparece y el modelo no tiene
   ViewGeo, revisa el LOD primero (skill `dayz-physics-engine`, truth #2).
+- (hasta 1.29: distancia CCT desde hit-pos / `GetPosition()`, a menudo via hueso Head). (desde 1.30 Exp: `CCTCursor` y `CCTCursorInherited` miden tambien `MiscGameplayFunctions.GetPlayerHeadPosition` — altura de stance, no hueso Head — `CCTCursor.c:27-28`, `CCTCursorInherited.c:28-32`, `MiscGameplayFunctions.c:748`. Nuevo `CCTLiquid` (ctor `:37`) sustituye el uso vanilla de `CCTWaterSurfaceEx` en fill/drink/wash. `Can()` de un CCT custom no cambia de firma.)
 
 ### Damage pipeline (quick facts)
 - `ProcessDirectDamage(damageType, source, componentName, ammoName, modelPos, damageCoef, flags)`

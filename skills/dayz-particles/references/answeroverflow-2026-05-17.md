@@ -36,6 +36,12 @@ Key points (matches existing `script-api-reference.md`):
 
 Source: Leo/STimon (Land_Wreck_C130J) — https://www.answeroverflow.com/m/1504612151212511303
 
+(until 1.29: vanilla wrecks used `if (!g_Game.IsDedicatedServer())` — the snippet above matches 1.29 `Wreck_MI8.c:6`.) (since 1.30 Exp: vanilla wrecks, FireplaceBase, ParticleManager, and boats gate with `if (!g_Game.IsHeadlessOrDedicatedServer())`. Verified: `exp\scripts\scripts\4_World\Entities\Building\Wrecks\Wreck_MI8.c:6`, `Wreck_UH1Y.c:5`, `FireplaceBase.c:1112`, `BoatScript.c:382`. The digest citation `BoatScript.c:38` is an enum, not the VFX guard.)
+
+[DESIGN] Keep the community snippet as a 1.29 pattern. New 1.30 code should use `IsHeadlessOrDedicatedServer()` so headless clients do not allocate from the particle pool.
+
+---
+
 ---
 
 ## Mining metadata

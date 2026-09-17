@@ -4,6 +4,8 @@ Complete list of the 276 particles catalogued from `ParticleList.c`. NOTE: the v
 Access via `ParticleList.CONSTANT_NAME` in Enforce Script.
 All .ptc files live under `graphics/particles/` unless a subfolder is shown.
 
+(since 1.30 Exp: new constants are listed at the bottom under [DayZ 1.30 Exp new ParticleList constants](#dayz-130-exp-new-particlelist-constants). The 276-count above is the pre-1.30 catalog, not a live count.)
+
 ## Example how to register particles from a mod
 
 | Constant | .ptc filename |
@@ -564,3 +566,72 @@ All .ptc files live under `graphics/particles/` unless a subfolder is shown.
 
 | Constant | .ptc filename |
 |---|---|
+
+## DayZ 1.30 Exp new ParticleList constants
+
+Tables below are **additions**. Existing rows above stay valid. Verified in `exp\scripts\scripts\3_Game\Particles\ParticleList.c`; absent from 1.29 `ParticleList.c` unless noted.
+
+### Fireplace tandoor (`ParticleList.c:48-54`)
+
+| Constant | .ptc filename |
+|---|---|
+| `TANDOOR_HOUSE_SMALL_FIRE` | tandoor_fire_small_house_01_start |
+| `TANDOOR_HOUSE_SMALL_SMOKE` | tandoor_smoke_small_house_01 |
+| `TANDOOR_HOUSE_NORMAL_FIRE` | tandoor_fire_small_house_01 |
+| `TANDOOR_HOUSE_NORMAL_SMOKE` | tandoor_smoke_medium_house_01 |
+| `TANDOOR_HOUSE_FIRE_END` | tandoor_fire_small_house_01_end |
+| `TANDOOR_HOUSE_FIRE_STEAM_2END` | tandoor_steam_medium_house_2end |
+
+### Grenade explosion by surface (added)
+
+| Constant | .ptc filename |
+|---|---|
+| `EXPLOSION_GRENADE_SAND` | explosion_grenade_sand |
+| `EXPLOSION_GRENADE_DESERT_SAND` | explosion_grenade_desert_sand |
+
+### Bullet impacts (desert sand / mud brick) (`ParticleList.c:266-271`)
+
+| Constant | .ptc filename |
+|---|---|
+| `IMPACT_DESERT_SAND_ENTER` | impacts/hit_desert_sand_ent_01 |
+| `IMPACT_DESERT_SAND_RICOCHET` | impacts/hit_desert_sand_ric_01 |
+| `IMPACT_DESERT_SAND_EXIT` | impacts/hit_desert_sand_ext_01 |
+| `IMPACT_MUD_BRICK_ENTER` | impacts/hit_mud_brick_ent_01 |
+| `IMPACT_MUD_BRICK_RICOCHET` | impacts/hit_mud_brick_ric_01 |
+| `IMPACT_MUD_BRICK_EXIT` | impacts/hit_mud_brick_ext_01 |
+
+### Steps already in 1.29 but missing from this catalog
+
+| Constant | .ptc filename |
+|---|---|
+| `STEP_DESERT` | step_desert |
+| `STEP_SOIL` | step_soil |
+
+### Ceiling dust / building destruction (`ParticleList.c:377-383`)
+
+| Constant | .ptc filename |
+|---|---|
+| `CEILING_WOOD` | dust/dust_ceiling_wood (via `RegisterParticleByFullPath`) |
+| `BUILDNG_DESTRUCT_WOOD` | building_destruction_wood |
+| `BUILDNG_DESTRUCT_BRICK` | building_destruction_brick |
+| `BUILDNG_DESTRUCT_METAL` | building_destruction_metal |
+
+### Vehicle wheels (added)
+
+| Constant | .ptc filename |
+|---|---|
+| `VEHICLE_WHEEL_SOIL` | vehicle_wheel_soil |
+| `VEHICLE_WHEEL_DESERT` | vehicle_wheel_desert |
+
+### Dust / oil pits (`ParticleList.c:405-412`)
+
+| Constant | .ptc filename |
+|---|---|
+| `DUST_GROUND` | dust/dust_grnd_01 |
+| `DUST_CLOUD` | dust/dust_effect_01 |
+| `DUST_VEHICLE` | dust_vehicle |
+| `DUST_VEHICLE_SOFT` | dust_vehicle_soft |
+| `OIL_FIRE1` | fire_oil1 |
+| `OIL_FIRE2` | fire_oil2 |
+
+Weather sandstorm `.ptc` is **not** a `ParticleList` constant. Engine config uses `particlePath = "Graphics/Particles/sandstorm/sandstorm"` (`exp\dz\DZ\data\config.cpp:971`). File listed in `work\pbo-listings\exp__dta__graphics.txt`.

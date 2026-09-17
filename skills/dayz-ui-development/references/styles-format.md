@@ -1,7 +1,7 @@
 # DayZ .styles System — Complete Reference (dissected from vanilla ground truth)
 
-Added 2026-07-04. Source: full parse of `gui\looknfeel\dayzwidgets.styles` (4,462 lines, 28 widget
-types, 130 styles) cross-checked against all 214 vanilla `.layout` files, plus the LBmaster_Core
+Added 2026-07-04. Source: full parse of `gui\looknfeel\dayzwidgets.styles` (4,462 lines in 1.29; 4,596 lines in 1.30 Exp, 28 widget
+types, 130+ styles) cross-checked against all vanilla `.layout` files, plus the LBmaster_Core
 shipped-mod example and `enwidgets.c` protos. Every stat independently reproduced by an adversarial
 verify pass (scripts `styles_audit.py` / `verify_styles_claim.py`, session scratchpad 2026-07-04).
 This resolves the skill's former largest known-unknown (`style` = 3rd most common layout attribute).
@@ -117,12 +117,53 @@ Highlights per type (full inventory in the styles file itself):
 - ButtonWidget (22): `Default, Colorable, Empty, EmptyHighlight, MainMenu, MenuDefault, Editor,
   InventoryActionMenu, OldStyle, DayZDefaultButton(+NoBorder/Bottom/Sides/Top/All/_DisabledState),
   DayZInventoryButton(All/Top/Bottom/Right/Left)`
-- PanelWidget (21): `rover_sim_colorable, blank, Outline, ColorablePanel, editor_quad,
+- PanelWidget (22+): `rover_sim_colorable, blank, Outline, ColorablePanel, editor_quad,
   editor_quad_dark, dashed, DayZDefaultPanel(+Left/Right/Top/Bottom/Sides), ToolbarWidget,
-  UIDefaultPanel, rover_sim_black(_2), InventoryPanel, EditorPanel, editor_selection`
+  UIDefaultPanel, rover_sim_black(_2), InventoryPanel, EditorPanel, editor_selection`,
+  **`ActionWidget` (DayZ 1.30 Exp)**
 - ProgressBarWidget: `Default, DayZLoading, Stamina, Quantity, Loading`
 - Styles exist for XComboBox/SmartPanel/Html/ThreeStateCheckbox/graph widgets too — the 4 graph
   widgets are the only types with styles but zero vanilla layout instantiation.
+
+### The `ActionWidget` Style for `PanelWidget` (Added in DayZ 1.30 Exp)
+
+In DayZ 1.30 Exp (`exp\gui\gui\looknfeel\dayzwidgets.styles:3700-3723`), a new style `ActionWidget`
+was introduced for `PanelWidget`:
+
+```xml
+<!-- [EXACT] exp\gui\gui\looknfeel\dayzwidgets.styles:3700 -->
+<Style Name="ActionWidget" Font="gui/fonts/AmorSerifPro-Bold" ImageSet="dayz_gui" Color="0">
+    <State Name="Disabled">
+        <Item Name="Bottom" Image="ActionWidgetGradientBottom" />
+        <Item Name="Center" Image="ActionWidgetGradientCenter" />
+        <Item Name="Left" Image="ActionWidgetGradientLeft" />
+        <Item Name="LeftBottom" Image="ActionWidgetGradientLeftBottom" />
+        <Item Name="LeftTop" Image="ActionWidgetGradientLeftTop" />
+        <Item Name="Right" Image="ActionWidgetGradientRight" />
+        <Item Name="RightBottom" Image="ActionWidgetGradientRightBottom" />
+        <Item Name="RightTop" Image="ActionWidgetGradientRightTop" />
+        <Item Name="Top" Image="ActionWidgetGradientTop" />
+    </State>
+    <State Name="Normal">
+        <Item Name="Bottom" Image="ActionWidgetGradientBottom" />
+        <Item Name="Center" Image="ActionWidgetGradientCenter" />
+        <Item Name="Left" Image="ActionWidgetGradientLeft" />
+        <Item Name="LeftBottom" Image="ActionWidgetGradientLeftBottom" />
+        <Item Name="LeftTop" Image="ActionWidgetGradientLeftTop" />
+        <Item Name="Right" Image="ActionWidgetGradientRight" />
+        <Item Name="RightBottom" Image="ActionWidgetGradientRightBottom" />
+        <Item Name="RightTop" Image="ActionWidgetGradientRightTop" />
+        <Item Name="Top" Image="ActionWidgetGradientTop" />
+    </State>
+</Style>
+```
+
+**What it does:** It builds a parametric 9-slice gradient frame around interaction widgets using cut slices
+from the `dayz_gui` imageset (`ActionWidgetGradient*`).
+In `exp\gui\gui\layouts\day_z_hud.layout:2294, 2477`, this replaces the legacy 1.29 pattern where interaction prompts
+were `ImageWidgetClass` loading `linear_gradient.edds` or `card_drop.edds`.
+In 1.30, interaction widgets (`item`, `interact`, `continuous_interact`, `single`, `continuous`) are `PanelWidgetClass`
+styled with `style ActionWidget`.
 
 ## 7. Custom-style recipe (production-proven, LBmaster_Core)
 

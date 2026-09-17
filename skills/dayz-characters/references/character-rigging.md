@@ -227,3 +227,13 @@ Reference scripts (LFInfectedBig): `3dmodel\LFInfectedBig\_export\{bl_export_rig
 | Mesh explodes | selection not in `skeletonBones[]`, or wrong skeleton name in `model.cfg` |
 | `Bone X doesn't exist` (RPT) | bone-name casing/underscore mismatch |
 | Limbs drift during anims | mesh not in canonical bind, or baked-scale drift (accepted for 1.2×) |
+
+## DayZ 1.30 Exp — bone indices and infected graphs
+
+(hasta 1.29: `skeletons.anim.xml` listed a numeric `index` per bone; community practice treated 250 as a hard global cap.)
+
+(desde 1.30 Exp: [CHANGELOG] the 250 global bone limit is removed. The global bone index is derived from the bone **name**, not from a value in `skeletons.anim.xml`. Most of that XML is unused; only the `lod` attribute is used, plus adding bones that were missing inside the `.xob`. `work/changelog-1.30-exp-modding.md:31,43`.)
+
+The extracted `hermit_newbindpose.xob` block still *contains* leftover `index = "10"` style attributes (`exp/anims_cfg/DZ/anims/cfg/skeletons.anim.xml:2-16`). Do not copy those numbers into a custom skeleton — they are unused. New 1.30 skeletons name bones only; the sole remaining `index` is `EntityPosition` `index = "0"` (`ovis_gmelini_skeleton.xob` at `:986-989`, `canis_familiaris_dobermann_skeleton.xob` at `:1047-1050`). Those animal skeletons are **not** the zed bind: a custom infected still weights to the 95-bone `hermit_newbindpose.xob` subset.
+
+Infected graph files: `infected.agr` is now an Enfusion `AnimSrcGraph` index over `.agf` subgraphs (`Locomotion.agf`, `Combat.agf`, `Interaction.agf`). See `references/dayz-1-30-characters.md`. Custom infected workspaces: open the 1.29 `.aw` in Workbench 1.30 and re-save ([CHANGELOG] tweet; converter untested).

@@ -690,3 +690,9 @@ These patterns solve:
 - Performance issues (allocating temporary objects every frame)
 
 Apply these patterns consistently across your UI controllers and views for stable, production-ready Enforce Script.
+
+## DayZ 1.30 Exp — `DoOnce` and action UI
+
+`class DoOnce` (`exp\scripts\scripts\3_Game\DoOnce.c:1`) is a process-wide "run this reflected method once per key". `DoOnce.Run(string key, Class target, string fnName, Param params = null)` (`:12`) sets the key then `g_Game.GameScript.CallFunctionParams`. Use it for one-shot init, not as a per-frame debounce (that is still the mission `OnUpdate` accumulator in SKILL.md timer rule 23). `HasRun` / `Clear` at `:30` / `:37`.
+
+Action HUD (not Dabs): vanilla can **show** an action whose `CanBeStarted()` is false (info panels, `ActionPartInfo.c:18-21`). The client manager will not `ActionStart` it (`ActionManagerClient.c:336-337`). Do not treat "visible on the cursor" as "F will run". Gate client-only presentation on `DayZPlayer.IsFirstRenderFrame()` (`dayzplayer.c:1186-1189`) when the sim ticks more than once per render frame.

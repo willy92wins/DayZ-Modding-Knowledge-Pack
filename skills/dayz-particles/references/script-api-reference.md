@@ -162,6 +162,7 @@ enum EGetParticleMode {
 
 ```
 // Singleton access (returns null on dedicated server!)
+// (until 1.29: skipped when IsDedicatedServer.) (since 1.30 Exp: skipped when IsHeadlessOrDedicatedServer — ParticleManager.c:65)
 static ParticleManager GetInstance();
 static void CleanupInstance();
 
@@ -283,3 +284,41 @@ protected bool StopParticle(out Particle particle)
 
 Key insight: `out Particle particle` ensures the caller's reference is nulled,
 preventing double-stop bugs.
+
+(until 1.29: FireplaceBase used `!g_Game.IsDedicatedServer()` as in the block above.) (since 1.30 Exp: vanilla is `!g_Game.IsHeadlessOrDedicatedServer()` at `FireplaceBase.c:1112` / `:1132`. Copy the 1.30 check for new helpers.)
+
+## DayZ 1.30 Exp: SurfaceInfo, vehicle VFX, synced spawn
+
+Signatures verified from 1.30 Exp sources. Full narrative: `dayz-1-30-particles.md`.
+
+`proto native bool IsHeadlessOrDedicatedServer();` — `exp\scripts\scripts\3_Game\Global\Game.c:1136` (comment at `:1132-1135`: also true for headed dedicated servers).
+
+`ParticleManager.GetInstance()` creates the global pool only when `!g_Game.IsHeadlessOrDedicatedServer()` (`ParticleManager.c:63-75`). (until 1.29: `!IsDedicatedServer()`.)
+
+Synced effecter API (existed in 1.29; 1.30 ceiling dust is a new caller):
+
+```
+static int CreateParticleServer(vector pos, EffecterParameters parameters);
+static void ReinitParticleServer(int effecterID, EffecterParameters parameters);
+static void ReactivateParticleServer(int effecterID);
+```
+
+`CreateParticleServer` lived in 1.29; 1.30 ceiling dust (`DustEffectCeilingHandlerSynced`) is the new high-traffic caller.
+
+```
+// EffectParticle surface + runtime override (1.30)
+void SelectFromSurface(string surface);              // leftover; vehicle VFX use SurfaceInfo
+void SelectFromSurface(SurfaceInfo surfaceInfo);
+void ParticleParamsOverride(notnull ParticleParamsOverrideData data);
+
+class ParticleParamsOverrideData {
+    ref TFloatArray m_FloatModifiers;  // [0]=speed, [1]=weight in vehicle dust/contact
+    void ClearAll();
+};
+```
+
+`Surface.GetStepsParticleID` / `GetWheelParticleID` are `[Obsolete("1.30: ...")]` wrappers around `SurfaceInfo.GetByName(name).GetStepParticleId()` / `GetWheelParticleId()`.
+
+`VehicleVFXComponent` (`VehicleVFXComponent.c:96`): `RegisterEffect(EVehicleVFXEffect, typename, VehicleVFXDataParams)`, `RegisterEffectGroup(...)`, `GetParticleParamsOverrideData`, `GetEffectGroupParticleParamsOverrideData`. Enums in `EVehicleVFXTypes.c`.
+
+`EffWheelSmoke.SetSurface(string)` is `[Obsolete("1.30: use SelectFromSurface instead")]`.

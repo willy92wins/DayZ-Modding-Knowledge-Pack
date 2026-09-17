@@ -1,6 +1,6 @@
 ---
 name: dayz-physics-engine
-description: "Use when: física DayZ, dBody, collision layers, player walks through my object, action/cursor does not appear, EOnContact, TransportHit, thrown/rolling objects. Not vehicle authoring: dayz-vehicles; not flight: dayz-aviation."
+description: "Use when: física DayZ, dBody, collision layers, player walks through my object, action/cursor does not appear, EOnContact, TransportHit, thrown/rolling objects, ragdoll, .ragdoll, fall damage, PhysicsSetSimpleDeath. Not vehicle authoring: dayz-vehicles; not flight: dayz-aviation."
 ---
 
 # DayZ Engine Physics (Enforce Script)
@@ -20,16 +20,20 @@ only when the task needs that depth:
 | `references/fisica-engine-deep-dive.md` | full dBody/dGeom/dJoint signatures, raycast family tables, surfaces, drop-physics lifecycle details |
 | `references/transport-netsync-vehiculos.md` | anything about why/how vehicles replicate, CarScript damage-by-momentum, Pawn/TransportOwnerState, push-action pattern |
 | `references/dano-transporthit.md` | damage pipeline (MDF), EEHitBy chain, the complete TransportHit flow line-by-line, hitzones, armor reality |
+| `references/dayz-1-30-ragdoll-and-fall.md` | 1.30 Exp: `.ragdoll` / `RagdollDef`, `PhysicsSetSimpleDeath`, unconscious wake-while-falling, fall-damage `CurveExp` |
 
 ## The 9 engine truths (prevent the classic bugs)
 
 1. **A body only collides where it exists.** The player capsule (CCT) is simulated client-side
-   (`3_game/human.c:1397-1418`). A rigid body created only on the server can never block a player —
+   (hasta 1.29: `3_game/human.c:1397-1418`; desde 1.30 Exp: `exp/scripts/scripts/3_Game/human.c:1426-1452`). A rigid body created only on the server can never block a player —
    the client's CCT has nothing to collide with. This is architectural; no layer mask fixes it.
 2. **The action cursor sees View Geometry, not physics.** Action targeting uses `RaycastRVProxy`
-   with default `ObjIntersectView` (`4_world/classes/useractionscomponent/actiontargets.c:214-219`,
-   default at `3_game/global/dayzphysics.c:88`). No View Geometry LOD in the .p3d → no action, no
-   admin-tool selection, regardless of any physics body.
+   with default `ObjIntersectView` (hasta 1.29: `4_world/classes/useractionscomponent/actiontargets.c:214-219`;
+   desde 1.30 Exp: `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`; default still
+   `3_game/global/dayzphysics.c:88`). No View Geometry LOD in the .p3d → no action, no
+   admin-tool selection, regardless of any physics body. Truth #2 still holds in 1.30. (desde 1.30 Exp:
+   liquid surfaces with no object are also scored action targets at utility 0.01 —
+   `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:532-534`; `ActionTarget` ctor takes `surfaceName` at `:125-138`.)
 3. **`dSetInteractionLayer` is GLOBAL.** It edits the world's layer↔layer interaction matrix
    (`1_core/physics/physicsworld.c:14-21`); the first parameter only resolves the world. To stop two
    specific entities from colliding use the surgical pair-block instead:
@@ -57,7 +61,9 @@ only when the task needs that depth:
    **15 s** (n=2, `dBodyIsDynamic` polled at 4 Hz flips at t=15.00); `SetDynamicPhysicsLifeTime(3600)`
    is honored (still dynamic past a 300 s watchdog).
 8. **A player's EOnContact only reacts to Transport.** `DayZPlayerImplement.EOnContact` casts
-   `Transport.Cast(other)` and ignores everything else (`4_world/entities/dayzplayerimplement.c:3814-3829`).
+   `Transport.Cast(other)` and ignores everything else (hasta 1.29: `4_world/entities/dayzplayerimplement.c:3814-3829`;
+   1.29 real `EOnContact` is `stable-1.29/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:3822-3836`;
+   desde 1.30 Exp: `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:3958-3973`).
    A custom ItemBase that should hurt players must detect the contact itself and call
    `target.ProcessDirectDamage(...)` from its own `EOnContact`.
 9. **Script impulses push corpses, not living players.** Vanilla applies `dBodyApplyImpulse` to the
@@ -142,7 +148,7 @@ Two separate worlds — pick the right one:
 `CollisionFlags` (FIRSTCONTACT, NEARESTCONTACT, ONLYSTATIC, ONLYDYNAMIC, ONLYWATER, ALLOBJECTS) —
 `1_core/proto/endebug.c:140-148`. Overlap callback: `CollisionOverlapCallback.OnContact(IEntity, Contact)`
 (`dayzphysics.c:115-121`). Action-cursor ground fallback uses `RayCastBullet` with
-`ROADWAY|TERRAIN|WATERLAYER` (`actiontargets.c:329-331`).
+`ROADWAY|TERRAIN|WATERLAYER` (hasta 1.29: `actiontargets.c:329-331`; desde 1.30 Exp: `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:383-384`).
 
 ### Contacts
 
@@ -162,9 +168,9 @@ one frame" (`4_world/entities/vehicles/carscript.c:1453`): buffer contacts, proc
 proto native void EnableCollisionsWithCharacter(bool state);   // :21
 proto native void ThrowPhysically(DayZPlayer player, vector force, bool collideWithCharacters = true); // :26
 // 3_game/entities/object.c
-proto native void CreateDynamicPhysics(int interactionLayers); // :462  (never called by vanilla script)
-proto native void EnableDynamicCCD(bool state);                // :463
-proto native void SetDynamicPhysicsLifeTime(float lifeTime);   // :464
+proto native void CreateDynamicPhysics(int interactionLayers); // hasta 1.29: :462; desde 1.30 Exp: exp/scripts/scripts/3_Game/Entities/Object.c:456  (never called by vanilla script)
+proto native void EnableDynamicCCD(bool state);                // hasta 1.29: :463; desde 1.30 Exp: :457
+proto native void SetDynamicPhysicsLifeTime(float lifeTime);   // hasta 1.29: :464; desde 1.30 Exp: :458
 ```
 Lifecycle: throw (`hand_actions.c:62-88`, server+owner) · inventory dump uses
 `ThrowPhysically(null, force, false)` (`4_world/static/miscgameplayfunctions.c:1164-1220`) · admin
@@ -176,9 +182,10 @@ by naming (inference — internal assignment not script-visible).
 
 ### Player CCT (`3_game/human.c`)
 
-`PhysicsIsFalling` :1397, `PhysicsGetFloorEntity` :1400, `PhysicsGetLinkedEntity` :1403,
+`PhysicsIsFalling` (hasta 1.29: :1397; desde 1.30 Exp: `exp/scripts/scripts/3_Game/human.c:1428`, comment `:1426-1427` "returns true if the ragdoll is moving greater than 1m/s"), `PhysicsGetFloorEntity` (hasta 1.29: :1400; desde 1.30 Exp: :1431), `PhysicsGetLinkedEntity` :1403,
 `PhysicsGetVelocity` :1410, `PhysicsEnableGravity` :1412, `PhysicsSetSolid` :1414-1415,
-`PhysicsSetRagdoll` :1418 ("sets and synchronize interaction layers RAGDOLL..."),
+`PhysicsSetRagdoll` (hasta 1.29: :1418 comment at `stable-1.29/scripts/scripts/3_Game/human.c:1417-1418`; desde 1.30 Exp: `:1451`, catalogued as old death-state system),
+`PhysicsSetSimpleDeath` (desde 1.30 Exp: `:1449`), `PhysicsIsRagdoll` (desde 1.30 Exp: `:1452`; also `HumanCommandUnconscious.IsRagdoll` at `:647`),
 `CheckFreeSpace` :1354, `CollisionMoveTest` :1357, `LinkToLocalSpaceOf` :1361.
 
 ### Joints
@@ -236,8 +243,8 @@ override void EOnContact(IEntity other, Contact extra)
 }
 ```
 `damageCoef` IS the velocity: real damage = base damage of ammo `"TransportHit"` × coef
-(`entityai.c:4086-4116`). The ammo lives in binary game data, not scripts. Vanilla resets its
-one-hit guard in the victim's `EEHitBy` (`dayzplayerimplement.c:1551`). Corpse launch only:
+(`entityai.c:4086-4116`; desde 1.30 Exp: `RegisterTransportHit` at `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4111`, Motorbike branch `:4143-4160`). The ammo lives in binary game data, not scripts. Vanilla resets its
+one-hit guard in the victim's `EEHitBy` (`dayzplayerimplement.c:1551`; desde 1.30 Exp: `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:1567`). Corpse launch only:
 `impulse = 40 * velocity; impulse[1] = 60; dBodyApplyImpulse(victim, impulse);` gated by
 `IsDamageDestroyed()` (truth #9). Full pipeline: `references/dano-transporthit.md`.
 
@@ -293,10 +300,12 @@ on sleeping bodies are lost.
 
 Origen: LFSlidingFloor spike B, test in-game 2026-06-10 (script logs con telemetría completa). Actualiza la expectativa previa "sin uso público sobre vivos / probablemente no simula":
 
+(desde 1.30 Exp: ragdoll is no longer a fully opaque native blob — vanilla ships `RagdollDef` in `exp/characters_bodies/DZ/characters/bodies/human.ragdoll`. The live-player empirical notes below still apply; the new data format, Workbench editor, and `PhysicsSetSimpleDeath` are in `references/dayz-1-30-ragdoll-and-fall.md`.)
+
 - **SERVER-SIDE SÍ SIMULA**: con (1) DisableSimulation(false) antes del toggle (paridad con el flujo de muerte, dayzplayerimplement.c:726), (2) pre-wake `dBodyActive(p, ActiveState.ACTIVE)` + `dBodyDynamic(p, true)`, (3) `dBodyApplyImpulse(p, V*masa)` — dBodyGetMass devolvió masa real del player (87.5 kg) y el impulso prendió a la primera (sin necesidad de SetVelocity). El cuerpo deslizó 77.6 m a 4-6.7 m/s siguiendo el terreno (cuestas arriba incluidas — fricción efectiva bajísima).
 - **OWNER CLIENT NO**: el avatar local nunca ragdollea — sigue de pie y controlable (movimiento client-authoritative). Desync total server-owner. Ragdoll-en-vivo solo es viable end-to-end con sync custom de posición (ver LL-138).
 - El toggle `PhysicsSetRagdoll(false)` NO rubber-bandea: la entidad queda exactamente donde terminó el cuerpo (pos pre == post, verificado).
-- **PELIGRO get-up**: `StartCommand_Unconscious(0)` + `WakeUp` a los 0.5 s dejó al player server-side 40 m BAJO el terreno, con caída al vacío, uncon real y muerte. La protección vanilla anti-wake-early es de 2 s (playerbase.c:3169-3172); no se re-iteró (el desync ya invalidaba el enfoque).
+- **PELIGRO get-up**: `StartCommand_Unconscious(0)` + `WakeUp` a los 0.5 s dejó al player server-side 40 m BAJO el terreno, con caída al vacío, uncon real y muerte. La protección vanilla anti-wake-early es de 2 s (hasta 1.29: playerbase.c:3169-3172; 1.29 real: `stable-1.29/scripts/scripts/4_World/Entities/ManBase/PlayerBase.c:3184` `m_UnconsciousTime > 2`). (desde 1.30 Exp: the 2 s guard remains at `exp/scripts/scripts/4_World/Entities/ManBase/PlayerBase.c:3420` AND vanilla additionally refuses wake-up while falling: `if (false == PhysicsIsFalling(false))` before `hcu.WakeUp()` at `:3423-3431`. Custom 0.5 s wake paths that skip this still risk burying the body.)
 
 ## Cuerpos script sobre items vanilla — evidencia empírica BenchRE (added 2026-08-26)
 
@@ -326,3 +335,27 @@ de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de or
 la entrada completa vive allí. No quites la cita: el índice detecta la promoción por ella.
 
 - **LL-014** — Para cuerpos rodantes, usa damping lineal y angular muy bajos pero no nulos y ajusta el sleeping threshold. No minimices la fricción de contacto: vive en `.bisurf`; si desliza sin girar, súbela, y si vibra o no para, sube damping.
+
+## DayZ 1.30 Exp (build 1.30.164014)
+
+What changes:
+- Ragdoll is data-driven. Vanilla ships `RagdollDef` with 11 bones, capsules/sphere, `flesh.bisurf`, joints (`exp/characters_bodies/DZ/characters/bodies/human.ragdoll:1-202`). Workbench adds a ragdoll editor. [CHANGELOG] `work/changelog-1.30-exp-modding.md:47`.
+- Death-state handling: (hasta 1.29: `DayZPlayerImplement` called `PhysicsSetRagdoll(true)` at `stable-1.29/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:736`) (desde 1.30 Exp: the non-command death branch calls `PhysicsSetSimpleDeath(true)` at `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:745`). `PhysicsSetRagdoll` / `PhysicsIsRagdoll` remain (`exp/scripts/scripts/3_Game/human.c:1451-1452`).
+- Unconscious ragdoll unhooks vehicle re-attach: `if (hcu && hcu.IsRagdoll()) m_TransportCache = null` (`exp/scripts/scripts/4_World/Entities/ManBase/PlayerBase.c:3346-3350`).
+- Fall damage is exponential `CurveExp` with much lower height gates (health from **2 m**, shock from **0 m**, broken legs from **3 m**). `Randomize` no longer rolls a lethal 1.0 coef back down. Detail in `references/dano-transporthit.md` and `references/dayz-1-30-ragdoll-and-fall.md`.
+- Action cursor still uses View Geometry (`RaycastRVProxy` + `ObjIntersectView`). Liquid surfaces without an object are now targets (utility 0.01).
+- [CHANGELOG] hiding physics components of static meshes no longer leaves a residual collision at the origin (`work/changelog-1.30-exp-modding.md:35`). No script counterpart.
+
+What breaks:
+- `modded DayZPlayerImplementFallDamage` that copies 1.29 `Math.InverseLerp` thresholds: 2.5–4 m falls now cause shock and can break legs.
+- Custom uncon wake that calls `hcu.WakeUp()` while `PhysicsIsFalling(false)` is true: vanilla now refuses; skipping the guard can still bury the body (1.29 empirical).
+- Assuming player ragdoll collision/mass is 100% native and uneditable: you can now author `.ragdoll` (bind path is a `dayz-characters` concern).
+
+Migration checklist:
+- [ ] If you override fall damage: port `CurveExp` + 1.30 height constants; keep `if (pValue == 1) return pValue;` in `Randomize`.
+- [ ] Custom humanoids: ship a `.ragdoll` next to the body; do not assume `LoadRagdollFile` exists in script ([UNVERIFIED] — no such call in extracted scripts).
+- [ ] Custom uncon wake: keep `m_UnconsciousTime > 2` AND `PhysicsIsFalling(false) == false`.
+- [ ] Action targeting over water: expect a surface target even with no object (`ActionTarget.GetSurfaceLiquidType`).
+- [ ] Death path: `PhysicsSetSimpleDeath(true)` is the script-visible non-ragdoll death branch.
+
+Detail: `references/dayz-1-30-ragdoll-and-fall.md`. Action-cursor line drift also patched in `references/fisica-engine-deep-dive.md`.

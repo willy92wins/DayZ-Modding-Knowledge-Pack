@@ -1,6 +1,6 @@
 ---
 name: dayz-persistence
-description: Use when designing, implementing, debugging, or auditing DayZ persistence — OnStoreSave/OnStoreLoad entity streams, CF ModStorage and storageVersion, persistent-format migration or rollback, sidecar JSON, recoverable file replacement or atomic-save claims, and player-data corruption after save or restart. Invoke for deprecated JSON loading APIs, future or truncated versions, and uninstall-safe mod data.
+description: Use when designing, implementing, debugging, or auditing DayZ persistence — OnStoreSave/OnStoreLoad entity streams, CF ModStorage and storageVersion, persistent-format migration or rollback, sidecar JSON, recoverable file replacement or atomic-save claims, and player-data corruption after save or restart. Invoke for deprecated JSON loading APIs, future or truncated versions, uninstall-safe mod data, CombinationLock stream v143, code lock, ThermalBiasHandler, GAME_STORAGE_VERSION, and BunkerBroadcastPersistenceStorage.bin.
 ---
 
 # DayZ Persistence
@@ -38,6 +38,11 @@ width: the optional energy component writes nine fields or none, so a fixed
 offset after `super` is a latent alignment bug
 (`VANILLA/3_game/entities/entityai.c:2928-2959`). If the mod is removed, no
 remaining code re-emits its appended bytes.
+(hasta 1.29: that EntityAI prefix was energy-or-nothing plus `SaveVariables`;
+`GAME_STORAGE_VERSION` was 142.)
+(desde 1.30 Exp: energy is still optional, but `HandleStoreSave` runs first and
+`PlayerBase` appends `ThermalBiasHandler` with no version gate. See
+[references/dayz-1-30-persistence.md](references/dayz-1-30-persistence.md).)
 
 Read the complete contract in
 [references/vanilla-stream.md](references/vanilla-stream.md).
@@ -121,3 +126,65 @@ Stop and resolve the violation before recommending or shipping persistence work:
 6. A test covers only the happy path; future, truncated, rollback, and injected
    I/O failures remain unexercised.
 7. Promotion reports `PROMOTION-UNROUTED` or `PROMOTION-DRIFT`.
+
+## DayZ 1.30 Exp (build 1.30.164014)
+
+Verified against `exp\scripts\scripts\` (1.30.164014) vs `stable-1.29`. Full
+`[EXACT]` bodies live in
+[references/dayz-1-30-persistence.md](references/dayz-1-30-persistence.md).
+Worked 1.30 cells for CombinationLock, ThermalBiasHandler, Rebuilding, and
+BunkerBroadcast are in
+[references/migration-matrix.md](references/migration-matrix.md).
+Mission-file exception: [references/sidecar-files.md](references/sidecar-files.md).
+
+### What changes
+
+- `GAME_STORAGE_VERSION` is 144 (`3_Game\Global\Game.c:5`). `SaveVersion()` is
+  at `:435`. CombinationLock and EntityAI construction load branch on
+  `version >= 143`; a 1.29 record (`142`) skips those new fields.
+- `EntityAI.OnStoreSave` calls `ConstructionBasic.HandleStoreSave` before
+  energy (`3_Game\Entities\EntityAI.c:2887-2891`). Load of that block is
+  `version >= 143` (`:2955-2961`). Empty for `BaseBuildingBase`; `Rebuilding`
+  writes `REBUILDING_STORAGE_VERSION` plus ten ints.
+- `PlayerBase` MP save appends `m_ThermalBiasHandler.OnStoreSave` after the
+  arrow manager (`4_World\Entities\ManBase\PlayerBase.c:7395`). Load has **no**
+  version gate (`:7520-7524`). Payload is `float m_TemporaryResistanceTime`
+  (`4_World\Classes\ThermalBiasHandler.c:67-77`).
+- `CombinationLock` writes `m_CombinationInside` and reads it at
+  `version >= 143` (`4_World\Entities\ItemBase\CombinationLock.c:128-177`).
+- New `DigitalCodeLock` streams PIN / locked / door index through
+  `CodeLockComponent` (`ItemBase\CodeLock.c:469-482`;
+  `Classes\CodeLockComponent.c:257-277`).
+- New `$mission:BunkerBroadcastPersistenceStorage.bin` via `FileSerializer`
+  (`Classes\BunkerBroadcastHandler.c:16-82`). Not the character/world bin.
+
+### What breaks
+
+- A `PlayerBase` override that copies the 1.29 MP suffix or skips `super`
+  fails with `---- failed to load ThermalBiasHandler, read fail  ----`.
+- A `CombinationLock` `OnStoreLoad` that assumes two ints after `super`
+  desyncs from v143 onward.
+- Seeking a fixed offset past `super` on a `Rebuilding` house: construction
+  bytes now sit in front of energy.
+- Treating the bunker `.bin` as `JsonFileLoader` or as an atomic replace.
+  `DeleteFile`/`CopyFile` only work on `$profile:` and `$saves:`
+  (`1_Core\proto\EnSystem.c:527-531`).
+
+`JsonFileLoader` and CF ModStorage line numbers in this extract still match
+the 1.29 skill. Digest I's `PlayerBase.c:941-950` cite was volcanic-area ticks,
+not persistence.
+
+### Migration checklist
+
+- [ ] Keep `super.OnStoreSave` / `super.OnStoreLoad` on PlayerBase,
+      CombinationLock, DigitalCodeLock, and any EntityAI with a construction
+      component.
+- [ ] CombinationLock: `if (version >= 143) ctx.Read(m_CombinationInside)`
+      (or rely on `super`).
+- [ ] Do not treat a 1.29 `player.bin` on 1.30 as a successful thermal
+      legacy migrate — vanilla always reads the new float on MP load.
+- [ ] Do not apply `Rebuilding`'s ten ints to `BaseBuildingBase` (still three
+      ints + `m_HasBase` at `BaseBuildingBase.c:420-429`).
+- [ ] Do not clone vanilla's unchecked `$mission:` `FileSerializer` overwrite.
+- [ ] Classify CombinationLock 142→144 as gated known/legacy; classify
+      ThermalBias 142→144 as failed/truncated unless Bohemia wipes characters.

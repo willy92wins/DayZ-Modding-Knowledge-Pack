@@ -123,6 +123,8 @@ class CfgVehicles
 };
 ```
 
+(since 1.30 Exp [CHANGELOG]) House-based classes may set `disableSimulation = 1;` so the building does not tick. Engine API: `Entity.DisableSimulation` / `GetIsSimulationDisabled` in `exp\scripts\scripts\1_Core\proto\EnEntity.c:3-6`. The config key itself was not found in extracted 1.30 configs (`[UNVERIFIED]`). See `dayz-1-30-model-pipeline.md`.
+
 ## config.cpp for DayZ Buildings
 
 All buildings inherit from `HouseNoDestruct`. The class name MUST follow the pattern
@@ -304,3 +306,5 @@ BinPBO.exe -SIGN my_addon @MyMod\addons\my_addon.pbo
 2. Add `-mod=@MyMod` to launch parameters
 3. Use the in-game admin tools or script to spawn the object
 4. Verify: visual appearance, collision, bullet interaction, animations, sounds
+
+(since 1.30 Exp [CHANGELOG]) `-mod` also accepts an unpacked source folder (not only a packed `@Mod` with PBOs). Pair with `-cacheP3D=0` / `-cacheP3D=1` and `-resolveFilePatchingUsingEnfusion=0` / `-resolveFilePatchingUsingEnfusion=1`. See `dayz-1-30-pbo-build.md` and `dayz-1-30-test-ingame.md`.

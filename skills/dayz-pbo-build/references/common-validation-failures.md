@@ -54,3 +54,8 @@ hiddenSelectionsTextures[] = {"tex1.paa", "tex2.paa"};        // 2 textures (one
 hiddenSelectionsMaterials[] = {"mat1.rvmat", "mat2.rvmat"};   // 2 materials (one per selection)
 // Total items in hiddenSelections (2) must match texture count (2) AND material count (2)
 ```
+
+### FAIL: Binarizer stops — member defined multiple times (DayZ 1.30 Exp)
+**(until 1.29:** duplicate **properties** inside one class were last-write-wins / silent.) **(since 1.30 Exp [CHANGELOG]:** `work\changelog-1.30-exp-modding.md:19` — "Binarizer will now stop binarising if a member is defined multiple times in a config file".)
+**Cause:** The same member (`scope`, `displayName`, `weight`, `hiddenSelections[]`, an inner class, …) appears twice in one class body. Duplicate **class names** were already a FAIL (SKILL.md check 2); duplicate **members** are now a hard binarize stop too.
+**Fix:** Delete or merge the extra assignment so each member appears once per class block. Then rebuild. Detail: `references/dayz-1-30-pbo-build.md`.

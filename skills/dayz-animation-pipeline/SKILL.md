@@ -230,22 +230,22 @@ cannot be "tweaked out" of a corrupted file.
 Cross-references already covered in this skill:
 
 - `vehicle-rider-ik-pose.md` §"Frame-of-reference caveat" addresses Quirk 6
-  from the pose side (the anchor placement step). The rebake step is what
-  Quirk 6 covers; both must agree on the frame in use.
+   from the pose side (the anchor placement step). The rebake step is what
+   Quirk 6 covers; both must agree on the frame in use.
 - `selection-painter-for-actions.md` §"Pipeline (start to finish)" step 6
-  calls into a `p3d_update.py`-style writer that needs all five quirks. The
-  LFQuad case (`LFQuad_dev/task4_handoff/p3d_update.py`) is the canonical
-  reference.
+   calls into a `p3d_update.py`-style writer that needs all five quirks. The
+   LFQuad case (`LFQuad_dev/task4_handoff/p3d_update.py`) is the canonical
+   reference.
 - `dual-entry-action-pattern.md` §"Bail-out for non-LFQuad" relies on
-  `crewdriver` / `crewcodriver` having been overwritten in place (Quirk 4).
-  If the rebake step skipped that, the modded action silently sees vanilla
-  positions and L/R routing degrades.
+   `crewdriver` / `crewcodriver` having been overwritten in place (Quirk 4).
+   If the rebake step skipped that, the modded action silently sees vanilla
+   positions and L/R routing degrades.
 - `dayz-debinarizer-inspector-memory-selection-bugs.md` (vault knowledge note)
-  covers an adjacent failure mode on the READ side: ODOL → MLOD round-trip can
-  preserve selection names but lose membership (LL-018). py3d 1.0.0 Quirks 1,
-  2 and 5 reproduce a *similar* symptom on the WRITE side: name present,
-  body empty or corrupted. If you see name-present-body-empty after either
-  step, check the matching skill before assuming the source `.p3d` is wrong.
+   covers an adjacent failure mode on the READ side: ODOL → MLOD round-trip can
+   preserve selection names but lose membership (LL-018). py3d 1.0.0 Quirks 1,
+   2 and 5 reproduce a *similar* symptom on the WRITE side: name present,
+   body empty or corrupted. If you see name-present-body-empty after either
+   step, check the matching skill before assuming the source `.p3d` is wrong.
 
 ## Locomoción en scripted commands: GetCurrentStance/GetCurrentMovement conducen el grafo (added 2026-06-11)
 
@@ -282,3 +282,36 @@ la entrada completa vive allí. No quites la cita: el índice detecta la promoci
 - **LL-102** — Usa `source="steeringwheel"`; `DrivingWheel` es el nombre habitual de la clase, no el source. Replica la jerarquía estándar `damper → steering → wheel`; no intentes alimentar una segunda animación desde el source de una rueda.
 - **LL-171** — Antes de ajustar una pose offline, enumera los determinantes reales del estado in-game: origen del arma, bone remap, ikpose, geometría y stance/aim-space. Construye el visor desde esos datos; no encadenes heurísticas visuales.
 - **LL-189** — Para articulaciones resueltas por IK en runtime, vuelca posiciones de huesos model-space desde el cliente y reconstruye la pose offline desde posiciones. No adivines el swivel ni dependas de rotaciones raw con convención no verificada.
+
+---
+
+## DayZ 1.30 Exp (build 1.30.164014) — What changes, breaking points & migration
+
+### 1. Modular Animation Graphs (.agf Submodules) & Schema Evolution
+- **Modular Graphs**: Large monolithic animation graph setups are replaced by modular subgraphs (`.agf`), such as `Vehicles.agf` (3,654 lines) and `wolf_maingraph.agf`. The master graph (`.agr`) references submodules via `include` directives.
+- **Node Graph Format**: Graph nodes use Enfusion class syntax, such as `ControlTemplate AnimSrcGCT` and procedural transform nodes like `AnimSrcNodeProcTransform`.
+- **Class-Based AnimSet Sources**: Legacy `$animsetinstance` blocks transition to `AnimSetInstanceSource` (with typed `IKPoses`, `Runtimes`, and `Animations`), while templates transition to `AnimSetTemplateSource` with explicit `AnimSetTemplateSource_AnimationGroup`.
+
+### 2. Removal of the 250 Bone Limit & Dynamic Bone Hashing
+- **No Global Bone Cap**: The engine no longer limits skeletons to 250 global bones.
+- **Dynamic Hashing**: Bone indices are hashed directly from bone names at engine boot. In `skeletons.anim.xml`, manual `index` attributes are removed (retained only on `EntityPosition`), simplifying multi-mod skeleton coexistence.
+- **Physical Ragdoll Skeletons**: Physics bone rosters (e.g. `characters/bodies/human.ragdoll`, 11 physical bones, 73.8 kg) remain aligned with the primary skeleton hierarchy.
+
+### 3. Script Animation API Table (1.30 Additions)
+
+| Script API / Hook (declaration as in the file) | `exp\scripts\scripts\...:line` | Purpose / Mechanics |
+|---|---|---|
+| `proto native void SetAnimationInstanceByName(string animationInstanceName, float blendingTime);` | `exp\scripts\scripts\3_Game\human.c:1384` | Switches the player's animation instance (.asi profile) at runtime with a blend time; no entity recreation. Dangerous in multiplayer, see the source comment. |
+| `proto native void SetErectSpeedLimit(bool bShouldDisable, int pMaxErectSpeed = DayZPlayerConstants.MOVEMENTIDX_SPRINT);` | `exp\scripts\scripts\3_Game\human.c:230` | `HumanInputController`: caps the erect movement speed (sibling `SetCrouchSpeedLimit`/`SetProneSpeedLimit`). |
+| `proto native void DisableProneCameraHorizontalRotation(bool pDisable);` | `exp\scripts\scripts\3_Game\human.c:242` | `HumanInputController`: locks horizontal camera rotation in prone (siblings for erect/crouch, note the vanilla typo `DisableErectCameratHorizontalRotation`). |
+| `proto native bool IsTag(TAnimGraphTag iTag);` | `exp\scripts\scripts\3_Game\human.c:319` | `HumanAnimInterface`: queries an animation tag bound with `BindTag` on the fixed tick (changelog item). |
+| `bool IsTransitioning()` | `exp\scripts\scripts\3_Game\human.c:735` | `HumanCommandVehicle`: true while a get-in/get-out/seat-switch transition is playing. |
+| `proto native void PhysicsSetSimpleDeath(bool pEnable);` | `exp\scripts\scripts\3_Game\human.c:1449` | Toggles the simple physics death simulation. |
+| `proto native bool IsFirstRenderFrame();` | `exp\scripts\scripts\3_Game\dayzplayer.c:1189` | `DayZPlayer`: true on the first rendered frame after a catch-up, to limit per-frame work (changelog item). |
+
+### 4. 1.29 -> 1.30 Animation Migration Checklist
+- [ ] **Audit `skeletons.anim.xml`**: Strip hardcoded `index` attributes from custom skeleton declarations (except `EntityPosition`), relying on engine bone name hashing.
+- [ ] **Adopt `.agf` Modularity**: Break down custom monolithic animation graphs into `.agf` submodules included by the main `.agr` workspace.
+- [ ] **Dynamic Grip/Stance Profiles**: Migrate attachment-based grip and weapon stance hacks to native `SetAnimationInstanceByName(asiName)` within `OnItemInHandsChanged`.
+- [ ] **Directional Boarding Support**: For custom vehicles and motorbikes, implement `HasDirectionalInOutAction()` and `GetSeatAnimationTypeDirectional(posIdx, directionIndex)` to take advantage of native directional entry/exit without scripted snaps.
+- [ ] **Workbench 2021 Filepatching**: Use `-resolveFilePatchingUsingEnfusion=1` in Workbench launch parameters when iterating on loose `.anm` and `.asi` resources.

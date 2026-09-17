@@ -283,6 +283,8 @@ class EffectSound : Effect
 ```
 [scripts\3_game\effects\effectsound.c — completo]
 
+(desde 1.30 Exp: si `m_SoundFadeInDuration > 0`, `Event_OnSoundWaveStarted` llama `SetSoundVolume(0)` para evitar un pico de un frame a volumen pleno — `exp\scripts\scripts\3_Game\Effects\EffectSound.c:549-555`. `[EXACT]` en `references/dayz-1-30-sound.md`.)
+
 ### Object.PlaySoundSet (scripts/3_game/entities/object.c)
 
 Método de conveniencia en cualquier Object para reproducir parented:
@@ -297,6 +299,9 @@ bool StopSoundSet(out EffectSound sound);
 [scripts\3_game\entities\object.c:1243-1321]
 
 **IMPORTANTE:** Todos tienen guard `if (g_Game && !g_Game.IsDedicatedServer())` — **solo reproducen en cliente**. [scripts\3_game\entities\object.c:1245]
+
+(hasta 1.29 / sigue en 1.30 para `Object.PlaySoundSet`: el guard real está en `object.c:1249`.)
+(desde 1.30 Exp: los handlers de item/jugador usan `!g_Game.IsHeadlessOrDedicatedServer()` — `ItemSoundHandler.c:121`, `PlayerSoundManager.c:105`, `DayZPlayerCfgSounds.c:335`. Proto nuevo: `Game.c:1132-1136`. `PlaySoundSet` en `Object` **no** migró.)
 
 ### g_Game.CreateSoundOnObject
 
@@ -440,6 +445,12 @@ Gestionados en `DayZPlayerImplement.OnStepEvent`:
 ### Archivos relevantes
 - `scripts/4_world/entities/manbase/dayzplayer/dayzplayercfgsounds.c` — [NO VERIFICADO existencia exacta, path deducido por estructura vanilla]
 - Sonidos de voz/VON: `AbstractSoundScene.SetSpeechExVolume` + WaveKind.WAVESPEECHEX
+- (desde 1.30 Exp: el path existe como `exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgSounds.c`. El registro de sonidos de attachment/partículas usa `IsHeadlessOrDedicatedServer()` en `:335`.)
+- (desde 1.30 Exp: el path existe como `exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgSounds.c`. El registro de sonidos de attachment/partículas usa `IsHeadlessOrDedicatedServer()` en `:335`.)
+
+### HEAVY_BREATHING (desde 1.30 Exp)
+
+Nuevo `EPlayerSoundEventID.HEAVY_BREATHING` (`PlayerSoundEventHandler.c:38`), registrado con `RegisterState(new HeavyBreathEvent1())` (`:99`). Clase `HeavyBreathEvent1` en `HeavyBreathEvents.c:21-27` con `m_SoundVoiceAnimEventClassID = 907`. Vanilla lo dispara desde silicosis (`Silicosis.c:105`). `[EXACT]`: `references/dayz-1-30-sound.md`.
 
 ---
 
@@ -469,6 +480,8 @@ enum EDynamicMusicPlayerCategory
 
 **Para mods:** se puede registrar una ubicación dinámica (p.ej. zona de evento) con `RegisterDynamicLocation`, que reproduce tracks de `LOCATION_DYNAMIC` cuando el jugador entra. El track es un SoundSet normal con `WaveKind.WAVEMUSIC`.
 
+(desde 1.30 Exp: `RegisterDynamicLocation` sigue en `DynamicMusicPlayer.c:289`. Cada mundo instancia su `DynamicMusicPlayerRegistry*` — Nasdara en `missionBase.c:130-132`. Zonas estáticas rectangulares: `RegisterTrackLocationStaticMultiRectangle` (`DynamicMusicPlayerRegistry.c:224`, llamadas en `DynamicMusicPlayerRegistryNasdara.c:39-67`). 15 pistas de tiempo DAY/DUSK/DAWN/NIGHT, no horarias (`:71-93`). `DynamicMusicPlayerTimeOfDay.Translate` mapea MORNING/NOON/AFTERNOON→DAY y EVENING→NIGHT (`DynamicMusicPlayer.c:1053-1070`).)
+
 ---
 
 ## 8. NoiseSystem
@@ -482,6 +495,7 @@ class NoiseSystem
         float external_strenght_multiplier = 1.0);
     proto void AddNoiseTarget(vector pos, float lifetime, NoiseParams noise_params,
         float external_strength_multiplier = 1.0);
+    proto native float GetEnvironmentNoiseReduction(vector pos); // desde 1.30 Exp; Noise.c:13
 }
 
 class NoiseParams
@@ -506,7 +520,9 @@ void AddNoise(NoiseParams noisePar, float noiseMultiplier = 1.0)
 ```
 [scripts\4_world\entities\dayzplayerimplement.c:3204-3208]
 
-El multiplicador se reduce con lluvia/viento mediante `NoiseAIEvaluate.GetNoiseReduction(g_Game.GetWeather())`. Los pasos usan tipos de ruido cargados de `DayZPlayerType.GetNoiseParamsLandLight()/LandHeavy()`. Los disparos usan `class NoiseShoot { strength = 82; type = "shot"; }` en config de arma [IMPWMODPart2\Weapons\Automatic\MCXSpear\config.cpp:73-77].
+(hasta 1.29: El multiplicador se reduce con lluvia/viento mediante `NoiseAIEvaluate.GetNoiseReduction(g_Game.GetWeather())`.)
+(desde 1.30 Exp: obsoleto. `GetEnvironmentNoiseReduction(pos)` es la fuente de verdad de la IA (`Noise.c:13`). `GetNoiseReduction` / `GetNoiseReductionByWeather` están `[Obsolete]` (`SensesAIEvaluate.c:92`, `Weather.c:454`). Los pasos ya no pasan multiplicador climático: `GetNoiseMultiplier(this)` (`DayZPlayerImplement.c:3472-3474`). `AddNoise` de infectados no lleva clima (`ZombieBase.c:597-600`). `class AIParams` añade nieve/niebla/viento/sandstorm (`exp\dz\DZ\data\aiconfigs\config.cpp:19-27`). No pases un multiplicador que ya incluya clima: el motor atenúa nativamente y duplicarías la reducción.)
+Los pasos usan tipos de ruido cargados de `DayZPlayerType.GetNoiseParamsLandLight()/LandHeavy()`. Los disparos usan `class NoiseShoot { strength = 82; type = "shot"; }` en config de arma [IMPWMODPart2\Weapons\Automatic\MCXSpear\config.cpp:73-77].
 
 `AddNoiseTarget` permite crear un "decoy" de ruido en posición fija con duración — útil para granadas aturdidoras o señuelos.
 
@@ -537,6 +553,9 @@ Controladores disponibles (documentados en el comment del proto):
 | Volumen global por script de un sonido específico | No hay API tipo `SetMasterVolume` para instancias individuales más allá de `SetVolumeRelative(0-1)` en `AbstractWave`. El "volumen" del shader es fijo en config. |
 | `OnSoundEvent` o callback automático en ItemBase | NO existe tal override. Los sonidos de items se activan manualmente vía `StartItemSoundServer` o `PlaySoundSet`. |
 | `PlaySoundSet` funcionando en servidor | Tiene guard `!g_Game.IsDedicatedServer()` — **silencioso en DS**. [object.c:1245] |
+
+(desde 1.30 Exp: esa fila sigue siendo cierta para `Object.PlaySoundSet`. Los handlers usan además `IsHeadlessOrDedicatedServer()`. No uses `GetNoiseReductionByWeather()` en código nuevo.)
+
 | `DynamicMusicPlayer.PlayTrack(string)` público | El método `PlayTrack` es **privado**. La API pública es `SetCategory`. [dynamicmusicplayer.c:511] |
 | Múltiples sonidos simultáneos con `StartItemSoundServer` | Solo 1 play + 1 stop sincronizables a la vez por diseño del protocolo de red. [itemsoundhandler.c:19-20] |
 
@@ -614,6 +633,18 @@ np.Load("Footstep_Heavy");    // nombre de CfgNoises vanilla o custom
 g_Game.GetNoiseSystem().AddNoise(this, np, 2.0);  // multiplicador x2
 ```
 
+(desde 1.30 Exp: no multipliques ese `2.0` por una reducción de clima calculada en script; el motor ya atenúa nativamente en la coordenada.)
+
+---
+
+## 12. DayZ 1.30 Exp — radios, vegetación, destructor
+
+Detalle `[EXACT]` en `references/dayz-1-30-sound.md`.
+
+- **Radio / búnker:** `TransmitterBase.SOUND_BUNKER_STATIC_NOISE`; `UseBunkerStaticNoise()` = `IsTunedToBunkerFrequency() && SOUND_BUNKER_STATIC_NOISE != ""` (`TransmitterBase.c:4-6,135-137`). Proto en `ItemTransmitter` (`InventoryItem.c:25`). `PersonalRadio` / `BaseRadio` asignan `"bunkerbroadcast_staticnoise_SoundSet"`.
+- **Vegetación estática:** `StaticObjectType` lee `CfgNonAIVehicles <Nombre> VegetationSounds` (`StaticObjectType.c:13-47`). Macro `CUSTOM_PLAYER_MOVEMENT_SOUNDSETS` en `basicDefines.hpp:310-338` (no en `:68-96`).
+- **Destructor de eventos:** `~SoundEventBase` hace `if (g_Game) Stop();` (`SoundEvents.c:12-16`). No reimplementar un destructor 1.29 en subclases de `InfectedSoundEventBase`.
+
 ---
 
 ## Fuentes
@@ -638,3 +669,7 @@ g_Game.GetNoiseSystem().AddNoise(this, np, 2.0);  // multiplicador x2
 | `IMPWMODPart2\Weapons\Automatic\F2000\Sounds\config.cpp` | Prior art: herencia de base vanilla |
 | `IMPWMODPart2\Weapons\Automatic\MCXSpear\config.cpp:59` | Prior art: soundSetShot en weapon mode + NoiseShoot |
 | `DoorLockSystem\Scripts\...\ActionUnlockDLSDoor.c:63` | Prior art: building.PlaySound / PlaySoundLoop |
+| `scripts\3_game\entities\staticobjecttype.c` | StaticObjectType / VegetationSounds (1.30) |
+| `scripts\4_world\entities\itembase\transmitterbase.c` | SOUND_BUNKER_STATIC_NOISE |
+| `scripts\3_game\systems\dynamicmusicplayer\dynamicmusicplayerregistrynasdara.c` | Registro musical Nasdara |
+| `references/dayz-1-30-sound.md` | Bloques `[EXACT]` 1.30 |

@@ -9,6 +9,7 @@
 - [DamageSystem contract](#damagesystem-contract)
 - [Verified mappings](#verified-mappings)
 - [Unverified or conflicting details](#unverified-or-conflicting-details)
+- [Door open conditions and locks (DayZ 1.30 Exp)](#door-open-conditions-and-locks-dayz-130-exp)
 - [Sources](#sources)
 
 ## Evidence convention
@@ -115,6 +116,10 @@ The button is absent from its skeleton because it does not animate (**Door_w_But
 | **soundClose** | Closing sound name. | Full door entries Simple/button/expert **:27**. |
 | **soundLocked** | Locked/rattle sound. | Full door entries Simple/button/expert **:28**. |
 | **soundOpenABit** | Partial-opening sound. | Full door entries Simple/button/expert **:29**. |
+| **relatedInventorySlots[]** (since 1.30 Exp) | Names of inventory slots tied to this door (locks). Parsed into `AdditionalDoorInfo.m_RelatedInventorySlotNames`. Absent from the tutorial **assets/** examples. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:23-26`. **[UNVERIFIED]** no extracted vanilla `config.cpp` **class Doors** entry in this dump actually sets the property. |
+| **lockCompatibilityBitMask** (since 1.30 Exp) | Integer already in bitwise form. If omitted, script default is `1 << EBuildingLockType.LOCKPICK`. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:29-32`, `exp/scripts/scripts/3_Game/Enums/EBuildingLockTypes.c:7-16`. |
+| **interactPositionPoint** / **interactDirPoint** (since 1.30 Exp) | Memory point names for one-sided open/close. Config keys are these two strings; members are `m_InteractLimitingPositionPoint` / `m_InteractLimitingDirPoint`. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:34-38`, `exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:335-342`. |
+| **doorConstructionPart** / **doorConstructionPhysicsSource** (since 1.30 Exp) | Rebuildable-house door: construction part name and AnimationSource that toggles door physics. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:40-44`, `exp/scripts/scripts/4_World/Classes/Rebuilding/Rebuilding.c:440-464`. |
 
 Tutorial sound list: **DZ\sounds\hpp\config.cpp** (**WELCOME TO novoGODS Shit Door Tutorial.txt:255-256**). Verify a sound there before adding it.
 
@@ -161,6 +166,163 @@ Remaining:
 - ? Duplicate skeleton names causing a server crash: tutorial warning, not independently reproduced. Treat skeleton-name uniqueness as a cheap preventive convention.
 - Conflict (resolved by authority, not a ?): the one-source/one-Doors rule is contradicted by Expert -- two Doors entries share component `door1_open`. A real quirk of the shipped example.
 - Conflict (resolved by authority): Expert prose has `soundOpen = "switchOpen"` / `soundClose = "switchClose"`, but real `assets/Expert_Mode/config.cpp:31-38` omits both. The real file wins.
+- ? (1.30 Exp) No extracted vanilla `config.cpp` **class Doors** child in this dump sets `relatedInventorySlots[]`, `lockCompatibilityBitMask`, `interactPositionPoint`, or `doorConstructionPart`. The parser and script consumers are verified; a copy-paste vanilla Doors block with those keys is **[UNVERIFIED]**. Fence uses entity-level `attachments[] = {..., "Att_CombinationLock", "Att_CodeLock", ...}` (`exp/gear_camping/DZ/gear/camping/config.cpp:2683`) rather than per-door `relatedInventorySlots[]`.
+
+## Door open conditions and locks (DayZ 1.30 Exp)
+
+(until 1.29: `Building.CanDoorBeOpened(int doorIndex, bool checkIfLocked = false)` was the only script signature, and vanilla `ActionOpenDoors` called it directly — `stable-1.29/scripts/scripts/4_World/Classes/UserActionsComponent/Actions/Interact/ActionOpenDoors.c:45,63`. `GetLockCompatibilityType` always returned `1 << EBuildingLockType.LOCKPICK`.)
+
+(since 1.30 Exp: both signatures exist. The `int` form is a wrapper that builds `DoorManipulationParams` and does **not** set `m_Caller`. Vanilla Open uses the params form plus a directional check.)
+
+```c
+// [EXACT] exp/scripts/scripts/3_Game/Entities/Building.c:5
+class DoorManipulationParams
+{
+	int m_DoorIndex;
+	bool m_CheckIfLocked;
+	Object m_Caller;
+}
+```
+
+```c
+// [EXACT] exp/scripts/scripts/3_Game/Entities/Building.c:141
+	bool CanDoorBeOpened(notnull DoorManipulationParams params)
+	{
+		if (IsDoorOpen(params.m_DoorIndex))
+			return false;
+
+		if (params.m_CheckIfLocked)
+		{
+			if (IsDoorLocked(params.m_DoorIndex))
+				return false;
+		}
+		else
+		{
+			if (!IsDoorLocked(params.m_DoorIndex))
+				return false;
+		}
+
+		return true;
+	}
+```
+
+```c
+// [EXACT] exp/scripts/scripts/3_Game/Entities/Building.c:160
+	bool CanDoorBeOpened(int doorIndex, bool checkIfLocked = false)
+	{
+		DoorManipulationParams doorParams = new DoorManipulationParams();
+		doorParams.m_DoorIndex = doorIndex;
+		doorParams.m_CheckIfLocked = checkIfLocked;
+
+		return CanDoorBeOpened(doorParams);
+	}
+```
+
+`ActionOpenDoors` (1.30) fills `m_DoorIndex`, `m_CheckIfLocked`, `m_Caller`, and requires `DoorsDirectionalCheck` before Open:
+
+```c
+// [EXACT] exp/scripts/scripts/4_World/Classes/UserActionsComponent/Actions/Interact/ActionOpenDoors.c:36
+		BuildingBase building;
+		if (Class.CastTo(building, target.GetObject()))
+		{
+			DoorManipulationParams doorParams = new DoorManipulationParams();
+			doorParams.m_DoorIndex = building.GetDoorIndex(target.GetComponentIndex());
+			if (doorParams.m_DoorIndex != -1)
+			{
+				if (!IsInReach(player, target, UAMaxDistances.DEFAULT)) 
+					return false;
+				
+				if (!building.DoorsDirectionalCheck(player,target.GetComponentIndex()))
+					return false;
+				
+				doorParams.m_CheckIfLocked = CheckIfDoorIsLocked();
+				doorParams.m_Caller = player;
+
+				return building.CanDoorBeOpened(doorParams);
+			}
+		}
+```
+
+`BuildingBase` then rejects Open when a related `DigitalCodeLock` or `CombinationLock` is locked:
+
+```c
+// [EXACT] exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:312
+		int doorIndex = params.m_DoorIndex;
+		AdditionalDoorInfo doorInfo = GetDoorInfo(doorIndex);
+		if (doorInfo && doorInfo.m_RelatedInventorySlotNames)
+		{
+			foreach(string relatedSlotName: doorInfo.m_RelatedInventorySlotNames)
+			{
+				EntityAI slotEntity = FindAttachmentBySlotName(relatedSlotName);
+				if (!slotEntity)
+					continue;
+				
+				DigitalCodeLock codeLock;
+				if (Class.CastTo(codeLock, slotEntity) && codeLock.IsLocked())
+					return false;
+				
+				CombinationLock combinationLock;
+				if (Class.CastTo(combinationLock, slotEntity) && combinationLock.IsLocked())
+					return false;
+			}
+		}
+		
+		return true;
+```
+
+Directional check (missing/empty memory points pass — the helper returns true):
+
+```c
+// [EXACT] exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:335
+	//! checks against player relative to defined door direction, some doors can only be operated from one side
+	bool DoorsDirectionalCheck(PlayerBase player, int componentIdx)
+	{
+		string memPointPos = GetDoorInfo(GetDoorIndex(componentIdx)).m_InteractLimitingPositionPoint;
+		string memPointDir = GetDoorInfo(GetDoorIndex(componentIdx)).m_InteractLimitingDirPoint;
+		
+		return MiscGameplayFunctions.MemPointDirectionalCheck(player, this, memPointPos, memPointDir);
+	}
+```
+
+```c
+// [EXACT] exp/scripts/scripts/4_World/Static/MiscGameplayFunctions.c:911
+	static bool MemPointDirectionalCheck(PlayerBase player, EntityAI targetEnt, string memPointStartName, string memPointEndName, float toleranceAngle = Math.PI_HALF)
+	{
+		if (player && targetEnt && memPointEndName != "" && targetEnt.MemoryPointExists(memPointEndName) && memPointStartName != "" && targetEnt.MemoryPointExists(memPointStartName))
+		{
+			vector memPointEndPos = targetEnt.ModelToWorld(targetEnt.GetMemoryPointPos(memPointEndName));
+			vector memPointStartPos = targetEnt.ModelToWorld(targetEnt.GetMemoryPointPos(memPointStartName));
+			vector playerPosition = player.GetPosition();
+			vector playerHeadPos = MiscGameplayFunctions.GetPlayerHeadPosition(player);
+			vector playerDir = vector.Direction(playerHeadPos, memPointStartPos);
+			playerDir.Normalize();
+			vector memDir = vector.Direction(memPointStartPos, memPointEndPos);
+			memDir.Normalize();
+```
+
+If that `if` fails (empty names or missing Memory points), the function returns `true` (`MiscGameplayFunctions.c:936`).
+
+### `EBuildingLockType` (not attachment locks)
+
+```c
+// [EXACT] exp/scripts/scripts/3_Game/Enums/EBuildingLockTypes.c:7
+enum EBuildingLockType
+{
+	NONE = 0, //unlockable only via script
+	LOCKPICK,
+	SHIP_CONTAINER_0,
+	SHIP_CONTAINER_1,
+	SHIP_CONTAINER_2,
+	SHIP_CONTAINER_3,
+	SHIP_CONTAINER_4
+}
+```
+
+**[DESIGN]** Combination locks and code locks are `IsExternalLockType()` inventory items (`DigitalCodeLock` / `CombinationLock` override, `CodeLock.c:527`, `CombinationLock.c:779`), not extra `EBuildingLockType` values. Digest J's `COMBINATION_LOCK = 2` / `CODE_LOCK = 4` is false against this file.
+
+`GetLockCompatibilityType` now returns `GetDoorInfo(doorIdx).m_LockCompatibilityBitMask` (`Building.c:193-196`). `ActionLockDoors` / `ActionUnlockDoors` still use that mask against `tool.GetKeyCompatibilityType()`, but they return false first if any related slot already holds an `IsExternalLockType()` item (`ActionLockDoors.c:40-57`).
+
+Native engine locks are unchanged: `LockDoor`, `UnlockDoor`, `IsDoorLocked` (`Building.c:54-70`).
 
 ## Sources
 

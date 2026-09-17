@@ -88,3 +88,32 @@ covers the part. The bone's MOTION — the weapon-states `.anm` for the bolt, th
 fire/reload/chamber/jam-unjam, `AddItemInHandsProfileIK` IK-pose semantics, the player skeleton bones
 (`Weapon_Root`, `RightHand_Dummy`, `LeftHandIKTarget`) — all belong to `dayz-animation-pipeline`
 (`weapon-in-hands.md`, `player-skeleton.md`, `anim-graph.md`).
+
+## DayZ 1.30 Exp (build 1.30.164014) — vanilla IK + extra remaps
+
+`[VERIFIED-vanilla]` `exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgBase.c`.
+IK paths are entity-side registration only; `.anm` authoring stays on the anim skill. Staged weapons
+(W-STAGING1 in `dayz-1-30-weapons.md`) still have no packed `.p3d` — remap arrays below are the
+**selection names** you would cover if you shipped a stand-in model, not a debinarize source.
+
+Default rifle remap still applies to anything under `Rifle_Base` (`:1568-1569`):
+`bolt`, `magazine`, `trigger`, `charging`, `bullet`, `mag_release`, `boltrelease`.
+`SCARL_Base` / `MP18_Base` have **no** extra `AddItemBoneRemap` — they inherit that rifle map.
+`SCARL_Base` IK is the SCAR-H profile (`:445`, same ASI/IK/states as `:444`).
+
+```
+// [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgBase.c:1594
+		array<string> LeeEnfieldBoneRemap ={ "bolthandle", "Weapon_Bolt", "boltbody", "Weapon_Bone_01", "trigger", "Weapon_Trigger", "bullet", "Weapon_Bullet", "bullet1", "Weapon_Bone_02", "magazine", "Weapon_Magazine"};
+		pType.AddItemBoneRemap("LeeEnfield_Base", LeeEnfieldBoneRemap);
+```
+
+```
+// [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgBase.c:1610
+		array<string> LugerBoneRemap ={ "bolt", "Weapon_Bolt", "magazine", "Weapon_Magazine", "bullet","Weapon_Bullet", "trigger", "Weapon_Trigger", "slide", "Weapon_Bone_01", "toggle1", "Weapon_Bone_02", "toggle2", "Weapon_Bone_03" };
+		pType.AddItemBoneRemap("Luger_Base", LugerBoneRemap);
+```
+
+W-SEL1 still applies: `slide` / `toggle1` / `toggle2` (Luger) and `bolthandle` / `boltbody` / `bullet1`
+(Lee-Enfield) must spatially cover those parts before you trust the remap. Recoil script objects
+(`SCARLRecoil`, `LugerRecoil`, `LeeEnfieldRecoil`, `MP18Recoil`) live under
+`exp\scripts\scripts\4_World\Classes\RecoilBase\Recoils\` — see `dayz-1-30-weapons.md`.

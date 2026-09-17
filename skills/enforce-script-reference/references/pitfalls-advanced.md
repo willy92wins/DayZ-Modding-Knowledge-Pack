@@ -636,3 +636,15 @@ Do not hide the declaration with `#ifndef SERVER`. That can make the dedicated-s
 For a long concatenation or formatting expression, `Formula too complex` is the root parser/compiler error. An `Incompatible parameter` reported on the same line can be a cascade, not a second API defect. Split the build into incremental single-line assignments (`s = s + part;`). Extract vector or matrix indexing and function-call results into typed locals before formatting them.
 
 A physical expression longer than 400 characters is a useful offline lint signal, not a language boundary. Likewise, the roughly-ten-operands observation is empirical. The game compile remains the gate.
+
+## DayZ 1.30 Exp — obsolete callbacks, ID shift, hand FSM
+
+This file did not document `OnCEUpdate` at line 87 (that row is `FileHandle`; digest O mis-mapped it). 1.30 traps:
+
+- (hasta 1.29: `override void OnCEUpdate()`). (desde 1.30 Exp: `[Obsolete]`; live tick is `OnCEIterate(float currentTime, float elapsedTime)` — `EntityAI.c:3881-3888`, `:4893-4894`.)
+- (hasta 1.29: hand guards auto-passed `e.m_IsJuncture || e.m_IsRemote`). (desde 1.30 Exp: only `e.m_IsRemote` — `Hand_Guards.c:299,325,351`. New `HandGuardIsNotSurrendered` `:405` returns `!m_Player.IsSurrendered()`.)
+- (hasta 1.29: `UA_AM_PENDING` was 14). (desde 1.30 Exp: `UA_AM_INIT = 14` inserted; `PENDING=15`, `ACCEPTED=16`, `REJECTED=17` — `constants.c:508-511`. Never hardcode the integers.)
+- (hasta 1.29: `TakeEntityToCargo` / `AsAttachment` family). (desde 1.30 Exp: `[Obsolete]` `Inventory.c:1345-1386` → Target* variants.)
+- (hasta 1.29: `ActionFillBottleBase` in `RegisterActions`). (desde 1.30 Exp: `[Obsolete]` `ActionFillBottleBase.c:28-29`; constructor inserts `ActionObtainLiquidBase` `:156`.)
+- `ProcessInputData` override is silent in retail (DIAG + debug flag only) — `DayZPlayerInventory.c:668-687`.
+- `World.Is3rdPersonDisabled()` `[Obsolete]` (`World.c:291`). `GetNoiseReductionByWeather` was **not** deleted (digest O false); both Weather methods exist and are `[Obsolete]` (`Weather.c:407`, `:454`).

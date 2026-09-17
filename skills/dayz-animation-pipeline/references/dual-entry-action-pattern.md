@@ -176,3 +176,58 @@ If step 4 misbehaves, the bail-out check is wrong — likely you whitelisted a t
 ## Reference case
 
 `LFQuad_dev/task4_handoff/LFQuad_ActionGetInTransport.c` and `LFQuad_dev/handoff_2026-05-28.md`. The pattern generalizes to any vehicle with bilateral ingress.
+
+## DayZ 1.30 Exp: Native Directional In/Out (Alternative) [EXACT]
+
+In DayZ 1.30 Exp, vanilla introduced a native engine-supported mechanism for directional get-in / get-out on single-track vehicles (motorcycles / bikes), eliminating the need for scripted player snaps on vehicles implementing this contract.
+
+### Engine flow in `ActionGetInTransport.c`
+When `transport.HasDirectionalInOutAction()` returns `true` (`Transport.c:677`), `ActionGetInTransport` computes the approach side using the dot product between the target direction vector and the vehicle's right-normal vector:
+
+```c
+// [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:81-100
+		if (transport.HasDirectionalInOutAction())
+		{
+			vector fwd = transport.GetDirection();
+			fwd[1] = 0;
+			fwd.Normalize();
+	
+			vector playerPosition = action_data.m_Player.GetPosition();
+			vector toTarget = transport.GetPosition() - playerPosition;
+			toTarget[1] = 0;
+			toTarget.Normalize();
+	
+			vector right = Vector(fwd[2], 0.0, -fwd[0]);
+	
+			float side = vector.Dot(toTarget, right);
+	
+			if (side < 0.0)
+			    direction = 1;
+		
+			seat = transport.GetSeatAnimationTypeDirectional(crewIndex, direction);
+		}
+		else
+			seat = transport.GetSeatAnimationType(crewIndex);
+```
+
+### Transport interface methods in `Transport.c`
+```c
+// [EXACT] exp\scripts\scripts\3_Game\Vehicles\Transport.c:677-680
+	bool HasDirectionalInOutAction()
+	{
+		return false;
+	}
+```
+and:
+```c
+// [EXACT] exp\scripts\scripts\3_Game\Vehicles\Transport.c:690-695
+	int GetSeatAnimationTypeDirectional(int posIdx, int directionIndex)
+	{
+#ifndef CFGMODS_DEFINE_TEST
+		Error("GetSeatAnimationTypeDirectional() not implemented");
+#endif
+		return 0;
+	}
+```
+
+[DESIGN] For a custom vehicle (such as a quad or motorbike) in 1.30+, overriding `HasDirectionalInOutAction()` to return `true` and implementing `GetSeatAnimationTypeDirectional(posIdx, directionIndex)` allows mapping left (`direction = 0`) and right (`direction = 1`) boarding animations natively through the animation graph (`CMD_Vehicle_GetIn` variants in `Vehicles.agf`), serving as a clean alternative to the manual `pos_*_L/_R` snap script.

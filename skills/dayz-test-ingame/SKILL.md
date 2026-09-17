@@ -12,6 +12,7 @@ where the engine reads mods, and launch `DayZDiag_x64.exe` with `-filePatching` 
 and config edits are picked up without re-binarizing. Three launch modes (offline / server /
 client / all) driven by one orchestrator script and double-click `.bat` wrappers, generated
 per mod into `<Mod>_dev\tools\`.
+(until 1.29: the loop was pack PBO → deploy packed `@Mod` → DayZDiag `-filePatching`.) (since 1.30 Exp [CHANGELOG]: `-mod` may point at an **unpacked** source folder; RV configs load unpacked; new flags `-cacheP3D=0/1` and `-resolveFilePatchingUsingEnfusion=0/1`. Details: [dayz-1-30-test-ingame.md](references/dayz-1-30-test-ingame.md) and ## DayZ 1.30 Exp.)
 
 ## SOURCE OF TRUTH
 
@@ -85,6 +86,7 @@ Con la caja libre de procesos DayZ del run y autorizacion explicita del usuario,
 - Receta: el agente escribe `.bat` (argv de server/client, comillas literales en cada valor con espacios) y el usuario los ejecuta a doble-clic en su sesion interactiva. [EXACT - esta skill, SP-077] Leer script.log/RPT con `FileShare.ReadWrite`. Cierre por UI, no por PID, salvo zombie del propio agente (entonces `Stop-Process -Id` exacto).
 - [DESIGN] Server argv: `-server "-config=<serverDZ.cfg>" "-profiles=<server-profiles>" "-mission=<mission-abs>" "-mod=<mod-abs-semicolon-list>" -filePatching -port=2302`
 - [DESIGN] Client argv: `"-mod=<mod-abs-semicolon-list>" -connect=127.0.0.1 -port=2302 "-profiles=<client-profiles>" -name=Dev -window -filePatching`
+(since 1.30 Exp [CHANGELOG]) Optional on both: `-cacheP3D=1` (unbinarized `.p3d` sibling cache) and `-resolveFilePatchingUsingEnfusion=1` (requires `-filePatching`; always on in Workbench). `-mod=` may name an unpacked source folder, not only a packed `@Mod`. See `references/dayz-1-30-test-ingame.md`.
 
 Tres gotchas que muerden en este mismo camino y no son del argv (SP-228, medidos):
 

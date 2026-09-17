@@ -10,6 +10,7 @@ description: >
   instead of them. Triggers: "implement", "write the code", "build the mod",
   "fix the bug", "debug this", "it doesn't work", "actions not showing",
   sprint execution, or any transition from plan to code/fix.
+  Also: CanBeStarted, CCTLiquid, MotorbikeScript, HouseDestructible, cfggameplay ExternalLockData/SandstormData, PluginUndergroundTriggerManager, NVTypes underground/sandstorm, IsHeadless.
 ---
 
 # DayZ Mod Implementation & Debug Protocol
@@ -17,6 +18,7 @@ description: >
 Process skill for implementing and fixing DayZ mods. Does not contain domain
 knowledge (that lives in domain skills). Ensures domain knowledge is correctly
 applied and gaps are detected before they become bugs.
+(until 1.29: the six-layer debug hierarchy, SyncVar rules, and E01–E20 catalog below remain the 1.29 contract.) (since 1.30 Exp: client start also gates on `CanBeStarted()`; vanilla water uses `CCTLiquid`; CE adds `MotorbikeScript`/`HouseDestructible`; `cfggameplay.json` gained lock/sandstorm keys. Details: [dayz-1-30-mod-workflow.md](references/dayz-1-30-mod-workflow.md) and ## DayZ 1.30 Exp.)
 
 ---
 
@@ -110,6 +112,7 @@ Corre el **gate estructural obligatorio** (`script_validator.py`, y `ui_reconcil
   ActionCondition must only rely on data available on BOTH sides; a
   client-only cache passes the menu but the server rejects the action
   start silently.
+(until 1.29: a listed action was assumed startable once `Can()` passed.) (since 1.30 Exp: the widget can still **show** an action whose `CanBeStarted()` is false; `ActionManagerClient.c:336` does not call `ActionStart`. Info actions override to false — `ActionPartInfo.c:18-21`. See `references/dayz-1-30-mod-workflow.md`.)
 - **OnStart/OnFinish/OnUpdate with "Server" suffix** runs on SERVER.
   Use server-only data here.
 - Server DOES re-execute `Can()` (and therefore `ActionCondition()`) before
@@ -169,7 +172,6 @@ equiredAddons[] lists the **CfgPatches class names** you actually depend on (scr
 equiredAddons and feature-detect at runtime when optional
 
 Source: CLAIM-STARDZ-REQUIREDADDONS-ORDER — https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/02-mod-structure/01-five-layers.md
-
 
 
 ### Professional mod scaffold patterns (StarDZ — historical; patterns only)
@@ -243,8 +245,11 @@ Defer to `enforce-script-reference` for full rules. Key verified restrictions:
 6. ActionCondition()  - custom override, runs CLIENT (menu) AND SERVER (start gate, actionmanagerserver.c:142)
 7. FullBody stance    - if full body, verify stance transition
 ```
+(until 1.29: steps 1–7 were treated as the full client start gate.) (since 1.30 Exp: after the widget lists the action, `CanBeStarted()` must be true or the client never calls `ActionStart` — `ActionManagerClient.c:336`. Vanilla pond wash/drink/fill uses `CCTLiquid`, not `CCTWaterSurfaceEx` — `ActionWashHandsWater.c:28`.)
 
 - [ ] CreateConditionComponents overridden with correct CCT/CCI
+- [ ] (since 1.30 Exp) `CanBeStarted()` returns true for performable actions; info-only overrides return false
+- [ ] (since 1.30 Exp) Water/wash/fill on sea/pond: `CCTLiquid` unless you intentionally diverge
 - [ ] ActionCondition uses ONLY data available on BOTH client and server (see 2.5)
 - [ ] Target type: `GetType()` for exact, `IsKindOf()` for inheritance
 - [ ] **Non-pickupable items**: Use `RemoveAction(ActionTakeItem)` +
@@ -323,6 +328,8 @@ Verified errors committed more than once. Check ACTIVELY during implementation. 
 - **E18** — `IsServer()`/`IsClient()` for server/client guard
 - **E19** — Version field manually serialized in persistence
 - **E20** — modded vehicle won't drive, `WheelCountPresent()=0` while `WheelCount()=N` — `CfgSlots.<wheel-slot>.selection` must exist in the body FireGeometry LOD with a wheel proxy
+- **E21** — (since 1.30 Exp) custom-map `cfgeconomycore.xml` missing `MotorbikeScript` / `HouseDestructible` rootclasses — `exp\worlds_chernarusplus_ce\DZ\worlds\chernarusplus\ce\cfgeconomycore.xml:17-18`
+- **E22** — (since 1.30 Exp) visible action widget but F does nothing, or custom pond drink never lists — `CanBeStarted()` / `CCTLiquid` (see E21/E22 in `references/error-catalog.md` and `references/dayz-1-30-mod-workflow.md`)
 
 ---
 

@@ -1,4 +1,5 @@
 # Recurring error catalog (E01–E20)
+# (until 1.29: index stopped at E20.) (since 1.30 Exp: also E21 CE rootclasses, E22 CanBeStarted / CCTLiquid — see table rows below and `dayz-1-30-mod-workflow.md`.)
 
 > Extracted from dayz-mod-workflow/SKILL.md 2026-07-07 (F3).
 >
@@ -31,3 +32,5 @@ Verified errors committed more than once. Check ACTIVELY during implementation.
 | E18 | `IsServer()`/`IsClient()` for server/client guard | Use `IsDedicatedServer()` / `!IsDedicatedServer()` | Expansion Pitfalls |
 | E19 | Version field manually serialized in persistence | Engine manages version. Use `OnStoreLoad(ctx, version)` param | vanilla EntityAI.c |
 | E20 | Modded vehicle won't drive + no RPT error + wheels mount but don't spin (`WheelCountPresent()=0` while `WheelCount()=N`); chassis bounces/sinks; steering animates without sim spin | `CfgSlots.<wheel-slot>.selection` must name a selection that exists in the **FireGeometry LOD of the body** and contains a wheel proxy (`proxy:\…`). If only in visual LODs → fix Y: alias the FireGeo proxy face into the slot's selection name (additive py3d, preserves visual hide). See `enforce-script-reference` §"Wheel attachment to simulation: `CfgSlots.selection` ↔ FireGeometry proxy selection" for mechanism + py3d fix. | LFQuad blocker `wheelPresent=0` |
+| E21 | Custom-map `cfgeconomycore.xml` copied from 1.29 (no Motorbike / destructible-house rootclasses) | (since 1.30 Exp) Add `<rootclass name="MotorbikeScript" act="car" reportMemoryLOD="no" />` and `<rootclass name="HouseDestructible" reportMemoryLOD="no" />` next to `CarScript`/`BoatScript`. Verified `exp\worlds_chernarusplus_ce\DZ\worlds\chernarusplus\ce\cfgeconomycore.xml:17-18` (same pair on Enoch and Sakhal). | DayZ 1.30 Exp CE |
+| E22 | Visible action widget but F does nothing / custom pond drink never lists | (since 1.30 Exp) After CCT/CCI vanilla can **show** actions with `CanBeStarted()==false` (`ActionManagerClient.c:336`); info actions override it to false (`ActionPartInfo.c:18-21`). Water/wash/fill vanilla uses `CCTLiquid` not `CCTWaterSurfaceEx` (`ActionWashHandsWater.c:28`). See `references/dayz-1-30-mod-workflow.md`. | DayZ 1.30 Exp actions |

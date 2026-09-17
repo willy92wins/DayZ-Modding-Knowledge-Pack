@@ -23,6 +23,7 @@ crash, segfault, or silent failure in production.
 Before treating any vanilla Enforce API as callable, verify it is not trapped inside an `#ifdef` whose macro is never defined in the tree. Gate: `grep -rn "#ifdef <MACRO>\|#define <MACRO>" scripts/` — if only `#ifdef` hits appear, the code is DEAD in this build and the symbol does not exist.
 
 Canonical case: `ActionManagerClient.PerformAction(int user_action_id, ActionTarget, ItemBase, Param)` at `actionmanagerclient.c:756` is a correct citation, but sits inside `#ifdef BOT` (opens `:754`, closes `:760`). `BOT` appears in the entire vanilla tree only as `#ifdef`, never as `#define` → the symbol does not exist in retail or diag. The real public entry point for dispatching an action by script is `PerformActionStart(ActionBase, ActionTarget, ItemBase, Param)` at `:762`, outside the block.
+(hasta 1.29: those line numbers). (desde 1.30 Exp: `#ifdef BOT` is `ActionManagerClient.c:796-802`, `PerformAction` is `:798`, public `PerformActionStart` is `:804`. SP `PerformActionStart` ignores re-entry when pending/current exist; `GetActionState()` can return `UA_AM_INIT` while pending. Cite-then-verify still applies — `BOT` still has no `#define`. Bodies: `references/dayz-1-30-enforce-script.md`.)
 
 **`CCINone` does NOT mean "hands must be empty."** `CCINone.Can()` returns `true` unconditionally (`4_world\classes\useractionscomponent\itemconditioncomponents\ccinone.c`). It means "no item condition", not "the player's hands must be empty". Reading it as "hands empty" produces dead checks and chases a fault that does not exist.
 
@@ -118,6 +119,7 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
 19. **`GetGame().IsServer()` returns TRUE on client during load** — use `IsDedicatedServer()`
 20. **`GetGame().IsClient()` is NOT reliably true on the client during load (inferred from rule 19, which is the primary-source-verified one; treat as unreliable, do not assume an exact value)** — use `!IsDedicatedServer()`
     - Scope of 19-20: LOAD/INIT time (constructors, module init, OnInit). In post-load callbacks (OnRPC, EOnContact, per-tick), `GetGame().IsServer()` / `IsClient()` are safe and are the standard vanilla pattern
+(hasta 1.29: inventory net path was `DayZPlayerInventory.ProcessInputData`). (desde 1.30 Exp: retail does **not** call `ProcessInputData` — that call site is `#ifdef DIAG_DEVELOPER` plus `PluginInventoryDebug.IsOldProcessInputDataEnable()`. Live split: `ValidateInventoryCommandServer` / `ExecuteInventoryCommandServer` / `ExecuteInventoryCommandClient` / `ExecuteInventoryCommandRemote`, plus `INPUT_UDT_INVENTORY_CHECK` / `OnInventoryCheck`. See `references/dayz-1-30-enforce-script.md`.)
 
 ### Timer Rules
 
@@ -268,6 +270,7 @@ Pick the reference file matching your need:
 | Vanilla deep-dive additions | `references/vanilla-deep-dive.md` | Source-verified v1.24 facts: recipes/crafting, ComponentEnergyManager, action system, damage pipeline, player internals/sync |
 | Weapon fire modes | `references/weapon-firemodes.md` | Fire-mode inheritance (single/burst/full-auto), `Mode_*` root-scope forward-decl trap (SP-031) |
 | Server-side performance | `references/server-performance.md` | Budget-per-frame scheduler, FPS-adaptive interval + rolling average, staggered/modulo-gated scan, exponential backoff, `#ifdef SERVER` vs `IsServer`/`IsDedicatedServer`, ScriptInvoker bus vs polling |
+| DayZ 1.30 Exp Enforce contract | `references/dayz-1-30-enforce-script.md` | `OnCEIterate`, inventory Validate/Execute* + `OnInventoryCheck`, obsolete `TakeEntityToCargo`/`TakeEntityAsAttachment`, hand FSM guards, `ItemBaseType` / `GUIInventoryAttachmentsProps`, `CanBeStarted` / `ActionObtainLiquidBase` / CCT liquid, `vector.Cross` / `array.Slice` / `DoOnce` / `GetThirdPersonViewMode` / `GetNoiseReductionByWeatherEx`, `GAME_STORAGE_VERSION = 144` |
 | UI / layout / Dabs / widgets | skill `dayz-ui-development` (canonical, HEAD-verified) | Full UI, layout and Dabs MVC work lives there; this skill keeps only hard rules 34-35 (layout-path crash, ScriptViewMenu guard) and CfgMods `inputs` |
 
 ---
@@ -838,6 +841,7 @@ The creator on the owner is `ActionGetInTransport.Start()` (`actiongetintranspor
 **Consequence for mod code:** any client-side action gated by "I am seated" (vanilla pattern: `GetCommand_Vehicle()` then `GetTransport()`, as in `actionstartengine.c`) behaves differently depending on HOW the player got seated. A human who used the normal get-in action passes the gate; an occupant placed by server script has the crew replicated (`CrewMember(n) == player` is true on the client) **and yet** `GetCommand_Vehicle()` is null, so the action is never offered.
 
 **Consequence for autotests (dayz-test-ingame):** an autotest that seats the player from the server and then fires the subsystem RPC **bridges the real gate** and reports green on a human path that may be broken. Measured: the OH-1 FLIR was unopenable by hand for months while the autotest passed, because it emitted the RPC directly. Remedy: the client half of the autotest calls its own `StartCommand_Vehicle` even when the seat already appears occupied, and does not probe until `GetCommand_Vehicle().GetTransport() == <vehicle>`. The gate probe must evaluate `ActionBase.Can(player, target, item)` (public, `actionbase.c:912`), **never** `ActionCondition`, which is `protected` — calling it from outside breaks compilation of the World module (the client does not start; the server stays up because it does not compile client-only classes).
+(hasta 1.29: `ActionBase.Can` public at `actionbase.c:912`). (desde 1.30 Exp: 3-arg `Can(PlayerBase, ActionTarget, ItemBase)` is at `ActionBase.c:968`; 4-arg overload still below. The rule "probe `Can`, never `ActionCondition`" is unchanged. `UA_AM_INIT = 14` shifted later `UA_AM_*` values — do not hardcode the integers.)
 
 Evidence: `LFHeli_dev\reviews\evidence-2026-08-18\flir-actiongate-01\` — probe `[LFHELI-FLIR-F0] action gate can=false cond=false vehCmd=false natEng=false syncEng=true` with `seat fixed (client) crew=1` and no `seat commanded (client)` in the same log.
 
@@ -972,6 +976,7 @@ Decision split:
   is useless here, because the engine/mission instantiates the vanilla name.
 - **Add a NEW action** -> `extends ActionBase` + `modded ActionConstructor` to
   `RegisterActions` + `AddAction` in the item's `SetActions()`.
+(hasta 1.29: that triad was the whole contract). (desde 1.30 Exp: still required, and incomplete: also register the **replacement** if vanilla dropped the old class — `ActionFillBottleBase` is `[Obsolete]` and is **not** in `RegisterActions`; live class is `ActionObtainLiquidBase`. Info-only actions use `InitInfoData` + `CanBeStarted()==false` (manager will not `ActionStart`). Liquid CCT is `CCTLiquid`. Animation overrides live on `EntityAI.m_EntityActionOverrides`. Details: `references/dayz-1-30-enforce-script.md`.)
 
 Blast radius: `modded` on a `*Base` class applies to EVERY descendant at once.
 That is the right tool when a blanket change is the goal, and the wrong one when
@@ -1082,3 +1087,13 @@ Forma de fallo verde y silenciosa; la corrida entera fue inútil.
 Escribir esos literales componiendo la barra en Python (`chr(92)`) y verificar con `repr()`. Y si
 el valor lo consume el motor, **comprobar en su log que llegó entero** antes de fiarse de la
 corrida: aquí el propio log imprimía la ruta recibida, y ahí se veía sin barras.
+
+## DayZ 1.30 Exp (build 1.30.164014)
+
+Bodies, `[EXACT]` blocks, and the full migration list: `references/dayz-1-30-enforce-script.md`.
+
+**What changes.** CE tick is `OnCEIterate(float currentTime, float elapsedTime)` (`OnCEUpdate` `[Obsolete]`). Inventory net path is `ValidateInventoryCommandServer` + `ExecuteInventoryCommandServer/Client/Remote` (retail does not call `ProcessInputData`) plus `INPUT_UDT_INVENTORY_CHECK` / `OnInventoryCheck`. `TakeEntityToCargo*` / `TakeEntityAsAttachment*` are `[Obsolete]` → Target* variants. Hand guards no longer auto-pass `m_IsJuncture`; `HandGuardIsNotSurrendered` blocks surrendered players. `ItemBaseType` caches `headSelectionsToHide`, `varWetMax`, `GUIInventoryAttachmentsProps` groups. Actions: `CanBeStarted` / `SortActions` / `IsTargetInfoAction`; `ActionFillBottleBase` → `ActionObtainLiquidBase` + `CCTLiquid`; `EntityAI.OverrideActionAnimation`. Engine: `World.GetThirdPersonViewMode()`, `Weather.GetNoiseReductionByWeatherEx`, `vector.Cross`, `array.Slice`, `EnumFlagsToString`, `DoOnce`, `DayZPlayer.IsFirstRenderFrame`, `Entity.DisableSimulation`. `GAME_STORAGE_VERSION = 144`.
+
+**What breaks.** A 1.29 `override OnCEUpdate`, `modded ProcessInputData`, `AddAction(ActionFillBottleBase)`, `ItemBase.m_ItemActionOverrides`, hardcoded `UA_AM_*` ints, or `Is3rdPersonDisabled()` as a bool. Recipe replace no longer overwrites result health. Fill/drink CCT copied from `CCTWaterSurfaceEx` misses vanilla liquid.
+
+**Checklist.** `OnCEIterate` + `super`. Split inventory Validate/Execute*. Target* takes. `ActionObtainLiquidBase`. `OverrideActionAnimation` on the entity. `CanBeStarted` for info actions. `CCTLiquid` + `GetPlayerHeadPosition`. `ThirdPersonMode.ENABLED`. Storage `144`. Never hardcode `UA_AM_*`. Do not treat `GetNoiseReductionByWeatherEx` as the AI damper (native AIParams; Ex is kept for HUD).

@@ -22,11 +22,11 @@ Si la petición es sólo técnica —por ejemplo, elegir un `AnimationSource`, r
 
 | Animación | Skills que se añaden a la directora |
 |---|---|
-| Jugador, manos, humano custom o infectado | `dayz-characters`; para criaturas verifica primero su bind/skeleton real |
-| Arma, recarga, unjam o mecanismo P3D | `dayz-weapons` si cambia el contrato de entidad + la skill P3D/model pertinente |
-| Ocupante, entrada o controles de vehículo | `dayz-vehicles` |
+| Jugador, manos, humano custom o infectado | `dayz-characters`; para criaturas verifica primero su bind/skeleton real (en 1.30: sin index fijo en skeletons.anim.xml, límite de 250 huesos suprimido) |
+| Arma, recarga, unjam o mecanismo P3D | `dayz-weapons` si cambia el contrato de entidad + la skill P3D/model pertinente (en 1.30: nuevos bone remaps y perfiles ASI dedicados) |
+| Ocupante, entrada o controles de vehículo | `dayz-vehicles` (en 1.30: cuatrorruedas + motocicletas `MOTO1`/`MOTO2`, 2-bone IK en manillar) |
 | Mocap/donor externo | skill de retargeting aplicable; nunca sin mapa source→target |
-| Prueba runtime | `dayz-test-ingame`/`dayz-mcp-verify` vigente, con lease y lifecycle |
+| Prueba runtime | `dayz-test-ingame`/`dayz-mcp-verify` vigente, con lease y lifecycle (en 1.30: Workbench Enfusion 2021 Live Editing) |
 
 `blender-animation` y `dayz-animation-pipeline` siguen siendo obligatorias para autoría e integración respectivamente; las skills de la tabla no las sustituyen.
 
@@ -120,14 +120,14 @@ Además del JSON:
 
 - Entrega a `blender-animation` el export desde Blender siguiendo su contrato vigente.
 - Entrega el artefacto a `dayz-animation-pipeline` para compile, ASI/config, build y deploy.
-- Verifica el artefacto realmente desplegado, no sólo el source.
+- Verifica el artefacto realmente desplegado, no sólo el source. En DayZ 1.30, los grafos de animación se estructuran en ficheros modulares Enfusion Config `.agf` indexados desde `AnimSrcGraph` `.agr`, y los `.asi` usan `AnimSetInstanceSource`.
 - No declares que Workbench, DayZATool, Blender MCP o DayZ se ejecutaron si no existe evidencia de esa ejecución en la sesión.
 
 ### 7. Gate in-game
 
 Lee [evidence-and-integration.md](references/evidence-and-integration.md).
 
-- Prueba las stances, cámaras y estados que puedan cambiar IK o blending.
+- Prueba las stances, cámaras y estados que puedan cambiar IK o blending. En 1.30, Workbench Animation Editor permite **Live Editing** en clientes activos para depuración visual interactiva de transiciones y grafos.
 - Revisa RPT y compara timing, contacto, clipping y estados mecánicos contra el contrato.
 - Si in-game contradice Blender, in-game manda y el caso se convierte en regresión.
 - Si el entorno no permite el test, termina en `MANUAL_REQUIRED`, no en PASS.
@@ -159,6 +159,53 @@ python '<skill>\scripts\run_regression_tests.py'
 ```
 
 Para incluir la fixture real de SR2M, define `SR2M_V44_BLEND` y añade `--real-fixtures`. Si la variable falta, el resultado correcto es `SKIP_REAL_FIXTURE`, no PASS.
+
+## DayZ 1.30 Exp (build 1.30.164014)
+
+### Qué cambia en 1.30 para la dirección de animación realista
+
+1. **Integración del piloto de motocicleta [EXACT]:**
+   - Instancias de animación dedicadas: `MOTO1 = 10` (Jawa 50cc) y `MOTO2 = 11` (Jawa Bitrak triciclo) en `exp\scripts\scripts\4_World\Entities\Vehicles\VehicleAnimInstances.c:13-14`.
+   - Cámara vehicular de tercera persona con retardo elástico: `DAYZCAMERA_3RD_VEHICLE_MOTORBIKE = 32` en `exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCameras.c:20`.
+   - Agarre de manillar con solvers IK continuos de dos huesos (`AnimSrcNodeIK2` y `AnimSrcNodeIK2Target` en `Vehicles.agf`) modulados por variables físicas de inclinación y balanceo (`VehicleSteering`, `VehicleThrottle`, `VehicleSuspension`).
+   - Consulta unificada de transiciones mediante `HumanCommandVehicle.IsTransitioning()` (`exp\scripts\scripts\3_Game\human.c:735-738`).
+2. **Refactorización de la rendición (Surrender) [EXACT]:**
+   - *(Hasta 1.29: rendirse creaba físicamente el ítem invisible `SurrenderDummyItem` en manos; desde 1.30 Exp: se elimina por completo `SurrenderDummyItem` y se gobierna de forma nativa mediante `PlayerBase.SetSurrenderState(bool)` y `Man.IsSurrendered()` [`exp\scripts\scripts\3_Game\Entities\Man.c:67`, `exp\scripts\scripts\4_World\Classes\EmoteManager.c:314, 1248-1250`]).*
+3. **Control dinámico de instancias y desacoplo de manos [EXACT]:**
+   - Transición directa entre instancias de animación en runtime con `Human.SetAnimationInstanceByName(string animationInstanceName, float blendingTime)` (`exp\scripts\scripts\3_Game\human.c:1384`), apoyado en el perfil `"Empty"` registrado en `player_main.asi` (`DayZPlayerCfgBase.c:1537`).
+   - Desacoplamiento de intercambio de ítems en manos: `HumanItemAccessor.OnItemInHandsChanged(bool pInstant, bool pChangeAnimationInstance)` (`exp\scripts\scripts\3_Game\humanitems.c:112`).
+4. **Límites de velocidad y giro de cámara por postura [EXACT]:**
+   - `HumanInputController` expone `SetErectSpeedLimit`, `SetCrouchSpeedLimit`, `SetProneSpeedLimit` y `DisableErectCameratHorizontalRotation` [sic], etc. (`exp\scripts\scripts\3_Game\human.c:230-243`).
+5. **Catálogo de 11 nuevas acciones Full-Body [EXACT]:**
+   - `CMD_ACTIONFB_COMBINATIONLOCK = 256` a `CMD_ACTIONFB_WETCLOTHWELL = 266` (`exp\scripts\scripts\3_Game\dayzplayer.c:889-899`), incluyendo cerradura de combinación, mortero, apilado de ladrillos y escala de cuerda.
+6. **Desindexación de esqueletos y cinemática en criaturas [EXACT]:**
+   - Supresión del límite de 250 huesos; índices globales resueltos en runtime por hash del nombre. En `skeletons.anim.xml` solo `EntityPosition` retiene `index="0" movement="true" lod="0"` (`work\changelog-1.30-exp-modding.md:31`, `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:39, 986-988`).
+   - Rotación procedural en cuadrúpedos para alineación con el terreno: `AnimSrcNodeProcTransform AlignToTerrain_Rot` con `SlopeAngleX * 0.0174532925...` (`exp\animals\DZ\animals\animations\!graph_files\wolf\wolf_maingraph.agf:5-18`).
+   - Nuevo estado mental para infectados: `MINDSTATE_COWER` (`exp\scripts\scripts\3_Game\Entities\DayZInfected.c:18`).
+7. **Herramientas de integración y física en Workbench [EXACT]:**
+   - Workbench Animation Editor actualizado a Enfusion 2021 con **Live Editing** de grafos en clientes en ejecución (`work\changelog-1.30-exp-modding.md:48, 62`).
+   - Workbench Ragdoll Editor para configurar y editar archivos `.ragdoll` (`work\changelog-1.30-exp-modding.md:47`).
+   - Separación nativa entre muerte animada y ragdoll en scripts: `PhysicsSetSimpleDeath(bool)` vs `PhysicsSetRagdoll(bool)` (`exp\scripts\scripts\3_Game\human.c:1448-1452`).
+
+### Qué se rompe en contratos y assets de 1.29 y cómo migrar
+
+| Elemento roto | Causa en 1.30 | Acción requerida |
+|---|---|---|
+| Grafos `.agr` propietarios monolíticos | Formato reemplazado por ficheros de texto Enfusion Config `.agf` modulares (`Locomotion.agf`, `Vehicles.agf`, etc.) [EXACT: `player_main.agr:1587`] | Reexportar workspaces desde Workbench Animation Editor 2021 o reconstruir modificaciones en texto sobre los módulos `.agf` correspondientes. |
+| Templates `.ast` con grupos anónimos | Eliminado soporte para `$groupType { #ngroupnames 0 ... }` [EXACT: `changelog:42`] | Asignar a cada grupo un atributo `Name` explícito (`Name "Default"`, `Name ".unnamed"`). |
+| Ficheros `.asi` con sintaxis `$animsetinstance` | Migrado a clase `AnimSetInstanceSource` [EXACT: `anims_cfg.diff:624`] | Convertir directivas `#template`/`#parent`/`$animations` a la estructura Enfusion Config. |
+| Nodos `Buffer Save` / `Buffer Use` | Erradicados completamente del motor de animación [EXACT: `changelog:41`] | Reemplazar lógica de buffers por variables de control en `ControlTemplate AnimSrcGCT` o conexiones directas en máquina de estados. |
+| Dependencia de `SurrenderDummyItem` | Objeto dummy eliminado [EXACT: `EmoteManager.c:1242`] | Sustituir comprobaciones de ítem en manos por llamadas a `PlayerBase.SetSurrenderState(bool)` e `IsSurrendered()`. |
+| Índices fijos en `skeletons.anim.xml` | Indices manuales ignorados salvo en `EntityPosition` [EXACT: `changelog:43`] | Retirar atributos `index` del XML; asegurar coincidencia exacta de nombres con el modelo `.xob`. |
+
+### Checklist de migración para el director de animación
+
+- [ ] **Mapeos de armas:** Verificar si el arma o prop interactivo utiliza nuevos remaps (`LugerBoneRemap`, `LeeEnfieldBoneRemap`) o `.asi` dedicado (`bandage.asi`, `hayhook.asi`, etc.).
+- [ ] **Ocupantes de vehículos:** En motocicletas, auditar el bloqueo relativo de ambas manos a manillares (`AnimSrcNodeIK2`) y pies a estriberas en todas las fases de `HumanCommandVehicle.IsTransitioning()`.
+- [ ] **Rendición:** Confirmar que ningún check offline o fixture asume un ítem virtual en manos durante el estado de rendición.
+- [ ] **Terreno en criaturas:** Comprobar que los contactos de patas en animales incluyan el offset angular procedural de `AnimSrcNodeProcTransform` frente a pendientes (`SlopeAngleX`).
+- [ ] **Templates e Instancias:** Auditar que los ficheros `.ast` de entrega declaren `Name` en todos los grupos y los `.asi` usen la clase `AnimSetInstanceSource`.
+- [ ] **Validación en vivo:** Aprovechar Workbench Enfusion 2021 Live Editing para verificar parámetros continuos de mezcla en cliente activo antes del empaquetado final.
 
 ## Índice de recursos
 

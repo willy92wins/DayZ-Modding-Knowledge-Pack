@@ -107,7 +107,9 @@ From `3_game/tools/uiscriptedmenu.c`:
   panels (:136-158). `OnMissionFinish` deletes the root (:266) — **modded HUD widgets parented
   elsewhere must self-clean**.
 - `IngameHud.Init` resolves ~31 sub-widgets by name (+~35 generated in InitBadgesAndNotifiers)
-  (`ingamehud.c:143-240`) — **the widget names in day_z_hud.layout are load-bearing API**.
+  (`ingamehud.c:143-240`) — **the widget names AND types in day_z_hud.layout are load-bearing API**.
+  *(hasta 1.29: los widgets de interacción `item`, `interact`, `continuous_interact`, `single`, `continuous` eran `ImageWidgetClass` cargando texturas como `card_drop.edds` o `linear_gradient.edds`; desde 1.30 Exp: `exp\gui\gui\layouts\day_z_hud.layout:2294, 2477, 2755, 3033, 3311` mutaron a `PanelWidgetClass` con `style ActionWidget` en `exp\gui\gui\looknfeel\dayzwidgets.styles:3700`).*
+  ⚠️ **Ruptura crítica 1.30:** Cualquier script que haga `ImageWidget.Cast(m_Root.FindAnyWidget("interact"))` o `"item"` obtendrá invariablemente `null` (Null Pointer Exception al invocar LoadImageFile/SetColor). Migrar a `PanelWidget.Cast(...)` o `Widget`.
 - Safest modded extension points: (1) `modded class IngameHud` override `Init(Widget hud_panel)` →
   super, then add widgets inside the HudPanel subtree; (2) `modded class MissionGameplay` override
   `OnInit` → super, then `CreateWidgets(your.layout)` as a SIBLING root — the same pattern vanilla
@@ -128,6 +130,11 @@ From `3_game/tools/uiscriptedmenu.c`:
 - Sibling overlays NOT inside IngameHud (map for extending them): watermark `gui/watermark.c:10`;
   debug monitor `gui/debugmonitor.c:25`; player tag `ingamehud.c:1102`
   (`new_ui/hud/hud_player_tag.layout`, lazy); chat lines `chat/chatline.c:25`.
+- **Modular Action Info Panels on Cursor (DayZ 1.30 Exp)**: `ActionTargetsCursor.c:152-176, 1268-1292`
+  incorpora paneles modulares de información suplementaria (`TargetActionInfoPanelBase`, `ConstructionActionInfoPanel`
+  en `ActionInfoPanels.c:82`) acoplados al layout `new_ui/hud/action_info_spacer.layout:1`, renderizando
+  dinámicamente grids de herramientas y materiales requeridos para la acción (`ActionInfoGrids.c:103`).
+  Ver referencia completa en `references/hud-action-info-panels.md`.
 
 ## 6. Inventory architecture (the biggest vanilla UI — patterns to steal)
 
@@ -139,6 +146,14 @@ From `3_game/tools/uiscriptedmenu.c`:
   null, false)` → `parent.GetMainWidget().AddChild(...)` (:89-121); dtor deletes root (:123-127).
   `Container extends LayoutHolder` adds `array<ref LayoutHolder> m_Body` + focused-container/column
   state for gamepad nav (`containers/container.c:1-80`) + `Insert(holder, pos)` (:1201).
+- **Desacoplamiento de `SlotsIconBase` (DayZ 1.30 Exp)**:
+  *(hasta 1.29: `SlotsIcon.c` era la clase base monolítica de slots de inventario; desde 1.30 Exp: `exp\scripts\scripts\5_Mission\GUI\InventoryNew\ContainedItems\SlotsIconBase.c:1` absorbió 744 líneas de lógica genérica, reduciendo `SlotsIcon.c:1` a 217 líneas dedicadas al registro de eventos de ratón).*
+  `SlotsIconBase` gestiona widgets de estado (`m_CursorWidget`, `m_ColWidget`, `m_MountedWidget`,
+  `m_OutOfReachWidget`, `m_ReservedWidget`, `m_SelectedPanel`, `m_EmptySelectedPanel`, `m_MicromanagedPanel`),
+  dimensiones, banderas de item y el render de preview (`m_ItemPreview`).
+  Para renderizar iconos fuera del menú de inventario (en el HUD y cursor de construcción), 1.30 introduce
+  `GenericIconBase: SlotsIconBase` (`exp\scripts\scripts\5_Mission\GUI\InventoryNew\ContainedItems\GenericIcon.c:1`)
+  sobre `new_ui/hud/SimpleIconTemplate.layout`, orquestado por `ActionInfoGrids.c:1`.
 - Width classes: `InventoryMenu` ctor computes static ScreenWidthType from aspect ratio (>1.75 WIDE,
   >1.5 MEDIUM, else NARROW; `inventorymenu.c:38-52`); layout paths centralized as consts in
   `class WidgetLayoutName` (`3_game/gui/widgetlayoutname.c:1-51`) with narrow/medium/wide/xbox
@@ -160,6 +175,11 @@ From `3_game/tools/uiscriptedmenu.c`:
 - Device hot-swap: subscribe `g_Game.GetMission().GetOnInputDeviceChanged().Insert(fn)`
   (+ GetOnInputPresetChanged) — 23 vanilla files do this and **Remove in destructor**
   (`mapmenu.c:41-47,162-163`).
+- **Iconos de mando universales vs métodos Xbox obsoletos (DayZ 1.30 Exp)**:
+  *(hasta 1.29: `ActionTargetsCursor.c` utilizaba métodos específicos de Xbox como `SetInteractXboxIcon`, `SetContinuousInteractXboxIcon`, `SetSingleXboxIcon`, `SetContinuousXboxIcon` y `SetXboxIcon`; desde 1.30 Exp: `exp\scripts\scripts\5_Mission\GUI\ActionTargetsCursor.c:1368-1377` los marca como `[Obsolete("no replacement")]`).*
+  El soporte de gamepad ahora es multiplataforma y unificado mediante `SetControllerIcon(string pWidgetName, string pInputName)`
+  (`exp\scripts\scripts\5_Mission\GUI\ActionTargetsCursor.c:146-150`), el cual inyecta glifos RichText dinámicos
+  para mandos de Xbox, PlayStation o PC vía `InputUtils.GetRichtextButtonIconFromInputAction(pInputName, "", EUAINPUT_DEVICE_CONTROLLER)`.
 
 ## 8. Facts that correct/extend the skill
 

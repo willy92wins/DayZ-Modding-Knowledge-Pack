@@ -133,3 +133,45 @@ record. It is never a promotion or deletion criterion.
 - The digest sidecar is created before `.tmp` cleanup.
 - Valid and truncated orphan candidates take different deterministic actions.
 - No orphan decision uses mtime.
+- (desde 1.30 Exp) A `$mission:` `FileSerializer` overwrite is not this
+  contract. See the bunker exception below.
+
+## DayZ 1.30 Exp: `$mission:BunkerBroadcastPersistenceStorage.bin`
+
+Vanilla 1.30 adds a mission-level binary that is **not** a sidecar in this
+contract's sense: no version header, no JSON, no `.tmp`/`.bak`, no post-write
+verify. Path and types:
+
+`exp\scripts\scripts\4_World\Classes\BunkerBroadcastHandler.c:16-82`
+
+- `STORAGE_PATH = "$mission:BunkerBroadcastPersistenceStorage.bin"` (`:18`).
+- `BunkerBroadcastHandlerPersistenceData.m_LastActiveBunkers` (`TIntStringMap`,
+  bunker id → lock code) (`:11-14`).
+- `BunkerBroadcastSchedulerPersistenceData.m_LastReportHour` /
+  `m_LastReportMinute` (`:5-9`).
+- `Save()` opens `FileMode.WRITE` and `Write`s both objects (`:73-81`).
+- `Load()` opens `FileMode.READ`, `Read`s both, returns `true` if `Open`
+  succeeded (`:56-68`). `Serializer.Read` returns `bool`
+  (`exp\scripts\scripts\1_Core\proto\Serializer.c:58`) and is not checked.
+
+`DeleteFile` / `CopyFile` still only work on `$profile:` and `$saves:`
+(`exp\scripts\scripts\1_Core\proto\EnSystem.c:527-531`). The recoverable
+replace in this file cannot be implemented on `$mission:` with those
+primitives.
+
+(hasta 1.29: this file did not exist.)
+(desde 1.30 Exp: the bunker scheduler persists across mission restarts in
+that `.bin`. It does not touch the character/world entity stream.)
+
+[DESIGN] Do not copy this as a persistence template. If a mod needs
+administrator-inspectable bunker-like state, keep this sidecar contract on
+`$profile:` / `$saves:` with an explicit version header. If the data must
+live next to the mission, document that `DeleteFile` cannot rotate it and
+that a failed `Read` is undetectable in vanilla.
+
+`JsonFileLoader<T>.LoadFile` / deprecated `JsonLoadFile` line numbers in this
+build still match the 1.29 cites
+(`exp\scripts\scripts\3_Game\tools\JsonFileLoader.c:7-40`, `:99-131`).
+
+Full `[EXACT]` copies:
+[dayz-1-30-persistence.md](dayz-1-30-persistence.md).

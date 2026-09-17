@@ -16,6 +16,8 @@ Supports sprite sheet animation (TileU/TileV).
 Used for simpler particles that just need diffuse+ambient lighting.
 No BlendMode property available.
 
+(until 1.29: these two shaders cover particle `.emat` files.) (since 1.30 Exp: weather also ships **postprocess** `.emat` that are not particle materials. Sandstorm uses shader `SnowEffect` at `exp\graphics\graphics\Materials\postprocess\sandstorm.emat:1` with `ParticlesColor 0.69 0.49 0.29 1` (`:29`). Nasdara rain uses shader `RainEffect` (`rainnasdara.emat:1`). Do not reference those files from a `.ptc` `Material` line.)
+
 ---
 
 ## COMPLETE PROPERTY TABLE
