@@ -535,6 +535,19 @@
       "verification_level": "runtime_verified"
     },
     {
+      "artifact_id": "file/skills/enforce-script-reference/references/pitfalls-advanced.md",
+      "claim_id": "CLAIM-ENFORCE-COMBINEITEMS-PENDING-DELETE",
+      "evidence_locator": "scripts/4_world/entities/itembase.c:2202-2262,2308-2332,3354-3363,3413-3416; scripts/3_game/entities/entityai.c:774-778,807-810; scripts/3_game/entities/object.c:82-85",
+      "license": "MIT",
+      "line_end": 668,
+      "line_start": 652,
+      "observed_at": "2026-09-19",
+      "promotion_artifact_id": "skill/enforce-script-reference",
+      "source_id": "dayz-vanilla",
+      "source_revision": "1.29.0.163451",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/skills/dayz-underground/skill.md",
       "claim_id": "CLAIM-UG-HOLES-SCHEMA-130",
       "evidence_locator": "Addons/worlds_enoch.pbo > config.bin > CfgWorlds > Enoch > Holes (DayZ 1.30.164014 Exp, derapified with CfgConvert); absent from the 1.29 config",

@@ -648,3 +648,21 @@ This file did not document `OnCEUpdate` at line 87 (that row is `FileHandle`; di
 - (hasta 1.29: `ActionFillBottleBase` in `RegisterActions`). (desde 1.30 Exp: `[Obsolete]` `ActionFillBottleBase.c:28-29`; constructor inserts `ActionObtainLiquidBase` `:156`.)
 - `ProcessInputData` override is silent in retail (DIAG + debug flag only) — `DayZPlayerInventory.c:668-687`.
 - `World.Is3rdPersonDisabled()` `[Obsolete]` (`World.c:291`). `GetNoiseReductionByWeather` was **not** deleted (digest O false); both Weather methods exist and are `[Obsolete]` (`Weather.c:407`, `:454`).
+
+### Looping `CombineItems`: an emptied stack is deleted only on the next frame (added 2026-09-19)
+
+`ItemBase.CombineItems` empties the donor with `AddQuantity(-used)`, which goes through `SetQuantity`. For items with `varQuantityDestroyOnMin = 1` (e.g. `Rag`), `SetQuantity` at the minimum calls `this.Delete()` (`4_world\entities\itembase.c:3354-3363`). `EntityAI.Delete()` only sets `m_PendingDelete` (`3_game\entities\entityai.c:774-778`), and `Object.Delete()` queues `ObjectDelete` for the next frame (`3_game\entities\object.c:82-85`). Until then the emptied stack is still a cargo child with quantity 0, and `CanBeCombined` (`itembase.c:2202-2262`) has no pending-delete check: an empty stack is "not full", so it is a valid target.
+
+Any loop that performs several merges in one call (auto-stack, stack-all, loot consolidation) can therefore pick the emptied stack as a later target and move live quantity into it. Everything merged into it disappears on the next frame. Rag stacks 2/2/5: A←B (B=0, pending), A←C (A full, C=3), B←C (C=0) → 9 rags become 6.
+
+[EXACT][CLAIM-ENFORCE-COMBINEITEMS-PENDING-DELETE] Before each target and donor, skip entities already queued for deletion (`IsSetForDeletion`, `entityai.c:807-810`), and empty ammunition piles:
+
+```c
+if (!item || item.IsSetForDeletion())
+    continue;
+Magazine pile = Magazine.Cast(item);
+if (pile && pile.GetAmmoCount() <= 0)
+    continue;
+```
+
+Verification: static trace through the vanilla script tree (TransferZ audit, 2026-09-19); not reproduced in game.

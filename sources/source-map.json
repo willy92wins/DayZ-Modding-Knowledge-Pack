@@ -10515,7 +10515,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e8eb6d381a7fcd191610418f847680000e8ebd3b73639ef71fe507c2b5cf56d6",
+      "output_hash": "6e92b3ebd6edf0ad17c28b8afd0a7164efb3e3371171b23624eeaba6e3f24764",
       "output_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -12075,10 +12075,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "integrate-publish@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Side commit 65f078a replayed onto the integration branch; the file also changed on the integrated line, so the replayed bytes are a merge of both.",
+          "license": "MIT",
+          "source_hash": "bf85122cfdd31a7a7818ea4eb9dae09cf49027cc2a7d98789a7811dcd4a9b772",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "integrate-publish@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "db5cbeb979590a0e771ab4c3cbeb90c2c24912956268aee0199351ba801ab95c",
+      "output_hash": "bf85122cfdd31a7a7818ea4eb9dae09cf49027cc2a7d98789a7811dcd4a9b772",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
