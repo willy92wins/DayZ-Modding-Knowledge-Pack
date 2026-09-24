@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from packctl import generated
 from packctl.validation import validate_generated
 
@@ -124,3 +126,35 @@ def test_skipped_directories_are_not_scanned(tmp_path: Path) -> None:
         copy.write_bytes(generated.MARK.encode("utf-8") + b"\n" + SOURCE_BODY)
 
     assert generated.scan(tmp_path) == []
+
+
+def test_root_that_lives_under_a_worktrees_directory_scans_clean(tmp_path: Path) -> None:
+    # The repo keeps its checkouts at <repo>/.worktrees/<name> and packctl resolves
+    # --root, so the root's own absolute path must never reach the skip set.
+    root = (tmp_path / ".worktrees" / "feature").resolve()
+    write_sources(root)
+    generated.sync(root)
+
+    assert ".worktrees" in root.parts
+    assert generated.scan(root) == []
+
+
+@pytest.mark.parametrize(
+    "parent", ["", ".worktrees/feature"], ids=["plain-root", "root-under-worktrees"]
+)
+def test_worktrees_nested_inside_the_root_stay_skipped(tmp_path: Path, parent: str) -> None:
+    root = (tmp_path / parent).resolve()
+    write_sources(root)
+    generated.sync(root)
+    header_only = generated.MARK.encode("utf-8") + b"\n" + SOURCE_BODY
+    for rel in (f".worktrees/other/{generated.PAIRS[0][1]}", "tools/bare.py"):
+        path = root / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(header_only)
+
+    problems = generated.scan(root)
+
+    # The same bytes are reported where the scan reaches and ignored inside the
+    # nested checkout, so the skip is shown against a live finding, not an empty tree.
+    assert codes(problems) == ["GENERATED-COPY-HEADER-INCOMPLETE"]
+    assert problems[0]["path"] == "tools/bare.py"

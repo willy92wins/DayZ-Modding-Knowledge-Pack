@@ -12598,17 +12598,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored in this branch: packctl.generated shipped with no tests and its PAIRS backstop failed every synthetic root.",
+          "decision_evidence": "Authored in this branch: packctl.generated shipped with no tests and its PAIRS backstop failed every synthetic root. Two regression tests pin the repo-relative skip: a root under a .worktrees directory scans clean, and a .worktrees checkout nested inside the root stays skipped whether or not the root itself lives under one; both root-under-worktrees cases fail against the pre-fix module.",
           "license": "MIT",
-          "source_hash": "fbe19dce3d1c2e45de7e750039ccda70ef1ff24d024384268b4542d0090aef86",
+          "source_hash": "a92a1523bc6609639197c8ffbd5d771368c50419ed8f33a7e02a4c36b7e1783a",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_generated.py",
-          "source_revision": "packctl-gate-green@2026-09-02",
+          "source_revision": "packctl-generated-relparts@2026-09-24",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "fbe19dce3d1c2e45de7e750039ccda70ef1ff24d024384268b4542d0090aef86",
+      "output_hash": "a92a1523bc6609639197c8ffbd5d771368c50419ed8f33a7e02a4c36b7e1783a",
       "output_path": "tests/packctl/test_generated.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -23490,17 +23490,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Owns both halves of the generated-copy seal - writing a copy and checking one - so the rule that decides 'in sync' cannot drift between the writer and the checker. The PAIRS backstop is scoped to trees that carry the edited source, so a registry entry about this pack cannot fail a synthetic root.",
+          "decision_evidence": "Owns both halves of the generated-copy seal - writing a copy and checking one - so the rule that decides 'in sync' cannot drift between the writer and the checker. The PAIRS backstop is scoped to trees that carry the edited source, so a registry entry about this pack cannot fail a synthetic root. The skip set is tested against repo-relative parts, so a checkout that lives under a .worktrees directory is scanned instead of being skipped whole and failed with a false GENERATED-COPY-UNMARKED.",
           "license": "MIT",
-          "source_hash": "8905d79c0417f090e83b4f17263248b975c42d870ebe3bfc37343dfe7586f0d8",
+          "source_hash": "581e2f0c90f7da19819600c148ebf024658e347a09b47a6e3c13b5a10cd382b3",
           "source_id": "pack-r21-authored",
           "source_path": "packctl/generated.py",
-          "source_revision": "packctl-gate-green@2026-09-02",
+          "source_revision": "packctl-generated-relparts@2026-09-24",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8905d79c0417f090e83b4f17263248b975c42d870ebe3bfc37343dfe7586f0d8",
+      "output_hash": "581e2f0c90f7da19819600c148ebf024658e347a09b47a6e3c13b5a10cd382b3",
       "output_path": "packctl/generated.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested",
