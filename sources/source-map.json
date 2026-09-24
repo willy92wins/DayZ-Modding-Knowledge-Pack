@@ -2174,10 +2174,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "repin-after-apply@2026-09-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Rewritten by the promotion commit 5f6568e (transaction 53bcac92a5e929a8aa4e2dff, 2026-09-17), which did not reseal this entry and left SOURCE-HASH-MISMATCH. Resealed on 2026-09-24 to the bytes at bc042c2; the content of that rewrite was not re-audited here.",
+          "license": "MIT",
+          "source_hash": "0e04f036e6aae6bd7e2935c332539d08d75a2157f863e0b331f8e4964821af48",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion@2026-09-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e967993fe493d8cfec6819e1e364327b7441feed9bc34d7dd23a3215afbba255",
+      "output_hash": "0e04f036e6aae6bd7e2935c332539d08d75a2157f863e0b331f8e4964821af48",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -23356,6 +23366,579 @@
       "output_hash": "249d7c785cf4d1945131c2cf4eab4a04cb6eee044327361b5f65ea9f8761aab5",
       "output_path": "tools/dayz-script-validator/tests/fixtures/protected_cross_module/ok_same_module/scripts/4_World/fx_device.c",
       "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ai-patterns/references/dayz-1-30-ai.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "d30d7fb5f2372bce7f80c70cecd1c6afaec28d054f08b209a6483aa7fac2d7d3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ai-patterns/references/dayz-1-30-ai.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d30d7fb5f2372bce7f80c70cecd1c6afaec28d054f08b209a6483aa7fac2d7d3",
+      "output_path": "skills/dayz-ai-patterns/references/dayz-1-30-ai.md",
+      "routing_artifact_id": "skill/dayz-ai-patterns",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-aviation/references/dayz-1-30-aviation.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "e2eb8768fc539ffa3831bdce4afa65328ba5907acdf68f34652019d78e9688ec",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/references/dayz-1-30-aviation.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e2eb8768fc539ffa3831bdce4afa65328ba5907acdf68f34652019d78e9688ec",
+      "output_path": "skills/dayz-aviation/references/dayz-1-30-aviation.md",
+      "routing_artifact_id": "skill/dayz-aviation",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-basebuilding/references/dayz-1-30-construction-rebuilding.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "d404b85694afd1383c3571f85202494f84b47f0f2a78c30833387a15ed5bfc8d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-basebuilding/references/dayz-1-30-construction-rebuilding.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d404b85694afd1383c3571f85202494f84b47f0f2a78c30833387a15ed5bfc8d",
+      "output_path": "skills/dayz-basebuilding/references/dayz-1-30-construction-rebuilding.md",
+      "routing_artifact_id": "skill/dayz-basebuilding",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-characters/references/character-ragdoll.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "51e000fd89d86d5d22138fc5d21620930b77f812a0c0fbe7cc62a9f84db10ecd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/character-ragdoll.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "51e000fd89d86d5d22138fc5d21620930b77f812a0c0fbe7cc62a9f84db10ecd",
+      "output_path": "skills/dayz-characters/references/character-ragdoll.md",
+      "routing_artifact_id": "skill/dayz-characters",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-characters/references/dayz-1-30-characters.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "f7e6ab7cca87070bef4c7706dd2affe022f806480394bdd245a6b537749020f2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/dayz-1-30-characters.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f7e6ab7cca87070bef4c7706dd2affe022f806480394bdd245a6b537749020f2",
+      "output_path": "skills/dayz-characters/references/dayz-1-30-characters.md",
+      "routing_artifact_id": "skill/dayz-characters",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-clothing/references/dayz-1-30-clothing.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "fd530db2f228c1273457f359d7e24a3b6828d43ed9962196f48145314999c1b1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/references/dayz-1-30-clothing.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fd530db2f228c1273457f359d7e24a3b6828d43ed9962196f48145314999c1b1",
+      "output_path": "skills/dayz-clothing/references/dayz-1-30-clothing.md",
+      "routing_artifact_id": "skill/dayz-clothing",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-environment-hazards/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "a1364d075280a1aa9d127af4c00343c7030d8c60db2b5de2cd8147fe3fb609bf",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/SKILL.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a1364d075280a1aa9d127af4c00343c7030d8c60db2b5de2cd8147fe3fb609bf",
+      "output_path": "skills/dayz-environment-hazards/SKILL.md",
+      "routing_artifact_id": "skill/dayz-environment-hazards",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-environment-hazards/references/dust-oilpit-nasdara.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "0842748fa290f135a6306354d3b802d2fffac1fb90035adab0ecceedb7c8d3cd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/references/dust-oilpit-nasdara.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0842748fa290f135a6306354d3b802d2fffac1fb90035adab0ecceedb7c8d3cd",
+      "output_path": "skills/dayz-environment-hazards/references/dust-oilpit-nasdara.md",
+      "routing_artifact_id": "skill/dayz-environment-hazards",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-environment-hazards/references/ppe-agents.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "89d5448a1e690792ec5c2b760288671fb00f281790283a6b6df0b395a4900138",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/references/ppe-agents.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "89d5448a1e690792ec5c2b760288671fb00f281790283a6b6df0b395a4900138",
+      "output_path": "skills/dayz-environment-hazards/references/ppe-agents.md",
+      "routing_artifact_id": "skill/dayz-environment-hazards",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-environment-hazards/references/sandstorm-shelter.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "74389d44a1aa8723dc92992984e8b932d6a254775a4a4041ac2b1c8a69d0e110",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/references/sandstorm-shelter.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "74389d44a1aa8723dc92992984e8b932d6a254775a4a4041ac2b1c8a69d0e110",
+      "output_path": "skills/dayz-environment-hazards/references/sandstorm-shelter.md",
+      "routing_artifact_id": "skill/dayz-environment-hazards",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-environment-hazards/references/sources.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "c6fdb3eee3e4957a8ef0069a175d781f7eb0730d889a37c3a0555c9d600a034c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/references/sources.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c6fdb3eee3e4957a8ef0069a175d781f7eb0730d889a37c3a0555c9d600a034c",
+      "output_path": "skills/dayz-environment-hazards/references/sources.md",
+      "routing_artifact_id": "skill/dayz-environment-hazards",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-environment-hazards/references/thermal-heatstroke.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "3c7a112b0d0f6b209098836ec9fcd2b4d5f3f815cadeb7b4396ce1ec8fd6023b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/references/thermal-heatstroke.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3c7a112b0d0f6b209098836ec9fcd2b4d5f3f815cadeb7b4396ce1ec8fd6023b",
+      "output_path": "skills/dayz-environment-hazards/references/thermal-heatstroke.md",
+      "routing_artifact_id": "skill/dayz-environment-hazards",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "a35a140351921ba2216dfe409502f096253f50ab7bcfb3d3130fc4a60a64ad50",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a35a140351921ba2216dfe409502f096253f50ab7bcfb3d3130fc4a60a64ad50",
+      "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+      "routing_artifact_id": "skill/dayz-mcp-verify",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-mod-workflow/references/dayz-1-30-mod-workflow.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "1fc63d5aa51def561ec67a5aab13af12e1e6cdfe169e30011ca3bd9df2bf44d2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/references/dayz-1-30-mod-workflow.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1fc63d5aa51def561ec67a5aab13af12e1e6cdfe169e30011ca3bd9df2bf44d2",
+      "output_path": "skills/dayz-mod-workflow/references/dayz-1-30-mod-workflow.md",
+      "routing_artifact_id": "skill/dayz-mod-workflow",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/dayz-1-30-model-pipeline.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "f2a1291740e48782017eed63edcacea4f503a9c8b34595dbe706781290cc57e6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/dayz-1-30-model-pipeline.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f2a1291740e48782017eed63edcacea4f503a9c8b34595dbe706781290cc57e6",
+      "output_path": "skills/dayz-model-pipeline/references/dayz-1-30-model-pipeline.md",
+      "routing_artifact_id": "skill/dayz-model-pipeline",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-particles/references/dayz-1-30-particles.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "c210b202543ea886d2dc33a1263f068d6a4592571bd759d71378a7281f961f16",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-particles/references/dayz-1-30-particles.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c210b202543ea886d2dc33a1263f068d6a4592571bd759d71378a7281f961f16",
+      "output_path": "skills/dayz-particles/references/dayz-1-30-particles.md",
+      "routing_artifact_id": "skill/dayz-particles",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "996aca9e0a827255e57c38a674c939667ef5d249302c84e687b1330e31e41647",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "996aca9e0a827255e57c38a674c939667ef5d249302c84e687b1330e31e41647",
+      "output_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
+      "routing_artifact_id": "skill/dayz-pbo-build",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-persistence/references/dayz-1-30-persistence.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "45adb229e6a26feac00883ed5481dedc144ab7d7d9067a7c68a9abd5b8a78496",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/references/dayz-1-30-persistence.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "45adb229e6a26feac00883ed5481dedc144ab7d7d9067a7c68a9abd5b8a78496",
+      "output_path": "skills/dayz-persistence/references/dayz-1-30-persistence.md",
+      "routing_artifact_id": "skill/dayz-persistence",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "e36000207ebc1b0d7195ae3c858b810f97ddc6d1f14de6e23227fd72e725adf7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e36000207ebc1b0d7195ae3c858b810f97ddc6d1f14de6e23227fd72e725adf7",
+      "output_path": "skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
+      "routing_artifact_id": "skill/dayz-physics-engine",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-sound-system/references/dayz-1-30-sound.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "b4b3dc5831bdf3b6a2df0f4dfac60de5f672da5b57865eb9f4c32bf05457a3da",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/references/dayz-1-30-sound.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b4b3dc5831bdf3b6a2df0f4dfac60de5f672da5b57865eb9f4c32bf05457a3da",
+      "output_path": "skills/dayz-sound-system/references/dayz-1-30-sound.md",
+      "routing_artifact_id": "skill/dayz-sound-system",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "389ddf8384da2061dc333d2f119add9c8df9d203200231ec8d9cf5d5c7a73681",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "389ddf8384da2061dc333d2f119add9c8df9d203200231ec8d9cf5d5c7a73681",
+      "output_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/references/hud-action-info-panels.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "0649d7fb19cf1b8fca8626c782ae4355c4c254e9699d0f502c8b5c266c5c616e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/hud-action-info-panels.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0649d7fb19cf1b8fca8626c782ae4355c4c254e9699d0f502c8b5c266c5c616e",
+      "output_path": "skills/dayz-ui-development/references/hud-action-info-panels.md",
+      "routing_artifact_id": "skill/dayz-ui-development",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "083cb06ee81326516c739e6e4af75ff12385836888a87364ec0946623952a13a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "083cb06ee81326516c739e6e4af75ff12385836888a87364ec0946623952a13a",
+      "output_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+      "routing_artifact_id": "skill/dayz-vehicles",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-weapons/references/dayz-1-30-weapons.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "aa9cb2734109e796de297c648c48f5dbc49dee771d0e96a66a9cf486801648e8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/references/dayz-1-30-weapons.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "aa9cb2734109e796de297c648c48f5dbc49dee771d0e96a66a9cf486801648e8",
+      "output_path": "skills/dayz-weapons/references/dayz-1-30-weapons.md",
+      "routing_artifact_id": "skill/dayz-weapons",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added by 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) and promoted by 5f6568e (receipt 53bcac92a5e929a8aa4e2dff) without a source-map entry. Mapped on 2026-09-24 from the bytes at bc042c2 so that validate can run green. This entry records provenance only and does not re-verify the content, hence historical.",
+          "license": "MIT",
+          "source_hash": "263acce9a5ee898ae4029bfd05b920a1ed0c906b02085c6ce6d05777fcf74538",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
+          "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
+          "verification_level": "historical"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "263acce9a5ee898ae4029bfd05b920a1ed0c906b02085c6ce6d05777fcf74538",
+      "output_path": "skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
+      "routing_artifact_id": "skill/enforce-script-reference",
+      "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/53bcac92a5e929a8aa4e2dff.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt written by promote --apply on 2026-09-17 for transaction 53bcac92a5e929a8aa4e2dff: the promotion of 5ad3174 (DayZ 1.30 Exp in 22 skills plus the new dayz-environment-hazards) to claude_user_skills, agents_user_skills and obsidian_snapshots, 113 operations, verdict PASS, run from the kp-recon worktree and committed as 5f6568e without a source-map entry. Mapped on 2026-09-24; the receipt bytes are unchanged.",
+          "license": "MIT",
+          "source_hash": "030a2efd8d086e0bec829a206d6d704a53f34ffe913de7db443511bcb22d2429",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/53bcac92a5e929a8aa4e2dff.json",
+          "source_revision": "promotion@2026-09-17",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "030a2efd8d086e0bec829a206d6d704a53f34ffe913de7db443511bcb22d2429",
+      "output_path": "promotions/receipts/53bcac92a5e929a8aa4e2dff.json",
+      "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     }
   ],
