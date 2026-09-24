@@ -162,6 +162,9 @@ Keybinds (verified):
 than hand-editing trigger configs blindly. Not available in retail (the plugin
 file is wrapped in `DIAG_DEVELOPER`).
 
+The trigger JSON schema, the 4096-trigger limit, triggers tied to Object Spawner
+objects, the underground presence sync and terrain holes are in `dayz-underground`.
+
 ## NVTypes environmental variants (custom cameras)
 
 (until 1.29: `NVTypes` ended at optics/pumpkin night variants.) (since 1.30

@@ -30,7 +30,7 @@ reads the `Construction{}` config block and populates `map<string, ref Construct
 (until 1.29: that field type and those line numbers). (since 1.30 Exp: `protected ref ConstructionBasic
 m_Construction` (`basebuildingbase.c:15`). `ConstructionInit()` is on `EntityAI` (`EntityAI.c:3441-3448`)
 and calls `CreateConstructionComponent()` (`:3451`). `BaseBuildingBase` overrides that to
-`m_Construction = new Construction(this)` (`basebuildingbase.c:872-876`). `UpdateConstructionParts` is on
+`m_Construction = new Construction(this)` (`basebuildingbase.c:871-875`). `UpdateConstructionParts` is on
 `ConstructionBase.c:495-532` and fills parts from `ConstructionDataTypeHolder`, not by walking config on the
 instance. `GetConstruction()` is `Construction.Cast(m_Construction)` (`:883-886`).)
 

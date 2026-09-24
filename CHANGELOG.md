@@ -7,6 +7,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-underground` (new skill), DayZ 1.30 Exp (1.30.164014).
+  - Terrain holes: the `CfgWorlds >> <world> >> Holes >> <group> >> tiles[]`
+    format taken from Livonia's config, the read-only `SurfaceIsHole(x, z)`,
+    and why a tile is a heightmap cell (6.25 m on Livonia, cross-checked
+    against the vanilla Dambog triggers).
+  - Evidence that holes live in the world config: the `.wrp` of both
+    Chernarus and Livonia moved from OPRW v29 to v32 and grew about 5 % on
+    each, with or without holes.
+  - Underground triggers: the JSON schema, the 256 to 4096 limit, and
+    triggers tied to Object Spawner objects.
+  - The underground presence the client now reports to the server.
+  - The Badlands bunker-broadcast and irrigation-tunnel scripts.
+  - Source-verified against the 1.30.164014 scripts; in-game behaviour is
+    unverified and listed as such (claims `CLAIM-UG-*`).
+- `dayz-basebuilding` §9 of the 1.30 reference.
+  - The `Construction{}` activation check (`EntityAI.c:248-249`).
+  - The per-part keys 1.30 reads: decay, `StaticsSupportData`, `EffectsData`,
+    `custom_part_type`, `skipOnRepair`/`skipOnDismantle`.
+  - Door locks on rebuilt buildings.
+  - Rebuildable Nasdara buildings ship as scripts only in the Exp build.
+  - `ECE_OBJECT_SPAWNER` (claims `CLAIM-BB-*`).
 - `dayz-script-validator`: two tree-level checks, both derived from failures
   observed on a running server on 2026-09-17 rather than from review opinion.
   - `ES-PROTECTED-CROSS-MODULE` (FAIL). Enforce enforces `protected` across
@@ -37,6 +58,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Review assignment and the bounded product-based stop rule belong to the orchestrator.
   The evidence checks and domain coverage remain; unavailable independent review must
   be declared. No game API, artifact format or runtime behavior changed.
+
+### Fixed
+
+- `dayz-basebuilding` cited `BaseBuildingBase.CreateConstructionComponent` at
+  `basebuildingbase.c:872-876`. In 1.30.164014 the override is at `871-875`.
+- `sources/source-map.json`: `validate` was red on bc042c2 with 28 errors and
+  is now green. The 25 skill files and receipt 53bcac92 that 5ad3174 and
+  5f6568e left unmapped are now mapped, and `adjudications.json` is resealed.
 
 ## [1.3.0] - 2026-08-25
 

@@ -198,10 +198,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased entries for dayz-underground, dayz-basebuilding section 9, the citation fix and the source-map repair.",
+          "license": "MIT",
+          "source_hash": "dd4b8052090b81d4a2c3d3f21820c12f67b36fbc9033a5bbfe5fd35953558a9b",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "dayz-underground@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "046ac225f75e4f88ad828bfb1648db20e2fa6a998a371365ba97c3efd05db378",
+      "output_hash": "dd4b8052090b81d4a2c3d3f21820c12f67b36fbc9033a5bbfe5fd35953558a9b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2230,10 +2240,20 @@
           "source_path": "promotions/promotion-map.json",
           "source_revision": "r21-unpublish-internal-layer@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Routing entry for the new skill/dayz-underground tree (claude_user_skills, agents_user_skills, obsidian_snapshots).",
+          "license": "MIT",
+          "source_hash": "548fca7285c4b24d38ab68508047fe5a113a9b77d693c57ecae70ac633872ca2",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/promotion-map.json",
+          "source_revision": "dayz-underground@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dbeba46de5c71ab15327031cd74d46e90fb4a801f06b43a2299b64c9f5771440",
+      "output_hash": "548fca7285c4b24d38ab68508047fe5a113a9b77d693c57ecae70ac633872ca2",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -4377,10 +4397,20 @@
           "source_path": "skills/dayz-basebuilding/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "1.30 section: Construction{} activation, rebuildable buildings shipping as scripts only, pointer and delegation row to dayz-underground; description compacted to stay under the 1024-character cap; basebuildingbase.c citation corrected from 872-876 to 871-875.",
+          "license": "MIT",
+          "source_hash": "78611d4d38955d440a950424b9cdafbe3cd0a80b2f7d9468c7e12b6342680cae",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-basebuilding/SKILL.md",
+          "source_revision": "dayz-underground@2026-09-24",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "f285394f97df33fd2ac5455075b7f72223bb19f65f343d9668baaeb12efe92ba",
+      "output_hash": "78611d4d38955d440a950424b9cdafbe3cd0a80b2f7d9468c7e12b6342680cae",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -4461,10 +4491,20 @@
           "source_path": "skills/dayz-basebuilding/references/entity-lifecycle.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "basebuildingbase.c citation corrected from 872-876 to 871-875 (re-opened in the 1.30.164014 scripts).",
+          "license": "MIT",
+          "source_hash": "366751f5424f4d3e297acc52bda5fd7159834a71abcf114de9748516c290fe64",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-basebuilding/references/entity-lifecycle.md",
+          "source_revision": "dayz-underground@2026-09-24",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "d60b7e3ee65406acfcffa4acceed6e783991e2fddba75112f5a1c5d294a35eec",
+      "output_hash": "366751f5424f4d3e297acc52bda5fd7159834a71abcf114de9748516c290fe64",
       "output_path": "skills/dayz-basebuilding/references/entity-lifecycle.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -11780,10 +11820,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "filesystem@2026-08-21",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Seven claims for dayz-underground and dayz-basebuilding section 9 (CLAIM-UG-*, CLAIM-BB-*), source_verified against 1.30.164014.",
+          "license": "MIT",
+          "source_hash": "b3c06ab925519f476c9c9f99f147a7381338037a3007640d7e97dc7738a3ca04",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "dayz-underground@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "59ec8a0c0020efe810ec6b6bca637b49139faa3500e41dceed05432abb996625",
+      "output_hash": "b3c06ab925519f476c9c9f99f147a7381338037a3007640d7e97dc7738a3ca04",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -23426,10 +23476,20 @@
           "source_path": "skills/dayz-basebuilding/references/dayz-1-30-construction-rebuilding.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Added section 9 (activation check, per-part keys read by 1.30, locks on rebuilt doors, what the Exp build ships, ECE_OBJECT_SPAWNER), source_verified against 1.30.164014; citation 872-876 corrected to 871-875.",
+          "license": "MIT",
+          "source_hash": "04295b41e896f268fc1b097ed48383ad708455b8e3bebdc5c6f0a4b43309afb7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-basebuilding/references/dayz-1-30-construction-rebuilding.md",
+          "source_revision": "dayz-underground@2026-09-24",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "d404b85694afd1383c3571f85202494f84b47f0f2a78c30833387a15ed5bfc8d",
+      "output_hash": "04295b41e896f268fc1b097ed48383ad708455b8e3bebdc5c6f0a4b43309afb7",
       "output_path": "skills/dayz-basebuilding/references/dayz-1-30-construction-rebuilding.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "historical"
@@ -23668,10 +23728,20 @@
           "source_path": "skills/dayz-mod-workflow/references/dayz-1-30-mod-workflow.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "One pointer from the trigger-editor section to dayz-underground.",
+          "license": "MIT",
+          "source_hash": "1ee777d7bdd1989b916f3fb54090cae55a0d6d7839ff30dcb9a068276fbeeb0f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/references/dayz-1-30-mod-workflow.md",
+          "source_revision": "dayz-underground@2026-09-24",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "1fc63d5aa51def561ec67a5aab13af12e1e6cdfe169e30011ca3bd9df2bf44d2",
+      "output_hash": "1ee777d7bdd1989b916f3fb54090cae55a0d6d7839ff30dcb9a068276fbeeb0f",
       "output_path": "skills/dayz-mod-workflow/references/dayz-1-30-mod-workflow.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "historical"
@@ -23940,6 +24010,72 @@
       "output_path": "promotions/receipts/53bcac92a5e929a8aa4e2dff.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-underground/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "New skill authored 2026-09-24 from the DayZ 1.30.164014 Exp scripts.pbo and world configs, compared with 1.29. Facts are source_verified with path:line; the cell size and config-only location are cross_checked and in-game behaviour is marked unverified in the text.",
+          "license": "MIT",
+          "source_hash": "1ea1713d5946680cdaa12ba11e9654240d9b0e5463d6031a8e058cb36732c7aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-underground/SKILL.md",
+          "source_revision": "dayz-underground@2026-09-24",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1ea1713d5946680cdaa12ba11e9654240d9b0e5463d6031a8e058cb36732c7aa",
+      "output_path": "skills/dayz-underground/SKILL.md",
+      "routing_artifact_id": "skill/dayz-underground",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-underground/references/terrain-holes-evidence.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "New skill authored 2026-09-24 from the DayZ 1.30.164014 Exp scripts.pbo and world configs, compared with 1.29. Facts are source_verified with path:line; the cell size and config-only location are cross_checked and in-game behaviour is marked unverified in the text.",
+          "license": "MIT",
+          "source_hash": "662a73fb7819637ab19fe94932a0c68b5d1d48bd96004a1cd1d7aeb9f3d67249",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-underground/references/terrain-holes-evidence.md",
+          "source_revision": "dayz-underground@2026-09-24",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "662a73fb7819637ab19fe94932a0c68b5d1d48bd96004a1cd1d7aeb9f3d67249",
+      "output_path": "skills/dayz-underground/references/terrain-holes-evidence.md",
+      "routing_artifact_id": "skill/dayz-underground",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-underground/references/underground-triggers.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "New skill authored 2026-09-24 from the DayZ 1.30.164014 Exp scripts.pbo and world configs, compared with 1.29. Facts are source_verified with path:line; the cell size and config-only location are cross_checked and in-game behaviour is marked unverified in the text.",
+          "license": "MIT",
+          "source_hash": "ee0deed4e831fb1677aa6163523919822573611719edfc68992ed96900752980",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-underground/references/underground-triggers.md",
+          "source_revision": "dayz-underground@2026-09-24",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ee0deed4e831fb1677aa6163523919822573611719edfc68992ed96900752980",
+      "output_path": "skills/dayz-underground/references/underground-triggers.md",
+      "routing_artifact_id": "skill/dayz-underground",
+      "verification_level": "source_verified"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",

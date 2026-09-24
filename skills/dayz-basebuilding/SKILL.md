@@ -13,7 +13,8 @@ description: >
   authoring/debugging a buildable structure or its persistence. Delegate
   geometry to dayz-model-pipeline, script APIs to enforce-script-reference,
   persistence audit to rigorous-data-audit and packaging to dayz-pbo-build.
-  Also 1.30 Exp: ConstructionBasic/ConstructionBase/Rebuilding, BuildPartServerEx, brick and mortar rebuilding, code lock on a fence.
+  Also 1.30 Exp: ConstructionBase/Rebuilding, BuildPartServerEx, bricks/mortar, fence code lock.
+  Not terrain holes: dayz-underground.
 ---
 
 # DayZ Base Building
@@ -54,7 +55,7 @@ The four-class quartet and who owns what:
 restored from the sync bitmask (see PERSISTENCE). End-to-end flow:
 (until 1.29: `BaseBuildingBase` owned `ref Construction m_Construction` and `ConstructionPart` stored config
 fields per instance). (since 1.30 Exp: the field is `protected ref ConstructionBasic m_Construction`
-(`basebuildingbase.c:15`); `CreateConstructionComponent()` does `new Construction(this)` (`:872-876`);
+(`basebuildingbase.c:15`); `CreateConstructionComponent()` does `new Construction(this)` (`:871-875`);
 `GetConstruction()` is `Construction.Cast(m_Construction)` (`:883-886`). Config is cached once per
 `EntityType` in `ConstructionPartTypeData` and attached via `SetPartTypeData` (`ConstructionPart.c:383-389`;
 `ConstructionBase.UpdateConstructionParts` `:495-532`).)
@@ -255,6 +256,7 @@ Do NOT build new features on `ActionPlugIntoFence` — it is DEPRECATED (`action
 | Persistence / bitmask packing / recovery paths (data-critical, id ranges, save ordering) | `rigorous-data-audit` (R9) |
 | Show/hide a part (`SetAnimationPhase`), gate open/close, AnimationSources | `dayz-animation-pipeline` |
 | Build / deploy / launch to test; smoke it in-game | `dayz-pbo-build` + `dayz-test-ingame` (+ `dayz-mcp-verify`) |
+| Terrain holes, underground triggers, `disallowedTypesInUnderground`, bunkers under the terrain | `dayz-underground` |
 
 ## CITE-THEN-VERIFY
 
@@ -294,7 +296,7 @@ Digest J (`work/out2/digest-J-construction-locks-bunker.md` §§1,3–5). Every 
 
 ### What changes
 
-- **Hierarchy.** `EntityAI.CreateConstructionComponent()` (`EntityAI.c:3451`) returns null by default. `BaseBuildingBase` overrides it to `new Construction(this)` (`basebuildingbase.c:872-876`). `BuildingBase` overrides it to `new Rebuilding(this)` (`Building.c:23-26`). Field type on both is `protected ref ConstructionBasic m_Construction`.
+- **Hierarchy.** `EntityAI.CreateConstructionComponent()` (`EntityAI.c:3451`) returns null by default. `BaseBuildingBase` overrides it to `new Construction(this)` (`basebuildingbase.c:871-875`). `BuildingBase` overrides it to `new Rebuilding(this)` (`Building.c:23-26`). Field type on both is `protected ref ConstructionBasic m_Construction`.
 - **Static vs instance.** `ConstructionPartTypeData` caches `Construction{}` on `EntityType` (`ConstructionPartTyped.c:2-67`). `ConstructionPart` keeps `m_PartTypeData`, `m_LocalSyncBitMask`, `m_IsBuilt` (`ConstructionPart.c:9-12`). The old multi-arg constructor is empty (`:14-16`); instances are `ToType().Spawn()` then `SetPartTypeData` (`ConstructionBase.c:514-520`).
 - **`*ServerEx`.** `BuildPartServer` / `DismantlePartServer` / `IsColliding` are `[Obsolete]` wrappers on `ConstructionBase` (`:1688-1740`). Live path: `BuildPartServerEx` / `DismantlePartServerEx` / `IsCollidingEx(CollisionCheckData)` (`:174,185,1471`). Digest J's `IsCollidingEx(string, Object, bool, bool)` signature is **not** in the file.
 - **Collision triggers.** `CreateCollisionTrigger` / `DestroyCollisionTrigger` / `IsTriggerColliding` are **not deleted**. They are `[Obsolete("no replacement")]` (`ConstructionBase.c:1742-1787`). Calling them still compiles; do not build new code on them.
@@ -304,6 +306,8 @@ Digest J (`work/out2/digest-J-construction-locks-bunker.md` §§1,3–5). Every 
 - **Fence locks.** `Fence` has `ATTACHMENT_CODE_LOCK = "Att_CodeLock"` and `GetCodeLock()` (`fence.c:20,26,161-165`) beside the existing combination lock. Dialing a combo lock no longer unlocks it: `ActionCombinationLockUnlock` (`CombinationLock.c:686`).
 - **Material enum moved.** `ConstructionMaterialType` now lives on `ConstructionBase.c:2-12` and adds `MATERIAL_BRICK = 6`, `MATERIAL_RUBBLE = 7`.
 - **`disableSimulation`.** `[CHANGELOG]` house entities may set `disableSimulation` to skip ticking (`changelog-1.30-exp-modding.md:13`; native `Entity.c:3-6`). Not a `BaseBuildingBase` field.
+- **Activation.** Any `CfgVehicles` class with a `Construction` subclass gets the component at init (`EntityAI.c:248-249`). Rebuilding parts read new keys: per-part decay (`can_part_decay`, `part_decay_threshold`, `part_decay_rate`, global `disableBaseDecay`), `StaticsSupportData`, `EffectsData`, `custom_part_type`, `skipOnRepair`/`skipOnDismantle`. Table with readers: `references/dayz-1-30-construction-rebuilding.md` §9.2.
+- **Rebuildable map buildings are scripts only in 1.30 Exp.** The Nasdara houses and `Land_IrrigationTunnel_Entrance_01` have script classes but no configs or models in the Exp install (§9.4). Terrain holes and underground areas: `dayz-underground`.
 
 ### What breaks (1.29 mods)
 

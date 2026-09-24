@@ -408,3 +408,54 @@ Not removed. Marked obsolete:
 ```
 
 `[CHANGELOG]` `disableSimulation` config parameter on house-based entities (`work/changelog-1.30-exp-modding.md:13`). Not observed on `BaseBuildingBase`.
+
+## 9. Activation, new per-part keys and rebuildable buildings (added 2026-09-24)
+
+Re-opened on 2026-09-24 against the 1.30.164014 Exp `scripts.pbo`. Nothing in this section has been exercised in-game.
+
+### 9.1 What turns construction on
+
+```c
+// [EXACT][CLAIM-BB-CONSTRUCTION-ACTIVATION-130] exp/scripts/scripts/3_Game/Entities/EntityAI.c:248-249
+		if (g_Game.ConfigIsExisting("cfgVehicles" + " " + GetType() + " " + "Construction"))
+			ConstructionInit();
+```
+
+Any `CfgVehicles` class with a `Construction` subclass gets its component when the entity is constructed. The concrete type comes from `CreateConstructionComponent()`: `new Rebuilding(this)` on `BuildingBase` (`4_World/Entities/Game/Super/Building.c:23-26`) and `new Construction(this)` on `BaseBuildingBase` (`basebuildingbase.c:871-875`). Inference from those two overrides, not measured: a modded building that inherits a `BuildingBase` descendant needs no script override to become rebuildable, only the config block and the model selections.
+
+### 9.2 Per-part keys that 1.30 reads
+
+[EXACT][CLAIM-BB-REBUILD-PART-KEYS-130] Readers are in `exp/scripts/scripts/4_World/Classes/BaseBuilding/TypeConstructionData/ConstructionPartTyped.c` unless another file is named. The paths are relative to `Construction <main_part> <part>`.
+
+| Key | Reader | What the code shows |
+|---|---|---|
+| `custom_part_type` | `ConstructionPartTypedHolder.c:34` | script class for the part's type data (e.g. the `ConstructionPartRebuild*Typed` classes) |
+| `can_part_decay`, `part_decay_threshold`, `part_decay_rate` | `:199`, `:205`, `:212` | per-part decay. Global switch `disableBaseDecay` (`3_Game/CfgGameplayDataJson.c:60`, `CfgGameplayHandler.c:172`, used by `ConstructionBasic.CanConstructionDecay`, `3_Game/Systems/Construction_Basic.c:31-34`) |
+| `insider_minMaxs` | `:159` | inner box, next to `collision_data` (`:148`) |
+| `item_falling_data` | `:188` | read; its effect was not traced |
+| `essential_attachments` | `:228` | read; its effect was not traced |
+| `related_GUI_categories` | `:239` | ties the part to inventory GUI categories |
+| `damage_hands_on_build` | `:250` | read; its effect was not traced |
+| `is_utility`, `utility_build` | `:259`, `:265` | read; their effect was not traced |
+| `EffectsData` > `soundEffectPositions`, `particleEffectPositions` | `4_World/Classes/Rebuilding/ConstructionEffects.c:19,26-28,37` | memory points for build effects |
+| `StaticsSupportData` > `SupportProviders` / `SupportRequirements` > `<child>` > `supportCategory` (string, hashed), `supportStrength` (int) | `4_World/Classes/Rebuilding/ConstructionStatics.c:13,26,37-38,45,56-57` | structural support: what a part provides and needs, by category |
+| `Materials` > `<material>` > `skipOnRepair`, `skipOnDismantle` | `4_World/Classes/BaseBuilding/ConstructionMaterials.c:31-32` | material not needed to repair / not refunded on dismantle (next to `type`, `slot_name`, `quantity`, `lockable`, `:26-30`) |
+
+### 9.3 Locks on rebuilt doors
+
+`BuildingBase` declares the slots `Att_CombinationLock` and `Att_CodeLock` (`Building.c:10-11`). A door cannot hold both (`HasConflictingDoorAttachment`, `:224-228`, `:344`), and `CanDoorBeOpened` is overridden (`:307`). The per-door slot wiring was not traced further here.
+
+### 9.4 What 1.30 Exp ships and what it does not
+
+- **Script classes.** The Nasdara houses (`4_World/Entities/Building/Rebuildable/House_*.c`) and `Land_IrrigationTunnel_Entrance_01 : BuildingSuper` (`IrrigationTunnel_Entrance.c:1-11`, whose debug spawn puts a `WoodenStick` and a `Rope` in its inventory).
+- **No configs or models.** On 2026-09-24, no unencrypted PBO config of the Exp install defined `Land_House_2M1`, `Land_IrrigationTunnel_Entrance_01`, `wall1_wood` or `rubble_rubble1`. `nasdara\addons\data_nasdara.pbo` carries only the DLC `CfgMods` entry and a `mud_brick` surface.
+- **Example part names.** `Land_House_2M1_Dam2.OnDebugSpawn` builds `rubble_rubble1`, `rubble_rubble2`, `wall1_wood`, `wall2_wood`, `wall3_brick` and `roof1` with `BuildPartServerEx(null, <part>, -1)` (`House_2M1.c:13-20`).
+- **`RebuildingSpawner` is diag-only** (`4_World/Classes/BaseBuilding/RebuildingSpawner.c:1`, `#ifdef DIAG_DEVELOPER`).
+
+### 9.5 Object Spawner flag
+
+- **The flag.** `ECE_OBJECT_SPAWNER = 256` (`3_Game/CE/CentralEconomy.c:15`) is now set by the Object Spawner (`3_Game/ObjectSpawner.c:44,48`).
+- **New parameter.** `CreateObject` and `CreateStaticObjectUsingP3D` gained `bool objSpawner = false` (`3_Game/Global/Game.c:680,691`).
+- **Unknowns.** Script does not say what the engine does with the flag. Whether a rebuildable building placed by the Object Spawner keeps its parts across a restart is unmeasured.
+
+Terrain holes, underground triggers and the underground placement block are in `dayz-underground`.
