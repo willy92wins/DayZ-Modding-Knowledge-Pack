@@ -1,6 +1,6 @@
 # Tools
 
-Nine Python tools ship in this pack. They are offline and deterministic;
+Ten Python tools ship in this pack. They are offline and deterministic;
 none of them phone home, and none of them guess. Most are stdlib-only;
 [`dayz-vehicle-proxy-contract`](#tools-dayz-vehicle-proxy-contract) also
 needs numpy, scipy, matplotlib and the pack py3d fork.
@@ -9,8 +9,8 @@ needs numpy, scipy, matplotlib and the pack py3d fork.
 once that tool is installed — `python -m pip install -e tools/<name>` from the
 repository root. On a fresh clone they fail with `No module named`, which
 reads like a broken tool and is a missing install. Tools that also ship a
-script path (`dayz-script-validator`, `dayz-ui-lab`) can be run from the tree
-without installing; each tool's section says which.
+script path (`dayz-script-validator`, `dayz-ui-lab`, `skill-runtime-pin`) can
+be run from the tree without installing; each tool's section says which.
 
 They exist because the DayZ asset pipeline fails *silently*: a `.p3d` written
 with a stale selection loads white, a mistyped RTM signature produces an
@@ -29,6 +29,7 @@ one.
 | [`dayz-3d-viewer`](#tools-dayz-3d-viewer) | Convert MLOD `.p3d`, PAA and RVMAT to glTF + HTML | **Yes** — `.glb`, PNG, HTML |
 | [`dayz-script-validator`](#tools-dayz-script-validator) | Lint Enforce, `config.cpp`, `.layout` and `.rvmat` before packing | Reports only |
 | [`dayz-vehicle-proxy-contract`](#tools-dayz-vehicle-proxy-contract) | Audit vehicle proxy graph, fit, engine properties and PBO closure | Reports only; `repair` stages copies outside the addon |
+| [`skill-runtime-pin`](#tools-skill-runtime-pin) | Capture a Pack commit and expose one derived runtime adapter | **Yes** — new task-local root only |
 
 ---
 
@@ -338,6 +339,28 @@ Generated HTML loads **three.js 0.160.0 from jsDelivr** — it is not
 bundled, so a render needs a network. Known converter gaps (SWIZ, proxy
 triangles, ViewPilot at resolution 1100) are listed in
 `tools/dayz-3d-viewer/KNOWN-ISSUES.md` and are not repaired here.
+
+## `tools/skill-runtime-pin`
+
+Capture **every blob** of a clean Pack commit into a new task-local root and
+add one derived discovery adapter. It is not a host launcher and it does not
+prove the rest of a global catalog is off.
+
+```powershell
+python tools/skill-runtime-pin/runtime_pin.py materialize --source <pack-repo> --commit <sha> --task-root <new-task-root>
+python tools/skill-runtime-pin/runtime_pin.py verify --task-root <task-root>
+python tools/skill-runtime-pin/runtime_pin.py assemble --task-root <task-root> --consumer cursor
+python tools/skill-runtime-pin/runtime_pin.py inspect-prompt --task-root <task-root> --prompt-input <dump.txt>
+python tools/skill-runtime-pin/runtime_pin.py grade --task-root <task-root> --transcript <transcript.json>
+```
+
+The capture stays byte-identical to the git objects. The adapter is
+**DERIVED** (`<skill>-<short-commit>`), points at the captured original
+`SKILL.md`, and holds a canary whose nonce is never placed in the assembled
+prompt. Codex `--ignore-user-config` is not HOME isolation; Cursor has no
+exclusive catalog. Consumer argv is `[DESIGN]` until the owner runs the real
+Cursor/Codex probes. A nonce without a read or injection of the original is a
+failed grade, not a pin.
 
 ---
 

@@ -1,5 +1,6 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "installation_id": "01234567-89ab-4cde-8012-3456789abcde",
   "path_aliases": {
     "<claude-appdata>": {
       "kind": "path",

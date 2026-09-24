@@ -9,7 +9,8 @@ description: >
   (enforce-script-reference, dayz-ui-development, dayz-particles, etc.), not
   instead of them. Triggers: "implement", "write the code", "build the mod",
   "fix the bug", "debug this", "it doesn't work", "actions not showing",
-  sprint execution, or any transition from plan to code/fix.
+  sprint execution, or any transition from plan to code/fix. Concurrent
+  sessions, skill snapshot, live promote during an open session.
   Also: CanBeStarted, CCTLiquid, MotorbikeScript, HouseDestructible, cfggameplay ExternalLockData/SandstormData, PluginUndergroundTriggerManager, NVTypes underground/sandstorm, IsHeadless.
 ---
 
@@ -41,6 +42,8 @@ Before writing or fixing ANY code:
   - Build+deploy+launch loop -> `dayz-test-ingame`
 - [ ] Is vanilla/mod reference code available for key patterns? If NO -> ask user.
 - [ ] List all files to implement/fix, in dependency order.
+- [ ] Concurrent session: follow
+      `references/concurrent-session-snapshot.md`.
 
 ---
 

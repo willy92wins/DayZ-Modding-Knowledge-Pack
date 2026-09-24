@@ -78,6 +78,29 @@
       "verification_level": "cross_checked"
     },
     {
+      "artifact_id": "file/.github/workflows/ci.yml",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored pack-contract workflow committed at 34e33343e117ba384d7da3f698ee70db48fdf66a: windows-latest, Python 3.12, contents:read, pinned actions/checkout and actions/setup-python, packctl validate and tests/packctl as separate steps. MIT-authored CI governance; not release payload.",
+          "license": "MIT",
+          "source_hash": "6274966cd25922e98df3f81b50626253226310a87bb5fda85bc06017436b1366",
+          "source_id": "pack-r21-authored",
+          "source_path": ".github/workflows/ci.yml",
+          "source_revision": "34e33343e117ba384d7da3f698ee70db48fdf66a",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6274966cd25922e98df3f81b50626253226310a87bb5fda85bc06017436b1366",
+      "output_path": ".github/workflows/ci.yml",
+      "routing_artifact_id": "root/github-workflows-ci",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/.gitignore",
       "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
@@ -244,7 +267,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
           "source_hash": "86317285dc15585eb93240d8177a285d212526cac81e10fef031fdfd2d7e4c6e",
@@ -252,10 +275,50 @@
           "source_path": "CONTRIBUTING.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "2026-09-10 concurrent governed-skill maintenance: full-map promote as version rollback, recover as incomplete-transaction restore, session pin via immutable commit snapshot.",
+          "license": "MIT",
+          "source_hash": "0650a0d1817c1165bbb738ef309d51fff723630980239d9e0ab245f968ca1be4",
+          "source_id": "pack-r21-authored",
+          "source_path": "CONTRIBUTING.md",
+          "source_revision": "concurrent-skills-pilot@2026-09-10",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Documented isolated schema-2 bootstrap (UUIDv4, empty targets/backup), full-map check/inspect/apply, owner source-map registration, and rollback as a new commit that keeps receipts and installation_id.",
+          "license": "MIT",
+          "source_hash": "dec6697d2737cb94cc903ddb87e2d97720eeeacbbdbb5379b7809cc8ad506846",
+          "source_id": "pack-r21-authored",
+          "source_path": "CONTRIBUTING.md",
+          "source_revision": "operations-integration@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Added [EXACT][CLAIM-PACKCTL-PORTABLE-PROMOTION-V2] beside the isolated schema-2 bootstrap contract restored from ab2f53d583ff50574bd336a88737c12d99234694. Registry-only; does not assert G5 runtime on this worktree HEAD.",
+          "license": "MIT",
+          "source_hash": "4f4c5a927e63cecc979199dfb4aefff41340f88dd5a81af01e972f316df2655d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CONTRIBUTING.md",
+          "source_revision": "g5-portable-claim-registry@2026-09-11",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Corrected isolated schema-2 bootstrap step 3: create backup_root and each targets.*.path as existing empty directories; routed artifact destinations may be absent or empty.",
+          "license": "MIT",
+          "source_hash": "810ea1a3ad65dc3a5452ac6760958cd90ede4c89451a67479d2e28304b0e0f13",
+          "source_id": "pack-r21-authored",
+          "source_path": "CONTRIBUTING.md",
+          "source_revision": "g5-root-precondition-docs@2026-09-11",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "502804dee4dd1a56ec2a19d2642ae93b44587300f67e6bd3062afcd50d832cae",
+      "output_hash": "810ea1a3ad65dc3a5452ac6760958cd90ede4c89451a67479d2e28304b0e0f13",
       "output_path": "CONTRIBUTING.md",
       "routing_artifact_id": "root/contributing",
       "verification_level": "cross_checked"
@@ -448,7 +511,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Index of the bundled tools, what each one refuses to do, and how to run it.",
           "license": "MIT",
           "source_hash": "1ea4be0e0c974d568f090830eeaa94262021c66721dbbcfb08689c8edc45ca79",
@@ -456,10 +519,20 @@
           "source_path": "TOOLS.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added the skill-runtime-pin capture/adapter contract and kept the existing tool index.",
+          "license": "MIT",
+          "source_hash": "ea8fcc18b03e34c7d5415b5f0da3b5b5f0b6b82f1ce3cc6be3257d9c6298328b",
+          "source_id": "pack-r21-authored",
+          "source_path": "TOOLS.md",
+          "source_revision": "runtime-pin@2026-09-11",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f3f2255789c820de33ede62dacc414e7660b1b1a0c01d1f469edca5495f82b9a",
+      "output_hash": "ea8fcc18b03e34c7d5415b5f0da3b5b5f0b6b82f1ce3cc6be3257d9c6298328b",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -1899,7 +1972,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
           "source_hash": "435c1b6f038de45245b56c6b93d16eeb5a3f576e41c8c352795f7ea282631d68",
@@ -1907,10 +1980,20 @@
           "source_path": "packctl/cli.py",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted the portable promotion history bytes from fbec75f9825565074bd79776da4d5dd4152ad370: v2 plans and receipts carry installation_id and a bootstrap flag so a moved checkout can reseal against git ancestry instead of physical paths. Working-tree SHA-256 matches that commit.",
+          "license": "MIT",
+          "source_hash": "e48cb6750aad29ecc7062368191306f1867fb3d0141da8e15a4513494788710b",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/cli.py",
+          "source_revision": "fbec75f9825565074bd79776da4d5dd4152ad370",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8e5f0e70e2de83a669a5d92cc966fe2d39a4d0be6330cd4fa10777e8107d9b66",
+      "output_hash": "e48cb6750aad29ecc7062368191306f1867fb3d0141da8e15a4513494788710b",
       "output_path": "packctl/cli.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -2037,7 +2120,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "The closed alias list gains <tmp>: it is a real path root in three executable payloads, and a token missing from the tuple is neither reported by the scanner nor configurable by an operator.",
           "license": "MIT",
           "source_hash": "0f02db69d4869fe6ecc2a6e253805eda41090303ff71405adf370dfd86afe793",
@@ -2045,10 +2128,50 @@
           "source_path": "packctl/promotion.py",
           "source_revision": "packctl-tmp-alias@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Adopted the portable promotion history bytes from fbec75f9825565074bd79776da4d5dd4152ad370: v2 plans and receipts carry installation_id and a bootstrap flag so a moved checkout can reseal against git ancestry instead of physical paths. Working-tree SHA-256 matches that commit.",
+          "license": "MIT",
+          "source_hash": "0a603d7bb63f7d032895ab50b7d0aa98459f00f7fd83848a893a47e0116ce4b9",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/promotion.py",
+          "source_revision": "fbec75f9825565074bd79776da4d5dd4152ad370",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "G5-FIX1: walk logical target and backup bindings to the containing allowed root, and share dest/backup lock keys so outer vs inner allowlists cannot apply the same physical trees concurrently.",
+          "license": "MIT",
+          "source_hash": "c70764143664e36fe8fa637f5f48852f19bf27775f293fbcd0cc6601c451d5a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/promotion.py",
+          "source_revision": "portable-promotion-fix1@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "G5-CI ronda 2: parent-binding walk starts at the logical parent so a governed leaf alias to an allowed destination stays coalesced; nested links and parent junctions still fail PROMOTION-TARGET-LINKED.",
+          "license": "MIT",
+          "source_hash": "4c08d07a9e6960d666182b8e9f30ac95d4b93390b1696bbb51e5c676537779f3",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/promotion.py",
+          "source_revision": "g5-ci-leaf-alias@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "G5 completion: restore root-inclusive _logical_chain_linked and _contains_links; confine the governed leaf-alias exception to _destination_findings so residue/recovery still reject a root junction whose digest is allowed.",
+          "license": "MIT",
+          "source_hash": "6c021bf191e8dbaeae12a959e8cd2bfe9e52d6a12de27b25da3513a9dbec4239",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/promotion.py",
+          "source_revision": "g5-root-inclusive-residue@2026-09-11",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0f02db69d4869fe6ecc2a6e253805eda41090303ff71405adf370dfd86afe793",
+      "output_hash": "6c021bf191e8dbaeae12a959e8cd2bfe9e52d6a12de27b25da3513a9dbec4239",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -2209,7 +2332,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Documents <tmp> now that it is in the closed alias list: an operator copying this example without it fails promote check on five findings.",
           "license": "MIT",
           "source_hash": "43e7fc5a4e81327d896218191c7e307b4aa2a0a3986da26f0a741f881b45e131",
@@ -2217,10 +2340,20 @@
           "source_path": "promotions/local-targets.example.json",
           "source_revision": "packctl-tmp-alias@2026-09-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted the portable promotion history bytes from fbec75f9825565074bd79776da4d5dd4152ad370: v2 plans and receipts carry installation_id and a bootstrap flag so a moved checkout can reseal against git ancestry instead of physical paths. Working-tree SHA-256 matches that commit.",
+          "license": "MIT",
+          "source_hash": "c1958c8197600111f5ef52eb88367e62916ea145cc9df27e87f76584ef92928d",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/local-targets.example.json",
+          "source_revision": "fbec75f9825565074bd79776da4d5dd4152ad370",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "43e7fc5a4e81327d896218191c7e307b4aa2a0a3986da26f0a741f881b45e131",
+      "output_hash": "c1958c8197600111f5ef52eb88367e62916ea145cc9df27e87f76584ef92928d",
       "output_path": "promotions/local-targets.example.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -2232,7 +2365,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "The internal process layer (plans, specs, session handoff, root CLAUDE.md) stopped being published; its promotion entries were removed with it.",
           "license": "MIT",
           "source_hash": "7c476dd4d619800e5e6c6cbac1ec5d16981c7ab762aa1bacf9fb6daf469467c6",
@@ -2240,6 +2373,16 @@
           "source_path": "promotions/promotion-map.json",
           "source_revision": "r21-unpublish-internal-layer@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Integration of the reviewed GitHub CI artifact adds its existing source-map route to the complete promotion map; an isolated bootstrap exposed PROMOTION-UNROUTED before any apply. Skill target routing remains unchanged.",
+          "license": "MIT",
+          "source_hash": "e8e1a912a17e994f0ebd6cd768d94f0b3fd9cfa621804bc4397bd74ab3801409",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/promotion-map.json",
+          "source_revision": "ci-promotion-route-integration@2026-09-11",
+          "verification_level": "offline_tested"
         },
         {
           "decision": "merge",
@@ -2250,10 +2393,20 @@
           "source_path": "promotions/promotion-map.json",
           "source_revision": "dayz-underground@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration of the unpublished Pack line (54a2b7d) with origin/main 9727ae8 (PRs #6-#9): both sides changed this file; the merged bytes keep both changes.",
+          "license": "MIT",
+          "source_hash": "527ffcf2db644ceaddd9743ee28de63ccf7c3975c84133668712509769310e70",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/promotion-map.json",
+          "source_revision": "integrate-publish@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "548fca7285c4b24d38ab68508047fe5a113a9b77d693c57ecae70ac633872ca2",
+      "output_hash": "527ffcf2db644ceaddd9743ee28de63ccf7c3975c84133668712509769310e70",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -5705,7 +5858,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
           "license": "MIT",
           "source_hash": "26dd50d7308f9304c98a546772e33b9289493738fa4c4a38c9709c88a4e1742e",
@@ -5713,10 +5866,30 @@
           "source_path": "dayz-mod-workflow/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "2026-09-10 concurrent-session trigger and pointer to references/concurrent-session-snapshot.md; procedure stays out of the YAML description.",
+          "license": "MIT",
+          "source_hash": "64b624dbb9817db607021f49233ecb8021e95f9aa879989a4d6563f91eb5fdb3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "concurrent-skills-pilot@2026-09-10",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration of the unpublished Pack line (54a2b7d) with origin/main 9727ae8 (PRs #6-#9): both sides changed this file; the merged bytes keep both changes.",
+          "license": "MIT",
+          "source_hash": "c78bff7c401680b67b8eb04e23f8a9091e1f1f63d79760bc6dfa3a2b3ff8576b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "integrate-publish@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b4d3aa5a93c8bf102b43310d29aa4b033572109fe445547b1a38f3795b7def37",
+      "output_hash": "c78bff7c401680b67b8eb04e23f8a9091e1f1f63d79760bc6dfa3a2b3ff8576b",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -5742,6 +5915,28 @@
       "output_path": "skills/dayz-mod-workflow/references/audit-escalation.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-mod-workflow/references/concurrent-session-snapshot.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-09-10 for concurrent session pins of this governed skill. Consumer procedure only; contribution authority stays in CONTRIBUTING.md.",
+          "license": "MIT",
+          "source_hash": "2139b31affc8a97e168b2af2f5a377ad1469a30c93cd29ffa2a8b5baa5896728",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/references/concurrent-session-snapshot.md",
+          "source_revision": "concurrent-skills-pilot@2026-09-10",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2139b31affc8a97e168b2af2f5a377ad1469a30c93cd29ffa2a8b5baa5896728",
+      "output_path": "skills/dayz-mod-workflow/references/concurrent-session-snapshot.md",
+      "routing_artifact_id": "skill/dayz-mod-workflow",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-mod-workflow/references/error-catalog.md",
@@ -11812,7 +12007,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Claim registry records the three approved evidence-backed contracts and their skill ranges.",
           "license": "MIT",
           "source_hash": "858612b6cfc43947fad8945c3b8be1771f30746be981ab6c91a3397a7f486e0f",
@@ -11823,6 +12018,36 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Claim registry as published on d0fd531fae96d3e0bc5d0d37cd91e53b836aced3 before G5 portable claim registration.",
+          "license": "MIT",
+          "source_hash": "b8debb922ffb3d03aef8324f2ff17da344377d42c6a51507f17cc55181932e51",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "d0fd531fae96d3e0bc5d0d37cd91e53b836aced3",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registered CLAIM-PACKCTL-PORTABLE-PROMOTION-V2 for promote --bootstrap / schema_version 2 / installation_id. Evidence inspected at ab2f53d583ff50574bd336a88737c12d99234694; not present on this worktree HEAD.",
+          "license": "MIT",
+          "source_hash": "2844e474e2fc9ad4a2c9a38000e3cdd315925625090d5ad906d832a64427d86e",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "g5-portable-claim-registry@2026-09-11",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Added ab2 backup_root.resolve(strict=True) and PROMOTION-TARGET-MISSING anchors to CLAIM-PACKCTL-PORTABLE-PROMOTION-V2 evidence_locator.",
+          "license": "MIT",
+          "source_hash": "17a1b3e39c32e77097f78a83ce9bd90c113f71ca4c971f3ee78d51e353f15148",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "g5-root-precondition-docs@2026-09-11",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Seven claims for dayz-underground and dayz-basebuilding section 9 (CLAIM-UG-*, CLAIM-BB-*), source_verified against 1.30.164014.",
           "license": "MIT",
           "source_hash": "b3c06ab925519f476c9c9f99f147a7381338037a3007640d7e97dc7738a3ca04",
@@ -11830,10 +12055,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "dayz-underground@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration of the unpublished Pack line (54a2b7d) with origin/main 9727ae8 (PRs #6-#9): both sides changed this file; the merged bytes keep both changes.",
+          "license": "MIT",
+          "source_hash": "db5cbeb979590a0e771ab4c3cbeb90c2c24912956268aee0199351ba801ab95c",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "integrate-publish@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b3c06ab925519f476c9c9f99f147a7381338037a3007640d7e97dc7738a3ca04",
+      "output_hash": "db5cbeb979590a0e771ab4c3cbeb90c2c24912956268aee0199351ba801ab95c",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -12143,7 +12378,7 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
+          "decision": "merge",
           "decision_evidence": "Phase 01 authored or newly generated source-backed artifact, reviewed in the r21 branch.",
           "license": "MIT",
           "source_hash": "4e27c297f4171f948331f4e2d57e9e68b3cb175be4dcf93e20daef2663fbfc46",
@@ -12151,10 +12386,20 @@
           "source_path": "tests/packctl/test_cli.py",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted the portable promotion history bytes from fbec75f9825565074bd79776da4d5dd4152ad370: v2 plans and receipts carry installation_id and a bootstrap flag so a moved checkout can reseal against git ancestry instead of physical paths. Working-tree SHA-256 matches that commit.",
+          "license": "MIT",
+          "source_hash": "1de425faa4440f11a4cf13846e14c786cd5a19049208f8a2e20c36c89371f7e3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_cli.py",
+          "source_revision": "fbec75f9825565074bd79776da4d5dd4152ad370",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "83f837138f37bd153df3d4a4e31353875ff3d9390b7e51cdf795e76165859afb",
+      "output_hash": "1de425faa4440f11a4cf13846e14c786cd5a19049208f8a2e20c36c89371f7e3",
       "output_path": "tests/packctl/test_cli.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -12281,18 +12526,68 @@
       "hash_policy": "sha256",
       "inputs": [
         {
-          "decision": "adopt",
-          "decision_evidence": "The pinned placeholder census drops the four <dayz-projects> hits 6c75623 deleted (check_dayz_winding.py, alignment_viewer_extract.py, apply_alignment_json.py, export_clothing_fbx.py): verified 2026-09-24 by running check_dayz_winding.py (--help and a read-only MLOD pass) and the side-effect-free prologues of the other three, which resolve the installed py3d 1.7.0 with no machine path.",
+          "decision": "merge",
+          "decision_evidence": "The pinned placeholder census tracks <tmp>, which returns alignment_viewer_build.py to the list: verified 2026-09-02 that the script dies on the literal <tmp> path before it can build its viewer.",
+          "license": "MIT",
+          "source_hash": "b7d0421317d84ee5aa4458c08b1742392afbf305c2ceebb64cbc688eea3e5b71",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "packctl-tmp-alias@2026-09-02",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Placeholder census pinned to the scanner's 25 tokens in 5f22363839f3f569651d8a952be2b83e8806ca7d; the same bytes remain at 34e33343e117ba384d7da3f698ee70db48fdf66a. Four stale PROMOTION-CONFIG-INVALID rows were removed; the detector was not changed.",
           "license": "MIT",
           "source_hash": "3c8c4701472f4ae307a89b9044f5a1ebf908ca592deb909c64202c87fcf8074b",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_promotion.py",
-          "source_revision": "placeholder-census-6c75623@2026-09-24",
+          "source_revision": "5f22363839f3f569651d8a952be2b83e8806ca7d",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Adopted the portable promotion history bytes from fbec75f9825565074bd79776da4d5dd4152ad370: v2 plans and receipts carry installation_id and a bootstrap flag so a moved checkout can reseal against git ancestry instead of physical paths. Working-tree SHA-256 matches that commit.",
+          "license": "MIT",
+          "source_hash": "17c598cc2e6f786cebadb059036b1d7acec428a0bc155d2b1c389caedd44b563",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "fbec75f9825565074bd79776da4d5dd4152ad370",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "G5-FIX1 negatives: parent binding inside an allowed root must fail PROMOTION-TARGET-LINKED, and two allowlists that share dest/backup must collide on one OS lock.",
+          "license": "MIT",
+          "source_hash": "93883350df3fe78d91bf8c3bff067da30483e01c93eb5d483b9aa7c88fda6566",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "portable-promotion-fix1@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "G5-CI ronda 2: leaf-alias check/apply cases use try_dir_link so they execute on Windows without Developer Mode; asserts and fail-closed parent-binding/retarget checks are unchanged.",
+          "license": "MIT",
+          "source_hash": "2acc6cf9ba3606075c42665023224ee04a92f88b7e351e6e723b9313d791a178",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "g5-ci-leaf-alias@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "G5 completion: add the root-junction residue negative that fails closed through _ensure_known_residue with an allowed digest, using try_dir_link without skipping.",
+          "license": "MIT",
+          "source_hash": "4afd0bed1efd2d534e9dcfdb828d1edf856da8dffc0bf2da31d064c31c7e944b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "g5-root-inclusive-residue@2026-09-11",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3c8c4701472f4ae307a89b9044f5a1ebf908ca592deb909c64202c87fcf8074b",
+      "output_hash": "4afd0bed1efd2d534e9dcfdb828d1edf856da8dffc0bf2da31d064c31c7e944b",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -12317,6 +12612,49 @@
       "license": "MIT",
       "output_hash": "e6101c46d3f46812c8a3f597c24080e2b7d81821fabaa8002a117b3dbca8f5d7",
       "output_path": "tests/packctl/test_receipt_history_baseline.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/packctl/test_runtime_pin.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "Offline Git V1/V2 capture, adapter/manifest, refusal and probe-grade contract for skill-runtime-pin.",
+          "license": "MIT",
+          "source_hash": "384098a1eecfc4ad790b6d243daff055276e1530b1c56a2664a443e05672a367",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_runtime_pin.py",
+          "source_revision": "runtime-pin@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Reviewer negatives: exact argv arrays, Skill-roots rN, exact canary/path identity, and physical probe set.",
+          "license": "MIT",
+          "source_hash": "a16851656fb67e36e032896952259d7cf30fa6098770ced8a82ec6c2e8462b99",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_runtime_pin.py",
+          "source_revision": "runtime-pin-fix1@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "JSON-array Codex prompt-input fixture with escaped skill text, and raw Cursor system/subtype/init served-label mapping.",
+          "license": "MIT",
+          "source_hash": "4cbd1e70d55fcb64dbe2146fff3d90b844ba7e2f7bd44c5dff413ade17b88dcf",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_runtime_pin.py",
+          "source_revision": "runtime-pin-fix2@2026-09-11",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4cbd1e70d55fcb64dbe2146fff3d90b844ba7e2f7bd44c5dff413ade17b88dcf",
+      "output_path": "tests/packctl/test_runtime_pin.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
     },
@@ -22910,6 +23248,100 @@
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested",
       "distribution_reason": "Repository governance tooling; imports packctl and is excluded from the public release payload."
+    },
+    {
+      "artifact_id": "file/tools/skill-runtime-pin/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "Contract, limits and commands for the stdlib Pack commit capture and derived runtime adapter.",
+          "license": "MIT",
+          "source_hash": "d228400bb0dfbcf4063a5d678bee43253f9dfce66cc38792f810df5bc7a26ebc",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/skill-runtime-pin/README.md",
+          "source_revision": "runtime-pin@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Documented structured program/argv, exact catalog paths, Skill-roots rN, grade reception schema, and physical probe set.",
+          "license": "MIT",
+          "source_hash": "7e14d82d7bc54a09f548faee6afd7fd474d3b9c1d858d12b5b84d6173d68ddac",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/skill-runtime-pin/README.md",
+          "source_revision": "runtime-pin-fix1@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Documented Codex raw JSON string walking and the real Cursor system/subtype/init served label.",
+          "license": "MIT",
+          "source_hash": "d2a223ab086631b7ad6f14eb8cc6b9e3376e55610456a66c9944609a8f894392",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/skill-runtime-pin/README.md",
+          "source_revision": "runtime-pin-fix2@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Documented the owner probe sequence: materialize commit, verify, assemble argv arrays, inspect-prompt on raw Codex dumps, launch a new process, keep full stdout JSONL, normalize final assistant plus observed tool reads, and grade without inventing injection or retry-until-green.",
+          "license": "MIT",
+          "source_hash": "da3fa0697a2df386921d41265c9252817ed2a5979e026eb93b47a0c562ef03df",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/skill-runtime-pin/README.md",
+          "source_revision": "operations-integration@2026-09-11",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "da3fa0697a2df386921d41265c9252817ed2a5979e026eb93b47a0c562ef03df",
+      "output_path": "tools/skill-runtime-pin/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/skill-runtime-pin/runtime_pin.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "Stdlib materialize/verify/assemble/inspect/grade for a full Pack commit pin plus one derived adapter.",
+          "license": "MIT",
+          "source_hash": "34f1930f2654bd425538aed6629b0c414d3846dc31614e96b09067c696cd4fb5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/skill-runtime-pin/runtime_pin.py",
+          "source_revision": "runtime-pin@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Separated program/argv, exact path identity with Skill-roots rN, exact canary reception, and physical probe set without following links.",
+          "license": "MIT",
+          "source_hash": "d0606f430664b397975a03fa023fff996cb4830423b490b12d130a100d0d1033",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/skill-runtime-pin/runtime_pin.py",
+          "source_revision": "runtime-pin-fix1@2026-09-11",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "Walk decoded JSON strings for catalog roots/entries per block; accept raw Cursor type=system subtype=init served label via a closed map.",
+          "license": "MIT",
+          "source_hash": "788b36cdad763196e4d0b5a2512adfa8dd4078cf16baf9a123f73c04d1e9e4fb",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/skill-runtime-pin/runtime_pin.py",
+          "source_revision": "runtime-pin-fix2@2026-09-11",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "788b36cdad763196e4d0b5a2512adfa8dd4078cf16baf9a123f73c04d1e9e4fb",
+      "output_path": "tools/skill-runtime-pin/runtime_pin.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/packctl/generated.py",
