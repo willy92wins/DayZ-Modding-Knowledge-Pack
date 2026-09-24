@@ -1,6 +1,6 @@
 ---
 name: dayz-sound-system
-description: "Use when: sonido DayZ, CfgSoundShaders, SoundSet, sound not playing, no sound on dedicated server, PlaySoundSet, NoiseSystem. Audio is client-only. Not particles: dayz-particles; not UI: dayz-ui-development."
+description: "Use when: sonido DayZ, CfgSoundShaders, SoundSet, sound not playing, no sound on dedicated server, PlaySoundSet, NoiseSystem, bunker radio, HEAVY_BREATHING, GetEnvironmentNoiseReduction, IsHeadlessOrDedicatedServer, sandstorm noise, VegetationSounds. Audio is client-only. Not particles: dayz-particles; not UI: dayz-ui-development."
 ---
 
 # DayZ Sound System (Enforce Script + config)
@@ -8,7 +8,8 @@ description: "Use when: sonido DayZ, CfgSoundShaders, SoundSet, sound not playin
 Verified reference for mod audio. Citations are `path:line` against vanilla v1.24 decompiled scripts
 (±3 drift) and two real mods used as prior art (IMPWMODPart2 weapons, DoorLockSystem). The full
 deep-dive with every signature lives in `references/sonido-deep-dive.md` — load it for AbstractWave
-events, DynamicMusicPlayer internals, or PlayerSoundManager handlers.
+events, DynamicMusicPlayer internals, or PlayerSoundManager handlers. 1.30 Exp cites:
+`references/dayz-1-30-sound.md`.
 
 ## The one rule that explains most bugs
 
@@ -18,6 +19,11 @@ and `Object.PlaySoundSet` is guarded by `if (g_Game && !g_Game.IsDedicatedServer
 To make a sound happen "from the server", you synchronize a state change and let each client play it:
 the official vehicle for that is `StartItemSoundServer` (below), or your own SyncVar +
 `OnVariablesSynchronized`.
+(hasta 1.29 / still on `Object.PlaySoundSet` in 1.30: the guard is `object.c:1249` —
+`if ( g_Game && !g_Game.IsDedicatedServer() )`.)
+(desde 1.30 Exp: item/player sound **handlers** use `g_Game.IsHeadlessOrDedicatedServer()` so headless
+clients are skipped too — `ItemSoundHandler.c:121`, `PlayerSoundManager.c:105`,
+`DayZPlayerCfgSounds.c:335`. Proto: `Game.c:1132-1136`. `[EXACT]`: `references/dayz-1-30-sound.md`.)
 
 ## Decision table — which API when
 
@@ -30,7 +36,10 @@ the official vehicle for that is `StartItemSoundServer` (below), or your own Syn
 | Animation-bound audio (footsteps, gestures) | AnimEvents in the anim config — engine plays them client-side automatically |
 | Building door/alarm | `building.PlaySound/PlaySoundLoop` (native on Building; prior art DoorLockSystem `ActionUnlockDLSDoor.c:63,73`) |
 | Make AI/infected hear something | `g_Game.GetNoiseSystem().AddNoise/AddNoisePos/AddNoiseTarget` (`3_game/noise.c:1-23`) — server side |
-| Ambient music zone | `DynamicMusicPlayer.RegisterDynamicLocation` (`3_game/systems/dynamicmusicplayer/dynamicmusicplayer.c:289`) |
+| Ambient music zone | `DynamicMusicPlayer.RegisterDynamicLocation` (`dynamicmusicplayer.c:289`) |
+| (since 1.30 Exp) Per-world static music boxes | Subclass `DynamicMusicPlayerRegistry` and `RegisterTrackLocationStaticMultiRectangle` (`DynamicMusicPlayerRegistryNasdara.c:39-67`, wired `missionBase.c:130-132`) |
+| (since 1.30 Exp) Radio tuned to bunker frequency | Set `SOUND_BUNKER_STATIC_NOISE` on the transmitter; `IsTunedToBunkerFrequency()` (`TransmitterBase.c:6,135-137`, proto on `ItemTransmitter` in `InventoryItem.c:25`) |
+| (since 1.30 Exp) Per-bush / static vegetation footsteps | `CfgNonAIVehicles <class> VegetationSounds` via `StaticObjectType` (`StaticObjectType.c:13-47`); macro `CUSTOM_PLAYER_MOVEMENT_SOUNDSETS` (`basicDefines.hpp:310-338`) |
 
 Cleanup matters: every `SEffectManager.Play*` registers a ref; call `SEffectManager.DestroyEffect(eff)`
 or set autodestroy, or you leak (`effectmanager.c:41-44`).
@@ -95,6 +104,8 @@ but were not verifiable in local source — inherit a vanilla set rather than ha
   (Started/Stopped/Loaded/HeaderLoaded/Ended) (:146-230).
 - `EffectSound` (high-level wrapper): `SetSoundSet/SetSoundLoop/SetSoundFadeIn/Out/SetSoundVolume/
   SoundPlay/SoundStop/IsSoundPlaying` + its own invokers — what `PlaySoundSet` returns.
+  (desde 1.30 Exp: if `m_SoundFadeInDuration > 0`, `Event_OnSoundWaveStarted` calls `SetSoundVolume(0)`
+  so the first frame is silent — `EffectSound.c:549-555`. `[EXACT]`: `references/dayz-1-30-sound.md`.)
 - `WaveKind` enum: WAVEEFFECT, WAVEEFFECTEX, WAVESPEECH, WAVEMUSIC, WAVEENVIRONMENT, WAVEWEAPONS,
   WAVEATTALWAYS, WAVEUI... (:1-14) — controls mixer category (and thus user volume sliders).
 - Global category volumes only: `AbstractSoundScene.SetSoundVolume(vol, time)/SetMusicVolume/...`
@@ -135,8 +146,16 @@ g_Game.GetNoiseSystem().AddNoisePos(entity, pos, noiseParams, mult);    // at po
 g_Game.GetNoiseSystem().AddNoiseTarget(pos, lifetimeSec, noiseParams);  // positional DECOY with duration
 NoiseParams np = new NoiseParams();  np.Load("name_in_CfgNoises");      // or LoadFromPath
 ```
-Rain/wind reduce effective noise via `NoiseAIEvaluate.GetNoiseReduction(g_Game.GetWeather())`
-(used by player steps, `4_world/entities/dayzplayerimplement.c:3204-3208`). Weapon shots define
+(hasta 1.29: Rain/wind reduce effective noise via `NoiseAIEvaluate.GetNoiseReduction(g_Game.GetWeather())`
+(used by player steps, `4_world/entities/dayzplayerimplement.c:3204-3208`).)
+(desde 1.30 Exp: climate is native. Query `GetGame().GetNoiseSystem().GetEnvironmentNoiseReduction(pos)`
+— `exp\scripts\scripts\3_Game\Noise.c:13`. `GetNoiseReduction` / `GetNoiseReductionByWeather` are
+`[Obsolete]` (`SensesAIEvaluate.c:92`, `Weather.c:454`). Player steps pass only
+`NoiseAIEvaluate.GetNoiseMultiplier(this)` (`DayZPlayerImplement.c:3472-3474`). Infected
+`AddNoise(this, sound_event.m_NoiseParams)` has no weather multiplier (`ZombieBase.c:597-600`).
+Tune rain/snow/fog/wind/sandstorm in `class AIParams` (`exp\dz\DZ\data\aiconfigs\config.cpp:19-27`).
+Do not also multiply `AddNoise` by a script weather factor — native attenuation would double-dampen.)
+Weapon shots define
 `class NoiseShoot { strength = 82; type = "shot"; }` in the weapon config (real example
 `IMPWMODPart2\Weapons\Automatic\MCXSpear\config.cpp:73-77`). `AddNoiseTarget` is the tool for
 distraction devices: infected investigate a position that has no entity.
@@ -160,6 +179,11 @@ daytime, shooting, coast, waterDepth, overcast, fog, snowfall, caveSmall, caveBi
 | Several simultaneous synced sounds via StartItemSoundServer | One play + one stop per sync by protocol (`itemsoundhandler.c:19-20`) |
 | Per-sound master volume API | Only `SetVolumeRelative(0..1)` per wave; shader `volume` is fixed config |
 | samples[] with file extension | Engine infers `.ogg` — paths go extension-less (all prior-art configs) |
+
+(desde 1.30 Exp: the `PlaySoundSet` row above is still true for `Object.PlaySoundSet`. Item/player
+**handlers** additionally skip headless via `IsHeadlessOrDedicatedServer()`. Do not write
+`GetNoiseReductionByWeather()` into new mods — `[Obsolete]`; use `GetEnvironmentNoiseReduction(pos)`
+or `AIParams`.)
 
 ## Recipes
 
@@ -186,9 +210,12 @@ NoiseParams np = new NoiseParams();
 np.Load("FlareLight");                          // any CfgNoises entry; verify name in config dump
 g_Game.GetNoiseSystem().AddNoiseTarget(pos, 30, np, 2.0);
 ```
+(desde 1.30 Exp: do not multiply that `2.0` by a weather reduction you computed in script.)
 
 **D. Music zone** — `RegisterDynamicLocation(this, locationType, radius)` on spawn,
 `UnregisterDynamicLocation(this)` on delete; track = SoundSet with `WaveKind.WAVEMUSIC`.
+(desde 1.30 Exp: a custom world should also subclass `DynamicMusicPlayerRegistry` like
+`DynamicMusicPlayerRegistryNasdara` and construct it from `missionBase` world switch.)
 
 ## Cross-skill pointers
 
@@ -197,3 +224,37 @@ g_Game.GetNoiseSystem().AddNoiseTarget(pos, 30, np, 2.0);
 - `dayz-physics-engine` — contact events that typically drive impact sounds.
 - `dayz-particles` — SEffectManager also owns particles; same lifecycle/leak rules.
 - `dayz-ai-patterns` — how the eAI/infected consume NoiseSystem events.
+
+## DayZ 1.30 Exp (build 1.30.164014)
+
+What changes, what breaks, and the migration checklist. `[EXACT]` blocks: `references/dayz-1-30-sound.md`.
+Deep-dive updates: `references/sonido-deep-dive.md`. Shared AI noise: skill `dayz-ai-patterns` (its 1.30 noise section).
+
+**What changes**
+
+- Native noise attenuation + `GetEnvironmentNoiseReduction(pos)`; `AIParams` adds snow/fog/wind/sandstorm multipliers.
+- `IsHeadlessOrDedicatedServer()` on item/player sound paths. `Object.PlaySoundSet` still uses `IsDedicatedServer()`.
+- `EffectSound` zeros volume at wave start when fade-in is set.
+- `EPlayerSoundEventID.HEAVY_BREATHING` / `HeavyBreathEvent1` (anim 907); silicosis requests it.
+- Per-world `DynamicMusicPlayerRegistry*` + `DynamicMusicPlayerTimeOfDay.Translate` (MORNING/NOON/AFTERNOON→DAY, EVENING→NIGHT).
+- Transmitters: `SOUND_BUNKER_STATIC_NOISE` / `IsTunedToBunkerFrequency()`.
+- `StaticObjectType` + `CUSTOM_PLAYER_MOVEMENT_SOUNDSETS` for vegetation step sounds (digest H).
+- `[CHANGELOG]` `SoundHitType` / `GetSoundHitType()` (T189758): **not** present in Enforce `SurfaceInfo.c` on this build (digest K). Do not call them.
+
+**What breaks for a 1.29 audio / stealth mod**
+
+1. `[Obsolete]` on `GetNoiseReductionByWeather` / `NoiseAIEvaluate.GetNoiseReduction`.
+2. Double-damp if you still pass a weather multiplier into `AddNoise`.
+3. Custom radios that ignore bunker frequency never play `bunkerbroadcast_staticnoise_SoundSet`.
+4. Subclassing `~InfectedSoundEventBase` to `Stop()` without `if (g_Game)` can crash on shutdown (`SoundEvents.c:12-16`).
+5. Looped sounds with fade-in now start at volume 0 — if you relied on the 1.29 first-frame peak, levels will differ.
+
+**Migration checklist**
+
+- [ ] AI-heard factor: `GetEnvironmentNoiseReduction(pos)`; balance via `AIParams`, not script weather math.
+- [ ] New client play/stop: `IsHeadlessOrDedicatedServer()`.
+- [ ] Custom transmitter: set `SOUND_BUNKER_STATIC_NOISE` and `SetSynchDirty()` on frequency change (vanilla `SetNextFrequency` already does).
+- [ ] Custom world music: subclass `DynamicMusicPlayerRegistry`, register boxes with `RegisterTrackLocationStaticMultiRectangle`.
+- [ ] Custom bushes: `VegetationSounds` on the `CfgNonAIVehicles` class, or the `CUSTOM_PLAYER_MOVEMENT_SOUNDSETS` macro.
+- [ ] Do not call `SurfaceInfo.GetSoundHitType` — not in this Enforce dump.
+- [ ] Load `references/sonido-deep-dive.md` for player-event and NoiseSystem signature tables.

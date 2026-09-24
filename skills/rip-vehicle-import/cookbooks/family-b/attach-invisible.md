@@ -43,3 +43,54 @@ Landrover. Antes de creer que la constante está mal:
 La fixture mecánica que acompaña a la invariante solo exige que el frame identidad FALLE.
 Una fixture que intercambie los lados y exija fallo sigue **pendiente**, y es la que
 convertiría «invertido» en un rojo automático en vez de en una discusión.
+
+## «Adjunto pero invisible» tiene una SEGUNDA causa, y su comprobacion va ANTES
+
+Anadido 2026-09-09, fuera del bloque MOVED-EXACT para no romper su sha de procedencia.
+
+El caso: LFQuad3, proxies de acople a huecos de INVENTARIO (`Shoulder`, `Melee`, `Back`), no
+ruedas. Los tres dibujaban NADA: ni el item, ni un placeholder, ni una linea en el RPT. Seis
+recetas probadas en partida tocaron la propiedad del slot, la animacion `hide`, `initPhase`, el
+indice del proxy y el LOD; **ninguna toco el nombre de la clase**. La causa era exactamente la
+regla (d) de arriba. Medido con el checker de GunRacks: ese mod **18/18** conformes, el nuestro
+**0/4**; tras renombrar, **3/3** y los items dibujan, verificado en partida.
+
+Dos correcciones al bloque de arriba:
+
+1. **El sintoma de (d) no es solo el crash de B5.** La misma violacion produce tambien
+   **no-render total y silencioso**, modo de fallo mucho mas caro porque no deja rastro que
+   investigar: sin error, sin log, sin nada que buscar.
+2. **El orden del atajo de diagnostico esta al reves para este caso.** El bloque dice, ante
+   «attached but invisible», medir primero los FRAMES. Emparejar el nombre de clase con el
+   basename del `.p3d` es una comprobacion de TEXTO sobre el `config.cpp` -- por cada clase de
+   `CfgNonAIVehicles`, `clase.lower() == "proxy" + basename(model).lower()` --, cuesta segundos
+   y no tiene falsos positivos: **hazla antes de medir ningun frame.** No hacerla costo aqui
+   seis ciclos de partida.
+
+Y un tercer dato de la misma sesion: `ProxyVehiclePart` y `ProxyAttachment` NO son
+intercambiables para un hueco que deba mostrar lo que le cuelgues. `ProxyVehiclePart`
+(`simulation = "ProxyInventory"`) dibuja el modelo de LA CLASE -- medido en partida como un
+fusil gris de placeholder sobre la parrilla --; `ProxyAttachment` pone ahi la ENTIDAD acoplada.
+Para una rueda, cuyo modelo de proxy ES la rueda, el primero es lo correcto; para un hueco de
+inventario es el fallo.
+
+## Un soporte compartido por fusiles y herramientas no alinea las dos familias (added 2026-09-13)
+
+Un proxy de acople dibuja el item en el marco propio de SU modelo, con el origen en el punto del
+proxy. Los modelos vanilla que caben en `Shoulder`/`Melee` no comparten eje largo (censo de 120
+piezas en LFQuad3): **84 de 87 armas de `CfgWeapons` lo tienen en X; los 3 arcos (`Archery_Base`)
+y las 33 herramientas de `CfgVehicles`, en Y**. Un soporte colocado para fusiles deja pala, pico o
+hacha cruzados 90 grados, y un visor que pinta cada modelo en su marco ya lo ensena: no es un fallo
+del motor ni del visor, es geometria.
+
+Dos salidas, las dos medidas en partida:
+- **Dos proxys en el mismo slot**, uno por familia y cada uno en su hueso, con el script ocultando
+  el de la familia no acoplada (`IsWeapon()`, y `Archery_Base` cuenta como herramienta). Dibuja: la
+  herramienta salio en el plano correcto. En LFQuad3 se descarto por estetica.
+- **Soporte solo para armas**: rechazar en `CanReceiveAttachment` lo que no sea `IsWeapon()` o sea
+  `Archery_Base`. No hace falta un slot propio, que obligaria a parchear `Rifle_Base` para todas las
+  armas del servidor.
+
+Trampa del censo: el config desbinarizado abre `class cfgWeapons` en minuscula. Un parser que
+compare el nombre de la raiz respetando mayusculas no ve ni un arma y devuelve "cero excepciones":
+exigir controles positivos (tres fusiles conocidos en X) antes de creerse el resultado.

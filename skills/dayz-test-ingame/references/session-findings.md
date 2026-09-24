@@ -7,7 +7,7 @@ Extracted from dayz-test-ingame/SKILL.md 2026-07-07 (F3). Per-session in-game fi
 ## Hallazgos sesión LFSlidingFloor (added 2026-06-11)
 
 Origen: sesión 2026-06-10 (R21 + test in-game de 2 spikes). Cinco gotchas verificados del flujo diag:
-
+    10|
 - **Print() va a script_*.log, NO al RPT**: en DayZDiag los Print de script van SOLO al script log (retail server: RPT). Gates/monitores que digan "RPT" deben traducirse al runtime real. Sonda mínima: un Print en OnInit de un modded MissionServer confirma el sink Y el enganche del mod sin necesidad de cliente (ver LL-137).
 - **-filePatching NO garantiza cargar los scripts del mod desde el work drive**: verificado 2026-06-10 — con -filePatching y un PBO vacío, los módulos compilaron SIN los archivos del mod y SIN error (World 2240 vs 2245 esperado). Detección: comparar los counts "Module: X; loaded Nx files" del script log contra un run de referencia (+N archivos del mod). Mitigación: -NoFilePatching (cargar SIEMPRE del PBO verificado por contenido).
 - **VPPAdminTools REQUIERE @CF delante en -mod**: sin él, popup modal "Unknown type 'RPCManager'" (Can't compile Game module) que BLOQUEA el server esperando un click — sin traza útil si nadie mira el escritorio. Para leer diálogos invisibles: EnumWindows + GetWindowText vía PowerShell.
@@ -192,3 +192,13 @@ SUB_BRZ Fase 5 smoke 2026-06-28 (costó ~media sesión). Cross-ref LL-168.
   NO un mismatch de versión: pasa a `ok` cuando el mission del server carga del todo (~1-2 min). No
   re-registres el server ni redepliegues por eso — espera y re-chequea `bridge_status` (refina la fila
   homónima de la skill `dayz-mcp-verify`).
+
+## DayZ 1.30 Exp — launch flags (added 2026-09-17, lane P15)
+
+(since 1.30 Exp [CHANGELOG]) New launch flags on DayZDiag / Workbench (not observed as strings in this extract; documented in `work\changelog-1.30-exp-modding.md`):
+
+- `-mod` accepts an **unpacked** source folder (not only a packed `@Mod` with PBOs).
+- `-cacheP3D=0` / `-cacheP3D=1` — disable / enable P3D cache.
+- `-resolveFilePatchingUsingEnfusion=0` / `-resolveFilePatchingUsingEnfusion=1` — Enfusion path for filePatching.
+
+(until 1.29: `-mod` was documented as packed `@Mod` folders.) Pair unpacked `-mod` with the filePatching caveats already in this file (empty-PBO compile, `-NoFilePatching` for production replica). Full notes: `dayz-1-30-test-ingame.md`.

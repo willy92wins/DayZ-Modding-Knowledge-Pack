@@ -141,3 +141,40 @@ Workflow when bringing the skeleton into Blender to author a new `.txa` or `.anm
 - `references/anim-graph.md` — how these bones are referenced from state machines, ASIs, commands.
 - `references/skeletal-anm-enfusion.md` — the `.anm` route from authoring to runtime.
 - `references/blender-authoring.md` — bone-name discipline + headless Blender export pattern.
+
+## DayZ 1.30 Exp: Bone Indexing & skeletons.anim.xml Deprecation [EXACT]
+
+In DayZ 1.30 Exp (build 1.30.164014), the global skeleton architecture underwent fundamental changes:
+
+1. **Removal of the 250 Bone Limit [CHANGELOG]**:
+   The engine no longer enforces the legacy 250 global bone limit (`changelog:31`).
+2. **Bone Index Resolution by String Hash [EXACT]**:
+   Global bone indices are no longer sequential integers defined in `skeletons.anim.xml`. The engine derives the runtime bone index by hashing the bone name directly.
+3. **Deprecation of `skeletons.anim.xml` Indices [EXACT]**:
+   In `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml`, all `index` attributes have been stripped across all human and animal skeletons, except for `EntityPosition`:
+   ```xml
+   <!-- [EXACT] exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:986-989 -->
+   	<skeleton name="ovis_gmelini_skeleton.xob">
+   		<bone name="Scene_Root"/>
+   		<bone name="EntityPosition"	index = "0" movement = "true" lod = "0" />
+   		<bone name="Pelvis"/>
+   ```
+   `skeletons.anim.xml` is now primarily used for declaring Level-of-Detail (`lod="N"`) and auxiliary bones missing from the base `.xob`.
+
+### Physical Ragdoll Bones in `human.ragdoll` [EXACT]
+
+DayZ 1.30 Exp introduces data-driven ragdoll physics defined in `DZ/characters/bodies/human.ragdoll` (`exp\characters_bodies\DZ\characters\bodies\human.ragdoll:1-25`, 202 lines). The physical character model comprises 11 articulated rigid body bones, totaling 73.8 kg with collision capsules/spheres assigned to `"DZ/data/data/penetration/flesh.bisurf"`:
+
+| Ragdoll Bone | Parent Bone | Mass (kg) | Collision Geometry | Joint Limits (Pitch / Roll / Yaw) | Stiffness / Damper |
+|---|---|---|---|---|---|
+| `pelvis` | *(Root)* | 17.0 | `Spine1` (capsule r=0.1, h=0.2), `Spine2` (capsule r=0.1, h=0.1) | N/A (Root) | N/A |
+| `spine3` | `pelvis` | 15.0 | `Spine3` (capsule r=0.12, h=0.1) | Min `[-15, -20, -35]`, Max `[15, 20, 5]` | 0.8 / 0.4 |
+| `head` | `spine3` | 6.1 | `Head` (sphere r=0.1) | Min `[-70, -35, -40]`, Max `[70, 35, 45]` | 0.8 / 0.3 |
+| `leftarm` | `spine3` | 2.1 | `LeftArm` (capsule r=0.04, h=0.25) | Min `[-15, -45, -45]`, Max `[15, 130, 45]` | Default |
+| `leftforearm` | `leftarm` | 1.7 | `LeftForeArm` (capsule r=0.04, h=0.2) | Min `[0, -45, -45]`, Max unconstrained | Default |
+| `rightarm` | `spine3` | 2.1 | `RightArm` (capsule r=0.04, h=0.25) | Min `[-15, -45, -45]`, Max `[15, 130, 45]` | Default |
+| `rightforearm` | `rightarm` | 1.7 | `RightForeArm` (capsule r=0.04, h=0.2) | Min `[0, -45, -45]`, Max unconstrained | Default |
+| `leftupleg` | `pelvis` | 7.5 | `LeftUpLeg` (capsule r=0.05, h=0.425) | Min `[-5, -10, -120]`, Max `[5, 60, 70]` | - / 0.3 |
+| `leftleg` | `leftupleg` | 6.6 | `LeftLeg` (capsule r=0.04, h=0.4), `LeftFoot` (capsule r=0.03, h=0.175) | Min `[-5, -2, -5]`, Max `[5, 2, 120]` | - / 0.3 |
+| `rightupleg` | `pelvis` | 7.5 | `RightUpLeg` (capsule r=0.05, h=0.425) | Min `[-5, -10, -120]`, Max `[5, 60, 70]` | - / 0.3 |
+| `rightleg` | `rightupleg` | 6.6 | `RightLeg` (capsule r=0.04, h=0.4), `RightFoot` (capsule r=0.03, h=0.175) | Min `[-5, -2, -5]`, Max `[5, 2, 120]` | - / 0.3 |

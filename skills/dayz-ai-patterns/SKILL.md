@@ -8,6 +8,8 @@ description: >
   enemy, not spreading into formation, or when debugging eAIBase, eAIGroup, eAIState, or
   ExpansionPathHandler. Trigger on: eAI, DayZ AI, AI FSM, FSM pathfinding, group AI,
   squad AI, threat targeting, LOS FOV AI, Expansion AI, AI bots.
+  Also 1.30: sandstorm, MINDSTATE_COWER, AIParams, GetEnvironmentNoiseReduction, animal group AI,
+  DZMouflonGroupBeh, DZDogGroupBeh.
 ---
 
 # DayZ Expansion AI Patterns (eAI)
@@ -59,6 +61,10 @@ On enter: `unit.DisableSimulation(true)`. On exit: `unit.DisableSimulation(false
 Do not scatter `DisableSimulation` calls across logic — let the FSM state own that toggle. The FSM exit restores simulation; no caller needs to remember to re-enable it.
 
 Full detail: `references/eai-fsm-combat.md` — PC-5.
+
+### Vanilla infected mind-state: `MINDSTATE_COWER` (since 1.30 Exp)
+
+This is **not** Expansion eAI. Vanilla `DayZInfected` gained `DayZInfectedConstants.MINDSTATE_COWER` after `MINDSTATE_FIGHT` (`exp\scripts\scripts\3_Game\Entities\DayZInfected.c:18`). `ZombieBase` syncs `m_MindState` with range `-1..5` (`ZombieBase.c:54`). On the sandstorm cower state the infected holds the calm idle pose (`SetIdleState(0)`); native AI already stopped movement (`ZombieBase.c:474-478`). `[EXACT]` blocks: `references/dayz-1-30-ai.md`.
 
 ---
 
@@ -212,10 +218,22 @@ Full detail: `references/eai-pathfinding-groups.md` — PC-18.
 
 ---
 
+## Animal & Group AI Templates (vanilla, since 1.30 Exp)
+
+Nasdara ships native group-behaviour templates in `GroupBehaviourTemplates` (`exp\nasdara__data_nasdara\DZ\data_takistan\aiconfigs\config.cpp:14-132`). These are **not** Expansion eAI FSMs.
+
+- `DZMouflonGroupBeh` — `type = "DomesticHerbivores"`: graze/rest lifecycle, `safeKeeperIntervalMin/Max`, catch-up radii (`:16-67`).
+- `DZDogGroupBeh` — `type = "Predators"`: `zoneType = "HuntingGround"`, `siegeAttackCountdownMin/Max`, `huntAttackCountdownMin/Max`, `safeKeeperIntervalMin/Max` (`:68-127`).
+
+`[DESIGN]` Custom maps that want the same packs copy these classes (or inherit them) in their own `aiconfigs` rather than reimplementing predator/herbivore FSMs in script. `[EXACT]` blocks: `references/dayz-1-30-ai.md`.
+
+---
+
 ## References
 
 - `references/eai-fsm-combat.md` — PC-5, PC-11, PC-13, PC-9a
 - `references/eai-pathfinding-groups.md` — PC-14, PC-7, PC-2, PC-9b, PC-15, PC-16, PC-17, PC-18
+- `references/dayz-1-30-ai.md` — 1.30 Exp: native noise attenuation, `MINDSTATE_COWER`, `AIParams`, animal group templates
 
 
 ## NoiseSystem — feeding noise the AI can hear (added 2026-06-06)
@@ -227,7 +245,45 @@ Source-verified vs vanilla v1.24 (`3_game/noise.c:1-23`):
 - `AddNoiseTarget` creates a positional **decoy with a duration** — infected/AI investigate a
   position with no entity attached (distraction devices, impacts).
 - `NoiseParams.Load("CfgNoises_entry")` or `LoadFromPath(path)`.
-- Rain/wind reduce effective noise: `NoiseAIEvaluate.GetNoiseReduction(g_Game.GetWeather())`
-  (player steps use it, `dayzplayerimplement.c:3204-3208`).
+- (hasta 1.29: Rain/wind reduce effective noise: `NoiseAIEvaluate.GetNoiseReduction(g_Game.GetWeather())`
+  (player steps use it, `dayzplayerimplement.c:3204-3208`).)
+  (desde 1.30 Exp: weather dampening is native. Query the factor the AI uses with
+  `NoiseSystem.GetEnvironmentNoiseReduction(vector pos)` — `exp\scripts\scripts\3_Game\Noise.c:13`.
+  `NoiseAIEvaluate.GetNoiseReduction` and `Weather.GetNoiseReductionByWeather` are `[Obsolete]`
+  (`SensesAIEvaluate.c:92-93`, `Weather.c:454-455`). Player steps no longer pass a weather multiplier:
+  `noiseMultiplier = NoiseAIEvaluate.GetNoiseMultiplier(this)` then `AddNoise(noiseParams, noiseMultiplier)`
+  (`DayZPlayerImplement.c:3472-3474`). Infected voice noise is `AddNoise(this, sound_event.m_NoiseParams)`
+  with no climate multiplier (`ZombieBase.c:597-600`). Tune rain/snow/fog/wind/sandstorm in `class AIParams`
+  (`exp\dz\DZ\data\aiconfigs\config.cpp:19-27`). Do **not** also multiply `AddNoise` by a script weather
+  factor — the engine applies native attenuation on the coordinate and you would double-dampen.)
 - Weapon shots are config-side: `class NoiseShoot { strength = 82; type = "shot"; }` in the weapon
   config (real mod example: IMPWMODPart2 MCXSpear `config.cpp:73-77`).
+
+## DayZ 1.30 Exp (build 1.30.164014)
+
+What changes, what breaks, and the migration checklist. `[EXACT]` blocks: `references/dayz-1-30-ai.md`.
+
+**What changes**
+
+- Native C++ noise attenuation. New proto `GetEnvironmentNoiseReduction(vector pos)` on `NoiseSystem` (`Noise.c:12-13`). HUD/debug reads it via `PluginPresenceNotifier.c:155-158`.
+- `class AIParams` gained `snowfallToNoiseMultiplier = 5.0`, `fogToNoiseMultiplier = 10.0`, `windToNoiseMultiplier = 10.0`, `sandstormToNoiseMultiplier = 10.0` (1.29 had rain + sea only). `[CHANGELOG]` official text says weather handling is native and `'Weather.GetNoiseReductionByWeather'` was removed; the method **still exists** as `[Obsolete]` (`Weather.c:454-467`) plus `GetNoiseReductionByWeatherEx(object)` (`Weather.c:407-419`).
+- Vanilla infected: `MINDSTATE_COWER` for sandstorm; net-sync range of `m_MindState` is 5.
+- Nasdara animal group templates `DZMouflonGroupBeh` / `DZDogGroupBeh`.
+- `[CHANGELOG]` navmesh file version has **no** backwards compatibility — regenerate navmesh for custom terrains (matters to eAI PC-15/PC-16). Navmesh can use a hide animation source via EntityType Navmesh config.
+
+**What breaks for a 1.29 AI / stealth mod**
+
+1. Compile warning `[Obsolete("Use Weather.GetNoiseReductionByWeatherEx instead!")]` if you still call `GetNoiseReductionByWeather` / `NoiseAIEvaluate.GetNoiseReduction`.
+2. Overrides of `GetNoiseReductionByWeather` no longer change what native infected/animal AI actually hear — they hear the native `AIParams` curve.
+3. Passing a weather-derived multiplier into `AddNoise` **and** letting the engine apply native reduction double-damps the event.
+4. Custom terrains: old navmesh files will not load. `[CHANGELOG]`
+
+**Migration checklist**
+
+- [ ] For the factor AI actually uses: `GetGame().GetNoiseSystem().GetEnvironmentNoiseReduction(pos)`.
+- [ ] For HUD / old script math on a specific object: `weather.GetNoiseReductionByWeatherEx(object)`.
+- [ ] To change how rain/snow/fog/wind/sandstorm dampen zombie hearing: edit `class AIParams` in `DZ\data\aiconfigs\config.cpp` (`rainToNoiseMultiplier`, `snowfallToNoiseMultiplier`, `sandstormToNoiseMultiplier`, …).
+- [ ] Call `AddNoise(entity, params)` without folding climate into `external_strenght_multiplier`.
+- [ ] If you spawn custom infected, keep `m_MindState` sync range covering `MINDSTATE_COWER` (5).
+- [ ] Custom maps: regenerate navmesh. Copy/inherit `DZMouflonGroupBeh` / `DZDogGroupBeh` if you want those packs.
+- [ ] Expansion eAI PC-5..PC-18 in this extract were **not** re-verified (Expansion scripts are not in `exp\`). Treat those cites as 1.29 Expansion research.

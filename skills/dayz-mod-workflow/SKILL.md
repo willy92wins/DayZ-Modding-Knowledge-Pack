@@ -11,6 +11,7 @@ description: >
   "fix the bug", "debug this", "it doesn't work", "actions not showing",
   sprint execution, or any transition from plan to code/fix. Concurrent
   sessions, skill snapshot, live promote during an open session.
+  Also: CanBeStarted, CCTLiquid, MotorbikeScript, HouseDestructible, cfggameplay ExternalLockData/SandstormData, PluginUndergroundTriggerManager, NVTypes underground/sandstorm, IsHeadless.
 ---
 
 # DayZ Mod Implementation & Debug Protocol
@@ -18,6 +19,7 @@ description: >
 Process skill for implementing and fixing DayZ mods. Does not contain domain
 knowledge (that lives in domain skills). Ensures domain knowledge is correctly
 applied and gaps are detected before they become bugs.
+(until 1.29: the six-layer debug hierarchy, SyncVar rules, and E01–E20 catalog below remain the 1.29 contract.) (since 1.30 Exp: client start also gates on `CanBeStarted()`; vanilla water uses `CCTLiquid`; CE adds `MotorbikeScript`/`HouseDestructible`; `cfggameplay.json` gained lock/sandstorm keys. Details: [dayz-1-30-mod-workflow.md](references/dayz-1-30-mod-workflow.md) and ## DayZ 1.30 Exp.)
 
 ---
 
@@ -113,6 +115,7 @@ Corre el **gate estructural obligatorio** (`script_validator.py`, y `ui_reconcil
   ActionCondition must only rely on data available on BOTH sides; a
   client-only cache passes the menu but the server rejects the action
   start silently.
+(until 1.29: a listed action was assumed startable once `Can()` passed.) (since 1.30 Exp: the widget can still **show** an action whose `CanBeStarted()` is false; `ActionManagerClient.c:336` does not call `ActionStart`. Info actions override to false — `ActionPartInfo.c:18-21`. See `references/dayz-1-30-mod-workflow.md`.)
 - **OnStart/OnFinish/OnUpdate with "Server" suffix** runs on SERVER.
   Use server-only data here.
 - Server DOES re-execute `Can()` (and therefore `ActionCondition()`) before
@@ -163,16 +166,12 @@ Corre el **gate estructural obligatorio** (`script_validator.py`, y `ui_reconcil
 
 ### Script compile order vs -mod= path order (historical)
 
-Mod **script/config load order** is driven by 
-equiredAddons[] in each PBO’s config.cpp CfgPatches dependency graph — not by -mod= path order alone. The engine compiles **all mods’** scripts for layer N (ordered by that graph) before layer N+1. Unrelated mods may fall back to ASCII order of CfgMods class names (community note in StarDZ — historical).
+Mod **script/config load order** is driven by `requiredAddons[]` in each PBO’s config.cpp CfgPatches dependency graph — not by -mod= path order alone. The engine compiles **all mods’** scripts for layer N (ordered by that graph) before layer N+1. Unrelated mods may fall back to ASCII order of CfgMods class names (community note in StarDZ — historical).
 
-- [ ] 
-equiredAddons[] lists the **CfgPatches class names** you actually depend on (scripts + config parents), not Steam folder names
-- [ ] Soft deps: omit from 
-equiredAddons and feature-detect at runtime when optional
+- [ ] `requiredAddons[]` lists the **CfgPatches class names** you actually depend on (scripts + config parents), not Steam folder names
+- [ ] Soft deps: omit from `requiredAddons` and feature-detect at runtime when optional
 
 Source: CLAIM-STARDZ-REQUIREDADDONS-ORDER — https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/02-mod-structure/01-five-layers.md
-
 
 
 ### Professional mod scaffold patterns (StarDZ — historical; patterns only)
@@ -246,8 +245,11 @@ Defer to `enforce-script-reference` for full rules. Key verified restrictions:
 6. ActionCondition()  - custom override, runs CLIENT (menu) AND SERVER (start gate, actionmanagerserver.c:142)
 7. FullBody stance    - if full body, verify stance transition
 ```
+(until 1.29: steps 1–7 were treated as the full client start gate.) (since 1.30 Exp: after the widget lists the action, `CanBeStarted()` must be true or the client never calls `ActionStart` — `ActionManagerClient.c:336`. Vanilla pond wash/drink/fill uses `CCTLiquid`, not `CCTWaterSurfaceEx` — `ActionWashHandsWater.c:28`.)
 
 - [ ] CreateConditionComponents overridden with correct CCT/CCI
+- [ ] (since 1.30 Exp) `CanBeStarted()` returns true for performable actions; info-only overrides return false
+- [ ] (since 1.30 Exp) Water/wash/fill on sea/pond: `CCTLiquid` unless you intentionally diverge
 - [ ] ActionCondition uses ONLY data available on BOTH client and server (see 2.5)
 - [ ] Target type: `GetType()` for exact, `IsKindOf()` for inheritance
 - [ ] **Non-pickupable items**: Use `RemoveAction(ActionTakeItem)` +
@@ -326,6 +328,8 @@ Verified errors committed more than once. Check ACTIVELY during implementation. 
 - **E18** — `IsServer()`/`IsClient()` for server/client guard
 - **E19** — Version field manually serialized in persistence
 - **E20** — modded vehicle won't drive, `WheelCountPresent()=0` while `WheelCount()=N` — `CfgSlots.<wheel-slot>.selection` must exist in the body FireGeometry LOD with a wheel proxy
+- **E21** — (since 1.30 Exp) custom-map `cfgeconomycore.xml` missing `MotorbikeScript` / `HouseDestructible` rootclasses — `exp\worlds_chernarusplus_ce\DZ\worlds\chernarusplus\ce\cfgeconomycore.xml:17-18`
+- **E22** — (since 1.30 Exp) visible action widget but F does nothing, or custom pond drink never lists — `CanBeStarted()` / `CCTLiquid` (see E21/E22 in `references/error-catalog.md` and `references/dayz-1-30-mod-workflow.md`)
 
 ---
 
@@ -837,6 +841,33 @@ re-diverges, which points at replay determinism; a monotonic rise or plateau wit
 means the transform is not receiving correction, which points at mechanism gating. Do not
 interpret shape until both clocks and sample gaps have passed those existing gates.
 
+## Fit the clock offset on the axis you are NOT investigating (SP-385, added 2026-09-09)
+
+LL-200 says to estimate the server↔client offset and interpolate one series onto the
+other. It does not say which components to fit on, and the obvious choice is wrong:
+minimising the full 3-D distance **absorbs a real single-axis divergence into the
+fitted offset** and removes it from the residual. The measurement then reports "the
+two sides agree" for a defect that is present, with no symptom that anything failed.
+
+Restrict the fit to the axes NOT under investigation, and leave the axis in question
+as a measurement rather than a fit parameter.
+
+Measured 2026-09-04 on LFHeli: fitting horizontal X/Z only gave a 6 mm median
+residual over 405 cells and left a post-landing height divergence of 0.169 m p50,
+0.833 m max, standing. A full 3-D fit would have spent that height on the offset.
+
+Two corollaries:
+
+- **Where the reference side is CONSTANT the residual is immune to offset error.**
+  With the airframe resting and the server reporting `|vy| <= 0.05`, height on that
+  side does not move, so any clock error contributes zero. Prefer that window when
+  it exists: the result then does not depend on the fit at all.
+- **Validate the fit with a second estimator that shares nothing with it.** A paired
+  handshake line logged with `t=` on both sides is independent of the trajectory;
+  agreement bounds the alignment error. Measured: the two estimators differed by a
+  constant 0.180 s, with 356 of 405 cells within ±0.05 s of that median — which also
+  identifies the residual as send→apply latency rather than error.
+
 ## Probe independence and time order (SP-357, added 2026-08-31)
 
 Before adjudicating a bug with a runtime probe, prove that the measured quantity is
@@ -877,3 +908,76 @@ Only expand instrumentation after the existing probe is shown to execute and its
 fields fail to discriminate. If a guard exits first, fix the placement or exercise a state
 that reaches the call. A probe behind an incompatible guard fails because of where it is,
 not because of what it measures.
+
+
+## Un gate sobre un RANGO puntua la duracion de la observacion (SP-387, added 2026-09-10)
+
+`p2p` (max menos min), el maximo, y cualquier extremo crecen de forma monotona con el numero
+de muestras. Un gate escrito sobre uno de ellos puntua, sin decirlo, **cuanto duro la
+ventana**, y una variante que simplemente acorte las celdas lo pasa sin arreglar nada.
+
+Medido el 2026-09-10 sobre 405 celdas archivadas de LFHeli. Dentro de un solo grupo
+—celdas erguidas, un unico proceso— el `p2p` de altura por estratos de numero de muestras:
+
+| muestras en reposo | p2p mediano |
+|---|---|
+| [0,5) | 0,0000 m |
+| [5,8) | 0,0000 m |
+| [8,12) | 0,0031 m |
+| [12,18) | 0,1729 m |
+| [18,25) | 0,2619 m |
+| [25,+) | 0,4726 m |
+
+**El recorrido del artefacto (0,0000 -> 0,4726 m) es mayor que el efecto que se estaba
+midiendo con el.** La conclusion que dependia de el —"las celdas volcadas botan menos",
+0,0023 vs 0,2434— no sobrevive al emparejar por numero de muestras: dentro de un estrato el
+signo cambia segun el estrato y en el mejor poblado los dos grupos coinciden (0,2247 vs
+0,2619). Las volcadas tenian 7 muestras y las erguidas 21, y esa era toda la diferencia.
+
+**Como se escribe el gate en su lugar:**
+
+1. **Ventana de duracion FIJA** (p. ej. los primeros 3 s de reposo), no "toda la ventana".
+   Asi cada celda aporta la misma longitud de observacion y el rango vuelve a ser comparable.
+2. **Estadisticos que no crecen con n**: una TASA (eventos por segundo), un cuantil (p90),
+   o el RMS respecto a la mediana de la propia ventana.
+3. Si se conserva el rango, se conserva **junto a su n**, y nunca se comparan dos rangos con
+   n distinto.
+
+**Senal generica:** antes de comparar dos grupos con un estadistico, preguntar si ese
+estadistico es funcion del tamano muestral. Si lo es, la comparacion mide el diseno del
+muestreo. Emparentado con SP-357 (independencia de sondas): alli el problema es que dos
+instrumentos comparten origen, aqui que un estadistico comparte destino con el reloj.
+
+## Una tasa de defecto agregada sobre variantes MUTADAS describe el experimento (SP-388, added 2026-09-10)
+
+Un corpus de campana de tuning contiene, por diseno, configuraciones deliberadamente
+estropeadas. Promediar el defecto sobre todo el corpus produce un numero que no describe lo
+que hace el producto, y ese numero acaba citado como si lo hiciera.
+
+Medido el 2026-09-10, misma corrida. El vuelco al aterrizar del LFHeli:
+
+| configuracion | celdas | erguida | inclinada | de lado |
+|---|---|---|---|---|
+| **incumbente (la que se envia)** | 114 | **95,6 %** | 2,6 % | **1,8 %** |
+| candidatos mutados | 291 | 49,1 % | 21,3 % | 29,6 % |
+| **corpus entero (lo que se citaba)** | 405 | 62,2 % | 16,0 % | **21,7 %** |
+
+El 21,7 % era la cifra en circulacion. La configuracion enviada vuelca **1,8 %**, y
+desglosada por fecha sale 100 % erguida en seis de nueve raices de evidencia. El corpus
+media, sobre todo, cuantos candidatos malos se probaron.
+
+Y el efecto que lo genera merece quedar registrado: entre el incumbente y el peor candidato
+solo cambian **tres campos**, ninguno mas de un 13 % —`AttitudeAlphaMaxRadS2` -5,3 %,
+`GroundEffectBonus` +12,6 %, `StabSoftDeg` -4,6 %— y la tasa de vuelco pasa de 1,8 % a
+66,7 %. Los tres se movieron a la vez, asi que **no se puede atribuir a uno**: es una lista
+de sospechosos para una corrida de un campo cada vez, no una causa.
+
+**Como se reporta:** toda tasa de defecto lleva pegada la configuracion sobre la que se
+midio. "El X % de las celdas" sin decir cuales es una cifra sin universo (SP-149 y la regla
+de declarar el censo). Y antes de abrir un plan de rediseno por una tasa alta, comprobar
+que la tasa describe la configuracion enviada y no la cola de experimentos.
+
+**Limite que hay que decir en voz alta:** que el banco no lo reproduzca no significa que no
+pase. Estas celdas son aterrizajes guionizados, en un solo sitio y **sin tocar el ciclico**;
+lo unico que autorizan a decir es que el banco, tal como esta, no reproduce el defecto en la
+configuracion enviada.

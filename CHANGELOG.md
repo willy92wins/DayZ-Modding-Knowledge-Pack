@@ -3,6 +3,88 @@
 All notable changes to the DayZ Modding Knowledge Pack are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- `dayz-underground` (new skill), DayZ 1.30 Exp (1.30.164014).
+  - Terrain holes: the `CfgWorlds >> <world> >> Holes >> <group> >> tiles[]`
+    format taken from Livonia's config, the read-only `SurfaceIsHole(x, z)`,
+    and why a tile is a heightmap cell (6.25 m on Livonia, cross-checked
+    against the vanilla Dambog triggers).
+  - Evidence that holes live in the world config: the `.wrp` of both
+    Chernarus and Livonia moved from OPRW v29 to v32 and grew about 5 % on
+    each, with or without holes.
+  - Underground triggers: the JSON schema, the 256 to 4096 limit, and
+    triggers tied to Object Spawner objects.
+  - The underground presence the client now reports to the server.
+  - The Badlands bunker-broadcast and irrigation-tunnel scripts.
+  - Source-verified against the 1.30.164014 scripts; in-game behaviour is
+    unverified and listed as such (claims `CLAIM-UG-*`).
+- `dayz-basebuilding` §9 of the 1.30 reference.
+  - The `Construction{}` activation check (`EntityAI.c:248-249`).
+  - The per-part keys 1.30 reads: decay, `StaticsSupportData`, `EffectsData`,
+    `custom_part_type`, `skipOnRepair`/`skipOnDismantle`.
+  - Door locks on rebuilt buildings.
+  - Rebuildable Nasdara buildings ship as scripts only in the Exp build.
+  - `ECE_OBJECT_SPAWNER` (claims `CLAIM-BB-*`).
+- `dayz-script-validator`: two tree-level checks, both derived from failures
+  observed on a running server on 2026-09-17 rather than from review opinion.
+  - `ES-PROTECTED-CROSS-MODULE` (FAIL). Enforce enforces `protected` across
+    script modules: a class compiled into `5_Mission` cannot read a protected
+    member declared by a `4_World` class, and the whole Mission module aborts.
+    Verified at runtime with a disposable probe built into a PBO and booted
+    (claim `CLAIM-ENFORCE-PROTECTED-CROSS-MODULE`). The check resolves the
+    receiver's declared type before firing; a first version matched on the
+    member name alone and produced 164 false positives on a tree that compiles
+    clean, because one name was protected on an entity and public on an
+    unrelated data class.
+  - `ES-EXTERNAL-CONSUMER-MISSING` (FAIL), enabled by the new repeatable
+    `--external-scripts DIR`. Script that lives outside the addon -- a mission
+    `init.c`, another mod -- can call an addon class's methods, and no in-addon
+    check sees it. A refactor removed 62 facade methods after proving no file
+    under the addon's own `scripts/` called them; the offline linter, the
+    implementer's gates and an independent review were all green, and the
+    server then refused to compile the mission
+    (claim `CLAIM-ENFORCE-EXTERNAL-CONSUMER-SURFACE`). The check only judges a
+    receiver whose whole base chain is declared inside the addon, so
+    vanilla-inherited and `modded class` methods stay silent. Measured against
+    the real trees: 69 errors on the broken one, zero on the fixed one.
+  - Paths are never hardcoded: external roots arrive by argument.
+- `dayz-mcp-verify`: driving-bench traps measured on 2026-09-13 (SP-423): a
+  `world_spawn` car outlives a dead run unless created with `flags=8389668`, get-in
+  can seat a nearby car and still answer `ok`, the drive controller skipped gears before
+  dayz-mcp `d065b0e`, and old trace dumps need the reader revision they were recorded with.
+- `dayz-vehicles`: straight-line sensitivities of the vanilla sedan (SP-424): launch
+  acceleration scales as torque^0.93-0.95, tyreGrip 0.70-1.00 leaves launch and braking
+  unchanged, and the first upshift matches the gear-ratio formula within 1.4 %.
+- Promotions that had stayed on side branches: `dayz-test-ingame` (an unfocused DayZDiag
+  client runs at ~20 fps, SP-391), `dayz-pbo-build` (a content-gate string the base
+  already contains cannot go red, SP-390), `dayz-mod-workflow` (tune a clock offset on
+  the axis you are not investigating, SP-385), `enforce-script-reference` (a line break
+  ends the statement inside a condition too, SP-386; looping `CombineItems` merges into
+  pending-delete stacks) and `_shared/prompt-conventions` (single quotes in PowerShell).
+
+### Changed
+
+- Audit procedure: coverage angles no longer require eight agents or a fixed model.
+  Review assignment and the bounded product-based stop rule belong to the orchestrator.
+  The evidence checks and domain coverage remain; unavailable independent review must
+  be declared. No game API, artifact format or runtime behavior changed.
+
+### Fixed
+
+- `dayz-basebuilding` cited `BaseBuildingBase.CreateConstructionComponent` at
+  `basebuildingbase.c:872-876`. In 1.30.164014 the override is at `871-875`.
+- `sources/source-map.json`: `validate` was red on bc042c2 with 28 errors and
+  is now green. The 25 skill files and receipt 53bcac92 that 5ad3174 and
+  5f6568e left unmapped are now mapped, and `adjudications.json` is resealed.
+- Skill text mangled by shell escapes since 2026-09-07: PowerShell double quotes ate the
+  backtick and first letter of `requiredAddons`, `nullptr`, `null`, `try`, `throw`, `for`, `break` and
+  `array.Remove` in `dayz-mod-workflow`, `dayz-pbo-build` and `enforce-script-reference`, and a
+  Python `\v` escape broke two `DZ\vehicles` paths in `dayz-vehicles`. The StarDZ block of
+  `enforce-script-reference`, committed twice, keeps one copy.
+
 ## [1.3.0] - 2026-08-25
 
 ### Removed

@@ -636,3 +636,33 @@ Do not hide the declaration with `#ifndef SERVER`. That can make the dedicated-s
 For a long concatenation or formatting expression, `Formula too complex` is the root parser/compiler error. An `Incompatible parameter` reported on the same line can be a cascade, not a second API defect. Split the build into incremental single-line assignments (`s = s + part;`). Extract vector or matrix indexing and function-call results into typed locals before formatting them.
 
 A physical expression longer than 400 characters is a useful offline lint signal, not a language boundary. Likewise, the roughly-ten-operands observation is empirical. The game compile remains the gate.
+
+## DayZ 1.30 Exp — obsolete callbacks, ID shift, hand FSM
+
+This file did not document `OnCEUpdate` at line 87 (that row is `FileHandle`; digest O mis-mapped it). 1.30 traps:
+
+- (hasta 1.29: `override void OnCEUpdate()`). (desde 1.30 Exp: `[Obsolete]`; live tick is `OnCEIterate(float currentTime, float elapsedTime)` — `EntityAI.c:3881-3888`, `:4893-4894`.)
+- (hasta 1.29: hand guards auto-passed `e.m_IsJuncture || e.m_IsRemote`). (desde 1.30 Exp: only `e.m_IsRemote` — `Hand_Guards.c:299,325,351`. New `HandGuardIsNotSurrendered` `:405` returns `!m_Player.IsSurrendered()`.)
+- (hasta 1.29: `UA_AM_PENDING` was 14). (desde 1.30 Exp: `UA_AM_INIT = 14` inserted; `PENDING=15`, `ACCEPTED=16`, `REJECTED=17` — `constants.c:508-511`. Never hardcode the integers.)
+- (hasta 1.29: `TakeEntityToCargo` / `AsAttachment` family). (desde 1.30 Exp: `[Obsolete]` `Inventory.c:1345-1386` → Target* variants.)
+- (hasta 1.29: `ActionFillBottleBase` in `RegisterActions`). (desde 1.30 Exp: `[Obsolete]` `ActionFillBottleBase.c:28-29`; constructor inserts `ActionObtainLiquidBase` `:156`.)
+- `ProcessInputData` override is silent in retail (DIAG + debug flag only) — `DayZPlayerInventory.c:668-687`.
+- `World.Is3rdPersonDisabled()` `[Obsolete]` (`World.c:291`). `GetNoiseReductionByWeather` was **not** deleted (digest O false); both Weather methods exist and are `[Obsolete]` (`Weather.c:407`, `:454`).
+
+### Looping `CombineItems`: an emptied stack is deleted only on the next frame (added 2026-09-19)
+
+`ItemBase.CombineItems` empties the donor with `AddQuantity(-used)`, which goes through `SetQuantity`. For items with `varQuantityDestroyOnMin = 1` (e.g. `Rag`), `SetQuantity` at the minimum calls `this.Delete()` (`4_world\entities\itembase.c:3354-3363`). `EntityAI.Delete()` only sets `m_PendingDelete` (`3_game\entities\entityai.c:774-778`), and `Object.Delete()` queues `ObjectDelete` for the next frame (`3_game\entities\object.c:82-85`). Until then the emptied stack is still a cargo child with quantity 0, and `CanBeCombined` (`itembase.c:2202-2262`) has no pending-delete check: an empty stack is "not full", so it is a valid target.
+
+Any loop that performs several merges in one call (auto-stack, stack-all, loot consolidation) can therefore pick the emptied stack as a later target and move live quantity into it. Everything merged into it disappears on the next frame. Rag stacks 2/2/5: A←B (B=0, pending), A←C (A full, C=3), B←C (C=0) → 9 rags become 6.
+
+[EXACT][CLAIM-ENFORCE-COMBINEITEMS-PENDING-DELETE] Before each target and donor, skip entities already queued for deletion (`IsSetForDeletion`, `entityai.c:807-810`), and empty ammunition piles:
+
+```c
+if (!item || item.IsSetForDeletion())
+    continue;
+Magazine pile = Magazine.Cast(item);
+if (pile && pile.GetAmmoCount() <= 0)
+    continue;
+```
+
+Verification: static trace through the vanilla script tree (TransferZ audit, 2026-09-19); not reproduced in game.

@@ -22,6 +22,21 @@ Weapon (native)
 Verified: `boltactionrifle_base.c:5` `class BoltActionRifle_Base extends Weapon_Base`;
 `pistol_base.c:149` `class Pistol_Base extends Weapon_Base`. Do not assume a common `Rifle_Base` parent.
 
+(desde 1.30 Exp, still `[VERIFIED-vanilla]` on this extract — extra script branches, same `Weapon_Base`
+root. Full staging warning: `dayz-1-30-weapons.md`.)
+
+- `RifleBoltLock_Base extends Rifle_Base` — `rifleboltlock_base.c:119`. `SCARH_Base : RifleBoltLock_Base`
+  (`AutomaticRifle\SCARH.c`); `SCARL_Base : SCARH_Base` (`AutomaticRifle\SCARL.c:1`). Config for SCAR-H
+  is `class SCARH_Base: Rifle_Base` (`exp\weapons_firearms\DZ\weapons\firearms\SCARH\config.cpp:40`).
+  There is **no** `class SCARL` in that config in this build.
+- `OpenBolt_Base extends Rifle_Base` — `openbolt_base.c:122`. `MP18_Base extends OpenBolt_Base`
+  (`SMG\MP18.c:1`).
+- `BoltActionRifle_ExternalMagazine_Base : BoltActionRifle_Base` —
+  `boltactionrifleexternalmagazine_base.c:112`. `LeeEnfield_Base : BoltActionRifle_ExternalMagazine_Base`
+  (`Rifle\LeeEnfield.c:1`).
+- `Luger_Base : Pistol_Base` (`Pistol\Luger.c:1`) — pistol anim IDs via `Get*PistolAnimState()`
+  (`pistol_base.c:611-629`), not a second FSM.
+
 **`Weapon_Base` owns the FSM + jam state** `[VERIFIED-vanilla]` (`weapon_base.c`): `m_fsm` (`:49`),
 `m_isJammed` (`:50`), `m_Charged` (`:54`), `m_WeaponOpen` (`:55`), `m_ChanceToJam` (`:72`),
 `m_abilities` (`:48`).
@@ -122,3 +137,24 @@ hold, needs `LoopStart`/`LoopEnd`) is documented in `dayz-animation-pipeline` (a
 The firearm hierarchy is not linear (above) and per-mode blocks vary by base. Grep the field in
 `P:\scripts\4_world\entities\firearms\` or in the des-rapificado config before writing it; keep the
 `[VERIFIED in-game]` / `[VERIFIED-vanilla]` / `[UNVERIFIED]` labels.
+
+## DayZ 1.30 Exp (build 1.30.164014) — config / script contract deltas
+
+Entity-side only. Details and `[EXACT]` blocks: `dayz-1-30-weapons.md`.
+
+- **Script recoil vs CfgRecoils.** `SpawnRecoilObject()` returns `SCARLRecoil` / `LugerRecoil` /
+  `LeeEnfieldRecoil` / `MP18Recoil` (`RecoilBase\Recoils\*.c`). Shipped `SCARH_Base` still sets
+  `recoil = "recoil_fal"` in config (`SCARH\config.cpp:73`) — that is a different channel. Matching a
+  5.56 SCAR-shaped mod to SCAR-H means inheriting that config block, then swapping `chamberableFrom` /
+  `magazines[]` / script recoil; you cannot unRap a SCAR-L `CfgWeapons` class from this build.
+- **Magazine attach/detach.** `FirearmActionAttachMagazine` requires
+  `TestAttachMagazine(GetCurrentMuzzle(), mag, false, true)`
+  (`Actions\Weapons\FirearmActionAttachMagazine.c:256`). `FirearmActionDetachMagazine_Old` is
+  `[Obsolete("1.30: Use class FirearmActionDetachMagazine instead")]`
+  (`FirearmActionDetachMagazine.c:13`). Open-bolt bases register the new detach action in `SetActions()`
+  (`OpenBolt_Base.c:388`).
+- **FSM repair on mag yank.** `Weapon_Base.EEItemDetached` → `ValidateAndRepair()` if
+  `item.IsMagazine()` (`weapon_base.c:1115-1121`).
+- **Explosives.** Do not call `ExplosivesBase.SetParticleExplosion` / `AddExplosionEffectForSurface`
+  (both `[Obsolete("1.30: Handled in AmmoTypes instead")]`, `ExplosivesBase.c:306-310` and `:433`).
+  Use `CfgAmmo` `particle` + `AmmoTypesAPI.GetExplosiveEffectData`.

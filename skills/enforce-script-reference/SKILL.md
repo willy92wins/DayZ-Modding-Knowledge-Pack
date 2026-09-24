@@ -23,6 +23,7 @@ crash, segfault, or silent failure in production.
 Before treating any vanilla Enforce API as callable, verify it is not trapped inside an `#ifdef` whose macro is never defined in the tree. Gate: `grep -rn "#ifdef <MACRO>\|#define <MACRO>" scripts/` — if only `#ifdef` hits appear, the code is DEAD in this build and the symbol does not exist.
 
 Canonical case: `ActionManagerClient.PerformAction(int user_action_id, ActionTarget, ItemBase, Param)` at `actionmanagerclient.c:756` is a correct citation, but sits inside `#ifdef BOT` (opens `:754`, closes `:760`). `BOT` appears in the entire vanilla tree only as `#ifdef`, never as `#define` → the symbol does not exist in retail or diag. The real public entry point for dispatching an action by script is `PerformActionStart(ActionBase, ActionTarget, ItemBase, Param)` at `:762`, outside the block.
+(hasta 1.29: those line numbers). (desde 1.30 Exp: `#ifdef BOT` is `ActionManagerClient.c:796-802`, `PerformAction` is `:798`, public `PerformActionStart` is `:804`. SP `PerformActionStart` ignores re-entry when pending/current exist; `GetActionState()` can return `UA_AM_INIT` while pending. Cite-then-verify still applies — `BOT` still has no `#define`. Bodies: `references/dayz-1-30-enforce-script.md`.)
 
 **`CCINone` does NOT mean "hands must be empty."** `CCINone.Can()` returns `true` unconditionally (`4_world\classes\useractionscomponent\itemconditioncomponents\ccinone.c`). It means "no item condition", not "the player's hands must be empty". Reading it as "hands empty" produces dead checks and chases a fault that does not exist.
 
@@ -59,44 +60,16 @@ Community traps **not** already covered by the hard rules above (skip ternary; I
 
 | Trap | Rule of thumb | Claim / note |
 |---|---|---|
-| No do…while | Use while / or | CLAIM-STARDZ-ENFORCE-SYNTAX-ABSENCES |
-| No 	ry/catch/	hrow | Fail-closed returns; don’t invent exception flow | same |
-| switch/case **falls through** without reak | Always reak unless intentional | same |
-| No 
-ullptr | Use 
-ull / NULL | same |
+| No do…while | Use while / `for` | CLAIM-STARDZ-ENFORCE-SYNTAX-ABSENCES |
+| No `try`/`catch`/`throw` | Fail-closed returns; don’t invent exception flow | same |
+| switch/case **falls through** without `break` | Always `break` unless intentional | same |
+| No `nullptr` | Use `null` / `NULL` | same |
 | No #include / no namespaces | Modules come from config.cpp CfgMods.defs | same |
 | Default params must be literals or NULL | No call expressions as defaults | same |
 | GetGame().GetPlayer() is **null on dedicated server** | Local player only; server: GetGame().GetPlayers(...) (distinct from client-preload null) | CLAIM-STARDZ-GETPLAYER-SERVER-NULL (cross_checked) |
 | sealed types/methods (1.28+) | Cannot extend/override | StarDZ gotchas 31 |
 | Method arity hard-cap **16** params (1.28+) | Split args into structs/helpers | StarDZ gotchas 32 |
-| rray.Remove is **unordered** (swaps with last) | Don’t assume stable order after Remove — confirm ordered API on P:\scripts if order matters | StarDZ gotchas 23 |
-
-More one-liners (historical): string methods may mutate in-place; empty #ifdef/#ifndef blocks can crash compile; crash_*.log filename ≠ proof of engine crash; compile errors sometimes cite the wrong file; parenthesize bitwise vs comparison tests; Obsolete (1.28+) warnings deserve cleanup; StarDZ says JsonFileLoader.JsonLoadFile returns void — reconcile with Pack SP-136 before treating as a hard rule.
-
-Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-enforce-script/12-gotchas.md (CC BY-SA 4.0).
-
-
-<!-- corpus-stardz-2026-09-07 -->
-
-### Additional Enforce absences / traps (StarDZ — historical unless noted)
-
-Community traps **not** already covered by the hard rules above (skip ternary; IsDedicatedServer@load; sibling if/else redeclare; multiline args). Paraphrase only — do not vendor StarDZ chapter bodies.
-
-| Trap | Rule of thumb | Claim / note |
-|---|---|---|
-| No do…while | Use while / or | CLAIM-STARDZ-ENFORCE-SYNTAX-ABSENCES |
-| No 	ry/catch/	hrow | Fail-closed returns; don’t invent exception flow | same |
-| switch/case **falls through** without reak | Always reak unless intentional | same |
-| No 
-ullptr | Use 
-ull / NULL | same |
-| No #include / no namespaces | Modules come from config.cpp CfgMods.defs | same |
-| Default params must be literals or NULL | No call expressions as defaults | same |
-| GetGame().GetPlayer() is **null on dedicated server** | Local player only; server: GetGame().GetPlayers(...) (distinct from client-preload null) | CLAIM-STARDZ-GETPLAYER-SERVER-NULL (cross_checked) |
-| sealed types/methods (1.28+) | Cannot extend/override | StarDZ gotchas 31 |
-| Method arity hard-cap **16** params (1.28+) | Split args into structs/helpers | StarDZ gotchas 32 |
-| rray.Remove is **unordered** (swaps with last) | Don’t assume stable order after Remove — confirm ordered API on P:\scripts if order matters | StarDZ gotchas 23 |
+| `array.Remove` is **unordered** (swaps with last) | Don’t assume stable order after Remove — confirm ordered API on P:\scripts if order matters | StarDZ gotchas 23 |
 
 More one-liners (historical): string methods may mutate in-place; empty #ifdef/#ifndef blocks can crash compile; crash_*.log filename ≠ proof of engine crash; compile errors sometimes cite the wrong file; parenthesize bitwise vs comparison tests; Obsolete (1.28+) warnings deserve cleanup; StarDZ says JsonFileLoader.JsonLoadFile returns void — reconcile with Pack SP-136 before treating as a hard rule.
 
@@ -118,6 +91,7 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
 19. **`GetGame().IsServer()` returns TRUE on client during load** — use `IsDedicatedServer()`
 20. **`GetGame().IsClient()` is NOT reliably true on the client during load (inferred from rule 19, which is the primary-source-verified one; treat as unreliable, do not assume an exact value)** — use `!IsDedicatedServer()`
     - Scope of 19-20: LOAD/INIT time (constructors, module init, OnInit). In post-load callbacks (OnRPC, EOnContact, per-tick), `GetGame().IsServer()` / `IsClient()` are safe and are the standard vanilla pattern
+(hasta 1.29: inventory net path was `DayZPlayerInventory.ProcessInputData`). (desde 1.30 Exp: retail does **not** call `ProcessInputData` — that call site is `#ifdef DIAG_DEVELOPER` plus `PluginInventoryDebug.IsOldProcessInputDataEnable()`. Live split: `ValidateInventoryCommandServer` / `ExecuteInventoryCommandServer` / `ExecuteInventoryCommandClient` / `ExecuteInventoryCommandRemote`, plus `INPUT_UDT_INVENTORY_CHECK` / `OnInventoryCheck`. See `references/dayz-1-30-enforce-script.md`.)
 
 ### Timer Rules
 
@@ -152,6 +126,7 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
 31. **Use `IsKindOf()` not `GetType() ==` for tool checks** — `GetType()` exact match fails on inherited/modded variants; `IsKindOf()` checks full inheritance chain
 32. **Match client-side and server-side tool checks** — if ActionCondition uses `IsKindOf`, the server RPC handler must also use `IsKindOf`, not `GetType() !=`
 33. **`RemoveAction(ActionTakeItem)` + `RemoveAction(ActionTakeItemToHands)`** — prevents item pickup/drag on placed objects; combine with `IsTakeable()` returning false and `CanPutInCargo()` returning false
+34. **Cursor component → selection membership goes through the engine's name list, in LOWER CASE** — `GetActionComponentNameList(idx, list, "")` (`object.c:198`) returned `component14`, `component19`, `door1` for a runtime `House` (LFSecure room, in-game 2026-09-09): names are lower-cased and the cursor index is 0-based while Object Builder auto-names are 1-based (`comp 13 → component14`, `comp 18 → component19`, `comp 8 → door1`). `IsActionComponentPartOfSelection(idx, "Component14", LOD.NAME_VIEW)` never matched, so three actions (bed, sink, exit) were dead for a whole test cycle with no error anywhere. Compare `list.Get(i)` after `ToLower()` against lower-case names in the default geometry, and while diagnosing log `idx` + the name list once per distinct index.
 
 ### Layout & UI Path Rules
 
@@ -267,6 +242,7 @@ Pick the reference file matching your need:
 | Vanilla deep-dive additions | `references/vanilla-deep-dive.md` | Source-verified v1.24 facts: recipes/crafting, ComponentEnergyManager, action system, damage pipeline, player internals/sync |
 | Weapon fire modes | `references/weapon-firemodes.md` | Fire-mode inheritance (single/burst/full-auto), `Mode_*` root-scope forward-decl trap (SP-031) |
 | Server-side performance | `references/server-performance.md` | Budget-per-frame scheduler, FPS-adaptive interval + rolling average, staggered/modulo-gated scan, exponential backoff, `#ifdef SERVER` vs `IsServer`/`IsDedicatedServer`, ScriptInvoker bus vs polling |
+| DayZ 1.30 Exp Enforce contract | `references/dayz-1-30-enforce-script.md` | `OnCEIterate`, inventory Validate/Execute* + `OnInventoryCheck`, obsolete `TakeEntityToCargo`/`TakeEntityAsAttachment`, hand FSM guards, `ItemBaseType` / `GUIInventoryAttachmentsProps`, `CanBeStarted` / `ActionObtainLiquidBase` / CCT liquid, `vector.Cross` / `array.Slice` / `DoOnce` / `GetThirdPersonViewMode` / `GetNoiseReductionByWeatherEx`, `GAME_STORAGE_VERSION = 144` |
 | UI / layout / Dabs / widgets | skill `dayz-ui-development` (canonical, HEAD-verified) | Full UI, layout and Dabs MVC work lives there; this skill keeps only hard rules 34-35 (layout-path crash, ScriptViewMenu guard) and CfgMods `inputs` |
 
 ---
@@ -462,6 +438,8 @@ Destructor       → Object being garbage collected
 
 **Registration timing**: `RegisterNetSyncVariableInt/Bool/Float` MUST be called in the **constructor**, not in `EEInit`. SyncVar registration after construction is ignored.
 
+**Storage load order and attachments at creation (SP-LFS-3, measured 2026-09-10, DayZDiag 1.29)**: persisted entities are created AFTER `MissionServer.OnMissionStart` returns (three `Print`s: the `OnMissionStart` dump came at server script log line 33, the stored entities' `EEInit`/`AfterStoreLoad` at 49-61), and `EEInit` runs BEFORE `OnStoreLoad`/`AfterStoreLoad`. Consequences: (a) a registry that reconciles persisted entities must run after `AfterStoreLoad` (self-register there, reconcile deferred), never inside `OnMissionStart`; (b) an attachment created with `GetInventory().CreateAttachmentEx(type, slotId)` inside `EEInit` — or in the same tick as `CreateObjectEx` of the parent — is counted by the server but NEVER reaches clients (invisible, absent from the vicinity panel) and on a stored entity collides with the restored one; created 1 s later via `g_Game.GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(fn, 1000, false)` it renders immediately. Stock new entities from their creator with a deferred call and a persisted "stocked" flag. Origin: LFSecure V3 armory probes (`P:/LFSecure_dev/evidence/v3/l0-proxy-probe/README.md`).
+
 ---
 
 ## MANDATORY CODE REVIEW CHECKLIST
@@ -495,6 +473,7 @@ Before delivering ANY Enforce Script code, verify:
 - [ ] No exclude in the set transitively reaches `aiming` — `menu` does, via `inventory` (rule 37b)
 - [ ] A seated sight/turret hijacks `DayZPlayerCamera1stPersonVehicle` instead of unpossessing (rule 37d); if legacy code still unpossesses, it rebuilds `StartCommand_Vehicle` AND is known not to restore the camera (rule 37c)
 - [ ] Vanilla inventorySlot overrides: use `=` for string-defined items, `+=` only for array-defined items
+  - `+=` appends to the class's OWN current list, not to the parent's (measured 2026-09-10 with `ConfigGetTextArray` at the end of `OnMissionStart`: with GunRacks re-listing `Shoulder`,`Melee` and LFSecure adding `LFS_Gun_1..3`, `Rifle_Base` = `Shoulder,Melee,LFS_Gun_1..3,Shoulder,Melee,GunRack_Gun_1..6`; `Pot` patched by LFPowerGrid kept `CookingEquipment`). Add only the new values; two mods' patches stack in load order. A class that redefines the array (70 of 139 `Edible_Base` descendants do) does NOT inherit a base-class patch: generate per-class patches with the exact parent (SP-LFS-4).
 
 ---
 
@@ -541,13 +520,54 @@ ground and the server ground check fails with "no ground" for any wall standing 
 !hit.entry) continue;`, and treat `hit.obj == null` as terrain. `RaycastRVResult.dir` is documented as "direction
 outside ... or (in case of line-object collision) direction and size of the intersection"
 (`3_game/global/dayzphysics.c:104`): measured magnitudes 0.16-0.42, so `dot(dir, fwd) >= 0.9` never passes and
-`sqrt(dir.x^2 + dir.z^2) >= 0.2` is a coin flip. Use it for sign/axis only. For a real surface normal use
-`DayZPhysics.RaycastRV(beg, end, hitPos, hitNormal, contactComponent, results, with, ignore, sorted, groundOnly,
-ObjIntersectFire, radius)` as `P:\LFPowerGrid\scripts\4_World\LFPG_HologramMod.c:542,829` does, with
-`g_Game.SurfaceY(x, z)` as the ground fallback (`:843`); vanilla `hologram.c:1438` builds
+`sqrt(dir.x^2 + dir.z^2) >= 0.2` is a coin flip. Use it for sign/axis only. **SUPERSEDED 2026-09-09 (SP-LFS-2
+below): `DayZPhysics.RaycastRV(... contactDir ...)` is NOT a surface normal either; the earlier advice to take the
+normal from it, as `LFPowerGrid/scripts/4_World/LFPG_HologramMod.c:542,829` does, was wrong and LFPG carries the
+same latent defect.** `g_Game.SurfaceY(x, z)` as the ground fallback (`:843`) stays valid; vanilla `hologram.c:1438` builds
 `RaycastRVParams(from, to, m_Projection)` and leaves `with` unset. `RaycastRVParams.with` is documented only as
 "ignore object with this object, otherwise collision hits" (`dayzphysics.c:55`): do not rely on it to restrict or
 select targets.
+
+### Surface normals: neither `RaycastRVResult.dir` nor `RaycastRV.contactDir` is one — use `RayCastBullet` (SP-LFS-2, added 2026-09-09)
+
+[IN-GAME MEASURED, DayZDiag 1.29.163709, LFSecure placement cycles 1-2, 2026-09-09] For object hits BOTH fields
+carry the ray direction, not the face normal: `RaycastRVProxy` `dir` on a dozen vertical wall components of
+`Land_House_1W09_Yellow` had Y between 0.25 and 0.45 (the camera pitch), and `RaycastRV` `contactDir` on
+`Land_House_1W02` pointed the same way with magnitudes 0.01-3.3 ("direction and size of the intersection",
+`dayzphysics.c:104`; the doc example at `dayzphysics.c:170-181` prints a `contactDir` equal to the ray direction). A
+hologram yaw derived from either FACES THE CAMERA: it looks aligned only when the player faces the wall squarely,
+and at any other angle the ghost's box collides with the wall it is supposed to hug (the "grey hologram, no
+action" symptom). `LFPG_HologramMod.c:542,711` inherits this; its floor/wall/ceiling split works only because
+camera pitch correlates with the surface aimed at. For a physics normal use
+`DayZPhysics.RayCastBullet(beg, end, PhxInteractionLayers.BUILDING, ignoreObj, hitObject, hitPos, hitNormal,
+hitFraction)` (`dayzphysics.c:211`; layers `dayzphysics.c:14-40`; vanilla users `environment.c:408`,
+`actiontargets.c:330`, `undergroundhandlerclient.c:146`), keep the fire-geometry ray for identity and `entry`,
+accept the normal only when both contacts lie within ~15 cm, and log which source the pose used (`src phx|ray`).
+The physics path shipped in LFSecure R6 and was NOT yet exercised in-game; its fallback (face the camera) is the
+behaviour accepted in V1/R5. Verification: `dir`/`contactDir` claims = runtime_verified; `RayCastBullet` = source_verified.
+
+### Ambient temperature falls with ABSOLUTE height — elevated structures freeze players (SP-LFS-5, added 2026-09-10)
+
+`WorldData.GetBaseEnvTemperatureAtPosition(vector pos)` (`3_game/worlddata.c:217-221`) subtracts `pos[1] * m_TemperaturePerHeightReductionModifier` (0.02 °C/m, `:78`) using the absolute Y, and `GetBaseEnvTemperatureAtObject` delegates to it (`:212-215`; used by `Environment` for players, `ItemBase` for items, fireplaces). A room at 3900 m is ~78 °C colder than ground level: the player died of hypothermia within minutes (LFSecure, 2026-09-10). Fix measured in-game («temperatura normal en la sala»):
+
+```c
+modded class WorldData
+{
+	override float GetBaseEnvTemperatureAtPosition(vector pos)
+	{
+		float surface = g_Game.SurfaceY(pos[0], pos[2]);
+		if (pos[1] - surface > 1000.0)   // far above the terrain: use the ground under it
+		{
+			vector ground = pos;
+			ground[1] = surface;
+			return super.GetBaseEnvTemperatureAtPosition(ground);
+		}
+		return super.GetBaseEnvTemperatureAtPosition(pos);
+	}
+}
+```
+
+Restrict the condition to your own structure (class name check from 3_Game via `GetType()`) before shipping; put the override in the contract of any elevated room/platform design.
 
 ### Safe Inventory Operations
 ```
@@ -694,7 +714,7 @@ Five measured facts (LFHeli LF-007 / LF-001; evidence `evidence-2026-08-17/cell-
 
 3. **`Object.GetHealth01(zone,type)` (`object.c:997`) is not callable on client.** Throws `Virtual Machine Exception ... cannot be called on client` (non-fatal, returns 0).
 
-4. **`DumpStackString(out string)` (`endebug.c:50`) gives the multiline script stack, but the client log truncates the string to ~255 chars.** Print line by line instead of the whole block.
+4. **The script log truncates EVERY `Print` line at 255 characters**, not only `DumpStackString(out string)` (`endebug.c:50`): measured 2026-09-09, 172 of 193 LFSecure diagnostic lines cut at exactly 255, losing the fields that mattered. Write diagnostics as several short lines sharing an event tag (`Hologram#12 wall …`, `Hologram#12 ground …`), clip variable-length fields, and print stacks line by line.
 
 5. **`ActionStopEngine.OnExecute` (`actionstopengine.c:35-59`) with PHYSICS executes the stop ONLY on client.** The server sees it via replication (its stack shows only `OnEngineStop`).
 
@@ -793,6 +813,7 @@ The creator on the owner is `ActionGetInTransport.Start()` (`actiongetintranspor
 **Consequence for mod code:** any client-side action gated by "I am seated" (vanilla pattern: `GetCommand_Vehicle()` then `GetTransport()`, as in `actionstartengine.c`) behaves differently depending on HOW the player got seated. A human who used the normal get-in action passes the gate; an occupant placed by server script has the crew replicated (`CrewMember(n) == player` is true on the client) **and yet** `GetCommand_Vehicle()` is null, so the action is never offered.
 
 **Consequence for autotests (dayz-test-ingame):** an autotest that seats the player from the server and then fires the subsystem RPC **bridges the real gate** and reports green on a human path that may be broken. Measured: the OH-1 FLIR was unopenable by hand for months while the autotest passed, because it emitted the RPC directly. Remedy: the client half of the autotest calls its own `StartCommand_Vehicle` even when the seat already appears occupied, and does not probe until `GetCommand_Vehicle().GetTransport() == <vehicle>`. The gate probe must evaluate `ActionBase.Can(player, target, item)` (public, `actionbase.c:912`), **never** `ActionCondition`, which is `protected` — calling it from outside breaks compilation of the World module (the client does not start; the server stays up because it does not compile client-only classes).
+(hasta 1.29: `ActionBase.Can` public at `actionbase.c:912`). (desde 1.30 Exp: 3-arg `Can(PlayerBase, ActionTarget, ItemBase)` is at `ActionBase.c:968`; 4-arg overload still below. The rule "probe `Can`, never `ActionCondition`" is unchanged. `UA_AM_INIT = 14` shifted later `UA_AM_*` values — do not hardcode the integers.)
 
 Evidence: `LFHeli_dev\reviews\evidence-2026-08-18\flir-actiongate-01\` — probe `[LFHELI-FLIR-F0] action gate can=false cond=false vehCmd=false natEng=false syncEng=true` with `seat fixed (client) crew=1` and no `seat commanded (client)` in the same log.
 
@@ -927,6 +948,7 @@ Decision split:
   is useless here, because the engine/mission instantiates the vanilla name.
 - **Add a NEW action** -> `extends ActionBase` + `modded ActionConstructor` to
   `RegisterActions` + `AddAction` in the item's `SetActions()`.
+(hasta 1.29: that triad was the whole contract). (desde 1.30 Exp: still required, and incomplete: also register the **replacement** if vanilla dropped the old class — `ActionFillBottleBase` is `[Obsolete]` and is **not** in `RegisterActions`; live class is `ActionObtainLiquidBase`. Info-only actions use `InitInfoData` + `CanBeStarted()==false` (manager will not `ActionStart`). Liquid CCT is `CCTLiquid`. Animation overrides live on `EntityAI.m_EntityActionOverrides`. Details: `references/dayz-1-30-enforce-script.md`.)
 
 Blast radius: `modded` on a `*Base` class applies to EVERY descendant at once.
 That is the right tool when a blanket change is the goal, and the wrong one when
@@ -1037,3 +1059,56 @@ Forma de fallo verde y silenciosa; la corrida entera fue inútil.
 Escribir esos literales componiendo la barra en Python (`chr(92)`) y verificar con `repr()`. Y si
 el valor lo consume el motor, **comprobar en su log que llegó entero** antes de fiarse de la
 corrida: aquí el propio log imprimía la ruta recibida, y ahí se veía sin barras.
+
+## DayZ 1.30 Exp (build 1.30.164014)
+
+Bodies, `[EXACT]` blocks, and the full migration list: `references/dayz-1-30-enforce-script.md`.
+
+**What changes.** CE tick is `OnCEIterate(float currentTime, float elapsedTime)` (`OnCEUpdate` `[Obsolete]`). Inventory net path is `ValidateInventoryCommandServer` + `ExecuteInventoryCommandServer/Client/Remote` (retail does not call `ProcessInputData`) plus `INPUT_UDT_INVENTORY_CHECK` / `OnInventoryCheck`. `TakeEntityToCargo*` / `TakeEntityAsAttachment*` are `[Obsolete]` → Target* variants. Hand guards no longer auto-pass `m_IsJuncture`; `HandGuardIsNotSurrendered` blocks surrendered players. `ItemBaseType` caches `headSelectionsToHide`, `varWetMax`, `GUIInventoryAttachmentsProps` groups. Actions: `CanBeStarted` / `SortActions` / `IsTargetInfoAction`; `ActionFillBottleBase` → `ActionObtainLiquidBase` + `CCTLiquid`; `EntityAI.OverrideActionAnimation`. Engine: `World.GetThirdPersonViewMode()`, `Weather.GetNoiseReductionByWeatherEx`, `vector.Cross`, `array.Slice`, `EnumFlagsToString`, `DoOnce`, `DayZPlayer.IsFirstRenderFrame`, `Entity.DisableSimulation`. `GAME_STORAGE_VERSION = 144`.
+
+**What breaks.** A 1.29 `override OnCEUpdate`, `modded ProcessInputData`, `AddAction(ActionFillBottleBase)`, `ItemBase.m_ItemActionOverrides`, hardcoded `UA_AM_*` ints, or `Is3rdPersonDisabled()` as a bool. Recipe replace no longer overwrites result health. Fill/drink CCT copied from `CCTWaterSurfaceEx` misses vanilla liquid.
+
+**Checklist.** `OnCEIterate` + `super`. Split inventory Validate/Execute*. Target* takes. `ActionObtainLiquidBase`. `OverrideActionAnimation` on the entity. `CanBeStarted` for info actions. `CCTLiquid` + `GetPlayerHeadPosition`. `ThirdPersonMode.ENABLED`. Storage `144`. Never hardcode `UA_AM_*`. Do not treat `GetNoiseReductionByWeatherEx` as the AI damper (native AIParams; Ex is kept for HUD).
+
+## El salto de linea cierra la sentencia TAMBIEN en una condicion (SP-386, added 2026-09-10)
+
+Ampliacion de **Tres formas de romper el compilador** (mismo fichero). Su punto 1 ya dice
+que el compilador cierra la sentencia en el salto de linea, pero lo ilustra **solo** con
+concatenacion de strings. La regla es del PARSER, no del operador `+`, y quien busca el
+sintoma bajo `if` no lo encuentra donde esta archivado.
+
+Medido el 2026-09-10 sobre `LFHeli_Base.c`: una condicion partida en dos lineas
+
+```c
+if (m_RestProbeArmed && startVel.Length() < REST_PROBE_SPEED_MPS
+    && m_RestProbeLines < REST_PROBE_MAX_LINES)
+```
+
+da `Expected ')', not a 'REST_PROBE_SPEED_MPS'` mas `Missing ';' at the end of line`, y
+detras `Invalid statement ')'`, `Unexpected scope` y `Syntax error` en las lineas
+siguientes. El error apunta a un parentesis y el defecto es el salto de linea.
+
+**Senal barata y decisiva antes de escribir:** contar las condiciones multilinea que ya
+existen en el fichero. En este eran **0 de ~4.700 lineas** — todas en una sola linea,
+incluidas las de seis clausulas. Esa uniformidad no era estilo, era el parser. Cuando un
+fichero entero evita una construccion comoda, la explicacion por defecto es que no compila.
+
+### Un cuarto gate falso: "Build Successful" de AddonBuilder
+
+La seccion ya avisa de que `CfgConvert -test`, un linter propio o un grep de anchors
+acreditan forma y no compilacion. Falta el que esta **dentro del pipeline de build**, que es
+el que mas enganya: AddonBuilder **empaqueta**, no compila Enforce. En esa misma corrida:
+
+| gate | veredicto | lo que acredita |
+|---|---|---|
+| linter offline del addon | `WARN=6 ERROR=0`, identico a la base | forma |
+| AddonBuilder | `exit=0`, `Build Successful` | que el PBO se empaqueto |
+| content gate del PBO | la cadena nueva esta dentro | que el texto viajo |
+| **arranque del servidor** | **`Can't compile "World" script module!`** | **compilacion** |
+
+Los tres primeros en verde y el modulo sin compilar. Cuesta el arranque entero de un lote:
+aqui, un servidor y una caja compartida que otras sesiones estaban esperando.
+
+**Corolario operativo:** cuando la caja es un recurso en cola, el arranque de servidor no es
+solo el gate, es el gate MAS BARATO que existe — falla en ~20 s. Gastar 20 s en arrancar
+antes de encolar un lote de 30 min no es prudencia, es aritmetica.

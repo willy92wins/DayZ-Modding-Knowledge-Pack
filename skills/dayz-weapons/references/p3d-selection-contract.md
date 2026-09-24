@@ -101,3 +101,19 @@ The validator that renders + checks these — `scripts/weapon_grip_viewer.py` �
 
 - `[TBD-verify]` memory-point semantics for `magazine_axis`, `recoil`, `weapon back` carry over from
   `weapon-in-hands.md` — not independently confirmed here.
+
+## DayZ 1.30 Exp (build 1.30.164014) — do not debinarize staged classnames
+
+(hasta 1.29: PARITY-FIRST meant unpacking the vanilla weapon whose **script** you inherit.)
+(desde 1.30 Exp: `SCARL` / `Luger` / `LeeEnfield` / `MP18` / `P1907_Bayonet` scripts exist, but
+`work\pbo-listings\exp__Addons__weapons_firearms.txt` and `exp__Addons__weapons_pistols.txt` have no
+matching `.p3d`. `SCARH\ScarH.p3d` **is** packed — use that (or AKM / CZ61 / a 1.29 pistol) as the
+memory-LOD reference.)
+
+If you author a stand-in mesh for those classnames anyway, W-SEL1 extra names from vanilla remaps
+(`bone-remap.md`): Luger `slide` / `toggle1` / `toggle2`; Lee-Enfield `bolthandle` / `boltbody` /
+`bullet1`. MP18 drum mag script expects AnimationSource `"drum"` and memory point `"drum_sound"`
+(`Magazines.c:81-95`) — still no mag `.p3d` in `weapon_magazines` this build.
+
+ADS `eye` vs `usti hlavne` alignment for Luger / Lee-Enfield was **not** measurable in-game here
+(no body `.p3d`). `[UNVERIFIED]` leave those points to a later experimental drop that ships the mesh.

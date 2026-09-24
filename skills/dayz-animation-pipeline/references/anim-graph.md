@@ -8,9 +8,11 @@ All `[VERIFIED-vanilla]` items below were greped directly against the unpacked v
 
 | Topic | Vanilla path | Format |
 |---|---|---|
-| Player commands + transitions | `SurvivorAnims/animgraph/player_main/*.agr` | text |
+| Player master graph index (1.30 Exp) | `DZ/anims/workspaces/player/player_main/player_main.agr` (added 2026-09-16, DayZ 1.30 Exp) [EXACT] | text (`AnimSrcGraph` with `GraphFilesResourceNames` at `player_main.agr:1587`) |
+| Player sub-graphs (Locomotion, Vehicles, Actions, Combat...) | `DZ/anims/workspaces/player/player_main/*.agf` (added 2026-09-16, DayZ 1.30 Exp) [EXACT] | text Enfusion Config (`AnimSrcGraphFile`); in 1.29 these were binary `.agr` |
+| Player commands + transitions (pre-1.30 source) | `SurvivorAnims/animgraph/player_main/*.agr` | text |
 | Animal/infected/predator graphs | `DZ/animals/animations/!graph_files/<species>/*_graph.agr` | text |
-| Skeleton bone catalog | `DZ/anims/cfg/skeletons.anim.xml` | XML |
+| Skeleton LOD and missing bones | `DZ/anims/cfg/skeletons.anim.xml` (added 2026-09-16, DayZ 1.30 Exp) [CHANGELOG] | XML (`lod` attribute only; 250 bone limit removed) |
 | ASIs (player + props + weapons) | `DZ/anims/workspaces/player/player_main/` | text (`$animsetinstance`) |
 | Event table | `DZ/anims/workspaces/player/Player_EventTable.ae` | text |
 | Workspaces | `DZ/anims/workspaces/player/player_main/*.aw` (compiled), `SurvivorAnims/animgraph/player_main/*.aw` (source) | text |
@@ -49,6 +51,26 @@ Source: `SurvivorAnims/animgraph/player_main/{combat,locomotion,player_main}.agr
 | `CMD_Reload_Clip` | clip reload |
 | `CMD_Modifier_Additive` | **state modifier** for sickness/cough/sneeze (`locomotion.agr:3959-3976`). **NOT for reload** — see the refutation below |
 
+### New Player Commands in DayZ 1.30 Exp [EXACT]
+
+In DayZ 1.30 Exp (`exp\scripts\scripts\3_Game\dayzplayer.c:766-767, 889-899`), 11 new Full-Body action commands (`CMD_ACTIONFB_*`) and new modifier action commands (`CMD_ACTIONMOD_*`) are registered in `DayZPlayerConstants`:
+
+| Command | Constant Value | Stance / Context (`dayzplayer.c`) |
+|---|---|---|
+| `CMD_ACTIONMOD_COMBINATIONLOCK` | `256` | Mod action: combination lock (erc, cro) (`dayzplayer.c:766`) |
+| `CMD_ACTIONMOD_WASHFACE` | `257` | Mod action: wash face (`dayzplayer.c:767`) |
+| `CMD_ACTIONFB_COMBINATIONLOCK` | `256` | Full-body: combination lock (pne) (`dayzplayer.c:889`) |
+| `CMD_ACTIONFB_WASHFACEPOND` | `257` | Full-body: wash face in pond (cro) (`dayzplayer.c:890`) |
+| `CMD_ACTIONFB_BUILDROPELADDER` | `258` | Full-body: build rope ladder (cro) (`dayzplayer.c:891`) |
+| `CMD_ACTIONFB_BRICKSTACK` | `259` | Full-body: brick stacking (erc, cro) (`dayzplayer.c:892`) |
+| `CMD_ACTIONFB_BRICKTROWEL` | `260` | Full-body: brick trowel (erc, cro) (`dayzplayer.c:893`) |
+| `CMD_ACTIONFB_MIX_MORTAR` | `261` | Full-body: mix mortar in bucket (cro) (`dayzplayer.c:894`) |
+| `CMD_ACTIONFB_DRINKWELL_BUCKET` | `262` | Full-body: drink from well bucket (erc) (`dayzplayer.c:895`) |
+| `CMD_ACTIONFB_SHARPEN` | `263` | Full-body: sharpen tools with stone (cro) (`dayzplayer.c:896`) |
+| `CMD_ACTIONFB_WASHFACEWELL` | `264` | Full-body: wash face at well (erc) (`dayzplayer.c:897`) |
+| `CMD_ACTIONFB_WETCLOTH` | `265` | Full-body: wet cloth in pond (cro) (`dayzplayer.c:898`) |
+| `CMD_ACTIONFB_WETCLOTHWELL` | `266` | Full-body: wet cloth at well (erc) (`dayzplayer.c:899`) |
+
 ## Variables — `#Var` declarations [VERIFIED-vanilla]
 
 Animal graphs declare variables with `#Var <name> <type> <default> <min> <max> ""`. Examples from `herbivores_graph.agr`:
@@ -59,6 +81,27 @@ Animal graphs declare variables with `#Var <name> <type> <default> <min> <max> "
 
 `swimming` is **NOT** a `#Var` in any animal graph. In the player it appears as a state tag (`TagSwimming`, `SwimmingMaster` in `locomotion.agr`), not as a numeric variable. Community tutorials that treat `swimming` as a creature variable are inventing it.
 
+### DayZ 1.30 Exp: ControlTemplate in AnimSrcGraph (.agr) [EXACT]
+
+(until 1.29: `#Var` declarations were used in animal graphs; since 1.30 Exp: `#Var` is completely replaced by `ControlTemplate AnimSrcGCT`). In 1.30 Exp, variables are declared in the root `.agr` file (`AnimSrcGraph`) under `ControlTemplate`:
+
+```enfusion
+// [EXACT] exp\animals\DZ\animals\animations\!graph_files\wolf\wolf_graph.agr:4-16
+ ControlTemplate AnimSrcGCT "{6930A8DF8B23ACB9}" {
+  Variables {
+   AnimSrcGCTVarFloat speed {
+    DefaultValue 0
+    MinValue 0
+    MaxValue 5
+   }
+   AnimSrcGCTVarFloat turn {
+    DefaultValue 0
+    MinValue -180
+    MaxValue 180
+   }
+   AnimSrcGCTVarInt behaviorAction {
+```
+
 ## Terrain alignment [VERIFIED-vanilla]
 
 There is no special "terrain alignment node". It's an `AnimNodeRot` that consumes `SlopeAngleX/Z` multiplied by `0.01745329` (= π/180, degrees → radians):
@@ -67,6 +110,28 @@ There is no special "terrain alignment node". It's an `AnimNodeRot` that consume
 - Herbivores: `TerrainRot_Deers`, `TerrainRot_CowAndBull`, `TerrainRot_BoarAndPig`, `TerrainRot_SheepAndGoat` — same shape.
 
 For a new creature, **copy the formula from the vanilla animal closest in proportions** (large quadruped → cow, medium → boar, small → sheep). Don't reinvent.
+
+### DayZ 1.30 Exp: AnimSrcNodeProcTransform in .agf [EXACT]
+
+(until 1.29: terrain alignment was declared as `AnimNodeRot` inside `.agr`; since 1.30 Exp: terrain alignment is declared as an `AnimSrcNodeProcTransform` procedural node inside the submodule `.agf` file):
+
+```enfusion
+// [EXACT] exp\animals\DZ\animals\animations\!graph_files\wolf\wolf_maingraph.agf:5-18
+    AnimSrcNodeProcTransform AlignToTerrain_Rot {
+     EditorPos -1 -4.7
+     Child "Master_SM"
+     Expression "SlopeAngleX  * 0.01745329251994329576923690768489"
+     Bones {
+      AnimSrcNodeProcTrBoneItem "{6930A8DF8B23795C}" {
+       Bone "scene_root"
+       Axis X
+       Space Model
+       Op Rotate
+       Amount 1
+      }
+      AnimSrcNodeProcTrBoneItem "{6930A8DF8B237969}" {
+       Bone "lflegcollarbone"
+```
 
 ## ASI — `$animsetinstance` structure [VERIFIED-vanilla]
 
@@ -87,6 +152,29 @@ $animsetinstance {
 - `#template` → the `.ast` (animset template) that defines which states this instance can populate.
 - `#parent` → another `.asi` to inherit from. `player_main.asi` is the root of the player chain.
 - `$animations` → the state-to-anm mapping. State path is dotted: `Category.SubCategory.StateName`.
+
+### DayZ 1.30 Exp: AnimSetInstanceSource (.asi) [EXACT]
+
+(until 1.29: `.asi` files used the proprietary `$animsetinstance` syntax with `#template`, `#parent`, `$animations`; since 1.30 Exp: `.asi` files use Enfusion Config syntax `AnimSetInstanceSource`):
+
+```enfusion
+// [EXACT] exp\anims_workspaces\DZ\anims\workspaces\player\player_main\player_main_rifle.asi:1-15
+AnimSetInstanceSource {
+ Template "{F0C651DE8E24A5DE}DZ/anims/workspaces/player/player_main/player_main.ast"
+ ParentTemplates {
+  "{0F5E6205A5E823C3}DZ/anims/workspaces/player/player_main/player_main.asi"
+ }
+ Lines {
+  AnimSetInstanceSource_Line "ActionContinuous.BlowFireplaceCro.In" {
+   Resource "{DACEA97B45382D18}DZ/anims/anm/player/actions/items/p_rfl_cro_blow_fireplace_in.anm"
+  }
+  AnimSetInstanceSource_Line "ActionContinuous.BlowFireplaceCro.Loop" {
+   Resource "{71CBDFD73BA4352D}DZ/anims/anm/player/actions/items/p_rfl_cro_blow_fireplace_loop.anm"
+  }
+  AnimSetInstanceSource_Line "ActionContinuous.BlowFireplaceCro.Out" {
+   Resource "{17BC83680E9A434B}DZ/anims/anm/player/actions/items/p_rfl_cro_blow_fireplace_out.anm"
+  }
+```
 
 ### Player ASI catalog [VERIFIED-vanilla `DZ/anims/workspaces/player/player_main/`]
 
@@ -124,6 +212,36 @@ Real state names corrected from community/video tutorial naming:
 | "mag remove" | `ReloadMagazineDetach` | the `.anm` filename has `_mag_remove_` but the state name is `ReloadMagazineDetach` |
 | "bullet in chamber" | **no such state** | chambering uses commands (`CMD_Reload_Chambering`, `CMD_Reload_ChamberingFast`), not a state name |
 
+## Vehicles.agf & Enfusion .agf format (added 2026-09-16, DayZ 1.30 Exp) [EXACT]
+
+Starting with DayZ 1.30 Exp, the player sub-graphs live in `.agf` text files (`AnimSrcGraphFile`) referenced by `GraphFilesResourceNames` in `player_main.agr:1587`. The vehicle graph `DZ/anims/workspaces/player/player_main/Vehicles.agf` (3654 lines) is the reference implementation. Extraction root for the citations below: `E:\DayZ-Exp-Extract\1.30.164014\exp\anims_workspaces\DZ\anims\workspaces\player\player_main\`.
+
+```
+// Vehicles.agf:1564-1576
+AnimSrcNodeBlendT MotorBikeB {
+ EditorPos 4 -18.3
+ BlendTime "0.3"
+ BlendFn S
+ Condition "VehicleType == 10 || VehicleType == 11"
+ Child0 "VehicleSTM"
+ Child1 "MotorBikeSTM"
+ OptimizeMin 1
+ OptimizeMax 1
+ SelectMainPath 0
+}
+```
+
+Node types seen in the file (each with the line where the first instance starts):
+- `AnimSrcNodeBlendN`: multi-input threshold blend (`BlendWeight "VehicleSpeed"`, `Thresholds { 3.5 8 }`, `Vehicles.agf:5-16`).
+- `AnimSrcNodeBlendT`: conditional transition selector (`Condition`, `BlendTime`, `Child0`/`Child1`, `Vehicles.agf:1564`).
+- `AnimSrcNodeBlend`: continuous 2-input formula blend (`MotoYIntertiaB`, `Vehicles.agf:1556`).
+- `AnimSrcNodePose`: 1D static pose evaluated along its timeline by a variable (`Vehicles.agf:47-51`).
+- `AnimSrcNodeStateMachine`: hierarchical state machine with `states { AnimSrcNodeState ... }` and `transitions { AnimSrcNodeTransition ... }` (`MotorBikeSTM`, `Vehicles.agf:1582-1750`).
+- `AnimSrcNodeIK2Target` and `AnimSrcNodeIK2`: two-bone IK pinning the driver's hands to the handlebar (`AnimNodeIK2Target0` at `Vehicles.agf:17`, `AnimNodeIK2hands` at `:31`).
+- `AnimSrcNodeSourceSync`: clip playback bound to a sync line (`Vehicles.agf:69-80`).
+
+`MotorBikeSTM` rider states: `Idle`, `GetIn_L`, `GetIn_R`, `GetOut_L`, `GetOut_R`, `JumpOut_L`, `JumpOut_R`, `Death`, `GettingInDeath` (`Vehicles.agf:1582-1750`); transitions test integer direction flags (`GetCommandI(CMD_Vehicle_GetIn) == 0` left, `== 1` right). The `.agr` of 1.29 was binary; diffing a 1.30 `.agf` against a 1.29 graph is therefore not possible in text.
+
 ## Reload is NOT additive in vanilla [REFUTED-vanilla]
 
 Some community tutorials say "reload is an additive animation: only torso/shoulders, the rest is handled by another layer". Vanilla does not confirm this:
@@ -146,6 +264,8 @@ Tutorials say "to load the Player Animation Editor in Workbench you have to edit
 
 To edit the player graph in Workbench Animation Editor: take a `.aw` that has `#eventtable`, delete that line, and the editor will open. Workbench/Workshop re-binds the `.ae` on export/compile.
 
+(added 2026-09-16, DayZ 1.30 Exp) [CHANGELOG] In 1.30 the Workbench Animation Editor moved to the 2021 Enfusion editor with live editing of a running graph and a "Show In Explorer" context action; `Buffer Save` / `Buffer Use` nodes and the default unnamed group of animation set templates were removed. [EXACT] The 1.30 `player_main.aw:15` declares its event table directly: `EventTable "{3037156104937B91}DZ/anims/workspaces/player/Player_EventTable.ae"`. [UNVERIFIED] Whether the `#eventtable` deletion trick is still needed with the 2021 editor has not been tried on this host.
+
 ## Building a creature anim graph — minimal-first workflow
 
 1. Create the graph + state machine with **one state** (idle) and **one anim source** (one `.anm`).
@@ -160,6 +280,17 @@ See `references/player-skeleton.md` for the full bone catalog. The two creature-
 
 - `EntityPosition` (`skeletons.anim.xml:4`, `movement="true"`) — the bone the engine reads for predicted entity displacement. Animal graphs reference it explicitly, e.g. wolf uses `"PredictionTurn" "EntityPosition"`.
 - `LookAt` (`skeletons.anim.xml:18`) — head/look tracking. The name is literally `LookAt`, not `Pin Look At` or `PinLookAt`.
+
+## Animation tags and HumanAnimInterface.IsTag (added 2026-09-16, DayZ 1.30 Exp) [EXACT]
+
+DayZ 1.30 lets script query the active animation-graph tags on the fixed tick via `HumanAnimInterface.IsTag` (`3_Game/human.c:318-319`):
+```c
+// E:\DayZ-Exp-Extract\1.30.164014\exp\scripts\scripts\3_Game\human.c:318-319
+proto native TAnimGraphTag 			BindTag(string pTagName);
+proto native bool                   IsTag(TAnimGraphTag iTag);
+```
+
+In the graph, states declare tags with a `Tags { "TagName" }` block. In `Vehicles.agf`: `TagVehicleGetIn` in `GetIn_L` / `GetIn_R` (`Vehicles.agf:1594, 1614`) and `TagVehicleGetOut` in the get-out / jump-out states (`:1604, 1624, 1634, 1651`). Transitions consume them, e.g. the driver death animation is blocked while boarding is in progress: `Condition "IsCommand(CMD_Death) && !IsTag(\"TagVehicleGetIn\")"` (`Vehicles.agf:1719`). [DESIGN] Script can cache the handle with `BindTag("TagVehicleGetIn")` and poll `IsTag(handle)` on the fixed tick to sync gameplay with an animation phase; no vanilla script caller was found in this extraction, so treat the usage pattern as a proposal.
 
 ## What this reference does NOT cover
 
@@ -187,3 +318,66 @@ The 3-frame closed/open/jammed is the AUTHORING intent (one frame per init state
 ### ikpose_* keys live in the WeaponIK graph node, not player_main.ast [VERIFIED-vanilla]
 
 The `ikpose_chainoffset`/`ikpose_weaponoffset`/`ikpose_secchainoffset`/`ikpose_chainmiddledir`/`ikpose_secchainmiddledir` keys (plus two omitted by community sources: `ikpose_chainmiddlediro`, `ikpose_secchainmiddlediro`) are parameters of the `AnimNodeWeaponIK` node in the `.agr`/compiled `.aw` graph — `DZ/anims/workspaces/player/player_main/combat.agr:24-30`, 14× across 6 `.agr` files. They are NOT in `player_main.ast`/`.aw` top-level (a grep there returns 0) and NOT in config.cpp/model.cfg. They are explicit IK-role→bone mappings, identical in every vanilla occurrence. Full block in `references/weapon-anim-blender-complete.md`.
+
+## DayZ 1.30 Exp: Animation Set Templates (.ast) & Elimination of Unnamed Groups [EXACT]
+
+(until 1.29: `.ast` files allowed anonymous groups `$groupType { #ngroupnames 0 ... }`; since 1.30 Exp: unnamed groups are rejected by the compiler).
+
+In DayZ 1.30 Exp, `.ast` files are formatted as `AnimSetTemplateSource` and **must** declare an explicit `Name` for every group (`AnimSetTemplateSource_AnimationGroup`):
+
+```enfusion
+// [EXACT] exp\anims_workspaces\DZ\anims\workspaces\player\player_main\player_main.ast:1216-1224
+  AnimSetTemplateSource_AnimationGroup "{694EE03ABF952F04}" {
+   Name "WeaponOperations"
+   Animations {
+    "ChamberingBulletL"
+    "ChamberingBulletR"
+    "ChamberingCancel"
+    "ChamberingFast_Closed"
+    "ChamberingFast_Open"
+    "ChamberingIn"
+```
+
+In vanilla templates, previously unnamed groups were migrated to `Name "Default"` (`infected.ast:76`, `wolf.ast:4`) or `Name ".unnamed"` (`zoW.ast:643`).
+
+## DayZ 1.30 Exp: Elimination of Buffer Save / Buffer Use Nodes [EXACT]
+
+In DayZ 1.30 Exp, `Buffer Save` and `Buffer Use` nodes were completely eliminated from the animation graph compiler and engine (`changelog:41`). An audit of all `.agf` sub-graphs (`Vehicles.agf`, `Locomotion.agf`, `wolf_maingraph.agf`) confirms zero instances of Buffer nodes. Custom graphs relying on buffer nodes must migrate to variables (`AnimSrcGCTVar*`) or direct state machine transitions.
+
+## DayZ 1.30 Exp: Script Animation APIs in Enforce Script [EXACT]
+
+DayZ 1.30 Exp introduces several native proto methods for script-side animation control:
+
+1. **Dynamic Animation Instance Control**:
+   `proto native void SetAnimationInstanceByName(string animationInstanceName, float blendingTime);` (`exp\scripts\scripts\3_Game\human.c:1384`)
+2. **Decoupled Item in Hands Notifications**:
+   `proto native void OnItemInHandsChanged(bool pInstant = false, bool pChangeAnimationInstance = true);` (`exp\scripts\scripts\3_Game\humanitems.c:112`)
+   `proto native void EnableAutoAnimInstUpdateOnHandsChange(bool pNewValue);` (`humanitems.c:115`)
+3. **Locomotion Speed Limits & Camera Horizontal Locks**:
+   `proto native void SetErectSpeedLimit(bool bShouldDisable, int pMaxErectSpeed = DayZPlayerConstants.MOVEMENTIDX_SPRINT);` (`human.c:231`)
+   `proto native void SetCrouchSpeedLimit(bool bShouldDisable, int pMaxErectSpeed = DayZPlayerConstants.MOVEMENTIDX_SPRINT);` (`human.c:232`)
+   `proto native void SetProneSpeedLimit(bool bShouldDisable, int pMaxErectSpeed = DayZPlayerConstants.MOVEMENTIDX_SPRINT);` (`human.c:233`)
+   `proto native void DisableProneCameraHorizontalRotation(bool pDisable);` (`human.c:243`)
+4. **Vehicle Transition State Query**:
+   `bool IsTransitioning()` returns `IsGettingIn() || IsGettingOut() || IsSwitchSeat();` (`exp\scripts\scripts\3_Game\human.c:735-738`)
+5. **Simple Death vs Ragdoll Physics**:
+   `proto native void PhysicsSetSimpleDeath(bool pEnable);` (`human.c:1448`)
+   `proto native void PhysicsSetRagdoll(bool pEnable);` (`human.c:1449`)
+   `proto native bool PhysicsIsRagdoll();` (`human.c:1450`)
+6. **Client Render Optimization**:
+   `proto native bool IsFirstRenderFrame();` (`exp\scripts\scripts\3_Game\dayzplayer.c:1189`)
+
+## DayZ 1.30 Exp: Refactor of Surrender (Hands Up) System [EXACT]
+
+DayZ 1.30 Exp completely eliminates `SurrenderDummyItem`. Surrender state transitions are handled natively:
+- `m_Player.SetSurrenderState(bool)` (`exp\scripts\scripts\4_World\Entities\ManBase\PlayerBase.c:2116-2125`)
+- `m_Player.IsSurrendered()` (`exp\scripts\scripts\3_Game\Entities\Man.c:66`)
+- `SetAnimationInstanceByName("dz/anims/workspaces/player/player_main/player_main_surrender.asi", 1)` (`PlayerBase.c:2088`)
+- Hand state reset via `"Empty"` profile in `DayZPlayerCfgBase.c:1537`.
+
+## DayZ 1.30 Exp: Workbench Animation Editor (Enfusion 2021) [EXACT]
+
+The Animation Editor in Workbench 1.30 was upgraded to Enfusion 2021:
+- Live Editing against active game clients (`changelog:48, 62`).
+- Native `.ae` EventTable support (`player_main.aw:15`).
+- Native Ragdoll Editor for `.ragdoll` files (`DZ/characters/bodies/human.ragdoll`).

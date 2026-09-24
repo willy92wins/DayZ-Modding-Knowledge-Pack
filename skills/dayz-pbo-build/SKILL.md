@@ -13,6 +13,7 @@ description: >
 # DayZ PBO Build Validator
 
 Complete pre-build validation pipeline for DayZ mod addons. Catches configuration errors, missing assets, and structural problems BEFORE packing into PBOs—avoiding in-game crashes and deployment failures.
+(until 1.29: the folder structure, stringtable.csv, include-list, and "Duplicate class names" check below remain the 1.29 contract.) (since 1.30 Exp: binarizer also **stops** if a member is defined multiple times in one class; unpacked `-mod` is a diag iteration path, not a shipping substitute. Details: [dayz-1-30-pbo-build.md](references/dayz-1-30-pbo-build.md) and ## DayZ 1.30 Exp.)
 
 ## Overview
 
@@ -73,6 +74,7 @@ This check is critical—most DayZ mod failures start here.
 - **AnimationSources reference check:**
   - Any AnimationSource defined here must be referenced in model.cfg (if model.cfg exists)
 - **Duplicate class names:** Same class cannot be defined twice
+- **Duplicate members (since 1.30 Exp [CHANGELOG]):** Same member cannot be defined twice inside one class body — binarizer **stops** (`work\changelog-1.30-exp-modding.md:19`). Not the same as `class Foo;` forward + `class Foo: Bar {}` definition. See `references/common-validation-failures.md` and `references/dayz-1-30-pbo-build.md`.
 - **No syntax helpers:** Reject obvious Python/macro syntax in .cpp (these get missed at compile time)
 
 **Example output:**
@@ -83,6 +85,7 @@ This check is critical—most DayZ mod failures start here.
 [WARN] Class inheritance: parent "CustomBase_Broken" not recognized (may not exist)
 [PASS] hiddenSelections arrays aligned (3 selections, 3 textures, 3 materials)
 [FAIL] Duplicate class name "Item_Torch" defined at lines 28 and 105
+[FAIL] Duplicate member "scope" defined twice in class "MyItem" (1.30 binarizer stop)
 ```
 
 ---
@@ -238,6 +241,33 @@ dayz-ui-development skill, LOCALIZATION section.
 ---
 
 ### 7. Script Validation (Basic)
+
+**Corre el linter REAL primero: existe, vive en este mismo pack, y no es opcional antes de
+empaquetar un PBO.**
+
+```
+python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>
+```
+
+Cubre Enforce `.c`, `.layout`, `config.cpp`, `inputs.xml` y `.rvmat`, y saca JSON. La ruta es
+**relativa a la raiz del Knowledge Pack**, no a tu proyecto: desde el directorio de un mod hay que
+dar la ruta absoluta de TU checkout, o el comando muere con `No such file or directory` y se lee
+como «no esta instalado».
+
+- Las claves del informe son **`errors` y `warnings` en la raiz**, no `findings`.
+- ⚠ **`status` vale `WARN` aunque `errors` sea 0**, y el exit code es `0 PASS / 1 FAIL / 2 WARN`:
+  un arbol limpio con warnings sale con **2**. Gatea por `len(errors)`, nunca por `status` ni por
+  el exit del wrapper.
+- **Compara contra una base** (el commit base en un worktree): el delta es lo que atribuye un error
+  nuevo a tu cambio; un numero absoluto no.
+- **No es un compilador.** Enforce solo compila al cargar el mundo. Si caza referencias colgando
+  tras un borrado, que es lo que un grep de simbolos se deja. Medido 2026-09-08 en LFPowerGrid:
+  271 ficheros en ~60 s; retirar 8 los dejo en 263, con 0 errores en ambos lados.
+- ⚠ **Y tiene un punto ciego que cuesta un arranque: no ve una variable no declarada.** Detalle,
+  caso medido y el barrido que si lo caza, en `dayz-test-ingame` §Paso 0.
+
+Las heuristicas de abajo son el respaldo cuando el validador no esta disponible, y una segunda
+pasada util cuando si lo esta.
 
 Checked if scripts exist in `scripts/` folder.
 
@@ -994,9 +1024,54 @@ de otros proyectos en cuarentena mientras dura el build.
 
 ### Cross-link: load order + thin lower layers (historical)
 
-
-equiredAddons[] dependency graph orders cross-mod compile within each script module layer (see dayz-mod-workflow). Prefer not inventing 1_Core/2_GameLib content unless you truly need that surface — default shared data to 3_Game.
+`requiredAddons[]` dependency graph orders cross-mod compile within each script module layer (see dayz-mod-workflow). Prefer not inventing 1_Core/2_GameLib content unless you truly need that surface — default shared data to 3_Game.
 
 Source: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/02-mod-structure/01-five-layers.md
 
+## Binarize is not byte-deterministic (added 2026-09-08)
 
+Measured 2026-09-07 on LFSecure with AddonBuilder 1.29 (`build_pbo.py`, staging outside `P:\`, `-temp` under `P:\`): two consecutive builds of the SAME assembled tree (MLOD `lfs_door.p3d` and `lfs_room.p3d` byte-identical by sha256) produced different ODOL entries — door 339,554 vs 339,551 B, room 2,597,078 vs 2,598,395 B — while every script, config, rvmat, paa and csv entry hashed the same. Consequences for a release or A/B gate:
+
+- **Per-entry PBO hashes are an identity gate for scripts, config, materials and textures only.** A changed `.p3d` entry between two builds proves nothing by itself.
+- **A binarized model is accredited by the hash of its MLOD input plus the engine check** (render + raycast), never by ODOL bytes. Keep the MLOD hashes next to the PBO hash in the evidence.
+- **Do not chase a byte diff in a `.p3d` entry** when the MLOD did not change; rebuild twice and compare before opening a debinarizer.
+
+## Una cadena de content gate que la BASE tambien contiene no puede ponerse roja (SP-390, added 2026-09-10)
+
+`core-build-deploy.ps1 -RequireString <cadena>` comprueba que el texto esta dentro del
+PBO empaquetado y del desplegado, y es un buen gate: caza el build que empaqueto una
+version vieja del arbol. Falla en silencio cuando la cadena elegida **no es exclusiva
+del cambio**.
+
+Medido el 2026-09-10 sobre LFHeliCore. Para probar una variante que activaba el
+suavizado del cliente solo con `ClientPresentMode == 1`, el gate se cerro con:
+
+```
+core-build-deploy.ps1 -RequireString "ClientPresentMode == 1"
+```
+
+y paso. Pero la BASE ya contenia esa subcadena, en una funcion que no tiene nada que
+ver con la variante:
+
+```c
+// LFHeliOwnerWakeEnabled(), presente desde antes del cambio
+return m_Tuning.ClientPresentMode == 0 || m_Tuning.ClientPresentMode == 1;
+```
+
+O sea que el gate **habria pasado igual sobre el build sin la variante**. No podia
+ponerse rojo, y por tanto no acreditaba nada: durante toda la corrida parecio que
+verificaba que el cambio viajaba al PBO, y solo verificaba que el fichero seguia ahi.
+
+**Como se elige la cadena.** Que sea unica del cambio, no del area del cambio. Un
+nombre de constante nueva (`REST_PROBE_ARM_MPS`) o un tag de log nuevo
+(`[LFHELI-REST]`) son buenos: no existen antes. Un fragmento de expresion sobre un
+campo que ya se usaba, no.
+
+**Y la comprobacion que lo cierra, que cuesta un minuto**: antes de fiarte del gate,
+**correrlo contra el artefacto SIN el cambio y ver que FALLA**. Un gate del que solo
+has visto el verde no esta calibrado; probar que puede ponerse rojo es la mitad que
+casi nunca se hace. En la misma corrida, dos cadenas sobre simbolos nuevos si
+discriminaban y una sobre un simbolo preexistente no, con el mismo comando.
+
+Hermano de lo que esta seccion ya dice sobre gates que acreditan forma y no
+compilacion: alli el gate mide lo que no toca, aqui mide algo que ya estaba.

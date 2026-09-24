@@ -12,6 +12,7 @@ where the engine reads mods, and launch `DayZDiag_x64.exe` with `-filePatching` 
 and config edits are picked up without re-binarizing. Three launch modes (offline / server /
 client / all) driven by one orchestrator script and double-click `.bat` wrappers, generated
 per mod into `<Mod>_dev\tools\`.
+(until 1.29: the loop was pack PBO → deploy packed `@Mod` → DayZDiag `-filePatching`.) (since 1.30 Exp [CHANGELOG]: `-mod` may point at an **unpacked** source folder; RV configs load unpacked; new flags `-cacheP3D=0/1` and `-resolveFilePatchingUsingEnfusion=0/1`. Details: [dayz-1-30-test-ingame.md](references/dayz-1-30-test-ingame.md) and ## DayZ 1.30 Exp.)
 
 ## SOURCE OF TRUTH
 
@@ -85,6 +86,7 @@ Con la caja libre de procesos DayZ del run y autorizacion explicita del usuario,
 - Receta: el agente escribe `.bat` (argv de server/client, comillas literales en cada valor con espacios) y el usuario los ejecuta a doble-clic en su sesion interactiva. [EXACT - esta skill, SP-077] Leer script.log/RPT con `FileShare.ReadWrite`. Cierre por UI, no por PID, salvo zombie del propio agente (entonces `Stop-Process -Id` exacto).
 - [DESIGN] Server argv: `-server "-config=<serverDZ.cfg>" "-profiles=<server-profiles>" "-mission=<mission-abs>" "-mod=<mod-abs-semicolon-list>" -filePatching -port=2302`
 - [DESIGN] Client argv: `"-mod=<mod-abs-semicolon-list>" -connect=127.0.0.1 -port=2302 "-profiles=<client-profiles>" -name=Dev -window -filePatching`
+(since 1.30 Exp [CHANGELOG]) Optional on both: `-cacheP3D=1` (unbinarized `.p3d` sibling cache) and `-resolveFilePatchingUsingEnfusion=1` (requires `-filePatching`; always on in Workbench). `-mod=` may name an unpacked source folder, not only a packed `@Mod`. See `references/dayz-1-30-test-ingame.md`.
 
 Tres gotchas que muerden en este mismo camino y no son del argv (SP-228, medidos):
 
@@ -742,6 +744,45 @@ logs NOTHING useful. The real message is only inside the minidump: extract strin
 because the engine handles it itself. Check `Get-Process steam` BEFORE launching a client, and start
 it with `steam.exe -silent` if missing.
 
+**1-bis. If that message appears while Steam IS running, stop reading the message and run the
+discriminator.** Measured 2026-09-08 on SUB_BRZ: the client died on 5 consecutive launches with
+exactly the string above, plus `[API loaded no]` in the same dump, while `Get-Process steam`
+returned a live process, `HKCU\Software\Valve\Steam\ActiveProcess` held a non-zero `ActiveUser`
+whose `pid` matched it, and steam.exe, DayZDiag_x64 and the daemon all ran as the same unelevated
+user. Restarting Steam (`steam.exe -shutdown`, then relaunch) changed nothing, twice. Point 1's
+advice ends at "check Steam is running"; when it IS, the reader has nowhere to go.
+
+**The asymmetry is the clue: the server lives and the client dies.** Point 1 already says why - only
+the client needs the Steam API - so the split names the suspect on its own, and the experiment that
+separates the two causes is to launch the dead half YOURSELF, from your own user shell, with the
+same command line (lift it from the RPT header or the dump). Two minutes, and it answers completely:
+
+- **the hand-launched client dies too** -> the host or Steam really is broken, and that fix belongs
+  to the user.
+- **the hand-launched client lives** -> the DAEMON'S SPAWN CONTEXT is what breaks it, not the host.
+  Different owner, different fix, and no amount of restarting Steam will touch it.
+
+On that date it lived: it booted, connected, and reached the in-game HUD. `capture_screenshot` works
+on it, because capture is host-side rather than a bridge verb. Filed as `fb-20260908-190943-5073`.
+
+**Caveat that bounds the workaround**: a client you launched yourself is FOREIGN to the run record,
+so the instance fence rejects its polls (`unaccredited_polls_by_class.instance_unknown` climbs) and
+no client verb reaches it. Without `camera_set` there is no framing. It is good for putting a HUMAN
+in front of the screen, not for automating a reading.
+
+**The general rule, worth more than this case**: when one half of a client/server pair dies and the
+other lives, their differing requirements already shortlist the cause. Run the by-hand launch of the
+dead half BEFORE believing whatever subsystem the error message happens to name. Here the message
+named Steam, and Steam was the one thing that could not help.
+
+**And when it IS the daemon, re-measure before treating the wall as permanent.** Confirmed on
+SUB_BRZ 2026-09-10, the day after: the same launch succeeded on the first try -- `client_alive=true`
+at 17 s, player in game at 51 s, no Steam intervention, and `auto_remediate_steam` not even
+requested. The only thing that had changed was `session_status.daemon_generation`. The wall was
+daemon STATE, not the host, and a daemon restart cleared it. So record `daemon_generation` when you
+file the finding, compare it when you retry, and give a freshly restarted daemon one clean launch
+before spending a session on the workaround.
+
 **2. The request JSON must not carry a UTF-8 BOM.** `Out-File -Encoding utf8` in Windows PowerShell
 5.1 writes a BOM and the parser rejects the whole request with `invalid_dayz_test_request`. Write it
 with `[IO.File]::WriteAllText($path, $json, (New-Object Text.UTF8Encoding($false)))`, or copy a
@@ -1203,9 +1244,18 @@ proceso?"**:
 eso el proceso queda vivo con 0 CPU en vez de desaparecer, y por eso no hay evento de fallo en
 el visor de sucesos de Windows: DayZ escribe su propio `.mdmp` y se planta.
 
-**Remedio** (conserva el login, ~20 s): `steam.exe -shutdown`, esperar a que el proceso muera,
-relanzar, y **esperar a que la clave vuelva a casar con un proceso vivo** antes de lanzar el
-cliente. No basta con que Steam "este abierto".
+**Remedio** (revisado 2026-09-12): el fiable es **copiar el pid del `steam.exe` vivo a la clave**,
+con guardas: clave estable entre dos lecturas, `ActiveUser` valido, un solo `steam.exe` vivo en tu
+sesion y en su ruta, recomprobado justo antes de escribir y verificado despues. Reiniciar Steam
+(`steam.exe -shutdown` y relanzar) conserva el login pero **puede no reescribir la clave**: medido
+ese dia, Steam arranco con pid 34316, la clave siguio en 50968 sin tocarse desde la noche anterior
+y el pid nuevo solo aparecio en `HKLM\SOFTWARE\Valve\Steam\SteamPID`. Si reinicias, **comprueba que
+la clave case con un proceso vivo** antes de lanzar el cliente; no basta con que Steam "este abierto".
+
+**La sonda que discrimina es `SteamAPI_IsSteamRunning`, no `SteamAPI_Init`.** Con la clave rancia,
+la `steam_api64.dll` del propio DayZ devolvio `Init` OK e `IsSteamRunning` FALSO, y el cliente murio
+igual; tras copiar el pid salieron las dos verdaderas y el cliente entro. Una puerta que solo llama
+a `Init` da verde sobre el estado roto.
 
 **Como leer el volcado sin depurador**, que es lo que corto el bucle de hipotesis: un minidump
 trae `MINIDUMP_EXCEPTION_STREAM` (tipo 6) y `MODULE_LIST` (tipo 4); con ~60 lineas de Python se
@@ -1678,3 +1728,35 @@ contra el objetivo**, y la rechazo su `ActionCondition`. Sirve para acreditar qu
 alcanza a un tipo de entidad sin montar la fixture que satisfaria su guard. **Con control
 negativo**: lanza tambien un nombre de accion inventado sobre el mismo objeto y comprueba que da
 `action_not_found`; sin ese control no sabes si los dos codigos se distinguen de verdad.
+
+## Un cliente DayZDiag sin foco va a ~20 fps: lo que mide el cliente depende de quien tiene el primer plano (SP-391, added 2026-09-13)
+
+Medido en el banco F1 de LFHeli (DayZDiag, cliente en ventana y servidor en la misma maquina),
+**con manipulacion**, no por correlacion:
+
+- Con su ventana en primer plano, el cliente va a **25,0 ms** por frame (40 fps); sin foco, a
+  **51-52 ms** (~20 fps). Dentro de una misma celda, poner y quitar el foco movio la mediana
+  26 <-> 53 ms.
+- No es la GPU compartida ni el reparto de CPU: 0 de 10 celdas lentas coincidieron con
+  inferencia LLM local, y fijar el cliente a 2 nucleos con prioridad alta dejo 4 de 4 celdas en
+  51-52 ms. Las lentas forman un tope estrecho (91 % de los frames a +-3 ms), no una cola de
+  contencion.
+- Lo que arrastra: el bote en reposo del heli **seguia al foco**. Con el foco sujeto, 6 de 6
+  reposos quietos; con el foco quitado, bota. Cualquier medida del lado cliente
+  (presentacion, fisica del owner, `vehicle_trace`) hereda el estado del foco.
+- En una maquina con varias sesiones, el primer plano lo roban cada pocos segundos otras
+  aplicaciones: medidos Discord, OpenCode, Cursor, el AddonBuilder de otra sesion y explorer.
+
+Reglas:
+
+1. Un banco que mide el cliente **sujeta el primer plano durante toda la corrida** (reafirmarlo
+   cada 0,25 s basta) y **registra el cumplimiento** cada segundo junto a los datos.
+2. Si el diseno necesita quitar el foco, lo aparca en una **ventana visible y activable de un
+   proceso propio** (una ventana Tk sirve). Dos destinos medidos que fallan: la consola del
+   servidor DayZ (Windows devuelve el foco al cliente al instante: cumplimiento 1,00 con ~430
+   intentos por celda) y `Start-Process notepad.exe` en Windows 11 (el PID devuelto es un
+   lanzador que sale enseguida; la ventana vive en otro proceso).
+3. Un archivo de celdas corrido con el foco al azar mezcla dos regimenes de frame: antes de
+   comparar variantes, estratificar por tiempo de frame o repetir con el foco sujeto.
+
+Evidencia y recetas: `<vault>\30_Sessions\2026-09-13-LFHeli-el-bote-sigue-al-foco-del-cliente.md`.

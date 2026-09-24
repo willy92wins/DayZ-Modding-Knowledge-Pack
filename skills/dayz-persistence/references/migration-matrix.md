@@ -103,3 +103,26 @@ correctness.
 - Legacy and migration rewrites are gated by complete validation and backup.
 - Mod payload compatibility is independent from the DayZ build.
 - Seven deliberate byte mutations change seven verdicts.
+
+## DayZ 1.30 Exp (build 1.30.164014) — worked cells
+
+The seven cells above stay normative for **mod** formats. Vanilla 1.30 does
+not implement all seven for every new field. Classify each 1.29→1.30 input
+explicitly; do not infer a migrate from a version bump alone.
+
+| Input | Case | Verdict | Bytes consumed | State preserved | Action |
+|---|---|---|---|---|---|
+| `CombinationLock` saved on 1.29 (`version` 142) | `legacy-no-header` relative to the third int; engine treats it as known-minus-field | `ok` | two ints after `super` | `m_CombinationInside` stays default | skip `m_CombinationInside` (`version >= 143` false). Verified: `exp\scripts\scripts\4_World\Entities\ItemBase\CombinationLock.c:169-177`. 1.29 writer: `stable-1.29\scripts\scripts\4_World\Entities\ItemBase\CombinationLock.c:90-97`. |
+| `CombinationLock` saved on 1.30 (`version` 144) | `known-version` | `ok` | three ints after `super` | complete | read `m_CombinationInside`. Writer always emits the third int (`CombinationLock.c:128-136`). |
+| Old CombinationLock reader (1.29 binary) vs 1.30 save | `rollback-old-reader` | `reject_forward` / desync | 1.29 reader never consumes the third int | 1.30 record intact on disk | 1.29 `OnStoreLoad` stops after two ints (`stable-1.29\scripts\scripts\4_World\Entities\ItemBase\CombinationLock.c:99-129`). Later attachments in the same world bin misalign. Do not ship a 1.29 lock subclass against a 1.30 world. |
+| `PlayerBase` saved on 1.29, loaded on 1.30 MP | `truncated` (vanilla does **not** gate) | `reject` | thermal `ctx.Read` fails | pre-load player state | print `---- failed to load ThermalBiasHandler, read fail  ----` (`PlayerBase.c:7520-7524`). Not `ok_legacy`. |
+| `PlayerBase` saved on 1.30 MP | `known-version` | `ok` | one float after arrow manager | complete | `ThermalBiasHandler.c:67-77`. |
+| `DigitalCodeLock` on a 1.29 world | `fresh` | `ok` | `0` | defaults | class did not exist; no legacy record. |
+| `BaseBuildingBase` 1.29 fence | `known-version` | `ok` | three ints + bool after `super` | complete | suffix unchanged (`BaseBuildingBase.c:420-429`). |
+| `Rebuilding` stored version `< REBUILDING_STORAGE_VERSION` | vanilla rejects as invalid | `reject` | `0` applied after the version int fails the `<` check | intact | `Rebuilding.c:519-525`. |
+| `Rebuilding` stored version `>` current | vanilla **accepts** | (violates this matrix's `future-version` cell) | ten ints | applied | `[DESIGN]` do not copy. `m_LastStorageVersion < REBUILDING_STORAGE_VERSION` only. |
+| Missing `$mission:BunkerBroadcastPersistenceStorage.bin` | `fresh` | `ok` | `0` | scheduler/handler defaults | `Load()` returns `false` when `Open` fails (`BunkerBroadcastHandler.c:56-68`); constructor still installs empty objects (`:29-34`). |
+| Present bunker `.bin` | `known-version` **without a header** | vanilla returns `true` after `Open` even if `Read` fails | whole objects or partial | applied | `file.Read` bool ignored (`:61-65`; `Serializer.c:58`). Classify as vanilla exception, not a model. Schema change has no `legacy`/`future` branch. |
+
+Bodies and `[EXACT]` copies:
+[dayz-1-30-persistence.md](dayz-1-30-persistence.md).

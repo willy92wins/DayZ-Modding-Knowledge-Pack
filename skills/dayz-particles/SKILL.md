@@ -1,6 +1,6 @@
 ---
 name: dayz-particles
-description: "Use when: particles, .ptc, .emat, ParticleSource, SEffectManager, PlayOnObject, cfgeffectarea, smoke/sparks without Workbench. Client-only .ptc/.emat. Not sound: dayz-sound-system."
+description: "Use when: particles, .ptc, .emat, ParticleSource, SEffectManager, PlayOnObject, cfgeffectarea, smoke/sparks without Workbench, sandstorm, ceiling dust, ParticleParamsOverrideData, VehicleVFX, IsHeadlessOrDedicatedServer. Client-only .ptc/.emat. Not sound: dayz-sound-system."
 ---
 
 # DayZ Particle Effects — Complete Modding Reference
@@ -19,6 +19,7 @@ not binary. Custom particles can be created programmatically without Workbench.
 
 All particles are CLIENT-ONLY. Server controls state via SyncVars; client
 creates/destroys particles in response.
+(until 1.29: this was the documented PlayOnObject contract; wrecks gated with `!g_Game.IsDedicatedServer()`. `SEffectManager.CreateParticleServer` already existed for trees/fishing/traps.) (since 1.30 Exp: local PlayOnObject is still client-only, but ceiling dust and other synced effecters spawn on the server via `CreateParticleServer`; vanilla wrecks, FireplaceBase, and `ParticleManager.GetInstance()` now gate with `!g_Game.IsHeadlessOrDedicatedServer()`. Details: `references/dayz-1-30-particles.md`.)
 
 ## EFFECT-AREA PREFLIGHT (added 2026-08-31)
 
@@ -69,6 +70,7 @@ BillboardingType (Full), CenterY (-1=bottom, 0=center), StretchMultiplier
 **Motion:** Velocity, VelocityRND, AirResistance, AirResistanceRND,
 GravityMultiply, GravityMultiplyRND, Wind (0-1), Spring, Restitution,
 VelAngle (0/1), VelAffect (0-1)
+(since 1.30 Exp: after play, `EffectParticle.ParticleParamsOverride(ParticleParamsOverrideData)` can retune `EmitorParam.LIFETIME` / `VELOCITY` / `SIZE` / `AIR_RESISTANCE` from script — used by vehicle dust and wheel contact. See `references/dayz-1-30-particles.md`.)
 
 **Lifetime:** LifeTime (seconds), LifeTimeRND, EffectTime (cycle duration),
 Repeat (0=one-shot auto-deletes, 1=loop MUST stop manually)
@@ -101,6 +103,8 @@ Particle {
  TileV 2
 }
 ```
+
+(until 1.29: particle `.emat` shaders documented here are `Particle` and `ParticleSprite`.) (since 1.30 Exp: weather VFX also ship postprocess `.emat` that are **not** particle materials — sandstorm uses shader `SnowEffect` in `exp\graphics\graphics\Materials\postprocess\sandstorm.emat:1`. Do not treat that file as a `.ptc` material.)
 
 ### Shader: `ParticleSprite` (steam, flares, glow billboards)
 ```
@@ -171,12 +175,14 @@ StopParticleFlags: `NONE = 0` (no-op; default `StopParticle()` already does grad
 ### 3. `ParticleManager` pool (ParticleManager.c)
 Global instance via `ParticleManager.GetInstance()` — 10000 pool, client only,
 returns null on dedicated server. Pre-allocates+reuses ParticleSource objects.
+(until 1.29: GetInstance skipped create when `IsDedicatedServer()`.) (since 1.30 Exp: skipped when `IsHeadlessOrDedicatedServer()` — headless clients also get null. `exp\scripts\scripts\3_Game\Particles\ParticleManager\ParticleManager.c:65`.)
 Mods can also `new ParticleManager(settings)` to instantiate their own pools
 (the test framework does this); GetInstance() is the global, not a hard singleton.
 
 ### Wrapper: `SEffectManager`
 PowerGenerator pattern: `SEffectManager.PlayOnObject(effect, parent, pos, ori)`.
 Cleanup: `SEffectManager.DestroyEffect(m_Smoke)`.
+(since 1.30 Exp: synced spawn uses `SEffectManager.CreateParticleServer(pos, EffecterParameters)` — ceiling dust: `DustEffectCeilingHandlerSynced`. `exp\scripts\scripts\3_Game\EffectManager.c:586`.)
 
 Full API signatures: `references/script-api-reference.md`
 
@@ -189,6 +195,7 @@ Full API signatures: `references/script-api-reference.md`
 Particle p = Particle.PlayOnObject(ID, parent, localPos, localOri, forceWorldRot);
 Particle p = Particle.PlayInWorld(ID, worldPos);
 // ParticleManager.GetInstance() returns null on dedicated server — always guard.
+// (since 1.30 Exp: also null on headless — use !g_Game.IsHeadlessOrDedicatedServer().)
 ParticleManager pm = ParticleManager.GetInstance();
 ParticleSource ps;
 if (pm) ps = pm.PlayOnObject(ID, parent, localPos);
@@ -263,6 +270,7 @@ ONLY via SEffectManager.DestroyEffect().
 
 **Pattern E** — Runtime parameter tuning: SetParameter for AIR_RESISTANCE,
 ScaleParticleParamFromOriginal for SIZE.
+(since 1.30 Exp: vehicle VFX use `ParticleParamsOverride(ParticleParamsOverrideData)` instead of ad-hoc SetParameter after Play.)
 
 **Cleanup contract**: EVERY device with looping particles MUST clean up in
 EEDelete + LFPG_OnWiresCut + destructor.
@@ -272,12 +280,14 @@ EEDelete + LFPG_OnWiresCut + destructor.
 ## PITFALLS AND HARD RULES
 
 1. **Particles are CLIENT-ONLY.** Wrap in `#ifndef SERVER`.
+   (until 1.29: PlayOnObject gated with `!IsDedicatedServer()`.) (since 1.30 Exp: vanilla uses `!g_Game.IsHeadlessOrDedicatedServer()` so headless clients also skip VFX. Server-spawned effecters use `CreateParticleServer`, not PlayOnObject.)
 2. **Looping particles (Repeat 1) NEVER end.** MUST Stop() + null ref.
 3. **Stop() is gradual.** Use StopParticleFlags.IMMEDIATE for instant removal.
 4. **ObjectDelete(particle)** valid for ParticleSource with DisableAutoDestroy().
 5. **Render distance ~200m.** Engine limit, no workaround.
 6. **Duplicate filenames** across mods: use unique prefixes (`lfpg_`).
 7. **ParticleManager.GetInstance()** returns null on server. Always null-check.
+   (since 1.30 Exp: also null on headless clients — `IsHeadlessOrDedicatedServer()`.)
    Guards 1 and 7 are complementary, not redundant: `#ifndef SERVER` (pitfall 1) is
    compile-time exclusion for whole client-only blocks; the null-check (this pitfall)
    is runtime safety for code compiled on both sides (a diag/SP client-server build has
@@ -297,6 +307,7 @@ EEDelete + LFPG_OnWiresCut + destructor.
 ## VANILLA PARTICLE CATALOG — KEY CATEGORIES
 
 Full catalog: `references/vanilla-particle-catalog.md` (276 entries; version-dependent).
+(since 1.30 Exp: new constants include tandoor fireplace, desert/mud-brick impacts, ceiling dust, vehicle dust, oil-pit fire, sand grenade explosions — listed in that catalog's 1.30 section.)
 
 ### Electricity
 `POWER_GENERATOR_SMOKE` (1 emitter, loop), `BARBED_WIRE_SPARKS` (1 emitter, one-shot)
@@ -314,6 +325,7 @@ Full catalog: `references/vanilla-particle-catalog.md` (276 entries; version-dep
 ### Environment
 `ENV_SWARMING_FLIES`, `SMOKING_HELI_WRECK`, `HOTPSRING_WATERVAPOR`,
 `GEYSER_NORMAL`, `GEYSER_STRONG`, `VOLCANO`
+(since 1.30 Exp: `OIL_FIRE1`/`OIL_FIRE2`, `DUST_GROUND`/`DUST_CLOUD`/`DUST_VEHICLE`, `CEILING_WOOD`. Weather sandstorm also references `Graphics/Particles/sandstorm/sandstorm`.)
 
 ---
 
@@ -327,6 +339,7 @@ Full catalog: `references/vanilla-particle-catalog.md` (276 entries; version-dep
 - `references/emat-format-reference.md` — .emat format, both shader types, all 12 properties
 - `references/script-api-reference.md` — Particle/ParticleSource/ParticleManager signatures
 - `references/answeroverflow-2026-05-17.md` — community snippets verified vs vanilla (PlayOnObject pattern with client guard)
+- `references/dayz-1-30-particles.md` — DayZ 1.30 Exp: dust, VehicleVFX, ParticleParamsOverrideData, sandstorm, oil pits, SurfaceInfo IDs, migration
 
 ## Effect areas (`cfgeffectarea.json`): emitter budget and vertical band (added 2026-08-31)
 
@@ -367,6 +380,7 @@ the same band after snapping to terrain (`:413,421`). Choose `PosHeight` and `Ne
 actual elevation range inside the radius, not from a small vanilla zone. Underground spaces also
 count: particles snap to `SurfaceY` and are never spawned below terrain, so a bunker can be lethal
 inside the cylinder while showing no gas. That can be deliberate, but it must not be accidental.
+(until 1.29: `SpawnParticles` wrote `partPos[1] = g_Game.SurfaceY(...)`.) (since 1.30 Exp: it prefers `g_Game.SurfaceRoadY` when the particle is above the road surface — bridges/roads. `exp\scripts\scripts\4_World\Classes\ContaminatedArea\EffectArea.c:414-417`. Tick hook is `OnCEIterate`, not `OnCEUpdate`.)
 
 ### Safe positions and schema
 
@@ -408,3 +422,37 @@ Reaching `PARTICLES_MAX` truncates additional visual emitters in `SpawnParticles
 (`:429-447`). Do not use the RPT message as the cap gate. Vertical culling can reduce the actual
 count, but an approximation that under-counts cannot authorize a radius; calculate the upper budget
 and confirm the visible perimeter in game.
+
+## DayZ 1.30 Exp (build 1.30.164014)
+
+Full detail: `references/dayz-1-30-particles.md`. Surface-dust / ceiling-dust / VehicleVFX / sandstorm `.ptc` path live there.
+
+### What changes
+- Client VFX gate is `!g_Game.IsHeadlessOrDedicatedServer()` (wrecks, FireplaceBase, ParticleManager).
+- Synced ceiling dust: `SEffectManager.CreateParticleServer` + `ParticleEffecterParameters("CeilingDustEffecter", ...)`.
+- Runtime retune: `ParticleParamsOverrideData.m_FloatModifiers` via `VehicleVFXComponent`.
+- Surface particle IDs move to `SurfaceInfo.GetStepParticleId` / `GetWheelParticleId` / `GetVehicleDustParticleId` / `GetCeilingDustParticleId` (the `Surface.GetStepsParticleID` / `GetWheelParticleID` wrappers are `[Obsolete]`).
+- Effect areas: `OnCEIterate` replaces `OnCEUpdate`; `SpawnParticles` prefers `SurfaceRoadY`.
+- New ParticleList constants: tandoor, desert/mud-brick impacts, `CEILING_WOOD`, dust, `OIL_FIRE1`/`OIL_FIRE2`. Weather sandstorm is a `SnowEffect` postprocess `.emat` plus `particlePath = "Graphics/Particles/sandstorm/sandstorm"`.
+
+### What breaks (1.29 mods)
+| Symptom | Severity | Change |
+|---|---|---|
+| Particles play on headless client | MEDIUM | Replace `!IsDedicatedServer()` with `!IsHeadlessOrDedicatedServer()`. |
+| Wheel/step particles ignore custom surfaces | MEDIUM | Stop calling `Surface.GetStepsParticleID` / `GetWheelParticleID`; use `SurfaceInfo`. |
+| `EffWheelSmoke.SetSurface(string)` | LOW | Use `SelectFromSurface(SurfaceInfo)`. |
+| Custom `EffectArea` never ticks / particles float above bridges | MEDIUM | Override `OnCEIterate`; snap with `SurfaceRoadY`. |
+
+### 1.30 migration checklist
+- [ ] Search the mod for `IsDedicatedServer()` on particle spawn; switch VFX to `IsHeadlessOrDedicatedServer()`.
+- [ ] Replace `Surface.GetStepsParticleID` / `GetWheelParticleID` with `SurfaceInfo.GetByName(...).GetStepParticleId()` / `GetWheelParticleId()`.
+- [ ] Replace `EffWheelSmoke.SetSurface` with `SelectFromSurface`.
+- [ ] Custom EffectArea: `OnCEIterate(float currentTime, float elapsedTime)` and `SurfaceRoadY`.
+- [ ] Vehicle dust/exhaust: register through `VehicleVFXComponent` and override `ParticleParamsOverride`.
+- [ ] Do not copy `sandstorm.emat` as a particle material — shader is `SnowEffect`.
+
+### 1.30 references in this skill
+- [DayZ 1.30 particles](references/dayz-1-30-particles.md)
+- [Script API 1.30](references/script-api-reference.md#dayz-130-exp-surfaceinfo-vehicle-vfx-synced-spawn)
+- [Vanilla catalog 1.30 constants](references/vanilla-particle-catalog.md#dayz-130-exp-new-particlelist-constants)
+- [PlayOnObject client gate](references/answeroverflow-2026-05-17.md)

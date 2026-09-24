@@ -5,6 +5,9 @@ Authored 2026-07-07 (F4) from vanilla P:\scripts — see citations.
 Every field below is read live at runtime by `construction.c` / `basebuildingbase.c` via `g_Game.ConfigGet*`
 — nothing is precomputed. Roots: `P:\scripts\` = `<dayz-projects>\scripts\`;
 config root `DZ\gear\camping\config.cpp`. Line numbers are for the Fence entity unless noted.
+(until 1.29: that live-on-instance read). (since 1.30 Exp: `ConstructionPartTypeData.InitPartTypeData` caches
+the same `g_Game.ConfigGet*` keys once per `EntityType` (`ConstructionPartTyped.c:42-67`); instances only
+hold `m_PartTypeData` + built/sync state. Field names in the `Construction{}` block did not change.)
 
 ## 1. The entity class
 
@@ -50,6 +53,10 @@ Two-level nesting: `Construction { class <main_part> { class <part> {...} } }`. 
 ### `ConstructionMaterialType` enum (`construction.c:1-9`)
 
 `NONE=0`, `LOG=1`, `WOOD=2`, `STAIRS=3`, `METAL=4`, `WIRE=5`. Selects the build/dismantle sound set.
+(until 1.29: enum on `construction.c:1-9` with those five values). (since 1.30 Exp: enum moved to
+`ConstructionBase.c:2-12` as `MATERIAL_NONE`..`MATERIAL_WIRE` plus `MATERIAL_BRICK = 6` and
+`MATERIAL_RUBBLE = 7`. SFX switch on `BaseBuildingBase` still only handles log/wood/stairs/metal/wire
+(`basebuildingbase.c:1089-1101`).)
 
 ### `Materials` sub-block
 
@@ -77,6 +84,10 @@ resolve which slot an attach action targets, and by `DropNonUsableMaterialsServe
 A tool participates by declaring `build_action_type` / `dismantle_action_type` in its own CfgVehicles
 entry (`construction.c:966, 989`). Build is allowed when `(part_type & tool_type) > 0`. Shovel / Pickaxe /
 Pliers / SledgeHammer also switch the player animation command (`actionbuildpart.c:161-181`).
+(since 1.30 Exp: part masks are `EConstructionTools` including `TOOL_BRICKLAYING = 256`
+(`ConstructionConstants.c:13-26`). `BrickTrowel` uses `CMD_ACTIONFB_BRICKTROWEL` (`actionbuildpart.c:260-262`).
+Readers: `ConstructionPartTypeData.InitActionMasks` (`ConstructionPartTyped.c:92-104`) and
+`ConstructionBase` tool cfg path `cfgVehicles <type> build_action_type` (`ConstructionBase.c:1407-1413`).)
 
 ## 6. DamageZones ↔ part mapping
 
@@ -91,3 +102,29 @@ trigger that part's destruction on ruin.
   (`construction.c:591-599`). Missing memory point / selection → no collision on that part.
 - `show/hide` a part = `SetAnimationPhase(part_name, 0/1)` (`construction.c:578-588`, phase 0 = visible).
   Every `part_name` must be an AnimationSource in config AND a selection in the `.p3d`.
+
+## 8. DayZ 1.30 Exp — type cache, `IsCollidingEx`, obsolete trigger API
+
+Digest J §3 told this file to "purge" `CreateCollisionTrigger` / `DestroyCollisionTrigger` / `IsTriggerColliding`.
+Those names were **not** in this 1.29 reference. In 1.30 they still exist on `ConstructionBase`, tagged
+`[Obsolete("no replacement")]` (`ConstructionBase.c:1742-1787`). Do not call them from new code.
+
+Collision for a build now goes through `IsCollidingEx(CollisionCheckData)` (`ConstructionBase.c:1471`).
+Fill `m_PartName` and optional `m_AdditionalExcludes` (vanilla inserts the player — `actionbuildpart.c:157-160`).
+
+Config field readers moved:
+
+| Field | 1.29 reader (kept as map) | 1.30 Exp reader (verified) |
+|---|---|---|
+| `name` / `id` / `is_base` / `is_gate` | `UpdateConstructionParts` `construction.c:256-264` | `ConstructionPartTypeData.InitBasicStrings` `ConstructionPartTyped.c:72-83` |
+| `required_parts[]` | `HasRequiredPart` `construction.c:415-418` | still `HasRequiredPart` but on `ConstructionBase.c:668`; data from `InitRequiredParts` `:85-90` |
+| `conflicted_parts[]` | `HasConflictPart` `construction.c:441-443` | `ConstructionBase.c:690`; data from `InitConflictedParts` |
+| `build_action_type` | `construction.c:959, 966-1003` | `InitActionMasks` `ConstructionPartTyped.c:92-104` |
+| `Materials` | `construction.c:632-693` | `InitPartMaterials` `ConstructionPartTyped.c:106+` |
+
+`UpdateConstructionParts` on `ConstructionBase.c:495-532` no longer walks config children; it iterates
+`ConstructionDataTypeHolder.GetConstructionPartTypeDataArray()` (`ConstructionPartTypedHolder.c:8-58`).
+
+New optional config keys consumed by type data (rebuild-oriented, unused by vanilla Fence): `custom_part_type`,
+`StaticsSupportData`, `can_decay` / `can_decay_general` (`ConstructionPartTyped.c:32-66`). [DESIGN] A player
+`BaseBuildingBase` can ignore those unless you are authoring a rebuildable `BuildingBase`.

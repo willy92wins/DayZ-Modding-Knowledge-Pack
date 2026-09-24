@@ -60,3 +60,17 @@ Pipeline step "1. `.txa` route (official-aligned)" is the recommended route for 
 ### Extraction "always incorrect" — confirmed scope [VERIFIED]
 
 The line 41 caveat is real: DayZATool/Mikero extraction is worst for empties / IK-helper bones (the ones weapon reload/state anims use) and inverts local bone axes. Treat Route B extraction as a reference only; use Route A (`.txa`) for authoring. Frame data + full weapon-anim binding contract in `references/weapon-anim-blender-complete.md`.
+
+## DayZ 1.30 Exp Updates (build 1.30.164014) [EXACT]
+
+### Modular Plain-Text Graph Files (.agf)
+In DayZ 1.30 Exp, sub-graphs are no longer opaque binaries compiled inside `.agr` monoliths. They are distributed as plain-text Enfusion Config `.agf` files (`AnimSrcGraphFile`, e.g., `DZ/anims/workspaces/player/player_main/Locomotion.agf`, `Actions.agf`, `Combat.agf`, `Vehicles.agf`). Master `.agr` files (`AnimSrcGraph`) index these via `GraphFilesResourceNames`.
+
+### Vehicles are No Longer an Unsupported Binary Exception
+Vehicles are fully documented in plain text in `Vehicles.agf` (`DZ/anims/workspaces/player/player_main/Vehicles.agf`, 3654 lines). Rider poses and state machines (`MotorBikeSTM`) are transparent and accessible.
+
+### Bone Limit & Indexing
+The 250 global bone limit is completely eliminated (`changelog:31`). Bone indices are dynamically hashed at runtime from bone names, rendering index numbers in `skeletons.anim.xml` deprecated.
+
+### Workbench Enfusion 2021 & Live Editing
+Workbench updates to the Enfusion 2021 animation editor suite with native Live Editing on running game clients (`changelog:48, 62`) and native `.ae` event table support.

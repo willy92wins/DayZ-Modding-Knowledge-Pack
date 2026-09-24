@@ -176,6 +176,18 @@ re-sincroniza desde servidor, se pierde. Si el cambio tiene que sobrevivir a eso
 2. **Backup antes**, y **read-after-write** siempre.
 3. **Barre con control positivo.** Si tu comprobación final da cero, pásala por la versión previa
    al arreglo: si allí también da cero, lo roto es tu detector, no el fichero que declaras limpio.
+4. **En PowerShell, el texto que escribes va entre comillas SIMPLES** (`'...'` o here-string
+   `@'...'@`), nunca entre dobles. En `"..."` y `@"..."@` el acento grave es escape y `$`
+   interpola, así que un span de código markdown cuyo texto empiece por `0`, `a`, `b`, `e`, `f`,
+   `n`, `r`, `t` o `v` se corrompe sin dar error: `` "ver `references/x.md` y" `` escribe un CR
+   seguido de `eferences/x.md`, y el acento grave de cierre desaparece. Medido el 2026-09-15 con
+   PowerShell 7.6.5: `` "[`0][`a][`b][`e][`f][`n][`r][`t][`v]" `` da entre corchetes los códigos
+   0, 7, 8, 27, 12, 10, 13, 9 y 11; `` "`q" `` da solo `q`; `` 'x`ry' `` sale literal. Ya pasó:
+   una sección escrita host-direct el 2026-09-02 en la copia de plugin de `delegar/SKILL.md`
+   llevaba dos CR sueltos donde el texto fuente decía `` `references/routing.md` ``, y sobrevivió
+   13 días. Para ficheros enteros, `Copy-Item` desde una copia verificada. Y ojo con el
+   read-after-write: el sha solo prueba que el disco tiene lo que mandaste, no que lo mandaste
+   bien; busca también CR sueltos (`\r(?!\n)`).
 
 ### Cuándo SÍ se empaqueta un `.skill`
 

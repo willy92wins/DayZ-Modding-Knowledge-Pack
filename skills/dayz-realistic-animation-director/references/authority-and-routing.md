@@ -19,8 +19,9 @@ If two authorities disagree, record both claims with their sources and stop the 
 | Pure `model.cfg`, `AnimationSources`, ASI, skeleton or registration question | `dayz-animation-pipeline` |
 | Generic Blender animation with no DayZ destination | `blender-animation` |
 | Retarget external mocap into a DayZ source action | This director + retargeting skill + both authorities |
-| Player/custom human asset or rig | Add `dayz-characters` |
-| Vehicle occupant/contact choreography | Add `dayz-vehicles` |
+| Player/custom human asset or rig | Add `dayz-characters` (in 1.30: native surrender, dynamic ASI, stance speed/camera rotation limits) |
+| Vehicle occupant/contact choreography | Add `dayz-vehicles` (in 1.30: 4-wheelers + motorcycles `MOTO1`/`MOTO2`, 2-bone handlebar IK, rider lean) |
+| Creature locomotion, combat or terrain alignment | Add `dayz-characters` (in 1.30: `.agf` subgraphs, `AnimSrcNodeProcTransform` terrain rotation, unindexed skeletons) |
 | P3D hierarchy, selection, proxy or mechanical axis | Add the relevant P3D/model skill |
 | In-game verification | Add the current DayZ test/MCP skill and follow its lease/lifecycle rules |
 
@@ -36,11 +37,11 @@ If two authorities disagree, record both claims with their sources and stop the 
 
 From the DayZ authority, request:
 
-- route and target artifact;
-- authoritative rig/skeleton and bone/channel mask;
+- route and target artifact (in 1.30: modular `.agf` subgraphs under `AnimSrcGraph` `.agr` master index; Enfusion Config syntax for `.asi`);
+- authoritative rig/skeleton and bone/channel mask (in 1.30: global bone indices resolved by runtime name hash; 250-bone limit removed);
 - timeline and event/notetrack constraints;
-- runtime state(s), stance(s), handedness and camera modes;
-- compile, wiring, build and deployment path;
+- runtime state(s), stance(s), handedness and camera modes (in 1.30: includes `DAYZCAMERA_3RD_VEHICLE_MOTORBIKE = 32`, speed limits per posture, and stance camera horizontal rotation lock);
+- compile, wiring, build and deployment path (in 1.30: Workbench Enfusion 2021 Animation Editor with Live Editing, `-resolveFilePatchingUsingEnfusion=1`);
 - exact in-game evidence required.
 
 To the Blender authority, provide:

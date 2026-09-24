@@ -32,6 +32,28 @@ python -m dayz_script_validator <addon_root>
 
 Exit `0` = PASS, `1` = FAIL, `2` = WARN. Findings are JSON on stdout.
 
+## Checks that need more than one file
+
+Most rules read a single file. Two read the tree, and one of them needs a root
+outside the addon:
+
+- `ES-PROTECTED-CROSS-MODULE` compares modules against each other. Enforce
+  enforces `protected` across script modules, so a `5_Mission` class reading a
+  `4_World` class's protected member aborts the whole Mission module. Runs
+  automatically.
+- `ES-EXTERNAL-CONSUMER-MISSING` compares the addon against script that calls
+  into it from outside -- a mission folder, another mod. Pass those roots
+  explicitly; the check is inert without them:
+
+```powershell
+python tools/dayz-script-validator/scripts/script_validator.py <addon_root> `
+    --external-scripts <mission_root> --external-scripts <other_mod_root>
+```
+
+Both only fire when the receiver's declared type resolves inside the addon.
+That is deliberate: judging by member name alone produced 164 false positives
+on a tree that compiles clean.
+
 ## Tests
 
 ```powershell

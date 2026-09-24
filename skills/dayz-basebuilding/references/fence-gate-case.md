@@ -57,3 +57,47 @@ generic `ActionRepairPart` / kit path (not in `fence.c`).
 4. If the behaviour has a physical volume (area damage, a moving leaf), rotate/relocate it in the same
    handler that mutates the state (`fence.c:558-566` pattern).
 5. Gate the whole thing behind server authority — the state mutation runs server-side and syncs to clients.
+
+## 6. DayZ 1.30 Exp — `DigitalCodeLock` and combo-lock unlock
+
+(until 1.29: Fence lock attachment was `CombinationLock` on `Att_CombinationLock` only; finishing the
+dial unlocked/detached the lock). (since 1.30 Exp: Fence also declares `DigitalCodeLock` on `Att_CodeLock`.)
+
+```c
+// [EXACT] exp/scripts/scripts/4_World/Entities/ItemBase/BaseBuildingBase/Fence.c:19-26
+	typename ATTACHMENT_COMBINATION_LOCK	= CombinationLock;
+	typename ATTACHMENT_CODE_LOCK			= DigitalCodeLock;
+	
+	const string ATTACHMENT_SLOT_CAMONET			= "Wall_Camonet";
+	const string ATTACHMENT_SLOT_BARBEDWIRE_DOWN	= "Wall_Barbedwire_1";
+	const string ATTACHMENT_SLOT_BARBEDWIRE_UP		= "Wall_Barbedwire_2";
+	const string ATTACHMENT_SLOT_COMBINATION_LOCK 	= "Att_CombinationLock";
+	const string ATTACHMENT_SLOT_CODE_LOCK 			= "Att_CodeLock";
+```
+
+`GetCodeLock()` finds the slot (`fence.c:161-165`). `GetCombinationLock()` is unchanged (`:155-159`). Gate
+open checks in 1.30 also reject a mounted code lock (`fence.c:208,440`).
+
+`CombinationLock.SetActions` now includes `ActionCombinationLockUnlock` (`CombinationLock.c:686`). Dialing
+the right combination is not enough. Persist: `OnStoreSave` writes `m_Combination`, `m_CombinationLocked`,
+then `m_CombinationInside`; `OnStoreLoad` reads the third int only when `version >= 143`
+(`CombinationLock.c:128-136,169-177`). Fence gate fields themselves still follow the v110 branch
+(`fence.c:246-279` in 1.30; the 1.29 citations `:212-255` above are the same methods, shifted).
+
+Building-door lock slots on `BuildingBase` (`Building.c:10-11`) are documented for `dayz-doors`. This
+file only covers the Fence attachment.
+
+`Fence.OnStoreSave` in 1.30:
+
+```c
+// [EXACT] exp/scripts/scripts/4_World/Entities/ItemBase/BaseBuildingBase/Fence.c:246-254
+	override void OnStoreSave( ParamsWriteContext ctx )
+	{   
+		super.OnStoreSave( ctx );
+		
+		//write
+		ctx.Write( m_GateState );
+		ctx.Write( m_IsOpened );
+		if (LogManager.IsBaseBuildingLogEnable()) bsbDebugPrint("[bsb] OnStoreSave - build=" + m_GateState + " opened=" + m_IsOpened);
+	}
+```

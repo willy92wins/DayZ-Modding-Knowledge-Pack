@@ -1,6 +1,6 @@
 ---
 name: dayz-preflight
-description: "Use when: P:\\ not mounted, DayZ Tools missing, workshop folder, vanilla data unpacked, before building/packing, AddonBuilder path, DayZDiag locatable. Read-only env check. Not launch/test: dayz-test-ingame."
+description: "Use when: P:\\ not mounted, DayZ Tools missing, workshop folder, vanilla data unpacked, before building/packing, AddonBuilder path, DayZDiag locatable. Read-only env check. Not launch/test: dayz-test-ingame. Also: cacheP3D, unpacked -mod folder, Workbench 1.30."
 ---
 
 # /dayz-preflight
@@ -117,3 +117,15 @@ handoff.
 
 Not verified yet: that Buldozer opens a *custom* `.p3d` with its rvmats. Do not promote this to
 `dayz-model-pipeline` / `dayz-vehicles` as a visual gate until that part is measured.
+
+## DayZ 1.30 Exp (build 1.30.164014)
+
+Digests F/H/J/L/O do not list a false sentence in this skill. The 1.29 checks above still hold.
+What 1.30 adds is Tools/launch awareness (not new `preflight.py` probes — those remain 1.29):
+
+- (since 1.30 Exp [CHANGELOG]) `-cacheP3D=0/1` next to unbinarized `.p3d` speeds later Game/Buldozer launches (`work\changelog-1.30-exp-modding.md:11`). Surface it when the user is about to iterate MLOD in Buldozer; this skill still does not launch.
+- (since 1.30 Exp [CHANGELOG]) `-mod` may point at a physical unpacked folder; RV configs load unpacked (`:27-28`). Preflight still requires `P:\` + Workshop junction for the **packed** deploy path; unpacked iteration is `dayz-test-ingame`.
+- (since 1.30 Exp [CHANGELOG] WORKBENCH) Ragdoll editor, Enfusion config editor, Animation Editor 2021 Enfusion. This extract has **no** Workbench 1.30 exe on disk (Digest O §6.4) — treat as [CHANGELOG]; do not invent install paths.
+- SP-374 Buldozer viewer path is unchanged as a check. Pair it with `-cacheP3D` only after Tools 1.30 is the installed tree.
+
+Operational flags and argv: `dayz-test-ingame` / `dayz-test-ingame/references/dayz-1-30-test-ingame.md`. Mesh cache: `dayz-model-pipeline` / `dayz-model-pipeline/references/dayz-1-30-model-pipeline.md`.

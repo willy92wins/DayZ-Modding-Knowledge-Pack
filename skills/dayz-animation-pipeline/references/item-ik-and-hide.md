@@ -120,3 +120,56 @@ RXIFoFo5stY, 2026); author credits the vanilla flag (folded/opened) as the refer
 script APIs are verified; the exact `AnimationSource`/`initPhase` wiring is `[verify]`
 against the vanilla flag config before shipping. Selections must exist in Resolution + View
 Geometry (and Geometry if the attached model needs collision).
+
+## Pattern D — Dynamic Animation Instance Switching (DayZ 1.30 Exp) [EXACT]
+
+In DayZ 1.30 Exp, Bohemia introduced native Enforce Script methods to dynamically switch the player character's animation instance (`.asi`) at runtime without needing to swap physical items in hands.
+
+### Native `Human.SetAnimationInstanceByName`
+```c
+// [EXACT] exp\scripts\scripts\3_Game\human.c:1383-1384
+	//! sets the animation instance of the player character - careful when using, could create desync if not used properly
+	proto native	void		SetAnimationInstanceByName(string animationInstanceName, float blendingTime);
+```
+
+### Decoupling Hand Item Changes from Animation Instances
+`HumanItemAccessor` allows mods to decouple item-in-hands changes from automatic animation instance transitions:
+```c
+// [EXACT] exp\scripts\scripts\3_Game\humanitems.c:111-118
+	//! signalization from script to engine that item in hands changed
+	proto native void	OnItemInHandsChanged(bool pInstant = false, bool pChangeAnimationInstance = true);
+	
+	//! enable whether the animation instance should change when switching the item in hand
+	proto native void	EnableAutoAnimInstUpdateOnHandsChange(bool pNewValue);
+	
+	//! get whether the animation instance should change when switching the item in hand
+	proto native bool	IsAutoAnimInstUpdateOnHandsChangeEnabled();
+```
+
+### Resetting to Unarmed Hands via "Empty" Profile
+To return the player character cleanly to the default unarmed state, DayZ 1.30 Exp registers an `"Empty"` hands profile in `DayZPlayerCfgBase.c`:
+```c
+// [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgBase.c:1535-1538
+	//! Empty profile to be able to switch back to this using SetAnimationInstanceByName
+	{
+		pType.AddItemInHandsProfileIK("Empty", "dz/anims/workspaces/player/player_main/player_main.asi", emptyHanded, "");
+	}
+```
+Invoking `SetAnimationInstanceByName("Empty", 0.2)` restores the base `player_main.asi` animation instance.
+
+### Native Surrender System (No Dummy Item)
+In 1.29 and earlier, the surrender emote (`HandsUp`) required spawning an invisible `SurrenderDummyItem` in hands. In 1.30 Exp, this hack is eradicated; `PlayerBase` uses `SetAnimationInstanceByName` directly:
+```c
+// [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\PlayerBase.c:2081-2090
+	protected void OnStartTransitionToSurrender()
+	{		
+		m_StartedSurrenderTransition = true;
+		HumanInputController hic = GetInputController();
+		hic.DisableProneCameraHorizontalRotation(true);
+		g_Game.GetMission().AddActiveInputRestriction(EInputRestrictors.SURRENDER_TRANSITION);
+		GetItemAccessor().EnableAutoAnimInstUpdateOnHandsChange(false);
+		SetAnimationInstanceByName("dz/anims/workspaces/player/player_main/player_main_surrender.asi", 1);	
+		m_SurrenderTransitionTimer = m_SurrenderAnimationTransitionTime;
+	}
+```
+State is controlled via `player.SetSurrenderState(bool)` (`PlayerBase.c:2116`) and queried via `player.IsSurrendered()` (`Man.c:66`), completely eliminating dummy item desyncs.

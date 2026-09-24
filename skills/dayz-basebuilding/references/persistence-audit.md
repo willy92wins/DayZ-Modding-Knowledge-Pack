@@ -81,3 +81,52 @@ references `AddRefresherTime01` / `AnimateFlagEx`, but the territory system (rad
 mechanics) was not opened here — do not assume its persistence follows the same bitmask model without
 tracing it. `[UNVERIFIED]` the `show_on_init` config field is read by `UpdateConstructionParts` but had no
 observed runtime effect in the traced show/hide paths.
+
+## 8. DayZ 1.30 Exp — Rebuilding is a second stream (not the 93-part cap)
+
+(until 1.29: the three-int / 93-part model was the only construction persistence). (since 1.30 Exp: it
+still is, **for `BaseBuildingBase` only**.)
+
+Verified unchanged on `BaseBuildingBase`:
+
+```c
+// [EXACT] exp/scripts/scripts/4_World/Entities/ItemBase/BaseBuildingBase.c:420-430
+	override void OnStoreSave( ParamsWriteContext ctx )
+	{   
+		super.OnStoreSave( ctx );
+		
+		//sync parts 01
+		ctx.Write( m_SyncParts01 );
+		ctx.Write( m_SyncParts02 );
+		ctx.Write( m_SyncParts03 );
+		
+		ctx.Write( m_HasBase );
+	}
+```
+
+`RegisterPartForSync` still packs 1 bit per `id` into `m_SyncParts01/02/03` with the same 1..31 / 32..62 /
+63..93 ranges (`basebuildingbase.c:137-164`). `GetDamageSystemVersionChange()` is still `111` (`:1133-1136`).
+
+`Rebuilding` (component on `BuildingBase`, created by `CreateConstructionComponent` at `Building.c:23-26`)
+is a **different** save:
+
+- version const `REBUILDING_STORAGE_VERSION = 1` (`Rebuilding.c:3`)
+- ten ints `m_SyncParts1`..`m_SyncParts10` (`:7-16`), netsync-registered on `BuildingBase` (`Building.c:35-44`)
+- `HandleStoreSave` → `SerializeConstructionData`: version then the ten ints (`Rebuilding.c:474-515`)
+- 2 bits reserved per part (`ConstructionPart.BITWISE_SYNCINFO_SIZE_BASE = 2` at `ConstructionPart.c:6`)
+- capacity [DESIGN]: `BIT_INT_SIZE = 32` (`BitArray.c:4`) × 10 / 2 = **160 part ids**
+- bit 0 = built (`ConstructionPart.c:111-117`); `ConstructionPartRebuild` stores facing in bit 1 (`:985-991`)
+
+Do **not** put Rebuilding parts on a `BaseBuildingBase` entity or write the ten-int blob from a Fence/Watchtower
+subclass. Fence extra fields still go **after** `super.OnStoreSave` (`fence.c:246-254` in 1.30).
+
+`CombinationLock` on a Fence attachment now writes a third int `m_CombinationInside` and reads it at
+vanilla stream **version >= 143** (`CombinationLock.c:128-136,169-177`). A modded `OnStoreLoad` that always
+reads the 1.29 two-int layout after `super` will desync every later field. Delegate stream chronology to
+`dayz-persistence`; the Fence attachment path is this skill's concern.
+
+R9 extras for 1.30:
+
+8. Confirm you are editing `BaseBuildingBase` (3 ints, 1 bit, id 1..93) or `Rebuilding` (10 ints, 2 bits), never both on one class.
+9. If the entity attaches `CombinationLock`, `OnStoreLoad` handles `version >= 143`.
+10. `DigitalCodeLock` / `CodeLockComponent` persist `m_LockPIN`, `m_IsLocked`, `m_DoorIndex` (`CodeLockComponent.c:257-262`).

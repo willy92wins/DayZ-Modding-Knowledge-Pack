@@ -24,6 +24,9 @@ accepts a seat only when all four links pass:
    respectively, requires that memory point to exist, ignores vertical
    distance and applies a default 1 m horizontal limit.
 
+(hasta 1.29: the four gates above, with door clearance via `IsAreaAtDoorFree`.)
+(desde 1.30 Exp: `ActionGetInTransport.ActionCondition` first rejects when `!transport.CanGetIn()` (`ActionGetInTransport.c:36`; default `true` on `Transport` at `exp\scripts\scripts\3_Game\Vehicles\Transport.c:672-675`). Gate 3 in this build is `IsAreaAtDoorFreeDiag(crewIndex)` combined with `CrewCanGetThrough` (`ActionGetInTransport.c:54`). Gate 4 **is called from script** — see the block after the 1.29 anchors. Motorbikes that inherit `Motorbike_01_ColorBase` additionally require `GetAnimationPhase("SeatDriver") == 0.0` inside `CanGetIn()` (`Motorbike_01.c:92-98`).)
+
 Inspect and fix them in that order. Rebuilding `seat_con_*` cannot help while
 the cursor resolves an envelope component, and script changes cannot help while
 the model lacks the final memory point.
@@ -33,6 +36,17 @@ Source anchors (DayZ stable `1.29.0.163451`):
 - `scripts/4_world/classes/useractionscomponent/actions/interact/actiongetintransport.c:26-80`
 - `scripts/3_game/vehicles/transport.c:114-116,493-500,634-676`
 - `scripts/4_world/entities/vehicles/carscript.c:2674-2693,2710-2732`
+
+(desde 1.30 Exp, re-opened 2026-09-17:)
+
+- `exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:26-69`
+- `CanGetIn` default: `exp\scripts\scripts\3_Game\Vehicles\Transport.c:672-675`
+
+```c
+// [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:36-37
+		if (!transport.CanGetIn())
+			return false;
+```
 
 The envelope-component failure was cross-checked in a custom vehicle; vanilla
 source establishes the component-to-seat and subsequent condition order.
@@ -93,6 +107,18 @@ Gate 4 above says `CanReachSeatFromDoors` "applies a default 1 m horizontal limi
 is the **default in the signature** (`carscript.c:2710`), and it is not evidence about what runs:
 **no vanilla script calls that method**. The engine invokes it natively, so neither `pDistance`
 nor `pFromPos` are observable from script.
+
+(hasta 1.29: the two sentences above — "no vanilla script calls that method"; native-only.)
+(desde 1.30 Exp: **false**. `ActionGetInTransport.ActionCondition` loops selections and calls `transport.CanReachSeatFromDoors(selections[i], playerPosition, 1.0)` at `exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:62-66`. The third argument vanilla passes is `1.0`. The LFQuad2 measurement below remains a valid warning against guessing `pFromPos` from memory-point choice; instrument the 1.30 call if you change `GetDoorConditionPointFromSelection`.)
+
+```c
+// [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:62-66
+		for (int i = 0; i < selectionCount; ++i)
+		{
+			if (transport.CanReachSeatFromDoors(selections[i], playerPosition, 1.0))
+				return true;
+		}
+```
 
 Measured cost of taking it at face value (LFQuad2, 2026-09-07): a quad whose
 `GetDoorConditionPointFromSelection` returned the approach points `pos_driver`/`pos_codriver`

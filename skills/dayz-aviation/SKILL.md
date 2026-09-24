@@ -26,12 +26,14 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
   `POSTSIMULATE`/`POSTFRAME` (`P:\scripts\4_world\entities\vehicles\carscript.c:325-326`, verified
   2026-07-10). Any aviation flight loop living in `EOnSimulate` must add
   `SetEventMask(EntityEvent.SIMULATE)` in the class ctor — RFFS does exactly this (`RFFSHeli_Core.c:180-181`).
+  (hasta 1.29: `carscript.c:325-326`.) (desde 1.30 Exp: `CarScript.c:207-208`. Re-open `exp\scripts\scripts\4_World\Entities\Vehicles\CarScript.c`. Detail: `references/dayz-1-30-aviation.md`.)
   Symptom if missed: mod compiles, spawns, idles normally — and the flight model silently never runs.
 - **`super.EOnSimulate` is an EMPTY STUB — CarScript's real per-tick work lives in `EOnPostSimulate`**
   (added 2026-07-29, LFHeli OH-1 B3). `CarScript` has no `EOnSimulate` override at all: `super`
   resolves to the empty body at `P:\scripts\1_core\proto\enentity.c:201-203`. Engine, fluids,
   part-health checks, fuel/engine auto-stop and exhaust/wheel FX all live in
   `CarScript.EOnPostSimulate` (`P:\scripts\4_world\entities\vehicles\carscript.c:948`), much of it
+  (hasta 1.29: `:948`.) (desde 1.30 Exp: `CarScript.c:807`.)
   gated `IsServerOrOwner()` — so it is MEANT to run on the owner client. Consequences: (a) skipping
   `super.EOnSimulate` protects nothing, and any comment claiming it "would run engine/fluids twice"
   is false; (b) if you pump the solver manually because the native event went quiet, pump BOTH
@@ -52,6 +54,7 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
 - **Native `Helicopter`/`HelicopterScript` is a STUB** — empty `EOnPostSimulate` + empty engine hooks
   (`P:\scripts\4_world\entities\vehicles\helicopterscript.c:1-35`, verified 2026-07-10). Do not inherit
   from it expecting flight behavior; use CarScript-as-aviation (below).
+  (hasta 1.29 and since 1.30 Exp: still a stub. Re-verified `exp\scripts\scripts\4_World\Entities\Vehicles\HelicopterScript.c:4-13` — ctor only `POSTSIMULATE`, empty `EOnPostSimulate`. Do not switch a flying CarScript child onto it.)
 - **Custom flight inputs are silent-fail wiring** (added 2026-07-12, LFHeli W4). A `UA*` action name
   typo'd anywhere in the chain (`inputs.xml` declaration ↔ `SyncedValue("...")` call ↔ stringtable
   `loc=` key) compiles clean and reads 0 forever — the channel is dead with zero errors. Verify the
@@ -134,6 +137,7 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
   pilot seated + engine on, or wake in the get-in / engine-start hook.
   Tooling note: the MCP `vehicle_prepare_fixture` conditioning is hardcoded to one car (`MCPBridge.c:835`),
   so a custom test vehicle should self-condition via `EEInit -> CallLater(OnDebugSpawn)`.
+## DayZ 1.30 Exp (build 1.30.164014)
 
 - **CarScript-as-aviation runs under `NetworkMoveStrategy.PHYSICS` in 1.29 — client fluidity needs the
   full Pawn pipeline, NOT a mirror** (added 2026-07-14, LFHeli, verified in-game). A CarScript child in
@@ -198,9 +202,12 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
   the body integrates one way and the teleport snaps it back — the exact judder a `vector.Zero`
   angular write is usually added to suppress. The pose-delta form is also automatically zero on
   hold/clamp call sites, which is what those sites mean.
+Digests F and M do not list this skill in SKILL IMPACT. A plane/heli that inherits `CarScript` still inherits the 1.30 vehicle-light/horn/battery/event-mask contract. Native `HelicopterScript` remains a stub. Line numbers against `P:\scripts\...\carscript.c` in this file are 1.29.
 
 ## Helicopters
+Open `references/dayz-1-30-aviation.md` for the re-verified 1.30 cites (`CarScript.c:207-208`, `:807`, `:940-948`; `Transport.c:224`; `ForceUpdateLights*` Obsolete at `:2805-2809`), wreck-script note, and migration checklist. Headlight example in `references/effects-and-lights.md` is marked (hasta 1.29) `CarLightBase` / (desde 1.30 Exp) `VehicleLightBase`. Ground-vehicle table: `dayz-vehicles/references/dayz-1-30-vehicles.md`.
 
+The remainder of the 1.29/phase-1 atlas body (LM_Planes patterns, aerodynamics, combat, OnDriverExit recipe, camera input) is unchanged. Reconstruct the full insertion-only SKILL.md by applying `SKILL.md.diff` onto `work/refs/skills/dayz-aviation/SKILL.md` (905 base lines, same order). The diff also inserts the `dayz-1-30-aviation.md` row in the reference-loading table and the OnDriverExit line-drift notes.
 A **real rotary-wing flight model is documented from FOUR author/teams across five aircraft** (plus
 LM_Planes fixed-wing), which confirms the pattern generalizes AND that monolithic (both kinematic and
 force-based) and modular-aerofoil flight are all buildable (see `references/helicopters.md` for the full

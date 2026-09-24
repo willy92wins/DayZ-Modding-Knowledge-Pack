@@ -154,6 +154,13 @@ from detectors.es_local_var_redeclare import (
     ES_LOCAL_VAR_REDECLARE_RULE_ID,
     check_es_local_var_redeclare,
 )
+from detectors.es_protected_cross_module import (
+    check_es_protected_cross_module,
+    _module_of as module_of_rel_path,
+)
+from detectors.es_external_consumer_missing import (
+    check_es_external_consumer_missing,
+)
 from detectors.es_member_redeclare_base import (
     ES_MEMBER_REDECLARE_BASE_RULE_ID,
     check_es_member_redeclare_base,
@@ -246,7 +253,29 @@ def exit_code_for_status(status):
     return 0
 
 
-def validate_addon(addon_root):
+def collect_external_scripts(external_roots):
+    """Lee los .c de raices FUERA del addon (misiones, otros mods).
+
+    Las rutas llegan por argumento, nunca codificadas: el Pack prohibe versionar
+    rutas absolutas de una maquina concreta.
+    """
+    collected = []
+    for root in external_roots or []:
+        root_path = pathlib.Path(root)
+        if not root_path.exists():
+            continue
+        for path in sorted(root_path.rglob("*.c")):
+            try:
+                source = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            rel = relative_path(path, root_path)
+            stripped, _ = strip_enforce_comments_and_strings(source, rel)
+            collected.append((rel, stripped))
+    return collected
+
+
+def validate_addon(addon_root, external_roots=None):
     start = time.perf_counter()
     received_addon_root = pathlib.Path(addon_root)
     addon_root = pathlib.Path(addon_root).resolve()
@@ -260,6 +289,8 @@ def validate_addon(addon_root):
         return build_result(addon_root, errors, warnings, 0, elapsed_ms)
 
     files = discover_files(addon_root)
+    module_files = []
+    addon_sources = []
     pboprefix = parse_pboprefix(addon_root)
     inputs_xml_present = detect_inputs_xml(relative_root)
     errors.extend(check_es_inputs_xml_root(relative_root))
@@ -277,6 +308,8 @@ def validate_addon(addon_root):
                 source, rel_path
             )
             warnings.extend(stripper_warnings)
+            module_files.append((rel_path, module_of_rel_path(rel_path), stripped))
+            addon_sources.append((rel_path, stripped))
             empty_ifdef_errors, empty_ifdef_warnings = check_es_empty_ifdef(
                 stripped, rel_path
             )
@@ -351,6 +384,15 @@ def validate_addon(addon_root):
                 check_pdrive_path(source, rel_path, PDRIVE_PATH_CONFIG_RULE_ID)
             )
 
+    # Comprobaciones de ARBOL, no de fichero: necesitan ver un modulo frente a
+    # otro, o el addon frente a un consumidor externo.
+    errors.extend(check_es_protected_cross_module(module_files))
+    errors.extend(
+        check_es_external_consumer_missing(
+            addon_sources, collect_external_scripts(external_roots)
+        )
+    )
+
     elapsed_ms = int((time.perf_counter() - start) * 1000)
     return build_result(addon_root, errors, warnings, len(files), elapsed_ms)
 
@@ -366,13 +408,24 @@ def build_parser():
             "instead of the JSON report."
         ),
     )
+    parser.add_argument(
+        "--external-scripts",
+        action="append",
+        metavar="DIR",
+        help=(
+            "Root of script that lives OUTSIDE the addon and calls into it -- a "
+            "mission folder, another mod. Repeatable. Enables "
+            "ES-EXTERNAL-CONSUMER-MISSING, which catches a method removed from "
+            "an addon class while an external consumer still calls it."
+        ),
+    )
     return parser
 
 
 def run(argv=None):
     args = build_parser().parse_args(argv)
 
-    result = validate_addon(args.addon_root)
+    result = validate_addon(args.addon_root, args.external_scripts)
     return exit_code_for_status(result["status"]), result
 
 

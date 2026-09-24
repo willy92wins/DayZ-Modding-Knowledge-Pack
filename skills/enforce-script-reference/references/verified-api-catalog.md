@@ -443,3 +443,18 @@ A reflection-based fixture is valid only when it is fail-closed:
 4. Hash the production PBO before and after qualification, and keep the fixture outside the publish set. Do not use `modded class` as the fixture: it changes the compiled hierarchy being qualified.
 
 A failed write is not harmless. When `SetClassVar` returns `0`, abort the oracle and quarantine the subject; do not continue using it or send it through its normal deletion path. In the measured ref-collection probe, eight failed writes were followed by 48 null-pointer exceptions during deletion, while a no-reflection control had zero and retained valid elements. The internal mechanism is undetermined; do not claim a specific partial mutation.
+
+## DayZ 1.30 Exp — engine / inventory catalog
+
+This catalog never listed `TakeEntityToCargo` / `World.Is3rdPersonDisabled` / `Weather.GetNoiseReductionByWeather` / "vector has no Cross" (digest E/O mapped those claims here; they were not in the 1.29 text). 1.30 additions, re-opened:
+
+- (hasta 1.29: `TakeEntityToCargo` / `TakeEntityToCargoEx` / `TakeEntityAsAttachment` / `TakeEntityAsAttachmentEx`). (desde 1.30 Exp: all four `[Obsolete]` at `Inventory.c:1345-1386`. Use `TakeEntityToTargetCargo` `:1077`, `TakeEntityToTargetCargoEx` `:1084`, `TakeEntityAsTargetAttachmentEx` `:1100`, `TakeEntityAsTargetAttachment` `:1142`.)
+- (hasta 1.29: `World.Is3rdPersonDisabled()` bool). (desde 1.30 Exp: `[Obsolete]`; `GetThirdPersonViewMode()` returns `ThirdPersonMode` {`DISABLED`,`ENABLED`,`VEHICLES_ONLY`} — `World.c:177`, `:291-305`. Digest O `:49-50` is moon/sun, not this API.)
+- (hasta 1.29: `Weather.GetNoiseReductionByWeather()`). (desde 1.30 Exp: **not deleted**. `[Obsolete]` → `GetNoiseReductionByWeatherEx(notnull Object object)` at `Weather.c:407-408`, itself `[Obsolete]` "Kept for HUD and old mods" because AI damping is native AIParams. Vanilla still calls Ex: `SensesAIEvaluate.c:23`.)
+- `vector.Cross(vector v)` is native (`EnConvert.c:239-246`). Digest O `:29-36` is `int.MAX`/`MIN`.
+- `array<T>.Slice(int from, int to)` inclusive-`to` (`EnScript.c:720-727`). Digest O `:33-40` is `ClassName` docs.
+- `typename.EnumFlagsToString` / `Enum.EnumFlagsToString` (`EnConvert.c:614`, `:704`).
+- `class DoOnce` (`3_Game\DoOnce.c:1`); `DayZPlayer.IsFirstRenderFrame()` (`dayzplayer.c:1186-1189`); `Entity.DisableSimulation` / `GetIsSimulationDisabled` (`Entity.c:3-6`).
+- `GAME_STORAGE_VERSION = 144` (`Game.c:5`; 1.29 was `142` at the same line). `OnCEIterate` replaces `OnCEUpdate` (`EntityAI.c:3881`, `:4893-4894`).
+
+Full `[EXACT]` bodies: `references/dayz-1-30-enforce-script.md`.

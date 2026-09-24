@@ -52,7 +52,18 @@ or imported (Blender / OBJ) from another game.
 (`car.c:98` / `boat.c:31`) — NOT parent/child. `Transport` owns crew/get-in/flip/fuel; `Car` owns
 wheels/brakes/`CarFluid`; `Boat` owns propeller/buoyancy/`BoatFluid`(fuel-only). A truck is a plain
 `CarScript` config with 3 axles + double wheels, NOT a new class. Boats, truck double-wheels, ATV and
-the motorbike gap → `references/vehicle-types-boat-truck.md`.
+the motorbike gap → `references/vehicle-types-boat-truck.md` (historical: since DayZ 1.30 Exp motorbikes are a vanilla family, see the `dayz-motorbikes` skill).
+
+**DayZ 1.30 Exp (build 1.30.164014) changes the matrix (added 2026-09-16, source_verified on the extraction at `E:\DayZ-Exp-Extract\1.30.164014\exp`):**
+- [EXACT] A third sibling exists: `class Motorbike: Transport` with `simulation = "motorbike"` (`dta\bin\config.cpp:1054-1059`; engine proto `3_Game\Vehicles\Motorbike.c:30`), scripted by `MotorbikeScript` (`4_World\Entities\Vehicles\MotorbikeScript.c:53`), which does NOT inherit `CarScript`. Two-wheel work goes to the `dayz-motorbikes` skill; this atlas stays for cars, trucks, quads and boats.
+- [EXACT] `CarScript` was refactored around components owned by `Transport`: `VehicleLightsComponent` (`CarScript.c:187, 229-233`), `VehicleHornComponent` and `VehicleVFXComponent` (`CarScript.c:189, 343-368`). The old overrides are marked `[Obsolete]`: `CreateRearLight`/`CreateFrontLight` (`CarScript.c:2937-2945`), `IsVitalCarBattery`/`IsVitalTruckBattery` (`:2811-2817`, replaced by `Transport.NeedElectricitySourceDevice()` at `Transport.c:821`), `CarPartsHealthCheck` (`:2976-2979`, replaced by `Transport.PartsHealthCheck()` at `Transport.c:437` / override at `CarScript.c:2121`). The horn actions are `ActionVehicleHornShort/Long` (`CarScript.c:2319-2320`). Contact data is `VehicleContactData.m_Impulse` (`Transport.c:1144-1148`, used at `CarScript.c:1291-1292`). Wheel classes gained `tyreRoughness`, `tyreLongitudinalFriction`, `tyreLateralFriction` (`DZ\vehicles\wheeled\config.cpp:749-751`; absent in 1.29).
+- [DESIGN] A 1.29 car mod that overrides any of the obsolete members compiles against the attribute but its override is no longer called; re-verify each override against the 1.30 `CarScript.c` before shipping. Migration checklist and the "1.29 statements that are now false" table: `dayz-motorbikes/references/vehicle-1.30-refactor.md`. Sections of this atlas that predate 1.30 (lights via `CarLightBase`, `CarPartsHealthCheck`, `data[0].impulse`) describe 1.29 and are not yet rewritten.
+- [EXACT] `Transport.GetWeightCoef()` default `1.0` (`Transport.c:475-478`); vanilla `Truck_01_Base` `2.0` (`Truck_01_Base.c:120-123`), `Offroad_02` `1.5` (`Offroad_02.c:133-136`), `Motorbike_01` `0.5` (`Motorbike_01.c:87-90`), `Motorbike_02` `0.75` (`Motorbike_02.c:77-80`). Digest M's claim that `MotorbikeScript.c:646` *returns* `0.25` is false: that line *uses* `GetWeightCoef()`, it does not define it.
+- [EXACT] `CarScript.HasGangedTailAndBrakeLights()` default `false` (`CarScript.c:468-471`); `true` on Offroad_02 (`Offroad_02.c:68-71`) so reverse/position swaps do not kill the brake selection (`CarScript.c:2061-2094`).
+- [EXACT] Vehicle light toggle is `UAToggleVehicleLights` / `ToggleVehicleLightsActionInput` (`ActionInput.c:849-855`, `ActionSwitchLights.c:16-18`); `UAToggleHeadlight` is headgear (`ActionInput.c:776-782`). `ForceUpdateLightsStart`/`End` are `[Obsolete("1.30: no replacement")]` (`CarScript.c:2805-2809`).
+- [EXACT] Get-in calls `CanGetIn()` then `IsAreaAtDoorFreeDiag` and **does** call `CanReachSeatFromDoors(..., 1.0)` from script (`ActionGetInTransport.c:36,54,64`).
+- Lights, horn, fluids, boats, wreck cisterns-as-Well, `speedGeoms`, and the motorbike 3PP camera pointer: `references/dayz-1-30-vehicles.md`. Motorbike camera ID 32 lives in `dayz-motorbikes/references/rider-animation.md`.
+
 
 **Per-tick event asymmetry (invariant, added 2026-07-29, LFHeli OH-1):** `CarScript` has NO
 `EOnSimulate` — its ctor registers only `POSTSIMULATE`/`POSTFRAME` (`carscript.c:325-326`) and ALL
@@ -63,6 +74,7 @@ car: hook `EOnPostSimulate` for per-tick logic; `super.EOnSimulate` is the empty
 `enentity.c:201-203`, so calling or skipping it does nothing either way — treat any comment claiming
 it "runs engine/fluids twice" as false. Custom solvers that add `SetEventMask(EntityEvent.SIMULATE)`
 and pump it by hand (aviation) → `dayz-aviation` preflight invariants.
+(hasta 1.29: those `carscript.c` line numbers.) (desde 1.30 Exp: `SetEventMask` is `CarScript.c:207-208`; `EOnPostSimulate` is `CarScript.c:807`. Full line-drift table: `references/dayz-1-30-vehicles.md`.)
 
 **Cockpit screen → live engine map (RTTextureWidget bridge) (invariant, added 2026-08-19, SUB_BRZ RT spike):**
 Any hiddenSelections screen can display the ENGINE's map renderer (what LBmaster's GPS uses) instead
@@ -616,6 +628,7 @@ and require approximately zero residual before trusting any product comparison.
 
 5. **Crew/wheel proxies must exist in BOTH ViewGeometry AND FireGeometry**; the proxy triangle uses the
    engine identity frame (`R=((-1,0,0),(0,0,1),(0,1,0))`, model-space), NOT py3d `rotation=None`. → parity + rip-import.
+
 5b. **`wheelHub` names a GEOMETRY/MEMORY selection, not the visual `wheel_X_Y` — and the visual
    `wheel_X_Y` IS the proxy's own triangle under a second name (added 2026-08-07, MercedesAMGLF).**
    `class Wheels { class Left { wheelHub="wheel_1_1_damper_land"; } }` resolves to a selection that
@@ -676,6 +689,7 @@ and require approximately zero residual before trusting any product comparison.
    SparkPlug already attached = the un-overridden GlowPlug, **NOT** a removed requirement — `IsVitalGlowPlug→false`
    IS the vanilla petrol pattern (the car still requires its SparkPlug). Bit SUB_BRZ (petrol car defaulted
    to needing a GlowPlug it had no slot for; a "remove the check" framing got it backwards). → `vehicle-config-and-modelcfg.md` §engine parts.
+
 9. **Engine STARTS then immediately STALLS (eng=1 for one tick → eng=0 rpm=0) with fuel + ALL vital parts
    attached → the car is missing its `Engine` (and `FuelTank`) DamageZone.** `CarScript` stops a running
    engine EVERY tick when `m_EngineHealth <= 0` (`carscript.c:991`), and `m_EngineHealth =
@@ -711,6 +725,7 @@ and require approximately zero residual before trusting any product comparison.
      proxies sit mirrored (−X,−Z) off their hubs, BOTH at once. Diagnose by comparing
      `dmgZone_front`/hubs (sim) vs headlights/wheel-proxies (visual) against nose=−Z.
    > Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“Invariante 11”.
+
    - **CORRECTION to THE TRAP (added 2026-08-01, adjudicated from the applied fix's dated backups +
      in-game outcome — supersedes the "interior/dash/steering/occlusion correctly sim-aligned" claim
      above):** on the Mercedes those `mb_` contents were VISUAL-aligned (coherent with the yaw-180
@@ -783,11 +798,14 @@ and require approximately zero residual before trusting any product comparison.
     (`storedN-outward` high, i.e. it reads transparent not black), a GLOBAL vertex-order flip
     (`face.vertices.reverse()` on every face, do NOT touch normals — they ride the vertices) suffices — census
     98%→2%, matching LOD0. Reach for make-consistent+orient (`rip_winding_core.repair_winding_majority`) ONLY
-    when the far-LOD is topologically MIXED (low interior-edge consistency), not merely globally inverted (G5
-    simple-first). Root cause on SUB_BRZ: the in-line s26 ladder assembler took the dissolve winding VERBATIM +
-    raw +cross normals and skipped make-consistent (which the shell's `rip_winding_core` runs) → res=2 shipped
-    see-through, `outward=38.9%` was printed and ignored, no offline gate. GATE any baked far-LOD by census-vs-LOD0
-    BEFORE deploy — Blender cannot judge DayZ winding (right- vs left-handed cull).
+     when the far-LOD is topologically MIXED (low interior-edge consistency), not merely globally inverted (G5
+     simple-first). Root cause on SUB_BRZ: the in-line s26 ladder assembler took the dissolve winding VERBATIM +
+     raw +cross normals and skipped make-consistent (which the shell's `rip_winding_core` runs) → res=2 shipped
+     see-through, `outward=38.9%` was printed and ignored, no offline gate. GATE any baked far-LOD by census-vs-LOD0
+     BEFORE deploy — Blender cannot judge DayZ winding (right- vs left-handed cull). El instrumento
+     replica el ORDEN del consumidor: el culling va ANTES del test de profundidad (LL-485); agrupar
+     impactos a t_min+epsilon y preguntar si ALGUNO mira a camara, y releer los controles cuando el
+     arreglo cambie la clase de geometria que el instrumento resuelve.
 14. **Steering wheel vs hands: measure rim-center delta AND plane tilt vs the control BEFORE moving
     anything — the seat anim is the control's, so hands land on ITS wheel plane.** (added 2026-07-07,
     SUB_BRZ s25 measured) SUB_BRZ: rim-center delta vs crew anchor already in parity (1-1.6 cm) but rim
@@ -806,6 +824,47 @@ and require approximately zero residual before trusting any product comparison.
     observed damper rest −4.3/−5.6 cm ("wheels slightly up"). Day-1 check: `WHEEL_R == mounted-wheel
     radius` or document why not.
 
+15a. **The symptom of a wrong hub level is "it spawns sunk and corrects itself once a player
+     mounts" — and vanilla parks the hub ABOVE the tyre radius, not level with it (measured
+     2026-09-09, Arma2Quad ex-LFQuad2; offline, in-game pending).** Invariant 15 says to match the
+     mounted wheel's radius but gives no control value and no way to recognise the defect from a
+     user report. Both, measured: the quad's four `wheel_*_damper_land` sat at `cy=+0.3231` with a
+     mounted wheel of `radius=0.350149`, i.e. **hub_y − radius = −0.0271**; the control
+     `civiliansedan_mlod.p3d` sits at `+0.3627` against `CivSedanWheel radius=0.34`
+     (`DZ\vehicles\wheeled\config.cpp:4771`), i.e. **+0.0227**. Sign is the whole diagnosis:
+     negative puts the wheels under the terrain at spawn and the settling suspension lifts the body,
+     which reads to a player as a sync bug; vanilla's positive margin spawns slightly clear and drops.
+     Confirm the config `radius` against the wheel MESH before touching the body — measure the
+     outer radius in the plane perpendicular to the spin axis (here 0.3501/0.3502, so the config was
+     right and the hub was wrong).
+
+15c. **A ported vehicle that "drifts on its own, even on flat ground" is a `tyreRollResistance`
+     defect, and the roll-away threshold is `tan(slope) > tyreRollResistance` (measured
+     2026-09-09, Arma2Quad; closed by telemetry).** The quad's healthy wheels carried
+     **0.0015** against **0.008-0.015 on every vanilla wheel**
+     (`DZ\vehicles\wheeled\config.cpp:876, 4775, 8985, 13403, 18077`), and its ruined ones
+     0.03 against 0.2-0.75. That moves the threshold from 0.86 deg to **0.086 deg**: no DayZ
+     terrain is that flat, so the vehicle creeps everywhere and the report reads as a physics
+     or sync bug. Three things this invariant exists to stop, all of which cost cycles here:
+     **(a) mass is irrelevant** - gravity and rolling resistance both scale with weight and
+     cancel, so "it is too heavy / too light" explains nothing; **(b) vanilla vehicles do not
+     hold still through friction, they hold still because they are BRAKED** - every vanilla
+     config carries `Brake.driverless = 0.1` and `Car.c:223` declares
+     `SetBrakesActivateWithoutDriver`, which `actionpushcar.c:95` disables to push a car, so a
+     vanilla car with a driver seated and the engine off ALSO rolls downhill; **(c) the
+     ground is never flat** - `surface_query` returns the normal, and spots that look level
+     measured 0.72-4.8 deg. Day-1 check on any port: diff the whole wheel class against the
+     nearest vanilla wheel, not just `radius`. Discriminating rolling from sliding is one
+     line of telemetry: rolling satisfies `omega == v / r` (here 0.051 measured against 0.048
+     predicted, 6 %); a mismatch means slip or a decoupled animation.
+     **Fix the ORIGIN, not the hubs.** Translating the whole model leaves every body-to-hub relation
+     intact, so the settled pose is unchanged and only the spawn pose moves; raising the hubs alone
+     changes ride height by the same amount and breaks a pose the user already accepted.
+     **And measure `autocenter` instead of fearing it:** the warning that the engine re-centres a LOD
+     lacking `autocenter=0` did NOT apply here — 10 of 12 LODs lacked it, with bbox centres 0.62–1.63 m
+     off origin, and the model renders aligned in-game, so a global translation survives. If it were
+     re-centring, those LODs would already be scattered by up to a metre relative to Geometry.
+
 15b. **Wheel-mesh facing needs an asymmetric witness, not a symmetric bbox (SP-254,
      added 2026-08-31).** Split wheel points by the sign of the mesh's shortest axis
      and compare minimum radius in the perpendicular plane. The closed exterior face
@@ -815,6 +874,150 @@ and require approximately zero residual before trusting any product comparison.
      `(x,y,z)→(-x,y,-z)` and rotate points and stored normals together. Calibrate the axis-to-side mapping on an independently
      known-good mounted wheel, never on the candidate, then repeat the measurement on
      the wheel blob extracted from the deployed PBO.
+
+15d. **Two hidden selections cannot own the same face: a hiddenSelection that overlaps
+     another one never gets a material slot, and `SetObjectMaterial(index, ...)` on it is a
+     SILENT no-op (measured 2026-09-10, Arma2Quad; closed in game).** The quad's third bulb
+     (`light_dashboard`, `hiddenSelections[8]`, which is `SELECTION_ID_DASHBOARD_LIGHT` at
+     `scripts/4_world/entities/vehicles/carscript.c:301`) never lit, while `light_1_1` and
+     `light_2_1` lit from the SAME rvmat pair through the SAME call
+     (`carscript.c:2487`). The only difference lived in the model: the bulb's 12 faces were
+     also claimed by `camo1`, which is `hiddenSelections[9]`. camo1 won the faces, so index 8
+     addressed nothing.
+     **The diagnostic is a face-ownership census INSIDE the same file**, listing for every
+     `sections[]` entry which OTHER selections claim its faces. Every light that worked came
+     back exclusive; the dead one was the only shared one. That is a relative measurement
+     through one reader, so it holds regardless of how your p3d library reports conventions.
+     **Overlap with an ANIMATION selection is fine and must be preserved** - here the same 12
+     faces are also in `drivewheel`, the handlebar bone, because the bulb has to turn with the
+     bars. Only hiddenSelections compete for a material slot.
+     **Being listed in model.cfg `sections[]` is necessary but NOT sufficient**:
+     `light_dashboard` was in `sections[]` the whole time.
+     Fix by removing the faces from the other hiddenSelection, and drop a point from it only
+     when no REMAINING face of that selection still uses it, so shared border vertices survive.
+     Three hypotheses were checked and refuted BEFORE this one, each worth a build+test cycle:
+     (a) "the faces need their own material" - given to 48 faces across LODs 0-4, still dead;
+     (b) "the selection is empty in the ViewPilot LOD" - every light selection is empty there,
+     including the ones that work; (c) "the engine renumbers by real sections so index 8 is
+     lost" - malformed, because `hiddenSelections[]` and `sections[]` agree on indices 0-8 and
+     only diverge at 9. Confirmation is cheap and does not need the light to work: with the
+     lights OFF the bulb switched from the body material to the lights material, which alone
+     proves index 8 now reaches those faces.
+     Corollary that removes a suspect: `UpdateLightsServer` is NOT server-only - `carscript.c:2095-2101`
+     guards only the CLIENT half with `#ifndef SERVER`, so `SetObjectMaterial` runs on the client
+     too and replication is never the explanation for a light material that fails to apply.
+
+15e. **Through dayz-mcp, a client-side get-in is not enough for any action the SERVER
+     validates (measured 2026-09-10).** `vehicle_get_in_client` establishes the client
+     ownership that `engine_set`, `vehicle_control` and `vehicle_trace` need, but
+     `ActionSwitchLights` checks `car.CrewMemberIndex(player) == VEHICLESEAT_DRIVER` in
+     `ActionCondition` on the server
+     (`scripts/4_world/classes/useractionscomponent/actions/interact/vehicles/actionswitchlights.c`),
+     so it was rejected silently: `action_use` kept answering `started: 1` and nothing lit, three
+     times. Calling `vehicle_enter` (server-side seat) as well made the very next identical
+     `action_use` work. Rule: for a server-validated action use BOTH verbs, and never read
+     `started: 1` as evidence - verify the effect. Two related bounds cost a round trip each:
+     `engine_set` takes `start`/`stop`, not `on`/`off`, and `vehicle_control.hold_ttl_s` is
+     capped low (900 and 120 rejected, 30 accepted), so a vehicle parked on a slope starts
+     rolling again the moment the hold expires.
+     Also: `camera_set` refuses with `camera_unavailable_vehicle` while
+     `GetCommand_Vehicle()` is non-null, and a moving vehicle cannot be exited, so a scene that
+     rolls away traps the camera. Set the static camera BEFORE getting in - it survives the
+     get-in and gives the external view of a seated rider.
+     **And it can be worse than a refusal: `camera_set` can leave the client RENDER frozen while
+     simulation, audio and input keep running** (measured again 2026-09-10, this time on a user's
+     live session). The player walks, hears their own footsteps, and their server position
+     advances, but the picture never changes. The signal is in `capture_screenshot`:
+     `distinct_frames: 1` with `max_adjacent_delta: 0` over several frames, while
+     `query_player_state` shows the position moving. There is NO recovery short of
+     `dayz_test_stop` + a full `dayz_test_run`: `restore_gameplay` has no path to green in that
+     state (it always answers `restore_unverified`, because `camera_get` returns
+     `camera_unavailable_no_scripted_camera` - which IS the released state - and its "Retry"
+     advice cannot ever succeed), and `dayz_test_run(mode="client")` refuses with
+     `client_already_polling`, because polling is taken as proof of health and it is not. Do NOT
+     try to force a repaint by moving the window host-side with SetWindowPos: it does not restore
+     the render, and under a 150% display scale it leaves the window oversized and black.
+     Practical rule: use a scripted camera only when nothing else will do, and before handing the
+     game back to a human, confirm the render is alive with `distinct_frames`.
+     Two more traps from the same session: deleting a vehicle a player was put into with
+     `vehicle_enter`, without taking them out first, desynchronises client and server - the client
+     draws them seated while the server has them on foot with no vehicle within 40 m, and holding
+     the get-out key does nothing because the prompt is client-side and the action is validated
+     server-side. And once a player is bound to a vehicle, `vehicle_get_in_client` on ANOTHER one
+     answers `not_seated`; neither `vehicle_release` nor `player_teleport` nor
+     `ActionGetOutTransport` frees them. Only deleting the vehicle does. That makes "measure ours,
+     then measure a vanilla control in the same session" impossible without a relaunch.
+
+15f. **Raising `maxSteeringAngle` without scaling `increaseSpeed[]` makes the vehicle turn LESS
+     in practice, not more (measured 2026-09-10, Arma2Quad; caught by the user, not by me).**
+     `increaseSpeed[]` and `decreaseSpeed[]` inside `class Steering` are {km/h, deg/s} pairs: the
+     RATE at which the steering ramps toward the requested lock. Time to full lock is
+     `angle / rate`, so the ramp only makes sense relative to the angle it was written for.
+     Arma2Quad carried `{0,40,30,20,100,5}` - byte-identical to vanilla `OffroadHatchback`
+     (`DZ/vehicles/wheeled/config.cpp:636`), whose `maxSteeringAngle` is **30**. Taking ours from
+     50 to 60 while leaving 20 deg/s at 30 km/h moved time-to-lock from 2.5 s to **3.0 s**, against
+     the donor car's 1.5 s. In a real corner nobody holds the key that long, so the ceiling went up
+     and the usable steering went DOWN. The user's report was exactly right and worth quoting as
+     the symptom: *"sigue sin girar tanto como esperaria y ya no creo que sea por el radio de giro
+     de las ruedas"* - it still does not turn as much as expected, and it is no longer the wheels'
+     angle. Rule: whenever you copy a vanilla `Steering` block, the ramp belongs to the DONOR's
+     lock angle; rescale it with the angle, and state the resulting time-to-lock in the commit so
+     the next reader can check it in one division.
+     **Before blaming the steering at all, check the MASS - and it is not in config.cpp.** In DayZ
+     the vehicle mass lives in the **Geometry LOD of the p3d** (`resolution 1e13`) as a PER-POINT
+     table: py3d exposes it as `Point.mass` on every point of that LOD, and `lod.mass` is only
+     their SUM. Read the table before saying anything about how the mass is distributed. This
+     invariant first shipped (03ba883) claiming Arma2Quad carried "1500 kg on one point"; the
+     per-point read refuted it in one line - all 214 points carried mass (1.2-46.2 kg), with the
+     centre of mass centred laterally (X -0.0001) and low (23 % of the hull height). The
+     distribution was sound; only the TOTAL was wrong: 1500 kg against 250-320 kg for a real ATV,
+     four to five times the yaw inertia the tyres must overcome. Changing it is coordinated work,
+     not a tweak - see 15g. What does not change either way is the roll-away threshold: mass
+     cancels there (15c).
+
+15g. **Changing a vehicle's mass: scale every `Point.mass` by one factor, and scale `stiffness`,
+     `damping` and `compression` by the SAME factor - never `travelMaxUp/Down` (measured
+     2026-09-10, Arma2Quad 1500 -> 750 kg).** A uniform factor leaves the centre of mass and the
+     front/rear split exactly where they were, so the only thing that changes is inertia. Ride
+     height comes out of `u = -travelMaxDown + F/k`: holding `k/F` holds the stance, so
+     `stiffness` scales with the mass. `damping` and `compression` scale the same way because the
+     damping ratio is `c / (2*sqrt(k*m))`, and halving both k and m halves `sqrt(k*m)`. Travel is
+     geometry and stays. Result: front `u` -0.00005 m before and after, rear -0.00470 vs -0.00469,
+     and in game a freshly prepared quad settled at `y = 139.97918701171875` at BOTH masses, bit
+     for bit. Gate the mass INSIDE the PBO, not in the source: pull the packed `.p3d` out and sum
+     `Point.mass` with py3d. Keep `.p3d` backups out of the addon folder - AddonBuilder packs them.
+     Traps surfaced by halving the mass. (a) The user reported *"gira menos que antes, sin mas"* -
+     it turns less, with no slide and no bounce, and the lock angle had not changed. Suspected
+     cause, NOT confirmed: the same corner is now taken faster, where `increaseSpeed[]` is lower.
+     Flattening the ramp above the speed the driver had already approved (35 -> 60 deg/s at
+     60 km/h) drew "aun mejorable", not a clean yes. (b) Do NOT read `centeringSpeed >
+     increaseSpeed` at speed as the defect: in `DZ/vehicles/wheeled/config.cpp` centering is
+     higher at 60 km/h in 8 of the 10 `Steering` blocks (up to 6.5x, `:14054-14056`) and equal in
+     the other 2 (`:741-743`, `:18466-18468`) - it is the vanilla norm. (c) Check
+     `Clutch.maxTorqueTransfer` against the `torqueCurve` peak before adding torque: Arma2Quad had
+     140 against a 320 peak, below every vanilla car (165 at `:14094` to 720 at `:779`). On
+     `DRIVE_FWD`, a first-order Coulomb estimate (not measured in game) says first gear was already
+     asking 6307 N of the 4749 N of front grip at 750 kg, so torque past that becomes wheelspin on
+     the steering axle, which works against turning.
+
+15h. **To change the fuel a vehicle spawns with, override `EEOnCECreate`, not `EEInit`
+     (source-verified; a script spawn does NOT reach it - measured, see below).** Vanilla
+     `CarScript.EEOnCECreate` fills a random 0-35 % of `GetFluidCapacity(CarFluid.FUEL)`
+     (`scripts/4_world/entities/vehicles/carscript.c:2967-2974`). It runs when the entity is
+     created as new by CE/debug (`scripts/3_game/entities/entityai.c:1385-1388`), while a load
+     from storage goes through `AfterStoreLoad` (`:1390-1393`) - so a fill there cannot turn into
+     free fuel on every restart, which the same code in `EEInit` would. `Fill` ADDS
+     (`scripts/3_game/vehicles/car.c:375-376`), so top up rather than pour the whole capacity into
+     a tank that may not be empty:
+     `Fill(CarFluid.FUEL, GetFluidCapacity(CarFluid.FUEL) * (1.0 - GetFluidFraction(CarFluid.FUEL)))`.
+     `OnDebugSpawn` is a separate path and fills on its own. **Measured 2026-09-11 with a vanilla
+     `Hatchback_02` as the control**, which must land in 0-35 % if the path runs: neither a plain
+     script spawn (`ECE_PLACE_ON_SURFACE`) nor the debug spawner's own flags
+     (`ECE_PLACE_ON_SURFACE|ECE_INITAI|ECE_EQUIP_ATTACHMENTS`, the ones
+     `4_World/plugins/pluginbase/plugindeveloper.c:405` uses) fire `EEOnCECreate`: both controls
+     read `fuel_fraction` 0, and so did the modded vehicle. Only a real Central Economy spawn
+     exercises the override, so observing it needs a `types.xml` entry plus an event. Without a
+     vanilla control in the same run, that zero reads as "my override is broken".
 
 16. **Drive-ready TEST KIT: fill ALL fluids + attach the radiator, not just FUEL (RECURRING: LFQuad + SUB_BRZ
     s28).** An admin/harness kit that only `Fill(CarFluid.FUEL,...)` leaves OIL/COOLANT/BRAKE empty → the oil
@@ -1229,7 +1432,7 @@ references.
 - **Boats, trucks, and the ATV / motorbike gaps** → `references/vehicle-types-boat-truck.md`:
   the `Transport`→Car/Boat sibling hierarchy and the per-type deltas — boat propeller/buoyancy/
   BoatFluid + always-free get-in, truck 3-axle DRIVE_642 + single-classname double wheels, ATV
-  slots on `Chassis`, and the honest motorbike gap. All source-verified against vanilla `P:\scripts`.
+  slots on `Chassis`, and the honest motorbike gap (pre-1.30; for DayZ 1.30 motorbikes use the `dayz-motorbikes` skill). All source-verified against vanilla `P:\scripts`.
 - **Get-in prompt, cursor actions and proxied-sub pose** →
   `references/get-in-actions-and-proxy-pose.md`: the four-link get-in condition
   chain, the `ActionConstructor` + `PlayerBase` registration contract, and the
@@ -1596,3 +1799,133 @@ Metodo que los encontro, y es lo transportable: no enumerar que mirar, sino **de
 contrato del referente en ejecucion** --"toda familia de seleccion que el referente tiene, el
 port la tiene"-- con una lista corta de excepciones autorizadas. El port llevaba 17 puertas, 15
 en verde, y no nacia; el barrido complementario saco 22 huecos en una sola pasada.
+
+## El estado visual por script NO se aplica a un vehiculo recien spawneado, y el default del config parece un resultado (SP-384, added 2026-09-10, SUB_BRZ s90)
+
+El codigo visual que corre desde `OnVariablesSynchronized` **no se ejecuta nunca** en un
+vehiculo creado con un spawn pelado: todavia no ha sincronizado nada. El coche pinta las
+entradas de `hiddenSelectionsTextures[]` y `hiddenSelectionsMaterials[]` del `config.cpp` y
+nada mas, asi que todos los `SetObjectTexture` / `SetObjectMaterial` del script faltan.
+
+Es una trampa silenciosa porque **el default del config suele ser una version plausible de lo
+que el script habria pintado**: una pantalla casi negra, un piloto apagado, un panel en blanco.
+Leer esos pixeles como el resultado de la rama con script da un veredicto seguro y falso.
+
+**Lo que si sincroniza, medido:** montar piezas. Un fixture de debug-spawn que engancha bateria,
+bujia, radiador, cuatro ruedas y puertas es una sincronizacion grande de adjuntos y dispara la
+actualizacion visual. Sentar a un jugador y arrancar el motor tambien vale, con el coste de
+abajo.
+
+**El discriminante: lleva un control EN EL MISMO FOTOGRAMA.** Elige una SEGUNDA seleccion cuyo
+estado por script se distinga a simple vista de su default de config, y leela en la misma
+captura que el sujeto:
+
+- cuadro de instrumentos: el config le da el material OFF, el script le pone el ON.
+- cualquier piloto: OFF en config, ON solo desde script.
+
+Asi el fotograma responde dos preguntas a la vez. Control encendido => la rama con script
+corrio, luego el aspecto del sujeto **es** el resultado. Control apagado => el script no corrio
+y el sujeto no dice nada, tenga el aspecto que tenga.
+
+Compara los `emmisive[]` de los dos materiales antes de fiarte del ojo: una diferencia de escala
+0,3 frente a 1,1 es inconfundible a plena luz; 0,9 frente a 1,0 no lo es.
+
+**Coste de la via alternativa (arnes DayZ-MCP, medido 2026-09-10):** arrancar el motor exige
+propiedad del vehiculo en cliente, y tomarla deja la camara libre inutilizable durante toda la
+vida del proceso cliente. Encuadrar el salpicadero y tener el motor en marcha pasan a ser
+excluyentes en un mismo cliente. Prefiere la sincronizacion por adjuntos.
+
+
+## Every axle must be listed in an `Axles` override: what the engine ENUMERATES is not inherited (added 2026-09-11, Arma2Quad)
+
+A derived vehicle class that redeclares `class Axles: Axles` and lists only one axle loses the
+other one entirely - not its values, the axle itself. Measured on three drivetrain variants that
+declared only `class Rear: Rear`: in game all three reported `wheel_count` 2 against 4 on the
+control, sat nose-down (pitch -7 to -10 deg against -0.3) and would not move. The user saw it
+before the diagnosis did: *"the front wheels are buried and they do not turn"*. The fix is one
+line per variant: `class Front: Front {};`.
+
+The discriminator, which is what makes this reusable: in the SAME override `Clutch`, `Engine`,
+`Gearbox` and `Steering` were inherited without being declared, and those variants kept engine,
+gearbox and steering. Inheritance works for children the engine looks up BY NAME; it does not
+for children the engine ENUMERATES because their names are free - the axles under `Axles`.
+Vanilla never exercises the hole: every vanilla car lists both `Front` and `Rear` in every
+override (`DZ\vehicles\wheeled\config.cpp:494-530`, `:1424-1489`), so copying vanilla hides it.
+
+Nothing offline catches it: CfgConvert parses the config without a complaint and the script
+linter says nothing. The cheap tell is to count in the engine what should be there -
+`telemetry_read(mode="object_at").wheel_count` on the prepared fixture - before handing a build
+to a human. A bare `fixture_not_ready` from `vehicle_prepare_fixture` is usually exactly this.
+
+## config.cpp syntax has one offline gate, CfgConvert, and it only counts with canaries (added 2026-09-11, Arma2Quad)
+
+`-packonly` does NOT rapify, so the config ships as text and the first parser that reads it is
+the game's. The DayZ script validator does not check syntax either. What works:
+
+    "...\DayZ Tools\Bin\CfgConvert\CfgConvert.exe" -bin -dst <tmp>.bin <config.cpp>
+
+Gate it with two canaries that MUST fail, or a green proves nothing:
+
+| canary | what CfgConvert answers |
+|---|---|
+| remove the brace that closes `CfgVehicles` | `line NNN: /CfgVehicles/: Missing '}'` |
+| misspell a base class inside the new block | `Undefined base class 'ClutchTypo'` |
+
+The second is worth more than it looks: it proves the parser RESOLVES the nested `class X: X`
+chains, which is the real risk when writing variant classes. And one thing that does NOT work as
+a canary: dropping the `;` after a closing `}` - CfgConvert accepts it, so it is not a syntax
+error in that grammar and a gate built on it declares itself vacuous for the wrong reason.
+
+## "It slides" is almost never fixed by lowering grip: weigh wheel force against grip (added 2026-09-11, Arma2Quad)
+
+A first-order Coulomb estimate is not a simulation, but it RANKS layouts, and the ranking is the
+decision. First gear asks `clutch cap x gear x final drive / tyre radius` at the wheels; the
+driven axle holds `mass x 9.81 x its share of the weight x tyreGrip`. On a 750 kg quad with a
+180 Nm cap, 4.3 x 3.667 / 0.35 m, front/rear split 65.2/34.8:
+
+| layout | asked | held | over | what the driver said |
+|---|---|---|---|---|
+| RWD | 8109 N | 2535 N | 3.2x | "they slide a lot" |
+| AWD, open diffs | 8109 N | 7284 N, less in a corner: the inner wheel spins first | - | "they slide a lot" |
+| AWD, locked rear | 8109 N | 7284 N | 1.11x | "least bad, but it cannot go straight at full throttle without skidding" |
+| FWD (shipped) | 8109 N | 4749 N | 1.7x | stable, but "it turns less" |
+
+That arithmetic predicted the exact order the driver reported. Lowering `tyreGrip` moves every
+row the wrong way: at 0.85 the locked-rear AWD goes from 1.11x to 1.30x and the FWD from 1.7x to
+2.0x. It agrees with invariant 18 from the other side - the SUB_BRZ accel-slide was fixed with
+grip UP and throttle DOWN.
+
+Vanilla `tyreGrip` census for healthy wheels, so no one calls a value "too high" again without
+one: 0.80 (`:875`), 0.82 (`:13402`), 0.85 (`:4774`), 0.89 (`:8984`), 0.95 (`:18076`, `:20508`),
+1.0 (`:18104`); ruined wheels sit at 0.2-0.5. A 0.99 is inside the vanilla band.
+
+Corollary for a wheel-driven steering axle: on `DRIVE_FWD` the wheels that spin are the wheels
+that steer, so excess torque reaches the driver as "it will not turn", never as "wheelspin".
+Halving a vehicle's mass halves the grip budget while leaving the torque where it was, which on
+its own turns a vehicle that steered into one that pushes - the trap behind 15g(a).
+
+## CivilianSedan on a straight: what torque, tyreGrip and the gear ratios did, measured (SP-424, added 2026-09-24)
+
+Measured 2026-09-13 in DayZDiag: NWAF concrete, standing start at full throttle through the MCP
+drive controller, one config field changed per variant on `CivilianSedan` / `CivSedanWheel`,
+`vehicle_trace` at 19-20 Hz. The samples are small and the n is given per result: these are
+measurements, not general law. The controller of that build skipped gears above ~33 km/h
+(`dayz-mcp-verify`, SP-423), so the launch figures stop there.
+
+- **Torque drives the launch almost proportionally.** Acceleration over the first 3 s scales as
+  torque^0.93-0.95 (torque ×0.7 → ×0.72, n = 1; ×1.3 with clutch 520 → ×1.28, n = 3; baseline
+  n = 5), and the 0-30 km/h time as torque^-1.17. First gear does not slip (rear slip p90
+  ≈ 0.001): the torque reaches the ground.
+- **tyreGrip between 0.70 and 1.00 changed neither the straight launch (≤ 2 %) nor braking
+  (5.7-6.0 m/s²).** At 0.30 the car braked 22-30 % less and launched 10 % faster with almost no
+  slip (n = 1, unexplained). In this regime tyreGrip does not act as a simple longitudinal
+  friction coefficient.
+- **First upshift at 9.20 m/s**, against 9.33 m/s predicted by
+  `0.8 × redline × 2πr / (60 · i_1 · i_final)` (n = 5): the formula holds for wheel radius and
+  gear ratios.
+- **Steady arc at steering 0.3** (~20 m circles): drift angle falls from 8.3° at 14 km/h to 3.4°
+  at 32 km/h, lateral acceleration reaches 7.2 m/s² (≈ 0.73 g), no slide (n = 1).
+
+Rule of thumb: to change the launch, change the torque. Above ~0.7, tyreGrip does not change the
+vanilla sedan's straight launch or braking; look for its effect in cornering and drift, which is
+not measured yet.

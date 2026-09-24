@@ -128,6 +128,10 @@ class CfgVehicles
 6. **No trailing comma in arrays** — Last element must NOT have comma.
 7. **Case sensitivity** — Class names are case-sensitive in config lookups.
 
+8. **`ItemBaseType` keys (1.30 Exp)** — script reads these from the item's `CfgVehicles` class at type construction (`ItemBaseType.c:55-138`): `headSelectionsToHide`, `hideSelectionsByinventorySlot`, `varWetMax` / `varWetInit` / `varWetMin`, `quickBarBonus`, `itemModelLength`, `itemAttachOffset`, `temperaturePerQuantityWeight`, `EnvironmentWetnessIncrements` (Soaking `parentWithLiquid`/`wetParent`, Drying `player`/`ground`/`playerHeatSource`/`groundHeatSource`), `compatibleLocks`, `lockType`. Instance fields that 1.29 mods stored on the item may now be type-cached — put the values in config, not only on the script instance.
+9. **`GUIInventoryAttachmentsProps`** — resolved by `TypeAttachmentGroupsDataHolder` (`TypeAttachmentGroupDataHolders.c:39`) under weapons / magazines / vehicles. Vicinity category reach is a 1.5 m dome (`AttachmentCategoriesRow.c:764`).
+10. **Rebuilding slots `RB_LvL*`** — `CfgSlots` in `exp\scripts\scripts\config.cpp:2924` (`Slot_RB_LvL1_Log`, `name = "RB_LvL1_Log"`, `stackMax = 15`) plus LvL1/2/3 plank/nail/sheet/brick/wire/mortar and LvL1/2 rope/stick. Also new: `Slot_Att_CodeLock*`, `Slot_Att_CombinationLock*_Wood/Metal`, `Slot_NBC*`, motorbike wheel/shield slots. Duplicate members inside one class now fail the binarizer (`[CHANGELOG]` — skill `dayz-pbo-build`).
+
 ### hiddenSelections System
 
 hiddenSelections allow runtime texture/material swaps:

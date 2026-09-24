@@ -1,6 +1,6 @@
 # Widget API — Verified Reference
 
-Source: `enwidgets.c` (engine protos), Dabs Framework source, LFPG production.
+Source: `enwidgets.c` (engine protos), `gameplay.c`, Dabs Framework source, LFPG production.
 Every function listed here is confirmed to exist in the engine.
 
 ---
@@ -324,6 +324,74 @@ WidgetAlignment: `WA_LEFT(0)`, `WA_RIGHT(1)`, `WA_CENTER(2)`, `WA_TOP(0)`, `WA_B
 GridSpacer layout: `Columns N`, `Rows N`, `Padding X`, `Margin X`, `"Size To Content H/V" 1`
 WrapSpacer layout: same + auto-wraps children to next row.
 Both work inside ScrollWidget for dynamic lists.
+
+---
+
+## PreviewWidget / ItemPreviewWidget / PlayerPreviewWidget (DayZ 1.30 Exp Verified)
+
+Source: `exp\scripts\scripts\3_Game\gameplay.c:276-314`. Used for in-UI 3D model rendering (inventory slots, inspect windows, character selection).
+
+### PreviewWidget (extends Widget)
+
+```c
+// [EXACT] exp\scripts\scripts\3_Game\gameplay.c:276-284
+class PreviewWidget: Widget
+{
+	proto native void		ApplyToCamera(int cam);
+
+	proto native void		SetModelOrientation(vector vOrientation);
+	proto native vector		GetModelOrientation();
+	proto native void		SetModelPosition(vector vPos);
+	proto native vector		GetModelPosition();
+};
+```
+
+### ItemPreviewWidget (extends PreviewWidget)
+
+```c
+// [EXACT] exp\scripts\scripts\3_Game\gameplay.c:286-302
+class ItemPreviewWidget: PreviewWidget
+{
+	proto native void SetItem(EntityAI object);
+	proto native EntityAI GetItem();
+	
+	proto native int GetView();
+	/**
+	* 0 - default boundingbox_min + boundingbox_max + invView
+	* 1 - boundingbox_min2 + boundingbox_max2 + invView2
+	* 2 - boundingbox_min3 + boundingbox_max3 + invView3
+	* ...	
+	*/
+	proto native void SetView(int viewIndex);
+	
+	proto native void SetForceFlipEnable(bool enable);
+	proto native void SetForceFlip(bool value);
+};
+```
+
+### PlayerPreviewWidget (extends PreviewWidget)
+
+```c
+// [EXACT] exp\scripts\scripts\3_Game\gameplay.c:305-313
+class PlayerPreviewWidget: PreviewWidget
+{
+	proto native void		UpdateItemInHands(EntityAI object);
+	proto native void		SetPlayer(DayZPlayer player);
+	//proto native void		SetPlayerType(string type);
+	proto native DayZPlayer	GetDummyPlayer();
+	
+	proto native void		Refresh();
+};
+```
+
+### ⚠️ Verificación de Changelog 1.30 Exp vs Realidad en Scripts
+
+1. **Ticket T181406 (`WorldToScreen` / `ScreenToWorld`)**:
+   El changelog oficial de DayZ 1.30 Exp afirma: *"Added: WorldToScreen and ScreenToWorld methods for ItemPreviewWidget and PlayerPreviewWidget classes (T181406)"*.
+   **Verificación estática negativa:** En `exp\scripts\scripts\3_Game\gameplay.c:276-314` (y en la totalidad del árbol de scripts de esta build 1.30.164014), dichos métodos **NO están declarados en Enforce Script**. La funcionalidad reside presumiblemente en el binario compilado C++ del motor Enfusion sin binding script expuesto (`[CHANGELOG]`).
+2. **Deshabilitación de partículas en widgets de previsualización**:
+   El changelog afirma: *"Added: Possibility to disable specific attached particles inside of the player / item preview widgets"*.
+   **Verificación estática negativa:** No existe ningún método `Particle` en `gameplay.c` ni propiedades en layouts de preview. Es una capacidad interna del renderizador C++ (`[CHANGELOG]`).
 
 ---
 

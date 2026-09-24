@@ -49,6 +49,8 @@ protected bool LFPG_StopParticle(out Particle particle)
 **Why `out Particle particle`?** Setting it to null in the stop method prevents
 double-stop bugs. The caller's reference is cleared automatically.
 
+(until 1.29: FireplaceBase and this pattern used `IsDedicatedServer()`.) (since 1.30 Exp: vanilla FireplaceBase uses `!g_Game.IsHeadlessOrDedicatedServer()` — `FireplaceBase.c:1112`. Swap both helpers to that check so headless clients skip VFX. `#ifndef SERVER` in Patterns B–D still compiles out dedicated-server code; it does **not** skip headless clients that compile client modules.)
+
 ---
 
 ## Pattern B: SyncVar-driven toggle (Sprinkler example)

@@ -44,6 +44,15 @@ use storage-version gates at
 `VANILLA/4_world/classes/playerstomach.c:255` and
 `VANILLA/4_world/classes/playermodifiers/modifiersmanager.c:170`. These build
 checks describe engine compatibility; they do not version a mod release.
+(hasta 1.29: `GAME_STORAGE_VERSION` was 142 at
+`stable-1.29\scripts\scripts\3_Game\Global\Game.c:5`; `SaveVersion()` was the
+native at the 1.29 `game.c:434` cite.)
+(desde 1.30 Exp: `GAME_STORAGE_VERSION` is 144 at
+`exp\scripts\scripts\3_Game\Global\Game.c:5`; `SaveVersion()` is at `:435`.
+`PlayerStomach.OnStoreLoad` is at
+`exp\scripts\scripts\4_World\Classes\PlayerStomach.c:471` with a `version >= 140`
+temperature read at `:492`. `ModifiersManager.OnStoreLoad` is at
+`exp\scripts\scripts\4_World\Classes\PlayerModifiers\ModifiersManager.c:273`.)
 
 ## Variable-width super trap
 
@@ -61,6 +70,17 @@ the resulting sequential position.
 
 This trap applies even when a fixture with the component present passes. Test
 both component-present and component-absent streams against the same reader.
+
+(desde 1.30 Exp: energy is no longer the only optional prefix. `EntityAI.OnStoreSave`
+calls `GetConstructionBasic().HandleStoreSave` **before** the `m_EM` block
+(`exp\scripts\scripts\3_Game\Entities\EntityAI.c:2887-2891`); `OnStoreLoad`
+consumes it only when `version >= 143` (`:2955-2961`). `ConstructionBasic`
+writes nothing (`HandleStorageEvents` returns `false` at
+`exp\scripts\scripts\3_Game\Systems\Construction_Basic.c:23-29`). `Rebuilding`
+writes eleven ints when present. `PlayerBase` then appends
+`ThermalBiasHandler` after the arrow manager with no version gate — a second
+width that 1.29 did not have. Bodies:
+[dayz-1-30-persistence.md](dayz-1-30-persistence.md).)
 
 ## Failure and ownership boundaries
 
@@ -83,3 +103,30 @@ both component-present and component-absent streams against the same reader.
 - Both optional-component widths are exercised.
 - The hook build version is not presented as the mod's format version.
 - Uninstall behavior is declared rather than implied.
+- (desde 1.30 Exp) Construction-present and construction-absent EntityAI
+  prefixes are both exercised; PlayerBase thermal float is present on 1.30 MP
+  saves; CombinationLock `version >= 143` is exercised against a 142 fixture.
+
+## Vanilla stream version gates that 1.30 added
+
+The 1.29 skill had no chronological table of item-stream bumps. 1.30 adds
+these engine `version` cuts (the hook argument from `g_Game.SaveVersion()`,
+not a mod `storageVersion`):
+
+| Engine `version` | Writer | Extra field | Load gate |
+|---|---|---|---|
+| `< 105` (legacy remnant) | `CombinationLock` (until removed) | attached-bool | still skipped when `version < 105` (`CombinationLock.c:160-167`) |
+| `>= 140` | `EntityAI` variables / `PlayerStomach` temperature | existing 1.29 gates | `EntityAI.c:3030-3035`; `PlayerStomach.c:492` |
+| `>= 143` | `CombinationLock` | `int m_CombinationInside` | `CombinationLock.c:169-177` |
+| `>= 143` | `EntityAI` construction handle | `Rebuilding` payload or nothing | `EntityAI.c:2958-2961` |
+| (ungated on 1.30 MP load) | `PlayerBase` | `float m_TemporaryResistanceTime` | `PlayerBase.c:7520-7524`; `ThermalBiasHandler.c:72-77` |
+
+`BaseBuildingBase` subclass suffix is unchanged: `super`, three sync ints,
+`m_HasBase` (`exp\scripts\scripts\4_World\Entities\ItemBase\BaseBuildingBase.c:420-429`).
+
+New 1.30 entity (no 1.29 fixture): `DigitalCodeLock` writes
+`m_LockPIN` (string), `m_IsLocked` (bool), `m_DoorIndex` (int) after `super`
+(`CodeLock.c:469-482`; `CodeLockComponent.c:257-277`).
+
+Full `[EXACT]` copies:
+[dayz-1-30-persistence.md](dayz-1-30-persistence.md).

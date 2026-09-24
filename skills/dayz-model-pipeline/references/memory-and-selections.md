@@ -111,6 +111,7 @@ For an animated part (e.g., a lever):
 | `Component01`, `Component02` | Geometry/Fire/View geometry components |
 | `camo` | Texture swap selection (for hiddenSelections) |
 | `zbytek` | "Remainder" — everything not in another selection |
+| `liquid_source` | (since 1.30 Exp) ViewGeometry component for well/pump liquid actions — `UAMisc.LIQUID_SOURCE_SELECTION` in `ActionConstants.c:180`. See `dayz-1-30-model-pipeline.md`. |
 
 ### Doors & ladders — esquema REAL verificado vanilla (2026-07-06, 9 modelos debinarizados)
 
@@ -174,8 +175,11 @@ proxy:addon_path\proxy_model.p3d.NNN
 | Geometry LOD | No | Proxy face is not a collision surface |
 | Fire Geometry LOD | No | Proxy face is not a ballistic surface |
 | Memory LOD | No | Proxy position is defined by the face, not memory points |
+| ViewGeometry LOD | **YES on dedicated server (since 1.30 Exp)** | (until 1.29: if the proxy was missing from the final visual LOD, the server could report the parent origin.) (since 1.30 Exp [CHANGELOG]: the server uses the View Geometry LOD for inventory-attachment proxy position — `work\changelog-1.30-exp-modding.md:39`) |
 
 **SP-012 — Wheel/suspension slot proxies (vehicles):** the `Fire Geometry LOD | No` row above applies to ITEM-ATTACHMENT proxies (battery, headlight torch, etc.) only. For VEHICLE wheel/suspension slot proxies it is wrong: verified 4/4 vanilla (civiliansedan, hatchback_02, offroadhatchback, offroad_02) that wheel proxies appear in the Resolution LOD AND in the FireGeometry LOD (same positions). Causation caveat: adding wheel proxies to FireGeo was required PARITY but did NOT by itself fix LFQuad's "wheels never simulate" — do not present their absence as the single cause of that bug (the wheel-sim gate is the CfgSlots.selection↔FireGeo selection wiring, see SP-017 in dayz-p3d-audit).
+
+(since 1.30 Exp [CHANGELOG]) Duplicate item-attachment proxy triangles in **ViewGeometry** as well as Resolution LODs so a dedicated server does not fall back to the parent origin. Detail: `dayz-1-30-model-pipeline.md`.
 
 ### What a Proxy Selection Contains
 
@@ -195,6 +199,14 @@ For an attachment to render visually, ALL THREE parts must be present:
 3. **CfgNonAIVehicles entry** — in config.cpp, mapping `inventorySlot` to the proxy model
 
 Missing any one of these three = attachment is logically attached but invisible.
+
+### Mesh-less proxy carrier: an invisible `Inventory_Base` can hold and render attachments (SP-LFS-6, measured 2026-09-10)
+
+An entity whose visual LOD contains ONLY proxy triangles (py3d `LOD.add_proxy`, all inside a selection declared as a bone in `CfgSkeletons`, GunRacks pattern) plus Memory/ViewGeometry/FireGeometry box LODs and NO Geometry LOD:
+- renders the attached item at the proxy, shows in the vicinity panel and accepts drag in/out (LFSecure V3 `LFS_Armory_Probe`, Guillermo in-game), and persists with its attachments across restarts without `types.xml`;
+- needs `autocenter = 0` in its CfgVehicles class: without it the engine recentres the model (memory points and bounding centre shifted);
+- still collides with the player: its bounding volume blocks movement even with no Geometry, no ViewGeometry and no FireGeometry (four variants measured). Design proxies and cursor boxes inside geometry that already blocks, or prototype without a physics body before accepting the placement;
+- verify with BOTH a storage-loaded instance and a runtime-created one: attachments created in `EEInit`/the creation tick never reach clients (see enforce-script-reference SP-LFS-3).
 
 ### Vanilla Attachment Model Paths (DayZ SA)
 

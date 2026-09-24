@@ -12,6 +12,8 @@ description: >
   AddItemBoneRemap, Weapon_Bolt, Weapon_Trigger and Mode_*. Grip/hand pose, ADS,
   reload, fire and jam animations belong to dayz-animation-pipeline. Use
   dayz-vehicles/dayz-characters/dayz-model-pipeline for those domains.
+  Also 1.30 Exp: GetExplosiveEffectData, ExplosiveEffectData, Get*PistolAnimState,
+  SCARL/Luger/LeeEnfield/MP18 script-only staging.
 ---
 
 # DayZ Firearm Modding — the ENTITY side
@@ -64,6 +66,11 @@ pointer. Firearm test cycles are as expensive as any DayZ rebuild — a prefligh
    `class CfgWeapons`.** `[VERIFIED in-game]` SR2M. Forward-declaring `Mode_FullAuto` INSIDE `CfgWeapons`
    makes an empty stub without `autoFire=1` → the mode is dropped → weapon stuck in single.
    → `cfgweapons-contract.md` §"root-scope Mode_*".
+7. **W-STAGING1 — (desde 1.30 Exp) a firearm script under `4_World/Entities/Firearms/` does NOT imply a
+   packed `.p3d` or `CfgWeapons` class.** `[VERIFIED-vanilla]` 1.30.164014. `SCARL`, `Luger`, `LeeEnfield`,
+   `MP18` (and `P1907_Bayonet`) have scripts + IK registrations; their weapon PBOs have no matching
+   model/config. NEVER debinarize them from this experimental client as a parity reference — inherit a
+   shipped peer (`SCARH` / a 1.29 pistol / CZ527 / CZ61). → `dayz-1-30-weapons.md`.
 
 **Memory-point sanity** (each was a real AI-mesh bug on MK47): `usti hlavne`/`konec hlavne` share Y and
 Z (level bore); `bolt_axis` parallel to bore; eject direction within ~25° of the reference; `eye` height
@@ -76,6 +83,11 @@ AK-pattern, AKS74U/PM73 for an SMG), debinarize it (external ODOL→MLOD convert
 its **config**, and match: named selections present, memory points shaped the same, config base chosen
 for its ammo / mags / recoil / sounds / anims. Every preflight item above falls out of this one diff
 instead of error-by-error in-game. → `p3d-selection-contract.md`, `cfgweapons-contract.md`.
+
+(hasta 1.29: that vanilla weapon is always in the matching `weapons_*.pbo`.) (desde 1.30 Exp: **W-STAGING1**
+— scripts for `SCARL` / `Luger` / `LeeEnfield` / `MP18` are not a licence to unpack those classnames from
+this build. Debinarize `SCARH\ScarH.p3d` (listed in `work\pbo-listings\exp__Addons__weapons_firearms.txt`)
+or another packed peer. Details: `dayz-1-30-weapons.md`.)
 
 ## QUICK TRIAGE
 
@@ -92,6 +104,9 @@ instead of error-by-error in-game. → `p3d-selection-contract.md`, `cfgweapons-
 | Optics / attachment slot won't accept X | `attachments[]` slot name vs the attachment's `inventorySlot`; mount-gated optics | `cfgweapons-contract.md` §attachments |
 | **Grip / hands / ADS / rider pose wrong** | NOT this skill — anim | `dayz-animation-pipeline` → `weapon-in-hands.md` |
 | **Bolt-slide / reload / fire / jam-unjam MOTION** | NOT this skill — anim (`.anm`/`.asi` authoring) | `dayz-animation-pipeline` → `weapon-anim-*` |
+| Spawn/class missing for SCARL/Luger/LeeEnfield/MP18 (1.30 Exp) | W-STAGING1 — script+IK present, no CfgWeapons / `.p3d` in weapon PBOs | `dayz-1-30-weapons.md` |
+| Compile fail on `GetExplosionParticleID` (1.30 Exp) | API replaced by `AmmoTypesAPI.GetExplosiveEffectData(ammo, surface)` | `dayz-1-30-weapons.md` §ammo |
+| Pistol slide/toggle anim IDs wrong (1.30 Exp) | override `Get*PistolAnimState()`; do not fork the pistol FSM classes | `dayz-1-30-weapons.md` §pistol |
 
 ## DELEGATION MAP — ANIM vs ENTITY, and the generic-pipeline hand-offs
 
@@ -110,6 +125,7 @@ instead of error-by-error in-game. → `p3d-selection-contract.md`, `cfgweapons-
 | Enforce Script (`modded class`, config-script side) rules | `enforce-script-reference` |
 | PBO packaging / binarize | `dayz-pbo-build` |
 | In-game build/deploy/launch + auto-verify | `dayz-test-ingame` (+ `dayz-mcp-verify`) |
+| 1.30 Exp pistol anim-state getters, open-bolt mag detach, explosion FX API, staging weapons | **THIS skill** → `dayz-1-30-weapons.md` |
 
 ## CITE-THEN-VERIFY
 
@@ -120,6 +136,13 @@ field, or selection, grep it in vanilla (`P:\scripts\4_world\entities\firearms\`
 `.p3d`) or the cited references, and keep the provenance labels the references use: `[VERIFIED in-game]`
 (a real in-game test in a project handoff) vs `[VERIFIED-vanilla]` (read off disk) vs `[UNVERIFIED]`
 (inferred, not confirmed). Anchor every new weapon lesson to a real mod with `path:line`, never memory.
+
+(hasta 1.29: pistol stable states were constructed with `PistolAnimState.*` constants —
+`stable-1.29` `Pistol_Base.c:203-212`.) (desde 1.30 Exp: `InitStateMachine()` passes
+`GetDischargedPistolAnimState()` / `GetChargedPistolAnimState()` / `GetOpenPistolAnimState()` /
+`GetJammedPistolAnimState()` — `exp\scripts\scripts\4_World\Entities\Firearms\Pistol_Base.c:203-212`.
+Override those getters on an atypical pistol (Luger: charged→`DEFAULT`, jammed→`CLOSED_CHARGED` in
+`Pistol\Luger.c:8-21`). Do not duplicate the `Pistol_CLO_*` FSM. → `dayz-1-30-weapons.md`.)
 
 ## AMMO CLASSIFICATION SERVER-SIDE (added 2026-08-13, LFPowerGrid turret)
 
@@ -157,9 +180,52 @@ ballistics, loot logic, scaling that must also work for modded weapons):
 - Cartridge -> ammo type for the damage system: `AmmoTypesAPI.MagazineTypeToAmmoType(magType, out ammoType)`
   — `P:\scripts\3_game\global\ammotypes.c:14`, used by vanilla in `weapon_base.c:848` `[VERIFIED-vanilla]`.
   Do not hand-roll a `CfgMagazines <t> ammo` lookup.
+  (hasta 1.29: those line numbers.) (desde 1.30 Exp: `MagazineTypeToAmmoType` is
+  `exp\scripts\scripts\3_Game\Global\AmmoTypes.c:26`; vanilla `Weapon_Base.c:840`.
+  `GetExplosionParticleID` is gone — MUST call `AmmoTypesAPI.GetExplosiveEffectData(ammoName, surfaceName)`
+  and read `m_ParticleID` / `m_SoundSetName` on `ExplosiveEffectData`. → `dayz-1-30-weapons.md`.)
 - A cartridge damage profile is readable BEFORE firing:
   `ConfigGetFloat("CfgAmmo " + ammoType + " DamageApplied Health damage")` (also `Blood damage`,
   `Shock damage`) — `P:\scripts\4_world\entities\dayzplayerimplementfalldamage.c:261-263`
   `[VERIFIED-vanilla]`. This is how a mod caps absurd modded ammo without a whitelist.
 - `iconCartridge` is nominally a UI icon field reused as the cartridge class: confirm per-pile coherence
   against a debinarized config before shipping balance that depends on it. `[UNVERIFIED]`
+
+## DayZ 1.30 Exp (build 1.30.164014)
+
+What changes, what breaks, and the migration checklist. Full citations and `[EXACT]` blocks:
+`dayz-1-30-weapons.md`. Recoil curves and Luger/LeeEnfield bone remaps:
+`bone-remap.md`, `cfgweapons-contract.md`.
+
+**What changes**
+
+- Four firearm scripts (`SCARL_Base : SCARH_Base`, `Luger_Base`, `LeeEnfield_Base`, `MP18_Base`) plus
+  `P1907_Bayonet` and mag stubs — scripts and (for Luger/LeeEnfield) extra `AddItemBoneRemap` arrays;
+  IK `.asi`/`.anm` packed; **no** `CfgWeapons` / weapon `.p3d` in this experimental PBO set (W-STAGING1).
+- Pistol FSM anim IDs are virtual getters on `Pistol_Base` (`Pistol_Base.c:611-629`, wired at `:203-212`).
+- `OpenBolt_Base.SetActions()` adds `FirearmActionDetachMagazine` (`OpenBolt_Base.c:388`).
+- `Weapon_Base.EEItemDetached` calls `ValidateAndRepair()` when the detached item is a magazine (`:1121`).
+- Explosion FX: `ExplosiveEffectData` + `GetExplosiveEffectData(string, string)` replace
+  `GetExplosionParticleID`. `ExplosivesBase.SetParticleExplosion` / `AddExplosionEffectForSurface` are
+  `[Obsolete("1.30: Handled in AmmoTypes instead")]`.
+- Attach mag action requires `TestAttachMagazine(...)` (`FirearmActionAttachMagazine.c:256`).
+- Chamber helper uses `LocalAcquireCartridgeEx` (`weapon_utils.c:9`).
+
+**What breaks for a 1.29 weapon mod**
+
+1. Compile error if you still call `AmmoTypesAPI.GetExplosionParticleID`.
+2. Reload never starts if `TestAttachMagazine` is too strict/wrong on a custom muzzle.
+3. Open-bolt mag-detach workarounds fight the new `AddAction(FirearmActionDetachMagazine)`.
+4. Spawning `SCARL` / `Luger` / `LeeEnfield` / `MP18` / `Mag_Luger_8Rnd` / `Mag_MP18_Drum32Rnd` from
+   types/traders fails — no config class. `[CHANGELOG]` `SoundHitType` / `GetSoundHitType()` are **not**
+   in Enforce `SurfaceInfo.c` on this build (T189758); do not call them from weapon scripts.
+
+**Migration checklist**
+
+- [ ] Replace explosion-particle lookups with `GetExplosiveEffectData(ammoType, surfaceType)`.
+- [ ] Drop `SetParticleExplosion` / script surface-particle maps; set `particle` on `CfgAmmo`.
+- [ ] Atypical pistols: override `Get*PistolAnimState()`, keep the stock pistol FSM.
+- [ ] Confirm `TestAttachMagazine` for custom mag/bolt states.
+- [ ] Use `LocalAcquireCartridgeEx` in custom chamber helpers.
+- [ ] Parity-first: debinarize a **packed** peer, not the 1.30 staged classnames.
+- [ ] Do not add staged classnames to `types.xml` until Bohemia ships CfgWeapons + `.p3d`.

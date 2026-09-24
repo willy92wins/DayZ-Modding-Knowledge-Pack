@@ -69,13 +69,17 @@ def scan(root: Path) -> list[dict[str, str]]:
     problems: list[dict[str, str]] = []
     seen: set[str] = set()
     for path in sorted(root.rglob("*.py")):
-        if any(part in SKIP_PARTS for part in path.parts):
+        relative = path.relative_to(root)
+        # Repo-relative parts only. packctl resolves --root, and this repo keeps its
+        # checkouts under `.worktrees/`, so absolute parts skipped every file of such a
+        # checkout and the PAIRS backstop then failed it with GENERATED-COPY-UNMARKED.
+        if any(part in SKIP_PARTS for part in relative.parts):
             continue
         raw = path.read_bytes()
         head = raw[:512].decode("utf-8", "replace").splitlines()
         if not head or head[0].strip() != MARK:
             continue
-        rel = path.relative_to(root).as_posix()
+        rel = relative.as_posix()
         seen.add(rel)
         source_rel = next((l[len(SOURCE_PREFIX):].strip() for l in head if l.startswith(SOURCE_PREFIX)), "")
         pinned = next((l[len(SHA_PREFIX):].strip().upper() for l in head if l.startswith(SHA_PREFIX)), "")

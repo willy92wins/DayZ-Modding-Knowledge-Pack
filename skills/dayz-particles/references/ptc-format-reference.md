@@ -263,3 +263,7 @@ Emitter roles:
 
 Key insight: complex effects are built by layering simple emitters.
 Each emitter handles one visual aspect independently.
+
+## DayZ 1.30 Exp: runtime overrides (not .ptc keys)
+
+`.ptc` properties above are still the on-disk format. (since 1.30 Exp: after play, `EffectParticle.ParticleParamsOverride(ParticleParamsOverrideData)` can change the live `EmitorParam` values — `LIFETIME`, `VELOCITY`, `SIZE`, `AIR_RESISTANCE`, `BIRTH_RATE`, `REPEAT`, `WIND`, `SPRING`. That is script, not a new .ptc key. See `references/dayz-1-30-particles.md`.)

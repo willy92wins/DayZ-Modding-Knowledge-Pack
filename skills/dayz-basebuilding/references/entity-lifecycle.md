@@ -27,6 +27,12 @@ mutating hop runs through a `*Server` method gated by `g_Game.IsServer()`; the c
 (`:489-494`). `GetConstruction()` (`:975`). `Construction.UpdateConstructionParts()` (`construction.c:235-270`)
 reads the `Construction{}` config block and populates `map<string, ref ConstructionPart> m_ConstructionParts`
 (`construction.c:15`), keyed by part config-class name.
+(until 1.29: that field type and those line numbers). (since 1.30 Exp: `protected ref ConstructionBasic
+m_Construction` (`basebuildingbase.c:15`). `ConstructionInit()` is on `EntityAI` (`EntityAI.c:3441-3448`)
+and calls `CreateConstructionComponent()` (`:3451`). `BaseBuildingBase` overrides that to
+`m_Construction = new Construction(this)` (`basebuildingbase.c:871-875`). `UpdateConstructionParts` is on
+`ConstructionBase.c:495-532` and fills parts from `ConstructionDataTypeHolder`, not by walking config on the
+instance. `GetConstruction()` is `Construction.Cast(m_Construction)` (`:883-886`).)
 
 ## 3. Base part
 
@@ -41,9 +47,16 @@ builds the `base` part (`is_base=1`). Building the base sets `HasBase()=true`, s
    `ActionConditionContinue` / `OnFinishProgressServer` via `IsCollidingEx` (`actionbuildpart.c:90-110, 112-130`).
 2. `OnFinishProgressServer` (`:112-130`) re-validates `CanBuildPart` (the "redundant at this point?" comment
    at `:123`) then calls `construction.BuildPartServer(player, part_name, AT_BUILD_PART)` (`construction.c:75-95`).
+   (until 1.29: `BuildPartServer`). (since 1.30 Exp: `construction.BuildPartServerEx(action_data.m_Player, partName, AT_BUILD_PART)`
+   after `IsCollidingEx(checkData)` (`actionbuildpart.c:157-170`). `Construction.BuildPartServerEx` still
+   resets the damage zone and calls `OnPartBuiltServer` (`Construction.c:52-68`).)
 3. `BuildPartServer`: reset the part's damage-zone health, `TakeMaterialsServer` (`construction.c:671-723` —
    `lockable=1` locks the slot; else subtract `quantity`, or delete on `quantity==-1`), destroy the build
    collision trigger, call `GetParent().OnPartBuiltServer` (`basebuildingbase.c:587-618`).
+   (until 1.29: `BuildPartServer` destroyed a construction-box trigger). (since 1.30 Exp: `ConstructionBase.BuildPartServerEx`
+   only `TakeMaterialsServer(part_name)` (`ConstructionBase.c:174-179`); `CreateCollisionTrigger` /
+   `DestroyCollisionTrigger` / `IsTriggerColliding` remain as `[Obsolete("no replacement")]`
+   (`ConstructionBase.c:1742-1787`). Do not write new trigger calls.)
 4. `OnPartBuiltServer` → `RegisterPartForSync` (sets the part's `id` bit in `m_SyncParts01/02/03`
    `basebuildingbase.c:148-175`), sync, show part physics + visual, regen navmesh.
 
@@ -51,6 +64,8 @@ builds the `base` part (`is_base=1`). Building the base sets `HasBase()=true`, s
 
 - `CanBuildPart` (`construction.c:296-304`): `!IsPartConstructed && HasRequiredPart && !HasConflictPart &&
   HasMaterials && (!use_tool || CanUseToolToBuildPart) && !MaterialIsRuined`.
+  (since 1.30 Exp: `CanBuildPart` / `CanBuildPartEx` on `ConstructionBase.c:568-585`; failure bits in
+  `EConstructionInfoCategories` (`ConstructionConstants.c:1-11`).)
 - `CanDismantlePart` (`:468-476`): `IsPartConstructed && !HasDependentPart && CanUseToolToDismantlePart`.
 - `CanDestroyPart` (`:566-574`): `IsPartConstructed && !HasDependentPart` (no tool/material gate — triggered
   by damage, `basebuildingbase.c:510-518`).
@@ -70,6 +85,8 @@ sets the variant count (`constructionactiondata.c:139`), and its `OnUpdateAction
   refunds materials (`ReceiveMaterialsServer` → `StaticConstructionMethods.SpawnConstructionMaterialPiles`),
   drops non-usable materials, calls `OnPartDismantledServer`. Blocked if the part `HasDependentPart`
   (`construction.c:479-496`). Dismantling the **base** destroys the whole construction (`basebuildingbase.c:653-657`).
+  (since 1.30 Exp: `DismantlePartServerEx` (`ConstructionBase.c:185-200`, override `Construction.c:77-90`).
+  `HasDependentPart` is `ConstructionBase.c:758`.)
 - Destroy on ruin: `EEHealthLevelChanged` (`basebuildingbase.c:496-528`) — when a zone hits `STATE_RUINED`,
   `DestroyPartServer` that part + `DestroyConnectedParts` (`construction.c:141-154`, dependents, with a gate
   exception `ExceptionCheck` `:157-167`).
@@ -106,3 +123,12 @@ Action classes (`scripts\4_world\classes\useractionscomponent\actions\`): `conti
 `[UNVERIFIED]` The no-tool shelter path (`ActionBuildShelter` / `ActionActionBuildPartNoTool`,
 `UseMainItem()→false`, `actionbuildpart.c:224-245` + `interact\actionbuildshelter.c`) exists but its
 shelter-specific config was not fully traced in this pass.
+
+## 9. DayZ 1.30 Exp — hop notes
+
+- `CreateConstructionComponent` / `GetConstructionBasic` are the hooks; see
+  `references/dayz-1-30-construction-rebuilding.md` §1 for EXACT getters.
+- `BuildingBase` uses the same hooks to install `Rebuilding` (`Building.c:23-50`). That path does **not**
+  go through `FenceKit.OnPlacementComplete`.
+- `SetRequestBuiltState` is obsolete (`ConstructionPart.c:492-500`); use `SetBuiltState`.
+- Fence `OnStoreSave` in 1.30 is `fence.c:246-254` (still `super` then `m_GateState`, `m_IsOpened`).

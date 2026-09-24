@@ -8,6 +8,8 @@ DayZ uses a client-server model. Server is authoritative. Key mechanisms:
 2. **ScriptRPC** — Manual remote procedure calls (bidirectional)
 3. **Persistence** — OnStoreSave/OnStoreLoad for server restart survival
 
+4. **Inventory commands (1.30 Exp)** — not SyncVars. Retail `DayZPlayerInventory` no longer runs `ProcessInputData` (method still at `:3319`; call sites are `#ifdef DIAG_DEVELOPER` + `IsOldProcessInputDataEnable()`, `:668-687` and `:734-744`). Live split: `ValidateInventoryCommandServer` (`:3410`), `ExecuteInventoryCommandServer` (`:3501`), `ExecuteInventoryCommandClient` (`:3569`), `ExecuteInventoryCommandRemote` (`:3633`). Desync repair: `INPUT_UDT_INVENTORY_CHECK = 16` (`_constants.c:19`), `OnInventoryCheck` (`:5003`), cap 5 items / 500 m (`:163-164`). Hand FSM: 1.30 guards auto-pass only `e.m_IsRemote` (1.29 was `m_IsJuncture || m_IsRemote`); `HandGuardIsNotSurrendered` (`Hand_Guards.c:405`). Bodies: `references/dayz-1-30-enforce-script.md`.
+
 ---
 
 ## SyncVars (RegisterNetSyncVariable)

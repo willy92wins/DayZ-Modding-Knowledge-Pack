@@ -74,7 +74,7 @@ Optional refinement: subtle **torso twist** with handlebar yaw. When `steerMax` 
 2. **Author or validate the pose interactively** (optional but strongly recommended for the first vehicle). The LFQuad reference case used a Three.js viewer (`LFQuad_pose_viewer.html`) with sliders for `lean`, `steerMax`, and per-anchor positions; the viewer ran the same solver and exported the canonical pose JSON. Building one yourself takes about a day; reusing the LFQuad viewer pattern is faster — the baked-viewer-reuse trick (decode the existing viewer's `const DATA` block instead of re-parsing the `.p3d` with py3d) is documented in SKILL.md anchor 5 (LL-baked-viewer-reuse) and applied in `selection-painter-for-actions.md` for the painter case.
 3. **Generate the SEAnim variants** with `scripts/ik_pose_to_seanim.py` (this skill). One SEAnim per variant: idle, steer-left, steer-right, plus copilot idle if applicable.
 4. **User runs DayZATool** (`--generate-anim file.seanim`) on Windows → `.anm`.
-5. **Wire in `vehicles.agr`** (Layer 3 GUI in Workbench) — point the appropriate transition or state at the new `.anm`. This step is Workbench-only; Claude cannot run it in-sandbox.
+5. **Wire in the vehicle graph** — point the appropriate transition or state at the new `.anm`. Up to 1.29 the graph was binary `vehicles.agr` and this step was Workbench-only. (added 2026-09-16, DayZ 1.30 Exp) [EXACT] In 1.30 the graph is plain text (`DZ\anims\workspaces\player\player_main\Vehicles.agf`, `MotorBikeSTM` at `Vehicles.agf:1582-1750`) and the vanilla rider sets are bound through `player_main.ast:1119-1120` (`Jawa_05`, `Jawa_Bitrak`) and `player_main.asi:5088` (`Vehicle.Jawa_05.*`). [UNVERIFIED] Editing the `.agf` by hand and having the engine accept it has not been tried; the Workbench Animation Editor (2021 Enfusion, live editing) remains the measured path.
 6. **Test in-game.** RPT must show no bone-name errors. Verify pose visually from inside the vehicle (1st person) and outside (3rd person, both sides).
 
 ## The wall this route does NOT escape
@@ -101,6 +101,14 @@ This is the standard Bohemia animation pipeline; there is no shortcut. Plan for 
 If your project has two coordinate frames for the same model (a viewer/authoring frame and a production `.p3d` frame), all anchor coordinates must be expressed in the SAME frame as the `.p3d` they get baked into. The LFQuad reference case has a `+Z front` authoring frame and a `-Z front` production frame; baking anchors from the authoring frame to the production `.p3d` requires negating Z first.
 
 The dual-entry detection in `dual-entry-action-pattern.md` is robust to this because `WorldToModel` returns local coords in whatever frame the `.p3d` uses, so the `localP[0] >= 0` side check works regardless. But the anchor coords you place via `dayz-p3d-inspector` Recipe edits DO need to be in the right frame — verify by reopening the `.p3d` in a viewer aligned to the production frame and confirming `crewdriver` sits where the pelvis should sit.
+
+## Single-track vehicles: directional boarding and stability ejection (added 2026-09-16, DayZ 1.30 Exp) [EXACT]
+
+When authoring poses for motorbikes or other single-track vehicles in 1.30:
+1. **Directional get-in / get-out**: the side is chosen at runtime by a dot product in `ActionGetInTransport.c:81-100` when `Transport.HasDirectionalInOutAction()` (`Transport.c:677`) is true. The graph has separate states `GetIn_L` (`CMD_Vehicle_GetIn == 0`) and `GetIn_R` (`== 1`), plus `GetOut_L/R` and `JumpOut_L/R` (`Vehicles.agf:1592-1658`). A custom vehicle with its own mounting animations needs both left and right variants.
+2. **Handlebar IK lock**: vanilla uses `AnimNodeIK2hands` (`AnimSrcNodeIK2`, `Vehicles.agf:31-46`) with `SnapRotation 1` to hold the wrists on the grips; the steering pose `DriverSteeringMain` is driven by `VehicleSteering` normalised over [-0.785, +0.785] rad (about +/-45 deg) (`Vehicles.agf:47-51`).
+3. **Stability ejection**: `CrewShouldEject(seatPos)` on the motorbike returns `IsFallen()` (`MotorbikeScript.c:466`); when the bike is down, `DayZPlayerImplement.c:2458` activates `eModifiers.MDF_UNCONSCIOUSNESS` to get the rider off (Bohemia's own comment at `:2454-2455` calls this temporary until a ragdoll command exists). When the driver dies, `motorbike.FallOver()` (`DayZPlayerImplement.c:731`) tips the bike over.
+Rider-side detail, anim list (`Jawa_05` = `Motorbike_01`, `Jawa_Bitrak` = `Motorbike_02`) and the vehicle config side live in the `dayz-motorbikes` skill (`references/rider-animation.md`).
 
 ## Cross-contract with handlebar/wheel rotation (LL-handlebar-rotation-sync)
 

@@ -53,6 +53,8 @@ Transform types:
 
 Missing objects, bones, vertices, frames, Actions, radii or non-finite values are invalid input. Frames outside the scene timeline are invalid. They produce exit `2`, never an omitted channel.
 
+*(Nota DayZ 1.30: Al eliminarse el límite global de 250 huesos y resolverse los índices por hash del nombre [`work\changelog-1.30-exp-modding.md:31`, `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:39, 986-988`], los nombres de huesos en `transforms` y `landmarks` deben coincidir exactamente caracter a caracter con la jerarquía `.xob` / esqueleto exportado).*
+
 ## Check catalog
 
 ### `timeline`

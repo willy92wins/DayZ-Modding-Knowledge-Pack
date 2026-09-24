@@ -204,6 +204,7 @@ override protected void EOnContact(IEntity other, Contact extra)
 ```
 
 **CLAVE**: `EOnContact` solo reacciona a `Transport.Cast(other)`. Si la entidad que impacta NO es un `Transport` (ni hereda de él), el flujo TransportHit NO se activa en absoluto desde el jugador. Para LF_RollingStone como `ItemBase`, el jugador no detecta la colisión con la piedra automáticamente — es la piedra quien debe llamar `target.ProcessDirectDamage(...)` directamente desde su propio `EOnContact`.
+(desde 1.30 Exp: same Transport-only filter at `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:3958-3973`.)
 
 ### RegisterTransportHit — análisis línea a línea
 
@@ -289,6 +290,7 @@ void RegisterTransportHit(Transport transport)
 ```
 
 La rama genérica tiene el umbral más bajo (0.1 m/s). Cualquier objeto que herede de `Transport` sin ser `Car` ni `Boat` cae aquí.
+(desde 1.30 Exp: `RegisterTransportHit` starts at `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4111`. A Motorbike branch sits between Car and Boat at `:4143-4160` — damage like Car when `GetSpeedometerAbsolute() > 2.0`; corpse impulse is `5.0 * velocity` with Y = 5.0, not 40/60. Generic is the last `else`. See section "DayZ 1.30 Exp" below.)
 
 ### Reset de m_TransportHitRegistered
 
@@ -585,7 +587,7 @@ Helper para herramientas que se desgastan al usarse. Bypasea el sistema de ammo.
 
 8. **`componentName` en ProcessDirectDamage no es el nombre de componente del modelo**: es el nombre de la DamageZone (ej: "Head", "Engine"). El comentario en el código lo aclara explícitamente (`object.c:1128`).
 
-9. **Boat tiene factor 0.5 de daño** respecto a Car a la misma velocidad (`entityai.c:4129`). La rama genérica aplica el mismo factor que Car.
+9. **Boat tiene factor 0.5 de daño** respecto a Car a la misma velocidad (hasta 1.29: `entityai.c:4129`; desde 1.30 Exp: `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4173` after the Motorbike branch). La rama genérica aplica el mismo factor que Car.
 
 10. **Zona "Brain" solo existe en muerte headshot tracking**: No es una DamageZone de config, sino un string que el shooter envía en `dmgZone` cuando la bala impacta el componente de cabeza. Verificar si está configurada como zona real es pendiente.
 
@@ -681,3 +683,36 @@ class CfgAmmo {
 | `scripts/3_game/constants.c:851-855` | `STATE_PRISTINE`..`STATE_RUINED` |
 | `scripts/4_world/classes/useractionscomponent/actions/actionconstants.c:146-156` | `UADamageApplied` constantes |
 | `scripts/4_world/static/miscgameplayfunctions.c:1597-1599` | `DealAbsoluteDmg` |
+
+## DayZ 1.30 Exp (build 1.30.164014)
+
+Digest H mapped "fall damage from 5 m health / 3 m shock, linear" onto this file via `SKILL.md:59-62`. That SKILL span is Transport-only `EOnContact`, not fall damage. This section **adds** the 1.30 facts.
+
+(hasta 1.29: `HEALTH_HEIGHT_LOW = 5`, `HEALTH_HEIGHT_HIGH = 14`, `SHOCK_HEIGHT_LOW = 3`, `SHOCK_HEIGHT_HIGH = 12`, `BROKENLEGS_HEIGHT_LOW = 5`, `BROKENLEGS_HEIGHT_HIGH = 9`; `HandleFallDamage` used `Math.InverseLerp`. `stable-1.29/scripts/scripts/4_World/Entities/DayZPlayerImplementFallDamage.c:26-32,97`.)
+
+(desde 1.30 Exp: health 2-12 m, shock 0-8 m, broken legs 3-8 m. `CurveExp` = `Pow(Clamp(InverseLerp(low, high, value),0,1), power)` — health/shock power 2.0, broken-legs 2.5. `Randomize` returns 1.0 unchanged if `pValue == 1`. `exp/scripts/scripts/4_World/Entities/DayZPlayerImplementFallDamage.c:26-33,92-140,160-163`.)
+
+```c
+// [EXACT] exp/scripts/scripts/3_Game/Entities/EntityAI.c:4143
+			else if (Motorbike.CastTo(motorbike, transport))
+			{
+				float motorbikeSpeed = motorbike.GetSpeedometerAbsolute();
+				if (motorbikeSpeed > 2.0)
+				{
+					damage = m_TransportHitVelocity.Length();
+					ProcessDirectDamage(DT_CUSTOM, transport, "", "TransportHit", "0 0 0", damage);
+				}
+				else
+					m_TransportHitRegistered = false;
+
+				// compute impulse and apply only if the body dies
+				if (IsDamageDestroyed() && motorbikeSpeed > 3.0)
+				{
+					impulse = 5.0 * m_TransportHitVelocity;
+					impulse[1] = 5.0;
+					dBodyApplyImpulse(this, impulse);
+				}
+			}
+```
+
+Vehicle authoring of that Motorbike type is `dayz-vehicles` / `dayz-motorbikes`. Full ragdoll / fall-damage deep-dive: `dayz-1-30-ragdoll-and-fall.md`.
