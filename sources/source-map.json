@@ -12282,17 +12282,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "The pinned placeholder census tracks <tmp>, which returns alignment_viewer_build.py to the list: verified 2026-09-02 that the script dies on the literal <tmp> path before it can build its viewer.",
+          "decision_evidence": "The pinned placeholder census drops the four <dayz-projects> hits 6c75623 deleted (check_dayz_winding.py, alignment_viewer_extract.py, apply_alignment_json.py, export_clothing_fbx.py): verified 2026-09-24 by running check_dayz_winding.py (--help and a read-only MLOD pass) and the side-effect-free prologues of the other three, which resolve the installed py3d 1.7.0 with no machine path.",
           "license": "MIT",
-          "source_hash": "b7d0421317d84ee5aa4458c08b1742392afbf305c2ceebb64cbc688eea3e5b71",
+          "source_hash": "3c8c4701472f4ae307a89b9044f5a1ebf908ca592deb909c64202c87fcf8074b",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_promotion.py",
-          "source_revision": "packctl-tmp-alias@2026-09-02",
+          "source_revision": "placeholder-census-6c75623@2026-09-24",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b7d0421317d84ee5aa4458c08b1742392afbf305c2ceebb64cbc688eea3e5b71",
+      "output_hash": "3c8c4701472f4ae307a89b9044f5a1ebf908ca592deb909c64202c87fcf8074b",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
