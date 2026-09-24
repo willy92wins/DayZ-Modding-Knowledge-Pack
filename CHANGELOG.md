@@ -51,6 +51,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
     vanilla-inherited and `modded class` methods stay silent. Measured against
     the real trees: 69 errors on the broken one, zero on the fixed one.
   - Paths are never hardcoded: external roots arrive by argument.
+- `dayz-mcp-verify`: driving-bench traps measured on 2026-09-13 (SP-423): a
+  `world_spawn` car outlives a dead run unless created with `flags=8389668`, get-in
+  can seat a nearby car and still answer `ok`, the drive controller skipped gears before
+  dayz-mcp `d065b0e`, and old trace dumps need the reader revision they were recorded with.
+- `dayz-vehicles`: straight-line sensitivities of the vanilla sedan (SP-424): launch
+  acceleration scales as torque^0.93-0.95, tyreGrip 0.70-1.00 leaves launch and braking
+  unchanged, and the first upshift matches the gear-ratio formula within 1.4 %.
+- Promotions that had stayed on side branches: `dayz-test-ingame` (an unfocused DayZDiag
+  client runs at ~20 fps, SP-391), `dayz-pbo-build` (a content-gate string the base
+  already contains cannot go red, SP-390), `dayz-mod-workflow` (tune a clock offset on
+  the axis you are not investigating, SP-385), `enforce-script-reference` (a line break
+  ends the statement inside a condition too, SP-386; looping `CombineItems` merges into
+  pending-delete stacks) and `_shared/prompt-conventions` (single quotes in PowerShell).
 
 ### Changed
 
@@ -66,6 +79,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `sources/source-map.json`: `validate` was red on bc042c2 with 28 errors and
   is now green. The 25 skill files and receipt 53bcac92 that 5ad3174 and
   5f6568e left unmapped are now mapped, and `adjudications.json` is resealed.
+- Skill text mangled by shell escapes since 2026-09-07: PowerShell double quotes ate the
+  backtick and first letter of `requiredAddons`, `nullptr`, `null`, `try`, `throw`, `for`, `break` and
+  `array.Remove` in `dayz-mod-workflow`, `dayz-pbo-build` and `enforce-script-reference`, and a
+  Python `\v` escape broke two `DZ\vehicles` paths in `dayz-vehicles`. The StarDZ block of
+  `enforce-script-reference`, committed twice, keeps one copy.
 
 ## [1.3.0] - 2026-08-25
 

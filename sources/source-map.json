@@ -231,10 +231,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "dayz-underground@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-423 (dayz-mcp-verify: driving-bench traps measured 2026-09-13 on the LFCarTune bench) and SP-424 (dayz-vehicles: measured straight-line sensitivities of CivilianSedan), with claim CLAIM-MCPV-FIXTURE-NOPERSIST and CHANGELOG lines for them, the replayed side promotions and the escape repair.",
+          "license": "MIT",
+          "source_hash": "ac25cc112d7d632e3960b0bbc6b61ee31cf972f1e750c7ae3f738c318d2a8ffe",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "sp423-sp424@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dd4b8052090b81d4a2c3d3f21820c12f67b36fbc9033a5bbfe5fd35953558a9b",
+      "output_hash": "ac25cc112d7d632e3960b0bbc6b61ee31cf972f1e750c7ae3f738c318d2a8ffe",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5718,10 +5728,20 @@
           "source_path": "dayz-mcp-verify/SKILL.md",
           "source_revision": "filesystem@2026-08-30",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-423 (dayz-mcp-verify: driving-bench traps measured 2026-09-13 on the LFCarTune bench) and SP-424 (dayz-vehicles: measured straight-line sensitivities of CivilianSedan), with claim CLAIM-MCPV-FIXTURE-NOPERSIST and CHANGELOG lines for them, the replayed side promotions and the escape repair.",
+          "license": "MIT",
+          "source_hash": "816c358ca57423b266b52cadb009bc300c5ba5e5b3ee3b249d5943d7ca63b8ed",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "sp423-sp424@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "519c1ebb9407af40bc95cf5ee9854cdc7e5865e26d38537b15dde4ccab40f27d",
+      "output_hash": "816c358ca57423b266b52cadb009bc300c5ba5e5b3ee3b249d5943d7ca63b8ed",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -9250,10 +9270,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-423 (dayz-mcp-verify: driving-bench traps measured 2026-09-13 on the LFCarTune bench) and SP-424 (dayz-vehicles: measured straight-line sensitivities of CivilianSedan), with claim CLAIM-MCPV-FIXTURE-NOPERSIST and CHANGELOG lines for them, the replayed side promotions and the escape repair.",
+          "license": "MIT",
+          "source_hash": "250c891bebfa4109b86d1a98e0798713806ca4f560f52d816ffdccd1d7a0ea7f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "sp423-sp424@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a2da4ddaa0aaed73ed2dd15c4f1e15b7df17b604cc7038bf069e0d3940b21752",
+      "output_hash": "250c891bebfa4109b86d1a98e0798713806ca4f560f52d816ffdccd1d7a0ea7f",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -12165,10 +12195,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "integrate-publish@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-423 (dayz-mcp-verify: driving-bench traps measured 2026-09-13 on the LFCarTune bench) and SP-424 (dayz-vehicles: measured straight-line sensitivities of CivilianSedan), with claim CLAIM-MCPV-FIXTURE-NOPERSIST and CHANGELOG lines for them, the replayed side promotions and the escape repair.",
+          "license": "MIT",
+          "source_hash": "9829b277fcfd6e51359bafbbe334ded7a9714a223a466599789e5b250ffa0344",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "sp423-sp424@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "bf85122cfdd31a7a7818ea4eb9dae09cf49027cc2a7d98789a7811dcd4a9b772",
+      "output_hash": "9829b277fcfd6e51359bafbbe334ded7a9714a223a466599789e5b250ffa0344",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

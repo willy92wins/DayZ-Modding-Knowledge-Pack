@@ -1904,3 +1904,28 @@ that steer, so excess torque reaches the driver as "it will not turn", never as 
 Halving a vehicle's mass halves the grip budget while leaving the torque where it was, which on
 its own turns a vehicle that steered into one that pushes - the trap behind 15g(a).
 
+## CivilianSedan on a straight: what torque, tyreGrip and the gear ratios did, measured (SP-424, added 2026-09-24)
+
+Measured 2026-09-13 in DayZDiag: NWAF concrete, standing start at full throttle through the MCP
+drive controller, one config field changed per variant on `CivilianSedan` / `CivSedanWheel`,
+`vehicle_trace` at 19-20 Hz. The samples are small and the n is given per result: these are
+measurements, not general law. The controller of that build skipped gears above ~33 km/h
+(`dayz-mcp-verify`, SP-423), so the launch figures stop there.
+
+- **Torque drives the launch almost proportionally.** Acceleration over the first 3 s scales as
+  torque^0.93-0.95 (torque ×0.7 → ×0.72, n = 1; ×1.3 with clutch 520 → ×1.28, n = 3; baseline
+  n = 5), and the 0-30 km/h time as torque^-1.17. First gear does not slip (rear slip p90
+  ≈ 0.001): the torque reaches the ground.
+- **tyreGrip between 0.70 and 1.00 changed neither the straight launch (≤ 2 %) nor braking
+  (5.7-6.0 m/s²).** At 0.30 the car braked 22-30 % less and launched 10 % faster with almost no
+  slip (n = 1, unexplained). In this regime tyreGrip does not act as a simple longitudinal
+  friction coefficient.
+- **First upshift at 9.20 m/s**, against 9.33 m/s predicted by
+  `0.8 × redline × 2πr / (60 · i_1 · i_final)` (n = 5): the formula holds for wheel radius and
+  gear ratios.
+- **Steady arc at steering 0.3** (~20 m circles): drift angle falls from 8.3° at 14 km/h to 3.4°
+  at 32 km/h, lateral acceleration reaches 7.2 m/s² (≈ 0.73 g), no slide (n = 1).
+
+Rule of thumb: to change the launch, change the torque. Above ~0.7, tyreGrip does not change the
+vanilla sedan's straight launch or braking; look for its effect in cornering and drift, which is
+not measured yet.

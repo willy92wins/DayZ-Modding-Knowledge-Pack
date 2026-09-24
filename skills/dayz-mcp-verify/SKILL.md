@@ -962,3 +962,43 @@ Cross-ref: `dayz-test-ingame` (misma regla, lado del launch).
 
 When a config is validated against a *closed* option set and long-lived readers re-validate every request, order is: (1) add the new token to the allowlist in code, (2) ship that code to every reader, (3) restart those readers, (4) only then write the value. Writing first invalidates the whole file for old readers (`daemon_provenance_conflict` / fail-closed). Not every resident process is a reader — measure which ones read the file and when. Cheap check: run the validator in a fresh process right after write and revert on failure.
 
+## Driving bench through the MCP: the fixture outlives a dead run, get-in can seat the wrong car, old dumps need their reader (SP-423, added 2026-09-24)
+
+Measured 2026-09-13 on a car-tuning bench (LFCarTune: 17 episodes, DayZDiag, NWAF concrete,
+one `vehicle_trace` per episode) with the dayz-mcp build before `d065b0e`.
+
+1. **A `world_spawn` car outlives its run.** Created with `flags=0`, a car whose run dies before
+   `object_delete` is persisted by the server and comes back in every new run.
+   `object_delete(object_id)` cannot reach it: the id belonged to the dead run. Create bench
+   fixtures with `flags=8389668`:
+   [EXACT][CLAIM-MCPV-FIXTURE-NOPERSIST] `ECE_PLACE_ON_SURFACE` (1060) | `ECE_NOPERSISTENCY_WORLD` (8388608), `scripts/3_game/ce/centraleconomy.c:30,37`.
+2. **`vehicle_get_in_client(pos)` answered `ok` while seating the player in that orphan**, 2 m
+   away, instead of the car just created at 0 m, in two episodes. Only the trace's `car_type`
+   showed it. Two cars of the same class in range make `vehicle_prepare_fixture` return
+   `ambiguous_fixture`. `d065b0e` makes get-in take the nearest vehicle; keep the check anyway.
+3. After that, get-in returned `not_seated` for any car, also on a clean site and after
+   `player_respawn`. Only a fresh client fixed it.
+4. **The drive controller skipped gears.** Automatic `ShiftUp()` fired on every tick with rpm
+   above 0.8 × redline: 1st to 4th within 100 ms at ~33 km/h, and no downshift. `d065b0e` waits
+   0.3 s between automatic upshifts (`AUTO_SHIFT_SETTLE_S`, dayz-mcp
+   `addon/scripts/4_World/MCP_CarScript.c`). Launch figures recorded before that build are only
+   valid below ~33 km/h.
+5. **`vehicle_trace` dumps of that build carry 0/1 booleans and lack fields added later.** The
+   reader coerces them and requires those fields since dayz-mcp `1f71983`, so a current checkout
+   rejects them as `dump_invalid`. Pinning the reader at `d2f9dad` reproduced all 16 episodes
+   without a difference.
+6. With that build, 7 cars in a row within one run, each deleted with the client seated, worked.
+   What broke get-in was the orphan, not the car count.
+
+Rules for a driving bench:
+
+- Create the fixture with `flags=8389668`.
+- Before the first episode, `entities_query(pos, radius=30)` shows no foreign vehicle.
+- After `vehicle_get_in_client`, the returned `type` is the class you created; otherwise record
+  `car_mismatch` and skip the episode.
+- Before analysing an episode, cross-check the trace's `car_type` against the class you asked for.
+- A `not_seated` that survives `player_respawn` needs a fresh client.
+- An analysis of stored dumps pins the `vehicle_trace.py` revision they were recorded with.
+
+Would close the gap: a get-in with a foreign vehicle 2 m away on a build with `d065b0e`, and a
+5-car run with `flags=8389668` killed halfway, checking that nothing persists.
