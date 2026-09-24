@@ -60,44 +60,16 @@ Community traps **not** already covered by the hard rules above (skip ternary; I
 
 | Trap | Rule of thumb | Claim / note |
 |---|---|---|
-| No do…while | Use while / or | CLAIM-STARDZ-ENFORCE-SYNTAX-ABSENCES |
-| No 	ry/catch/	hrow | Fail-closed returns; don’t invent exception flow | same |
-| switch/case **falls through** without reak | Always reak unless intentional | same |
-| No 
-ullptr | Use 
-ull / NULL | same |
+| No do…while | Use while / `for` | CLAIM-STARDZ-ENFORCE-SYNTAX-ABSENCES |
+| No `try`/`catch`/`throw` | Fail-closed returns; don’t invent exception flow | same |
+| switch/case **falls through** without `break` | Always `break` unless intentional | same |
+| No `nullptr` | Use `null` / `NULL` | same |
 | No #include / no namespaces | Modules come from config.cpp CfgMods.defs | same |
 | Default params must be literals or NULL | No call expressions as defaults | same |
 | GetGame().GetPlayer() is **null on dedicated server** | Local player only; server: GetGame().GetPlayers(...) (distinct from client-preload null) | CLAIM-STARDZ-GETPLAYER-SERVER-NULL (cross_checked) |
 | sealed types/methods (1.28+) | Cannot extend/override | StarDZ gotchas 31 |
 | Method arity hard-cap **16** params (1.28+) | Split args into structs/helpers | StarDZ gotchas 32 |
-| rray.Remove is **unordered** (swaps with last) | Don’t assume stable order after Remove — confirm ordered API on P:\scripts if order matters | StarDZ gotchas 23 |
-
-More one-liners (historical): string methods may mutate in-place; empty #ifdef/#ifndef blocks can crash compile; crash_*.log filename ≠ proof of engine crash; compile errors sometimes cite the wrong file; parenthesize bitwise vs comparison tests; Obsolete (1.28+) warnings deserve cleanup; StarDZ says JsonFileLoader.JsonLoadFile returns void — reconcile with Pack SP-136 before treating as a hard rule.
-
-Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-enforce-script/12-gotchas.md (CC BY-SA 4.0).
-
-
-<!-- corpus-stardz-2026-09-07 -->
-
-### Additional Enforce absences / traps (StarDZ — historical unless noted)
-
-Community traps **not** already covered by the hard rules above (skip ternary; IsDedicatedServer@load; sibling if/else redeclare; multiline args). Paraphrase only — do not vendor StarDZ chapter bodies.
-
-| Trap | Rule of thumb | Claim / note |
-|---|---|---|
-| No do…while | Use while / or | CLAIM-STARDZ-ENFORCE-SYNTAX-ABSENCES |
-| No 	ry/catch/	hrow | Fail-closed returns; don’t invent exception flow | same |
-| switch/case **falls through** without reak | Always reak unless intentional | same |
-| No 
-ullptr | Use 
-ull / NULL | same |
-| No #include / no namespaces | Modules come from config.cpp CfgMods.defs | same |
-| Default params must be literals or NULL | No call expressions as defaults | same |
-| GetGame().GetPlayer() is **null on dedicated server** | Local player only; server: GetGame().GetPlayers(...) (distinct from client-preload null) | CLAIM-STARDZ-GETPLAYER-SERVER-NULL (cross_checked) |
-| sealed types/methods (1.28+) | Cannot extend/override | StarDZ gotchas 31 |
-| Method arity hard-cap **16** params (1.28+) | Split args into structs/helpers | StarDZ gotchas 32 |
-| rray.Remove is **unordered** (swaps with last) | Don’t assume stable order after Remove — confirm ordered API on P:\scripts if order matters | StarDZ gotchas 23 |
+| `array.Remove` is **unordered** (swaps with last) | Don’t assume stable order after Remove — confirm ordered API on P:\scripts if order matters | StarDZ gotchas 23 |
 
 More one-liners (historical): string methods may mutate in-place; empty #ifdef/#ifndef blocks can crash compile; crash_*.log filename ≠ proof of engine crash; compile errors sometimes cite the wrong file; parenthesize bitwise vs comparison tests; Obsolete (1.28+) warnings deserve cleanup; StarDZ says JsonFileLoader.JsonLoadFile returns void — reconcile with Pack SP-136 before treating as a hard rule.
 

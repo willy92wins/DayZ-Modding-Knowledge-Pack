@@ -1024,8 +1024,7 @@ de otros proyectos en cuarentena mientras dura el build.
 
 ### Cross-link: load order + thin lower layers (historical)
 
-
-equiredAddons[] dependency graph orders cross-mod compile within each script module layer (see dayz-mod-workflow). Prefer not inventing 1_Core/2_GameLib content unless you truly need that surface — default shared data to 3_Game.
+`requiredAddons[]` dependency graph orders cross-mod compile within each script module layer (see dayz-mod-workflow). Prefer not inventing 1_Core/2_GameLib content unless you truly need that surface — default shared data to 3_Game.
 
 Source: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/02-mod-structure/01-five-layers.md
 

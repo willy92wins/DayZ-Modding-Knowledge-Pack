@@ -542,7 +542,7 @@ matching 2-point `*_axis` selection in the Memory LOD or it silently does nothin
 
 ### Dashboard needles: what the engine actually feeds `speed` / `rpm` (measured on vanilla ODOL, added 2026-09-02, LFQuad3)
 
-Read with the debinarizer skill's `odol_reader.py` from `DZehicles\wheeled\offroadhatchback\offroadhatchback.p3d`
+Read with the debinarizer skill's `odol_reader.py` from `DZ\vehicles\wheeled\offroadhatchback\offroadhatchback.p3d`
 and `civiliansedan\civiliansedan.p3d` (ODOL v54, DayZ 1.29). These are the classes the vanilla cars ship with,
 not the Landrover template above:
 
@@ -557,7 +557,7 @@ not the Landrover template above:
 What this settles (the earlier `[Landrover]` template rows are consistent with it):
 
 1. `speed`, `rpm`, `fuel`, `coolant` are engine-provided sources; vanilla declares NO `AnimationSources` for them.
-2. `speed` arrives on the speedometer scale, i.e. km/h like `GetSpeedometer()` (`3_Gameehicles\car.c:113`):
+2. `speed` arrives on the speedometer scale, i.e. km/h like `GetSpeedometer()` (`3_Game\vehicles\car.c:113`):
    `maxValue` is simply the top number painted on the dial (120 hatchback, 200 sedan).
 3. `rpm` arrives NORMALISED 0..1 (`maxValue = 1.0` on both cars). Which engine rpm maps to 1.0 (`EngineGetRPMMax`
    = end of `torqueCurve[]`, or `rpmRedline`) is NOT settled by the ODOL; on LFQuad2 they differ by 1 rpm

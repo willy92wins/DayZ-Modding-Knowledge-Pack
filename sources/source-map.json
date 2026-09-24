@@ -5906,10 +5906,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "integrate-publish@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Repair text mangled in 0cfbe3e by PowerShell double-quote escapes (`r `n `t `f `b `a ate the backtick and first letter of requiredAddons, nullptr, null, try, throw, for, break, array.Remove) and by a Python \\v escape in two DZ\\vehicles paths; the StarDZ block of enforce-script-reference, committed twice back to back, keeps one copy.",
+          "license": "MIT",
+          "source_hash": "991719277a694fc3c4f7e63b030a1d0b0f09ab7ec10e973fb9f90a0d398f4f1f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "escape-repair@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "145cbdaddafb6976ec20ce2f3d5ca12f125bf5cc1677ee18375a72fec8378910",
+      "output_hash": "991719277a694fc3c4f7e63b030a1d0b0f09ab7ec10e973fb9f90a0d398f4f1f",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -6870,10 +6880,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "integrate-publish@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Repair text mangled in 0cfbe3e by PowerShell double-quote escapes (`r `n `t `f `b `a ate the backtick and first letter of requiredAddons, nullptr, null, try, throw, for, break, array.Remove) and by a Python \\v escape in two DZ\\vehicles paths; the StarDZ block of enforce-script-reference, committed twice back to back, keeps one copy.",
+          "license": "MIT",
+          "source_hash": "5543d48d5145c45780912b00be6d943e9aafcf71a8e4b0b456f27ad97eed5cc3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "escape-repair@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "76687469bbd9f7f834f5f531ebbf0f0403bb37d8d52e7cc2eed26a579fb5cfa6",
+      "output_hash": "5543d48d5145c45780912b00be6d943e9aafcf71a8e4b0b456f27ad97eed5cc3",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -10008,10 +10028,20 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Repair text mangled in 0cfbe3e by PowerShell double-quote escapes (`r `n `t `f `b `a ate the backtick and first letter of requiredAddons, nullptr, null, try, throw, for, break, array.Remove) and by a Python \\v escape in two DZ\\vehicles paths; the StarDZ block of enforce-script-reference, committed twice back to back, keeps one copy.",
+          "license": "MIT",
+          "source_hash": "c5d44af86d924411610306a4e0a20284f51bbc147c8810b114a6ae624296f575",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
+          "source_revision": "escape-repair@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7f7d0409493ef90aac866a9ca7e2ec487eae683a377aa4e8820170a00e97ed7a",
+      "output_hash": "c5d44af86d924411610306a4e0a20284f51bbc147c8810b114a6ae624296f575",
       "output_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10420,10 +10450,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "integrate-publish@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Repair text mangled in 0cfbe3e by PowerShell double-quote escapes (`r `n `t `f `b `a ate the backtick and first letter of requiredAddons, nullptr, null, try, throw, for, break, array.Remove) and by a Python \\v escape in two DZ\\vehicles paths; the StarDZ block of enforce-script-reference, committed twice back to back, keeps one copy.",
+          "license": "MIT",
+          "source_hash": "ed34bb2c3cbf05615dce2acbb2579e8b78e5510285813a0f8e9e6a80c6faea75",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "escape-repair@2026-09-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "862a6667e77096ca9e5037b3ec9b029d97b9cb6b0c78db9b8f6ad95dc2a3dfee",
+      "output_hash": "ed34bb2c3cbf05615dce2acbb2579e8b78e5510285813a0f8e9e6a80c6faea75",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"

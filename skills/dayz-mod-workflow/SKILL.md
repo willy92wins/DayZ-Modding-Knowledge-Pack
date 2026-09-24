@@ -166,13 +166,10 @@ Corre el **gate estructural obligatorio** (`script_validator.py`, y `ui_reconcil
 
 ### Script compile order vs -mod= path order (historical)
 
-Mod **script/config load order** is driven by 
-equiredAddons[] in each PBO’s config.cpp CfgPatches dependency graph — not by -mod= path order alone. The engine compiles **all mods’** scripts for layer N (ordered by that graph) before layer N+1. Unrelated mods may fall back to ASCII order of CfgMods class names (community note in StarDZ — historical).
+Mod **script/config load order** is driven by `requiredAddons[]` in each PBO’s config.cpp CfgPatches dependency graph — not by -mod= path order alone. The engine compiles **all mods’** scripts for layer N (ordered by that graph) before layer N+1. Unrelated mods may fall back to ASCII order of CfgMods class names (community note in StarDZ — historical).
 
-- [ ] 
-equiredAddons[] lists the **CfgPatches class names** you actually depend on (scripts + config parents), not Steam folder names
-- [ ] Soft deps: omit from 
-equiredAddons and feature-detect at runtime when optional
+- [ ] `requiredAddons[]` lists the **CfgPatches class names** you actually depend on (scripts + config parents), not Steam folder names
+- [ ] Soft deps: omit from `requiredAddons` and feature-detect at runtime when optional
 
 Source: CLAIM-STARDZ-REQUIREDADDONS-ORDER — https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/02-mod-structure/01-five-layers.md
 
