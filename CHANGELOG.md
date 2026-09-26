@@ -83,6 +83,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   (offline gates, no in-game proof), and its procedural-texture presets pack SMDI as R=255, G=old R,
   B=old G, as `map-conventions` does. `map-conventions` cites the measured SMDI PAAs instead of the
   stale procedural table.
+- `dayz-mcp-verify` 1.30 reference: a confirmation run (run 3: 50 and 100 dummies on a
+  10-wide grid, 45 s settles, back on the grid before moving) held 60 FPS with 100 moving
+  dummies at about 0.01 cores. The run-2 reading that 100 dummies show is withdrawn; the
+  table shows both runs, and the cause of the run-2 drop is undetermined. The headless
+  roboclient crash is 3 of 3. `dayz-test-ingame` gains two traps measured that day: a
+  stale script log in a reused `-profiles=` directory, and a stalled CPU sampler.
 
 ### Fixed
 

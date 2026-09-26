@@ -65,7 +65,7 @@ dummy bots.
 
 The managed launcher runs the 1.29 install. Probing the Exp install by hand
 (measured 2026-09-26, evidence in `VAULT/AI/10_Projects/DayZ_MCP/lanes/2026-09-26-roboclient-130/`)
-hit five traps, each costing a run:
+hit six traps, each costing a run:
 
 1. **The script log is the define oracle.** Each module logs
    `Module: <name>; …; defines: "…"`. Reading that line after a launch to the main
@@ -94,6 +94,10 @@ hit five traps, each costing a run:
    dumps you do not need.
 5. **Own the PID.** Out-of-lifecycle probes start and stop only the process they
    launched, and hold the MCP lease while they run so no managed run lands on top.
+6. **Use a fresh `-profiles=` directory per run.** A readiness check that greps the
+   newest `script_*.log` found a log left by an earlier run in the same directory.
+   It reported the server ready and the client connected at +0 s (2026-09-26): the
+   run looked healthy and measured nothing.
 
 ## Measuring server load
 
@@ -113,7 +117,14 @@ What worked on 2026-09-26 (dummy-bot load, same evidence folder):
 - **Separate spawn transients.** With a 15 s settle, the idle window right after
   spawning 25 or 50 dummies cost more than the moving window that followed it
   (0.201 vs 0.010 and 0.179 vs 0.032 cores). Settle longer (45 s) before
-  measuring idle.
+  measuring idle. In run 3, with 45 s, the idle windows after spawning 50 and 100 held
+  60 FPS with a 32 ms max frame.
+- **Keep the CPU sampler cheap, and drop windows it missed.** In run 3 the 1 s
+  sampler went 58.7 s without a sample across a spawn. Its loop also ran a WMI
+  machine-CPU query and a script-log scan every 5 s; the cause was not isolated. Two
+  windows had no samples of their own, so their CPU is unusable, while the in-server
+  FPS meter was unaffected. Reject any window whose surrounding samples are further
+  apart than the window itself.
 - **Write CSV numbers with the invariant culture (LL-524).** On an es-ES host,
   `'{0:F3}' -f` writes decimal commas and silently splits every CSV row into
   extra columns. Use `[string]::Format([Globalization.CultureInfo]::InvariantCulture, …)`.
