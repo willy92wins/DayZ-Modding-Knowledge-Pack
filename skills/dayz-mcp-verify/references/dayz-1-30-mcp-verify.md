@@ -91,8 +91,9 @@ d.m_Bot.StartAction(EActions.PLAYER_BOT_STOP_CURRENT);       // back to idle
 ```
 
 Measured: ~33.7 m per 5 s (sprint, ~6.75 m/s) in a straight line north, ~1.7 m/s
-once in water; 169 m mean displacement in 25 s for 10, 25 and 50 dummies, 158.9 m
-for 100. The "randomizer" is not random: it forces `OverrideMovementSpeed(ONE_FRAME, 3.0)`
+once in water. Mean displacement: 169 m in 25 s for 10, 25 and 50 dummies and 158.9 m
+for 100 (run 2); 297 m and 291 m in 45 s for 50 and 100 (run 3). The "randomizer" is
+not random: it forces `OverrideMovementSpeed(ONE_FRAME, 3.0)`
 and `OverrideMovementAngle(ONE_FRAME, 0.0)` every frame
 (`4_World\Systems\Bot\Bot_MovementRandomizer.c:26-40`). Spawn inland; from the
 coast the dummies run into the sea.
@@ -100,21 +101,33 @@ coast the dummies run into the sea.
 [EXACT][CLAIM-DZ130-HEADLESS-CLIENT-CRASH] The headless roboclient is unusable in
 this build: `-headlessMode=1 -roboclient` crashes with
 `Access violation. Illegal read … at 0x0` at the same instruction, standalone and
-with `-connect` (2 of 2), after compiling `Game` and before `World`.
+with `-connect` (3 of 3 on 2026-09-26), after compiling `Game` and before `World`.
 
-Load, one server at `-limitFPS=60`, no client, Ryzen 7 7800X3D, one sample per cell:
+Load: one server at `-limitFPS=60`, no client, Ryzen 7 7800X3D. Two runs on
+2026-09-26, one sample per cell:
 
-| Moving dummies | Server FPS | Server CPU (cores) |
-|---:|---:|---:|
-| 0 (final baseline) | 60.0 | 0.007 |
-| 25 | 60.0 | 0.010 |
-| 50 | 60.0 | 0.032 |
-| 100 | 54.7 | 0.384 |
+- Run 2 added dummies in steps of 10, 25, 50 and 100 with 15 s settles, and did not
+  move them back between steps.
+- Run 3 spawned 50 and then 100 on a 10-wide grid (6 m by 8 m), settled 45 s, and put
+  every dummy back on the grid before each moving window.
 
-Read it as "up to 50 moving dummies do not show at 60 FPS; 100 do". At 25 and 50
-dummies the idle window right after a spawn cost more than the moving window after
-it (spawn transients), and the first minutes after a fresh CE start are
-contaminated (machine CPU 36-84 %). Method and traps:
+| Moving dummies | Run 2 FPS | Run 2 CPU (cores) | Run 3 FPS | Run 3 CPU (cores) |
+|---:|---:|---:|---:|---:|
+| 0 (final baseline) | 60.0 | 0.007 | 60.0 | 0.001 |
+| 25 | 60.0 | 0.010 | not run | not run |
+| 50 | 60.0 | 0.032 | 60.0 | no samples (sampler gap) |
+| 100 | 54.7 | 0.384 | 60.0 | 0.008 |
+
+In run 3, 100 moving dummies held 60 FPS at about 0.01 cores. The run-2 drop at 100
+did not reproduce, and its cause is undetermined, so neither run is a capacity
+figure. Two things contaminate a measurement:
+
+- Spawn transients. At 25 and 50 dummies in run 2, the idle window right after a
+  spawn cost more than the moving window after it.
+- A fresh CE start. Machine CPU was 36-84 % in the first minutes of run 2, and the
+  run-3 baseline after a 120 s warm-up still used 0.276 cores.
+
+Method and traps:
 `dayz-test-ingame/references/dayz-1-30-test-ingame.md` § Measuring server load.
 
 [DESIGN] For the MCP: server verbs `bot_dummy_spawn(n, pos)` plus `bot_start(action)`
