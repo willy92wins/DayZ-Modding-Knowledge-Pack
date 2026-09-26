@@ -24393,7 +24393,7 @@
           "decision": "merge",
           "decision_evidence": "Run 3 (50 and 100 dummies on a 10-wide grid, 45 s settles) joins the load table with machine CPU per window: 100 moving dummies averaged 60 FPS in run 3, run 2's drop came with 34 % host load, and the difference is not isolated. Headless-client crash 3 of 3; exact displacement figures.",
           "license": "MIT",
-          "source_hash": "9d50104c80031519a1ae2123b12b1fdd6517cb6eebe32df59b17c375be5121d0",
+          "source_hash": "0ca8fe983e40219e0779188620fa70798416d1b9a7afe8ce3035e3075f847352",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
           "source_revision": "roboclient-run3@2026-09-26",
@@ -24401,7 +24401,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9d50104c80031519a1ae2123b12b1fdd6517cb6eebe32df59b17c375be5121d0",
+      "output_hash": "0ca8fe983e40219e0779188620fa70798416d1b9a7afe8ce3035e3075f847352",
       "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "historical"

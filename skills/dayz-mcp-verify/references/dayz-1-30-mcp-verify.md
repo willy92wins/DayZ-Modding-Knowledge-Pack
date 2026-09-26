@@ -118,8 +118,8 @@ Load: one server at `-limitFPS=60`, no client, Ryzen 7 7800X3D. Two runs on
 | 50 | 60.0 | 0.032 | 2.0 % | 60.0 | 0.024 (32 of 45 s sampled) | 3.2 % |
 | 100 | 54.7 | 0.384 | 34.2 % | 60.0 | 0.008 | 2.0 % |
 
-FPS is the mean over the window (25 s in run 2, 45 s in run 3); machine CPU is the
-whole host. In run 3's setup the 100-dummy moving window averaged 60.0 FPS (33 ms
+FPS is the mean over each window (run 2: 25 s for moving windows and 30 s for the final
+baseline; run 3: 45 s); machine CPU is the whole host. In run 3's setup the 100-dummy moving window averaged 60.0 FPS (33 ms
 max frame) at 0.008 server cores. Run 2's averaged 54.7 FPS while the host ran at
 34.2 % CPU, of which the server's 0.384 cores are about 2.4 %. The runs differ in
 settles, placement, window length and host load, and none of them was isolated, so
