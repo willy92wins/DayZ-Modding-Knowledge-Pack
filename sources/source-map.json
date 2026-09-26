@@ -2367,10 +2367,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "repin-718f-abef@2026-09-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Advanced by promote --apply for transaction 4efc58ed02c8ffefb3996682 (2026-09-26): 18 pins moved to the digests their stores reached on write and 0 added. Resealed in the promotion commit, as LL-515 requires.",
+          "license": "MIT",
+          "source_hash": "e5811800c2d7d3e4480c08d2c575dd5b1c641368de6b70860ce5b1c0132a7d3a",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion@2026-09-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "723d60c3c42250fe8b589f68345b738b7ab56817f7b0ffcbabfb0ec67643f4f2",
+      "output_hash": "e5811800c2d7d3e4480c08d2c575dd5b1c641368de6b70860ce5b1c0132a7d3a",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -24730,6 +24740,29 @@
       "license": "MIT",
       "output_hash": "030a2efd8d086e0bec829a206d6d704a53f34ffe913de7db443511bcb22d2429",
       "output_path": "promotions/receipts/53bcac92a5e929a8aa4e2dff.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/4efc58ed02c8ffefb3996682.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt written by promote --apply on 2026-09-26 for transaction 4efc58ed02c8ffefb3996682: the promotion of 16e605c (main after #11-#13: the DayZ 1.30 Exp roboclient and dummy-bot references with the run-3 correction, the Option A harvest of tickets 718f and abef, and the Pack line published in #10) to claude_user_skills, agents_user_skills and obsidian_snapshots, 117 operations, check WARN (only the expected PROMOTION-DRIFT, 84 of 117 operations changing), apply PASS, run from the kp-recon worktree the previous receipts are bound to.",
+          "license": "MIT",
+          "source_hash": "ad011dea95785583599397f2d42f317dfcdf08d62666d40aab2349f2eb06d0eb",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/4efc58ed02c8ffefb3996682.json",
+          "source_revision": "promotion@2026-09-26",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ad011dea95785583599397f2d42f317dfcdf08d62666d40aab2349f2eb06d0eb",
+      "output_path": "promotions/receipts/4efc58ed02c8ffefb3996682.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
