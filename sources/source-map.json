@@ -266,7 +266,7 @@
           "decision": "merge",
           "decision_evidence": "Unreleased Changed entry for the run-3 correction of the dayz-mcp-verify load table and the two new dayz-test-ingame traps.",
           "license": "MIT",
-          "source_hash": "974825adf5a79e97812aae389bff5c4ea7f4c97bd9e2920b8bc85eaa3e1cc17a",
+          "source_hash": "119f21cb5a8b3b89b2fe400e3fa7d5c4fff0b257a5bfe178d027bebe5b422cd5",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "roboclient-run3@2026-09-26",
@@ -274,7 +274,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "974825adf5a79e97812aae389bff5c4ea7f4c97bd9e2920b8bc85eaa3e1cc17a",
+      "output_hash": "119f21cb5a8b3b89b2fe400e3fa7d5c4fff0b257a5bfe178d027bebe5b422cd5",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -24391,9 +24391,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Run 3 (50 and 100 dummies on a 10-wide grid, 45 s settles) joins the load table: 100 moving dummies held 60 FPS, so the run-2 reading is withdrawn and its cause left undetermined. Headless-client crash now 3 of 3, run-3 displacement figures.",
+          "decision_evidence": "Run 3 (50 and 100 dummies on a 10-wide grid, 45 s settles) joins the load table with machine CPU per window: 100 moving dummies averaged 60 FPS in run 3, run 2's drop came with 34 % host load, and the difference is not isolated. Headless-client crash 3 of 3; exact displacement figures.",
           "license": "MIT",
-          "source_hash": "ad9f53b928bcbcb5079fcc62aac587e5ecba1b439e00ffdab9df0a4c84bb8580",
+          "source_hash": "9d50104c80031519a1ae2123b12b1fdd6517cb6eebe32df59b17c375be5121d0",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
           "source_revision": "roboclient-run3@2026-09-26",
@@ -24401,7 +24401,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ad9f53b928bcbcb5079fcc62aac587e5ecba1b439e00ffdab9df0a4c84bb8580",
+      "output_hash": "9d50104c80031519a1ae2123b12b1fdd6517cb6eebe32df59b17c375be5121d0",
       "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "historical"
@@ -24607,9 +24607,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Two traps measured on 2026-09-26: a stale script log in a reused -profiles directory made a run look ready at +0 s, and the CPU sampler stalled 58.7 s across a spawn. The settle advice now cites run 3.",
+          "decision_evidence": "Two traps measured on 2026-09-26 (a stale script log in a reused -profiles directory, a CPU sampler that stalled 58.7 s); the warm-up and post-spawn settle advice is no longer presented as validated.",
           "license": "MIT",
-          "source_hash": "140f2b1ac07b1cebac81bdfecbcb8c59e09ec3b45d1c3b474cbc7322682305de",
+          "source_hash": "1669450f6618a1ce8dce15f8ed3c3e4ebe3bea29c46267a27885654f1d1e27f5",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
           "source_revision": "roboclient-run3@2026-09-26",
@@ -24617,7 +24617,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "140f2b1ac07b1cebac81bdfecbcb8c59e09ec3b45d1c3b474cbc7322682305de",
+      "output_hash": "1669450f6618a1ce8dce15f8ed3c3e4ebe3bea29c46267a27885654f1d1e27f5",
       "output_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "historical"

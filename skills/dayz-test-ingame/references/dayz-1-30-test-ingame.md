@@ -111,20 +111,24 @@ What worked on 2026-09-26 (dummy-bot load, same evidence folder):
   of the server mission (`5_Mission\mission\missionServer.c:108`) and log per
   window: frames, seconds, FPS, max frame time. Sample the process
   `TotalProcessorTime` every second from outside and join by timestamp.
-- **Skip the first minutes after a fresh CE start.** The first three windows of a
-  fresh storage ran at 36-84 % machine CPU; a final baseline after deleting all
-  load returned to 0.007 cores. Warm up two minutes, and end with a baseline.
-- **Separate spawn transients.** With a 15 s settle, the idle window right after
-  spawning 25 or 50 dummies cost more than the moving window that followed it
-  (0.201 vs 0.010 and 0.179 vs 0.032 cores). Settle longer (45 s) before
-  measuring idle. In run 3, with 45 s, the idle windows after spawning 50 and 100 held
-  60 FPS with a 32 ms max frame.
-- **Keep the CPU sampler cheap, and drop windows it missed.** In run 3 the 1 s
-  sampler went 58.7 s without a sample across a spawn. Its loop also ran a WMI
-  machine-CPU query and a script-log scan every 5 s; the cause was not isolated. Two
-  windows had no samples of their own, so their CPU is unusable, while the in-server
-  FPS meter was unaffected. Reject any window whose surrounding samples are further
-  apart than the window itself.
+- **Bracket the run with baselines, and do not trust a fixed warm-up.** The first three
+  windows of run 2 (a fresh storage) ran at 36-84 % machine CPU. In run 3 a 120 s
+  warm-up was not enough either: its first baseline used 0.276 server cores, against
+  0.001 at the baseline taken after deleting all load. Record a baseline at both ends,
+  and treat a large mismatch as an inconclusive comparison.
+- **Check post-spawn idle windows.** After 15 s settles in run 2, the idle window right
+  after spawning 25 dummies used 0.201 server cores against 0.010 in the moving window
+  after it, with the machine nearly idle (3.8 % CPU). At 50 dummies the gap was 0.179
+  against 0.032 cores, but machine CPU was 49.2 % during that idle window. The cause
+  was not isolated. Run 3 used 45 s settles and its idle windows after spawning 50 and
+  100 averaged 60.0 FPS; that does not make 45 s a validated settle time for CPU.
+- **Keep the CPU sampler cheap, and check it for gaps.** In run 3 the 1 s sampler went
+  58.7 s without a sample across a spawn. Its loop also ran a WMI machine-CPU query and
+  a script-log scan every 5 s; the cause was not isolated. The gap crossed two windows,
+  which kept only 32 and 43 of their 45 s sampled. An analyzer that takes the nearest
+  samples around a window then mixes stages into its CPU delta. Use the samples inside
+  the window, report how much of it they cover, and drop the window when coverage is
+  short. The in-server FPS meter was unaffected.
 - **Write CSV numbers with the invariant culture (LL-524).** On an es-ES host,
   `'{0:F3}' -f` writes decimal commas and silently splits every CSV row into
   extra columns. Use `[string]::Format([Globalization.CultureInfo]::InvariantCulture, …)`.

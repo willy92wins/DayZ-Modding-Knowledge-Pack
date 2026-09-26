@@ -91,9 +91,9 @@ d.m_Bot.StartAction(EActions.PLAYER_BOT_STOP_CURRENT);       // back to idle
 ```
 
 Measured: ~33.7 m per 5 s (sprint, ~6.75 m/s) in a straight line north, ~1.7 m/s
-once in water. Mean displacement: 169 m in 25 s for 10, 25 and 50 dummies and 158.9 m
-for 100 (run 2); 297 m and 291 m in 45 s for 50 and 100 (run 3). The "randomizer" is
-not random: it forces `OverrideMovementSpeed(ONE_FRAME, 3.0)`
+once in water. Mean displacement: 169.2, 169.1, 168.1 and 158.9 m in 25 s for 10, 25,
+50 and 100 dummies (run 2); 297.1 and 291.0 m in 45 s for 50 and 100 (run 3). The
+"randomizer" is not random: it forces `OverrideMovementSpeed(ONE_FRAME, 3.0)`
 and `OverrideMovementAngle(ONE_FRAME, 0.0)` every frame
 (`4_World\Systems\Bot\Bot_MovementRandomizer.c:26-40`). Spawn inland; from the
 coast the dummies run into the sea.
@@ -111,21 +111,26 @@ Load: one server at `-limitFPS=60`, no client, Ryzen 7 7800X3D. Two runs on
 - Run 3 spawned 50 and then 100 on a 10-wide grid (6 m by 8 m), settled 45 s, and put
   every dummy back on the grid before each moving window.
 
-| Moving dummies | Run 2 FPS | Run 2 CPU (cores) | Run 3 FPS | Run 3 CPU (cores) |
-|---:|---:|---:|---:|---:|
-| 0 (final baseline) | 60.0 | 0.007 | 60.0 | 0.001 |
-| 25 | 60.0 | 0.010 | not run | not run |
-| 50 | 60.0 | 0.032 | 60.0 | no samples (sampler gap) |
-| 100 | 54.7 | 0.384 | 60.0 | 0.008 |
+| Moving dummies | Run 2 FPS | Run 2 server CPU (cores) | Run 2 machine CPU | Run 3 FPS | Run 3 server CPU (cores) | Run 3 machine CPU |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0 (final baseline) | 60.0 | 0.007 | 0.6 % | 60.0 | 0.001 | 0.4 % |
+| 25 | 60.0 | 0.010 | 0.4 % | not run | not run | not run |
+| 50 | 60.0 | 0.032 | 2.0 % | 60.0 | 0.024 (32 of 45 s sampled) | 3.2 % |
+| 100 | 54.7 | 0.384 | 34.2 % | 60.0 | 0.008 | 2.0 % |
 
-In run 3, 100 moving dummies held 60 FPS at about 0.01 cores. The run-2 drop at 100
-did not reproduce, and its cause is undetermined, so neither run is a capacity
-figure. Two things contaminate a measurement:
+FPS is the mean over the window (25 s in run 2, 45 s in run 3); machine CPU is the
+whole host. In run 3's setup the 100-dummy moving window averaged 60.0 FPS (33 ms
+max frame) at 0.008 server cores. Run 2's averaged 54.7 FPS while the host ran at
+34.2 % CPU, of which the server's 0.384 cores are about 2.4 %. The runs differ in
+settles, placement, window length and host load, and none of them was isolated, so
+neither run is a capacity figure. Other contamination seen that day:
 
-- Spawn transients. At 25 and 50 dummies in run 2, the idle window right after a
-  spawn cost more than the moving window after it.
-- A fresh CE start. Machine CPU was 36-84 % in the first minutes of run 2, and the
-  run-3 baseline after a 120 s warm-up still used 0.276 cores.
+- Post-spawn idle windows. In run 2 the idle window right after spawning 25 dummies
+  used 0.201 server cores against 0.010 in the moving window after it, with the host
+  nearly idle; the idle window after spawning 50 ran with the host at 49.2 %.
+- Startup. Machine CPU was 36-84 % in the first three windows of run 2, and the run-3
+  baseline after a 120 s warm-up still used 0.276 server cores against 0.001 at its
+  final baseline.
 
 Method and traps:
 `dayz-test-ingame/references/dayz-1-30-test-ingame.md` § Measuring server load.
