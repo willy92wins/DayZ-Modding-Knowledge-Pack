@@ -22,20 +22,21 @@ DayZ uses a standard PBR-inspired texture pipeline. All procedural generation ta
 - **Key fact**: Completely eliminates the need for high-poly details
 
 ### Specular/Metallic/Detail Map (`_smdi.png`)
-- **Purpose**: Controls material properties in three channels
+- **Purpose**: Controls material properties in three channels (DayZ Super shader SMDI packing)
 - **Format**: PNG, RGB mode
-- **R channel (Specular)**: 0=completely matte, 255=mirror-like reflective
+- **SSOT**: Channel meanings live in `dayz-texture-pipeline/references/map-conventions.md` (SMDI packing). This file keeps local generator presets aligned to that packing.
+- **R channel (≈255 fixed)**: Keep near white unless cloning a vanilla exception. Measured LFPG/`_smdi` PAAs and BI Super shader agree R stays ~255.
+- **G channel (Specular intensity)**: 0=matte, 255=mirror-like reflective
   - Painted metal: ~80–100
   - Raw steel: ~180–200
   - Rubber: ~20–40
   - Glass/clear plastic: ~220–240
-- **G channel (Gloss/Smoothness)**: 0=extremely rough, 255=perfectly smooth
+- **B channel (Gloss / roughness inverted)**: 0=extremely rough, 255=perfectly smooth
   - Weathered paint: ~100–140
   - Fresh paint: ~150–180
   - Polished metal: ~200–240
   - Rough rubber: ~60–100
-- **B channel (Detail Index)**: Usually 0 for single-layer detail; can be 1–5 for multi-layer blending
-- **Note**: B channel rarely varies in simple procedural work; set to 0
+- **Note**: Do **not** treat B as Detail Index. Detail Index packing is wrong for DayZ SMDI; leave R near white and put gloss in B.
 
 ### Resolution Guidelines
 - **Small objects** (switches, adapters, knobs): 512x512
@@ -366,10 +367,10 @@ def generate_painted_metal(width=512, height=512, seed=42):
     return canvas
 ```
 
-**SMDI Map for Painted Metal**:
-- R (Specular): 85–95 (slightly reflective)
-- G (Gloss): 120–140 (semi-matte factory finish)
-- B (Detail): 0
+**SMDI Map for Painted Metal** (map-conventions SSOT packing):
+- R (≈255): 255
+- G (Specular): 85–95 (slightly reflective)
+- B (Gloss): 120–140 (semi-matte factory finish)
 
 ### Recipe 2: Brushed Steel/Aluminum
 
@@ -410,10 +411,10 @@ def generate_brushed_steel(width=512, height=512, direction='horizontal', seed=4
     return canvas
 ```
 
-**SMDI Map for Brushed Steel**:
-- R (Specular): 180–200 (highly reflective)
-- G (Gloss): 200–220 (highly smooth)
-- B (Detail): 0
+**SMDI Map for Brushed Steel** (map-conventions SSOT packing):
+- R (≈255): 255
+- G (Specular): 180–200 (highly reflective)
+- B (Gloss): 200–220 (highly smooth)
 
 ### Recipe 3: Rubber/Plastic (Cable Insulation)
 
@@ -452,10 +453,10 @@ def generate_rubber(width=512, height=512, color=(0.15, 0.15, 0.18), seed=42):
     return canvas
 ```
 
-**SMDI Map for Rubber**:
-- R (Specular): 20–40 (non-reflective)
-- G (Gloss): 60–100 (rough surface)
-- B (Detail): 0
+**SMDI Map for Rubber** (map-conventions SSOT packing):
+- R (≈255): 255
+- G (Specular): 20–40 (non-reflective)
+- B (Gloss): 60–100 (rough surface)
 
 ### Recipe 4: Rust/Corrosion Overlay
 
@@ -582,55 +583,61 @@ def generate_normal_from_texture(diffuse_path, strength=1.0):
 
 ## 7. SMDI Map Generation and Values
 
-The SMDI map controls material properties. Generate per-material values:
+The SMDI map controls material properties. **SSOT packing** is in `dayz-texture-pipeline/references/map-conventions.md` (R≈255 / G=specular / B=gloss). Generate per-material values with that packing (presets below rematerialized for ticket 718f; BI Super shader + measured `_smdi` PAAs):
 
 ```python
 def generate_smdi_map(width, height, material='painted_metal'):
-    """Generate SMDI map for specified material."""
+    """Generate SMDI map for specified material.
 
-    # Material property presets
+    Packing (SSOT: dayz-texture-pipeline/references/map-conventions.md):
+      R ≈ 255 (keep near white), G = specular, B = gloss (roughness inverted).
+    Presets rematerialized from the old wrong R/G/B=Detail packing by rotating
+    old-R→G and old-G→B (ticket fb-20260921-164235-718f).
+    """
+
+    # Material property presets (R fixed 255; G=specular; B=gloss)
     materials = {
-        'painted_metal': {'r': 85, 'g': 130, 'b': 0},
-        'brushed_steel': {'r': 190, 'g': 210, 'b': 0},
-        'raw_steel': {'r': 180, 'g': 200, 'b': 0},
-        'polished_aluminum': {'r': 220, 'g': 230, 'b': 0},
-        'rubber': {'r': 25, 'g': 70, 'b': 0},
-        'plastic': {'r': 40, 'g': 90, 'b': 0},
-        'glass': {'r': 230, 'g': 245, 'b': 0},
-        'worn_paint': {'r': 70, 'g': 100, 'b': 0},
+        'painted_metal': {'r': 255, 'g': 85, 'b': 130},
+        'brushed_steel': {'r': 255, 'g': 190, 'b': 210},
+        'raw_steel': {'r': 255, 'g': 180, 'b': 200},
+        'polished_aluminum': {'r': 255, 'g': 220, 'b': 230},
+        'rubber': {'r': 255, 'g': 25, 'b': 70},
+        'plastic': {'r': 255, 'g': 40, 'b': 90},
+        'glass': {'r': 255, 'g': 230, 'b': 245},
+        'worn_paint': {'r': 255, 'g': 70, 'b': 100},
     }
 
     props = materials.get(material, materials['painted_metal'])
 
-    # Create solid SMDI map with slight variation
+    # Create solid SMDI map with slight variation on gloss (B)
     smdi = np.zeros((height, width, 3), dtype=np.uint8)
-    smdi[:, :, 0] = props['r']  # Specular
-    smdi[:, :, 1] = props['g']  # Gloss
-    smdi[:, :, 2] = props['b']  # Detail index
+    smdi[:, :, 0] = props['r']  # R ≈ 255 (fixed / near-white)
+    smdi[:, :, 1] = props['g']  # Specular
+    smdi[:, :, 2] = props['b']  # Gloss
 
-    # Optional: Add subtle variation to gloss
+    # Optional: Add subtle variation to gloss (channel 2), not specular
     gen = OpenSimplex(seed=99)
     for y in range(height):
         for x in range(width):
             var = gen.noise2(x / width * 2, y / height * 2)
             var = int((var + 1) / 2 * 15)  # ±15 variation
-            smdi[y, x, 1] = np.clip(smdi[y, x, 1] + var, 0, 255)
+            smdi[y, x, 2] = np.clip(smdi[y, x, 2] + var, 0, 255)
 
     return Image.fromarray(smdi, mode='RGB')
 ```
 
-**Material SMDI Values**:
+**Material SMDI Values** (SSOT packing; generator bases use midpoints):
 
-| Material | R (Specular) | G (Gloss) | Notes |
-|----------|--------------|-----------|-------|
-| Painted Metal | 85–95 | 120–140 | Standard industrial |
-| Brushed Steel | 180–200 | 200–220 | Directional grain |
-| Raw Steel | 180–200 | 180–200 | Slightly rougher than brushed |
-| Polished Aluminum | 220–230 | 230–245 | Mirror-like |
-| Rubber | 25–35 | 60–90 | Very matte |
-| Plastic (Matte) | 40–50 | 80–110 | Slightly reflective |
-| Glass | 230–245 | 240–255 | Highly transparent/reflective |
-| Worn Paint | 70–80 | 100–120 | Aged, weathered |
+| Material | R (≈255) | G (Specular) | B (Gloss) | Notes |
+|----------|----------|--------------|-----------|-------|
+| Painted Metal | 255 | 85–95 | 120–140 | Standard industrial; measured/SSOT |
+| Brushed Steel | 255 | 180–200 | 200–220 | Directional grain |
+| Raw Steel | 255 | 180–200 | 180–200 | Slightly rougher than brushed |
+| Polished Aluminum | 255 | 220–230 | 230–245 | Mirror-like |
+| Rubber | 255 | 25–35 | 60–90 | Very matte |
+| Plastic (Matte) | 255 | 40–50 | 80–110 | Slightly reflective |
+| Glass | 255 | 230–245 | 240–255 | Highly reflective |
+| Worn Paint | 255 | 70–80 | 100–120 | Aged, weathered |
 
 ---
 
@@ -719,7 +726,7 @@ def generate_electrical_box_textures(output_dir='textures', seed=42):
     print(f"Generated textures:")
     print(f"  {output_dir}/box_co.png (diffuse)")
     print(f"  {output_dir}/box_nohq.png (normal)")
-    print(f"  {output_dir}/box_smdi.png (specular/metallic/detail)")
+    print(f"  {output_dir}/box_smdi.png (specular/gloss SMDI)")
 
 # Run: generate_electrical_box_textures()
 ```
@@ -826,7 +833,7 @@ normals = height_to_normal(height_map, strength=1.2)
 
 9. **Composite Carefully**: Blend modes matter. Test multiply, screen, overlay to find the right look.
 
-10. **SMDI Accuracy**: Match specular/gloss values to real material properties. Research typical values for your material.
+10. **SMDI Accuracy**: Match specular/**gloss** (B) to the material; keep R near white (≈255). Research typical G/B values; see map-conventions SSOT.
 
 ---
 

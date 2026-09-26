@@ -251,10 +251,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "roboclient-130@2026-09-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Changed entry for the Option A edits of tickets 718f and abef, harvested from the installed dayz-model-pipeline and dayz-texture-pipeline.",
+          "license": "MIT",
+          "source_hash": "f801126b7d6a4b0325d08815011a292899ef5d7697c13ebf6ef98ee8ea29f195",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "harvest-718f-abef@2026-09-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ebf90818f137e924f68ef92e56a3a73ffc8c7e4d1baca4d27688a9112aed4ded",
+      "output_hash": "f801126b7d6a4b0325d08815011a292899ef5d7697c13ebf6ef98ee8ea29f195",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2337,10 +2347,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion@2026-09-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Re-pinned the four PROMOTION-TARGET-UNEXPLAINED pairs of dayz-model-pipeline and dayz-texture-pipeline (claude_user_skills, agents_user_skills) against the digests promote --check observed from kp-recon at 8d3df9c on 2026-09-26; the installed stores carry the Option A edits of tickets 718f and abef, harvested verbatim in the same commit.",
+          "license": "MIT",
+          "source_hash": "723d60c3c42250fe8b589f68345b738b7ab56817f7b0ffcbabfb0ec67643f4f2",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "repin-718f-abef@2026-09-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0e04f036e6aae6bd7e2935c332539d08d75a2157f863e0b331f8e4964821af48",
+      "output_hash": "723d60c3c42250fe8b589f68345b738b7ab56817f7b0ffcbabfb0ec67643f4f2",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -6044,10 +6064,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "ll-citations@2026-08-29",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Option A winding SSOT (ticket fb-20260921-164243-abef, 2026-09-26): unify Regla 12/13 + GLB on measured FBX/Blender recipe axis (x,z,-y) + invert faces + negate normals; remove contradictory det=+1 never-reverse Blender blanket vs GLB invert advice; offline gates documented; no in-game proof claim. Harvested verbatim from installed ~/.claude/skills working copy.",
+          "license": "User-authored input",
+          "source_hash": "d1950876afc2cc4245e47183a7aa30fa0372dd629ce5adff9a543491457434b0",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/SKILL.md",
+          "source_revision": "filesystem@2026-09-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1ee19f521aac5929ac8e2db4773b1d21e05f21784c508458ea0b6cdff3e5696c",
+      "output_hash": "d1950876afc2cc4245e47183a7aa30fa0372dd629ce5adff9a543491457434b0",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -6264,10 +6294,20 @@
           "source_path": "dayz-model-pipeline/references/procedural-textures.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Option A SMDI channel alignment (ticket fb-20260921-164235-718f, 2026-09-26): rematerialized generator presets R=255/G=old-R/B=old-G; intro/recipes/section 7 aligned to dayz-texture-pipeline map-conventions SSOT packing. Harvested verbatim from installed ~/.claude/skills working copy.",
+          "license": "User-authored input",
+          "source_hash": "0bf49acac73c7b99de98bcd7928db3b79566b5a43a62de3de2c60ff928ac2596",
+          "source_id": "installed-skills",
+          "source_path": "dayz-model-pipeline/references/procedural-textures.md",
+          "source_revision": "filesystem@2026-09-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "79d0c45a23456770927fd20818eccd395b7f240d340c95f6d2191e274c09891c",
+      "output_hash": "0bf49acac73c7b99de98bcd7928db3b79566b5a43a62de3de2c60ff928ac2596",
       "output_path": "skills/dayz-model-pipeline/references/procedural-textures.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8282,10 +8322,20 @@
           "source_path": "dayz-texture-pipeline/references/map-conventions.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Option A Evidence hygiene (ticket fb-20260921-164235-718f, 2026-09-26): replaced stale Local SMDI table source citation to procedural section 7 with measurement cite (four _smdi PAAs, R=255) noting procedural section 7 now aligned. Packing table unchanged. Harvested verbatim from installed ~/.claude/skills working copy.",
+          "license": "User-authored input",
+          "source_hash": "906699b69d354a64ecb8b0fde0f1582cfc08d0a938657a45a02391a9444c2570",
+          "source_id": "installed-skills",
+          "source_path": "dayz-texture-pipeline/references/map-conventions.md",
+          "source_revision": "filesystem@2026-09-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d48b253c99249ff18456c105821ff1c083d02b55fe01f5fc4c9651fd2d32fb79",
+      "output_hash": "906699b69d354a64ecb8b0fde0f1582cfc08d0a938657a45a02391a9444c2570",
       "output_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"

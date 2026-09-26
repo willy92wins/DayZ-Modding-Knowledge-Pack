@@ -76,7 +76,7 @@ Evidence:
 
 - BI Super shader channel description: https://community.bistudio.com/wiki/Super_shader
 - Community DayZ Modders SMDI discussion: https://www.answeroverflow.com/m/1512098192869818471
-- Local SMDI table source: `dayz-model-pipeline/references/procedural-textures.md:583` to `:635`.
+- Measured DayZ `_smdi` PAAs (ticket fb-20260921-164235-718f, 2026-09-21): four assets (searchlight, battery_adapter, housing, battery_charger) decode with R min/mean **255**; G/B carry specular/gloss. `dayz-model-pipeline/references/procedural-textures.md` §7 generator/presets were wrong (old R=specular / B=Detail Index) and are now aligned to this packing.
 
 ## Export and path rules
 

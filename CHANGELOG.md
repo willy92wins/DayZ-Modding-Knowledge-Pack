@@ -77,6 +77,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Review assignment and the bounded product-based stop rule belong to the orchestrator.
   The evidence checks and domain coverage remain; unavailable independent review must
   be declared. No game API, artifact format or runtime behavior changed.
+- `dayz-model-pipeline` and `dayz-texture-pipeline`: the Option A edits made in the installed skills
+  on 2026-09-26 (tickets 718f and abef) are now in the Pack. `dayz-model-pipeline` unifies Regla 12/13
+  and GLB on the measured FBX/Blender recipe axis (x,z,-y) with inverted faces and negated normals
+  (offline gates, no in-game proof), and its procedural-texture presets pack SMDI as R=255, G=old R,
+  B=old G, as `map-conventions` does. `map-conventions` cites the measured SMDI PAAs instead of the
+  stale procedural table.
 
 ### Fixed
 
