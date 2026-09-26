@@ -64,6 +64,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   the axis you are not investigating, SP-385), `enforce-script-reference` (a line break
   ends the statement inside a condition too, SP-386; looping `CombineItems` merges into
   pending-delete stacks) and `_shared/prompt-conventions` (single quotes in PowerShell).
+- DayZ 1.30 Exp roboclients and server-side dummy bots, measured on build 1.30.164014:
+  the 1.30 references of `dayz-mcp-verify`, `dayz-test-ingame` and `dayz-mod-workflow`
+  record the public-Diag defines, the headless-client crash, the dummy-bot recipe, a
+  server-load table and the launch/measurement traps, with three `runtime_verified`
+  claims. `dayz-physics-engine` gains a section on what can and cannot be offloaded
+  from the server.
 
 ### Changed
 

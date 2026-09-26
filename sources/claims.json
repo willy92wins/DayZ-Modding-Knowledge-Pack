@@ -650,6 +650,45 @@
       "source_id": "dayz-vanilla",
       "source_revision": "1.29.0.163451",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+      "claim_id": "CLAIM-DZ130-ROBOCLIENT-DEFINE-PUBLIC-DIAG",
+      "evidence_locator": "VAULT/AI/10_Projects/DayZ_MCP/lanes/2026-09-26-roboclient-130/evidence_extracts.txt §A §C §E; results/exe_string_census.txt",
+      "license": "MIT",
+      "line_end": 65,
+      "line_start": 61,
+      "observed_at": "2026-09-26",
+      "promotion_artifact_id": "skill/dayz-mcp-verify",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-09-26",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+      "claim_id": "CLAIM-DZ130-DUMMY-BOT-SERVER-MOVES",
+      "evidence_locator": "VAULT/AI/10_Projects/DayZ_MCP/lanes/2026-09-26-roboclient-130/evidence_extracts.txt §C §G; results/run2_cap60_perf_results.json",
+      "license": "MIT",
+      "line_end": 98,
+      "line_start": 81,
+      "observed_at": "2026-09-26",
+      "promotion_artifact_id": "skill/dayz-mcp-verify",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-09-26",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+      "claim_id": "CLAIM-DZ130-HEADLESS-CLIENT-CRASH",
+      "evidence_locator": "VAULT/AI/10_Projects/DayZ_MCP/lanes/2026-09-26-roboclient-130/evidence_extracts.txt §B §D",
+      "license": "MIT",
+      "line_end": 103,
+      "line_start": 100,
+      "observed_at": "2026-09-26",
+      "promotion_artifact_id": "skill/dayz-mcp-verify",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-09-26",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1

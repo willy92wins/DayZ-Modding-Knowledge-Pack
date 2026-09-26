@@ -1,6 +1,6 @@
 ---
 name: dayz-physics-engine
-description: "Use when: física DayZ, dBody, collision layers, player walks through my object, action/cursor does not appear, EOnContact, TransportHit, thrown/rolling objects, ragdoll, .ragdoll, fall damage, PhysicsSetSimpleDeath. Not vehicle authoring: dayz-vehicles; not flight: dayz-aviation."
+description: "Use when: física DayZ, dBody, collision layers, player walks through my object, action/cursor does not appear, EOnContact, TransportHit, thrown/rolling objects, ragdoll, .ragdoll, fall damage, PhysicsSetSimpleDeath, offload physics / reduce server load. Not vehicle authoring: dayz-vehicles; not flight: dayz-aviation."
 ---
 
 # DayZ Engine Physics (Enforce Script)
@@ -287,6 +287,30 @@ on sleeping bodies are lost.
 
 `enum ActiveState { INACTIVE, ACTIVE, ALWAYS_ACTIVE }` (`1_core/physics/activestate.c:9-17`).
 `ALWAYS_ACTIVE` prevents mid-slope sleep for objects that must keep simulating.
+
+## Offloading physics from the server (checked 2026-09-26)
+
+Gameplay physics cannot leave the authority; only cosmetic physics can.
+
+- **No out-of-process channel for per-tick work.** Vanilla scripts expose no native-extension call
+  (0 matches for `callExtension`, `LoadLibrary`, `DllImport` in the 1.29 and 1.30 Exp trees). The only
+  network exit is `RestApi`: asynchronous with a callback (`3_game/http/restapi.c:103,123`) or
+  thread-blocking `GET_now`/`POST_now` (`:106-108`, `:126-128`). Fine for slow, latency-tolerant work;
+  never for a physics step.
+- **Owner prediction does not remove server work.** The authority consumes and replays the owner's move
+  (`3_game/entities/pawn.c:80-81`, `ConsumeMove` `:270-274`), and a native comparison runs as well, with
+  the more severe result winning (`:261-265`). A script `CompareMove` that always returns `APPROVE`
+  therefore cannot suppress corrections. Vanilla cars follow this under `NetworkMoveStrategy.PHYSICS`
+  (`4_world/entities/vehicles/carscript.c:3220-3230`).
+- **Cosmetic physics can run per client at no server cost.** `ECE_LOCAL` creates a machine-local object
+  (`3_game/ce/centraleconomy.c:24`); vanilla gives local objects collision with
+  `ECE_LOCAL|ECE_CREATEPHYSICS` (`5_mission/gui/scriptconsoleitemstab.c:695`). Whether a local object
+  accepts a dynamic body is unverified.
+- **Measure before optimizing.** `EnProfiler` profiles script only (`1_core/proto/enprofiler.c:62-63`,
+  `-profile`). For native cost, compare server CPU with and without the load on a capped server
+  (`dayz-test-ingame/references/dayz-1-30-test-ingame.md` § Measuring server load). On 1.30 Exp, 50
+  server-side dummy players sprinting did not show at 60 FPS and 100 did
+  (`dayz-mcp-verify/references/dayz-1-30-mcp-verify.md`).
 
 ## Cross-skill pointers
 

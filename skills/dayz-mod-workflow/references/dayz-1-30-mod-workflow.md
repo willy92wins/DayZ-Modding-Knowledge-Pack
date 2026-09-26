@@ -232,6 +232,32 @@ servers.) Workflow: E18 still forbids `IsServer()`/`IsClient()` as the
 client/server **guard**; for "skip VFX" prefer the new combined helper so
 headless roboclients do not run particles.
 
+Measured 2026-09-26 on 1.30.164014 Exp: vanilla calls `IsHeadlessOrDedicatedServer()`
+97 times and `IsHeadless()` alone never, and the script log lists `DAYZ_1_30` among
+the defines (1.29 logs `DAYZ_1_29`). A mod that must compile on both can gate the
+new helper on the version define, which names only the current version
+(`exp\scripts\scripts\1_Core\defines.c:12-14`); 1.29 vanilla gates the same way
+(`stable-1.29\scripts\scripts\3_Game\Systems\DynamicMusicPlayer\DynamicMusicPlayerRegistry.c:116`):
+
+```c
+// [DESIGN] not compiled; 1.29 has no IsHeadlessOrDedicatedServer
+static bool MyMod_IsHeadlessOrDedicated()
+{
+#ifdef DAYZ_1_29
+	return g_Game.IsDedicatedServer();
+#else
+	return g_Game.IsHeadlessOrDedicatedServer();
+#endif
+}
+```
+
+By their documented semantics (the `Game.c:1125-1136` excerpt above) both guards
+agree on a rendered client and on a dedicated server and differ only on a headless
+client; that is inferred, not measured. `ROBOCLIENT` and `INPUT_OVERRIDE` are
+defined in the public 1.30 Exp DayZDiag, client and server, so code under
+`#ifdef ROBOCLIENT` compiles for everyone on that exe and every `PlayerBase`
+carries an idle `m_Bot`. Details: `dayz-mcp-verify/references/dayz-1-30-mcp-verify.md`.
+
 ## Migration checklist (implementation)
 
 1. Action mods: implement `CanBeStarted`; do not treat a visible widget as
