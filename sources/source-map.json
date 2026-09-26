@@ -241,10 +241,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "sp423-sp424@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Added bullet for the 1.30 roboclient lane: roboclients and server-side dummy bots measured on build 1.30.164014 and the dayz-physics-engine offload section.",
+          "license": "MIT",
+          "source_hash": "ebf90818f137e924f68ef92e56a3a73ffc8c7e4d1baca4d27688a9112aed4ded",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "roboclient-130@2026-09-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ac25cc112d7d632e3960b0bbc6b61ee31cf972f1e750c7ae3f738c318d2a8ffe",
+      "output_hash": "ebf90818f137e924f68ef92e56a3a73ffc8c7e4d1baca4d27688a9112aed4ded",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7172,10 +7182,20 @@
           "source_path": "dayz-physics-engine/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Adds the section 'Offloading physics from the server (checked 2026-09-26)': no out-of-process channel for per-tick work, owner prediction does not remove server work, cosmetic physics via local objects; description gains an offload trigger.",
+          "license": "MIT",
+          "source_hash": "16e14b49fdc790267fade45c0a35d1236aa4869af7b71ca3839371647c9ed795",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "roboclient-130@2026-09-26",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "903216f47bbdcd42bb3c791193f59b8f432708617d5650ab85d47e612b66a7ce",
+      "output_hash": "16e14b49fdc790267fade45c0a35d1236aa4869af7b71ca3839371647c9ed795",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -12205,10 +12225,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "sp423-sp424@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Three claims for the 1.30 roboclient lane (CLAIM-DZ130-ROBOCLIENT-DEFINE-PUBLIC-DIAG, CLAIM-DZ130-DUMMY-BOT-SERVER-MOVES, CLAIM-DZ130-HEADLESS-CLIENT-CRASH), runtime_verified against 1.30.164014.",
+          "license": "MIT",
+          "source_hash": "7194ecf66016c1675c284859a8747fba4585e3919ea8843e107e3c49a2074937",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "roboclient-130@2026-09-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9829b277fcfd6e51359bafbbe334ded7a9714a223a466599789e5b250ffa0344",
+      "output_hash": "7194ecf66016c1675c284859a8747fba4585e3919ea8843e107e3c49a2074937",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -24278,10 +24308,20 @@
           "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Adds the section 'Roboclients vs server-side dummy bots (measured 2026-09-26)': public-Diag ROBOCLIENT/INPUT_OVERRIDE defines, the server-side dummy-bot recipe with movement and server-load numbers, and the headless roboclient crash.",
+          "license": "MIT",
+          "source_hash": "9e80cf3a072db0f858783f821a8beb38c9df755d855255ab995fd4f84f054f96",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+          "source_revision": "roboclient-130@2026-09-26",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a35a140351921ba2216dfe409502f096253f50ab7bcfb3d3130fc4a60a64ad50",
+      "output_hash": "9e80cf3a072db0f858783f821a8beb38c9df755d855255ab995fd4f84f054f96",
       "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "historical"
@@ -24310,10 +24350,20 @@
           "source_path": "skills/dayz-mod-workflow/references/dayz-1-30-mod-workflow.md",
           "source_revision": "dayz-underground@2026-09-24",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Adds a cross-version compile guard for IsHeadlessOrDedicatedServer on the DAYZ_1_29/DAYZ_1_30 defines, plus the vanilla 97-call census and a ROBOCLIENT defines pointer to dayz-mcp-verify.",
+          "license": "MIT",
+          "source_hash": "c616a26b5ab06ed2494895285e667bd022b21c33baf4d788f2fda4a0a2d9056a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/references/dayz-1-30-mod-workflow.md",
+          "source_revision": "roboclient-130@2026-09-26",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "1ee777d7bdd1989b916f3fb54090cae55a0d6d7839ff30dcb9a068276fbeeb0f",
+      "output_hash": "c616a26b5ab06ed2494895285e667bd022b21c33baf4d788f2fda4a0a2d9056a",
       "output_path": "skills/dayz-mod-workflow/references/dayz-1-30-mod-workflow.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "historical"
@@ -24464,10 +24514,20 @@
           "source_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Adds the sections 'Launching the 1.30 Exp DayZDiag directly (outside the managed lifecycle)' (five launch traps) and 'Measuring server load' (cap the server, meter frames in mission code, warm-up and CSV traps), plus a headless-client crash pointer.",
+          "license": "MIT",
+          "source_hash": "a612b52b911c978e4fc02a23c3283d3e295d56f59299a2723eea5d7ad37fa2ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
+          "source_revision": "roboclient-130@2026-09-26",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "389ddf8384da2061dc333d2f119add9c8df9d203200231ec8d9cf5d5c7a73681",
+      "output_hash": "a612b52b911c978e4fc02a23c3283d3e295d56f59299a2723eea5d7ad37fa2ee",
       "output_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "historical"
