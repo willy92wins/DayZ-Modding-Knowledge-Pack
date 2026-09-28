@@ -75,7 +75,7 @@ Use only the sections relevant to the task, in addition to the common contract a
   *(Hasta 1.29: skeletons.anim.xml definía índices fijos y limitaba el sistema a 250 huesos; desde 1.30 Exp: se elimina el límite de 250 huesos; los índices se calculan en runtime por hash del nombre del hueso y skeletons.anim.xml solo conserva index="0" en EntityPosition [`work\changelog-1.30-exp-modding.md:31, 43`, `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:986-988`]).*
   Four new animal skeletons are introduced in DayZ 1.30: `ovis_gmelini_skeleton.xob` (mouflon), `canis_familiaris_dobermann_skeleton.xob`, `canis_familiaris_german_shepherd_skeleton.xob`, and `varanus_griseus_skeleton.xob` (`skeletons.anim.xml:986-1150`).
 - **Graph modularity (`.agf` files) [EXACT]:**
-  Creature graphs migrate from monolithic binary `.agr` to modular Enfusion Config `.agf` files (`wolf_maingraph.agf`, `ambientlife_maingraph.agf`, `locomotion.agf`) referenced by master `AnimSrcGraph` `.agr` indexes (`wolf_graph.agr:157-159`).
+  Creature graphs migrate from old-format text `.agr` sub-graphs to modular Enfusion Config `.agf` files (`wolf_maingraph.agf`, `ambientlife_maingraph.agf`, `locomotion.agf`) referenced by master `AnimSrcGraph` `.agr` indexes (`wolf_graph.agr:157-159`). (corrected 2026-09-28: this line used to say "monolithic binary `.agr`". In the 1.29 extraction the wolf graph is already two text files, `Wolf_Graph.agr` listing `Wolf_MainGraph.agr` at `:58`, both opening with `$AnimGraph 7 {`, and all six 1.29 animal `.agr` files are text.)
 - **Procedural terrain alignment (`AnimSrcNodeProcTransform`) [EXACT]:**
   Quadrupeds use procedural bone transforms driven by terrain slope:
   ```enfusion

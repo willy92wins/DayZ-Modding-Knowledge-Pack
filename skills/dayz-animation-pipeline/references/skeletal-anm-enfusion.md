@@ -64,10 +64,10 @@ The line 41 caveat is real: DayZATool/Mikero extraction is worst for empties / I
 ## DayZ 1.30 Exp Updates (build 1.30.164014) [EXACT]
 
 ### Modular Plain-Text Graph Files (.agf)
-In DayZ 1.30 Exp, sub-graphs are no longer opaque binaries compiled inside `.agr` monoliths. They are distributed as plain-text Enfusion Config `.agf` files (`AnimSrcGraphFile`, e.g., `DZ/anims/workspaces/player/player_main/Locomotion.agf`, `Actions.agf`, `Combat.agf`, `Vehicles.agf`). Master `.agr` files (`AnimSrcGraph`) index these via `GraphFilesResourceNames`.
+In DayZ 1.30 Exp, sub-graphs are distributed as plain-text Enfusion Config `.agf` files (`AnimSrcGraphFile`, e.g., `DZ/anims/workspaces/player/player_main/Locomotion.agf`, `Actions.agf`, `Combat.agf`, `Vehicles.agf`). Master `.agr` files (`AnimSrcGraph`) index these via `GraphFilesResourceNames`. (corrected 2026-09-28) This section used to say that before 1.30 the sub-graphs were opaque binaries compiled inside `.agr` monoliths. They were neither: 1.29 ships them as separate text `.agr` files in the old `$AnimGraph 7` format, listed by the root `player_main.agr` (`:540-547` in the 1.29 extraction). 1.30 changed the syntax and the extension; evidence in `anim-graph.md` §Vehicles.agf.
 
-### Vehicles are No Longer an Unsupported Binary Exception
-Vehicles are fully documented in plain text in `Vehicles.agf` (`DZ/anims/workspaces/player/player_main/Vehicles.agf`, 3654 lines). Rider poses and state machines (`MotorBikeSTM`) are transparent and accessible.
+### Vehicles in the 1.30 graph
+The vehicle sub-graph is `Vehicles.agf` (`DZ/anims/workspaces/player/player_main/Vehicles.agf`, 3654 lines), with the rider state machines (`MotorBikeSTM`) readable in it. (corrected 2026-09-28) The old heading here said vehicles were "no longer an unsupported binary exception"; they were never binary, since 1.29 ships the same sub-graph as the text `Vehicles.agr`. What 1.30 adds is the motorbike rider: the 1.29 graph caps `VehicleType` at 10 and has no `Jawa_*` column. Readable is not patchable: a new rider state or vehicle type still means replacing vanilla graph files (`tooling-and-walls.md` §Named Filesystems for Mods).
 
 ### Bone Limit & Indexing
 The 250 global bone limit is completely eliminated (`changelog:31`). Bone indices are dynamically hashed at runtime from bone names, rendering index numbers in `skeletons.anim.xml` deprecated.

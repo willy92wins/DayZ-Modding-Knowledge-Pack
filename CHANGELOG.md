@@ -70,6 +70,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   server-load table and the launch/measurement traps, with three `runtime_verified`
   claims. `dayz-physics-engine` gains a section on what can and cannot be offloaded
   from the server.
+- `dayz-animation-pipeline` `vehicle-rider-ik-pose.md`: a per-vehicle rider pose without a
+  graph change, measured in game while the vehicle stands, for one player (DayZDiag
+  1.30.164014, dedicated server and the owning client): a child `.asi` registered in
+  `RegisterCustom` and swapped in with `SetAnimationInstanceByName`, as vanilla does for
+  surrender. The page records the recipe, three traps (the frames after the get-out clip,
+  bone names that do not resolve, the server's hand bones), the gates still open (riding,
+  other riders, remote observers, weapon in hand, unconsciousness, ejection, death) and how
+  the motorbike graph splits a rider pose into four pieces. Also the source-verified wiring
+  of the steering-pose branch into the hand IK target nodes, and the inference that the
+  steering clips set where the hands go (claims `CLAIM-ANIM-CHILD-ASI-SWAP-130`,
+  `CLAIM-ANIM-HAND-IK-FROM-CLIP-130`, `CLAIM-ANIM-CHILD-ASI-RUNTIME-130`,
+  `CLAIM-ANIM-POSE-PROBE-TRAPS-130`, `CLAIM-ANIM-MOTO-STOP-RIDE-SPLIT-130`).
 
 ### Changed
 
@@ -94,6 +106,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-animation-pipeline` `item-ik-and-hide.md`: switching back to the base instance takes
+  the `.asi` path, as vanilla does (`PlayerBase.c:2107`); the page said
+  `SetAnimationInstanceByName("Empty", 0.2)`, which nobody has run. It also said 1.30
+  dropped the surrender dummy item: the item no longer goes into the hands, but its profile
+  is still registered so that the child `.asi` is preloaded.
 - `dayz-basebuilding` cited `BaseBuildingBase.CreateConstructionComponent` at
   `basebuildingbase.c:872-876`. In 1.30.164014 the override is at `871-875`.
 - `sources/source-map.json`: `validate` was red on bc042c2 with 28 errors and
@@ -104,6 +121,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `array.Remove` in `dayz-mod-workflow`, `dayz-pbo-build` and `enforce-script-reference`, and a
   Python `\v` escape broke two `DZ\vehicles` paths in `dayz-vehicles`. The StarDZ block of
   `enforce-script-reference`, committed twice, keeps one copy.
+- `dayz-animation-pipeline` said the 1.29 player graphs, the vehicle graph among them,
+  were opaque binaries (`anim-graph.md`, `skeletal-anm-enfusion.md`, `tooling-and-walls.md`,
+  `vehicle-rider-ik-pose.md`, `SKILL.md`). The 1.29.0.163709 extraction has nine text `.agr`
+  files in the old `$AnimGraph 7` format, `Vehicles.agr` among them; 1.30 changed the
+  syntax, not text versus binary (claim `CLAIM-ANIM-GRAPH-TEXT-129`). `SKILL.md` also
+  called the 1.29 graph monolithic and said the master graph uses `include` directives
+  (0 hits in the 1.30 `.agr` files). `dayz-realistic-animation-director` said the same of
+  the creature graphs; all six 1.29 animal `.agr` files are text.
+- `dayz-animation-pipeline` `tooling-and-walls.md` said 1.30 mods can patch individual
+  sub-graphs. That is now marked unsupported and the one-graph-mod wall stays in force:
+  adding a vehicle type touches `Vehicles.agf`, `player_main.ast`, `player_main.asi` and,
+  above 12, `player_main.agr`, all at vanilla paths (claim
+  `CLAIM-ANIM-VEHICLETYPE-PATHS-130`), and the official @DayZ post of 2026-09-16 tells
+  graph mods to redo their changes from scratch.
 
 ## [1.3.0] - 2026-08-25
 

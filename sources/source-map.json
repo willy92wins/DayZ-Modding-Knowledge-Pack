@@ -274,7 +274,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "119f21cb5a8b3b89b2fe400e3fa7d5c4fff0b257a5bfe178d027bebe5b422cd5",
+      "output_hash": "39d9e2760bb19248c741ed9bdfdf6f22b5c5a45680eb29b5bfc8eb7436beb7ef",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3643,7 +3643,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "922d42615c30081d1095334cf37d6b8c9460d24e49cf8f767c73df3ed9f5ac07",
+      "output_hash": "7830d21bced7be5633cc1c6c34e38714159b060f10ef0037e520bab710f8f3cd",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3665,7 +3665,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3e924e3ac3c0cacfe1c18288bea8233cc0125f7fb873df2d156337abb6f0ebe5",
+      "output_hash": "e4f2d2533092b68946593552e96c3ce9bc648ea7b555303907bbc8f241e429d2",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3775,7 +3775,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b410d69e04b8203c17a29b9071ec5b4de143a397edb6135d9b3dffa825139fa9",
+      "output_hash": "46cd1143ec289b1ccb122e3991755bc83b09e9e93acb4f20913e3c3dd23ec812",
       "output_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3885,7 +3885,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4789b5ab99b0d61d0c5b8d87c274c9bfd4884da969c7eb1345285bc0e92a2664",
+      "output_hash": "80a06577676201147927ef8b2c14ed995429c5dd5285e398764b68b96f00c34a",
       "output_path": "skills/dayz-animation-pipeline/references/skeletal-anm-enfusion.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3929,7 +3929,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6c9da2903d606abe099625608c19d91783e2ee99e9a4d67edb5a6fa210e873f0",
+      "output_hash": "4cf557d0e0ab9d605ce56c1eae8f534ac7ea3cd083548184f22da63438aa34b1",
       "output_path": "skills/dayz-animation-pipeline/references/tooling-and-walls.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3951,7 +3951,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "da6a380f58ede02b87f1843d2d49b4b7c3cf64100b2e1572024c48563177202d",
+      "output_hash": "572a01c2807600c33812acc8e5913d1c3cc547fbdc139f2d9c7547c75d627adb",
       "output_path": "skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -7671,7 +7671,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "37550f71e630f6cc1e416c28f38724f618623396957d1da927fd0c2e3922edbd",
+      "output_hash": "237997502073da00118b34220ea53a84706810826ab5251c23e6d1d6b7554ca2",
       "output_path": "skills/dayz-realistic-animation-director/references/domain-gates.md",
       "routing_artifact_id": "skill/dayz-realistic-animation-director",
       "verification_level": "cross_checked"
@@ -12318,7 +12318,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f2f3e1e96fea7ac965948b6ab1e42bd1dacb2d2a72d4406105b5f67813d44702",
+      "output_hash": "158b4f6482a2c8920959bce648fd691ece4dee4fd352eac75dfaf43471e2b377",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

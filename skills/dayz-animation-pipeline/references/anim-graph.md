@@ -9,7 +9,7 @@ All `[VERIFIED-vanilla]` items below were greped directly against the unpacked v
 | Topic | Vanilla path | Format |
 |---|---|---|
 | Player master graph index (1.30 Exp) | `DZ/anims/workspaces/player/player_main/player_main.agr` (added 2026-09-16, DayZ 1.30 Exp) [EXACT] | text (`AnimSrcGraph` with `GraphFilesResourceNames` at `player_main.agr:1587`) |
-| Player sub-graphs (Locomotion, Vehicles, Actions, Combat...) | `DZ/anims/workspaces/player/player_main/*.agf` (added 2026-09-16, DayZ 1.30 Exp) [EXACT] | text Enfusion Config (`AnimSrcGraphFile`); in 1.29 these were binary `.agr` |
+| Player sub-graphs (Locomotion, Vehicles, Actions, Combat...) | `DZ/anims/workspaces/player/player_main/*.agf` (added 2026-09-16, DayZ 1.30 Exp) [EXACT] | text Enfusion Config (`AnimSrcGraphFile`); in 1.29 these were `.agr` files, also text, in the old `$AnimGraph 7` format (corrected 2026-09-28, see §Vehicles.agf) |
 | Player commands + transitions (pre-1.30 source) | `SurvivorAnims/animgraph/player_main/*.agr` | text |
 | Animal/infected/predator graphs | `DZ/animals/animations/!graph_files/<species>/*_graph.agr` | text |
 | Skeleton LOD and missing bones | `DZ/anims/cfg/skeletons.anim.xml` (added 2026-09-16, DayZ 1.30 Exp) [CHANGELOG] | XML (`lod` attribute only; 250 bone limit removed) |
@@ -240,7 +240,9 @@ Node types seen in the file (each with the line where the first instance starts)
 - `AnimSrcNodeIK2Target` and `AnimSrcNodeIK2`: two-bone IK pinning the driver's hands to the handlebar (`AnimNodeIK2Target0` at `Vehicles.agf:17`, `AnimNodeIK2hands` at `:31`).
 - `AnimSrcNodeSourceSync`: clip playback bound to a sync line (`Vehicles.agf:69-80`).
 
-`MotorBikeSTM` rider states: `Idle`, `GetIn_L`, `GetIn_R`, `GetOut_L`, `GetOut_R`, `JumpOut_L`, `JumpOut_R`, `Death`, `GettingInDeath` (`Vehicles.agf:1582-1750`); transitions test integer direction flags (`GetCommandI(CMD_Vehicle_GetIn) == 0` left, `== 1` right). The `.agr` of 1.29 was binary; diffing a 1.30 `.agf` against a 1.29 graph is therefore not possible in text.
+`MotorBikeSTM` rider states: `Idle`, `GetIn_L`, `GetIn_R`, `GetOut_L`, `GetOut_R`, `JumpOut_L`, `JumpOut_R`, `Death`, `GettingInDeath` (`Vehicles.agf:1582-1750`); transitions test integer direction flags (`GetCommandI(CMD_Vehicle_GetIn) == 0` left, `== 1` right).
+
+(corrected 2026-09-28) [EXACT][CLAIM-ANIM-GRAPH-TEXT-129] This paragraph used to end by saying the 1.29 `.agr` was binary and could not be diffed in text. It was text. In the 1.29 stable extraction (build 1.29.0.163709, root `stable-1.29\anims_workspaces\DZ\anims\workspaces\player\player_main\`), `player_main.agr:1` is `$AnimGraph 7 {`; `:99` declares `#Var VehicleType int -1 -1 10 ""` and no `Jawa_*` column exists anywhere in that graph, so the motorbike rider is new in 1.30; `:540-547` list eight sub-graphs as `.agr` files, among them `Vehicles.agr` (`:544`), which also opens with `$AnimGraph 7 {`. None of the nine files holds a NUL byte. What 1.30 changed is the syntax, not text versus binary: 1.29 writes `$Node AnimNodeGroupSelect {` with positional fields (`"Boat_01ActionG" "" "VehicleTalkingT" "VehicleActions" "Boat_01"`, `Vehicles.agr:3-4`), 1.30 writes named ones (`AnimSrcNodeGroupSelect Jawa_BitrakActionG { ... Group "VehicleActions" Column "Jawa_Bitrak" }`, `Vehicles.agf:1381-1386`). A line diff across the two formats is noise; compare parsed nodes, variables and commands instead. Bohemia's warning when 1.30 Exp shipped says the same: in 1.29 a graph mod could be compared with vanilla in a text editor, and for 1.30 graph mods must redo their graph changes from scratch, with new limits such as the number of groups ([@DayZ, 2026-09-16](https://x.com/DayZ/status/2100152871580823661)).
 
 ## Reload is NOT additive in vanilla [REFUTED-vanilla]
 
