@@ -218,7 +218,7 @@ Contract extracted and verified 2026-07-09 (all citations in `references/dayz-ha
   - 30 fps is the pipeline default. Bone names must match `OFP2_ManSkeleton` exactly.
 - **This skill STOPS at the `.txa` + a note of the target `.anm` name.** Workbench
   "Register & Import", `.asi`/config wiring, PBO build and the in-game test belong to
-  `dayz-animation-pipeline` and the user. Never claim to run Workbench or DayZATool.
+  `dayz-animation-pipeline` and the user. Never claim to have run Workbench; DayZATool only when you ran it and read the file it wrote (on a Windows host it runs headless: `dayz-animation-pipeline/references/skeletal-anm-enfusion.md`, 2026-09-28).
 
 ## §7 Self-verification before delivering (non-negotiable)
 

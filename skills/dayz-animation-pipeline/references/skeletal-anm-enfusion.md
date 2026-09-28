@@ -4,7 +4,7 @@ This is the route for body and weapon animation. DayZ characters run on the Enfu
 
 ## ⚠️ The wall, first
 
-**Only one mod modifying player/creature animations can be loaded at a time** — two crash the client/server. Enfusion engine limit, not policy. [VERIFIED across multiple Workshop mod descriptions.] State this on every plan that ships a character/creature animation. If the user already runs an animation mod, yours will conflict with it.
+**Only one mod modifying player/creature animations can be loaded at a time** — two crash the client/server. Enfusion engine limit, not policy. [VERIFIED across multiple Workshop mod descriptions.] State this on every plan that ships a character/creature animation through a graph replacement (scoped 2026-09-28: the child-`.asi` routes, weapon and vehicle, replace no graph file; see the correction below and `vehicle-rider-ik-pose.md` §Per-vehicle pose without a graph change). If the user already runs an animation mod, yours will conflict with it.
 
 ## The pipeline
 
@@ -40,6 +40,8 @@ Target skeleton is `OFP2_ManSkeleton`. Bone names must match exactly or RPT logs
 
 Caveat: a community note (MRTsBackflip mod) says DayZATool's extracted rigs are "always incorrect" — treat extraction as a starting point, verify the rig, do not assume a clean round-trip. [TBD-verify exact failure mode.]
 
+[EXACT][CLAIM-ANIM-DAYZATOOL-ROUNDTRIP-130] (added 2026-09-28, LFRider) Measured on two vanilla 1.30 player clips (the `MOTO2` steering pose, 119 bones, and `stand2drive`, 27): extract then generate kept rotations within 0.005 degrees and positions within 0.0021 cm. The generated file is `ANIMSET5` (the originals are `ANIMSET6`) and plays in 1.30, but as an absolute pose: a clip holding differences, like the vanilla transitions, collapses the skeleton (`vehicle-rider-ik-pose.md` §Own clips on the rider). On a Windows host DayZATool runs headless from a script: `DayZATool.exe --generate-anim f.seanim 100` with stdin closed returned 0 and wrote the file (2026-09-29); an earlier session reported it throwing on `Console.ReadKey` after writing, so judge by the output file, not by the exit code.
+
 ## Source-of-truth repos (with URLs)
 
 - DayZATool: dtzxporter.com/tools/dayzatool
@@ -51,7 +53,7 @@ Caveat: a community note (MRTsBackflip mod) says DayZATool's extracted rigs are 
 
 ### The wall (top of this file) is the GRAPH-replacement wall — weapon anims are conflict-free [VERIFIED-vanilla]
 
-"Only one mod modifying player/creature animations at a time" applies ONLY to mods that REPLACE the player/creature animation GRAPH (`player_main.aw`/`.agr`). Custom WEAPON animations via the ASI route (`AddItemInHandsProfileIK` + per-weapon `.asi` parent chain + `AddItemBoneRemap`, `dayzplayer.c:243`) do NOT touch the graph and **coexist across mods**. Do not state the wall on a custom-weapon-anim plan. (Vehicles are the unsupported exception.)
+"Only one mod modifying player/creature animations at a time" applies ONLY to mods that REPLACE the player/creature animation GRAPH (`player_main.aw`/`.agr`). Custom WEAPON animations via the ASI route (`AddItemInHandsProfileIK` + per-weapon `.asi` parent chain + `AddItemBoneRemap`, `dayzplayer.c:243`) do NOT touch the graph and **coexist across mods**. Do not state the wall on a custom-weapon-anim plan. (Vehicles were written up here as the unsupported exception; corrected 2026-09-28: a per-vehicle rider pose through a child `.asi` works without touching the graph, `vehicle-rider-ik-pose.md` §Per-vehicle pose without a graph change and §Own clips on the rider.)
 
 ### `.txa` → Workbench is the canonical PLAYER weapon route; the maintained plugin needs Blender 4.4+/5.x [VERIFIED]
 

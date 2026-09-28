@@ -758,7 +758,7 @@
     {
       "artifact_id": "file/skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
       "claim_id": "CLAIM-ANIM-POSE-PROBE-TRAPS-130",
-      "evidence_locator": "VAULT/AI/20_Knowledge/lessons-learned.md LL-530 (GetBoneIndexByName -1 for RightHand and RightFoot on 2026-09-28, LeftForeArm, RightForeArm, RightToeBase on 2026-09-19; server vs client left-hand bone 0.35 m and 0.55 m apart for the same stopped pose, pelvis and head within mm); exp/anims_cfg/DZ/anims/cfg/skeletons.anim.xml:24-48",
+      "evidence_locator": "VAULT/AI/20_Knowledge/lessons-learned.md LL-530 (server vs client left-hand bone 0.35 m and 0.55 m apart for the same stopped pose, pelvis and head within mm) and LL-535 (GetBoneIndexByName returns hash-like ids, RightHand -1405358722, RightFoot, RightToeBase, LeftForeArm negative; only -1 is missing; LFRider runs P1 20260928-202230, P4 20260928-214956, P5 20260928-215928 and P6 20260928-220631 (DayZDiag 1.30.164014, dedicated server and owning client, one player, LFR_POSE/LFR_BONES/LFR_SWITCH probe lines)); exp/scripts/scripts/3_Game/human.c:1417",
       "license": "MIT",
       "line_end": 97,
       "line_start": 97,
@@ -780,6 +780,71 @@
       "source_id": "dayz-vanilla",
       "source_revision": "1.30.164014-exp",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
+      "claim_id": "CLAIM-ANIM-OWN-ANM-PLAYS-130",
+      "evidence_locator": "VAULT/AI/20_Knowledge/lessons-learned.md LL-534 (P1: a DayZATool ANIMSET5 clip, vanilla MOTO2 steering pose with Spine1 bent 20 deg, head 0.4 mm median from its FK over 129 client samples, 19 cm from vanilla; Resource by bare path and with an invented {GUID}); exp/addons anims_anm_player.pbo headers counted 2026-09-28: 10 ANIMSET4, 2398 ANIMSET5, 4980 ANIMSET6; LFRider runs P1 20260928-202230, P4 20260928-214956, P5 20260928-215928 and P6 20260928-220631 (DayZDiag 1.30.164014, dedicated server and owning client, one player, LFR_POSE/LFR_BONES/LFR_SWITCH probe lines)",
+      "license": "MIT",
+      "line_end": 107,
+      "line_start": 107,
+      "observed_at": "2026-09-28",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-09-28",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
+      "claim_id": "CLAIM-ANIM-MOTO-STEER-SCALE-130",
+      "evidence_locator": "exp/anims_workspaces/DZ/anims/workspaces/player/player_main/Vehicles.agf:47-51,1463-1467 (Time = clamp((VehicleSteering + 0.785) * 0.63694, 0, 1)); VAULT/AI/20_Knowledge/lessons-learned.md LL-533 (P4: frames over the 20 deg lock, hands 44 mm off at full lock, fit s = 0.45; P6: frames over 45 deg, the frame best explaining the measured hands (fit residual 0.3 mm per hand) at the bars' measured angle, 20.0 deg stopped at full lock; riding at 11-27 km/h, bars -16.0..+17.4 deg, within 1.2 deg (<= 0.1 deg in 29 of 39 turning samples, fit residual median 0.3 mm, max 0.6 mm per hand); no direct hand-to-grip distance); LFRider runs P1 20260928-202230, P4 20260928-214956, P5 20260928-215928 and P6 20260928-220631 (DayZDiag 1.30.164014, dedicated server and owning client, one player, LFR_POSE/LFR_BONES/LFR_SWITCH probe lines)",
+      "license": "MIT",
+      "line_end": 108,
+      "line_start": 108,
+      "observed_at": "2026-09-28",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-09-28",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
+      "claim_id": "CLAIM-ANIM-TRANSITIONS-ABSOLUTE-130",
+      "evidence_locator": "VAULT/AI/20_Knowledge/lessons-learned.md LL-534 (vanilla stand2drive frame 0 = drive^-1 * idle within 0.19 deg, ends at identity; P4 difference-style clips: pelvis, spine, neck and head at one point in 8 of 209 client and 9 of 218 server samples during transitions; P6 absolute whole-body clips: none in 210 client and 218 server samples, measured hands 0.1-1.5 mm from our clips' hands at the measured bar angle while stopping (3 client samples)); exp/anims_workspaces/DZ/anims/workspaces/player/player_main/Vehicles.agf:1204-1220,2720; LFRider runs P1 20260928-202230, P4 20260928-214956, P5 20260928-215928 and P6 20260928-220631 (DayZDiag 1.30.164014, dedicated server and owning client, one player, LFR_POSE/LFR_BONES/LFR_SWITCH probe lines)",
+      "license": "MIT",
+      "line_end": 109,
+      "line_start": 109,
+      "observed_at": "2026-09-28",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-09-28",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
+      "claim_id": "CLAIM-ANIM-BARS-ANGLE-PROBE-130",
+      "evidence_locator": "exp/scripts/scripts/3_Game/Entities/Object.c:220,233,242; 4_World/Entities/Vehicles/MotorbikeScript.c:287-292; 3_Game/Vehicles/Motorbike.c:247; read in game by the LFRider_Dev probe (barsq, wdir) in P6 20260928-220631",
+      "license": "MIT",
+      "line_end": 110,
+      "line_start": 110,
+      "observed_at": "2026-09-28",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "dayz-vanilla",
+      "source_revision": "1.30.164014",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/skeletal-anm-enfusion.md",
+      "claim_id": "CLAIM-ANIM-DAYZATOOL-ROUNDTRIP-130",
+      "evidence_locator": "VAULT/AI/20_Knowledge/lessons-learned.md LL-534; round trip of p_motorbike_02_driver_steering_pose (119 bones) and p_motorbike_02_transition_stand2drive (27) through DayZATool 1.3 --extract-anim/--generate-anim 100: rotation <= 0.005 deg, position <= 0.0021 cm; generated header ANIMSET5, originals ANIMSET6; headless --generate-anim with stdin closed returned 0 and wrote the file (2026-09-29)",
+      "license": "MIT",
+      "line_end": 43,
+      "line_start": 43,
+      "observed_at": "2026-09-28",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-09-28",
+      "verification_level": "offline_tested"
     }
   ],
   "schema_version": 1

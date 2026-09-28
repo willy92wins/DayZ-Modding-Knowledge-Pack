@@ -274,7 +274,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "39d9e2760bb19248c741ed9bdfdf6f22b5c5a45680eb29b5bfc8eb7436beb7ef",
+      "output_hash": "99cb0cc498bda4921e8d83da91240b407337cdd069bf52a2820558955cae3c5e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2973,7 +2973,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "bd7e6b3fd56dbdcc1accad514210671a898f62c4a3e2b50d14325114ca69138d",
+      "output_hash": "d28aaab165939edcf93790962489213fea2db448580774daefb7e584fbd79c68",
       "output_path": "skills/blender-animation/SKILL.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -3079,7 +3079,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c96e2ff6f5c5cafc148912766e35db7981950b4171cefb3e18ff14123f63462e",
+      "output_hash": "f321084dcd2250c4d4732d267ce82fc316b27d2ddcfab4018acb3d4623c91077",
       "output_path": "skills/blender-animation/references/dayz-handoff.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -3653,7 +3653,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7830d21bced7be5633cc1c6c34e38714159b060f10ef0037e520bab710f8f3cd",
+      "output_hash": "a305f5ef4164931148cf542686b17fa9cd2a4a80a9a88919aedfd1fb0306b19e",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3895,7 +3895,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "80a06577676201147927ef8b2c14ed995429c5dd5285e398764b68b96f00c34a",
+      "output_hash": "818be32d4c21a354b03f4585c67d7be0bb74a2fd8735b1c432d6c57d6c238fd1",
       "output_path": "skills/dayz-animation-pipeline/references/skeletal-anm-enfusion.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3961,7 +3961,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "572a01c2807600c33812acc8e5913d1c3cc547fbdc139f2d9c7547c75d627adb",
+      "output_hash": "68bd66ee95181102afd95ce54deedcf8c04da3811b8c040046a64e14cdcd231a",
       "output_path": "skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -12328,7 +12328,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "158b4f6482a2c8920959bce648fd691ece4dee4fd352eac75dfaf43471e2b377",
+      "output_hash": "ff1798f3fe7171f7f9a46602324746b105d346b066f602a31ae48e2a3f70b51e",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

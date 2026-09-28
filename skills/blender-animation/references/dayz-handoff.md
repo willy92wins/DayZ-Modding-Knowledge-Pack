@@ -78,7 +78,7 @@ Every verified, in-game-confirmed animation in this pipeline was produced by loa
      ]
    }
    ```
-   This feeds `seanim_export.py --anim <json> --rig data/jd_dayz.json --out out.seanim`, then the user runs `DayZATool --generate-anim out.seanim 100` (Windows CLI, not a GUI step, but still outside the sandbox — DayZATool is a closed `.NET` binary).
+   This feeds `seanim_export.py --anim <json> --rig data/jd_dayz.json --out out.seanim`, then the user runs `DayZATool --generate-anim out.seanim 100` (Windows CLI, not a GUI step, but still outside the sandbox — DayZATool is a closed `.NET` binary; on a Windows host an agent can run it headless, `dayz-animation-pipeline/references/skeletal-anm-enfusion.md`, 2026-09-28).
 
 ### What the new skill must NEVER do (already owned downstream)
 
