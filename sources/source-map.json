@@ -2377,10 +2377,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion@2026-09-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Advanced by promote --apply for transaction 3f04dab022968bbd61cb3841 (2026-09-28): 4 pins moved to the digests their stores reached on write and 0 added. Resealed in the promotion commit, as LL-515 requires.",
+          "license": "MIT",
+          "source_hash": "ff6241d6259cbb2bf2c3f0499e607d301a107ccb89547acf9e906102bfcb74b7",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion@2026-09-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e5811800c2d7d3e4480c08d2c575dd5b1c641368de6b70860ce5b1c0132a7d3a",
+      "output_hash": "ff6241d6259cbb2bf2c3f0499e607d301a107ccb89547acf9e906102bfcb74b7",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -24763,6 +24773,29 @@
       "license": "MIT",
       "output_hash": "ad011dea95785583599397f2d42f317dfcdf08d62666d40aab2349f2eb06d0eb",
       "output_path": "promotions/receipts/4efc58ed02c8ffefb3996682.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/3f04dab022968bbd61cb3841.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt written by promote --apply on 2026-09-28 for transaction 3f04dab022968bbd61cb3841: the promotion of 45c222f (dayz-animation-pipeline: the per-vehicle rider .asi route measured in game while the vehicle stands, LFDucati B1, with the 1.29-graph and sub-graph corrections of the same day; dayz-realistic-animation-director: the creature-graph text correction) to claude_user_skills, agents_user_skills and obsidian_snapshots, 117 operations, check WARN (only the expected PROMOTION-DRIFT, 74 of 117 operations changing: the two skills in both user trees and 72 new obsidian snapshots), apply done, receipt written, both user trees compared file by file with the commit (equal except the path aliases the local targets expand), run from the kp-recon worktree the previous receipts are bound to.",
+          "license": "MIT",
+          "source_hash": "7eda38a1f3fbcf77ebaa3b5351afc461644d86e34249efc311a0939dd273c2af",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/3f04dab022968bbd61cb3841.json",
+          "source_revision": "promotion@2026-09-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7eda38a1f3fbcf77ebaa3b5351afc461644d86e34249efc311a0939dd273c2af",
+      "output_path": "promotions/receipts/3f04dab022968bbd61cb3841.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
