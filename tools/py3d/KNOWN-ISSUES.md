@@ -150,9 +150,28 @@ digests, so its chirality and winding checks run on the very bytes that were
 binarized. A and B differ only in the matrix, and A passes the winding
 checks - vertex order against normals, inward per box - on all 48 faces.
 
-Not covered, and not claimed: proxy frames (`blender_to_dayz()` warns when a
-model has `proxy:` selections), collision LODs (the model had none), and any
-model built partly in DayZ space before the conversion.
+A second probe the same day, binarized the same way and read with an ODOL
+reader independent of this library, covered what the first left out:
+
+- **Collision.** The F plate with Geometry, ViewGeometry and FireGeometry LODs,
+  one convex component per box. In the binarized file every component of the
+  B and A variants winds like vanilla `Motorbike_02` (outward, 48 of 48 per
+  LOD) and C the other way (0 of 48). In game, `scene_raycast` north to south
+  and south to north hit B and A in `geom`, `view` and `fire`, missed C in all
+  three, and hit a vanilla container used as control.
+- **Proxies.** Three static proxies drawn in Blender as canonical raw
+  triangles (identity, yaw +90, yaw +90 after a 30 degree tilt), converted with
+  the model: their binarized engine frames equal the ones worked out by hand
+  (aside = M x, up = M z, dir = M y, M the swap) and the ones
+  `add_proxy(space="engine")` writes for them; the same matrices through
+  `add_proxy(space="raw")` in DayZ space do not. In game the proxied F stood
+  in the pose drawn in Blender, and read correctly where it faced the camera
+  (the identity and the yawed proxy).
+
+Not covered, and not claimed: crew and wheel proxies of a driven vehicle,
+proxies drawn with another convention or as ambiguous (isosceles) triangles,
+player collision (only raycasts), and any model built partly in DayZ space
+before the conversion.
 
 ---
 

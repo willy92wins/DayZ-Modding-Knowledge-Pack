@@ -146,10 +146,20 @@ plate, written three ways and binarized with AddonBuilder:
 
 The mirrored model passes the winding checks — vertex order against normals,
 inward per component — so only an asymmetric feature shows the mirror.
-Proxy frames were not part of that test: `blender_to_dayz` moves proxy
-triangles like any other face and warns when the model has `proxy:`
-selections. Add proxies after the conversion with
-`add_proxy(..., space="engine")` where you can.
+
+Measured the same day with the same map:
+
+- **Collision LODs.** Geometry, ViewGeometry and FireGeometry converted with
+  `blender_to_dayz` register raycasts in all three modes, from both sides;
+  after `transform(ROT_X_NEG90)` alone they register none.
+- **Proxies.** `blender_to_dayz` moves proxy triangles like any other face. A
+  proxy drawn in Blender as this library's canonical raw triangle — what
+  `add_proxy(space="raw")` builds in Blender coordinates — comes out of
+  binarize with the same engine frame as `add_proxy(space="engine")` given the
+  matching rotation, and renders in the pose it had in Blender (static proxies;
+  identity, a yaw and a tilted yaw). Proxies drawn another way get whatever
+  frame their triangle implies: check those in the binarized file against a
+  model that works.
 
 **Migrating from `py3d.BLENDER_TO_DAYZ`.** Up to 1.7.0 this README gave
 `model.transform(py3d.BLENDER_TO_DAYZ)`, the det=+1 rotation `(x, z, −y)`, as
@@ -190,7 +200,7 @@ turns a quad `[0,1,2,3]` into `[0,2,1,3]`, a crossed face.
 
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 280 tests pass -- 273 of them
+The library is used in a real modding pipeline, and 282 tests pass -- 275 of them
 on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
 upstream (see [Tests](#tests)). It has also been through a deliberately
 adversarial audit, and **not every problem it found is fixed yet**. Before

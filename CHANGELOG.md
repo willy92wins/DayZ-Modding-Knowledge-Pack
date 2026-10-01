@@ -18,10 +18,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   (DayZDiag 1.29.163709) with one chiral model written three ways (the test behind Rule 12 in
   1.4.0). The new `blender_to_dayz(p3d)` applies the det=-1 swap `(x, z, y)`, keeps the face
   order and negates the normals; it writes, byte for byte, the MLOD that rendered solid and read
-  correctly, and it warns on `proxy:` selections because proxy frames were not part of the test.
+  correctly. A second probe the same day measured what the first left out: collision LODs
+  converted with it register raycasts in `geom`, `view` and `fire` (the uncorrected det=+1 map:
+  none), and static proxies drawn in Blender as py3d canonical triangles come out with the ODOL
+  frames of `add_proxy(space="engine")` and render in the pose drawn.
   Wheel `py3d_dayz-1.8.0-py3-none-any.whl`, SHA-256
-  `f68974e16687d55fbf3c0b1d7c3c9dd1e48d833ec67db4795f69eb02320e2f16`; the copies vendored in
-  installed skills are not restocked yet. `dayz-clothing` now spells out the matrix of its det=+1
+  `3fd4caa3ca40ac0436fb582cf41dfdf4f67a9aa8382cfcebb9314076a9827f8e`; no installed skill tree
+  vendors the wheel any more, and the site-packages install follows the merge. `dayz-clothing` now spells out the matrix of its det=+1
   round trip; `dayz-characters` flags its `(x, z, -y)` map, and a winding gate that fails the
   model measured correct.
 

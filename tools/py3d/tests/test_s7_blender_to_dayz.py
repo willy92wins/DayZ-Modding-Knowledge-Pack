@@ -18,6 +18,7 @@ of them, or it is not checking anything.
 """
 
 import hashlib
+import math
 import warnings
 
 import pytest
@@ -224,8 +225,7 @@ def test_b2d_maps_points_keeps_order_negates_normals(fork):
 
 def test_b2d_multilod_every_lod_validate_clean(fork):
     """Every LOD converts - visual, the three collision LODs and the memory
-    points - and validate() stays [] on the clean multi-LOD model. Its
-    proxy triggers the warning."""
+    points - and validate() stays [] on the clean multi-LOD model."""
     p3d = build_multilod_v2_p3d(fork)
     assert p3d.validate() == []
     before = [([p.coords for p in lod.points], list(lod.facenormals),
@@ -233,8 +233,7 @@ def test_b2d_multilod_every_lod_validate_clean(fork):
               for lod in p3d.lods]
     mem = p3d.get_lod("memory")
     mem_before = mem.get_memory_points()
-    with pytest.warns(UserWarning, match="proxy"):
-        fork.blender_to_dayz(p3d)
+    fork.blender_to_dayz(p3d)
     assert p3d.validate() == []
     kinds = [lod.kind() for lod in p3d.lods]
     assert kinds == ["visual", "geometry", "view_geometry", "fire_geometry",
@@ -293,43 +292,71 @@ def test_b2d_second_call_undoes_the_first(fork):
     assert [[v.point_index for v in fa.vertices] for fa in lod.faces] == orders
 
 
-# ---- proxies: moved, not measured ------------------------------------------
+# ---- proxies: measured in game the same day --------------------------------
 
-def test_b2d_proxy_warning_comes_before_any_change(fork):
-    """With warnings turned into errors the call raises and the model is
-    byte for byte what it was."""
-    p3d = build_multilod_v2_p3d(fork)
-    before = write_bytes(p3d)
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        with pytest.raises(UserWarning, match="not been measured"):
-            fork.blender_to_dayz(p3d)
-    assert write_bytes(p3d) == before
+# Blender poses of the in-game proxy test: canonical raw rows (x, y, z) in
+# Blender coordinates. Identity, yaw +90 about Blender Z, and yaw +90 after a
+# 30 degree tilt about Blender X.
+_C30, _S30 = math.cos(math.radians(30.0)), math.sin(math.radians(30.0))
+BLENDER_PROXY_POSES = {
+    "identity": ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+    "yaw90": ((0.0, 1.0, 0.0), (-1.0, 0.0, 0.0), (0.0, 0.0, 1.0)),
+    "yaw90_tilt30": ((0.0, 1.0, 0.0), (-_C30, 0.0, _S30), (_S30, 0.0, _C30)),
+}
+
+
+def swap(v):
+    return (v[0], v[2], v[1])
+
+
+@pytest.mark.parametrize("pose", sorted(BLENDER_PROXY_POSES))
+def test_b2d_blender_proxy_equals_engine_space_proxy(fork, pose):
+    """What the binarized files showed, pinned offline: a proxy drawn in
+    Blender with add_proxy(space="raw") and converted with the model becomes
+    the very triangle add_proxy(space="engine") builds in DayZ space for the
+    frame worked out by hand - aside = M x, up = M z, dir = M y, M the swap.
+    In game those proxies rendered in the pose drawn in Blender; the same
+    matrices with space="raw" in DayZ space (the LL-505 bug) did not."""
+    rows = BLENDER_PROXY_POSES[pose]
+    engine_rows = (swap(rows[0]), swap(rows[2]), swap(rows[1]))
+    anchor = (1.5, 2.0, 0.25)
+    p3d = fork.P3D()
+    lod = fork.LOD()
+    lod.resolution = 1.0
+    p3d.lods.append(lod)
+    lod.add_proxy("\\kp\\target", 1, origin=anchor, rotation=rows, space="raw")
+    fork.blender_to_dayz(p3d)
+    want = fork.canonical_proxy_triangle(swap(anchor), engine_rows, 0.001,
+                                         "engine")
+    for got, expected in zip([p.coords for p in lod.points], want):
+        assert close3(got, expected), pose
+    frame = lod.get_proxies(strict=True)[0]["engine_frame"]
+    for got, expected in zip(frame, engine_rows):
+        assert close3(got, expected), pose
+    raw_twin = fork.canonical_proxy_triangle(swap(anchor), engine_rows, 0.001,
+                                             "raw")
+    assert not all(close3(p.coords, q) for p, q in zip(lod.points, raw_twin))
 
 
 def test_b2d_proxy_moves_like_any_face(fork):
-    """Records what happens to a proxy, without endorsing it: its points are
-    mapped and its vertex order kept. Its engine frame was not measured."""
+    """A proxy triangle gets nothing special: its points are mapped and its
+    vertex order kept, like every other face."""
     p3d = build_multilod_v2_p3d(fork)
     vis = p3d.lods[0]
     face = next(iter(vis.selections[PROXY].faces))
     order = [v.point_index for v in face.vertices]
     coords = [vis.points[i].coords for i in order]
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        fork.blender_to_dayz(p3d)
-    assert len(caught) == 1
-    assert caught[0].category is UserWarning
-    assert caught[0].filename == __file__
-    assert PROXY in str(caught[0].message)
+    fork.blender_to_dayz(p3d)
     assert [v.point_index for v in face.vertices] == order
     for (x, y, z), i in zip(coords, order):
         assert vis.points[i].coords == (x, z, y)
 
 
-def test_b2d_no_proxy_no_warning(fork):
+def test_b2d_emits_no_warning(fork):
+    """Not even for a model with a proxy."""
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
+        fork.blender_to_dayz(build_multilod_v2_p3d(fork))
         fork.blender_to_dayz(build_chiral_f_p3d(fork))
     assert caught == []
 

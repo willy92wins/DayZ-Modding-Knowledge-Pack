@@ -3000,16 +3000,21 @@ def blender_to_dayz(p3d):
 
     Call it once, on geometry that is in Blender space, before adding
     anything built in DayZ space - collision boxes, memory points in DayZ
-    coordinates, proxies from LOD.add_proxy: it converts everything in the
-    model, and a second call undoes the first.
+    coordinates, proxies placed with LOD.add_proxy(space="engine"): it
+    converts everything in the model, and a second call undoes the first.
 
     Proxy triangles move like any other face - points mapped, vertex order
-    kept, normal negated - and nothing more. The engine frame that comes
-    out of that was NOT part of the in-game test, so a model with
-    'proxy:' selections gets a UserWarning, raised before anything changes.
-    Prefer adding proxies after the conversion with
-    LOD.add_proxy(..., space="engine"), and check the binarized frame
-    against a model that works.
+    kept, normal negated - and nothing more. Measured the same day with
+    static proxies: a proxy drawn in Blender as this library's canonical
+    raw triangle (what LOD.add_proxy(space="raw") builds in Blender
+    coordinates, and what a DayZ raw triangle looks like after the swap)
+    comes out of binarize with the same engine frame as
+    LOD.add_proxy(space="engine") given the matching rotation, and renders
+    in the pose it had in Blender. A proxy drawn another way gets whatever
+    frame its triangle implies; check that one in the binarized file
+    against a model that works. Collision LODs converted with this
+    function register raycasts in all three collision modes; with
+    transform(ROT_X_NEG90) alone they do not.
 
     Refuses, with ValueError and before changing anything, a model where
     one Point object or one facenormals list is listed more than once -
@@ -3037,20 +3042,6 @@ def blender_to_dayz(p3d):
                     "each LOD its own points. Nothing was changed."
                     % (seen_points[id(p)], i))
             seen_points[id(p)] = i
-    proxies = sorted({name for lod in p3d.lods for name in lod.selections
-                      if PROXY_NAME_RE.match(name)})
-    if proxies:
-        shown = ", ".join(proxies[:3])
-        if len(proxies) > 3:
-            shown += " and %d more" % (len(proxies) - 3)
-        warnings.warn(
-            "blender_to_dayz: %d proxy selection(s) (%s) move with the model "
-            "- points mapped, vertex order kept - but the engine frame that "
-            "comes out has not been measured in game. Add proxies after the "
-            "conversion with LOD.add_proxy(..., space=\"engine\") and check "
-            "the binarized frame against a model that works."
-            % (len(proxies), shown),
-            UserWarning, stacklevel=2)
     p3d.transform(_BLENDER_TO_DAYZ_AXES)
     for lod in p3d.lods:
         for face in lod.faces:

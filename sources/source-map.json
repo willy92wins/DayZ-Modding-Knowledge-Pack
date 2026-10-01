@@ -326,7 +326,7 @@
           "decision": "merge",
           "decision_evidence": "Unreleased Deprecated and Fixed entries for py3d 1.8.0 (blender_to_dayz, BLENDER_TO_DAYZ deprecated, wheel identity, callers updated or flagged). Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
           "license": "MIT",
-          "source_hash": "f744ce21c7b185f8e5a521bb36328ebce506d42ad99240b8aea2487b70441104",
+          "source_hash": "753749df203267d3a41fd0be772dcfc72de2b8956e163589386e6ace1079e8bd",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
@@ -334,7 +334,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f744ce21c7b185f8e5a521bb36328ebce506d42ad99240b8aea2487b70441104",
+      "output_hash": "753749df203267d3a41fd0be772dcfc72de2b8956e163589386e6ace1079e8bd",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6987,9 +6987,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Rule 12 points at py3d.blender_to_dayz() (py3d 1.8.0) as the one-call form of its py3d recipe and notes the BLENDER_TO_DAYZ deprecation; appended within line 224, so no claim range moved. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
+          "decision_evidence": "Rule 12 points at py3d.blender_to_dayz() (py3d 1.8.0) as the one-call form of its py3d recipe and notes the BLENDER_TO_DAYZ deprecation; appended within line 224, so no claim range moved; the line's proxy sentence now carries the second in-game probe (collision raycasts, proxy frames). Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
           "license": "MIT",
-          "source_hash": "24e4f7fb7f41cf47496f06637fe3e7e60cca20ef7e4736fb74495fb1b3734a3d",
+          "source_hash": "7e6c6365e50c85e71b97034157d5627ac23cfd9efd0e1ffff3e98b9aa0098ca0",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
@@ -6997,7 +6997,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "24e4f7fb7f41cf47496f06637fe3e7e60cca20ef7e4736fb74495fb1b3734a3d",
+      "output_hash": "7e6c6365e50c85e71b97034157d5627ac23cfd9efd0e1ffff3e98b9aa0098ca0",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -7329,9 +7329,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "The py3d recipe paragraph points at py3d.blender_to_dayz() (py3d 1.8.0), states that it keeps every face's order, proxy triangles included, and warns on proxy selections (frames unmeasured, LL-505), and notes the BLENDER_TO_DAYZ deprecation; the Face Winding Order Fix paragraph now says that undoing transform()'s reversal restores the proxy triangles' authored order too, as Rule 12 does (frame still unmeasured). Both edits appended within their lines. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
+          "decision_evidence": "The py3d recipe paragraph points at py3d.blender_to_dayz() (py3d 1.8.0), states that it keeps every face's order, proxy triangles included, with the proxy frames measured later that day, and notes the BLENDER_TO_DAYZ deprecation; the Face Winding Order Fix paragraph now says that undoing transform()'s reversal restores the proxy triangles' authored order too, as Rule 12 does; both lines now carry the second in-game probe (collision raycasts, proxy frames for py3d canonical triangles). Both edits appended within their lines. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
           "license": "MIT",
-          "source_hash": "2f5e7ff16e1b550efc30da7543aecf76907cfb7237c9eb0f4f202a689bb571bc",
+          "source_hash": "ea801c44faa30411fc6dd6c88fbe9f6e579fa130763828691f086dcf0886ad19",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
@@ -7339,7 +7339,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2f5e7ff16e1b550efc30da7543aecf76907cfb7237c9eb0f4f202a689bb571bc",
+      "output_hash": "ea801c44faa30411fc6dd6c88fbe9f6e579fa130763828691f086dcf0886ad19",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -23335,7 +23335,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ebc71a932c96bb788d30858a5c53515db9fb3aec700ab490872555669a92b658",
+      "output_hash": "1a01aa5cba58e818ad3e97c36afeb2b9de635e04ff0dbe85591b3d2305eea8f0",
       "output_path": "tools/py3d/KNOWN-ISSUES.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23449,9 +23449,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Blender -> DayZ section: the in-game table, the migration from BLENDER_TO_DAYZ, and what was not measured (proxy frames); winding section reworded; test count 280 (273 plain + 7 CANON, run against upstream 7acd58b). Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
+          "decision_evidence": "Blender -> DayZ section: the in-game table, the migration from BLENDER_TO_DAYZ, and the measured scope; winding section reworded; test count 282 (275 plain + 7 CANON, run against upstream 7acd58b); collision and proxy results of the second in-game probe. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
           "license": "MIT",
-          "source_hash": "a6512221346e5e3e047cd324dd0413e9d82986b2466520855b7cd878e3467900",
+          "source_hash": "190054af1b8b3e5089395f6bffa1031c769210b4cc5b44003e1714506d8b2a00",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/README.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
@@ -23459,7 +23459,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a6512221346e5e3e047cd324dd0413e9d82986b2466520855b7cd878e3467900",
+      "output_hash": "190054af1b8b3e5089395f6bffa1031c769210b4cc5b44003e1714506d8b2a00",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23531,9 +23531,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "py3d 1.8.0: blender_to_dayz(p3d) - the det=-1 swap (x,z,y), face order kept, normals negated - replaces the documented transform(BLENDER_TO_DAYZ), which ships a mirrored model (measured in game 2026-10-01 on DayZDiag 1.29.163709 with one chiral model written three ways and binarized with AddonBuilder); its output is byte-identical to the MLOD that rendered solid and read correctly. BLENDER_TO_DAYZ is deprecated through a module __getattr__ (FutureWarning, value unchanged, also published as ROT_X_NEG90); proxy selections warn because proxy frames were not measured; a Point object or facenormals list listed twice (shared between LODs) is refused before any change, after a cross-family review (Codex gpt-6-sol) showed transform() would map it twice. The published fork does not carry this yet. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
+          "decision_evidence": "py3d 1.8.0: blender_to_dayz(p3d) - the det=-1 swap (x,z,y), face order kept, normals negated - replaces the documented transform(BLENDER_TO_DAYZ), which ships a mirrored model (measured in game 2026-10-01 on DayZDiag 1.29.163709 with one chiral model written three ways and binarized with AddonBuilder); its output is byte-identical to the MLOD that rendered solid and read correctly. BLENDER_TO_DAYZ is deprecated through a module __getattr__ (FutureWarning, value unchanged, also published as ROT_X_NEG90); proxy triangles move like any face; a second in-game probe the same day (DayZDiag 1.29.163709, run 7e4d808b, ODOL read with the LL-505 reader) measured collision LODs (raycasts hit in geom/view/fire, none after the det=+1 map alone) and static proxies drawn in Blender as canonical raw triangles (same ODOL frames as add_proxy(space=engine), rendered in the pose drawn), so the proxy warning was replaced by that documented result; a Point object or facenormals list listed twice (shared between LODs) is refused before any change, after a cross-family review (Codex gpt-6-sol) showed transform() would map it twice. The published fork does not carry this yet. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
           "license": "MIT",
-          "source_hash": "24efb2844e0998ec761fcba55abf33f85a2ce64442cf02c3a7ade17643a39c76",
+          "source_hash": "86e0541ae4a2336f57a8101453b82e46a9fb460f7b96b689bd57ecfa24445ab6",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/py3d/__init__.py",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
@@ -23541,7 +23541,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "24efb2844e0998ec761fcba55abf33f85a2ce64442cf02c3a7ade17643a39c76",
+      "output_hash": "86e0541ae4a2336f57a8101453b82e46a9fb460f7b96b689bd57ecfa24445ab6",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23717,9 +23717,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Identity gate updated for the 1.8.0 reseal: control rebuild of the 1.7.0 pin byte for byte, two identical 1.8.0 builds, applicator dry-run only, live restock not done; build-wheel.ps1 path corrected to rollout/. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
+          "decision_evidence": "Identity gate updated for the 1.8.0 reseal: control rebuild of the 1.7.0 pin byte for byte, two identical 1.8.0 builds, applicator dry-run only; no installed skill tree vendors a wheels/ directory any more and the site-packages install follows the merge; build-wheel.ps1 path corrected to rollout/. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
           "license": "MIT",
-          "source_hash": "49300590361eda5b72182031b3de3ef5840b22b405c43cb6f957afee07ba13d1",
+          "source_hash": "6f8165dde7f3df36b3e499f157eb125940732dceca4f095b4515b8058c9c37d2",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/rollout/README.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
@@ -23727,7 +23727,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "49300590361eda5b72182031b3de3ef5840b22b405c43cb6f957afee07ba13d1",
+      "output_hash": "6f8165dde7f3df36b3e499f157eb125940732dceca4f095b4515b8058c9c37d2",
       "output_path": "tools/py3d/rollout/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24205,9 +24205,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Resealed by build-wheel.ps1 -UpdateManifest at the owner's explicit request: py3d_dayz-1.8.0-py3-none-any.whl, SHA-256 f68974e16687d55fbf3c0b1d7c3c9dd1e48d833ec67db4795f69eb02320e2f16, two identical builds from a clean tree after the review fixes (an earlier 1.8.0 pin, 0864beae..., never left this machine); the same script first reproduced the 1.7.0 pin 96bb546b... byte for byte on the same machine. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
+          "decision_evidence": "Resealed by build-wheel.ps1 -UpdateManifest at the owner's explicit request: py3d_dayz-1.8.0-py3-none-any.whl, SHA-256 3fd4caa3ca40ac0436fb582cf41dfdf4f67a9aa8382cfcebb9314076a9827f8e, two identical builds plus a third verification build from a clean tree after the proxy measurement (earlier 1.8.0 pins 0864beae... and f68974e1... never left this machine or were superseded on the open PR); the same script first reproduced the 1.7.0 pin 96bb546b... byte for byte on the same machine. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
           "license": "MIT",
-          "source_hash": "013535144cb3e7733b18d0b3c762b0cd022502615116ad2b419cacf04d1ea1ea",
+          "source_hash": "6260625e23d247684bc0fb4a80f8e1818181cbbfe307d29991f2f7c7466c611c",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/rollout/wheel-manifest.json",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
@@ -24215,7 +24215,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "013535144cb3e7733b18d0b3c762b0cd022502615116ad2b419cacf04d1ea1ea",
+      "output_hash": "6260625e23d247684bc0fb4a80f8e1818181cbbfe307d29991f2f7c7466c611c",
       "output_path": "tools/py3d/rollout/wheel-manifest.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25291,9 +25291,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored in the pack for py3d 1.8.0: rebuilds the 2026-10-01 in-game test model and asserts the SHA-256 of the three measured MLODs, chirality (the F reads correctly only through blender_to_dayz), the MLOD inward winding, the proxy warning before any change, and the deprecated constant. Seven wrong implementations each fail at least one of its tests: old det=+1 recipe, reflection alone, no normal negation, no un-reversal and no proxy warning fail 3-7 each; collision LODs shifted 1 m (the cross-family review's mutant) and no shared-data check fail 1 and 2. The published fork does not carry this file yet. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
+          "decision_evidence": "Authored in the pack for py3d 1.8.0: rebuilds the 2026-10-01 in-game test model and asserts the SHA-256 of the three measured MLODs, chirality (the F reads correctly only through blender_to_dayz), the MLOD inward winding, a Blender-drawn proxy converted into the add_proxy(space=engine) triangle for three poses (what the binarized files showed), no warnings, and the deprecated constant. Six wrong implementations each fail at least one of its tests: old det=+1 recipe 10, reflection alone 8, no normal negation 7, no un-reversal 5, collision LODs shifted 1 m (the cross-family review's mutant) 1, no shared-data check 2. The published fork does not carry this file yet. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
           "license": "MIT",
-          "source_hash": "b35542778605c4b5c8a14e88fe302d1970ad31b82571e1a00f83ffd7e1c65eea",
+          "source_hash": "78663a447ae3ea5c0e9b916ced4b014b0d08d5d928ed4f353e631dad9700a61d",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/tests/test_s7_blender_to_dayz.py",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
@@ -25301,7 +25301,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b35542778605c4b5c8a14e88fe302d1970ad31b82571e1a00f83ffd7e1c65eea",
+      "output_hash": "78663a447ae3ea5c0e9b916ced4b014b0d08d5d928ed4f353e631dad9700a61d",
       "output_path": "tools/py3d/tests/test_s7_blender_to_dayz.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
