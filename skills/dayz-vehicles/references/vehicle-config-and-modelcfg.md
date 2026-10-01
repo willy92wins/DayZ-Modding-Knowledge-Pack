@@ -171,6 +171,8 @@ refuted twice: `vehicle-structural-parity.md` Correction 2026-06-01 and 2026-06-
 spawn-bounce causes: chassis Geometry overlapping the wheel volume, spawn placement, and a stray `#Mass#`
 tag on a non-Geometry LOD (FireGeo) baking CoM=(0,0,0).
 
+Measured generalization for any vehicle inheriting suspension from a different mass [DESIGN] (LL-512, measured in game on a 157 kg motorbike inheriting `Motorbike_02`'s springs, DayZ 1.30.164014 Exp): the wheel hangs from the modeled axle, the spring is zero at full extension, and F = k (u + travelMaxDown) with u linear in the damper phase (phase 0 = -travelMaxDown, 1 = +travelMaxUp). Measure each wheel's rest phase in game: the sum of spring forces / 9.81 must equal the configured mass — a shortfall means another collision box is resting on the ground. To seat the body on the axle set travelMaxDown = F / k per wheel keeping the up+down total (so the model.cfg damper zero stays valid); if that asks for too much extension, raise k = F / down and scale damping with √(k·m). Leave compression travel for load transfer (m·h / wheelbase). Full recipe with the measured numbers: `dayz-motorbikes` SKILL.md, "Measured lessons from LFDucati" (LL-512).
+
 ## 4. Crew (driver / co-driver / cargo)
 
 `[DayZ-wiki ✓]` property table:

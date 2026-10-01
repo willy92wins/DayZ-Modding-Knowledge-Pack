@@ -110,6 +110,12 @@ source. If `config.bin` and `config.cpp` coexist, derapify and audit the `config
 the PBO the engine consumes; resolve any date or content divergence before release. Several
 script-only audits are not independent confirmation when they share this same blind spot.
 
+### Storage-copy census: without the CE anchor files nothing loads (SP-399, added 2026-09-14, measured in game, DayZDiag 1.29.163709)
+
+[EXACT] A copy of `storage_1` carrying only `animals.bin`, `building.*` and `dynamic_*` (without `types.*`, `events.*`, `vehicles.*`, `zombies.bin`) loads NOTHING: the RPT reports every file `ver:0 stamp:0, valid:NO` — even files that are present — and ends with `[CE][Hive] :: Empty storage folder, reinitializing ...`; zero items restored, zero mod load lines. The `dynamic_000.bin` header bytes match a working world's, so it is not corruption: the CE files anchor the stamp that validates the rest. Control on the same machine, full world: `dynamic_000.bin ... valid:yes` and `Restoring file ... 812 items.`
+
+Rules: (1) before censusing a storage copy, check that `data/` brings `types.bin` and `events.bin` with their generations besides the `dynamic_*`; (2) a boot census counts only if the RPT shows `Restoring file ... N items` with N > 0 — without that signal a zero count of load lines is vacuous, not "zero"; (3) do not count entities by grepping class names in the `.bin` files — the byte-grep returns 0 even in a world that contains them.
+
 ## Hard stops
 
 Stop and resolve the violation before recommending or shipping persistence work:
@@ -126,6 +132,11 @@ Stop and resolve the violation before recommending or shipping persistence work:
 6. A test covers only the happy path; future, truncated, rollback, and injected
    I/O failures remain unexercised.
 7. Promotion reports `PROMOTION-UNROUTED` or `PROMOTION-DRIFT`.
+8. Live `CargoBase` is walked by frozen index across ticks while items can be removed mid-walk (SP-418).
+
+### Live cargo capture across ticks (SP-418, added 2026-09-21, measured in game, DayZ 1.30.164014 Exp)
+
+[EXACT] `GetItemCount()` is frozen when the capture begins; a batched walk over `cargo.GetItem(i)` silently loses items if the player removes one mid-capture: the cargo compacts, the shifted item lands on an already-visited index, never enters the snapshot, and a later `ClearPhantomItems` destroys it unwritten. The guard `i < GetItemCount()` hides the out-of-range access. Invariant: walking live cargo across ticks requires either a fail-closed abort when the count changes, or capture by entity identity at a single instant. A range guard that skips the hole is silent loss. Do not improvise a smarter walk on a data path without an explicit decision: the minimum correct behaviour is to abort without writing world or disk.
 
 ## DayZ 1.30 Exp (build 1.30.164014)
 

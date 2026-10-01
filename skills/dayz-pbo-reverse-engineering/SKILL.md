@@ -68,6 +68,9 @@ New-Item -ItemType Directory -Force -Path "$workdir\_state","$workdir\_meta" | O
 - `-P` — don't pause on completion (required for scripting). MANDATORY.
 - DO NOT use `-W` — it means "warnings are errors", too strict for unfinished/legacy PBOs. Skip.
 - `-LB` for listing only (inventory pass).
+- [EXACT] `-R` — do not convert binarised param files. Required when the `-LB` listing shows `config.bin` AND a packaged `config.cpp` in the same folder: without `-R` the converter writes a `.cpp` from the `.bin`, collides with the packaged one, and extraction aborts at the first collision (exit 11, "already exists. Will not overwrite it."). (measured with ExtractPbo 2.35 / DePbo DLL 10.13, 2026-09-26)
+- [DESIGN] Keep the destination short and shallow: nested PBO folders under a long destination exceed MAX_PATH and abort with "cannot make folder" (exit 11).
+- [EXACT] `-P` also applies when printing the syntax: a bare `ExtractPbo.exe` run to see the usage waits for a key press and hangs the shell until killed by PID; `ExtractPbo -P` prints the syntax and exits.
 
 Mikero auto-creates subdirectory `<destination>\<pbo_basename>\` from PBO prefix.
 

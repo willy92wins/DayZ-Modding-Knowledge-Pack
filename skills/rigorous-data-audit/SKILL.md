@@ -709,3 +709,9 @@ Procedure:
 
 Record both directions separately: leaf-to-base proves that a leaf reaches the hook, while
 base-to-descendants proves that no overriding child bypasses it.
+
+## (added 2026-09-29, SP-447) Census the inventory before handing it to auditors; deployed ≠ source via the PBO
+
+1. [EXACT] A regex-generated inventory is closed with an independent census before auditors see it: the LFPowerGrid save/load-body table listed 11 files while 25 contained `ctx.Read` or `ctx.Write`, missing an entire hook family (`LFPG_OnStore*Device`, 10 classes). Auditors treat the handed table as complete.
+2. [DESIGN] "Deployed artifact ≠ source" is checked in DayZ by extracting the PBO and comparing by content (EOL-normalized) against each candidate tag: a release tag differed from the published PBO in 51 of 144 scripts.
+3. [EXACT] Do not count entities by searching class names in `storage_1\data\*.bin` (nor in `types.bin`): the positive control returns 0 matches in a world that does contain those classes. Count them in game.

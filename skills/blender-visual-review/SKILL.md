@@ -169,6 +169,8 @@ Walk every category — the point of a checklist is to catch the defect you were
 - **Shading artifacts** — black facets, pinching, smooth shading bleeding across a hard edge, n-gons on curved areas.
 - **Exploded / floating parts** — gaps between parts that should touch; a part hovering off its mount. (`blender-assembly`'s `verify_overlap` catches the quantifiable ones; the eye catches the rest.)
 - **Doubled geometry** — a shimmer that flickers between angles means two faces occupy the same place (z-fighting).
+- **Animated parts: clearance per keyframe, not per render** — presentation renders only show posed frames; impacts hide behind walls or closed doors. Evaluate the depsgraph mesh at every keyframe AND at intermediate points of each travel span: `BVHTree.overlap` between each moving mesh and each fixed mesh, a sweep of fixed-geometry points (vertices, face and edge centres) that fall inside the part's at-rest footprint and travel range, and section cuts on the travel planes. A flush contact also reports as overlap — separate it from a penetration by measuring how deep the geometry enters the footprint, not how many triangles cross. [EXACT] Measured on an animated rock platform (2026-10-01): its 9 presentation cameras showed nothing, while the sweep found a 12 × 14.6 m platform crossing a lip 0.27 m into its footprint and an elevator cabin crossing the top threshold (0.14 m) on every ride, visible only from inside at frame 145.
+- **Workbench `color_type = 'TEXTURE'` paints one image of the material, not its shading** [EXACT] — on a vanilla rock the `rock_*_mask` input rendered as flat RGB mask colours and looked like a defect. Judge materials in EEVEE with the file's own lights. (measured 2026-10-01)
 
 ### B. DayZ parity vs a vanilla reference
 
@@ -181,6 +183,13 @@ Import a known-good vanilla model into the same scene at 1:1 and compare side by
 ### C. Reference-image comparison
 
 When matching a photo or concept: load the reference as a camera background image (`cam_data.show_background_images = True`, then `cam_data.background_images.new().image = bpy.data.images.load(path)`), match the camera to the reference's angle, render, and compare **named landmarks** — roofline, wheel arch, handle position — not overall impression. Report silhouette deviation, missing or extra masses, and proportion drift by pointing at specific points.
+
+### D. Photo-resemblance scoring: calibrate the camera first (added 2026-09-25, SP-427)
+
+- **One Blender camera per reference photo, calibrated by silhouette IoU** — maximize the IoU between the Workbench-alpha silhouette and the photo mask (Nelder-Mead over loc/yaw/pitch/roll/focal, initialized from a known-size feature such as the tyres from the spec sheet). Judge only photo|render crops taken with that same camera: with an eyeballed "similar" camera the proportion errors (a wing out of place, a dome floating 5 cm) stay invisible.
+- **Poor or partial views** — low-res or off-angle photos converge to a false camera (IoU 0.81 on a brochure front view); solve PnP on 6-8 triangulated points across other photos instead, and reject any refinement that LOWERS silhouette IoU (a 2-anchor bundle shifted the camera 38 cm along the view rays and dropped IoU 0.936 to 0.923).
+- **Silhouette renders** — set `render.use_compositing = False`: an Alpha-Over compositor makes the whole silhouette opaque when `film_transparent` is on.
+- **Judge blind, cross-family.** [EXACT] Same-family self-scores ran 1-2 checklist points above a blind audit by another model family over the same 27 image sets (measured in Blender 5.1.1 headless against studio photos, 2026-09-25); the working score is the per-criterion minimum of self and blind.
 
 ## Hard guardrail: a Blender render cannot judge DayZ winding
 

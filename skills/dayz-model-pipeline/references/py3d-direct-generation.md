@@ -225,7 +225,7 @@ After generating, verify:
 - [ ] Texture paths use backslashes and .paa extension
 - [ ] Material paths use backslashes
 - [ ] If imported from Blender: Z-up → Y-up rotation applied (see below)
-- [ ] After source-axis conversion: reverse face winding only for a reflection (det<0) or a non-engine-winding source (glTF/CCW); do not reverse a det=+1 rotation whose source winding already matches the engine. For that det=+1 case, verify `check_face_winding` reports ~0% flipped (UNIFORM_NON_FLIPPED).
+- [EXACT] After source-axis conversion: follow SKILL.md Rule 12 — Blender/FBX-authored geometry gets every face's vertex order reversed and normals negated even though the position map is det=+1; glTF/GLB goes pure-swap det=-1 + reverse. The old "reverse only for det<0" criterion is superseded (SP-432); see also the LL-504 mirroring correction under "Rule 13 nuance". Verify with `check_face_winding`.
 - [ ] If accepting attachments: proxy faces + selections present in visual LODs
 
 ## Blender Z-up → DayZ Y-up Rotation (MANDATORY for Blender exports)
@@ -254,21 +254,11 @@ for lod in model.lods:
     lod.facenormals = new_normals
 ```
 
-**WARNING (corregido 2026-07-06 — alinea con `SKILL.md` Rule 13 / LL-020, verificado in-game):** la
-reversión de winding NO es incondicional. La rotación `(x,z,-y)` es una **rotación PROPIA (det=+1)** →
-PRESERVA handedness y winding → **NO se reversa** (reversar sobre un det=+1 da 100% flipped: modelo solo
-visible desde dentro / negro por fuera, LL-020). Se reversa SÓLO si (a) la transform introduce una
-REFLEXIÓN (det<0, p.ej. el pure swap `(x,z,y)` de los imports glTF), o (b) el source no trae ya el
-winding del engine (glTF front faces = CCW por spec → import glTF va con pure swap `(x,z,y)` det=-1 +
-reverse). Verifica SIEMPRE con `check_face_winding` (cross(e1,e2)·normal) tras ensamblar: ~0% flipped.
+**WARNING [EXACT] (corrected 2026-09-26, SP-432 — aligns with `SKILL.md` Rule 12):** the 2026-07-06 note "det=+1 → never reverse" does NOT hold for Blender/FBX-authored geometry. Follow SKILL.md Rule 12: Blender/FBX-authored geometry with outward normals maps with `(x,z,-y)`, gets every face's vertex order reversed (except proxy triangles) and normals rotated then negated; measured against five working LFPowerGrid p3d whose game side is validated. glTF/GLB keeps its own pure-swap `(x,z,y)` det=-1 + reverse path. Additional in-game measurement (LL-504, 2026-09-22): even with that recipe, a det=+1 map ships a MIRRORED model — text and logos read backwards; see the LL-504 correction under "Rule 13 nuance" in SKILL.md and re-check the position map itself. Verify with `check_face_winding` after assembly.
 
-## Face Winding Order Fix (CONDICIONAL — solo si det<0 o source glTF/CCW)
+## Face Winding Order Fix (per source path — see SKILL.md Rule 12)
 
-Refinado por LL-020: reversa el orden de vértices SÓLO cuando la transform introduce una reflexión
-(det<0) o el source no trae ya el winding del engine. Geometría generada en Z-up y rotada con la
-rotación propia `(x,z,-y)` (det=+1) → NO se reversa. Cuando SÍ toca (típico: import glTF/GLB resuelto
-como pure swap `(x,z,y)` det=-1), reversa cada cara de cada LOD — EXCEPTO triángulos proxy (su orden
-codifica el frame P0/P1/P2, no tocar):
+Blender/FBX-authored geometry: reverse every face of every LOD — EXCEPT proxy triangles (their vertex order encodes the attachment frame P0/P1/P2, do not touch). glTF/GLB resolved as pure swap `(x,z,y)` det=-1: reverse as well. The old "reverse only if det<0" criterion is superseded by the measured recipe (SKILL.md Rule 12) and the LL-504 mirroring correction.
 
 ```python
 for lod in model.lods:

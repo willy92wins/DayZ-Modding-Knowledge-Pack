@@ -507,3 +507,7 @@ MLOD round-trip, compare parsed fields while ignoring the unused fourth slot of 
 or binarize both versions and compare the resulting ODOL semantics. Keep byte identity only
 for producers that explicitly promise canonical zero padding. This caveat is separate from
 the Memory-selection loss described in SP-002.
+
+## Measure visibility by AREA sampling, not by a centroid ray (SP-446, added 2026-09-28)
+
+[EXACT] To decide whether a selection is visible from outside, cast rays from random points across the whole face (order of 3000 per LOD) and report the free-area percentage; a single ray from the centroid lies. Measured on a heater model: centroid rays reported "48/48 blocked in all 6 directions" while area sampling showed 84-86 % free — every face was a long thin triangle whose centroid sat behind a 1-2 mm wire. The false diagnosis nearly triggered rebuilding the model (the emissive grid) instead of fixing the config.
