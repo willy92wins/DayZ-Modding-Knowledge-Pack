@@ -299,7 +299,7 @@ plan.
 | Touch a linter rule | `python tools/dayz-script-validator/scripts/vanilla_control.py` |
 | Change *this repository* | [§4](#4-what-this-file-is-not) |
 
-Forty playbooks sit under `skills/`. The table above is the frequent
+Forty-two playbooks sit under `skills/`. The table above is the frequent
 routes. The rest (`blender-assembly`, `uv-clean-atlas`, `mixamo-retarget`,
 `ardy-motion-generation`, …) still apply when their `description:` matches —
 read front-matter, then that `SKILL.md`.

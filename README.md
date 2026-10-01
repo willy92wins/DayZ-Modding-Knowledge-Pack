@@ -165,6 +165,7 @@ back to it.
 | Skill | Use when |
 |---|---|
 | `dayz-vehicles` | Authoring, importing or debugging a **drivable ground/water vehicle** (car, truck, quad/ATV, motorbike, boat) on the CarScript/Boat base. Owns the full `config.cpp` + `model.cfg` contract (SimulationModule drivetrain, Axles/Wheels, Crew, AnimationSources, `wheel_1_1..2_2`), structural parity vs a vanilla vehicle, and the packaging failures that pass local filepatching but break on a dedicated server (white/untextured, reversed wheel spin). **Invoke before writing any ground-vehicle entity/config.** |
+| `dayz-motorbikes` | **Single-track vehicles (motorbikes / motorcycles)** in DayZ 1.30 Experimental build 1.30.164014. Covers `MotorbikeScript`, `simulation = "motorbike"`, 2-wheel physics (Wheels block without Axles, Brakes split Front/Rear, lean/steering/tipover), kickstand/kickstart, 3rd person camera (ID 32), and 1.30 modular refactor (`VehicleLightsComponent`, `VehicleHornComponent`, `VehicleVFXComponent`). |
 | `dayz-aviation` | **Planes, seaplanes, and helicopters** via the CarScript-as-aviation pattern. Real aerodynamics in Enforce Script (lift/drag/stall, ISA atmosphere), NaN-safe physics, PID auto-stabilization, flight-control AnimationSources, aviation memory points, script-driven dials, Buoyancy for seaplanes, retractable gear, RPM-band sound. Documents 5 flight-model implementations across 4 authors. |
 | `rip-vehicle-import` | Converting a **racing-game rip** (source-game Grub: `.modelbin`/`.carbin`) into a drivable, textured DayZ CarScript car. A 12-step pipeline + day-1 checklist + winding/glass/interior/material rules distilled from ~30 sessions on the first car. Pairs with `dayz-vehicles`. |
 
@@ -173,6 +174,7 @@ back to it.
 |---|---|
 | `dayz-weapons` | Custom **firearm** (entity side): the `.p3d` contract (bolt/trigger/magazine selections + memory points), weapon-selection→player-bone remap (`AddItemBoneRemap`), the `CfgWeapons`/`config.cpp` contract, inheritance base choice (Rifle_Base / BoltActionRifle_Base / Pistol_Base…), fire modes, dispersion, recoil, jam config, attachment/optics slots, muzzle-flash + ejection points. |
 | `dayz-characters` | **Humanoid characters** (custom infected/zombies, survivors, NPCs): mesh → retopo → rig to `OFP2_ManSkeleton` → UV + normal bake → character LODs → `config.cpp` inheritance (ZombieMaleBase / SurvivorBase…) → PBO. Owns baked scaling (runtime `SetScale` is broken), the one-anim-mod-at-a-time wall, canonical bind pose. |
+| `dayz-clothing` | **Clothing mods and worn models** (`_m`/`_f`): `ClothingTypes`, slot setup (`Vest`, `Body`, `Armband`, `NBCHead`/`NBCTop`/`NBCPants`/`NBCBoots`/`NBCGloves`), `NBCBag`, `Waterskin`, gas mask filters, `headSelectionsToHide`, and wet clothing. Fixes floating, rigid or rotated clothing. |
 | `blender-animation` | Authoring or modifying **animations in Blender** (via the Blender MCP) and handing them off to DayZ (RTM / `.anm` / `.txa` / SEAnim). Includes physics-sim driven motion. |
 | `dayz-animation-pipeline` | **DayZ animation end-to-end**: config-driven object animation (`model.cfg` / AnimationSources), item carry IK, hide-on-attach, skeletal RTM / Enfusion `.anm` via SEAnim, anim-graph / weapon states, vehicle-rider IK. Use before writing any animation that has to play in-game. |
 | `dayz-realistic-animation-director` | **Realistic motion director**: contract, blocking, offline audit and in-game gate for player/hands/weapons/locomotion/creatures/vehicles. Orchestrates `blender-animation` and `dayz-animation-pipeline`; ships no third-party motion models. |
@@ -209,6 +211,9 @@ back to it.
 | `dayz-ui-development` | **UI / HUD / menus**: `.layout` brace format, `.styles`, vanilla widgets, Dabs MVC, Expansion menus. Especially when the UI does not match the design or breaks at other resolutions. |
 | `dayz-doors` | A **door, hatch or lid** on a building or static prop (`class Doors`), including a button/lever source and `model.cfg` skeleton work. |
 | `dayz-physics-engine` | **Rigid bodies, layers, raycasts, contacts**: `dBody*`/`dGeom*`/`dJoint*`, `PhxInteractionLayers`, `RaycastRV` vs `*Bullet`, `EOnContact`, TransportHit, "player walks through my object". |
+| `dayz-environment-hazards` | **Environmental hazards and weather events**: sandstorms (`sandstormFrequency`, `ScriptedSandstormController`, shelter fade, `DEF_DUST_PARTICLE`), temperature and solar exposure (`ThermalBias`, `HeatStroke`, `IsInShadow`), oil pits (`OilPitArea`), silicosis, irritated eyes, `AGT_AIRBOURNE_SOLID`, `WashHead`, Badlands, and Nasdara. |
+| `dayz-persistence` | **Entity persistence and data safety**: designing, implementing, debugging, or auditing `OnStoreSave`/`OnStoreLoad` streams, CF `ModStorage` and `storageVersion`, format migration/rollback, sidecar JSON, recoverable file replacement, `CombinationLock` stream v143, code lock, `ThermalBiasHandler`, `GAME_STORAGE_VERSION`, and `BunkerBroadcastPersistenceStorage.bin`. |
+| `dayz-underground` | **Underground areas and terrain holes** in DayZ 1.30 Exp (1.30.164014): bunkers, tunnels, caves, `SurfaceIsHole`, `holes.cfg`, `CfgWorlds Holes` (`tiles[]`), Buldozer `MarkUnderground`/`CopyTileCoord`, `cfgundergroundtriggers.json` (`UndergroundTrigger`, `EyeAccommodation`, `EUndergroundPresence`, `INPUT_UDT_UNDERGROUND_SYNC`), and `cfgbunkerbroadcast.json`. |
 
 **Process, QA & tooling** (domain-agnostic — use them across all of the above)
 | Skill | Use when |
@@ -263,14 +268,15 @@ look in game* — and that step is the expensive one: a rebuild, a server, a cli
 set up by hand, several minutes per iteration. **[DayZ-MCP](https://github.com/willy92wins/dayz-mcp)**
 (MIT, its own repository) is what lets an agent take that step itself.
 
-It is an MCP server that drives a running DayZDiag server **and** client. **38 tools are
-advertised** of 39 registered — `exec_enforce` is an escape hatch, off by default behind an
-exact-match allowlist. They group into: a **session lease** so two agents cannot fight over one
-game, **queries** on player state, **world mutation** (spawn, delete, animate, time, weather,
-inventory, teleport), **scene reads** (raycast, surface query, object inspect, telemetry),
-**camera and capture**, a **vehicle** group (enter, engine, control, telemetry, trace), and
-**lifecycle**: `dayz_test_run` builds a mod, starts a diag server and client with it loaded,
-and waits for readiness.
+It is an MCP server that drives a running DayZDiag server **and** client. **75 tools (+
+`exec_enforce` when an allowlist is configured)** — `exec_enforce` is an escape hatch, off by
+default behind an exact-match allowlist. They group into: a **session lease** so two agents
+cannot fight over one game, **queries** on player state, **world mutation** (spawn, delete,
+animate, time, weather, inventory, teleport), **scene reads** (raycast, surface query, object
+inspect, telemetry), **camera and capture**, a **vehicle** group (enter, engine, control,
+telemetry, trace), **weapons**, **actions and input**, **UI**, **knowledge**, **playbooks**,
+the **pipeline inbox**, and **lifecycle**: `dayz_test_run` builds a mod, starts a diag server
+and client with it loaded, and waits for readiness.
 
 The detail that shows it was built against the engine and not against a wish: the split is not
 by tool group, it is **by peer**. `vehicle_enter` seats a player server-side; only
@@ -506,9 +512,14 @@ are the real value; keep them even if you adapt everything else.
 
 ## 9. Updates and releases
 
-`~\.claude\skills\` is the working copy (where agents edit and load).
-This repository is the publication snapshot: it receives harvest by UNION,
-never a wipe of the destination. A release is created only after
+For every skill listed in `promotions/promotion-map.json`, this repository is
+the **editable source**: a change lands here first (the skill, a resealed
+`sources/source-map.json`, `packctl validate` green) and is then promoted into
+the installed skill trees with `packctl promote`. Those installed trees are
+promotion targets, not working copies; a hand edit there is what
+`PROMOTION-TARGET-UNEXPLAINED` exists to catch ([`CONTRIBUTING.md`](CONTRIBUTING.md) §7).
+Harvest from a working store is by UNION, never a wipe of the destination.
+A release is created only after
 `python -m packctl gate --root .` passes from a clean commit and two clean
 builds produce the same SHA-256. The Cowork plugin tree is ephemeral.
 The pack is the OFFLINE layer; DayZ-MCP is the ONLINE/in-game layer.
@@ -519,6 +530,13 @@ representative in-game matrix. Record evidence and unknowns in
 [`compatibility-matrix.md`](compatibility-matrix.md) and notable changes in
 [`CHANGELOG.md`](CHANGELOG.md). Contribution and privacy requirements are in
 [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+**Build coverage (2026-10-01).** The compatibility matrix is pinned to stable
+`1.29.0.163451`. 24 skills also carry sections for **DayZ 1.30 Experimental**
+(build `1.30.164014`), each labelled as such, and `dayz-motorbikes` targets 1.30
+only. 1.30 has not reached stable on this date; when it does, those sections are
+re-checked against the stable build before their labels change. Where each 1.30
+section lives: [`compatibility-matrix.md`](compatibility-matrix.md) §DayZ 1.30 Experimental.
 
 ---
 

@@ -32,6 +32,48 @@ workflow was run end-to-end on this build during r21 Phase 01.
   when reused.
 - `unverified`: no sufficient evidence; never interpret as compatible.
 
+## DayZ 1.30 Experimental (build 1.30.164014)
+
+Added **2026-10-01**. 1.30 is still Experimental on this date (Experimental Update 1
+shipped 2026-09-16); the stable target above is unchanged.
+
+Between 2026-09-16 and 2026-09-30, sections for 1.30 Experimental were added to
+the 24 skills below, plus the 1.30-only `dayz-motorbikes`. They were written
+against a local extraction of build `1.30.164014` (scripts, `config.cpp` files and
+the plain-text `.agf` animation graphs). **This table only locates that content; it
+does not re-verify it.** The evidence level of each 1.30 statement is the one its own
+section records (`[EXACT]` with a `path:line` for source checks, "measured in game"
+for runtime ones). None of it has been checked against a 1.30 stable build, because
+none exists yet.
+
+| Skill | Where the 1.30 Experimental content lives |
+|---|---|
+| `dayz-ai-patterns` | `references/dayz-1-30-ai.md` |
+| `dayz-animation-pipeline` | `references/anim-graph.md`, `references/dual-entry-action-pattern.md`, `references/item-ik-and-hide.md` (+6 more) |
+| `dayz-aviation` | `references/dayz-1-30-aviation.md` |
+| `dayz-basebuilding` | `references/dayz-1-30-construction-rebuilding.md` |
+| `dayz-characters` | `references/dayz-1-30-characters.md` |
+| `dayz-clothing` | `references/dayz-1-30-clothing.md` |
+| `dayz-doors` | `references/door-model-cfg-and-config.md`, `references/lods-and-object-builder.md`, `references/worked-examples.md` (+1 more) |
+| `dayz-environment-hazards` | `references/sandstorm-shelter.md`, `references/sources.md`, `references/thermal-heatstroke.md` (+1 more) |
+| `dayz-mcp-verify` | `references/dayz-1-30-mcp-verify.md` |
+| `dayz-mod-workflow` | `references/dayz-1-30-mod-workflow.md` |
+| `dayz-model-pipeline` | `references/dayz-1-30-model-pipeline.md` |
+| `dayz-particles` | `references/dayz-1-30-particles.md` |
+| `dayz-pbo-build` | `references/dayz-1-30-pbo-build.md` |
+| `dayz-persistence` | `references/dayz-1-30-persistence.md` |
+| `dayz-physics-engine` | `references/dayz-1-30-ragdoll-and-fall.md` |
+| `dayz-preflight` | `SKILL.md` |
+| `dayz-realistic-animation-director` | `references/biomechanics-and-contact.md`, `references/domain-gates.md`, `references/evidence-and-integration.md` (+2 more) |
+| `dayz-sound-system` | `references/dayz-1-30-sound.md` |
+| `dayz-test-ingame` | `references/dayz-1-30-test-ingame.md` |
+| `dayz-ui-development` | `references/hud-action-info-panels.md`, `references/styles-format.md`, `references/vanilla-menus-map.md` (+2 more) |
+| `dayz-underground` | `references/terrain-holes-evidence.md`, `references/underground-triggers.md`, `SKILL.md` |
+| `dayz-vehicles` | `references/dayz-1-30-vehicles.md` |
+| `dayz-weapons` | `references/dayz-1-30-weapons.md` |
+| `enforce-script-reference` | `references/dayz-1-30-enforce-script.md` |
+| `dayz-motorbikes` | the whole skill (1.30 only) |
+
 ## Skill coverage
 
 | Skill | Level on 1.29.0.163451 | Required or recommended dependencies | Breaking changes / limits | Evidence |
@@ -75,6 +117,9 @@ workflow was run end-to-end on this build during r21 Phase 01.
 | `dayz-realistic-animation-director` | `cross_checked` | Blender with `bpy`; `blender-animation`; `dayz-animation-pipeline`; optional DayZDiag for the in-game gate | Offline validators compile. No third-party motion models or ARDY weights ship. Adopted, not re-run. | `skills/dayz-realistic-animation-director/SKILL.md`; `skills/dayz-realistic-animation-director/scripts/` |
 | `uv-clean-atlas` | `cross_checked` | Blender 4.3+ headless; optional PartUV (not shipped) | Scripts compile; `sys.path` stays at the skill `scripts/` directory. One source-game brand token was neutralized. Adopted, not re-run. | `skills/uv-clean-atlas/SKILL.md`; `skills/uv-clean-atlas/scripts/` |
 | `3d-generation-harness` | `cross_checked` | `blender-assembly`; `blender-visual-review`; `dayz-model-pipeline`; `dayz-p3d-audit`; optional external image-to-3D skill (not in this pack) | Process harness. `hunyuan3d-local` and kin are optional/external — the pack does not include them. Adopted, not re-run. | `skills/3d-generation-harness/SKILL.md` |
+| `dayz-environment-hazards` | `unverified` (1.30 Experimental feature set) | `enforce-script-reference`; `dayz-underground` | Written against 1.30.164014 Exp; not checked on 1.29. | `skills/dayz-environment-hazards/references/sources.md` |
+| `dayz-motorbikes` | `unverified` (targets 1.30 only) | `dayz-vehicles`; `dayz-animation-pipeline`; `dayz-model-pipeline` | 1.30 Experimental `MotorbikeScript` contract; the 1.29 stable scripts contain no `MotorbikeScript` (0 references, checked 2026-10-01). | `skills/dayz-motorbikes/references/sources.md` |
+| `dayz-underground` | `unverified` (1.30 Experimental terrain holes) | `dayz-basebuilding`; `dayz-test-ingame` | Written against 1.30.164014 Exp; not checked on 1.29. | `skills/dayz-underground/references/terrain-holes-evidence.md` |
 
 ## Stable-build evidence and update policy
 

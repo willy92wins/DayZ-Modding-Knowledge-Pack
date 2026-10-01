@@ -189,10 +189,20 @@
           "source_path": "AGENTS.md",
           "source_revision": "r22-tool-routing@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 public docs refresh: skill and tool counts measured on the tree (42 skills, ten Python tools), README skill index completed (five rows written by Gemini 3.8 Flash from each skill's front-matter, reviewed by Claude), DayZ-MCP tool count taken from the public dayz-mcp README (75 + exec_enforce), section 9 aligned with CONTRIBUTING.md item 7, and the DayZ 1.30 Experimental coverage located per skill.",
+          "license": "MIT",
+          "source_hash": "e5a64fd45fb2f54e0d22d31cd3a6624f7b4af72059d0b2bfb8d853d82c688e79",
+          "source_id": "pack-r21-authored",
+          "source_path": "AGENTS.md",
+          "source_revision": "kp-update-docs@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dea9a46f7ccbc8445678e4de52b56a178228eef4dbee7099f5b44a5d2e0edb42",
+      "output_hash": "e5a64fd45fb2f54e0d22d31cd3a6624f7b4af72059d0b2bfb8d853d82c688e79",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -399,10 +409,20 @@
           "source_path": "GETTING-STARTED.md",
           "source_revision": "r21-getting-started@2026-08-19",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 public docs refresh: skill and tool counts measured on the tree (42 skills, ten Python tools), README skill index completed (five rows written by Gemini 3.8 Flash from each skill's front-matter, reviewed by Claude), DayZ-MCP tool count taken from the public dayz-mcp README (75 + exec_enforce), section 9 aligned with CONTRIBUTING.md item 7, and the DayZ 1.30 Experimental coverage located per skill.",
+          "license": "MIT",
+          "source_hash": "ac8302e734c0f7ed71a4b49e611650bb8e48e7ddfbe4d128af49862dd5aff653",
+          "source_id": "pack-r21-authored",
+          "source_path": "GETTING-STARTED.md",
+          "source_revision": "kp-update-docs@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "831bf779c8879db3ba5a03e0364a177479bc9b76c9cc6b437c53cbb05e47f2a1",
+      "output_hash": "ac8302e734c0f7ed71a4b49e611650bb8e48e7ddfbe4d128af49862dd5aff653",
       "output_path": "GETTING-STARTED.md",
       "routing_artifact_id": "root/getting-started",
       "verification_level": "cross_checked"
@@ -505,10 +525,20 @@
           "source_path": "README.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 public docs refresh: skill and tool counts measured on the tree (42 skills, ten Python tools), README skill index completed (five rows written by Gemini 3.8 Flash from each skill's front-matter, reviewed by Claude), DayZ-MCP tool count taken from the public dayz-mcp README (75 + exec_enforce), section 9 aligned with CONTRIBUTING.md item 7, and the DayZ 1.30 Experimental coverage located per skill.",
+          "license": "MIT",
+          "source_hash": "23676d8c5f1d4c388d38c5d45f8782c1ad8561873ca84a675d8f982b13cc3826",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "kp-update-docs@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2fadc5aef3786fe1d06acf073497620ba65b2facc2dd3c947cba1999a1228c65",
+      "output_hash": "23676d8c5f1d4c388d38c5d45f8782c1ad8561873ca84a675d8f982b13cc3826",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -591,10 +621,20 @@
           "source_path": "compatibility-matrix.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 public docs refresh: skill and tool counts measured on the tree (42 skills, ten Python tools), README skill index completed (five rows written by Gemini 3.8 Flash from each skill's front-matter, reviewed by Claude), DayZ-MCP tool count taken from the public dayz-mcp README (75 + exec_enforce), section 9 aligned with CONTRIBUTING.md item 7, and the DayZ 1.30 Experimental coverage located per skill.",
+          "license": "MIT",
+          "source_hash": "484b15168a329f59fdb3fcfbb2ff02ff4c6e12e5d72977fc5d0804bb88930246",
+          "source_id": "pack-r21-authored",
+          "source_path": "compatibility-matrix.md",
+          "source_revision": "kp-update-docs@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2451af7fc0fbdf3b46a501a0212d16fcf0816a608948f2ad4780f41b9f1dc851",
+      "output_hash": "484b15168a329f59fdb3fcfbb2ff02ff4c6e12e5d72977fc5d0804bb88930246",
       "output_path": "compatibility-matrix.md",
       "routing_artifact_id": "root/compatibility-matrix",
       "verification_level": "cross_checked"
@@ -2483,10 +2523,20 @@
           "source_path": "promotions/promotion-map.json",
           "source_revision": "integrate-publish@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01: artifact skill/dayz-motorbikes (tree, domain_invariant) joins the map with the claude_user_skills, agents_user_skills and obsidian_snapshots targets, like dayz-environment-hazards did as artifact 70.",
+          "license": "MIT",
+          "source_hash": "9208065a89903ab99cbefcae14d68ed061115d2b9029413bf0c2fd4b1f30ad03",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/promotion-map.json",
+          "source_revision": "kp-update@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "527ffcf2db644ceaddd9743ee28de63ccf7c3975c84133668712509769310e70",
+      "output_hash": "9208065a89903ab99cbefcae14d68ed061115d2b9029413bf0c2fd4b1f30ad03",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -4640,10 +4690,20 @@
           "source_path": "skills/dayz-basebuilding/SKILL.md",
           "source_revision": "dayz-underground@2026-09-24",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Harvested c4b5950 (2026-09-28): Fence.OpenFence() does not consult the combination lock; one preflight bullet and one triage row. Citations re-checked on 2026-10-01 against 1.29 stable fence.c:115-124, 427-434 and 447-465.",
+          "license": "MIT",
+          "source_hash": "acf2ddad27499c7d8af5117782d906011ff65723d030af28195c298246fab605",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-basebuilding/SKILL.md",
+          "source_revision": "c4b59502ed07fd946ce4b1be3121e3803d838998",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "78611d4d38955d440a950424b9cdafbe3cd0a80b2f7d9468c7e12b6342680cae",
+      "output_hash": "acf2ddad27499c7d8af5117782d906011ff65723d030af28195c298246fab605",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -24499,6 +24559,204 @@
       "output_path": "skills/dayz-model-pipeline/references/dayz-1-30-model-pipeline.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-motorbikes/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-10-01: author-owned MIT skill previously unpublished in this pack (DayZ 1.30 Experimental 1.30.164014). For publication, Spanish passages were translated to English by Gemini 3.8 Flash and nine machine-specific paths plus one private tool name were removed; a mechanical gate checked that every code span, number (by value), link and heading survived, and Claude (Anthropic) reviewed the result.",
+          "license": "MIT",
+          "source_hash": "fd0854894fd8f20c8350f9148da3e5770e927056c6f412abebfed0aab65ee1d1",
+          "source_id": "installed-skills",
+          "source_path": "dayz-motorbikes/SKILL.md",
+          "source_revision": "filesystem@2026-10-01",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f7247be487b6ab4dc976fa4dbdd9bfbc261e7b4d154300912011e2d34513f2ae",
+      "output_path": "skills/dayz-motorbikes/SKILL.md",
+      "routing_artifact_id": "skill/dayz-motorbikes",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-motorbikes/references/actions-hud-lights-sounds.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-10-01: author-owned MIT skill previously unpublished in this pack (DayZ 1.30 Experimental 1.30.164014). For publication, Spanish passages were translated to English by Gemini 3.8 Flash and nine machine-specific paths plus one private tool name were removed; a mechanical gate checked that every code span, number (by value), link and heading survived, and Claude (Anthropic) reviewed the result.",
+          "license": "MIT",
+          "source_hash": "51fcfa5c24f2fd7913ca9163861a9fd316afc87241307ae892c0d6aab960d474",
+          "source_id": "installed-skills",
+          "source_path": "dayz-motorbikes/references/actions-hud-lights-sounds.md",
+          "source_revision": "filesystem@2026-10-01",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bd2b34f45fd5e690c122578ce2cd514928ca41d86f7fe8149d16b6935b603c78",
+      "output_path": "skills/dayz-motorbikes/references/actions-hud-lights-sounds.md",
+      "routing_artifact_id": "skill/dayz-motorbikes",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-motorbikes/references/config-contract.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-10-01: author-owned MIT skill previously unpublished in this pack (DayZ 1.30 Experimental 1.30.164014). For publication, Spanish passages were translated to English by Gemini 3.8 Flash and nine machine-specific paths plus one private tool name were removed; a mechanical gate checked that every code span, number (by value), link and heading survived, and Claude (Anthropic) reviewed the result.",
+          "license": "MIT",
+          "source_hash": "b7db996fb6fad944e970ac3c77486bd97cf66cc1b2db5313a8a6f6aa8b47c3f7",
+          "source_id": "installed-skills",
+          "source_path": "dayz-motorbikes/references/config-contract.md",
+          "source_revision": "filesystem@2026-10-01",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4c97dfd868d36d38b3c87dc40bcec3f711f30d8d8ff796ae38fb174388fa88bc",
+      "output_path": "skills/dayz-motorbikes/references/config-contract.md",
+      "routing_artifact_id": "skill/dayz-motorbikes",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-motorbikes/references/forward-contract.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-10-01: author-owned MIT skill previously unpublished in this pack (DayZ 1.30 Experimental 1.30.164014). For publication, Spanish passages were translated to English by Gemini 3.8 Flash and nine machine-specific paths plus one private tool name were removed; a mechanical gate checked that every code span, number (by value), link and heading survived, and Claude (Anthropic) reviewed the result.",
+          "license": "MIT",
+          "source_hash": "7c09dd32247ca983bab503dc82ba78015b6fb5380f3edebb1dda9f3605f7103d",
+          "source_id": "installed-skills",
+          "source_path": "dayz-motorbikes/references/forward-contract.md",
+          "source_revision": "filesystem@2026-10-01",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e6a5ae34506204665fdc15ad0e8a59fb020b2e480d749e5c2a3864a1175acbd8",
+      "output_path": "skills/dayz-motorbikes/references/forward-contract.md",
+      "routing_artifact_id": "skill/dayz-motorbikes",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-motorbikes/references/rider-animation.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-10-01: author-owned MIT skill previously unpublished in this pack (DayZ 1.30 Experimental 1.30.164014). For publication, Spanish passages were translated to English by Gemini 3.8 Flash and nine machine-specific paths plus one private tool name were removed; a mechanical gate checked that every code span, number (by value), link and heading survived, and Claude (Anthropic) reviewed the result.",
+          "license": "MIT",
+          "source_hash": "1bfcd629786f95d0e14b7b8fd23587603a05093a3fc5a5275e38ae70168b5504",
+          "source_id": "installed-skills",
+          "source_path": "dayz-motorbikes/references/rider-animation.md",
+          "source_revision": "filesystem@2026-10-01",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "869101ee676ecb11124b70c573d9f5aacddba87626478ffe8d3bbce3303c6d30",
+      "output_path": "skills/dayz-motorbikes/references/rider-animation.md",
+      "routing_artifact_id": "skill/dayz-motorbikes",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-motorbikes/references/script-api.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-10-01: author-owned MIT skill previously unpublished in this pack (DayZ 1.30 Experimental 1.30.164014). For publication, Spanish passages were translated to English by Gemini 3.8 Flash and nine machine-specific paths plus one private tool name were removed; a mechanical gate checked that every code span, number (by value), link and heading survived, and Claude (Anthropic) reviewed the result.",
+          "license": "MIT",
+          "source_hash": "40266bbed7e7bb14e667a38e2e4cf3239f320dbdc8b50cbefc04e409387ca3fb",
+          "source_id": "installed-skills",
+          "source_path": "dayz-motorbikes/references/script-api.md",
+          "source_revision": "filesystem@2026-10-01",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a54c543208dd4d99e2527fee7d7f3f55c5bb85131dae6779c6ae28526b2acd84",
+      "output_path": "skills/dayz-motorbikes/references/script-api.md",
+      "routing_artifact_id": "skill/dayz-motorbikes",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-motorbikes/references/sources.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-10-01: author-owned MIT skill previously unpublished in this pack (DayZ 1.30 Experimental 1.30.164014). For publication, Spanish passages were translated to English by Gemini 3.8 Flash and nine machine-specific paths plus one private tool name were removed; a mechanical gate checked that every code span, number (by value), link and heading survived, and Claude (Anthropic) reviewed the result.",
+          "license": "MIT",
+          "source_hash": "079813a9d1dedf0db881ccb6547535515ab076f2b222144a62ae91e111c0a4e0",
+          "source_id": "installed-skills",
+          "source_path": "dayz-motorbikes/references/sources.md",
+          "source_revision": "filesystem@2026-10-01",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "83b1baec8af22ac4ac3c48599eb1b12154c172546b3658e0a77a6d6925c8564d",
+      "output_path": "skills/dayz-motorbikes/references/sources.md",
+      "routing_artifact_id": "skill/dayz-motorbikes",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-motorbikes/references/vanilla-p3d-anatomy.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-10-01: author-owned MIT skill previously unpublished in this pack (DayZ 1.30 Experimental 1.30.164014). For publication, Spanish passages were translated to English by Gemini 3.8 Flash and nine machine-specific paths plus one private tool name were removed; a mechanical gate checked that every code span, number (by value), link and heading survived, and Claude (Anthropic) reviewed the result.",
+          "license": "MIT",
+          "source_hash": "9484cfffd44d5860c356fa5755c2631aaff227920da38198f792fd81007a8fdc",
+          "source_id": "installed-skills",
+          "source_path": "dayz-motorbikes/references/vanilla-p3d-anatomy.md",
+          "source_revision": "filesystem@2026-10-01",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "102c7cbfe0abfe44726ccf4a43e6379f74fd69b5dd4886a540f6b00f54b051ea",
+      "output_path": "skills/dayz-motorbikes/references/vanilla-p3d-anatomy.md",
+      "routing_artifact_id": "skill/dayz-motorbikes",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-motorbikes/references/vehicle-1.30-refactor.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-10-01: author-owned MIT skill previously unpublished in this pack (DayZ 1.30 Experimental 1.30.164014). For publication, Spanish passages were translated to English by Gemini 3.8 Flash and nine machine-specific paths plus one private tool name were removed; a mechanical gate checked that every code span, number (by value), link and heading survived, and Claude (Anthropic) reviewed the result.",
+          "license": "MIT",
+          "source_hash": "7352f2e54c880746b67825cdf22946c47d662d5ede008af974284c7c3ca2e4b7",
+          "source_id": "installed-skills",
+          "source_path": "dayz-motorbikes/references/vehicle-1.30-refactor.md",
+          "source_revision": "filesystem@2026-10-01",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9eb3b1d6b75f9f5befd96282c1a6d6a283eaf01f79f706859b91993a2a448153",
+      "output_path": "skills/dayz-motorbikes/references/vehicle-1.30-refactor.md",
+      "routing_artifact_id": "skill/dayz-motorbikes",
+      "verification_level": "cross_checked"
     },
     {
       "artifact_id": "file/skills/dayz-particles/references/dayz-1-30-particles.md",

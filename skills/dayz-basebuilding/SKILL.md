@@ -138,6 +138,7 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
   (`Rebuilding.c:3,7-16,502-515`). Do not mix the two caps.)
 - **Damage-zone name MUST equal the part name, lowercased.** `EEHealthLevelChanged` lowercases the zone and
   looks up the part by that name (`basebuildingbase.c:507-517`); a mismatch means damage never destroys the part.
+- **`Fence.OpenFence()` does not consult the combination lock.** `CanOpenFence()` requires `HasHinges() && !IsOpened() && !IsLocked()` (`fence.c:427-434`). `IsLocked()` is a closed `CombinationLock` (`fence.c:115-124`). `OpenFence()` skips that check, plays the gate animations and calls `SetOpenedState(true)` (`fence.c:447-465`). A script that calls `OpenFence()` directly opens a locked fence. Test `!IsLocked()` or call `CanOpenFence()` first. `CanCloseFence()` does not require the lock to be open (`fence.c:437-444`). Source-verified 2026-09-28 against `P:\scripts\4_world\entities\itembase\basebuildingbase\fence.c`.
 - **`OnStoreSave`/`OnStoreLoad` order is strict.** Save writes `m_SyncParts01`, `02`, `03`, then `m_HasBase`
   (`basebuildingbase.c:420-430`); load reads them in the same order (`:432-464`). A subclass writes/reads its
   extra fields AFTER calling `super`, in the exact same order both ways (Fence appends gate state after the
@@ -244,6 +245,7 @@ map buildings — see `references/persistence-audit.md` §8 and `references/dayz
 | **Compile error on `CreateCollisionTrigger` (1.30)** | methods still exist but are `[Obsolete("no replacement")]`; collision is `IsCollidingEx(CollisionCheckData)` | `ConstructionBase.c:1471,1742-1787` |
 | **Rebuilt house / well part resets** | mixed up `BaseBuildingBase` 3-int save with `Rebuilding` 10-int `HandleStoreSave` | `Rebuilding.c:474-515`; `Building.c:23-45` |
 | **Fence code lock ignored** | slot is `Att_CodeLock`; getter is `Fence.GetCodeLock()` | `fence.c:20,26,161-165` |
+| **Powered opener opens a locked fence** | caller used `OpenFence()` and skipped `CanOpenFence()` / `IsLocked()` | `fence.c:115-124,427-465` |
 
 Do NOT build new features on `ActionPlugIntoFence` — it is DEPRECATED (`actionplugintofence.c:1`).
 
