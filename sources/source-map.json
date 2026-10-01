@@ -25293,7 +25293,7 @@
           "decision": "adopt",
           "decision_evidence": "Authored in the pack for py3d 1.8.0: rebuilds the 2026-10-01 in-game test model and asserts the SHA-256 of the three measured MLODs, chirality (the F reads correctly only through blender_to_dayz), the MLOD inward winding, a Blender-drawn proxy converted into the add_proxy(space=engine) triangle for three poses (what the binarized files showed), no warnings, and the deprecated constant. Six wrong implementations each fail at least one of its tests: old det=+1 recipe 10, reflection alone 8, no normal negation 7, no un-reversal 5, collision LODs shifted 1 m (the cross-family review's mutant) 1, no shared-data check 2. The published fork does not carry this file yet. Authored by Claude (Anthropic) on the owner's request; PR reviewed by the owner before merge.",
           "license": "MIT",
-          "source_hash": "78663a447ae3ea5c0e9b916ced4b014b0d08d5d928ed4f353e631dad9700a61d",
+          "source_hash": "1327803578587500a111ce3d1679de279d910430adf5bcf40dad2842753a0a97",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/tests/test_s7_blender_to_dayz.py",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
@@ -25301,7 +25301,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "78663a447ae3ea5c0e9b916ced4b014b0d08d5d928ed4f353e631dad9700a61d",
+      "output_hash": "1327803578587500a111ce3d1679de279d910430adf5bcf40dad2842753a0a97",
       "output_path": "tools/py3d/tests/test_s7_blender_to_dayz.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

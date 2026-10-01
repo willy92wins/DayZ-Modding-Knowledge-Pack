@@ -316,7 +316,8 @@ def test_b2d_blender_proxy_equals_engine_space_proxy(fork, pose):
     the very triangle add_proxy(space="engine") builds in DayZ space for the
     frame worked out by hand - aside = M x, up = M z, dir = M y, M the swap.
     In game those proxies rendered in the pose drawn in Blender; the same
-    matrices with space="raw" in DayZ space (the LL-505 bug) did not."""
+    matrices with space="raw" in DayZ space - raw frames passed off as engine
+    frames - did not."""
     rows = BLENDER_PROXY_POSES[pose]
     engine_rows = (swap(rows[0]), swap(rows[2]), swap(rows[1]))
     anchor = (1.5, 2.0, 0.25)
