@@ -5,7 +5,93 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-10-01
+
+DayZ 1.30 Experimental (1.30.164014) coverage across the pack, three new skills since 1.3.0
+(`dayz-environment-hazards`, `dayz-underground`, `dayz-motorbikes`), the Blender→DayZ axis map
+settled in game (`dayz-model-pipeline` Rule 12), the whole pack in English, the offline Enforce
+linter at the source, Windows CI, and the author's pending skill-patch and lesson backlog
+harvested into the governed skills.
+
 ### Added
+
+- `dayz-motorbikes` (new skill), DayZ 1.30 Experimental (1.30.164014): single-track
+  vehicles — `MotorbikeScript`, `simulation = "motorbike"`, two-wheel physics without
+  `Axles`, kickstand and kickstart actions, the dedicated 3rd-person camera, the 1.30
+  vehicle component refactor, rider animation and the vanilla P3D anatomy of
+  `Motorbike_01`/`Motorbike_02`. Adopted from the author's live store; Spanish passages
+  translated to English and machine-specific paths removed, with a mechanical gate that
+  every code span, number (by value), link and heading survived (#16).
+- Backlog harvest from the author's pending skill-patch ledger and lessons:
+  - `enforce-script-reference` (#17): `%` only in integer context (hard rule 13);
+    `Bottle_Base` liquid-action inheritance (rule 40); `ActionEmptyBottleBase` loop
+    callbacks (rule 41); custom cookware, `Cooking.CookWithEquipment` and the
+    cooling-fireplace double cook; client-local cable segments; field visibility when a body
+    moves between script modules. Claims `CLAIM-ENF-MODULO-INT-ONLY`,
+    `CLAIM-ENF-BOTTLE-LIQUID-ACTIONS`, `CLAIM-ENF-COOKWITHEQUIPMENT-HUB`,
+    `CLAIM-ENF-EMPTYBOTTLE-LOOP-OVERRIDE`.
+  - `dayz-model-pipeline` (#17): cookware model origin and heat-source anchor heights;
+    the py3d `validate()` `_axis` heuristic; the client-local cable segment model.
+  - `dayz-texture-pipeline` (#17): a config `hiddenSelectionsTextures[] = {""}` hides
+    the selection.
+  - `dayz-vehicles` and `rip-vehicle-import` (WP-VEH): the base seat→door table of
+    `GetDoorConditionPointFromSelection` is the left-hand-drive mapping, so a
+    right-hand-drive car needs the crossed override (claim `CLAIM-GETIN-LHD-BASE-TABLE`);
+    a blank inventory preview when `invview` sits at the bounding-box centre (claim
+    `CLAIM-INVVIEW-VIEW0-DEF`); the dashboard-light index has one writer
+    (`UpdateLightsServer`, claim `CLAIM-DASHBOARD-LIGHT-RESYNC`) and coincident body/proxy
+    faces with different materials flicker; a static proxy animates none of its pieces;
+    sliding-plate tile margins, collapsed UVs in decimated LODs, the free-edge gate and
+    the opening sense, and moving a whole wheel corner to change the track.
+  - `dayz-motorbikes` (WP-VEH): shrink a lowered damper box around its own centre; log
+    contacts server-side before tuning.
+  - Models, textures and proxies (WP-VMOD): DayZ 1.30 vanilla P3Ds are ODOL v56 (1.29:
+    v54) — read header bytes 4-7 before extracting (claim `CLAIM-ODOL-V56-130`, in
+    `dayz-vehicles`, `dayz-model-pipeline`, `dayz-pbo-reverse-engineering`); crew-proxy
+    frames beyond identity and the upright rider (`dayz-proxy-align`); satmap tile overlap,
+    multi-atlas paint variants and `_as` encoding (`dayz-vehicles`,
+    `dayz-texture-pipeline`); see-through triage from the real first-person camera, two-sided
+    sheets, and control pieces for new ODOL gates (`dayz-p3d-audit`, `dayz-model-pipeline`).
+  - Testing and building (WP-TEST): an unpacked `-mod` does not merge its `config.cpp`
+    (world configs need a packed PBO); `class Missions` keeps a dedicated server alive
+    without a client; registry views under a sandboxed (MSIX) launcher; which Steam account
+    is logged in and whether it owns DayZ; a stage path that repeats the addon folder name
+    packs a model-less PBO with exit 0; binarized ODOL judged by content; idle `cmd /K`
+    windows from `cmd /c start`; a third-party graph mod crashing a 1.30 Exp server
+    (`dayz-test-ingame`, `dayz-pbo-build`, `dayz-animation-pipeline`).
+  - In-game bridge (WP-MCP): a locked Windows session fails `capture_screenshot` with
+    `capture_backend_failed`; a `proto native` declaration does not prove the function is
+    linked (`GetFPS` in DayZDiag 1.29); an adopted run's lease lasts 120 s and needs
+    `session_heartbeat`; a native setter without a getter must not become a DTO field
+    (claim `CLAIM-ENFORCE-NO-GET-TIMEMULTIPLIER`); archive a file-driver case directory and
+    never re-run an answered command (`dayz-mcp-verify`, `dayz-test-ingame`,
+    `enforce-script-reference`, `knowledge/dayz-mcp-bridge-protocol.md`).
+  - Animation (WP-ANIM): measured authoring corrections (the vanilla aux-helper rule, the
+    lossy Workbench compile, exporter constraints, no arm IK during continuous actions, the
+    quaternion-sign split), syncing an object's pose to a continuous action, and the
+    ~22 mm vanilla grip (`dayz-animation-pipeline`); physics truth 10 — config-driven
+    animated building geometry is not a mover (`dayz-physics-engine`); `model.cfg` rotation
+    sign and chained segments; raising a crop's `varStackMax` changes its harvest yield
+    (claim `CLAIM-HARVEST-YIELD-STACKMAX-130`, `dayz-basebuilding`).
+  - Models, persistence and QA (WP-MISC): LL-504's in-game measurement that a det=+1
+    Blender→DayZ position map ships a mirrored model (claim `CLAIM-BLENDER-DAYZ-DET-NEG1`;
+    Rule 12's det=+1 map is flagged for re-review); parts contained between LODs are
+    recomputed per LOD; procedural face textures binarize to an undrawn section
+    (`dayz-model-pipeline`); a storage copy without the CE anchor files loads nothing, and
+    live cargo must not be walked by a frozen index (`dayz-persistence`); vanilla house
+    furniture is proxy geometry, made interactive by replacing the model by path (claim
+    `CLAIM-FURNITURE-FRIDGE-CLASS`, `dayz-doors`); `ExtractPbo -R` and friends
+    (`dayz-pbo-reverse-engineering`); visibility by area sampling (`dayz-p3d-inspector`);
+    inventory census before an audit (`rigorous-data-audit`); photo-resemblance scoring and
+    animated-part clearance (`blender-visual-review`).
+- Moving platforms and edited vanilla rocks (SP-450, SP-451, measured 2026-10-01):
+  physics truth 11 — a platform that is a separate entity carries players and vehicles, with
+  the vehicle mode that works, the frame hook that fires (`GetUpdateQueue(CALL_CATEGORY_GAMEPLAY)`)
+  and the one that never reaches a `House` (`EOnFrame`) (`dayz-physics-engine`); three traps
+  when driving a client by MCP (`dayz-mcp-verify`); editing imported vanilla rocks — double
+  shell, triangle soup, a height field for inner faces (`dayz-model-pipeline`); checking moving
+  mechanisms over their whole travel and sweeping sub-frame collisions (`blender-assembly`);
+  absolute render paths under `blender -b` (`blender-visual-review`) (#26).
 
 - `dayz-underground` (new skill), DayZ 1.30 Exp (1.30.164014).
   - Terrain holes: the `CfgWorlds >> <world> >> Holes >> <group> >> tiles[]`
@@ -103,6 +189,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- README: the skill index lists all 42 skills (five rows were missing); the DayZ-MCP
+  section reflects its 75 tools; §9 now states the editing direction of
+  `CONTRIBUTING.md` item 7 (this repository is the editable source; installed trees are
+  promotion targets) and the DayZ build coverage (#16).
+- `AGENTS.md`, `GETTING-STARTED.md`: skill and tool counts measured on the tree (42
+  skills, ten Python tools) (#16).
+- The remaining Spanish passages are now English: about 10,000 lines in 129 files (skills,
+  `knowledge/`, `decisions/` and tool READMEs), translated line by line so no claim range
+  moved, behind a mechanical gate (code spans, links, numbers by value, epistemic tags, claim
+  markers and Markdown structure per line) and reviewed for meaning pair by pair. Left as they
+  were on purpose: the sealed `MOVED-EXACT` history block, quoted game messages, section
+  names of documents outside the Pack, file names, and skill front-matter descriptions
+  (#25).
+
 - Audit procedure: coverage angles no longer require eight agents or a fixed model.
   Review assignment and the bounded product-based stop rule belong to the orchestrator.
   The evidence checks and domain coverage remain; unavailable independent review must
@@ -123,6 +223,40 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   two-minute warm-up or a 45 s settle as validated.
 
 ### Fixed
+
+- `dayz-mcp-verify` no longer says `PrintWindow(PW_RENDERFULLCONTENT)` returns a black D3D
+  area: with the session unlocked and the display on it captures the scene (measured
+  2026-09-28, more than 20 captures) (#21).
+- `dayz-animation-pipeline` cited `MotorBikeSTM` as `Vehicles.agf:1582-1750`; the node
+  closes at `:1751` (claim `CLAIM-ANIM-MOTORBIKE-STM-RANGE`) (#22).
+- `dayz-model-pipeline` `py3d-direct-generation.md` still taught the 2026-07-06 "det=+1,
+  never reverse" rule that `SKILL.md` Rule 12 contradicts; it now defers to Rule 12 and to
+  the LL-504 measurement (#23).
+- `dayz-test-ingame` no longer presents restarting Steam as the remedy for a stale
+  `ActiveProcess` pid; the deterministic fix (copy the live pid, from a shell outside any
+  sandboxed app) is (#20).
+- `dayz-basebuilding`: `Fence.OpenFence()` does not consult the combination lock (#16).
+- `dayz-model-pipeline` Rule 12: the Blender→DayZ map is the det=-1 reflection
+  `(x,y,z)→(x,z,y)` with the face order kept and the normals negated. The previous recipe
+  (`(x,z,-y)` det=+1 + reversed faces + negated normals) renders solid but MIRRORED, which no
+  winding gate can see: confirmed in game (DayZDiag 1.29.163709) with one chiral model exported
+  three ways; `P3D.transform(py3d.BLENDER_TO_DAYZ)` on its own renders inside-out and mirrored.
+  Propagated to `py3d-direct-generation.md`, `lods-and-geometry.md`, `blender-workflow.md` (its
+  OBJ Forward -Y / Up Z settings are Blender's own axes, not a conversion), `blender-visual-review`
+  and `knowledge/DAYZ_TECHNICAL_NOTES.md` (#26).
+- A cross-family review of #16-#23 (Gemini over the 78 harvest hunks, GLM over the
+  `dayz-motorbikes` translation) fixed: a wheel-proxy claim in
+  `dayz-vehicles/references/rip-import.md` that generalised a door-proxy finding to vanilla
+  wheels (whose frames are mirrored per side); the `dayz-mcp-verify` heartbeat rule that sat
+  after the teardown, a 2026-09-07 "doors do not open by MCP" bullet that predates
+  `door_index`, and a locked session read as a black frame (it fails with
+  `capture_backend_failed`); the `dayz-pbo-build` "`-temp` under `P:\`" rule, which did not
+  reproduce later; the inventory-preview failures filed under LIGHTS in `dayz-vehicles`; the
+  cooling-fireplace double cook filed under the action-system rules; list and placement
+  slips; three translation slips in `dayz-motorbikes`; and the README skill count (#24).
+- `compatibility-matrix.md`: a "DayZ 1.30 Experimental" section that locates the 1.30
+  content of each skill (without re-verifying it), and rows for the three 1.30-only
+  skills (#16).
 
 - `dayz-animation-pipeline` `item-ik-and-hide.md`: switching back to the base instance takes
   the `.asi` path, as vanilla does (`PlayerBase.c:2107`); the page said

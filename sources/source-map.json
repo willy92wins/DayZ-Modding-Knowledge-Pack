@@ -281,10 +281,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "roboclient-run3@2026-09-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: CHANGELOG [1.4.0] folded from this update's PRs (#16-#26); DayZ 1.30 coverage counts in README section 9 and compatibility-matrix regenerated from the tree (28 skills + dayz-motorbikes). Prepared by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4610906c71e65066e391db80c8cd538dc8a698b8142cbbe05b5e52c65e541518",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "99cb0cc498bda4921e8d83da91240b407337cdd069bf52a2820558955cae3c5e",
+      "output_hash": "4610906c71e65066e391db80c8cd538dc8a698b8142cbbe05b5e52c65e541518",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -555,10 +565,20 @@
           "source_path": "README.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: CHANGELOG [1.4.0] folded from this update's PRs (#16-#26); DayZ 1.30 coverage counts in README section 9 and compatibility-matrix regenerated from the tree (28 skills + dayz-motorbikes). Prepared by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d75152762f5b055e87fcfc866717ce38dc7c8e51391ae8cf6fe13c2a2709b59a",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "55872009032fc8b237fd7fb5807c467cfd2a82d916a2d7c7adb020aaf50b647a",
+      "output_hash": "d75152762f5b055e87fcfc866717ce38dc7c8e51391ae8cf6fe13c2a2709b59a",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -651,10 +671,20 @@
           "source_path": "compatibility-matrix.md",
           "source_revision": "kp-update-docs@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: CHANGELOG [1.4.0] folded from this update's PRs (#16-#26); DayZ 1.30 coverage counts in README section 9 and compatibility-matrix regenerated from the tree (28 skills + dayz-motorbikes). Prepared by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5e3b67ec1caaa1c456f6e195e8809e6046547b1c68891ede278e5faed9fc2b18",
+          "source_id": "pack-r21-authored",
+          "source_path": "compatibility-matrix.md",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "484b15168a329f59fdb3fcfbb2ff02ff4c6e12e5d72977fc5d0804bb88930246",
+      "output_hash": "5e3b67ec1caaa1c456f6e195e8809e6046547b1c68891ede278e5faed9fc2b18",
       "output_path": "compatibility-matrix.md",
       "routing_artifact_id": "root/compatibility-matrix",
       "verification_level": "cross_checked"

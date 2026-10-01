@@ -37,8 +37,8 @@ workflow was run end-to-end on this build during r21 Phase 01.
 Added **2026-10-01**. 1.30 is still Experimental on this date (Experimental Update 1
 shipped 2026-09-16); the stable target above is unchanged.
 
-Between 2026-09-16 and 2026-09-30, sections for 1.30 Experimental were added to
-the 24 skills below, plus the 1.30-only `dayz-motorbikes`. They were written
+Between 2026-09-16 and 2026-10-01, sections for 1.30 Experimental were added to
+the 28 skills below, plus the 1.30-only `dayz-motorbikes`. They were written
 against a local extraction of build `1.30.164014` (scripts, `config.cpp` files and
 the plain-text `.agf` animation graphs). **This table only locates that content; it
 does not re-verify it.** The evidence level of each 1.30 statement is the one its own
@@ -49,29 +49,33 @@ none exists yet.
 | Skill | Where the 1.30 Experimental content lives |
 |---|---|
 | `dayz-ai-patterns` | `references/dayz-1-30-ai.md` |
-| `dayz-animation-pipeline` | `references/anim-graph.md`, `references/dual-entry-action-pattern.md`, `references/item-ik-and-hide.md` (+6 more) |
+| `dayz-animation-pipeline` | `SKILL.md`, `references/anim-graph.md`, `references/dual-entry-action-pattern.md` (+6 more) |
 | `dayz-aviation` | `references/dayz-1-30-aviation.md` |
 | `dayz-basebuilding` | `references/dayz-1-30-construction-rebuilding.md` |
 | `dayz-characters` | `references/dayz-1-30-characters.md` |
 | `dayz-clothing` | `references/dayz-1-30-clothing.md` |
-| `dayz-doors` | `references/door-model-cfg-and-config.md`, `references/lods-and-object-builder.md`, `references/worked-examples.md` (+1 more) |
-| `dayz-environment-hazards` | `references/sandstorm-shelter.md`, `references/sources.md`, `references/thermal-heatstroke.md` (+1 more) |
+| `dayz-doors` | `SKILL.md`, `references/door-model-cfg-and-config.md`, `references/lods-and-object-builder.md` (+1 more) |
+| `dayz-environment-hazards` | `SKILL.md`, `references/sandstorm-shelter.md`, `references/sources.md` (+1 more) |
 | `dayz-mcp-verify` | `references/dayz-1-30-mcp-verify.md` |
 | `dayz-mod-workflow` | `references/dayz-1-30-mod-workflow.md` |
 | `dayz-model-pipeline` | `references/dayz-1-30-model-pipeline.md` |
 | `dayz-particles` | `references/dayz-1-30-particles.md` |
 | `dayz-pbo-build` | `references/dayz-1-30-pbo-build.md` |
+| `dayz-pbo-reverse-engineering` | `SKILL.md` |
 | `dayz-persistence` | `references/dayz-1-30-persistence.md` |
 | `dayz-physics-engine` | `references/dayz-1-30-ragdoll-and-fall.md` |
 | `dayz-preflight` | `SKILL.md` |
-| `dayz-realistic-animation-director` | `references/biomechanics-and-contact.md`, `references/domain-gates.md`, `references/evidence-and-integration.md` (+2 more) |
+| `dayz-proxy-align` | `SKILL.md` |
+| `dayz-realistic-animation-director` | `SKILL.md`, `references/biomechanics-and-contact.md`, `references/domain-gates.md` (+2 more) |
 | `dayz-sound-system` | `references/dayz-1-30-sound.md` |
 | `dayz-test-ingame` | `references/dayz-1-30-test-ingame.md` |
-| `dayz-ui-development` | `references/hud-action-info-panels.md`, `references/styles-format.md`, `references/vanilla-menus-map.md` (+2 more) |
-| `dayz-underground` | `references/terrain-holes-evidence.md`, `references/underground-triggers.md`, `SKILL.md` |
+| `dayz-texture-pipeline` | `SKILL.md`, `references/vehicle-materials-and-color-variants.md` |
+| `dayz-ui-development` | `SKILL.md`, `references/hud-action-info-panels.md`, `references/styles-format.md` (+2 more) |
+| `dayz-underground` | `SKILL.md`, `references/terrain-holes-evidence.md`, `references/underground-triggers.md` |
 | `dayz-vehicles` | `references/dayz-1-30-vehicles.md` |
 | `dayz-weapons` | `references/dayz-1-30-weapons.md` |
 | `enforce-script-reference` | `references/dayz-1-30-enforce-script.md` |
+| `rip-vehicle-import` | `cookbooks/family-b/get-in-ausente.md` |
 | `dayz-motorbikes` | the whole skill (1.30 only) |
 
 ## Skill coverage

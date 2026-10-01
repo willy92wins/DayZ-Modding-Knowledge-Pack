@@ -532,7 +532,7 @@ representative in-game matrix. Record evidence and unknowns in
 [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 **Build coverage (2026-10-01).** The compatibility matrix is pinned to stable
-`1.29.0.163451`. 24 skills also carry sections for **DayZ 1.30 Experimental**
+`1.29.0.163451`. 28 skills also carry sections for **DayZ 1.30 Experimental**
 (build `1.30.164014`), each labelled as such, and `dayz-motorbikes` targets 1.30
 only. 1.30 has not reached stable on this date; when it does, those sections are
 re-checked against the stable build before their labels change. Where each 1.30
