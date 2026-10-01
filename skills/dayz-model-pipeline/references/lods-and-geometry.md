@@ -140,24 +140,26 @@ The RV engine uses face winding order to determine which side of a face is
 - Object appears solid black from outside (shadow-only)
 
 **Rule (source: [`SKILL.md`](../SKILL.md), Rule 12):** The winding decision is
-conditional on the source transform's determinant, with two cases:
-- **Blender-authored geometry** via the proper rotation `x'=x, y'=z, z'=-y`
-  (det=+1): apply it to ALL vertices AND face normals in ALL LODs, and do NOT
-  reverse winding. A det=+1 rotation preserves handedness.
+conditional on the asset source (Blender-authored vs GLB/glTF) — both maps below are det=-1 — with two
+cases:
+- **Blender-authored geometry** via the reflection `x'=x, y'=z, z'=y` (det=-1):
+  apply it to ALL vertices and normals in ALL LODs, keep the vertex order (it comes
+  out INWARD, the MLOD convention) and negate the normals. The old det=+1 rotation
+  `z'=-y` ships a MIRRORED model (measured in game 2026-10-01).
 - **GLB/glTF-sourced geometry** via the pure swap `(x,y,z)->(x,z,y)` (det=-1):
   ALWAYS reverse the vertex order of every face in every LOD, except proxy
   triangles, whose vertex order encodes the attachment frame.
 Never assume either case: verify post-assembly with `check_face_winding`; it
 must read ~0% flipped.
 
-**Fix in py3d for the det<0 / GLB/glTF case:**
+**Fix in py3d for the GLB/glTF source case:**
 ```python
 for lod in model.lods:
     for face in lod.faces:
         face.vertices.reverse()
 ```
 
-**Fix in Blender for the det<0 / GLB/glTF case:**
+**Fix in Blender for the GLB/glTF source case:**
 - Select all faces → Mesh → Normals → Flip
 - Or: Mesh → Normals → Recalculate Outside
 

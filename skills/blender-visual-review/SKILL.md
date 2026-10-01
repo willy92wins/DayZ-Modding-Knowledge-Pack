@@ -92,6 +92,10 @@ for area in bpy.context.screen.areas:
 
 Workbench needs no scene lights (it has its own studio light), which sidesteps the classic "render came out black because the scene has no lamp" trap. Use Workbench for diagnosis; switch to EEVEE or Cycles only when you are specifically judging materials.
 
+**Render paths in `blender -b` are absolute** (SP-451, measured 2026-10-01). A relative `render.filepath`
+without the `//` prefix saved the renders under a folder at the root of the drive, not in the working folder.
+Pass absolute paths.
+
 ## Multi-angle capture (the workhorse)
 
 Run this via `execute_blender_code`. It renders the object from front / right / top / iso to files you can read, restores the scene's original camera and engine, and returns both the file paths and the measurable diagnostics. Then `Read` each path and actually look.
@@ -197,7 +201,7 @@ Blender (and any Three.js viewer) renders **right-handed**; DayZ culls **left-ha
 
 - **NEVER conclude that DayZ face winding or normal direction is correct from a Blender render or screenshot.** The render genuinely cannot tell you. Absolute winding is decided by `dayz-p3d-audit` (its edge-pair topology check), not by eye.
 - The *only* valid visual winding signal is **relative**: the model winds the same way as a vanilla reference imported beside it. "Same as vanilla" is meaningful; "looks fine to me" is not.
-- The Blender→DayZ transform `(x,y,z)→(x,z,-y)` is a proper rotation (det=+1) and **preserves** winding — do not "flip to be safe" (LL-020; authority: `dayz-model-pipeline`).
+- The Blender→DayZ map is the det=-1 reflection `(x,y,z)→(x,z,y)` with negated normals (`dayz-model-pipeline` Rule 12, measured in game 2026-10-01). A render cannot judge the result: the old det=+1 recipe renders solid in Blender and in DayZ and is still MIRRORED — check chirality on text or a one-sided part in game.
 
 Everything else here — orientation, proportion, scale, exploded parts, ride-height, reference match — the render judges well. Winding is the one thing it cannot; hand that to `dayz-p3d-audit`.
 
@@ -208,7 +212,7 @@ A standard lit render cannot expose a winding flip (the guardrail above) because
 1. **Face Orientation overlay** (already in Setup above) — from OUTSIDE the model, any red face is winding-flipped. Screenshot the 4 canonical angles with the overlay on; a uniformly red exterior means the whole mesh is flipped.
 2. **Backface-culling re-render** — set `mat.use_backface_culling = True` on every material (EEVEE honors it), re-render the same 4 angles, and diff each against its original render (`references/vr_delta.py` per angle). Faces that vanish (holes; silhouette IoU < 0.95 on any view) were winding-flipped ⇒ verdict `FLIPPED_LIKELY` — do not approve the export.
 
-Do NOT "verify" a suspected flip by running `normals_make_consistent` and re-rendering: recalc rewrites the winding itself, so the re-render comes back clean and the check false-negatives. Recalc is a repair tool; the repair decision for a DayZ export belongs to the import-transform rules in `dayz-model-pipeline` (LL-020: the canonical `(x,y,z)→(x,z,-y)` transform preserves winding; a `det=−1` variant is what flips it).
+Do NOT "verify" a suspected flip by running `normals_make_consistent` and re-rendering: recalc rewrites the winding itself, so the re-render comes back clean and the check false-negatives. Recalc is a repair tool; the repair decision for a DayZ export belongs to the import-transform rules in `dayz-model-pipeline` (LL-504 and `dayz-model-pipeline` Rule 12: the Blender→DayZ map is the det=-1 reflection `(x,y,z)→(x,z,y)` with the face order kept and the normals negated; the old `(x,z,-y)` rotation renders solid but mirrored).
 
 When to run: any import from glTF/FBX/OBJ, any pipeline with a configurable `reverse_winding`, any build destined for a winding-culling engine (DayZ / Arma / BI). Absolute authority on the exported `.p3d` remains `dayz-p3d-audit`'s topology check; this is the free early warning that saves the in-game cycle.
 

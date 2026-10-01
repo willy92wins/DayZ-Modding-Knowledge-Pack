@@ -238,6 +238,17 @@ The gate failing means stop and fix before the next part — same discipline as 
 
 **Component checkpoint:** for complex parts (lofts, boolean-heavy pieces), also take one quick visual capture of the part alone before building on top — see `blender-visual-review`. Numbers verify topology; only eyes verify intent.
 
+**Moving mechanisms: check the fit over the WHOLE travel and the whole length** (SP-451, added 2026-10-01)
+[OFFLINE MEASURED]. A vertical mechanism checked on one representative section failed twice on SecretRock R7:
+standing leaves checked only at their widest section (y = 0.8) stuck out of the rock by up to 0.96 m
+elsewhere, and a platform checked only at the top touched the lining at the hangar end by up to 1.1 m.
+
+**Per-frame sampling skips short collisions** [OFFLINE MEASURED]: folding a 2.46 m leaf hinged on its top edge
+brings each lower corner 4.7 mm closer in the first degrees — a collision shorter than one frame. Sweep the
+kinematics with hand-set angles and a fine step near 0°, with the actions unhooked so the depsgraph does not
+override the angles. (Keyframe clearance in presentation renders: `blender-visual-review` §A, "Animated
+parts".)
+
 ## Phase 4: Finalization
 
 Apply to every mesh object: `finalize(name)` (transforms applied, origin set, shade smooth), then `audit_all()` to confirm rotation=(0,0,0) and scale=(1,1,1) across the whole scene. Both in the helper library.

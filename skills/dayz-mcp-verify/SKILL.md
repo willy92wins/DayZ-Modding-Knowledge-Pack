@@ -856,6 +856,16 @@ NOTHING — byte-identical position. The response does not distinguish both case
 vanilla menu does not hang from `OnKeyPress`. It works for modded UIs that DO hang from there. Do not
 use it as a substitute for system ESC, and do not declare the verb broken from that test.
 
+### Driving a client by MCP: three traps (SP-450, added 2026-10-01)
+
+Measured on DayZDiag 1.29.163709 with one client on localhost [EXACT]:
+
+- With the CF + Dabs Framework + VPPAdminTools stack loaded, a mod's `MissionGameplay.OnKeyPress` does not
+  receive the keys sent by `input_trigger`; without that stack it does.
+- The client can come up in the pause menu: ESC does not close it, `ui_click` on `continuebtn` does.
+- `Print(variable)` prefixes the line with `string name = '…'`, and the CLIENT log cuts lines at 255
+  characters (the server log does not): print short expressions.
+
 ## Visual smokes: bubble follows player, not camera (SP-082, added 2026-08-31)
 
 - Before spawn, read `query_player_state.pos` and place the object next to the player. Free

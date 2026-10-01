@@ -44,15 +44,15 @@ It is the #1 cause of failures when porting models from Blender to DayZ. Subtle 
 - Sometimes only ONE of these symptoms: winding may be fine in Visual and bad in Geometry, or vice versa. **Verify each LOD separately.**
 
 ### Root cause
-The winding decision depends on the determinant of the origin transformation (source: [`skills/dayz-model-pipeline/SKILL.md`](../skills/dayz-model-pipeline/SKILL.md), Rule 12), with two cases:
-- **Blender-authored geometry**, via proper rotation `x'=x, y'=z, z'=-y` (det=+1): apply to all vertices and face normals across all LODs and **DO NOT** invert winding. A det=+1 rotation preserves handedness.
+The winding decision depends on the asset source — Blender-authored or GLB/glTF; both maps below are det=-1 (source: [`skills/dayz-model-pipeline/SKILL.md`](../skills/dayz-model-pipeline/SKILL.md), Rule 12), with two cases:
+- **Blender-authored geometry**, via the reflection `x'=x, y'=z, z'=y` (det=-1): map vertices and normals in all LODs, keep the face order and negate the normals (`dayz-model-pipeline` Rule 12, measured in game 2026-10-01; the old det=+1 rotation `z'=-y` ships a mirrored model).
 - **Geometry originating from GLB/glTF**, via pure swap `(x,y,z)->(x,z,y)` (det=-1): **ALWAYS** invert vertex order of each face across each LOD, except proxy triangles, whose order encodes attachment frame.
 Never assume which of the two cases applies: verify result with `check_face_winding`; must yield ~0% flipped.
 
-This does NOT affect the normals in the `lod.facenormals` pool — they still point where they pointed in Blender. That is why the model *looks* correct when inspecting normals but fails in game: **what matters to the raycast/render engine is the winding, not the declared normal**.
+Reversing faces does NOT touch the normals in the `lod.facenormals` pool — they keep pointing where they pointed before (for Blender-authored geometry, Rule 12 negates them explicitly). That is why the model *looks* correct when inspecting normals but fails in game: **what matters to the raycast/render engine is the winding, not the declared normal**.
 
 ### Canonical fix
-For Blender authorship with det=+1 rotation, apply transformation to vertices and face normals and **DO NOT** invert winding. For a GLB/glTF source with det=-1 swap, invert vertex order with:
+For Blender authorship, follow `dayz-model-pipeline` Rule 12 (det=-1 reflection, face order kept, normals negated); the det=+1 rotation ships a mirrored model. For a GLB/glTF source with det=-1 swap, invert vertex order with:
 ```python
 import py3d
 with open(p3d_path, 'rb') as f:

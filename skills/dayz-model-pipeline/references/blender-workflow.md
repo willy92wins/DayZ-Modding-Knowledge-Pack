@@ -348,9 +348,12 @@ When exporting OBJ for py3d assembly, use these settings:
 - Forward: **-Y**
 - Up: **Z**
 
-This automatically converts from Blender's Z-up to DayZ's Y-up during export.
+These are Blender's own axes: the OBJ keeps raw Blender coordinates (Z up), and the conversion happens in py3d.
+[INFERRED, not tested in game] Do not let the exporter convert to Y-up instead (Forward -Z / Up Y): that is a
+rotation (det=+1), the kind of map Rule 12 measured as shipping a mirrored model.
 
-**If exporting raw and transforming in py3d**: apply transformation `x'=x, y'=z, z'=-y`.
+**Transforming in py3d**: apply the Rule 12 map `x'=x, y'=z, z'=y` (det=-1) with negated normals, keeping the face order
+(`SKILL.md` Rule 12; the old `z'=-y` rotation ships a mirrored model).
 
 ---
 

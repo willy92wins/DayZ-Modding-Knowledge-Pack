@@ -1309,10 +1309,20 @@
           "source_path": "knowledge/DAYZ_TECHNICAL_NOTES.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01: dayz-model-pipeline Rule 12 rewritten after an in-game test (DayZDiag 1.29.163709, LFPowerGrid carrier): one chiral model exported three ways with py3d 1.7.0 and binarized by AddonBuilder — det=-1 reflection with face order kept and normals negated renders correctly; the old det=+1 recipe renders solid but mirrored; transform(BLENDER_TO_DAYZ) alone renders inside-out and mirrored. Written by Claude (Anthropic); reviewed by Gemini 3.8 Flash (Google): 10 findings, 9 applied.",
+          "license": "MIT",
+          "source_hash": "5734e278d96f2ca07fe997304ea8de566ef134f97dffd123dbc67f9c0af26eba",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/DAYZ_TECHNICAL_NOTES.md",
+          "source_revision": "kp-update-rule12@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d8e80ede0458848d32a3d1a183aedaf0f1f2389265a6892e46dca88d66d78173",
+      "output_hash": "5734e278d96f2ca07fe997304ea8de566ef134f97dffd123dbc67f9c0af26eba",
       "output_path": "knowledge/DAYZ_TECHNICAL_NOTES.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -3584,10 +3594,20 @@
           "source_path": "skills/blender-assembly/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01: SP-450 (moving platform as a separate entity, measured in game on DayZDiag 1.29.163709) and SP-451 (editing vanilla rocks, Blender 5.1 offline measurements) from the author's ledger; API names verified against vanilla 1.29.0.163451 scripts; written by Claude (Anthropic), reviewed by Gemini 3.8 Flash (Google).",
+          "license": "MIT",
+          "source_hash": "db53fea5b64128a216a80318c9253c37534c9a02c07e8a269a8dc0dc754cc993",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-assembly/SKILL.md",
+          "source_revision": "kp-update-sp450-451@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "afd71d43ff080cec05ae0feeda7969b83e210b866c6a931c381aae73b317ccf2",
+      "output_hash": "db53fea5b64128a216a80318c9253c37534c9a02c07e8a269a8dc0dc754cc993",
       "output_path": "skills/blender-assembly/SKILL.md",
       "routing_artifact_id": "skill/blender-assembly",
       "verification_level": "cross_checked"
@@ -3648,10 +3668,20 @@
           "source_path": "skills/blender-visual-review/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01: dayz-model-pipeline Rule 12 rewritten after an in-game test (DayZDiag 1.29.163709, LFPowerGrid carrier): one chiral model exported three ways with py3d 1.7.0 and binarized by AddonBuilder — det=-1 reflection with face order kept and normals negated renders correctly; the old det=+1 recipe renders solid but mirrored; transform(BLENDER_TO_DAYZ) alone renders inside-out and mirrored. Written by Claude (Anthropic); reviewed by Gemini 3.8 Flash (Google): 10 findings, 9 applied.",
+          "license": "MIT",
+          "source_hash": "4ff098fd445e9408481f8951137b09788a9a8da598ab5bfd0bd1f10d240422d5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-visual-review/SKILL.md",
+          "source_revision": "kp-update-rule12@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "32f99d02df44e8ea1556a835b292575843b50c7bbaae6921a469cfdccdebd1ed",
+      "output_hash": "4ff098fd445e9408481f8951137b09788a9a8da598ab5bfd0bd1f10d240422d5",
       "output_path": "skills/blender-visual-review/SKILL.md",
       "routing_artifact_id": "skill/blender-visual-review",
       "verification_level": "cross_checked"
@@ -6448,10 +6478,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01: SP-450 (moving platform as a separate entity, measured in game on DayZDiag 1.29.163709) and SP-451 (editing vanilla rocks, Blender 5.1 offline measurements) from the author's ledger; API names verified against vanilla 1.29.0.163451 scripts; written by Claude (Anthropic), reviewed by Gemini 3.8 Flash (Google).",
+          "license": "MIT",
+          "source_hash": "0aa06dcf7e295bdb6d82cb96f9e92ac4f9042c128ed7d88fcfa8355fd37e470f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-sp450-451@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d1656637523061be152f58cee1224421c14c1d0b115fe97db5e6bf063a3a9a1f",
+      "output_hash": "0aa06dcf7e295bdb6d82cb96f9e92ac4f9042c128ed7d88fcfa8355fd37e470f",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -6824,10 +6864,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01: dayz-model-pipeline Rule 12 rewritten after an in-game test (DayZDiag 1.29.163709, LFPowerGrid carrier): one chiral model exported three ways with py3d 1.7.0 and binarized by AddonBuilder — det=-1 reflection with face order kept and normals negated renders correctly; the old det=+1 recipe renders solid but mirrored; transform(BLENDER_TO_DAYZ) alone renders inside-out and mirrored. Written by Claude (Anthropic); reviewed by Gemini 3.8 Flash (Google): 10 findings, 9 applied.",
+          "license": "MIT",
+          "source_hash": "b3dbe89f4ea108f8ee1f9d22a80b47088eb29d263660e8f42c50159a0ae61c22",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "kp-update-rule12@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cd80043cb2b24db078b88ae79f396c3cb69ad74c3627b891cff85c40715934b5",
+      "output_hash": "b3dbe89f4ea108f8ee1f9d22a80b47088eb29d263660e8f42c50159a0ae61c22",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -6912,10 +6962,20 @@
           "source_path": "dayz-model-pipeline/references/blender-workflow.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01: dayz-model-pipeline Rule 12 rewritten after an in-game test (DayZDiag 1.29.163709, LFPowerGrid carrier): one chiral model exported three ways with py3d 1.7.0 and binarized by AddonBuilder — det=-1 reflection with face order kept and normals negated renders correctly; the old det=+1 recipe renders solid but mirrored; transform(BLENDER_TO_DAYZ) alone renders inside-out and mirrored. Written by Claude (Anthropic); reviewed by Gemini 3.8 Flash (Google): 10 findings, 9 applied.",
+          "license": "MIT",
+          "source_hash": "6cc08b85595ab921b502389292353c5f38013d870661a02b2849a51dce18d8f9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/blender-workflow.md",
+          "source_revision": "kp-update-rule12@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ceefb4c54aaac89d2e773bd8971766d0c8f8aaa1f133c0a050c665100cdf9415",
+      "output_hash": "6cc08b85595ab921b502389292353c5f38013d870661a02b2849a51dce18d8f9",
       "output_path": "skills/dayz-model-pipeline/references/blender-workflow.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -6978,10 +7038,20 @@
           "source_path": "dayz-model-pipeline/references/lods-and-geometry.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01: dayz-model-pipeline Rule 12 rewritten after an in-game test (DayZDiag 1.29.163709, LFPowerGrid carrier): one chiral model exported three ways with py3d 1.7.0 and binarized by AddonBuilder — det=-1 reflection with face order kept and normals negated renders correctly; the old det=+1 recipe renders solid but mirrored; transform(BLENDER_TO_DAYZ) alone renders inside-out and mirrored. Written by Claude (Anthropic); reviewed by Gemini 3.8 Flash (Google): 10 findings, 9 applied.",
+          "license": "MIT",
+          "source_hash": "2b755efa18ae527b52bdd351083ec2e6ad3c2690ae7cf390daa0cf66dca25859",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
+          "source_revision": "kp-update-rule12@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c7986b7f44c35d89e7cb8354edae1547ffddfddc51a13fce1d583c46ab64ac10",
+      "output_hash": "2b755efa18ae527b52bdd351083ec2e6ad3c2690ae7cf390daa0cf66dca25859",
       "output_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -7126,10 +7196,20 @@
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01: dayz-model-pipeline Rule 12 rewritten after an in-game test (DayZDiag 1.29.163709, LFPowerGrid carrier): one chiral model exported three ways with py3d 1.7.0 and binarized by AddonBuilder — det=-1 reflection with face order kept and normals negated renders correctly; the old det=+1 recipe renders solid but mirrored; transform(BLENDER_TO_DAYZ) alone renders inside-out and mirrored. Written by Claude (Anthropic); reviewed by Gemini 3.8 Flash (Google): 10 findings, 9 applied.",
+          "license": "MIT",
+          "source_hash": "49ac210178a3ec4abae0a25368ec6587f7696f10fa779f2b0c2da0adc6b7d01e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "kp-update-rule12@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5c22f8cc21bceb58be93c8446a7044d9abb94561b33e2c778ec046aa78aa0fce",
+      "output_hash": "49ac210178a3ec4abae0a25368ec6587f7696f10fa779f2b0c2da0adc6b7d01e",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8202,10 +8282,20 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01: SP-450 (moving platform as a separate entity, measured in game on DayZDiag 1.29.163709) and SP-451 (editing vanilla rocks, Blender 5.1 offline measurements) from the author's ledger; API names verified against vanilla 1.29.0.163451 scripts; written by Claude (Anthropic), reviewed by Gemini 3.8 Flash (Google).",
+          "license": "MIT",
+          "source_hash": "cf5f2c114aeab0c7d6f37064e0dfdf10152a942c3fbdd07bade99834c986e294",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "kp-update-sp450-451@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "badf508804c61cf666533f4d864c3f74e8f032524793a07702acff0a957f0f1a",
+      "output_hash": "cf5f2c114aeab0c7d6f37064e0dfdf10152a942c3fbdd07bade99834c986e294",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -14145,10 +14235,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 Rule 12 + SP-450/451: claim ranges shifted where lines moved; no claim added or removed.",
+          "license": "MIT",
+          "source_hash": "555cb4b4d26189c24bc1b6a8e272fc4b5e11ec6bf33f3f57e524b2cb1b138cca",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-rule12@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "eddfa8b106413592b6e604162b626209cb7c2b5b29d8b5f5a6709ab83cbc9498",
+      "output_hash": "555cb4b4d26189c24bc1b6a8e272fc4b5e11ec6bf33f3f57e524b2cb1b138cca",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

@@ -22,7 +22,7 @@ only when the task needs that depth:
 | `references/dano-transporthit.md` | damage pipeline (MDF), EEHitBy chain, the complete TransportHit flow line-by-line, hitzones, armor reality |
 | `references/dayz-1-30-ragdoll-and-fall.md` | 1.30 Exp: `.ragdoll` / `RagdollDef`, `PhysicsSetSimpleDeath`, unconscious wake-while-falling, fall-damage `CurveExp` |
 
-## The 10 engine truths (prevent the classic bugs)
+## The 11 engine truths (prevent the classic bugs)
 
 1. **A body only collides where it exists.** The player capsule (CCT) is simulated client-side
    (hasta 1.29: `3_game/human.c:1397-1418`; desde 1.30 Exp: `exp/scripts/scripts/3_Game/human.c:1426-1452`). A rigid body created only on the server can never block a player —
@@ -71,6 +71,10 @@ only when the task needs that depth:
    players are displaced by the contact solver itself (both bodies present + interacting layers), not
    by script.
 10. **Config-driven animated geometry on a building is NOT a mover** (measured in game, DayZDiag 1.29.163709) [EXACT]: a standing player stays suspended while the piece descends; a moving player rides up but does not ride down — they stay up, can walk a few metres on "nothing", then fall; a parked car is clipped through by the rising piece; a running car rises a bit and drops. Any elevator or lift platform needs a script layer that carries the rider. (On the way down the client seems to keep the old collision for a while — hypothesis, not measured.)
+11. **A platform that is a SEPARATE entity does carry riders** (measured in game, DayZDiag 1.29.163709, one client on localhost; SP-450) [EXACT]: a `House` whose config inherits `HouseNoDestruct` with `animPhysDetachSpeed=100`, moved with `SetPosition` every frame on the server AND on each client from the same clock (the server re-syncs the time every 0.25 s, the client extrapolates), lifted a standing player 8.9 m in 15 s (peak 0.93 m/s) without touching the player's position: within 5 cm on the server and 7.9 cm on the client, the client error being one frame of lag (correlation 0.89 with speed × frame time). The player must be linked (`PhysicsGetLinkedEntity() == platform`, `3_game/human.c:1403`); after a teleport they need one native step before they link.
+    - **Vehicles on that platform.** Asleep (`dBodyActive` `INACTIVE`) + `SetPosition` + `Transport.Synchronize()`: the server carries them but the client receives nothing until they wake — do not use. Awake only (`ALWAYS_ACTIVE`): a sedan rides well, but a `CarScript` helicopter with its own flight model bounces up to 24 cm and slides 31 cm. Awake with `SetVelocity` = platform velocity + 4 × position error, every frame: the sedan (with and without wheels) and the helicopter ride within 4.6 cm on the server and 11.5 cm on the client, and stop exactly when released.
+    - **The frame hook.** `EOnFrame` never reaches a `House` instance, even with `SetEventMask(EntityEvent.FRAME)` (measured `fe=0`); the `GetGame().GetUpdateQueue(CALL_CATEGORY_GAMEPLAY)` invoker runs every frame on server and client (`3_game/dayzgame.c:3035-3038`).
+    - **A script cannot walk a client-controlled player.** In 1.29 multiplayer with reconciliation, `OverrideMovementSpeed`/`OverrideMovementAngle` moved the player 0.24-0.40 m in 1.5 s when set on the client only, and 0.00 m when also set on the server by RPC: enough for the one step that links, not for walking.
 
 ## API quick map (verified signatures)
 

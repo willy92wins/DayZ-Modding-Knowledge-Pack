@@ -225,7 +225,7 @@ After generating, verify:
 - [ ] Texture paths use backslashes and .paa extension
 - [ ] Material paths use backslashes
 - [ ] If imported from Blender: Z-up → Y-up rotation applied (see below)
-- [ ] [EXACT] After source-axis conversion: follow SKILL.md Rule 12 — Blender/FBX-authored geometry gets every face's vertex order reversed and normals negated even though the position map is det=+1; glTF/GLB goes pure-swap det=-1 + reverse. The old "reverse only for det<0" criterion is superseded (SP-432); see also the LL-504 mirroring correction under "Rule 13 nuance". Verify with `check_face_winding`.
+- [ ] [EXACT] After source-axis conversion: follow SKILL.md Rule 12 — Blender/FBX-authored geometry is mapped with the det=-1 reflection `(x,y,z)→(x,z,y)`, keeps its vertex order and gets its normals negated (measured in game 2026-10-01, DayZDiag 1.29.163709: one chiral model exported three ways — this map renders solid and reads correctly; the old det=+1 recipe renders solid but MIRRORED; `P3D.transform(py3d.BLENDER_TO_DAYZ)` alone renders inside-out AND mirrored); glTF/GLB keeps its own section. Verify with `check_face_winding` and check chirality on an asymmetric feature.
 - [ ] If accepting attachments: proxy faces + selections present in visual LODs
 
 ## Blender Z-up → DayZ Y-up Rotation (MANDATORY for Blender exports)
@@ -233,16 +233,19 @@ After generating, verify:
 Blender uses Z as the up-axis. DayZ uses Y. If you generate geometry in Blender
 or in code using Z-up conventions, you MUST rotate all data before writing the p3d.
 
-**Transform: `x' = x,  y' = z,  z' = -y`**
+**Transform: `x' = x,  y' = z,  z' = y`** (det=-1)
 
-This is a -90° rotation around the X axis. Apply to BOTH vertex positions AND face normals.
+Blender is right-handed and DayZ left-handed, so the shape-preserving map is this REFLECTION in the numbers,
+not the -90° rotation about X (`z' = -y`), which ships a MIRRORED model (SKILL.md Rule 12, measured in game
+2026-10-01). Map vertex positions; map normals the same way and negate them (MLOD stores normals inward);
+keep the face vertex order.
 
 ```python
 def rot_coords(c):
-    return (c[0], c[2], -c[1])
+    return (c[0], c[2], c[1])
 
 def rot_normal(n):
-    return (n[0], n[2], -n[1])
+    return (-n[0], -n[2], -n[1])   # mapped like the positions, then negated (MLOD: inward)
 
 # Apply to ALL LODs (visual, geometry, fire, view, shadow, memory)
 for lod in model.lods:
@@ -254,11 +257,16 @@ for lod in model.lods:
     lod.facenormals = new_normals
 ```
 
-**WARNING [EXACT] (corrected 2026-09-26, SP-432 — aligns with `SKILL.md` Rule 12):** the 2026-07-06 note "det=+1 → never reverse" does NOT hold for Blender/FBX-authored geometry. Follow SKILL.md Rule 12: Blender/FBX-authored geometry with outward normals maps with `(x,z,-y)`, gets every face's vertex order reversed (except proxy triangles) and normals rotated then negated; measured against five working LFPowerGrid p3d whose game side is validated. glTF/GLB keeps its own pure-swap `(x,z,y)` det=-1 + reverse path. Additional in-game measurement (LL-504, 2026-09-22): even with that recipe, a det=+1 map ships a MIRRORED model — text and logos read backwards; see the LL-504 correction under "Rule 13 nuance" in SKILL.md and re-check the position map itself. Verify with `check_face_winding` after assembly.
+With py3d itself: `model.transform(((1, 0, 0), (0, 0, 1), (0, 1, 0)))` maps points and normals and, because
+det<0, reverses every face; reverse them back and negate the normals — the result equals the loop above.
+`py3d.BLENDER_TO_DAYZ` is the old det=+1 rotation: `model.transform(py3d.BLENDER_TO_DAYZ)` on its own renders
+inside-out AND mirrored in game (2026-10-01).
+
+**History [EXACT] (superseded 2026-10-01):** 2026-07-06 "det=+1 → never reverse" rendered inside-out; 2026-09-26 (SP-432) "det=+1 + reverse + negate" rendered solid but mirrored (its five validation models are symmetric); LL-504 (2026-09-22) and the 2026-10-01 in-game test settled the det=-1 reflection above. Winding gates passed every step: only an asymmetric model shows a mirror.
 
 ## Face Winding Order Fix (per source path — see SKILL.md Rule 12)
 
-Blender/FBX-authored geometry: reverse every face of every LOD — EXCEPT proxy triangles (their vertex order encodes the attachment frame P0/P1/P2, do not touch). glTF/GLB resolved as pure swap `(x,z,y)` det=-1: reverse as well. The old "reverse only if det<0" criterion is superseded by the measured recipe (SKILL.md Rule 12) and the LL-504 mirroring correction.
+Blender/FBX-authored geometry mapped with Rule 12's det=-1 reflection keeps its vertex order: no reversal. Reverse faces only to repair a mesh whose cross product points OUTWARD — for example after `P3D.transform()` with a det<0 map, which reverses on its own — and never proxy triangles (their vertex order encodes the attachment frame P0/P1/P2). glTF/GLB: see SKILL.md "GLB/glTF imports".
 
 ```python
 for lod in model.lods:
@@ -677,10 +685,10 @@ def check_uv_range(model):
 
 ### 4. Face Winding Verification
 
-After axis conversion, reverse face winding only for a reflection (det<0) or when
-the source does not already carry engine winding (e.g. glTF/CCW); a proper det=+1
-rotation otherwise preserves it. See `SKILL.md` Rule 12 and the warning at lines
-257-263 above. If normals point inward,
+After Rule 12's map the faces are already in the MLOD order (cross product INWARD, normals
+negated to match). This check only confirms that vertex order and stored normals AGREE: it
+cannot see a mirror, and it cannot tell inward from outward when both are flipped together. See
+`SKILL.md` Rule 12. When the vertex order and the stored normals disagree, or both point OUTWARD,
 textures render on the inside only. Check by comparing geometric normal
 (from cross product) with stored normal.
 
@@ -721,9 +729,9 @@ def check_face_winding(model):
         pct = flipped * 100 / total
         if pct > 50:
             issues.append(f"WINDING REVERSED: {flipped}/{total} faces ({pct:.0f}%) have "
-                           f"inverted normals. Check the source transform determinant "
-                           f"before reversing faces; reversing after det=+1 yields "
-                           f"100% flipped.")
+                           f"inverted normals. Check the axis map and the normal sign "
+                           f"before reversing faces: Rule 12 maps with det=-1 and "
+                           f"negates the normals.")
         elif pct > 5:
             issues.append(f"PARTIAL WINDING ISSUE: {flipped}/{total} faces ({pct:.0f}%) "
                            f"have inverted normals. Some faces may render inside-out.")
@@ -945,18 +953,17 @@ def flip_uv_v(model):
 
 ```python
 def apply_axis_rotation(lod):
-    """Apply Blender Z-up → DayZ Y-up rotation: x'=x, y'=z, z'=-y."""
+    """Blender Z-up → DayZ Y-up (Rule 12): the det=-1 reflection x'=x, y'=z, z'=y."""
     for pt in lod.points:
         x, y, z = pt.coords
-        pt.coords = (x, z, -y)
+        pt.coords = (x, z, y)
 
     new_normals = []
     for nx, ny, nz in lod.facenormals:
-        new_normals.append((nx, nz, -ny))
+        new_normals.append((-nx, -nz, -ny))   # mapped, then negated: MLOD normals point inward
     lod.facenormals = new_normals
 
-    # This proper det=+1 rotation preserves winding (Rule 12).
-    # Do not reverse face vertices here.
+    # Keep the face vertex order: after this map it is already the MLOD (inward) order.
 ```
 
 ### Fix 4: Update Memory LOD ce_center
