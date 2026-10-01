@@ -173,7 +173,7 @@ def test_val_audit_mass_pos(fork, tmp_path):
 
 # ---- P3D.transform ----------------------------------------------------
 
-def test_trans_pos_blender_to_dayz(fork):
+def test_trans_pos_rot_x_neg90(fork):
     """TRANS-POS: (x,y,z)->(x,z,-y) exacto; normales M*n; winding y
     normal_index INTACTOS (det=+1); signos preservados."""
     p3d = fork.P3D()
@@ -184,7 +184,7 @@ def test_trans_pos_blender_to_dayz(fork):
     orders_before = vertex_orders(vis)
     nidx_before = normal_indices(vis)
     signs_before = winding_signs(vis)
-    p3d.transform(fork.BLENDER_TO_DAYZ)
+    p3d.transform(fork.ROT_X_NEG90)
     for old, p in zip(pts_before, vis.points):
         assert close3(p.coords, (old[0], old[2], -old[1]))
     for old, n in zip(normals_before, vis.facenormals):
@@ -199,7 +199,7 @@ def test_trans_pos_multilod_validate_clean(fork):
     findings against the empty baseline."""
     p3d = build_multilod_v2_p3d(fork)
     assert p3d.validate() == []
-    p3d.transform(fork.BLENDER_TO_DAYZ)
+    p3d.transform(fork.ROT_X_NEG90)
     assert p3d.validate() == []
 
 
@@ -285,7 +285,7 @@ def test_trans_sem_save_reopen(fork, tmp_path):
             mem_before = lod.get_memory_points()
     vis = p3d.get_lod("visual")
     proxies_before = vis.get_proxies()
-    p3d.transform(fork.BLENDER_TO_DAYZ)
+    p3d.transform(fork.ROT_X_NEG90)
     expected_normals = {i: [tuple(n) for n in lod.facenormals]
                         for i, lod in enumerate(p3d.lods)}
     expected_nidx = {i: normal_indices(lod) for i, lod in enumerate(p3d.lods)}

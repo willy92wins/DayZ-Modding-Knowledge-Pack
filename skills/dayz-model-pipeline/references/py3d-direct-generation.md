@@ -260,7 +260,7 @@ for lod in model.lods:
 With py3d itself: `model.transform(((1, 0, 0), (0, 0, 1), (0, 1, 0)))` maps points and normals and, because
 det<0, reverses every face; reverse them back and negate the normals — the result equals the loop above.
 `py3d.BLENDER_TO_DAYZ` is the old det=+1 rotation: `model.transform(py3d.BLENDER_TO_DAYZ)` on its own renders
-inside-out AND mirrored in game (2026-10-01).
+inside-out AND mirrored in game (2026-10-01). From py3d 1.8.0 `py3d.blender_to_dayz(model)` does the whole conversion in one call: it keeps every face's vertex order, proxy triangles included, and warns when the model has `proxy:` selections, because their engine frame was not part of the test (LL-505); `py3d.BLENDER_TO_DAYZ` is deprecated, same value, now `py3d.ROT_X_NEG90`.
 
 **History [EXACT] (superseded 2026-10-01):** 2026-07-06 "det=+1 → never reverse" rendered inside-out; 2026-09-26 (SP-432) "det=+1 + reverse + negate" rendered solid but mirrored (its five validation models are symmetric); LL-504 (2026-09-22) and the 2026-10-01 in-game test settled the det=-1 reflection above. Winding gates passed every step: only an asymmetric model shows a mirror.
 

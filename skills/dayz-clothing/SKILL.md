@@ -135,8 +135,13 @@ FBX with geometry, UVs (V flipped for Blender), the diffuse as PNG
 armature (FBX drops loose vertex groups — verified: without an armature
 deformer the groups vanish on reimport; with it, round-trip keeps all 10
 groups at exact weight sums). Axis map DayZ→Blender: `(x, −z, y)` (det=+1;
-character stands on Z-up facing +Y; return trip = the fork's standard
-`py3d.BLENDER_TO_DAYZ`). ALWAYS verify by reimporting the FBX in a clean
+character stands on Z-up facing +Y, a mirror image in Blender's right-handed
+frame; return trip = its exact inverse `(x, z, −y)`, i.e.
+`transform(((1, 0, 0), (0, 0, 1), (0, -1, 0)))` — the matrix py3d 1.8.0 names
+`py3d.ROT_X_NEG90`; the old name `py3d.BLENDER_TO_DAYZ` still works but is
+deprecated and warns). Do NOT use `py3d.blender_to_dayz()` for this return trip:
+it is for geometry authored in Blender's own frame, while here the two det=+1
+maps have to cancel out. ALWAYS verify by reimporting the FBX in a clean
 scene (counts + vgroups + weight sums) before shipping.
 Package: FBX m/f + PNG + the MLOD p3ds + model.cfg + README from
 `references/LEEME-ARTISTA.template.md` (states the three do-not-undo fixes,

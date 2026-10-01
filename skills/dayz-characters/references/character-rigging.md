@@ -188,6 +188,20 @@ normals (`mesh.corner_normals[loop].vector`, transformed by `matrix_world.to_3x3
   inside-out. The detector gates on this crisp sign (the "normals outward" extreme-vertex check is too noisy
   on a humanoid to gate — informational only). Do NOT compare to a *debinarized* vanilla model for winding:
   the ODOL→MLOD converter's winding handling inverts the comparison and will mislead you.
+- **FLAG (2026-10-01, py3d 1.8.0) — not re-run on a character; read before changing this pipeline.** An
+  in-game test made since disagrees with two items above. (1) `(x, z, -y)` is det = +1, and a det = +1 map
+  from Blender to DayZ ships a MIRRORED model: one chiral test model rendered mirrored through it and read
+  correctly through the det = -1 swap `(x, z, y)` (dayz-model-pipeline SKILL.md Rule 12). py3d 1.8.0 adds
+  `blender_to_dayz()` for that swap and deprecates `py3d.BLENDER_TO_DAYZ`, which is this same `(x, z, -y)`.
+  The 180° fix `(−x, z, y)` above plus SKILL.md's "un-reflect" (negate X) compose to exactly `(x, z, y)`.
+  (2) The GATE disagrees with that test on the stored-normal sign. Run on the MLOD that rendered solid and
+  read correctly in game (`blender_to_dayz()` output: cross INWARD, normals INWARD), `check_dayz_winding.py`
+  prints `cross.normal_positive=1.00 normals_outward=0.00`, "WINDING will render INSIDE-OUT", and exits 1;
+  its fix, reversing every face, would turn the cross product outward, as in the variant that rendered
+  inside-out. The test did not include inward winding with OUTWARD normals, so it does not show that this
+  pipeline's builds are wrong — only that the gate's `cross·normal > 0 ⇒ inside-out` is false as stated. Do
+  not run this gate on `blender_to_dayz()` output, or switch this pipeline to it, without an in-game A/B on a
+  character.
 - **Selection names LOWERCASE.** Vanilla `.p3d` selections are lowercase (`leftarm`, `pelvis`, `spine3`);
   Blender vgroups are MixedCase → `.lower()` them. (DayZ matching is case-insensitive, but match vanilla.)
 - **Identity binding (py3d F1-05).** Alias `points = lod.points` BEFORE creating any `Face(lod.points, …)`

@@ -85,7 +85,9 @@ python -m py3d diff     a.p3d b.p3d  # structural comparison
 
 **Editing helpers**
 - `bbox`, `triangulate`, `set_selection`, `set_total_mass`, `set_memory_point`,
-  `make_double_sided`, `transform` (with `py3d.BLENDER_TO_DAYZ`).
+  `make_double_sided`, `transform`.
+- `blender_to_dayz(model)`: a model authored in Blender, converted to DayZ's
+  frame without mirroring it. See [Blender → DayZ](#blender--dayz).
 - A full proxy lifecycle: `add_proxy` / `get_proxies(strict=True)` /
   `align_proxy` / `remove_proxy`, with explicit raw↔engine frame conversion.
 
@@ -114,11 +116,61 @@ Builder survives a read/write cycle byte for byte; a file written by BI may not,
 because tags are written in this library's order -- which is the order Object
 Builder itself writes, and not always the source file's.
 
+## Blender → DayZ
+
+```python
+import py3d
+
+model = py3d.P3D()
+# ... fill model.lods with points, faces and normals exactly as Blender has
+# them: Blender coordinates, faces counter-clockwise seen from outside,
+# outward normals ...
+py3d.blender_to_dayz(model)   # once, before adding anything built in DayZ space
+model.save("thing.p3d")
+```
+
+Blender is right-handed (Z up, front at −Y) and DayZ left-handed (X east, Y up,
+Z north). A conversion that keeps the shape is therefore a reflection in the
+numbers, `(x, y, z) → (x, z, y)`, determinant −1. That reflection on its own
+already puts the faces in the MLOD order — vertex-order cross product pointing
+inward — so `blender_to_dayz` keeps every face's vertex order and only negates
+the normals, which MLOD also stores pointing inward. Measured in game on
+2026-10-01 (DayZDiag 1.29.163709) with one chiral model, an "F" in relief on a
+plate, written three ways and binarized with AddonBuilder:
+
+| how the model was written | in game |
+|---|---|
+| `py3d.blender_to_dayz(model)` | solid, the F reads correctly |
+| `model.transform(py3d.ROT_X_NEG90)`, then every face reversed and every normal negated | solid but **mirrored** |
+| `model.transform(py3d.ROT_X_NEG90)` alone — the usage this README gave up to 1.7.0 | inside-out **and** mirrored |
+
+The mirrored model passes the winding checks — vertex order against normals,
+inward per component — so only an asymmetric feature shows the mirror.
+Proxy frames were not part of that test: `blender_to_dayz` moves proxy
+triangles like any other face and warns when the model has `proxy:`
+selections. Add proxies after the conversion with
+`add_proxy(..., space="engine")` where you can.
+
+**Migrating from `py3d.BLENDER_TO_DAYZ`.** Up to 1.7.0 this README gave
+`model.transform(py3d.BLENDER_TO_DAYZ)`, the det=+1 rotation `(x, z, −y)`, as
+the Blender → DayZ step. It mirrors the model. From 1.8.0:
+
+- geometry authored in Blender: call `py3d.blender_to_dayz(model)` instead;
+- code that needs the rotation itself — for instance to undo a det=+1 export
+  `(x, −z, y)` from DayZ to Blender, where the mirror cancels out — uses
+  `py3d.ROT_X_NEG90`, the same matrix under a name that says what it is.
+
+`py3d.BLENDER_TO_DAYZ` still holds that same matrix, so no model changes shape
+behind your back, and every read of it raises a `FutureWarning` that says the
+above.
+
 ## Winding: read this before trusting any validator
 
-The single most common way to break a DayZ model is to export from Blender
-(Z-up) to DayZ (Y-up) without reordering face vertices. Handedness flips, the
-texture becomes visible only from *inside*, and raycasts pass through.
+The single most common way to break a DayZ model is a Blender (Z-up) to DayZ
+(Y-up) export whose face order or normal sign does not match its axis map: the
+texture becomes visible only from *inside*, and raycasts pass through. (The
+other common way, a mirrored model, is invisible to every check below; see
+[Blender → DayZ](#blender--dayz).)
 
 This fork checks winding two ways:
 
@@ -138,7 +190,7 @@ turns a quad `[0,1,2,3]` into `[0,2,1,3]`, a crossed face.
 
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 263 tests pass -- 256 of them
+The library is used in a real modding pipeline, and 278 tests pass -- 271 of them
 on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
 upstream (see [Tests](#tests)). It has also been through a deliberately
 adversarial audit, and **not every problem it found is fixed yet**. Before

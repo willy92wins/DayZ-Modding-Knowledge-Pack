@@ -96,11 +96,11 @@ If installing or replacing a wheel is needed, `../dist/<pinned filename>` is als
 
 ### Identity gate
 
-`tools/py3d/dist/` contains pinned wheel `py3d_dayz-1.6.0-py3-none-any.whl`, and its SHA-256 matches `wheel-manifest.json` (verified on 2026-09-02). Restocking is therefore unblocked.
+`tools/py3d/dist/` is gitignored: the pinned wheel lives on the machine that built it, and `wheel-manifest.json` is its tracked identity. Current pin: `py3d_dayz-1.8.0-py3-none-any.whl`, resealed on 2026-10-01 for the Blender -> DayZ change (`blender_to_dayz()`, `BLENDER_TO_DAYZ` deprecated) at the owner's explicit request. Before resealing, the same script rebuilt the 1.7.0 pin (`96bb546b...`) byte for byte on that machine, so the toolchain is the one that sealed it; then `-UpdateManifest` built 1.8.0 twice to the same hash. The vendored copies in the live skills were NOT restocked with it: that write needs its own authorization (see "Restricciones operativas").
 
 Do not run `-UpdateManifest` or edit `wheel-manifest.json` to bypass a mismatch. Resealing identity is an explicit user decision. If source wheel is missing or hash does not match, applicator aborts without overwriting any vendored copy.
 
-What was NOT remeasured in 2026-09-02 run: whether `build-wheel.ps1` reproduces that byte-for-byte hash today. Only the artifact already published in `dist/` was checked.
+What the 2026-10-01 reseal did NOT check: that another machine reproduces the 1.8.0 hash, or a real restock. The applicator was only dry-run (`-WheelOnly -NoWrite`) against a temporary root holding one skill that vendors 1.7.0: it planned that one replacement and wrote nothing.
 
 ## Maintenance checks
 
@@ -116,7 +116,7 @@ To inspect the reproducible gate without resealing:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
-  -File tools\py3d\build-wheel.ps1 `
+  -File tools\py3d\rollout\build-wheel.ps1 `
   -Python <python-3.10-or-newer>
 ```
 

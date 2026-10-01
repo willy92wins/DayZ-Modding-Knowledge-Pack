@@ -102,19 +102,29 @@ the four rounds did validate: sections 3-5 and 7 as a pipeline, and (j) as a mem
   pack's `DayzSkeleton.p3d`, read with py3d 1.5.0): `lefttoebase` centroid sits 0.147 m in -Z
   from `leftfoot`, `head` 0.030 m in -Z from `neck`, `leftfoot` at x = +0.167: front -Z, left +X.
   `(x, -z, y)` puts those toes at +Y; the swap `(x, z, y)` puts them at -Y, i.e. onto the rig.
-- Consequence: a garment fitted on `Male_body` returns to DayZ with the pure swap
-  `(x, y, z)_blender -> (x, z, y)_dayz` AND face-order reversal in every LOD (the det = -1 rule,
-  dayz-model-pipeline/references/lods-and-geometry.md:146-148). That is exactly the pack's
-  `from_bl` + `rev()`. Do NOT apply `py3d.BLENDER_TO_DAYZ` = `(x, z, -y)` to it: that is the
-  det = +1 route for meshes authored in our +Y-facing frame. dayz-characters hit this on the
+- Consequence: a garment fitted on `Male_body` returns to DayZ through the det = -1 swap
+  `(x, y, z)_blender -> (x, z, y)_dayz`. For a mesh with Blender's own winding (faces
+  counter-clockwise seen from outside, outward normals) that is `py3d.blender_to_dayz()`
+  (py3d >= 1.8.0): swap, face order KEPT, normals negated - measured in game 2026-10-01 on a
+  chiral test model (dayz-model-pipeline SKILL.md Rule 12). [UNVERIFIED] The pack's `from_bl`
+  also runs `rev()`, which reverses every face: under the measured MLOD convention (vertex-order
+  cross product INWARD) that is right only for a mesh whose faces already point inward in
+  Blender, such as one that came in through the pack's own `to_bl` + `rev()`. Check the result
+  with the per-component outward check of dayz-model-pipeline Rule 18 (expected: cross product
+  INWARD) before trusting either. Do NOT apply the det = +1
+  `(x, z, -y)` to it (`py3d.ROT_X_NEG90`, formerly `py3d.BLENDER_TO_DAYZ`, now deprecated): that
+  is the route for meshes authored in our +Y-facing frame. dayz-characters hit this on the
   same rig: `(x, z, -y)` shipped LFInfectedBig walking backwards and a residual mirror
   (character-rigging.md:169-175; dayz-characters/SKILL.md:167-192).
 - Alternative that keeps every existing clothing script unchanged: mirror the rig into our frame
   first (`y -> -y` on `Armature` and `Male_body`, then reverse `Male_body` face order), fit
-  there, export with `BLENDER_TO_DAYZ`.
+  there, export with the det = +1 `py3d.ROT_X_NEG90` (formerly `BLENDER_TO_DAYZ`).
+  [UNVERIFIED] On its own that map leaves outward Blender faces and normals OUTWARD in the MLOD
+  (rendered inside-out in the 2026-10-01 test); this route also needs every face reversed and
+  every normal negated after it, unless the worn export already does that.
 - [ASSUMPTION] Which of the two is less error-prone in practice. Neither has been run on a real
-  garment yet; in both cases run the anatomical facing test of SKILL.md CANONICAL WORN FRAME on
-  the exported p3d before packing (killer #2).
+  garment yet; in both cases run the anatomical facing test of SKILL.md CANONICAL WORN FRAME and
+  the Rule 18 per-component winding check on the exported p3d before packing (killer #2).
 
 ## 3. Landmarks: replacing `_real_dayz_rig_landmarks` [RUN 2026-09-01: works; mirrors addon.py:3853-3876]
 
