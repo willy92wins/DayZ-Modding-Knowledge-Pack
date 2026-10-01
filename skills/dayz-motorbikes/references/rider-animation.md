@@ -97,7 +97,7 @@ In 1.30 the vehicle graph is distributed as structured text: `exp\anims_workspac
 - `VehicleType == 11`: `VehicleAnimInstances.MOTO2` (`Motorbike_02`).
 
 ### State Machine `MotorBikeSTM` (`Vehicles.agf:1582-1751`)
-1. `Idle`: Upright riding or rest with hand IK active (`Child "AnimNodeIK2hands"`).
+1. `Idle`: Stretched-out riding or rest with hand IK active (`Child "AnimNodeIK2hands"`).
 2. `GetIn_L` / `GetIn_R`: Directional get-in from left or right with `"TagVehicleGetIn"` tag.
 3. `GetOut_L` / `GetOut_R`: Get-out at a complete stop (`IsExit 1`).
 4. `JumpOut_L` / `JumpOut_R`: Running jump-out at speed with ground impact animation.

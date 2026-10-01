@@ -225,7 +225,7 @@ After generating, verify:
 - [ ] Texture paths use backslashes and .paa extension
 - [ ] Material paths use backslashes
 - [ ] If imported from Blender: Z-up → Y-up rotation applied (see below)
-- [EXACT] After source-axis conversion: follow SKILL.md Rule 12 — Blender/FBX-authored geometry gets every face's vertex order reversed and normals negated even though the position map is det=+1; glTF/GLB goes pure-swap det=-1 + reverse. The old "reverse only for det<0" criterion is superseded (SP-432); see also the LL-504 mirroring correction under "Rule 13 nuance". Verify with `check_face_winding`.
+- [ ] [EXACT] After source-axis conversion: follow SKILL.md Rule 12 — Blender/FBX-authored geometry gets every face's vertex order reversed and normals negated even though the position map is det=+1; glTF/GLB goes pure-swap det=-1 + reverse. The old "reverse only for det<0" criterion is superseded (SP-432); see also the LL-504 mirroring correction under "Rule 13 nuance". Verify with `check_face_winding`.
 - [ ] If accepting attachments: proxy faces + selections present in visual LODs
 
 ## Blender Z-up → DayZ Y-up Rotation (MANDATORY for Blender exports)

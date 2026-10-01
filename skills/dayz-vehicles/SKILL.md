@@ -1619,7 +1619,9 @@ corrupts both the car and the measurement.
 And adjudicate by photo: the `got=` of a readback is the setter's echo, not proof that the engine
 drew anything.
 
-### 6. `rotationFlags` is per SIDE, and the wrong one renders an empty preview
+## INVENTORY PREVIEW — two ways a part preview renders empty (split from LIGHTS 2026-10-01)
+
+### 1. `rotationFlags` is per SIDE, and the wrong one renders an empty preview
 
 Left-hand doors take `8`, right-hand doors take `4`. Vanilla applies this in every family —
 `Hatchback_02_Door_1_1`/`1_2` use 8 while `2_1`/`2_2` use 4 (`DZ\vehicles\wheeled\config.cpp:9006`,
@@ -1629,7 +1631,7 @@ while its opposite renders normally, with everything else identical: same LOD ta
 properties, same bounding box, same distance to origin, same selections, same winding. Symmetric
 config plus symmetric geometry plus one side blank means look at `rotationFlags` before the model.
 
-### 7. An inventory preview goes BLANK when `invview` sits at the bounding-box centre (SP-415, added 2026-10-01, SUB_BRZ s98)
+### 2. An inventory preview goes BLANK when `invview` sits at the bounding-box centre (SP-415, added 2026-10-01, SUB_BRZ s98)
 
 A part mounts, renders in the world and keeps its tooltip, and its inventory preview is still empty.
 `ItemPreviewWidget` view 0 is `boundingbox_min + boundingbox_max + invView`

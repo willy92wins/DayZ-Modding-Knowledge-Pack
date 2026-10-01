@@ -529,6 +529,8 @@ The orchestrated build path (temp wipe + deploy + launch) lives in dayz-test-ing
    "Binarizing" step dies in ~4 s with "Process ended with non-zero code. Exit code: 1",
    empty stderr and zero p3d produced — AddonBuilder still exits 0 ("Build failed" only
    in its log). Keep `-temp` on `P:\` (canonical: `-temp=P:\temp\<ModName>`).
+   That explanation did not reproduce in four later builds with `-temp` outside `P:\` and the work drive
+   mounted (`references/build-appendices.md`, item 6): keep `-temp` on `P:\`, but re-measure before blaming it.
    `-packonly` still accepts local folders outside `P:\`, so local staging remains valid.
 
 2. **ODOL output is neither the source nor the target.** It lands in

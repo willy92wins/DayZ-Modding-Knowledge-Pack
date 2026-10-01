@@ -535,10 +535,20 @@
           "source_path": "README.md",
           "source_revision": "kp-update-docs@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "55872009032fc8b237fd7fb5807c467cfd2a82d916a2d7c7adb020aaf50b647a",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "23676d8c5f1d4c388d38c5d45f8782c1ad8561873ca84a675d8f982b13cc3826",
+      "output_hash": "55872009032fc8b237fd7fb5807c467cfd2a82d916a2d7c7adb020aaf50b647a",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -3902,10 +3912,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
           "source_revision": "kp-update-wp-anim@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "8dec2a3f244e55047445e425f20e7f1885ba9aab96df246ee6edc020e968d8e0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d0630c3e222844a6043344a0432a889f95f3e6841603a57656d9fc2f615618f6",
+      "output_hash": "8dec2a3f244e55047445e425f20e7f1885ba9aab96df246ee6edc020e968d8e0",
       "output_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4800,10 +4820,20 @@
           "source_path": "skills/dayz-basebuilding/SKILL.md",
           "source_revision": "kp-update-wp-anim@2026-10-01",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "d95f1e84837b111f0f596e8607d9a8f9d4dec979c646a90184bbd5d9da6a79c5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-basebuilding/SKILL.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "80d11951e300bab1bd6352d8bfa102c91255c834ac54413c8bc0cb6646e2ecb5",
+      "output_hash": "d95f1e84837b111f0f596e8607d9a8f9d4dec979c646a90184bbd5d9da6a79c5",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -5998,10 +6028,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-wp-anim@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "149ab72e2eee7ca575734fc43932984ec727bde00b7bec1003797cda174166e1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5822c237cff4c2082fdd6c6349759a7e5498d69e05244933a13038d6c2f3e2ab",
+      "output_hash": "149ab72e2eee7ca575734fc43932984ec727bde00b7bec1003797cda174166e1",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -6606,10 +6646,20 @@
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "75d1363e561c928c266572df54759688754e9e7bb97834df6aaeb8e713fba4f6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e5815e11600c9d7d803cd50295b6ffbe04ab16440198b854e693a6699493fd0c",
+      "output_hash": "75d1363e561c928c266572df54759688754e9e7bb97834df6aaeb8e713fba4f6",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -7260,10 +7310,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "kp-update-wp-test@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "bf628a0161dace67e647e0dac0953fb3ab5f7a47d4ad34e9789c10562602e336",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8e9a654d05a760269bd4c1d80b0c9d7e1c59b9ff4aeceefc799d58ae626ee59f",
+      "output_hash": "bf628a0161dace67e647e0dac0953fb3ab5f7a47d4ad34e9789c10562602e336",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -9780,10 +9840,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "kp-update-wp-vmod@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "eb28d3df242459aae60a6f3ba6334d6f21d84dd11d1c7892909ebc45ea20c434",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fe9b8b6fb1c68d590673e1d0636ecb3b03acbc3593e64fafe736258dbabf64f6",
+      "output_hash": "eb28d3df242459aae60a6f3ba6334d6f21d84dd11d1c7892909ebc45ea20c434",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10556,10 +10626,20 @@
           "source_path": "skills/dayz-vehicles/references/rip-import.md",
           "source_revision": "kp-update-wp-veh@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "a196c0992bf0faabdf33d04c1801e7460c3ae4e60b9c66e36fb3fde0cfe68a8d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/rip-import.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "852391751e944238c19a4d8c2a4126a0b09b244a981004e7b0b1015054e3e994",
+      "output_hash": "a196c0992bf0faabdf33d04c1801e7460c3ae4e60b9c66e36fb3fde0cfe68a8d",
       "output_path": "skills/dayz-vehicles/references/rip-import.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -11080,10 +11160,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "kp-update-wp-mcp@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "db3fb52e82d574e9a6398ff7d9cc0c6261143b3eba2a25acc879964035bb344e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "caeac4a478c144974be51ed6e9c12743bff9f17c91325ae8f3874b8725f181dd",
+      "output_hash": "db3fb52e82d574e9a6398ff7d9cc0c6261143b3eba2a25acc879964035bb344e",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -12915,10 +13005,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 review fixes: claim ranges shifted where lines moved (no claim added or removed).",
+          "license": "MIT",
+          "source_hash": "eddfa8b106413592b6e604162b626209cb7c2b5b29d8b5f5a6709ab83cbc9498",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d79d44ca91a99263dc2d2d320e2488a2458c027c86cb755539644fbcb4817cd8",
+      "output_hash": "eddfa8b106413592b6e604162b626209cb7c2b5b29d8b5f5a6709ab83cbc9498",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -25104,10 +25204,20 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "kp-update-wp-veh@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "38f2bf4264a883013f76f7edf71f3562c25d971751a66bc2cdaf328c0a7a2e72",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7d66672423b26c94b5993f0d78d246a34afe8a41d5356987c5e0bb82201cf593",
+      "output_hash": "38f2bf4264a883013f76f7edf71f3562c25d971751a66bc2cdaf328c0a7a2e72",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -25148,10 +25258,20 @@
           "source_path": "dayz-motorbikes/references/config-contract.md",
           "source_revision": "filesystem@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "c7ffdd4a441648ff92c0e0ed9210b9dd56d93956cad7453c5ca578bba5e174ef",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/references/config-contract.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4c97dfd868d36d38b3c87dc40bcec3f711f30d8d8ff796ae38fb174388fa88bc",
+      "output_hash": "c7ffdd4a441648ff92c0e0ed9210b9dd56d93956cad7453c5ca578bba5e174ef",
       "output_path": "skills/dayz-motorbikes/references/config-contract.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -25192,10 +25312,20 @@
           "source_path": "dayz-motorbikes/references/rider-animation.md",
           "source_revision": "filesystem@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 cross-family review of #16-#23: findings by Gemini 3.8 Flash (Google, 78 hunks of the harvest) and GLM-5.3-Flash on the local GX10 (dayz-motorbikes translation fidelity); every finding verified against the text and applied by Claude (Anthropic). 10 of 11 Gemini findings and 2 of 3 GLM findings accepted.",
+          "license": "MIT",
+          "source_hash": "5171e751ba4058b8ef363d187d9b68aa126419281c7616db10946241583fe53b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/references/rider-animation.md",
+          "source_revision": "kp-update-review@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "869101ee676ecb11124b70c573d9f5aacddba87626478ffe8d3bbce3303c6d30",
+      "output_hash": "5171e751ba4058b8ef363d187d9b68aa126419281c7616db10946241583fe53b",
       "output_path": "skills/dayz-motorbikes/references/rider-animation.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"

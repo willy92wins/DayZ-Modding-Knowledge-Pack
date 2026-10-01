@@ -20,7 +20,7 @@ description: >
 
 DayZ 1.30 Experimental (build 1.30.164014) introduces full native engine support for single-track vehicles via the engine simulation type `simulation = "motorbike"` (`exp\bin\bin\config.cpp:1059`, in-game `bin\config.cpp`). At the class architecture level, `class Motorbike: Transport` is a direct sibling of `Car` and `Boat` in native C++ (`exp\scripts\scripts\3_Game\Vehicles\Motorbike.c:30`, in-game `scripts\3_Game\Vehicles\Motorbike.c`), not a child of `Car`. In the game script layer, `MotorbikeScript` inherits directly from `Motorbike` (`exp\scripts\scripts\4_World\Entities\Vehicles\MotorbikeScript.c:53`, in-game `scripts\4_World\Entities\Vehicles\MotorbikeScript.c`), NOT from `CarScript`.
 
-### Three-Layer Inheritance Hierarchy
+## Three-Layer Inheritance Hierarchy
 1. **Engine Config Layer (`bin\config.cpp`)**:
    `Transport` -> `Motorbike` (`exp\bin\bin\config.cpp:1054-1059`, with `simulation = "motorbike"`).
 2. **3_Game Script Layer (`scripts\3_Game\Vehicles\`)**:

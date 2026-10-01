@@ -12,7 +12,7 @@ It contains three things:
 
 | Part | What it is |
 |---|---|
-| `skills/` | 40 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
+| `skills/` | 42 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
 | `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export, ODOL parity, the pre-PBO script/config linter, the vehicle-proxy gate, UI lab, `.layout` previewer and 3D-viewer tools. |
 | `knowledge/` | **Verified reference notes** — technical facts, infra, and cross-project pattern syntheses. |
 

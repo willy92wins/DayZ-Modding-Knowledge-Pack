@@ -164,7 +164,7 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
   written. Origin: caught by an independent plan review after the item-class reading had already been written
   into a spec — the item's ceiling exists, it just is not the one that governs.
 
-**Raising a crop's `varStackMax` changes its vanilla harvest yield** (DayZ 1.30.164014 Exp) [EXACT][CLAIM-HARVEST-YIELD-STACKMAX-130]: `PlantBase.Harvest` creates each crop pile with `SetQuantity(GetQuantityMax())` (`4_World/Entities/GardenBase/PlantBase.c:575-576`), and for a splitable item `GetQuantityMax` resolves to `varStackMax` when the slot declares no stack max (`4_World/Entities/ItemBase.c:3436-3469`). `SetQuantity` clamps to `[min, max]` (`4_World/Entities/ItemBase.c:3353`), so a scripted yield above the stack size was silently clipped until the mod replaced the harvest quantity.
+- **The same fallback sets a crop's harvest yield: raising its `varStackMax` changes the vanilla yield** (DayZ 1.30.164014 Exp) [EXACT][CLAIM-HARVEST-YIELD-STACKMAX-130]: `PlantBase.Harvest` creates each crop pile with `SetQuantity(GetQuantityMax())` (`4_World/Entities/GardenBase/PlantBase.c:575-576`), and for a splitable item `GetQuantityMax` resolves to `varStackMax` when the slot declares no stack max (`4_World/Entities/ItemBase.c:3436-3469`). `SetQuantity` clamps to `[min, max]` (`4_World/Entities/ItemBase.c:3353`), so a scripted yield above the stack size was silently clipped until the mod replaced the harvest quantity.
 
 - **A green/red placement hologram needs TWO declarations, and neither is the one the name
   suggests.** `Hologram.RefreshVisual` tints by calling `SetObjectTexture`/`SetObjectMaterial` on a

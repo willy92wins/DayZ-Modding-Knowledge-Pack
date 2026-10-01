@@ -98,8 +98,8 @@ atraviese el bridge (`query_*`, telemetría, raycast, capturas, `world_spawn`…
    `adopted_run.error = "multiple_idle_runs"` y no adopta ninguno (`:3202-3208`): `dayz_test_stop`
    del sobrante y repetir.
 4. `wait_for(players_at_least, 1)` y el resto de verbos.
+   - [EXACT] The adopted lease expires by itself (added 2026-09-27, LFPowerGrid, three runs): it lasts 120 s and is NOT renewed internally, fresh MCP client or not. Send `session_heartbeat` at least every ~90 s during the whole run, including while a human plays. Past the deadline the run goes ownerless again (`grace.remaining_s` counts down) and the daemon stops it (`lifecycle_stop_outcome: stopped`), even with the user in front of the game. (measured in game, DayZ 1.30.164014 Exp)
 5. `session_release` → `dayz_test_stop(run_id)`.
-6. [EXACT] The adopted lease expires by itself (added 2026-09-27, LFPowerGrid, three runs): it lasts 120 s and is NOT renewed internally, fresh MCP client or not. Send `session_heartbeat` at least every ~90 s during the whole run, including while a human plays. Past the deadline the run goes ownerless again (`grace.remaining_s` counts down) and the daemon stops it (`lifecycle_stop_outcome: stopped`), even with the user in front of the game. (measured in game, DayZ 1.30.164014 Exp)
 
 Con un cliente MCP anterior al `8f5727f` de DayZ_MCP (2026-09-06) el rechazo llegaba como un
 `remote_error` DESNUDO, sin código ni hint (ficha `fb-20260906-193626-f45d`, atribuida primero a un
@@ -391,14 +391,14 @@ Claves:
     **ninguna prueba de `OnStoreSave`/`OnStoreLoad` entre reinicios es concluyente por MCP hoy**.
     Si el resultado sale "no persistió", eso es el arnés, NO el mod: no lo reportes como bug.
 
-- **Puertas de `class Doors` (`Building`) NO se abren por MCP** (medido 2026-09-07, LFSecure I-0/I-4, PBO L4):
-  `action_use(ActionOpenDoors, classname=<puerta>)` devuelve `condition_failed` aunque el jugador este a 1,4 m,
-  porque el bridge construye el `ActionTarget` con `componentIndex=-1` y `Building.GetDoorIndex(-1)` (nativa,
-  `3_game/entities/building.c:17`, "index of the door based on the view geometry component index") no resuelve
-  ninguna puerta. `object_anim(source=<fuente de la puerta>, phase=1.0)` responde `phase=1` pero el controlador de
-  puertas del motor la devuelve a su fase "wanted" (relectura `phase=0`) y `IsDoorOpen(index)` sigue en falso, asi que
-  toda accion condicionada a puerta abierta tambien da `condition_failed`. Abrir/cerrar, sonido y sync son test
-  MANUAL (F del usuario); lo unico verificable por MCP es "arranca cerrada" (`object_anim` lee `phase=0`).
+- **`class Doors` (`Building`) doors do NOT open by MCP without `door_index`** (measured 2026-09-07, LFSecure I-0/I-4, PBO L4):
+  `action_use(ActionOpenDoors, classname=<door>)` returns `condition_failed` even with the player 1.4 m away,
+  because the bridge builds the `ActionTarget` with `componentIndex=-1` and `Building.GetDoorIndex(-1)` (native,
+  `3_game/entities/building.c:17`, "index of the door based on the view geometry component index") resolves no
+  door. `object_anim(source=<door source>, phase=1.0)` answers `phase=1`, but the engine's door controller returns
+  it to its "wanted" phase (re-read `phase=0`) and `IsDoorOpen(index)` stays false, so every action that needs an
+  open door also returns `condition_failed`. Without `door_index`, opening/closing, sound and sync were a MANUAL
+  test (the user's F) and MCP could only verify "starts closed" (`object_anim` reads `phase=0`); see the update below.
 - Update (measured 2026-10-01, DayZDiag 1.29.163709, test building whose door component is a button on a moving piece) [EXACT]: `action_use` with `ActionOpenDoors`/`ActionCloseDoors` and `door_index` DOES open and close the door even there. `object_anim` (`SetAnimationPhaseNow`) on the door's source still cannot hold a static pose: the door settles at `ajar` with phase 0.07 instead of the requested phase — doors cannot be posed statically. For the verdict, use `object_doors` and rays.
 - **`setup_failed` es un FALSO NEGATIVO para acciones locales instantaneas** (`IsLocal() && IsInstant()`:
   `ActionTogglePlaceObject`, `ActionDropItemSimple`; medido 2026-09-07): el bridge comprueba
@@ -548,7 +548,7 @@ que cerrar el juego y pedir relanzar normal.
 Dos caveats de smoke MCP autonomo verificados in-vivo (SUB_BRZ s32):
 
 1. **`world_spawn` toma el vector en orden MOTOR `[x, y_up, z_north]`** (`MCPBridge.c:1638` `Vector(x,y,z)`), pero el connect-log del bridge imprime la posicion del player como `<x, z_north, y_up>`. Pasar la tripleta del log VERBATIM spawnea el objeto a ~6 km de altura -> `IsSpawnReady` (radio 2.0 m) nunca se cumple -> job timeout + `found=0`, y el motor auto-borra el huerfano (`NETWORK (E): Will delete object ... outside world coords`). Costo 3 timeouts seguidos. Regla: convertir `<x,z,y>` -> `[x,y,z]` antes de todo `world_spawn`/`camera_set`; tras un timeout de spawn, grep del RPT por `outside world coords` ANTES de reintentar (distingue coords-malas de spawn-lento). Verificable con `scene_raycast` al terreno (da la y_up real).
-2. **Captura con el display en reposo o la sesion bloqueada = frame NEGRO** aunque el client corra. Fix: traer la ventana del client a foreground + input wiggle (raton / F15) antes de CADA `capture_screenshot`. Sintoma enganoso: parece "render roto del mod" y es el compositor.
+2. **Capturing with the display asleep = BLACK frame** even though the client runs (on 2026-07-11 a locked session with LockApp also gave black frames; since 2026-09-14 the capture backend fails outright on a locked session instead, see point 4). Fix: bring the client window to the foreground + input wiggle (mouse / F15) before EVERY `capture_screenshot`. Misleading symptom: it looks like "the mod's render is broken" and it is the compositor.
 3. (menor) Spawn adyacente al player puede caer DENTRO de un edificio -> sondear 3-4 `scene_raycast` a terreno despejado antes de elegir la pos.
 4. [EXACT] A locked Windows session is a distinct capture failure (added 2026-09-14, SUB_BRZ s93): with `LogonUI` alive, `capture_screenshot` does not return a black frame — it fails outright with `capture_backend_failed` on every attempt while the game client stays alive and probing. Before budgeting captures in an unattended run, run `Get-Process LogonUI` first: with a locked session there is no host capture at all, for the MCP capture and for any window-grab script. (measured in game, DayZ 1.30.164014 Exp)
 
