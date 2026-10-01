@@ -1,5 +1,5 @@
-This repository is a DayZ (Enfusion) modding knowledge pack: 16 domain
-playbooks under skills/, five Python tools under tools/, verified reference
+This repository is a DayZ (Enfusion) modding knowledge pack: 42 domain
+playbooks under skills/, ten Python tools under tools/, verified reference
 notes under knowledge/. AGENTS.md is the full agent file; these are the rules
 that matter most in an editor.
 

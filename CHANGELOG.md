@@ -194,7 +194,8 @@ harvested into the governed skills.
   `CONTRIBUTING.md` item 7 (this repository is the editable source; installed trees are
   promotion targets) and the DayZ build coverage (#16).
 - `AGENTS.md`, `GETTING-STARTED.md`: skill and tool counts measured on the tree (42
-  skills, ten Python tools) (#16).
+  skills, ten Python tools) (#16); the Copilot and Cursor agent files (`.github/copilot-instructions.md`,
+  `.cursorrules`) still said 16 playbooks and five tools (#27).
 - The remaining Spanish passages are now English: about 10,000 lines in 129 files (skills,
   `knowledge/`, `decisions/` and tool READMEs), translated line by line so no claim range
   moved, behind a mechanical gate (code spans, links, numbers by value, epistemic tags, claim

@@ -14,10 +14,20 @@
           "source_path": ".cursorrules",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: agent instruction files for Copilot and Cursor carried the 1.0-era counts (16 playbooks, five tools); aligned with AGENTS.md (42 playbooks, ten Python tools, measured on the tree in #16). Found by Claude (Anthropic) in a final sweep.",
+          "license": "MIT",
+          "source_hash": "cdd200533d8b5f0ba7186abf7ba9313febf3aad98f15309f309475b17762fb8b",
+          "source_id": "pack-r21-authored",
+          "source_path": ".cursorrules",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "efe1e5200d861fadcbb8aebb86bb034f0abd6729f77409a2ac4d6bd4687afa52",
+      "output_hash": "cdd200533d8b5f0ba7186abf7ba9313febf3aad98f15309f309475b17762fb8b",
       "output_path": ".cursorrules",
       "routing_artifact_id": "root/cursorrules",
       "verification_level": "cross_checked"
@@ -69,10 +79,20 @@
           "source_path": ".github/copilot-instructions.md",
           "source_revision": "r22-tool-routing@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: agent instruction files for Copilot and Cursor carried the 1.0-era counts (16 playbooks, five tools); aligned with AGENTS.md (42 playbooks, ten Python tools, measured on the tree in #16). Found by Claude (Anthropic) in a final sweep.",
+          "license": "MIT",
+          "source_hash": "dfeabb9146697c71e19e2f957c854df8eb2f7f339de84ceaf52617a5d3ee3c5b",
+          "source_id": "pack-r21-authored",
+          "source_path": ".github/copilot-instructions.md",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1bab9cc3b91061722136599627cfd5c3aeb8af4513c7580b8ed140cc37de8332",
+      "output_hash": "dfeabb9146697c71e19e2f957c854df8eb2f7f339de84ceaf52617a5d3ee3c5b",
       "output_path": ".github/copilot-instructions.md",
       "routing_artifact_id": "root/copilot-instructions",
       "verification_level": "cross_checked"
@@ -291,10 +311,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "release-v1.4.0@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: agent instruction files for Copilot and Cursor carried the 1.0-era counts (16 playbooks, five tools); aligned with AGENTS.md (42 playbooks, ten Python tools, measured on the tree in #16). Found by Claude (Anthropic) in a final sweep.",
+          "license": "MIT",
+          "source_hash": "b43fc1a5f4ba2620c3a514e1ee92e05e070ac297cc33c2ce25cd0456ab21b55d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4610906c71e65066e391db80c8cd538dc8a698b8142cbbe05b5e52c65e541518",
+      "output_hash": "b43fc1a5f4ba2620c3a514e1ee92e05e070ac297cc33c2ce25cd0456ab21b55d",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
