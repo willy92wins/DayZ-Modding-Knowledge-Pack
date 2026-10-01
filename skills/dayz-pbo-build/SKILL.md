@@ -1035,6 +1035,7 @@ Measured 2026-09-07 on LFSecure with AddonBuilder 1.29 (`build_pbo.py`, staging 
 - **Per-entry PBO hashes are an identity gate for scripts, config, materials and textures only.** A changed `.p3d` entry between two builds proves nothing by itself.
 - **A binarized model is accredited by the hash of its MLOD input plus the engine check** (render + raycast), never by ODOL bytes. Keep the MLOD hashes next to the PBO hash in the evidence.
 - **Do not chase a byte diff in a `.p3d` entry** when the MLOD did not change; rebuild twice and compare before opening a debinarizer.
+- When the doubt is already open (a test PBO whose ten `.p3d` all hash differently and whose body is ~33 KB smaller, SUB_BRZ s96, 2026-09-18), close it by CONTENT: extract the ODOL from inside each PBO and compare what matters — baked animations, bones, face counts, dimensions — against the stage (measured identical there, `pbo_diff.py`: 127 entries equal, the 10 `.p3d` different). Size and hash differences between builds of the same stage are expected binarize noise, not evidence of a geometry change. [EXACT] (measured, SP-410]
 
 ## Una cadena de content gate que la BASE tambien contiene no puede ponerse roja (SP-390, added 2026-09-10)
 

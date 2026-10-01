@@ -3732,10 +3732,20 @@
           "source_path": "dayz-animation-pipeline/references/anim-graph.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-TEST): LL-514. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "4a0962ac9c79441cb78ce498559ed135122ae354c3a264864adfe125b5487a73",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
+          "source_revision": "kp-update-wp-test@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e4f2d2533092b68946593552e96c3ce9bc648ea7b555303907bbc8f241e429d2",
+      "output_hash": "4a0962ac9c79441cb78ce498559ed135122ae354c3a264864adfe125b5487a73",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -7090,10 +7100,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "escape-repair@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-TEST): SP-410. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "8e9a654d05a760269bd4c1d80b0c9d7e1c59b9ff4aeceefc799d58ae626ee59f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "kp-update-wp-test@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5543d48d5145c45780912b00be6d943e9aafcf71a8e4b0b456f27ad97eed5cc3",
+      "output_hash": "8e9a654d05a760269bd4c1d80b0c9d7e1c59b9ff4aeceefc799d58ae626ee59f",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -7134,10 +7154,20 @@
           "source_path": "dayz-pbo-build/references/build-appendices.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-TEST): SP-394. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "efc6a7580f74d02b6615d35b3d949cc104778317ca32a1268e41e2a9354ef855",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/build-appendices.md",
+          "source_revision": "kp-update-wp-test@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a801a7a0782bc45a1d230b2660f77ef48ee28af28306ccb67409ebe0cc51bc3e",
+      "output_hash": "efc6a7580f74d02b6615d35b3d949cc104778317ca32a1268e41e2a9354ef855",
       "output_path": "skills/dayz-pbo-build/references/build-appendices.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -8176,10 +8206,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "integrate-publish@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-TEST): SP-380, SP-382, SP-434, SP-435. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry. One correction (SP-382): restarting Steam is no longer presented as the remedy for a stale ActiveProcess pid; the pid copy from a non-sandboxed shell is, per the measurements of 2026-09-08/09 and the pid section revised 2026-09-12.",
+          "license": "MIT",
+          "source_hash": "88a40feef83ef55ad0be43f1cfc2ee8398c3ca9855a53eeafd1004ab1f96b7a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-wp-test@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "17bc8eb9e613572056f41b6ac205b633aed3fcb6a0996df0dd89697d1095e4f0",
+      "output_hash": "88a40feef83ef55ad0be43f1cfc2ee8398c3ca9855a53eeafd1004ab1f96b7a5",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -12605,10 +12645,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-wp-vmod@2026-10-01",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-TEST): no new claims; CLAIM-R21-TEST-BUILD-POSTCONDITION and CLAIM-R21-TEST-VPP-SECRET ranges shifted by one line with the inserted text in dayz-test-ingame/SKILL.md.",
+          "license": "MIT",
+          "source_hash": "589fa16a7b380da99ccf4aaad6cd9e4bdcea469aec169b6bc1a084d7c719551d",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-wp-test@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "edf501009711e35b9c9ae806c1f4b35ea3cd94f50157c701680b17cc33de0a79",
+      "output_hash": "589fa16a7b380da99ccf4aaad6cd9e4bdcea469aec169b6bc1a084d7c719551d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -25122,10 +25172,20 @@
           "source_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
           "source_revision": "roboclient-run3@2026-09-26",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-TEST): LL-510, LL-516, SP-420, SP-434. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "d207d21085099d85fae91e7dd86aebc9fe361b3ed700534dc0c4339275833b98",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
+          "source_revision": "kp-update-wp-test@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1669450f6618a1ce8dce15f8ed3c3e4ebe3bea29c46267a27885654f1d1e27f5",
+      "output_hash": "d207d21085099d85fae91e7dd86aebc9fe361b3ed700534dc0c4339275833b98",
       "output_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "historical"

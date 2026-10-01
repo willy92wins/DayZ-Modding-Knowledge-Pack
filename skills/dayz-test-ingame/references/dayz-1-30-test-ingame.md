@@ -23,6 +23,8 @@ engine reads mods, and launch DayZDiag".) (since 1.30 Exp [CHANGELOG],
 bare `@Name` is unchanged). `.p3d` / `.paa` still follow the existing
 filepatching-does-not-reload-binaries rule. A shipping test still packs.
 
+[EXACT] Measured bound of that [DESIGN] (dedicated server, 1.30.164014 Exp, 2026-09-27): an unpacked `-mod` folder mounts as a `relative directory` (RPT: `Adding relative directory ...` vs a PBO's `Adding package ... (pbo count: N)`); with a `CfgMods` block it injects the mod's define into the script modules and loads its scripts, but it does NOT merge its `config.cpp` into the runtime config tree — `ConfigIsExisting("CfgPatches <mod>")` stays false. World configs (`CfgWorlds` terrain `Holes`) therefore require a PACKED PBO: unpacked, `SurfaceIsHole` stays false and the RPT logs `No entry 'config.bin/CfgWorlds/<world>.Holes'`; the same PBO mounted and measured true when packed (the PBO may carry `config.cpp` as text, no binarize needed). Measured in game, DayZ 1.30.164014 Exp.
+
 ## New launch flags
 
 (since 1.30 Exp [CHANGELOG], `work\changelog-1.30-exp-modding.md:10-11`):
@@ -80,6 +82,7 @@ hit six traps, each costing a run:
    (`Win32_Process.Create`) or sync the copy right before launching. Writing the
    value from a shell inside the app only fixes the private copy, and only until the
    next Steam restart.
+   Two measured corollaries (2026-09-23/24, LL-510 / SP-420). Never START or restart Steam from a shell inside the sandboxed app: the new Steam registers in the private copy, and the REAL key can be left at `pid = 0, ActiveUser = 0` — a state the outside WMI check reports as broken while the app's own view looks healthy, and which `auto_remediate_steam` cannot fix because the worker sits inside the app too. Never write or delete another app's HKCU keys from an app shell: a write creates the private copy (shadow), a delete leaves a tombstone that hides the real key even after it is rewritten outside; the shadow only disappears with the app closed and the hive loaded offline. Preflight BOTH views: WMI `StdRegProv` reads the real hive, `Get-ItemProperty` inside the app reads the copy the launched client will see — require both to point at the live `steam.exe`. [EXACT] (measured, LL-510 / SP-420 / LL-516)
 3. **A very long `-profiles=` path is a crash suspect.** A ~245-character profiles
    path ended in `0xC0000005` after 1 s with no log written; a short path did not
    repeat it. Steam was broken at the same time, so the cause is probable, not

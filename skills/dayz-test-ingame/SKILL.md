@@ -83,6 +83,7 @@ Con la caja libre de procesos DayZ del run y autorizacion explicita del usuario,
 
 - No disparar el exe desde la shell del agente. [EXACT - esta skill, cross-ref SP-085] DayZDiag lanzado fuera del launcher registrado queda vivo con 0 CPU y 0 RPT. Firma: vivo + 0 CPU + 0 RPT => no es args/mod, es launch-desde-agente.
 - No usar `Start-Process -ArgumentList` para DayZDiag. [EXACT - esta skill, SP-167] En Windows PowerShell 5.1 el array no garantiza el quoting de cada elemento. [EXACT - SP-228, medido en LFPowerGrid P0.0, 6 intentos A/B el 2026-08-12] `cmd /c start` con comillas literales en cada valor con espacios es la via que arranca; `Start-Process -ArgumentList` arranca y queda colgado a ~0,06 s de CPU sin escribir NI el header del RPT.
+- [EXACT] When the command that `cmd /c start` launches is a `.bat`, the new window runs `cmd /K`: an `exit /b` at the end of the bat exits the script, not the interpreter, and the window stays at an idle prompt after the server closes — one leftover console window per launch (measured 2026-09-25, LFDucati T99, Windows 11 23H2: 9 idle `cmd.exe /K` wrappers after two days of server starts; 0 after the switch). Wrap the bat in a second `cmd /c`: `cmd /c start "<title>" cmd /c "<abs bat>"`. A preflight failure with `pause` inside the bat is still visible.
 - Receta: el agente escribe `.bat` (argv de server/client, comillas literales en cada valor con espacios) y el usuario los ejecuta a doble-clic en su sesion interactiva. [EXACT - esta skill, SP-077] Leer script.log/RPT con `FileShare.ReadWrite`. Cierre por UI, no por PID, salvo zombie del propio agente (entonces `Stop-Process -Id` exacto).
 - [DESIGN] Server argv: `-server "-config=<serverDZ.cfg>" "-profiles=<server-profiles>" "-mission=<mission-abs>" "-mod=<mod-abs-semicolon-list>" -filePatching -port=2302`
 - [DESIGN] Client argv: `"-mod=<mod-abs-semicolon-list>" -connect=127.0.0.1 -port=2302 "-profiles=<client-profiles>" -name=Dev -window -filePatching`
@@ -150,12 +151,12 @@ The orchestrator checks these every run and fixes what it safely can. Verified o
 - **Mission template** — absolute path; the server loads an empty mission otherwise.
   [EXACT — DAYZ_INFRA.md §Comandos de invocación canónicos — Server diag]. Aliases:
   `chernarus`/`livonia`/`sakhal`. [EXACT — DAYZ_INFRA.md §Mission templates — aliases canónicos]
+- **`class Missions` in `serverDZ.cfg`** — a dedicated server with a `dayzOffline.*` mission self-terminates before the mission loads (RPT countdown `[Server] :: termination in: N`) unless the config declares `class Missions { class DayZ { template="<mission>"; }; };`. With it, the server stays up with no client, which is what a server-side probe in the mission `init.c` needs. [EXACT] (measured in game, DayZ 1.30.164014 Exp, SP-434]
 - **AddonBuilder** — only when `-Build`. [EXACT — DAYZ_INFRA.md §Comandos de invocación canónicos — AddonBuilder]
 - **Steam client session** — for CLIENT-launching modes only (`offline`, `client`, `all`),
   `HKCU\Software\Valve\Steam\ActiveProcess` must have both `pid != 0` and
   `ActiveUser != 0`. The script warns without aborting; run `steam.exe -shutdown`, then relaunch
-  Steam (the login is preserved, no re-login is required, and the key repopulates in ~20 s).
-  See `SKILL.md:387-391` for the measured failure signature and details. [EXACT — SKILL.md:387-391]
+  Steam (the login is preserved). [DESIGN] Restart is NOT the reliable remedy: measured 2026-09-08/09, a restart can leave the key pointing at the old pid with the client still dead — the deterministic fix is to copy the live `steam.exe` pid into `ActiveProcess` from a shell OUTSIDE any sandboxed (MSIX) app — a write from inside one only reaches that app's private registry copy, see `references/dayz-1-30-test-ingame.md` — (guards and verification in the "El `pid` de Steam en el registro puede estar MUERTO" section below), and restart only as a fallback when there is no live Steam or `ActiveUser == 0`.
 
 - **El conjunto de mods está SELLADO, y cambiarlo BORRA el mundo de pruebas** (desde 2026-09-06,
   medido in-game). Cada arranque de servidor sella su lista efectiva de mods en
@@ -1257,6 +1258,8 @@ la `steam_api64.dll` del propio DayZ devolvio `Init` OK e `IsSteamRunning` FALSO
 igual; tras copiar el pid salieron las dos verdaderas y el cliente entro. Una puerta que solo llama
 a `Init` da verde sobre el estado roto.
 
+**Two Steam facts the registry cannot answer (measured 2026-09-08, LFPowerGrid; SP-382).** (1) WHICH account is logged in: read `logs/connection_log.txt` under the Steam install for `[Logged On, ...] [U:1:<accountID>] RecvMsgClientLogOnResponse() : 'OK'` (`SteamID64 = accountID + 76561197960265728`). (2) Whether that account OWNS DayZ: `steamapps/appmanifest_221100.acf`, field `"LastOwner"`. If the logged-in account is not the LastOwner, the client dies about one second after launch with the same header-only RPT + `0x80000003` signature while every registry check passes green; the dump's `Caching Steam ID: <id>` vs `LastOwner` closes the case in a minute. [EXACT] (measured, SP-382]
+
 **Como leer el volcado sin depurador**, que es lo que corto el bucle de hipotesis: un minidump
 trae `MINIDUMP_EXCEPTION_STREAM` (tipo 6) y `MODULE_LIST` (tipo 4); con ~60 lineas de Python se
 saca el codigo de excepcion y el modulo que contiene `ExceptionAddress`. Antes de teorizar
@@ -1607,6 +1610,8 @@ un artefacto que parece correcto en todos los pasos y no contiene el cambio.
 **Señal barata de que te ha pasado**: el log de AddonBuilder dice `[ERROR]: Build failed` y
 tu wrapper dice `[ok] deployed` a continuación. Si esas dos líneas conviven en la misma
 corrida, el PBO que vas a probar es el de antes.
+
+**Two more masks of the same trunk (af59 round 2, measured 2026-09-08).** (1) The generated launcher FABRICATES its own destination: `Invoke-Build` creates `<WorkDrive>\Mods\@<Mod>\Addons` with `New-Item -Force` if missing, and `-BuildOnly` / `-Mode none` reach `Invoke-Build` without passing through the preflight, so a missing `Mods` folder becomes a PLAIN folder that silently receives the PBO — the script prints `[ok] deployed` and the engine never reads it (reproduced literally: `exit=0; Mods created=True; junction=False`; the two lines are in 6 of 6 mod trees and in the template). The destination check — exists AND is a reparse point — must run from the build path itself before copying, not only in the interactive preflight. (2) Add the stdout text gate beside the byte gate: capture AddonBuilder stdout (`Start-Process -RedirectStandardOutput`) and require `Build Successful` while rejecting `[ERROR]: Build failed`. The pair discriminates: a false "Successful" with an untouched PBO dies on the mtime/hash gate; a touched-but-failed build dies on the text gate. A FIRST legit build has no previous PBO, so the byte comparison must be guarded (compare only when a previous PBO existed). [EXACT] (measured, SP-380]
 
 ### SP-124 — El lease libre NO implica caja libre
 
