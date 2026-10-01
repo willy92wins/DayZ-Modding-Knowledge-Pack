@@ -52,7 +52,7 @@ mesh around far-off points → the broken-deform symptom.
    to align bbox centers; align Z by feet (mins).
 3. Rotate into the viewer's Y-up frame: `(x', y', z') = (x, z, −y)` (Blender Z-up → Three.js Y-up). Both
    are right-handed, so this is a rotation (det +1), not DayZ's handedness change: DayZ model space is
-   left-handed and any map into it has det −1 (game-MS ↔ viewer `(x, y, −z)`, `weapon-in-hands.md:240`).
+   left-handed and any map into it has det −1 (`weapon-in-hands.md:240` uses the flip `(x, y, −z)`).
    This step used to be called "the DayZ axis fix" (relabelled 2026-10-01).
 4. Build a fresh `THREE.Skeleton`/`SkinnedMesh` in that space; the bind is now
    self-consistent (boneInverses from the aligned rest). Skinning + IK are correct.
