@@ -5,6 +5,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Rig handedness: the det=+1 Blender→DayZ maps that Rule 12 retired were still taught on the
+  character, clothing and animation routes. `dayz-characters` (`character-rigging.md` §6): the
+  official rig's `R⁻¹ = (x,z,-y)` lands in the FBX's own right-handed frame, not in the DayZ bind,
+  so a rigged mesh exports with Rule 12's `(x,z,y)`; this explains LFInfectedBig walking backward
+  with `(x,z,-y)` and mirrored with `(-x,z,y)`. `check_dayz_winding.py` predates Rule 12 and fails
+  a correct export (measured on the Rule 12 probe); the gate to use instead is named.
+  `dayz-clothing`: the "rotate 180° + swap L/R" worn fix keeps a mirror (ArmorHneck's p3d was a
+  det=+1 export); the artist-handoff script `export_clothing_fbx.py` now uses the self-inverse
+  `(x,z,y)` (offline round trip exact, faces outward in Blender); `autofit-from-official-rig.md`
+  drops the face reversal and the mirrored-frame alternative. `dayz-animation-pipeline` and
+  `blender-animation`: the viewer's `(x,z,-y)` is a rotation into a right-handed frame and is
+  relabelled; geometry cross-references now point at Rule 12. Chiral in-game checks are
+  designed for each route, not run.
+
 ## [1.4.0] - 2026-10-01
 
 DayZ 1.30 Experimental (1.30.164014) coverage across the pack, three new skills since 1.3.0

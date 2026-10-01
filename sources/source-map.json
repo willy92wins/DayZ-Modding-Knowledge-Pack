@@ -321,10 +321,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "release-v1.4.0@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Written by Claude (Anthropic); no cross-family review; the owner reviews the PR.",
+          "license": "MIT",
+          "source_hash": "46dbd45128048ccde09423208f05713dc8b7d8e8b2e74c76f3b5f2f47a1d4596",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b43fc1a5f4ba2620c3a514e1ee92e05e070ac297cc33c2ce25cd0456ab21b55d",
+      "output_hash": "46dbd45128048ccde09423208f05713dc8b7d8e8b2e74c76f3b5f2f47a1d4596",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3496,10 +3506,20 @@
           "source_path": "skills/blender-animation/references/dayz-handoff.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Written by Claude (Anthropic); no cross-family review; the owner reviews the PR.",
+          "license": "MIT",
+          "source_hash": "b911f6cb74d4e092394365a49be8928271d31e9b10b37965a21708954709f644",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-animation/references/dayz-handoff.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f321084dcd2250c4d4732d267ce82fc316b27d2ddcfab4018acb3d4623c91077",
+      "output_hash": "b911f6cb74d4e092394365a49be8928271d31e9b10b37965a21708954709f644",
       "output_path": "skills/blender-animation/references/dayz-handoff.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -4150,10 +4170,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Written by Claude (Anthropic); no cross-family review; the owner reviews the PR.",
+          "license": "MIT",
+          "source_hash": "097e92c04cecd2ef3ac0360c0fb846c9168c9703a7173ccfd15fa5d4574b57c8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8f90c450e687a946444eb3d5bce6131df4c1eb56d3bbf592880fef0e5ecb4389",
+      "output_hash": "097e92c04cecd2ef3ac0360c0fb846c9168c9703a7173ccfd15fa5d4574b57c8",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4214,10 +4244,20 @@
           "source_path": "dayz-animation-pipeline/references/blender-authoring.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Written by Claude (Anthropic); no cross-family review; the owner reviews the PR.",
+          "license": "MIT",
+          "source_hash": "278ebdd742375201dc2a29c51ea0ee6093859374835f9b738526558554eec3fc",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6cdbbba6bc2177b6545e2a8590f4bfb68f23a5acdbff012821e6357a6b6ecfa1",
+      "output_hash": "278ebdd742375201dc2a29c51ea0ee6093859374835f9b738526558554eec3fc",
       "output_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4580,10 +4620,20 @@
           "source_path": "dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Written by Claude (Anthropic); no cross-family review; the owner reviews the PR.",
+          "license": "MIT",
+          "source_hash": "653aeb2219051adcd2712f1b3fe93a4d341996eeacaec27b8d5f9ac7c557fcc2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3c613e9c2b5be20a43cb756ce5aa349ff9996d55aa2dad6b6eac7157b93b0020",
+      "output_hash": "653aeb2219051adcd2712f1b3fe93a4d341996eeacaec27b8d5f9ac7c557fcc2",
       "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4666,10 +4716,20 @@
           "source_path": "dayz-animation-pipeline/scripts/build_rig_dayz.py",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Written by Claude (Anthropic); no cross-family review; the owner reviews the PR.",
+          "license": "MIT",
+          "source_hash": "de1ca7653206d3d6b5271e3f31cc5dd14df8917bb727b795b3005a6ddcafd5d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/scripts/build_rig_dayz.py",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8ef4d1bc25179438c8f6bc964d268fda09adb06083455dfd9f091ea7149dd438",
+      "output_hash": "de1ca7653206d3d6b5271e3f31cc5dd14df8917bb727b795b3005a6ddcafd5d7",
       "output_path": "skills/dayz-animation-pipeline/scripts/build_rig_dayz.py",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5520,10 +5580,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Written by Claude (Anthropic); no cross-family review; the owner reviews the PR.",
+          "license": "MIT",
+          "source_hash": "413e24bbf705cd5423b0886e072793f0af7fafbdbe9c597e100022c6a3270f47",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "430a53d459e66b324049abf5a4cd38c9797ffcb6be26115f6b3fcfbd8dbce6ad",
+      "output_hash": "413e24bbf705cd5423b0886e072793f0af7fafbdbe9c597e100022c6a3270f47",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -5562,10 +5632,20 @@
           "source_path": "skills/dayz-characters/references/character-rigging.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Written by Claude (Anthropic); no cross-family review; the owner reviews the PR.",
+          "license": "MIT",
+          "source_hash": "c6a8ca9da7d5ba404c5c75928b5d8ce968faf0b9b0f921edd4aa1177cf8ec894",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/character-rigging.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "18500a1e36208ceaf4fb6820f9aa6a536ffc47bb0e5608f3cc78f0485311d702",
+      "output_hash": "c6a8ca9da7d5ba404c5c75928b5d8ce968faf0b9b0f921edd4aa1177cf8ec894",
       "output_path": "skills/dayz-characters/references/character-rigging.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -5678,10 +5758,20 @@
           "source_path": "dayz-clothing/SKILL.md",
           "source_revision": "r21-phase02@2026-08-15",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Written by Claude (Anthropic); no cross-family review; the owner reviews the PR.",
+          "license": "MIT",
+          "source_hash": "ef691d8fc42a547107f5dcb75a99ba1712a896e6446e8da6a4aae0515b18835b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "04ba3f601410d159cca094f8c03859b7cff65fde492c329431bd1b9d9e69e5e4",
+      "output_hash": "ef691d8fc42a547107f5dcb75a99ba1712a896e6446e8da6a4aae0515b18835b",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -5710,10 +5800,20 @@
           "source_path": "skills/dayz-clothing/references/LEEME-ARTISTA.template.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Artist README template aligned with the export script's new (x,z,y) map: the delivered FBX faces -Y with left at +X (the official rig frame), the return trip is the same self-inverse map, packages made before 2026-10-01 return the way they were delivered. Offline test of the script as above.",
+          "license": "MIT",
+          "source_hash": "59ec3bde9d55fc9759d83256ff5081b95df74e1c371c210cb55e7e861c86e79f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/references/LEEME-ARTISTA.template.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "00319626c550b8cf197b072eb2601116208c8aafae403dca5b9f0b317ec3edb1",
+      "output_hash": "59ec3bde9d55fc9759d83256ff5081b95df74e1c371c210cb55e7e861c86e79f",
       "output_path": "skills/dayz-clothing/references/LEEME-ARTISTA.template.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -5828,10 +5928,20 @@
           "source_path": "dayz-clothing/references/autofit-from-official-rig.md",
           "source_revision": "installed-skills@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Written by Claude (Anthropic); no cross-family review; the owner reviews the PR.",
+          "license": "MIT",
+          "source_hash": "38b6e0390c322226da35beb9d28f7fdcd0ef18d143c5f5981efc6a78dcf5a324",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0945d88484905b3bb32ff5bb1210cc0f435f0e51417afaa48845bfc3836fd7df",
+      "output_hash": "38b6e0390c322226da35beb9d28f7fdcd0ef18d143c5f5981efc6a78dcf5a324",
       "output_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "offline_tested"
@@ -5860,10 +5970,20 @@
           "source_path": "dayz-clothing/references/export_clothing_fbx.py",
           "source_revision": "filesystem@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Axis map changed from (x,-z,y) (det=+1) to (x,z,y) (det=-1, Rule 12). Offline tested 2026-10-01 on the ArmorHneck _m worn MLOD with Blender 5.1.1 + py3d 1.7.0: FBX_EXPORT_ALL_OK; the reimported FBX mapped back with the same swap matches the MLOD to 2.7e-7 m with identical face order; leftarm centroid x=+0.34 and pelvis/spine centroid y=-0.045 (the official rig frame); signed volume +0.026 in Blender (faces outward). The old map gave front +Y (a mirror of the rig frame) and signed volume -0.026 (faces inward); both maps round-trip exactly with their own inverse.",
+          "license": "MIT",
+          "source_hash": "2a370aba1774b511cfff043bd6adfc4e903d8961f3893373ac1fdcd607516d9f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/references/export_clothing_fbx.py",
+          "source_revision": "kp-update-rig-handedness@2026-10-01",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ed2dd4f24969629ffd48dd1f9887944771b1cba82fba5f2bc722bcb68cc31908",
+      "output_hash": "2a370aba1774b511cfff043bd6adfc4e903d8961f3893373ac1fdcd607516d9f",
       "output_path": "skills/dayz-clothing/references/export_clothing_fbx.py",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
