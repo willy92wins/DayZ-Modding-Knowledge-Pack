@@ -239,9 +239,13 @@ resolves the seat from the proxy in the ViewGeo LOD — NOT from a memory point 
 An anchor placed too high seats the player in the air. LFQuad evidence: anchors at
 Y=1.46 / 1.70 left the rider elevated; corrected down to actual seat height.
 
+**A crew proxy positions and yaws; the engine keeps the rider upright (added 2026-09-23, LFDucati T94).** [EXACT] Measured in game (DayZ 1.30.164014 Exp): `CrewTransform` returns exactly the ODOL proxy rows conjugated by `R = diag(-1,1,-1)` (origins through the same `R`) — the engine's crew model space is the ODOL reader's space rotated 180 deg about Y — but a proxy pitched 20 deg forward still seated the player vertical with a fixed ~17 deg yaw and the hips 35 cm back, and a 20 deg roll left the player standing ~30 cm beside the bike. Proxy pitch and roll never reach the rider: leaning or crouching needs animation, and what the engine does must be measured from the player frame and bones in vehicle space, not by eye.
+
 **Do not copy a frame raw from another sub-model's proxy.** Croco `bus_*` proxies are
 not vanilla `crew_*`; the correct frame depends on the sub-model. For vanilla crew
 proxies the rule is **+Y → forward**.
+
+**Crew-proxy frames beyond identity: gate the ODOL, set the convention first (added 2026-09-23, LFDucati T90/T93).** [EXACT] A crew proxy triangle authored as RAW-space identity came out of binarize with rows aside -X, up +Z, dir +Y in the ODOL, while the vanilla `Motorbike_02` proxies read identity in the same reader — and in game the driver stood sideways and spun on get-in (measured in game, DayZ 1.30.164014 Exp). Write crew proxies with `space="engine"` and the frame the vanilla model carries after binarize (identity for crew and wheels). [DESIGN] The gate is the FILE THE ENGINE READS, compared with a model that works, with the same ODOL reader: diff every proxy of the export against the vanilla equivalents, fail on the known-broken build (negative control) and pass vanilla-vs-itself (positive control). A checker that re-derives the frame with the exporter's own convention goes green on its own error; a gate that compares the ODOL with what was requested only proves the file carries what was written, not what the engine does with it. Before building rotated variants, fix the convention with a working reference: how a vanilla ODOL writes a known rotation, or a small per-axis rotation verified in game.
 
 ## Pure-geometry proxies: MODEL-SPACE geometry + the engine-identity frame P' (added 2026-06-24; in-game VERIFIED 2026-06-24)
 

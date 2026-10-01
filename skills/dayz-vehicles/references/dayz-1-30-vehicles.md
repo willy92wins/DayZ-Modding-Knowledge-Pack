@@ -22,6 +22,8 @@ Migration of a 1.29 *car* mod also lives in `dayz-motorbikes/references/vehicle-
 | High-speed geom | changelog only | config `speedGeomActivation` + `speedGeoms[]` | `vehicles_singletrack\config.cpp:226-227`; changelog MODDING |
 | Motorbike 3PP camera | — | `DAYZCAMERA_3RD_VEHICLE_MOTORBIKE = 32` | `DayZPlayerCameras.c:20,63` — detail in `dayz-motorbikes/references/rider-animation.md` |
 
+[EXACT][CLAIM-ODOL-V56-130] Vanilla P3Ds on 1.30 Exp are ODOL **v56** (1.29 stable: v54); read the P3D header (bytes 4-7) before any extraction or parity tooling on a new build — a v54 reader fails with `ValueError: subsection not found`. [DESIGN] Preflight: on a new build, run a positive control with the previous build's reader before starting vehicle parity work. Measured headers: `Motorbike_01`/`Motorbike_02` and `offroadhatchback` read 56 on 1.30.164014 Exp; the 1.29 `offroadhatchback.p3d` reads 54 and converts cleanly. Full motorbike anatomy tables read from the v56 binaries: `dayz-motorbikes/references/vanilla-p3d-anatomy.md`. An external ODOL->MLOD converter needs a v56-capable reader for 1.30 vanilla models.
+
 ## 1. Lights: `VehicleLightBase` + profiles (not `CarLightBase`)
 
 (until 1.29: subclass `CarLightBase` / `CarRearLightBase` and override `CreateFrontLight`/`CreateRearLight`.)

@@ -159,6 +159,8 @@ Audit `_as` files **per channel, never as grayscale**. In the measured vanilla
 R, B, and A are constant 255. A luminance conversion reports a bright image around 185 and hides the
 very shadows the shader consumes.
 
+**`_as` encoding and gate criterion (added 2026-09-14, LFQuad3).** [EXACT] The native ImageToPAA route encodes `_as` by filename: the `*_as.*` pattern compresses DXT1 with `channelSwizzleR="1"`, `channelSwizzleG="G"`, `channelSwizzleB="1"`, `channelSwizzleA="1"` and `dynRange=0`, so the AO stays in G while R, B and A sit at 255 (confirmed decoding five vanilla vehicle `_as.paa`: civiliansedan, hatchback_02_body, sedan_02_body, truck_01_cab, offroad_02_wheel). [DESIGN] Gate a produced `_as` by decoding the PAA and requiring max G error <= 8/255 against the source, with R, B and A at 255. Never require per-channel RGB error against a gray PNG: that criterion pushed a worker to bypass the swizzle through an intermediate `_dxt1` suffix and ship gray `_as` maps (R=G=B). Keep the `_as` source name plain, with no intermediate suffixes.
+
 Borrowing a vanilla `.rvmat` also borrows mesh-specific baked data. Its Stage4 `_as` can paint dark
 patches from the donor mesh onto a custom model and look like broken lighting or normals; Stage5
 `_smdi` carries the same reuse risk. Check the coordinate source too: the measured Stage4 uses

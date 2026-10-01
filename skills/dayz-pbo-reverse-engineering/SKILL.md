@@ -428,3 +428,5 @@ Use these checks before parsing the result:
 
 Treat a baseline mismatch as an extraction failure. Stop the sweep instead of drawing findings
 from bytes whose decoding has not been proved.
+
+**ODOL version preflight (1.30 Exp):** a 1.30 vanilla `.p3d` is ODOL v56 (1.29: v54). Read header bytes 4-7 before parsing a binarized model; a v54 reader fails with `ValueError: subsection not found`. Detail: `dayz-vehicles/references/dayz-1-30-vehicles.md`.

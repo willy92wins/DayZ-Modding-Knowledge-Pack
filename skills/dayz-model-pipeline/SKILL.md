@@ -75,6 +75,7 @@ door axis sat 198.8 mm behind its own leaf.
 Before doing anything, read the relevant reference file:
 
 - **Wheeled vehicle? READ FIRST, before baking** → `references/vehicle-structural-parity.md`. A from-scratch vehicle reveals the pieces a real DayZ vehicle has of stock (Geometry wheel hubs, crew proxies in ViewGeometry, FireGeometry damage zones, lights, AnimationSources) one error at a time in-game unless you extract the full anatomy up front. Debinarize the civiliansedan once, diff against it, build every missing piece in one pass — that is the anatomy a project's readiness gate expects in hand before the spec is written (LL-030).
+- **1.30 Exp vanilla P3Ds are ODOL v56 (1.29: v54).** Before debinarizing a 1.30 vanilla reference model, read the P3D header (bytes 4-7); a v54 reader fails with `ValueError: subsection not found`. Preflight detail: `dayz-vehicles/references/dayz-1-30-vehicles.md`.
 - **Wheeled vehicle config.cpp + model.cfg (complete, worked example)** → `references/vehicle-config-and-modelcfg.md`. The full car class: SimulationModule (engine/gearbox/drive/differential/suspension), Crew, lights, DamageZones, cargo, wheel/door items + slots + proxies, sound, AnimationSources, plus the matching model.cfg (CfgSkeletons bone hierarchy + wheel/steering/damper animations). Reproduces a verified working car (Tyson89/Landrover). Read AFTER vehicle-structural-parity.md.
 - **Wheeled vehicle per-LOD content, memory points & proxies** → `references/vehicle-structural-parity.md` Addendum 2026-05-30b (what each LOD carries for a car, the full memory-point catalog, and proxy placement per LOD).
 - **Vehicle-specific work beyond assembly** (CarScript config tuning, vanilla parity debugging, wheel simulation, dedicated-server packaging failures) → delegate to the USER skill `dayz-vehicles`.
@@ -682,6 +683,8 @@ actual separation must be measured before labelling a pair as intentional double
 geometry. Finally, flip a suspect component and remeasure it: if the defect disappears it
 was winding; if it moves to the other side, the sheet needs two-sided geometry rather than
 another flip.
+
+**Instrument and seal for see-through triage (added 2026-09-24, LFDucati T96).** [DESIGN] To see what the game draws, render with Blender Workbench `show_backface_culling` (rasterizes and discards backfaces before depth, like the engine) — use it to locate see-through pixels, not to adjudicate winding signs (SP-179 in `dayz-vehicles`). Cycles with a transparent backface also skips the coincident twin, and per-face red overlays come out mottled on double layers: neither adjudicates what the player sees. [EXACT] Flipping a two-sided sheet only moves the hole (measured: 313 tank-lip faces flipped, the front lip then vanished from above); the seal that never removes what was visible is an inverted twin carrying its own UVs and normals in the same animation selections. Twins cost vertices — respect the per-model resolved budget (`dayz-p3d-audit` SP-359), not a fixed 65,535. For a real hole (side views show nothing behind), close the gap and back it with a dark inset sheet. After any mesh fix, compare before/after from the owner's viewpoint, not only the face counts.
 
 ## Closed collision-LOD winding (SP-169, added 2026-08-31)
 

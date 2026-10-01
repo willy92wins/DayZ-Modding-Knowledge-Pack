@@ -80,6 +80,8 @@ own selection with a neutral-`diffuse` rvmat so a variant is just **1 new `_co` 
 subclass**. (For a per-color gloss change instead, override `hiddenSelectionsMaterials` at
 the same index.)
 
+**Variants with multi-atlas paint and saturated bases (added 2026-09-14, LFQuad3).** [EXACT] A variant subclass only tints the atlases that sit on a `hiddenSelections` index: with the paint split across several atlases, every atlas not attached to a variant selection keeps the base look (measured in game, DayZ 1.30.164014 Exp: only the lower details changed, the main body stayed red — its atlas shared no face with any variant selection). [DESIGN] Census rule before trusting a variant: check that every visible painted face falls in a variant hidden selection, in every render LOD and in the 1100/1200 view LODs. On a saturated base (measured mean RGB 201/53/50) a multiplicative tint cannot reach other hues: bake each variant as its own `_co` from the base luminance (`L / mean * target color`) with a soft mask that keeps dark marks.
+
 ## Stage block reference (NormalMapSpecularMap, constant-color part)
 
 ```cpp

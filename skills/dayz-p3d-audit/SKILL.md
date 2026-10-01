@@ -333,6 +333,10 @@ The measured SUB_BRZ path paired source MLOD and published ODOL triangles by cen
 
 Qualify the release gate with a known MLOD/ODOL pair and prove it separates a healthy build from an intentionally broken one. An identical zero count across materially different inputs is evidence of an instrument failure, not a clean artifact — measured `0 of 2367` on three distinct builds; with the sign inverted, ODOL and MLOD agreed cell by cell (637 → 0 and 636 → 0). Verify the published ODOL, but never port the MLOD predicate by memory.
 
+### Locating seat-visible see-through: render from the REAL first-person camera (added 2026-09-18, SUB_BRZ s96)
+
+A defect the player reports from the seat must be reproduced from the real first-person camera, not an estimated eye: an eye 23 cm below and behind the real one showed neither windshield-base patch. [EXACT] Recover the camera from the user's own screenshot by PnP over known-position dashboard features (measured reprojection error 2.7 px), then z-buffer-render the LOD flagging every pixel whose nearest opaque face is a backface; the seal is measured, not estimated (2,203 inverted twins added, 0 see-through pixels afterwards). [DESIGN] Show the before/after to the user BEFORE touching geometry. Seal culprits with inverted twins — same points, reversed vertex order and UVs, negated normals — never by flipping; exclude twin candidates that coincide with another piece (< 2 mm) or they will flicker. Winding-vs-hole still goes through the battery above and `dayz-model-pipeline` SP-166.
+
 ### Absolute winding check: what 0 % means (added 2026-09-07, corrected the same day with the engine verdict)
 
 py3d fork 1.7.0 implements the absolute signal: `_pct_normal_agreement(lod)` = % of faces with `dot(cross(v1−v0, v2−v0), declared_normal_v0) > 0`, both vectors in raw MLOD space; `_check_winding_absolute` raises `ERR_WINDING_VS_NORMALS` (CRITICAL) near 0 % and `WARN_WINDING_NORMAL_MISMATCH` when mixed. Calibration measured 2026-09-07 with that same function on the visual LOD:
@@ -456,6 +460,10 @@ Run `binarize` as the authoritative serialization check, with the previous known
 as a control in the same run. This separates a product failure from a broken test bench and
 makes pre-existing log noise comparable. A binarize pass proves that this index/serialization
 gate passed; it still does not replace the in-game spawn gate in SP-216.
+
+### Trusting a FAIL from a new gate on a binarized ODOL: run the control piece first (added 2026-09-28, LFDucati T102b)
+
+[DESIGN] Before trusting a FAIL from a new ODOL gate, run the gate on a piece that already works in game (here `drivewheel`): if the control also fails, the gate is wrong, not the model — two rebuild cycles stopped on a bad gate while the model was fine. [EXACT] In a binarized ODOL the named selections of the VISUAL LODs are stored as faces (also `drivewheel` and `damper_1`, which do move in game); read their vertices through the face corner indices. Memory and Geometry LOD selections list vertices. And write gate expressions against the tool's real output, not its vocabulary: the anatomy dump writes animation types as numbers (0 rotation, 4 translation), so an expression matching the string `rotation` never fires.
 
 ## SP-359 — The audit does not check the resolved-vertex budget
 

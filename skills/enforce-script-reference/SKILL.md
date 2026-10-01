@@ -1076,6 +1076,7 @@ Forma de fallo verde y silenciosa; la corrida entera fue inútil.
 Escribir esos literales componiendo la barra en Python (`chr(92)`) y verificar con `repr()`. Y si
 el valor lo consume el motor, **comprobar en su log que llegó entero** antes de fiarse de la
 corrida: aquí el propio log imprimía la ruta recibida, y ahí se veía sin barras.
+
 The same single-backslash trap repeats at mod scale, and script path literals belong in the audit: [EXACT] vanilla script literals write texture paths escaped and without a leading backslash (`"dz\\gear\\navigation\\data\\GPS_%1_ca.paa"`, `scripts/4_world/entities/itembase/gear/navigation/gpsreceiver.c:4`) (DayZ 1.30.164014 Exp); one mod shipped 64 `"\ModName\data\....rvmat"` literals with SINGLE backslashes in the source across 24 `.c` files — all of them its LEDs (measured, LFPowerGrid). [DESIGN] Recipe: grep the mod's `.c` files for string literals that carry a lone backslash inside a path, and print in the log the path the engine actually receives.
 
 ## DayZ 1.30 Exp (build 1.30.164014)
