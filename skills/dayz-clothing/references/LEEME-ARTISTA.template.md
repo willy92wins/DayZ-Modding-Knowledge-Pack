@@ -14,8 +14,10 @@ pending: that is the task for this delivery.
 - `model.cfg` — CORRECT model.cfg for binarizing these models
 
 ## The FBX
-- **Axes**: standard Blender, Z up, character is STANDING facing +Y.
-  Units: meters. Origin at character's feet.
+- **Axes**: standard Blender, Z up, character is STANDING facing -Y (Blender's
+  Front view), anatomical left at +X: the same frame as the official DayZ rig.
+  Units: meters. Origin at character's feet. (Packages made before 2026-10-01
+  faced +Y and were a mirror image; return those the way they were delivered.)
 - **The 10-bone armature is a WEIGHT CARRIER, not the game rig**:
   its bones are placed at each region's centroid only so the
   FBX preserves vertex groups. Not for animating. The important part are the
@@ -57,5 +59,7 @@ influences, like vanilla clothing) would greatly improve deformation.
 
 ## Return workflow
 Deliver modified FBX (or .blend). We convert it to .p3d
-(standard Blender->DayZ transformation), rebuild selections with
-vertex group weights, and binarize with included model.cfg.
+(the same axis map that produced this FBX, which is its own inverse),
+rebuild selections with vertex group weights, and binarize with included
+model.cfg. Do not mirror the model or flip its normals: the garment is
+meant to look in game as it does in Blender, text and logos included.

@@ -22,7 +22,8 @@ t = verts.mean(0) - s*bpts.mean(0)
 t[2] = verts[:,2].min() - s*bpts[:,2].min()
 print("align scale=%.6f  translate=%s"%(s,[round(x,4) for x in t]))
 
-# Fm: Blender world Z-up -> DayZ Y-up: x'=x, y'=z, z'=-y
+# Fm: Blender world Z-up -> viewer Y-up: x'=x, y'=z, z'=-y (det=+1, right-handed like Three.js).
+# Not DayZ model space despite the "dayz" names: that one is left-handed, any map into it has det=-1.
 Rf=np.array([[1,0,0],[0,0,1],[0,-1,0]],dtype=float)
 def to_dayz(R,tr):
     Rfin=Rf@R; tfin=Rf@(s*tr+t); return Rfin,tfin

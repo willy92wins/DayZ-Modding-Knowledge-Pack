@@ -50,7 +50,7 @@ the four rounds did validate: sections 3-5 and 7 as a pipeline, and (j) as a mem
 |---|---|---|
 | `_load_local_dayz_player_rig` 3880-3924 + `_real_dayz_rig_landmarks` 3853-3876 | needs the external `DayzAnimationTools.import_xob` and a hard-coded `P:\DZ\characters\bodies\player_testing.xob`; that XOB is a TEST skeleton with `To Be removed` bones (dayz-animation-pipeline/references/player-skeleton.md:88-92) | bone heads of `animation_rig_character.fbx` (section 1, 3) |
 | donor `resources\DayzSkeleton.p3d` (`_ensure_builtin_reference` 1649-1673) | single visual LOD, 44 lowercase groups, 1,517 of 10,153 verts with zero weight, sums not normalised; embeds vanilla `m_adam` textures/rvmats (licence); the pack decodes weights with its own table (`weight_decode` 225-231), not the py3d codec | `Male_body` of the same FBX: 0 unweighted verts, <=4 influences (section 1, 5) |
-| `to_bl`/`from_bl` = `(x, z, y)` + `rev()` 219-221 | it is the rig-frame convention, NOT our worn-export frame | section 2 |
+| `to_bl`/`from_bl` = `(x, z, y)` + `rev()` 219-221 | the swap is right (Rule 12); `rev()` belongs to the pack's own p3d writer (not checked here): with py3d, Rule 12 keeps the Blender face order | section 2 |
 | `_apply_autofit_armature(..., apply=True)` 3213-3287, run by default in `clothing_prepare` 4454-4457 | destructive bone-heat sleeve warp; the panel says it does not run (4828) and the code runs it | do not port; sleeve detection as a mask only (section 6) |
 
 ## 1. The reference rig [EXACT: Blender 5.1.1 / Python 3.13.9, headless, 2026-09-01]
@@ -93,28 +93,30 @@ the four rounds did validate: sections 3-5 and 7 as a pipeline, and (j) as a mem
   (PascalCase: `RightArm`, `Spine3`, `Pelvis`), max 4 influences per vertex, 0 zero-weight
   vertices.
 
-## 2. Axes: the rig frame is NOT the worn-export frame [EXACT + doctrine; lesson LL-413]
+## 2. Axes: one swap between the rig frame and DayZ [EXACT + doctrine; lesson LL-413; corrected 2026-10-01 for Rule 12]
 
-- Our worn tooling maps DayZ -> Blender with `(x, -z, y)` (`references/export_clothing_fbx.py:12-13`):
-  the body stands Z-up FACING +Y with left at +X (SKILL.md, CANONICAL WORN FRAME: -Z chest,
-  +X left, +Y up). The official rig faces -Y with left at +X. The two Blender frames differ by
-  the reflection `y -> -y`, not by a rotation. [EXACT] cross-check on a DayZ-frame body (the
-  pack's `DayzSkeleton.p3d`, read with py3d 1.5.0): `lefttoebase` centroid sits 0.147 m in -Z
-  from `leftfoot`, `head` 0.030 m in -Z from `neck`, `leftfoot` at x = +0.167: front -Z, left +X.
-  `(x, -z, y)` puts those toes at +Y; the swap `(x, z, y)` puts them at -Y, i.e. onto the rig.
-- Consequence: a garment fitted on `Male_body` returns to DayZ with the pure swap
-  `(x, y, z)_blender -> (x, z, y)_dayz` AND face-order reversal in every LOD (the det = -1 rule,
-  dayz-model-pipeline/references/lods-and-geometry.md:146-148). That is exactly the pack's
-  `from_bl` + `rev()`. Do NOT apply `py3d.BLENDER_TO_DAYZ` = `(x, z, -y)` to it: that is the
-  det = +1 route for meshes authored in our +Y-facing frame. dayz-characters hit this on the
-  same rig: `(x, z, -y)` shipped LFInfectedBig walking backwards and a residual mirror
-  (character-rigging.md:169-175; dayz-characters/SKILL.md:167-192).
-- Alternative that keeps every existing clothing script unchanged: mirror the rig into our frame
-  first (`y -> -y` on `Armature` and `Male_body`, then reverse `Male_body` face order), fit
-  there, export with `BLENDER_TO_DAYZ`.
-- [ASSUMPTION] Which of the two is less error-prone in practice. Neither has been run on a real
-  garment yet; in both cases run the anatomical facing test of SKILL.md CANONICAL WORN FRAME on
-  the exported p3d before packing (killer #2).
+- The official rig faces -Y with left at +X (section 1; re-measured 2026-10-01 with both FBX
+  importers). The DayZ worn frame is -Z chest, +X left, +Y up (SKILL.md, CANONICAL WORN FRAME).
+  [EXACT] cross-check on a DayZ-frame body (the pack's `DayzSkeleton.p3d`, read with py3d 1.5.0):
+  `lefttoebase` centroid sits 0.147 m in -Z from `leftfoot`, `head` 0.030 m in -Z from `neck`,
+  `leftfoot` at x = +0.167: front -Z, left +X. The swap `(x, y, z)_blender <-> (x, z, y)_dayz`
+  (det = -1, its own inverse) puts those toes at -Y, i.e. onto the rig.
+- Consequence: a garment fitted on `Male_body` returns to DayZ with that swap, faces in their
+  Blender order and normals negated (dayz-model-pipeline Rule 12, in-game test 2026-10-01). Until
+  2026-10-01 this item also asked for face-order reversal in every LOD, citing the pack's `from_bl`
+  + `rev()`; under Rule 12 that reversal turns a py3d export inside-out. Do NOT apply `py3d.BLENDER_TO_DAYZ` =
+  `(x, z, -y)`: it is det = +1 and mirrors. dayz-characters hit this on the same rig: `(x, z, -y)`
+  shipped LFInfectedBig walking backwards, and `(-x, z, y)` mirrored it (character-rigging.md §6).
+- Until 2026-10-01 our worn tooling imported DayZ -> Blender with `(x, -z, y)`
+  (`references/export_clothing_fbx.py`). That frame faced +Y with left at +X, a mirror image of
+  the rig frame (the two differed by `y -> -y`). The script now uses the same swap, so the two
+  frames are one. The alternative that used to stand here (mirror the rig into that frame, fit,
+  export with `BLENDER_TO_DAYZ`) is withdrawn: it fits in a mirrored frame and exports with a
+  det = +1 map, so anything with a side (text, a pocket, a buckle) ships reversed.
+- Before packing, run the anatomical facing test of SKILL.md CANONICAL WORN FRAME on the exported
+  p3d (killer #2). With weights transferred from `Male_body` it catches a det = +1 export, since
+  the selections then come from the true side; it cannot see a mirror once the L/R selections
+  have been swapped by hand (SKILL.md, chiral check).
 
 ## 3. Landmarks: replacing `_real_dayz_rig_landmarks` [RUN 2026-09-01: works; mirrors addon.py:3853-3876]
 
@@ -158,8 +160,8 @@ after the axis swap.
   the torso, not on the arms (`02_fit_front.png`).
 - Rest forward offset (`_set_clothing_rest_forward_offset` 1608-1621): translate along the body's
   FRONT vector by `offset` (pack default 0.035 m), stored on the object to avoid accumulation on
-  repeated fits. On the official rig the front vector is world `(0, -1, 0)`; in our +Y frame it
-  is `(0, +1, 0)`.
+  repeated fits. On the official rig the front vector is world `(0, -1, 0)`, and since 2026-10-01
+  in our worn tooling too (its retired +Y frame had `(0, +1, 0)`).
 
 ## 5. Weight transfer from `Male_body` [RUN 2026-09-01: works in Blender 5.1.1 with the three corrections of item 7]
 

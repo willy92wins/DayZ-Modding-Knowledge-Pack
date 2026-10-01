@@ -29,7 +29,7 @@ Bone names must match the target skeleton exactly. A mismatch logs `Error: Bone 
 
 ## Coordinate handling
 
-DayZ/Arma use a different up-axis than Blender (the model pipeline applies `x'=x, y'=z, z'=-y` for geometry — see `dayz-model-pipeline`). For animation, the converter/plugin generally handles axis conversion, but verify on a round-trip rather than assuming. [TBD-verify whether SEAnim/FBX export needs manual axis fix for DayZ skeletons.]
+DayZ/Arma differ from Blender in up-axis AND handedness: Blender is right-handed with Z up, DayZ left-handed with Y up. For geometry the model pipeline maps `(x, y, z) → (x, z, y)`, det −1 (`dayz-model-pipeline` Rule 12, in-game test 2026-10-01). *Corrected 2026-10-01: this line used to give `x'=x, y'=z, z'=-y`, a det +1 map that mirrors.* For animation, the calibrated viewer → SEAnim conversion already carries that reflection: rotation `(x,y,z,w) → (−y,−z,x,w)`, rest position `(x,y,z) → (y,z,−x)`, det −1, calibrated exactly against a DayZATool-extracted reference (`blender-animation/references/dayz-handoff.md`, Route C). Do not add a second reflection on top. `scripts/seanim_export.py` in this skill predates that calibration and writes the viewer frame as it is. [TBD-verify whether SEAnim/FBX export needs manual axis fix for DayZ skeletons.] A mirrored clip raises no error; it plays with left and right swapped. Chiral check for any new route [DESIGN, not yet run]: key one side only (raise `LeftArm`, the arm at +X in the official rig in Blender), export, play it in game on a player holding an item. The arm that rises must be the one opposite the item hand (items sit on `RightHand_Dummy`).
 
 ## Verify before shipping
 

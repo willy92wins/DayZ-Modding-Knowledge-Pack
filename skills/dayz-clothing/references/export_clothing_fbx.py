@@ -10,7 +10,9 @@ TEX = os.path.join(OUT, "armorhneck_beige_co.png")
 BONES = ["leftarm", "rightarm", "leftforearm", "rightforearm", "leftupleg", "rightupleg", "neck", "pelvis", "spine", "spine3"]
 
 def dayz_to_blender(c):
-    return (c[0], -c[2], c[1])
+    # det -1 and its own inverse (dayz-model-pipeline Rule 12): the garment lands like the official rig
+    # (front -Y, left +X) with outward faces. Was (x, -z, y) until 2026-10-01: a mirror, faces inward.
+    return (c[0], c[2], c[1])
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
