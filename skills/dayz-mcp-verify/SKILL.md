@@ -107,6 +107,8 @@ cliente sin sondear); con el cliente actual llega `run_not_owned: This run has n
 (RUNNING_IDLE)…`. En los dos casos el remedio es adoptar, no reintentar ni relanzar. Esta regla corrige
 el paso 1 de la receta SP-292 y precisa la primera viñeta de SP-152, más abajo.
 
+Two lease failures around long waits (measured in game sessions, 2026-09-28): (1) `wait_for` over the log does NOT renew the lease — a wait longer than ~2 min expired with `lease_expired`; interleave `session_heartbeat` between waits. (2) When a user message interrupts an in-flight call (a long `wait_for`), the next `session_heartbeat` answers `lease_invalid: token was never valid for this client`; if the run is still alive, `session_acquire_wait` readopts it. Also: `dayz_test_close` shuts the run down in order, with a termination line on both sides. [EXACT]
+
 ### Companion externo: dayz-labs
 
 [EXACT][CLAIM-R21-MCP-COMPANION-AUTHORITY]
@@ -397,6 +399,7 @@ Claves:
   puertas del motor la devuelve a su fase "wanted" (relectura `phase=0`) y `IsDoorOpen(index)` sigue en falso, asi que
   toda accion condicionada a puerta abierta tambien da `condition_failed`. Abrir/cerrar, sonido y sync son test
   MANUAL (F del usuario); lo unico verificable por MCP es "arranca cerrada" (`object_anim` lee `phase=0`).
+- Update (measured 2026-10-01, DayZDiag 1.29.163709, test building whose door component is a button on a moving piece) [EXACT]: `action_use` with `ActionOpenDoors`/`ActionCloseDoors` and `door_index` DOES open and close the door even there. `object_anim` (`SetAnimationPhaseNow`) on the door's source still cannot hold a static pose: the door settles at `ajar` with phase 0.07 instead of the requested phase — doors cannot be posed statically. For the verdict, use `object_doors` and rays.
 - **`setup_failed` es un FALSO NEGATIVO para acciones locales instantaneas** (`IsLocal() && IsInstant()`:
   `ActionTogglePlaceObject`, `ActionDropItemSimple`; medido 2026-09-07): el bridge comprueba
   `GetRunningAction()==null` justo despues de `PerformActionStart`, y una accion instantanea ya ha terminado.

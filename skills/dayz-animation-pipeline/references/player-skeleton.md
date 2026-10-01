@@ -78,6 +78,7 @@ the output file; ignore the exception and check the file exists.
 
 - `RightHand_Dummy` is at `skeletons.anim.xml:100,115,525` (lod=2 helper). Distinct from `RightHand` (lod=1, the real hand bone).
 - It's the helper that anchors weapons/items in the hand. Moving `RightHand_Dummy` moves the held item.
+- Measured in game (DayZ 1.30.164014 Exp): the in-hand item sits on `RightHand_Dummy` within ~4 mm, and at rest the hands fall exactly on the IK pose. Two consequences. (1) The right grip is RIGID: if the animation rotates the right hand relative to the item, the item rotates with it and the other hand slips out of its grip — put any slack (a handle pivoting in the fist) on the LEFT hand. (2) `GetTransform` of the in-hand item is a trap: `mat[1]` is the dummy's Z, `mat[2]` its Y, and `mat[0]` points opposite to the model's +X as drawn — do not place item parts with that X. [EXACT]
 - Tutorials call it "right hand dummy" (lowercase, with space) — **the real string is `RightHand_Dummy`** (PascalCase, underscore).
 - `LeftHand_Dummy` (`skeletons.anim.xml:74`) is the symmetric helper. It's what the engine uses to track magazine position during reload — there are no dedicated magazine bones in the production skeleton (see §Legacy below).
 

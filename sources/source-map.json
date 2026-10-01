@@ -3752,10 +3752,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
           "source_revision": "kp-update-wp-test@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ANIM): SP-412. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry. Correction (SP-412): MotorBikeSTM spans Vehicles.agf:1582-1751, not 1582-1750; the receiver recounted the brace depth from :1582 (back to 0 at :1751).",
+          "license": "MIT",
+          "source_hash": "104ca558351b472d39f76a924676e4ea58d01bb317cec2f54d5c653c012f2d1a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
+          "source_revision": "kp-update-wp-anim@2026-10-01",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "4a0962ac9c79441cb78ce498559ed135122ae354c3a264864adfe125b5487a73",
+      "output_hash": "104ca558351b472d39f76a924676e4ea58d01bb317cec2f54d5c653c012f2d1a",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3796,10 +3806,20 @@
           "source_path": "dayz-animation-pipeline/references/config-driven-animation.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ANIM): SP-449. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "6a3225942f80d5ec8ba3fbe2ef31b8f285b812233e5bf5ec76e6a13ae7e274d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/config-driven-animation.md",
+          "source_revision": "kp-update-wp-anim@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "255cbe22402b16382c2a3f91b1f128c7bb74511359700d34673dd18cfd1e50f0",
+      "output_hash": "6a3225942f80d5ec8ba3fbe2ef31b8f285b812233e5bf5ec76e6a13ae7e274d7",
       "output_path": "skills/dayz-animation-pipeline/references/config-driven-animation.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3862,10 +3882,20 @@
           "source_path": "dayz-animation-pipeline/references/item-ik-and-hide.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ANIM): SP-442, SP-443. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "d0630c3e222844a6043344a0432a889f95f3e6841603a57656d9fc2f615618f6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
+          "source_revision": "kp-update-wp-anim@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "46cd1143ec289b1ccb122e3991755bc83b09e9e93acb4f20913e3c3dd23ec812",
+      "output_hash": "d0630c3e222844a6043344a0432a889f95f3e6841603a57656d9fc2f615618f6",
       "output_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3884,10 +3914,20 @@
           "source_path": "dayz-animation-pipeline/references/player-skeleton.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ANIM): SP-443, SP-444. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "308ea7c8e0c4b479988170a35f25e5c7e199e670db1407a7f2de8047b3f1e92e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
+          "source_revision": "kp-update-wp-anim@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0137e05b436ca9c7f9c145f472dfef0acf8cbdcb94950bff8758e83772aa9e58",
+      "output_hash": "308ea7c8e0c4b479988170a35f25e5c7e199e670db1407a7f2de8047b3f1e92e",
       "output_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4038,10 +4078,20 @@
           "source_path": "dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ANIM): LL-531, SP-412. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry. Correction (SP-412): MotorBikeSTM spans Vehicles.agf:1582-1751, not 1582-1750; the receiver recounted the brace depth from :1582 (back to 0 at :1751).",
+          "license": "MIT",
+          "source_hash": "92a3df5cd7157064fb2269d1069ecf06685db96d800b3dd717673aa53306795d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
+          "source_revision": "kp-update-wp-anim@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "68bd66ee95181102afd95ce54deedcf8c04da3811b8c040046a64e14cdcd231a",
+      "output_hash": "92a3df5cd7157064fb2269d1069ecf06685db96d800b3dd717673aa53306795d",
       "output_path": "skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4082,10 +4132,20 @@
           "source_path": "dayz-animation-pipeline/references/weapon-anim-blender-complete.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ANIM): SP-421, SP-443, SP-444. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "53e91bb5e95689c137d47af35fcdeb6ac3c02baaa385c14e819bbbb0f58b7349",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-blender-complete.md",
+          "source_revision": "kp-update-wp-anim@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "06c005c2c9959d831ec315c3945994fa9477f973e0885d07cbebb63c6f89f08d",
+      "output_hash": "53e91bb5e95689c137d47af35fcdeb6ac3c02baaa385c14e819bbbb0f58b7349",
       "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-blender-complete.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4720,10 +4780,20 @@
           "source_path": "skills/dayz-basebuilding/SKILL.md",
           "source_revision": "c4b59502ed07fd946ce4b1be3121e3803d838998",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ANIM): SP-444. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "80d11951e300bab1bd6352d8bfa102c91255c834ac54413c8bc0cb6646e2ecb5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-basebuilding/SKILL.md",
+          "source_revision": "kp-update-wp-anim@2026-10-01",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "acf2ddad27499c7d8af5117782d906011ff65723d030af28195c298246fab605",
+      "output_hash": "80d11951e300bab1bd6352d8bfa102c91255c834ac54413c8bc0cb6646e2ecb5",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -5898,10 +5968,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-wp-mcp@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ANIM): SP-442, SP-443, SP-449. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "5822c237cff4c2082fdd6c6349759a7e5498d69e05244933a13038d6c2f3e2ab",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-wp-anim@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c0e4ea9dab45f6413da6ec6e01ba11b02bf2f78a4e5ac13164890fd37362d37d",
+      "output_hash": "5822c237cff4c2082fdd6c6349759a7e5498d69e05244933a13038d6c2f3e2ab",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -7422,10 +7502,20 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "roboclient-130@2026-09-26",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ANIM): SP-449. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "feda8d7c4e1b9058f0e709c124f11d9561c0ae4463cf38ad5e02792326b2b6f8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "kp-update-wp-anim@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "16e14b49fdc790267fade45c0a35d1236aa4869af7b71ca3839371647c9ed795",
+      "output_hash": "feda8d7c4e1b9058f0e709c124f11d9561c0ae4463cf38ad5e02792326b2b6f8",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -11020,10 +11110,20 @@
           "source_path": "enforce-script-reference/references/networking.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ANIM): SP-442, SP-444. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry. The RegisterNetSyncVariableFloat citation now gives both builds: entityai.c:2876 on 1.29.0.163451 and :2838 on 1.30.164014 Exp (both re-checked by the receiver).",
+          "license": "MIT",
+          "source_hash": "b1ae1e4de739da7c43a5dd4684f7bcf1d467f09beeb88883f17f6d53f36f9f10",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/networking.md",
+          "source_revision": "kp-update-wp-anim@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "07194c013ab8a01079381e898f2666fe58d5777eeb6cf956f60e9606a08fb2b6",
+      "output_hash": "b1ae1e4de739da7c43a5dd4684f7bcf1d467f09beeb88883f17f6d53f36f9f10",
       "output_path": "skills/enforce-script-reference/references/networking.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -12705,10 +12805,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-wp-mcp@2026-10-01",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ANIM): new claims CLAIM-ANIM-MOTORBIKE-STM-RANGE, CLAIM-HARVEST-YIELD-STACKMAX-130; claim ranges shifted where lines moved.",
+          "license": "MIT",
+          "source_hash": "ba8c51d9023c645d79a20e20f85b7fc463bb8bbd5bef12e7fdbb1711324a814d",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-wp-anim@2026-10-01",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a6affcd59412d435b37f55d766f8befae10bc360febe0d43c000e9d3ecbb117f",
+      "output_hash": "ba8c51d9023c645d79a20e20f85b7fc463bb8bbd5bef12e7fdbb1711324a814d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

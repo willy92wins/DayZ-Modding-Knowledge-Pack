@@ -659,6 +659,7 @@ Documented imperfections to expect/budget for: prone anims reusing standing/crou
 - [ ] Reload/charge/chamber/jam: shoulders-down, keyed bones only, spine micro-motion.
 - [ ] HOLD-type action anim (unjam/continuous) -> `LoopStart`/`LoopEnd` notetracks present (SP-046 below).
 - [ ] No keys on IK helpers for non-IK anims; no scale keys anywhere.
+- [ ] After authoring, recompute the aux helpers with the vanilla rule (Arm/ForeArm/Wrist Extra = half of the sibling rotation; ElbowExtra ~= half of the elbow swing; roll bones = pure twist, re-oriented toward the original elbow and wrist so they do not shift) and gate the result: helper error <= 1 degree (elbow <= 7), roll swing <= 1 degree, hands preserved with a stable metric (atan2 of the relative quaternion). [DESIGN]
 - [ ] Events set in the N-panel Event Manager (state-change events mandatory).
 
 **Export + compile**
@@ -977,3 +978,20 @@ This enables mods to swap character weapon profiles dynamically when grips or at
 - **Named File System Routing**: Workbench 2021 resolves filepatching using the new `-resolveFilePatchingUsingEnfusion=1` switch, avoiding PBO packing loops during `.anm` iterations when loading loose workspace and meta resources.
 - **GUID Integrity**: In DayZ 1.30 Exp, `{GUID}` prefixes in `.asi` and `.ast` files must be strictly maintained for engine asset tracking and Animation Editor stability.
 
+
+
+## [2026-09-24 / 2026-09-29] Measured animation-authoring corrections: aux helpers, lossy compile, exporter constraints, continuous-action IK, quaternion sign (CocaLab, A6_SR2M)
+
+### Aux-helper rule and the lossy Workbench compile (A6_SR2M unjam v45h; measured offline on 8 vanilla anims, DayZ 1.30.164014 Exp) [EXACT]
+- Vanilla aux helpers follow a fixed rule: `ArmExtra`, `ForeArmExtra`, `WristExtra` = `slerp(I, q_sibling_local, 0.5)`, the siblings being `ArmRoll`, `ForeArmRoll`, `Hand` (median error 0.2-1 degree, max <= 4). `ElbowExtra` ~= half of the `ForeArm` swing without its twist (median 3-7, max ~26 degrees), and its rest axes differ 7.32 degrees from the `ForeArm` ones. `ArmRoll`/`ForeArmRoll` are pure twist about the bone axis (swing <= 0.9 degree). Hierarchy in `references/ofp2-manskeleton-parents.txt`. An authored anim that leaves the helpers still or bends the roll bones gives pinched or peaked elbows and stepped wrists.
+- Measured compile loss (extends the §6.2 trim note above): the `.anm` Workbench compiles from a plugin `.txa` deviates up to 0.017 per quaternion component (~2 degrees) and 0.92 cm, because it drops near-identical keys (fast frames 229-231 of the v45 hit). Direct route without Workbench: `.txa` -> SEAnim -> `DayZATool --generate-anim X 100`; quaternion XYZW pass through normalized, translations are multiplied by 100 (m -> cm), events become `Name|userString|userInt` notes; the result is exact to float32 and the round-trip passes (2.7e-5 rot, 3.2e-4 cm). That direct `.anm` has not been exercised in game yet.
+- Convention split: DayZATool extracts vanilla anims RELATIVE TO BIND (`Spine3` with identity rotation and t=(0,0,0); most bones without position keys), while plugin-compiled output is absolute (`Spine3` t=(10.06, -0.67, 0) cm). The "SEAnim rotations are rest-pose-relative" caveat (see vehicle-rider-ik-pose.md) holds for vanilla extractions only. Comparing raw values across the two conventions yields huge false positives (a constant 104-degree shoulder offset); compare in Blender (`pose_bone.matrix_basis`) or through the bind.
+- The maintained plugin fork disables ALL bone constraints before sampling on export and re-enables them afterwards. Bake any constraint-dependent pose before exporting.
+
+### Continuous actions: no arm IK in the action layer (CocaLab; measured in game, DayZ 1.30.164014 Exp) [EXACT]
+- `NormalWeaponIK` precedes `LocomotionQ` in the player graph, and `ActionMaster` enters at `LocomotionQ`; the continuous-action STM carries no `AnimNodeWeaponIK`, and after the queue only `LocomotionQBufferUse` and the root `MasterControl` remain. During a continuous action the arms get no IK.
+- Borrowing another object's animation set is borrowing its geometry: the non-anchor hand goes to that object's second grip. Measured: the pot holds 28.7 cm between wrists and left a 57.5 cm tray's left hand 33.5 cm from its grip through the whole pour. Before choosing a borrowed set, compare its IK-pose wrist separation with the animation's.
+- The instrument lies too: `acos` of the dot product of unnormalized float32 quaternions (norms 0.99999) reports ~0.8 degrees where the real error is ~0.002. Normalize and use `atan2`; a flat error across all bones points at the instrument, not the pose.
+
+### Splitting a rotation requires the quaternion sign fixed (CocaLab; measured in game, DayZ 1.30.164014 Exp) [EXACT]
+`q` and `-q` are the same rotation, but `2*atan2(x, w)` places them 360 degrees apart, so splitting a half leaves the halves 180 degrees apart. Symptom in game: the forearm twisted like a candy with the hand correctly placed, because the total is right and the split is not (measured: `ForeArmRoll` at -121..-146 degrees from its parent, +49 at rest; hand at -150..-167). Fix: force `w >= 0` before splitting. An identity case does not catch the old version (it splits small rotations with `w > 0`); a `-q` case fails it by 180 degrees.

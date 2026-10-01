@@ -22,7 +22,7 @@ only when the task needs that depth:
 | `references/dano-transporthit.md` | damage pipeline (MDF), EEHitBy chain, the complete TransportHit flow line-by-line, hitzones, armor reality |
 | `references/dayz-1-30-ragdoll-and-fall.md` | 1.30 Exp: `.ragdoll` / `RagdollDef`, `PhysicsSetSimpleDeath`, unconscious wake-while-falling, fall-damage `CurveExp` |
 
-## The 9 engine truths (prevent the classic bugs)
+## The 10 engine truths (prevent the classic bugs)
 
 1. **A body only collides where it exists.** The player capsule (CCT) is simulated client-side
    (hasta 1.29: `3_game/human.c:1397-1418`; desde 1.30 Exp: `exp/scripts/scripts/3_Game/human.c:1426-1452`). A rigid body created only on the server can never block a player —
@@ -70,6 +70,7 @@ only when the task needs that depth:
    victim only when `IsDamageDestroyed()` (ragdoll) — `3_game/entities/entityai.c:4111-4115`. Living
    players are displaced by the contact solver itself (both bodies present + interacting layers), not
    by script.
+10. **Config-driven animated geometry on a building is NOT a mover** (measured in game, DayZDiag 1.29.163709) [EXACT]: a standing player stays suspended while the piece descends; a moving player rides up but does not ride down — they stay up, can walk a few metres on "nothing", then fall; a parked car is clipped through by the rising piece; a running car rises a bit and drops. Any elevator or lift platform needs a script layer that carries the rider. (On the way down the client seems to keep the old collision for a while — hypothesis, not measured.)
 
 ## API quick map (verified signatures)
 

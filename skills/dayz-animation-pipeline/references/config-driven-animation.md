@@ -40,6 +40,7 @@ Three files, names must match exactly across all three:
 - `angle0` / `angle1` — start/end angle in radians (rotation types).
 - `offset0` / `offset1` — start/end offset (translation types).
 - `hideValue` — phase threshold at/under which the selection is hidden (`hide` type). [VERIFIED via working mod; confirm exact comparison direction against vanilla.]
+- **Rotation sign and chained segments** (measured in game, DayZDiag 1.29.163709) [EXACT]: a positive angle rotates right-handed around the P1->P2 axis, memory points taken in index order in model coordinates (axis toward +Z: +X moves toward +Y). Several `minValue`/`maxValue` segments over one clamped source chain a whole sequence, played back in reverse when it closes. A child rotation hung on a parent rotation via `skeletonBones` composes correctly (a leaf folding over another folding part). Measured with rays: blade tips cut at x = ±3.15 against ±3.21 predicted.
 
 ## `class AnimationSources` (in `config.cpp`, under your CfgVehicles class) [VERIFIED]
 
