@@ -41,8 +41,8 @@ class CfgModels {
         class Animations {
             class handlebar {
                 type      = "rotation";
-                source    = "steeringwheel";  // engine source -1..+1. NO "drivingWheel" (eso es nombre de CLASE). EXIGE skeleton de direccion ESTANDAR (wheel_X_X_damper->wheel_X_X_steering->wheel_X_X) o el engine NO lo alimenta.
-                selection = "handlebar";      // named selection in .p3d (puede ser "drivewheel", etc.)
+                source    = "steeringwheel";  // engine source -1..+1. NOT "drivingWheel" (that is a CLASS name). REQUIRES STANDARD steering skeleton (wheel_X_X_damper->wheel_X_X_steering->wheel_X_X) or the engine does NOT feed it.
+                selection = "handlebar";      // named selection in .p3d (can be "drivewheel", etc.)
                 axis      = "handlebar_axis"; // memory axis: two points
                 memory    = 1;                // axis lives in Memory LOD
                 minValue  = -1;
@@ -57,11 +57,11 @@ class CfgModels {
 
 Key properties:
 
-- `source = "steeringwheel"` — engine drives this from -1 (full left) to +1 (full right). **NO `drivingWheel`** (es el nombre de CLASE de la animacion, no el source). No `AnimationSources` entry required; pero EXIGE el skeleton de direccion estandar (ver correccion 2026-06-06 abajo). `wheel` (looping wheel rotation) and `damper_*` (suspension travel) work the same way for related parts.
+- `source = "steeringwheel"` — engine drives this from -1 (full left) to +1 (full right). **NOT `drivingWheel`** (that is the animation CLASS name, not the source). No `AnimationSources` entry required; but REQUIRES standard steering skeleton (see correction 2026-06-06 below). `wheel` (looping wheel rotation) and `damper_*` (suspension travel) work the same way for related parts.
 - `selection = "handlebar"` — the named selection in the `.p3d` that holds the geometry to rotate (the entire handlebar assembly, all grips, levers, mirrors).
 - `axis = "handlebar_axis"` — a named selection that the engine reads as **the line between two memory points** (`<axis>_begin` and `<axis>_end`). Those two points must exist in the Memory LOD.
 - `memory = 1` — tells the engine the axis is in the Memory LOD. The default is `1`; include it explicitly so a reader knows where to look.
-- `angle0` / `angle1` — angle at `source = minValue` / `maxValue`. **Escala empirica: el numero se comporta como GRADOS para el throw visible** (`rad 0.39` -> casi invisible; `rad 30` -> ~30 grados). Usar ~25-35 y afinar in-game; NO escala de radianes decimal (ver correccion 2026-06-07 abajo).
+- `angle0` / `angle1` — angle at `source = minValue` / `maxValue`. **Empirical scale: the number behaves like DEGREES for visible throw** (`rad 0.39` -> almost invisible; `rad 30` -> ~30 degrees). Use ~25-35 and refine in-game; NOT decimal radian scale (see correction 2026-06-07 below).
 
 ## Axis geometry — the two memory points
 
@@ -82,7 +82,7 @@ Tooling: add the two memory points and the named selection with `dayz-p3d-inspec
 
 | Source | What it represents | Range | Typical use |
 |---|---|---|---|
-| `steeringwheel` | steering input | -1 .. +1 | handlebar, steering wheel, rudder (NO `drivingWheel`: es nombre de clase) |
+| `steeringwheel` | steering input | -1 .. +1 | handlebar, steering wheel, rudder (NOT `drivingWheel`: it is a class name) |
 | `wheel` | wheel rotation (looped) | 0 .. 1 looping | wheel spin (`sourceAddress = "loop"`) |
 | `damper_<corner>` | suspension travel | 0 .. 1 | shock absorbers per wheel |
 | `direction` | yaw of vehicle | 0 .. 1 | compass needles |

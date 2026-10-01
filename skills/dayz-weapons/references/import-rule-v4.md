@@ -1,17 +1,17 @@
-# REGLA DE IMPORTS v4 + model-path — import & build invariants
+# IMPORT RULE v4 + model-path — import & build invariants
 
 Authored 2026-07-07 (F4). `[VERIFIED in-game]` = a real in-game test in a project handoff;
 `[VERIFIED-vanilla]` = read off disk; `[UNVERIFIED]` = inferred. Owns the model-path / winding /
 serve-binarized invariants that decide whether the build loads and renders. Geometry assembly / LODs /
 textures are delegated (`dayz-model-pipeline`, `dayz-texture-pipeline`); packaging to `dayz-pbo-build`.
 
-## REGLA DE IMPORTS v4 `[VERIFIED in-game]` (MK47 v12c)
+## IMPORT RULE v4 `[VERIFIED in-game]` (MK47 v12c)
 
 `A6_MK47_dev\HANDOFF.md:26-32` + `A6_MK47_dev\CLAUDE.md`:
 
-> swap puro (x,y,z)→(x,z,y) det=−1 + normales pseudovector −S·n + `REVERSE_WINDING=False` + **SERVIR
-> BINARIZADO**. El binarize invierte el winding (100%) y pasa las normales tal cual; patrón objetivo
-> (akm.p3d ODOL): ~70% caras outward, stored·geo ≈ −0.98.
+> pure swap (x,y,z)→(x,z,y) det=−1 + pseudovector normals −S·n + `REVERSE_WINDING=False` + **SERVE
+> BINARIZED**. Binarize flips winding (100%) and passes normals as-is; target pattern
+> (akm.p3d ODOL): ~70% outward faces, stored·geo ≈ −0.98.
 
 Origin: the Blender weapon frame is X-long (muzzle X−), Z up, Y lateral (right +Y); the swap converts
 Z-up Blender to DayZ Y-up. Implemented in `assemble_mk47.py:68-87` (`A6_MK47_dev\CLAUDE.md`).
@@ -21,8 +21,8 @@ stored·geo ≤ −0.85. v12c measured 63.2% / −0.88 = PASS. **Do NOT re-itera
 future changes OFFLINE against the AKM ODOL pattern with this validator + the model-path check.
 
 **The swap is RE-DERIVED per weapon, never copied.** SR2M has a DIFFERENT blend frame — long axis = Y,
-muzzle Y− (`A6_SR2M\CLAUDE.md` "Decisiones fijas": "Frame del blend: eje largo = Y, muzzle Y−, Z up
-(DISTINTO del MK47; el swap de import se re-deriva y se valida con `compare_outwardness.py`)"). Copying
+muzzle Y− (`A6_SR2M\CLAUDE.md` "Fixed decisions": "Blend frame: long axis = Y, muzzle Y−, Z up
+(DIFFERENT from MK47; import swap is re-derived and validated with `compare_outwardness.py`)"). Copying
 MK47's swap onto SR2M would flip it wrong. Re-derive the frame from the actual blend, re-validate against
 the same AKM pattern.
 
@@ -43,16 +43,16 @@ the same AKM pattern.
 
 **W-BUILD1 invariant:** `model=` must point at the real in-PBO path (`data\`), and the build must run
 with a clean temp (`-Clean` after structure changes). A check for this was added to `dayz-pbo-build`
-(LL-145). It is also codified as an A6_MK47 "invariante cerrada" (`A6_MK47_dev\HANDOFF.md:67-69`): "`model=`
-del config apunta a `data\` y se valida contra el contenido del PBO en cada build."
+(LL-145). It is also codified as an A6_MK47 "closed invariant" (`A6_MK47_dev\HANDOFF.md:67-69`): "config
+`model=` points to `data\` and is validated against PBO content on each build."
 
 ## W-BUILD2 — serve BINARIZED; RETAIL exe for the A6 family `[VERIFIED in-game]`
 
 `A6_MK47_dev\HANDOFF.md:99-105` + `:41`:
 
 - **Serve binarized.** The winding/normals contract above is only correct on the BINARIZED ODOL —
-  binarize flips the winding (100%). A diag-pair / MLOD-served build measures the wrong thing. "NO iterar
-  winding/normales más; cambios futuros se validan offline contra el patrón AKM."
+  binarize flips the winding (100%). A diag-pair / MLOD-served build measures the wrong thing. "Do NOT iterate
+  winding/normals further; future changes are validated offline against AKM pattern."
 - **RETAIL exe, not DayZDiag, for A6-family mods.** The A6 weapon pack uses brace-less syntax
   (`override typename GetInputType() return X;` in OpticScripts/WeaponScripts) that the DayZDiag
   strict-compiler REJECTS as an ERROR while retail tolerates it as a FIX-ME warning. LBmaster is also

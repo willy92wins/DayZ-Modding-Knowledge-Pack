@@ -64,7 +64,7 @@ protected void CreateActionInfoPanel(typename panelType, int actionCategory)
 
 ### 2.2. Per-Frame Target Info Update
 
-When an action is active, `ActionTargetsCursor.UpdateAdditionalActionInfo` (`exp\scripts\scripts\5_Mission\GUI\ActionTargetsCursor.c:1268-1292`) recorre `m_ActionMap` y, para cada acción con `IsTargetInfoAction()`, actualiza sus paneles (o los limpia si dejó de aplicar):
+When an action is active, `ActionTargetsCursor.UpdateAdditionalActionInfo` (`exp\scripts\scripts\5_Mission\GUI\ActionTargetsCursor.c:1268-1292`) iterates over `m_ActionMap` and, for each action with `IsTargetInfoAction()`, updates its panels (or clears them if it no longer applies):
 
 ```c
 // [EXACT] exp\scripts\scripts\5_Mission\GUI\ActionTargetsCursor.c:1268-1292
@@ -134,7 +134,7 @@ protected void SetControllerIcon(string pWidgetName, string pInputName)
 	w.SetText(InputUtils.GetRichtextButtonIconFromInputAction(pInputName, "", EUAINPUT_DEVICE_CONTROLLER));
 }
 ```
-*(hasta 1.29: métodos Set*XboxIcon con imágenes fijas de Xbox; desde 1.30 Exp: SetControllerIcon con glifos RichText multiplataforma).*
+*(up to 1.29: Set*XboxIcon methods with fixed Xbox images; since 1.30 Exp: SetControllerIcon with cross-platform RichText glyphs).*
 
 ---
 
@@ -200,7 +200,7 @@ class TargetActionInfoPanelBase: ActionInfoPanelBase
 	}
 ```
 
-`ConstructionActionInfoPanel` (`ActionInfoPanels.c:82-108`) crea los dos grids y alterna el separador en `UpdateInterval` (`:100-108`):
+`ConstructionActionInfoPanel` (`ActionInfoPanels.c:82-108`) creates the two grids and toggles the separator in `UpdateInterval` (`:100-108`):
 
 ```c
 // [EXACT] exp\scripts\scripts\5_Mission\GUI\InventoryNew\ContainedItems\ActionInfoPanels.c:82-98

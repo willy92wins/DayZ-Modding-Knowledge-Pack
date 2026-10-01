@@ -44,9 +44,9 @@ The two gates are where this skill earns its place: nothing goes to the expensiv
 Fill `references/spec-template.md`. It is deliberately short. Four sections carry the DayZ-specific weight:
 
 - **Acceptance Scenarios** — Given/When/Then, each with concrete **in-game repro steps** (spawn what, do what, observe what). "It works" is not a scenario.
-- **Success Criteria** — measurable and, where possible, technology-agnostic. DayZ examples: "cerrojo se desplaza al disparar", "0 `Error` lines in `script_*.log` post-test", "manos a <0.5 cm del grip", "coche alcanza ≥X km/h en llano". Vague adjectives ("se ve bien", "funciona") are not criteria. La posición del evento es covariable obligatoria del spec (LL-427): se registra y reporta con el resultado, y la prueba de mecanismo es estratificar por ella y comprobar que dentro del estrato el tratamiento deja de importar.
+- **Success Criteria** — measurable and, where possible, technology-agnostic. DayZ examples: "bolt moves when firing", "0 `Error` lines in `script_*.log` post-test", "hands within <0.5 cm of grip", "car reaches ≥X km/h on flat ground". Vague adjectives ("looks good", "works") are not criteria. Event position is mandatory covariate of spec (LL-427): recorded and reported with result, and proof of mechanism is stratifying by it and checking that within the stratum treatment ceases to matter.
 - **Assumptions** — every guess marked `ASSUMED`. If an assumption decides whether the work is correct (path, classname, version, format), resolve it with `AskUserQuestion` **now**, not after coding (G1: verbalizing a risk is not managing it).
-- **Forward Contract** (R8-extended) — list every symbol the *next* phase or consumer reads: `config.cpp` classnames, `model.cfg` selections/bones, `.p3d` proxy paths, `hiddenSelections`, stringtable keys, layout names. Each MUST carry a verify status — `path:line` (verified per G2/R2) or `[UNVERIFIED]`. An `[UNVERIFIED]` ref is a coverage gap the analyze gate treats as CRITICAL. This is exactly the LFQuad Fase B P1 class of bug (proxy path to a non-existent file, missing selections model.cfg needs). Antes de gastar un brazo en un campo, grep de lectores descontando declaración/default/clamp/serialización (LL-428): sin lectores es placebo, y si el lector es condicional hay que probar en datos volados que la condición se alcanza.
+- **Forward Contract** (R8-extended) — list every symbol the *next* phase or consumer reads: `config.cpp` classnames, `model.cfg` selections/bones, `.p3d` proxy paths, `hiddenSelections`, stringtable keys, layout names. Each MUST carry a verify status — `path:line` (verified per G2/R2) or `[UNVERIFIED]`. An `[UNVERIFIED]` ref is a coverage gap the analyze gate treats as CRITICAL. This is exactly the LFQuad Phase B P1 class of bug (proxy path to a non-existent file, missing selections model.cfg needs). Before spending an arm on a field, grep readers discounting declaration/default/clamp/serialization (LL-428): without readers it is placebo, and if reader is conditional one must prove on flown data that condition is reached.
 
 ## Step 2 — Spec quality checklist ("unit tests for English")
 
@@ -92,9 +92,9 @@ that replaces another implementation (planner, bridge, transport, repository),
 the Forward Contract MUST enumerate every field and method the consumer reads,
 not only the field that motivates the test double. Grep all accesses on the
 injected value and prefer the existing result type over a partial look-alike.
-El generador aplica las reglas de clamp del consumidor antes de declarar el
-tratamiento, y el manifiesto registra el valor efectivo, no el pedido (LL-429):
-lo que colapsa al control es control mal etiquetado.
+The generator applies consumer clamp rules before declaring
+treatment, and manifest records effective value, not requested one (LL-429):
+what collapses to control is mislabeled control.
 
 The failure mode is concrete: a consumer can read `.status.value`, `.proposal`
 and `.source` even when a plan mentions only `.proposal`; the partial object
@@ -131,23 +131,23 @@ The v2 index is supporting evidence, not an implementation gate for unrelated
 work. In particular, it does not block the `.layout` viewer or the UI evidence
 loop defined by the r21 product spec.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so they arrive via trigger instead
+of depending on someone remembering to search for them. Each rule cites its origin `LL-NNN`;
+the complete entry (symptom, origin, evidence) lives there.
 
-- **LL-017** — Todo test de decisión define PASS, FAIL e INCONCLUSO/setup-failed, con una precondición explícita que separa el tercero. Fija métricas y emparejamiento antes de ejecutar.
-- **LL-116** — Todo probe usado para decidir arquitectura mantiene los inputs durante la ventana, usa un fixture mecánicamente completo y valida fail-closed antes del side effect. Si un resultado nulo admite más de una causa plausible, clasifícalo INCONCLUSO.
+- **LL-017** — Every decision test defines PASS, FAIL, and INCONCLUSIVE/setup-failed, with an explicit precondition separating the third. Fix metrics and matching before executing.
+- **LL-116** — Every probe used to decide architecture maintains inputs during window, uses mechanically complete fixture, and validates fail-closed before side effect. If a null result admits more than one plausible cause, classify it INCONCLUSIVE.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so they arrive via trigger instead
+of depending on someone remembering to search for them. Each rule cites its origin `LL-NNN`;
+the complete entry (symptom, origin, evidence) lives there. Do not remove the citation: the index
+`lessons-index.md` detects promotion by searching for that reference inside skills.
 
-- **LL-040** — No cierres ni descartes un criterio por silencio del log hasta ejecutar la interacción que puede revelar el fallo. Si la condición aún no es reproducible, conserva el gate o demuestra paridad estructural con un referente funcional.
+- **LL-040** — Do not close or dismiss a criterion based on log silence until executing interaction that can reveal failure. If condition is not yet reproducible, keep gate or demonstrate structural parity with a functional baseline.
 
 
 ## (added 2026-08-31, SP-239) Separate raw producer records from canonical derived records

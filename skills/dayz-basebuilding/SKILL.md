@@ -286,14 +286,14 @@ against the real `.c` and `.p3d`, never from memory.
   `ConstructionBase` / `Rebuilding`), `ConstructionPartTypeData`, `*ServerEx` / `IsCollidingEx`,
   obsolete collision-trigger wrappers, brick/mortar/trowel loop, Fence `DigitalCodeLock`.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons learned corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so they trigger automatically rather
+than depending on someone remembering to look them up. Each rule cites its originating `LL-NNN`;
+the full entry (symptom, origin, evidence) lives there. Do not remove citation: the index
+`lessons-index.md` detects promotion by searching for that reference inside the skills.
 
-- **LL-042** — Crea una clase de script homónima para cada clase config placeable y hereda del kit/static base que aporta `SetActions`, `IsDeployable` y el enlace kit↔static. Verifica ambas mitades antes de diagnosticar holograma o texturas.
+- **LL-042** — Create an eponymous script class for each placeable config class and inherit from kit/static base providing `SetActions`, `IsDeployable`, and the kit↔static link. Verify both halves before diagnosing hologram or textures.
 
 ## DayZ 1.30 Exp (build 1.30.164014)
 

@@ -347,14 +347,14 @@ constants — regenerate with modern values.
 
 ---
 
-## Blender 5.x — API de import/export OBJ (added 2026-05-30)
+## Blender 5.x — OBJ import/export API (added 2026-05-30)
 
-En Blender 4.x+/5.x, `bpy.ops.import_scene.obj` / `export_scene.obj` **ya no
-existen** — se movieron a `bpy.ops.wm.obj_import` / `bpy.ops.wm.obj_export`,
-con parámetros distintos (`forward_axis`/`up_axis` en mayúsculas tipo
+In Blender 4.x+/5.x, `bpy.ops.import_scene.obj` / `export_scene.obj` **no longer
+exist** — they moved to `bpy.ops.wm.obj_import` / `bpy.ops.wm.obj_export`,
+with different parameters (`forward_axis`/`up_axis` in uppercase like
 `"NEGATIVE_Z"`/`"Y"`, `use_split_objects`, `export_selected_objects`, etc.).
-**FBX y glTF SIGUEN** en `bpy.ops.import_scene.fbx` / `.gltf` (esos addons no
-migraron a `wm.`). Verificado en Blender 5.1.1 contra
-`dayz-weapon-ingest/scripts/import_weapon.py` (2026-05-30). Los snippets de OBJ
-de arriba asumen la API `<4.x`; al ejecutarlos en Blender moderno, traduce a
+**FBX and glTF REMAIN** in `bpy.ops.import_scene.fbx` / `.gltf` (those addons did not
+migrate to `wm.`). Verified in Blender 5.1.1 against
+`dayz-weapon-ingest/scripts/import_weapon.py` (2026-05-30). OBJ snippets
+above assume `<4.x` API; when running them in modern Blender, translate to
 `wm.obj_import`/`wm.obj_export`.

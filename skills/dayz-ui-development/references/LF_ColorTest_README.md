@@ -1,18 +1,18 @@
-# LF_ColorTest — Mini test de colores DayZ
+# LF_ColorTest — DayZ Color Mini-Test
 
-> **⚠️ Esto es un arnés de DIAGNÓSTICO, no un patrón a copiar.** Llama a
-> `Widget.SetLV(0)` a propósito, para medir. Un mod **no** debe hacerlo: esas APIs
-> son `proto static` y globales, y vanilla las usa para aplicar el brillo elegido por
-> el jugador (`dayzgame.c:3778-3782`). Si corres este test, deja el valor como estaba
-> al cerrarlo. Ver SKILL.md §COLOR SYSTEM.
+> **⚠️ This is a DIAGNOSTIC harness, not a pattern to copy.** It calls
+> `Widget.SetLV(0)` on purpose, to measure. A mod must **not** do this: those APIs
+> are `proto static` and global, and vanilla uses them to apply the brightness chosen by
+> the player (`dayzgame.c:3778-3782`). If you run this test, leave the value as it was
+> upon closing it. See SKILL.md §COLOR SYSTEM.
 
-## Qué hace
-- F7 abre un panel con 10 rectángulos de colores ARGB conocidos
-- Muestra el valor hex de cada color al lado
-- Prueba `Widget.SetLV(0)` al abrir para ver si normaliza colores
-- El usuario: screenshot del panel y comparar con los hex esperados
-- Segundo test: comentar la línea SetLV(0), recargar, screenshot de nuevo
-- Comparando ambos screenshots sabremos el factor de oscurecimiento exacto
+## What it does
+- F7 opens a panel with 10 rectangles of known ARGB colors
+- Shows the hex value of each color next to it
+- Tests `Widget.SetLV(0)` upon opening to see if it normalizes colors
+- The user: screenshot of the panel and compare with expected hex values
+- Second test: comment out the SetLV(0) line, reload, screenshot again
+- Comparing both screenshots we will know the exact darkening factor
 
 ## Archivos
 
@@ -55,7 +55,7 @@ LF_ColorTest
 ### scripts/5_Mission/LF_ColorTest.c
 
 ```csharp
-// LF_ColorTest — Diagnóstico de color DayZ
+// LF_ColorTest — DayZ color diagnostics
 // F7 para abrir/cerrar
 
 class LF_ColorTestPanel
@@ -107,8 +107,8 @@ class LF_ColorTestPanel
         }
 
         // ===== TEST: SetLV(0) para normalizar colores =====
-        // Primer test: con esta línea activa. Screenshot.
-        // Segundo test: comentar esta línea. Screenshot.
+        // First test: with this line active. Screenshot.
+        // Second test: comment out this line. Screenshot.
         Widget.SetLV(0);
         Widget.SetTextLV(0);
         // ==================================================
@@ -276,22 +276,22 @@ modded class MissionGameplay
 }
 ```
 
-## Instrucciones para el usuario
+## User instructions
 
-1. Crear estructura `@LF_ColorTest/Addons/LF_ColorTest/` con los archivos
-2. Cargar el mod en el servidor local
-3. En juego: pulsar F7
-4. **Test A**: Screenshot del panel (con SetLV(0) activo)
-5. Cerrar juego
-6. Comentar las líneas `Widget.SetLV(0)` y `Widget.SetTextLV(0)` en el script
-7. Recargar
-8. **Test B**: Screenshot del panel (sin SetLV)
-9. Copiar ambos screenshots + el .RPT
+1. Create `@LF_ColorTest/Addons/LF_ColorTest/` structure with the files
+2. Load the mod on the local server
+3. In game: press F7
+4. **Test A**: Screenshot of the panel (with SetLV(0) active)
+5. Close game
+6. Comment the lines `Widget.SetLV(0)` and `Widget.SetTextLV(0)` in the script
+7. Reload
+8. **Test B**: Screenshot of the panel (without SetLV)
+9. Copy both screenshots + the .RPT
 
-## Qué buscamos
+## What we are looking for
 
-Comparando Test A vs Test B:
-- Si Test A muestra colores idénticos a los hex → `SetLV(0)` es la cura
-- Si Test A sigue oscuro → el darkening es del renderer, no de LV
-- En ambos: medir cuánto más oscuro es cada swatch vs el hex esperado
-  (especialmente gris 50% — si 808080 se ve como 5C5C5C, sabemos el factor)
+Comparing Test A vs Test B:
+- If Test A shows colors identical to the hex values → `SetLV(0)` is the cure
+- If Test A remains dark → darkening comes from the renderer, not LV
+- In both: measure how much darker each swatch is vs the expected hex
+  (especially 50% gray — if 808080 looks like 5C5C5C, we know the factor)

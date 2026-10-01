@@ -98,17 +98,17 @@ class MiMoto extends MotorbikeScript
 {
     void MiMoto()
     {
-        // [EXACT] Coeficientes de colisión calibrados para no matar instantáneamente al jugador
+        // [EXACT] Collision coefficients calibrated not to instantly kill the player
         m_VehicleContactDamageCoef = 0.03;   // exp\scripts\scripts\4_World\Entities\Vehicles\InheritedMotorbikes\Motorbike_01.c:5
         m_CrewContactDamageCoef    = 0.018;  // Motorbike_01.c:6
 
-        // [EXACT] Enlace de cadenas SoundSet de motor (de exp\sounds_hpp\DZ\sounds\hpp\config.cpp:98414-98439)
+        // [EXACT] Engine SoundSet string binding (from exp\sounds_hpp\DZ\sounds\hpp\config.cpp:98414-98439)
         m_EngineStartOK   = "Motorbike_01_engine_start_SoundSet";
         m_EngineStartFuel = "Motorbike_01_engine_failed_start_fuel_SoundSet";
         m_EngineStop      = "Motorbike_01_engine_stop_SoundSet";
         m_EngineStopFuel  = "Motorbike_01_engine_stop_fuel_SoundSet";
 
-        // [EXACT] Registro de luces y bocina en componentes modulares
+        // [EXACT] Lights and horn registration in modular components
         m_LightsComponent.RegisterLight("Front", new VehicleLightData(new Motorbike_01LightProfileFront()));
         m_LightsComponent.RegisterLight("Rear",  new VehicleLightData(new Motorbike_01LightProfileRear()));
         m_HornComponent.RegisterSound(VehicleHornMode.SHORT, "Motorbike_01_Horn_Short_SoundSet");
@@ -118,7 +118,7 @@ class MiMoto extends MotorbikeScript
         SetEnginePos("0 0.3 -0.06"); // Motorbike_01.c:25
     }
 
-    // [EXACT] Perfil de animación del piloto en Vehicles.agf (10 = MOTO1, 11 = MOTO2)
+    // [EXACT] Rider animation profile in Vehicles.agf (10 = MOTO1, 11 = MOTO2)
     override int GetAnimInstance()
     {
         return VehicleAnimInstances.MOTO1; // Motorbike_01.c:50
@@ -144,7 +144,7 @@ class MiMoto extends MotorbikeScript
         return 0;
     }
 
-    // [EXACT] Parámetros de la cámara de 3ª persona (ID 32)
+    // [EXACT] 3rd person camera parameters (ID 32)
     override float GetTransportCameraDistance()
     {
         return 2.5; // Motorbike_01.c:40

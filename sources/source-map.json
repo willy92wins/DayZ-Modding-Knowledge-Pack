@@ -419,10 +419,20 @@
           "source_path": "GETTING-STARTED.md",
           "source_revision": "kp-update-docs@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d9a8755db9a83f04d9902424b6c90e9b97e9ef6a9a849648171160e081b8e765",
+          "source_id": "pack-r21-authored",
+          "source_path": "GETTING-STARTED.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ac8302e734c0f7ed71a4b49e611650bb8e48e7ddfbe4d128af49862dd5aff653",
+      "output_hash": "d9a8755db9a83f04d9902424b6c90e9b97e9ef6a9a849648171160e081b8e765",
       "output_path": "GETTING-STARTED.md",
       "routing_artifact_id": "root/getting-started",
       "verification_level": "cross_checked"
@@ -674,10 +684,20 @@
           "source_path": "decisions/001-canonical-source-and-baseline.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "de3999fa001c48986889864466d060309eaaa0b06d1216b1c91a6afd168d9b26",
+          "source_id": "pack-r21-authored",
+          "source_path": "decisions/001-canonical-source-and-baseline.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4e08f4eb38001ea10502f3d01ac8f25bdb6ccec97c09e139617204aff8ec0b4e",
+      "output_hash": "de3999fa001c48986889864466d060309eaaa0b06d1216b1c91a6afd168d9b26",
       "output_path": "decisions/001-canonical-source-and-baseline.md",
       "routing_artifact_id": "repo/decisions",
       "verification_level": "cross_checked"
@@ -707,10 +727,20 @@
           "source_path": "decisions/002-three-surface-promotion.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "ac9384407a2fd85e6d997b4b6abea9bc770a78446e5d9b43b2c9fc3a9628331e",
+          "source_id": "pack-r21-authored",
+          "source_path": "decisions/002-three-surface-promotion.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1062c8894d8d0b1284ab6642457440868b6f381daf1be54a103aa6589ff296eb",
+      "output_hash": "ac9384407a2fd85e6d997b4b6abea9bc770a78446e5d9b43b2c9fc3a9628331e",
       "output_path": "decisions/002-three-surface-promotion.md",
       "routing_artifact_id": "repo/decisions",
       "verification_level": "cross_checked"
@@ -1227,10 +1257,20 @@
           "source_path": "knowledge/DAYZ_INFRA.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "39435ff0e90831107cf221dc60a0b087845cf2bd391924e9f329f4ecb390a461",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/DAYZ_INFRA.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b3b7ce154ec6c054a42fb1e233caeb5d959729fce76e6ba8032b1ae0886b73db",
+      "output_hash": "39435ff0e90831107cf221dc60a0b087845cf2bd391924e9f329f4ecb390a461",
       "output_path": "knowledge/DAYZ_INFRA.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1259,10 +1299,20 @@
           "source_path": "knowledge/DAYZ_TECHNICAL_NOTES.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d8e80ede0458848d32a3d1a183aedaf0f1f2389265a6892e46dca88d66d78173",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/DAYZ_TECHNICAL_NOTES.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2ddbc86c08fd383e76f747bfe6cd00764083395e2ff1b69db0b5f2c40c90d98a",
+      "output_hash": "d8e80ede0458848d32a3d1a183aedaf0f1f2389265a6892e46dca88d66d78173",
       "output_path": "knowledge/DAYZ_TECHNICAL_NOTES.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1355,10 +1405,20 @@
           "source_path": "knowledge/vault-notes/dayz-animations-creatures-weapons.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "295c1565730c3692c08ac1cf8623e6f013903e41429a3d75d0049a5e78a39777",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-animations-creatures-weapons.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "823e96593528dfd17a418bc78f2dedfdc701943745890b5530104b3a39ade5ef",
+      "output_hash": "295c1565730c3692c08ac1cf8623e6f013903e41429a3d75d0049a5e78a39777",
       "output_path": "knowledge/vault-notes/dayz-animations-creatures-weapons.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1397,10 +1457,20 @@
           "source_path": "knowledge/vault-notes/dayz-capacidades-verificadas.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "96b452da26199594368229307e9f9a048937d22853d62707a77e96ced16849ca",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-capacidades-verificadas.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "27b91c8e46eb5d96597d7d91704ca82250b16129c2c04db0066ba7d9cfc06628",
+      "output_hash": "96b452da26199594368229307e9f9a048937d22853d62707a77e96ced16849ca",
       "output_path": "knowledge/vault-notes/dayz-capacidades-verificadas.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1439,10 +1509,20 @@
           "source_path": "knowledge/vault-notes/dayz-custom-infected.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d6443f51ea17fccd48003632042ae95bdfe0e6c4875cc170389dcae37546febc",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-custom-infected.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "36b96066a52a10630ba755c684daf25525e9d59ada86a7e21706a8519055d1c0",
+      "output_hash": "d6443f51ea17fccd48003632042ae95bdfe0e6c4875cc170389dcae37546febc",
       "output_path": "knowledge/vault-notes/dayz-custom-infected.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1481,10 +1561,20 @@
           "source_path": "knowledge/vault-notes/dayz-p3d-inspector-memory-selection-bugs.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "97412ee3e757425397f9751b3767415954fd04535313ce5a6518d8dced245fe2",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-p3d-inspector-memory-selection-bugs.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "be9c099f1b290c84fdd8caa6181edebb3bd0fb0db88580f3260d988e6b63f590",
+      "output_hash": "97412ee3e757425397f9751b3767415954fd04535313ce5a6518d8dced245fe2",
       "output_path": "knowledge/vault-notes/dayz-p3d-inspector-memory-selection-bugs.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1523,10 +1613,20 @@
           "source_path": "knowledge/vault-notes/dayz-enforce-script-reference.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "286a4d69218318d2fdfcbb39f275da1bcea8c4491a4b9b2aa4b27ab5ed181591",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-enforce-script-reference.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6bf23008ea0880d1c67690b920945dafe8346eb0661aec70e47e0d4a9016d9b7",
+      "output_hash": "286a4d69218318d2fdfcbb39f275da1bcea8c4491a4b9b2aa4b27ab5ed181591",
       "output_path": "knowledge/vault-notes/dayz-enforce-script-reference.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1565,10 +1665,20 @@
           "source_path": "knowledge/vault-notes/dayz-mod-implementation-checklists.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "0587228eef19bcdc2159534e4ced21bdeadb98334a5ad03baa741be0202a7321",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-mod-implementation-checklists.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b6146a484afe5644f8bbc555cca341af5c7e9e032616ed90bfd60608b944a35d",
+      "output_hash": "0587228eef19bcdc2159534e4ced21bdeadb98334a5ad03baa741be0202a7321",
       "output_path": "knowledge/vault-notes/dayz-mod-implementation-checklists.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1607,10 +1717,20 @@
           "source_path": "knowledge/vault-notes/dayz-modded-class-server-stub-pattern.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "78b7b20958f44e71ba0edba59a6e81eb258793b22539f0300a6861ee157771a2",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-modded-class-server-stub-pattern.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "670a9fc9faa115f909bd45148e9e0f60ee390699ffe521a29e8719d390ce664b",
+      "output_hash": "78b7b20958f44e71ba0edba59a6e81eb258793b22539f0300a6861ee157771a2",
       "output_path": "knowledge/vault-notes/dayz-modded-class-server-stub-pattern.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1649,10 +1769,20 @@
           "source_path": "knowledge/vault-notes/dayz-model-pipeline.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "5a1112a6d23951c819a64814e2681c72899824022c006d704682ef1aa965bddb",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-model-pipeline.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ba428213c1ac01f5493ab35f4f76d53ef3530025dffb0e7c7cb6f6ac7e853bae",
+      "output_hash": "5a1112a6d23951c819a64814e2681c72899824022c006d704682ef1aa965bddb",
       "output_path": "knowledge/vault-notes/dayz-model-pipeline.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1691,10 +1821,20 @@
           "source_path": "knowledge/vault-notes/dayz-objectbuilder-lod-conventions.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "cf25be73c3592638a356935e7697f05b391f66ec1ec5ba9da4564124c8ed5bed",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-objectbuilder-lod-conventions.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4b6ae7a79c29e9111f303bbc6bd4588ae6bdbbb2659e54184ec8a93769a5cc74",
+      "output_hash": "cf25be73c3592638a356935e7697f05b391f66ec1ec5ba9da4564124c8ed5bed",
       "output_path": "knowledge/vault-notes/dayz-objectbuilder-lod-conventions.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1733,10 +1873,20 @@
           "source_path": "knowledge/vault-notes/dayz-ui-development.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "2d32e48ade8fdeb0c3f19492f977679028eaa9e1d7da8481c68290a17a69bf6e",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-ui-development.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d1e9c2e646955dbcc00b5de41f66a476e68daccf85df9cf3252e47cb93fd62de",
+      "output_hash": "2d32e48ade8fdeb0c3f19492f977679028eaa9e1d7da8481c68290a17a69bf6e",
       "output_path": "knowledge/vault-notes/dayz-ui-development.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1775,10 +1925,20 @@
           "source_path": "knowledge/vault-notes/dayz-vehicles-crossproject.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "19f7716a0acb0a24ca3dd73a62a63d24d20f6aba8cc4940416ddbac76efaa4a0",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-vehicles-crossproject.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0832366953a49510e712777bd95a8866a1dc47469b0b79a29be7bc17ad8dabf6",
+      "output_hash": "19f7716a0acb0a24ca3dd73a62a63d24d20f6aba8cc4940416ddbac76efaa4a0",
       "output_path": "knowledge/vault-notes/dayz-vehicles-crossproject.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1859,10 +2019,20 @@
           "source_path": "knowledge/vault-notes/dayz-wiki-systems-reference.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "098b9282dd1f883e01e84917681195ea8735b01a1d390c94982e7aed4818cebb",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-wiki-systems-reference.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "028e3b4f68270292a1710a98aedc629e8e604bc53b4b27f033c837f3601e156f",
+      "output_hash": "098b9282dd1f883e01e84917681195ea8735b01a1d390c94982e7aed4818cebb",
       "output_path": "knowledge/vault-notes/dayz-wiki-systems-reference.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1881,10 +2051,20 @@
           "source_path": "AI/20_Knowledge/dayz-enforce-world-arena-optimization.md",
           "source_revision": "vault@2026-08-15",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "2ac88d32b450a63699035aa081bbfa2a5d890c117b7b986b837deedfb2ff7f04",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-world-arena-optimization.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "33815ee2075d938bc18e2b2acdcc3001255be37c5f374ef309f6aa8d21f70cee",
+      "output_hash": "2ac88d32b450a63699035aa081bbfa2a5d890c117b7b986b837deedfb2ff7f04",
       "output_path": "knowledge/vault-notes/dayz-world-arena-optimization.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "source_verified"
@@ -1923,10 +2103,20 @@
           "source_path": "knowledge/vault-notes/dayz-wrp-roadgraph-extraction.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "ea1daefd01fb339cefb29c90e3d31c764fc44aa88d826a19856510cefae81140",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-wrp-roadgraph-extraction.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "bc5281547cb16acc65975516fabf7b12979d84ae92e59db2559bc31e488bb292",
+      "output_hash": "ea1daefd01fb339cefb29c90e3d31c764fc44aa88d826a19856510cefae81140",
       "output_path": "knowledge/vault-notes/dayz-wrp-roadgraph-extraction.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -1965,10 +2155,20 @@
           "source_path": "knowledge/vault-notes/uv-mapping-dayz.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "35e11a377fb8e3271143cf8e045ced29e09ea158ba40b02b78a1e0b8329ebe6c",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/uv-mapping-dayz.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "280592941b76f2820e33c1c2e6e8868fb47bd95ae28d2fa3a36883b3deead818",
+      "output_hash": "35e11a377fb8e3271143cf8e045ced29e09ea158ba40b02b78a1e0b8329ebe6c",
       "output_path": "knowledge/vault-notes/uv-mapping-dayz.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -2354,10 +2554,20 @@
           "source_path": "product-spec.md",
           "source_revision": "r22-tool-routing@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "9ced8fe91c595bc6d19110e8e4714c9eacec8b1976fbd92e5d349962facc9785",
+          "source_id": "pack-r21-authored",
+          "source_path": "product-spec.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "97e2c3dc2f267373d06e5d576d9a77cad9ac8d02984f96788bc8ed0f56c4b131",
+      "output_hash": "9ced8fe91c595bc6d19110e8e4714c9eacec8b1976fbd92e5d349962facc9785",
       "output_path": "product-spec.md",
       "routing_artifact_id": "root/product-spec",
       "verification_level": "cross_checked"
@@ -2752,10 +2962,20 @@
           "source_path": "skills/_shared/dayz-conventions.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "240322295a50735cbdab4eecc9588f613bb0b04b769a05a005e01885e149e2fa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/dayz-conventions.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "30908083d67a83ec4bfa730e0af1e4b8e4220b158f49db003f0cb4ebc65d8650",
+      "output_hash": "240322295a50735cbdab4eecc9588f613bb0b04b769a05a005e01885e149e2fa",
       "output_path": "skills/_shared/dayz-conventions.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -2860,10 +3080,20 @@
           "source_path": "_shared/prompt-conventions.md",
           "source_revision": "filesystem@2026-07-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "ee2956ab2d07f84194da2aef385baffcf1b389778d45b1d511fba22dab5a8c6a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/prompt-conventions.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "User-authored input",
-      "output_hash": "b9439117d125791b70dc2d10e97ff8bab7377f9f732459fb5fc8186ea243d58b",
+      "output_hash": "ee2956ab2d07f84194da2aef385baffcf1b389778d45b1d511fba22dab5a8c6a",
       "output_path": "skills/_shared/prompt-conventions.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -2882,10 +3112,20 @@
           "source_path": "_shared/skill-resolution.md",
           "source_revision": "filesystem@2026-07-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "a1466ac725907eadb0c2e13a5e2217656d3261ac37a87912cb3db27e584c6bcd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/skill-resolution.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "User-authored input",
-      "output_hash": "cc93b85d613b81069dc46238de9cad7d7a3319bcab96212fd25eca84b1bf85b0",
+      "output_hash": "a1466ac725907eadb0c2e13a5e2217656d3261ac37a87912cb3db27e584c6bcd",
       "output_path": "skills/_shared/skill-resolution.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -2924,10 +3164,20 @@
           "source_path": "skills/ai-3d-to-dayz/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "e9d9508f6edd68838636c55da04152a5995463091a010585e5468db92974bff9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5b458b4d5653b9c6cf10ab93019cee8e2399eee56c2aba1a823efeabac4b632e",
+      "output_hash": "e9d9508f6edd68838636c55da04152a5995463091a010585e5468db92974bff9",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
@@ -2966,10 +3216,20 @@
           "source_path": "skills/ardy-motion-generation/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "5d443cc4310f55e4c556dc02e358129ec29f91449e850165a1da90c6f08f2648",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ardy-motion-generation/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "58bde71b815a179ae777806e92005bb81e9640ca3b9f32698ceca654d22d45f7",
+      "output_hash": "5d443cc4310f55e4c556dc02e358129ec29f91449e850165a1da90c6f08f2648",
       "output_path": "skills/ardy-motion-generation/SKILL.md",
       "routing_artifact_id": "skill/ardy-motion-generation",
       "verification_level": "cross_checked"
@@ -3008,10 +3268,20 @@
           "source_path": "skills/ardy-motion-generation/references/dayz-integration-plan.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "bfa82811f48244a8d3405f931fe7b9b963309733243556ec318744ca2cba5d86",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ardy-motion-generation/references/dayz-integration-plan.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1d8104e5b5cec2d59d46baead8b503270ca71ca169a06fbbc322bc7e5751889d",
+      "output_hash": "bfa82811f48244a8d3405f931fe7b9b963309733243556ec318744ca2cba5d86",
       "output_path": "skills/ardy-motion-generation/references/dayz-integration-plan.md",
       "routing_artifact_id": "skill/ardy-motion-generation",
       "verification_level": "cross_checked"
@@ -3304,10 +3574,20 @@
           "source_path": "blender-assembly/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "afd71d43ff080cec05ae0feeda7969b83e210b866c6a931c381aae73b317ccf2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-assembly/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1c95c5ed56c4df4d7b86be995bbfecb6fb6248b2f3629730196e419091e6fd00",
+      "output_hash": "afd71d43ff080cec05ae0feeda7969b83e210b866c6a931c381aae73b317ccf2",
       "output_path": "skills/blender-assembly/SKILL.md",
       "routing_artifact_id": "skill/blender-assembly",
       "verification_level": "cross_checked"
@@ -3358,10 +3638,20 @@
           "source_path": "skills/blender-visual-review/SKILL.md",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "32f99d02df44e8ea1556a835b292575843b50c7bbaae6921a469cfdccdebd1ed",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-visual-review/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dc1afe05e4ec050db1c763c3774bd85612c90cd67bb64ea218e63466248acb54",
+      "output_hash": "32f99d02df44e8ea1556a835b292575843b50c7bbaae6921a469cfdccdebd1ed",
       "output_path": "skills/blender-visual-review/SKILL.md",
       "routing_artifact_id": "skill/blender-visual-review",
       "verification_level": "cross_checked"
@@ -3402,10 +3692,20 @@
           "source_path": "blender-visual-review/references/FORMATO-CHECKLIST.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "3d6582782f935eb0e74a154b844c5eb690e0861afef60d52d412cf9cc3d7fcc9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-visual-review/references/FORMATO-CHECKLIST.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6266cc5a395676d5d5805fc4d74cab4e9fcb65b0fb708a115f4ad1d42bf37cb2",
+      "output_hash": "3d6582782f935eb0e74a154b844c5eb690e0861afef60d52d412cf9cc3d7fcc9",
       "output_path": "skills/blender-visual-review/references/FORMATO-CHECKLIST.md",
       "routing_artifact_id": "skill/blender-visual-review",
       "verification_level": "cross_checked"
@@ -3586,10 +3886,20 @@
           "source_path": "dayz-3d-viewer/SKILL.md",
           "source_revision": "filesystem@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "744e9e748da639ba2a1b7aefdc59f0471ebfefcd66539d48c6ece092f668d0df",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-3d-viewer/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "159a7a98bcb1ba8a147dedc0cb9ccab940a207c749c7a3ca0a400d41cb43b448",
+      "output_hash": "744e9e748da639ba2a1b7aefdc59f0471ebfefcd66539d48c6ece092f668d0df",
       "output_path": "skills/dayz-3d-viewer/SKILL.md",
       "routing_artifact_id": "skill/dayz-3d-viewer",
       "verification_level": "cross_checked"
@@ -3740,10 +4050,20 @@
           "source_path": "dayz-animation-pipeline/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "8f90c450e687a946444eb3d5bce6131df4c1eb56d3bbf592880fef0e5ecb4389",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a305f5ef4164931148cf542686b17fa9cd2a4a80a9a88919aedfd1fb0306b19e",
+      "output_hash": "8f90c450e687a946444eb3d5bce6131df4c1eb56d3bbf592880fef0e5ecb4389",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3836,10 +4156,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/config-driven-animation.md",
           "source_revision": "kp-update-wp-anim@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "bd82d0f8f20016ffa0dcf83f87b965b9aa6a2492baa5ee0ec0ae2ff48ad87a66",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/config-driven-animation.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6a3225942f80d5ec8ba3fbe2ef31b8f285b812233e5bf5ec76e6a13ae7e274d7",
+      "output_hash": "bd82d0f8f20016ffa0dcf83f87b965b9aa6a2492baa5ee0ec0ae2ff48ad87a66",
       "output_path": "skills/dayz-animation-pipeline/references/config-driven-animation.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3880,10 +4210,20 @@
           "source_path": "dayz-animation-pipeline/references/handlebar-and-steering-config.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "f5cfdb9fc7090b98faeb9be5a0883b8513c711062e76ce4d2ff6356234dadb78",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/handlebar-and-steering-config.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a7ab0f0c6387a9a044aed9aedbf9e8e93163a68566bf2e88719be84f4cac46fd",
+      "output_hash": "f5cfdb9fc7090b98faeb9be5a0883b8513c711062e76ce4d2ff6356234dadb78",
       "output_path": "skills/dayz-animation-pipeline/references/handlebar-and-steering-config.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3998,10 +4338,20 @@
           "source_path": "dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "c624ef363c3f36776bfc3451aa7acc0c23f1e9ec40343529c440ed72bc502a6e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "11ddf11a6d8987e169c70e2846750428c6d4d7366707a890a19698c8cde7af3d",
+      "output_hash": "c624ef363c3f36776bfc3451aa7acc0c23f1e9ec40343529c440ed72bc502a6e",
       "output_path": "skills/dayz-animation-pipeline/references/py3d-1.0.0-quirks.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4194,10 +4544,20 @@
           "source_path": "dayz-animation-pipeline/references/weapon-in-hands.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "25969eb528a458fc5fa8df07a2f2bb34eab9efd68336df7e48c26e7610043e4b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/weapon-in-hands.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ce090420ad7ab65cbd91fc0745d43e558c6a9c457a9572a8dbd64853f1ad54d8",
+      "output_hash": "25969eb528a458fc5fa8df07a2f2bb34eab9efd68336df7e48c26e7610043e4b",
       "output_path": "skills/dayz-animation-pipeline/references/weapon-in-hands.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4454,10 +4814,20 @@
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d5922de0123225b1c8ecbc7d9f8f14e4fb02dbef97dd3e39840541cf9a2b62a9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e9ebcffdbaf5f9a553507d0101f7bfdfa606a66901c2f4104dfe3184c10e9ee4",
+      "output_hash": "d5922de0123225b1c8ecbc7d9f8f14e4fb02dbef97dd3e39840541cf9a2b62a9",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -4830,10 +5200,20 @@
           "source_path": "skills/dayz-basebuilding/SKILL.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "73576b6dfca02cb86d320e2f15a2c87699965a51d6de98570612a0e05b061061",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-basebuilding/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d95f1e84837b111f0f596e8607d9a8f9d4dec979c646a90184bbd5d9da6a79c5",
+      "output_hash": "73576b6dfca02cb86d320e2f15a2c87699965a51d6de98570612a0e05b061061",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -5230,10 +5610,20 @@
           "source_path": "dayz-clothing/references/LEEME-ARTISTA.template.md",
           "source_revision": "r21-phase02@2026-08-15",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "00319626c550b8cf197b072eb2601116208c8aafae403dca5b9f0b317ec3edb1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/references/LEEME-ARTISTA.template.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "aa8d63ed1ab2bfd77ba784df19daa3f21709be80ae167c6fdc0f38c915c79bab",
+      "output_hash": "00319626c550b8cf197b072eb2601116208c8aafae403dca5b9f0b317ec3edb1",
       "output_path": "skills/dayz-clothing/references/LEEME-ARTISTA.template.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -5770,10 +6160,20 @@
           "source_path": "dayz-feature-spec/SKILL.md",
           "source_revision": "filesystem@2026-09-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "97a37cf2e0fd4ddf483ee25e361979624e8c0c7ac713bc4169ecf44cb21ed001",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-feature-spec/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e285b5e712cb6d0eae7aaa10806d1700243f874b09cb1b9b28b2ff871b79f7a3",
+      "output_hash": "97a37cf2e0fd4ddf483ee25e361979624e8c0c7ac713bc4169ecf44cb21ed001",
       "output_path": "skills/dayz-feature-spec/SKILL.md",
       "routing_artifact_id": "skill/dayz-feature-spec",
       "verification_level": "cross_checked"
@@ -6038,10 +6438,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d1656637523061be152f58cee1224421c14c1d0b115fe97db5e6bf063a3a9a1f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "149ab72e2eee7ca575734fc43932984ec727bde00b7bec1003797cda174166e1",
+      "output_hash": "d1656637523061be152f58cee1224421c14c1d0b115fe97db5e6bf063a3a9a1f",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -6080,10 +6490,20 @@
           "source_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "f6685123429036b499ad1be77643a48d1dcdd0de35e0f255c36a605c84fada2c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f390ac6625b33e1ace44c264b2a69a5ac9de7d275b10e5ae509b4452ca8ffb7a",
+      "output_hash": "f6685123429036b499ad1be77643a48d1dcdd0de35e0f255c36a605c84fada2c",
       "output_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -6236,10 +6656,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "escape-repair@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "735cd365f9f9252b1250e547c3d9febac28389649f4ce9529244bcbdbd3464a3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "991719277a694fc3c4f7e63b030a1d0b0f09ab7ec10e973fb9f90a0d398f4f1f",
+      "output_hash": "735cd365f9f9252b1250e547c3d9febac28389649f4ce9529244bcbdbd3464a3",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -6258,10 +6688,20 @@
           "source_path": "dayz-mod-workflow/references/audit-escalation.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "cd4d1c6da3d02d9338be311ddab32f263dd5867d7e6735ac39223b4d3d17bf7a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/references/audit-escalation.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1adc6e0c8e0fd41c9b75efaa3a10fd9a793d6a850ea640339e411a55dc6e2a1c",
+      "output_hash": "cd4d1c6da3d02d9338be311ddab32f263dd5867d7e6735ac39223b4d3d17bf7a",
       "output_path": "skills/dayz-mod-workflow/references/audit-escalation.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -6374,10 +6814,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "cd80043cb2b24db078b88ae79f396c3cb69ad74c3627b891cff85c40715934b5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "70ef21878431ccdc0f11f892f03aa6fcaf12596bdfd76e500a66d5e3cd0e5c2c",
+      "output_hash": "cd80043cb2b24db078b88ae79f396c3cb69ad74c3627b891cff85c40715934b5",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -6550,10 +7000,20 @@
           "source_path": "dayz-model-pipeline/references/memory-and-selections.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "3fbf85b7f14223ecfd9701e54b2aa978d0e9cbb34575b55466f8c0d6ba8d94a2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/memory-and-selections.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "19b2c2b5362f058d908f038720d724e4cc69cf3f4a8c5b862fafbe603ae3ac29",
+      "output_hash": "3fbf85b7f14223ecfd9701e54b2aa978d0e9cbb34575b55466f8c0d6ba8d94a2",
       "output_path": "skills/dayz-model-pipeline/references/memory-and-selections.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -6656,10 +7116,20 @@
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "5c22f8cc21bceb58be93c8446a7044d9abb94561b33e2c778ec046aa78aa0fce",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "75d1363e561c928c266572df54759688754e9e7bb97834df6aaeb8e713fba4f6",
+      "output_hash": "5c22f8cc21bceb58be93c8446a7044d9abb94561b33e2c778ec046aa78aa0fce",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -6792,10 +7262,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-wp-vmod@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "1b66d4b4d30192944e67d72610c3f6fc169bdd16c70f5d35ce5425dc59d462e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4d9b10e5c97d4951e1b1313fe7cdddee65ee0e61690f0f95c75ad1f07313e229",
+      "output_hash": "1b66d4b4d30192944e67d72610c3f6fc169bdd16c70f5d35ce5425dc59d462e5",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -6836,10 +7316,20 @@
           "source_path": "dayz-p3d-audit/references/vehicle-killers.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "eab3167454ae409e9724630cee544f324fb3e181770dce8113bc0444c239ccad",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/vehicle-killers.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4a8ceaf9b0c2ef4a57de6fe2b1461d43fd760cab8c4e58d153cd64e3026c6f23",
+      "output_hash": "eab3167454ae409e9724630cee544f324fb3e181770dce8113bc0444c239ccad",
       "output_path": "skills/dayz-p3d-audit/references/vehicle-killers.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -6878,10 +7368,20 @@
           "source_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
           "source_revision": "gunracks-backdominance@2026-08-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "5d260b57323e795ce727ba1d8e3f7738175fcd3681431db8f04db8164c5002fd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4138ca8402f8a47b417975d8fafaf1482289b0952c1e4d91ece0b807b5036575",
+      "output_hash": "5d260b57323e795ce727ba1d8e3f7738175fcd3681431db8f04db8164c5002fd",
       "output_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -6932,10 +7432,20 @@
           "source_path": "skills/dayz-p3d-inspector/SKILL.md",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "4e63224f637d26c5e8601ed9fccff3896d3f41a6aff452d3540701cbc17c240e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "80bc7e83e15df5b9f2804c83c5b8a5fa46152cf3ee08d7b33768878ea7c4c251",
+      "output_hash": "4e63224f637d26c5e8601ed9fccff3896d3f41a6aff452d3540701cbc17c240e",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -7206,10 +7716,20 @@
           "source_path": "dayz-pbo-build/INDEX.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d9de4114943917f9359b00a5bb4f42566b61a273fb12579967e9add1a6a7552c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/INDEX.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "12e34dbd947d2df1f4cdb061bf14885b367d07df6df428e2283e9046bac71ed9",
+      "output_hash": "d9de4114943917f9359b00a5bb4f42566b61a273fb12579967e9add1a6a7552c",
       "output_path": "skills/dayz-pbo-build/INDEX.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -7320,10 +7840,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "cef5e7108b274086f9f1f6fbef2f5e676ff0c2ceff4190bc3d70fd0777201764",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "bf628a0161dace67e647e0dac0953fb3ab5f7a47d4ad34e9789c10562602e336",
+      "output_hash": "cef5e7108b274086f9f1f6fbef2f5e676ff0c2ceff4190bc3d70fd0777201764",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -7374,10 +7904,20 @@
           "source_path": "skills/dayz-pbo-build/references/build-appendices.md",
           "source_revision": "kp-update-wp-test@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "9de434ac35e8d4b55251e19b9bc2641ca90d4824bc98076262ce989f7754ea43",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/build-appendices.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "efc6a7580f74d02b6615d35b3d949cc104778317ca32a1268e41e2a9354ef855",
+      "output_hash": "9de434ac35e8d4b55251e19b9bc2641ca90d4824bc98076262ce989f7754ea43",
       "output_path": "skills/dayz-pbo-build/references/build-appendices.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -7480,10 +8020,20 @@
           "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "93088f841ef08c10a548bbe0c73a92f00f507cd5889afc7526027cd80a47f797",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d28249db406ffc44b53287353c3abf0864b4a93eb9ed0fd946fd76257956db14",
+      "output_hash": "93088f841ef08c10a548bbe0c73a92f00f507cd5889afc7526027cd80a47f797",
       "output_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-reverse-engineering",
       "verification_level": "cross_checked"
@@ -7642,10 +8192,20 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-wp-anim@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "badf508804c61cf666533f4d864c3f74e8f032524793a07702acff0a957f0f1a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "feda8d7c4e1b9058f0e709c124f11d9561c0ae4463cf38ad5e02792326b2b6f8",
+      "output_hash": "badf508804c61cf666533f4d864c3f74e8f032524793a07702acff0a957f0f1a",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -7664,10 +8224,20 @@
           "source_path": "dayz-physics-engine/references/dano-transporthit.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "f5f7a650dce224ed247a5241b54ba6798cca7ce3024e33389f11273508f5a84d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/references/dano-transporthit.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b9d6b2a627575ecf3c99a77e826e26584fa42ed3dc5fc43c37612173f83a9ea5",
+      "output_hash": "f5f7a650dce224ed247a5241b54ba6798cca7ce3024e33389f11273508f5a84d",
       "output_path": "skills/dayz-physics-engine/references/dano-transporthit.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -7686,10 +8256,20 @@
           "source_path": "dayz-physics-engine/references/fisica-engine-deep-dive.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "88b7c7ea6ca31fbdda0a6f06dfadbc0a8bcfe2551a5ca4d338eefd2fc89511a3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/references/fisica-engine-deep-dive.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "63d18b3b15a23aea1b9229de60d2a62bd1f49846f731a8056a0a165a6cb933bc",
+      "output_hash": "88b7c7ea6ca31fbdda0a6f06dfadbc0a8bcfe2551a5ca4d338eefd2fc89511a3",
       "output_path": "skills/dayz-physics-engine/references/fisica-engine-deep-dive.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -7708,10 +8288,20 @@
           "source_path": "dayz-physics-engine/references/transport-netsync-vehiculos.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "c81a481d6990a360e92d8d6f2735146111ee48e8cbdc37a2599f3f4778db7cbb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/references/transport-netsync-vehiculos.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "380265ab914a215eafd4ca762b21579ea8ad9ac18414003d3d6169a75588ed45",
+      "output_hash": "c81a481d6990a360e92d8d6f2735146111ee48e8cbdc37a2599f3f4778db7cbb",
       "output_path": "skills/dayz-physics-engine/references/transport-netsync-vehiculos.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -7794,10 +8384,20 @@
           "source_path": "skills/dayz-proxy-align/SKILL.md",
           "source_revision": "kp-update-wp-vmod@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d7c01f9604a4e9f8fb51aff73bdd1aade5e8bf92113140a502a707a893f8f084",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a19f3fda7cbd09071cffe75333b093a1f45502b6e2004e463d51b90fdee07ae2",
+      "output_hash": "d7c01f9604a4e9f8fb51aff73bdd1aade5e8bf92113140a502a707a893f8f084",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -7980,10 +8580,20 @@
           "source_path": "dayz-realistic-animation-director/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "fa018f31f77c9f65899451bbc3620db41df8163d6b521babfb970e4ac0d1a028",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dc3ec04a8d3c0ce5a6fee5cc6d0713c18886387c50433098d8645869d539a91b",
+      "output_hash": "fa018f31f77c9f65899451bbc3620db41df8163d6b521babfb970e4ac0d1a028",
       "output_path": "skills/dayz-realistic-animation-director/SKILL.md",
       "routing_artifact_id": "skill/dayz-realistic-animation-director",
       "verification_level": "cross_checked"
@@ -8046,10 +8656,20 @@
           "source_path": "dayz-realistic-animation-director/references/biomechanics-and-contact.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d5f0efc54ce94c3a04f74af2fb2e1894ea3ec85f1ad3eeba9ef0be33e6e5db58",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/references/biomechanics-and-contact.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "aaa20ee76beb677814f72c3decdeb723d5561c6a25d03c4fa08b689542a7fef4",
+      "output_hash": "d5f0efc54ce94c3a04f74af2fb2e1894ea3ec85f1ad3eeba9ef0be33e6e5db58",
       "output_path": "skills/dayz-realistic-animation-director/references/biomechanics-and-contact.md",
       "routing_artifact_id": "skill/dayz-realistic-animation-director",
       "verification_level": "cross_checked"
@@ -8068,10 +8688,20 @@
           "source_path": "dayz-realistic-animation-director/references/domain-gates.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "6cb5d73d77a921e8056197a3e789e170f29223c92447159ed447469a6cc0c758",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/references/domain-gates.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "237997502073da00118b34220ea53a84706810826ab5251c23e6d1d6b7554ca2",
+      "output_hash": "6cb5d73d77a921e8056197a3e789e170f29223c92447159ed447469a6cc0c758",
       "output_path": "skills/dayz-realistic-animation-director/references/domain-gates.md",
       "routing_artifact_id": "skill/dayz-realistic-animation-director",
       "verification_level": "cross_checked"
@@ -8112,10 +8742,20 @@
           "source_path": "dayz-realistic-animation-director/references/motion-quality-contract.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "89d0fd2c353c8c6dd504cc8cbc96f8da9a7a2b239bfcece72934701a67859b1e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/references/motion-quality-contract.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4315a2135bf41ab4bcf4d46547272aaba6d8511e0c7b360df87e0c31e0cafd3d",
+      "output_hash": "89d0fd2c353c8c6dd504cc8cbc96f8da9a7a2b239bfcece72934701a67859b1e",
       "output_path": "skills/dayz-realistic-animation-director/references/motion-quality-contract.md",
       "routing_artifact_id": "skill/dayz-realistic-animation-director",
       "verification_level": "cross_checked"
@@ -8354,10 +8994,20 @@
           "source_path": "dayz-sound-system/references/sonido-deep-dive.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "753f84949eb015e7b24dd2cff12aa3421c74d401a6a34db5e7c127911d9c3a7e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/references/sonido-deep-dive.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "febff4999214c9b69b0af2ae41835b28492a84fe1c272f69ac89a57160c478e1",
+      "output_hash": "753f84949eb015e7b24dd2cff12aa3421c74d401a6a34db5e7c127911d9c3a7e",
       "output_path": "skills/dayz-sound-system/references/sonido-deep-dive.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -8466,10 +9116,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "kp-update-wp-mcp@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "f8aca04b42761a0c2f043a7945868df75357375ad7119b007a91b6c367c4731e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a0056a3b62ce607891770c11efd3096cafce9b9275bb736bde94ef502310d000",
+      "output_hash": "f8aca04b42761a0c2f043a7945868df75357375ad7119b007a91b6c367c4731e",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -8508,10 +9168,20 @@
           "source_path": "skills/dayz-test-ingame/references/session-findings.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "4c8b694a4cb36643febc3d05f5313dd4005296195e366b7371f5791a9f290659",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/session-findings.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b19088ba1c468e4b047c283bb4db23d4f6e4f8fd77b5f821a8f26a41e9e33948",
+      "output_hash": "4c8b694a4cb36643febc3d05f5313dd4005296195e366b7371f5791a9f290659",
       "output_path": "skills/dayz-test-ingame/references/session-findings.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -8738,10 +9408,20 @@
           "source_path": "skills/dayz-texture-pipeline/SKILL.md",
           "source_revision": "kp-update-wp-vmod@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "2d148668c1ba1678ba680a4e73ef9b2321a7c22af0af25878307463a29ad4c87",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "084b84c62e045f663ae795c32ae4ce6b06eeb8f974e2e9dcdfa494a3739ff947",
+      "output_hash": "2d148668c1ba1678ba680a4e73ef9b2321a7c22af0af25878307463a29ad4c87",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -8998,10 +9678,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "ui-text-sizing-laws@2026-08-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "5fa90e34a751d88db5652dd66b97e3614a84720db08c9bc3039fa03d2d827625",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "152104b9fa62de390b8b5c1a3eb2a8e54cfc8ccb522c45f3a49fc5dfb04a5223",
+      "output_hash": "5fa90e34a751d88db5652dd66b97e3614a84720db08c9bc3039fa03d2d827625",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9020,10 +9710,20 @@
           "source_path": "dayz-ui-development/references/LFPG_UI_KnowledgeBase_v3.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "9db808a2e93de55ba8ef6078055c55b1712e9482b565c4827184e18f521e89f0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/LFPG_UI_KnowledgeBase_v3.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fc327b30cc41d623808c34155d1ca82679dc210643cacc991dfd4977f5dffb6f",
+      "output_hash": "9db808a2e93de55ba8ef6078055c55b1712e9482b565c4827184e18f521e89f0",
       "output_path": "skills/dayz-ui-development/references/LFPG_UI_KnowledgeBase_v3.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9042,10 +9742,20 @@
           "source_path": "dayz-ui-development/references/LF_ColorTest_README.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "907bdca9805d294d63aa946fa3f00e3b8766298fb8a622d6a3449f63e0e0526b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/LF_ColorTest_README.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "50ffdf7c82063397510f94e343339fb7edc2b1ee1f44e7fffc65e05bcb4ee349",
+      "output_hash": "907bdca9805d294d63aa946fa3f00e3b8766298fb8a622d6a3449f63e0e0526b",
       "output_path": "skills/dayz-ui-development/references/LF_ColorTest_README.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9130,10 +9840,20 @@
           "source_path": "dayz-ui-development/references/dabs-framework.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "1a4b42f787a123a357e7275aa18151dc3b1d63c5fb2112f180b3e26203bb913f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/dabs-framework.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "aa22f524f94a19e9d2b1893e9ce31fa28455730ebb10504adf7fcf119922608a",
+      "output_hash": "1a4b42f787a123a357e7275aa18151dc3b1d63c5fb2112f180b3e26203bb913f",
       "output_path": "skills/dayz-ui-development/references/dabs-framework.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9152,10 +9872,20 @@
           "source_path": "dayz-ui-development/references/expansion-market-menu-pattern.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "a846f02c8fc7d256cbeecfe9653295b4eafa293afe42ea4586ad5939198359c3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/expansion-market-menu-pattern.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fe879e64e0165d67fc827f3291e99f5518ed9607deba148800080263c25c7bbe",
+      "output_hash": "a846f02c8fc7d256cbeecfe9653295b4eafa293afe42ea4586ad5939198359c3",
       "output_path": "skills/dayz-ui-development/references/expansion-market-menu-pattern.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9284,10 +10014,20 @@
           "source_path": "dayz-ui-development/references/plan-to-implementation.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d4aea8ad54c26b89124e844d029c397de83fcd8937689a08e825748750944f9d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/plan-to-implementation.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3b2462dabdef7c5294d3a3e6349e641ca8ceca29bea2ac68fbd60f8ddd402d1c",
+      "output_hash": "d4aea8ad54c26b89124e844d029c397de83fcd8937689a08e825748750944f9d",
       "output_path": "skills/dayz-ui-development/references/plan-to-implementation.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9328,10 +10068,20 @@
           "source_path": "dayz-ui-development/references/vanilla-menus-map.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "e0b32dd3fe8cb669a89eebe3afb21539a085fc9bb3d963b4af610e297da570c9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/vanilla-menus-map.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a022fa898da035c19cde0ddaa078d795507ba12756bea5aff1d7b2590c1c3d50",
+      "output_hash": "e0b32dd3fe8cb669a89eebe3afb21539a085fc9bb3d963b4af610e297da570c9",
       "output_path": "skills/dayz-ui-development/references/vanilla-menus-map.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9350,10 +10100,20 @@
           "source_path": "dayz-ui-development/references/widget-api.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d1e7ae2257f3cf5232ae3bc0a5db5aec17cabc8b002ade30672c65efc2b19c34",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/widget-api.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "087831cee653281f1ca1ef03b07a15a51895721b8fdce79cd21cf7661c258258",
+      "output_hash": "d1e7ae2257f3cf5232ae3bc0a5db5aec17cabc8b002ade30672c65efc2b19c34",
       "output_path": "skills/dayz-ui-development/references/widget-api.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9680,10 +10440,20 @@
           "source_path": "dayz-ui-development/scripts/CONTRACT.md",
           "source_revision": "filesystem@2026-08-21",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "64da9e550e5c59b1ce1ba96e5adf51cd19a02f5c09d1c95db507140c39186ddb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/scripts/CONTRACT.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0fb7e80d1cfca4583559a141fbe83d832ddaf64747c5a5725c6cdd6ac5f7e5dd",
+      "output_hash": "64da9e550e5c59b1ce1ba96e5adf51cd19a02f5c09d1c95db507140c39186ddb",
       "output_path": "skills/dayz-ui-development/scripts/CONTRACT.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -9850,10 +10620,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "a9576d2aae85ee6f22d9e69b5202bb8f1dbc6972663edba1a7d26367c4afe866",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "eb28d3df242459aae60a6f3ba6334d6f21d84dd11d1c7892909ebc45ea20c434",
+      "output_hash": "a9576d2aae85ee6f22d9e69b5202bb8f1dbc6972663edba1a7d26367c4afe866",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9872,10 +10652,20 @@
           "source_path": "dayz-vehicles/history/cambio-1-superseded-family-b-rules.md",
           "source_revision": "filesystem@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "539e25bece758cc8a74cb7b6c6048de1f3c32bc5ae80678e267ce401d5534e65",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/history/cambio-1-superseded-family-b-rules.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e4cbeff0259e5a01a1a92caab3874355e59d18214923842d01336011e7be533d",
+      "output_hash": "539e25bece758cc8a74cb7b6c6048de1f3c32bc5ae80678e267ce401d5534e65",
       "output_path": "skills/dayz-vehicles/history/cambio-1-superseded-family-b-rules.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9916,10 +10706,20 @@
           "source_path": "dayz-vehicles/references/animation-sign-and-axis.md",
           "source_revision": "filesystem@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "12166c952656345e57f102f85b5535fdb0812f21c3da3403a4e693b13bc64fa8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/animation-sign-and-axis.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "aa512142c8210e022b778cdf47793b493ead0ada69340d63444e253c2d704599",
+      "output_hash": "12166c952656345e57f102f85b5535fdb0812f21c3da3403a4e693b13bc64fa8",
       "output_path": "skills/dayz-vehicles/references/animation-sign-and-axis.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10096,10 +10896,20 @@
           "source_path": "skills/dayz-vehicles/references/doors-and-panel-edges.md",
           "source_revision": "kp-update-wp-veh@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "837d871568ef411b0711db8237c1ab5421b0f16e6d1559cbe3f92a06787becc9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/doors-and-panel-edges.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f4b07b52d37bae79f0a3634c2decb84c8fc7fa6aac058af12acd32400e1d0ff8",
+      "output_hash": "837d871568ef411b0711db8237c1ab5421b0f16e6d1559cbe3f92a06787becc9",
       "output_path": "skills/dayz-vehicles/references/doors-and-panel-edges.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10180,10 +10990,20 @@
           "source_path": "skills/dayz-vehicles/references/external-obj-import.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "8c65e2339c3ccc0ebda6bba850b8991b73347c7db881ec3871b5cd866522e5c8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/external-obj-import.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e6581469eb6b3f4b31b7483ae3d4a18dd5361c9b54c321f04caae7c5af5dc803",
+      "output_hash": "8c65e2339c3ccc0ebda6bba850b8991b73347c7db881ec3871b5cd866522e5c8",
       "output_path": "skills/dayz-vehicles/references/external-obj-import.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10234,10 +11054,20 @@
           "source_path": "skills/dayz-vehicles/references/gauge-needles.md",
           "source_revision": "kp-update-wp-veh@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "a218bb63cdeb454c856963879091189eca861084cdb4893a6fa9da183889fd64",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/gauge-needles.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5a3341ec43f6d2ec076c9358f5c52d8e297f4901bd15a7622523d4c91cbcce16",
+      "output_hash": "a218bb63cdeb454c856963879091189eca861084cdb4893a6fa9da183889fd64",
       "output_path": "skills/dayz-vehicles/references/gauge-needles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10402,10 +11232,20 @@
           "source_path": "skills/dayz-vehicles/references/materials-and-selections.md",
           "source_revision": "kp-update-wp-veh@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "6a45623b81746fcee37a2a17b20298aeecb8691c8ba9c7fdf66ee3bef53f960b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/materials-and-selections.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0dfdafd4f07e65b3c8c8dab3fc7f42ab6c47966c1615ba3de2dcc2b37e6b5470",
+      "output_hash": "6a45623b81746fcee37a2a17b20298aeecb8691c8ba9c7fdf66ee3bef53f960b",
       "output_path": "skills/dayz-vehicles/references/materials-and-selections.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10424,10 +11264,20 @@
           "source_path": "dayz-vehicles/references/network-physics-ownership.md",
           "source_revision": "filesystem@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "f1a1158a3a741f49780a7a02f0eed2ece789d0f52072b2f9e0872c3f5c42a265",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/network-physics-ownership.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3540c1711c38fe9c934fce9ccefafbe72b128074349d84a4e6c1ca9c69183318",
+      "output_hash": "f1a1158a3a741f49780a7a02f0eed2ece789d0f52072b2f9e0872c3f5c42a265",
       "output_path": "skills/dayz-vehicles/references/network-physics-ownership.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10530,10 +11380,20 @@
           "source_path": "dayz-vehicles/references/process-gates.md",
           "source_revision": "filesystem@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "1cf83af2e2f894386704ce8331875e9720da59355a0e842510a9e1f827917999",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/process-gates.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f5037fcc9c672c00aa3481659e1aa576eb809d0d962d09ab82ad54fe1c312787",
+      "output_hash": "1cf83af2e2f894386704ce8331875e9720da59355a0e842510a9e1f827917999",
       "output_path": "skills/dayz-vehicles/references/process-gates.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10552,10 +11412,20 @@
           "source_path": "dayz-vehicles/references/proxies-and-get-in.md",
           "source_revision": "filesystem@2026-09-05",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "019746fb581336c9afa062f91f3dd63ebea73efc01dc2a8ba383d388b2c65fed",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/proxies-and-get-in.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ca31c2f3001709ed70abfd1e396a1e0090cba3edce319fcad6c3221e3bca4222",
+      "output_hash": "019746fb581336c9afa062f91f3dd63ebea73efc01dc2a8ba383d388b2c65fed",
       "output_path": "skills/dayz-vehicles/references/proxies-and-get-in.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10574,10 +11444,20 @@
           "source_path": "dayz-vehicles/references/rip-geometry-and-winding.md",
           "source_revision": "filesystem@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "41ae3394a53ee401fce55c167924dc4d682cb3ca954099e6ecba51b6c494a817",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/rip-geometry-and-winding.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f5cac5165c3a840d8994251e82c5bc3c678f66df3a14315ca11ac7a218bed4cd",
+      "output_hash": "41ae3394a53ee401fce55c167924dc4d682cb3ca954099e6ecba51b6c494a817",
       "output_path": "skills/dayz-vehicles/references/rip-geometry-and-winding.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10636,10 +11516,20 @@
           "source_path": "skills/dayz-vehicles/references/rip-import.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "b99b1152a2a38fa5377a8c23bdf8ddaddd589164e2616a1565a35dc21f3fa415",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/rip-import.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a196c0992bf0faabdf33d04c1801e7460c3ae4e60b9c66e36fb3fde0cfe68a8d",
+      "output_hash": "b99b1152a2a38fa5377a8c23bdf8ddaddd589164e2616a1565a35dc21f3fa415",
       "output_path": "skills/dayz-vehicles/references/rip-import.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10750,10 +11640,20 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
           "source_revision": "kp-update-wp-veh@2026-10-01",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "7796f605a53c3898fb5b01ce2e9198fc33f6ce56b8b5c05bfdaf6b717669db8e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fe3dcd06f863422c725bdff11a6ddc89ff9f4fbf5a4a279c95d3fa255cb0d27d",
+      "output_hash": "7796f605a53c3898fb5b01ce2e9198fc33f6ce56b8b5c05bfdaf6b717669db8e",
       "output_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10834,10 +11734,20 @@
           "source_path": "skills/dayz-vehicles/references/visual-gates-and-winding.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "b8adeea0271eaa953c43d04bf8c02acfaf95e22c5a3fdd7fce31139dce8eea48",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/visual-gates-and-winding.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "468c8c2e1b321dbe966796cd9e8945ee667604abfb9aba055c8fa376eeb5575e",
+      "output_hash": "b8adeea0271eaa953c43d04bf8c02acfaf95e22c5a3fdd7fce31139dce8eea48",
       "output_path": "skills/dayz-vehicles/references/visual-gates-and-winding.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10856,10 +11766,20 @@
           "source_path": "dayz-vehicles/references/visual-metrics-and-viewer.md",
           "source_revision": "filesystem@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "040a708d5d52d8e8e10a735a08598424d582c0f0219ffd81d1fdae7b3f7909e7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/visual-metrics-and-viewer.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "adad5357e4dfd670df04f45f31371fba3bbce561c6808ad1512043c50492fc94",
+      "output_hash": "040a708d5d52d8e8e10a735a08598424d582c0f0219ffd81d1fdae7b3f7909e7",
       "output_path": "skills/dayz-vehicles/references/visual-metrics-and-viewer.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10920,10 +11840,20 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "536aadc25a1b7da21d5e5069a0fc4fd1791c3a10c391eb462bb0676c63064b92",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2a76df5a6cfa4ca998908c0b14c060165513123093c1d2d3d6a3af1b0889766c",
+      "output_hash": "536aadc25a1b7da21d5e5069a0fc4fd1791c3a10c391eb462bb0676c63064b92",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -11046,10 +11976,20 @@
           "source_path": "skills/dayz-weapons/references/import-rule-v4.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "ba7f33d32761c758e3e8b7cd805384315c03384b95d2363b9cf7836c359a68cf",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/references/import-rule-v4.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cb7c0b14aed044b54bef31648e0f5ec7d1b9de2df5b70d4f930883a34c274892",
+      "output_hash": "ba7f33d32761c758e3e8b7cd805384315c03384b95d2363b9cf7836c359a68cf",
       "output_path": "skills/dayz-weapons/references/import-rule-v4.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -11170,10 +12110,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "f3c879094cb038d91a557d21076d1fc89780d9a75fb35c1c407cd874845b506f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "db3fb52e82d574e9a6398ff7d9cc0c6261143b3eba2a25acc879964035bb344e",
+      "output_hash": "f3c879094cb038d91a557d21076d1fc89780d9a75fb35c1c407cd874845b506f",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -11312,10 +12262,20 @@
           "source_path": "enforce-script-reference/references/pitfalls-advanced.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "35776c7e7c5449419b82cfe64fc097f592de1ec54191e71e0355ae90c9d15a2a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6e92b3ebd6edf0ad17c28b8afd0a7164efb3e3371171b23624eeaba6e3f24764",
+      "output_hash": "35776c7e7c5449419b82cfe64fc097f592de1ec54191e71e0355ae90c9d15a2a",
       "output_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -11400,10 +12360,20 @@
           "source_path": "enforce-script-reference/references/vanilla-deep-dive.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d5ad7514a18ead32f623560deff054ee393341b2bf7f356cccdce2f15436d03c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/vanilla-deep-dive.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d974d914592efa3b65b16661f9f37be5e4183f5445ec60deafe4e85ab33a0c95",
+      "output_hash": "d5ad7514a18ead32f623560deff054ee393341b2bf7f356cccdce2f15436d03c",
       "output_path": "skills/enforce-script-reference/references/vanilla-deep-dive.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -11444,10 +12414,20 @@
           "source_path": "enforce-script-reference/references/weapon-firemodes.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "884e155b3584753adfce9c0ee0c67810d2c904985826b9b21566b4a6ba5bc3c2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/weapon-firemodes.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "12961cf0d2d9203dc90af3abd7e8728e0d1852bc58238410ad203dae6b4ac3ea",
+      "output_hash": "884e155b3584753adfce9c0ee0c67810d2c904985826b9b21566b4a6ba5bc3c2",
       "output_path": "skills/enforce-script-reference/references/weapon-firemodes.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -11594,10 +12574,20 @@
           "source_path": "skills/rigorous-data-audit/SKILL.md",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "dfdf8ec2eb0043e2b28980de2ed7e68af206e506260eff8294ab6474b4ef75ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rigorous-data-audit/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6908ec279ee8338ea827cb66e99822b79423015400f6dda4d02c95324df151f6",
+      "output_hash": "dfdf8ec2eb0043e2b28980de2ed7e68af206e506260eff8294ab6474b4ef75ee",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -11636,10 +12626,20 @@
           "source_path": "skills/rigorous-data-audit/index.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "f411efd6ddb5f296447c5e35a5510109d45a99b1eb5ab017eafede3177afacca",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rigorous-data-audit/index.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "10d572ac934613394497bf68092c1aa4845282e9d52491fff608633bebf851d3",
+      "output_hash": "f411efd6ddb5f296447c5e35a5510109d45a99b1eb5ab017eafede3177afacca",
       "output_path": "skills/rigorous-data-audit/index.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -12148,10 +13148,20 @@
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "73dad0be8c1752c461870d32fc241f0b0c180da554a04a5a2a4435bd0953462e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b6c363dbf9a7ead909de4fc2baf894b49cdcf63f6198f804a99cdfe4a634d557",
+      "output_hash": "73dad0be8c1752c461870d32fc241f0b0c180da554a04a5a2a4435bd0953462e",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -12170,10 +13180,20 @@
           "source_path": "rip-vehicle-import/assets/classify-viewer/README.md",
           "source_revision": "filesystem@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "d8a93da34502842c9de3d55b08be3cfc10326df95469356dcc00c1accd2e52ae",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/assets/classify-viewer/README.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "07c4bae2837f6c48ff205d9e05068836d3e10ba9d015a9b0ff9d536724b7add9",
+      "output_hash": "d8a93da34502842c9de3d55b08be3cfc10326df95469356dcc00c1accd2e52ae",
       "output_path": "skills/rip-vehicle-import/assets/classify-viewer/README.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -12236,10 +13256,20 @@
           "source_path": "rip-vehicle-import/cookbooks/family-b/attach-invisible.md",
           "source_revision": "filesystem@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "c884b24eb4fcb6af064b3341d96d0cfcb1c0acdbc96d792ef5d4f51db0fca82d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/cookbooks/family-b/attach-invisible.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "38576bbd84f0c6c3f1b047a75e67a2f9aa209935423b1362fce4458d1faaaa05",
+      "output_hash": "c884b24eb4fcb6af064b3341d96d0cfcb1c0acdbc96d792ef5d4f51db0fca82d",
       "output_path": "skills/rip-vehicle-import/cookbooks/family-b/attach-invisible.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -12258,10 +13288,20 @@
           "source_path": "rip-vehicle-import/cookbooks/family-b/coche-blanco.md",
           "source_revision": "filesystem@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "b580c28ab7b180aeb1a883e5fa97228d71a0c6dbce5f91a976791851831c7c39",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/cookbooks/family-b/coche-blanco.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "aa1b7265c95aa7a2807a3e1d0d252777992ae139728f265daa53755cc9f5fdad",
+      "output_hash": "b580c28ab7b180aeb1a883e5fa97228d71a0c6dbce5f91a976791851831c7c39",
       "output_path": "skills/rip-vehicle-import/cookbooks/family-b/coche-blanco.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -12290,10 +13330,20 @@
           "source_path": "skills/rip-vehicle-import/cookbooks/family-b/get-in-ausente.md",
           "source_revision": "kp-update-wp-veh@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "9ef5c7a45deeb2a21740725bafedd40b167b37694d4eee84c58fc7b398f10250",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/cookbooks/family-b/get-in-ausente.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5851b9e83f5bdae7b253e69f3d2d22bd06bebe79310e90e9b32a8d7820873f31",
+      "output_hash": "9ef5c7a45deeb2a21740725bafedd40b167b37694d4eee84c58fc7b398f10250",
       "output_path": "skills/rip-vehicle-import/cookbooks/family-b/get-in-ausente.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -12312,10 +13362,20 @@
           "source_path": "rip-vehicle-import/cookbooks/family-b/radial-puerta-ausente.md",
           "source_revision": "filesystem@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "25461e3f5ee34f710b73fc8ba2e16bc3e355a2c68c0fb3ec15efbf50aabf1a7e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/cookbooks/family-b/radial-puerta-ausente.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "bc776f70063d4c26428164acb58ba0e2c6b42f8b4771d2c0fa21d8155c8f2589",
+      "output_hash": "25461e3f5ee34f710b73fc8ba2e16bc3e355a2c68c0fb3ec15efbf50aabf1a7e",
       "output_path": "skills/rip-vehicle-import/cookbooks/family-b/radial-puerta-ausente.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -12334,10 +13394,20 @@
           "source_path": "rip-vehicle-import/cookbooks/family-b/wheelpresent-0.md",
           "source_revision": "filesystem@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "1c645d37c4b0e4de477d3a3745590ee9978e480cc140db9cca0782911b260065",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/cookbooks/family-b/wheelpresent-0.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5dbe3006135a45e69e5dc6c0f2ea46c8efa1918b37fef9b832b21586f66fd772",
+      "output_hash": "1c645d37c4b0e4de477d3a3745590ee9978e480cc140db9cca0782911b260065",
       "output_path": "skills/rip-vehicle-import/cookbooks/family-b/wheelpresent-0.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -12378,10 +13448,20 @@
           "source_path": "rip-vehicle-import/history/pre-cambio-0-canonical-path.md",
           "source_revision": "filesystem@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "86ff78fc7a6b41c84bd16f36a1993d49fd123c699083b231b22b2220ceab7310",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/history/pre-cambio-0-canonical-path.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "82db8da1c4f2110c6f0baef534d5a9dd9311d62d892d102fd1b8e1b4882d96e5",
+      "output_hash": "86ff78fc7a6b41c84bd16f36a1993d49fd123c699083b231b22b2220ceab7310",
       "output_path": "skills/rip-vehicle-import/history/pre-cambio-0-canonical-path.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -12400,10 +13480,20 @@
           "source_path": "rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
           "source_revision": "filesystem@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "b05fc8f9e7e14bf2df4211855c40f820bfde9627296ec6acffe21161a36b637d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3ebbc522376844e8c1a1276ccfe79a1e11113447f744dc7bfa4492c4cdcdd6db",
+      "output_hash": "b05fc8f9e7e14bf2df4211855c40f820bfde9627296ec6acffe21161a36b637d",
       "output_path": "skills/rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -12452,10 +13542,20 @@
           "source_path": "skills/rip-vehicle-import/references/profile-schema.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "f60c2d14dde255b165878131f159fa9c1828809b702c944a374f0610b00da159",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/references/profile-schema.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d205700342228b68d00c67e054b371090625cef60bc744526fb177ef9ad1f100",
+      "output_hash": "f60c2d14dde255b165878131f159fa9c1828809b702c944a374f0610b00da159",
       "output_path": "skills/rip-vehicle-import/references/profile-schema.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -12514,10 +13614,20 @@
           "source_path": "uv-clean-atlas/SKILL.md",
           "source_revision": "g12-paint-photograph@2026-09-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "78c0ed8cbd24ca36ffaa58fe901feda555e49fa57bb7f984aaecd5ec8fac7ab8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/uv-clean-atlas/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "95f889067dc8e4ede1e2f747f6e60ff6d6f004d2d5e576b7b30533ad797a8130",
+      "output_hash": "78c0ed8cbd24ca36ffaa58fe901feda555e49fa57bb7f984aaecd5ec8fac7ab8",
       "output_path": "skills/uv-clean-atlas/SKILL.md",
       "routing_artifact_id": "skill/uv-clean-atlas",
       "verification_level": "cross_checked"
@@ -12536,10 +13646,20 @@
           "source_path": "skills/uv-clean-atlas/references/multi-lod-shared-atlas.md",
           "source_revision": "multi-lod-atlas@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "1ab17c2a9d5f47c5591f7525c6aac03b73445b328bb89423d4299d51ecd2fd82",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/uv-clean-atlas/references/multi-lod-shared-atlas.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "35d905abca4744b6173165f1eacc0a4de9728b9a70dea9e17e020a2e12c40f9a",
+      "output_hash": "1ab17c2a9d5f47c5591f7525c6aac03b73445b328bb89423d4299d51ecd2fd82",
       "output_path": "skills/uv-clean-atlas/references/multi-lod-shared-atlas.md",
       "routing_artifact_id": "skill/uv-clean-atlas",
       "verification_level": "offline_tested"
@@ -12800,10 +13920,20 @@
           "source_path": "uv-clean-atlas/references/g12-paint-photograph.md",
           "source_revision": "g12-paint-photograph@2026-09-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "19613b796d2a3cf4e5e4659089626ab0c876754f6293e9f1ff52d54010250020",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/uv-clean-atlas/references/g12-paint-photograph.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7421ca536ce9947d18574a8009fd829747fb41b581ce7dab42a8c2520ac98c1f",
+      "output_hash": "19613b796d2a3cf4e5e4659089626ab0c876754f6293e9f1ff52d54010250020",
       "output_path": "skills/uv-clean-atlas/references/g12-paint-photograph.md",
       "routing_artifact_id": "skill/uv-clean-atlas",
       "verification_level": "offline_tested"
@@ -21110,10 +22240,20 @@
           "source_path": "tools/dayz-ui-lab/probe/README.md",
           "source_revision": "r21-phase02@2026-07-25",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "e8aa4d3ac3a63c4879731d402bc13f2a008f2c0ed8ae4125eb986b5cffdf4035",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/probe/README.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "038e018f3ab0cd0563130f32ca97b808f466bce4560d21090eb4daa3e9dfc038",
+      "output_hash": "e8aa4d3ac3a63c4879731d402bc13f2a008f2c0ed8ae4125eb986b5cffdf4035",
       "output_path": "tools/dayz-ui-lab/probe/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "cross_checked"
@@ -22314,10 +23454,20 @@
           "source_path": "tools/py3d/rollout/README.md",
           "source_revision": "r21-patch-only@2026-07-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "62fe6fb8b6ebce74f5116159e5b76365b17e4fadb6b9382a0964c7efa17e9281",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/README.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c22b6761da8f29f4754c4417e9d3194629ca97ab8be21bf9f74a5698529c046c",
+      "output_hash": "62fe6fb8b6ebce74f5116159e5b76365b17e4fadb6b9382a0964c7efa17e9281",
       "output_path": "tools/py3d/rollout/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24814,10 +25964,20 @@
           "source_path": "skills/dayz-ai-patterns/references/dayz-1-30-ai.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "4e06eb93cf7c26573b7bb4e94c3f001e17d7687ff72cf9752a2aa4906c51ef23",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ai-patterns/references/dayz-1-30-ai.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d30d7fb5f2372bce7f80c70cecd1c6afaec28d054f08b209a6483aa7fac2d7d3",
+      "output_hash": "4e06eb93cf7c26573b7bb4e94c3f001e17d7687ff72cf9752a2aa4906c51ef23",
       "output_path": "skills/dayz-ai-patterns/references/dayz-1-30-ai.md",
       "routing_artifact_id": "skill/dayz-ai-patterns",
       "verification_level": "historical"
@@ -24956,10 +26116,20 @@
           "source_path": "skills/dayz-environment-hazards/SKILL.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "c09f286685d4d1f47bb373fa311f9f9474f33ce343a301fc3555a467f84f39a7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a1364d075280a1aa9d127af4c00343c7030d8c60db2b5de2cd8147fe3fb609bf",
+      "output_hash": "c09f286685d4d1f47bb373fa311f9f9474f33ce343a301fc3555a467f84f39a7",
       "output_path": "skills/dayz-environment-hazards/SKILL.md",
       "routing_artifact_id": "skill/dayz-environment-hazards",
       "verification_level": "historical"
@@ -24978,10 +26148,20 @@
           "source_path": "skills/dayz-environment-hazards/references/dust-oilpit-nasdara.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "5b2ed73d693285d163f0dd40d13c61ba58030d09af9abc3d12b1f25c221544c7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/references/dust-oilpit-nasdara.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0842748fa290f135a6306354d3b802d2fffac1fb90035adab0ecceedb7c8d3cd",
+      "output_hash": "5b2ed73d693285d163f0dd40d13c61ba58030d09af9abc3d12b1f25c221544c7",
       "output_path": "skills/dayz-environment-hazards/references/dust-oilpit-nasdara.md",
       "routing_artifact_id": "skill/dayz-environment-hazards",
       "verification_level": "historical"
@@ -25000,10 +26180,20 @@
           "source_path": "skills/dayz-environment-hazards/references/ppe-agents.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "18226b7abe92c4f55bcbcee8b19d34c3c89cad5269c8dc1ad115d866e4c19048",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/references/ppe-agents.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "89d5448a1e690792ec5c2b760288671fb00f281790283a6b6df0b395a4900138",
+      "output_hash": "18226b7abe92c4f55bcbcee8b19d34c3c89cad5269c8dc1ad115d866e4c19048",
       "output_path": "skills/dayz-environment-hazards/references/ppe-agents.md",
       "routing_artifact_id": "skill/dayz-environment-hazards",
       "verification_level": "historical"
@@ -25022,10 +26212,20 @@
           "source_path": "skills/dayz-environment-hazards/references/sandstorm-shelter.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "26c52f9a631e3b47ecfcf8fb091ec9feb3b7c80fa57c38c506577ab9c1d8ee1c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/references/sandstorm-shelter.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "74389d44a1aa8723dc92992984e8b932d6a254775a4a4041ac2b1c8a69d0e110",
+      "output_hash": "26c52f9a631e3b47ecfcf8fb091ec9feb3b7c80fa57c38c506577ab9c1d8ee1c",
       "output_path": "skills/dayz-environment-hazards/references/sandstorm-shelter.md",
       "routing_artifact_id": "skill/dayz-environment-hazards",
       "verification_level": "historical"
@@ -25044,10 +26244,20 @@
           "source_path": "skills/dayz-environment-hazards/references/sources.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "500d46d81298e68b0c8588af1564002c41cafbbf513438a200ee4da712eaee3c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/references/sources.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c6fdb3eee3e4957a8ef0069a175d781f7eb0730d889a37c3a0555c9d600a034c",
+      "output_hash": "500d46d81298e68b0c8588af1564002c41cafbbf513438a200ee4da712eaee3c",
       "output_path": "skills/dayz-environment-hazards/references/sources.md",
       "routing_artifact_id": "skill/dayz-environment-hazards",
       "verification_level": "historical"
@@ -25066,10 +26276,20 @@
           "source_path": "skills/dayz-environment-hazards/references/thermal-heatstroke.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "1eb3e95da37e9a23d063367fe4db340d320e32e438c39c046a3a45b51b9adba3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/references/thermal-heatstroke.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3c7a112b0d0f6b209098836ec9fcd2b4d5f3f815cadeb7b4396ce1ec8fd6023b",
+      "output_hash": "1eb3e95da37e9a23d063367fe4db340d320e32e438c39c046a3a45b51b9adba3",
       "output_path": "skills/dayz-environment-hazards/references/thermal-heatstroke.md",
       "routing_artifact_id": "skill/dayz-environment-hazards",
       "verification_level": "historical"
@@ -25290,10 +26510,20 @@
           "source_path": "dayz-motorbikes/references/forward-contract.md",
           "source_revision": "filesystem@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "2a87c8d4d184aefb014a959b854984e8c13997b334c25523530aa974484391b9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/references/forward-contract.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e6a5ae34506204665fdc15ad0e8a59fb020b2e480d749e5c2a3864a1175acbd8",
+      "output_hash": "2a87c8d4d184aefb014a959b854984e8c13997b334c25523530aa974484391b9",
       "output_path": "skills/dayz-motorbikes/references/forward-contract.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -25594,10 +26824,20 @@
           "source_path": "skills/dayz-ui-development/references/hud-action-info-panels.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "4ca1aea3fdf852a2c054d9418075b6bbdaebfe630d443db8176754af8a85ac2f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/hud-action-info-panels.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0649d7fb19cf1b8fca8626c782ae4355c4c254e9699d0f502c8b5c266c5c616e",
+      "output_hash": "4ca1aea3fdf852a2c054d9418075b6bbdaebfe630d443db8176754af8a85ac2f",
       "output_path": "skills/dayz-ui-development/references/hud-action-info-panels.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "historical"
@@ -25648,10 +26888,20 @@
           "source_path": "skills/dayz-weapons/references/dayz-1-30-weapons.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "49cf699017b134298a78deb108514cc60d85949f5ab26c2efb7830f8c7c86a62",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/references/dayz-1-30-weapons.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "aa9cb2734109e796de297c648c48f5dbc49dee771d0e96a66a9cf486801648e8",
+      "output_hash": "49cf699017b134298a78deb108514cc60d85949f5ab26c2efb7830f8c7c86a62",
       "output_path": "skills/dayz-weapons/references/dayz-1-30-weapons.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "historical"
@@ -25670,10 +26920,20 @@
           "source_path": "skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "b9a7a1c69f62a128a46225c9566025db4a6512f13897435bd6f8a86aa32db79d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "263acce9a5ee898ae4029bfd05b920a1ed0c906b02085c6ce6d05777fcf74538",
+      "output_hash": "b9a7a1c69f62a128a46225c9566025db4a6512f13897435bd6f8a86aa32db79d",
       "output_path": "skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "historical"
@@ -25784,10 +27044,20 @@
           "source_path": "skills/dayz-underground/SKILL.md",
           "source_revision": "dayz-underground@2026-09-24",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "91e6c602376491f23cc61b897fe89451836d088108dd00d34fd6104ef888b305",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-underground/SKILL.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1ea1713d5946680cdaa12ba11e9654240d9b0e5463d6031a8e058cb36732c7aa",
+      "output_hash": "91e6c602376491f23cc61b897fe89451836d088108dd00d34fd6104ef888b305",
       "output_path": "skills/dayz-underground/SKILL.md",
       "routing_artifact_id": "skill/dayz-underground",
       "verification_level": "source_verified"
@@ -25806,10 +27076,20 @@
           "source_path": "skills/dayz-underground/references/terrain-holes-evidence.md",
           "source_revision": "dayz-underground@2026-09-24",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "eb287e1d2d34615bb4a89ed4cf91b651829ee3f7ed7db0c4dd93dcc984001394",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-underground/references/terrain-holes-evidence.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "662a73fb7819637ab19fe94932a0c68b5d1d48bd96004a1cd1d7aeb9f3d67249",
+      "output_hash": "eb287e1d2d34615bb4a89ed4cf91b651829ee3f7ed7db0c4dd93dcc984001394",
       "output_path": "skills/dayz-underground/references/terrain-holes-evidence.md",
       "routing_artifact_id": "skill/dayz-underground",
       "verification_level": "source_verified"
@@ -25828,10 +27108,20 @@
           "source_path": "skills/dayz-underground/references/underground-triggers.md",
           "source_revision": "dayz-underground@2026-09-24",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 translation of the remaining Spanish passages to English: line-aligned machine translation by Gemini 3.8 Flash (Google) behind a mechanical gate (code spans, links, numbers by value, tags, claim markers and Markdown structure per line), meaning reviewed pair by pair by Claude Sonnet (Anthropic) subagents; applied and checked by Claude (Anthropic). No technical content added or removed.",
+          "license": "MIT",
+          "source_hash": "84735742f12c859ddee95a04bb4e7523814c723506fa5f3ba5a951ce2bd3f4a1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-underground/references/underground-triggers.md",
+          "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ee0deed4e831fb1677aa6163523919822573611719edfc68992ed96900752980",
+      "output_hash": "84735742f12c859ddee95a04bb4e7523814c723506fa5f3ba5a951ce2bd3f4a1",
       "output_path": "skills/dayz-underground/references/underground-triggers.md",
       "routing_artifact_id": "skill/dayz-underground",
       "verification_level": "source_verified"

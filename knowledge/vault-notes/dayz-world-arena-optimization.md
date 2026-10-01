@@ -1,183 +1,183 @@
-# DayZ Enforce — la arena `4_World` y cómo se mide de verdad
+# DayZ Enforce — the `4_World` arena and how it is truly measured
 
-> Hub de dominio: qué cobra realmente el compilador de Enforce por módulo, y por
-> qué casi todo lo que parece un proxy de tamaño no lo es. Existe porque medir mal
-> aquí cuesta campañas enteras: reducir un millón de bytes de fuente puede dar
-> **0 kB** de arena.
+> Domain hub: what the Enforce compiler actually charges per module, and why
+> almost everything that looks like a size proxy is not. It exists because measuring wrong
+> here costs entire campaigns: reducing one million source bytes can yield
+> **0 kB** of arena.
 >
-> Medido sobre DayZ `1.29.163451` en un mod de producción con ~1,2 MB de módulo
-> World. Los números concretos son de ese mod; **las invariantes y los métodos son
-> del motor**. Separar siempre hecho de motor, inferencia y restricción de producto:
-> no conviertas una pendiente observada en una constante universal.
+> Measured on DayZ `1.29.163451` in a production mod with ~1.2 MB of World
+> module. The concrete numbers are from that mod; **the invariants and methods are
+> from the engine**. Always separate engine fact, inference, and product constraint:
+> do not turn an observed slope into a universal constant.
 
-## El único veredicto de capacidad
+## The only capacity verdict
 
 ```
 candidate.World - empty.World <= limit
 ```
 
-Un ahorro causal pequeño **no** equivale a PASS de capacidad. Y un PASS nombra el
-stack al que pertenece: un par E/candidato donde solo cambia el PBO del producto
-mide la contribución absoluta del candidato **en ese snapshot**, no que otro stack
-quepa. Usa etiquetas separadas (`PROSPECTIVE_SNAPSHOT_CAPACITY_PASS|FAIL`,
-`AFFECTED_STACK_NOT_RUN`) en vez de un PASS ambiguo.
+A small causal saving is **not** equivalent to a capacity PASS. And a PASS names the
+stack to which it belongs: an E/candidate pair where only the product PBO changes
+measures the absolute contribution of the candidate **in that snapshot**, not that another stack
+will fit. Use separate tags (`PROSPECTIVE_SNAPSHOT_CAPACITY_PASS|FAIL`,
+`AFFECTED_STACK_NOT_RUN`) instead of an ambiguous PASS.
 
-## Jerarquía de evidencia
+## Hierarchy of evidence
 
 De mayor a menor autoridad:
 
-1. **Delta de módulo en pares adyacentes de motor** — misma build, stack, orden,
-   misión, config y artefactos; Game/World/Mission completos.
-2. **Contador engine de clases, calibrado por familia.**
-3. **Bytecode semántico retirado de la vista preprocesada servidor** — vale para
-   forecast solo cuando el comportamiento desaparece de verdad del módulo.
-4. **Declaraciones, métodos, líneas, bytes fuente y tamaño PBO** — son
-   inventarios. Por sí solos **no predicen arena**.
+1. **Module delta on adjacent engine pairs** — same build, stack, order,
+   mission, config, and artifacts; full Game/World/Mission.
+2. **Engine class counter, calibrated by family.**
+3. **Semantic bytecode removed from the server preprocessed view** — valid for
+   forecast only when the behavior truly disappears from the module.
+4. **Declarations, methods, lines, source bytes, and PBO size** — they are
+   inventories. By themselves they **do not predict arena**.
 
-## Lo que NO es un proxy (medido)
+## What is NOT a proxy (measured)
 
-| Transformación | Cambio estructural | World kB |
+| Transformation | Structural change | World kB |
 |---|---|---:|
-| `−16` ficheros, clases iguales | ninguno | `0/−1` |
-| `−1.071.376` bytes fuente, clases iguales | ninguno | `−2/0` |
-| `−3` clases shell de kit | 3 clases | `1/0` |
-| `−1` clase grande, `−19.670` non-whitespace | 1 clase | `44/45` |
-| `−12` clases genéricas | 12 unidades | `79/77` |
-| `−18` unidades engine | 18 unidades | `101/101` |
-| `−3` expresiones genéricas fuente, clases iguales | ninguno | `−3` |
-| clases iguales, bytecode servidor real retirado | ninguno | `28/29` |
+| `−16` files, same classes | none | `0/−1` |
+| `−1,071,376` source bytes, same classes | none | `−2/0` |
+| `−3` kit shell classes | 3 classes | `1/0` |
+| `−1` large class, `−19,670` non-whitespace | 1 class | `44/45` |
+| `−12` generic classes | 12 units | `79/77` |
+| `−18` engine units | 18 units | `101/101` |
+| `−3` source generic expressions, same classes | none | `−3` |
+| same classes, real server bytecode removed | none | `28/29` |
 
-**El compilador cobra estructura, bytecode y materializaciones, no el texto físico
-que las representa.** Un millón de bytes de fuente valió 0 kB; doce clases
-genéricas valieron ~78 kB.
+**The compiler charges structure, bytecode, and materializations, not the physical text
+that represents them.** One million source bytes was worth 0 kB; twelve generic
+classes were worth ~78 kB.
 
-## Las invariantes
+## The invariants
 
-| # | Invariante | Por qué muerde |
+| # | Invariant | Why it bites |
 |---|---|---|
-| 1 | **Las clases se calibran por familia** | banda observada ~`5,6..6,6 kB` por unidad engine en especializaciones genéricas, pero una clase ordinaria pequeña puede valer **`0 kB`**. Una regresión global de «kB/clase» selecciona el trabajo equivocado |
-| 2 | **Expresión genérica retirada ≠ materialización eliminada** | quitar tres `JsonFileLoader<T>` del modelo no bajó el contador engine. El scanner de fuente es precondición, no veredicto |
-| 3 | **La masa se cuenta neta** | `cuerpo retirado − fuente exacta de reemplazo − kernels compartidos añadidos`. Un refactor mostró `277.983` caracteres gross y solo `2.700` netos |
-| 4 | **El preprocesador servidor cuenta** | una clase entera bajo `#ifndef SERVER` dejó de contarse (`6141→6140`). Analiza con los defines exactos del run; un grep bruto fabrica inventarios falsos |
-| 5 | **El contador `classes` incluye tipos generados** | no es un grep de `class`: `203 = 187 declaraciones + 14 genéricos novedosos + 2 residuales`. La resta dimensiona, no bautiza |
-| 6 | **Anti-redistribución** | reporta Game, World, Mission **y total**. Un recorte de World que crece igual o más en otro módulo, otro PBO o en runtime no resuelve la presión: la desplaza |
-| 7 | **Un PBO no es una arena** | `CfgMods.*ScriptModule.files[]` decide dónde compila un script. Varios PBO que declaran `worldScriptModule` siguen alimentando World: un split de empaquetado con el mismo módulo ahorra **`0 kB`** |
-| 8 | **Solo existen cinco keys de ScriptModule** | Engine, GameLib, Game, World, Mission. Un scan de `1.238` `config.cpp` y `1.098` declaraciones `class *ScriptModule` no encontró ninguna key estática custom |
+| 1 | **Classes are calibrated by family** | observed band ~`5.6..6.6 kB` per engine unit in generic specializations, but a small ordinary class can be worth **`0 kB`**. A global regression of "kB/class" selects the wrong work |
+| 2 | **Generic expression removed ≠ materialization eliminated** | removing three `JsonFileLoader<T>` from the model did not lower the engine counter. The source scanner is a precondition, not a verdict |
+| 3 | **Mass is counted net** | `removed body − exact replacement source − shared kernels added`. A refactor showed `277,983` gross characters and only `2,700` net |
+| 4 | **The server preprocessor counts** | an entire class under `#ifndef SERVER` stopped being counted (`6141→6140`). Analyze with the exact defines of the run; a raw grep manufactures false inventories |
+| 5 | **The `classes` counter includes generated types** | it is not a grep for `class`: `203 = 187 declarations + 14 novel generics + 2 residual`. Subtraction dimensions, does not name |
+| 6 | **Anti-redistribution** | report Game, World, Mission **and total**. A reduction in World that grows equally or more in another module, another PBO, or at runtime does not resolve the pressure: it displaces it |
+| 7 | **A PBO is not an arena** | `CfgMods.*ScriptModule.files[]` decides where a script compiles. Several PBOs declaring `worldScriptModule` still feed World: a packaging split with the same module saves **`0 kB`** |
+| 8 | **Only five ScriptModule keys exist** | Engine, GameLib, Game, World, Mission. A scan of `1,238` `config.cpp` and `1,098` declarations of `class *ScriptModule` found no static custom key |
 
-Referencias del motor para la 7: [Modding
-Structure](https://community.bistudio.com/wiki/DayZ:Modding_Structure) y [Modding
+Engine references for 7: [Modding
+Structure](https://community.bistudio.com/wiki/DayZ:Modding_Structure) and [Modding
 Basics](https://community.bistudio.com/wiki/DayZ:Modding_Basics).
 
-## La palanca que sí funciona: fachada temprana World → Mission
+## The lever that does work: early World → Mission facade
 
-**Medido, dos pares reproducibles, probe sintético de 200 métodos.** Una clase base
-declarada en `4_World` cuyos **cuerpos** viven en una subclase declarada en
-`5_Mission` mantiene esa masa fuera de la arena de World.
+**Measured, two reproducible pairs, synthetic probe of 200 methods.** A base class
+declared in `4_World` whose **bodies** live in a subclass declared in
+`5_Mission` keeps that mass out of the World arena.
 
-**No es un truco: es el patrón canónico de vanilla**, y sus cuatro piezas están
-repartidas entre los dos módulos exactamente como exige el patrón (verificado en
-`P:\scripts` sobre `1.29`):
+**It is not a trick: it is the canonical vanilla pattern**, and its four pieces are
+distributed between the two modules exactly as the pattern requires (verified in
+`P:\scripts` on `1.29`):
 
-- `4_world\classes\missionbaseworld.c:3` — la base, **en World**, declara
-  `GetRainProcurementHandler()` devolviendo `null`;
-- `5_Mission\mission\missionserver.c:822` — el `override` con el cuerpo real,
-  **en Mission**;
-- `4_World\classes\rainprocurementcomponent.c:14` — el call-site llama por el
-  tipo base: `MissionBaseWorld.Cast(g_Game.GetMission()).GetRainProcurementHandler()`;
+- `4_world\classes\missionbaseworld.c:3` — the base, **in World**, declares
+  `GetRainProcurementHandler()` returning `null`;
+- `5_Mission\mission\missionserver.c:822` — the `override` with the real body,
+  **in Mission**;
+- `4_World\classes\rainprocurementcomponent.c:14` — the call-site calls through the
+  base type: `MissionBaseWorld.Cast(g_Game.GetMission()).GetRainProcurementHandler()`;
 - `5_Mission\mission\missionbase.c:1` — `class MissionBase extends MissionBaseWorld`
-  hereda cruzando módulo.
+  inherits across modules.
 
-| | control (cuerpos en World) | candidato (cuerpos en Mission) | movido |
+| | control (bodies in World) | candidate (bodies in Mission) | moved |
 |---|---|---|---|
 | World − baseline | +116 / +118 kB | +53 / +54 kB | **+63 / +64 kB (54 %)** |
 
-**Dos matices que deciden si te sirve:**
+**Two nuances that decide whether it is useful to you:**
 
-- **La cáscara no es gratis.** Las firmas siguen declaradas en World: 53 de los 116
-  kB se quedaron. El porcentaje movido depende de la proporción cuerpo/firma, así
-  que **no se proyecta linealmente entre clases**. El probe tenía 33 % de firmas
-  (200 métodos diminutos); una clase de 49 métodos gordos tiene ~4 % y mueve mucho más.
-- **Es transporte, no reducción.** Mission sube +103 kB y el overhead de firmas
-  duplicadas añade +39 kB. En dos pares con clases reales: World `−139/−140 kB`,
+- **The shell is not free.** Signatures remain declared in World: 53 of the 116
+  kB remained. The percentage moved depends on the body/signature ratio, so
+  it **does not project linearly between classes**. The probe had 33 % signatures
+  (200 tiny methods); a class of 49 fat methods has ~4 % and moves much more.
+- **It is transport, not reduction.** Mission goes up +103 kB and duplicate signature
+  overhead adds +39 kB. In two pairs with real classes: World `−139/−140 kB`,
   Mission `+142/+142 kB`, Game `0`, **total `+3/+2 kB`**.
 
-Cuando World está al 97 % y Mission al 39 %, el servidor falla **por capacidad de
-módulo** aunque sobre memoria total. Reequilibrar es una solución legítima, pero
-llámala **reequilibrio de arena**: no cumple un contrato anti-redistribución.
+When World is at 97 % and Mission at 39 %, the server fails **due to module
+capacity** even if total memory is plenty. Rebalancing is a legitimate solution, but
+call it **arena rebalance**: it does not fulfill an anti-redistribution contract.
 
-**Mission es preferible a Game** para un core de World: se compila después y puede
-nombrar tipos World; Game se compila antes y no puede.
+**Mission is preferable to Game** for a World core: it compiles later and can
+name World types; Game compiles earlier and cannot.
 
-## El puente dinámico, si no puedes usar la fachada
+## The dynamic bridge, if you cannot use the facade
 
-APIs verificadas en `P:\scripts\1_core\proto\enscript.c`, con la doc del propio
-header:
+APIs verified in `P:\scripts\1_core\proto\enscript.c`, with doc from the header
+itself:
 
 - `Call` (`:139`) — *«The call creates new thread, so it's legal to use
   sleep/wait»*;
-- `CallFunction` (`:146`) y `CallFunctionParams` (`:147`) — *«The call do not
+- `CallFunction` (`:146`) and `CallFunctionParams` (`:147`) — *«The call do not
   create new thread!!!!»*;
-- `LoadScript` (`:160`) — crea un child, pero **no** demuestra arena separada ni
-  carga desde VFS/PBO.
+- `LoadScript` (`:160`) — creates a child, but does **not** demonstrate separate arena nor
+  loading from VFS/PBO.
 
-Patrón obligatorio: una llamada por **evento grueso** (nunca por getter), nombre de
-función fijo no derivado del cliente, resultado comprobado, **fail-closed antes de
-cualquier side effect**, warning rate-limited y **cero dispatch en ticks, loops,
-scans, timers o callbacks periódicos**.
+Mandatory pattern: one call per **coarse event** (never per getter), fixed function
+name not derived from the client, checked result, **fail-closed before
+any side effect**, rate-limited warning, and **zero dispatch in ticks, loops,
+scans, timers, or periodic callbacks**.
 
-Diferencia con la fachada: el puente solo admite islas **sin llamadores desde
-World**; la fachada es despacho virtual normal y no toca los call-sites.
+Difference with the facade: the bridge only allows islands **without callers from
+World**; the facade is normal virtual dispatch and does not touch call-sites.
 
-**Un módulo hijo puede tener su propia arena, pero eso no es ahorro.** El `init.c`
-de misión aparece como módulo separado con `1 file`, `1 class`. Si un cambio reduce
-World y el coste reaparece en un child que no cuentas, el total de tres módulos
-deja de ser completo: es reubicación no contabilizada.
+**A child module can have its own arena, but that is not savings.** Mission
+`init.c` appears as a separate module with `1 file`, `1 class`. If a change reduces
+World and the cost reappears in a child you do not count, the three-module total
+ceases to be complete: it is unaccounted relocation.
 
-## Método: dos reglas que generalizan fuera de DayZ
+## Method: two rules that generalize outside DayZ
 
-**Un experimento de «quitar coste» necesita control positivo.** Un probe de dos
-variantes —sin la cosa y con la cosa— produce un **cero ambiguo**: si el candidato
-no mueve la métrica, no distingues «el mecanismo funciona» de «el probe no medía
-nada» (clase descartada por no referenciada, fichero fuera del módulo, build que no
-cogió el cambio). **Tres variantes siempre: baseline / control positivo /
-candidato.** El control mete la masa por la vía convencional y **debe** mover la
-métrica; si no lo hace, el experimento es `VOID` y el candidato no se lee. Y
-**escribe la predicción numérica de las tres filas antes de medir**: un experimento
-cuya predicción se redacta después no puede fallar.
+**A "cost-removal" experiment needs a positive control.** A probe of two
+variants —without the thing and with the thing— produces an **ambiguous zero**: if the candidate
+does not move the metric, you cannot distinguish "the mechanism works" from "the probe was measuring
+nothing" (class discarded as unreferenced, file outside the module, build that did not
+pick up the change). **Always three variants: baseline / positive control /
+candidate.** The control injects mass through the conventional route and **must** move the
+metric; if it does not, the experiment is `VOID` and the candidate is not read. And
+**write the numerical prediction of the three rows before measuring**: an experiment
+whose prediction is drafted afterward cannot fail.
 
-**Un piloto mínimo debe poder falsar.** Gate típico: módulos completos, contador
-esperado, ahorro World `>=4 kB`, Game/Mission sin crecimiento, ahorro total `>=`
-ahorro World, oráculo funcional, stop exacto y cleanup. Y separa siempre los dos
-veredictos del piloto: **mecanismo** (World baja, el resto cuadra, el
-comportamiento pasa) y **escala** (la densidad medida aplicada a la masa realmente
-trasladable alcanza el objetivo con margen). Un mecanismo que da `>=4 kB` no
-autoriza escalar.
+**A minimal pilot must be able to falsify.** Typical gate: full modules, expected
+counter, World savings `>=4 kB`, Game/Mission without growth, total savings `>=`
+World savings, functional oracle, exact stop, and cleanup. And always separate the pilot's
+two verdicts: **mechanism** (World drops, the rest adds up, behavior
+passes) and **scale** (the measured density applied to the mass truly
+transferable reaches the target with margin). A mechanism yielding `>=4 kB` does
+not authorize scaling.
 
-## Señales de STOP
+## STOP signals
 
-- El upper depende de borrar comportamiento que luego debe reaparecer en otra clase.
-- La propuesta añade loops, scans, timers, callbacks o dispatch para sustituir
-  coste estático sin un Intent explícito.
-- La familia mezcla clases shell, templates y clases grandes.
-- El contador baja pero World no supera la cuantización.
-- El ahorro total es menor que el ahorro de World.
-- Un hash deriva, o el candidato medido no es el build normal.
+- The upper depends on deleting behavior that must later reappear in another class.
+- The proposal adds loops, scans, timers, callbacks, or dispatch to substitute
+  static cost without an explicit Intent.
+- The family mixes shell classes, templates, and large classes.
+- The counter drops but World does not exceed quantization.
+- Total savings is less than World savings.
+- A hash drifts, or the measured candidate is not the normal build.
 
-## Congelar el stack significa congelar PBOs
+## Freezing the stack means freezing PBOs
 
-Una línea `-mod` prueba orden y raíces, **no** qué PBOs existían dentro de cada
-raíz. Para un gate fail-closed la identidad mínima de cada input es: ruta y orden
-del mod; conjunto exacto de PBOs bajo esa raíz; tamaño y SHA-256 de cada uno;
-digest de su listado de miembros; manifiesto explícito de cero archivos para raíces
-vacías; y **el mismo manifiesto antes y después de cada run**. Si falta cualquiera,
-escribe `INVENTORY_INCOMPLETE` — nunca lo conviertas en «cero consumers».
+A `-mod` line proves order and roots, **not** which PBOs existed inside each
+root. For a fail-closed gate the minimum identity of each input is: mod path and
+order; exact set of PBOs under that root; size and SHA-256 of each;
+digest of its member listing; explicit zero-file manifest for empty
+roots; and **the same manifest before and after each run**. If any is missing,
+write `INVENTORY_INCOMPLETE` — never turn it into "zero consumers".
 
-**Con `-filePatching`, «mod vacío» significa árbol recursivo vacío.** Comprobar
-solo `Addons\*.pbo` no congela un mod: un script suelto, un subdirectorio
-inesperado o un reparse point cambia el input efectivo aunque el conteo de PBOs sea
-cero.
+**With `-filePatching`, "empty mod" means empty recursive tree.** Checking
+only `Addons\*.pbo` does not freeze a mod: a stray script, an unexpected
+subdirectory, or a reparse point changes the effective input even if the PBO count is
+zero.
 
-**Un control positivo distingue «cero hits» de «búsqueda rota».** Al auditar si
-alguien externo referencia tus classnames, corre el detector contra un artefacto
-que **sí** los contiene. Si el control no encuentra nada, el cero del resto no
-significa nada.
+**A positive control distinguishes "zero hits" from "broken search".** When auditing whether
+anyone external references your classnames, run the detector against an artifact
+that **does** contain them. If the control finds nothing, zero from the rest
+means nothing.

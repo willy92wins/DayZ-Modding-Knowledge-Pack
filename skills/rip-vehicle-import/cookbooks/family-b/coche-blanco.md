@@ -1,6 +1,6 @@
 # Cookbook B — coche blanco
 
-> Familia B. Los dos bloques se movieron sin reescritura en CAMBIO-1; la separación entre ellos es costura documental.
+> Family B. Both blocks were moved without rewriting in CAMBIO-1; separation between them is documentary seam.
 
 <!-- MOVED-EXACT source="dayz-vehicles/SKILL.md:554" sha256="B09D90BB657DFDFC4FA85AF17DB0FE6A99DC8A05C8860C9723FF40DDA7700029" -->
 12. **AddonBuilder `-include` REPLACES its default copy-list — a binarize build with scripts AND

@@ -20,41 +20,41 @@
 
 ## Contexto
 
-El usuario exige que todo conocimiento reunido permanezca también en Obsidian y
-en las skills, además de incorporarse al repositorio. Tratar esas tres
-superficies como fuentes editables equivalentes repetiría BUG-001: hoy las
-catorce skills del baseline ya divergen de sus copias locales.
+The user requires that all gathered knowledge also remain in Obsidian and
+in the skills, in addition to being incorporated into the repository. Treating those three
+surfaces as equivalent editable sources would repeat BUG-001: today the
+fourteen baseline skills already diverge from their local copies.
 
-## Decisión
+## Decision
 
-Cada superficie tiene un rol distinto:
+Each surface has a distinct role:
 
-1. **Git** es la única fuente del pack distribuible y de cualquier ZIP/release.
-2. **Obsidian** conserva la memoria durable completa: evidencia, rutas locales,
-   research, decisiones, unknowns y la versión privada de cada invariante.
-3. **Skills instaladas** son despliegues operativos generados desde un commit
-   validado; no se editan como fuentes independientes.
+1. **Git** is the sole source of the distributable pack and of any ZIP/release.
+2. **Obsidian** preserves the complete durable memory: evidence, local paths,
+   research, decisions, unknowns, and the private version of each invariant.
+3. **Installed skills** are operational deployments generated from a validated
+   commit; they are not edited as independent sources.
 
-Todo conocimiento aceptado debe tener un routing durable:
+All accepted knowledge must have durable routing:
 
-- repo y Obsidian son obligatorios;
-- una invariante de dominio debe llegar además a su skill activa;
-- `not_applicable` solo se permite para gobierno o tooling sin consumidor de
-  skill, con motivo explícito;
-- la variante pública se sanitiza; la evidencia privada permanece en Obsidian.
+- repo and Obsidian are mandatory;
+- a domain invariant must also reach its active skill;
+- `not_applicable` is only permitted for governance or tooling without a skill
+  consumer, with an explicit reason;
+- the public variant is sanitized; private evidence remains in Obsidian.
 
-La promoción usa targets lógicos versionados y roots físicos en configuración
-local no versionada. Se ejecuta únicamente después de los gates mediante
-staging, validación del árbol completo, replace en targets allowlisted y
-readback por hash. Cada promoción produce un recibo con commit fuente, hashes,
-IDs de destino y fecha, sin rutas privadas.
+Promotion uses versioned logical targets and physical roots in unversioned
+local configuration. It executes only after gates via
+staging, full-tree validation, replace on allowlisted targets, and
+hash readback. Each promotion produces a receipt with source commit, hashes,
+destination IDs, and date, without private paths.
 
 ## Consecuencias
 
-- Ninguna fase se cierra con `PROMOTION-UNROUTED` o `PROMOTION-DRIFT`.
-- La fase 01 reconcilia las copias existentes antes de la primera promoción.
-- Un hallazgo privado puede conservar más detalle en Obsidian, pero su
-  invariante depersonalizada debe llegar al repo y a la skill aplicable.
-- Los documentos de gobierno no se fuerzan dentro de una skill; quedan
-  explícitamente `not_applicable`.
-- Una promoción parcial o un target no verificado no se presenta como éxito.
+- No phase closes with `PROMOTION-UNROUTED` or `PROMOTION-DRIFT`.
+- Phase 01 reconciles existing copies before the first promotion.
+- A private finding may retain more detail in Obsidian, but its
+  depersonalized invariant must reach the repo and applicable skill.
+- Governance documents are not forced into a skill; they remain
+  explicitly `not_applicable`.
+- A partial promotion or unverified target is not presented as a success.

@@ -1,25 +1,25 @@
-# 04 — Vehículos y Sincronización de Red (Transport / CarScript)
-> DayZ Standalone v1.24 · Enforce Script descompilado · 2026-06-06  
-> Fuente de verdad: `<dayz-projects>\scripts\`  
-> Anti-confabulación: toda clase/firma verificada con Grep/Read + ruta:línea
+# 04 — Vehicles and Network Synchronization (Transport / CarScript)
+> DayZ Standalone v1.24 · Decompiled Enforce Script · 2026-06-06  
+> Source of truth: `<dayz-projects>\scripts\`  
+> Anti-confabulation: every class/signature verified with Grep/Read + path:line
 
 ---
 
 ## Resumen Ejecutivo
 
-El sistema de vehículos de DayZ está construido en tres capas:
+DayZ vehicle system is built across three layers:
 
-1. **Transport (nativo + script)** — clase base de todos los vehículos; hereda de `Pawn` (con `FEATURE_NETWORK_RECONCILIATION` activo) o de `EntityAI` en builds sin esa feature. Es el nivel donde ocurre la **magia de red**: Transport registra `TransportOwnerState` / `TransportMove` y usa `NetworkMoveStrategy.NONE` (tick de red propio, totalmente nativo — no el sistema de reconciliación de jugadores).
-2. **Car / Boat / Helicopter (nativo)** — clases que heredan de Transport y exponen la API de física (throttle, steering, brake, fluidos, marchas). Toda la simulación es nativa (C++/PhysX); el script sólo llama a setters.
-3. **CarScript / BoatScript / HelicopterScript (script puro)** — wrappers script que añaden daño por contacto, fluidos, luces, partículas, sonido, temperatura. Los caches de daño (`m_ContactCache`) sólo corren en server.
+1. **Transport (native + script)** — base class of all vehicles; inherits from `Pawn` (with active `FEATURE_NETWORK_RECONCILIATION`) or from `EntityAI` in builds without that feature. This is the level where **network magic** occurs: Transport registers `TransportOwnerState` / `TransportMove` and uses `NetworkMoveStrategy.NONE` (own network tick, entirely native — not the player reconciliation system).
+2. **Car / Boat / Helicopter (native)** — classes inheriting from Transport and exposing physics API (throttle, steering, brake, fluids, gears). All simulation is native (C++/PhysX); script only calls setters.
+3. **CarScript / BoatScript / HelicopterScript (pure script)** — script wrappers adding contact damage, fluids, lights, particles, sound, temperature. Damage caches (`m_ContactCache`) run on server only.
 
-La **sincronización de posición/rotación** de un Transport no es "magia de ItemBase" ni usa `SetSynchDirty()`; es una propiedad intrínseca del tipo nativo `Pawn`/Transport que el engine sincroniza de forma continua (posición + velocidades linear/angular) a todos los clientes.
+Position/rotation **synchronization** of a Transport is not "ItemBase magic" nor does it use `SetSynchDirty()`; it is an intrinsic property of native `Pawn`/Transport type that the engine synchronizes continuously (position + linear/angular velocities) to all clients.
 
 ---
 
 ## API Verificada
 
-### Jerarquía de herencia
+### Inheritance hierarchy
 
 ```
 EntityAI
@@ -38,32 +38,32 @@ EntityAI
             └── HelicopterScript                     helicopterscript.c:4
 ```
 
-Sin `FEATURE_NETWORK_RECONCILIATION` el árbol es `EntityAI → Transport → …` (sin `Pawn`).  
-Define activo en v1.24: `1_core/defines.c:64` (documentación-only; se activa desde C++).
+Without `FEATURE_NETWORK_RECONCILIATION` the tree is `EntityAI → Transport → …` (without `Pawn`).  
+Define active in v1.24: `1_core/defines.c:64` (documentation-only; activated from C++).
 
 ---
 
 ### Transport — API clave
 
-| Método | Firma | Nota |
+| Method | Signature | Note |
 |--------|-------|------|
-| `Synchronize()` | `proto native void Synchronize()` | transport.c:109 — fuerza sync de estado cuando la simulación no está corriendo |
+| `Synchronize()` | `proto native void Synchronize()` | transport.c:109 — forces state sync when simulation is not running |
 | `CrewSize()` | `proto native int CrewSize()` | transport.c:112 |
-| `CrewPositionIndex(int componentIdx)` | `proto native int` | transport.c:116 — mapea component index del raycast a seat index |
-| `CrewMemberIndex(Human player)` | `proto native int` | transport.c:120 — returns -1 si no está dentro |
-| `CrewMember(int posIdx)` | `proto native Human` | transport.c:124 — null si vacío |
+| `CrewPositionIndex(int componentIdx)` | `proto native int` | transport.c:116 — maps raycast component index to seat index |
+| `CrewMemberIndex(Human player)` | `proto native int` | transport.c:120 — returns -1 if not inside |
+| `CrewMember(int posIdx)` | `proto native Human` | transport.c:124 — null if empty |
 | `CrewDriver()` | `proto native Human` | transport.c:128 |
 | `CrewGetIn(Human player, int posIdx)` | `proto native void` | transport.c:143 |
 | `CrewGetOut(int posIdx)` | `proto native Human` | transport.c:146 |
 | `CrewDeath(int posIdx)` | `proto native void` | transport.c:149 |
-| `ApplyForce/Torque/Impulse…` | `proto void` | transport.c:197-212 — física determinista |
-| `Random/RandomRange/Random01` | `proto native` | transport.c:220-233 — solo usar en EOnSimulate/EOnPostSimulate |
-| `OnContact(zoneName, localPos, other, data)` | `void` | transport.c:252 — callback de colisión |
-| `OnInput(float dt)` | `void` | transport.c:262 — llamado tras cada paso de input |
-| `OnUpdate(float dt)` | `void` | transport.c:268 — cada frame (cliente) / tasa fija (server) |
+| `ApplyForce/Torque/Impulse…` | `proto void` | transport.c:197-212 — deterministic physics |
+| `Random/RandomRange/Random01` | `proto native` | transport.c:220-233 — only use in EOnSimulate/EOnPostSimulate |
+| `OnContact(zoneName, localPos, other, data)` | `void` | transport.c:252 — collision callback |
+| `OnInput(float dt)` | `void` | transport.c:262 — called after each input step |
+| `OnUpdate(float dt)` | `void` | transport.c:268 — every frame (client) / fixed rate (server) |
 | `IsTransport()` | `override bool → true` | transport.c:273 |
 
-### Car — API de física por script
+### Car — script physics API
 
 ```cpp
 // car.c — todos proto native, verificados
@@ -82,7 +82,7 @@ proto native bool  EngineIsOn();
 proto native void  EngineStart();
 proto native void  EngineStop();
 proto native int   GetCurrentGear();          // ver enum CarGear (REVERSE, NEUTRAL, FIRST…SIXTEENTH)
-proto native int   GetGear();                 // gear futuro (antes de aplicar)
+proto native int   GetGear();                 // future gear (before applying)
 proto native int   GetNeutralGear();
 proto native int   GetGearCount();
 proto native void  ShiftUp/ShiftDown/ShiftTo(int gear);
@@ -103,13 +103,13 @@ proto native vector WheelGetContactPosition(int idx);
 
 ### CarController — OBSOLETO
 
-`GetController()` está marcado `[Obsolete("Use methods directly on Car")]` — `car.c:440`.  
-`CarController` existe como clase legada compatible hacia atrás: `car.c:464-497`. No usar en mods nuevos.
+`GetController()` is marked `[Obsolete("Use methods directly on Car")]` — `car.c:440`.  
+`CarController` exists as backwards-compatible legacy class: `car.c:464-497`. Do not use in new mods.
 
-### EOnPostSimulate — firma y dónde corre
+### EOnPostSimulate — signature and where it runs
 
 ```cpp
-// carscript.c:325 — se registra en el constructor:
+// carscript.c:325 — registered in constructor:
 SetEventMask(EntityEvent.POSTSIMULATE);
 SetEventMask(EntityEvent.POSTFRAME);
 
@@ -119,7 +119,7 @@ override void EOnPostSimulate(IEntity other, float timeSlice)
     m_Time += timeSlice;
     if (g_Game.IsServer())
     {
-        CheckContactCache();         // aplica daño acumulado de colisiones
+        CheckContactCache();         // applies accumulated collision damage
         m_VelocityPrevTick = GetVelocity(this);
         m_MomentumPrevTick = GetMomentum();
     }
@@ -127,17 +127,17 @@ override void EOnPostSimulate(IEntity other, float timeSlice)
 }
 ```
 
-`EOnPostSimulate` corre en **server y cliente**. La sección de daño (`CheckContactCache`) y drenaje de fluidos está guardada por `g_Game.IsServer()`. Los efectos visuales están en `!g_Game.IsDedicatedServer()`. La función `IsServerOrOwner()` (carscript.c:3222) devuelve `IsServer()` para networking clásico o `IsOwner()` cuando `NetworkMoveStrategy == PHYSICS`.
+`EOnPostSimulate` runs on **server and client**. The damage section (`CheckContactCache`) and fluid draining is guarded by `g_Game.IsServer()`. Visual effects are in `!g_Game.IsDedicatedServer()`. The `IsServerOrOwner()` function (carscript.c:3222) returns `IsServer()` for classic networking or `IsOwner()` when `NetworkMoveStrategy == PHYSICS`.
 
-`EOnSimulate` no está en carscript.c ni en transport.c — la simulación de física es enteramente **nativa**. El script no sobreescribe el loop de física.
+`EOnSimulate` is not in carscript.c or transport.c — physics simulation is entirely **native**. Script does not override physics loop.
 
-### OnInput y OnUpdate
+### OnInput and OnUpdate
 
 ```cpp
 // carscript.c:1303
-override void OnInput(float dt)  // llamado por el engine para que el script aplique controles
+override void OnInput(float dt)  // called by engine for script to apply controls
 {
-    // (en DIAG: modo automático de test)
+    // (in DIAG: automatic test mode)
     SetThrottle(thrustWanted);
     SetSteering(steeringWanted);
     SetBrake(0.0);
@@ -150,52 +150,52 @@ override void OnUpdate(float dt)
     Human driver = CrewDriver();
     if (driver && !driver.IsControllingVehicle())
         if (driver.IsAlive())
-            SetBrake(0.5);     // frena si el conductor está inconsciente
+            SetBrake(0.5);     // brakes if driver is unconscious
 }
 ```
 
-En condiciones normales (sin código de test), `CarScript.OnInput` sólo actúa si el conductor es una IA de prueba. El conductor humano controla el vehículo por su propia entrada (la física nativa lee el input del jugador directamente).
+Under normal conditions (without test code), `CarScript.OnInput` only acts if driver is test AI. Human driver controls vehicle via own input (native physics reads player input directly).
 
 ---
 
 ## Config CfgVehicles [WEB]
 
-La estructura de config para vehículos usa `SimulationModule` y es completamente declarativa (no existe en los scripts descompilados; está en los archivos `config.cpp` de los addons P3D).  
-Referencia: https://community.bistudio.com/wiki/DayZ:Vehicle_Configuration
+Config structure for vehicles uses `SimulationModule` and is completely declarative (does not exist in decompiled scripts; lives in `config.cpp` files of P3D addons).  
+Reference: https://community.bistudio.com/wiki/DayZ:Vehicle_Configuration
 
-Clases relevantes confirmadas por convención de naming en scripts (verificadas indirectamente):
+Relevant classes confirmed by naming convention in scripts (indirectly verified):
 
-- `class SimulationModule` — parámetros de física PhysX del vehículo completo
-  - `axles[]` — lista de ejes (front/rear), cada uno con `wheels[]`
-  - Dentro de cada rueda: `steerAngle`, `frictionCoef`, `dampingRate`
+- `class SimulationModule` — vehicle-wide PhysX physics parameters
+  - `axles[]` — axle list (front/rear), each with `wheels[]`
+  - Inside each wheel: `steerAngle`, `frictionCoef`, `dampingRate`
   - `engine {}` — `torque[][]`, `RPMMin`, `RPMIdle`, `RPMMax`, `RPMRedline`
-  - `gearbox {}` — tipo (MANUAL/AUTOMATIC), relaciones de marcha
+  - `gearbox {}` — type (MANUAL/AUTOMATIC), gear ratios
   - `clutch {}` — `maxRPMDrop`, `engagingSpeed`
   - `brakes {}` — `torqueMax`
   - `aerodynamics {}` — `dragCoef`, `frontalArea`
   - `drive` — `DRIVE_AWD`, `DRIVE_FWD`, `DRIVE_RWD`
-- `inventorySlots[]` — slots de ruedas (para attachment de `CarWheel`)
+- `inventorySlots[]` — wheel slots (for `CarWheel` attachment)
 - `attachments[]` — `CarRadiator`, `CarBattery`, `SparkPlug`, `GlowPlug`
-- `dmgZones` — zonas de daño (Engine, FuelTank, ruedas, fenders, etc.)
+- `dmgZones` — damage zones (Engine, FuelTank, wheels, fenders, etc.)
 
-Los enums `CarFluid` (FUEL/OIL/BRAKE/COOLANT) y `CarGear` sí existen en scripts y determinan el comportamiento de los fluidos y la caja de cambios por script.
+Enums `CarFluid` (FUEL/OIL/BRAKE/COOLANT) and `CarGear` do exist in scripts and determine fluid and gearbox behavior via script.
 
 ---
 
-## ⚠️ Netsync de Transport — Por qué Replica y ItemBase No
+## ⚠️ Transport Netsync — Why It Replicates and ItemBase Does Not
 
-### La diferencia fundamental
+### The fundamental difference
 
 ```
 Transport extends Pawn extends EntityAI    ← transport.c:52-53
 ItemBase extends EntityAI                  ← NO es Pawn
 ```
 
-**`Pawn`** es el tipo nativo que el engine trata como entidad "poseída" o controlada con movimiento continuo de red. La clase `Pawn` tiene:
+**`Pawn`** is the native type treated by the engine as a "possessed" or controlled entity with continuous network movement. Class `Pawn` has:
 
-- `GetOwnerStateType()` → devuelve `PawnOwnerState` — contiene posición/velocidades en una snapshot comprimida para corrección de desync — `pawn.c:238`
-- `GetMoveType()` → devuelve `PawnMove` — el paquete de movimiento enviado cada tick — `pawn.c:246`
-- `GetNetworkMoveStrategy()` → devuelve la estrategia activa (`NONE`, `LATEST`, `PHYSICS`) — `pawn.c:218`
+- `GetOwnerStateType()` → returns `PawnOwnerState` — contains position/velocities in a compressed snapshot for desync correction — `pawn.c:238`
+- `GetMoveType()` → returns `PawnMove` — movement packet sent each tick — `pawn.c:246`
+- `GetNetworkMoveStrategy()` → returns active strategy (`NONE`, `LATEST`, `PHYSICS`) — `pawn.c:218`
 
 **Transport** sobreescribe estos tipos:
 
@@ -205,23 +205,23 @@ protected override event typename GetOwnerStateType() { return TransportOwnerSta
 protected override event typename GetMoveType()        { return TransportMove;       }
 ```
 
-`TransportOwnerState` tiene `SetWorldTransform/GetWorldTransform`, `SetLinearVelocity/GetLinearVelocity`, `SetAngularVelocity/GetAngularVelocity` — `transport.c:13-30`. Estos campos son los que el engine nativo serializa y envía a clientes proxy en cada tick de red de vehículos.
+`TransportOwnerState` has `SetWorldTransform/GetWorldTransform`, `SetLinearVelocity/GetLinearVelocity`, `SetAngularVelocity/GetAngularVelocity` — `transport.c:13-30`. These fields are what the native engine serializes and sends to proxy clients on each vehicle network tick.
 
-El comentario en transport.c:52 dice explícitamente:
+The comment in transport.c:52 explicitly states:
 ```
 //! Uses NetworkMoveStrategy.NONE
 class Transport extends Pawn
 ```
-`NetworkMoveStrategy.NONE` significa que **no usa el sistema de reconciliación de cliente** (el mismo que usa el jugador). En cambio, el engine emplea su propio mecanismo de sincronización de física de vehículos (propietario del servidor, proxy en clientes), que replica posición + velocidades de forma continua a todos los proxies.
+`NetworkMoveStrategy.NONE` means that **it does not use the client reconciliation system** (the same one used by player). Instead, engine uses its own vehicle physics synchronization mechanism (server owner, proxy on clients), replicating position + velocities continuously to all proxies.
 
-### Por qué ItemBase con dBody dinámico NO replica automáticamente
+### Why ItemBase with dynamic dBody does NOT replicate automatically
 
-- `ItemBase` hereda de `EntityAI`, no de `Pawn`. El engine no sabe que debe tratar su transform como "estado de red continuo".
-- El sistema `SetSynchDirty()` / `RegisterNetSyncVariable*` es un mecanismo de RPC de estado discreto (por cambio de valor), no un stream continuo de posición/velocidad.
-- Un `dBody` dinámico sobre `ItemBase` tiene física en el servidor pero el cliente no recibe el transform en tiempo real — sólo lo actualiza cuando el item entra en su área de interés y en eventos de resync periódico.
-- **Por eso el comportamiento "PASS provisional"** del proyecto (el cliente vio rodar la piedra en test S1) puede ser un artefacto de latencia baja + frecuencia de resync alta en red local / singleplayer, o de algún mecanismo de replicación de EntityAI que no está documentado en scripts.
+- `ItemBase` inherits from `EntityAI`, not `Pawn`. The engine does not know it must treat its transform as "continuous network state".
+- The `SetSynchDirty()` / `RegisterNetSyncVariable*` system is a discrete state RPC mechanism (per value change), not a continuous position/velocity stream.
+- A dynamic `dBody` on `ItemBase` has physics on server but client does not receive transform in real time — only updates when item enters its area of interest and on periodic resync events.
+- **That is why the "provisional PASS" behavior** of project (client saw stone roll in S1 test) may be an artifact of low latency + high resync frequency on local network / singleplayer, or of some EntityAI replication mechanism undocumented in scripts.
 
-### Métodos de red relevantes en Transport
+### Relevant network methods in Transport
 
 ```cpp
 // transport.c:108-109
@@ -229,22 +229,22 @@ class Transport extends Pawn
 proto native void Synchronize();
 ```
 
-Este `Synchronize()` es un "force push" de estado para cuando el vehículo no está en simulación activa (ej: acaba de ser activado, o el driver salió y el coche quedó quieto). Confirma que la sincronización normal es continua por el engine, y esto es un override manual.
+This `Synchronize()` is a state "force push" for when vehicle is not in active simulation (e.g.: just activated, or driver exited and car remained still). Confirms normal synchronization is continuous by engine, and this is a manual override.
 
 ```cpp
 // transport.c:579-583
 void SetEngineZoneReceivedHit(bool pState)
 {
     m_EngineZoneReceivedHit = pState;
-    SetSynchDirty();  // <- usa el sistema de netSyncVar para estado discreto
+    SetSynchDirty();  // <- uses netSyncVar system for discrete state
 }
 ```
 
-Transport usa AMBOS sistemas: el stream nativo de posición (vía Pawn) Y `SetSynchDirty()` para variables de estado (luces, daño de motor, etc.).
+Transport uses BOTH systems: native position stream (via Pawn) AND `SetSynchDirty()` for state variables (lights, engine damage, etc.).
 
 ---
 
-## Daño en CarScript
+## Damage in CarScript
 
 ### OnContact + CheckContactCache
 
@@ -254,7 +254,7 @@ override void OnContact(string zoneName, vector localPos, IEntity other, Contact
 {
     if (g_Game.IsServer())
     {
-        if (m_ContactCache.Count() == 0)  // sólo primera zona por frame
+        if (m_ContactCache.Count() == 0)  // first zone per frame only
         {
             float momentumDelta = GetMomentum() - m_MomentumPrevTick;
             float dot = vector.Dot(m_VelocityPrevTick.Normalized(), GetVelocity(this).Normalized());
@@ -265,9 +265,9 @@ override void OnContact(string zoneName, vector localPos, IEntity other, Contact
 }
 ```
 
-`OnContact` sólo corre en server (`g_Game.IsServer()`). Usa la **variación de momento** (delta de momentum = cambio en velocidad × masa) como proxy del impulso de colisión. El `Contact data` struct tiene `data.Impulse` (carscript.c:1462).
+`OnContact` only runs on server (`g_Game.IsServer()`). Uses **momentum variation** (momentum delta = change in velocity × mass) as proxy for collision impulse. The `Contact data` struct has `data.Impulse` (carscript.c:1462).
 
-El procesamiento real ocurre en `CheckContactCache()` llamado desde `EOnPostSimulate`:
+Actual processing occurs in `CheckContactCache()` called from `EOnPostSimulate`:
 
 ```cpp
 // carscript.c:1482-1588
@@ -276,7 +276,7 @@ void CheckContactCache()
     float dmg = Math.AbsInt(data[0].impulse * m_dmgContactCoef);  // m_dmgContactCoef = 0.058 (carscript.c:198)
     float crewDmgBase = Math.AbsInt((data[0].impulse / dBodyGetMass(this)) * 1000 * m_dmgContactCoef);
     
-    if (dmg < GameConstants.CARS_CONTACT_DMG_MIN) continue;    // umbral mínimo
+    if (dmg < GameConstants.CARS_CONTACT_DMG_MIN) continue;    // minimum threshold
     
     if (dmg < GameConstants.CARS_CONTACT_DMG_THRESHOLD)
         SynchCrashLightSound(true);    // choque leve
@@ -290,37 +290,37 @@ void CheckContactCache()
 }
 ```
 
-Las **zonas de daño** (Engine, FuelTank, fenders, front, back) se mapean desde memoria points del modelo (`dmgZone_engine`, `dmgZone_front`, etc.) — carscript.c:393-426.
+**Damage zones** (Engine, FuelTank, fenders, front, back) are mapped from model memory points (`dmgZone_engine`, `dmgZone_front`, etc.) — carscript.c:393-426.
 
 ### Daño a tripulación
 
-`DamageCrew(float dmg)` — carscript.c:1592. Si `dmg > CARS_CONTACT_DMG_KILLCREW` → `player.SetHealth(0.0)`. De lo contrario, calcula shock + HP via `Math.InverseLerp`.
+`DamageCrew(float dmg)` — carscript.c:1592. If `dmg > CARS_CONTACT_DMG_KILLCREW` → `player.SetHealth(0.0)`. Otherwise, calculates shock + HP via `Math.InverseLerp`.
 
-### EEHitBy en Transport
+### EEHitBy in Transport
 
-`Transport.EEHitBy` activa `SetEngineZoneReceivedHit(dmgZone == "Engine")` — transport.c:84-89. Este flag se sincroniza vía `SetSynchDirty()`.
+`Transport.EEHitBy` activates `SetEngineZoneReceivedHit(dmgZone == "Engine")` — transport.c:84-89. This flag is synchronized via `SetSynchDirty()`.
 
 ---
 
 ## Patrones Vanilla
 
-### OnInput: física completamente nativa, script sólo lee/escribe
+### OnInput: fully native physics, script only reads/writes
 
-El patrón estándar para mods que quieran modificar comportamiento de conducción:
+The standard pattern for mods that want to modify driving behavior:
 
 ```cpp
 override void OnInput(float dt)
 {
-    super.OnInput(dt);         // importante: dejar correr la lógica base
+    super.OnInput(dt);         // important: let base logic run
     // leer state: GetThrottle(), GetSteering()
     // modificar: SetThrottle(newVal), SetSteering(newVal)
 }
 ```
 
-### Fluidos por script
+### Fluids via script
 
 ```cpp
-// Llenar en debug spawn (patrón de offroadhatchback/boat_01):
+// Fill on debug spawn (offroadhatchback/boat_01 pattern):
 float amount = GetFluidCapacity(CarFluid.FUEL);
 Fill(CarFluid.FUEL, amount);
 
@@ -330,102 +330,102 @@ if (GetFluidFraction(CarFluid.FUEL) <= 0)
 
 // Leak progresivo:
 if (m_FuelTankHealth < GameConstants.DAMAGE_DAMAGED_VALUE)
-    LeakFluid(CarFluid.FUEL);  // wrapper que llama Leak() con tasa
+    LeakFluid(CarFluid.FUEL);  // wrapper that calls Leak() with rate
 ```
 
-### Temperatura de motor (patrón UTSource)
+### Engine temperature (UTSource pattern)
 
-Todos los coches vanilla (OffroadHatchback, Truck_02, Van_01, etc.) instancian `UniversalTemperatureSource` en `EEInit` sólo en server/SP, la actualizan en `EOnPostSimulate` y la activan/desactivan en `OnEngineStart/Stop`. El cliente no toca UTSource.
+All vanilla cars (OffroadHatchback, Truck_02, Van_01, etc.) instantiate `UniversalTemperatureSource` in `EEInit` only on server/SP, update it in `EOnPostSimulate`, and activate/deactivate it in `OnEngineStart/Stop`. The client does not touch UTSource.
 
 ### Boarding completo
 
-1. Jugador mira el vehículo → raycast llega a componente de modelo.
-2. `ActionGetInTransport.ActionCondition` verifica: `trans.CrewPositionIndex(componentIndex)` >= 0 y seat vacío — actiongetintransport.c:50-80.
-3. En `Start()`: `player.StartCommand_Vehicle(trans, crew_index, seat)` → crea `HumanCommandVehicle`.
-4. En server (`OnStartServer`): actualiza luces.
-5. Para salir: `ActionGetOutTransport` + `OnVehicleJumpOutServer` calcula daño por velocidad al desembarcar — carscript.c:1217-1291.
+1. Player looks at the vehicle → raycast hits model component.
+2. `ActionGetInTransport.ActionCondition` verifies: `trans.CrewPositionIndex(componentIndex)` >= 0 and empty seat — actiongetintransport.c:50-80.
+3. In `Start()`: `player.StartCommand_Vehicle(trans, crew_index, seat)` → creates `HumanCommandVehicle`.
+4. On server (`OnStartServer`): updates lights.
+5. To exit: `ActionGetOutTransport` + `OnVehicleJumpOutServer` calculates speed damage when disembarking — carscript.c:1217-1291.
 
 ---
 
 ## Gotchas
 
-1. **`OnContact` sólo corre en server** — carscript.c:1456. No hay callback de colisión en cliente para coches.
-2. **`EOnPostSimulate` corre en ambos** — pero la mayoría de lógica está guardada por `g_Game.IsServer()`.
-3. **`Random/RandomRange/Random01` sólo en EOnSimulate/EOnPostSimulate** — transport.c:216-237. Usarlos fuera de esos callbacks rompe el determinismo.
-4. **`GetController()` está obsoleto** — usar métodos directos de `Car` (SetThrottle, SetSteering, etc.).
-5. **`IsServerOrOwner()`** — carscript.c:3222. Con networking nuevo (`NetworkMoveStrategy.PHYSICS`), el "owner" (cliente que conduce) también ejecuta la simulación. Con networking clásico, sólo el server.
-6. **`dBodyApplyImpulseAt` en ActionPushCar** — actionpushcar.c:52. Usa la API dBody global (no la del Transport); el resultado se propaga porque el physics body sí existe en server y Transport lo replica.
-7. **`Synchronize()`** — llamar manualmente cuando el vehículo pasa de estado estático a activo, para forzar snapshot.
-8. **`CarContactData` usa `momentumDelta` como "impulso"** — no es el `data.Impulse` del Contact struct en el cálculo principal; es `GetMomentum() - m_MomentumPrevTick`.
-9. **`FEATURE_NETWORK_RECONCILIATION` está definido** — transport.c:52-56 muestra que si NO está definido, Transport hereda de EntityAI directamente. En v1.24 está activo.
-10. **Coches sin conductor**: `SetBrakesActivateWithoutDriver(true)` — car.c:222. Si el conductor pierde control, `OnUpdate` aplica brake=0.5.
+1. **`OnContact` runs only on server** — carscript.c:1456. There is no collision callback on client for cars.
+2. **`EOnPostSimulate` runs on both** — but most logic is guarded by `g_Game.IsServer()`.
+3. **`Random/RandomRange/Random01` only in EOnSimulate/EOnPostSimulate** — transport.c:216-237. Using them outside these callbacks breaks determinism.
+4. **`GetController()` is obsolete** — use direct `Car` methods (SetThrottle, SetSteering, etc.).
+5. **`IsServerOrOwner()`** — carscript.c:3222. With new networking (`NetworkMoveStrategy.PHYSICS`), the "owner" (client driving) also executes the simulation. With classic networking, only the server.
+6. **`dBodyApplyImpulseAt` in ActionPushCar** — actionpushcar.c:52. Uses the global dBody API (not Transport's); the result propagates because the physics body does exist on server and Transport replicates it.
+7. **`Synchronize()`** — call manually when the vehicle transitions from static to active state, to force snapshot.
+8. **`CarContactData` uses `momentumDelta` as "impulse"** — it is not `data.Impulse` from the Contact struct in the main calculation; it is `GetMomentum() - m_MomentumPrevTick`.
+9. **`FEATURE_NETWORK_RECONCILIATION` is defined** — transport.c:52-56 shows that if NOT defined, Transport inherits directly from EntityAI. In v1.24 it is active.
+10. **Driverless cars**: `SetBrakesActivateWithoutDriver(true)` — car.c:222. If the driver loses control, `OnUpdate` applies brake=0.5.
 
 ---
 
-## Qué NO Existe / Confabulaciones Típicas
+## What DOES NOT Exist / Typical Confabulations
 
-- **`CarScript` con `SimulationModule` por script**: FALSO. El `SimulationModule` es estrictamente config (CfgVehicles). No hay forma de crear parámetros de física de ruedas/axles por código Enforce Script.
-- **Transport custom sin modelo con sim module**: FALSO. Necesitas un modelo P3D con geometría apropiada (PhysX collision, LODs, memory points) registrado en config.
-- **`GetCrewIndex()`**: NO EXISTE con ese nombre. El método correcto es `CrewPositionIndex(int componentIdx)` (transport.c:116) o `CrewMemberIndex(Human player)` (transport.c:120).
-- **`EFluidType` enum para vehículos**: NO EXISTE con ese nombre. Es `CarFluid` (car.c:17) y `BoatFluid` (boat.c:13-16). `EFluidType` puede existir para otros sistemas (water, fireplace) pero no para coches.
-- **`EOnSimulate` en CarScript**: NO está overrideado en ninguna clase de script de coches. La simulación de física es 100% nativa.
-- **`HelicopterScript` con física completa**: `HelicopterScript.EOnPostSimulate` está vacío — helicopterscript.c:11-13. Todo el vuelo es nativo en `HelicopterAuto`.
-- **BoatScript hereda de BoatScript**: Confirmar — `BoatScript extends Boat` (boatscript.c:41), y `Boat extends Transport` (boat.c:31). La clase `BoatScript` SÍ existe (al contrario de lo que algunos suponen).
+- **`CarScript` with `SimulationModule` via script**: FALSE. `SimulationModule` is strictly config (CfgVehicles). There is no way to create wheel/axle physics parameters via Enforce Script code.
+- **Custom Transport without model with sim module**: FALSE. You need a P3D model with appropriate geometry (PhysX collision, LODs, memory points) registered in config.
+- **`GetCrewIndex()`**: DOES NOT EXIST under that name. Correct method is `CrewPositionIndex(int componentIdx)` (transport.c:116) or `CrewMemberIndex(Human player)` (transport.c:120).
+- **`EFluidType` enum for vehicles**: DOES NOT EXIST under that name. It is `CarFluid` (car.c:17) and `BoatFluid` (boat.c:13-16). `EFluidType` may exist for other systems (water, fireplace) but not for cars.
+- **`EOnSimulate` in CarScript**: NOT overridden in any car script class. Physics simulation is 100% native.
+- **`HelicopterScript` with full physics**: `HelicopterScript.EOnPostSimulate` is empty — helicopterscript.c:11-13. All flight is native in `HelicopterAuto`.
+- **BoatScript inherits from BoatScript**: Confirm — `BoatScript extends Boat` (boatscript.c:41), and `Boat extends Transport` (boat.c:31). Class `BoatScript` DOES exist (contrary to what some assume).
 
 ---
 
-## Relevancia para LF_RollingStone
+## Relevance for LF_RollingStone
 
-### ⚠️RELEVANTE: Por qué Transport replica y tu ItemBase no
+### ⚠️RELEVANT: Why Transport replicates and your ItemBase does not
 
-La razón exacta es que `Transport extends Pawn` y el engine trata a todos los Pawn con un stream continuo de `TransportOwnerState` (worldTransform + linearVelocity + angularVelocity) hacia todos los proxies. `ItemBase` no hereda de `Pawn`, por lo que el engine no genera ese stream.
+The exact reason is that `Transport extends Pawn` and the engine treats all Pawns with a continuous stream of `TransportOwnerState` (worldTransform + linearVelocity + angularVelocity) to all proxies. `ItemBase` does not inherit from `Pawn`, so the engine does not generate that stream.
 
-El "PASS provisional" de S1 (el cliente ve la piedra rodar) puede explicarse por:
-- En **singleplayer**: no hay red, el mismo proceso ve todo.
-- En **MP local / baja latencia**: EntityAI hace resync periódico de posición cuando cambia lo suficiente (mecanismo de `SetSynchDirty` automático del engine al mover entidades). Este resync es infrecuente (posiblemente cada N ms o cuando el server lo decide) y no envía velocidades, por lo que el cliente interpola mal o ve saltos.
+The provisional "PASS" of S1 (client sees stone roll) can be explained by:
+- In **singleplayer**: no network, the same process sees everything.
+- In **local MP / low latency**: EntityAI performs periodic position resync when changed sufficiently (engine automatic `SetSynchDirty` mechanism when moving entities). This resync is infrequent (possibly every N ms or when server decides) and does not send velocities, so client interpolates poorly or sees jumps.
 
-### ⚠️RELEVANTE: Opciones reales para LF_RollingStone
+### ⚠️RELEVANT: Real options for LF_RollingStone
 
-1. **Opción A (Plan S3 — ThrowPhysically / DYNAMICITEM)**: Convertir la piedra en un `Transport` o aprovechar alguna entidad "throwable" que el engine sí sincronice. Riesgoso sin mod de sim module completo.
-2. **Opción B (RPC manual de posición)**: En cada tick del server, leer `GetPosition()` y `GetVelocity()` del dBody y enviar un RPC al cliente para mover la piedra manualmente (`SetPosition` + `dBodySetVelocity`). Es costoso pero correcto.
-3. **Opción C (Heredar de Transport)**: Crear una clase que herede de `Transport` (no de `ItemBase`), registrarlo con un sim module mínimo en config. Tendría netsync automático. El problema es que Transport requiere config de CfgVehicles con SimulationModule + modelo P3D adecuado.
-4. **Opción D (Throttle nativo del dBody)**: Confirmar empíricamente si el engine hace resync del EntityAI en un intervalo tolerable para el gameplay. Si la frecuencia es ~100ms, puede ser "suficientemente bueno" para S1.
+1. **Option A (Plan S3 — ThrowPhysically / DYNAMICITEM)**: Turn stone into a `Transport` or leverage some "throwable" entity that engine does synchronize. Risky without full sim module mod.
+2. **Option B (Manual position RPC)**: On each server tick, read `GetPosition()` and `GetVelocity()` from dBody and send an RPC to client to move stone manually (`SetPosition` + `dBodySetVelocity`). Expensive but correct.
+3. **Option C (Inherit from Transport)**: Create a class inheriting from `Transport` (not from `ItemBase`), register with minimal sim module in config. Would have automatic netsync. The issue is Transport requires CfgVehicles config with SimulationModule + suitable P3D model.
+4. **Option D (Native dBody throttle)**: Empirically confirm whether engine resyncs EntityAI at an interval tolerable for gameplay. If frequency is ~100ms, it may be "good enough" for S1.
 
-### ⚠️RELEVANTE: ActionPushCar como referencia para LFRS_ActionPush
+### ⚠️RELEVANT: ActionPushCar as reference for LFRS_ActionPush
 
-`ActionPushCarCB.ApplyForce` usa exactamente el patrón que debería usar `LFRS_ActionPush`:
+`ActionPushCarCB.ApplyForce` uses exactly the pattern that `LFRS_ActionPush` should use:
 ```cpp
 dBodyApplyImpulseAt(car, impulse, car.ModelToWorld(car.GetEnginePos()));
 // actionpushcar.c:52
 ```
-Adaptado para la piedra:
+Adapted for the stone:
 ```cpp
 dBodyApplyImpulseAt(stone, impulse, stone.GetPosition());
 ```
-El impulse se calcula como `bodyMass × fuerza × coef × dirección`. Este código ya está en server (la acción corre en server) y el push físicamente mueve el dBody en servidor. El cliente verá el efecto sólo si hay netsync (problema conocido).
+The impulse is calculated as `bodyMass × force × coef × direction`. This code is already on server (action runs on server) and push physically moves dBody on server. Client will see the effect only if netsync exists (known issue).
 
-### ⚠️RELEVANTE: OnContact para EOnContact de la piedra
+### ⚠️RELEVANT: OnContact for stone EOnContact
 
-El `OnContact` de Transport (que sólo corre en server) es el mismo patrón que `EOnContact` de ItemBase. La diferencia es que para Transport hay callbacks bien definidos con nombre de zona; para ItemBase el patrón es `EOnContact(IEntity other, Contact data)`. La arquitectura de daño (acumular en cache, procesar en PostSimulate) es reutilizable para la piedra si se quiere daño al jugador por impacto.
+Transport `OnContact` (running on server only) is the same pattern as ItemBase `EOnContact`. The difference is that for Transport there are well-defined callbacks with zone name; for ItemBase the pattern is `EOnContact(IEntity other, Contact data)`. Damage architecture (accumulate in cache, process in PostSimulate) is reusable for stone if player impact damage is desired.
 
 ---
 
 ## Fuentes
 
-| Archivo | Descripción |
+| File | Description |
 |---------|-------------|
-| `3_game/vehicles/transport.c` | Clase base Transport: crew, forces, netsync state types |
+| `3_game/vehicles/transport.c` | Transport base class: crew, forces, netsync state types |
 | `3_game/vehicles/car.c` | Car proto-native API: steering/throttle/brake/gear/fluid |
-| `3_game/vehicles/boat.c` | Boat proto-native API (confirma BoatScript existe) |
-| `3_game/vehicles/helicopter.c` | Helicopter + HelicopterAuto (auto-hover nativo) |
+| `3_game/vehicles/boat.c` | Boat proto-native API (confirms BoatScript exists) |
+| `3_game/vehicles/helicopter.c` | Helicopter + HelicopterAuto (native auto-hover) |
 | `3_game/entities/pawn.c` | Pawn, PawnOwnerState, PawnMove, NetworkMoveStrategy enum |
-| `1_core/defines.c` | FEATURE_NETWORK_RECONCILIATION definido en v1.24 |
-| `4_world/entities/vehicles/carscript.c` | CarScript completo: contacto, fluidos, luces, EOnPostSimulate |
-| `4_world/entities/vehicles/boatscript.c` | BoatScript: confirma existencia y estructura |
-| `4_world/entities/vehicles/helicopterscript.c` | HelicopterScript: EOnPostSimulate vacío |
-| `4_world/entities/vehicles/inheritedcars/offroadhatchback.c` | Patrón UTSource, GetSeatAnimationType |
-| `4_world/entities/vehicles/inheritedcars/truck_02.c` | Patrón truck con temperatura |
-| `4_world/entities/vehicles/inheritedboats/boat_01.c` | Boat_01: fluidos, asientos |
-| `4_world/classes/useractionscomponent/actions/interact/actiongetintransport.c` | Boarding completo |
-| `4_world/classes/useractionscomponent/actions/continuous/actionpushcar.c` | dBodyApplyImpulseAt como patrón |
+| `1_core/defines.c` | FEATURE_NETWORK_RECONCILIATION defined in v1.24 |
+| `4_world/entities/vehicles/carscript.c` | Full CarScript: contact, fluids, lights, EOnPostSimulate |
+| `4_world/entities/vehicles/boatscript.c` | BoatScript: confirms existence and structure |
+| `4_world/entities/vehicles/helicopterscript.c` | HelicopterScript: empty EOnPostSimulate |
+| `4_world/entities/vehicles/inheritedcars/offroadhatchback.c` | UTSource pattern, GetSeatAnimationType |
+| `4_world/entities/vehicles/inheritedcars/truck_02.c` | Truck pattern with temperature |
+| `4_world/entities/vehicles/inheritedboats/boat_01.c` | Boat_01: fluids, seats |
+| `4_world/classes/useractionscomponent/actions/interact/actiongetintransport.c` | Full boarding |
+| `4_world/classes/useractionscomponent/actions/continuous/actionpushcar.c` | dBodyApplyImpulseAt as pattern |
 | [WEB] community.bistudio.com/wiki/DayZ:Vehicle_Configuration | CfgVehicles SimulationModule |

@@ -251,7 +251,7 @@ Protocolo cada turno:
 1. Lee queue.md y toma la PRIMERA línea con [ ]
 2. Ejecuta la unidad (dimensional / per-entity / APPLY / PASS_END_CHECK)
 3. Actualiza state, tick la línea
-4. ScheduleWakeup 240s if más unidades; sin schedule si converged or flag raised
+4. ScheduleWakeup 240s if more units; without schedule if converged or flag raised
 
 Reglas:
 - UNA unidad por turno

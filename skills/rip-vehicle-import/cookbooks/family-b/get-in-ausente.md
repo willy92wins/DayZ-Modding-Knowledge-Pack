@@ -1,6 +1,6 @@
 # Cookbook B — get-in ausente
 
-> Familia B. Este cuerpo se movió sin reescritura en CAMBIO-1; las notas de estado y las rutas permanecen tal como estaban en el origen.
+> Family B. This body was moved without rewriting in CAMBIO-1; status notes and paths remain exactly as they were in the origin.
 
 <!-- MOVED-EXACT source="dayz-vehicles/SKILL.md:344" sha256="E7A04C3A464FDD6735E3D7D564267E9464762A811903E504F50E02147BA727F1" -->
 ## GET-IN DOESN'T APPEAR — name the guard BEFORE touching the model (SP-141, added 2026-07-29)

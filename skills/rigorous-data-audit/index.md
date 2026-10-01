@@ -1,157 +1,157 @@
 # DayZ Skills — Fact Audit Index
 
-> ⛔ **AVISO CRÍTICO 2026-05-12 — ESTE AUDIT CONFABULA**
+> ⛔ **CRITICAL NOTICE 2026-05-12 — THIS AUDIT CONFABULATES**
 >
-> Re-verificación del 2026-05-12 contra archivos reales (no contra el audit narrativo) demostró que la mayoría de hallazgos críticos eran **inventados**. De 11 claims P0/P1 verificados uno a uno:
+> Re-verification of 2026-05-12 against real files (not against narrative audit) showed that most critical findings were **invented**. Out of 11 P0/P1 claims verified one by one:
 >
 > - **6 fully confabulated** (1a, 1b, 1d, 2, 3, 4)
-> - **2 reales** (1c bug LOD en `dayz-3d-viewer/p3d_to_gltf.py`, 1e código demo arma3 en `py3d-direct-generation.md`)
-> - **3 parciales/exagerados** (5 unverified, 6 partial — solo Motorcycle/Helicopter no HouseNoDestruct, 7 exagerado)
+> - **2 real** (1c LOD bug in `dayz-3d-viewer/p3d_to_gltf.py`, 1e Arma 3 demo code in `py3d-direct-generation.md`)
+> - **3 partial/exaggerated** (5 unverified, 6 partial — only Motorcycle/Helicopter not HouseNoDestruct, 7 exaggerated)
 >
-> **Tasa de confabulación ≈ 55%.** Este audit no es citable como fuente. Para cualquier acción que dependa de un hallazgo aquí: **abrir el archivo real, hacer grep, verificar contra `path:line`** antes de actuar. Los reportes individuales por skill probablemente comparten la misma tasa de confabulación — tratarlos igual.
+> **Confabulation rate ≈ 55%.** This audit is not citable as a source. For any action depending on a finding here: **open the real file, grep, verify against `path:line`** before acting. Individual per-skill reports likely share the same confabulation rate — treat them equally.
 >
-> **Acciones reales accionables (las únicas 2 verificadas):**
+> **Real actionable actions (the only 2 verified):**
 >
-> 1. `dayz-3d-viewer/scripts/p3d_to_gltf.py:30-51` — `classify_lod()` solo reconoce LODs Arma 3 (`2e13`/`3e13`). Modernos DayZ (`6e15`/`7e15`) caen a "memory". Fix: añadir las bandas `5.9e15..6.1e15` → `view_geometry`, `6.9e15..7.1e15` → `fire_geometry` antes del `else`.
-> 2. `dayz-model-pipeline/references/py3d-direct-generation.md:538-545` — `classify_lod()` snippet de copy-paste enseña valores Arma 3 sin marcar como legacy. Fix: añadir bandas modernas o marcar el snippet como demo histórico.
+> 1. `dayz-3d-viewer/scripts/p3d_to_gltf.py:30-51` — `classify_lod()` only recognizes Arma 3 LODs (`2e13`/`3e13`). Modern DayZ (`6e15`/`7e15`) fall back to "memory". Fix: add bands `5.9e15..6.1e15` → `view_geometry`, `6.9e15..7.1e15` → `fire_geometry` before `else`.
+> 2. `dayz-model-pipeline/references/py3d-direct-generation.md:538-545` — copy-paste `classify_lod()` snippet teaches Arma 3 values without marking as legacy. Fix: add modern bands or mark snippet as historical demo.
 >
-> **F2 del fix-tracker (`_shared/dayz-conventions.md`):** purgar solo `Motorcycle`, `Helicopter` de `dayz-pbo-build/references/validation-scripts.md:226-228`. Mantener `HouseNoDestruct`, `Vehicle` (válidos en DayZ).
+> **F2 from fix-tracker (`_shared/dayz-conventions.md`):** purge only `Motorcycle`, `Helicopter` from `dayz-pbo-build/references/validation-scripts.md:226-228`. Keep `HouseNoDestruct`, `Vehicle` (valid in DayZ).
 >
-> Todo lo demás del audit: leer pero **NO actuar sin verificación contra fuente primaria**.
+> Everything else from audit: read but **DO NOT act without verification against primary source**.
 
 ---
 
-**Fecha**: 2026-05-11
-**Alcance**: 12 skills DayZ del plugin `skills-plugin/.../skills/`
-**Profundidad**: Profundo (conventions doc + py3d source + Bohemia wiki + cite-then-verify; P:\ marcado para verificación manual)
-**Trabajo realizado por**: 4 agentes general-purpose en paralelo + agregación
+**Date**: 2026-05-11
+**Scope**: 12 DayZ skills from plugin `skills-plugin/.../skills/`
+**Depth**: Deep (conventions doc + py3d source + Bohemia wiki + cite-then-verify; P:\ marked for manual verification)
+**Work done by**: 4 general-purpose agents in parallel + aggregation
 
 ---
 
 ## TL;DR
 
-| Skill | VERIFIED | SUSPECT | CONFABULATED | Veredicto |
+| Skill | VERIFIED | SUSPECT | CONFABULATED | Verdict |
 |---|---:|---:|---:|---|
-| `dayz-p3d-audit` | 34 | 12 | **9** | 🔴 Crítico — bug Arma 3 sobrevive |
-| `dayz-p3d-inspector` | 51 | 11 | 0 | 🟢 Limpio (ya fixed prior 3e13/7e13) |
-| `dayz-3d-viewer` | 31 | 4 | **2** | 🔴 Crítico — mismo bug Arma 3 |
-| `dayz-model-pipeline` | 47 | 6 | **5** | 🔴 Crítico — `LOD_RESOLUTION` dict mal |
+| `dayz-p3d-audit` | 34 | 12 | **9** | 🔴 Critical — Arma 3 bug survives |
+| `dayz-p3d-inspector` | 51 | 11 | 0 | 🟢 Clean (prior 3e13/7e13 already fixed) |
+| `dayz-3d-viewer` | 31 | 4 | **2** | 🔴 Critical — same Arma 3 bug |
+| `dayz-model-pipeline` | 47 | 6 | **5** | 🔴 Critical — `LOD_RESOLUTION` dict bad |
 | `dayz-particles` | 38 | 6 | 3 | 🟡 Off-by-one (276 vs 277) |
-| `dayz-pbo-build` | ? | ? | **muchas** | 🔴 Crítico — "Forbidden EnScript" falso |
-| `dayz-preflight` | ? | ? | 0–1 | 🟢 Limpio (registry casing) |
-| `japm-pbo-recovery` | ? | **muchas** | ? | 🟡 Nombre erróneo + constantes empíricas |
-| `enforce-script-reference` | ? | 1 | 0 | 🟢 Solo SUSPECT(P:\) |
-| `dayz-ui-development` | ? | 2+ | 0 | 🟢 SUSPECT(P:\) en COLOR_DAYZ_RED |
-| `dayz-mod-workflow` | ? | pocos | 0 | 🟢 La más limpia |
+| `dayz-pbo-build` | ? | ? | **many** | 🔴 Critical — false "Forbidden EnScript" |
+| `dayz-preflight` | ? | ? | 0–1 | 🟢 Clean (registry casing) |
+| `japm-pbo-recovery` | ? | **many** | ? | 🟡 Wrong name + empirical constants |
+| `enforce-script-reference` | ? | 1 | 0 | 🟢 Only SUSPECT(P:\) |
+| `dayz-ui-development` | ? | 2+ | 0 | 🟢 SUSPECT(P:\) on COLOR_DAYZ_RED |
+| `dayz-mod-workflow` | ? | few | 0 | 🟢 Cleanest |
 
 **Totales aproximados**: ~248 VERIFIED, ~65 SUSPECT (≥30 requieren P:\), ~20 CONFABULATED.
 
 ---
 
-## 🔴 Hallazgos críticos (acción inmediata)
+## 🔴 Critical findings (immediate action)
 
 ### 1. Bug Arma 3 LOD thresholds — TRES skills afectadas
 
-El bug que motivó esta auditoría está en más sitios que el reporte inicial:
+The bug that motivated this audit is in more places than the initial report:
 
-| Skill | Fichero | Línea | Problema |
+| Skill | File | Line | Problem |
 |---|---|---|---|
-| `dayz-p3d-audit` | `scripts/audit_p3d.py` | 40-42 | `classify_lod()` acepta tanto `3e13`/`7e13` como `6e15`/`7e15`. Mensajes user-facing citan los Arma 3 como canónicos. |
-| `dayz-p3d-audit` | `SKILL.md` | 71, 87 | Cita `FireGeo (3e13)` y `GeoPhys (2e13)` como LODs DayZ. |
-| `dayz-3d-viewer` | `scripts/p3d_to_gltf.py` | 40-49 | `classify_lod()` usa **solo** valores Arma 3. Todo DayZ FireGeo/ViewGeo cae en `else: res > 1e14` y se etiqueta `memory`. **Glb resultante no tiene labels correctos.** |
-| `dayz-model-pipeline` | `references/py3d-direct-generation.md` | 85-94 | El dict `LOD_RESOLUTION` — referencia canónica de la skill para generar .p3d — usa `2e13` y `3e13`. |
-| `dayz-model-pipeline` | `references/py3d-direct-generation.md` | 404-418 | `classify_lod()` reader con el mismo bug. |
+| `dayz-p3d-audit` | `scripts/audit_p3d.py` | 40-42 | `classify_lod()` accepts both `3e13`/`7e13` and `6e15`/`7e15`. User-facing messages cite Arma 3 as canonical. |
+| `dayz-p3d-audit` | `SKILL.md` | 71, 87 | Cites `FireGeo (3e13)` and `GeoPhys (2e13)` as DayZ LODs. |
+| `dayz-3d-viewer` | `scripts/p3d_to_gltf.py` | 40-49 | `classify_lod()` uses **only** Arma 3 values. All DayZ FireGeo/ViewGeo falls into `else: res > 1e14` and is labeled `memory`. **Resulting glb lacks correct labels.** |
+| `dayz-model-pipeline` | `references/py3d-direct-generation.md` | 85-94 | The `LOD_RESOLUTION` dict — canonical skill reference to generate .p3d — uses `2e13` and `3e13`. |
+| `dayz-model-pipeline` | `references/py3d-direct-generation.md` | 404-418 | `classify_lod()` reader with same bug. |
 
-→ Estos cinco puntos requieren patch alineado con `dayz-conventions.md@01b15a6` (tabla canónica: Visual 0..N, ShadowVolume 1e4/1.1e4, Geometry 1e13, Memory 1e15, LandContact 2e15, **ViewGeometry 6e15**, **FireGeometry 7e15**).
+→ These five points require patch aligned with `dayz-conventions.md@01b15a6` (canonical table: Visual 0..N, ShadowVolume 1e4/1.1e4, Geometry 1e13, Memory 1e15, LandContact 2e15, **ViewGeometry 6e15**, **FireGeometry 7e15**).
 
 ### 2. `dayz-p3d-audit/scripts/audit_p3d.py:34` — ShadowVolume off by 6 orders
 
-Línea actual: `if 9e9 <= resolution <= 1.1e10:  return "ShadowVolume"`
-Real (conventions doc): ShadowVolume es `10000` y `11000`, i.e. `1e4..1.1e4`. El rango actual está 6 órdenes de magnitud más arriba — nunca matchea un .p3d real, ningún modelo se clasifica como ShadowVolume.
+Current line: `if 9e9 <= resolution <= 1.1e10:  return "ShadowVolume"`
+Real (conventions doc): ShadowVolume is `10000` and `11000`, i.e. `1e4..1.1e4`. Current range is 6 orders of magnitude higher — never matches a real .p3d, no model is classified as ShadowVolume.
 
 ### 3. `dayz-p3d-audit` clasificador omite Roadway, Paths, Hitpoints
 
-Las LODs `3e15` (Roadway), `4e15` (Paths), `5e15` (Hitpoints) — válidas en DayZ y reconocidas por la sibling skill `dayz-p3d-inspector` — caen en `Other(...)` y se warning como "Unknown". Falso negativo masivo en modelos con esas LODs.
+The LODs `3e15` (Roadway), `4e15` (Paths), `5e15` (Hitpoints) — valid in DayZ and recognized by sibling skill `dayz-p3d-inspector` — fall into `Other(...)` and are warned as "Unknown". Massive false negative on models with those LODs.
 
 ### 4. `dayz-pbo-build/SKILL.md:189-217` — "Forbidden in Enforce Script" **wholesale falso**
 
-La sección "Forbidden in Enforce Script" lista como prohibidos:
-- Ternary `?:` — **es válido**
-- `++` / `--` — **son válidos**
-- `foreach` — **es válido** (existe en EnScript)
-- `+=` — **es válido**
+The section "Forbidden in Enforce Script" lists as forbidden:
+- Ternary `?:` — **is valid**
+- `++` / `--` — **are valid**
+- `foreach` — **is valid** (exists in EnScript)
+- `+=` — **is valid**
 
-Aplicar esta guidance haría a un usuario reescribir código correcto para "evitar" features que sí existen. Hay que **eliminar la sección entera** (o reemplazarla con la lista real, que es mucho más corta: no hay templates, sí hay `auto`, etc. — cross-check contra Bohemia wiki).
+Applying this guidance would cause a user to rewrite correct code to "avoid" features that actually exist. The **entire section must be deleted** (or replaced with the real list, which is much shorter: no templates, `auto` exists, etc. — cross-check against Bohemia wiki).
 
 ### 5. `dayz-pbo-build` LOD validator usa string-match
 
-El validador hace `'resolution' in str(lod.type).lower()` — pero `py3d.Lod.resolution` es un **float**, no un string con la palabra "resolution". El validador no funciona en ningún caso. También hard-errea cuando falta `ce_center` que NO es un memory point engine-required — el validador falla todo modelo vanilla.
+Validator does `'resolution' in str(lod.type).lower()` — but `py3d.Lod.resolution` is a **float**, not a string with the word "resolution". Validator does not work in any case. It also hard-errors when `ce_center` is missing which is NOT an engine-required memory point — validator fails every vanilla model.
 
-### 6. `dayz-pbo-build` `known_bases` con clases Arma 3
+### 6. `dayz-pbo-build` `known_bases` with Arma 3 classes
 
-La lista de clases base incluye `HouseNoDestruct`, `Motorcycle`, `Helicopter`, `Vehicle` — clases **Arma 3**, no DayZ. Mismo patrón de confabulación que el bug de los thresholds. Hay que limpiar contra `CfgVehicles` vanilla.
+Base class list includes `HouseNoDestruct`, `Motorcycle`, `Helicopter`, `Vehicle` — **Arma 3** classes, not DayZ. Same confabulation pattern as threshold bug. Must clean against vanilla `CfgVehicles`.
 
-### 7. `japm-pbo-recovery` — nombre incorrecto y constantes single-source
+### 7. `japm-pbo-recovery` — incorrect name and single-source constants
 
-- "JAPM" **no es el nombre público** de ningún obfuscador documentado. Los docs públicos lo llaman "PBO Tools". Usuarios buscando ayuda nunca encontrarán esta skill por nombre.
-- Magic constants (`65793` / `8388608` / `4282663` para el LCG, heurística "≤3 cluster", clases hardcoded "A6 Storage", interpretación relative-vs-absolute LZSS) son **single-source empíricas**. No están corroboradas en bibliografía. Pueden ser ciertas pero no se puede afirmar como hechos verificados.
+- "JAPM" **is not the public name** of any documented obfuscator. Public docs call it "PBO Tools". Users seeking help will never find this skill by name.
+- Magic constants (`65793` / `8388608` / `4282663` for LCG, "≤3 cluster" heuristic, hardcoded "A6 Storage" classes, relative-vs-absolute LZSS interpretation) are **single-source empirical**. They are not corroborated in literature. They may be true but cannot be stated as verified facts.
 
 ---
 
 ## 🟡 Hallazgos medios
 
 ### `dayz-particles`
-- Claim "277 vanilla particles" en SKILL.md:13,182 + catalog header. Tabla del catálogo tiene **276** entries — off-by-one. Pequeño pero indica que no se contó.
-- Resto verificado directamente contra `dayzexplorer.zeroy.com` (POOL_SIZE=10000, enum values, GetInstance server guard) — la skill es la más sólida de las visuales.
+- Claim "277 vanilla particles" in SKILL.md:13,182 + catalog header. Catalog table has **276** entries — off-by-one. Small but indicates it was not counted.
+- Remainder verified directly against `dayzexplorer.zeroy.com` (POOL_SIZE=10000, enum values, GetInstance server guard) — skill is the most solid of the visual ones.
 
 ### `dayz-preflight`
-- Cosmetic: registry key casing inconsistente entre SKILL.md y código. Funcional pero confuso. Único hallazgo.
+- Cosmetic: registry key casing inconsistent between SKILL.md and code. Functional but confusing. Sole finding.
 
 ---
 
 ## 🟢 Skills limpias
 
 ### `dayz-p3d-inspector`
-**v4 changelog explícitamente registra el fix del bug 3e13/7e13.** Trata `facenormals` como pool consistentemente. Único drift en `extract.py` shadow threshold dict (cosmético).
+**v4 changelog explicitly records fix for bug 3e13/7e13.** Treats `facenormals` as pool consistently. Only drift in `extract.py` shadow threshold dict (cosmetic).
 
 ### `dayz-mod-workflow`
-**La skill más limpia.** Embebe anti-confabulación en su propio proceso (Mini-audit + GOLDEN RULE + E08). 6 de 6 entries del Recurring Error Catalog verificadas. Ningún confabulated.
+**The cleanest skill.** Embeds anti-confabulation in its own process (Mini-audit + GOLDEN RULE + E08). 6 of 6 Recurring Error Catalog entries verified. Zero confabulated.
 
 ### `enforce-script-reference`
-- **Bug refs VERIFICADAS**: T148506 (inventorySlot string-vs-array), T156746 (CallLater 4.5h precision loss), CCINonRuined vs CCINone — todas confirmadas en Bohemia feedback tracker.
-- Único SUSPECT: SKILL.md:61 dice que `IsClient()` retorna FALSE on client durante load (asymmetric pair del IsServer()=TRUE verificado). Conventions doc solo dice "prefer IsDedicatedServer()". El consejo es correcto, el mecanismo del consejo no se puede verificar.
+- **Bug refs VERIFIED**: T148506 (inventorySlot string-vs-array), T156746 (CallLater 4.5h precision loss), CCINonRuined vs CCINone — all confirmed on Bohemia feedback tracker.
+- Sole SUSPECT: SKILL.md:61 states `IsClient()` returns FALSE on client during load (asymmetric pair of verified IsServer()=TRUE). Conventions doc only says "prefer IsDedicatedServer()". Advice is correct, mechanism of advice cannot be verified.
 
 ### `dayz-ui-development`
-- SKILL.md:317-322 — `COLOR_DAYZ_RED` "exactamente UN sitio — mainmenupromo.c:158" es **claim repetido verbatim** de conventions doc, ninguna fuente verificable sin P:\. **Si está mal, está mal en dos sitios.**
-- SKILL.md:482-512 — Dabs WidgetAnimator, LinearColor, NotifyPropertyChanged: line refs (e.g. `ViewController.c:84-117`) no verificables. Dabs repo existe; line refs y claims "30 easing curves / 140+ named colors" son SUSPECT hasta añadir permalinks.
+- SKILL.md:317-322 — `COLOR_DAYZ_RED` "exactly ONE place — mainmenupromo.c:158" is **claim repeated verbatim** from conventions doc, no source verifiable without P:\. **If it is wrong, it is wrong in two places.**
+- SKILL.md:482-512 — Dabs WidgetAnimator, LinearColor, NotifyPropertyChanged: line refs (e.g. `ViewController.c:84-117`) unverifiable. Dabs repo exists; line refs and claims "30 easing curves / 140+ named colors" are SUSPECT until adding permalinks.
 
 ---
 
-## Acción recomendada (priorizada)
+## Recommended action (prioritized)
 
-### P0 — Crítico, romper si se queda
-1. **Eliminar bug Arma 3 LOD** en `dayz-p3d-audit`, `dayz-3d-viewer/p3d_to_gltf.py`, `dayz-model-pipeline/references/py3d-direct-generation.md`. Diff completo ya está en `py3d-skills-patch-report.md`.
-2. **Arreglar ShadowVolume range** en `dayz-p3d-audit/scripts/audit_p3d.py:34` (cambiar `9e9..1.1e10` → `9.9e3..1.15e4`).
-3. **Eliminar sección "Forbidden in Enforce Script"** de `dayz-pbo-build/SKILL.md` o reemplazarla con la lista verdadera.
-4. **Re-escribir LOD validator** de `dayz-pbo-build` para usar `lod.resolution` (float) en lugar de string-match.
-5. **Limpiar `known_bases`** de `dayz-pbo-build`: quitar `HouseNoDestruct`, `Motorcycle`, `Helicopter`, `Vehicle`.
+### P0 — Critical, will break if left
+1. **Eliminate Arma 3 LOD bug** in `dayz-p3d-audit`, `dayz-3d-viewer/p3d_to_gltf.py`, `dayz-model-pipeline/references/py3d-direct-generation.md`. Full diff already in `py3d-skills-patch-report.md`.
+2. **Fix ShadowVolume range** in `dayz-p3d-audit/scripts/audit_p3d.py:34` (change `9e9..1.1e10` → `9.9e3..1.15e4`).
+3. **Eliminate section "Forbidden in Enforce Script"** from `dayz-pbo-build/SKILL.md` or replace it with the true list.
+4. **Rewrite LOD validator** from `dayz-pbo-build` to use `lod.resolution` (float) instead of string-match.
+5. **Clean `known_bases`** from `dayz-pbo-build`: remove `HouseNoDestruct`, `Motorcycle`, `Helicopter`, `Vehicle`.
 
 ### P1 — Confusión / falsos positivos / off-by-one
-6. **Añadir Roadway/Paths/Hitpoints** al clasificador de `dayz-p3d-audit`.
-7. **Renombrar/cross-referenciar** `japm-pbo-recovery` con "PBO Tools" para que sea encontrable.
-8. **Recontar particles** en `dayz-particles` (277 → 276 o añadir el que falta).
-9. **Reconciliar `format_notes.md` vs `odol_reader.py:494`** sobre `allowAnimation` version gating.
+6. **Add Roadway/Paths/Hitpoints** to the `dayz-p3d-audit` classifier.
+7. **Rename/cross-reference** `japm-pbo-recovery` with "PBO Tools" so that it is discoverable.
+8. **Recount particles** in `dayz-particles` (277 → 276 or add the missing one).
+9. **Reconcile `format_notes.md` vs `odol_reader.py:494`** regarding `allowAnimation` version gating.
 
 ### P2 — Caveat / softening
-10. **Suavizar `IsClient()` returns FALSE claim** en `enforce-script-reference`.
-11. **Reemplazar single-source claims** en `japm-pbo-recovery` con "empirically observed, no public verification".
-12. **Añadir permalinks** a Dabs Framework refs en `dayz-ui-development`.
+10. **Soften `IsClient()` returns FALSE claim** in `enforce-script-reference`.
+11. **Replace single-source claims** in `japm-pbo-recovery` with "empirically observed, no public verification".
+12. **Add permalinks** to Dabs Framework refs in `dayz-ui-development`.
 
-### Requiere P:\ manual check (no bloquea pero conviene)
-- `dayz-ui-development`: confirmar `COLOR_DAYZ_RED` solo en `mainmenupromo.c:158`.
-- `dayz-p3d-audit`: confirmar gotchas script-side líneas 312-319.
-- `dayz-particles`: validar GUIDs y AddonBuilder defaults.
-- Total ~30+ items P:\-pending — todos marcados `SUSPECT(P:\)` en los reportes individuales.
+### Requires P:\ manual check (does not block but recommended)
+- `dayz-ui-development`: confirm `COLOR_DAYZ_RED` only in `mainmenupromo.c:158`.
+- `dayz-p3d-audit`: confirm script-side gotchas lines 312-319.
+- `dayz-particles`: validate GUIDs and AddonBuilder defaults.
+- Total ~30+ items P:\-pending — all marked `SUSPECT(P:\)` in the individual reports.
 
 ---
 
@@ -173,26 +173,26 @@ La lista de clases base incluye `HouseNoDestruct`, `Motorcycle`, `Helicopter`, `
 
 ---
 
-## Patrones de confabulación observados (lecciones)
+## Observed confabulation patterns (lessons)
 
-Recurrentes en lo encontrado — **vigilar en futuras skills**:
+Recurrent across findings — **watch out in future skills**:
 
-1. **"Acepta ambos rangos"** — anti-patrón: cuando una API tiene un valor canónico, aceptar también el valor "wrong but in the wild" hace que el clasificador *enseñe el bug*. Mejor: aceptar solo el correcto, marcar el otro como `Arma3_LEGACY_INVALID`.
-2. **Magic numbers single-source** — si una constante (`65793`, `277`, `1e15`) viene de "yo lo medí una vez", flagéala como tal en el doc, no como hecho.
-3. **Copy-paste between Arma 3 and DayZ** — `known_bases`, LOD resolutions, class names: Arma 3 references contaminan DayZ skills si nadie las re-verifica.
-4. **"X is forbidden"** sin citar engine docs — el caso de `dayz-pbo-build` "Forbidden EnScript" es ejemplo perfecto: prohibir features reales basándose en confusión.
-5. **"Exactly N" / "the only place" superlatives** — `COLOR_DAYZ_RED` "exactamente un sitio". Estos claims son altamente confabulables. Citar siempre con permalink + commit hash.
-6. **Nombre público != nombre interno** — `japm` vs "PBO Tools". Las skills deben usar el nombre que el usuario googlea.
+1. **"Accepts both ranges"** — anti-pattern: when an API has a canonical value, accepting also the "wrong but in the wild" value makes the classifier *teach the bug*. Better: accept only the correct one, mark the other as `Arma3_LEGACY_INVALID`.
+2. **Single-source magic numbers** — if a constant (`65793`, `277`, `1e15`) comes from "I measured it once", flag it as such in the doc, not as a fact.
+3. **Copy-paste between Arma 3 and DayZ** — `known_bases`, LOD resolutions, class names: Arma 3 references contaminate DayZ skills if no one reverifies them.
+4. **"X is forbidden"** without citing engine docs — the `dayz-pbo-build` case "Forbidden EnScript" is a perfect example: forbidding real features based on confusion.
+5. **"Exactly N" / "the only place" superlatives** — `COLOR_DAYZ_RED` "exactamente un sitio". These claims are highly prone to confabulation. Always cite with permalink + commit hash.
+6. **Public name != internal name** — `japm` vs "PBO Tools". Skills must use the name the user googles.
 
-Considera añadir un check rule en `skill-conventions` que pille (1)-(6) en revisión.
+Consider adding a check rule in `skill-conventions` that catches (1)-(6) in review.
 
 ---
 
-## Metodología y fuentes
+## Methodology and sources
 
 **Tier**: Profundo (conventions doc + py3d GitHub + Bohemia wiki + cite-then-verify; P:\ flagged manual)
 
-**Fuentes consultadas** (consolidado de los 4 agentes):
+**Consulted sources** (consolidated from the 4 agents):
 - [dayz-conventions.md @ 01b15a6](https://raw.githubusercontent.com/<author>/Agentic-Z/01b15a6eeea5ea204079cddc9254f62388d0a9e1/.claude/skills/_shared/dayz-conventions.md)
 - [KoffeinFlummi/py3d](https://github.com/KoffeinFlummi/py3d)
 - [Bohemia Wiki — P3D MLOD Format](https://community.bistudio.com/wiki/P3D_File_Format_-_MLOD)
@@ -209,11 +209,11 @@ Considera añadir un check rule en `skill-conventions` que pille (1)-(6) en revi
 - [PBO-Tools/DayZ-PBO-Obfuscator](https://github.com/PBO-Tools/DayZ-PBO-Obfuscator)
 - [DayZ Explorer (Zeroy) — ParticleManager / ParticleList / ParticleSource](https://dayzexplorer.zeroy.com/)
 
-**Tokens consumidos por los agentes**: ~674K tokens, ~227 tool calls, ~32 minutos de wall time.
+**Tokens consumed by agents**: ~674K tokens, ~227 tool calls, ~32 minutes of wall time.
 
-**Limitaciones**:
-- `P:\` no accesible desde sandbox — todos los claims que citan `P:\<path>:line` están marcados `SUSPECT(P:\)`.
-- `py3d/__init__.py` no fetcheable directamente desde sandbox (provenance lock); usado conventions doc como proxy autoritativo de la API.
-- 80+ "battle-tested facts" en `LFPG_UI_KnowledgeBase_v3.md` no fueron sampleados (time budget). Follow-up explícito en `audit-dayz-ui-development.md`.
+**Limitations**:
+- `P:\` not accessible from sandbox — all claims citing `P:\<path>:line` are marked `SUSPECT(P:\)`.
+- `py3d/__init__.py` not fetchable directly from sandbox (provenance lock); used conventions doc as authoritative proxy for the API.
+- 80+ "battle-tested facts" in `LFPG_UI_KnowledgeBase_v3.md` were not sampled (time budget). Explicit follow-up in `audit-dayz-ui-development.md`.
 
-**Reproducibilidad**: los prompts enviados a los 4 agentes están en `references/audit-prompts.md` para futuras re-ejecuciones tras cambios en las skills.
+**Reproducibility**: the prompts sent to the 4 agents are in `references/audit-prompts.md` for future re-runs following changes to the skills.

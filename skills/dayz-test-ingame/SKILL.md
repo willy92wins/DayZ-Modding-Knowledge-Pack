@@ -33,159 +33,159 @@ Use when the user wants to see a mod running in-game, iterate scripts/configs li
 up a local server+client. Do NOT use to author the mod (that is `dayz-model-pipeline` /
 `enforce-script-reference`), to validate/pack only (`dayz-pbo-build`), or to configure a
 production server. The retail `DayZ_x64.exe` is for final pre-release validation only —
-default to the diag exe. Retail es manual-only y externo a este launcher.
-En esta caja el retail no carga misión (LL-479): B-4 acredita 3_Game+4_World y 5_Mission
-solo se compila en el diag; la cobertura se escribe por módulo en la matriz, nunca «B-4 verde».
+default to the diag exe. Retail is manual-only and external to this launcher.
+On this box retail does not load mission (LL-479): B-4 accredits 3_Game+4_World and 5_Mission
+only compiles in diag; coverage is written per module in the matrix, never "B-4 green".
 
-## PROTOCOLO DE SESIÓN COMPARTIDA
+## SHARED SESSION PROTOCOL
 
-Leer antes de lanzar:
+Read before launching:
 `<runbooks>\dayz-mcp-agent-session-protocol.md`.
-El launcher oficial es Diag-only y aplica esta matriz:
+Official launcher is Diag-only and enforces this matrix:
 
-| Ruta | Ejecutable / rol | Contrato |
+| Route | Executable / role | Contract |
 |---|---|---|
-| Diag gestionado | `DayZDiag_x64.exe`, incluido el rol `-server` | `managed_lifecycle=true`; `dayz_test_run` posee lease/heartbeat/release y devuelve `run_id`. |
-| Servidor dedicado | `DayZServer_x64.exe` | `managed_lifecycle=false`; probe-gated y no lo inicia el launcher oficial. |
-| Retail manual externo | Sesión abierta por el usuario fuera del launcher | Sin lifecycle de agente; activa cuarentena. |
+| Managed diag | `DayZDiag_x64.exe`, including `-server` role | `managed_lifecycle=true`; `dayz_test_run` possesses lease/heartbeat/release and returns `run_id`. |
+| Dedicated server | `DayZServer_x64.exe` | `managed_lifecycle=false`; probe-gated and not started by official launcher. |
+| External manual retail | Session opened by user outside launcher | No agent lifecycle; triggers quarantine. |
 
-1. Ejecuta `bridge_status`; con cuarentena retail solo se permiten lecturas.
-2. [EXACT][CLAIM-R21-TEST-PUBLIC-LIFECYCLE] Usa `dayz_test_run` para el
-   server/client gestionado y `dayz_test_stop` para el `run_id` exacto. Esas
-   herramientas poseen la cola FIFO, lease, heartbeat y liberación; NO
-   pre-adquieras otro lease alrededor de ellas.
-3. `session_acquire`/`session_wait`/`session_heartbeat`/`session_release` quedan
-   para mutaciones de bajo nivel que no estén encapsuladas por las herramientas
-   públicas. (rev. 2026-09-06) Y para ADOPTAR el run: al terminar, `dayz_test_run`
-   suelta su lease y el run queda `RUNNING_IDLE` sin dueño; cualquier verbo del bridge
-   sobre él, lecturas incluidas, se rechaza con `run_not_owned` hasta que
-   `session_acquire_wait` lo adopte (mira `adopted_run`). Secuencia y citas:
-   `dayz-mcp-verify` §COMPOSICIÓN, «Secuencia de arranque del puente».
-4. [EXACT][CLAIM-R21-TEST-CREDENTIAL-SCOPE] El launcher aprobado recibe
-   `DAYZ_MCP_CLIENT_ID_JSON` y `DAYZ_MCP_LEASE_TOKEN` solo en el entorno de
-   proceso. La plantilla los captura, los retira del entorno padre y los
-   restaura únicamente alrededor del proceso hijo; nunca copies sus valores a
-   shell, argv, logs o handoff ni invoques el launcher aprobado directamente.
-5. Conserva el `run_id` devuelto. El mismo mod no concede ownership: stop/adopt
-   requieren el run exacto. `-Kill` sin `-RunId` queda fail-closed.
-6. Verifica estado terminal después del stop. NUNCA sustituyas el lifecycle
-   guard por un kill o por atribución basada en nombre, mod, cmdline o perfil.
+1. Run `bridge_status`; under retail quarantine only reads are allowed.
+2. [EXACT][CLAIM-R21-TEST-PUBLIC-LIFECYCLE] Use `dayz_test_run` for
+   managed server/client and `dayz_test_stop` for exact `run_id`. Those
+   tools possess FIFO queue, lease, heartbeat, and release; DO NOT
+   pre-acquire another lease around them.
+3. `session_acquire`/`session_wait`/`session_heartbeat`/`session_release` remain
+   for low-level mutations not encapsulated by public
+   tools. (rev. 2026-09-06) And to ADOPT the run: upon completion, `dayz_test_run`
+   releases its lease and run remains `RUNNING_IDLE` without owner; any bridge verb
+   on it, reads included, is rejected with `run_not_owned` until
+   `session_acquire_wait` adopts it (check `adopted_run`). Sequence and citations:
+   `dayz-mcp-verify` §COMPOSITION, "Bridge startup sequence".
+4. [EXACT][CLAIM-R21-TEST-CREDENTIAL-SCOPE] The approved launcher receives
+   `DAYZ_MCP_CLIENT_ID_JSON` and `DAYZ_MCP_LEASE_TOKEN` only in the process
+   environment. The template captures them, removes them from parent environment, and
+   restores them solely around child process; never copy their values to
+   shell, argv, logs, or handoff nor invoke approved launcher directly.
+5. Retain returned `run_id`. Same mod does not grant ownership: stop/adopt
+   require the exact run. `-Kill` without `-RunId` remains fail-closed.
+6. Verify terminal state after stop. NEVER substitute lifecycle
+   guard with a kill or with attribution based on name, mod, cmdline, or profile.
 7. [EXACT] After adopting, keep the run owned yourself: the lease lasts 120 s and is not renewed internally, fresh client or not, so send `session_heartbeat` at least every ~90 s during the whole run, including while a human plays. Without heartbeats the run goes ownerless and the daemon stops it after the grace period (measured 2026-09-27, three runs; detail in `dayz-mcp-verify` §COMPOSICIÓN).
 
-Retail manual-only activa cuarentena retail: el usuario que lo abrió lo cierra por la UI y
-después ejecuta doctor/rescan. Sin acceso a esa UI, declarar `manual_cleanup_required`; otro
-agente no mata ni adopta el proceso.
+Manual-only retail triggers retail quarantine: user who opened it closes it via UI and
+then runs doctor/rescan. Without access to that UI, declare `manual_cleanup_required`; another
+agent neither kills nor adopts the process.
 
-### Fallback unmanaged cuando el managed esta bloqueado (SP-084-unmanaged-fallback)
+### Unmanaged fallback when managed is blocked (SP-084-unmanaged-fallback)
 
-`dayz-test.ps1` y `dayz_test_run` son la via managed. Si el registro `approved-launchers.json` no deja pasar el proyecto y el daemon MCP del puerto documentado cae (`session_status`=`daemon_unavailable`), esa via no lanza.
+`dayz-test.ps1` and `dayz_test_run` are the managed path. If `approved-launchers.json` registry does not let the project pass and MCP daemon on documented port goes down (`session_status`=`daemon_unavailable`), that path does not launch.
 
-Con la caja libre de procesos DayZ del run y autorizacion explicita del usuario, la via es launch UNMANAGED. No es el default.
+With the box free of run DayZ processes and explicit user authorization, the path is UNMANAGED launch. It is not default.
 
-- No disparar el exe desde la shell del agente. [EXACT - esta skill, cross-ref SP-085] DayZDiag lanzado fuera del launcher registrado queda vivo con 0 CPU y 0 RPT. Firma: vivo + 0 CPU + 0 RPT => no es args/mod, es launch-desde-agente.
-- No usar `Start-Process -ArgumentList` para DayZDiag. [EXACT - esta skill, SP-167] En Windows PowerShell 5.1 el array no garantiza el quoting de cada elemento. [EXACT - SP-228, medido en LFPowerGrid P0.0, 6 intentos A/B el 2026-08-12] `cmd /c start` con comillas literales en cada valor con espacios es la via que arranca; `Start-Process -ArgumentList` arranca y queda colgado a ~0,06 s de CPU sin escribir NI el header del RPT.
+- Do not launch exe from agent shell. [EXACT - this skill, cross-ref SP-085] DayZDiag launched outside registered launcher stays alive with 0 CPU and 0 RPT. Signature: alive + 0 CPU + 0 RPT => not args/mod, it is launch-from-agent.
+- Do not use `Start-Process -ArgumentList` for DayZDiag. [EXACT - this skill, SP-167] In Windows PowerShell 5.1 array does not guarantee quoting of each element. [EXACT - SP-228, measured in LFPowerGrid P0.0, 6 A/B attempts 2026-08-12] `cmd /c start` with literal quotes on each value with spaces is the path that starts; `Start-Process -ArgumentList` starts and hangs at ~0.06 s CPU without writing EVEN the RPT header.
 - [EXACT] When the command that `cmd /c start` launches is a `.bat`, the new window runs `cmd /K`: an `exit /b` at the end of the bat exits the script, not the interpreter, and the window stays at an idle prompt after the server closes — one leftover console window per launch (measured 2026-09-25, LFDucati T99, Windows 11 23H2: 9 idle `cmd.exe /K` wrappers after two days of server starts; 0 after the switch). Wrap the bat in a second `cmd /c`: `cmd /c start "<title>" cmd /c "<abs bat>"`. A preflight failure with `pause` inside the bat is still visible.
-- Receta: el agente escribe `.bat` (argv de server/client, comillas literales en cada valor con espacios) y el usuario los ejecuta a doble-clic en su sesion interactiva. [EXACT - esta skill, SP-077] Leer script.log/RPT con `FileShare.ReadWrite`. Cierre por UI, no por PID, salvo zombie del propio agente (entonces `Stop-Process -Id` exacto).
+- Recipe: agent writes `.bat` (server/client argv, literal quotes on each value with spaces) and user double-clicks to execute them in interactive session. [EXACT - this skill, SP-077] Read script.log/RPT with `FileShare.ReadWrite`. UI closure, not by PID, except agent's own zombie (then exact `Stop-Process -Id`).
 - [DESIGN] Server argv: `-server "-config=<serverDZ.cfg>" "-profiles=<server-profiles>" "-mission=<mission-abs>" "-mod=<mod-abs-semicolon-list>" -filePatching -port=2302`
 - [DESIGN] Client argv: `"-mod=<mod-abs-semicolon-list>" -connect=127.0.0.1 -port=2302 "-profiles=<client-profiles>" -name=Dev -window -filePatching`
 (since 1.30 Exp [CHANGELOG]) Optional on both: `-cacheP3D=1` (unbinarized `.p3d` sibling cache) and `-resolveFilePatchingUsingEnfusion=1` (requires `-filePatching`; always on in Workbench). `-mod=` may name an unpacked source folder, not only a packed `@Mod`. See `references/dayz-1-30-test-ingame.md`.
 
-Tres gotchas que muerden en este mismo camino y no son del argv (SP-228, medidos):
+Three gotchas that bite along this same path and are not from argv (SP-228, measured):
 
-- **Workshop atascado.** `workshop_log.txt` con «No workshop depot defined, skipping non-legacy
-  item» en cada item (`NeedsDownload=1`) se destraba con `steam://validate/221100`, que refresca el
-  appinfo. Ni el launcher ni la página de descargas lo destraban.
-- **RPT por defecto.** Si `-profiles` no llega al exe, DayZDiag escribe el RPT y el script log en
-  `%LOCALAPPDATA%\DayZ`. Buscar ahí antes de declarar que no escribió nada.
-- **VPP superadmin.** Las versiones actuales leen
-  `<profiles>\VPPAdminTools\Permissions\SuperAdmins\SuperAdmins.txt` (solo IDs, una por línea);
-  `SuperAdmins.json` es formato viejo y se ignora. Con `vppDisablePassword=1` más la ID en el `.txt`
-  el menú abre directo. Corrige el hint que citaba solo el JSON.
+- **Stuck Workshop.** `workshop_log.txt` with "No workshop depot defined, skipping non-legacy
+  item" on each item (`NeedsDownload=1`) is unblocked with `steam://validate/221100`, which refreshes
+  appinfo. Neither launcher nor download page unblocks it.
+- **Default RPT.** If `-profiles` does not reach exe, DayZDiag writes RPT and script log to
+  `%LOCALAPPDATA%\DayZ`. Search there before declaring nothing was written.
+- **VPP superadmin.** Current versions read
+  `<profiles>\VPPAdminTools\Permissions\SuperAdmins\SuperAdmins.txt` (IDs only, one per line);
+  `SuperAdmins.json` is old format and ignored. With `vppDisablePassword=1` plus ID in `.txt`
+  menu opens directly. Corrects hint that cited only the JSON.
 
 ## PREREQUISITES (preflight — runs automatically)
 
-### Paso 0 — el linter offline, ANTES de gastar un arranque
+### Step 0 — offline linter, BEFORE wasting a startup
 
-Un ciclo de arranque cuesta minutos; el linter cuesta ~60 s y caza en frio lo que si no descubres
-leyendo un RPT:
+A startup cycle costs minutes; linter costs ~60 s and catches cold what you would otherwise
+discover reading an RPT:
 
 ```
 python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>
 ```
 
-Gatea por **`len(errors)`**, nunca por `status` (vale `WARN` con cero errores).
- La ruta es **relativa a la raiz del Knowledge Pack**, no a tu proyecto: desde el directorio
-de un mod hay que dar la ruta absoluta de TU checkout del pack, o el comando muere con
-`No such file or directory` y se lee como «no esta instalado».
- Compara contra la
-base para saber si el error es tuyo. **No sustituye el arranque** — Enforce solo compila al cargar
-el mundo, y este linter no ve eso — pero un `errors > 0` significa que el arranque va a fallar y
-no hace falta lanzarlo para averiguarlo. Obligatorio si el cambio borra clases, ficheros o
-entradas de `config.cpp`.
+Gate on **`len(errors)`**, never on `status` (`WARN` with zero errors is valid).
+ Path is **relative to Knowledge Pack root**, not your project: from a mod directory
+you must give absolute path to YOUR checkout of the pack, or command dies with
+`No such file or directory` and reads as "not installed".
+ Compare against
+base to know if error is yours. **Does not substitute startup** — Enforce only compiles on loading
+the world, and this linter does not see that — but `errors > 0` means startup will fail and
+there is no need to launch it to find out. Mandatory if change deletes classes, files, or
+`config.cpp` entries.
 
-⚠ **Punto ciego MEDIDO, y cuesta un arranque entero: el linter NO ve una variable no
-declarada.** Un `obj.m_Campo` donde el tipo de `obj` no declara `m_Campo` sale con **0 errores**
-y delta cero, y al cargar el mundo el modulo muere con `Cant compile "World" script module!` +
-`ACCESS_VIOLATION`. Medido el 2026-09-08 en LFPowerGrid: el MISMO arbol paso este gate en **12
-lanes** y otra vez sobre el `main` fusionado; una revision adversarial de otra familia tampoco
-lo vio, porque leido en un diff un contador que se incrementa parece razonable. El caso:
-`tRnd.m_Projections` sobre un `LFPG_RenderMetrics`, campo que existe en `LFPG_PreviewMetrics`
-— la clase de al lado en el mismo fichero. **Asimetria util**: el SERVIDOR arranco bien porque
-ese codigo era del camino de render; un gate que mire solo su log da verde a esto.
+⚠ **MEASURED blind spot, costing an entire startup: linter DOES NOT see an undeclared
+variable.** An `obj.m_Campo` where type of `obj` does not declare `m_Campo` exits with **0 errors**
+and zero delta, and upon world load module dies with `Cant compile "World" script module!` +
+`ACCESS_VIOLATION`. Measured 2026-09-08 in LFPowerGrid: SAME tree passed this gate in **12
+lanes** and again on merged `main`; an adversarial review from another family did not
+catch it either, because read in a diff an incrementing counter looks reasonable. The case:
+`tRnd.m_Projections` on a `LFPG_RenderMetrics`, field existing on `LFPG_PreviewMetrics`
+— the adjacent class in same file. **Useful asymmetry**: SERVER started fine because
+that code was on render path; a gate looking only at its log gives green to this.
 
-Barrido barato que si lo caza, antes de gastar el arranque cuando tocas muchos ficheros: por
-cada local tipada `Tipo obj = ...` del diff, comprobar que cada `obj.m_Campo` este declarado en
-`Tipo` o en sus padres, resolviendo la herencia con un censo por regex de `class X : BASE {...};`
-sobre todo `scripts/`. Medido: 145 clases y 32 ficheros en ~2 s. Solo cubre locales con tipo
-explicito — no ve accesos sobre miembros, retornos de funcion ni `this` — pero cubre este patron.
+Cheap sweep that catches it, before wasting startup when touching many files: for
+each typed local `Type obj = ...` in diff, check that each `obj.m_Campo` is declared in
+`Type` or its parents, resolving inheritance with regex census of `class X : BASE {...};`
+across all `scripts/`. Measured: 145 classes and 32 files in ~2 s. Only covers locals with explicit
+type — does not see member accesses, function returns, or `this` — but covers this pattern.
 
 The orchestrator checks these every run and fixes what it safely can. Verified on this box
 2026-05-30: missions present in DayZServer, AddonBuilder present, `P:\` mounted, but
 `P:\Mods` junction NOT yet created and `DAYZ_*` env vars unset (fallbacks used).
 
 - **Diag exe** — `DayZDiag_x64.exe`. Client AND server MUST be the diag binary; retail blocks
-  past the loading screen with `-filePatching`. [EXACT — DAYZ_INFRA.md §Diag binary obligatorio para iteración]
+  past the loading screen with `-filePatching`. [EXACT — DAYZ_INFRA.md §Mandatory diag binary for iteration]
 - **`P:\Mods` junction** -> `<DayZ>\!Workshop` so deployed PBOs land where the engine looks.
-  The script creates it via `mklink /J` if missing (no admin needed). [EXACT — DAYZ_INFRA.md §Layout de drives y mods]
+  The script creates it via `mklink /J` if missing (no admin needed). [EXACT — DAYZ_INFRA.md §Drive and mod layout]
 - **`allowFilePatching = 1`** in the server's `serverDZ.cfg`, else BattlEye kicks the client
   with `0x00020005`. The script generates a dev `serverDZ.cfg` with it set. [EXACT — DAYZ_INFRA.md §serverDZ.cfg — allowFilePatching = 1; obligatorio]
 - **Mission template** — absolute path; the server loads an empty mission otherwise.
-  [EXACT — DAYZ_INFRA.md §Comandos de invocación canónicos — Server diag]. Aliases:
-  `chernarus`/`livonia`/`sakhal`. [EXACT — DAYZ_INFRA.md §Mission templates — aliases canónicos]
+  [EXACT — DAYZ_INFRA.md §Canonical invocation commands — Server diag]. Aliases:
+  `chernarus`/`livonia`/`sakhal`. [EXACT — DAYZ_INFRA.md §Mission templates — canonical aliases]
 - **`class Missions` in `serverDZ.cfg`** — a dedicated server with a `dayzOffline.*` mission self-terminates before the mission loads (RPT countdown `[Server] :: termination in: N`) unless the config declares `class Missions { class DayZ { template="<mission>"; }; };`. With it, the server stays up with no client, which is what a server-side probe in the mission `init.c` needs. [EXACT] (measured in game, DayZ 1.30.164014 Exp, SP-434]
-- **AddonBuilder** — only when `-Build`. [EXACT — DAYZ_INFRA.md §Comandos de invocación canónicos — AddonBuilder]
+- **AddonBuilder** — only when `-Build`. [EXACT — DAYZ_INFRA.md §Canonical invocation commands — AddonBuilder]
 - **Steam client session** — for CLIENT-launching modes only (`offline`, `client`, `all`),
   `HKCU\Software\Valve\Steam\ActiveProcess` must have both `pid != 0` and
   `ActiveUser != 0`. The script warns without aborting; run `steam.exe -shutdown`, then relaunch
   Steam (the login is preserved). [DESIGN] Restart is NOT the reliable remedy: measured 2026-09-08/09, a restart can leave the key pointing at the old pid with the client still dead — the deterministic fix is to copy the live `steam.exe` pid into `ActiveProcess` from a shell OUTSIDE any sandboxed (MSIX) app — a write from inside one only reaches that app's private registry copy, see `references/dayz-1-30-test-ingame.md` — (guards and verification in the "El `pid` de Steam en el registro puede estar MUERTO" section below), and restart only as a fallback when there is no live Steam or `ActiveUser == 0`.
 
-- **El conjunto de mods está SELLADO, y cambiarlo BORRA el mundo de pruebas** (desde 2026-09-06,
-  medido in-game). Cada arranque de servidor sella su lista efectiva de mods en
-  `<mission>\storage_1.modset.json` (campo `seal`, sha256). Si el sello cambia respecto al arranque
-  anterior, el arranque **archiva `storage_1`** en `storage_1.modset-<ts>-<sello8>` (con su
-  `.marker.json` y un recibo `…rotation.<hash>.completed.json`) y empieza de cero: **mundo, bases y
-  personajes de pruebas, fuera**. Medido: repetir el mismo conjunto NO rota y el sello no se mueve;
-  cambiarlo rota **exactamente una vez**; repetir el nuevo no rota; y `mode=client` sobre un run vivo
-  tampoco rota — la rotación vive en el arranque del SERVIDOR.
-  - **Consecuencia para quien alterna stacks** (probar tu mod, luego el de al lado, luego el tuyo):
-    pierdes la persistencia de pruebas en cada salto. Si te hace falta conservarla, **copia
-    `storage_1` a mano antes**; los archivados quedan todos como hermanos en el directorio de misión.
-  - **La rotación NO deja fila en el registro de auditoría** (defecto conocido, el emisor traga sus
-    excepciones en silencio). Si un día pierdes el mundo y buscas el porqué, míralo por las carpetas
-    `storage_1.modset-*` y por el campo `seal`, no por el audit.
-  - **Es deliberado y arregla algo peor**: antes, ese mismo salto de conjunto corrompía la partida.
-    Medido el 2026-09-04 con el bundle anterior, un salto A→B produjo **43 197** líneas de
-    `Scripted variables corrupted`; con el sello, las dos firmas (`Failed to read modstorage` y
-    `Scripted variables corrupted`) salen a **0**. Ojo al diagnosticar: en aquel repro la firma que
-    aparecía NO era la que la ficha del incidente proponía vigilar; vigila **las dos**.
-  - **Trampa de forma**: `extra_mods` es una **lista**, no una cadena con `;`. Un
-    `["@CF;@VPPAdminTools"]` pasa la validación y luego no existe como carpeta: rojo mudo.
-  - Por la ruta MCP, la sesión de Steam caducada del punto anterior se manifiesta como
-    `dayz_test_run` muriendo en fase `validating` a ~1,3 s con `error_code: "steam_session_stale"`;
-    el remedio es el mismo (reiniciar Steam, el login se conserva).
+- **Mod set is SEALED, and changing it WIPES test world** (since 2026-09-06,
+  measured in game). Each server startup seals its effective mod list in
+  `<mission>\storage_1.modset.json` (`seal` field, sha256). If seal changes relative to previous
+  startup, startup **archives `storage_1`** into `storage_1.modset-<ts>-<seal8>` (with its
+  `.marker.json` and a `…rotation.<hash>.completed.json` receipt) and starts fresh: **world, bases, and
+  test characters, gone**. Measured: repeating same set DOES NOT rotate and seal does not move;
+  changing it rotates **exactly once**; repeating new one does not rotate; and `mode=client` on live run
+  does not rotate either — rotation lives in SERVER startup.
+  - **Consequence for anyone alternating stacks** (testing your mod, then next one, then yours):
+    you lose test persistence on each hop. If you need to preserve it, **copy
+    `storage_1` manually beforehand**; archived ones all remain as siblings in mission directory.
+  - **Rotation DOES NOT leave a row in audit log** (known defect, emitter swallows its
+    exceptions silently). If one day you lose the world and look for why, check via
+    `storage_1.modset-*` folders and `seal` field, not audit log.
+  - **It is deliberate and fixes something worse**: previously, that same stack hop corrupted savegame.
+    Measured 2026-09-04 with previous bundle, an A→B hop produced **43,197** lines of
+    `Scripted variables corrupted`; with seal, both signatures (`Failed to read modstorage` and
+    `Scripted variables corrupted`) exit at **0**. Caution when diagnosing: in that repro the signature
+    appearing was NOT the one incident entry proposed watching; watch **both**.
+  - **Format trap**: `extra_mods` is a **list**, not a string with `;`. A
+    `["@CF;@VPPAdminTools"]` passes validation and then does not exist as folder: silent red.
+  - Via MCP route, expired Steam session from previous point manifests as
+    `dayz_test_run` dying in `validating` phase at ~1.3 s with `error_code: "steam_session_stale"`;
+    remedy is the same (restart Steam, login is preserved).
 
 Path resolution is env-var-first, Steam-default fallback (`DAYZ_GAME_PATH`, `DAYZ_DIAG_PATH`,
-`DAYZ_TOOLS_PATH`, `DAYZ_WORK_DRIVE`). [EXACT — DAYZ_INFRA.md §Variables de entorno opcionales (resolvers)]
+`DAYZ_TOOLS_PATH`, `DAYZ_WORK_DRIVE`). [EXACT — DAYZ_INFRA.md §Optional environment variables (resolvers)]
 
 ## THE CYCLE
 
@@ -268,12 +268,12 @@ pipeline supplies these postconditions.
 
 | Mode | What | Status |
 |---|---|---|
-| `all` (default) | server, wait for UDP bind, then client | [EXACT — DAYZ_INFRA.md §Comandos de invocación canónicos — Server diag + Cliente diag] |
-| `server` | `DayZDiag_x64.exe` gestionado con `-server` | `managed_lifecycle=true`; [EXACT — DAYZ_INFRA.md §Comandos de invocación canónicos — Server diag] |
-| `client` | diag `-connect=127.0.0.1` (server already up) | [EXACT — DAYZ_INFRA.md §Comandos de invocación canónicos — Cliente diag] |
+| `all` (default) | server, wait for UDP bind, then client | [EXACT — DAYZ_INFRA.md §Canonical invocation commands — Server diag + Cliente diag] |
+| `server` | `DayZDiag_x64.exe` managed with `-server` | `managed_lifecycle=true`; [EXACT — DAYZ_INFRA.md §Canonical invocation commands — Server diag] |
+| `client` | diag `-connect=127.0.0.1` (server already up) | [EXACT — DAYZ_INFRA.md §Canonical invocation commands — Cliente diag] |
 | `offline` | single diag with `-mission`, no network | **[DESIGN]** validate in-game |
 
-## RETAIL EXTERNO MANUAL PARA MODSETS DE TERCEROS (histórico verificado 2026-06-11)
+## MANUAL EXTERNAL RETAIL FOR THIRD-PARTY MODSETS (historical verified 2026-06-11)
 
 The diag exe compiled Enforce in STRICT mode; the retail chain compiled permissively.
 Third-party packs were observed with syntax that retail tolerated as `FIX-ME` warnings but
@@ -405,7 +405,7 @@ its `.bikey`.
 1. Create `<Mod>_dev\tools\` if absent (per the dev-split layout in workflow.md).
 2. Copy `templates\dayz-test.ps1` there verbatim — it is fully generic (driven by `-Mod`).
 3. Copy the three `.bat` wrappers and replace the `__MODNAME__` placeholder with the real mod
-   name (the CfgPatches identifier — no dashes; `Mi_Mod`, not `Mi-Mod`). [EXACT — DAYZ_INFRA.md §Layout de drives y mods — Naming de mods]
+   name (the CfgPatches identifier — no dashes; `Mi_Mod`, not `Mi-Mod`). [EXACT — DAYZ_INFRA.md §Drive and mod layout — Naming de mods]
 4. Confirm the mod **source** is reachable at `P:\<Mod>` (a junction to the editable folder)
    or pass `-Source`. Confirm `requiredAddons` in `config.cpp` map to the `-ExtraMods` you
    pass (CF, Expansion, etc.) — the client and server mod lists MUST match.
@@ -484,27 +484,27 @@ cost many iterations, recorded so the next headless harness works first try:
    and an `ErrorMessage_*.mdmp` while the SERVER (no Steam) boots fine — `steam.exe -shutdown` +
    relaunch repopulated the key in ~20 s. Check the key in the pre-flight of every cell.
 
-### Mission `init.c`: no extender tipos de módulos anteriores desde el fixture (SP-140)
+### Mission `init.c`: do not extend previous module types from fixture (SP-140)
 
-[IN-GAME CONFIRMED, DayZ 1.29 server diag, 2026-07-30] En este compilador una
-misión generada que añadió `modded class` sobre tipos de `4_World` falló con
-`Unknown type` tanto para una clase concreta (`SmallStone`) como para una base
-(`BuildingBase`). Un incidente anterior reprodujo lo mismo con
-`LFPG_NetworkManager`. Los tests offline del texto no detectaron la frontera.
+[IN-GAME CONFIRMED, DayZ 1.29 server diag, 2026-07-30] On this compiler a
+generated mission adding `modded class` on `4_World` types failed with
+`Unknown type` for both a concrete class (`SmallStone`) and a base
+(`BuildingBase`). An earlier incident reproduced the same with
+`LFPG_NetworkManager`. Offline text tests did not detect the boundary.
 
-Regla para oráculos de misión: usa un receptor ya compilado que exponga el
-contrato bajo prueba. Si necesitas añadir un método, el puente debe vivir en el
-mismo módulo/PBO que el tipo y requiere su propio candidato/enmienda; no lo
-inyectes como `modded class` desde `init.c`. Mantén llamadas y expresiones
-booleanas del fixture en formas vanilla de una línea: el operador `&&` al
-comienzo de la línea siguiente produjo `Incompatible parameter` + `Syntax
-error`. Antes de gastar pares, ejecuta un único control que exija Module
-Game/World/Mission, OnInit y el marcador del oráculo.
+Rule for mission oracles: use an already compiled receiver exposing contract
+under test. If you need to add a method, bridge must live in the
+same module/PBO as the type and requires its own candidate/amendment; do not
+inject it as `modded class` from `init.c`. Keep fixture calls and boolean
+expressions in single-line vanilla forms: `&&` operator at the
+start of next line produced `Incompatible parameter` + `Syntax
+error`. Before expending pairs, run a single control requiring Module
+Game/World/Mission, OnInit, and oracle marker.
 
-Evidencia: `P:\LFPowerGrid_dev\_validation\server-footprint-a9p1-20260730\v1-oracle\a7-attempt3-f02-unknown-type\script-final.log`,
-`...\a7-attempt4-f03-cross-module-modded\script-final.log` y
-`...\a7-attempt5-f04-boolean-linebreak\script-final.log`. El receptor existente
-cerró el control en `...\a7-control\script-final.log`.
+Evidence: `P:\LFPowerGrid_dev\_validation\server-footprint-a9p1-20260730\v1-oracle\a7-attempt3-f02-unknown-type\script-final.log`,
+`...\a7-attempt4-f03-cross-module-modded\script-final.log` and
+`...\a7-attempt5-f04-boolean-linebreak\script-final.log`. Existing receiver
+closed control in `...\a7-control\script-final.log`.
 
 ## WHEEL SIMULATION DIAGNOSIS (vehicle won't drive / bounces / sinks)
 
@@ -551,25 +551,25 @@ fine. Check the regex against a raw sample line before concluding the build is b
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| Client kicked `0x00020005` | filePatching mismatch | `allowFilePatching = 1;` in serverDZ.cfg [DAYZ_INFRA.md §serverDZ.cfg — allowFilePatching = 1; obligatorio + §BattlEye — códigos de kick más comunes] |
+| Client kicked `0x00020005` | filePatching mismatch | `allowFilePatching = 1;` in serverDZ.cfg [DAYZ_INFRA.md §serverDZ.cfg — allowFilePatching = 1; obligatorio + §BattlEye — most common kick codes] |
 | VPP asks for a password despite a `SuperAdmins.txt` superadmin | `serverDZ.cfg` predates the `vppDisablePassword = 1;` default (generated before 2026-06-09); the existing-cfg path only re-checked `allowFilePatching` | launch now self-heals (appends `vppDisablePassword = 1;` if absent) + restart; or add it manually [session 2026-06-15] |
-| Kicked `0x00010002` | mismatched signatures | rebuild PBO; or `verifySignatures=0` (dev cfg already does) [DAYZ_INFRA.md §BattlEye — códigos de kick más comunes] |
-| "PlayerConnect will stay disabled" | mission empty / `-mission` not absolute | pass an absolute mission path [DAYZ_INFRA.md §Comandos de invocación canónicos — Server diag] |
-| Stuck past loading screen | retail exe + filePatching | use `DayZDiag_x64.exe` [DAYZ_INFRA.md §Diag binary obligatorio para iteración] |
-| Server/client no termina | run gestionado aún activo | detener solo el `run_id` exacto con `-Kill -RunId <run_id>`; si falta el ID, declarar `manual_cleanup_required` y no buscar otro proceso que matar |
-| Mod not visible in-game | PBO landed outside `!Workshop` | ensure `P:\Mods` is a junction [DAYZ_INFRA.md §Layout de drives y mods] |
+| Kicked `0x00010002` | mismatched signatures | rebuild PBO; or `verifySignatures=0` (dev cfg already does) [DAYZ_INFRA.md §BattlEye — most common kick codes] |
+| "PlayerConnect will stay disabled" | mission empty / `-mission` not absolute | pass an absolute mission path [DAYZ_INFRA.md §Canonical invocation commands — Server diag] |
+| Stuck past loading screen | retail exe + filePatching | use `DayZDiag_x64.exe` [DAYZ_INFRA.md §Mandatory diag binary for iteration] |
+| Server/client does not exit | managed run still active | stop only the exact `run_id` with `-Kill -RunId <run_id>`; if ID is missing, declare `manual_cleanup_required` and do not look for another process to kill |
+| Mod not visible in-game | PBO landed outside `!Workshop` | ensure `P:\Mods` is a junction [DAYZ_INFRA.md §Drive and mod layout] |
 | Server boots then dies before UDP bind; RPT/log shows `!!! Serious stream damage detected during load` | half-written CE storage after an unclean server kill — masquerades as a mod bug | wipe (or rename) `<mission>\storage_1` before the next test; the server regenerates a fresh one. SOP: after ANY unclean server kill, wipe it preemptively |
 | Mod class missing / `CreateObjectEx` returns null, no RPT error | relative `-mod=@Name` didn't mount | use absolute `!Workshop` paths — `Get-ModString` now does this (see "MOD PATHS MUST BE ABSOLUTE") |
 | Mod mounts (CfgPatches in `defines:`) but no script/hook runs | AddonBuilder binarize dropped the `.c` → config-only PBO | build scripts mods with `-packonly` (Invoke-Build auto-detects when no `.p3d`/`.paa`); grep the deployed PBO for a known classname to confirm. [verified 2026-06-03] |
 | Script edit doesn't take effect — the same compile error persists across rebuilds even though the source is fixed on disk | AddonBuilder's incremental sync to `P:\temp\<Mod>` served stale source (a changed `.c` not re-copied); filePatching also did not override the PBO's scripts with the loose work-drive copies | Invoke-Build now wipes `P:\temp\<Mod>` before every build; building AddonBuilder by hand, pass `-clear` or delete the temp first. Canonical tell: a compile error citing a line you already fixed and verified. [verified 2026-06-18] |
-| `-Build` ran but the deployed car is UNCHANGED in-game (old config/.p3d) | the deployed PBO was **LOCKED** by the running server, so AddonBuilder failed to COPY it — a SILENT `[ERROR] Build failed` at the *copy* step while the script CONTINUES and the gates run on the OLD pbo | detener el run gestionado exacto antes de reconstruir, verificar estado `EXITED`, luego build y relaunch; sin `run_id`, declarar cleanup manual en vez de inferir ownership. SUB_BRZ s28 |
-| Kicked `240 ("Game restart required")` 20-60 s after connect | server BE active + client launched bare (`DayZ_x64.exe` never inits BE); `BattlEye = 0;` stops masking it after a BE service hot-update (check mtimes in `Common Files\BattlEye`) | diagnóstico histórico: `DayZ_BE.exe` inicializó correctamente BE en la sesión 2026-06-11; el usuario decide si abre retail externamente y el agente permanece en cuarentena, sin iniciarlo |
+| `-Build` ran but the deployed car is UNCHANGED in-game (old config/.p3d) | the deployed PBO was **LOCKED** by the running server, so AddonBuilder failed to COPY it — a SILENT `[ERROR] Build failed` at the *copy* step while the script CONTINUES and the gates run on the OLD pbo | stop exact managed run before rebuilding, verify state `EXITED`, then build and relaunch; without `run_id`, declare manual cleanup instead of inferring ownership. SUB_BRZ s28 |
+| Kicked `240 ("Game restart required")` 20-60 s after connect | server BE active + client launched bare (`DayZ_x64.exe` never inits BE); `BattlEye = 0;` stops masking it after a BE service hot-update (check mtimes in `Common Files\BattlEye`) | historical diagnosis: `DayZ_BE.exe` correctly initialized BE in session 2026-06-11; user decides whether to open retail externally and agent remains in quarantine, without launching it |
 | Retail server binds, then dies ~1 min later; `BattlEye initialization failed`, RPT ends "Termination successfully completed" | `BEServer_x64.dll` missing/renamed | Historical observation: the 1.29 dedicated server shut down when BE initialization lacked that DLL. The external owner/user decides and performs any restoration outside the agent workflow; the agent remains in quarantine/read-only [session 2026-06-11] |
-| Modal "Compile error … Missing function scope" citing a third-party file at boot | diag exe strict-compiles third-party packs | reportar la incompatibilidad; si el usuario abre retail externamente, aplicar cuarentena y no perseguir el "bug" del tercero |
+| Modal "Compile error … Missing function scope" citing a third-party file at boot | diag exe strict-compiles third-party packs | report incompatibility; if user opens retail externally, apply quarantine and do not pursue third-party "bug" |
 
 Logs (where to look): `script.log` = script compile/runtime errors; `*.RPT` = engine errors
 (missing assets, malformed configs); `crash_*.log` = handled exceptions, not hard segfaults.
-[EXACT — DAYZ_INFRA.md §Cuándo cita el RPT que un script falla]. All under the `_server\profiles\` and `_client\profiles\`
+[EXACT — DAYZ_INFRA.md §When the RPT cites that a script fails]. All under the `_server\profiles\` and `_client\profiles\`
 folders. For a structured script-failure diagnosis, hand off to `dayz-mod-workflow`.
 
 ## OUT OF SCOPE
@@ -671,31 +671,31 @@ Origin: SP-128 (2026-07-28), measured against the launcher source; supersedes th
 "cannot be tested at all" reading of SP-089.
  Cross-ref SP-085 (diag hangs, 0 CPU / 0 RPT, when launched outside the registered launcher).
 
-## `-ExecutionPolicy Bypass` — quirk intermitente de Codex, NO un bloqueo del host (corregido 2026-07-22)
+## `-ExecutionPolicy Bypass` — intermittent Codex quirk, NOT a host block (corrected 2026-07-22)
 
-`[corregido por el usuario 2026-07-22]` La versión previa de esta sección (2026-07-21, escrita por
-Codex) afirmaba que la policy de PowerShell del host era `Restricted` y que Microsoft Defender
-interrumpía los wrappers con `-ExecutionPolicy Bypass`, y de ahí derivaba un régimen "BLOCKED-
-SECURITY / solo managed Python lifecycle". **Era un MALENTENDIDO de Codex sobre lo que dijo el
-usuario.** Lo real:
+`[corrected by user 2026-07-22]` The previous version of this section (2026-07-21, written by
+Codex) claimed that host PowerShell policy was `Restricted` and that Microsoft Defender
+interrupted wrappers with `-ExecutionPolicy Bypass`, and from there derived a "BLOCKED-
+SECURITY / only managed Python lifecycle" regime. **It was a MISUNDERSTANDING by Codex of what the
+user said.** The reality:
 
-- **Codex (ChatGPT CLI) A VECES dispara SU PROPIA política de seguridad cuando el comando contiene
-  `-ExecutionPolicy Bypass`.** Es un rechazo intermitente del AGENTE Codex, no un fallo del host: la
-  policy de PowerShell del host NO está en `Restricted` por esto, y Defender NO interrumpe los
+- **Codex (ChatGPT CLI) SOMETIMES triggers ITS OWN security policy when the command contains
+  `-ExecutionPolicy Bypass`.** It is an intermittent rejection by the Codex AGENT, not a host failure: the
+  host PowerShell policy is NOT set to `Restricted` because of this, and Defender does NOT interrupt
   launches.
-- Por tanto los lanzadores `.ps1`/`.bat` de este skill **NO están host-bloqueados**: Claude y el
-  usuario los ejecutan con normalidad. **No hay "BLOCKED-SECURITY"** por este motivo, ni requisito de
-  pasar por un "managed Python lifecycle" para poder lanzar.
-- **Única implicación, y SOLO al delegar un launch a Codex**: `-ExecutionPolicy Bypass` puede ser
-  rechazado de forma intermitente por Codex → evita ese flag en el comando que le pasas a Codex, o
-  deja que el launch lo haga Claude o el usuario.
-- **Independiente y vigente**: el protocolo de sesión compartida (lease FIFO + `run_id`,
-  §PROTOCOLO DE SESIÓN COMPARTIDA) sigue aplicando para coordinar launch/stop; no tiene relación con
-  esto.
+- Therefore `.ps1`/`.bat` launchers of this skill **are NOT host-blocked**: Claude and the
+  user run them normally. **There is no "BLOCKED-SECURITY"** for this reason, nor requirement to
+  go through a "managed Python lifecycle" to be able to launch.
+- **Only implication, and ONLY when delegating a launch to Codex**: `-ExecutionPolicy Bypass` may be
+  intermittently rejected by Codex → avoid that flag in the command you pass to Codex, or
+  let Claude or the user handle the launch.
+- **Independent and active**: the shared session protocol (FIFO lease + `run_id`,
+  §SHARED SESSION PROTOCOL) still applies to coordinate launch/stop; it has no relation to
+  this.
 
-(El reporte `P:\Utopia_PC_Suite\reports\2026-07-21-powershell-defender-diagnosis.md` arrastra el
-mismo malentendido de Codex — reconciliar o marcar si se cita. No deshabilites Defender ni añadas
-exclusiones como "workaround": no procede, porque no era Defender.)
+(The report `P:\Utopia_PC_Suite\reports\2026-07-21-powershell-defender-diagnosis.md` carries over the
+same Codex misunderstanding — reconcile or mark if cited. Do not disable Defender or add
+exclusions as a "workaround": not applicable, because it was not Defender.)
 
 ## Script changes NEVER hot-load from the work drive on this install - the PBO wins; rebuild the PBO for every script iteration (SP-078, added 2026-07-20)
 
@@ -823,111 +823,111 @@ divergence between the Claude and Codex registrations. Always invoke with
 Cross-ref SP-089 (allow-list format), SP-092 (daemon argv, staging dir, opaque errors), SP-085
 (diag hangs outside the registered launcher).
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so they arrive via trigger instead
+of depending on someone remembering to look them up. Each rule cites its originating `LL-NNN`;
+the full entry (symptom, origin, evidence) lives there.
 
-- **LL-118** — Ante una regresión, compara primero el comando de launch, argumentos `-mod`, rutas y entorno con el último run que pasó. Verifica un invariante medible entre ambos runs y consulta los ledgers antes de formular una hipótesis de código.
+- **LL-118** — In the face of a regression, first compare launch command, `-mod` arguments, paths, and environment with the last passing run. Verify a measurable invariant between both runs and consult ledgers before formulating a code hypothesis.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so they arrive via trigger instead
+of depending on someone remembering to look them up. Each rule cites its originating `LL-NNN`;
+the full entry (symptom, origin, evidence) lives there. Do not remove the citation: the
+`lessons-index.md` index detects promotion by searching for that reference inside skills.
 
-- **LL-196** — Busca `Print()` y `DbgLog` del mod en el `script_*.log` más reciente del profiles correspondiente. Usa el RPT para engine, CE, red, compilación y fallos nativos; no concluyas “el código no corrió” por ausencia de prints en el RPT.
-- **LL-197** — Prepara comando, rutas y argumentos antes de adquirir un lease corto; adquiere y usa el token en llamadas adyacentes. Si hubo análisis prolongado, vuelve a adquirir justo antes de la operación bloqueante.
-- **LL-198** — En ciclos gestionados, ejecuta `adopt → stop` mientras server y client sigan vivos; pide mantener ambos abiertos entre iteraciones. Si un peer ya murió, usa el cierre degradado documentado y espera el auto-heal antes de relanzar.
+- **LL-196** — Search for mod's `Print()` and `DbgLog` in the most recent `script_*.log` of corresponding profiles. Use RPT for engine, CE, network, compilation, and native crashes; do not conclude “code did not run” from absence of prints in RPT.
+- **LL-197** — Prepare command, paths, and arguments before acquiring a short lease; acquire and use the token in adjacent calls. If there was prolonged analysis, acquire again right before the blocking operation.
+- **LL-198** — In managed cycles, execute `adopt → stop` while server and client remain alive; request keeping both open between iterations. If a peer already died, use documented degraded shutdown and wait for auto-heal before relaunching.
 
-## `dayz_test_run` con `build:true` NO construye — y el error que devuelve no lo dice (SP-139, added 2026-07-29)
+## `dayz_test_run` with `build:true` does NOT build — and the error it returns does not say so (SP-139, added 2026-07-29)
 
-En esta caja DayZDiag solo arranca por el launcher nativo registrado (SP-085), asi que
-`dayz_test_run` es el unico camino. **Su `build:true` esta ROTO**: devuelve el generico
-`dayz_test_failed` y **NO escribe el PBO** (hash y mtime del desplegado quedan intactos).
-Medido 2026-07-29 en DayZ_MCP, reproducido 2 veces, siempre a los ~16 s.
+On this box DayZDiag only starts via registered native launcher (SP-085), so
+`dayz_test_run` is the only way. **Its `build:true` is BROKEN**: returns generic
+`dayz_test_failed` and **does NOT write the PBO** (hash and mtime of deployed remain intact).
+Measured 2026-07-29 in DayZ_MCP, reproduced 2 times, always at ~16 s.
 
-Por que engana: `dayz_test_failed` es el `except Exception` de `server.py:1101`, que **traga la
-causa real** — no es un codigo de error del tool, es "algo lanzo y no se que". Leer el audit
-(`%LOCALAPPDATA%\DayZ_MCP\audit\events.jsonl`) tampoco basta aqui: el lease se concede y se
-libera limpio, con `runs_released: []` y ningun evento de run. Parece un fallo de build y no
-dice donde.
+Why it is deceptive: `dayz_test_failed` is the `except Exception` of `server.py:1101`, which **swallows the
+real cause** — it is not a tool error code, it is "something threw and I don't know what". Reading the audit
+(`%LOCALAPPDATA%\DayZ_MCP\audit\events.jsonl`) is not enough here either: lease is granted and
+released cleanly, with `runs_released: []` and no run event. Looks like a build failure and does
+not say where.
 
-**Biseccion que lo aisla en 3 llamadas** (hazla antes de tocar nada):
+**Bisection isolating it in 3 calls** (perform it before touching anything):
 
-| Llamada | Resultado medido | Que descarta |
+| Call | Measured result | What it rules out |
 |---|---|---|
-| `preflight: true` | `succeeded` en 1,5 s | launcher, PE, bundle, request y lifecycle estan SANOS |
-| `mode: server` sin `build` | `succeeded` en 5,1 s | el launch funciona |
-| AddonBuilder a mano | `Build Successful`, exit 0, ~3,4 s | **AddonBuilder tampoco es el culpable** |
+| `preflight: true` | `succeeded` in 1.5 s | launcher, PE, bundle, request, and lifecycle are HEALTHY |
+| `mode: server` without `build` | `succeeded` in 5.1 s | launch works |
+| AddonBuilder by hand | `Build Successful`, exit 0, ~3.4 s | **AddonBuilder is not the culprit either** |
 
-Con esas tres, el fallo queda acotado a la ruta de build DEL LIFECYCLE, que es plataforma.
+With those three, the failure is isolated to the LIFECYCLE build path, which is platform.
 
-**Workaround verificado y repetible** (build fuera del path publicado, que ademas es lo que pide
-el §RELEASE-GRADE BUILD BOUNDARY de esta misma skill):
+**Verified and repeatable workaround** (build outside published path, which is also what
+§RELEASE-GRADE BUILD BOUNDARY of this same skill requires):
 
 ```powershell
-# 1. construir a staging, NUNCA directo al path publicado
+# 1. build to staging, NEVER directly to published path
 AddonBuilder.exe P:\<Mod> <staging> -prefix=<Mod> -temp=P:\temp\<Mod> -clear -packonly
-# 2. validar por CONTENIDO antes de publicar (contar anclas, no Contains -- SP-065)
-# 3. publicar y verificar por SHA-256, no por mtime
+# 2. validate by CONTENT before publishing (count anchors, not Contains -- SP-065)
+# 3. publish and verify by SHA-256, not by mtime
 Copy-Item <staging>\<Mod>.pbo P:\Mods\@<Mod>\Addons\<Mod>.pbo -Force
 (Get-FileHash 'P:\Mods\@<Mod>\Addons\<Mod>.pbo' -Algorithm SHA256).Hash
-# 4. arrancar con dayz_test_run SIN build
+# 4. start with dayz_test_run WITHOUT build
 ```
 
-Dos precondiciones que ya estaban documentadas y aqui son load-bearing: el PBO desplegado queda
-**LOCKED mientras el run corre** (para el run antes de publicar), y por SP-078 **los scripts no
-hot-loadean en esta instalacion**, asi que cada iteracion de Enforce necesita este ciclo entero.
+Two preconditions that were already documented and are load-bearing here: deployed PBO remains
+**LOCKED while the run is executing** (stop run before publishing), and per SP-078 **scripts do not
+hot-load on this install**, so each Enforce iteration requires this entire cycle.
 
-Origen: DayZ_MCP, gate agrupado de `query_all_players` (2026-07-29). Coste real: ~20 min de
-biseccion sobre un error opaco que no nombraba ni el build ni el launch.
+Origin: DayZ_MCP, grouped gate of `query_all_players` (2026-07-29). Real cost: ~20 min of
+bisection on an opaque error naming neither build nor launch.
 
-**Leccion de metodo asociada**: `LL-224` — el error opaco se acoto bisecando CAPACIDADES (preflight / sin la feature / la herramienta a mano), no leyendo el codigo que lo lanzo. La tabla de arriba ES esa biseccion; reutiliza el patron ante cualquier error de wrapper que no describa nada.
+**Associated method lesson**: `LL-224` — the opaque error was narrowed down by bisecting CAPABILITIES (preflight / without feature / tool by hand), not reading the code that threw it. The table above IS that bisection; reuse the pattern for any wrapper error that describes nothing.
 
-## `dayz_test_run` `extra_mods` REEMPLAZA la lista de extras, no la amplia (SP-323, added 2026-08-22)
+## `dayz_test_run` `extra_mods` REPLACES the extras list, does not extend it (SP-323, added 2026-08-22)
 
-Pasar `extra_mods=["@MiMod"]` a `dayz_test_run` **sustituye** los mods extra por esa
-lista en vez de anadirse a los que el proyecto trae. Si el bridge `@DayZ_MCP` viajaba
-ahi, se cae fuera y **todos los verbos del MCP dejan de funcionar aunque el par
-arranque perfectamente**: los dos procesos vivos, respondiendo, con la mision cargada,
-y `bridge_status.ready.reason = server_poll_stale` con `last_poll_age_s` congelado en
-el valor de la corrida ANTERIOR. Sintoma que despista porque todo lo demas esta sano.
+Passing `extra_mods=["@MiMod"]` to `dayz_test_run` **replaces** extra mods with that
+list instead of appending to those the project brings. If the `@DayZ_MCP` bridge traveled
+there, it drops out and **all MCP verbs stop working even though the pair
+boots perfectly**: both processes alive, responding, with mission loaded,
+and `bridge_status.ready.reason = server_poll_stale` with `last_poll_age_s` frozen at
+the value from PREVIOUS run. Misleading symptom because everything else is healthy.
 
-**Comprobacion barata en 5 s**: grepear el script log del servidor por `DayZ_MCP` en la lista de
-`defines:` de cualquier modulo, o por la linea `[DayZ-MCP] config loaded ... poll_hz=`; si no esta,
-el mod no se cargo. Nombrar SIEMPRE `@DayZ_MCP` explicitamente en `extra_mods`.
+**Cheap 5 s check**: grep server script log for `DayZ_MCP` in the list of
+`defines:` of any module, or for the line `[DayZ-MCP] config loaded ... poll_hz=`; if absent,
+the mod was not loaded. ALWAYS name `@DayZ_MCP` explicitly in `extra_mods`.
 
-Segundo apunte del mismo lanzamiento: **`mode="pair"` no existe** y devuelve
-`bad_dayz_test_request` sin decir cuales son validos. Los modos son `server`, `client`
-y `all`. El camino fiable sigue siendo `server` -> esperar -> `client` con el mismo
-`run_id` (T9-HARNESS-046), no `all`.
+Second note from same launch: **`mode="pair"` does not exist** and returns
+`bad_dayz_test_request` without saying which are valid. Modes are `server`, `client`,
+and `all`. Reliable path remains `server` -> wait -> `client` with same
+`run_id` (T9-HARNESS-046), not `all`.
 
-Origen: sesion 2026-08-22; un ciclo de arranque completo perdido por esto.
+Origin: session 2026-08-22; one full boot cycle lost to this.
 
-## (added 2026-08-01, HH-60G v19) El RPT del diag BUFFERIZA ~52 KB, y el lifecycle necesita su ventana tras run_not_adoptable
+## (added 2026-08-01, HH-60G v19) Diag RPT BUFFERS ~52 KB, and lifecycle needs its window after run_not_adoptable
 
-Dos hechos operativos de la nocturna de 6 boots (todos reproducidos varias veces):
+Two operational facts from 6-boot overnight run (all reproduced several times):
 
-1. **Un RPT congelado NO discrimina proceso muerto de buffer sin flush.** El diag escribe el
-   RPT a buffer de ~52 KB (esta noche: 5 boots distintos, SIEMPRE ~464 lineas / ~52 KB en el
-   momento del fallo, con contenidos distintos). El discriminante real es el **delta de CPU
-   del proceso en 30 s** (`Get-Process` dos veces): plano = parado de verdad; creciendo =
-   vivo con el log retenido. Ademas `Get-Item`/stat sobre P:\ (OneDrive) puede mentir el
-   tamano (927 b reportados con 52 KB reales): leer con `Get-Content` (share-read) y contar.
-2. **Tras un `run_not_adoptable` del `dayz_test_stop`, el lifecycle tiene una ventana de
-   reconciliacion**: el siguiente `dayz_test_run` devuelve `active_run_exists` aunque los
-   procesos esten muertos. Patron que funciono (x3): cerrar los DayZDiag huerfanos por
-   proceso, reintentar el stop hasta que devuelva `run_not_active`, y SOLO entonces lanzar
-   el run nuevo.
+1. **A frozen RPT does NOT distinguish dead process from un-flushed buffer.** Diag writes the
+   RPT to a buffer of ~52 KB (tonight: 5 distinct boots, ALWAYS ~464 lines / ~52 KB at the
+   moment of failure, with different contents). Real discriminant is **CPU delta of
+   the process in 30 s** (`Get-Process` twice): flat = truly stopped; growing =
+   alive with log buffered. Additionally `Get-Item`/stat over P:\ (OneDrive) can lie about
+   size (927 b reported with 52 KB real): read with `Get-Content` (share-read) and count.
+2. **After a `run_not_adoptable` from `dayz_test_stop`, the lifecycle has a reconciliation
+   window**: next `dayz_test_run` returns `active_run_exists` even if
+   processes are dead. Pattern that worked (x3): close orphan DayZDiag by
+   process, retry stop until it returns `run_not_active`, and ONLY then launch
+   the new run.
 
-## Estrenar CF sobre una misión con persistencia escrita SIN CF = crash duro del servidor (added 2026-08-02)
+## Introducing CF on a mission with persistence written WITHOUT CF = hard server crash (added 2026-08-02)
 
-Si un proyecto añade **Community Framework** (y con él Dabs/VPP) a una misión cuyo `storage_*` se
-escribió en corridas **sin** CF, el servidor arranca, carga la misión y **muere** al leer la
-persistencia. Firma exacta (MercedesAMGLF 2026-08-02, `crash_*.log` del server):
+If a project adds **Community Framework** (and with it Dabs/VPP) to a mission whose `storage_*` was
+written in runs **without** CF, the server starts, loads the mission and **dies** upon reading
+persistence. Exact signature (MercedesAMGLF 2026-08-02, server `crash_*.log`):
 
 ```
 SCRIPT (E): Virtual Machine Exception
@@ -937,100 +937,100 @@ Class: 'CF_ModStorageObject<ItemBase>'
   .../mpmissions/dayzOffline.chernarusplus/init.c:6  Function main
 ```
 
-**Lo que más despista**: la entidad citada es **vanilla y aleatoria** (aquí un `Rangefinder`), así
-que el mensaje apunta a cualquier sitio menos al mod que acabas de añadir. Y el cliente NO falla —
-carga bien (`PlayerBase OnStoreLoad SUCCESS`) y se cierra limpio detrás del servidor, lo que refuerza
-la lectura equivocada de «problema del cliente».
+**What is most misleading**: the cited entity is **vanilla and random** (here a `Rangefinder`), so
+the message points anywhere except the mod you just added. And the client does NOT fail —
+loads well (`PlayerBase OnStoreLoad SUCCESS`) and closes cleanly behind the server, reinforcing
+the mistaken reading of "client issue".
 
-**Causa**: las misiones `dayzOffline.*` del DayZServer se COMPARTEN entre proyectos. Un proyecto que
-corre sin CF persiste entidades sin los datos de `modstorage` de CF; el siguiente que sí lleva CF los
-lee y revienta.
+**Cause**: DayZServer `dayzOffline.*` missions are SHARED between projects. A project running
+without CF persists entities without CF's `modstorage` data; the next one that does include CF
+reads them and crashes.
 
-**Remedio** (convención ya establecida en la propia carpeta de la misión, con 4 ocurrencias:
-`storage_1_corrupt-modstorage-20260720 / 0728 / 0729 / 0802`): con los procesos parados, **renombrar**
-`storage_1` → `storage_1_corrupt-modstorage-<YYYYMMDD>` y dejar que el server regenere. Es rename, no
-borrado, así que es reversible — pero **volver a arrancar con CF sobre ese storage vuelve a crashear**:
-lo que se conserva es la evidencia, no un estado al que puedas volver con CF puesto.
+**Remedy** (convention already established in the mission folder itself, with 4 occurrences:
+`storage_1_corrupt-modstorage-20260720 / 0728 / 0729 / 0802`): with processes stopped, **rename**
+`storage_1` → `storage_1_corrupt-modstorage-<YYYYMMDD>` and let server regenerate. It is a rename, not
+deletion, so it is reversible — but **starting again with CF on that storage crashes again**:
+what is preserved is evidence, not a state you can return to with CF enabled.
 
-**Consecuencia que hay que decirle al usuario ANTES**: mundo y personaje se resetean.
+**Consequence that must be told to user BEFOREHAND**: world and character are reset.
 
-Cross-ref `SP-062` (misma acción — renombrar `storage_1` — por un motivo distinto: entidades
-persistidas que re-disparan `EEInit`). Regla combinada: **cualquier cambio en el conjunto de mods
-que altere quién escribe `modstorage` exige storage limpio**, igual que un boot de medición.
+Cross-ref `SP-062` (same action — rename `storage_1` — for a different reason: persisted
+entities that re-fire `EEInit`). Combined rule: **any change in mod set
+altering who writes `modstorage` requires clean storage**, same as a measurement boot.
 
-### La trampa es BIDIRECCIONAL y la regla se decide al LANZAR (medido 2026-08-21)
+### The trap is BIDIRECTIONAL and the rule is decided at LAUNCH (measured 2026-08-21)
 
-La direccion inversa tambien muerde, y mas rapido: un server **sin** CF que arranca sobre un
-`storage_1` escrito **con** CF entra en tormenta de VME — `!!! Scripted variables corrupted upon
-"<entidad>"` por CADA entidad persistida (medido: **15.688 en ~3 min**, `-mod=@DayZ_MCP` a secas
-sobre un storage recien guardado por un server con CF) — y puede morir a mitad de escritura
-dejando el storage PEOR: las entidades reescritas pierden su modstorage de CF, y el siguiente
-server que SI lleva CF crashea con la firma de arriba. Asi se encadenan los cruces:
-server-sin-CF reescribe -> server-con-CF crashea -> rotacion.
+The reverse direction also bites, and faster: a server **without** CF starting on a
+`storage_1` written **with** CF enters a VME storm — `!!! Scripted variables corrupted upon
+"<entity>"` for EACH persisted entity (measured: **15,688 in ~3 min**, plain `-mod=@DayZ_MCP`
+on a storage freshly saved by a server with CF) — and can die midway through writing
+leaving the storage WORSE: rewritten entities lose their CF modstorage, and next
+server that DOES include CF crashes with the signature above. Thus crossings chain together:
+server-without-CF rewrites -> server-with-CF crashes -> rotation.
 
-**Regla al lanzar sobre la mision compartida**: o el `-mod=` lleva CF, o se rota `storage_1`
-ANTES de levantar. No hay tercera opcion estable — el storage queda "CF-flavored" en cuanto un
-server con CF guarda una vez. Rotar = renombrar con motivo
-(`storage_1.bak-<YYYYMMDD>-<HHMM>-<motivo>`, con los procesos parados; ocurrencias 2026-08-21:
-`-1605-modstorage-corrupt`, `-1610-cfless-storm`). Que storage toca rotar lo dice el propio RPT
-del server: linea `[StorageDirs] :: Selected storage directory:`.
+**Rule when launching on shared mission**: either `-mod=` includes CF, or `storage_1` is rotated
+BEFORE starting. There is no third stable option — storage becomes "CF-flavored" as soon as a
+server with CF saves once. Rotate = rename with reason
+(`storage_1.bak-<YYYYMMDD>-<HHMM>-<reason>`, with processes stopped; occurrences 2026-08-21:
+`-1605-modstorage-corrupt`, `-1610-cfless-storm`). Which storage needs rotation is told by server's
+own RPT: line `[StorageDirs] :: Selected storage directory:`.
 
-## (added 2026-08-12, LFHeli celda COM/pivot) Celda in-game AUTOMATIZADA sin piloto: los 4 muros medidos y sus salidas
+## (added 2026-08-12, LFHeli COM/pivot cell) AUTOMATED in-game cell without pilot: the 4 measured walls and workarounds
 
-Once celdas de iteración en un día para dejar una celda automatizada verde (stack + get-in +
-motor + sondas + parser, ~5 min). Los cuatro muros, medidos con discriminantes, para no volver
-a pagarlos:
+Eleven iteration cells in one day to get an automated cell green (stack + get-in +
+engine + probes + parser, ~5 min). The four walls, measured with discriminants, so as not to pay
+them again:
 
-1. **DayZDiag NO define DEVELOPER para scripts (SÍ define DIAG y DIAG_DEVELOPER)** — medido con
-   telemetría de defines en cliente conectado. Todo mecanismo vanilla bajo `#ifdef DEVELOPER`
-   (p.ej. `SetGetInVehicleDebug`/`TryGetInVehicleDebug`, playerbase.c:3270-3295) NO EXISTE en
-   diag. Gatea el código de test por parámetro de línea de comandos (`CommandlineGetParam`,
-   game.c:660) o por `#ifdef DIAG`, nunca por DEVELOPER.
-2. **Get-in automatizado en MP: `StartCommand_Vehicle` directo desde el cliente sienta un
-   FANTASMA local** (own=true, HUD activa) pero el server NUNCA registra el crew (crew0=false,
-   consumed=0, ObtainState mudo). La vía que funciona: inyectar la ACCIÓN real —
+1. **DayZDiag does NOT define DEVELOPER for scripts (DOES define DIAG and DIAG_DEVELOPER)** — measured with
+   defines telemetry on connected client. Any vanilla mechanism under `#ifdef DEVELOPER`
+   (e.g. `SetGetInVehicleDebug`/`TryGetInVehicleDebug`, playerbase.c:3270-3295) DOES NOT EXIST in
+   diag. Gate test code via command line parameter (`CommandlineGetParam`,
+   game.c:660) or via `#ifdef DIAG`, never DEVELOPER.
+2. **Automated get-in in MP: `StartCommand_Vehicle` directly from client seats a
+   local GHOST** (own=true, HUD active) but server NEVER registers crew (crew0=false,
+   consumed=0, ObtainState silent). The route that works: inject real ACTION —
    `ActionManagerClient.PerformActionStart(GetAction(ActionGetInTransport), target, null)`
-   (actionmanagerclient.c:762; en MP entra por ActionStart, el flujo sincronizado que el server
-   espeja). El componentIndex del target se obtiene iterando `CrewPositionIndex(c)` hasta que
-   devuelva el asiento buscado (transport.c:116). El éxito se observa con `GetCommand_Vehicle()`
-   al tick siguiente (con retry), no marcando done al inyectar. OJO: `ActionCondition` es
-   protected — no se puede pre-validar desde fuera; el manager valida en ambos lados.
+   (actionmanagerclient.c:762; in MP enters through ActionStart, synchronized flow mirrored by
+   server). Target componentIndex is obtained iterating `CrewPositionIndex(c)` until
+   it returns desired seat (transport.c:116). Success is observed with `GetCommand_Vehicle()`
+   on next tick (with retry), not marking done upon injecting. NOTE: `ActionCondition` is
+   protected — cannot be pre-validated from outside; manager validates on both sides.
 
-   **El marco que reconcilia esto con SP-295** (medido contra el arbol vanilla, 2026-08-18):
-   la pertenencia al crew y el comando de vehiculo son DOS cosas distintas, y solo la accion
-   real produce las dos. El crew es estado NATIVO del engine, no un netsync de script:
-   `Transport` registra una sola variable (`m_EngineZoneReceivedHit`, transport.c:73) y
-   `CrewMember`/`CrewDriver` son `proto native` (transport.c:111-128), legibles desde cualquier
-   cliente — por eso el cliente que quiere subir puede rechazar un asiento ya ocupado
-   (actiongetintransport.c:57-60). El `HumanCommandVehicle`, en cambio, lo crea
-   `StartCommand_Vehicle` en LA MAQUINA que lo llama, y en los 2.805 ficheros del arbol hay
-   exactamente tres call-sites: la propia accion (actiongetintransport.c:91), la reanudacion
-   tras inconsciente via `m_TransportCache` (dayzplayerimplement.c:2376) y un debug bajo
-   `#ifdef DEVELOPER` (playerbase.c:3287). **Ninguno arranca el comando al enterarse por red de
-   que uno ya va sentado.** De ahi salen las dos caras del mismo hecho: llamar
-   `StartCommand_Vehicle` a pelo desde el cliente da comando SIN crew de server (el fantasma de
-   arriba); sentar a alguien por script desde el servidor da crew SIN comando local, y entonces
-   cualquier `ActionCondition` que exija ir sentado NUNCA se cumple, porque piden
-   `GetCommand_Vehicle()` y no `CrewMember` — asi lo hacen get-out
-   (actiongetouttransport.c:68-74) y arrancar/parar motor (actionstartengine.c:26-37). Ojo con
-   `IsInVehicle()`: acepta las dos vias (comando O parent Transport,
-   dayzplayerimplement.c:465-468), asi que no sirve para distinguirlas.
-3. **Un body DORMIDO rechaza la acción get-in inyectada** (sleep gate de PARKED). Si el mod
-   duerme el vehículo en reposo, la celda debe DESPERTARLO antes del get-in — lo más simple:
-   arrancar el motor server-side desde la misión de test (`EngineStart`, car.c:244) NADA MÁS
-   spawnear, no al detectar crew. Además, sin motor/simulación el canal OwnerState no fluye
-   (ObtainState/RewindState callados) aunque el player esté sentado.
-4. **El compile gate real de Enforce es el ARRANQUE del stack** (ningún check offline ve
-   visibilidad de métodos, p.ej. protected). La celda debe buscar `Compile error` / `Can't
-   compile` en el script log del server ANTES de esperar fases posteriores, y tratar el
-   message-box del cliente como cuelgue (timeout de fase).
+   **The framework reconciling this with SP-295** (measured against vanilla tree, 2026-08-18):
+   crew membership and vehicle command are TWO distinct things, and only real action
+   produces both. Crew is NATIVE engine state, not a script netsync:
+   `Transport` registers a single variable (`m_EngineZoneReceivedHit`, transport.c:73) and
+   `CrewMember`/`CrewDriver` are `proto native` (transport.c:111-128), readable from any
+   client — that is why a client wanting to get in can reject an already occupied seat
+   (actiongetintransport.c:57-60). `HumanCommandVehicle`, on the other hand, is created by
+   `StartCommand_Vehicle` on THE MACHINE that calls it, and across the tree's 2,805 files there are
+   exactly three call-sites: action itself (actiongetintransport.c:91), resumption
+   after unconsciousness via `m_TransportCache` (dayzplayerimplement.c:2376) and a debug under
+   `#ifdef DEVELOPER` (playerbase.c:3287). **None starts the command upon finding out via network
+   that one is already seated.** From there arise both sides of the same fact: calling
+   `StartCommand_Vehicle` directly from client gives command WITHOUT server crew (the ghost
+   above); seating someone via script from server gives crew WITHOUT local command, and then
+   any `ActionCondition` requiring being seated is NEVER satisfied, because they check
+   `GetCommand_Vehicle()` and not `CrewMember` — as done by get-out
+   (actiongetouttransport.c:68-74) and start/stop engine (actionstartengine.c:26-37). Beware of
+   `IsInVehicle()`: accepts both routes (command OR parent Transport,
+   dayzplayerimplement.c:465-468), so it is useless to distinguish them.
+3. **A ASLEEP body rejects the injected get-in action** (PARKED sleep gate). If the mod
+   sleeps the vehicle at rest, the cell must WAKE IT UP before get-in — simplest:
+   start the engine server-side from test mission (`EngineStart`, car.c:244) AS SOON AS
+   spawned, not upon detecting crew. Furthermore, without engine/simulation OwnerState channel does not flow
+   (silent ObtainState/RewindState) even if player is seated.
+4. **The real Enforce compile gate is stack STARTUP** (no offline check sees
+   method visibility, e.g. protected). The cell must search `Compile error` / `Can't
+   compile` in server script log BEFORE waiting for later phases, and treat client
+   message-box as hang (phase timeout).
 
-Patrón de orquestador que funcionó: wrapper con FASES nombradas (BOOT-spawn / BOOT-log /
-COMPILE / CONNECT / GETIN / sondas / SETTLE / teardown / PARSE), cada una con veredicto
-PASS/FAIL y timeout propio; los logs se copian a evidence AUNQUE una fase falle; el teardown
-mata SOLO los PIDs que la celda lanzó. Referencia completa:
-`LFHeli_dev\tools\run_celda_compivot.ps1` + `evidence-2026-08-12-offset\` (11 celdas con la
-causa de cada fallo). Cross-ref: sesión 2026-08-12-lfheli-oh1-com-pivot-medido-recenter-verde.
+Orchestrator pattern that worked: wrapper with named PHASES (BOOT-spawn / BOOT-log /
+COMPILE / CONNECT / GETIN / probes / SETTLE / teardown / PARSE), each with PASS/FAIL
+verdict and its own timeout; logs are copied to evidence EVEN IF a phase fails; teardown
+kills ONLY PIDs the cell launched. Full reference:
+`LFHeli_dev\tools\run_celda_compivot.ps1` + `evidence-2026-08-12-offset\` (11 cells with the
+cause of each failure). Cross-ref: session 2026-08-12-lfheli-oh1-com-pivot-medido-recenter-verde.
 
 ---
 
@@ -1052,17 +1052,17 @@ sequence that never occurs in a log. Measured against a synthetic log containing
 by construction. Same trap: `-Raw`, `-Literal*`, `[Regex]::Escape` on a pattern you meant as regex,
 and `-match` vs `-like` mixups.
 
-**1-bis. La simétrica: un patrón que NO puede salir verde — `not closed` es un falso rojo.**
-(medido 2026-09-07, LFPowerGrid). Si al gate le añades `not closed` pensando en el
-`CParser: quoted string not closed` de Enforce (§:626), vas a encontrarlo en arranques **sanos**:
-CommunityFramework escribe
+**1-bis. The symmetric one: a pattern that CANNOT come out green — `not closed` is a false red.**
+(measured 2026-09-07, LFPowerGrid). If you add `not closed` to the gate thinking of Enforce's
+`CParser: quoted string not closed` (§:626), you will find it in **healthy** boots:
+CommunityFramework writes
 `File "$mission:storage_1/communityframework/modstorageplayers.bin" was not closed. Always shut
-down the server gracefully to prevent data loss.` cada vez que el servidor anterior no cerró con
-gracia — que es SIEMPRE si lo paraste por herramienta. Medido en la misma caja: 1 aparición en un
-arranque verde y 0 en el siguiente, con `CParser` a 0 en los dos, o sea que la diferencia era el
-modo de apagado, no el código. **Ancla el patrón a `CParser`, no a la frase suelta**, y si de
-verdad quieres la frase, exige también `CParser` en la misma línea. Un gate que grita rojo en
-arranques buenos se desactiva solo: a la tercera, alguien lo ignora.
+down the server gracefully to prevent data loss.` every time previous server did not shut down
+gracefully — which is ALWAYS if stopped via tool. Measured on same box: 1 occurrence in a
+green boot and 0 in next, with `CParser` at 0 in both, meaning difference was shutdown
+mode, not code. **Anchor pattern to `CParser`, not the loose phrase**, and if you really
+want the phrase, also require `CParser` on the same line. A gate shouting red on
+good boots deactivates itself: by the third time, someone ignores it.
 
 **2. An analyzer whose input does not depend on the experiment.** Hardcoded log paths
 (`$clientPath = ...client_script_2026-08-12_11-25-05.log`) mean every future A/B re-analyses the
@@ -1102,204 +1102,204 @@ A teardown that kills first cannot be repaired afterwards: there is no second
 copy of an unflushed buffer. This costs one line-count assertion and buys the
 whole run.
 
-## Validez de una corrida automatizada: preflight, ciclo y evidencia
+## Validity of an automated run: preflight, cycle, and evidence
 
-Una celda solo emite `PASS` si demuestra que arrancó en el modo previsto, cubrió la transición completa y produjo la evidencia que el veredicto consume. Aplica este contrato antes de gastar una tanda:
+A cell only emits `PASS` if it demonstrates that it booted in the planned mode, covered the complete transition, and produced the evidence consumed by the verdict. Apply this contract before spending a batch:
 
-1. **Preflight por mecanismo y modo (LL-284, LL-307).** Documenta cada guard como `mecanismo protegido → modos afectados` y codifica la rama: un guard exclusivo de cliente aborta con cliente y solo avisa en `-NoClient`, sin bypass manual. En una caja con varios stacks, una celda desatendida con cliente tampoco está aislada del teclado: censa los otros `DayZDiag` y mods activos, registra PID/mods y riesgo de foco, y usa un guard DIAG exclusivo de test para rechazar las acciones humanas que cambiarían el estado mientras el guion esté activo. La automatización conserva una ruta programática separada. Si no puedes demostrar el aislamiento, el resultado es `SETUP_FAIL`.
+1. **Preflight by mechanism and mode (LL-284, LL-307).** Document each guard as `protected mechanism → affected modes` and code the branch: a client-exclusive guard aborts with client and only warns in `-NoClient`, without manual bypass. On a box with multiple stacks, an unattended cell with client is not isolated from keyboard either: census other `DayZDiag` and active mods, record PID/mods and focus risk, and use a test-exclusive DIAG guard to reject human actions that would change state while script is active. Automation preserves a separate programmatic path. If you cannot demonstrate isolation, result is `SETUP_FAIL`.
 
-2. **Identidad y separación de boots (LL-258, LL-260).** En una tanda que relanza el cliente, deja un cooldown conservador de 60 s desde el cierre anterior hasta el siguiente arranque; una muerte nativa durante ese arranque es `SETUP_FAIL`, no una regresión del mod. El cooldown no aplica a un one-shot realmente aislado porque no encadena otro cliente. Al empaquetar evidencia, no elijas el fichero por mtime aparente: los artefactos de producto se nombran en UTC y los RPT/mtimes usan hora local. Cruza el boot-id o marcador interno con el incidente del ledger; su timestamp manda sobre el mtime. Si faltan los marcadores esperados del boot, rechaza el bundle.
+2. **Boot identity and separation (LL-258, LL-260).** In a batch relaunching client, leave a conservative cooldown of 60 s from previous shutdown to next startup; a native crash during that startup is `SETUP_FAIL`, not a mod regression. Cooldown does not apply to a truly isolated one-shot because it does not chain another client. When packing evidence, do not select file by apparent mtime: product artifacts are named in UTC and RPT/mtimes use local time. Cross-check boot-id or internal marker against ledger incident; its timestamp rules over mtime. If expected boot markers are missing, reject bundle.
 
-3. **Recorrido completo y compile gate bilateral (LL-310, LL-312).** Dibuja cada transición crítica como `entrada → estado observable → salida → postestado` y ejecútala por software. Un autotest que solo entra tiene cobertura incompleta; busca primero el disparador de cierre entre watchers, cancelaciones y timeouts ya existentes. Extiende el gate de :811-814 (server) al log del cliente: escanea los logs de script de ambos peers por `Compile error` / `Can't compile` antes de esperar marcadores funcionales. `Cliente muerto / servidor vivo + Can't compile` es un fallo de compilación de código solo-cliente, no un timeout ni una regresión de runtime. El lint offline no acredita visibilidad `private`/`protected`; la compilación real de ambos peers es la autoridad.
+3. **Complete path and bilateral compile gate (LL-310, LL-312).** Draw each critical transition as `input → observable state → exit → poststate` and execute it via software. An autotest that only enters has incomplete coverage; first find the closing trigger among existing watchers, cancellations, and timeouts. Extend the gate from :811-814 (server) to client log: scan script logs of both peers for `Compile error` / `Can't compile` before waiting for functional markers. `Dead client / live server + Can't compile` is a client-only code compile failure, not a timeout nor runtime regression. Offline lint does not accredit `private`/`protected` visibility; real compilation of both peers is authoritative.
 
-4. **Cierre acorde con la medida (LL-277).** SP-237 ("copiar/verificar antes de matar") conserva evidencia ya emitida, pero no acredita métricas que nacen al salir. Para informes de fugas, flushes, destructores o hooks finales, solicita cierre ordenado, espera un marcador explícito de que el informe o hook ejecutó y solo entonces recoge el resultado. Un kill forzado produce `SETUP_FAIL` para toda métrica de salida y también impide verificar un arreglo que vive en ese hook. "No apareció el problema" nunca equivale a `PASS` si la comprobación no llegó a ejecutarse.
-
-
-## Tres trampas medidas en el ciclo LFPG S2-B (added 2026-08-29)
-
-Las tres costaron tiempo la misma noche, con el puente MCP v10 sano. Ninguna era del mod.
-
-1. **`action_use` empareja por NOMBRE DE CLASE, no por el texto de la accion.** El bridge recorre
-   `ActionManagerBase.m_ActionsArray` y compara `candidate.Type().ToString() == wantedAction`
-   (`DayZ_MCP/scripts/5_Mission/MCPClientBridge.c:1806`). Pasar el texto visible -el que resuelve
-   `m_Text` desde el stringtable- devuelve `action_not_found` aunque la accion este disponible en
-   pantalla. La trampa se agrava con el cliente en otro idioma, porque invita a probar la traduccion:
-   el idioma es irrelevante, la llave es la clase. Saca el nombre del `class X : ActionInteractBase`
-   del propio mod, nunca del stringtable.
-
-2. **El gate de Steam de :99-103 solo AVISA, y ademas no corre por la via del MCP.** Esta
-   implementado en `templates/dayz-test.ps1:478-484`, que es el lanzador de ESTA skill;
-   `dayz_test_run` del MCP no pasa por ahi, asi que en la ruta que usan las sesiones con MCP el
-   check sencillamente no existe. Variante nueva observada 2026-08-29: `pid=0` **y** `ActiveUser=0`
-   con **cero procesos de Steam vivos** (la firma ya documentada era pid poblado / ActiveUser=0).
-   Mismo desenlace: RPT del cliente cortado justo tras el argv, sin una sola linea de script, y
-   servidor intacto porque no usa Steam. Comprobar la clave antes de lanzar cliente cuesta 10 s.
-
-3. **La CUENTA de Steam activa decide QUE PERSONAJE carga.** (Corregido el mismo dia: ver la
-   refutacion al final del punto — el estado del MOD no depende de la cuenta.) Reiniciar
-   Steam puede devolver OTRA cuenta sin avisar. Medido 2026-08-29: el cliente de las 03:55 entro
-   como `76561197995575711`, con su personaje persistido en el sitio de pruebas; el de las 04:17,
-   tras el reinicio, como `76561198141021937`, con personaje fresco en la costa. El sitio aparecia
-   sin sus dispositivos y **parecia un fallo de persistencia del mod**. La clave del registro lo
-   dice sin abrir el juego: `ActiveUser = steamID64 - 76561197960265728`. Corroborable desde fuera:
-   AddonBuilder imprime `Steam_SetMinidumpSteamID:  Caching Steam ID:  <steamID64>` en su salida.
-   Si el ciclo depende del personaje persistido, fija la CUENTA en el pre-flight, no solo el pid.
-
-   **REFUTACION MEDIDA EL MISMO DIA, y la distincion es fina y cara.** Volver a la cuenta correcta
-   devuelve el PERSONAJE (spawn en el sitio exacto, sin teleport) pero NO el estado del mod. Con
-   `...711` el server seguia diciendo `[VanillaWires] Loaded 0 entries from 0` y
-   `RebuildTrackedDevices: tracking 0 wired devices`: cero cables en las DOS cuentas. O sea que un
-   sitio de pruebas vacio NO se explica por la cuenta, y quien lo asuma perdera el tiempo cambiando
-   de login en vez de montar la fixture. La regla util es: la cuenta explica DONDE aparece tu
-   personaje; el estado del mod se monta o no esta.
+4. **Shutdown matching the measurement (LL-277).** SP-237 ("copy/verify before killing") preserves already emitted evidence, but does not accredit metrics born upon exiting. For leak reports, flushes, destructors, or final hooks, request graceful shutdown, wait for an explicit marker that the report or hook executed, and only then collect result. A forced kill produces `SETUP_FAIL` for all exit metrics and also prevents verifying a fix living in that hook. "Problem did not appear" never equals `PASS` if check never ran.
 
 
-## El aviso de `modstorage` lleva 12 fallos: conviertelo en preflight, no en parrafo (added 2026-08-29)
+## Three pitfalls measured in LFPG S2-B cycle (added 2026-08-29)
 
-La seccion "Estrenar CF sobre una mision con persistencia escrita SIN CF = crash duro del
-servidor" (added 2026-08-02) es correcta y **ha vuelto a fallar**. Contado hoy host-direct en la
-carpeta de la mision compartida `DayZServer\mpmissions\dayzOffline.chernarusplus`:
+All three cost time the same night, with healthy MCP bridge v10. None was from mod.
 
-    12 carpetas storage_1*corrupt-modstorage*, del 2026-07-20 al 2026-08-29,
-    de al menos 5 proyectos distintos (subbrz, amglf, gunracks, nocf-gate, lfquad2).
+1. **`action_use` matches by CLASS NAME, not by action text.** The bridge iterates
+   `ActionManagerBase.m_ActionsArray` and compares `candidate.Type().ToString() == wantedAction`
+   (`DayZ_MCP/scripts/5_Mission/MCPClientBridge.c:1806`). Passing visible text -the one resolving
+   `m_Text` from stringtable- returns `action_not_found` even if action is available on
+   screen. Pitfall worsens with client in another language, inviting testing the translation:
+   language is irrelevant, the key is the class. Take the name from `class X : ActionInteractBase`
+   of the mod itself, never from stringtable.
 
-12 ocurrencias en 40 dias. Una nota que se ha saltado 12 veces no se arregla leyendola con mas
-cuidado la 13a: la precondicion es MECANICA y se esta pidiendo a mano.
+2. **Steam gate from :99-103 only WARNS, and also does not run via MCP.** It is
+   implemented in `templates/dayz-test.ps1:478-484`, which is THIS skill's launcher;
+   MCP's `dayz_test_run` does not pass through there, so on the route used by MCP sessions the
+   check simply does not exist. New variant observed 2026-08-29: `pid=0` **and** `ActiveUser=0`
+   with **zero live Steam processes** (already documented signature was populated pid / ActiveUser=0).
+   Same outcome: client RPT cut off right after argv, without a single script line, and
+   server intact because it does not use Steam. Checking key before launching client takes 10 s.
 
-**Regla operativa: la persistencia pertenece al juego de mods que la escribio.** Antes de lanzar
-con un `-mod=` distinto al de la corrida anterior sobre esa misma mision, rota. No es "si
-sospechas": es **siempre que cambie la lista**, y anadir UN mod ya la cambia.
+3. **Active Steam ACCOUNT decides WHICH CHARACTER loads.** (Corrected the same day: see
+   refutation at end of point — MOD state does not depend on account.) Restarting
+   Steam can return ANOTHER account without warning. Measured 2026-08-29: 03:55 client entered
+   as `76561197995575711`, with persisted character at test site; 04:17 client,
+   after restart, as `76561198141021937`, with fresh character on coast. Site appeared
+   without its devices and **looked like a mod persistence failure**. Registry key tells it
+   without opening game: `ActiveUser = steamID64 - 76561197960265728`. Corroborated from outside:
+   AddonBuilder prints `Steam_SetMinidumpSteamID:  Caching Steam ID:  <steamID64>` in its output.
+   If cycle depends on persisted character, pin ACCOUNT in pre-flight, not just pid.
 
-    # con los procesos parados
+   **MEASURED REFUTATION THE SAME DAY, and the distinction is subtle and costly.** Returning to correct account
+   returns CHARACTER (spawn at exact site, without teleport) but NOT mod state. With
+   `...711` server still said `[VanillaWires] Loaded 0 entries from 0` and
+   `RebuildTrackedDevices: tracking 0 wired devices`: zero wires across BOTH accounts. Meaning an
+   empty test site is NOT explained by account, and whoever assumes so wastes time switching
+   logins instead of mounting fixture. Useful rule is: account explains WHERE your
+   character appears; mod state is either set up or absent.
+
+
+## `modstorage` warning has 12 failures: turn it into preflight, not a paragraph (added 2026-08-29)
+
+The section "Introducing CF on a mission with persistence written WITHOUT CF = hard server
+crash" (added 2026-08-02) is correct and **has failed again**. Counted today host-direct in
+the shared mission folder `DayZServer\mpmissions\dayzOffline.chernarusplus`:
+
+    12 storage_1*corrupt-modstorage* folders, from 2026-07-20 to 2026-08-29,
+    from at least 5 different projects (subbrz, amglf, gunracks, nocf-gate, lfquad2).
+
+12 occurrences in 40 days. A note skipped 12 times is not fixed by reading it more
+carefully the 13th time: precondition is MECHANICAL and is being asked by hand.
+
+**Operational rule: persistence belongs to the mod set that wrote it.** Before launching
+with a `-mod=` different from previous run on that same mission, rotate. It is not "if
+you suspect": it is **whenever list changes**, and adding ONE mod already changes it.
+
+    # with processes stopped
     $m = "<mision>"
     Rename-Item -LiteralPath "$m\storage_1" -NewName "storage_1_corrupt-modstorage-$(Get-Date -f yyyyMMdd)_<proyecto>"
 
-Rename, no borrado: es reversible. Pero volver a arrancar con CF sobre ese storage vuelve a
-crashear, asi que lo que se conserva es la evidencia, no un estado al que puedas volver.
+Rename, not deletion: it is reversible. But starting again with CF on that storage crashes again,
+so what is preserved is evidence, not a state you can return to.
 
-**Aviso que hay que dar ANTES de rotar**: mundo y personaje de esa mision se resetean.
+**Warning to give BEFORE rotating**: world and character of that mission are reset.
 
-Y el modo de fallo de proceso que lo dejo pasar esta vez, que es el que hay que saber reconocer:
-**la precondicion se comprobo contra el plan A, y el plan cambio.** Iba a usar una copia nueva y
-propia de la mision, asi que "mision limpia, sin storage" era CIERTO cuando lo despache. Entonces
-el tool rechazo la ruta absoluta --`dayz_test_run` valida el campo `mission` contra
-`_MISSION_ALIASES` y solo acepta `chernarus|livonia|sakhal`, ver `dayz_mcp\dayz_test_tool.py:135`--
-y me empujo a la mision COMPARTIDA. El descarte viajo con el plan viejo y nadie lo reevaluo.
+And the process failure mode that let it slip this time, which is the one to recognize:
+**precondition was verified against plan A, and plan changed.** I was going to use a new,
+own copy of the mission, so "clean mission, no storage" was TRUE when dispatched. Then
+the tool rejected the absolute path --`dayz_test_run` validates `mission` field against
+`_MISSION_ALIASES` and only accepts `chernarus|livonia|sakhal`, see `dayz_mcp\dayz_test_tool.py:135`--
+pushing me to SHARED mission. Discard traveled with old plan and no one re-evaluated it.
 
-**Un descarte se apellida con el plan que lo justifico: si cambia la ruta, las precondiciones que
-despejaste vuelven a estar sin comprobar.** Vale para cualquier caveat de esta skill, no solo
-para este.
+**A discard is surnamed with the plan that justified it: if path changes, preconditions you
+cleared are unverified again.** Applies to any caveat in this skill, not just
+this one.
 
 
-## Tras un reinicio, `P:` NO existe -- y FileBank empaqueta el vacio con exit 0 (added 2026-08-29)
+## After a reboot, `P:` does NOT exist -- and FileBank packs emptiness with exit 0 (added 2026-08-29)
 
-`P:` es un `subst`, no un enlace en disco: **no sobrevive a un reinicio**, y menos a una caida
-dura. Todo lo que las herramientas BI y el launcher sellado tocan cuelga de ahi
+`P:` is a `subst`, not a disk link: **does not survive a reboot**, let alone a hard
+crash. Everything that BI tools and sealed launcher touch hangs from there
 (`P:\Mods`, `P:\<Mod>`, `P:\<Mod>_dev\_server\profiles`, `P:\scripts`, `P:\DZ`).
 
-Lo caro no es que falte: es **como falla**. Medido hoy, con `P:` ausente:
+The expensive part is not that it is missing: it is **how it fails**. Measured today, with `P:` absent:
 
     FileBank.exe -property prefix=<Mod> -exclude <lst> -dst <staging> P:\<Mod>
     exit=0
     <staging>\<Mod>.pbo   ->   79 bytes
 
-**Exit 0 y un PBO de 79 bytes.** Ni un mensaje. Es el mismo modo de fallo que el
-`Build failed` con exit 0 de AddonBuilder que ya documenta esta skill: la herramienta BI
-considera que empaquetar cero ficheros es un exito.
+**Exit 0 and a 79-byte PBO.** Not a single message. Same failure mode as
+AddonBuilder's `Build failed` with exit 0 already documented in this skill: BI tool
+considers packing zero files a success.
 
-**Preflight, dos lineas, antes de cualquier build o launch:**
+**Preflight, two lines, before any build or launch:**
 
     Test-Path -LiteralPath "P:\"          # si False:
     subst P: "<dayz-projects>"
 
-Y comprueba las anclas, no solo la raiz: `P:\<Mod>\config.cpp`, `P:\Mods\@<Mod>\Addons`,
-`P:\scripts`, `P:\DZ`. **Valida el PBO por TAMANO y por numero de entradas** antes de
-publicarlo; un paquete de tres cifras de bytes es la firma de esto.
+And check anchors, not just root: `P:\<Mod>\config.cpp`, `P:\Mods\@<Mod>\Addons`,
+`P:\scripts`, `P:\DZ`. **Validate PBO by SIZE and entry count** before
+publishing; a three-digit byte package is the signature of this.
 
-## El `pid` de Steam en el registro puede estar MUERTO, y la comprobacion de esta skill no lo veia (added 2026-08-29)
+## Steam `pid` in registry can be DEAD, and this skill's check was not seeing it (added 2026-08-29)
 
-Esta skill ya pide que `HKCU\Software\Valve\Steam\ActiveProcess` tenga `pid != 0` y
-`ActiveUser != 0`. **Necesario, pero NO suficiente: un `pid` distinto de cero puede ser un pid
-muerto.** Tras una caida dura del PC la clave conserva el pid del Steam anterior; Steam
-arranca de nuevo con OTRO pid y **no siempre reescribe la clave a tiempo**. DayZ lee ese pid,
-va a buscar ese proceso, no lo encuentra, y muere.
+This skill already requires `HKCU\Software\Valve\Steam\ActiveProcess` to have `pid != 0` and
+`ActiveUser != 0`. **Necessary, but NOT sufficient: a non-zero `pid` can be a dead
+pid.** After a hard PC crash the key retains the previous Steam pid; Steam
+starts again with ANOTHER pid and **does not always rewrite the key in time**. DayZ reads that pid,
+looks for that process, does not find it, and dies.
 
-Medido hoy: registro `pid=25484`, `steam.exe` vivo `pid=13856`. La comprobacion "no es cero"
-daba VERDE sobre un sistema roto. La pregunta correcta no es "¿es cero?" sino **"¿existe ese
-proceso?"**:
+Measured today: registry `pid=25484`, live `steam.exe` `pid=13856`. The "not zero" check
+gave GREEN on a broken system. The right question is not "is it zero?" but **"does that
+process exist?"**:
 
     $k  = Get-ItemProperty 'HKCU:\Software\Valve\Steam\ActiveProcess'
     $st = Get-Process -Name steam -ErrorAction SilentlyContinue
     $ok = $st -and ($st.Id -contains [int]$k.pid) -and $k.ActiveUser -ne 0
 
-**Firma del fallo, para reconocerla sin adivinar** (tres reproducciones identicas):
+**Failure signature, to recognize it without guessing** (three identical reproductions):
 
-| senal | valor |
+| signal | value |
 |---|---|
-| dialogo modal | `unable to locate running instance of Steam` |
-| excepcion del volcado | `0x80000003` **BREAKPOINT**, misma direccion exacta cada vez |
-| CPU del proceso cliente | **0 s** -- vivo pero parado en seco |
-| RPT del cliente | congelado en **847 B**, solo la cabecera |
-| modulos cargados | ~69, ultimos los de Steam (`gameoverlayrenderer64.dll`, `tier0_s64.dll`) |
+| modal dialog | `unable to locate running instance of Steam` |
+| dump exception | `0x80000003` **BREAKPOINT**, same exact address each time |
+| client process CPU | **0 s** -- alive but stopped cold |
+| client RPT | frozen at **847 B**, header only |
+| loaded modules | ~69, last ones from Steam (`gameoverlayrenderer64.dll`, `tier0_s64.dll`) |
 
-`0x80000003` **no es un crash**: es un `int 3` deliberado del exe diag al sacar su dialogo. Por
-eso el proceso queda vivo con 0 CPU en vez de desaparecer, y por eso no hay evento de fallo en
-el visor de sucesos de Windows: DayZ escribe su propio `.mdmp` y se planta.
+`0x80000003` **is not a crash**: it is a deliberate `int 3` of diag exe when popping its dialog. That
+is why process remains alive with 0 CPU instead of disappearing, and why there is no failure event
+in Windows Event Viewer: DayZ writes its own `.mdmp` and halts.
 
-**Remedio** (revisado 2026-09-12): el fiable es **copiar el pid del `steam.exe` vivo a la clave**,
-con guardas: clave estable entre dos lecturas, `ActiveUser` valido, un solo `steam.exe` vivo en tu
-sesion y en su ruta, recomprobado justo antes de escribir y verificado despues. Reiniciar Steam
-(`steam.exe -shutdown` y relanzar) conserva el login pero **puede no reescribir la clave**: medido
-ese dia, Steam arranco con pid 34316, la clave siguio en 50968 sin tocarse desde la noche anterior
-y el pid nuevo solo aparecio en `HKLM\SOFTWARE\Valve\Steam\SteamPID`. Si reinicias, **comprueba que
-la clave case con un proceso vivo** antes de lanzar el cliente; no basta con que Steam "este abierto".
+**Remedy** (revised 2026-09-12): reliable approach is **copying live `steam.exe` pid to the key**,
+with guards: stable key between two reads, valid `ActiveUser`, single live `steam.exe` in your
+session and in its path, rechecked just before writing and verified after. Restarting Steam
+(`steam.exe -shutdown` and relaunch) preserves login but **may not rewrite the key**: measured
+that day, Steam started with pid 34316, key stayed at 50968 untouched since previous night
+and new pid only appeared in `HKLM\SOFTWARE\Valve\Steam\SteamPID`. If you restart, **check that
+key matches a live process** before launching client; it is not enough that Steam "is open".
 
-**La sonda que discrimina es `SteamAPI_IsSteamRunning`, no `SteamAPI_Init`.** Con la clave rancia,
-la `steam_api64.dll` del propio DayZ devolvio `Init` OK e `IsSteamRunning` FALSO, y el cliente murio
-igual; tras copiar el pid salieron las dos verdaderas y el cliente entro. Una puerta que solo llama
-a `Init` da verde sobre el estado roto.
+**The discriminating probe is `SteamAPI_IsSteamRunning`, not `SteamAPI_Init`.** With stale key,
+DayZ's own `steam_api64.dll` returned `Init` OK and `IsSteamRunning` FALSE, and client died
+just the same; after copying pid both came back true and client entered. A gate that only calls
+`Init` yields green on broken state.
 
 **Two Steam facts the registry cannot answer (measured 2026-09-08, LFPowerGrid; SP-382).** (1) WHICH account is logged in: read `logs/connection_log.txt` under the Steam install for `[Logged On, ...] [U:1:<accountID>] RecvMsgClientLogOnResponse() : 'OK'` (`SteamID64 = accountID + 76561197960265728`). (2) Whether that account OWNS DayZ: `steamapps/appmanifest_221100.acf`, field `"LastOwner"`. If the logged-in account is not the LastOwner, the client dies about one second after launch with the same header-only RPT + `0x80000003` signature while every registry check passes green; the dump's `Caching Steam ID: <id>` vs `LastOwner` closes the case in a minute. [EXACT] (measured, SP-382]
 
-**Como leer el volcado sin depurador**, que es lo que corto el bucle de hipotesis: un minidump
-trae `MINIDUMP_EXCEPTION_STREAM` (tipo 6) y `MODULE_LIST` (tipo 4); con ~60 lineas de Python se
-saca el codigo de excepcion y el modulo que contiene `ExceptionAddress`. Antes de teorizar
-sobre drivers o sobre el mod, **lee el instrumento**: aqui `0x80000003` descarto de un golpe
-"crash de render" y "mod corrupto", que eran las dos hipotesis en las que ya se habian gastado
-dos ciclos de arranque.
+**How to read the dump without a debugger**, which is what broke the hypothesis loop: a minidump
+brings `MINIDUMP_EXCEPTION_STREAM` (type 6) and `MODULE_LIST` (type 4); with ~60 Python lines one
+extracts exception code and the module containing `ExceptionAddress`. Before theorizing
+about drivers or mod, **read the instrument**: here `0x80000003` ruled out in one blow
+"render crash" and "corrupt mod", which were the two hypotheses on which two boot cycles had already
+been spent.
 
-**Y el corolario de metodo, que vale para cualquier fallo tras tocar el mod:** antes de buscar
-la causa en tu cambio, **despliega el artefacto ANTERIOR y reproduce**. Aqui el PBO
-pre-cirugia fallaba identico, lo que exonero el trabajo en un solo ciclo y mando a buscar en
-el entorno. Un A/B con el binario viejo cuesta lo mismo que una hipotesis, y a diferencia de
-ella, decide.
+**And the method corollary, valid for any failure after touching the mod:** before searching
+for the cause in your change, **deploy PREVIOUS artifact and reproduce**. Here the
+pre-surgery PBO failed identically, exonerating work in a single cycle and sending search into
+the environment. An A/B with old binary costs same as a hypothesis, and unlike
+it, decides.
 
 
-## Parches medidos del ciclo de test promovidos el 2026-08-31
+## Measured test-cycle patches promoted on 2026-08-31
 
-Las reglas siguientes se aplican sobre el estado posterior a la cosecha del 2026-08-29. Cuando
-corrigen una sección histórica, la corrección de este bloque manda; la sección anterior se conserva
-como evidencia de la evolución medida.
+The following rules apply to state after 2026-08-29 harvest. When
+they correct a historical section, this block's correction rules; previous section is preserved
+as evidence of measured evolution.
 
-### Build mixto: `-include` filtra el sync, no define el PBO (SP-083 / SP-168, corregidos por SP-177)
+### Mixed build: `-include` filters sync, does not define PBO (SP-083 / SP-168, corrected by SP-177)
 
-Las afirmaciones históricas de :125-155 necesitan dos límites. AddonBuilder usa una ruta nativa
-para `config.cpp`, `.p3d` y los `.rvmat` descubiertos desde caras, y otra ruta de sincronización
-ordinaria para `.c`, `.paa`, `.ogg`, `.layout` y `.csv`. `-include` gobierna esta segunda ruta; no
-es el manifiesto final. Un `.rvmat` citado solo desde `config.cpp` todavía puede faltar.
+Historical statements in :125-155 need two boundaries. AddonBuilder uses a native route
+for `config.cpp`, `.p3d`, and `.rvmat` discovered from faces, and another ordinary sync
+route for `.c`, `.paa`, `.ogg`, `.layout`, and `.csv`. `-include` governs this second route; it is
+not the final manifest. An `.rvmat` cited only from `config.cpp` can still be missing.
 
-El template publicado de esta skill no pasa hoy una lista en
-`templates/dayz-test.ps1:531-534`. Por tanto, para un mod mixto no acredites el `-Build` genérico:
-usa un build que pase una lista adecuada para el payload ordinario y valida después las entradas
-reales del PBO. Exige al menos igualdad de rutas y conteos para los `.c` del fuente, y comprueba por
-separado los materiales citados por config. No añadas `*.rvmat` a una lista y lo tomes como prueba.
-La semántica de build autoritativa y el gate completo viven en
-`skills/dayz-pbo-build/SKILL.md`, sección SP-177.
+The published template of this skill does not pass a list today in
+`templates/dayz-test.ps1:531-534`. Therefore, for a mixed mod do not accredit generic `-Build`:
+use a build passing an adequate list for ordinary payload and validate actual PBO entries
+afterward. Require at least equality of paths and counts for source `.c`, and check
+separately materials cited by config. Do not add `*.rvmat` to a list and take it as proof.
+Authoritative build semantics and full gate live in
+`skills/dayz-pbo-build/SKILL.md`, section SP-177.
 
-### Logs vivos y cierre de un run liberado (SP-077)
+### Live logs and shutdown of a released run (SP-077)
 
-DayZDiag mantiene abiertos el RPT y `script_*.log`. `Get-Content` o `ReadAllText` pueden fallar con
-`IOException` durante todo un waiter. Para monitorizar un peer vivo, abre con compartición explícita:
+DayZDiag keeps RPT and `script_*.log` open. `Get-Content` or `ReadAllText` can fail with
+`IOException` throughout a waiter. To monitor a live peer, open with explicit sharing:
 
 ```powershell
 $fs = [IO.File]::Open($path, [IO.FileMode]::Open, [IO.FileAccess]::Read,
@@ -1307,242 +1307,242 @@ $fs = [IO.File]::Open($path, [IO.FileMode]::Open, [IO.FileAccess]::Read,
 try { $text = [IO.StreamReader]::new($fs).ReadToEnd() } finally { $fs.Dispose() }
 ```
 
-En lifecycle gestionado, conserva el `run_id` y usa las herramientas públicas. Si una operación de
-bajo nivel encuentra un run `released`, la secuencia es `adopt` y después `stop`; `stop` solo puede
-devolver `run_not_adopted`. Si otra sesión ya lo limpió, `run_not_adoptable` + cero procesos del run
-+ RPT terminado en `Termination successfully completed` describe cierre ordenado, no crash.
+In managed lifecycle, retain `run_id` and use public tools. If a low-level
+operation finds a `released` run, the sequence is `adopt` and then `stop`; `stop` can only
+return `run_not_adopted`. If another session already cleaned it up, `run_not_adoptable` + zero run processes
++ RPT ending in `Termination successfully completed` describes orderly shutdown, not crash.
 
-### Binarize antes de gastar un boot (SP-125)
+### Binarize before spending a boot (SP-125)
 
-Todo `.p3d` candidato necesita un veredicto PASS de binarize antes de entrar en un PBO, incluso si
-el empaquetado final usa `-packonly`: packonly conserva el MLOD, pero no hace que el motor acepte un
-modelo que binarize rechaza. Agrupa los modelos del cambio y paga este gate una vez antes del build;
-el censo post-build sigue siendo obligatorio y prueba otra frontera.
+Every candidate `.p3d` needs a binarize PASS verdict before entering a PBO, even if
+final packing uses `-packonly`: packonly preserves MLOD, but does not make engine accept a
+model that binarize rejects. Group models in the change and pay this gate once before build;
+post-build census remains mandatory and tests another boundary.
 
-### Identidad offline entre fuente y PBO desplegado (SP-144)
+### Offline identity between source and deployed PBO (SP-144)
 
-Antes de planificar por citas `path:line` o gastar un ciclo in-game, prueba qué bytes va a compilar
-el juego:
+Before planning by `path:line` citations or spending an in-game cycle, test what bytes the
+game will compile:
 
-1. Extrae el PBO desplegado a un scratch con un extractor que expanda correctamente las entradas
-   `Cprs`; valida primero el extractor contra una baseline conocida.
-2. Calcula SHA-256 del fichero dentro del PBO y del fichero fuente citado por el plan.
-3. Exige igualdad para cada fichero que sostiene el cambio. Un mtime reciente del contenedor no
-   acredita sus entradas.
+1. Extract deployed PBO to a scratch with an extractor that correctly expands `Cprs`
+   entries; validate extractor first against a known baseline.
+2. Compute SHA-256 of file inside PBO and of source file cited by plan.
+3. Demand equality for each file underpinning the change. A recent container mtime does not
+   accredit its entries.
 
-Si los hashes difieren, el plan está citando un árbol distinto del runtime. Reconstruye y repite el
-gate antes de diagnosticar lógica. Este control offline es el discriminador barato que complementa
-el `srcprobe` de SP-078.
+If hashes differ, plan is citing a tree different from runtime. Rebuild and repeat the
+gate before diagnosing logic. This offline check is the cheap discriminant complementing
+the `srcprobe` of SP-078.
 
-### El guard de deploy protege el destino, no congela toda la caja (SP-150)
+### Deploy guard protects destination, does not freeze entire box (SP-150)
 
-En una caja compartida, «cero procesos DayZ» es demasiado amplio. Antes de reemplazar un PBO exige
-las dos condiciones que protegen ese destino:
+On a shared box, "zero DayZ processes" is too broad. Before replacing a PBO require
+the two conditions protecting that destination:
 
-1. Ningún proceso vivo referencia el mod objetivo en su `CommandLine`/modline, medido con
-   `Win32_Process`; el nombre del ejecutable no basta.
-2. El PBO destino admite apertura exclusiva con `FileShare.None`.
+1. No live process references target mod in its `CommandLine`/modline, measured with
+   `Win32_Process`; executable name is not enough.
+2. Target PBO allows exclusive opening with `FileShare.None`.
 
-Registra el hash baseline justo antes de copiar y verifica el hash publicado después. Si una
-condición falla, no despliegues. Si ambas pasan, no cierres procesos de otras líneas que cargan otros
+Record baseline hash just before copying and verify published hash after. If either
+condition fails, do not deploy. If both pass, do not close processes from other lanes loading other
 mods.
 
-### Quoting y triage de un Diag que no llega a escribir logs (SP-167)
+### Quoting and triage of a Diag that does not manage to write logs (SP-167)
 
-Para argumentos `name=value` con espacios, entrecomilla el token entero:
+For `name=value` arguments with spaces, quote the entire token:
 
 ```text
--profiles="<profiles-path>"      # NO: comillas solo alrededor del valor
-"-profiles=<profiles-path>"      # SÍ: un token completo
+-profiles="<profiles-path>"      # NO: quotes only around the value
+"-profiles=<profiles-path>"      # YES: a complete token
 ```
 
-Aplica el mismo patrón a `-config=`, `-mission=` y `-mod=`. En Windows PowerShell 5.1, pasar un
-array a `Start-Process -ArgumentList` no garantiza el quoting de cada elemento; no uses ese
-resultado como prueba del argv recibido. La ruta gestionada de esta skill transporta un array
-estructurado y sigue siendo la vía normal.
+Apply the same pattern to `-config=`, `-mission=`, and `-mod=`. In Windows PowerShell 5.1, passing an
+array to `Start-Process -ArgumentList` does not guarantee quoting of each element; do not use that
+result as proof of the received argv. The managed path of this skill transports a structured
+array and remains the normal way.
 
-Para un cuelgue con 0 CPU y sin RPT, ejecuta primero el control mínimo autorizado
-`DayZDiag_x64.exe -server`, sin otros argumentos, y añade uno por uno. En la medida que fundó esta
-regla, ~53 módulos era «aún no llegó a UI» y 69-78 era arranque real; usa el delta como firma del
-build medido, no como constante universal. Obtén el argv real con `Win32_Process`: la línea truncada
-de cabecera del RPT no lo representa de forma fiable.
+For a hang with 0 CPU and no RPT, first run the authorized minimal control
+`DayZDiag_x64.exe -server`, with no other arguments, and add one by one. In the measurement that founded this
+rule, ~53 modules was "has not yet reached UI" and 69-78 was real startup; use the delta as signature of the
+measured build, not as a universal constant. Obtain the real argv with `Win32_Process`: the truncated
+RPT header line does not reliably represent it.
 
-### Cliente pelado: separar argumento, ruta nativa y mod (SP-174)
+### Bare client: separate argument, native path, and mod (SP-174)
 
-Ante un cliente que no arranca, decide por forma antes de tocar el mod:
+Faced with a client that does not start, decide by form before touching the mod:
 
-- **Vivo, 0 CPU, sin RPT ni dump:** aplica el control mínimo y la bisección de argumentos anterior.
-- **Muere con RPT de solo cabecera + `ErrorMessage_*.mdmp`, sin `crash_*.log`, incluso sin mods:**
-  lanza el servidor del mismo build. Servidor estable con RPT grande y cliente pelado que cae apunta
-  a la ruta nativa/gráfica del cliente. Confirma con el perfil de otro proyecto en la misma ventana.
-- **Solo falla al añadir `-mod`:** entonces sí abre la investigación del mod y su orden de carga.
+- **Alive, 0 CPU, without RPT or dump:** apply the minimal control and the previous argument bisection.
+- **Dies with header-only RPT + `ErrorMessage_*.mdmp`, without `crash_*.log`, even without mods:**
+  launch server of the same build. Stable server with large RPT and bare client crashing points
+  to client native/graphics path. Confirm with another project's profile in the same window.
+- **Only fails upon adding `-mod`:** then do open mod investigation and its load order.
 
-«Se reinició» también se mide: compara `Win32_OperatingSystem.LastBootUpTime` y comprueba que no
-sobreviva un proceso anterior al instante declarado. Fast Startup puede conservar el kernel después
-de apagar; un reinicio completo cambia ese dato.
+"It was rebooted" is also measured: compare `Win32_OperatingSystem.LastBootUpTime` and verify that no
+process prior to the declared instant survives. Fast Startup can preserve kernel after
+shutdown; a full reboot changes that datum.
 
-### Spawn diagnóstico sin depender de la UI de VPP (SP-210, alcance de un solo uso)
+### Diagnostic spawn without depending on VPP UI (SP-210, single-use scope)
 
-Si la UI administrativa bloquea un diagnóstico, una misión privada puede usar
-`CustomMission.InvokeOnConnect` para crear una fixture una vez por boot, a distancia fija del
-jugador, con `CreateObjectEx(..., ECE_PLACE_ON_SURFACE)`. Usa un booleano one-shot y storage limpio.
+If administrative UI blocks a diagnosis, a private mission can use
+`CustomMission.InvokeOnConnect` to create a fixture once per boot, at fixed distance from
+player, with `CreateObjectEx(..., ECE_PLACE_ON_SURFACE)`. Use a one-shot boolean and clean storage.
 
-Es un fallback desechable, no infraestructura de celda. La regla portable de :383-392 sigue
-mandando: cualquier spawner, watcher o control que deba sobrevivir al proyecto vive dentro del mod,
-gated por DIAG y por un parámetro explícito.
+It is a disposable fallback, not cell infrastructure. The portable rule of :383-392 continues
+to govern: any spawner, watcher, or control that must survive the project lives inside the mod,
+gated by DIAG and by an explicit parameter.
 
-### Parsers: primero extraer el payload real de `Print` (SP-234)
+### Parsers: first extract actual `Print` payload (SP-234)
 
-Una variable string llega al script log con una forma equivalente a:
+A string variable arrives in script log with a form equivalent to:
 
 ```text
 SCRIPT       : string <var> = '<payload>'
 ```
 
-La comilla simple de cierre queda pegada al último campo. Extrae primero lo comprendido entre
-`= '` y la última comilla; solo después tokeniza números y campos. Un gate de logs incluye siempre
-fixtures literales copiadas de un log real, además de casos sintéticos, y contrafixtures con wrapper
-truncado. Un self-test que nunca consumió una línea real solo valida el parser imaginado.
+Closing single quote is stuck to the last field. First extract what is between
+`= '` and the last quote; only then tokenize numbers and fields. A log gate always includes
+literal fixtures copied from a real log, in addition to synthetic cases, and counter-fixtures with truncated
+wrapper. A self-test that never consumed a real line only validates the imagined parser.
 
-### Teleport y readiness antes de inyectar una acción (SP-235)
+### Teleport and readiness before injecting an action (SP-235)
 
-Para teletransportar al jugador en un harness usa X/Z del punto censado y
-`Y = GetGame().SurfaceY(x, z)`. La Y de un memory point puede dejarlo en
-`ACID_Human_Fall`; durante Fall, una acción inyectada puede abortar sin error mientras el servidor ya
-reservó el asiento.
+To teleport player in a harness use X/Z of probed point and
+`Y = GetGame().SurfaceY(x, z)`. The Y of a memory point can leave them in
+`ACID_Human_Fall`; during Fall, an injected action can abort without error while server already
+reserved seat.
 
-Antes de gastar un intento, exige un command ID admitido, ninguna acción en curso,
-`CanStoreInputUserData()` y `ActionBase.Can(...)`. Después observa la transición real; no marques
-éxito al enviar la acción. Un desync `server=Move, client=Fall` apunta primero al placement.
+Before spending an attempt, require an accepted command ID, no action in progress,
+`CanStoreInputUserData()`, and `ActionBase.Can(...)`. Then observe real transition; do not mark
+success upon sending action. A desync `server=Move, client=Fall` points first to placement.
 
-### Servidor retail headless como término de paridad (SP-242)
+### Headless retail server as parity term (SP-242)
 
-La obligación de `DayZDiag_x64.exe` en :89-90 está acotada a la iteración con `-filePatching` y al
-launcher oficial de esta skill. Un `DayZServer_x64.exe` retail headless puede cargar PBOs con
-`-mod`, compilar Enforce y ejecutar `RestApi` saliente sin ocupar la sesión Steam del cliente.
-La medida observó defines `RELEASE, SERVER, NO_GUI, SERVER_FOR_WINDOWS` y polling HTTP real.
+The requirement of `DayZDiag_x64.exe` in :89-90 is scoped to iteration with `-filePatching` and to
+official launcher of this skill. A headless retail `DayZServer_x64.exe` can load PBOs with
+`-mod`, compile Enforce, and execute outbound `RestApi` without occupying client Steam session.
+Measurement observed defines `RELEASE, SERVER, NO_GUI, SERVER_FOR_WINDOWS` and real HTTP polling.
 
-Úsalo como segundo término de un gate diag↔retail cuando el comportamiento server-side pueda
-depender de `RELEASE` o de APIs developer-only. No sustituye al cliente para captura visual ni para
-verbos que requieren un jugador conectado. Este servidor queda fuera del lifecycle oficial: solo
-un runner probe-gated que posea su PID exacto puede iniciarlo y cerrarlo.
+Use it as second term of a diag↔retail gate when server-side behavior may
+depend on `RELEASE` or developer-only APIs. It does not replace client for visual capture or for
+verbs requiring a connected player. This server remains outside official lifecycle: only
+a probe-gated runner possessing its exact PID can start and stop it.
 
-### Celdas multi-peer: reloj, replay y sondas bilaterales (SP-276 / SP-278)
+### Multi-peer cells: clock, replay, and bilateral probes (SP-276 / SP-278)
 
-Para un fallo de salida o desync, instrumenta el callback equivalente a `OnDriverExit` en ambos
-peers y emite en una sola ventana `playerPos`, `vehiclePos`, `crewEntryWS` y sus distancias. Alinea
-los relojes cliente/servidor con pares del mismo evento; no compares timestamps crudos de peers.
+For an exit failure or desync, instrument the callback equivalent to `OnDriverExit` on both
+peers and emit in a single window `playerPos`, `vehiclePos`, `crewEntryWS`, and their distances. Align
+client/server clocks with pairs of the same event; do not compare raw peer timestamps.
 
-En una serie del owner con rewind/replay, varias muestras pueden compartir el mismo `t`. Conserva la
-primera muestra por tick —o colapsa un intervalo documentado menor de 20 ms— antes de evaluar los
-flancos. Convierte los eventos del servidor al reloj del owner, usa la serie autoritativa como
-oráculo principal y el owner como secundaria, y re-ejecuta el histórico después de cambiar el
-parser.
+In an owner series with rewind/replay, multiple samples can share the same `t`. Retain the
+first sample per tick —or collapse a documented interval smaller than 20 ms— before evaluating
+edges. Convert server events to owner clock, use authoritative series as
+primary oracle and owner as secondary, and re-run history after changing
+the parser.
 
-El bridge no inyecta valores arbitrarios en `UAInput`. Si el mod neutraliza `CarController` y
-consume ejes propios, una celda necesita un guion DIAG en el owner antes de `WriteToMove`; esta rama
-solo se promueve para el mod cuando una corrida in-game demuestre que pilota.
+The bridge does not inject arbitrary values into `UAInput`. If the mod neutralizes `CarController` and
+consumes its own axes, a cell needs a DIAG script on the owner before `WriteToMove`; this branch
+is only promoted for the mod when an in-game run demonstrates that it steers.
 
-### Contrato de una celda scriptada repetible (SP-279)
+### Contract of a repeatable scripted cell (SP-279)
 
-- Spawnea la fixture en un sitio fijo conocido y coloca al jugador en un offset fijo sobre
-  `SurfaceY`; un spawn aleatorio convierte obstáculos y puertas en ruido de entorno.
-- Después de una salida, rearma server-side el placement tras un cooldown con el jugador a pie.
-  La reentrada forma parte del test: una pose fantasma en cliente invalida reach y `Can()`.
-- `forces-off`, `clamp-abort`, `no-probes`, `no-pilot` y `not-owner` son **INCONCLUSO** y admiten
-  retries acotados. Un timeout después de satisfacer las precondiciones es **FAIL**.
-- El guion ejecuta; no adjudica. Sus gates son los mismos del preregistro. Detecta «posado» por AGL
-  sostenido o, mejor, por estado autoritativo, no por una velocidad owner aislada.
+- Spawn fixture at a known fixed location and place player at a fixed offset on
+  `SurfaceY`; random spawn turns obstacles and doors into environmental noise.
+- After an exit, rearm placement server-side after cooldown with player on foot.
+  Re-entry is part of the test: a ghost pose on client invalidates reach and `Can()`.
+- `forces-off`, `clamp-abort`, `no-probes`, `no-pilot`, and `not-owner` are **INCONCLUSIVE** and accept
+  bounded retries. A timeout after satisfying preconditions is **FAIL**.
+- Script executes; it does not adjudicate. Its gates are the same as preregistration. Detects "settled" by
+  sustained AGL or, better, by authoritative state, not by an isolated owner velocity.
 
-### Aislamiento, settle y sondas de efecto en celdas (SP-285)
+### Isolation, settle, and effect probes in cells (SP-285)
 
-Mientras el piloto scriptado está activo, un guard DIAG debe rechazar en `ActionCondition` las
-acciones humanas que rompen la celda, pero conservar una ruta programática separada. El settle se
-decide por estado autoritativo espejado (`GROUND_READY`/`PARKED`) y usa AGL solo como respaldo; el
-owner puede seguir rebotando después de que la autoridad esté posada.
+While scripted pilot is active, a DIAG guard must reject in `ActionCondition`
+human actions that break the cell, but preserve a separate programmatic route. Settle is
+decided by mirrored authoritative state (`GROUND_READY`/`PARKED`) and uses AGL only as backup;
+owner can keep bouncing after authority is settled.
 
-Instrumenta el callback del síntoma en ambos peers con una sonda gated y pila. En cliente imprime la
-pila línea a línea para evitar truncado y no llames APIs cuya validez sea solo server-side. Al
-arrancar, el runner censa otros DayZDiag vivos con PID, modline y puerto; si 2302 pertenece a otra
-sesión, elige un puerto acreditado distinto. Esto extiende el preflight de :976 sin tocar los peers
-ajenos.
+Instrument symptom callback on both peers with a gated probe and stack. On client print
+stack line by line to prevent truncation and do not call APIs whose validity is server-side only. Upon
+startup, runner probes other running DayZDiag with PID, modline, and port; if 2302 belongs to another
+session, choose a different accredited port. This extends preflight of :976 without touching foreign
+peers.
 
-### Quien abre un proceso manual también lo cierra (SP-344)
+### Whoever opens a manual process also closes it (SP-344)
 
-Los runs gestionados se cierran por su `run_id`. Para un proceso manual autorizado fuera del MCP,
-el agente que lo abrió conserva PID y `CommandLine`, solicita cierre ordenado con
-`CloseMainWindow()`, espera 8-10 s y usa `Stop-Process -Id <pid>` solo como fallback exacto. Nunca
-selecciona por nombre de ejecutable ni toca un peer de otra sesión.
+Managed runs are closed by their `run_id`. For an authorized manual process outside MCP,
+the agent that opened it retains PID and `CommandLine`, requests orderly shutdown with
+`CloseMainWindow()`, waits 8-10 s and uses `Stop-Process -Id <pid>` only as exact fallback. Never
+select by executable name or touch a peer from another session.
 
-Si la ventana la abrió el usuario y está jugando, el cierre sigue siendo suyo por la UI. Si la abrió
-el agente, no se convierte al usuario en operador de limpieza; pedir continuar el ciclo autoriza a
-cerrar solo esos procesos propios.
+If the window was opened by the user and they are playing, closing remains theirs via UI. If opened
+by the agent, the user is not turned into a cleanup operator; asking to continue the cycle authorizes
+closing only those own processes.
 
 
-## Dos trampas del ciclo build-deploy-test que ponen verde una corrida inútil (added 2026-08-31)
+## Two traps of the build-deploy-test cycle that make a useless run green (added 2026-08-31)
 
-Las dos medidas el 2026-08-31 cerrando un gate de motor. Ninguna da error; las dos dejan que
-saques conclusiones de una corrida que no probó lo que crees.
+Both measured on 2026-08-31 closing an engine gate. Neither gives an error; both let
+you draw conclusions from a run that did not test what you think.
 
-### 1. `DSSignFile` devuelve 0 después de un build fallido — y firma el PBO VIEJO
+### 1. `DSSignFile` returns 0 after a failed build — and signs the OLD PBO
 
-`dayz_test_run` (y cualquier cliente/servidor vivo) deja el PBO **bloqueado**. Reconstruir con
-AddonBuilder mientras la corrida está en pie da `[ERROR]: Build failed`, y si el script encadena
-la firma, `DSSignFile` sale con **`EXIT=0`** tan contento: ha firmado el binario anterior.
+`dayz_test_run` (and any live client/server) leaves the PBO **locked**. Rebuilding with
+AddonBuilder while the run is up gives `[ERROR]: Build failed`, and if the script chains
+signing, `DSSignFile` exits with **`EXIT=0`** quite happily: it has signed the previous binary.
 
-Encadenado en un `.ps1`, el resultado es un `SIGN=0` que parece confirmar el despliegue.
+Chained in a `.ps1`, the result is a `SIGN=0` that seems to confirm deployment.
 
-**Parar la corrida antes de reconstruir**, y verificar el resultado por **la tabla del PBO contra
-el tamaño del fuente**, nunca por exit codes:
+**Stop the run before rebuilding**, and verify the result by **the PBO table against
+source size**, never by exit codes:
 
 ```
 scripts\4_World\LFG10_Probe.c    3579     <- y en disco: 3579
 scripts\5_Mission\LFG10_Driver.c 4756     <- y en disco: 4756
 ```
 
-Es la misma doctrina que ya está en `DAYZ_INFRA.md` («el veredicto de un build es la tabla de
-ficheros del PBO, no el exit code»), extendida a la firma: **el exit code de `DSSignFile` no dice
-nada sobre si el build entró.**
+It is the same doctrine that is already in `DAYZ_INFRA.md` ("the verdict of a build is the PBO
+file table, not the exit code"), extended to signing: **the exit code of `DSSignFile` says
+nothing about whether the build got in.**
 
-### 2. La persistencia devuelve el sujeto como lo dejó la corrida anterior
+### 2. Persistence returns the subject as the previous run left it
 
-Un experimento que mide el estado de una entidad (salud, humedad, cantidad, temperatura) **no
-puede fiarse del loadout de spawn**. Medido: el personaje volvió con la prenda en `wetlevel=4
-hplevel=2`, exactamente donde la había dejado la corrida anterior, así que el control de la corrida
-nueva arrancaba **ya pasado el umbral que tenía que cruzar** — y habría dado «el control no
-dispara» siendo falso.
+An experiment measuring entity state (health, wetness, quantity, temperature) **cannot
+rely on spawn loadout**. Measured: character returned with garment at `wetlevel=4
+hplevel=2`, exactly where previous run had left it, so control for new run
+started **already past the threshold it had to cross** — and would have given "control does not
+fire" falsely.
 
-El probe **normaliza el sujeto** antes de medir nada (`SetWet(0)`, `SetHealthLevel(0)`, lo que
-aplique) y lo registra en el log. Y si hay una parte cliente que depende de ese estado, se ata a
-**la condición, no a un temporizador**: esperar a observar el sujeto ya normalizado, porque la
-propia normalización es un cambio de estado que puede pisar lo que ibas a medir.
+The probe **normalizes the subject** before measuring anything (`SetWet(0)`, `SetHealthLevel(0)`, whatever
+applies) and records it in log. And if there is a client part depending on that state, it binds to
+**the condition, not a timer**: wait to observe subject already normalized, because
+normalization itself is a state change that can clobber what you were about to measure.
 
-### Bonus: un probe desechable no necesita darse de alta como proyecto del MCP
+### Bonus: a disposable probe does not need to register as an MCP project
 
-`P:\Mods` es `mod_root` de los diez proyectos aprobados en `request-policy.json`, y
-`dayz_test_tool._valid_public_mod` acepta cualquier carpeta relativa dentro de esos roots. Así que:
+`P:\Mods` is `mod_root` of the ten approved projects in `request-policy.json`, and
+`dayz_test_tool._valid_public_mod` accepts any relative folder inside those roots. Thus:
 
 ```
 dayz_test_run(project="DayZ_MCP", mode="all", extra_mods=["@MiProbe"])
 ```
 
-sale con el bridge entero (`capture_screenshot`, `camera_set`, `query_player_state`, `wait_for`
-sobre `log_matches`) **más** tu probe, sin tocar la política sellada ni reconstruirla con
+starts with the full bridge (`capture_screenshot`, `camera_set`, `query_player_state`, `wait_for`
+on `log_matches`) **plus** your probe, without touching sealed policy or rebuilding it with
 `build_native_launcher.py`.
 
-## El gate post-build del `dayz-test.ps1` generado comprueba EXISTENCIA, no frescura (added 2026-08-31)
+## The post-build gate of generated `dayz-test.ps1` checks EXISTENCE, not freshness (added 2026-08-31)
 
-Complementa la sección anterior, no la repite: allí está la doctrina («el veredicto de un
-build es la tabla de ficheros del PBO, no el exit code»); aquí está **el instrumento que
-esta misma skill genera y que la incumple**, con su línea exacta y el arreglo.
+Complements the previous section, does not repeat it: there lies the doctrine ("the verdict of a
+build is the PBO file table, not the exit code"); here is **the instrument that
+this very skill generates and that violates it**, with its exact line and the fix.
 
-Origen: ficha `fb-20260830-011217-668f` del buzón del pipeline (`project: LFQuad2`,
-2026-08-30 01:12), archivada por otra sesión. La formulación «comprueba que el PBO EXISTE,
-no que sea el nuevo» es suya.
+Origin: ticket `fb-20260830-011217-668f` from the pipeline inbox (`project: LFQuad2`,
+2026-08-30 01:12), archived by another session. The phrasing "checks that PBO EXISTS,
+not that it is the new one" is theirs.
 
-### Lo que hace hoy el script generado
+### What the generated script does today
 
-Verificado el 2026-08-31 en **tres copias generadas independientemente**, no en una:
+Verified on 2026-08-31 on **three independently generated copies**, not on one:
 
 ```
 A6_MK47_dev\tools\dayz-test.ps1:422-429
@@ -1550,7 +1550,7 @@ ExpandedBuilding_dev\tools\dayz-test.ps1:403-408
 LFGungame_dev\tools\dayz-test.ps1:353-354
 ```
 
-La secuencia, tomada de `A6_MK47_dev\tools\dayz-test.ps1:422-429`:
+The sequence, taken from `A6_MK47_dev\tools\dayz-test.ps1:422-429`:
 
 ```powershell
 if ($p.ExitCode -ne 0) { Die "AddonBuilder failed (exit $($p.ExitCode)). ..." }
@@ -1560,26 +1560,26 @@ if (-not (Test-Path $pbo)) { Die "Build reported success but $pbo is missing." }
 Ok "deployed: $pbo ($((Get-Item $pbo).Length) b)"
 ```
 
-Tres comprobaciones, y **ninguna de las tres mira si el PBO es el de ESTE build**:
+Three checks, and **none of the three looks at whether the PBO is from THIS build**:
 
-| Comprobación | Qué contesta | Qué NO contesta |
+| Check | What it answers | What it does NOT answer |
 |---|---|---|
-| `$p.ExitCode -ne 0` | si AddonBuilder devolvió != 0 | nada si devuelve 0 **y aun así falla** — medido en la ficha: `[ERROR]: Build failed` en su log con exit 0 |
-| `Test-Path $pbo` | si existe **un** PBO | si es el nuevo. El anterior también existe |
-| `Length -lt 4096` | si salió ridículamente pequeño | nada: un PBO viejo completo pesa megas y pasa holgado |
+| `$p.ExitCode -ne 0` | if AddonBuilder returned != 0 | nothing if it returns 0 **and still fails** — measured in the ticket: `[ERROR]: Build failed` in its log with exit 0 |
+| `Test-Path $pbo` | if **a** PBO exists | if it is the new one. Previous one also exists |
+| `Length -lt 4096` | if it came out ridiculously small | nothing: a full old PBO weighs megabytes and easily passes |
 
-Con el juego corriendo el PBO destino está **bloqueado**, la copia final de AddonBuilder
-falla, y el wrapper imprime `[ok] deployed` y sale con **exit 0** sobre el binario anterior.
-Es el mismo bloqueo de la sección de `DSSignFile`, un paso antes: allí se firma el PBO viejo,
-aquí se declara desplegado.
+With game running target PBO is **locked**, AddonBuilder's final copy
+fails, and wrapper prints `[ok] deployed` and exits with **exit 0** on previous binary.
+It is the same lock from `DSSignFile` section, one step before: there old PBO is signed,
+here it is declared deployed.
 
-### Los tres niveles, y por qué el gate tiene que estar en el tercero
+### The three levels, and why gate must be on the third
 
-**Existencia** («hay un PBO») la satisface el build anterior. **Frescura** («este PBO es
-posterior al build») la satisface un PBO nuevo y vacío. Solo **contenido** («este PBO
-contiene estas fuentes») contesta la pregunta que hace el que va a probar el mod.
+**Existence** ("there is a PBO") is satisfied by previous build. **Freshness** ("this PBO is
+newer than build") is satisfied by a new empty PBO. Only **content** ("this PBO
+contains these sources") answers the question asked by the one testing the mod.
 
-El arreglo mínimo, que cuesta dos líneas y cierra el caso medido:
+The minimal fix, which costs two lines and closes the measured case:
 
 ```powershell
 $before = if (Test-Path $pbo) { (Get-Item $pbo).LastWriteTimeUtc } else { [datetime]::MinValue }
@@ -1590,86 +1590,86 @@ if ((Get-Item $pbo).LastWriteTimeUtc -le $before) {
 }
 ```
 
-El arreglo bueno es el gate de contenido, y se escribe en **forma complementaria**: no una
-lista de lo que podría haberse quedado atrás, sino la afirmación positiva **«toda fuente
-actual está en el PBO desplegado con su tamaño/sha»**. La lista de fuentes es corta y la
-recorres; la de cosas que pueden quedarse rancias no tiene fin.
+The good fix is the content gate, and is written in **complementary form**: not a
+list of what could have been left behind, but the positive statement **"every current source
+is in deployed PBO with its size/sha"**. The source list is short and you
+traverse it; that of things that can stay stale has no end.
 
-Ese gate no es teórico: el 2026-08-31 dos puertas de esa forma —una de identidad byte a byte
-contra un snapshot, otra de «cada fuente presente en el PBO con su sha256»— detectaron en
-otro mod un PBO que había aparecido en el árbol y no estaba desplegado. Un `Test-Path` no
-habría visto nada.
+That gate is not theoretical: on 2026-08-31 two gates of that form —one of byte-for-byte identity
+against a snapshot, another of "each source present in PBO with its sha256"— detected in
+another mod a PBO that had appeared in the tree and was not deployed. A `Test-Path` would
+not have seen anything.
 
-### Cuándo muerde esto
+### When this bites
 
-Siempre que se reconstruya con el juego vivo, que es justo lo que invita a hacer el ciclo de
-filepatching. Antes de reconstruir, **para la corrida** (ver la sección de `DSSignFile`). Y si
-vas a encadenar build → firma → despliegue en una tanda desatendida o en lanes paralelas,
-mete el gate de frescura antes de la firma: firmar el binario anterior y desplegarlo produce
-un artefacto que parece correcto en todos los pasos y no contiene el cambio.
+Whenever rebuilt with game running, which is just what the filepatching
+cycle invites you to do. Before rebuilding, **stop the run** (see `DSSignFile` section). And if
+you are going to chain build → sign → deploy in an unattended batch or in parallel lanes,
+put the freshness gate before signing: signing the previous binary and deploying it produces
+an artifact that seems correct in all steps and does not contain the change.
 
-**Señal barata de que te ha pasado**: el log de AddonBuilder dice `[ERROR]: Build failed` y
-tu wrapper dice `[ok] deployed` a continuación. Si esas dos líneas conviven en la misma
-corrida, el PBO que vas a probar es el de antes.
+**Cheap sign that it happened to you**: AddonBuilder log says `[ERROR]: Build failed` and
+your wrapper says `[ok] deployed` next. If those two lines coexist in the same
+run, the PBO you are going to test is the old one.
 
 **Two more masks of the same trunk (af59 round 2, measured 2026-09-08).** (1) The generated launcher FABRICATES its own destination: `Invoke-Build` creates `<WorkDrive>\Mods\@<Mod>\Addons` with `New-Item -Force` if missing, and `-BuildOnly` / `-Mode none` reach `Invoke-Build` without passing through the preflight, so a missing `Mods` folder becomes a PLAIN folder that silently receives the PBO — the script prints `[ok] deployed` and the engine never reads it (reproduced literally: `exit=0; Mods created=True; junction=False`; the two lines are in 6 of 6 mod trees and in the template). The destination check — exists AND is a reparse point — must run from the build path itself before copying, not only in the interactive preflight. (2) Add the stdout text gate beside the byte gate: capture AddonBuilder stdout (`Start-Process -RedirectStandardOutput`) and require `Build Successful` while rejecting `[ERROR]: Build failed`. The pair discriminates: a false "Successful" with an untouched PBO dies on the mtime/hash gate; a touched-but-failed build dies on the text gate. A FIRST legit build has no previous PBO, so the byte comparison must be guarded (compare only when a previous PBO existed). [EXACT] (measured, SP-380]
 
-### SP-124 — El lease libre NO implica caja libre
+### SP-124 — Free lease does NOT imply free box
 
-`session_status` puede devolver `owner: null`, cola vacía y `claimable: true` mientras hay un
-servidor y un cliente DayZ vivos, lanzados fuera del lifecycle gestionado por otra línea del
-proyecto y ocupando el puerto 2302. El lease habla del lease, no de la caja.
+`session_status` can return `owner: null`, empty queue, and `claimable: true` while a DayZ
+server and client are alive, launched outside the managed lifecycle by another project
+line and occupying port 2302. The lease speaks of the lease, not of the box.
 
-Antes de dar la caja por libre, leer el `-mod=` de los procesos vivos:
+Before considering the box free, read `-mod=` of living processes:
 
 ```powershell
 Get-CimInstance Win32_Process -Filter "Name LIKE 'DayZ%'" |
   Select-Object ProcessId, CommandLine
 ```
 
-La línea de comandos dice de quién es la corrida y si carga tu mod.
+The command line tells whose run it is and whether it loads your mod.
 
-Corolario para el build: el guard «ningún proceso DayZ» se puede **estrechar** a las dos
-condiciones que de verdad representa —ningún proceso vivo carga tu mod, y el PBO destino abre en
-exclusiva— en vez de saltárselo o de esperar a que la otra línea termine.
+Corollary for build: the "no DayZ process" guard can be **narrowed** to the two
+conditions it actually represents —no running process loads your mod, and target PBO opens
+exclusively— instead of skipping it or waiting for the other line to finish.
 
-Cross-ref: `dayz-mcp-verify` (misma regla, lado del bridge).
+Cross-ref: `dayz-mcp-verify` (same rule, bridge side).
 
 
-## Una observacion in-game vale lo que valga la linea `-mod=` de SU corrida (added 2026-09-05)
+## An in-game observation is worth whatever the `-mod=` line of ITS run is worth (added 2026-09-05)
 
-Distinta de la seccion anterior, que lee el `-mod=` para saber **de quien es la caja**. Esta lo
-lee para saber **si la observacion sirve como evidencia**, y se hace ANTES de usarla, no al
-lanzar.
+Distinct from the previous section, which reads `-mod=` to know **whose box it is**. This one
+reads it to know **if the observation serves as evidence**, and is done BEFORE using it, not at
+launch.
 
-Medido el 2026-09-04 en dos mods a la vez. De seis corridas con `@LFQuad3`, **una** llevaba
-`@SurvivorAnims`; de las cuatro de LFQuad2, **ninguna**. `LFQuad3.c:86-88` (y su gemelo en
-LFQuad2) hace `GetAnimInstance` -> devuelve 22 solo si existe `CfgPatches SurvivorAnims`, y si no
-cae a `VehicleAnimInstances.V3S`, que es la pose de CAMION sobre un quad. Con la pose equivocada
-**la camara del conductor no esta donde estaria de verdad**, y eso mueve tanto lo que se ve desde
-el asiento como que LOD elige el motor. LFQuad2 habia diagnosticado y "arreglado" un sintoma de
-LOD sobre esas corridas y tuvo que retirar el arreglo: la causa no estaba comprobada.
+Measured on 2026-09-04 on two mods at once. Of six runs with `@LFQuad3`, **one** carried
+`@SurvivorAnims`; of the four of LFQuad2, **none**. `LFQuad3.c:86-88` (and its twin in
+LFQuad2) does `GetAnimInstance` -> returns 22 only if `CfgPatches SurvivorAnims` exists, and otherwise
+falls back to `VehicleAnimInstances.V3S`, which is TRUCK pose on a quad. With the wrong pose
+**driver camera is not where it would really be**, and that moves both what is seen from
+seat and which LOD engine chooses. LFQuad2 had diagnosed and "fixed" a LOD
+symptom on those runs and had to withdraw the fix: cause was not verified.
 
-El fallo es silencioso por construccion: el mod ausente no da error, el juego arranca, la
-observacion parece normal y el usuario la reporta de buena fe.
+The failure is silent by construction: missing mod gives no error, game starts,
+observation seems normal and user reports it in good faith.
 
-**Al recibir una observacion in-game que vaya a decidir codigo o geometria:**
+**Upon receiving an in-game observation that will decide code or geometry:**
 
-1. Localiza el RPT de ESA corrida (servidor y cliente) y lee su primera linea `-mod=`.
-2. Comprueba que estan los mods de los que depende lo observado. Los tres que mas callan:
-   - un mod de **animaciones** consultado por `ConfigIsExisting` desde `GetAnimInstance` u
-     otro hook -> sin el, pose y camara son otras;
-   - un **framework** (CF y compania) que escriba modstorage por entidad;
-   - el propio mod de contenido cuyos objetos hay que ver.
-3. Si falta alguno, la observacion no se descarta: **se reclasifica**. Lo que no dependa de la
-   pose ni del LOD sigue valiendo (una textura espejada lo esta desde cualquier angulo); lo que
-   dependa de donde esta el ojo, no.
+1. Locate RPT of THAT run (server and client) and read its first `-mod=` line.
+2. Check that mods on which observed behavior depends are present. The three most silent:
+   - an **animations** mod queried by `ConfigIsExisting` from `GetAnimInstance` or
+     other hook -> without it, pose and camera are different;
+   - a **framework** (CF and company) that writes modstorage per entity;
+   - the content mod itself whose objects must be seen.
+3. If any is missing, observation is not discarded: **it is reclassified**. Whatever does not depend on
+   pose or LOD remains valid (a mirrored texture is so from any angle); whatever
+   depends on where the eye is, does not.
 
-Trampa de nombre en este arbol: `@Survivor Animations` **con espacio** parte la linea de
-comandos (en el RPT se ve cortada en `-mod=...;P:\Mods\@Survivor`). La junction buena es
+Name trap in this tree: `@Survivor Animations` **with space** splits the command
+line (in RPT it is seen cut off at `-mod=...;P:\Mods\@Survivor`). The good junction is
 `@SurvivorAnims`.
 
-Auditoria barata de toda una jornada, para saber que corridas valen:
+Cheap audit of a whole workday, to know which runs are valid:
 
 ```bash
 for f in _server/profiles/*.RPT _client/profiles/*.RPT; do
@@ -1678,91 +1678,91 @@ for f in _server/profiles/*.RPT _client/profiles/*.RPT; do
 done
 ```
 
-## (added 2026-09-08) Tres muros del arranque gestionado que no nombran su causa
+## (added 2026-09-08) Three walls of managed startup that do not name their cause
 
-Medidos en un arranque de verificacion de LFPowerGrid. Los tres devuelven un codigo que no
-describe lo que pasa, y los tres se resuelven en un minuto si sabes cual es.
+Measured in a verification startup of LFPowerGrid. All three return a code that does not
+describe what happens, and all three are resolved in one minute if you know which it is.
 
-### 1. `launcher_root_identity_drift` — el sello fija el DIRECTORIO, no solo el binario
+### 1. `launcher_root_identity_drift` — the seal fixes the DIRECTORY, not just binary
 
-El registro sellado pinea la identidad NTFS **del directorio** que contiene el lanzador
-(`launcher_registry.py` `_open_validated_entry`: compara `root_file_id` = `file_id` +
-`volume_serial_number` contra `os.stat(root)`). Si ese directorio se **recrea** —y esta bajo
-OneDrive, que lo hace— el `file_id` cambia y **todo** el camino gestionado muere, `preflight`
-incluido. El binario puede ser byte-identico y da igual.
+Sealed registry pins NTFS identity **of the directory** containing launcher
+(`launcher_registry.py` `_open_validated_entry`: compares `root_file_id` = `file_id` +
+`volume_serial_number` against `os.stat(root)`). If that directory is **recreated** —and it is under
+OneDrive, which does so— `file_id` changes and **the entire** managed path dies, `preflight`
+included. Binary can be byte-identical and it makes no difference.
 
-**Diagnostico antes de tocar un sello de seguridad**, porque distingue deriva benigna de
-manipulacion: compara los dos campos del `root_file_id` por separado y **el sha256 del PE**.
-Volumen igual + `file_id` distinto + **PE con el hash pinneado** = el directorio se recreo y el
-binario no cambio.
+**Diagnosis before touching a security seal**, because it distinguishes benign drift from
+tampering: compare the two fields of `root_file_id` separately and **the sha256 of the PE**.
+Same volume + different `file_id` + **PE with pinned hash** = directory was recreated and
+binary did not change.
 
-**Remedio** (es del dueno autorizarlo, no tuyo decidirlo):
+**Remedy** (it is the owner's to authorize, not yours to decide):
 
     cd <DayZ_MCP_dev>\tools
-    .venv-mcp\Scripts\python.exe -m dayz_mcp.launcher_registry_update         replace-dayz-test-v1 --expected-sha256 <SHA256 DEL REGISTRO, EN MAYUSCULAS>
+    .venv-mcp\Scripts\python.exe -m dayz_mcp.launcher_registry_update         replace-dayz-test-v1 --expected-sha256 <REGISTRY SHA256, IN UPPERCASE>
 
-- Es `replace-*`, no `install-*`: `install` se niega mientras exista la entrada.
-- El token CAS es el sha256 **de los bytes de `approved-launchers.json`**, no del PE.
-- ⚠ **VA EN MAYUSCULAS.** `_HEX = frozenset("0123456789ABCDEF")`, asi que un sha en minusculas
-  —lo que produce `sha256sum`— falla con `invalid_launcher_registry_update`, que no dice nada
-  del formato y manda a buscar el problema donde no esta.
-- Devuelve el sha del registro NUEVO, que es el token CAS de la siguiente operacion.
+- It is `replace-*`, not `install-*`: `install` refuses while entry exists.
+- CAS token is the sha256 **of the bytes of `approved-launchers.json`**, not of the PE.
+- ⚠ **MUST BE IN UPPERCASE.** `_HEX = frozenset("0123456789ABCDEF")`, so a lowercase sha
+  —what `sha256sum` produces— fails with `invalid_launcher_registry_update`, which says nothing
+  about the format and sends you looking for the problem where it is not.
+- Returns sha of the NEW registry, which is the CAS token for next operation.
 
-### 2. La ocupacion es de CAJA, no de puerto: `port=` no esquiva a un ajeno
+### 2. Occupation is of BOX, not port: `port=` does not dodge a foreign process
 
-Con un DayZ ajeno vivo, `dayz_test_run` devuelve `active_run_exists` / `port_in_use_foreign`
-**aunque pases otro `port=`**, y sigue nombrando el 2302 en el error. El primer hint dice
-«pass another port=»; el segundo, ya con la caja leida como ocupada, dice «retry with
-wait_for_box_s». **El que sirve es el segundo**: `wait_for_box_s` mete la peticion en el FIFO.
-`port=` solo vale para convivir cuando la caja YA es tuya.
+With a foreign DayZ running, `dayz_test_run` returns `active_run_exists` / `port_in_use_foreign`
+**even if you pass another `port=`**, and keeps naming 2302 in the error. The first hint says
+"pass another port="; the second, with the box already read as occupied, says "retry with
+wait_for_box_s". **The one that works is the second**: `wait_for_box_s` puts request into FIFO.
+`port=` is only valid to coexist when the box is ALREADY yours.
 
-Antes de esperar, comprueba que el ocupante esta vivo y no es un zombi: `Get-Process` sobre los
-`DayZ*` y mira **CPU y hora de arranque**. CPU creciendo = corrida real de otra linea, se
-respeta. Y mira su `-mod=`: te dice de quien es.
+Before waiting, verify that occupant is alive and not a zombie: `Get-Process` on
+`DayZ*` and check **CPU and start time**. Growing CPU = real run of another line, it is
+respected. And look at its `-mod=`: tells you whose it is.
 
-### 3. `mode=client` exige repetir `extra_mods`, o rechaza el reattach
+### 3. `mode=client` requires repeating `extra_mods`, or rejects reattach
 
-Complemento de SP-323 medido hoy: en el reattach del cliente, omitir `extra_mods` no hereda los
-del arranque del servidor — falla con `bridge_mod_missing: add extra_mods=['@DayZ_MCP']`. Pasa la
-**misma lista** que en `mode=server`, o el sello del conjunto cambia ademas de perderse el puente.
+Complement of SP-323 measured today: on client reattach, omitting `extra_mods` does not inherit those
+from server start — fails with `bridge_mod_missing: add extra_mods=['@DayZ_MCP']`. Pass the
+**same list** as in `mode=server`, or whole set's seal changes in addition to losing bridge.
 
-### Bonus: `condition_failed` vs `action_not_found` es un discriminador, con su control
+### Bonus: `condition_failed` vs `action_not_found` is a discriminator, with its control
 
-`action_use` distingue las dos cosas, y eso convierte una sonda barata en prueba: `action_not_found`
-= la clase de accion no esta en el array del jugador; `condition_failed` = **si esta y se resolvio
-contra el objetivo**, y la rechazo su `ActionCondition`. Sirve para acreditar que una accion
-alcanza a un tipo de entidad sin montar la fixture que satisfaria su guard. **Con control
-negativo**: lanza tambien un nombre de accion inventado sobre el mismo objeto y comprueba que da
-`action_not_found`; sin ese control no sabes si los dos codigos se distinguen de verdad.
+`action_use` distinguishes the two things, and that turns a cheap probe into proof: `action_not_found`
+= action class is not in player array; `condition_failed` = **is present and resolved
+against target**, and rejected by its `ActionCondition`. Serves to accredit that an action
+reaches an entity type without setting up the fixture satisfying its guard. **With negative
+control**: also launch an invented action name on the same object and verify that it gives
+`action_not_found`; without that control you do not know if both codes are truly distinguished.
 
-## Un cliente DayZDiag sin foco va a ~20 fps: lo que mide el cliente depende de quien tiene el primer plano (SP-391, added 2026-09-13)
+## An unfocused DayZDiag client runs at ~20 fps: what the client measures depends on who holds the foreground (SP-391, added 2026-09-13)
 
-Medido en el banco F1 de LFHeli (DayZDiag, cliente en ventana y servidor en la misma maquina),
-**con manipulacion**, no por correlacion:
+Measured on F1 bench of LFHeli (DayZDiag, windowed client and server on same machine),
+**with manipulation**, not by correlation:
 
-- Con su ventana en primer plano, el cliente va a **25,0 ms** por frame (40 fps); sin foco, a
-  **51-52 ms** (~20 fps). Dentro de una misma celda, poner y quitar el foco movio la mediana
+- With its window in foreground, client runs at **25.0 ms** per frame (40 fps); without focus, at
+  **51-52 ms** (~20 fps). Within the same cell, toggling focus moved median
   26 <-> 53 ms.
-- No es la GPU compartida ni el reparto de CPU: 0 de 10 celdas lentas coincidieron con
-  inferencia LLM local, y fijar el cliente a 2 nucleos con prioridad alta dejo 4 de 4 celdas en
-  51-52 ms. Las lentas forman un tope estrecho (91 % de los frames a +-3 ms), no una cola de
-  contencion.
-- Lo que arrastra: el bote en reposo del heli **seguia al foco**. Con el foco sujeto, 6 de 6
-  reposos quietos; con el foco quitado, bota. Cualquier medida del lado cliente
-  (presentacion, fisica del owner, `vehicle_trace`) hereda el estado del foco.
-- En una maquina con varias sesiones, el primer plano lo roban cada pocos segundos otras
-  aplicaciones: medidos Discord, OpenCode, Cursor, el AddonBuilder de otra sesion y explorer.
+- It is not shared GPU or CPU distribution: 0 of 10 slow cells coincided with
+  local LLM inference, and pinning client to 2 cores with high priority left 4 of 4 cells at
+  51-52 ms. Slow ones form a narrow ceiling (91% of frames within +-3 ms), not a contention
+  tail.
+- What it entails: heli idle bouncing **followed focus**. With focus held, 6 of 6
+  still idles; with focus removed, it bounces. Any client-side measurement
+  (presentation, owner physics, `vehicle_trace`) inherits focus state.
+- On a machine with multiple sessions, foreground is stolen every few seconds by other
+  applications: measured Discord, OpenCode, Cursor, another session's AddonBuilder, and explorer.
 
 Reglas:
 
-1. Un banco que mide el cliente **sujeta el primer plano durante toda la corrida** (reafirmarlo
-   cada 0,25 s basta) y **registra el cumplimiento** cada segundo junto a los datos.
-2. Si el diseno necesita quitar el foco, lo aparca en una **ventana visible y activable de un
-   proceso propio** (una ventana Tk sirve). Dos destinos medidos que fallan: la consola del
-   servidor DayZ (Windows devuelve el foco al cliente al instante: cumplimiento 1,00 con ~430
-   intentos por celda) y `Start-Process notepad.exe` en Windows 11 (el PID devuelto es un
-   lanzador que sale enseguida; la ventana vive en otro proceso).
-3. Un archivo de celdas corrido con el foco al azar mezcla dos regimenes de frame: antes de
-   comparar variantes, estratificar por tiempo de frame o repetir con el foco sujeto.
+1. A bench measuring client **holds foreground during the entire run** (reaffirming it
+   every 0.25 s suffices) and **records compliance** every second along with data.
+2. If design requires removing focus, park it on a **visible and activatable window of an
+   own process** (a Tk window works). Two measured destinations that fail: DayZ server
+   console (Windows returns focus to client instantly: compliance 1.00 with ~430
+   attempts per cell) and `Start-Process notepad.exe` on Windows 11 (returned PID is a
+   launcher that exits immediately; window lives in another process).
+3. A cell archive run with random focus mixes two frame regimes: before
+   comparing variants, stratify by frame time or repeat with focus held.
 
 Evidencia y recetas: `<vault>\30_Sessions\2026-09-13-LFHeli-el-bote-sigue-al-foco-del-cliente.md`.

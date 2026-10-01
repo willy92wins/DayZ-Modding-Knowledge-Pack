@@ -420,15 +420,15 @@ reference: the plate carrier ships ~5 resolution LODs.
 Source: community report (YouTube Oqz8-FNQypI, 2026) + BI LOD wiki recommendation of at
 least one resolution LOD. Related BI cap: 30+ total LODs can crash the binarizer.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa vive allí. No quites la cita: el índice detecta la promoción por ella.
+Promoted from `AI/20_Knowledge/lessons-learned.md` to arrive via trigger instead
+of depending on someone remembering to look them up. Each rule cites source `LL-NNN`;
+complete entry lives there. Do not remove citation: the index detects promotion by it.
 
-- **LL-068** — Audita por separado descomposición convexa y reparto de masa: reagrupar los mismos puntos no cambia CoM ni inercia. No conviertas CoM/Izz en gates duros si proceden de masas uniformes reconstruidas o son geométricamente inalcanzables.
-- **LL-092** — Construye el crew proxy como triángulo escaleno con frame inequívoco y calibra +Y/+Z contra el submodelo referenciado. Coloca el vértice ancla a la altura real del asiento; no copies vértices de otro tipo de proxy.
-- **LL-364** — Antes de citar «vanilla vale N» para un campo, pregunta POR QUÉ CANAL llegó ese N. Si el material se distribuye en formato derivado (ODOL) y el número lo produjo un conversor, la pregunta correcta no es cuánto vale sino si el campo sobrevive a la conversión: `odol_to_mlod.py` escribe `face.flags = 0` a pelo, así que cualquier «vanilla usa flags=N» medido por ahí es el instrumento contestándose. Medido 2026-08-24 por round-trip: `binarize.exe` DESCARTA el campo `flags` por cara del MLOD — tres MLOD que difieren solo en él binarizan a un modelo byte a byte idéntico, mientras dos controles positivos (un punto movido 1 cm, la textura vaciada en esas mismas caras) sí cambian la salida. Y un campo vecino del formato derivado que lleva el mismo bit (`Section.special`, por sección) NO es el mismo campo.
+- **LL-068** — Audit convex decomposition and mass distribution separately: regrouping the same points does not change CoM or inertia. Do not turn CoM/Izz into hard gates if they stem from reconstructed uniform masses or are geometrically unachievable.
+- **LL-092** — Build crew proxy as scalene triangle with unambiguous frame and calibrate +Y/+Z against referenced submodel. Place anchor vertex at actual seat height; do not copy vertices from another proxy type.
+- **LL-364** — Before citing "vanilla equals N" for a field, ask THROUGH WHAT CHANNEL that N arrived. If material is distributed in derived format (ODOL) and the number was produced by a converter, the right question is not what it is worth but whether field survives conversion: `odol_to_mlod.py` writes bare `face.flags = 0`, so any "vanilla uses flags=N" measured there is the instrument answering itself. Measured 2026-08-24 via round-trip: `binarize.exe` DISCARDS MLOD per-face `flags` field — three MLODs differing only in it binarize to a byte-for-byte identical model, while two positive controls (point moved 1 cm, texture cleared on same faces) do change output. And a neighboring field in derived format carrying same bit (`Section.special`, per section) is NOT the same field.
 
 
 ## Vehicle get-in action contract gate (SP-086, added 2026-08-31)

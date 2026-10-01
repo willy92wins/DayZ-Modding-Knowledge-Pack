@@ -58,25 +58,25 @@ A rendered viewer is not enough. The acceptance signal is a green P3D audit plus
 - [`AI/20_Runbooks/dayz-p3d-audit.md`](../20_Runbooks/dayz-p3d-audit.md)
 - [`AI/20_Runbooks/dayz-p3d-inspector.md`](../20_Runbooks/dayz-p3d-inspector.md)
 - [`AI/20_Runbooks/dayz-3d-viewer.md`](../20_Runbooks/dayz-3d-viewer.md)
-- [[dayz-p3d-inspector-memory-selection-bugs]] — bugs que vacían selecciones de Memory LOD al debinarizar/round-trip; gate antes de rebuild irreversible.
-- [[dayz-custom-infected]] — caso de modelo humanoide (LODs con hueco, Geometry convexo, escala horneada).
-- [[stage-01-mesh-retopo-uv-bake]] — retopo/UV/AO bake en Blender previo al assembly py3d.
-- [[dayz-mod-implementation-checklists]] — checklist de model.cfg/config.cpp y mínimos del engine (§6) para el modelo final.
-- [[dayz-animations-creatures-weapons]] — named selections + axes (2 puntos) que la capa de animación consume.
+- [[dayz-p3d-inspector-memory-selection-bugs]] — bugs that empty Memory LOD selections upon debinarizing/round-trip; gate before irreversible rebuild.
+- [[dayz-custom-infected]] — humanoid model case (LODs with gap, convex Geometry, baked scale).
+- [[stage-01-mesh-retopo-uv-bake]] — retopo/UV/AO bake in Blender prior to py3d assembly.
+- [[dayz-mod-implementation-checklists]] — model.cfg/config.cpp checklist and engine baselines (§6) for final model.
+- [[dayz-animations-creatures-weapons]] — named selections + axes (2 points) consumed by animation layer.
 
-## Caveat — proxies de rueda/suspensión SÍ van en la FireGeometry LOD (added 2026-05-26)
+## Caveat — wheel/suspension proxies DO go into FireGeometry LOD (added 2026-05-26)
 
-La regla genérica de proxies ("un proxy de attachment NO va en Fire/Geometry/Memory LOD,
-solo en las Resolution LODs" — `memory-and-selections.md` §Proxy Selections) es correcta
-para proxies de **ítem-attachment** (batería, faro). **NO** aplica a los proxies de **slot
-de rueda/suspensión** de un vehículo: verificado en **4/4 vehículos vanilla**
-(`civiliansedan`, `hatchback_02`, `offroadhatchback`, `offroad_02`), los wheel-proxies
-aparecen en la Resolution LOD **y** en la FireGeometry LOD (mismas posiciones). Al hornear
-la FireGeometry de un vehículo, **replicar los wheel-proxies** ahí para casar con vanilla.
+The generic proxy rule ("an attachment proxy DOES NOT go into Fire/Geometry/Memory LOD,
+only into Resolution LODs" — `memory-and-selections.md` §Proxy Selections) is correct
+for **item-attachment** proxies (battery, headlight). It **DOES NOT** apply to vehicle **wheel/
+suspension slot** proxies: verified in **4/4 vanilla vehicles**
+(`civiliansedan`, `hatchback_02`, `offroadhatchback`, `offroad_02`), wheel-proxies
+appear in the Resolution LOD **and** in the FireGeometry LOD (same positions). When baking
+vehicle FireGeometry, **replicate wheel-proxies** there to match vanilla.
 
-**Matiz de causación (R31/R35)**: en LFQuad, añadir los wheel-proxies que faltaban en la
-FireGeo era necesario por paridad, pero **no** resolvió por sí solo el bug "las ruedas no
-simulan/no ruedan" (que siguió abierto con otra causa). Incluirlos por paridad; no asumir
-que su ausencia es la causa única de un fallo de simulación de rueda.
+**Causation nuance (R31/R35)**: in LFQuad, adding missing wheel-proxies in
+FireGeo was necessary for parity, but **did not** by itself resolve the bug "wheels do not
+simulate/do not roll" (which remained open with another cause). Include them for parity; do not assume
+that their absence is the sole cause of a wheel simulation failure.
 
 Origen: LFQuad `bug-ledger.md` 2026-05-26 (P1, UPDATE 1/2) + [`research/2026-05-26-fix-firegeo-wheel-proxies-claude.md`](../10_Projects/LFQuad/research/2026-05-26-fix-firegeo-wheel-proxies-claude.md) + handoff [`30_Sessions/2026-05-26-LFQuad-wheelsim-debug-handoff.md`](../30_Sessions/2026-05-26-LFQuad-wheelsim-debug-handoff.md). Parche al plugin pendiente: [`skill-patches-pending.md`](skill-patches-pending.md) SP-012.

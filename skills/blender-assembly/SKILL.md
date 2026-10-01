@@ -280,19 +280,19 @@ do NOT clear it, and a `mesh.copy()` INHERITS the stale cache. NEW objects rende
   `bpy.context.window.scene` and pass `scene=` to `render.render()` on EVERY call, or you
   render (and screenshot) the wrong scene.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from the lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so that they arrive via trigger instead
+of relying on someone remembering to look them up. Each rule cites its source `LL-NNN`;
+the full entry (symptom, origin, evidence) lives there. Do not remove the citation: the index
+`lessons-index.md` detects promotion by searching for that reference inside the skills.
 
-- **LL-065** — No uses booleanos para tallar mallas orgánicas abiertas o no-watertight; prefiere extruir el boundary loop o hacer bridge manual. Si usas boolean, opera entre sólidos cerrados y valida raycast, boundary y non-manifold antes de continuar.
-- **LL-121** — Tras modificar `location`, `rotation` o `scale` por API, ejecuta `bpy.context.view_layer.update()` antes de leer `matrix_world`. Coloca el update en el helper lector y usa fixtures que varíen todos los ejes.
-- **LL-122** — Para tubos cerrados, activa `use_fill_caps`, convierte a malla y suelda con `remove_doubles(1e-5)`. Mantén el gate `require_closed`; no lo rebajes ante boundary edges.
-- **LL-126** — Llama siempre `transform_apply(location=False, rotation=<bool>, scale=<bool>)` con los tres argumentos explícitos. Crea los sources de copias en el origen mundial antes de hornear transforms.
-- **LL-127** — Llama `finalize()` inmediatamente sobre el objeto activo recién creado; no recorras nombres esperando que el helper haga lookup. Verifica el contrato real del helper y confirma nombre→bbox tras renombrar.
-- **LL-128** — Para piezas curvadas en un plano, construye un loft 2.5D con ancho en eje mundial fijo y profundidad derivada de la tangente planar. Ejecuta `remove_doubles` y `dissolve_degenerate` tras cada loft.
-- **LL-129** — En piezas huecas, dimensiona cada cutter para cruzar solo la pared objetivo, con overshoot hacia el hueco sin alcanzar la pared opuesta. Ejecuta el gate de integridad tras cada boolean.
-- **LL-132** — Mantén disjuntos los componentes de cada cutter y aplica círculos/ranuras en pasadas separadas. Haz fallar el gate si la malla queda con cero vértices y alerta si operaciones sucesivas producen firmas idénticas.
-- **LL-133** — No uses `panel_recess` sobre caps/ngons de loft; usa un boolean orientado o difiere el detalle al bake. Posiciona cutters desde path, escalas y perfil analíticos, nunca muestreando bandas de la malla resultante.
+- **LL-065** — Do not use booleans to carve open or non-watertight organic meshes; prefer extruding the boundary loop or doing manual bridge. If you use boolean, operate between closed solids and validate raycast, boundary, and non-manifold before continuing.
+- **LL-121** — After modifying `location`, `rotation`, or `scale` via API, execute `bpy.context.view_layer.update()` before reading `matrix_world`. Place the update in the reader helper and use fixtures that vary all axes.
+- **LL-122** — For closed tubes, enable `use_fill_caps`, convert to mesh, and weld with `remove_doubles(1e-5)`. Maintain the `require_closed` gate; do not lower it for boundary edges.
+- **LL-126** — Always call `transform_apply(location=False, rotation=<bool>, scale=<bool>)` with all three arguments explicit. Create copy sources at world origin before baking transforms.
+- **LL-127** — Call `finalize()` immediately on newly created active object; do not iterate names expecting helper to do lookup. Verify helper's actual contract and confirm name→bbox after renaming.
+- **LL-128** — For planar curved pieces, build a 2.5D loft with fixed world-axis width and depth derived from planar tangent. Execute `remove_doubles` and `dissolve_degenerate` after each loft.
+- **LL-129** — In hollow pieces, size each cutter to cross only the target wall, with overshoot toward hollow without reaching opposing wall. Execute integrity gate after each boolean.
+- **LL-132** — Keep components of each cutter disjoint and apply circles/slots in separate passes. Make gate fail if mesh is left with zero vertices and alert if successive operations produce identical signatures.
+- **LL-133** — Do not use `panel_recess` on loft caps/ngons; use an oriented boolean or defer detail to bake. Position cutters from analytical path, scales, and profile, never sampling bands of the resulting mesh.

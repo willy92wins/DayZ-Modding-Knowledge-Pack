@@ -1,11 +1,11 @@
-# Rollout py3d — reposición del wheel + preimagen fijada
+# py3d rollout — wheel restock + pinned preimage
 
-> Estado: la carga de parches de py3d 1.4.0 está CERRADA (2026-09-02); lo vigente
-> es la reposición del wheel vendorizado.
-> Preimagen: `live-snapshot-2026-09-02`, releída contra la raíz de skills viva.
-> Distribución: wheel vendorizado por skill; esta decisión no se modifica aquí.
+> Status: py3d 1.4.0 patch intake is CLOSED (2026-09-02); what is active
+> is restocking of vendored wheel.
+> Preimage: `live-snapshot-2026-09-02`, re-read against live skills root.
+> Distribution: vendored wheel per skill; this decision is not modified here.
 
-## Reponer el wheel (el comando)
+## Restock the wheel (the command)
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
@@ -15,49 +15,49 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -WheelOnly
 ```
 
-`-WheelOnly` no lee el manifiesto de preimagen. La corrección del wheel depende
-solo de `wheel-manifest.json` y de `tools/py3d/dist`; atarla a un hash de prosa
-hacía que cualquier edición de una skill abortase la reposición. Añádele
-`-NoWrite` para ver el plan sin escribir.
+`-WheelOnly` does not read the preimage manifest. The wheel fix depends
+only on `wheel-manifest.json` and on `tools/py3d/dist`; tying it to a prose hash
+made any edit of a skill abort the replacement. Add
+`-NoWrite` to see the plan without writing.
 
-Este directorio contiene una operación fail-closed. No hay proyecciones completas ni una ruta que copie archivos de conocimiento encima de las skills vivas. Cada cambio de texto se hace con un patch unificado, precedido por `git apply --check`; la idempotencia se reconoce con `git apply --reverse --check`.
+This directory contains a fail-closed operation. There are no full projections nor a route copying knowledge files on top of live skills. Every text change is made with a unified patch, preceded by `git apply --check`; idempotence is recognized with `git apply --reverse --check`.
 
 ## Artefactos vigentes
 
-- `apply-s2-rollout.ps1`: preflight, backup externo, aplicación de patches y copia fijada del wheel.
-- `preimage-manifest.json`: 6 rutas con SHA-256 de la preimagen viva, todas `not_applicable`. Solo detectan drift; ninguna se escribe.
-- `patches/`: los cuatro patches de py3d 1.4.0, conservados como registro. Ninguno sigue vivo (ver «Carga de parches cerrada»); el motor de parches del aplicador sí sigue vigente y cubierto por `tests/py3d_rollout/test_apply_rollout.py`.
-- `wheel-manifest.json`: identidad v2 del wheel, incluida su versión y SHA-256.
-- `patched/`: eliminado deliberadamente. Restaurarlo reabriría la ruta de reemplazo completo que causó BUG-018/BUG-019.
+- `apply-s2-rollout.ps1`: preflight, external backup, patch application and pinned wheel copy.
+- `preimage-manifest.json`: 6 paths with SHA-256 of live preimage, all `not_applicable`. Only detect drift; none are written.
+- `patches/`: the four py3d 1.4.0 patches, kept as record. None remain live (see "Closed patch intake"); applicator patch engine remains active and covered by `tests/py3d_rollout/test_apply_rollout.py`.
+- `wheel-manifest.json`: v2 identity of wheel, including its version and SHA-256.
+- `patched/`: deliberately removed. Restoring it would reopen the full replacement route that caused BUG-018/BUG-019.
 
-## Clasificación por destino
+## Classification by target
 
-| Destino | Estado | Evidencia / delta conservado |
+| Target | Status | Evidence / preserved delta |
 |---|---|---|
-| `dayz-model-pipeline/SKILL.md` | `retirado` | El parche elevaba el mínimo a 1.4.0 y el vivo ya declara `>= 1.6.0` (`SKILL.md:113,119,122`): aplicarlo sería una regresión. |
-| `dayz-model-pipeline/references/py3d-direct-generation.md` | `not_applicable` | La proyección no contiene delta nuevo de 1.4.0; reemplazarla eliminaría el winding condicional y resoluciones LOD DayZ-canónicas. |
-| `dayz-3d-viewer/SKILL.md` | `not_applicable` | No contiene API nueva de 1.4.0; sus diferencias son divergencia destructiva respecto al vivo. |
-| `dayz-p3d-inspector/SKILL.md` | `not_applicable` | No hay delta separable de 1.4.0; se preserva SP-028. |
-| `dayz-p3d-audit/SKILL.md` | `not_applicable` | No aporta 1.4.0; se preservan SP-017, SP-051 y los 13 Silent Killers. |
-| `dayz-p3d-audit/scripts/audit_p3d.py` | `not_applicable` | La proyección es un subconjunto estricto del vivo: 7 de 15 funciones; se preservan las 15, incluido `check_wheel_slot_firegeo`. |
-| `dayz-pbo-build/references/validation-scripts.md` | `not_applicable` | No contiene delta de 1.4.0; los cambios proyectados pertenecen a otro alcance. |
-| `dayz-proxy-align/SKILL.md` | `retirado` | El vivo declara `>= 1.6.0` (`SKILL.md:37,40`), ya tiene el ciclo `add / inspect / align / remove` (`SKILL.md:49`) y conserva **a propósito** el delta del parche bajo «py3d 1.4.0 lifecycle (plugin projection, historical)» (`SKILL.md:92`). No se perdió: se reetiquetó. |
-| `dayz-animation-pipeline/references/py3d-1.0.0-quirks.md` | `retirado` | Ya aplicado en el vivo: `git apply --reverse --check` sale 0. |
-| `dayz-animation-pipeline/SKILL.md` | `retirado` | Ya aplicado en el vivo (`git apply --reverse --check` sale 0) y el mínimo vivo es `>= 1.6.0` (`SKILL.md:16`). |
+| `dayz-model-pipeline/SKILL.md` | `retirado` | Patch raised minimum to 1.4.0 and live already declares `>= 1.6.0` (`SKILL.md:113,119,122`): applying it would be a regression. |
+| `dayz-model-pipeline/references/py3d-direct-generation.md` | `not_applicable` | Projection contains no new 1.4.0 delta; replacing it would remove conditional winding and DayZ-canonical LOD resolutions. |
+| `dayz-3d-viewer/SKILL.md` | `not_applicable` | Contains no new 1.4.0 API; its differences are destructive divergence from live. |
+| `dayz-p3d-inspector/SKILL.md` | `not_applicable` | No separable delta from 1.4.0; SP-028 is preserved. |
+| `dayz-p3d-audit/SKILL.md` | `not_applicable` | Does not provide 1.4.0; SP-017, SP-051 and the 13 Silent Killers are preserved. |
+| `dayz-p3d-audit/scripts/audit_p3d.py` | `not_applicable` | Projection is a strict subset of live: 7 of 15 functions; all 15 are preserved, including `check_wheel_slot_firegeo`. |
+| `dayz-pbo-build/references/validation-scripts.md` | `not_applicable` | Contains no 1.4.0 delta; projected changes belong to another scope. |
+| `dayz-proxy-align/SKILL.md` | `retirado` | Live declares `>= 1.6.0` (`SKILL.md:37,40`), already has `add / inspect / align / remove` cycle (`SKILL.md:49`) and preserves **on purpose** patch delta under "py3d 1.4.0 lifecycle (plugin projection, historical)" (`SKILL.md:92`). Not lost: relabeled. |
+| `dayz-animation-pipeline/references/py3d-1.0.0-quirks.md` | `retirado` | Already applied in live: `git apply --reverse --check` exits 0. |
+| `dayz-animation-pipeline/SKILL.md` | `retirado` | Already applied in live (`git apply --reverse --check` exits 0) and live minimum is `>= 1.6.0` (`SKILL.md:16`). |
 
-Los seis `not_applicable` siguen en el manifiesto: aunque no se escriben, su hash se comprueba para detectar drift de la preimagen. No se fabrica un patch vacío.
+The six `not_applicable` remain in manifest: although not written, their hash is checked to detect preimage drift. No empty patch is fabricated.
 
-## Carga de parches cerrada (2026-09-02)
+## Closed patch intake (2026-09-02)
 
-Los cuatro patches quedaron sin delta vivo: dos ya estaban aplicados y dos fueron superados por contenido más nuevo (1.6.0 > 1.4.0). Sus entradas salieron del manifiesto —una entrada `not_applicable` compara hash contra la prosa viva y eso rompe cualquier fixture sintético, incluido el de `verify-wheel-restock.ps1`—, y su motivo quedó escrito en la tabla de arriba. Los `.patch` siguen en `patches/` como registro.
+The four patches were left with no live delta: two were already applied and two were superseded by newer content (1.6.0 > 1.4.0). Their entries were removed from manifest — a `not_applicable` entry compares hash against live prose and that breaks any synthetic fixture, including `verify-wheel-restock.ps1` —, and their reason was recorded in table above. The `.patch` files remain in `patches/` as record.
 
-Antes de dar un patch por muerto se comprobó lo contrario de lo obvio: que la skill de destino no contuviera una corrección que lo contradijese. En `dayz-proxy-align` la comprobación devolvió señal positiva —el contenido de 1.4.0 sigue ahí, nombrado como histórico—, así que la ausencia era deliberada, no una pérdida.
+Before declaring a patch dead, the opposite of the obvious was verified: that target skill did not contain a fix contradicting it. In `dayz-proxy-align` the check returned positive signal — 1.4.0 content remains there, named as historical —, so absence was deliberate, not a loss.
 
-## Preflight y aplicación
+## Preflight and application
 
-Los dos parámetros de raíz son obligatorios. `-BackupRoot` debe quedar fuera de `-TargetSkillRoot`; se rechaza tanto una ruta igual como una contenida en el destino.
+Both root parameters are mandatory. `-BackupRoot` must remain outside `-TargetSkillRoot`; both an identical path and one contained in destination are rejected.
 
-Prueba permitida en esta fase, únicamente contra una copia temporal del snapshot:
+Test permitted in this phase, only against a temporary snapshot copy:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
@@ -67,7 +67,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -NoWrite
 ```
 
-Una ejecución de escritura usa los mismos parámetros sin `-NoWrite`, pero requiere autorización expresa del usuario y una raíz aprobada:
+A write execution uses the same parameters without `-NoWrite`, but requires explicit user authorization and an approved root:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
@@ -76,35 +76,35 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -BackupRoot <external-backup-root>
 ```
 
-Por cada destino textual, el preflight produce una de estas decisiones:
+For each textual target, preflight produces one of these decisions:
 
-- `[PLAN] patch`: hash de preimagen exacto y `git apply --check` verde.
-- `[OK] already applied`: `git apply --reverse --check` verde; no se escribe.
-- `[OK] not applicable`: hash vivo exacto y ninguna escritura prevista.
-- `[FAIL] preimage mismatch`: incluye path, SHA-256 esperado y observado; la operación completa aborta.
+- `[PLAN] patch`: exact preimage hash and green `git apply --check`.
+- `[OK] already applied`: green `git apply --reverse --check`; nothing is written.
+- `[OK] not applicable`: exact live hash and no writes planned.
+- `[FAIL] preimage mismatch`: includes path, expected and observed SHA-256; entire operation aborts.
 
-Cualquier fallo de preflight impide crear backups o modificar destinos. Antes del primer cambio, todos los archivos que se van a parchear se copian al backup externo y se releen por SHA-256. Tras ese I/O se repite el control de preimagen para cerrar la ventana de cambio concurrente.
+Any preflight failure prevents creating backups or modifying targets. Before the first change, all files to be patched are copied to the external backup and reread by SHA-256. After that I/O, the preimage check is repeated to close the concurrent change window.
 ## Wheel vendorizado
 
-El mecanismo sigue siendo una copia vendorizada en `wheels/` de las skills consumidoras. `$WheelSkillNames` es el conjunto CANDIDATO (siete); una skill se repone solo donde YA existe su directorio `wheels/`, y el aplicador imprime `[SKIP] not vendored: <skill>` donde no. El script repone, nunca decide que una skill empiece a vendorizar: a fecha de 2026-09-02 vendorizan cuatro (`dayz-3d-viewer`, `dayz-animation-pipeline`, `dayz-p3d-inspector`, `dayz-proxy-align`) y las otras tres declaran `pip install -e tools/py3d` en su propio bloque de dependencias. El aplicador endurece tres propiedades:
+The mechanism remains a vendored copy in `wheels/` across consuming skills. `$WheelSkillNames` is the CANDIDATE set (seven); a skill is restocked only where its `wheels/` directory ALREADY exists, and the applicator prints `[SKIP] not vendored: <skill>` where it does not. The script restocks, never deciding that a skill should start vendoring: as of 2026-09-02 four vendor (`dayz-3d-viewer`, `dayz-animation-pipeline`, `dayz-p3d-inspector`, `dayz-proxy-align`) and the other three declare `pip install -e tools/py3d` in their own dependency block. The applicator hardens three properties:
 
-1. los backups de wheels viven bajo `-BackupRoot`, fuera de las skills;
-2. cada copia con el nombre fijado debe coincidir con el SHA-256 de `wheel-manifest.json`, o se aborta sin sobrescribirla;
-3. ningún `py3d-*.whl` obsoleto se elimina hasta que su backup exista y su hash haya sido verificado.
+1. wheel backups reside under `-BackupRoot`, outside skills;
+2. each copy with pinned name must match `wheel-manifest.json` SHA-256, or it aborts without overwriting it;
+3. no obsolete `py3d-*.whl` is deleted until its backup exists and its hash has been verified.
 
-Si hace falta instalar o sustituir un wheel, también se exige que `../dist/<filename fijado>` exista y tenga el hash del manifiesto. No hay fallback a `pip`, venv ni una instalación centralizada.
+If installing or replacing a wheel is needed, `../dist/<pinned filename>` is also required to exist and match the manifest hash. There is no fallback to `pip`, venv, or centralized installation.
 
-### Gate de identidad
+### Identity gate
 
-`tools/py3d/dist/` contiene el wheel fijado `py3d_dayz-1.6.0-py3-none-any.whl`, y su SHA-256 coincide con `wheel-manifest.json` (verificado el 2026-09-02). La reposición, por tanto, no está bloqueada.
+`tools/py3d/dist/` contains pinned wheel `py3d_dayz-1.6.0-py3-none-any.whl`, and its SHA-256 matches `wheel-manifest.json` (verified on 2026-09-02). Restocking is therefore unblocked.
 
-No se debe ejecutar `-UpdateManifest` ni editar `wheel-manifest.json` para sortear un desajuste. Re-sellar la identidad es una decisión explícita del usuario. Si el wheel fuente falta o su hash no casa, el aplicador aborta sin sobrescribir ninguna copia vendorizada.
+Do not run `-UpdateManifest` or edit `wheel-manifest.json` to bypass a mismatch. Resealing identity is an explicit user decision. If source wheel is missing or hash does not match, applicator aborts without overwriting any vendored copy.
 
-Lo que NO se re-midió en la pasada del 2026-09-02: si `build-wheel.ps1` reproduce hoy ese hash byte a byte. Solo se comprobó el artefacto ya publicado en `dist/`.
+What was NOT remeasured in 2026-09-02 run: whether `build-wheel.ps1` reproduces that byte-for-byte hash today. Only the artifact already published in `dist/` was checked.
 
-## Comprobaciones de mantenimiento
+## Maintenance checks
 
-Desde la raíz del repositorio:
+From the repository root:
 
 ```powershell
 python -m pytest -q
@@ -112,7 +112,7 @@ python -m pytest -q tests\py3d_rollout\test_apply_rollout.py
 python -m packctl validate --root . --report .\reports\validate-sesion2.json
 ```
 
-Para inspeccionar el gate reproducible sin re-sellar:
+To inspect the reproducible gate without resealing:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
@@ -120,12 +120,12 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -Python <python-3.10-or-newer>
 ```
 
-El fallo esperado debe mostrar `expected=<sha256 fijado>` y `actual=<sha256 reproducible>`, dejar `dist/` vacío y no modificar el manifiesto.
+Expected failure must display `expected=<pinned sha256>` and `actual=<reproducible sha256>`, leave `dist/` empty, and not modify the manifest.
 
 ## Restricciones operativas
 
-- Nunca ejecutar este paquete contra una raíz real sin autorización explícita.
-- Nunca usar el snapshot como destino; siempre copiarlo a un temporal.
-- Nunca ubicar el backup dentro de la raíz de skills.
-- Un drift de preimagen o wheel es un bloqueo, no una invitación a sobrescribir.
-- `packctl` y cualquier rediseño de instalación quedan fuera de este rollout.
+- Never run this package against a live root without explicit authorization.
+- Never use the snapshot as target; always copy it to temporary location.
+- Never locate backup inside skills root.
+- Preimage or wheel drift is a blocker, not an invitation to overwrite.
+- `packctl` and any installation redesign remain outside this rollout.

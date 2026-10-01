@@ -149,7 +149,7 @@ Two separate worlds — pick the right one:
 `CollisionFlags` (FIRSTCONTACT, NEARESTCONTACT, ONLYSTATIC, ONLYDYNAMIC, ONLYWATER, ALLOBJECTS) —
 `1_core/proto/endebug.c:140-148`. Overlap callback: `CollisionOverlapCallback.OnContact(IEntity, Contact)`
 (`dayzphysics.c:115-121`). Action-cursor ground fallback uses `RayCastBullet` with
-`ROADWAY|TERRAIN|WATERLAYER` (hasta 1.29: `actiontargets.c:329-331`; desde 1.30 Exp: `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:383-384`).
+`ROADWAY|TERRAIN|WATERLAYER` (up to 1.29: `actiontargets.c:329-331`; from 1.30 Exp: `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:383-384`).
 
 ### Contacts
 
@@ -169,9 +169,9 @@ one frame" (`4_world/entities/vehicles/carscript.c:1453`): buffer contacts, proc
 proto native void EnableCollisionsWithCharacter(bool state);   // :21
 proto native void ThrowPhysically(DayZPlayer player, vector force, bool collideWithCharacters = true); // :26
 // 3_game/entities/object.c
-proto native void CreateDynamicPhysics(int interactionLayers); // hasta 1.29: :462; desde 1.30 Exp: exp/scripts/scripts/3_Game/Entities/Object.c:456  (never called by vanilla script)
-proto native void EnableDynamicCCD(bool state);                // hasta 1.29: :463; desde 1.30 Exp: :457
-proto native void SetDynamicPhysicsLifeTime(float lifeTime);   // hasta 1.29: :464; desde 1.30 Exp: :458
+proto native void CreateDynamicPhysics(int interactionLayers); // up to 1.29: :462; from 1.30 Exp: exp/scripts/scripts/3_Game/Entities/Object.c:456  (never called by vanilla script)
+proto native void EnableDynamicCCD(bool state);                // up to 1.29: :463; from 1.30 Exp: :457
+proto native void SetDynamicPhysicsLifeTime(float lifeTime);   // up to 1.29: :464; from 1.30 Exp: :458
 ```
 Lifecycle: throw (`hand_actions.c:62-88`, server+owner) · inventory dump uses
 `ThrowPhysically(null, force, false)` (`4_world/static/miscgameplayfunctions.c:1164-1220`) · admin
@@ -183,10 +183,10 @@ by naming (inference — internal assignment not script-visible).
 
 ### Player CCT (`3_game/human.c`)
 
-`PhysicsIsFalling` (hasta 1.29: :1397; desde 1.30 Exp: `exp/scripts/scripts/3_Game/human.c:1428`, comment `:1426-1427` "returns true if the ragdoll is moving greater than 1m/s"), `PhysicsGetFloorEntity` (hasta 1.29: :1400; desde 1.30 Exp: :1431), `PhysicsGetLinkedEntity` :1403,
+`PhysicsIsFalling` (up to 1.29: :1397; from 1.30 Exp: `exp/scripts/scripts/3_Game/human.c:1428`, comment `:1426-1427` "returns true if the ragdoll is moving greater than 1m/s"), `PhysicsGetFloorEntity` (up to 1.29: :1400; from 1.30 Exp: :1431), `PhysicsGetLinkedEntity` :1403,
 `PhysicsGetVelocity` :1410, `PhysicsEnableGravity` :1412, `PhysicsSetSolid` :1414-1415,
-`PhysicsSetRagdoll` (hasta 1.29: :1418 comment at `stable-1.29/scripts/scripts/3_Game/human.c:1417-1418`; desde 1.30 Exp: `:1451`, catalogued as old death-state system),
-`PhysicsSetSimpleDeath` (desde 1.30 Exp: `:1449`), `PhysicsIsRagdoll` (desde 1.30 Exp: `:1452`; also `HumanCommandUnconscious.IsRagdoll` at `:647`),
+`PhysicsSetRagdoll` (up to 1.29: :1418 comment at `stable-1.29/scripts/scripts/3_Game/human.c:1417-1418`; from 1.30 Exp: `:1451`, catalogued as old death-state system),
+`PhysicsSetSimpleDeath` (from 1.30 Exp: `:1449`), `PhysicsIsRagdoll` (from 1.30 Exp: `:1452`; also `HumanCommandUnconscious.IsRagdoll` at `:647`),
 `CheckFreeSpace` :1354, `CollisionMoveTest` :1357, `LinkToLocalSpaceOf` :1361.
 
 ### Joints
@@ -321,45 +321,45 @@ Gameplay physics cannot leave the authority; only cosmetic physics can.
 - `dayz-mod-workflow` — implementation protocol + DayZDiag/filePatching fast loop.
 - `dayz-sound-system` — impact/rolling audio driven from contact events (client-only rules).
 
-## PhysicsSetRagdoll sobre un jugador VIVO — evidencia empírica (added 2026-06-11)
+## PhysicsSetRagdoll on a LIVE player — empirical evidence (added 2026-06-11)
 
-Origen: LFSlidingFloor spike B, test in-game 2026-06-10 (script logs con telemetría completa). Actualiza la expectativa previa "sin uso público sobre vivos / probablemente no simula":
+Origin: LFSlidingFloor spike B, in-game test 2026-06-10 (script logs with complete telemetry). Updates previous expectation "no public usage on live players / probably does not simulate":
 
 (desde 1.30 Exp: ragdoll is no longer a fully opaque native blob — vanilla ships `RagdollDef` in `exp/characters_bodies/DZ/characters/bodies/human.ragdoll`. The live-player empirical notes below still apply; the new data format, Workbench editor, and `PhysicsSetSimpleDeath` are in `references/dayz-1-30-ragdoll-and-fall.md`.)
 
-- **SERVER-SIDE SÍ SIMULA**: con (1) DisableSimulation(false) antes del toggle (paridad con el flujo de muerte, dayzplayerimplement.c:726), (2) pre-wake `dBodyActive(p, ActiveState.ACTIVE)` + `dBodyDynamic(p, true)`, (3) `dBodyApplyImpulse(p, V*masa)` — dBodyGetMass devolvió masa real del player (87.5 kg) y el impulso prendió a la primera (sin necesidad de SetVelocity). El cuerpo deslizó 77.6 m a 4-6.7 m/s siguiendo el terreno (cuestas arriba incluidas — fricción efectiva bajísima).
-- **OWNER CLIENT NO**: el avatar local nunca ragdollea — sigue de pie y controlable (movimiento client-authoritative). Desync total server-owner. Ragdoll-en-vivo solo es viable end-to-end con sync custom de posición (ver LL-138).
-- El toggle `PhysicsSetRagdoll(false)` NO rubber-bandea: la entidad queda exactamente donde terminó el cuerpo (pos pre == post, verificado).
-- **PELIGRO get-up**: `StartCommand_Unconscious(0)` + `WakeUp` a los 0.5 s dejó al player server-side 40 m BAJO el terreno, con caída al vacío, uncon real y muerte. La protección vanilla anti-wake-early es de 2 s (hasta 1.29: playerbase.c:3169-3172; 1.29 real: `stable-1.29/scripts/scripts/4_World/Entities/ManBase/PlayerBase.c:3184` `m_UnconsciousTime > 2`). (desde 1.30 Exp: the 2 s guard remains at `exp/scripts/scripts/4_World/Entities/ManBase/PlayerBase.c:3420` AND vanilla additionally refuses wake-up while falling: `if (false == PhysicsIsFalling(false))` before `hcu.WakeUp()` at `:3423-3431`. Custom 0.5 s wake paths that skip this still risk burying the body.)
+- **SERVER-SIDE DOES SIMULATE**: with (1) DisableSimulation(false) before toggle (parity with death flow, dayzplayerimplement.c:726), (2) pre-wake `dBodyActive(p, ActiveState.ACTIVE)` + `dBodyDynamic(p, true)`, (3) `dBodyApplyImpulse(p, V*masa)` — dBodyGetMass returned actual player mass (87.5 kg) and impulse caught on first try (without need for SetVelocity). Body slid 77.6 m at 4-6.7 m/s following terrain (including uphills — extremely low effective friction).
+- **OWNER CLIENT DOES NOT**: local avatar never ragdolls — remains standing and controllable (client-authoritative movement). Total server-owner desync. Live-ragdoll is only viable end-to-end with custom position sync (see LL-138).
+- Toggle `PhysicsSetRagdoll(false)` does NOT rubber-band: entity stays exactly where body ended up (pos pre == post, verified).
+- **DANGER get-up**: `StartCommand_Unconscious(0)` + `WakeUp` at 0.5 s left player server-side 40 m UNDER terrain, with void fall, real uncon and death. Vanilla anti-wake-early protection is 2 s (up to 1.29: playerbase.c:3169-3172; 1.29 real: `stable-1.29/scripts/scripts/4_World/Entities/ManBase/PlayerBase.c:3184` `m_UnconsciousTime > 2`). (from 1.30 Exp: the 2 s guard remains at `exp/scripts/scripts/4_World/Entities/ManBase/PlayerBase.c:3420` AND vanilla additionally refuses wake-up while falling: `if (false == PhysicsIsFalling(false))` before `hcu.WakeUp()` at `:3423-3431`. Custom 0.5 s wake paths that skip this still risk burying the body.)
 
-## Cuerpos script sobre items vanilla — evidencia empírica BenchRE (added 2026-08-26)
+## Script bodies on vanilla items — BenchRE empirical evidence (added 2026-08-26)
 
-Corrida DayZDiag 1.29 server+cliente, mod BenchRE build 0004. Evidencia:
-`C:\Users\<you>\dayz_re_scratch\bench_results\` (CSVs + logs crudos); síntesis con las 7
-preguntas de la matriz en `C:\Users\<you>\dayz_re_scratch\physics_matrix.md` §6.
+DayZDiag 1.29 server+client run, BenchRE mod build 0004. Evidence:
+`C:\Users\<you>\dayz_re_scratch\bench_results\` (CSVs + raw logs); synthesis with 7
+matrix questions in `C:\Users\<you>\dayz_re_scratch\physics_matrix.md` §6.
 
-- **`Physics.CreateDynamic` / `CreateDynamicEx` / `CreateStaticEx` devuelven falsy sobre
-  InventoryItem vanilla** (SmallStone/WoodenStick spawneados con `CreateObjectEx`): 7/7 intentos
-  server-side. El path NATIVO sobre los mismos items funciona (`ThrowPhysically` +
-  `SetDynamicPhysicsLifeTime` + `dBodyIsDynamic` leído 2402 ticks). Los items ya poseen cuerpo
-  nativo y la familia `Create*Ex` no se adhiere a ellos — coincide con sus 0 usos gameplay en
-  vanilla. Un host viable para cuerpos script debe carecer de física propia (sin validar aún:
-  entidad custom estilo `scriptmodel.c`).
-- **`DayZPhysics.GetHitSurfaceAndLiquid` no nombra superficies de TERRENO**: `RayCastBullet`
-  sobre campo abierto devuelve hit_pos válido, pero la vía exige un Object y el terreno no lo
-  es (6/6 sondas sin nombre). Para terreno: `CGame.SurfaceGetType(x, z, out type)`
+- **`Physics.CreateDynamic` / `CreateDynamicEx` / `CreateStaticEx` return falsy on
+  vanilla InventoryItem** (SmallStone/WoodenStick spawned with `CreateObjectEx`): 7/7 attempts
+  server-side. The NATIVE path on the same items works (`ThrowPhysically` +
+  `SetDynamicPhysicsLifeTime` + `dBodyIsDynamic` read 2402 ticks). Items already possess a native
+  body and the `Create*Ex` family does not adhere to them — coincides with its 0 gameplay uses in
+  vanilla. A viable host for script bodies must lack own physics (unvalidated yet:
+  custom entity style `scriptmodel.c`).
+- **`DayZPhysics.GetHitSurfaceAndLiquid` does not name TERRAIN surfaces**: `RayCastBullet`
+  over open field returns valid hit_pos, but the path requires an Object and terrain is not
+  one (6/6 nameless probes). For terrain: `CGame.SurfaceGetType(x, z, out type)`
   (`3_game/global/game.c:1166`) / `SurfaceGetType3D` (`game.c:1168`).
-- **Cliente MP: `CreateObjectEx` sin `ECE_LOCAL` devuelve null** (n=2). Para geometría local de
-  test en cliente añadir `ECE_LOCAL` (`3_game/ce/centraleconomy.c:24`; patrón cliente:
+- **MP client: `CreateObjectEx` without `ECE_LOCAL` returns null** (n=2). For client test
+  local geometry add `ECE_LOCAL` (`3_game/ce/centraleconomy.c:24`; client pattern:
   `3_game/particles/particle.c:119`).
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from the lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa vive allí. No quites la cita: el índice detecta la promoción por ella.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so that they arrive via trigger instead
+of relying on someone remembering to look them up. Each rule cites its source `LL-NNN`;
+the full entry lives there. Do not remove the citation: the index detects promotion by it.
 
-- **LL-014** — Para cuerpos rodantes, usa damping lineal y angular muy bajos pero no nulos y ajusta el sleeping threshold. No minimices la fricción de contacto: vive en `.bisurf`; si desliza sin girar, súbela, y si vibra o no para, sube damping.
+- **LL-014** — For rolling bodies, use very low but non-zero linear and angular damping and adjust sleeping threshold. Do not minimize contact friction: lives in `.bisurf`; if it slides without rotating, raise it, and if it vibrates or does not stop, raise damping.
 
 ## DayZ 1.30 Exp (build 1.30.164014)
 

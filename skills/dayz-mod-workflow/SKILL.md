@@ -84,7 +84,7 @@ After each file, include:
 
 ### 2b-linter. Offline Enforce/layout lint
 
-Corre el **gate estructural obligatorio** (`script_validator.py`, y `ui_reconcile.py` si hay UI) — contrato completo, exit codes y limites en la seccion "Gates offline" mas abajo. Exit 1 bloquea. Es la capa OFFLINE; el comportamiento in-game lo cubre DayZ-MCP.
+Run the **mandatory structural gate** (`script_validator.py`, and `ui_reconcile.py` if UI present) — complete contract, exit codes, and limits in the "Offline gates" section below. Exit 1 blocks. It is the OFFLINE layer; in-game behavior is covered by DayZ-MCP.
 
 ### 2c. Run type-specific checklist (Section 4)
 
@@ -375,36 +375,36 @@ When something "doesn't work" after implementation, diagnose TOP-DOWN.
 - **Confidence < 90% -> ask user before applying.**
 - **After fix: re-run edge case checklist (4.8).**
 
-### Disciplina de medición antes de otra hipótesis
+### Measurement discipline before another hypothesis
 
-Después de confirmar las capas estáticas, no saltes automáticamente a otra
-lectura o a una bisección. Primero acredita qué midió el instrumento y si el
-código sospechoso pudo ejecutar antes del síntoma:
+After confirming static layers, do not automatically jump to another
+reading or to a bisection. First prove what the instrument measured and whether
+suspicious code could have executed before the symptom:
 
-1. **Acredita la pregunta y el instrumento (LL-287).** Antes de apoyar una
-   decisión en una medida, escribe “este comando contesta X, no Y” y conserva
-   tres salidas: `PASS`, `FAIL` e `INCONCLUSIVE/SETUP_FAIL`. Los barridos de
-   privacidad son case-insensitive y buscan variantes; una muestra ordenada por
-   ruta no permite estimar proporciones; un protocolo de reproducción no vale
-   hasta producir al menos un rojo con el arreglo apagado; y un error de
-   dependencias se repite en el entorno conocido-correcto antes de atribuirlo al
-   repo. Si el primer instrumento concluye “está limpio”, confirma con otro
-   instrumento independiente.
+1. **Establish the question and the instrument (LL-287).** Before basing a
+   decision on a measurement, write "this command answers X, not Y" and preserve
+   three outputs: `PASS`, `FAIL`, and `INCONCLUSIVE/SETUP_FAIL`. Privacy sweeps
+   are case-insensitive and look for variants; a sample ordered by
+   path does not allow estimating proportions; a reproduction protocol is not valid
+   until producing at least one red with the fix turned off; and a dependency
+   error is repeated in the known-good environment before attributing it to the
+   repo. If the first instrument concludes "it is clean", confirm with another
+   independent instrument.
 
-2. **Runtime mudo: sonda de recepción (LL-261).** Si el camino estático está
-   verificado de extremo a extremo y el runtime sigue callado, detén el análisis
-   por lectura y coloca una sonda mínima en la primera línea del receptor de cada
-   lado pertinente. Todo guard fail-closed registra, con rate-limit, el motivo de
-   `DROP` desde el diseño. Distingue primero “no llegó” de “llegó y fue rechazado”;
-   solo después continúa por la jerarquía.
+2. **Mute runtime: receiving probe (LL-261).** If static path is
+   verified end to end and runtime remains silent, stop analysis
+   by reading and place a minimal probe on the first line of the receiver on each
+   relevant side. Every fail-closed guard records, with rate-limit, the reason for
+   `DROP` by design. First distinguish "did not arrive" from "arrived and was rejected";
+   only then continue through the hierarchy.
 
-3. **Prueba alcanzabilidad temporal antes de bisecar (LL-304).** En una supuesta
-   regresión, demuestra que el diff ejecutó antes del síntoma. Si no hay marcador
-   previo, la correlación con el build no atribuye causalidad: instrumenta el
-   callback que observa el efecto y captura la pila completa para nombrar al
-   llamador. En cliente, emite la pila línea a línea porque el logger corta
-   mensajes largos alrededor de 255 caracteres. Solo biseca el diff si su
-   alcanzabilidad temporal está probada y la causa sigue abierta.
+3. **Prove temporal reachability before bisecting (LL-304).** In an alleged
+   regression, demonstrate that the diff executed before the symptom. If there is no prior
+   marker, correlation with the build does not attribute causality: instrument the
+   callback observing the effect and capture the full stack to name the
+   caller. On client, emit the stack line by line because the logger cuts
+   long messages around 255 characters. Only bisect the diff if its
+   temporal reachability is proven and the cause remains open.
 
 ---
 
@@ -428,27 +428,27 @@ código sospechoso pudo ejecutar antes del síntoma:
 full AddonBuilder+server cycle (R5 grouping still applies) for config.cpp, models, layouts and the
 final validation gate.
 
-**Hard stop — 2 ciclos sin convergencia**: dos ciclos in-game del MISMO tipo
-(parche→rebuild→test) sin progreso medible → PARA, no lances un 3º. Antes del 3er
-rebuild, haz (a) bisección pipeline-vs-data offline (Layer 7) o (b) cambio de estrategia
-(instrumentación Print/Shape/DiagMenu, o preguntar al usuario). "Una variable por ciclo"
-es el anti-patrón de Layer 7 trasladado al loop in-game: ilusión de progreso, O(N)
-rebuilds. Caso real (SUB_BRZ s8, `30_Sessions/2026-06-25-introspeccion.md`): "4 parches
-sin test limpio — debí parar tras 2". Endurece el "3+ rebuilds" de R5 a un tope de 2.
+**Hard stop — 2 cycles without convergence**: two in-game cycles of the SAME type
+(patch→rebuild→test) without measurable progress → STOP, do not launch a 3rd. Before the 3rd
+rebuild, do (a) offline pipeline-vs-data bisection (Layer 7) or (b) strategy change
+(Print/Shape/DiagMenu instrumentation, or ask user). "One variable per cycle"
+is the Layer 7 anti-pattern transferred to the in-game loop: illusion of progress, O(N)
+rebuilds. Real case (SUB_BRZ s8, `30_Sessions/2026-06-25-introspeccion.md`): "4 patches
+without clean test — should have stopped after 2". Hardens R5 "3+ rebuilds" to a cap of 2.
 
 
-**Cliente atascado en la carga (~148 MB) — rotar `storage_1`**: el cliente diag
-arranca, se queda en la pantalla de aviso de mods y no progresa. Su `script_*.log`
-se congela tras `Module: World`, el proceso responde, y la memoria se queda en
-**~148 MB** (un cliente que carga de verdad pasa de 2.000 MB). No es falta de
-foco ni un cuelgue del proceso. Arreglo: rotar `storage_1` de la misión
-(`...\DayZServer\mpmissions\dayzOffline.chernarusplus\storage_1` → renombrar,
-nunca borrar) y relanzar; el servidor lo regenera limpio. Verificado 2026-08-22:
-tras rotar, el mismo par arrancó entero y el jugador entró. El árbol ya acumula
-decenas de backups con ese patrón (`storage_1_stuck-loading-*`,
-`storage_1.bak_corrupt-modstorage-*`). Coste a declarar: rotar el storage borra
-el estado persistente del mundo — los vehículos spawneados desaparecen y hay
-que volver a crearlos.
+**Client stuck loading (~148 MB) — rotate `storage_1`**: diag client
+boots, stays on mod warning screen and does not progress. Its `script_*.log`
+freezes after `Module: World`, process responds, and memory stays at
+**~148 MB** (a client that really loads exceeds 2,000 MB). It is not lack of
+focus nor a process hang. Fix: rotate mission `storage_1`
+(`...\DayZServer\mpmissions\dayzOffline.chernarusplus\storage_1` → rename,
+never delete) and relaunch; server regenerates it clean. Verified 2026-08-22:
+after rotating, the same pair started completely and player joined. The tree already accumulates
+dozens of backups with that pattern (`storage_1_stuck-loading-*`,
+`storage_1.bak_corrupt-modstorage-*`). Cost to declare: rotating storage erases
+persistent world state — spawned vehicles disappear and must
+be re-created.
 
 ### Debug tooling matrix
 
@@ -478,72 +478,72 @@ que volver a crearlos.
 
 ---
 
-## Gates offline: estructurales vs de comportamiento (added 2026-06-29)
+## Offline gates: structural vs behavioral (added 2026-06-29)
 
-Un gate offline que pasa NO autoriza declarar "listo" si valida ESTRUCTURA pero el
-criterio de éxito es COMPORTAMIENTO del engine.
+An offline gate that passes does NOT authorize declaring "done" if it validates STRUCTURE but the
+success criterion is engine BEHAVIOR.
 
-- **Gate estructural** (offline, determinista): clase==filename, paths existen,
-  topología/winding/UV, sumas de selección, braces, APIs citadas (2b), skeleton/bind
-  comparado contra vanilla. Predice que el asset CARGA, no que se COMPORTA.
-- **Gate de comportamiento** (solo el motor corriendo, o Buldozer): deform bajo
-  animación, render/winding visible, masa/CoM/colisión, get-in, convención de proxy
-  aplicada, IK codo/muñeca. NO derivable offline ni por un sandbox que no sea el
-  propio engine.
+- **Structural gate** (offline, deterministic): class==filename, paths exist,
+  topology/winding/UV, selection sums, braces, cited APIs (2b), skeleton/bind
+  compared against vanilla. Predicts that asset LOADS, not that it BEHAVES.
+- **Behavioral gate** (engine running only, or Buldozer): deform under
+  animation, visible render/winding, mass/CoM/collision, get-in, applied proxy
+  convention, elbow/wrist IK. NOT derivable offline nor by a sandbox other than the
+  engine itself.
 
-### Gate estructural OBLIGATORIO antes de declarar nada listo
+### MANDATORY structural gate before declaring anything done
 
-No es una recomendación ni un "ver también": **si no lo has corrido, no está listo.**
+It is not a recommendation or a "see also": **if you have not run it, it is not done.**
 
 ```
 python tools/dayz-script-validator/scripts/script_validator.py <addon_root>
 ```
 
-Exit `0` = PASS · `1` = FAIL · `2` = WARN. **Exit 1 bloquea**: se arregla o se
-justifica por escrito en el handoff, con el rule id y el motivo. Un WARN se lee, no
-se ignora en silencio.
+Exit `0` = PASS · `1` = FAIL · `2` = WARN. **Exit 1 blocks**: fixed or
+justified in writing in the handoff, with rule id and reason. A WARN is read, not
+silently ignored.
 
-Si el mod tiene UI, el gate incluye además:
+If the mod has UI, the gate also includes:
 
 ```
 python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>
 ```
 
-que cruza `FindAnyWidget`/`FindWidget` contra los widgets reales del `.layout` y las
-claves `#STR_` contra el stringtable — dos fallos que compilan y solo aparecen al
-abrir el menú.
+which crosses `FindAnyWidget`/`FindWidget` against real widgets in `.layout` and
+`#STR_` keys against the stringtable — two flaws that compile and only appear on
+opening the menu.
 
-Cuesta bajo un segundo sobre un addon completo, así que **no hay excusa de coste**:
-corre en cada pasada, no solo al final. Caza la familia de errores que solo se
-manifiesta al compilar el módulo en el boot (`Unknown type`, redeclaración de local,
-override de método ausente, `delete`, `#ifdef` vacío, override de item en el `CfgXxx`
-equivocado) y que de otro modo se paga con un ciclo in-game de minutos.
+Costs under one second on a full addon, so **there is no cost excuse**:
+runs on every pass, not just at the end. Catches the family of errors that only
+manifests when compiling the module at boot (`Unknown type`, local redeclaration,
+missing method override, `delete`, empty `#ifdef`, item override in wrong
+`CfgXxx`) and which otherwise is paid for with a multi-minute in-game cycle.
 
-**Lo que este gate NO autoriza**, y es el punto entero de esta sección: verde aquí
-predice que el módulo COMPILA y que el asset CARGA. No dice nada del comportamiento
-del engine. El gate de comportamiento sigue siendo obligatorio aparte.
+**What this gate does NOT authorize**, and is the whole point of this section: green here
+predicts that module COMPILES and that asset LOADS. Says nothing about behavior
+of the engine. Behavioral gate remains mandatory separately.
 
-Cobertura conocida: las tablas de `scripts/shared/vanilla_reference.py` son
-deliberadamente pequeñas (el linter no parsea `P:\scripts` en runtime), así que hay
-falsos negativos por diseño y nunca falsos positivos por esa vía. Verde no es prueba
-de ausencia.
+Known coverage: tables in `scripts/shared/vanilla_reference.py` are
+deliberately small (linter does not parse `P:\scripts` at runtime), so there are
+false negatives by design and never false positives through that path. Green is not proof
+of absence.
 
-**Regla**: antes de iterar sobre una métrica offline, pregunta "¿correlaciona con el
-criterio de comportamiento, o es un proxy que el engine puede ignorar?". Proxy sin
-correlación demostrada → UN test de comportamiento ANTES de seguir puliendo el proxy;
-si no correlaciona, deja de pulirlo.
+**Rule**: before iterating on an offline metric, ask "does it correlate with the
+behavioral criterion, or is it a proxy the engine can ignore?". Proxy without
+demonstrated correlation → ONE behavioral test BEFORE continuing to polish the proxy;
+if it does not correlate, stop polishing it.
 
-**Anti-patrón (casos reales, semana 2026-06-23)**:
-- Deform de personaje: el deform-test en Blender bajó el edge-stretch 34×→6-9× en ~12
-  iteraciones offline con CERO mejora in-game — el motor skinea contra el
-  OFP2_ManSkeleton REAL del `model.cfg`, no contra el armature del FBX → gate falso
+**Anti-pattern (real cases, week of 2026-06-23)**:
+- Character deform: deform-test in Blender reduced edge-stretch 34×→6-9× in ~12
+  offline iterations with ZERO in-game improvement — engine skins against the
+  REAL OFP2_ManSkeleton from `model.cfg`, not against the FBX armature → false gate
   (`30_Sessions/2026-06-24-LFInfectedBig-s8-offline-gate-false-green.md`).
-- Proxy de vehículo: `derive_proxy_frame`=identidad dio "verde" offline 2 veces; el
-  engine aplicó otra convención → body-proxy rotado ~90°
+- Vehicle proxy: `derive_proxy_frame`=identity gave offline "green" 2 times;
+  engine applied another convention → body-proxy rotated ~90°
   (`30_Sessions/2026-06-24-MercedesAMGLF-fase2-smoke-FAIL-proxy-rotation.md`).
 
-**Cross-ref**: G3 (verificación honesta: declarar QUÉ se verificó y qué NO), Layer 7
-(bisección), R5 (no malgastar ciclos), SP-020 (gate real = tree compilable).
+**Cross-ref**: G3 (honest verification: declare WHAT was verified and what was NOT), Layer 7
+(bisection), R5 (do not waste cycles), SP-020 (real gate = compilable tree).
 
 ---
 
@@ -577,121 +577,121 @@ When session ends mid-implementation:
 
 ## Pre-implementation grill — checklist obligatoria DayZ (added 2026-05-28, LL-043)
 
-ANTES de escribir config.cpp / model.cfg / scripts de un mod DayZ, recorre esta
-checklist con el usuario. **Es opt-out, no opt-in**: el Grill Modo A genérico
-del `workflow.md` no captura los ejes propios de DayZ; saltarse esto regenera
-LL-043 (presunciones silenciosas).
+BEFORE writing config.cpp / model.cfg / scripts of a DayZ mod, go through this
+checklist with the user. **It is opt-out, not opt-in**: generic Mode A Grill
+from `workflow.md` does not capture DayZ-specific axes; skipping this regenerates
+LL-043 (silent assumptions).
 
-### Regla de presentación para usuarios no técnicos
-Por cada eje: ofrecer **opciones cerradas con default recomendado** vía
-`AskUserQuestion` (no preguntas abiertas). Si el usuario no entiende la pregunta,
-explicarla con un ejemplo vanilla concreto, NO rellenar con un default silencioso.
-Si una respuesta ramifica (lo siguiente cambia según), preguntar **una a una**
-(excepción legítima a R18, como en el Grill Modo B del workflow).
+### Presentation rule for non-technical users
+For each axis: offer **closed options with recommended default** via
+`AskUserQuestion` (not open questions). If user does not understand question,
+explain it with a concrete vanilla example, do NOT fill with silent default.
+If an answer branches (subsequent changes accordingly), ask **one by one**
+(legitimate exception to R18, as in workflow Mode B Grill).
 
 ### Ejes a cubrir (mínimo para CUALQUIER objeto colocable/usable)
 
-1. **Crafteo (si aplica)** — cantidades exactas, herramienta requerida (sí/no
-   y cuál), tiempo de animación, sonido. Default razonable: 2-6 unidades de
-   material principal, sin herramienta, 1-3 s.
-2. **Carga en manos** — peso (g), `itemSize` (slots — avisar si va a ser
-   "solo en manos" por tamaño), pose de transporte (default vs específica).
-3. **Deploy / colocación** — sonidos del holograma, superficies válidas
-   (terreno / interior / agua), orientación inicial, snap horizontal vs sigue
-   pendiente, rotación durante holograma.
-4. **Estado colocado** — **pickup sí/no y cómo** (esto es crítico y se
-   silencia muy fácilmente: aclarar que NO añadir acción de recoger ≠ que el
-   motor no la tenga por defecto; si no se quiere pickup, hay que
+1. **Crafting (if applicable)** — exact quantities, required tool (yes/no
+   and which), animation time, sound. Reasonable default: 2-6 units of
+   main material, without tool, 1-3 s.
+2. **In-hands carry** — weight (g), `itemSize` (slots — warn if going to be
+   "hands only" due to size), carry pose (default vs specific).
+3. **Deploy / placement** — hologram sounds, valid surfaces
+   (terrain / interior / water), initial orientation, horizontal snap vs follows
+   slope, rotation during hologram.
+4. **Placed state** — **pickup yes/no and how** (this is critical and is
+   very easily silenced: clarify that NOT adding take action ≠ engine
+   does not have it by default; if pickup is not wanted, one must
    `RemoveAction(ActionTakeItem)` + `RemoveAction(ActionTakeItemToHands)` +
-   `CanPutInCargo()=false` + `IsTakeable()=false`). Daño: hitpoints, fuentes
-   (balas/melee/clima), comportamiento a 0 HP (ruin/destroy), drops al
-   destruirse. `carveNavmesh`. Persistencia y tiempo de vida.
-5. **Cargo interno** — ¿guarda items dentro? Si vestible: slots de attachment
-   expuestos (subconjunto o todos).
-6. **Visual / UX** — icono de inventario (`.paa`, generar o esperar al usuario),
-   `displayName`/`descriptionShort` (idioma, tono, stringtable.xml con
+   `CanPutInCargo()=false` + `IsTakeable()=false`). Damage: hitpoints, sources
+   (bullets/melee/weather), behavior at 0 HP (ruin/destroy), drops on
+   destruction. `carveNavmesh`. Persistence and lifetime.
+5. **Internal cargo** — stores items inside? If wearable: attachment slots
+   exposed (subset or all).
+6. **Visual / UX** — inventory icon (`.paa`, generate or wait for user),
+   `displayName`/`descriptionShort` (language, tone, stringtable.xml with
    `#STR_<PREFIX>_*`).
-7. **Spawn / distribución** — solo crafteo / loot / trader / admin /
-   combinación. Compatibilidad TraderPlus / Expansion Market si aplica.
-8. **Mod paraguas (si lo es)** — política: mismo PBO para todos los objetos
-   futuros vs sub-mods. Naming convention de clases (`<PREFIX>_<Objeto>`).
-9. **Compatibilidad con mods de terceros** — Expansion / CF / Dabs /
-   TraderPlus / territorios (BBP, Expansion Territory). Preguntar qué corre el
-   server.
-10. **Fases avanzadas (si las hay)** — para personajes vestibles, vehículos,
-    crafteo complejo: enumerar los ejes propios de esa fase (slots, cargo en
-    prendas, decaimiento, límites…).
+7. **Spawn / distribution** — crafting only / loot / trader / admin /
+   combination. TraderPlus / Expansion Market compatibility if applicable.
+8. **Umbrella mod (if it is)** — policy: same PBO for all future objects
+   vs sub-mods. Class naming convention (`<PREFIX>_<Objeto>`).
+9. **Compatibility with third-party mods** — Expansion / CF / Dabs /
+   TraderPlus / territories (BBP, Expansion Territory). Ask what server
+   runs.
+10. **Advanced phases (if any)** — for wearable characters, vehicles,
+    complex crafting: enumerate axes specific to that phase (slots, cargo in
+    garments, decay, limits…).
 
 ### Anti-patrón a evitar
-"El usuario eligió X — por implicación también querrá Y / Z". NO. Cada decisión
-se confirma. Si una etiqueta de opción contiene varios features ("se coloca, tiene
-vida, se puede recoger"), tratar cada feature como confirmación INDEPENDIENTE
-antes de implementarlo (en sesión "Mannequin Fase 1" la etiqueta "deployable
-base-building" incluía "se puede recoger", el usuario tuvo que cortarlo a mano
-durante la implementación).
+"User chose X — by implication they will also want Y / Z". NO. Each decision
+is confirmed. If an option label contains multiple features ("is placed, has
+health, can be picked up"), treat each feature as INDEPENDENT confirmation
+before implementing it (in "Mannequin Phase 1" session the label "deployable
+base-building" included "can be picked up", user had to cut it by hand
+during implementation).
 
 ### Plantilla reusable
-Caso real con default + pregunta por punto, sirve de molde:
+Real case with default + question per point, serves as template:
 `<DayZ Projects>/Mannequin_dev/_grill-pendiente.md`.
 
 ### Cross-ref
-LL-043, R18 (preguntar antes de presuponer), R25 (no añadir no pedido — extender
-a "no presumir no pedido"), R26 (criterios verificables), workflow.md Grill
-Modo A.
+LL-043, R18 (ask before assuming), R25 (do not add unrequested — extend
+to "do not assume unrequested"), R26 (verifiable criteria), workflow.md Grill
+Mode A.
 
 ---
 
-## Debug hierarchy — Layer 7: Bisección de componentes (added 2026-06-02)
+## Debug hierarchy — Layer 7: Component bisection (added 2026-06-02)
 
-**Cuándo activar**: cuando los 6 niveles top-down anteriores (logs/RPT/script.log → config → ScriptRPC → engine class hierarchy → datos client/server → race conditions) no han aislado la causa y el síntoma es **binario** (PASS/FAIL, visible/invisible, action sale/no sale, CoM=0/CoM≠0).
+**When to activate**: when the 6 previous top-down levels (logs/RPT/script.log → config → ScriptRPC → engine class hierarchy → client/server data → race conditions) have not isolated the cause and symptom is **binary** (PASS/FAIL, visible/invisible, action shows/does not show, CoM=0/CoM≠0).
 
-**Procedimiento** (caso `.p3d` multi-LOD; el patrón generaliza a mods multi-módulo y pipelines multi-fase):
+**Procedure** (`.p3d` multi-LOD case; pattern generalizes to multi-module mods and multi-phase pipelines):
 
-1. **Lista de componentes separables** del sistema:
-   - `.p3d`: cada LOD (Visual, Geometry, FireGeo, ViewGeo, LandContact, Memory, Shadow).
-   - Mod: cada submódulo (clase modded, RPC, layout, animación, particle).
-   - Pipeline: cada fase (extract → assemble → bake → binarize → PBO → deploy).
+1. **List of separable components** of the system:
+   - `.p3d`: each LOD (Visual, Geometry, FireGeo, ViewGeo, LandContact, Memory, Shadow).
+   - Mod: each submodule (modded class, RPC, layout, animation, particle).
+   - Pipeline: each phase (extract → assemble → bake → binarize → PBO → deploy).
 
-2. **Construye un híbrido control + test**: mitad-A del que funciona, mitad-B del que falla. Para `.p3d`: copia el .p3d-control, sustituye sus LODs FireGeo+ViewGeo por los del .p3d-test (preservando la mitad A = Visual+Geometry+resto). Para mods: en `config.cpp`, hereda del módulo control y sobrescribe solo los miembros del módulo test sospechoso.
+2. **Build a control + test hybrid**: half-A of working one, half-B of failing one. For `.p3d`: copy .p3d-control, replace its FireGeo+ViewGeo LODs with those of .p3d-test (preserving half A = Visual+Geometry+rest). For mods: in `config.cpp`, inherit from control module and override only members of suspected test module.
 
-3. **Reproduce el síntoma** en el híbrido:
-   - Si **falla** → el bug está en la mitad B (LODs FireGeo+ViewGeo del test); recurse.
-   - Si **pasa** → el bug está en la mitad A (Visual+Geometry+resto del test); recurse.
+3. **Reproduce symptom** in hybrid:
+   - If it **fails** → bug is in half B (FireGeo+ViewGeo LODs of test); recurse.
+   - If it **passes** → bug is in half A (Visual+Geometry+rest of test); recurse.
 
-4. **Repite bisectando** hasta aislar el componente concreto. Converge en log₂(N) experimentos para N componentes (3 LODs = 2 bisecciones; 8 submódulos = 3 bisecciones).
+4. **Repeat bisecting** until isolating the concrete component. Converges in log₂(N) experiments for N components (3 LODs = 2 bisections; 8 submodules = 3 bisections).
 
-5. **Solo entonces** lees el mecanismo (R31) dentro del componente aislado y nombras la causa raíz `path:line`. La bisección aísla el componente; R31 exige leer el código para nombrar la causa, no solo "está en el componente X".
+5. **Only then** do you read mechanism (R31) within isolated component and name root cause `path:line`. Bisection isolates component; R31 requires reading code to name cause, not just "it is in component X".
 
-**Anti-patrón a evitar**: variar parámetros del componente sospechoso ("¿y si la masa es no-uniforme?", "¿y si la topología es tris?", "¿y si el material es metalplate?") antes de bisecar componentes. Cada variación es un experimento concreto que da la **ilusión de progreso**, pero si la sospecha inicial es errónea, gastas O(N) variaciones sin llegar al bug. La bisección refuta o confirma la sospecha en log₂(N) experimentos.
+**Anti-pattern to avoid**: varying parameters of suspected component ("what if mass is non-uniform?", "what if topology is tris?", "what if material is metalplate?") before bisecting components. Each variation is a concrete experiment giving the **illusion of progress**, but if initial suspicion is wrong, you spend O(N) variations without reaching the bug. Bisection refutes or confirms suspicion in log₂(N) experiments.
 
-**Caso real** (LFQuad N1.5 cerrado 2026-06-02): `.p3d` del LFQuad nacía con `CoM=(0,0,0)` en ODOL desplegado. Toda la evidencia inicial apuntaba al Geometry LOD (masa, topología, material). 5 binarizaciones de ensayo-error refutaron material/masa-distribución/topología/skeleton/writer; **2 binarizaciones de bisección** (híbrido Croco+LFQuad-Geo + LFQuad-sin-FireGeo) aislaron la causa al FireGeo LOD (un tagg `#Mass#` espurio con ceros que binarize priorizaba sobre el del Geometry). Handoff: `30_Sessions/2026-06-02-LFQuad-placement-fix-firegeo-mass-CLOSED.md`.
+**Real case** (LFQuad N1.5 closed 2026-06-02): LFQuad `.p3d` was spawned with `CoM=(0,0,0)` in deployed ODOL. All initial evidence pointed to Geometry LOD (mass, topology, material). 5 trial-and-error binarizations refuted material/mass-distribution/topology/skeleton/writer; **2 bisection binarizations** (Croco+LFQuad-Geo hybrid + LFQuad-without-FireGeo) isolated cause to FireGeo LOD (a spurious `#Mass#` tagg with zeroes that binarize prioritized over that of Geometry). Handoff: `30_Sessions/2026-06-02-LFQuad-placement-fix-firegeo-mass-CLOSED.md`.
 
-**Preventivo (no solo reactivo)**: para un PATH/PIPELINE NUEVO (primer export skinned,
-primera convención de proxy, primer crew-selection, scope de modo de fuego en un
-`CfgWeapons` nuevo) corre un CONTROL conocido-bueno por el mismo pipeline ANTES de la
-1ª iteración sobre tu asset. ¿Hay un vanilla que ya lo hace? Léelo / round-tríppealo
-primero: debinariza el `.p3d` vanilla, lee el `bin.pbo` de la config vanilla, o pasa un
-modelo vanilla por tu exporter. Si el CONTROL tampoco pasa, el bug está en el PIPELINE,
-no en tu asset. Casos de esta semana que esto atajaba: el scope de `Mode_FullAuto`
-(eclipsaba a la vanilla — visible leyendo el `bin.pbo` vanilla, no teorizando sobre
-modelo/anim; `30_Sessions/2026-06-28-A6_SR2M-bug10-fullauto-resolved.md`) y la malla
-espejada L↔R (cazada al comparar el skeleton vanilla debinarizado, tras ~8 sesiones
-iterando contra el rig FBX; `30_Sessions/2026-06-25-LFInfectedBig-mirror-fix-deform-solved.md`).
+**Preventive (not just reactive)**: for a NEW PATH/PIPELINE (first skinned export,
+first proxy convention, first crew-selection, fire mode scope in a
+new `CfgWeapons`) run a known-good CONTROL through the same pipeline BEFORE the
+1st iteration on your asset. Is there a vanilla one that already does it? Read it / round-trip it
+first: debinarize vanilla `.p3d`, read `bin.pbo` of vanilla config, or pass a
+vanilla model through your exporter. If the CONTROL fails as well, the bug is in the PIPELINE,
+not in your asset. Cases from this week that this would cut short: scope of `Mode_FullAuto`
+(eclipsed vanilla — visible by reading vanilla `bin.pbo`, not by theorizing about
+model/anim; `30_Sessions/2026-06-28-A6_SR2M-bug10-fullauto-resolved.md`) and mirrored
+L↔R mesh (caught when comparing debinarized vanilla skeleton, after ~8 sessions
+iterating against FBX rig; `30_Sessions/2026-06-25-LFInfectedBig-mirror-fix-deform-solved.md`).
 
 ### Cross-ref
-R35 (diagnóstico diferencial multi-dimensional), R35.1 (bisección antes de ensayo-error, added 2026-06-02 en `codex-briefing.md`), R31 (mecanismo `path:line` tras aislar). LL-079 (la lección durable de bisección), LL-080 (#Mass# espurio en FireGeo, el caso concreto).
+R35 (multi-dimensional differential diagnosis), R35.1 (bisection before trial-and-error, added 2026-06-02 in `codex-briefing.md`), R31 (`path:line` mechanism after isolating). LL-079 (the durable bisection lesson), LL-080 (spurious #Mass# in FireGeo, the concrete case).
 
-## (added 2026-06-01) Dev tree vs compilable tree: cite-then-verify del tree antes del valor (SP-020)
+## (added 2026-06-01) Dev tree vs compilable tree: cite-then-verify of tree before value (SP-020)
 
-Cuando un mod DayZ tiene dos árboles paralelos (`<MOD>/` compilable + `<MOD>_dev/`
-de trabajo), TODO valor de `config.cpp`/`model.cfg`/script citado como ground truth
-debe identificar el tree de origen. Antes de citar:
+When a DayZ mod has two parallel trees (`<MOD>/` compilable + `<MOD>_dev/`
+working tree), EVERY `config.cpp`/`model.cfg`/script value cited as ground truth
+must identify the source tree. Before citing:
 
-1. Confirmar qué tree es el COMPILABLE (el que el usuario buildea/firma/deploya).
-   Heurística: el que tiene `$PBOPREFIX$` con el path canónico, NO el sufijado `_dev`.
-2. Leer el config del tree compilable, no del `_dev`.
-3. Si los dos divergen, REPORTAR la divergencia como hallazgo (puede ser desync del
-   `_dev` que necesita rebase), NUNCA elegir uno como ground truth tácitamente.
+1. Confirm which tree is COMPILABLE (the one user builds/signs/deploys).
+   Heuristic: the one having `$PBOPREFIX$` with canonical path, NOT suffixed `_dev`.
+2. Read config from compilable tree, not from `_dev`.
+3. If both diverge, REPORT divergence as finding (may be desync of
+   `_dev` needing rebase), NEVER tacitly pick one as ground truth.
 
 Recidiva docs: LL-073, LL-025 (R8 extendido), handoff 2026-05-29/05-30 LFQuad.
 
@@ -754,40 +754,40 @@ Severity-inflation discipline (crash vs VM exception vs corruption vs degradatio
 
 > These OVERLAP the **`rigorous-data-audit`** skill — invoke that skill to RUN a data-critical audit (its 7-step, 8-parallel-auditor workflow); the reference here is only the severity-labelling + auditor-independence protocol note.
 
-## (added 2026-07-23) Al cambiar una constante de intervalo de scheduler, actualizar los harness de verificación con counts hardcodeados
+## (added 2026-07-23) When changing a scheduler interval constant, update verification harnesses with hardcoded counts
 
-Origen: LFPowerGrid T4 W4-F02 cambió `LFPG_VANILLA_FLUSH_S` de 30s a 5s (write-behind).
-El gate `verify_corrective` (16 checks sobre el mod) FALLÓ en `PERF_SCHEDULE_MAP` porque su
-harness `verify_scheduler.py` tenía los counts ESPERADOS hardcodeados con el valor viejo
-(`FlushVanillaIfDirty: 2` en la ventana de 60000ms = 30s; ahora `12` = 5s; y `10`→`60` en
-300000ms). El único diff era ese callback; el fix fue actualizar los 2 EXPECTED maps del
-harness, NO el mod.
+Origin: LFPowerGrid T4 W4-F02 changed `LFPG_VANILLA_FLUSH_S` from 30s to 5s (write-behind).
+The `verify_corrective` gate (16 checks on mod) FAILED on `PERF_SCHEDULE_MAP` because its
+harness `verify_scheduler.py` had EXPECTED counts hardcoded with old value
+(`FlushVanillaIfDirty: 2` in window of 60000ms = 30s; now `12` = 5s; and `10`→`60` in
+300000ms). The only diff was that callback; fix was updating the 2 EXPECTED maps of
+harness, NOT the mod.
 
-Regla: cuando un cambio de código toca una constante `*_MS` / `*_S` que alimenta un
-scheduler/timer periódico, ANTES de declarar el gate de build/verify PASS:
-1. Grep los harness de verificación (`tools/verify_*.py`, `tests/`) por counts/intervalos
-   hardcodeados de ESE callback (EXPECTED maps, snapshots congelados de la cadencia).
-2. Recalcular el count esperado = `ventana_ms / intervalo_nuevo_ms` y actualizar el harness
-   (APPEND-only o edición mínima, con comentario trazable citando el finding que lo motiva).
-3. Confirmar que SOLO ese callback difiere — los demás counts del map deben coincidir exactos.
-   Si difiere otro callback, es un cambio de cadencia NO-INTENCIONAL: investigar antes de tocar
-   el harness.
-4. Un FAIL de un gate de verify por un cambio LEGÍTIMO de intervalo NO es un fallo del código:
-   es el harness desactualizado. Actualizarlo es parte de cerrar el batch. NO enmascarar: el
-   único diff debe ser el intencional, verificado item-por-item contra el map esperado.
+Rule: when a code change touches a `*_MS` / `*_S` constant feeding a
+periodic scheduler/timer, BEFORE declaring build/verify gate PASS:
+1. Grep verification harnesses (`tools/verify_*.py`, `tests/`) for hardcoded
+   counts/intervals of THAT callback (EXPECTED maps, frozen cadence snapshots).
+2. Recalculate expected count = `window_ms / new_interval_ms` and update harness
+   (APPEND-only or minimal edit, with traceable comment citing motivating finding).
+3. Confirm that ONLY that callback differs — remaining map counts must match exact.
+   If another callback differs, it is an UNINTENDED cadence change: investigate before touching
+   harness.
+4. A verify gate FAIL due to a LEGITIMATE interval change is NOT code failure:
+   it is outdated harness. Updating it is part of closing batch. Do NOT mask: sole
+   diff must be intentional one, verified item-by-item against expected map.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` to arrive via trigger instead
+of depending on someone remembering to look them up. Each rule cites source `LL-NNN`;
+complete entry (symptom, origin, evidence) lives there. Do not remove citation: the index
+`lessons-index.md` detects promotion by looking for that reference inside skills.
 
-- **LL-013** — Aísla cambios de física, herencia y `SimulationModule` de las features, y valida cada bloque estructural por separado. No apruebes clases `modded`/`extends` hasta que pasen CfgConvert, compilación real y gate in-game.
-- **LL-061** — Antes de otro bake sobre el mismo `.p3d`/`.pbo`, cierra el gate pendiente del bake anterior o decláralo bloqueado con causa explícita. No acumules cambios que vuelvan ambiguo el siguiente veredicto.
-- **LL-147** — Para cualquier fallo de estado sincronizado, instrumenta cliente y servidor desde el primer ciclo y confirma el valor en el lado donde se observa el síntoma. Trata toda discrepancia entre lados como dato de primera clase antes de proponer el fix.
-- **LL-199** — En probes client-side, coloca primero `t`, posición y estado; deja raws y flags al final. Mantén cada payload útil por debajo de ~225 caracteres para absorber el wrapper del logger.
-- **LL-200** — Emite `t=GetTickTime()` al principio de cada línea de diagnóstico. Estima el offset server↔client con la mediana de pares RPC REQUEST/ACK, interpola una serie sobre la otra y descarta muestras con gaps excesivos.
+- **LL-013** — Isolate physics, inheritance, and `SimulationModule` changes from features, and validate each structural block separately. Do not approve `modded`/`extends` classes until they pass CfgConvert, actual compilation, and in-game gate.
+- **LL-061** — Before another bake on the same `.p3d`/`.pbo`, close the pending gate of previous bake or declare it blocked with explicit cause. Do not accumulate changes rendering the next verdict ambiguous.
+- **LL-147** — For any synced state failure, instrument client and server from first cycle and confirm value on the side where symptom is observed. Treat every discrepancy between sides as first-class data before proposing fix.
+- **LL-199** — In client-side probes, put `t`, position, and state first; leave raws and flags at end. Keep each useful payload below ~225 characters to absorb logger wrapper.
+- **LL-200** — Emit `t=GetTickTime()` at beginning of each diagnostic line. Estimate server↔client offset with median of RPC REQUEST/ACK pairs, interpolate one series over the other, and discard samples with excessive gaps.
 
 
 ## Live bug-ledger closure protocol (SP-236, added 2026-08-31)
@@ -910,14 +910,14 @@ that reaches the call. A probe behind an incompatible guard fails because of whe
 not because of what it measures.
 
 
-## Un gate sobre un RANGO puntua la duracion de la observacion (SP-387, added 2026-09-10)
+## A gate on a RANGE scores duration of observation (SP-387, added 2026-09-10)
 
-`p2p` (max menos min), el maximo, y cualquier extremo crecen de forma monotona con el numero
-de muestras. Un gate escrito sobre uno de ellos puntua, sin decirlo, **cuanto duro la
-ventana**, y una variante que simplemente acorte las celdas lo pasa sin arreglar nada.
+`p2p` (max minus min), maximum, and any extreme grow monotonically with sample
+count. A gate written on one of them scores, without stating it, **how long the
+window lasted**, and a variant that simply shortens cells passes it without fixing anything.
 
-Medido el 2026-09-10 sobre 405 celdas archivadas de LFHeli. Dentro de un solo grupo
-—celdas erguidas, un unico proceso— el `p2p` de altura por estratos de numero de muestras:
+Measured on 2026-09-10 on 405 archived LFHeli cells. Within a single group
+—upright cells, a single process— the height `p2p` by sample count strata:
 
 | muestras en reposo | p2p mediano |
 |---|---|
@@ -928,56 +928,56 @@ Medido el 2026-09-10 sobre 405 celdas archivadas de LFHeli. Dentro de un solo gr
 | [18,25) | 0,2619 m |
 | [25,+) | 0,4726 m |
 
-**El recorrido del artefacto (0,0000 -> 0,4726 m) es mayor que el efecto que se estaba
-midiendo con el.** La conclusion que dependia de el —"las celdas volcadas botan menos",
-0,0023 vs 0,2434— no sobrevive al emparejar por numero de muestras: dentro de un estrato el
-signo cambia segun el estrato y en el mejor poblado los dos grupos coinciden (0,2247 vs
-0,2619). Las volcadas tenian 7 muestras y las erguidas 21, y esa era toda la diferencia.
+**The artifact spread (0.0000 -> 0.4726 m) is greater than the effect being
+measured with it.** The conclusion relying on it —"flipped cells bounce less",
+0.0023 vs 0.2434— does not survive matching by sample count: within a stratum the
+sign flips depending on stratum and in most populated one both groups match (0.2247 vs
+0.2619). Flipped ones had 7 samples and upright ones 21, and that was whole difference.
 
-**Como se escribe el gate en su lugar:**
+**How the gate is written instead:**
 
-1. **Ventana de duracion FIJA** (p. ej. los primeros 3 s de reposo), no "toda la ventana".
-   Asi cada celda aporta la misma longitud de observacion y el rango vuelve a ser comparable.
-2. **Estadisticos que no crecen con n**: una TASA (eventos por segundo), un cuantil (p90),
-   o el RMS respecto a la mediana de la propia ventana.
-3. Si se conserva el rango, se conserva **junto a su n**, y nunca se comparan dos rangos con
-   n distinto.
+1. **FIXED duration window** (e.g. first 3 s of rest), not "entire window".
+   This way each cell contributes same observation length and range becomes comparable again.
+2. **Statistics that do not grow with n**: a RATE (events per second), a quantile (p90),
+   or RMS relative to window's own median.
+3. If range is retained, it is retained **alongside its n**, and two ranges with
+   different n are never compared.
 
-**Senal generica:** antes de comparar dos grupos con un estadistico, preguntar si ese
-estadistico es funcion del tamano muestral. Si lo es, la comparacion mide el diseno del
-muestreo. Emparentado con SP-357 (independencia de sondas): alli el problema es que dos
-instrumentos comparten origen, aqui que un estadistico comparte destino con el reloj.
+**Generic signal:** before comparing two groups with a statistic, ask whether that
+statistic is a function of sample size. If it is, the comparison measures sampling
+design. Related to SP-357 (probe independence): there problem is two
+instruments sharing origin, here a statistic sharing destination with clock.
 
-## Una tasa de defecto agregada sobre variantes MUTADAS describe el experimento (SP-388, added 2026-09-10)
+## An aggregate defect rate over MUTATED variants describes the experiment (SP-388, added 2026-09-10)
 
-Un corpus de campana de tuning contiene, por diseno, configuraciones deliberadamente
-estropeadas. Promediar el defecto sobre todo el corpus produce un numero que no describe lo
-que hace el producto, y ese numero acaba citado como si lo hiciera.
+A tuning campaign corpus contains, by design, deliberately
+broken configurations. Averaging defect across entire corpus produces a number not describing
+what product does, and that number ends up cited as if it did.
 
-Medido el 2026-09-10, misma corrida. El vuelco al aterrizar del LFHeli:
+Measured on 2026-09-10, same run. LFHeli landing rollover:
 
-| configuracion | celdas | erguida | inclinada | de lado |
+| configuration | cells | upright | tilted | on its side |
 |---|---|---|---|---|
-| **incumbente (la que se envia)** | 114 | **95,6 %** | 2,6 % | **1,8 %** |
-| candidatos mutados | 291 | 49,1 % | 21,3 % | 29,6 % |
-| **corpus entero (lo que se citaba)** | 405 | 62,2 % | 16,0 % | **21,7 %** |
+| **incumbent (the one shipped)** | 114 | **95.6 %** | 2.6 % | **1.8 %** |
+| mutated candidates | 291 | 49.1 % | 21.3 % | 29.6 % |
+| **entire corpus (what was cited)** | 405 | 62.2 % | 16.0 % | **21.7 %** |
 
-El 21,7 % era la cifra en circulacion. La configuracion enviada vuelca **1,8 %**, y
-desglosada por fecha sale 100 % erguida en seis de nueve raices de evidencia. El corpus
-media, sobre todo, cuantos candidatos malos se probaron.
+The 21.7 % was the figure in circulation. Shipped configuration rolls over **1.8 %**, and
+broken down by date comes out 100 % upright in six of nine evidence roots. The corpus
+measured, above all, how many bad candidates were tested.
 
-Y el efecto que lo genera merece quedar registrado: entre el incumbente y el peor candidato
-solo cambian **tres campos**, ninguno mas de un 13 % —`AttitudeAlphaMaxRadS2` -5,3 %,
-`GroundEffectBonus` +12,6 %, `StabSoftDeg` -4,6 %— y la tasa de vuelco pasa de 1,8 % a
-66,7 %. Los tres se movieron a la vez, asi que **no se puede atribuir a uno**: es una lista
-de sospechosos para una corrida de un campo cada vez, no una causa.
+And the generating effect deserves to be recorded: between incumbent and worst candidate
+only **three fields** change, none by more than 13 % —`AttitudeAlphaMaxRadS2` -5.3 %,
+`GroundEffectBonus` +12.6 %, `StabSoftDeg` -4.6 %— and rollover rate goes from 1.8 % to
+66.7 %. All three moved at once, so **it cannot be attributed to one**: it is a list
+of suspects for a one-field-at-a-time run, not a cause.
 
-**Como se reporta:** toda tasa de defecto lleva pegada la configuracion sobre la que se
-midio. "El X % de las celdas" sin decir cuales es una cifra sin universo (SP-149 y la regla
-de declarar el censo). Y antes de abrir un plan de rediseno por una tasa alta, comprobar
-que la tasa describe la configuracion enviada y no la cola de experimentos.
+**How it is reported:** every defect rate carries attached the configuration on which it was
+measured. "X % of cells" without stating which is a figure without a universe (SP-149 and rule
+of declaring census). And before opening a redesign plan for a high rate, verify
+that rate describes shipped configuration and not queue of experiments.
 
-**Limite que hay que decir en voz alta:** que el banco no lo reproduzca no significa que no
-pase. Estas celdas son aterrizajes guionizados, en un solo sitio y **sin tocar el ciclico**;
-lo unico que autorizan a decir es que el banco, tal como esta, no reproduce el defecto en la
-configuracion enviada.
+**Limit to state out loud:** that testbench does not reproduce it does not mean it will not
+happen. These cells are scripted landings, in a single spot and **without touching cyclic**;
+the only thing they authorize saying is testbench, as is, does not reproduce defect in
+shipped configuration.

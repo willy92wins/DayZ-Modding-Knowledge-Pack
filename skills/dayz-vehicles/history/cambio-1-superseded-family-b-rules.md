@@ -1,8 +1,8 @@
-# CAMBIO-1 — reglas superadas del carril familia B
+# CAMBIO-1 — superseded rules from family B lane
 
-> HISTORY ONLY — NO AUTHORITY. Ningún bloque de este fichero se ejecuta ni amplía el allowlist. Cada verdad vigente está en el sitio original de `dayz-vehicles/SKILL.md`; este fichero solo prueba qué texto fue sustituido.
+> HISTORY ONLY — NO AUTHORITY. No block in this file executes or extends the allowlist. Every active truth is in the original place in `dayz-vehicles/SKILL.md`; this file only proves what text was substituted.
 
-## SP-093 antes de la corrección de alcance
+## SP-093 before scope correction
 
 Origen previo a CAMBIO-1: `dayz-vehicles/SKILL.md:1038`. SHA-256 textual LF: `9FBD26B61A888E9BD494AAC1CA99385F7159463D6816832D101548CE2F784D21`.
 
@@ -23,7 +23,7 @@ were exactly the bug.
 
 <!-- END SUPERSEDED-EXACT -->
 
-## SP-097 antes de separar host, submodelo y prueba runtime
+## SP-097 before separating host, submodel, and runtime test
 
 Origen previo a CAMBIO-1: `dayz-vehicles/SKILL.md:1076`. SHA-256 textual LF: `C924E7F4F0816D625A445454F96CE47F59CC70F2696084BCA554579A64D71EFA`.
 
@@ -66,7 +66,7 @@ pointed at the Mercedes precedent from memory after it had already cost cycles i
 
 <!-- END SUPERSEDED-EXACT -->
 
-## Invariante 11 — afirmación factual errónea sobre el cluster Mercedes
+## Invariant 11 — erroneous factual claim about the Mercedes cluster
 
 Origen previo a CAMBIO-1: `dayz-vehicles/SKILL.md:515`. SHA-256 textual LF: `CF62F532235446D6E8E3C6CA760A737A786CF553D6C713328ED009C44FEA2482`.
 
@@ -95,7 +95,7 @@ Origen previo a CAMBIO-1: `dayz-vehicles/SKILL.md:568`. SHA-256 textual LF: `784
     user-gated and becomes a LAST resort, not the first.
 <!-- END SUPERSEDED-EXACT -->
 
-## Invariante 23 — atribución causal no aislada al orden de LODs
+## Invariant 23 — non-isolated causal attribution to LOD order
 
 Origen previo a CAMBIO-1: `dayz-vehicles/SKILL.md:673`. SHA-256 textual LF: `2BB6BEC0D6F105C24E6E2E160555EABC5F22072A6356363562B1F12D37D3B3C7`.
 
@@ -104,7 +104,7 @@ Origen previo a CAMBIO-1: `dayz-vehicles/SKILL.md:673`. SHA-256 textual LF: `2BB
 
 <!-- END SUPERSEDED-EXACT -->
 
-## Invariante 24 — techo portable 65535 y veredicto binario
+## Invariant 24 — portable 65535 ceiling and binary verdict
 
 Origen previo a CAMBIO-1: `dayz-vehicles/SKILL.md:675`. SHA-256 textual LF: `665718AC47F3C43380BA0E75923A944F8D138754AA03A2D2D47DDCA0FAD7DE9C`.
 
@@ -113,7 +113,7 @@ Origen previo a CAMBIO-1: `dayz-vehicles/SKILL.md:675`. SHA-256 textual LF: `665
 
 <!-- END SUPERSEDED-EXACT -->
 
-## attachments[] += como regla incondicional
+## attachments[] += as an unconditional rule
 
 Origen previo a CAMBIO-1: `dayz-vehicles/SKILL.md:1299`. SHA-256 textual LF: `535A03C3BEE0E5F18C2F04E1C25E02831EB39A93D35F09C62EE0DAE8525954A4`.
 
@@ -145,8 +145,8 @@ cycle by re-reading the base class the airframe actually inherits from.
 
 <!-- END SUPERSEDED-EXACT -->
 
-## Routing e índice retirados, no archivados como contenido
+## Routing and index removed, not archived as content
 
-- Bloque CAMBIO-0 de routing retirado: SHA-256 textual LF `040647625513EEF23726CB36394A0820566D890DF95FB36DE93508EE647D35C7`.
-- QUICK TRIAGE retirado: SHA-256 textual LF `97DE93E460BC02CB969895DEB17B4FBCF49BB7C36D90229C031FF36A2FEE9972`.
-- Se registran solo los hashes: conservar sus tablas aquí crearía un segundo router/índice y violaría E6.
+- Routing CAMBIO-0 block removed: LF textual SHA-256 `040647625513EEF23726CB36394A0820566D890DF95FB36DE93508EE647D35C7`.
+- QUICK TRIAGE removed: LF textual SHA-256 `97DE93E460BC02CB969895DEB17B4FBCF49BB7C36D90229C031FF36A2FEE9972`.
+- Only hashes are recorded: keeping their tables here would create a second router/index and violate E6.

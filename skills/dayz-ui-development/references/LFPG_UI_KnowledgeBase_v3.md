@@ -1,196 +1,196 @@
-# LFPG UI — Base de Conocimiento Definitiva v3
+# LFPG UI — Definitive Knowledge Base v3
 
-**Fecha:** 2026-03-23
-**Fuentes:** enwidgets.c (engine protos), Dabs Framework source, Bohemia wiki, LFPG producción.
-**Aplicación:** Sorter floating window, LF-COM Phone, PC Terminal, cualquier UI futura.
-
----
-
-## RESUMEN DE CAMBIOS vs v1 (FactMining)
-
-- 34 hechos verificados → **83 hechos verificados**
-- 13 asunciones → **2 pendientes** (ambas visuales)
-- 40+ tests propuestos → **2 tests runtime** (E7 color, E12 multi-res)
-- 6 técnicas custom a construir → **0** (Dabs ya tiene WidgetAnimator, LinearColor)
-- **V20 REVERTIDO**: `map<Widget, T>` SÍ funciona (Dabs lo usa en producción)
-- **V7 ACLARADO**: NotifyPropertyChanged NO corrompe refs — el bug era FindAnyWidget
-- **A1 DESCARTADO**: Override methods contiguos NO es requisito
+**Date:** 2026-03-23
+**Sources:** enwidgets.c (engine protos), Dabs Framework source, Bohemia wiki, LFPG production.
+**Application:** Sorter floating window, LF-COM Phone, PC Terminal, any future UI.
 
 ---
 
-## PARTE 1: HECHOS VERIFICADOS POR FUENTE
+## SUMMARY OF CHANGES vs v1 (FactMining)
 
-### Desde enwidgets.c (engine protos — 25 hechos)
+- 34 verified facts → **83 verified facts**
+- 13 assumptions → **2 pending** (both visual)
+- 40+ proposed tests → **2 runtime tests** (E7 color, E12 multi-res)
+- 6 custom techniques to build → **0** (Dabs already has WidgetAnimator, LinearColor)
+- **V20 REVERTED**: `map<Widget, T>` DOES work (Dabs uses it in production)
+- **V7 CLARIFIED**: NotifyPropertyChanged does NOT corrupt refs — the bug was FindAnyWidget
+- **A1 DISCARDED**: Contiguous override methods is NOT a requirement
 
-| # | Hecho | Evidencia |
+---
+
+## PART 1: FACTS VERIFIED BY SOURCE
+
+### From enwidgets.c (engine protos — 25 facts)
+
+| # | Fact | Evidence |
 |---|---|---|
-| P1 | Widget.Show(bool show, bool immedUpdate = true) — tiene parámetro immedUpdate | enwidgets.c:125 |
-| P2 | Widget.SetFlags AÑADE flags, ClearFlags los QUITA | enwidgets.c:128,131 |
-| P3 | Widget.Unlink() destruye widget Y TODOS sus hijos | enwidgets.c:173 comment |
-| P4 | Widget.IsVisibleHierarchy() chequea visibilidad de toda la cadena de padres | enwidgets.c:139 |
-| P5 | Widget.SetLV(float) controla luminancia global de widgets [-15, 0], default 0 | enwidgets.c:116 |
-| P6 | Widget.SetTextLV(float) controla luminancia global del texto [-15, 0] | enwidgets.c:118 |
-| P7 | ScrollWidget tiene API completa: GetVScrollPos, VScrollToPos, VScrollToPos01, VScrollToWidget(child), GetContentHeight, IsScrollbarVisible | enwidgets.c:481-502 |
-| P8 | RichTextWidget soporta: GetContentHeight, SetContentOffset, ElideText, GetNumLines, SetLinesVisibility, GetLineWidth | enwidgets.c:224-234 |
-| P9 | MultilineEditBoxWidget tiene: GetLinesCount, GetCarriageLine, GetCarriagePos, SetLine, GetLine | enwidgets.c:313-321 |
-| P10 | ImageWidget tiene sistema de alpha mask: LoadMaskTexture, SetMaskProgress, SetMaskTransitionWidth | enwidgets.c:282-310 |
-| P11 | SpacerWidget tiene SetContentAlignmentH/V con WA_LEFT/RIGHT/CENTER/TOP/BOTTOM | enwidgets.c:465-471 |
-| P12 | TextWidget tiene SetBold, SetItalic, SetShadow, SetOutline, GetTextSize, SetTextExactSize | enwidgets.c:189-217 |
-| P13 | CanvasWidget tiene DrawLine(x1,y1,x2,y2,width,color) y Clear() | enwidgets.c:341-345 |
-| P14 | VideoWidget completo: Load, Play, Pause, Stop, SetTime, GetTime, GetTotalTime, SetCallback | enwidgets.c:542-626 |
-| P15 | SetFocus(Widget) y GetFocus() son funciones globales | enwidgets.c:692,696 |
-| P16 | GetWidgetUnderCursor() función global | enwidgets.c:184 |
-| P17 | SetModal(Widget) existe | enwidgets.c:694 |
-| P18 | SetActiveWindow(Widget, bool resetFocus) existe | enwidgets.c:689 |
-| P19 | WidgetFlags tiene DRAGGABLE flag nativo | enwidgets.c:84 |
-| P20 | WidgetFlags.CLIPCHILDREN existe | enwidgets.c:81 |
-| P21 | OnEvent(EventType, Widget, int, int) existe en ScriptedWidgetEventHandler | enwidgets.c:679 |
-| P22 | EditBoxWidget.GetText() retorna string (no out param) | enwidgets.c:349 |
-| P23 | SliderWidget tiene SetMinMax, GetStep, SetStep | enwidgets.c:358-367 |
-| P24 | ButtonWidget tiene SetTextHorizontalAlignment, SetTextVerticalAlignment | enwidgets.c:395-399 |
-| P25 | PasswordEditBoxWidget.SetHideText(bool) existe | enwidgets.c:355 |
+| P1 | Widget.Show(bool show, bool immedUpdate = true) — has immedUpdate parameter | enwidgets.c:125 |
+| P2 | Widget.SetFlags ADDS flags, ClearFlags REMOVES them | enwidgets.c:128,131 |
+| P3 | Widget.Unlink() destroys widget AND ALL its children | enwidgets.c:173 comment |
+| P4 | Widget.IsVisibleHierarchy() checks visibility of the entire parent chain | enwidgets.c:139 |
+| P5 | Widget.SetLV(float) controls global widget luminance [-15, 0], default 0 | enwidgets.c:116 |
+| P6 | Widget.SetTextLV(float) controls global text luminance [-15, 0] | enwidgets.c:118 |
+| P7 | ScrollWidget has complete API: GetVScrollPos, VScrollToPos, VScrollToPos01, VScrollToWidget(child), GetContentHeight, IsScrollbarVisible | enwidgets.c:481-502 |
+| P8 | RichTextWidget supports: GetContentHeight, SetContentOffset, ElideText, GetNumLines, SetLinesVisibility, GetLineWidth | enwidgets.c:224-234 |
+| P9 | MultilineEditBoxWidget has: GetLinesCount, GetCarriageLine, GetCarriagePos, SetLine, GetLine | enwidgets.c:313-321 |
+| P10 | ImageWidget has alpha mask system: LoadMaskTexture, SetMaskProgress, SetMaskTransitionWidth | enwidgets.c:282-310 |
+| P11 | SpacerWidget has SetContentAlignmentH/V with WA_LEFT/RIGHT/CENTER/TOP/BOTTOM | enwidgets.c:465-471 |
+| P12 | TextWidget has SetBold, SetItalic, SetShadow, SetOutline, GetTextSize, SetTextExactSize | enwidgets.c:189-217 |
+| P13 | CanvasWidget has DrawLine(x1,y1,x2,y2,width,color) and Clear() | enwidgets.c:341-345 |
+| P14 | VideoWidget complete: Load, Play, Pause, Stop, SetTime, GetTime, GetTotalTime, SetCallback | enwidgets.c:542-626 |
+| P15 | SetFocus(Widget) and GetFocus() are global functions | enwidgets.c:692,696 |
+| P16 | GetWidgetUnderCursor() global function | enwidgets.c:184 |
+| P17 | SetModal(Widget) exists | enwidgets.c:694 |
+| P18 | SetActiveWindow(Widget, bool resetFocus) exists | enwidgets.c:689 |
+| P19 | WidgetFlags has native DRAGGABLE flag | enwidgets.c:84 |
+| P20 | WidgetFlags.CLIPCHILDREN exists | enwidgets.c:81 |
+| P21 | OnEvent(EventType, Widget, int, int) exists in ScriptedWidgetEventHandler | enwidgets.c:679 |
+| P22 | EditBoxWidget.GetText() returns string (no out param) | enwidgets.c:349 |
+| P23 | SliderWidget has SetMinMax, GetStep, SetStep | enwidgets.c:358-367 |
+| P24 | ButtonWidget has SetTextHorizontalAlignment, SetTextVerticalAlignment | enwidgets.c:395-399 |
+| P25 | PasswordEditBoxWidget.SetHideText(bool) exists | enwidgets.c:355 |
 
-### Desde Dabs Framework source (28 hechos)
+### From Dabs Framework source (28 facts)
 
-| # | Hecho | Archivo |
+| # | Fact | File |
 |---|---|---|
-| D1 | NotifyPropertyChanged("X") solo toca bindings con Binding_Name=="X" | ViewController.c:106-112 |
-| D2 | NotifyPropertyChanged("") actualiza TODOS (expensive) | ViewController.c:91-103 |
-| D3 | NotifyPropertyChanged con notify_controller=false evita PropertyChanged callback | ViewController.c:84,114 |
-| D4 | LoadWidgetsAsVariables usa FindAnyWidget UNA vez en constructor | ScriptView.c:238-266 |
-| D5 | ViewController.OnWidgetScriptInit llama SetHandler automáticamente | ViewController.c:63 |
-| D6 | Relay_Command: 1) variable RelayCommand, 2) typename, 3) g_Script.CallFunction | ViewBinding.c:206-231 |
-| D7 | ViewController.OnClick llama InvokeCommand Y super → double fire si override + super | ViewController.c:316-335 |
-| D8 | CheckBox usa OnChange (no OnClick) para InvokeCommand | ViewController.c:337-357 |
-| D9 | ObservableCollection.Clear() hace m_Data.Clear() | ObservableCollection.c:138-142 |
-| D10 | SpacerBaseWidgetController.Clear() itera GetChildren/GetSibling + RemoveChild | SpacerBaseWidgetController.c:88-95 |
-| D11 | ViewBinding es NOT reactivo — necesita NotifyPropertyChanged explícito | ViewBinding.c (no auto-sync) |
-| D12 | Two_Way_Binding requiere CanTwoWayBind()=true en WidgetController | ViewBinding.c:112 |
-| D13 | EditBox, Button, CheckBox, Slider, MultilineEditBox, SpacerBase soportan Two_Way | WidgetController/*.c |
-| D14 | Sub-property binding: dot notation "m_Obj.value" funciona | PropertyInfo.GetSubScope, SampleMVC.c:185 |
-| D15 | map<Widget, ViewBinding> usado en producción (ViewBindingHashMap) | Types.c:24, ViewController.c:319 |
+| D1 | NotifyPropertyChanged("X") only touches bindings with Binding_Name=="X" | ViewController.c:106-112 |
+| D2 | NotifyPropertyChanged("") updates ALL (expensive) | ViewController.c:91-103 |
+| D3 | NotifyPropertyChanged with notify_controller=false avoids PropertyChanged callback | ViewController.c:84,114 |
+| D4 | LoadWidgetsAsVariables uses FindAnyWidget ONCE in constructor | ScriptView.c:238-266 |
+| D5 | ViewController.OnWidgetScriptInit calls SetHandler automatically | ViewController.c:63 |
+| D6 | Relay_Command: 1) RelayCommand variable, 2) typename, 3) g_Script.CallFunction | ViewBinding.c:206-231 |
+| D7 | ViewController.OnClick calls InvokeCommand AND super → double fire if override + super | ViewController.c:316-335 |
+| D8 | CheckBox uses OnChange (not OnClick) for InvokeCommand | ViewController.c:337-357 |
+| D9 | ObservableCollection.Clear() does m_Data.Clear() | ObservableCollection.c:138-142 |
+| D10 | SpacerBaseWidgetController.Clear() iterates GetChildren/GetSibling + RemoveChild | SpacerBaseWidgetController.c:88-95 |
+| D11 | ViewBinding is NOT reactive — requires explicit NotifyPropertyChanged | ViewBinding.c (no auto-sync) |
+| D12 | Two_Way_Binding requires CanTwoWayBind()=true on WidgetController | ViewBinding.c:112 |
+| D13 | EditBox, Button, CheckBox, Slider, MultilineEditBox, SpacerBase support Two_Way | WidgetController/*.c |
+| D14 | Sub-property binding: dot notation "m_Obj.value" works | PropertyInfo.GetSubScope, SampleMVC.c:185 |
+| D15 | map<Widget, ViewBinding> used in production (ViewBindingHashMap) | Types.c:24, ViewController.c:319 |
 | D16 | ScriptView constructor: CreateWidget → LoadWidgetsAsVariables → Controller | ScriptView.c:46-97 |
-| D17 | GetLayoutRoot() válido inmediatamente post-constructor | TooltipView.c:48-51 |
-| D18 | GetScreenSize() válido inmediatamente post-constructor | TooltipView.c:51 |
-| D19 | WidgetAnimator existe con 30 easings y propiedades POS/SIZE/ROT/COLOR/TEXT | WidgetAnimator.c, WidgetAnimationTimer.c |
-| D20 | WidgetAnimator usado en producción: AnimateColor(panel, value, 10) | OptionSelectorColorViewController.c:38 |
-| D21 | LinearColor clase con 140+ named colors, HSV, Lerp, BlendModes | Color.c |
-| D22 | ScriptViewMenu maneja ChangeGameFocus, cursor, menú hierarchy automáticamente | ScriptViewMenu.c |
-| D23 | TooltipView demuestra GetScreenPos, GetScreenSize, SetScreenPos, GetTextSize, GetMousePos | Tooltip.c:34-128 |
-| D24 | ButtonWidget.SetColor() funciona sin LoadImageFile | SampleMVC.c:153 |
-| D25 | UseUpdateLoop() retorna true por defecto; override false para desactivar | ScriptView.c:293-296 |
+| D17 | GetLayoutRoot() valid immediately post-constructor | TooltipView.c:48-51 |
+| D18 | GetScreenSize() valid immediately post-constructor | TooltipView.c:51 |
+| D19 | WidgetAnimator exists with 30 easings and properties POS/SIZE/ROT/COLOR/TEXT | WidgetAnimator.c, WidgetAnimationTimer.c |
+| D20 | WidgetAnimator used in production: AnimateColor(panel, value, 10) | OptionSelectorColorViewController.c:38 |
+| D21 | LinearColor class with 140+ named colors, HSV, Lerp, BlendModes | Color.c |
+| D22 | ScriptViewMenu handles ChangeGameFocus, cursor, menu hierarchy automatically | ScriptViewMenu.c |
+| D23 | TooltipView demonstrates GetScreenPos, GetScreenSize, SetScreenPos, GetTextSize, GetMousePos | Tooltip.c:34-128 |
+| D24 | ButtonWidget.SetColor() works without LoadImageFile | SampleMVC.c:153 |
+| D25 | UseUpdateLoop() returns true by default; override false to disable | ScriptView.c:293-296 |
 | D26 | ScriptView destructor: Unlink layout, delete controller, remove from All | ScriptView.c:99-124 |
-| D27 | GetFocus() == EditBox funciona para saber qué widget tiene focus | OptionSelectorSliderView.c:41 |
-| D28 | ScrollWidget+WrapSpacer+ObservableCollection funciona en producción | options_tab.layout |
+| D27 | GetFocus() == EditBox works to know which widget has focus | OptionSelectorSliderView.c:41 |
+| D28 | ScrollWidget+WrapSpacer+ObservableCollection works in production | options_tab.layout |
 
-### Desde Bohemia wiki / web (5 hechos)
+### From Bohemia wiki / web (5 facts)
 
-| # | Hecho | Fuente |
+| # | Fact | Source |
 |---|---|---|
 | W1 | RichTextWidget tags: `<b>`, `<i>`, `<color rgba/hex/name>`, `<image set name scale>`, `<outline>`, `<shadow>`, `<font>` | Arma Reforger wiki |
-| W2 | Tags no pueden solaparse — parser necesita jerarquía limpia | Arma Reforger wiki |
-| W3 | Wrap + re-layout es expensive con textos largos | Arma Reforger wiki |
-| W4 | Bold/italic requieren SDF fonts | Arma Reforger wiki |
-| W5 | `<image set="..." name="..." scale="1" />` — scale default 1.0 = line height | Arma Reforger wiki |
+| W2 | Tags cannot overlap — parser needs clean hierarchy | Arma Reforger wiki |
+| W3 | Wrap + re-layout is expensive with long texts | Arma Reforger wiki |
+| W4 | Bold/italic require SDF fonts | Arma Reforger wiki |
+| W5 | `<image set="..." name="..." scale="1" />` — default scale 1.0 = line height | Arma Reforger wiki |
 
-### Desde producción LFPG (34 hechos — V1-V34 del FactMining v1, sin cambios)
+### From LFPG production (34 facts — V1-V34 from FactMining v1, unchanged)
 
-Todos los V1-V34 se mantienen excepto:
-- **V7 ACLARADO**: La corruption era por FindAnyWidget+ButtonWidget, NO por NotifyPropertyChanged
-- **V20 REVERTIDO**: `map<Widget, T>` SÍ funciona. Dabs lo usa. El crash original probablemente fue otra cosa
+All V1-V34 are retained except:
+- **V7 CLARIFIED**: The corruption was due to FindAnyWidget+ButtonWidget, NOT NotifyPropertyChanged
+- **V20 REVERTED**: `map<Widget, T>` DOES work. Dabs uses it. The original crash was probably something else
 
 ---
 
 ## PARTE 2: ASUNCIONES RESUELTAS
 
-| # | Claim original | Veredicto final | Evidencia |
+| # | Original claim | Final verdict | Evidence |
 |---|---|---|---|
-| A1 | Override methods contiguos obligatorio | **FALSO** — sorter no cumple y funciona | Producción |
-| A2 | SetHandler(this) obligatorio | **TRUE vanilla, INNECESARIO Dabs** | ViewController.c:63 |
-| A3 | GetScreenSize retorna 0 en constructor | **FALSO** — Dabs TooltipView lo usa post-constructor | TooltipView.c:51 |
-| A4 | Widget.Unlink() destruye widget | **CONFIRMADO** — enwidgets.c comment + ScriptView destructor | enwidgets.c:173 |
-| A5 | GetGame().IsServer() true en cliente durante carga | No UI-relevant | — |
-| A6 | DayZ colores 30-50% más oscuros | **RETRACTADO 2026-08-22** — no es el motor por defecto, es el `HUD_BRIGHTNESS` del jugador, que vanilla aplica con esas mismas dos llamadas. `Widget.SetLV(0)` desde un mod le pisa el ajuste. Saturados apenas afectados, grises/pasteles muy oscurecidos: eso sigue siendo cierto. Ver §6. | `enwidgets.c:114-117` + `dayzgame.c:3778-3787` |
-| A7 | UIScaler ComputeScale | **PENDIENTE E12** — test visual multi-resolución | — |
-| A8 | SoundSets inválidos | **CONFIRMADO** — comentados como TODO | Producción |
-| A9 | UpdateInventoryMenu | No UI-relevant | — |
-| A10 | ref solo en member fields | Conservador pero seguro | Dabs usa ref+autoptr |
-| A11-A13 | DPI/resolución | **PENDIENTE E12** | — |
+| A1 | Contiguous override methods mandatory | **FALSE** — sorter does not comply and works | Production |
+| A2 | SetHandler(this) mandatory | **TRUE vanilla, UNNECESSARY Dabs** | ViewController.c:63 |
+| A3 | GetScreenSize returns 0 in constructor | **FALSE** — Dabs TooltipView uses it post-constructor | TooltipView.c:51 |
+| A4 | Widget.Unlink() destroys widget | **CONFIRMED** — enwidgets.c comment + ScriptView destructor | enwidgets.c:173 |
+| A5 | GetGame().IsServer() true on client during load | Not UI-relevant | — |
+| A6 | DayZ colors 30-50% darker | **RETRACTED 2026-08-22** — not engine default, it is the player's `HUD_BRIGHTNESS`, which vanilla applies with those same two calls. `Widget.SetLV(0)` from a mod overrides the setting. Saturated barely affected, grays/pastels very darkened: that remains true. See §6. | `enwidgets.c:114-117` + `dayzgame.c:3778-3787` |
+| A7 | UIScaler ComputeScale | **PENDING E12** — multi-resolution visual test | — |
+| A8 | Invalid SoundSets | **CONFIRMED** — commented as TODO | Production |
+| A9 | UpdateInventoryMenu | Not UI-relevant | — |
+| A10 | ref only in member fields | Conservative but safe | Dabs uses ref+autoptr |
+| A11-A13 | DPI/resolution | **PENDING E12** | — |
 
 ---
 
-## PARTE 3: DESCUBRIMIENTOS CLAVE DE ESTA SESIÓN
+## PART 3: KEY FINDINGS FROM THIS SESSION
 
-### 1. WidgetAnimator elimina necesidad de Tween custom
-Dabs tiene animación completa: position, size, rotation, color, alpha, text size.
-30 curvas de easing. Loop. Color con blend modes. Usado en producción.
+### 1. WidgetAnimator eliminates need for custom Tween
+Dabs has complete animation: position, size, rotation, color, alpha, text size.
+30 easing curves. Loop. Color with blend modes. Used in production.
 
-### 2. LinearColor proporciona sistema de color completo
+### 2. LinearColor provides complete color system
 140+ named colors, HSV, Lerp, BlendModes, luminance. Base para Theme system.
 
-### 3. ScriptViewMenu como alternativa para input management
+### 3. ScriptViewMenu as an alternative for input management
 Auto-maneja ChangeGameFocus, cursor, menu hierarchy. Trade-off: usa UIManager.
 
 ### 4. map<Widget, T> FUNCIONA (V20 revertido)
-Dabs `ViewBindingHashMap = map<Widget, ViewBinding>` usado en toda la arquitectura MVC.
-Cientos de mods lo usan. Abre la puerta al Widget Factory con map<string, ImageWidget>.
+Dabs `ViewBindingHashMap = map<Widget, ViewBinding>` used throughout the MVC architecture.
+Hundreds of mods use it. Opens the door to the Widget Factory with map<string, ImageWidget>.
 
-### 5. NotifyPropertyChanged es SEGURO (V7 aclarado)
-Solo toca bindings del nombre específico. No escanea ni sobreescribe otros campos.
-El bug del sorter era FindAnyWidget devolviendo refs incorrectas dentro de ButtonWidget.
+### 5. NotifyPropertyChanged is SAFE (V7 clarified)
+Only touches bindings for the specific name. Does not scan or overwrite other fields.
+The sorter bug was FindAnyWidget returning incorrect refs inside ButtonWidget.
 
-### 6. Widget.SetLV(0) — RETRACTADO 2026-08-22: NO lo llames desde un mod
-> **Retractación.** La medida de abajo es correcta; la receta que se dedujo de ella, no.
-> `SetLV`/`SetTextLV` son `proto static` y globales (`enwidgets.c:114-117`), y vanilla las usa
-> para aplicar el brillo que ha elegido el jugador: `SetHudBrightness()` es literalmente esas
-> dos llamadas (`dayzgame.c:3778-3782`), alimentada desde
-> `EDayZProfilesOptions.HUD_BRIGHTNESS` (`:3784-3787`) en `OnInitialize()` (`:2075`).
-> Llamarlas en el init de un mod **pisa la preferencia del usuario** en todo el HUD, también
-> el de vanilla. Y lo que midió el test no era una constante del motor: era el
-> `HUD_BRIGHTNESS` de esa máquina. El HUD de LFHeli retiró ambas llamadas y los gates de UI
-> dieron el mismo resultado.
+### 6. Widget.SetLV(0) — RETRACTED 2026-08-22: DO NOT call it from a mod
+> **Retraction.** The measurement below is correct; the recipe deduced from it, is not.
+> `SetLV`/`SetTextLV` are `proto static` and global (`enwidgets.c:114-117`), and vanilla uses them
+> to apply the brightness chosen by the player: `SetHudBrightness()` is literally those
+> two calls (`dayzgame.c:3778-3782`), fed from
+> `EDayZProfilesOptions.HUD_BRIGHTNESS` (`:3784-3787`) in `OnInitialize()` (`:2075`).
+> Calling them in a mod's init **overrides the user's preference** across the entire HUD, including
+> vanilla. And what the test measured was not an engine constant: it was the
+> `HUD_BRIGHTNESS` of that machine. The LFHeli HUD removed both calls and the UI gates
+> gave the same result.
 
-Testeado in-engine 2026-03-24. Con el brillo de HUD de aquella máquina, los colores
-saturados puros (rojo, verde, azul) apenas se veían afectados, y los grises y pasteles
-(blanco, gris 50%, emerald, red400, blue400) salían significativamente más oscuros.
-Eso sigue siendo cierto — y es el ajuste del jugador haciendo su trabajo.
+Tested in-engine 2026-03-24. With the HUD brightness of that machine, pure
+saturated colors (red, green, blue) were barely affected, and grays and pastels
+(white, 50% gray, emerald, red400, blue400) came out significantly darker.
+That remains true — and it is the player's setting doing its job.
 
 ### 7. ScrollWidget.VScrollToWidget(child) existe
-Auto-scroll a un hijo específico. Perfecto para SMS del Phone (scroll to latest).
+Auto-scroll to a specific child. Perfect for Phone SMS (scroll to latest).
 
-### 8. ImageWidget tiene alpha mask system
-LoadMaskTexture + SetMaskProgress + SetMaskTransitionWidth = transiciones tipo "reveal"
-con gradiente. Gratis para animaciones de UI sin código extra.
+### 8. ImageWidget has alpha mask system
+LoadMaskTexture + SetMaskProgress + SetMaskTransitionWidth = "reveal"-type transitions
+with gradient. Free for UI animations without extra code.
 
-### 9. MultilineEditBoxWidget tiene posición del cursor
-GetCarriageLine() + GetCarriagePos() — clave para el PC Terminal.
+### 9. MultilineEditBoxWidget has cursor position
+GetCarriageLine() + GetCarriagePos() — key for PC Terminal.
 
-### 10. Función-como-comando simplifica Relay_Command
-`Relay_Command "OnSaveExecute"` + `bool OnSaveExecute(ButtonCommandArgs args)` en el
-controller. Sin necesidad de crear clases RelayCommand separadas.
+### 10. Function-as-command simplifies Relay_Command
+`Relay_Command "OnSaveExecute"` + `bool OnSaveExecute(ButtonCommandArgs args)` in the
+controller. Without needing to create separate RelayCommand classes.
 
 ---
 
-## PARTE 4: TESTS PENDIENTES DE RUNTIME
+## PART 4: PENDING RUNTIME TESTS
 
 Solo 1 pendiente (E7 resuelto 2026-03-24):
 
-| # | Test | Procedimiento | Para qué |
+| # | Test | Procedure | What for |
 |---|---|---|---|
-| **E7** | ~~Factor de oscurecimiento + SetLV~~ | **RESUELTO** — SetLV(0) normaliza colores | ~~Theme system~~ |
-| **E12** | Multi-resolución | Abrir panel a 720p/1080p/1440p. Screenshots. | Multi-res |
+| **E7** | ~~Darkening factor + SetLV~~ | **RESOLVED** — SetLV(0) normalizes colors | ~~Theme system~~ |
+| **E12** | Multi-resolution | Open panel at 720p/1080p/1440p. Screenshots. | Multi-res |
 
-Mini-mod `LF_ColorTest` preparado para E7. E12 se hace abriendo el sorter existente.
+Mini-mod `LF_ColorTest` prepared for E7. E12 is done by opening existing sorter.
 
 ---
 
-## PARTE 5: ESTADÍSTICAS
+## PART 5: STATISTICS
 
-| Métrica | FactMining v1 | Knowledge Base v3 |
+| Metric | FactMining v1 | Knowledge Base v3 |
 |---|---|---|
-| Hechos verificados | 34 | **84** |
-| Asunciones pendientes | 13 | **1** (visual: multi-res) |
-| Tests propuestos | 40+ | **1** (E12 multi-res) |
-| Técnicas custom a construir | 6 | **0** |
-| Referencias muertas en skill | 11 | **0** |
-| Reglas incorrectas en skill | 3 (V7, V20, A1) | **0** |
+| Verified facts | 34 | **84** |
+| Pending assumptions | 13 | **1** (visual: multi-res) |
+| Proposed tests | 40+ | **1** (E12 multi-res) |
+| Custom techniques to build | 6 | **0** |
+| Dead references in skill | 11 | **0** |
+| Incorrect rules in skill | 3 (V7, V20, A1) | **0** |

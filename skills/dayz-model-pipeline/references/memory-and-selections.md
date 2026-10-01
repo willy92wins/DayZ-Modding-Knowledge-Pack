@@ -115,22 +115,22 @@ For an animated part (e.g., a lever):
 
 ### Doors & ladders — esquema REAL verificado vanilla (2026-07-06, 9 modelos debinarizados)
 
-Verificado debinarizando garage_small / barn_wood1 / farm_cowsheda / 6 ladders (ODOL v54). Corrige/precisa
-las tablas de arriba (que usan `door1` singular):
+Verified by debinarizing garage_small / barn_wood1 / farm_cowsheda / 6 ladders (ODOL v54). Corrects/refines
+tables above (which use singular `door1`):
 
-- **Puertas**: la selección es **`doorsN` (PLURAL, con 's')** — los 9 vanilla usan `doors1`/`doors2`…, no
-  `door1`. En Memory LOD: `doorsN_axis` (eje de rotación) + `doorsN_action` (punto de acción). Puertas
-  gemelas = **`doorstwinN` + `twinN_action`**. La selección `doorsN` va en TODOS los LODs relevantes
-  (visual / geometry / memory / view_geometry / fire_geometry / hitpoints). Named properties del Geometry
-  LOD: `class=house` + `map=building` + `damage=no`.
-- **Escaleras** (DOS esquemas, según prop suelto vs integrada en edificio): (a) **prop suelto** climbable
-  (`ladder.p3d`) = Memory `start`/`end` (o `start1`/`end1`) + Roadway 3e15 debajo; (b) **integrada en
-  edificio** (lighthouse/watchtower/silo) = `ladderN` (base + componente ViewGeo) + Memory
-  `ladderN_bottom_front` + `ladderN_top_front` + `ladderN_middle_X`(+`_align`, pisos intermedios) +
-  `ladderN_con`/`ladderN_con_dir`/`ladderN_dir` + Roadway. El `ladderN_*` de la wiki es correcto para
-  el caso EDIFICIO.
-- **Paths LOD (AI)**: `posXX` (stop-vertices, usables por `buildingpos`) + `inXX` (entry) + `actionbeginN`/`actionendN`.
-- Detalle completo + tabla de resoluciones LOD (geometry 1e13…firegeo 7e15): `AI/20_Knowledge/dayz-objectbuilder-lod-conventions.md`.
+- **Doors**: selection is **`doorsN` (PLURAL, with 's')** — 9 vanilla use `doors1`/`doors2`…, not
+  `door1`. In Memory LOD: `doorsN_axis` (rotation axis) + `doorsN_action` (action point). Twin
+  doors = **`doorstwinN` + `twinN_action`**. `doorsN` selection goes in ALL relevant LODs
+  (visual / geometry / memory / view_geometry / fire_geometry / hitpoints). Geometry LOD named
+  properties: `class=house` + `map=building` + `damage=no`.
+- **Ladders** (TWO schemes, depending on loose prop vs integrated into building): (a) climbable **loose prop**
+  (`ladder.p3d`) = Memory `start`/`end` (or `start1`/`end1`) + Roadway 3e15 underneath; (b) **integrated into
+  building** (lighthouse/watchtower/silo) = `ladderN` (base + ViewGeo component) + Memory
+  `ladderN_bottom_front` + `ladderN_top_front` + `ladderN_middle_X`(+`_align`, intermediate floors) +
+  `ladderN_con`/`ladderN_con_dir`/`ladderN_dir` + Roadway. Wiki `ladderN_*` is correct for
+  the BUILDING case.
+- **Paths LOD (AI)**: `posXX` (stop-vertices, usable by `buildingpos`) + `inXX` (entry) + `actionbeginN`/`actionendN`.
+- Full detail + LOD resolution table (geometry 1e13…firegeo 7e15): `AI/20_Knowledge/dayz-objectbuilder-lod-conventions.md`.
 
 ### In Blender
 Named selections = Vertex Groups in Blender.

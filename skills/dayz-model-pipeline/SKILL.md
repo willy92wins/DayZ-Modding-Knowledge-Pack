@@ -114,14 +114,14 @@ Install: `apt-get install -y blender && pip install opensimplex --break-system-p
 
 > **CRITICAL: py3d installation** — Do NOT use `pip install py3d` (different
 > point-cloud library) and do NOT install upstream from GitHub anymore. Use the
-> **py3d DayZ fork >= 1.6.0** (codec KoffeinFlummi + guards anti-corrupcion,
-> constantes LOD DayZ, `validate()`, proxies, recipe y CLI `python -m py3d`),
+> **py3d DayZ fork >= 1.6.0** (KoffeinFlummi codec + anti-corruption guards,
+> DayZ LOD constants, `validate()`, proxies, recipe, and CLI `python -m py3d`),
 > pack distribution `py3d-dayz` via `pip install -e tools/py3d`:
 >
 > ```bash
-> SKILL_DIR=<dir de esta skill>
+> SKILL_DIR=<this skill dir>
 > # py3d DayZ fork >= 1.6.0 (`pip install -e tools/py3d`).
-> # NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
+> # NEVER `pip install py3d` (PyPI = point-cloud lib) NOR git+upstream (no guards).
 > pip install -e tools/py3d
 > python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 > ```
@@ -367,11 +367,11 @@ Docs mention only — no heater script change in this hop.
 
 ### Regla
 
-Cuando ensambles **LODs no-Geometry** (FireGeo 7e15, ViewGeo 6e15, LandContact 2e15, Memory 1e15, Shadow, Visual <1000) por py3d, usa explícitamente `point.mass = None` para cada punto. **NUNCA** uses `point.mass = 0.0`.
+When assembling **non-Geometry LODs** (FireGeo 7e15, ViewGeo 6e15, LandContact 2e15, Memory 1e15, Shadow, Visual <1000) via py3d, explicitly use `point.mass = None` for each point. **NEVER** use `point.mass = 0.0`.
 
-Razón: py3d emite el tagg `#Mass#` si **ALGUNA** `point.mass` del LOD es ≠ None, **aunque sea exactamente `0.0`**. Resultado: el `.p3d` lleva un `#Mass#` espurio en el LOD no-Geometry. AddonBuilder/binarize hornea la masa de ESE LOD (suma = 0) → ODOL desplegado con `CoM=(0,0,0)` e inercia 0 → `ECE_PLACE_ON_SURFACE` posiciona el vehículo a la altura del CoM = 0 → spawn bajo tierra → eyección por PhysX-depenetración.
+Reason: py3d emits `#Mass#` tagg if **ANY** `point.mass` of LOD is ≠ None, **even if exactly `0.0`**. Result: `.p3d` carries a spurious `#Mass#` in non-Geometry LOD. AddonBuilder/binarize bakes the mass of THAT LOD (sum = 0) → deployed ODOL with `CoM=(0,0,0)` and inertia 0 → `ECE_PLACE_ON_SURFACE` positions vehicle at height of CoM = 0 → spawn underground → ejection via PhysX-depenetration.
 
-### Antipattern (productor de bug LFQuad N1.5)
+### Antipattern (producing bug LFQuad N1.5)
 
 ```python
 # WRONG — produces #Mass# tagg in FireGeo LOD with all zeros
@@ -389,9 +389,9 @@ for face in firegeo_lod.faces:
         v.point.mass = None     # ← py3d skips #Mass# emission for this LOD
 ```
 
-### Verificación post-assemble
+### Post-assemble verification
 
-Iterar todos los LODs y asegurar que **solo el Geometry LOD (res 1e13)** tiene `lod.mass != None` y tagg `#Mass#`:
+Iterate all LODs and ensure that **only the Geometry LOD (res 1e13)** has `lod.mass != None` and `#Mass#` tagg:
 
 ```python
 for lod in model.lods:
@@ -402,11 +402,11 @@ for lod in model.lods:
         assert not has_mass, f"LOD res={lod.resolution:.0e} must NOT have #Mass#"
 ```
 
-Verificación end-to-end (post-binarize): `binarize.exe -always -addon=<dir> <src> <dst> <wildcard>` + leer `ModelInfo CoM` del ODOL → debe ser ≠ (0,0,0) y coincidir con el CoM del Geometry MLOD.
+End-to-end verification (post-binarize): `binarize.exe -always -addon=<dir> <src> <dst> <wildcard>` + read `ModelInfo CoM` of ODOL → must be ≠ (0,0,0) and match CoM of Geometry MLOD.
 
 ### Cross-ref
 
-LL-079 (bisección de LODs aisló el bug), LL-080 (la lección durable), check añadido a `dayz-p3d-audit` (Mass-only-Geometry, added 2026-06-02), tool de referencia `LFQuad_dev/tools/fix_firegeo_mass.py` (patch headless para .p3d con el bug).
+LL-079 (LOD bisection isolated the bug), LL-080 (the durable lesson), check added to `dayz-p3d-audit` (Mass-only-Geometry, added 2026-06-02), reference tool `LFQuad_dev/tools/fix_firegeo_mass.py` (headless patch for .p3d with bug).
 
 <!-- [merged 2026-06-05 from <claude-home>\skills user copy during plugin-canonical migration; almacen: .claude\skills] -->
 ## Llama Mod Extraction Patterns (rvmat)
@@ -564,15 +564,15 @@ attached magazine; the corrective build was also delivered blind ("lo veo igual"
    "Looks the same" without a discriminator cannot distinguish wrong-hypothesis from
    stale-build (then triage build identity first: LL-143/LL-145).
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa vive allí. No quites la cita: el índice detecta la promoción por ella.
+Promoted from `AI/20_Knowledge/lessons-learned.md` to arrive via trigger instead
+of depending on someone remembering to look them up. Each rule cites source `LL-NNN`;
+complete entry lives there. Do not remove citation: the index detects promotion by it.
 
-- **LL-024** — Para LODs de superficies curvas, usa Decimate COLLAPSE y protege las features críticas con un vertex group invertido. Mide tris y supervivencia de la feature; no uses planar dissolve como reductor sin verificar el conteo tras triangular.
-- **LL-134** — En attachments con bbox contractual, mide el grupo completo en el frame de exportación después de cada feature. Si el bbox está cerrado, crea relieve rebajando el entorno mediante escalón/recess en vez de añadir geometría proud.
-- **LL-372** — Phase 0 de procedencia también cubre licencia: un README/LICENSE empaquetado data del empaquetado, no de hoy. Fecha el anuncio vigente del publicador; si el interior del artefacto y la fuente actual discrepan, manda la fuente actual.
+- **LL-024** — For curved surface LODs, use Decimate COLLAPSE and protect critical features with an inverted vertex group. Measure tris and feature survival; do not use planar dissolve as reducer without verifying count after triangulating.
+- **LL-134** — On attachments with contractual bbox, measure full group in export frame after each feature. If bbox is closed, create relief by stepping down/recessing surrounding area instead of adding proud geometry.
+- **LL-372** — Provenance Phase 0 also covers licensing: a packaged README/LICENSE dates from packaging, not today. Date publisher's current announcement; if artifact interior and current source disagree, current source rules.
 
 
 ## Sibling-model frame gate (SP-221, added 2026-08-31)

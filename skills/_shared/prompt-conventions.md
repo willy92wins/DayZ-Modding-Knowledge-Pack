@@ -63,153 +63,153 @@ If you're authoring a new agent, follow the existing template exactly (uppercase
 
 ## CROSS-ENGINE / CROSS-LANGUAGE CONTAMINATION (added 2026-05-12)
 
-Cuando una skill documenta un sistema que comparte familia con otro mejor documentado online — Arma 3 ↔ DayZ, SQF ↔ EnScript, Python 2 ↔ 3, Vue 2 ↔ 3, React class ↔ hooks — el riesgo dominante es **transferir conocimiento de la versión mejor documentada a la peor sin re-verificar**. El autor da por hecho que comparten valores cuando solo comparten parentesco.
+When a skill documents a system sharing a family with another better documented online — Arma 3 ↔ DayZ, SQF ↔ EnScript, Python 2 ↔ 3, Vue 2 ↔ 3, React class ↔ hooks — dominant risk is **transferring knowledge from the better-documented version to the worse without re-verifying**. Author assumes they share values when they only share lineage.
 
-Anti-patrones detectados en 2026-05-12 (verificados contra los archivos reales, NO contra el audit narrativo):
+Anti-patterns detected on 2026-05-12 (verified against actual files, NOT against narrative audit):
 
-- En `dayz-p3d-audit/scripts/audit_p3d.py` y `dayz-p3d-inspector` hay rastro histórico de la contaminación: comentarios "Earlier versions used 2e13 / 3e13 / 7e13 — those values were wrong for modern DayZ" indican que rangos Arma 3 ESTUVIERON ahí y se corrigieron. El bug NO está en código actual.
-- En `dayz-pbo-build/references/validation-scripts.md:226-228` el `known_bases` mezcla bases válidas de DayZ (`Inventory_Base`, `Container_Base`, `HouseNoDestruct`) con etiquetas Arma 3 puras (`Motorcycle`, `Helicopter`) — un usuario que herede de `Motorcycle` en DayZ no encuentra la clase. Verificación recomendada: filtrar contra `P:\dz\` vanilla.
-- Caso paradójico (meta): el audit que pretendía detectar esta contaminación afirmó hallazgos concretos (ShadowVolume `9e9..1.1e10`, `dayz-p3d-audit:34`) que **NO EXISTEN en el código actual**. El bug que el audit citaba era de una versión previa ya corregida. Lección: incluso los audits confabulan — verificar contra fuente PRIMARIA (el archivo) antes de creer al audit.
+- In `dayz-p3d-audit/scripts/audit_p3d.py` and `dayz-p3d-inspector` there is a historical trail of contamination: comments "Earlier versions used 2e13 / 3e13 / 7e13 — those values were wrong for modern DayZ" indicate Arma 3 ranges WERE there and were corrected. The bug is NOT in current code.
+- In `dayz-pbo-build/references/validation-scripts.md:226-228` `known_bases` mixes valid DayZ bases (`Inventory_Base`, `Container_Base`, `HouseNoDestruct`) with pure Arma 3 tags (`Motorcycle`, `Helicopter`) — a user inheriting from `Motorcycle` in DayZ cannot find class. Recommended verification: filter against vanilla `P:\dz\`.
+- Paradoxical case (meta): the audit intended to detect this contamination asserted concrete findings (ShadowVolume `9e9..1.1e10`, `dayz-p3d-audit:34`) that **DO NOT EXIST in current code**. The bug cited by audit belonged to a previous version already fixed. Lesson: even audits confabulate — verify against PRIMARY source (the file) before believing audit.
 
-Regla operativa antes de escribir un magic number, lista de clases base, o restricción de lenguaje en una skill de sistema poco documentado:
+Operational rule before writing a magic number, base class list, or language restriction in a skill for poorly documented system:
 
-1. ¿Esta información viene de fuente nativa (P:\ vanilla, repo BI, docs Enfusion, scripts vanilla del propio juego)? Cita `path:line` o URL.
-2. ¿O viene de un cousin engine (Arma3/SQF/legacy) que asumí aplicaba? Si sí, marcar `[NEEDS DAYZ VERIFICATION]` hasta confirmar.
-3. Para lenguajes (EnScript, etc.): fuente autoritativa = binario o scripts vanilla del juego. Citarlo. No fiarse de blogs comunitarios sin cross-check contra el `.c` real.
+1. Does this information come from native source (vanilla P:\, BI repo, Enfusion docs, vanilla scripts of game itself)? Cite `path:line` or URL.
+2. Or does it come from a cousin engine (Arma3/SQF/legacy) assumed to apply? If yes, mark `[NEEDS DAYZ VERIFICATION]` until confirmed.
+3. For languages (EnScript, etc.): authoritative source = binary or game vanilla scripts. Cite it. Do not trust community blogs without cross-check against actual `.c`.
 
-Caso DEBUNKED-y-luego-corregido (audit 2026-05-12; actualizado 2026-07-06): el audit afirmó que `?:`, `++`, `foreach`, `+=` "son features válidas de EnScript". La verificación de 2026-05-12 contra las skills de entonces concluyó "los cuatro NO soportados". El veredicto final quedó partido:
+DEBUNKED-and-then-corrected case (2026-05-12 audit; updated 2026-07-06): audit claimed `?:`, `++`, `foreach`, `+=` "are valid EnScript features". Verification of 2026-05-12 against skills back then concluded "all four NOT supported". Final verdict split:
 
-- `?:` (ternario) — el desmentido SE SOSTIENE: no compila en EnScript. Sigue prohibido (enforce-script-reference, hard rules).
-- `++`, `foreach`, `+=` — el audit TENÍA RAZÓN: verificado después en producción (LBmaster) y en los scripts vanilla del propio juego (`P:\scripts\3_game\billboardset.c:108` usa foreach, entre muchos). Las skills que los listaban como prohibidos estaban equivocadas y se corrigieron (enforce-script-reference reglas 2-4).
+- `?:` (ternary) — debunking HOLDS: does not compile in EnScript. Remains prohibited (enforce-script-reference, hard rules).
+- `++`, `foreach`, `+=` — audit WAS RIGHT: verified later in production (LBmaster) and in game vanilla scripts (`P:\scripts\3_game\billboardset.c:108` uses foreach, among many). Skills listing them as prohibited were mistaken and got corrected (enforce-script-reference rules 2-4).
 
-Lección meta REVISADA (más fuerte que la original): en 2026-05-12 el claim se "refutó" citando 4-5 skills coincidentes — pero N skills que repiten el mismo claim NO son N fuentes independientes si comparten linaje (todas heredaban la misma nota antigua). Consenso multi-skill ≠ verificación. La única fuente primaria para restricciones de lenguaje es el compilador / los scripts vanilla del juego; un solo `.c` vanilla usando `foreach` pesa más que 5 skills diciendo que no existe.
+Meta lesson REVISED (stronger than original): on 2026-05-12 the claim was "refuted" citing 4-5 matching skills — but N skills repeating the same claim are NOT N independent sources if they share lineage (all inherited same legacy note). Multi-skill consensus ≠ verification. Sole primary source for language restrictions is compiler / vanilla game scripts; a single vanilla `.c` using `foreach` outweighs 5 skills saying it does not exist.
 
 ## DISCOVERABILITY THROUGH USER VOCABULARY (added 2026-05-12)
 
-El `name:` y `description:` de una skill son lo que decide si Claude la autoinvoca cuando el usuario pregunta sobre el dominio. Si la skill se llama con jerga interna o nombre técnico que el usuario nunca diría, no se autoinvocará — existe pero nadie la encuentra.
+The `name:` and `description:` of a skill decide whether Claude autoinvokes it when user asks about the domain. If skill is named with internal jargon or technical name user would never say, it will not autoinvoke — it exists but nobody finds it.
 
-Anti-patrón: skill `japm-pbo-recovery`. "JAPM" es el identificador del autor de la herramienta; el nombre comercial real es "PBO Tools". Un usuario que googlee "decompile PBO Tools" / "recover PBO source" / "obfuscated PBO" no encuentra la skill.
+Anti-pattern: skill `japm-pbo-recovery`. "JAPM" is the identifier of tool author; actual trade name is "PBO Tools". A user googling "decompile PBO Tools" / "recover PBO source" / "obfuscated PBO" does not find the skill.
 
 Regla: en `description:` incluir:
 
-1. Nombre técnico del sistema (para precisión).
-2. Nombre(s) comercial(es) o producto(s) público(s) asociados (lo que el usuario googlearía).
-3. Verbos de usuario en imperativo presente: "decompile", "recover", "fix", "audit" — lo que el usuario teclea.
-4. Síntomas del problema: "lost my source", "no source available", "obfuscated" — cómo lo describe el usuario antes de saber la solución.
+1. Technical system name (for precision).
+2. Associated commercial name(s) or public product(s) (what user would google).
+3. User verbs in present imperative: "decompile", "recover", "fix", "audit" — what user types.
+4. Problem symptoms: "lost my source", "no source available", "obfuscated" — how user describes it before knowing solution.
 
 Ejemplo correcto (parche aplicable a `japm-pbo-recovery`):
 
 > Recover source code from DayZ PBO files obfuscated with JAPM **(also known as "PBO Tools")**. Use whenever: user mentions "PBO Tools", "JAPM", "obfuscated PBO", "lost my source", "recover PBO source", "decompile PBO", ...
 
-## PROFUNDIDAD DE RESPUESTA (added 2026-05-12, recalibrada 2026-08-05)
+## DEPTH OF RESPONSE (added 2026-05-12, recalibrated 2026-08-05)
 
-El modelo ya tiende a ensanchar el alcance y a alargar la respuesta por su cuenta, y su
-harness ya instruye "entregar lo pedido, al alcance pedido". La versión anterior de esta
-sección mandaba lo contrario —subir por defecto **un nivel más profundo**— y empujaba justo
-el fallo que hoy hay que frenar. El default correcto es **el alcance pedido**.
+The model already tends to broaden scope and lengthen response on its own, and its
+harness already instructs to "deliver what was requested, at requested scope". Previous version of this
+section instructed the opposite —bump by default **one level deeper**— and pushed precisely
+the failure that today must be reined in. Correct default is **the requested scope**.
 
-- Tarea acotada ("búscame sobre X", "qué te parece Y") → responder a ese nivel. Si el dominio
-  es complejo y queda algo sustancial por decir, UNA frase al final ofreciéndolo: "puedo
-  bajar a alternativas + criterios + riesgos si lo quieres".
-- No inflar el primer turno con secciones que nadie pidió (matrices, 5+ opciones, auditorías
-  laterales) salvo que el coste de no hacerlo sea irreversible (`G1`, formato persistente).
-- Recomendar antes que enumerar sigue mandando (`G4`): máx 3 opciones y la recomendación
-  primero, no un catálogo.
+- Scoped task ("look up X for me", "what do you think of Y") → respond at that level. If domain
+  is complex and something substantial remains to be said, ONE sentence at the end offering it: "I can
+  drill down to alternatives + criteria + risks if you want".
+- Do not inflate first turn with sections nobody asked for (matrices, 5+ options, lateral
+  audits) unless cost of not doing so is irreversible (`G1`, persistent format).
+- Recommending before enumerating still rules (`G4`): max 3 options and recommendation
+  first, not a catalog.
 
-Palabras-clave con las que el usuario fija el nivel:
+Keywords with which user sets level:
 
-| Palabra-clave | Profundidad |
+| Keyword | Depth |
 |---|---|
-| "rápido" / "breve" | 2-4 frases máximo |
-| (sin palabra) | el alcance pedido, sin subir de nivel |
-| "profundo" / "a fondo" / "con math" / "audit" | exhaustivo |
+| "fast" / "brief" | 2-4 sentences maximum |
+| (no word) | requested scope, without leveling up |
+| "deep" / "in depth" / "with math" / "audit" | exhaustive |
 
-Una vez establecido el nivel, mantenerlo en toda la sesión salvo que el usuario lo cambie.
+Once level is established, maintain it throughout entire session unless user changes it.
 
-Origen y matiz (sesión 2026-05-12 "Optimize legendary reanimation deck"): el caso que creó
-esta regla fue un análisis demasiado superficial a "búscame sobre clive's hideaway", con el
-usuario insistiendo en *"haz una búsqueda mayor... haz un análisis matemático"*. Ese fallo es
-real, pero la respuesta correcta no es subir el default para todo: es **leer el contexto
-acumulado de la sesión**. Dominio complejo + historia previa de iteración pide profundidad;
-un prompt acotado en frío, no.
+Origin and nuance (2026-05-12 session "Optimize legendary reanimation deck"): case creating
+this rule was too superficial an analysis to "look up clive's hideaway for me", with
+user insisting on *"do a broader search... do a mathematical analysis"*. That failure is
+real, but correct response is not raising default across board: it is **reading the accumulated
+context of the session**. Complex domain + prior iteration history calls for depth;
+a scoped cold prompt does not.
 
-## PROTOCOLO DE ENTREGA — la sesión edita directo; el guardarraíl es el CENSO de raíces (reescrito 2026-09-01)
+## DELIVERY PROTOCOL — session edits directly; guardrail is root CENSUS (rewritten 2026-09-01)
 
-**Sustituye a la instrucción del 2026-07-30** («una edición de skill se empaqueta, no se aplica;
-la instala él»). Desde el 2026-08-31 las skills **las actualizan las sesiones directamente**, sin
-empaquetar y sin pedir permiso por cada edición. Lo que NO desaparece son los guardarraíles
-mecánicos: cambian de sitio, del permiso al censo.
+**Replaces instruction of 2026-07-30** ("a skill edit is packaged, not applied;
+he installs it"). Since 2026-08-31 skills **are updated directly by sessions**, without
+packaging and without asking permission for each edit. What does NOT disappear are mechanical
+guardrails: they shift place, from permission to census.
 
-### El guardarraíl que sustituye al permiso: censa las raíces ANTES de editar
+### Guardrail replacing permission: census roots BEFORE editing
 
-Escribir en UNA raíz deja **deriva invisible**: la copia que edita esta sesión y la que sirve al
-agente pueden ser distintas, y nadie lo ve hasta que alguien lee la vieja. Antes de tocar una
-skill, enumera dónde vive y **clasifica enlaces antes de contar** (regla de junctions):
+Writing to ONE root leaves **invisible drift**: the copy edited by this session and copy served to
+agent may differ, and nobody sees it until someone reads the old one. Before touching a
+skill, enumerate where it lives and **classify links before counting** (junction rule):
 
 ```
 ~\.claude\skills\<name>                          <- lo lee Claude Code (CLI)
 ~\.agents\skills\<name>                          <- muchas entradas son junction a la de .claude
-…\skills-plugin\<guid>\<guid>\skills\<name>      <- lo lee la app; hay N GUID y son plugins DISTINTOS
-~\.grok\skills\<name>                            <- proyección; medido 2026-09-01: junction al plugin
+…\skills-plugin\<guid>\<guid>\skills\<name>      <- read by app; there are N GUIDs and they are DISTINCT plugins
+~\.grok\skills\<name>                            <- projection; measured 2026-09-01: junction to plugin
 ```
 
-Escribe en **todas las copias reales**; las que sean enlace ya quedan cubiertas. Verifica al
-terminar por **sha256**, no por mtime. Ejemplo medido el 2026-09-01: `codex-handoff-template` y
-`grok-handoff-template` existían en una sola copia real (plugin) y `~\.grok\skills` era junction a
-ella, así que un solo write cubrió las dos vistas — pero eso **se comprueba, no se supone**.
+Write to **all real copies**; those that are links are already covered. Verify upon
+finishing by **sha256**, not by mtime. Example measured on 2026-09-01: `codex-handoff-template` and
+`grok-handoff-template` existed in a single real copy (plugin) and `~\.grok\skills` was junction to
+it, so a single write covered both views — but that **is verified, not assumed**.
 
-### Lo que decide quién te gobierna: el manifiesto, no la carpeta
+### What decides what governs you: manifest, not folder
 
-Una carpeta no dice qué la gobierna. `<plugin>\manifest.json` sí: trae por skill su `skillId`,
-`enabled`, `creatorType` y `updatedAt`. Antes de concluir que una skill está huérfana, ábrelo.
-El 2026-09-01 se dieron por huérfanas seis skills que estaban **registradas y habilitadas**, y el
-«rescate» acabó dejando el arreglo en la copia sin gobierno mientras la servida seguía rota.
+A folder does not state what governs it. `<plugin>\manifest.json` does: includes per skill its `skillId`,
+`enabled`, `creatorType`, and `updatedAt`. Before concluding a skill is orphaned, open it.
+On 2026-09-01 six skills were assumed orphaned that were **registered and enabled**, and the
+"rescue" ended up leaving the fix in ungoverned copy while served copy remained broken.
 
-**Caveat medido:** editar la proyección del plugin **persiste** (host-direct, sha estable a los
-minutos), pero **no** mueve el `updatedAt` del registro. La edición vive en local; si la app
-re-sincroniza desde servidor, se pierde. Si el cambio tiene que sobrevivir a eso, dilo al usuario.
+**Measured caveat:** editing plugin projection **persists** (host-direct, stable sha within
+minutes), but **does not** bump registry `updatedAt`. Edit lives locally; if app
+resyncs from server, it is lost. If change must survive that, tell user.
 
-### Guardarraíles mecánicos que siguen en pie
+### Mechanical guardrails that remain standing
 
-1. **En el árbol del plugin, escribe host-direct con PowerShell**, nunca con Edit/Write del
-   harness: allí van a una vista overlay que diverge del disco real. Leer para empaquetar, sí.
-2. **Backup antes**, y **read-after-write** siempre.
-3. **Barre con control positivo.** Si tu comprobación final da cero, pásala por la versión previa
-   al arreglo: si allí también da cero, lo roto es tu detector, no el fichero que declaras limpio.
-4. **En PowerShell, el texto que escribes va entre comillas SIMPLES** (`'...'` o here-string
-   `@'...'@`), nunca entre dobles. En `"..."` y `@"..."@` el acento grave es escape y `$`
-   interpola, así que un span de código markdown cuyo texto empiece por `0`, `a`, `b`, `e`, `f`,
-   `n`, `r`, `t` o `v` se corrompe sin dar error: `` "ver `references/x.md` y" `` escribe un CR
-   seguido de `eferences/x.md`, y el acento grave de cierre desaparece. Medido el 2026-09-15 con
-   PowerShell 7.6.5: `` "[`0][`a][`b][`e][`f][`n][`r][`t][`v]" `` da entre corchetes los códigos
-   0, 7, 8, 27, 12, 10, 13, 9 y 11; `` "`q" `` da solo `q`; `` 'x`ry' `` sale literal. Ya pasó:
-   una sección escrita host-direct el 2026-09-02 en la copia de plugin de `delegar/SKILL.md`
-   llevaba dos CR sueltos donde el texto fuente decía `` `references/routing.md` ``, y sobrevivió
-   13 días. Para ficheros enteros, `Copy-Item` desde una copia verificada. Y ojo con el
-   read-after-write: el sha solo prueba que el disco tiene lo que mandaste, no que lo mandaste
-   bien; busca también CR sueltos (`\r(?!\n)`).
+1. **In plugin tree, write host-direct with PowerShell**, never with harness
+   Edit/Write: there they go to an overlay view diverging from real disk. Read to package, yes.
+2. **Backup before**, and **read-after-write** always.
+3. **Sweep with positive control.** If your final check yields zero, run it across pre-fix
+   version: if it also yields zero there, what is broken is your detector, not file declared clean.
+4. **In PowerShell, text you write goes in SINGLE quotes** (`'...'` or here-string
+   `@'...'@`), never in double. In `"..."` and `@"..."@` backtick is escape and `$`
+   interpolates, so a markdown code span whose text begins with `0`, `a`, `b`, `e`, `f`,
+   `n`, `r`, `t` or `v` gets corrupted without throwing error: `` "see `references/x.md` and" `` writes a CR
+   followed by `eferences/x.md`, and closing backtick disappears. Measured 2026-09-15 with
+   PowerShell 7.6.5: `` "[`0][`a][`b][`e][`f][`n][`r][`t][`v]" `` gives bracketed codes
+   0, 7, 8, 27, 12, 10, 13, 9 and 11; `` "`q" `` gives only `q`; `` 'x`ry' `` outputs literal. Happened already:
+   a section written host-direct on 2026-09-02 in plugin copy of `delegar/SKILL.md`
+   carried two loose CRs where source text said `` `references/routing.md` ``, and survived
+   13 days. For whole files, `Copy-Item` from a verified copy. And watch out for
+   read-after-write: sha only proves disk has what you sent, not that you sent it
+   right; also look for loose CRs (`\r(?!\n)`).
 
-### Cuándo SÍ se empaqueta un `.skill`
+### When a `.skill` IS packaged
 
-Ya no es la vía de entrega por defecto. Queda para llevar una skill a una máquina o a un almacén
-que no tiene copia. Si empaquetas:
+No longer default delivery route. Remains for bringing a skill to a machine or storage
+lacking a copy. If packaging:
 
-1. `python C:\Users\<you>\.claude\skills\_shared\pack_skill.py <carpeta> <DIRECTORIO destino>` — el
-   segundo argumento es un **directorio**; pasarle un `.skill` muere con `FileExistsError`.
-   NO uses `skill-creator/scripts/package_skill.py`: lee `SKILL.md` sin `encoding`, cae a cp1252 en
-   Windows y muere con `UnicodeDecodeError` ante cualquier em-dash, flecha o acento (3 de 8 skills
-   murieron ahí el 2026-07-27).
-2. **Instalar REEMPLAZA la carpeta entera, no fusiona.** Empaqueta desde la copia **más completa**
-   —normalmente la del plugin, que puede vendorizar `scripts/` o `wheels/`— o instalar los borra.
-   Con `dayz-3d-viewer` habría tirado 6 scripts que su propio `SKILL.md:51` invoca.
-3. Empaqueta la skill **entera**: `SKILL.md` + `references/` + `scripts/` + `assets/`. Un
-   `SKILL.md` suelto la instala mutilada, y un fragmento `.md` ni siquiera instala
+1. `python C:\Users\<you>\.claude\skills\_shared\pack_skill.py <folder> <destination DIRECTORY>` — the
+   second argument is a **directory**; passing a `.skill` dies with `FileExistsError`.
+   DO NOT use `skill-creator/scripts/package_skill.py`: reads `SKILL.md` without `encoding`, falls back to cp1252 on
+   Windows and dies with `UnicodeDecodeError` on any em-dash, arrow, or accent (3 of 8 skills
+   died there on 2026-07-27).
+2. **Installing REPLACES the whole folder, does not merge.** Package from the **most complete** copy
+   —normally plugin copy, which may vendor `scripts/` or `wheels/`— or installing deletes them.
+   With `dayz-3d-viewer` it would have dropped 6 scripts that its own `SKILL.md:51` invokes.
+3. Package the **entire** skill: `SKILL.md` + `references/` + `scripts/` + `assets/`. A
+   standalone `SKILL.md` installs it mutilated, and a `.md` snippet will not even install
    (`SKILL.md must start with YAML frontmatter (---)`).
-4. El script excluye `__pycache__`, `.git`, `.pyc` y `.pyo` (`pack_skill.py:22-23`) pero **no** los
-   `SKILL.md.bak*`: si la carpeta tiene backups, empaqueta desde una copia en scratchpad con el
-   mismo nombre de carpeta y bórralos allí.
+4. The script excludes `__pycache__`, `.git`, `.pyc`, and `.pyo` (`pack_skill.py:22-23`) but **not**
+   `SKILL.md.bak*`: if folder has backups, package from scratchpad copy with
+   same folder name and delete them there.
 
-`pack_skill.py` ya valida que haya frontmatter y `name`, que el `description` no pase de 1024
-caracteres (recortar sacando lo que no dispara al body, nunca truncando), y reabre el zip para
-comprobar que las entradas usan `/` y no `\` — `CreateFromDirectory` de PowerShell 5.1 las escribe
-con backslash y entonces el instalador no encuentra `<nombre>/SKILL.md`.
+`pack_skill.py` already validates presence of frontmatter and `name`, that `description` does not exceed 1024
+characters (trim by moving non-triggering material to body, never by truncating), and reopens zip to
+check that entries use `/` and not `\` — PowerShell 5.1 `CreateFromDirectory` writes them
+with backslash and then installer cannot find `<name>/SKILL.md`.

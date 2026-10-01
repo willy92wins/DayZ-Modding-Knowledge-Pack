@@ -1,17 +1,17 @@
-# Deep-Dive: Sistema de Daño, Hitzones y Armadura — DayZ v1.24
+# Deep-Dive: Damage System, Hitzones and Armor — DayZ v1.24
 
-> Investigación: 2026-06-06  
-> Fuente de verdad: `<dayz-projects>\scripts\` (vanilla v1.24)  
-> Anti-confabulación: toda API citada está verificada con Grep/Read en los archivos indicados.
+> Investigation: 2026-06-06  
+> Source of truth: `<dayz-projects>\scripts\` (vanilla v1.24)  
+> Anti-confabulation: every cited API is verified with Grep/Read in the indicated files.
 
 ---
 
 ## Resumen ejecutivo
 
-El sistema de daño de DayZ (MDF — Modular Damage Framework) opera principalmente en C++ con una capa de scripting en Enforce Script. El flujo es:  
-**fuente de daño → `ProcessDirectDamage` (proto native) → cálculo C++ con CfgAmmo → EEHitBy (callback script server) → efectos secundarios (Shock, Blood, animación, bleeding)**
+The DayZ damage system (MDF — Modular Damage Framework) operates primarily in C++ with an Enforce Script scripting layer. The flow is:  
+**damage source → `ProcessDirectDamage` (proto native) → C++ calculation with CfgAmmo → EEHitBy (server script callback) → secondary effects (Shock, Blood, animation, bleeding)**
 
-Para LF_RollingStone el path relevante es **TransportHit**: la piedra debe registrarse como `Transport` (o llamar `RegisterTransportHit` directamente desde `EOnContact`) para que el sistema aplique daño proporcional a la velocidad sin necesidad de ninguna ammo customizada en los configs base del mod.
+For LF_RollingStone the relevant path is **TransportHit**: the rock must register as `Transport` (or call `RegisterTransportHit` directly from `EOnContact`) for system to apply damage proportional to velocity without requiring any customized ammo in mod base configs.
 
 ---
 
@@ -28,9 +28,9 @@ class TotalDamageResult: Managed
 };
 ```
 
-- `GetDamage("", "Health")` → daño total al hitzone global en healthType "Health".
-- `GetDamage("Head", "Shock")` → daño de Shock específico a zona "Head".
-- `GetHighestDamage("Health")` → mayor valor de daño Health entre todos los hitzones golpeados.
+- `GetDamage("", "Health")` → total damage to global hitzone in healthType "Health".
+- `GetDamage("Head", "Shock")` → specific Shock damage to "Head" zone.
+- `GetHighestDamage("Health")` → highest Health damage value among all hit hitzones.
 
 ### 2. DamageType enum
 
@@ -46,7 +46,7 @@ enum DamageType
 }
 ```
 
-Alias usados internamente: `DT_CUSTOM`, `DT_FIRE_ARM`, `DT_CLOSE_COMBAT` corresponden a los valores del enum (verificado por uso en RegisterTransportHit).
+Aliases used internally: `DT_CUSTOM`, `DT_FIRE_ARM`, `DT_CLOSE_COMBAT` correspond to enum values (verified by usage in RegisterTransportHit).
 
 ### 3. ProcessDirectDamage
 
@@ -54,24 +54,24 @@ Alias usados internamente: `DT_CUSTOM`, `DT_FIRE_ARM`, `DT_CLOSE_COMBAT` corresp
 // scripts/3_game/entities/object.c:1134
 proto native void ProcessDirectDamage(
     int damageType,          // DamageType enum value
-    EntityAI source,         // entidad que causa el daño
-    string componentName,    // nombre de zona de daño (string vacío = zona global)
+    EntityAI source,         // entity causing the damage
+    string componentName,    // damage zone name (empty string = global zone)
     string ammoName,         // nombre de CfgAmmo a aplicar
-    vector modelPos,         // posición en model space del impacto
-    float damageCoef = 1.0,  // multiplicador aplicado al daño del ammo
+    vector modelPos,         // model space position of impact
+    float damageCoef = 1.0,  // multiplier applied to ammo damage
     int flags = 0            // ProcessDirectDamageFlags
 );
 ```
 
 **ProcessDirectDamageFlags** (`scripts/3_game/entities/object.c:1-7`):
-- `ALL_TRANSFER` — transfiere daño a attachments y global (default).
-- `NO_ATTACHMENT_TRANSFER` — no transfiere a attachments.
-- `NO_GLOBAL_TRANSFER` — no transfiere al global.
-- `NO_TRANSFER` — combinación de ambos `NO_*`.
+- `ALL_TRANSFER` — transfers damage to attachments and global (default).
+- `NO_ATTACHMENT_TRANSFER` — does not transfer to attachments.
+- `NO_GLOBAL_TRANSFER` — does not transfer to global.
+- `NO_TRANSFER` — combination of both `NO_*`.
 
-> No existe `ProcessIndirectDamage` en scripts — el daño indirecto (explosiones en radio) se maneja vía `DamageSystem.ExplosionDamage` (C++). [NO VERIFICADO como función script accesible directamente en EntityAI.]
+> `ProcessIndirectDamage` does not exist in scripts — indirect damage (radius explosions) is handled via `DamageSystem.ExplosionDamage` (C++). [UNVERIFIED as script function directly accessible on EntityAI.]
 
-### 4. DamageSystem (clase estática)
+### 4. DamageSystem (static class)
 
 ```c
 // scripts/3_game/damagesystem.c:20-25
@@ -85,57 +85,57 @@ class DamageSystem
         int directDamageFlags = ProcessDirectDamageFlags.ALL_TRANSFER);
     static proto native void ExplosionDamage(EntityAI source, Object directHitObject,
         string ammoTypeName, vector worldPos, int damageType);
-    // + métodos helper en script: GetDamageZoneMap, GetDamageZoneFromComponentName, ResetAllZones
+    // + script helper methods: GetDamageZoneMap, GetDamageZoneFromComponentName, ResetAllZones
 }
 ```
 
-`ResetAllZones` setea Health, Shock y Blood al máximo en todas las zonas del DamageSystem de una entidad (`scripts/3_game/damagesystem.c:139-154`).
+`ResetAllZones` sets Health, Shock, and Blood to maximum across all DamageSystem zones of an entity (`scripts/3_game/damagesystem.c:139-154`).
 
 ### 5. SetHealth / GetHealth / DecreaseHealth / AddHealth
 
-Todos son `proto native` en `Object` (`scripts/3_game/entities/object.c`):
+All are `proto native` on `Object` (`scripts/3_game/entities/object.c`):
 
-| Función | Firma | Notas |
+| Function | Signature | Notes |
 |---------|-------|-------|
 | `GetHealth(zone, type)` | `proto native float` | zone="" → global; type="" → main health |
-| `GetHealth01(zone, type)` | `proto native float` | Normalizado 0..1 |
-| `GetMaxHealth(zone, type)` | `proto native float` | Máximo configurado |
-| `SetHealth(zone, type, value)` | `proto native void` | Setteo directo |
-| `AddHealth(zone, type, value)` | `proto native void` | Suma (valor negativo = resta) |
-| `DecreaseHealth(zone, type, value)` | `proto native void` | Sólo resta |
-| `SetHealthLevel(int level, zone)` | script helper | Usa `GetHealthLevelValue` |
+| `GetHealth01(zone, type)` | `proto native float` | Normalized 0..1 |
+| `GetMaxHealth(zone, type)` | `proto native float` | Configured maximum |
+| `SetHealth(zone, type, value)` | `proto native void` | Direct setting |
+| `AddHealth(zone, type, value)` | `proto native void` | Addition (negative value = subtraction) |
+| `DecreaseHealth(zone, type, value)` | `proto native void` | Subtraction only |
+| `SetHealthLevel(int level, zone)` | script helper | Uses `GetHealthLevelValue` |
 | `SetHealth01(zone, type, coef)` | script helper | `SetHealth(..., max*coef)` |
-| `SetHealthMax(zone, type)` | script helper | Llama `SetHealth(max)` |
+| `SetHealthMax(zone, type)` | script helper | Calls `SetHealth(max)` |
 | `GetHealthLevel(zone)` | `proto native int` | 0=pristine…4=ruined |
 | `IsDamageDestroyed()` | `proto native bool` | True = health <= 0 |
 
 Referencia: `scripts/3_game/entities/object.c:977-1121`
 
-Health types conocidos (usados en scripts): `"Health"`, `"Blood"`, `"Shock"`.  
-Zona especial `"GlobalHealth"` usada en PlayerBase para HUD (`scripts/4_world/entities/manbase/playerbase.c:5321-5322`).
+Known health types (used in scripts): `"Health"`, `"Blood"`, `"Shock"`.  
+Special zone `"GlobalHealth"` used in PlayerBase for HUD (`scripts/4_world/entities/manbase/playerbase.c:5321-5322`).
 
-### 6. EEHitBy — firma completa y parámetros
+### 6. EEHitBy — full signature and parameters
 
 ```c
 // scripts/3_game/entities/entityai.c:1117
 void EEHitBy(
-    TotalDamageResult damageResult,  // resultado del cálculo C++ de daño
+    TotalDamageResult damageResult,  // result of C++ damage calculation
     int damageType,                  // DamageType enum
-    EntityAI source,                 // quién causó el daño
-    int component,                   // índice de componente geométrico golpeado
-    string dmgZone,                  // nombre de la damage zone (ej: "Head", "Torso")
+    EntityAI source,                 // who caused the damage
+    int component,                   // hit geometric component index
+    string dmgZone,                  // damage zone name (e.g. "Head", "Torso")
     string ammo,                     // nombre del CfgAmmo aplicado
-    vector modelPos,                 // posición de impacto en model space
-    float speedCoef                  // coef de velocidad (para proyectiles)
+    vector modelPos,                 // impact position in model space
+    float speedCoef                  // velocity coef (for projectiles)
 )
 ```
 
-**Llamado**: solo en servidor. Se dispara DESPUÉS de que C++ aplica el daño.  
-**Cadena de herencia**:
-1. `EntityAI.EEHitBy` — invoca `m_OnHitByInvoker` (`entityai.c:1117-1124`)
-2. `ItemBase.EEHitBy` — daño random a cargo/attachments para ropa (`itembase.c:1522-1560`)
+**Called**: server only. Fires AFTER C++ applies damage.  
+**Inheritance chain**:
+1. `EntityAI.EEHitBy` — invokes `m_OnHitByInvoker` (`entityai.c:1117-1124`)
+2. `ItemBase.EEHitBy` — random damage to cargo/attachments for clothing (`itembase.c:1522-1560`)
 3. `PlayerBase.EEHitBy` — bleeding, shock check, broken legs, unconRefill (`playerbase.c:1224-1347`)
-4. `DayZPlayerImplement.EEHitBy` — reset `m_TransportHitRegistered`, animaciones de daño/muerte (`dayzplayerimplement.c:1547-1600+`)
+4. `DayZPlayerImplement.EEHitBy` — reset `m_TransportHitRegistered`, damage/death animations (`dayzplayerimplement.c:1547-1600+`)
 
 ### 7. EEHitByRemote
 
@@ -145,7 +145,7 @@ void EEHitByRemote(int damageType, EntityAI source, int component,
     string dmgZone, string ammo, vector modelPos)
 ```
 
-Llamado únicamente en el **cliente que causó el hit**. Sin `TotalDamageResult`. Usado para feedback local (ej: sound de bloqueo en melee en PlayerBase `playerbase.c:1349-1358`).
+Called only on **client that caused the hit**. Without `TotalDamageResult`. Used for local feedback (e.g. melee block sound in PlayerBase `playerbase.c:1349-1358`).
 
 ### 8. EEKilled
 
@@ -154,7 +154,7 @@ Llamado únicamente en el **cliente que causó el hit**. Sin `TotalDamageResult`
 void EEKilled(Object killer)
 ```
 
-Llamado en servidor cuando la entidad es eliminada. Invoca `m_OnKilledInvoker` y analytics. Si `ReplaceOnDeath()` → programa `DeathUpdate()` via CallLater.
+Called on server when entity is eliminated. Invokes `m_OnKilledInvoker` and analytics. If `ReplaceOnDeath()` → schedules `DeathUpdate()` via CallLater.
 
 ### 9. EEDelete
 
@@ -163,7 +163,7 @@ Llamado en servidor cuando la entidad es eliminada. Invoca `m_OnKilledInvoker` y
 void EEDelete(EntityAI parent)
 ```
 
-Llamado al eliminar la entidad del mundo (también propaga a inventario).
+Called when eliminating entity from world (also propagates to inventory).
 
 ### 10. EEHealthLevelChanged / OnDamageDestroyed
 
@@ -172,7 +172,7 @@ Llamado al eliminar la entidad del mundo (también propaga a inventario).
 void EEHealthLevelChanged(int oldLevel, int newLevel, string zone)
 ```
 
-Se llama cuando el nivel de salud cambia (0=pristine → 4=ruined). Si `newLevel == GameConstants.STATE_RUINED` y `zone == ""` (zona global), llama `OnDamageDestroyed(oldLevel)` y `AttemptDestructionBehaviour(...)`.
+Called when health level changes (0=pristine → 4=ruined). If `newLevel == GameConstants.STATE_RUINED` and `zone == ""` (global zone), calls `OnDamageDestroyed(oldLevel)` and `AttemptDestructionBehaviour(...)`.
 
 ```c
 // scripts/3_game/entities/entityai.c:1047
@@ -183,7 +183,7 @@ void OnDamageDestroyed(int oldLevel);   // proto (override en clases concretas)
 
 ## Flujo TransportHit completo ⚠️ (relevante LF_RollingStone)
 
-### Trigger: EOnContact en DayZPlayerImplement
+### Trigger: EOnContact in DayZPlayerImplement
 
 ```c
 // scripts/4_world/entities/dayzplayerimplement.c:3814-3829
@@ -203,8 +203,8 @@ override protected void EOnContact(IEntity other, Contact extra)
 }
 ```
 
-**CLAVE**: `EOnContact` solo reacciona a `Transport.Cast(other)`. Si la entidad que impacta NO es un `Transport` (ni hereda de él), el flujo TransportHit NO se activa en absoluto desde el jugador. Para LF_RollingStone como `ItemBase`, el jugador no detecta la colisión con la piedra automáticamente — es la piedra quien debe llamar `target.ProcessDirectDamage(...)` directamente desde su propio `EOnContact`.
-(desde 1.30 Exp: same Transport-only filter at `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:3958-3973`.)
+**KEY**: `EOnContact` only reacts to `Transport.Cast(other)`. If the impacting entity is NOT a `Transport` (nor inherits from it), the TransportHit flow is NOT activated at all from the player. For LF_RollingStone as `ItemBase`, player does not automatically detect collision with the stone — it is the stone that must call `target.ProcessDirectDamage(...)` directly from its own `EOnContact`.
+(from 1.30 Exp: same Transport-only filter at `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:3958-3973`.)
 
 ### RegisterTransportHit — análisis línea a línea
 
@@ -218,22 +218,22 @@ void RegisterTransportHit(Transport transport)
         m_TransportHitVelocity = GetVelocity(transport);  // velocidad del Transport
 ```
 
-**Paso 1**: `m_TransportHitRegistered` actúa como guard de un solo disparo por frame de física.  
-**Paso 2**: Captura la velocidad del Transport (no del jugador).
+**Step 1**: `m_TransportHitRegistered` acts as a single-shot guard per physics frame.  
+**Step 2**: Captures Transport velocity (not player's).
 
 #### Rama Car:
 ```c
         if (Car.CastTo(car, transport))
         {
-            if (car.GetSpeedometerAbsolute() > 2)          // umbral mínimo: 2 km/h
+            if (car.GetSpeedometerAbsolute() > 2)          // minimum threshold: 2 km/h
             {
-                damage = m_TransportHitVelocity.Length();   // daño = magnitud velocidad (m/s)
+                damage = m_TransportHitVelocity.Length();   // damage = velocity magnitude (m/s)
                 ProcessDirectDamage(DT_CUSTOM, transport, "", "TransportHit", "0 0 0", damage);
             }
             else
-                m_TransportHitRegistered = false;            // sin daño si va muy lento
+                m_TransportHitRegistered = false;            // no damage if moving too slow
 
-            // impulso ragdoll solo a cadáveres
+            // ragdoll impulse to corpses only
             if (IsDamageDestroyed() && car.GetSpeedometerAbsolute() > 3)
             {
                 impulse = 40 * m_TransportHitVelocity;
@@ -243,14 +243,14 @@ void RegisterTransportHit(Transport transport)
         }
 ```
 
-**Daño Car** = `velocidad_transport.Length()` (metros/segundo) como `damageCoef` pasado a `ProcessDirectDamage`. A 30 km/h (~8.3 m/s) el damageCoef es ~8.3.  
-**Impulso ragdoll**: solo si el jugador ya está muerto (`IsDamageDestroyed()`). Magnitud escalada ×40 en XZ y ×60 en Y.
+**Car damage** = `velocidad_transport.Length()` (meters/second) as `damageCoef` passed to `ProcessDirectDamage`. At 30 km/h (~8.3 m/s) the damageCoef is ~8.3.  
+**Ragdoll impulse**: only if player is already dead (`IsDamageDestroyed()`). Magnitude scaled ×40 in XZ and ×60 in Y.
 
 #### Rama Boat:
 ```c
         else if (Boat.CastTo(boat, transport))
         {
-            // jugador parado sobre el barco → ignorar (no es colisión real)
+            // player standing on boat → ignore (not a real collision)
             if (player && player.PhysicsGetLinkedEntity() == boat)
             {
                 m_TransportHitRegistered = false;
@@ -258,7 +258,7 @@ void RegisterTransportHit(Transport transport)
             }
             if (m_TransportHitVelocity.Normalize() > 5)     // umbral: >5 m/s (Normalize devuelve longitud original)
             {
-                damage = m_TransportHitVelocity.Length() * 0.5;  // mitad de daño vs Car
+                damage = m_TransportHitVelocity.Length() * 0.5;  // half damage vs Car
                 ProcessDirectDamage(DT_CUSTOM, transport, "", "TransportHit", "0 0 0", damage);
             }
             else
@@ -266,11 +266,11 @@ void RegisterTransportHit(Transport transport)
         }
 ```
 
-#### Rama genérica (cualquier otro Transport):
+#### Generic branch (any other Transport):
 ```c
         else
         {
-            if (m_TransportHitVelocity.Length() > 0.1)       // umbral mínimo: 0.1 m/s
+            if (m_TransportHitVelocity.Length() > 0.1)       // minimum threshold: 0.1 m/s
             {
                 damage = m_TransportHitVelocity.Length();
                 ProcessDirectDamage(DT_CUSTOM, transport, "", "TransportHit", "0 0 0", damage);
@@ -289,28 +289,28 @@ void RegisterTransportHit(Transport transport)
 }
 ```
 
-La rama genérica tiene el umbral más bajo (0.1 m/s). Cualquier objeto que herede de `Transport` sin ser `Car` ni `Boat` cae aquí.
-(desde 1.30 Exp: `RegisterTransportHit` starts at `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4111`. A Motorbike branch sits between Car and Boat at `:4143-4160` — damage like Car when `GetSpeedometerAbsolute() > 2.0`; corpse impulse is `5.0 * velocity` with Y = 5.0, not 40/60. Generic is the last `else`. See section "DayZ 1.30 Exp" below.)
+The generic branch has the lowest threshold (0.1 m/s). Any object inheriting from `Transport` without being `Car` or `Boat` falls here.
+(from 1.30 Exp: `RegisterTransportHit` starts at `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4111`. A Motorbike branch sits between Car and Boat at `:4143-4160` — damage like Car when `GetSpeedometerAbsolute() > 2.0`; corpse impulse is `5.0 * velocity` with Y = 5.0, not 40/60. Generic is the last `else`. See section "DayZ 1.30 Exp" below.)
 
-### Reset de m_TransportHitRegistered
+### Reset of m_TransportHitRegistered
 
-El flag se resetea en `DayZPlayerImplement.EEHitBy` (`dayzplayerimplement.c:1551`):
+The flag resets in `DayZPlayerImplement.EEHitBy` (`dayzplayerimplement.c:1551`):
 ```c
 m_TransportHitRegistered = false;
 ```
-Esto permite recibir múltiples hits de transport en diferentes frames de física.
+This allows receiving multiple transport hits in different physics frames.
 
-### Qué hace ProcessDirectDamage con "TransportHit"
+### What ProcessDirectDamage does with "TransportHit"
 
-La función `ProcessDirectDamage(DT_CUSTOM, source, "", "TransportHit", "0 0 0", damage)` invoca el sistema C++ que:
-1. Busca `CfgAmmo TransportHit` en la configuración.
-2. Multiplica los valores de daño del ammo por `damageCoef` (= velocidad en m/s).
-3. Aplica a zonas según el DamageSystem de la entidad.
-4. Dispara `EEHitBy` en el objetivo.
+The function `ProcessDirectDamage(DT_CUSTOM, source, "", "TransportHit", "0 0 0", damage)` invokes the C++ system that:
+1. Looks up `CfgAmmo TransportHit` in configuration.
+2. Multiplies ammo damage values by `damageCoef` (= velocity in m/s).
+3. Applies to zones according to entity DamageSystem.
+4. Fires `EEHitBy` on target.
 
-**El ammo "TransportHit" NO está definido en `scripts/config.cpp`** — está en los configs binarios de DayZ base (data/). Sus valores de daño base + shock son los que el C++ escala con la velocidad.
+**Ammo "TransportHit" is NOT defined in `scripts/config.cpp`** — it is in base DayZ binary configs (data/). Its base damage + shock values are what C++ scales with velocity.
 
-### Flujo en DayZPlayerImplement.EEHitBy post-TransportHit
+### Flow in DayZPlayerImplement.EEHitBy post-TransportHit
 
 ```c
 // dayzplayerimplement.c:1547-1600
@@ -327,7 +327,7 @@ override void EEHitBy(..., string ammo, ...)
     }
     else
     {
-        // animación de impacto:
+        // impact animation:
         // DamageType.CUSTOM con hitAnimation==1 → fullbody anim
         EvaluateDamageHitAnimation(...);
         DayZPlayerSyncJunctures.SendDamageHitEx(...);
@@ -335,15 +335,15 @@ override void EEHitBy(..., string ammo, ...)
 }
 ```
 
-Para `DamageType.CUSTOM` + ammo `"TransportHit"`:  
-- Si `cfgAmmo TransportHit hitAnimation == 1` → `pAnimHitFullbody = true` → animación de golpe de cuerpo completo.  
-- El jugador vivo recibe feedback visual/sonoro del impacto.
+For `DamageType.CUSTOM` + ammo `"TransportHit"`:  
+- If `cfgAmmo TransportHit hitAnimation == 1` → `pAnimHitFullbody = true` → full-body hit animation.  
+- The live player receives visual/audio impact feedback.
 
 ---
 
 ## Config dmgZones
 
-La estructura en `CfgVehicles`:
+Structure in `CfgVehicles`:
 ```
 class MyCar : Transport
 {
@@ -367,22 +367,22 @@ class MyCar : Transport
 };
 ```
 
-**Componentes clave de una zone**:
-- `componentNames[]`: nombres de geo-components del p3d que mapean a esta zona.
-- `transferToZonesNames[]` / `transferToZonesCoefs[]`: qué porcentaje del daño se transfiere a otras zonas.
-- `transferToGlobalCoef`: fracción que va al health global.
-- `fatalInjuryCoef`: si la zona llega a 0 health y este coef > 0, el objeto es destruido [NO verificado en scripts — aparece en comentarios de `actionrepairtent.c:160`].
+**Key components of a zone**:
+- `componentNames[]`: names of p3d geo-components mapping to this zone.
+- `transferToZonesNames[]` / `transferToZonesCoefs[]`: what percentage of damage transfers to other zones.
+- `transferToGlobalCoef`: fraction going to global health.
+- `fatalInjuryCoef`: if zone reaches 0 health and this coef > 0, object is destroyed [UNVERIFIED in scripts — appears in comments of `actionrepairtent.c:160`].
 
-**GlobalHealth**: zona especial del jugador accedida como `GetHealth("GlobalHealth", "Blood")` usada por el HUD (playerbase.c:5321). No es una zone definida en config del jugador — es un agregado C++.
+**GlobalHealth**: special player zone accessed as `GetHealth("GlobalHealth", "Blood")` used by HUD (playerbase.c:5321). Not a zone defined in player config — it is a C++ aggregate.
 
-**Estados de salud** (GameConstants, `scripts/3_game/constants.c:851-855`):
-| Constante | Valor | Descripción |
+**Health states** (GameConstants, `scripts/3_game/constants.c:851-855`):
+| Constant | Value | Description |
 |-----------|-------|-------------|
-| `STATE_PRISTINE` | 0 | Nuevo |
-| `STATE_WORN` | 1 | Desgastado |
-| `STATE_DAMAGED` | 2 | Dañado |
-| `STATE_BADLY_DAMAGED` | 3 | Muy dañado |
-| `STATE_RUINED` | 4 | Destruido / 0 HP |
+| `STATE_PRISTINE` | 0 | Pristine |
+| `STATE_WORN` | 1 | Worn |
+| `STATE_DAMAGED` | 2 | Damaged |
+| `STATE_BADLY_DAMAGED` | 3 | Badly damaged |
+| `STATE_RUINED` | 4 | Destroyed / 0 HP |
 
 ---
 
@@ -395,13 +395,13 @@ class MyCar : Transport
 float GetProtectionLevel(int type, bool consider_filter = false, int system = 0)
 ```
 
-Esta función en `ItemBase` devuelve protección **ambiental** (biológica/química) de máscaras y filtros, NO absorción balística de daño. Tipos DEF_BIOLOGICAL / DEF_CHEMICAL. Lee `CfgVehicles item Protection { biological; chemical; }`.
+This function in `ItemBase` returns **environmental** protection (biological/chemical) of masks and filters, NOT ballistic damage absorption. Types DEF_BIOLOGICAL / DEF_CHEMICAL. Reads `CfgVehicles item Protection { biological; chemical; }`.
 
-### Absorción balística (cómo funciona realmente)
+### Ballistic absorption (how it actually works)
 
-La absorción de daño de la ropa es un mecanismo **100% en C++** configurado vía `CfgAmmo`. Cada ammo tiene multiplicadores de daño que se reducen por el inventario de la víctima. En scripts, los eventos post-daño son:
+Clothing damage absorption is a **100% C++ mechanism** configured via `CfgAmmo`. Each ammo has damage multipliers reduced by victim's inventory. In scripts, post-damage events are:
 
-1. `ItemBase.EEHitBy` (el item EQUIPADO recibe el callback):
+1. `ItemBase.EEHitBy` (the EQUIPPED item receives the callback):
    ```c
    // scripts/4_world/entities/itembase.c:1522-1560
    override void EEHitBy(TotalDamageResult damageResult, ...)
@@ -410,47 +410,47 @@ La absorción de daño de la ropa es un mecanismo **100% en C++** configurado v�
        if (IsClothing() || IsContainer() || IsItemTent())
        {
            float dmg = damageResult.GetDamage("","Health") * -0.5;
-           // daña aleatoriamente cargo o attachment (1/4 probabilidad + otro rand)
+           // randomly damages cargo or attachment (1/4 probability + another rand)
            DamageItemInCargo(dmg);    // o
            DamageItemAttachments(dmg);
        }
    }
    ```
    
-   La **ropa equipada se degrada** cuando el jugador recibe daño (50% del daño de Health como HP negativos al cargo/attachment). La reducción real del daño al jugador NO ocurre en script — ocurre en C++ antes de que llegue el EEHitBy.
+   **Equipped clothing degrades** when player takes damage (50% of Health damage as negative HP to cargo/attachment). The actual reduction of damage to player does NOT occur in script — it occurs in C++ before EEHitBy arrives.
 
-2. Los cascos y chalecos balísticos tienen valores de protección en `CfgVehicles > armorLevels` (data C++ binaria, no en scripts descompilados).
+2. Ballistic helmets and vests have protection values in `CfgVehicles > armorLevels` (binary C++ data, not in decompiled scripts).
 
-### BallisticHelmet — solo wrapper de clase
+### BallisticHelmet — class wrapper only
 
 ```c
 // scripts/4_world/entities/itembase/clothing/helmetbase/ballistichelmet_colorbase.c:1
 class BallisticHelmet_ColorBase extends HelmetBase
 ```
 
-No hay override de script relevante — toda su lógica de protección es config C++.
+There is no relevant script override — its entire protection logic is C++ config.
 
 ---
 
-## Hitzones del jugador (DamageZones)
+## Player hitzones (DamageZones)
 
-Los nombres de zona usados en scripts (verificados por uso en playerbase.c, dayzplayerimplement.c):
+Zone names used in scripts (verified by usage in playerbase.c, dayzplayerimplement.c):
 
-| Zona | Observaciones |
+| Zone | Observations |
 |------|---------------|
-| `"Head"` | Zona de cabeza (disparo headshot) |
-| `"Brain"` | Sub-zona de cabeza para headshot kill tracking (`dayzplayerimplement.c:1576`) |
-| `"Torso"` | Torso, componente usado en animación fullbody (`dayzplayerimplement.c:1496`) |
+| `"Head"` | Head zone (headshot shot) |
+| `"Brain"` | Head sub-zone for headshot kill tracking (`dayzplayerimplement.c:1576`) |
+| `"Torso"` | Torso, component used in fullbody animation (`dayzplayerimplement.c:1496`) |
 | `"LeftArm"` | Bleeding source up (`playerbase.c:542`) |
 | `"RightArm"` | Bleeding source up (`playerbase.c:538`) |
 | `"LeftLeg"` | Legs (broken legs check) (`playerbase.c:1293`) |
 | `"RightLeg"` | Legs (`playerbase.c:1293`) |
 | `"LeftFoot"` | Feet (broken legs check) (`playerbase.c:1293`) |
 | `"RightFoot"` | Feet |
-| `""` (vacío) | Zona global |
-| `"GlobalHealth"` | Agregado C++ usado solo para lectura HUD |
+| `""` (empty) | Global zone |
+| `"GlobalHealth"` | C++ aggregate used only for HUD reading |
 
-Las zonas físicas con sus `componentNames` están definidas en la data binaria de DayZ (`DayZCharacter` en CfgVehicles), no en los scripts descompilados.
+Physical zones with their `componentNames` are defined in binary DayZ data (`DayZCharacter` in CfgVehicles), not in decompiled scripts.
 
 ---
 
@@ -462,34 +462,34 @@ ref BleedingSourcesManagerServer m_BleedingManagerServer;
 ref BleedingSourcesManagerRemote m_BleedingManagerRemote;
 ```
 
-**Flujo de bleeding** (`bleedingsourcesmanagerserver.c:167-198`):
-1. En `PlayerBase.EEHitBy`, si hay daño a "Blood" y hay bleeding manager: `GetBleedingManagerServer().ProcessHit(dmg, source, component, zone, ammo, modelPos)`.
-2. `ProcessHit` lee `CfgAmmo ammo DamageApplied bleedThreshold` (float 0..1).
-3. Si el daño supera el umbral, crea una `BleedingSource` en la zona correspondiente.
-4. El ammo puede tener `DamageApplied type` (string) para usar `BleedChanceData.CalculateBleedChance`.
+**Bleeding flow** (`bleedingsourcesmanagerserver.c:167-198`):
+1. In `PlayerBase.EEHitBy`, if there is "Blood" damage and bleeding manager exists: `GetBleedingManagerServer().ProcessHit(dmg, source, component, zone, ammo, modelPos)`.
+2. `ProcessHit` reads `CfgAmmo ammo DamageApplied bleedThreshold` (float 0..1).
+3. If damage exceeds threshold, creates a `BleedingSource` in corresponding zone.
+4. Ammo may have `DamageApplied type` (string) to use `BleedChanceData.CalculateBleedChance`.
 
-**Bleeding sources** tienen tipo `eBleedingSourceType` (NORMAL / CONTAMINATED) y están mapeadas a huesos/posiciones del skeleton del jugador.
+**Bleeding sources** have `eBleedingSourceType` type (NORMAL / CONTAMINATED) and are mapped to bones/positions of player skeleton.
 
 ---
 
-## Shock y Unconsciousness
+## Shock and Unconsciousness
 
 ```c
 // scripts/4_world/classes/shockhandler.c
 class ShockHandler
 {
     void SetShock(float dealtShock);    // acumula shock
-    void CheckValue(bool forceUpdate);  // aplica y sincroniza si supera threshold
+    void CheckValue(bool forceUpdate);  // applies and syncs if exceeds threshold
     float GetCurrentShock();            // shock actual (= player.m_CurrentShock)
 }
 ```
 
-**Flujo**:
-1. Daño de "Shock" entra por `ProcessDirectDamage` (C++ aplica al health Shock del jugador).
-2. En `PlayerBase.EEHitBy`: `m_ShockHandler.CheckValue(true)` — fuerza sincronización.
-3. Si `cfgAmmo ammo DamageApplied transferShockToDamage == 1`: se convierte Shock en daño adicional de Health (armas no letales).
-4. `ShockHandler.Update()` en cada tick; si shock < threshold, activa `ShouldBeUnconscious`.
-5. La inconsciencia se gestiona en el command handler de DayZPlayerImplement (`m_ShouldBeUnconscious`, `m_IsUnconscious`).
+**Flow**:
+1. "Shock" damage enters via `ProcessDirectDamage` (C++ applies to player Shock health).
+2. In `PlayerBase.EEHitBy`: `m_ShockHandler.CheckValue(true)` — forces synchronization.
+3. If `cfgAmmo ammo DamageApplied transferShockToDamage == 1`: Shock is converted into additional Health damage (non-lethal weapons).
+4. `ShockHandler.Update()` on each tick; if shock < threshold, activates `ShouldBeUnconscious`.
+5. Unconsciousness is managed in DayZPlayerImplement command handler (`m_ShouldBeUnconscious`, `m_IsUnconscious`).
 
 `GiveShock(float shock)` → `AddHealth("","Shock", shock)` (valor negativo drena shock).
 
@@ -504,39 +504,39 @@ bool EvaluateDamageHitAnimation(TotalDamageResult, int pDamageType, ...)
     switch (pDamageType)
     {
         case DamageType.CLOSE_COMBAT:  // lee cfgAmmo hitAnimation
-        case DamageType.FIRE_ARM:      // fullbody si Torso/Head + daño alto
-        case DamageType.EXPLOSION:     // sin animación especial
+        case DamageType.FIRE_ARM:      // fullbody if Torso/Head + high damage
+        case DamageType.EXPLOSION:     // no special animation
         case DamageType.CUSTOM:
             // hitAnimation==1 → fullbody
-            // si ammo != "HeatDamage" y no está cayendo → devuelve false (sin anim)
+            // if ammo != "HeatDamage" and not falling → returns false (no anim)
     }
 }
 ```
 
-Para `DamageType.CUSTOM` con ammo `"TransportHit"`:
-- Si `cfgAmmo TransportHit hitAnimation` retorna 1 → animación fullbody.
-- Si devuelve 0 o no existe → sin animación de impacto (solo sound).
+For `DamageType.CUSTOM` with ammo `"TransportHit"`:
+- If `cfgAmmo TransportHit hitAnimation` returns 1 → fullbody animation.
+- If returns 0 or does not exist → no impact animation (sound only).
 
 ---
 
 ## Patrones
 
-### Daño por script a una entidad (sin ammo custom)
+### Script damage to an entity (without custom ammo)
 ```c
-// Método más directo: usa DecreaseHealth bypaseando el sistema de ammo
-target.DecreaseHealth("", "", 50.0); // 50 HP de daño a zona global
+// Most direct method: uses DecreaseHealth bypassing ammo system
+target.DecreaseHealth("", "", 50.0); // 50 HP damage to global zone
 
-// Correcto para zonas específicas:
+// Correct for specific zones:
 target.DecreaseHealth("LeftLeg", "Health", 25.0);
 
-// Para respetar el pipeline completo (triggers EEHitBy, animations, bleeding):
+// To respect full pipeline (triggers EEHitBy, animations, bleeding):
 target.ProcessDirectDamage(DamageType.CUSTOM, sourceEntity, "", "TransportHit", "0 0 0", damageCoef);
 ```
 
-### Daño de área (trigger zones)
+### Area damage (trigger zones)
 ```c
 // AreaDamageComponent (scripts/4_world/classes/areadamage/):
-// Por defecto usa ammo "MeleeDamage" y type CUSTOM
+// Defaults to ammo "MeleeDamage" and type CUSTOM
 object.ProcessDirectDamage(m_DamageType, m_Parent.GetParentObject(),
     data.Hitzone, m_AmmoName, data.Modelpos, damageCoef);
 ```
@@ -554,7 +554,7 @@ DamageSystem.ExplosionDamage(EntityAI.Cast(source), null,
     "Explosion_40mm_Ammo", pos, DamageType.EXPLOSION);
 ```
 
-Cuando `directHitObject == null`, el sistema aplica daño en radio definido en CfgAmmo. Los destructibles usan `DestructionEffectBase.DealExplosionDamage()` que internamente llama esto (`destructioneffectbase.c:50-52`).
+When `directHitObject == null`, system applies damage in radius defined in CfgAmmo. Destructibles use `DestructionEffectBase.DealExplosionDamage()` which internally calls this (`destructioneffectbase.c:50-52`).
 
 ### DealAbsoluteDmg (script helper)
 ```c
@@ -565,66 +565,66 @@ static void DealAbsoluteDmg(ItemBase item, float dmg)
 }
 ```
 
-Helper para herramientas que se desgastan al usarse. Bypasea el sistema de ammo.
+Helper for tools that wear down upon use. Bypasses ammo system.
 
 ---
 
 ## Gotchas
 
-1. **TransportHit requiere herencia de Transport**: `EOnContact` del jugador solo registra hit si la entidad impactante hace `Transport.Cast(other)` con éxito. `ItemBase` → `EntityAI` → no es Transport. La piedra necesita llamar `target.ProcessDirectDamage(...)` ella misma desde su propio `EOnContact`.
+1. **TransportHit requires Transport inheritance**: player's `EOnContact` only registers hit if impacting entity does `Transport.Cast(other)` successfully. `ItemBase` → `EntityAI` → not Transport. The rock needs to call `target.ProcessDirectDamage(...)` itself from its own `EOnContact`.
 
-2. **m_TransportHitRegistered como guard de frame**: el flag solo permite un hit por "episodio de contacto". Se resetea en `EEHitBy`, no en cada frame. Si la piedra llama `ProcessDirectDamage` directamente, no hay guard — puede disparar múltiples veces por tick si el contacto físico oscila.
+2. **m_TransportHitRegistered as frame guard**: flag only permits one hit per "contact episode". Resets in `EEHitBy`, not every frame. If the rock calls `ProcessDirectDamage` directly, there is no guard — can fire multiple times per tick if physical contact oscillates.
 
-3. **damageCoef en ProcessDirectDamage ES la velocidad**: En `RegisterTransportHit`, `damage = velocidad.Length()` se pasa como `damageCoef`. El daño real = `CfgAmmo TransportHit daño_base * damageCoef`. A 10 m/s con daño base 1 → 10 HP. El ammo "TransportHit" no está en scripts — está en datos binarios.
+3. **damageCoef in ProcessDirectDamage IS the velocity**: In `RegisterTransportHit`, `damage = velocidad.Length()` is passed as `damageCoef`. Actual damage = `CfgAmmo TransportHit base_damage * damageCoef`. At 10 m/s with base damage 1 → 10 HP. Ammo "TransportHit" is not in scripts — it is in binary data.
 
-4. **Impulso ragdoll solo post-muerte**: `dBodyApplyImpulse` en RegisterTransportHit solo se llama si `IsDamageDestroyed()`. Para empujar jugadores VIVOS, el sistema de solver físico de PhysX maneja el impulso automáticamente cuando hay contacto de cuerpos rígidos — no hay llamada de script explícita para eso.
+4. **Ragdoll impulse only post-death**: `dBodyApplyImpulse` in RegisterTransportHit is only called if `IsDamageDestroyed()`. To push LIVE players, the PhysX physical solver system handles physical impulse automatically when there is rigid body contact — there is no explicit script call for that.
 
-5. **GetProtectionLevel es solo para hazmat**: No mide protección balística. Los valores de absorción de daño de chalecos/cascos son puramente C++/config.
+5. **GetProtectionLevel is for hazmat only**: Does not measure ballistic protection. Damage absorption values of vests/helmets are purely C++/config.
 
-6. **DamageType.STUN** existe en el enum pero no tiene uso visible en scripts vanilla — [uso no verificado en scripts actuales].
+6. **DamageType.STUN** exists in the enum but has no visible usage in vanilla scripts — [usage unverified in current scripts].
 
-7. **EEHitBy es SOLO servidor**: Cualquier lógica puesta en EEHitBy sin guard `IsServer()` se ejecutará solo en servidor de todas formas. `EEHitByRemote` es el equivalente en el cliente-shooter.
+7. **EEHitBy is SERVER ONLY**: Any logic placed in EEHitBy without `IsServer()` guard will execute server-side only anyway. `EEHitByRemote` is the shooter-client equivalent.
 
-8. **`componentName` en ProcessDirectDamage no es el nombre de componente del modelo**: es el nombre de la DamageZone (ej: "Head", "Engine"). El comentario en el código lo aclara explícitamente (`object.c:1128`).
+8. **`componentName` in ProcessDirectDamage is not the model component name**: it is the DamageZone name (e.g. "Head", "Engine"). Code comment explicitly clarifies it (`object.c:1128`).
 
-9. **Boat tiene factor 0.5 de daño** respecto a Car a la misma velocidad (hasta 1.29: `entityai.c:4129`; desde 1.30 Exp: `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4173` after the Motorbike branch). La rama genérica aplica el mismo factor que Car.
+9. **Boat has 0.5 damage factor** relative to Car at same speed (up to 1.29: `entityai.c:4129`; from 1.30 Exp: `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4173` after the Motorbike branch). The generic branch applies the same factor as Car.
 
-10. **Zona "Brain" solo existe en muerte headshot tracking**: No es una DamageZone de config, sino un string que el shooter envía en `dmgZone` cuando la bala impacta el componente de cabeza. Verificar si está configurada como zona real es pendiente.
-
----
-
-## Qué NO existe (anti-confabulación)
-
-- **`ProcessIndirectDamage` en EntityAI/Object**: NO existe como función script. El daño indirecto de explosiones es C++ vía `DamageSystem.ExplosionDamage`.
-- **`DealDamage` como función global de script**: NO existe. El nombre correcto es `ProcessDirectDamage` (en Object) o `DealAbsoluteDmg` (helper en MiscGameplayFunctions).
-- **"TransportHit" en config.cpp del mod**: NO está en los scripts de DayZ — está en datos binarios. Para replicar el flujo, el mod debe usar ese nombre de ammo (que ya existe en la base del juego) o uno propio definido en su config.cpp.
-- **`GetProtectionLevel` para protección balística**: La función existe pero solo cubre DEF_BIOLOGICAL y DEF_CHEMICAL. NO absorbe daño de armas.
-- **Hitzones definidas en scripts**: Los `componentNames` de las DamageZones del jugador están en CfgVehicles binario (DayZCharacter), no en los scripts descompilados.
-- **`BleedingSourcesManagerServer` / `ShockHandler` como clases accesibles directamente desde mods exteriores**: Son `ref` privados en PlayerBase — accesibles solo via `GetBleedingManagerServer()` / (ShockHandler no tiene getter público).
-- **`fatalInjuryCoef` en scripts**: Aparece referenciado en comentario de `actionrepairtent.c:156` como "hack", pero no se lee vía script directo — es leído por C++.
+10. **"Brain" zone exists only in headshot death tracking**: It is not a config DamageZone, but a string shooter sends in `dmgZone` when bullet impacts head component. Verifying if configured as real zone is pending.
 
 ---
 
-## Relevancia para LF_RollingStone
+## What does NOT exist (anti-confabulation)
 
-### Problema S2: "Empujar + daño TransportHit"
+- **`ProcessIndirectDamage` in EntityAI/Object**: does NOT exist as a script function. Indirect explosion damage is C++ via `DamageSystem.ExplosionDamage`.
+- **`DealDamage` as a global script function**: does NOT exist. The correct name is `ProcessDirectDamage` (on Object) or `DealAbsoluteDmg` (helper in MiscGameplayFunctions).
+- **"TransportHit" in mod config.cpp**: NOT in DayZ scripts — it is in binary data. To replicate flow, mod must use that ammo name (which already exists in game base) or its own defined in config.cpp.
+- **`GetProtectionLevel` for ballistic protection**: Function exists but only covers DEF_BIOLOGICAL and DEF_CHEMICAL. Does NOT absorb weapon damage.
+- **Hitzones defined in scripts**: `componentNames` of player DamageZones are in binary CfgVehicles (DayZCharacter), not in decompiled scripts.
+- **`BleedingSourcesManagerServer` / `ShockHandler` as classes accessible directly from exterior mods**: They are private `ref` on PlayerBase — accessible only via `GetBleedingManagerServer()` / (ShockHandler has no public getter).
+- **`fatalInjuryCoef` in scripts**: Appears referenced in comment of `actionrepairtent.c:156` as "hack", but is not read via direct script — it is read by C++.
 
-El path actual en LFRS S2 usa `ProcessDirectDamage(DT_CUSTOM, source, "", "TransportHit", ...)` desde el `EOnContact` de la piedra. Esto es **correcto** en concepto:
-- `DamageType.CUSTOM` + ammo `"TransportHit"` → C++ busca ese ammo (existe en DayZ base).
-- `damageCoef` = velocidad → daño proporcional a velocidad.
-- `EEHitBy` del jugador se dispara normalmente → bleeding + shock + animación.
+---
 
-**Problema de activación**: el jugador no detecta la piedra como Transport, entonces `EOnContact` de la piedra (LFRS_RollingStone que hereda ItemBase, no Transport) se dispara, no el del jugador. Desde `EOnContact` de la piedra, el target puede ser el jugador. El código necesita:
+## Relevance for LF_RollingStone
+
+### Problem S2: "Push + TransportHit damage"
+
+Current path in LFRS S2 uses `ProcessDirectDamage(DT_CUSTOM, source, "", "TransportHit", ...)` from stone's `EOnContact`. This is **correct** in concept:
+- `DamageType.CUSTOM` + ammo `"TransportHit"` → C++ looks up that ammo (exists in base DayZ).
+- `damageCoef` = velocity → damage proportional to velocity.
+- Player's `EEHitBy` fires normally → bleeding + shock + animation.
+
+**Activation problem**: player does not detect the stone as Transport, so `EOnContact` of the stone (LFRS_RollingStone inheriting ItemBase, not Transport) fires, not the player's. From stone's `EOnContact`, target can be player. The code needs:
 ```c
-// En EOnContact de LFRS_RollingStone:
+// In EOnContact of LFRS_RollingStone:
 override void EOnContact(IEntity other, Contact extra)
 {
     if (!g_Game.IsServer()) return;
     EntityAI target = EntityAI.Cast(other);
     if (target && target.IsAlive())
     {
-        float speed = GetVelocity(this).Length(); // velocidad de la PIEDRA
-        if (speed > 0.5) // umbral mínimo
+        float speed = GetVelocity(this).Length(); // velocity of the STONE
+        if (speed > 0.5) // minimum threshold
         {
             target.ProcessDirectDamage(DamageType.CUSTOM, this, "",
                 "TransportHit", "0 0 0", speed);
@@ -635,25 +635,25 @@ override void EOnContact(IEntity other, Contact extra)
 
 ### Problema del impulso (empuje a jugadores vivos)
 
-El impulso ragdoll de `RegisterTransportHit` solo aplica a cadáveres. Para vivos, el solver PhysX aplica impulso físico automáticamente si la piedra tiene `dBodySetMass` y el jugador tiene `EnableDynamicSimulation`. Pero `dBodyApplyImpulse` en el servidor sobre el jugador SÍ funciona para vivos también — es el mismo mecanismo que el ragdoll de caída.
+The ragdoll impulse of `RegisterTransportHit` applies only to corpses. For live players, PhysX solver applies physical impulse automatically if stone has `dBodySetMass` and player has `EnableDynamicSimulation`. But server-side `dBodyApplyImpulse` on the player DOES work for live players too — it is the same mechanism as falling ragdoll.
 
 Para empujar vivos:
 ```c
 if (target.IsAlive() && speed > 1.0)
 {
-    vector impulse = GetVelocity(this) * 20; // escalar según masa
-    impulse[1] = Math.Max(impulse[1], 5.0);  // componente Y mínima
+    vector impulse = GetVelocity(this) * 20; // scale according to mass
+    impulse[1] = Math.Max(impulse[1], 5.0);  // minimum Y component
     dBodyApplyImpulse(target, impulse);
 }
 ```
 
-### Guard contra hits múltiples
+### Guard against multiple hits
 
-Sin guard equivalente a `m_TransportHitRegistered`, el EOnContact puede dispararse múltiples veces en el mismo frame de física si hay múltiples puntos de contacto. Implementar un bool + reset en EEHitBy o usar un cooldown de tiempo.
+Without guard equivalent to `m_TransportHitRegistered`, EOnContact can fire multiple times in same physics frame if multiple contact points exist. Implement a bool + reset in EEHitBy or use a time cooldown.
 
-### Animación de hit
+### Hit animation
 
-Para que el jugador muestre animación de golpe por TransportHit, el ammo "TransportHit" en la data base tiene `hitAnimation` configurado. Si se usa un ammo custom (ej: "LFRS_StoneHit"), se debe definir en config.cpp:
+For player to show hit animation from TransportHit, ammo "TransportHit" in base data has `hitAnimation` configured. If custom ammo is used (e.g. "LFRS_StoneHit"), it must be defined in config.cpp:
 ```cpp
 class CfgAmmo {
     class LFRS_StoneHit {

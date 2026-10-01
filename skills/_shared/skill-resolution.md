@@ -1,77 +1,77 @@
 # Skill resolution policy (added 2026-05-12)
 
-Política operativa cuando ya hay duplicación entre skills custom del usuario y skills instaladas vía plugin (no es el caso "pre-install" — para eso ver "PLUGIN INSTALL CONFLICT CHECK" en `skill-conventions/SKILL.md`).
+Operational policy when duplication already exists between user custom skills and plugin-installed skills (not the "pre-install" case — for that see "PLUGIN INSTALL CONFLICT CHECK" in `skill-conventions/SKILL.md`).
 
-Caso típico: el plugin `agentic-z@dayz-n-chill` introduce `dayz-p3d-audit`, `dayz-p3d-debin`, `dayz-particles` cuando ya existen versiones locales en `C:\Users\<you>\.claude\skills\`. Ambos quedan resolvibles vía namespace (`agentic-z:dayz-p3d-audit` vs `dayz-p3d-audit`).
+Typical case: `agentic-z@dayz-n-chill` plugin introduces `dayz-p3d-audit`, `dayz-p3d-debin`, `dayz-particles` when local versions already exist in `C:\Users\<you>\.claude\skills\`. Both remain resolvable via namespace (`agentic-z:dayz-p3d-audit` vs `dayz-p3d-audit`).
 
 ## Default operativo
 
-Sin política explícita en proyecto: las skills custom locales (`C:\Users\<you>\.claude\skills\<name>`) ganan al plugin (`agentic-z:<name>`) porque suelen tener parches específicos del usuario.
+Without explicit project policy: local custom skills (`C:\Users\<you>\.claude\skills\<name>`) win over plugin (`agentic-z:<name>`) because they typically carry user-specific patches.
 
-## Política por skill (a decidir al detectar el conflicto)
+## Per-skill policy (to decide upon detecting conflict)
 
-1. **Custom local deriva de la del plugin y el parche ya está integrado upstream** → borrar la custom local, usar la del plugin. Verificar viendo el diff antes de borrar (`diff plugin/skill.md user-local/skill.md`).
-2. **Custom local diverge sustancialmente** (paths a `P:\` propios, magic numbers tuneados a tu setup, secciones específicas LFPG/LFV/SimpleGroup) → mantener custom, desactivar la del plugin con `/plugin manage <plugin>` desmarcando esa skill concreta.
-3. **No estás seguro** → mantener ambas, declarar conflicto en el `CLAUDE.md` del proyecto activo:
+1. **Local custom derives from plugin and patch is already upstreamed** → delete local custom, use plugin copy. Verify by inspecting diff before deleting (`diff plugin/skill.md user-local/skill.md`).
+2. **Local custom diverges substantially** (own `P:\` paths, magic numbers tuned to setup, specific LFPG/LFV/SimpleGroup sections) → keep custom, disable plugin copy with `/plugin manage <plugin>` unchecking that specific skill.
+3. **You are unsure** → keep both, declare conflict in `CLAUDE.md` of active project:
 
 ```markdown
 ## Skill resolution overrides
 - Para dominio `dayz-p3d-audit`: usar `<namespace>:dayz-p3d-audit` porque <razón>. Última verificación YYYY-MM-DD.
 ```
 
-## Documentar la decisión donde se vea
+## Document the decision where visible
 
-Una vez decidido, escribir el override en:
+Once decided, write override in:
 
-- `00_System/codex-briefing.md` del vault (regla global del pipeline).
-- `workflow.md` del vault si afecta a varios proyectos.
-- `CLAUDE.md` del repo si es específico de proyecto.
+- `00_System/codex-briefing.md` of vault (global pipeline rule).
+- `workflow.md` of vault if affecting multiple projects.
+- repo `CLAUDE.md` if project-specific.
 
-Así Codex y Claude saben cuál llamar y por qué, sin tener que re-evaluar el conflicto en cada sesión.
+This way Codex and Claude know which one to call and why, without having to re-evaluate conflict each session.
 
-## Antes de instalar un plugin nuevo
+## Before installing a new plugin
 
-Listar las skills locales (`ls ~/.claude/skills/`) y comparar con el manifest del plugin. Decidir política PR-skill ANTES de instalar, no después de notar el conflicto. Esto está ya cubierto en `skill-conventions/SKILL.md` sección "PLUGIN INSTALL CONFLICT CHECK".
+List local skills (`ls ~/.claude/skills/`) and compare with plugin manifest. Decide per-skill policy BEFORE installing, not after noticing conflict. This is already covered in `skill-conventions/SKILL.md` section "PLUGIN INSTALL CONFLICT CHECK".
 
-## Anti-patrón
+## Anti-pattern
 
-Instalar plugin sin auditar conflictos, descubrir la duplicación tres sesiones después, y dejar la decisión en limbo. Resultado: las dos versiones conviven indefinidamente, los agentes invocan la "incorrecta" según orden de búsqueda interno y el usuario no entiende por qué la skill se comporta diferente.
+Installing plugin without auditing conflicts, discovering duplication three sessions later, and leaving decision in limbo. Result: both versions coexist indefinitely, agents invoke the "wrong" one per internal search order, and user does not understand why skill behaves differently.
 
-## Medido el 2026-08-24: el «Default operativo» se confirma, y le faltan dos cosas (added 2026-08-24)
+## Measured on 2026-08-24: "Operational default" is confirmed, and is missing two things (added 2026-08-24)
 
-El default de arriba —«las skills custom locales ganan al plugin»— **se midió y es cierto**,
-pero hasta esa fecha era política escrita sin medición, y su ejemplo era `agentic-z:`, no el
-plugin que hoy sirve la mayoría del catálogo. Medición: se invocó la MISMA skill duplicada por
-sus dos nombres y se leyó el base directory devuelto.
+Default above —"local custom skills win over plugin"— **was measured and is true**,
+but until that date it was written policy without measurement, and its example was `agentic-z:`, not the
+plugin today serving most of the catalog. Measurement: SAME duplicated skill was invoked by
+its two names and returned base directory was read.
 
-| Invocación | Carga de |
+| Invocation | Loads from |
 |---|---|
-| `mixamo-retarget` (desnudo) | `C:\Users\<you>\.claude\skills\mixamo-retarget` |
-| `anthropic-skills:mixamo-retarget` (prefijado) | `%APPDATA%\Claude\local-agent-mode-sessions\skills-plugin\<uuid>\<uuid>\skills\mixamo-retarget` |
+| `mixamo-retarget` (bare) | `C:\Users\<you>\.claude\skills\mixamo-retarget` |
+| `anthropic-skills:mixamo-retarget` (prefixed) | `%APPDATA%\Claude\local-agent-mode-sessions\skills-plugin\<uuid>\<uuid>\skills\mixamo-retarget` |
 
-**Los dos matices que faltaban, y son los que hacen daño:**
+**The two missing nuances, and they are the ones causing damage:**
 
-1. **«Gana» sólo se aplica al nombre desnudo.** Las dos copias siguen siendo **servibles**: el
-   nombre prefijado carga la del plugin, y los dos nombres están en el catálogo de cada
-   sesión. Así que arreglar la copia local NO retira la otra — un agente que escriba
-   `anthropic-skills:<x>` se lleva la versión vieja sin ninguna señal de que lo es. En la
-   medida, la copia servida iba **19 días por detrás** y le faltaba un arreglo de doctrina que
-   sí estaba en la local.
-2. **Hay un tercer árbol, y no es ninguna de las dos editables.** Lo que sirve el namespace no
-   es la carpeta desde la que se empaquetó: es una copia **materializada por la app** bajo
-   `%APPDATA%\Claude\local-agent-mode-sessions\skills-plugin\`, con manifiesto y un
-   reconciliador que borra lo no registrado a los minutos (ver la memoria
-   `claude-skills-plugin-tree-managed`). Puede haber **más de una instalación** ahí a la vez,
-   con contenidos distintos. Editarla a mano no sobrevive; el alta oficial es `.skill` +
-   botón «Save skill».
+1. **"Wins" applies only to bare name.** Both copies remain **servable**: the
+   prefixed name loads the plugin copy, and both names are in the catalog of each
+   session. So fixing the local copy does NOT retire the other — an agent writing
+   `anthropic-skills:<x>` gets the old version with no indication that it is. In the
+   measurement, the served copy was **19 days behind** and lacked a doctrine fix that
+   was in the local copy.
+2. **There is a third tree, and it is neither of the two editable ones.** What namespace serves is not
+   the folder from which it was packaged: it is a copy **materialized by the app** under
+   `%APPDATA%\Claude\local-agent-mode-sessions\skills-plugin\`, with manifest and a
+   reconciler deleting unregistered items within minutes (see memo
+   `claude-skills-plugin-tree-managed`). There can be **more than one installation** there at once,
+   with differing contents. Editing by hand does not survive; official registration is `.skill` +
+   "Save skill" button.
 
-**Consecuencia para el punto 1 de §Política por skill** («borrar la custom local, usar la del
-plugin»): antes de borrar nada, comprobar **cuál de los árboles del plugin se sirve de verdad**
-y con qué contenido. El `diff` contra la carpeta de origen del paquete puede salir limpio
-mientras lo servido es otra cosa.
+**Consequence for item 1 of §Per-skill policy** ("delete local custom, use plugin
+copy"): before deleting anything, check **which of the plugin trees is actually served**
+and with what content. The `diff` against package source folder can come up clean
+while what is served is something else.
 
-**Comprobación barata, un minuto**: invoca la skill por sus dos nombres, compara el base
-directory y una línea testigo del cuerpo. Si difieren, tienes duplicación servible, no
-duplicación resuelta.
+**Cheap check, one minute**: invoke skill by its two names, compare base
+directory and a witness line from the body. If they differ, you have servable duplication, not
+resolved duplication.
 
-Detalle, mapa de las cinco raíces y las cuatro versiones simultáneas medidas: [[LL-356]].
+Detail, map of five roots, and four measured simultaneous versions: [[LL-356]].

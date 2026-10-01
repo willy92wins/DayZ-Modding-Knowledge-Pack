@@ -6,27 +6,27 @@
 Satellite checks that extend the 13 killers for wheeled vehicles. The core SKILL.md lists them under "Vehicle satellite checks" with a pointer here.
 
 
-## #Mass# debe vivir solo en Geometry LOD (added 2026-06-02)
+## #Mass# must live only in Geometry LOD (added 2026-06-02)
 
-**Origen**: LFQuad N1.5 cerrado 2026-06-02 (handoff `30_Sessions/2026-06-02-LFQuad-placement-fix-firegeo-mass-CLOSED.md`). Un `#Mass#` espurio (todos los valores en 0) en el FireGeo LOD del LFQuad hizo que AddonBuilder/binarize horneara la masa de ESE LOD → ODOL desplegado con `CoM=(0,0,0)` e inercia 0. `ECE_PLACE_ON_SURFACE` colocó el vehículo a la altura del CoM = 0 → spawn 0.48 m bajo tierra → eyección.
+**Origin**: LFQuad N1.5 closed 2026-06-02 (handoff `30_Sessions/2026-06-02-LFQuad-placement-fix-firegeo-mass-CLOSED.md`). A spurious `#Mass#` (all values at 0) in LFQuad FireGeo LOD caused AddonBuilder/binarize to bake mass of THAT LOD → deployed ODOL with `CoM=(0,0,0)` and inertia 0. `ECE_PLACE_ON_SURFACE` placed vehicle at height of CoM = 0 → spawn 0.48 m underground → ejection.
 
 ### MANUAL check (mass-only-geometry) — NOT automated in audit_p3d.py
 
 (Verified 2026-07-06: no mass-related check codes in `audit_p3d.py` nor in py3d `validate()` — the only `mass` hits in the fork are the `#Mass#` tagg reader/writer and the round-trip verify. Run the reference snippet below manually.)
 
-Per-LOD validation: iterar TODOS los LODs del `.p3d` (Visual <1000, Geometry 1e13, Memory 1e15, LandContact 2e15, ViewGeo 6e15, FireGeo 7e15, Shadow) y comprobar:
+Per-LOD validation: iterate ALL LODs of `.p3d` (Visual <1000, Geometry 1e13, Memory 1e15, LandContact 2e15, ViewGeo 6e15, FireGeo 7e15, Shadow) and check:
 
-- `Geometry LOD` (res 1e13): DEBE tener tagg `#Mass#` con valores no-cero y `lod.mass != None`.
-- **TODOS los demás LODs**: NO deben tener tagg `#Mass#`. Si lo tienen (aunque sea con todos 0s), severidad **CRITICAL**.
+- `Geometry LOD` (res 1e13): MUST have `#Mass#` tagg with non-zero values and `lod.mass != None`.
+- **ALL other LODs**: MUST NOT have `#Mass#` tagg. If they do (even with all 0s), severity **CRITICAL**.
 
-Mensaje del check al fallar (FireGeo):
+Check failure message (FireGeo):
 > *`FireGeometry LOD (res 7e15) contains a `#Mass#` tagg with N points. AddonBuilder/binarize will bake the mass of THIS LOD (not the Geometry LOD), producing CoM=(0,0,0) and inv_inertia=0 in the deployed ODOL → ECE_PLACE_ON_SURFACE will spawn the vehicle below ground. FIX: clear the mass from this LOD (set `point.mass = None` in the assemble, not `0.0`). py3d emits `#Mass#` if ANY point.mass is not None.*`
 
-### Trampa de py3d (sutil)
+### py3d gotcha (subtle)
 
-py3d **emite el tagg `#Mass#` si ALGUNA `point.mass` del LOD es ≠ None**, aunque sea exactamente `0.0`. Por eso `point.mass = 0.0` deja el tagg con ceros → binarize lo usa → CoM=0. La forma correcta en los LODs no-Geometry es `point.mass = None` (Python None, no `0.0`).
+py3d **emits `#Mass#` tagg if ANY `point.mass` of LOD is ≠ None**, even if exactly `0.0`. That is why `point.mass = 0.0` leaves tagg with zeroes → binarize uses it → CoM=0. Correct way in non-Geometry LODs is `point.mass = None` (Python None, not `0.0`).
 
-### Detección headless (sin tocar el modelo)
+### Headless detection (without touching model)
 
 ```python
 import py3d  # fork DayZ >= 1.6.0 (py3d.read_p3d NO existe: API confabulada)
@@ -41,37 +41,37 @@ for lod in m.lods:
             print(f"CRITICAL: LOD res={lod.resolution:.0e} has #Mass# tagg (must be Geometry-only)")
 ```
 
-### Tool de fix headless
+### Headless fix tool
 
-Para .p3d ya ensamblados con el bug, ver `LFQuad_dev/tools/fix_firegeo_mass.py` (LFQuad-specific pero el patrón generaliza: cargar p3d, iterar LOD ≠ Geometry, setear `point.mass = None`, reescribir). Verificación post-fix: `binarize.exe -always -addon=<dir> <src> <dst> <wildcard>` y leer `ModelInfo CoM` del ODOL (debe ser ≠ (0,0,0)).
+For .p3d already assembled with bug, see `LFQuad_dev/tools/fix_firegeo_mass.py` (LFQuad-specific but pattern generalizes: load p3d, iterate LOD ≠ Geometry, set `point.mass = None`, rewrite). Post-fix verification: `binarize.exe -always -addon=<dir> <src> <dst> <wildcard>` and read ODOL `ModelInfo CoM` (must be ≠ (0,0,0)).
 
 ### Cross-ref
-LL-079 (bisección de LODs aisló el bug), LL-080 (la lección durable), R26 (criterios verificables), R35.1 (bisección antes de ensayo-error).
+LL-079 (LOD bisection isolated the bug), LL-080 (the durable lesson), R26 (verifiable criteria), R35.1 (bisection before trial-and-error).
 
 ---
 
-## Wheel-well clearance: medir contra RADIO de rueda, no contra HUB (added 2026-06-02, SP-024)
+## Wheel-well clearance: measure against wheel RADIUS, not against HUB (added 2026-06-02, SP-024)
 
-**Origen**: LFQuad sesión 2026-06-01 (handoff `30_Sessions/2026-06-01-LFQuad-spawn-launch-rootcause.md`, FASE 2). El R21 AC-7 del bake ROUND-2 validó "hubs fuera del hull" usando cajas de hub de 8 puntos. Pero la rueda real (radio 0.34) penetraba el chasis: mín 0.16-0.19 m del centro de rueda al chasis. PhysX-depenetración eyectó al vehículo; el Croco con despeje 0.43-0.46 m asienta limpio.
+**Origin**: LFQuad session 2026-06-01 (handoff `30_Sessions/2026-06-01-LFQuad-spawn-launch-rootcause.md`, PHASE 2). R21 AC-7 of ROUND-2 bake validated "hubs outside hull" using 8-point hub boxes. But actual wheel (radius 0.34) penetrated chassis: min 0.16-0.19 m from wheel center to chassis. PhysX-depenetration ejected vehicle; Croco with 0.43-0.46 m clearance sits clean.
 
-### Check añadido (wheel-well radius-aware)
+### Added check (wheel-well radius-aware)
 
-Para cada rueda del modelo (proxy `wheel_*_*`):
+For each wheel of the model (`wheel_*_*` proxy):
 
-1. Leer el radio efectivo del config: `wheel_radius` del `class Wheels { ... }` o el del `.p3d` de la rueda (cilindro BoundingBox.Y/2).
-2. Computar `min_distance(chassis_geometry_hull, wheel_proxy_center)` con py3d (proyectar el centro del proxy sobre el hull del Geometry LOD del chasis).
-3. Si `min_distance < wheel_radius` → **CRITICAL**: collider de rueda penetra chasis → PhysX-depenetración eyectará el vehículo al spawn.
-4. Si `min_distance < wheel_radius * 1.20` → **WARNING**: margen mínimo (vibración / contacto intermitente). Croco-equivalent es ratio ~1.27.
+1. Read effective radius from config: `wheel_radius` of `class Wheels { ... }` or from wheel `.p3d` (cylinder BoundingBox.Y/2).
+2. Compute `min_distance(chassis_geometry_hull, wheel_proxy_center)` with py3d (project proxy center onto chassis Geometry LOD hull).
+3. If `min_distance < wheel_radius` → **CRITICAL**: wheel collider penetrates chassis → PhysX-depenetration will eject vehicle on spawn.
+4. If `min_distance < wheel_radius * 1.20` → **WARNING**: minimal margin (vibration / intermittent contact). Croco-equivalent is ~1.27 ratio.
 
-Mensaje del check al fallar:
+Check failure message:
 > *`Wheel '<wheel_proxy_name>': chassis-to-wheel-center distance = X.XX m < wheel_radius (Y.YY m). PhysX will treat this as self-penetration on spawn and eject the vehicle. FIX: reshape the chassis Geometry LOD to open wheel-wells (target clearance ≥ wheel_radius * 1.25-1.30, Croco-parity). NOT a hub-vs-hull check — must measure against the wheel volume (cylinder of `wheel_radius`).*`
 
-### Anti-patrón cazado
+### Anti-pattern caught
 
-El audit "hubs fuera del hull" mide contra la **caja del hub** (8 vértices pequeños), que pasa aun cuando la **rueda completa** (cilindro de radio efectivo) penetre. Es un falso PASS reproducible en cualquier vehículo donde el hub esté centrado pero el wheel-well sea estrecho.
+The "hubs outside hull" audit measures against the **hub box** (8 small vertices), which passes even when the **full wheel** (effective radius cylinder) penetrates. It is a reproducible false PASS on any vehicle where hub is centered but wheel-well is narrow.
 
 ### Cross-ref
-LL-082 (la lección durable), `vehicle-structural-parity.md` Addendum 2026-05-26/29, `dayz-model-pipeline` sección wheel rigging.
+LL-082 (the durable lesson), `vehicle-structural-parity.md` Addendum 2026-05-26/29, `dayz-model-pipeline` wheel rigging section.
 
 ---
 
@@ -121,7 +121,7 @@ for f in lod.faces:
 if len(res) > 65535:
     flag_critical(f"LOD resolves to {len(res)} unique vertices > 65535 (DX9 16-bit ceiling)")
 ```
-Cross-ref the project memory `dayz-binarize-vertex-limit` ("límite de vértices resueltos punto×normal×uv por
+Cross-ref the project memory `dayz-binarize-vertex-limit` ("limit of resolved point×normal×uv vertices per
 LOD"). **Patched 2026-07-06**: `check_lod0_vertex_budget` in `audit_p3d.py` now computes the resolved-vertex
 count directly — CRITICAL only when resolved unique vertices > 65535; raw point/face-index counts over 65536
 emit a WARNING that includes the resolved count.

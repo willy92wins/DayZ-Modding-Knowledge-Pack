@@ -9,8 +9,8 @@ its selections carry memory points, damage zones and proxy mounts, its material
 assignment is wired into `config.cpp`, and the only thing you are allowed to move
 is UV. Everything below is what that constraint costs and how to pay it.
 
-Read this when the ask sounds like *"re-desplegar el modelo que se envía"*,
-*"cambiar solo las UV"*, *"que los dos LOD compartan textura"*, or when an atlas
+Read this when the ask sounds like *"re-unwrap the sent model"*,
+*"change UVs only"*, *"make both LODs share texture"*, or when an atlas
 has to serve more than one visual LOD.
 
 ---
@@ -29,12 +29,12 @@ those four hashes means the change stopped being a UV change.
 
 Calibrate it by mutation before believing it, four candidates built in the run:
 
-| mutación | esperado | qué mueve |
+| mutation | expected | what it moves |
 |---|---|---|
-| fichero sin tocar | pasa | — |
-| **una UV movida 0,25** | **pasa** | — |
-| un punto movido 1 mm | falla | solo `puntos` |
-| una selección renombrada | falla | solo `selecciones` |
+| untouched file | passes | — |
+| **one UV moved 0.25** | **passes** | — |
+| one point moved 1 mm | fails | only `points` |
+| one renamed selection | fails | only `selections` |
 
 The bolded row is the one that matters and the one usually skipped. A gate that also
 rejects the legitimate change is not strict, it is broken, and that failure is
@@ -46,11 +46,11 @@ invisible if you only ever test the bad cases.
 
 Three attempts, three distinct failure modes, all measured on the same pair:
 
-| intento | método | resultado en LOD1 |
+| attempt | method | result on LOD1 |
 |---|---|---|
-| v1 | vecino más próximo por esquina, sesgado 12% al centro de la cara | ocupación **25.114%**, una sola cara con el **41% del atlas** |
-| v2 | isla fijada por cara, mapa afín de reserva | densidad correcta (ratio LOD1/LOD0 = 0,97) y **8.409 pares** solapados, 349.089 texeles |
-| v3 | proyección por isla con punto recortado al triángulo | 4.647 pares, 329.542 texeles, y **167 caras aplastadas** |
+| v1 | nearest neighbor per corner, biased 12% to face center | occupancy **25.114%**, a single face with **41% of atlas** |
+| v2 | pinned island per face, fallback affine map | correct density (ratio LOD1/LOD0 = 0.97) and **8,409 overlapping pairs**, 349,089 texels |
+| v3 | per-island projection with point clipped to triangle | 4,647 pairs, 329,542 texels, and **167 squashed faces** |
 
 The v2 row is the instructive one: **the density came out right and the sheet was
 still ruined**. A per-face affine map is locally correct and globally inconsistent,
@@ -75,13 +75,13 @@ The obvious response is to make the islands bigger. Measured on the same mesh,
 unwrap only — no fold loop, no packing — with the collapse percentage next to the
 island count:
 
-| estrategia de costura | costuras | islas | mediana | mayor | NaN | **colapsadas** |
+| seam strategy | seams | islands | median | largest | NaN | **collapsed** |
 |---|---:|---:|---:|---:|---:|---:|
-| `smart_project` 80° | 49 | 8.515 | 2 | 389 | 0 | **0,0%** |
-| material + aristas > 60° | 15.401 | 5.188 | 2 | 1.579 | 0 | **15,3%** |
-| material + aristas > 40° | 21.669 | 8.577 | 2 | 819 | 0 | 0,1% |
-| material + aristas > 25° | 28.433 | 13.442 | 2 | 620 | 0 | 0,0% |
-| **solo costuras de material** | 49 | **695** | **19** | 1.594 | 0 | **100,0%** |
+| `smart_project` 80° | 49 | 8,515 | 2 | 389 | 0 | **0.0%** |
+| material + edges > 60° | 15,401 | 5,188 | 2 | 1,579 | 0 | **15.3%** |
+| material + edges > 40° | 21,669 | 8,577 | 2 | 819 | 0 | 0.1% |
+| material + edges > 25° | 28,433 | 13,442 | 2 | 620 | 0 | 0.0% |
+| **material seams only** | 49 | **695** | **19** | 1,594 | 0 | **100.0%** |
 
 The floor is 495 connected shells in 3D, so 695 islands is nearly optimal — and it
 flattens the entire mesh. The only seam family that survives is the projection route,
@@ -129,13 +129,13 @@ Measured result at a 75/25 split, 4096 sheet, 4-texel pack margin:
 
 | | LOD0 | LOD1 |
 |---|---:|---:|
-| caras | 38.831 | 15.422 |
-| islas tras converger | 8.708 | 6.287 |
-| iteraciones del bucle de pliegues | 4 | 2 |
-| colapsadas | **0,00%** | **0,00%** |
-| solape SAT exacto | **0 pares** | **0 pares** |
-| cuota real de hoja | 75,0% | 25,0% |
-| densidad | 349 px/m | 204 px/m |
+| faces | 38,831 | 15,422 |
+| islands after converging | 8,708 | 6,287 |
+| fold loop iterations | 4 | 2 |
+| collapsed | **0.00%** | **0.00%** |
+| exact SAT overlap | **0 pairs** | **0 pairs** |
+| real sheet share | 75.0% | 25.0% |
+| density | 349 px/m | 204 px/m |
 
 Cross-LOD overlapping pairs: **0**. Islands all single-material, which comes free if
 you seam the material boundaries before unwrapping — 49 edges on this mesh, and worth

@@ -5,7 +5,7 @@
 A believable endpoint can hide an impossible chain. Sample every load-bearing joint and segment from the contact point back to the body. For a left-hand weapon interaction this normally includes all five digits, wrist, forearm/twist chain, elbow, upper arm, shoulder and clavicle/spine contribution allowed by the DayZ export mask.
 
 Treat joint-limit tables as calibration aids, not universal truths. Rig rest axes, species, stylisation and retargeting change the numerical representation. A hard limit needs a reference or measured rig convention.
-*(Hasta 1.29: skeletons.anim.xml imponía un límite duro de 250 huesos e índices fijos; desde 1.30 Exp: se elimina el límite de 250 huesos y el motor calcula el índice global en runtime mediante hash del nombre del hueso [EXACT: `work\changelog-1.30-exp-modding.md:31`, `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:39, 986-988`]).*
+*(Until 1.29: skeletons.anim.xml imposed a hard limit of 250 bones and fixed indices; since 1.30 Exp: 250-bone limit is removed and engine calculates global runtime index via bone name hash [EXACT: `work\changelog-1.30-exp-modding.md:31`, `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:39, 986-988`]).*
 
 ## Fingers
 

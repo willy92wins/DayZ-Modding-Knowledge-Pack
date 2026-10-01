@@ -16,133 +16,133 @@ description: >
 
 # DayZ MCP verify — auto-test in-game vía tools MCP
 
-## GATE 0 — preguntar QUIÉN conduce, antes de tocar nada (added 2026-08-07)
+## GATE 0 — ask WHO is driving, before touching anything (added 2026-08-07)
 (until 1.29: managed `dayz_test_run` / `dayz_test_stop` and Mode=all capture still hold.) (since 1.30 Exp: Diag Script Console tabs register via `ScriptConsoleTabRegistry`; `IsHeadless()` names roboclients; SP `PerformActionStart` no-ops while pending. Details: [dayz-1-30-mcp-verify.md](references/dayz-1-30-mcp-verify.md) and ## DayZ 1.30 Exp.)
 
-**Antes de la primera tool de `dayz-mcp` en una tanda de verificación, preguntar al usuario si
-conduce él o el MCP.** No se asume ninguno de los dos. Una sola pregunta por tanda, no por
-captura.
+**Before the first `dayz-mcp` tool in a verification run, ask the user whether
+they are driving or the MCP is.** Neither is assumed. A single question per run, not per
+capture.
 
-Por qué es un gate y no una preferencia: **con el usuario delante, su ciclo manual es más rápido
-y da mejor resultado** — spawnea con VPP en segundos y juzga la escena entera de un vistazo,
-mientras que el lazo MCP necesita colocar cámara, capturar y encadenar tools. El MCP gana cuando
-el usuario NO está: madrugada, tanda desatendida, o mientras atiende otro frente. Además el
-cambio de modo no es gratis a mitad de camino (el test manual limpio pide relanzar sin
-`@DayZ_MCP`), así que la decisión se toma al principio del ciclo o se paga dos veces.
+Why it is a gate and not a preference: **with the user present, their manual cycle is faster
+and yields better results** — spawns with VPP in seconds and evaluates the whole scene at a glance,
+while MCP loop needs to position camera, capture, and chain tools. MCP wins when
+the user is NOT there: early morning, unattended run, or while attending another front. Furthermore,
+changing mode is not free midway (clean manual test requires relaunching without
+`@DayZ_MCP`), so the decision is made at the start of the cycle or paid twice.
 
-| Situación | Quién conduce |
+| Situation | Who drives |
 |---|---|
-| Usuario presente y disponible | **Él** (VPP + juicio directo) — el MCP solo si él lo pide |
-| Usuario ausente / tanda desatendida | **MCP**, y se le deja el reporte con evidencia |
-| Duda | **Preguntar.** Nunca asumir |
+| User present and available | **Them** (VPP + direct judgment) — MCP only if they ask |
+| User absent / unattended run | **MCP**, and report is left for them with evidence |
+| Doubt | **Ask.** Never assume |
 
-Lo que NO cambia: el MCP sigue siendo obligatorio para lo que un humano no puede medir a ojo
-(telemetría, raycast numérico, placement exacto, series repetibles). Ahí no se pregunta, se usa.
+What does NOT change: MCP remains mandatory for what a human cannot measure by eye
+(telemetry, numerical raycast, exact placement, repeatable series). There you do not ask, you use it.
 
-Medición que originó el gate (2026-08-07, corpus de 276 sesiones): el 63% del reloj de un ciclo
-completo cae del lado del usuario, y el 71% de sus verificaciones reales son automatizables con
-las tools de hoy. Que sea automatizable no implica que convenga automatizarlo: con él delante,
-manda su ciclo.
+Measurement that originated gate (2026-08-07, corpus of 276 sessions): 63% of wall-clock time in a full
+cycle falls on user side, and 71% of their actual verifications are automatable with
+today's tools. That it is automatable does not imply it should be automated: with them present,
+their cycle rules.
 
 ## WHAT THIS DOES
 
-Conduce un cliente DayZDiag ya lanzado, vía las tools del servidor MCP `dayz-mcp`, para
-verificar un mod sin intervención humana: spawnea el objeto, lo mira desde varios ángulos
-(cámara + window-grab), comprueba su colisión por raycast, lee su placement/telemetría, y
-produce un reporte con criterios pass/fail y evidencia. Es el lazo de **observación**
-automatizada que cierra el hueco entre "el PBO compila/despliega" y "se ve y se comporta bien
-in-game", para la clase de propiedades que NO requieren input de teclado.
+Drives an already launched DayZDiag client, via `dayz-mcp` MCP server tools, to
+verify a mod without human intervention: spawns object, views it from multiple angles
+(camera + window-grab), checks collision via raycast, reads placement/telemetry, and
+produces a report with pass/fail criteria and evidence. It is the automated **observation**
+loop bridging the gap between "PBO compiles/deploys" and "looks and behaves properly
+in-game", for the class of properties that DO NOT require keyboard input.
 
-Server-authoritative + captura pasiva por píxeles. El control y los datos son engine-native
-(spawn, raycast, telemetría, cámara); la única pieza no-native es la captura visual
-(window-grab del cliente renderizado — `MakeScreenshot` está roto en diag, T165276).
+Server-authoritative + passive pixel capture. Control and data are engine-native
+(spawn, raycast, telemetry, camera); sole non-native piece is visual capture
+(window-grab of rendered client — `MakeScreenshot` is broken in diag, T165276).
 
-## COMPOSICIÓN — lifecycle público + verificación MCP
+## COMPOSITION — public lifecycle + MCP verification
 
-El build/deploy/launch es de **`dayz-test-ingame`** (su preflight de entorno corre solito:
-`P:\` montado, junction `P:\Mods`, AddonBuilder, `allowFilePatching`). Esta skill lo invoca
-con el mod MCP añadido y luego conduce. Los verbos de bridge no arrancan ni terminan
-procesos; las herramientas públicas de test sí orquestan el lifecycle gestionado.
+Build/deploy/launch belongs to **`dayz-test-ingame`** (its environment preflight runs on its own:
+`P:\` mounted, junction `P:\Mods`, AddonBuilder, `allowFilePatching`). This skill invokes it
+with MCP mod added and then drives. Bridge verbs do not start or terminate
+processes; public test tools do orchestrate managed lifecycle.
 
-Antes del flujo operativo, leer el protocolo canónico:
+Before operational flow, read canonical protocol:
 `<runbooks>\dayz-mcp-agent-session-protocol.md`.
-[EXACT][CLAIM-R21-MCP-ORCHESTRATED-TEST] Ejecuta el lifecycle con
-`dayz_test_run` y detenlo con `dayz_test_stop` sobre el `run_id` exacto. Ambas
-herramientas poseen cola FIFO, lease, heartbeat y release; no las envuelvas en
-un segundo `session_acquire`. Reserva las primitivas `session_*` para
-mutaciones de bajo nivel que no estén ya encapsuladas. Todo lifecycle se
-identifica por `run_id`: compartir mod no concede ownership. Con cuarentena
-retail solo se permiten lecturas; si quien abrió retail no puede cerrarlo por
-la UI, declarar `manual_cleanup_required`.
+[EXACT][CLAIM-R21-MCP-ORCHESTRATED-TEST] Execute lifecycle with
+`dayz_test_run` and stop it with `dayz_test_stop` on exact `run_id`. Both
+tools possess FIFO queue, lease, heartbeat, and release; do not wrap them in
+a second `session_acquire`. Reserve `session_*` primitives for
+low-level mutations not already encapsulated. Every lifecycle is
+identified by `run_id`: sharing mod does not grant ownership. Under retail
+quarantine only reads are allowed; if whoever opened retail cannot close it via
+UI, declare `manual_cleanup_required`.
 
-**Secuencia de arranque del puente (rev. 2026-09-06): `dayz_test_run` → `session_acquire_wait` →
-verbos. Nunca sondear antes de adoptar.** «No envolver el launch en otro lease» no significa que el run
-quede tuyo: al terminar, `dayz_test_run` SUELTA su lease de dueño (audit del daemon:
-`session_release_finished reason=owner_release` justo tras el launch) y el run pasa a `RUNNING_IDLE`
-sin dueño (`release_owner`, `process_lifecycle.py:958-976`). Desde ese instante la valla de run ocioso
-rechaza TODO `/enqueue` sobre ese run, **lecturas incluidas**: `_enqueue_run_rejection` descarta el flag
-`mutation` (`loopback.py:1293-1296`) y para `RUNNING_IDLE` devuelve `run_not_owned` (`:1317-1318`) con el
-hint «This run has no owner (RUNNING_IDLE). Adopt the existing run before dispatching.» (`:99-102`,
-`:1323-1329`). Lo contraintuitivo: el contador de `bridge_status` se llama
-`fence.mutation_rejects_by_code` (`:2821-2822`) y cuenta también las lecturas. Cae ahí todo verbo que
-atraviese el bridge (`query_*`, telemetría, raycast, capturas, `world_spawn`…) y también
-`wait_for(players_at_least|players_at_most)`, que sondea con `query_all_players` (`server.py:2645-2650`).
-`wait_for(log_matches)` NO cae: lee los ficheros de log sin tocar el bridge (`server.py:2603-2637`,
+**Bridge startup sequence (rev. 2026-09-06): `dayz_test_run` → `session_acquire_wait` →
+verbs. Never probe before adopting.** "Do not wrap launch in another lease" does not mean run
+remains yours: upon completion, `dayz_test_run` RELEASES its owner lease (daemon audit:
+`session_release_finished reason=owner_release` right after launch) and run transitions to `RUNNING_IDLE`
+without owner (`release_owner`, `process_lifecycle.py:958-976`). From that instant the idle run fence
+rejects ALL `/enqueue` on that run, **reads included**: `_enqueue_run_rejection` discards flag
+`mutation` (`loopback.py:1293-1296`) and for `RUNNING_IDLE` returns `run_not_owned` (`:1317-1318`) with
+hint "This run has no owner (RUNNING_IDLE). Adopt the existing run before dispatching." (`:99-102`,
+`:1323-1329`). The counter-intuitive part: `bridge_status` counter is named
+`fence.mutation_rejects_by_code` (`:2821-2822`) and counts reads as well. Every verb crossing
+bridge falls there (`query_*`, telemetry, raycast, captures, `world_spawn`…) and also
+`wait_for(players_at_least|players_at_most)`, which polls with `query_all_players` (`server.py:2645-2650`).
+`wait_for(log_matches)` does NOT fall: reads log files without touching bridge (`server.py:2603-2637`,
 `:2686-2697`).
 
-1. `dayz_test_run(...)` → conserva `run_id`.
-2. Opcional y sin adoptar: `wait_for(log_matches, "…")` para esperar el arranque por el RPT.
-3. `session_acquire_wait(purpose=…)`: el grant adopta el ÚNICO run `RUNNING_IDLE` sin dueño y lo
-   declara en `adopted_run` (`_adopt_on_grant`, `loopback.py:3119-3120`, `:3193-3230`). Comprueba
-   `adopted_run.ok` antes del primer verbo. Con varios ociosos responde
-   `adopted_run.error = "multiple_idle_runs"` y no adopta ninguno (`:3202-3208`): `dayz_test_stop`
-   del sobrante y repetir.
-4. `wait_for(players_at_least, 1)` y el resto de verbos.
+1. `dayz_test_run(...)` → retain `run_id`.
+2. Optional without adopting: `wait_for(log_matches, "…")` to wait for startup via RPT.
+3. `session_acquire_wait(purpose=…)`: grant adopts the ONLY ownerless `RUNNING_IDLE` run and
+   declares it in `adopted_run` (`_adopt_on_grant`, `loopback.py:3119-3120`, `:3193-3230`). Check
+   `adopted_run.ok` before first verb. With multiple idle runs it answers
+   `adopted_run.error = "multiple_idle_runs"` and adopts none (`:3202-3208`): `dayz_test_stop`
+   surplus run and repeat.
+4. `wait_for(players_at_least, 1)` and remaining verbs.
    - [EXACT] The adopted lease expires by itself (added 2026-09-27, LFPowerGrid, three runs): it lasts 120 s and is NOT renewed internally, fresh MCP client or not. Send `session_heartbeat` at least every ~90 s during the whole run, including while a human plays. Past the deadline the run goes ownerless again (`grace.remaining_s` counts down) and the daemon stops it (`lifecycle_stop_outcome: stopped`), even with the user in front of the game. (measured in game, DayZ 1.30.164014 Exp)
 5. `session_release` → `dayz_test_stop(run_id)`.
 
-Con un cliente MCP anterior al `8f5727f` de DayZ_MCP (2026-09-06) el rechazo llegaba como un
-`remote_error` DESNUDO, sin código ni hint (ficha `fb-20260906-193626-f45d`, atribuida primero a un
-cliente sin sondear); con el cliente actual llega `run_not_owned: This run has no owner
-(RUNNING_IDLE)…`. En los dos casos el remedio es adoptar, no reintentar ni relanzar. Esta regla corrige
-el paso 1 de la receta SP-292 y precisa la primera viñeta de SP-152, más abajo.
+With an MCP client prior to `8f5727f` of DayZ_MCP (2026-09-06) rejection arrived as a
+BARE `remote_error`, without code or hint (ledger entry `fb-20260906-193626-f45d`, first attributed to a
+client without polling); with current client it arrives as `run_not_owned: This run has no owner
+(RUNNING_IDLE)…`. In both cases remedy is adopting, neither retrying nor relaunching. This rule corrects
+step 1 of recipe SP-292 and clarifies first bullet of SP-152, below.
 
 Two lease failures around long waits (measured in game sessions, 2026-09-28): (1) `wait_for` over the log does NOT renew the lease — a wait longer than ~2 min expired with `lease_expired`; interleave `session_heartbeat` between waits. (2) When a user message interrupts an in-flight call (a long `wait_for`), the next `session_heartbeat` answers `lease_invalid: token was never valid for this client`; if the run is still alive, `session_acquire_wait` readopts it. Also: `dayz_test_close` shuts the run down in order, with a termination line on both sides. [EXACT]
 
 ### Companion externo: dayz-labs
 
 [EXACT][CLAIM-R21-MCP-COMPANION-AUTHORITY]
-`external_companion_no_lifecycle_authority`. La release dayz-labs v0.1.35,
-revisada en el commit fijado
-`dbd6ad3e54e30c81a9aeb88fcb9f60f007804c2a`, puede servir como referencia o
-companion opcional. Sus verbos `start/stop/restart` quedan excluidos mientras
-DayZ_MCP posee un run: solo `dayz_test_run` / `dayz_test_stop` sobre el
-`run_id` exacto gobiernan ese lifecycle. No instales ni actualices el companion
-como parte de un gate; documenta siempre la `pinned_version` examinada.
+`external_companion_no_lifecycle_authority`. Release dayz-labs v0.1.35,
+reviewed at pinned commit
+`dbd6ad3e54e30c81a9aeb88fcb9f60f007804c2a`, can serve as reference or
+optional companion. Its `start/stop/restart` verbs are excluded while
+DayZ_MCP holds a run: only `dayz_test_run` / `dayz_test_stop` on exact
+`run_id` govern that lifecycle. Do not install or update companion
+as part of a gate; always document the examined `pinned_version`.
 
-Su interfaz es WPF y captura su propia aplicación:
-`wpf_not_layout_evidence`. Una captura correcta de dayz-labs no valida el
-parser, las proporciones, el clipping ni la semántica de un `.layout` DayZ; el
-visor UI necesita su propio render y comparación contra evidencia del juego.
+Its interface is WPF and captures its own application:
+`wpf_not_layout_evidence`. A correct capture from dayz-labs does not validate the
+parser, proportions, clipping, or semantics of a DayZ `.layout`; UI
+viewer needs its own render and comparison against in-game evidence.
 
-El request de `dayz_test_run` debe seleccionar `Mode=all`, build cuando cambió
-el PBO y `@DayZ_MCP` como dependencia adicional:
+The `dayz_test_run` request must select `Mode=all`, build when PBO
+changed, and `@DayZ_MCP` as additional dependency:
 
-- `-Mode all` (server + cliente) es OBLIGATORIO: la captura visual lee del **cliente
-  renderizado**. Un `-Mode server` headless no tiene ventana que grabbear.
-- `@DayZ_MCP` se carga junto al mod bajo test; ambos peers (server + client bridge) pollean al
-  loopback del server MCP.
+- `-Mode all` (server + client) is MANDATORY: visual capture reads from **rendered
+  client**. A headless `-Mode server` has no window to grab.
+- `@DayZ_MCP` is loaded alongside the mod under test; both peers (server + client bridge) poll the
+  MCP server loopback.
 
-## PREREQUISITES (gate antes de conducir)
+## PREREQUISITES (gate before driving)
 
-1. **`dayz-mcp` registrado y conectable.** Gate PRIMARIO: ¿están disponibles las tools
-   `mcp__dayz-mcp__*` en la sesión? (ToolSearch las encuentra → gate PASS). `claude mcp list` es
-   SECUNDARIO y NO fiable: da falsos `× Failed to connect` con el server operativo — no bloquear
-   por él si ToolSearch ve las tools. Las tools solo están disponibles en una sesión que arrancó
-   CON el server ya registrado (registro broker `--client`, ver TROUBLESHOOTING).
-2. **Config del bridge sembrada.** El bridge in-game lee `dayz_mcp.json` (url + key + pollHz) de
-   sus profiles; el server MCP usa `<DayZ_MCP_dev>\tools\.dayz_mcp.key`. Sembrar la MISMA key en
-   los profiles del launch con `install-mcp.ps1` apuntando a los dirs que `dayz-test.ps1` genera:
+1. **`dayz-mcp` registered and connectable.** PRIMARY gate: are tools
+   `mcp__dayz-mcp__*` available in session? (ToolSearch finds them → gate PASS). `claude mcp list` is
+   SECONDARY and NOT reliable: gives false `× Failed to connect` with server operational — do not block
+   on it if ToolSearch sees tools. Tools are only available in a session started
+   WITH server already registered (broker registration `--client`, see TROUBLESHOOTING).
+2. **Bridge config seeded.** In-game bridge reads `dayz_mcp.json` (url + key + pollHz) from
+   its profiles; MCP server uses `<DayZ_MCP_dev>\tools\.dayz_mcp.key`. Seed the SAME key in
+   launch profiles with `install-mcp.ps1` pointing to directories generated by `dayz-test.ps1`:
 
    ```powershell
    <DayZ_MCP_dev>\tools\install-mcp.ps1 `
@@ -151,182 +151,182 @@ el PBO y `@DayZ_MCP` como dependencia adicional:
      -MissionPath "<...>\mpmissions\dayzOffline.chernarusplus"
    ```
 
-   `[verify on first run]` — el seeding genérico (mod arbitrario + `@DayZ_MCP` vía
-   `dayz-test.ps1`) hasta ahora solo se ejerció a través de `run-fase3.ps1`. La PRIMERA corrida
-   de esta skill valida que el bridge encuentra la config en estos paths; si `bridge_status`
-   reporta `last_poll_age_s = null`, la config no está donde el bridge la busca — ajustar el
-   path y declararlo.
-3. **`bridge_status` verde.** Primera llamada SIEMPRE: `bridge_status`. El `server_peer` debe
-   tener `last_poll_age_s` fresco (no null). Para captura, el `client_peer` también. `never
-   polled` → el bridge no arrancó (config/key/arranque) → abortar y diagnosticar, no seguir
-   conduciendo a ciegas.
-4. **Los mods que pases por `extra_mods`/`base_mods` deben ser DIRECTORIO REAL bajo `P:\Mods`
-   (→ `!Workshop`); las junctions de Steam NO valen.** Dos capas, y confundirlas cuesta una sesión:
-   - La frontera pública `_valid_public_mod` (`DayZ_MCP_dev\tools\dayz_mcp\dayz_test_tool.py:75-85`)
-     rechaza `:`, `\` y `/` en **todos** los proyectos → una ruta absoluta de workshop no pasa nunca
-     por la tool. Eso es diseño, NO una laguna de la policy de tu proyecto.
-   - Los mods suscritos que Steam expone en `!Workshop` (`@CF`, `@Dabs Framework`,
-     `@VPPAdminTools`) son **Junctions** a `steamapps\workshop\content\221100\<id>`, y el guard de
-     identidad de rutas las rechaza → `dayz_test_failed`, que es el catch-all genérico de
-     `server.py:1101` y **se traga la causa real**.
+   `[verify on first run]` — generic seeding (arbitrary mod + `@DayZ_MCP` via
+   `dayz-test.ps1`) was until now only exercised through `run-fase3.ps1`. The FIRST run
+   of this skill validates that bridge finds config in these paths; if `bridge_status`
+   reports `last_poll_age_s = null`, config is not where bridge looks for it — adjust
+   path and declare it.
+3. **`bridge_status` green.** ALWAYS first call: `bridge_status`. `server_peer` must
+   have fresh `last_poll_age_s` (not null). For capture, `client_peer` as well. `never
+   polled` → bridge did not start (config/key/startup) → abort and diagnose, do not keep
+   driving blindly.
+4. **Mods passed via `extra_mods`/`base_mods` must be REAL DIRECTORY under `P:\Mods`
+   (→ `!Workshop`); Steam junctions ARE NOT valid.** Two layers, confusing them costs a session:
+   - Public boundary `_valid_public_mod` (`DayZ_MCP_dev\tools\dayz_mcp\dayz_test_tool.py:75-85`)
+     rejects `:`, `\` and `/` across **all** projects → absolute workshop path never passes
+     through tool. That is by design, NOT a gap in your project's policy.
+   - Subscribed mods exposed by Steam in `!Workshop` (`@CF`, `@Dabs Framework`,
+     `@VPPAdminTools`) are **Junctions** to `steamapps\workshop\content\221100\<id>`, and path
+     identity guard rejects them → `dayz_test_failed`, which is the generic catch-all of
+     `server.py:1101` and **swallows the real cause**.
 
-   **Consecuencia operativa**: CF/Dabs/VPP sólo se cargan declarándolos con **ruta absoluta** en el
-   `default_base_mods` del proyecto dentro del `request-policy.json` del launcher — que es como los
-   declaran SUB_BRZ y LFHeli. Los mods que son directorio real (`@DayZ_MCP`, `@LFHeliCore`, el mod
-   bajo test) sí van por `extra_mods` con nombre relativo.
+   **Operational consequence**: CF/Dabs/VPP are only loaded by declaring them with **absolute path** in
+   project `default_base_mods` inside launcher `request-policy.json` — which is how
+   SUB_BRZ and LFHeli declare them. Mods that are real directories (`@DayZ_MCP`, `@LFHeliCore`, mod
+   under test) do go via `extra_mods` with relative name.
 
-   Diagnóstico en un comando:
-   `Get-Item '<!Workshop>\<@Mod>' -Force | Select-Object LinkType` → `Junction` = no sirve relativo.
-   Medido 2026-08-02 con `preflight=true` (dry-check puro: `dayz_test_worker.py:533-534` retorna
-   antes de build y de lanzar nada): sin mods OK · `@DayZ_MCP` OK · `@A6_SR2M` OK · `@CF` FAIL ·
+   Diagnosis in one command:
+   `Get-Item '<!Workshop>\<@Mod>' -Force | Select-Object LinkType` → `Junction` = relative does not work.
+   Measured 2026-08-02 with `preflight=true` (pure dry-check: `dayz_test_worker.py:533-534` returns
+   before build and launching anything): without mods OK · `@DayZ_MCP` OK · `@A6_SR2M` OK · `@CF` FAIL ·
    `base_mods=["@CF"]` FAIL.
 
-   ⚠ **Antes de culpar al puente por `version_blocked`/`last_poll_age_s=null`**: comprueba que la
-   `key` de `dayz_mcp.json` en los profiles del proyecto es la MISMA que
-   `DayZ_MCP_dev\tools\.dayz_mcp.key`. Una key stale da 401 y el bridge no pollea nunca, con
-   síntoma idéntico a "el mod no está cargado". Las rotaciones de key dejan atrás a los proyectos
-   que no se ejercitaron desde entonces (2026-08-02: MERCEDES_AMGLF y LFPowerGrid con la vieja,
-   SUB_BRZ/LFHeli/DayZ_MCP con la actual).
+   ⚠ **Before blaming the bridge for `version_blocked`/`last_poll_age_s=null`**: check that
+   `key` of `dayz_mcp.json` in project profiles is the SAME as
+   `DayZ_MCP_dev\tools\.dayz_mcp.key`. A stale key gives 401 and bridge never polls, with
+   symptom identical to "mod is not loaded". Key rotations leave behind projects
+   not exercised since then (2026-08-02: MERCEDES_AMGLF and LFPowerGrid with old key,
+   SUB_BRZ/LFHeli/DayZ_MCP with current key).
 
-   ⚠⚠ **El síntoma NO siempre es `version_blocked` / `last_poll_age_s=null`** — y creer que sí
-   cuesta la sesión igual (medido 2026-08-17 en LFPowerGrid, con este aviso ya escrito arriba y
-   pasado por alto). Con la key stale el peer puede leerse **`version_state: ok` con
-   `last_poll_age_s` de 1.485 s**: es el dato del ÚLTIMO sondeo bueno, que puede pertenecer a otra
-   corrida ya muerta. Un puente muerto se lee así como sano. La firma que no engaña está en el
-   script log del juego: `[MCP-POC] poll error=5` (server) / `[MCP-CLIENT] client poll error=5`
-   (cliente). Ese **5 es `EREST_ERROR_CLIENTERROR`** (`scripts\3_game\http\restapi.c:16-17`), o sea
-   el daemon devolvió 401 — el 401 NO aparece en ningún sitio del lado del juego.
-   Gate de dos comandos antes de culpar a nada:
-   - Comparar la key de **cada** `dayz_mcp.json` que el run vaya a usar contra el keyfile. Son dos
-     rutas y `$profile:` gana a `$mission:` (`MCPBridge.c:145-149`, `MCPClientBridge.c:234-237`);
-     si falta la de profiles, el bridge cae a la de la misión, que es la que suele quedar stale.
-     Mismo largo (43) NO es prueba: comparar los bytes.
-   - `Invoke-WebRequest "http://127.0.0.1:8765/poll?key=<contenido del keyfile>"` → 200
-     `{"commands":[]}` demuestra que daemon y key viva están bien, y acota el fallo al JSON del run.
-   **Y arreglarlo NO exige reiniciar el servidor**: `ReloadKeyAfterFailure` (`MCPBridge.c:373-398`)
-   relee la key cuando el backoff toca techo. Corriges el JSON, esperas ~20 s, sale
-   `[MCP-POC] poll key reloaded` y el peer vuelve a `last_poll_age_s` 0,2. Eso ahorra el boot.
+   ⚠⚠ **The symptom is NOT always `version_blocked` / `last_poll_age_s=null`** — and believing so
+   costs the session just the same (measured 2026-08-17 in LFPowerGrid, with this warning already written above and
+   overlooked). With stale key the peer can read **`version_state: ok` with
+   `last_poll_age_s` of 1.485 s**: it is data from LAST good poll, which may belong to another
+   already dead run. A dead bridge reads like healthy this way. The telltale signature is in
+   game script log: `[MCP-POC] poll error=5` (server) / `[MCP-CLIENT] client poll error=5`
+   (client). That **5 is `EREST_ERROR_CLIENTERROR`** (`scripts\3_game\http\restapi.c:16-17`), meaning
+   daemon returned 401 — 401 DOES NOT appear anywhere on game side.
+   Two-command gate before blaming anything:
+   - Compare key of **each** `dayz_mcp.json` the run will use against keyfile. These are two
+     paths and `$profile:` wins over `$mission:` (`MCPBridge.c:145-149`, `MCPClientBridge.c:234-237`);
+     if profiles key is missing, bridge falls back to mission key, which is usually the stale one.
+     Same length (43) is NOT proof: compare the bytes.
+   - `Invoke-WebRequest "http://127.0.0.1:8765/poll?key=<keyfile content>"` → 200
+     `{"commands":[]}` proves daemon and live key are fine, isolating failure to run JSON.
+   **And fixing it DOES NOT require server restart**: `ReloadKeyAfterFailure` (`MCPBridge.c:373-398`)
+   rereads key when backoff hits ceiling. Fix JSON, wait ~20 s,
+   `[MCP-POC] poll key reloaded` appears and peer returns to `last_poll_age_s` 0.2. That saves the boot.
 
-   ⚠ **La aguja de spawn del jugador no puede presuponer el género.** El ejemplo
-   `Create entity type 'SurvivorM_` —que sugiere la propia descripción de `wait_for`— **falla en
-   silencio** con un personaje femenino: 300 s de timeout con el jugador ya dentro del mundo y
-   `Create entity type 'SurvivorF_Helga'` escrito en el RPT. Usar `Create entity type 'Survivor`.
+   ⚠ **Player spawn needle cannot presuppose gender.** The example
+   `Create entity type 'SurvivorM_` —suggested by `wait_for` description itself— **fails in
+   silence** with a female character: 300 s timeout with player already in world and
+   `Create entity type 'SurvivorF_Helga'` written to RPT. Use `Create entity type 'Survivor`.
 
-## GOTCHAS DEL PUENTE QUE CUESTAN UNA CORRIDA CADA UNO (added 2026-08-18)
+## BRIDGE GOTCHAS THAT COST ONE RUN EACH (added 2026-08-18)
 
-Verificados in-game el 2026-08-18 durante una bateria de celdas de ATM. Los seis costaron al menos
-una corrida cada uno, y **cinco de los seis producen un veredicto que acusa al mod sin que el mod
-tenga nada** (6 corridas, 0 fallos reales del mod). Comprobalos ANTES de escribir la primera sonda.
+Verified in-game on 2026-08-18 during ATM cell test battery. All six cost at least
+one run each, and **five of six produce a verdict accusing the mod without the mod
+having any issue** (6 runs, 0 actual mod failures). Check them BEFORE writing first probe.
 
-1. **`dayz_test_run` NO carga `@DayZ_MCP` por defecto, y devuelve `succeeded` igual.** Los dos
-   procesos arrancan vivos, el juego funciona, y el puente calla. El sintoma que recibes
-   (`server_poll_stale` / `client_not_polling` / `ready.reason=no_run`) apunta al puente o a la
-   clave, no al conjunto de mods, asi que se pierde el tiempo en el sitio equivocado.
-   **Gate**: pasa `extra_mods=["@DayZ_MCP"]` y confirma en el log del servidor que el define
-   `DayZ_MCP` aparece en los cuatro modulos, o busca lineas `[MCP-POC]`.
+1. **`dayz_test_run` DOES NOT load `@DayZ_MCP` by default, and returns `succeeded` anyway.** Both
+   processes launch alive, the game works, and the bridge stays silent. The symptom you receive
+   (`server_poll_stale` / `client_not_polling` / `ready.reason=no_run`) points to bridge or
+   key, not to mod set, so time is lost in the wrong place.
+   **Gate**: pass `extra_mods=["@DayZ_MCP"]` and confirm in server log that define
+   `DayZ_MCP` appears in all four modules, or look for `[MCP-POC]` lines.
 
-2. **`logs_since` no acepta su propio `marker`.** Lo DEVUELVE como dict {ruta: [offsets]} y su
-   parametro lo exige string: ValidationError de Pydantic. El drenaje incremental es imposible.
-   **Rodeo**: lee el log entero al final de la secuencia y asigna las respuestas por orden,
-   verificando la alineacion con algun campo del propio evento (un tipo, un id). Si dos sondas
-   comparten ese campo, marca `ambiguous_alignment` en vez de adivinar.
+2. **`logs_since` does not accept its own `marker`.** It RETURNS it as dict {path: [offsets]} and its
+   parameter requires string: Pydantic ValidationError. Incremental draining is impossible.
+   **Workaround**: read entire log at end of sequence and assign responses in order,
+   verifying alignment with some field from event itself (a type, an id). If two probes
+   share that field, mark `ambiguous_alignment` instead of guessing.
 
-3. **`wait_for(log_matches)` no sirve para esperar TU respuesta.** Con el `lookback_lines=200` por
-   defecto, una linea de la sonda anterior satisface el patron al instante. Y con
-   `lookback_lines=0` se ha visto hacer timeout con la linea ya presente en el log del cliente,
-   devolviendo en `observed` una linea de otro flujo. Usalo como espera oportunista; el veredicto
-   sale del sondeo de `logs_since`.
+3. **`wait_for(log_matches)` does not work to wait for YOUR response.** With default
+   `lookback_lines=200`, a line from previous probe satisfies pattern instantly. And with
+   `lookback_lines=0` it has been seen timing out with line already present in client log,
+   returning a line from another flow in `observed`. Use it as opportunistic wait; verdict
+   comes from polling `logs_since`.
 
-4. **El inventario del jugador NO se resetea entre corridas.** La segunda corrida encuentra lo que
-   dejo la primera, ya no cabe nada y el dotado falla en silencio (`create_failed`, o endow de 0
-   unidades). Para encadenar: `dayz_test_stop`, borrar
-   `<mision>\storage_1\players.db` con backup, y relanzar (~3 min).
-   **OJO**: `clean=true` NO hace esto — fuerza `Build=true` y pasa `-clear` a AddonBuilder, o sea
-   **reconstruye el PBO** y rompe la identidad de binario, que es justo lo que un A/B no puede
-   permitirse. El saldo/estado que el mod guarde en el perfil del servidor SOBREVIVE al borrado.
+4. **Player inventory is NOT reset between runs.** Second run finds what
+   first left behind, nothing fits anymore and dotation fails silently (`create_failed`, or endow of 0
+   units). To chain: `dayz_test_stop`, delete
+   `<mission>\storage_1\players.db` with backup, and relaunch (~3 min).
+   **WARNING**: `clean=true` DOES NOT do this — forces `Build=true` and passes `-clear` to AddonBuilder, meaning
+   **rebuilds the PBO** and breaks binary identity, which is precisely what an A/B test cannot
+   afford. Balance/state that mod saves in server profile SURVIVES deletion.
 
-5. **`inventory_give` devuelve `create_failed` tanto si el classname no existe como si no cabe.**
-   Son indistinguibles. Antes de culpar al inventario, verifica que el classname existe: grep en el
-   `types.xml` de la mision y una prueba con un item vanilla de control (`Apple` sirve). Y no
-   presupongas que los classnames de la config del mod existen: pueden apuntar a un mod que no esta
-   cargado, en cuyo caso el conteo por classname exacto da 0 para siempre y toda la feature parece
-   rota sin estarlo.
+5. **`inventory_give` returns `create_failed` whether classname does not exist or does not fit.**
+   They are indistinguishable. Before blaming inventory, verify classname exists: grep in mission
+   `types.xml` and test with a control vanilla item (`Apple` works). And do not
+   presuppose mod config classnames exist: they can point to a mod not
+   loaded, in which case exact classname count gives 0 forever and entire feature looks
+   broken without being broken.
 
-6. **No te creas un veredicto sin mirar el log del cliente.** Muchos eventos de mod los escribe el
-   CLIENTE, no el servidor. En la bateria que origino esta seccion, el veredicto automatico dijo
-   FAIL o INCONCLUSIVE seis veces seguidas mientras el log del cliente mostraba las operaciones
-   ejecutandose correctamente. El modo de fallo peligroso de una celda no es "no mide": es
-   **"mide mal y acusa al mod"**, y eso se propaga a los documentos del proyecto. Si un veredicto
-   dice FAIL, abre el log del cliente antes de registrarlo.
+6. **Do not believe a verdict without looking at client log.** Many mod events are written by
+   CLIENT, not server. In test battery originating this section, automatic verdict said
+   FAIL or INCONCLUSIVE six times in a row while client log showed operations
+   executing properly. Dangerous failure mode of a cell is not "does not measure": it is
+   **"measures poorly and accuses the mod"**, and that propagates to project documents. If a verdict
+   says FAIL, open client log before recording it.
 
-- **`world_spawn` con `ok=1` NO prueba que el objeto se quede donde lo pediste** (added 2026-08-21,
-  council DayZ-MCP). `IsSpawnReady` (`MCPBridge.c:2729-2753`) toma la posicion ACTUAL del propio
-  objeto, busca objetos en esa posicion y se da por listo si se encuentra a si mismo. Un objeto
-  siempre esta donde esta: el gate es tautologico y se cumple para cualquier objeto vivo, aunque la
-  fisica ya lo este expulsando. No compara contra la posicion PEDIDA, no mide deriva y no exige
-  estabilidad entre ticks. Caso real: spawn en punto urbano con `ok=1` y el vehiculo terminando a
-  **Y = -40 km**. Distinto del fallo por coords invertidas de mas arriba, que da timeout: este da
-  PASS falso. **Regla: tras cualquier `world_spawn` que importe, confirmar con `object_inspect` o
-  `entities_query` que la distancia a la posicion pedida es la esperada, y repetir la lectura unos
-  segundos despues para descartar deriva.** Un veredicto de playbook que solo mire `ok` no vale.
+- **`world_spawn` with `ok=1` DOES NOT prove object stays where you asked** (added 2026-08-21,
+  DayZ-MCP council). `IsSpawnReady` (`MCPBridge.c:2729-2753`) takes ACTUAL position of object
+  itself, searches objects at that position, and considers itself ready if it finds itself. An object
+  is always where it is: gate is tautological and satisfied for any live object, even if physics
+  is already ejecting it. Does not compare against REQUESTED position, does not measure drift, and does not require
+  inter-tick stability. Real case: spawn at urban point with `ok=1` and vehicle ending up at
+  **Y = -40 km**. Distinct from inverted coords failure above, which times out: this gives
+  false PASS. **Rule: after any `world_spawn` that matters, confirm with `object_inspect` or
+  `entities_query` that distance to requested position is as expected, and repeat reading a few
+  seconds later to rule out drift.** A playbook verdict looking only at `ok` is invalid.
 
-## EL LAZO
+## THE LOOP
 
-1. **Lanzar** vía `dayz-test.ps1 … -ExtraMods "@DayZ_MCP"` (espera a que cliente y server
-   estén dentro; BUG-009: la autoconexión del cliente es flaky — `-ServerWait` mayor / reintento).
+1. **Launch** via `dayz-test.ps1 … -ExtraMods "@DayZ_MCP"` (wait until client and server
+   are in; BUG-009: client autoconnect is flaky — higher `-ServerWait` / retry).
 2. **Gate** `bridge_status` (PREREQUISITES.3).
-3. **Condiciones de escena** (capturas comparables): `world_time_set` a mediodía
-   (los 5 args `year/month/day/hour=12/minute=0` son obligatorios) y `world_weather_set(overcast=1.0)`. Cielo cubierto = luz difusa: elimina el
-   glint especular de sol directo que quema armas/materiales a blanco y tapa el detalle
-   (hallazgo A6_SR2M 2026-06-17). NO uses `time_multiplier=0` antes de animaciones pendientes
-   (congela la sim).
-4. **Playbook** según tipo de mod (abajo).
-5. **Reporte** con evidencia.
+3. **Scene conditions** (comparable captures): `world_time_set` at noon
+   (all 5 args `year/month/day/hour=12/minute=0` are mandatory) and `world_weather_set(overcast=1.0)`. Overcast sky = diffuse light: eliminates
+   specular glint from direct sun that burns weapons/materials to white and hides detail
+   (A6_SR2M finding 2026-06-17). DO NOT use `time_multiplier=0` before pending animations
+   (freezes sim).
+4. **Playbook** depending on mod type (below).
+5. **Report** with evidence.
 
-## PLAYBOOKS (criterios pass/fail por tipo)
+## PLAYBOOKS (pass/fail criteria by type)
 
-Todos parten de spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS si `ok` y sin
-`unknown_type`/`spawn_failed`; guarda el `pos` real para los pasos siguientes.
+All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `ok` and without
+`unknown_type`/`spawn_failed`; save actual `pos` for subsequent steps.
 
-### Objeto estático / contenedor / edificio
-- **Carga**: spawn ok (arriba). FAIL → el classname no resuelve (mod no montado: paths
-  absolutos `!Workshop`, ver dayz-test-ingame; o `CfgPatches` no registra).
-- **Visible + texturado + winding**: orbita la cámara (≥4 poses — frente/lado/atrás/picado) con
-  `camera_set` + `capture_screenshot`; lee cada PNG. PASS = el objeto se ve (no invisible), sin
-  texturas missing (no magenta/blanco/negro pleno), proporciones plausibles, sin caras invertidas
-  ni agujeros (winding). El agujero/cara-faltante desde un ángulo y sólida desde el opuesto = winding
-  invertido.
-- **Colisión**: `scene_raycast(from_pos, to)` apuntando al objeto desde ≥2 ángulos (para
-  edificios: multi-punto — paredes, esquinas, suelo). PASS = los rayos que deben pegar dan
-  `hit=true` con `object_type`/`object_class` del objeto. Sin hit donde debería = ViewGeo/FireGeo
-  ausente o mal resuelto (LODs).
+### Static object / container / building
+- **Load**: spawn ok (above). FAIL → classname does not resolve (mod not mounted: absolute
+  `!Workshop` paths, see dayz-test-ingame; or `CfgPatches` does not register).
+- **Visible + textured + winding**: orbit camera (≥4 poses — front/side/back/overhead) with
+  `camera_set` + `capture_screenshot`; inspect each PNG. PASS = object visible (not invisible), without
+  missing textures (no solid magenta/white/black), plausible proportions, without inverted faces
+  or holes (winding). Hole/missing-face from one angle and solid from opposite = inverted
+  winding.
+- **Collision**: `scene_raycast(from_pos, to)` aimed at object from ≥2 angles (for
+  buildings: multi-point — walls, corners, floor). PASS = rays that should hit yield
+  `hit=true` with `object_type`/`object_class` of object. No hit where it should hit = ViewGeo/FireGeo
+  missing or improperly resolved (LODs).
 - **Placement**: `telemetry_read(mode="object_at", type=<classname>, pos=<spawn_pos>, radius=2)`
-  → `found=true`, `pos` ~ spawn, `orientation` razonable. PASS = no enterrado ni flotando
-  (cruza `pos.y` con el visual).
+  → `found=true`, `pos` ~ spawn, reasonable `orientation`. PASS = not buried or floating
+  (cross-reference `pos.y` with visuals).
 
 ### Item / arma
-- Carga + visible/texturado/winding como arriba, con **énfasis en proporciones vs la referencia
-  real** y en la geometría post-import (orientación, winding) — es donde fallan las mallas
-  generadas/importadas.
-- `telemetry_read object_at` → `attachment_count`, `health01`. PASS de telemetría = found + stats
-  sanos.
+- Load + visible/textured/winding as above, with **emphasis on proportions vs real-world
+  reference** and on post-import geometry (orientation, winding) — where generated/imported
+  meshes tend to fail.
+- `telemetry_read object_at` → `attachment_count`, `health01`. Telemetry PASS = found + healthy
+  stats.
 
-### Vehículo (solo placement/estructura)
-- Carga + visible + colisión + telemetría. `vehicle_enter(pos)` → `seated=true` confirma el
-  asiento. `telemetry_read` → `engine_on_server`, `wheel_count`, `fuel_fraction`.
-- `vehicle_enter` SIENTA al player (placement/asiento). Para CONDUCIR: la escalera de
-  drivability (§DRIVABILITY + `references/acceptance-ladder.md`) cubre conducción autónoma vía los verbos owner-side
+### Vehicle (placement/structure only)
+- Load + visible + collision + telemetry. `vehicle_enter(pos)` → `seated=true` confirms
+  seat. `telemetry_read` → `engine_on_server`, `wheel_count`, `fuel_fraction`.
+- `vehicle_enter` SEATS player (placement/seat). To DRIVE: drivability ladder
+  (§DRIVABILITY + `references/acceptance-ladder.md`) covers autonomous driving via owner-side verbs
   (`vehicle_get_in_client`/`engine_set`/`vehicle_control`/`vehicle_telemetry`).
 
 ## CAPTURAR ARMA ALZADA / ADS (raise client-side) [VERIFIED-SR2M gate iter36→37]
 
-Para validar la pose de arma ALZADA/apuntada (p.ej. el agarre de la mano de apoyo) no hay tool de input
-de player. Se fuerza el raise EN EL MOD, **client-side** — el personaje capturado es el player LOCAL del
-cliente, así que un override desde el `init.c` del servidor NO mueve la pose que el cliente renderiza
-(síntoma exacto: el log del server dice `raised=1` pero la captura sale con el arma BAJADA).
+To validate RAISED/aimed weapon pose (e.g. support hand grip) there is no player input
+tool. Weapon raise is forced IN THE MOD, **client-side** — captured character is client's LOCAL
+player, so server `init.c` override DOES NOT alter the pose client renders
+(exact symptom: server log states `raised=1` but capture shows weapon LOWERED).
 
-Drop-in: un `modded class MissionGameplay` en un mod del gate (declara un `missionScriptModule` en su
-`class defs`, `files[]={"Mod/Scripts/5_Mission"}`; build `-PackOnly` para que el `.c` sobreviva al pack):
+Drop-in: a `modded class MissionGameplay` in a gate mod (declares a `missionScriptModule` in its
+`class defs`, `files[]={"Mod/Scripts/5_Mission"}`; build `-PackOnly` so `.c` survives packing):
 
 ```c
 modded class MissionGameplay
@@ -341,55 +341,55 @@ modded class MissionGameplay
 };
 ```
 
-Claves:
-- La pose de aim en 3ª persona depende SOLO de `IsRaised()` (`dayzplayerimplement.c:1726`, AimingModel) →
-  un raise sostenido basta. NO llamar `SetIronsights()`: fuerza la cámara ironsight que pelea con la
-  free-cam del MCP, y server-side dejó el arma sin textura.
-- `WeaponADS()` (`human.c:86`) es flag de INPUT sin override de script (`human.c:234-255`) → siempre 0
-  aunque el ADS funcione. La señal de éxito = `IsRaised()` / log del cliente, NO `WeaponADS()`.
-- Mantener un `OverrideRaise(ENABLED)` también server-side (init.c) para que el servidor concuerde.
-- Juzgar el agarre por la mano a resolución NATIVA (recortar el frame del orbit), nunca el contact-sheet
-  reescalado. Mecanismo del grip + parity geométrica: skill `dayz-animation-pipeline`
+Key takeaways:
+- 3rd-person aim pose depends SOLELY on `IsRaised()` (`dayzplayerimplement.c:1726`, AimingModel) →
+  sustained raise is enough. DO NOT call `SetIronsights()`: forces ironsight camera which fights MCP
+  free-cam, and server-side left weapon untextured.
+- `WeaponADS()` (`human.c:86`) is INPUT flag without script override (`human.c:234-255`) → always 0
+  even if ADS works. Success signal = `IsRaised()` / client log, NOT `WeaponADS()`.
+- Keep `OverrideRaise(ENABLED)` server-side (init.c) as well so server agrees.
+- Judge grip by hand at NATIVE resolution (crop orbit frame), never rescaled
+  contact-sheet. Grip mechanism + geometric parity: skill `dayz-animation-pipeline`
   (`references/weapon-in-hands.md`).
 
-## TOOL → QUÉ VERIFICA
+## TOOL → WHAT IT VERIFIES
 
-| Tool | Verifica | Señal de fallo |
+| Tool | Verifies | Failure signal |
 |---|---|---|
-| `world_spawn` | el classname carga | `unknown_type` / `spawn_failed` → mod no montado |
-| `camera_set` + `capture_screenshot` | render: visible, texturas, winding, proporciones | invisible / magenta / agujeros |
-| `scene_raycast` | colisión (ViewGeo/FireGeo) | sin hit donde debería pegar |
-| `telemetry_read` (object_at) | placement, orientación, attachments, health | `found=false` / pos enterrada |
-| `bridge_status` | liveness de peers (gate) | `last_poll_age_s=null` → bridge caído |
-| `world_time_set` / `world_weather_set` | escena reproducible para capturas | — |
+| `world_spawn` | classname loads | `unknown_type` / `spawn_failed` → mod not mounted |
+| `camera_set` + `capture_screenshot` | render: visible, textures, winding, proportions | invisible / magenta / holes |
+| `scene_raycast` | collision (ViewGeo/FireGeo) | no hit where it should hit |
+| `telemetry_read` (object_at) | placement, orientation, attachments, health | `found=false` / buried pos |
+| `bridge_status` | peer liveness (gate) | `last_poll_age_s=null` → bridge down |
+| `world_time_set` / `world_weather_set` | reproducible scene for captures | — |
 
-## QUÉ NO CUBRE (declarar SIEMPRE en el reporte)
+## WHAT IT DOES NOT COVER (ALWAYS declare in report)
 
-- **Acciones de player y UI**: abrir/cerrar puertas, inventario interactivo, disparar, recargar,
-  menús. No hay tool de input de player genérico. (Conducir SÍ está cubierto — escalera
-  §DRIVABILITY / `references/acceptance-ladder.md` con los verbos owner-side.) Para un edificio, la geometría/colisión SÍ;
-  las **puertas NO** → test manual.
-- **`exec_enforce`** no ejecuta en el server diag headless (GATE4B-LIM, limitación de engine tipo
-  MakeScreenshot) — no apoyarse en él para "ejecutar lógica arbitraria de verificación".
-- **`telemetry_read`** se expone tal cual (BUG-010/011/012, hardening pendiente): no certifica
-  fixtures JSONL grandes ni rangos extremos.
-- **Acciones CONTINUAS (con barra de progreso): `action_use` las ARRANCA pero NO las COMPLETA**
-  (medido 2026-09-07, LFPowerGrid, ficha `fb-20260907-184749-3fc1`). Devuelve `ok=1, started=1` y el
-  efecto de servidor **nunca llega**: `OnFinishProgressServer` no se dispara y el objetivo sigue en
-  el mundo (`entities_query` a 0.003 m tras dos intentos con esperas de 60 s y 45 s). `key_press`
-  **no** es la salida: documenta ella misma "not OS input, key-up, hold", y una acción continua
-  necesita la entrada SOSTENIDA. Esto tumba de golpe **desmontar, desplegar/deploy y craftear**, que
-  es justo por donde un mod mueve dinero y objetos persistentes.
-  - **Lo que SÍ se puede afirmar, y no es poco**: la CONDICIÓN se evalúa de verdad, así que
-    `started=1` significa "candidata válida" y sirve como medida de que el mod **ofrece** la acción
-    sobre ese objetivo en ese estado. Compruébalo siempre con un control negativo que deba salir
-    rojo (un objetivo excluido devuelve `condition_failed`), o el `started=1` no prueba nada.
-  - **Corolario que muerde aparte**: como desplegar desde un kit es una acción continua, **no hay
-    forma por MCP de crear un objeto persistente de verdad** — `world_spawn` usa banderas por
-    defecto y no sobrevive al reinicio. Súmale que `dayz_test_stop` no cierra con gracia (el
-    arranque siguiente imprime `... was not closed. Always shut down the server gracefully`) y
-    **ninguna prueba de `OnStoreSave`/`OnStoreLoad` entre reinicios es concluyente por MCP hoy**.
-    Si el resultado sale "no persistió", eso es el arnés, NO el mod: no lo reportes como bug.
+- **Player and UI actions**: open/close doors, interactive inventory, shooting, reloading,
+  menus. There is no generic player input tool. (Driving IS covered — ladder
+  §DRIVABILITY / `references/acceptance-ladder.md` with owner-side verbs.) For a building, geometry/collision YES;
+  **doors NO** → manual test.
+- **`exec_enforce`** does not execute on the headless diag server (GATE4B-LIM, engine limitation like
+  MakeScreenshot) — do not rely on it to "execute arbitrary verification logic".
+- **`telemetry_read`** is exposed as-is (BUG-010/011/012, hardening pending): does not certify
+  large JSONL fixtures or extreme ranges.
+- **CONTINUOUS actions (with progress bar): `action_use` STARTS them but does NOT COMPLETE them**
+  (measured 2026-09-07, LFPowerGrid, ledger entry `fb-20260907-184749-3fc1`). Returns `ok=1, started=1` and the
+  server effect **never arrives**: `OnFinishProgressServer` does not fire and the target remains in
+  the world (`entities_query` at 0.003 m after two attempts with 60 s and 45 s waits). `key_press`
+  is **not** the way out: it documents itself "not OS input, key-up, hold", and a continuous action
+  needs SUSTAINED input. This immediately kills **dismantling, deploying/deploy, and crafting**, which
+  is precisely how a mod moves money and persistent objects.
+  - **What CAN be affirmed, and it is not little**: the CONDITION is evaluated for real, so
+    `started=1` means "valid candidate" and serves as a measure that the mod **offers** the action
+    on that target in that state. Always verify it with a negative control that must come out
+    red (an excluded target returns `condition_failed`), or `started=1` proves nothing.
+  - **Corollary that bites separately**: since deploying from a kit is a continuous action, **there is no
+    way via MCP to create a truly persistent object** — `world_spawn` uses default flags
+    and does not survive restart. Add that `dayz_test_stop` does not shut down gracefully (the
+    next startup prints `... was not closed. Always shut down the server gracefully`) and
+    **no test of `OnStoreSave`/`OnStoreLoad` between restarts is conclusive via MCP today**.
+    If the result comes out "did not persist", that is the harness, NOT the mod: do not report it as a bug.
 
 - **`class Doors` (`Building`) doors do NOT open by MCP without `door_index`** (measured 2026-09-07, LFSecure I-0/I-4, PBO L4):
   `action_use(ActionOpenDoors, classname=<door>)` returns `condition_failed` even with the player 1.4 m away,
@@ -400,230 +400,230 @@ Claves:
   open door also returns `condition_failed`. Without `door_index`, opening/closing, sound and sync were a MANUAL
   test (the user's F) and MCP could only verify "starts closed" (`object_anim` reads `phase=0`); see the update below.
 - Update (measured 2026-10-01, DayZDiag 1.29.163709, test building whose door component is a button on a moving piece) [EXACT]: `action_use` with `ActionOpenDoors`/`ActionCloseDoors` and `door_index` DOES open and close the door even there. `object_anim` (`SetAnimationPhaseNow`) on the door's source still cannot hold a static pose: the door settles at `ajar` with phase 0.07 instead of the requested phase — doors cannot be posed statically. For the verdict, use `object_doors` and rays.
-- **`setup_failed` es un FALSO NEGATIVO para acciones locales instantaneas** (`IsLocal() && IsInstant()`:
-  `ActionTogglePlaceObject`, `ActionDropItemSimple`; medido 2026-09-07): el bridge comprueba
-  `GetRunningAction()==null` justo despues de `PerformActionStart`, y una accion instantanea ya ha terminado.
-  El holograma aparecio y el objeto cayo al suelo en los dos casos. Regla: con `setup_failed` en una accion
-  instantanea, verifica el EFECTO (captura, `entities_query` del objeto soltado) antes de dar la accion por fallida.
-- **`scene_raycast`: `entry=0` es el TERRENO y `normal` NO es una normal unitaria** (medido 2026-09-07 con
-  `intersect=fire` y `geom`): un rayo vertical contra el suelo devuelve `hit=1`, `object_type=""`,
-  `surface_type=cp_grass|cp_concrete2`, `entry=0`, `exit=0`; contra un objeto devuelve `entry=1`. El campo
-  `normal` es `RaycastRVResult.dir` tal cual, que en colision linea-objeto es "direction AND SIZE of the
-  intersection" (`3_game/global/dayzphysics.c:104`): modulos medidos 0,16-0,42. Usalo solo como direccion
-  (signo/eje), nunca como normal unitaria ni como umbral (`dot >= 0.9` no se alcanza jamas). Un mod que filtre
-  `!hit.entry` descarta el suelo natural (holograma que nunca se pega al suelo: LFSecure I-1).
-- **Sonda de colision con CONTROL vanilla antes de culpar a la malla** (medido 2026-09-07, LFSecure L3 -> L4):
-  si `scene_raycast` no impacta en un estatico del mod, repite el MISMO rayo (view, fire y geom; desde fuera Y
-  desde dentro) contra un estatico vanilla spawneado al lado (`world_spawn(type="Land_Container_1Aoh")`: paredes
-  planas, `House`, `IsBuilding()` true, util tambien como pared para hologramas). Control HIT + mod MISS en todos los
-  modos y por los dos lados = componentes convexos de colision del reves (winding invertido en Geometry/View/Fire:
-  el ODOL los conserva, el motor no los ve); control HIT + mod HIT solo desde dentro = caras al reves solo en
-  visuales. Con el winding de la fuente restaurado (L4) el mismo rayo dio la cara frontal a +0,079 m y una pared
-  de 0,42 m. La regla de correccion vive en `dayz-p3d-audit` (0 % de acuerdo = discrepancia, no direccion).
+- **`setup_failed` is a FALSE NEGATIVE for local instantaneous actions** (`IsLocal() && IsInstant()`:
+  `ActionTogglePlaceObject`, `ActionDropItemSimple`; measured 2026-09-07): the bridge checks
+  `GetRunningAction()==null` right after `PerformActionStart`, and an instantaneous action has already finished.
+  The hologram appeared and the object fell to the ground in both cases. Rule: with `setup_failed` on an instantaneous
+  action, verify the EFFECT (capture, `entities_query` of dropped object) before marking the action as failed.
+- **`scene_raycast`: `entry=0` is TERRAIN and `normal` is NOT a unit normal** (measured 2026-09-07 with
+  `intersect=fire` and `geom`): a vertical ray against the ground returns `hit=1`, `object_type=""`,
+  `surface_type=cp_grass|cp_concrete2`, `entry=0`, `exit=0`; against an object it returns `entry=1`. The
+  `normal` field is `RaycastRVResult.dir` as-is, which in line-object collision is "direction AND SIZE of the
+  intersection" (`3_game/global/dayzphysics.c:104`): measured magnitudes 0.16-0.42. Use it only as direction
+  (sign/axis), never as a unit normal nor as a threshold (`dot >= 0.9` is never reached). A mod that filters
+  `!hit.entry` discards natural ground (hologram that never snaps to ground: LFSecure I-1).
+- **Collision probe with vanilla CONTROL before blaming the mesh** (measured 2026-09-07, LFSecure L3 -> L4):
+  if `scene_raycast` does not hit a mod static, repeat the SAME ray (view, fire, and geom; from outside AND
+  from inside) against a vanilla static spawned next to it (`world_spawn(type="Land_Container_1Aoh")`: flat
+  walls, `House`, `IsBuilding()` true, also useful as a wall for holograms). Control HIT + mod MISS in all
+  modes and from both sides = reversed collision convex components (inverted winding in Geometry/View/Fire:
+  ODOL preserves them, engine does not see them); control HIT + mod HIT only from inside = reversed faces only in
+  visuals. With the source winding restored (L4) the same ray gave the front face at +0.079 m and a wall
+  of 0.42 m. The correction rule lives in `dayz-p3d-audit` (0% agreement = discrepancy, not direction).
 
 ## REPORTING
 
-Un reporte con: tabla de criterios (criterio · PASS/FAIL/INFO · evidencia), los PNGs y los JSON
-de telemetría/raycast como evidencia, veredicto global, y una sección **"a test manual"** con lo
-no cubierto (puertas, disparo, etc.). Coste de contexto: cada captura pesa ~25k tokens (~240-320
-px) — **batch** las capturas de una pose-órbita y NO re-leas un PNG salvo para verificar algo
-concreto (las imágenes inflan el contexto rápido). Presupuesto duro ~25k tokens/imagen: no pedir
-más resolución.
+A report with: criteria table (criterion · PASS/FAIL/INFO · evidence), PNGs and telemetry/raycast
+JSONs as evidence, global verdict, and a **"to manual test"** section with what is
+not covered (doors, shooting, etc.). Context cost: each capture weighs ~25k tokens (~240-320
+px) — **batch** orbit-pose captures and do NOT re-read a PNG except to verify something
+concrete (images inflate context quickly). Hard budget ~25k tokens/image: do not request
+higher resolution.
 
 ## TROUBLESHOOTING
 
-| Síntoma | Causa | Fix |
+| Symptom | Cause | Fix |
 |---|---|---|
-| `claude mcp list` → `× Failed to connect` | `claude mcp list` NO es fiable: da falsos `Failed` con el server operativo. La contención E4 del puerto 8765 (lock `ExclusiveThreadingHTTPServer`, fail-closed) era el modo de fallo PRE-broker | verificar PRIMERO con ToolSearch (¿tools `mcp__dayz-mcp__*` disponibles? → todo OK, ignorar el `Failed`). El registro broker `--client` (desde 2026-06-24) supera la contención E4: N sesiones comparten el server sin pelear por 8765, y el orphan-guard suelta huérfanos solo. Si las tools faltan de verdad: registrar en modo broker (`--client`) y abrir sesión NUEVA (las tools cargan al arranque) |
-| tools no aparecen en la sesión | el server se registró DESPUÉS de abrir la sesión | abrir una sesión nueva (los MCP se cargan al arranque) |
-| `bridge_status.server_peer.last_poll_age_s = null` | el bridge server no pollea | revisar `dayz_mcp.json` en server_profiles + la key; confirmar `@DayZ_MCP` montado (paths absolutos `!Workshop`) |
-| `client_peer … null` (server ok) | el cliente no conecta o `client_profiles\dayz_mcp.json` falta | BUG-009 (autoconexión flaky): `-ServerWait` mayor / reintento; sembrar la config del cliente |
-| `version_state = legacy_blocked` | `--require-version` ON contra un bridge que no manda `ver=` | desplegar el PBO 4B (manda `ver=4~…`), o registrar el server sin `--require-version` para ese run |
-| capturas byte-idénticas entre poses | grab cogió un frame stale del escritorio (no el render) | [EXACT] `PrintWindow(hwnd, hdc, PW_RENDERFULLCONTENT=2)` on the client's main window DOES capture the D3D game area — full scene in >20 captures even with another window covering it and without taking focus, as long as the Windows session is unlocked and the display is on (measured in game, DayZDiag 1.29, 2026-09-28). A black game area means the display is off or the session is locked, not that the route cannot read D3D. `CopyFromScreen` only works with the window in front, and a covered DayZDiag also drops to ~20 FPS; validate on a crop of the game area, not whole-frame variance (corrects the LL-247 entry of 2026-08-12) |
-| timeout de tool y luego comandos "zombie" al reconectar | BUG-024: un timeout deja el comando en cola; el bridge lo ejecuta al volver | tras un timeout, reconciliar con `bridge_status` antes de seguir |
+| `claude mcp list` → `× Failed to connect` | `claude mcp list` is NOT reliable: gives false `Failed` with the server operational. E4 contention on port 8765 (`ExclusiveThreadingHTTPServer` lock, fail-closed) was the PRE-broker failure mode | verify FIRST with ToolSearch (`mcp__dayz-mcp__*` tools available? → all OK, ignore `Failed`). Broker registration `--client` (since 2026-06-24) overcomes E4 contention: N sessions share the server without fighting for 8765, and orphan-guard releases orphans alone. If tools are truly missing: register in broker mode (`--client`) and open NEW session (tools load at startup) |
+| tools do not appear in session | server was registered AFTER opening session | open a new session (MCPs load at startup) |
+| `bridge_status.server_peer.last_poll_age_s = null` | server bridge does not poll | check `dayz_mcp.json` in server_profiles + key; confirm `@DayZ_MCP` mounted (absolute paths `!Workshop`) |
+| `client_peer … null` (server ok) | client does not connect or `client_profiles\dayz_mcp.json` missing | BUG-009 (flaky autoconnection): larger `-ServerWait` / retry; seed client config |
+| `version_state = legacy_blocked` | `--require-version` ON against a bridge not sending `ver=` | deploy 4B PBO (sends `ver=4~…`), or register server without `--require-version` for that run |
+| byte-identical captures between poses | grab caught a stale desktop frame (not render) | [EXACT] `PrintWindow(hwnd, hdc, PW_RENDERFULLCONTENT=2)` on the client's main window DOES capture the D3D game area — full scene in >20 captures even with another window covering it and without taking focus, as long as the Windows session is unlocked and the display is on (measured in game, DayZDiag 1.29, 2026-09-28). A black game area means the display is off or the session is locked, not that the route cannot read D3D. `CopyFromScreen` only works with the window in front, and a covered DayZDiag also drops to ~20 FPS; validate on a crop of the game area, not whole-frame variance (corrects the LL-247 entry of 2026-08-12) |
+| tool timeout and then "zombie" commands on reconnect | BUG-024: timeout leaves command queued; bridge executes it on return | after a timeout, reconcile with `bridge_status` before continuing |
 
 ## REFERENCES
 
-- `dayz-test-ingame` — build/deploy/launch (esta skill lo compone con `-ExtraMods "@DayZ_MCP"`).
-- `DayZ_MCP_dev\tools\README-mcp.md` — orden de arranque + troubleshooting del bridge.
-- `DayZ_MCP_dev\HANDOFF.md` (LIVE-STATE) — invariantes del server, 11 tools, GATE4B-LIM, backlog.
-- `_shared\dayz-conventions.md` — L2 (LODs, ViewGeo/FireGeo, formato de respuestas DayZ).
-- Precedente de captura por cámara+órbita: el `gate-mcp.ps1` del A6 (window-grab por órbita,
-  hallazgo dayz-test-ingame 2026-06-17) — barrido batch alternativo al agente conduciendo tools.
+- `dayz-test-ingame` — build/deploy/launch (this skill composes it with `-ExtraMods "@DayZ_MCP"`).
+- `DayZ_MCP_dev\tools\README-mcp.md` — startup order + bridge troubleshooting.
+- `DayZ_MCP_dev\HANDOFF.md` (LIVE-STATE) — server invariants, 11 tools, GATE4B-LIM, backlog.
+- `_shared\dayz-conventions.md` — L2 (LODs, ViewGeo/FireGeo, DayZ response format).
+- Precedent of camera+orbit capture: A6's `gate-mcp.ps1` (window-grab by orbit,
+  dayz-test-ingame finding 2026-06-17) — alternative batch sweep to agent driving tools.
 
 
-## VEHÍCULO: receta de smoke repetible (added 2026-06-24)
+## VEHICLE: repeatable smoke recipe (added 2026-06-24)
 
-Smoke visual de un vehículo CarScript conducido por MCP, verificado end-to-end en MercedesAMGLF
-2026-06-24. Repetible sin re-derivar:
+Visual smoke of a CarScript vehicle driven by MCP, verified end-to-end on MercedesAMGLF
+2026-06-24. Repeatable without re-deriving:
 
-1. **Misión = stock `dayzOffline.chernarusplus`** (la del DayZServer install), NO una mount-probe
-   `void main()` de Fase 0: la mount-probe no spawnea player → el cliente no renderiza el mundo y la
-   captura sale negra. La stock spawnea player (`CreateCharacter`→`CreatePlayer`) → free-cam con mundo
-   renderizado. Pásala con `-Mission "<...>\dayzOffline.chernarusplus"`.
-2. **Seed del bridge en los profiles que genera `dayz-test.ps1`**: `dayz_mcp.json`
-   `{"url":"http://127.0.0.1:8765/","key":"<key>","pollHz":5}` (ASCII) en `<Mod>_dev\_server\profiles\`
-   y `..\_client\profiles\`. El bridge lo lee de `$profile:` (server `MCPBridge.c:125`, client
-   `MCPClientBridge.c:211`); key = `DayZ_MCP_dev\tools\.dayz_mcp.key`. Sembrar ANTES del launch (el
-   bridge lee el config en su init, una sola vez). No uses `install-mcp.ps1 -Register` (re-registra el
-   modo broker `--client`).
+1. **Mission = stock `dayzOffline.chernarusplus`** (from DayZServer install), NOT a Phase 0
+   mount-probe `void main()`: mount-probe spawns no player → client does not render the world and
+   capture comes out black. Stock spawns player (`CreateCharacter`→`CreatePlayer`) → free-cam with rendered
+   world. Pass it with `-Mission "<...>\dayzOffline.chernarusplus"`.
+2. **Bridge seed in profiles generated by `dayz-test.ps1`**: `dayz_mcp.json`
+   `{"url":"http://127.0.0.1:8765/","key":"<key>","pollHz":5}` (ASCII) in `<Mod>_dev\_server\profiles\`
+   and `..\_client\profiles\`. The bridge reads it from `$profile:` (server `MCPBridge.c:125`, client
+   `MCPClientBridge.c:211`); key = `DayZ_MCP_dev\tools\.dayz_mcp.key`. Seed BEFORE launch (the
+   bridge reads config in its init, only once). Do not use `install-mcp.ps1 -Register` (re-registers
+   broker mode `--client`).
 3. **Launch**: `dayz-test.ps1 -Mod <Mod> -Mode all -Build -PackOnly -ExtraMods "@DayZ_MCP" -Mission
-   "<...>\dayzOffline.chernarusplus" -ServerWait 240`. `-PackOnly` obligatorio en mods con `.c`
-   (binarize los dropea → NO_IGNITER). Llamar el `.ps1` por ruta absoluta (P:\ es subst).
-4. **Readiness**: la stock corre el CE (`InitOffline`) ~1-3 min; durante el CE `bridge_status` sale
-   STALE (`last_poll_age_s` crece aunque `version_state=ok`) — NO spawnees ahí. Espera a `connected to
-   server` en el `script*.log` del server y a que `bridge_status` vuelva fresco (<1 s). Poll
-   host-direct con PowerShell del log, NO Monitor bash (hereda el cache bindfs, LL-142).
-5. **Smoke** (agrupado, R5): `world_time_set(year,month,day,hour=12,minute=0)` (los 5 obligatorios) + `world_weather_set overcast=1.0` → `world_spawn
-   <Class> pos≈[player+~10]` → esperar 30 s (sobrevive sin crash nativo = LL-099 descartado) →
+   "<...>\dayzOffline.chernarusplus" -ServerWait 240`. `-PackOnly` mandatory in mods with `.c`
+   (binarize drops them → NO_IGNITER). Call the `.ps1` via absolute path (P:\ is subst).
+4. **Readiness**: stock runs CE (`InitOffline`) ~1-3 min; during CE `bridge_status` comes out
+   STALE (`last_poll_age_s` grows even though `version_state=ok`) — do NOT spawn there. Wait for `connected to
+   server` in server's `script*.log` and for `bridge_status` to return fresh (<1 s). Poll
+   log host-direct with PowerShell, NOT bash Monitor (inherits bindfs cache, LL-142).
+5. **Smoke** (grouped, R5): `world_time_set(year,month,day,hour=12,minute=0)` (all 5 mandatory) + `world_weather_set overcast=1.0` → `world_spawn
+   <Class> pos≈[player+~10]` → wait 30 s (survives without native crash = LL-099 ruled out) →
    `camera_set` (cam_mode **"lookat"**, `cam_pos`+`look_at`) + `capture_screenshot` + `scene_raycast` +
-   `telemetry_read object_at`. Telemetría sana = `found=1`, `health01=1`, `velocity 0`.
-6. **Captura flaky**: el grab a veces coge la pantalla de carga o el overlay del menú "Continuar" del
-   cliente en vez del render. Si pasa: espera settle (~30-40 s en background — el foreground sleep está
-   bloqueado en este entorno) y recaptura; usa varios ángulos. Cenital que delata bien la
-   (des)alineación de proxys: `cam_pos=[carX+3, 16, carZ+1]` `look_at=[carX, suelo+0.1, carZ]`. ~25k
-   tokens/imagen — batch las capturas, no re-leas un PNG salvo para verificar algo concreto.
-7. **El ojo del usuario > la captura** cuando el render es ambiguo: en MercedesAMGLF el grab era flaky y
-   la lectura del usuario fue el diagnóstico fiable de winding y alineación de proxys. Si hay humano en
-   el bucle, contrástalo. (Caso s3 2026-06-24: yo iba a firmar PASS sobre renders tenues; el ojo del
-   usuario cazó la desalineación de proxys que yo no resolvía → FAIL correcto.)
+   `telemetry_read object_at`. Healthy telemetry = `found=1`, `health01=1`, `velocity 0`.
+6. **Flaky capture**: grab sometimes catches loading screen or client's "Continue" menu overlay
+   instead of render. If it happens: wait for settle (~30-40 s in background — foreground sleep is
+   blocked in this environment) and recapture; use several angles. Top-down that clearly reveals proxy
+   (mis)alignment: `cam_pos=[carX+3, 16, carZ+1]` `look_at=[carX, ground+0.1, carZ]`. ~25k
+   tokens/image — batch captures, do not re-read a PNG except to verify something concrete.
+7. **User's eye > capture** when render is ambiguous: in MercedesAMGLF grab was flaky and
+   user reading was reliable diagnosis of winding and proxy alignment. If there is a human in
+   the loop, cross-check with them. (Case s3 2026-06-24: I was about to sign PASS on faint renders; user's
+   eye caught proxy misalignment I could not resolve → correct FAIL.)
 
-8. **SESIÓN COMPARTIDA.** El puerto 2302 y el cliente Steam siguen siendo recursos únicos, pero
-   la exclusión se coordina con el lease FIFO del runbook, no atribuyendo procesos ni desalojando
-   otras sesiones. `dayz_test_run` adquiere y mantiene la exclusión; conserva el `run_id` y
-   termina ese mismo run con `dayz_test_stop`. NUNCA mates un proceso para desbloquear la caja:
-   si el estado no reconcilia, conserva el proceso y declara cierre degradado.
+8. **SHARED SESSION.** Port 2302 and Steam client remain single resources, but
+   exclusion is coordinated with the runbook's FIFO lease, not attributing processes nor evicting
+   other sessions. `dayz_test_run` acquires and maintains exclusion; retain `run_id` and
+   terminate that same run with `dayz_test_stop`. NEVER kill a process to unlock the box:
+   if state does not reconcile, retain the process and declare degraded shutdown.
 
-9. **"Ruedas = lámina/disco plano" NO es bug de proxy.** Un `world_spawn` de un CarScript sin attachments deja
-   `wheel_count=0`/`attachment_count=0` → solo se ve el hub/disco, sin neumáticos. Esperado en el smoke visual; las
-   ruedas reales requieren attachments (fase de física), fuera de alcance del smoke.
+9. **"Wheels = sheet/flat disk" is NOT a proxy bug.** A `world_spawn` of a CarScript without attachments leaves
+   `wheel_count=0`/`attachment_count=0` → only hub/disk is visible, without tires. Expected in visual smoke; real
+   wheels require attachments (physics phase), out of scope for smoke.
 
-10. **`legacy_blocked` ("poll did not include ver=") suele ser INIT INCOMPLETO, no mismatch de versión (added
-    2026-06-28).** Refina la fila homónima de TROUBLESHOOTING: con el PBO 4B desplegado, justo tras lanzar el server
-    el `bridge_status` puede salir `legacy_blocked`/`last_poll_age_s=null` porque el bridge aún no completó el
-    handshake; pasa a `ok` con `ver=4~…` cuando el mission del server CARGA del todo (~1-2 min). NO redepliegues ni
-    re-registres por eso — espera y re-chequea. Solo es mismatch real si sigue `legacy_blocked` con el mission ya
-    cargado (cliente conectado, world renderizado). Origen: SUB_BRZ Fase 5 2026-06-28.
+10. **`legacy_blocked` ("poll did not include ver=") is usually INCOMPLETE INIT, not version mismatch (added
+    2026-06-28).** Refines the homonymous row in TROUBLESHOOTING: with 4B PBO deployed, right after launching server
+    `bridge_status` can come out `legacy_blocked`/`last_poll_age_s=null` because the bridge has not yet completed the
+    handshake; transitions to `ok` with `ver=4~…` when server mission LOADS completely (~1-2 min). Do NOT redeploy nor
+    re-register for that — wait and re-check. It is only a real mismatch if it stays `legacy_blocked` with mission already
+    loaded (client connected, world rendered). Origin: SUB_BRZ Phase 5 2026-06-28.
 
-11. **Patrón histórico superseded 2026-07-15.** `cmd start`/`.bat` evitaba que un job background
-    perdiera su hijo, pero creaba un proceso fuera del lifecycle registrado. Para cualquier smoke
-    actual, usa exclusivamente `dayz_test_run`, conserva su `run_id` y termina solo ese run con
-    `dayz_test_stop`. No existe fallback unmanaged para sortear el lifecycle guard.
+11. **Historical pattern superseded 2026-07-15.** `cmd start`/`.bat` avoided a background job
+    losing its child, but created a process outside the registered lifecycle. For any current
+    smoke, use exclusively `dayz_test_run`, retain its `run_id` and terminate only that run with
+    `dayz_test_stop`. No unmanaged fallback exists to bypass the lifecycle guard.
 
-## DRIVABILITY + ESCALERA DE ACEPTACIÓN (resumen — detalle en reference)
+## DRIVABILITY + ACCEPTANCE LADDER (summary — detail in reference)
 
-Fase 5 del proyecto DayZ-MCP añadió y gateó in-game verbos owner-side que SÍ **conducen** el
-coche (el cliente toma ownership y maneja throttle/steer): `vehicle_get_in_client(pos)` (sienta +
+Phase 5 of DayZ-MCP project added and gated in-game owner-side verbs that DO **drive** the
+car (client takes ownership and handles throttle/steer): `vehicle_get_in_client(pos)` (seats +
 ownership), `engine_set("start"/"stop")`, `vehicle_control(throttle, steer, brake, handbrake,
-hold_ttl_s)` (control SOSTENIDO, fail-closed), `vehicle_telemetry()`, `vehicle_release()`, y
-`query_get_in_condition(pos, component)` (peer server, diagnostica cuál de los 7 gates de
-`ActionGetInTransport` bloquea). Sobre ellos corre la **escalera de aceptación** rip→conducible:
-rungs ordenados **R1 spawnea → R2 render → R3 get-in disponible → R4 sentado → R5 conduce → R6
-sentido de ruedas**, cada uno leyendo ground-truth in-game y mapeando su fallo a un fix conocido de
-la taxonomía SUB_BRZ (`dayz-vehicles/references/`). Orquestador de referencia `references/drive_ladder.py`
-(conduce R1→R6, emite `verdict.json`; NO aplica fixes ni rebuildea) + fixtures `references/test_drive_ladder.py`.
+hold_ttl_s)` (SUSTAINED control, fail-closed), `vehicle_telemetry()`, `vehicle_release()`, and
+`query_get_in_condition(pos, component)` (server peer, diagnoses which of the 7 gates of
+`ActionGetInTransport` blocks). On top of them runs the **acceptance ladder** rip→drivable:
+ordered rungs **R1 spawns → R2 render → R3 get-in available → R4 seated → R5 drives → R6
+wheel direction**, each reading in-game ground-truth and mapping its failure to a known fix in the
+SUB_BRZ taxonomy (`dayz-vehicles/references/`). Reference orchestrator `references/drive_ladder.py`
+(drives R1→R6, outputs `verdict.json`; does NOT apply fixes nor rebuild) + fixtures `references/test_drive_ladder.py`.
 
-**Detalle completo** (verbos, mecanismo owner-side verificado, precondiciones, colocación del spawn,
-R2.5 restore-gameplay, barandillas anti-verde-falso, la tabla de la escalera y el mapeo fallo→fix) →
+**Full detail** (verbs, verified owner-side mechanism, preconditions, spawn placement,
+R2.5 restore-gameplay, anti-false-green guardrails, ladder table, and failure→fix mapping) →
 `references/acceptance-ladder.md`.
 
 
-## (added 2026-07-14) No hay tool de restore-gameplay: para test MANUAL del usuario, relanzar sin @DayZ_MCP
+## (added 2026-07-14) No restore-gameplay tool: for user MANUAL test, relaunch without @DayZ_MCP
 
-`camera_set` SIEMPRE suprime el control del player (`SuppressGameplay()` -> `PlayerControlDisable`, ver
-§R2.5) y **NO hay tool MCP que dispare `RestoreGameplay()`** — solo el gate interno `drive_probe_client`
-lo hace, y no está expuesto como verbo/tool. Consecuencia práctica: tras un smoke MCP que usó `camera_set`
-(free-cam o static-cam lookat), el USUARIO no puede tomar el control del player para probar el coche a mano
-— su input sigue suprimido y no hay verbo para revertirlo en caliente.
+`camera_set` ALWAYS suppresses player control (`SuppressGameplay()` -> `PlayerControlDisable`, see
+§R2.5) and **there is NO MCP tool that fires `RestoreGameplay()`** — only internal gate `drive_probe_client`
+does it, and it is not exposed as a verb/tool. Practical consequence: after an MCP smoke that used `camera_set`
+(free-cam or static-cam lookat), the USER cannot take player control to test the car by hand
+— their input remains suppressed and there is no verb to revert it on the fly.
 
-Regla: cuando el flujo pasa del smoke MCP (automático) al **test manual del usuario** (conducir, juzgar
-feel/estética), **relanzar el juego SIN `@DayZ_MCP`** (o al menos con un cliente que nunca haya recibido
-`camera_set` en esa sesión). Un cliente limpio tiene control normal. Si el cliente ya quedó "capado":
-reconectar (Esc -> Disconnect -> Reconnect) recrea el player con cámara/control limpios; no hay atajo por
-tool. Origen: SUB_BRZ s35 — se perdió tiempo buscando una tool de restore inexistente y el usuario tuvo
-que cerrar el juego y pedir relanzar normal.
+Rule: when workflow passes from MCP smoke (automatic) to **user manual test** (driving, judging
+feel/aesthetics), **relaunch the game WITHOUT `@DayZ_MCP`** (or at least with a client that never received
+`camera_set` in that session). A clean client has normal control. If the client was already neutered:
+reconnecting (Esc -> Disconnect -> Reconnect) recreates the player with clean camera/control; there is no tool
+shortcut. Origin: SUB_BRZ s35 — time was lost looking for a non-existent restore tool and user had
+to close the game and ask to relaunch normally.
 
-## (added 2026-07-14) Smoke autonomo: world_spawn toma [x, y_up, z] motor, y captura con display dormido = frame negro (SP-060)
+## (added 2026-07-14) Autonomous smoke: world_spawn takes engine [x, y_up, z], and capture with sleeping display = black frame (SP-060)
 
 Dos caveats de smoke MCP autonomo verificados in-vivo (SUB_BRZ s32):
 
-1. **`world_spawn` toma el vector en orden MOTOR `[x, y_up, z_north]`** (`MCPBridge.c:1638` `Vector(x,y,z)`), pero el connect-log del bridge imprime la posicion del player como `<x, z_north, y_up>`. Pasar la tripleta del log VERBATIM spawnea el objeto a ~6 km de altura -> `IsSpawnReady` (radio 2.0 m) nunca se cumple -> job timeout + `found=0`, y el motor auto-borra el huerfano (`NETWORK (E): Will delete object ... outside world coords`). Costo 3 timeouts seguidos. Regla: convertir `<x,z,y>` -> `[x,y,z]` antes de todo `world_spawn`/`camera_set`; tras un timeout de spawn, grep del RPT por `outside world coords` ANTES de reintentar (distingue coords-malas de spawn-lento). Verificable con `scene_raycast` al terreno (da la y_up real).
+1. **`world_spawn` takes vector in ENGINE order `[x, y_up, z_north]`** (`MCPBridge.c:1638` `Vector(x,y,z)`), but bridge connect-log prints player position as `<x, z_north, y_up>`. Passing the log triplet VERBATIM spawns the object at ~6 km altitude -> `IsSpawnReady` (2.0 m radius) is never satisfied -> job timeout + `found=0`, and engine auto-deletes the orphan (`NETWORK (E): Will delete object ... outside world coords`). Cost 3 timeouts in a row. Rule: convert `<x,z,y>` -> `[x,y,z]` before every `world_spawn`/`camera_set`; after a spawn timeout, grep RPT for `outside world coords` BEFORE retrying (distinguishes bad-coords from slow-spawn). Verifiable with `scene_raycast` to terrain (gives real y_up).
 2. **Capturing with the display asleep = BLACK frame** even though the client runs (on 2026-07-11 a locked session with LockApp also gave black frames; since 2026-09-14 the capture backend fails outright on a locked session instead, see point 4). Fix: bring the client window to the foreground + input wiggle (mouse / F15) before EVERY `capture_screenshot`. Misleading symptom: it looks like "the mod's render is broken" and it is the compositor.
-3. (menor) Spawn adyacente al player puede caer DENTRO de un edificio -> sondear 3-4 `scene_raycast` a terreno despejado antes de elegir la pos.
+3. (minor) Spawn adjacent to player can fall INSIDE a building -> probe 3-4 `scene_raycast` to clear terrain before choosing pos.
 4. [EXACT] A locked Windows session is a distinct capture failure (added 2026-09-14, SUB_BRZ s93): with `LogonUI` alive, `capture_screenshot` does not return a black frame — it fails outright with `capture_backend_failed` on every attempt while the game client stays alive and probing. Before budgeting captures in an unattended run, run `Get-Process LogonUI` first: with a locked session there is no host capture at all, for the MCP capture and for any window-grab script. (measured in game, DayZ 1.30.164014 Exp)
 
-Origen: SUB_BRZ s32 smoke MCP (2026-07-11): 3 timeouts de `world_spawn` con la pos cruda del log + 2 capturas negras con LockApp; ambos resueltos con lo de arriba.
+Origin: SUB_BRZ s32 MCP smoke (2026-07-11): 3 `world_spawn` timeouts with raw log pos + 2 black captures with LockApp; both resolved with the above.
 
-## (added 2026-07-14) Gates numericos de telemetria: calibrar contra el SUELO FISICO MEDIDO, no contra fixtures ideales (SP-061)
+## (added 2026-07-14) Telemetry numeric gates: calibrate against MEASURED PHYSICAL FLOOR, not ideal fixtures (SP-061)
 
-Invariante para cualquier acceptance-ladder / gate numerico sobre telemetria in-game (drive_ladder de coches, spikes, futuros harnesses):
+Invariant for any acceptance-ladder / numeric gate on in-game telemetry (car drive_ladder, spikes, future harnesses):
 
-1. **Un umbral calibrado con fixtures matematicas ideales es un gate que ninguna fisica real pasa.** El motor tiene suelo de ruido nativo (dither del body entre SetVelocity y lectura; interpolador de red del cliente). Antes de fijar un umbral: MEDIR el suelo en un run real (p95 de la metrica sobre datos reales), umbral = suelo x margen (>=2x), y documentar los numeros medidos junto a la constante. Dos mediciones independientes convergentes (implementador + receptor, +-20%) validan el numero. Caso: LFHeli W0 batch1 - jitter gate a 0.5 m/s con suelo real 4.3-5.1 m/s -> NO-GO falso que costo una correctiva entera; recalibrado dio GO con margen 2.2x.
-2. **La metrica de suavidad perceptiva es el zigzag frame-a-frame en METROS (2a diferencia, |delta v_implied|*dt)** - NO |delta residual vs ideal| por frame (autocorrelacionado; media 2x el zigzag real) y NO implied-velocity en m/s (escala 1/dt: el mismo proceso da suelos distintos a 30 vs 60 FPS y rompe celdas A/B de FPS).
-3. **Transitorios de arranque (teleport de setup + interpolador persiguiendolo) se excluyen con warm-up acotado en la ventana de score del cliente** (transitorio real 0.25 s -> warm-up 1.0 s = margen 4x), fail-closed todo lo demas.
-4. *(extension LFHeli X.5e/f)* **Los checks ESTRUCTURALES relativos tambien necesitan piso absoluto, y la mediaNA del frame-time es falaz con distribucion bimodal.** Un run a 250 FPS con frame-time bimodal (rafagas 4 ms + poblacion ~50 ms) rompio tres umbrales relativos: max-gap 3x mediana, dt-tol 30%*dt, coverage span/mediana_dt. Fixes: pisos absolutos con base fisica (gap 0.150 s; dt-tol 0.015 s) y coverage por media de la columna dt (la media de los DELTAS de t es TAUTOLOGICA: span/(n-1) -> ratio ~1 siempre - check vacuo, trampa G3).
+1. **A threshold calibrated with ideal mathematical fixtures is a gate that no real physics passes.** The engine has a native noise floor (body dither between SetVelocity and reading; client network interpolator). Before setting a threshold: MEASURE the floor in a real run (metric p95 on real data), threshold = floor x margin (>=2x), and document the measured numbers next to the constant. Two convergent independent measurements (implementer + receiver, +-20%) validate the number. Case: LFHeli W0 batch1 - jitter gate at 0.5 m/s with real floor 4.3-5.1 m/s -> false NO-GO that cost an entire corrective pass; recalibrated gave GO with 2.2x margin.
+2. **The perceptual smoothness metric is frame-to-frame zigzag in METERS (2nd difference, |delta v_implied|*dt)** - NOT |residual delta vs ideal| per frame (autocorrelated; measures 2x real zigzag) and NOT implied-velocity in m/s (scales 1/dt: same process gives different floors at 30 vs 60 FPS and breaks A/B FPS cells).
+3. **Startup transients (setup teleport + interpolator chasing it) are excluded with bounded warm-up in client score window** (real transient 0.25 s -> warm-up 1.0 s = 4x margin), fail-closed everything else.
+4. *(LFHeli X.5e/f extension)* **Relative STRUCTURAL checks also need an absolute floor, and frame-time mediaN is fallacious with bimodal distribution.** A run at 250 FPS with bimodal frame-time (4 ms bursts + ~50 ms population) broke three relative thresholds: max-gap 3x median, dt-tol 30%*dt, coverage span/median_dt. Fixes: absolute floors with physical basis (gap 0.150 s; dt-tol 0.015 s) and coverage by mean of dt column (mean of t DELTAS is TAUTOLOGICAL: span/(n-1) -> ratio ~1 always - vacuous check, G3 pitfall).
 
 Cross-ref `dayz-vehicles` (drive_ladder) y `dayz-mod-workflow` ("primer run real -> retune, no NO-GO"). Origen: LFHeli X.5d (2026-07-11), doble medicion convergente + selftest 31/31.
 
-## (added 2026-07-14) Gates telemetricos (extiende SP-061): epsilon float en bordes + invariante AGREGADA de balance temporal (SP-063)
+## (added 2026-07-14) Telemetric gates (extends SP-061): float epsilon at boundaries + AGGREGATED temporal balance invariant (SP-063)
 
-Dos defectos adversariales reproducidos en un gate ya doblemente sellado (re-sello Codex, confirmados por el receptor):
+Two adversarial defects reproduced on an already double-sealed gate (Codex re-seal, confirmed by receiver):
 
-1. **Comparadores de umbral temporal necesitan epsilon de representacion float.** Un contrato "el borde exacto tolera" (gap 150 ms / desviacion 15 ms) se viola en binario: deltas acumulados dan `0.15000000000000002 > 0.15` -> falso REJECT del borde, y NO determinista. Fix: `> limite + EPS` (1e-6 s) en CADA comparador temporal, con fixtures de borde N-1/N/N+1 (149/150/151 y 14/15/16 ms).
-2. **Un coverage por conteo x media es una IDENTIDAD evadible sesgando el denominador.** `rows >= K*span/mean(dt)` <=> `sum(dt) >= K*span`: una columna dt sesgada +50% SOSTENIDA (bajo el floor por-fila) compensa un 40% de filas perdidas -> GO fail-open sobre traza incompleta. Fix: invariante AGREGADA de balance two-sided `|span - sum(dt[1:])| <= max(1%*span, 0.1 s)` - para productor honesto es ~0 por identidad fisica; medido <=0.0001% del span en 9 CSVs reales vs 9.98% en la fixture adversarial.
-3. **(Meta) floor-por-fila + invariante agregada son PAREJA obligatoria**: el por-fila caza el outlier aislado; el agregado caza el sesgo sostenido pequeno. Un solo nivel deja un flanco abierto - y la fixture que lo demuestra es el ACOPLAMIENTO de dos checks "cerrados" por separado.
+1. **Temporal threshold comparators need float representation epsilon.** A "boundary precisely tolerates" contract (gap 150 ms / deviation 15 ms) is violated in binary: accumulated deltas give `0.15000000000000002 > 0.15` -> boundary false REJECT, and NOT deterministic. Fix: `> limit + EPS` (1e-6 s) in EACH temporal comparator, with N-1/N/N+1 boundary fixtures (149/150/151 and 14/15/16 ms).
+2. **Coverage by count x mean is an evadable IDENTITY by biasing the denominator.** `rows >= K*span/mean(dt)` <=> `sum(dt) >= K*span`: a SUSTAINED +50% biased dt column (under per-row floor) compensates for 40% lost rows -> fail-open GO on incomplete trace. Fix: AGGREGATED two-sided balance invariant `|span - sum(dt[1:])| <= max(1%*span, 0.1 s)` - for honest producer it is ~0 by physical identity; measured <=0.0001% of span in 9 real CSVs vs 9.98% in adversarial fixture.
+3. **(Meta) per-row floor + aggregated invariant are a mandatory PAIR**: per-row catches isolated outlier; aggregated catches small sustained bias. A single level leaves an open flank - and fixture demonstrating it is COUPLING of two checks "closed" separately.
 
 Cross-ref `dayz-vehicles` (drive_ladder). Origen: re-sello LFHeli X5EF (2026-07-11), F-01/F-02 con outputs literales + fixture cruzada 40%-drops + dt-6ms -> GO fail-open.
 
-## (added 2026-07-18 s37) Conditioning server-side de un coche custom (OnDebugSpawn real)
+## (added 2026-07-18 s37) Server-side conditioning of a custom car (real OnDebugSpawn)
 
-`vehicle_get_in_client` ejecuta OnDebugSpawn CLIENT-side = no-op bajo autoridad del server
-(sintoma: `vehicle_fixture_ready=1` enganoso con `wheel_count=0`/`fuel=0` en telemetria
-server). Para condicionar de verdad (ruedas+fluidos autoritativos) sin tocar codigo:
-`vehicle_enter(pos)` (asiento server) y despues raw enqueue
-`vehicle_drive {throttle:0.01, duration:0.5}` — su fase PREP ejecuta `car.OnDebugSpawn()`
-SERVER-side (MCPBridge.c:2104-2112) y el micro-drive de 0.5 s es despreciable. OJO:
-`vehicle_drive` exige el asiento SERVER-side (da `not_seated` con el seat owner-client).
-`vehicle_prepare_fixture` NO sirve fuera del Mercedes (hardcode `MERCEDES_AMGLF` en
-MCPBridge.c:835 y loopback.py:113; chip abierto para generalizarlo). El raw `/enqueue`
-exige `{identity, lease_token}` en el body ademas de `?key=` (la identity/token salen de
-`session_acquire`). gear idx de `vehicle_telemetry`: 0=R, 1=N, 2=1a ... 7=6a.
-Verificado in-game SUB_BRZ s37 (wheel_count 0->4, fuel 1.0, kit completo, run B3 a 6a).
+`vehicle_get_in_client` executes OnDebugSpawn CLIENT-side = no-op under server authority
+(symptom: misleading `vehicle_fixture_ready=1` with `wheel_count=0`/`fuel=0` in server
+telemetry). To condition for real (authoritative wheels+fluids) without touching code:
+`vehicle_enter(pos)` (server seat) and then raw enqueue
+`vehicle_drive {throttle:0.01, duration:0.5}` — its PREP phase executes `car.OnDebugSpawn()`
+SERVER-side (MCPBridge.c:2104-2112) and the 0.5 s micro-drive is negligible. NOTE:
+`vehicle_drive` requires the SERVER-side seat (gives `not_seated` with owner-client seat).
+`vehicle_prepare_fixture` does NOT work outside the Mercedes (`MERCEDES_AMGLF` hardcoded in
+MCPBridge.c:835 and loopback.py:113; open issue to generalize it). Raw `/enqueue`
+requires `{identity, lease_token}` in body in addition to `?key=` (identity/token come from
+`session_acquire`). gear idx of `vehicle_telemetry`: 0=R, 1=N, 2=1st ... 7=6th.
+Verified in-game SUB_BRZ s37 (wheel_count 0->4, fuel 1.0, complete kit, run B3 to 6th).
 
-## (added 2026-07-22) Spawn pelado expone el tren de rodaje → parece misalignment; condicionar antes de juzgar alineación
+## (added 2026-07-22) Bare spawn exposes undercarriage → looks like misalignment; condition before judging alignment
 
-Un `world_spawn` de un vehículo CarScript lo crea SIN attachments (`wheel_count=0`, `attachment_count=0`): las ruedas/neumáticos NO están, así que los **frenos (rotor + caliper — el caliper suele ser ROJO), la suspensión y los hubs quedan AL DESCUBIERTO** en el paso de rueda y se ven "flotando" con un hueco. **Eso NO es misalignment**: es geometría base correcta, simétrica y en su sitio, contenida en el volumen que ocuparía la rueda ausente.
+A `world_spawn` of a CarScript vehicle creates it WITHOUT attachments (`wheel_count=0`, `attachment_count=0`): wheels/tires are NOT there, so **brakes (rotor + caliper — caliper is usually RED), suspension and hubs remain EXPOSED** in the wheel arch and are seen "floating" with a gap. **That is NOT misalignment**: it is correct base geometry, symmetric and in place, contained within the volume the absent wheel would occupy.
 
-Reglas:
-- Un smoke con **spawn pelado es MATERIALS-ONLY** — valida pintura/texturas/winding del cuerpo, NO la alineación del tren de rodaje ni el aspecto "completo".
-- Para juzgar alineación/aspecto CON ruedas: **CONDICIONAR** el coche (`wheel_count 0→4`) con `vehicle_enter(pos)` + micro-drive server-side (`OnDebugSpawn`; ver nota "Conditioning server-side (OnDebugSpawn real)" s37 arriba) y recapturar con las ruedas puestas.
-- Ante una pieza que "parece desplazada": **MEDIR antes de concluir** (bbox/centroide/simetría izq-der + bisección vs backup + containment en volumen de rueda) — no firmar "roto" ni "OK" por opinión.
+Rules:
+- A smoke with **bare spawn is MATERIALS-ONLY** — validates body paint/textures/winding, NOT undercarriage alignment nor "complete" look.
+- To judge alignment/look WITH wheels: **CONDITION** the car (`wheel_count 0→4`) with `vehicle_enter(pos)` + server-side micro-drive (`OnDebugSpawn`; see note "Server-side conditioning (real OnDebugSpawn)" s37 above) and recapture with wheels on.
+- Faced with a part that "looks displaced": **MEASURE before concluding** (bbox/centroid/left-right symmetry + bisection vs backup + containment in wheel volume) — do not sign "broken" or "OK" by opinion.
 
-Verificado: SUB_BRZ 2026-07-22 — un susto de "piezas desalineadas" resultó ser frenos/suspensión al descubierto por spawn pelado; el forense (Codex, py3d) midió simetría ≤0.003 m, bisección 0-movimiento en 6 shells y containment en el volumen de rueda (`<rip-import>\work\reviews\2026-07-22-SUB_BRZ-misalign-forensic.md`). Costó 30 min de forense evitable. Cross-ref LL-209.
+Verified: SUB_BRZ 2026-07-22 — a "misaligned parts" scare turned out to be exposed brakes/suspension from bare spawn; forensics (Codex, py3d) measured symmetry ≤0.003 m, 0-movement bisection across 6 shells, and containment in wheel volume (`<rip-import>\work\reviews\2026-07-22-SUB_BRZ-misalign-forensic.md`). Cost 30 min of avoidable forensics. Cross-ref LL-209.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so they arrive via trigger instead
+of depending on someone remembering to look them up. Each rule cites its originating `LL-NNN`;
+the full entry (symptom, origin, evidence) lives there. Do not remove the citation: the
+`lessons-index.md` index detects promotion by searching for that reference inside skills.
 
-- **LL-181** — Antes de culpar al mod por un FAIL automatizado, verifica el source del actuador/bridge y confirma que el estímulo llegó al sujeto. Ejecuta un control delta equivalente o un test manual para discriminar un defecto del harness.
-- **LL-187** — Si varias defensas interceptan el mismo fallo, diseña un repro por capa que alcance su punto de protección. Exige la señal específica de cada capa; un PASS agregado de “no falla” no demuestra que todas funcionen.
-- **LL-202** — Ante el primer error anómalo de un verbo client-side, verifica el PID del cliente, el tail de su RPT y `bridge_status` antes de seguir. Si el peer murió, extrae minidump/evidencia y documenta el cierre degradado; no diagnostiques los errores posteriores como estado del harness.
+- **LL-181** — Before blaming the mod for an automated FAIL, verify the actuator/bridge source and confirm the stimulus reached the subject. Run an equivalent delta control or manual test to distinguish a harness defect.
+- **LL-187** — If several defenses intercept the same failure, design a per-layer repro reaching its protection point. Demand each layer's specific signal; an aggregated PASS of “does not fail” does not prove all work.
+- **LL-202** — At the first anomalous error of a client-side verb, verify the client's PID, its RPT tail, and `bridge_status` before continuing. If peer died, extract minidump/evidence and document degraded shutdown; do not diagnose subsequent errors as harness state.
 
-## El daemon sirve el codigo que cargo al ARRANCAR — un verbo nuevo no existe hasta reiniciarlo (LL-223, added 2026-07-29)
+## The daemon serves the code it loaded at STARTUP — a new verb does not exist until restarting it (LL-223, added 2026-07-29)
 
-Si anades un verbo al bridge (`SERVER_COMMANDS` / `CLIENT_COMMANDS` en `loopback.py`) y la tool
-responde **`not_whitelisted`**, no busques el bug en tu diff: el **daemon** cargo ese modulo
-cuando arranco y no lo ha vuelto a leer. `loopback.py` y `server.py` NO estan sellados en
-`app.pyz` —editarlos surte efecto sin rebuild del bundle— pero eso no reinicia nada.
+If you add a verb to the bridge (`SERVER_COMMANDS` / `CLIENT_COMMANDS` in `loopback.py`) and the tool
+responds **`not_whitelisted`**, do not look for the bug in your diff: the **daemon** loaded that module
+when it started and has not read it again. `loopback.py` and `server.py` are NOT sealed in
+`app.pyz` —editing them takes effect without bundle rebuild— but that restarts nothing.
 
-Lo que mas engana: la tool **si aparece registrada** en tu cliente MCP, porque el cliente arranco
-despues de la edicion. La mitad visible del sistema confirma que el verbo existe mientras la
-mitad que decide sigue con la lista vieja.
+What deceives most: the tool **does appear registered** in your MCP client, because the client started
+after the edit. The visible half of the system confirms the verb exists while the
+deciding half remains with the old list.
 
-**Comprobacion de un comando** (mtime del fuente vs arranque del proceso que decide):
+**Command check** (source mtime vs startup of deciding process):
 
 ```powershell
 (Get-Item '<...>\dayz_mcp\loopback.py').LastWriteTime
@@ -631,338 +631,338 @@ $pid_ = (Get-NetTCPConnection -LocalPort 8765 -State Listen).OwningProcess
 (Get-CimInstance Win32_Process -Filter "ProcessId=$pid_").CreationDate
 ```
 
-Fuente mas nuevo que el proceso = esa es la causa, deja de mirar el codigo. Medido 2026-07-29:
-`loopback.py` 15:57:54 vs daemon arrancado 14:18:42 (1 h 39 min de desfase).
+Source newer than process = that is the cause, stop looking at code. Measured 2026-07-29:
+`loopback.py` 15:57:54 vs daemon started 14:18:42 (1 h 39 min offset).
 
-**Reinicio**: `Stop-Process` del listener del 8765; el cliente lo re-spawnea lazy en la siguiente
-llamada y `daemon_generation` cambia (asi confirmas que es otro proceso). Reiniciar el daemon
-esta declarado seguro (BUG-062b). **Avisa antes**: desarma momentaneamente las tools MCP de las
-demas sesiones vivas, asi que mira `session_status` (owner/cola) primero.
+**Restart**: `Stop-Process` on 8765 listener; client re-spawns it lazily on next
+call and `daemon_generation` changes (thus confirming it is another process). Restarting the daemon
+is declared safe (BUG-062b). **Warn beforehand**: momentarily disarms MCP tools of
+other live sessions, so check `session_status` (owner/queue) first.
 
-**Tras el reinicio hay ventana de re-handshake**: las primeras llamadas pueden dar
-`version_blocked` o `peer_reconnect_flush`. Son transitorios — reintenta, no rediagnostiques.
-Confirma con `bridge_status` que ambos peers tienen `version_state: ok` y `last_poll_age_s` bajo.
+**After restart there is a re-handshake window**: first calls may return
+`version_blocked` or `peer_reconnect_flush`. They are transients — retry, do not rediagnose.
+Confirm with `bridge_status` that both peers have `version_state: ok` and low `last_poll_age_s`.
 
-Hermano pero distinto de la trampa del bundle sellado: alli `app.pyz` sella COPIAS de los modulos
-del lifecycle de test (`dayz_test_worker.py` y cia) y hace falta rebuild+CAS; aqui no hay sellado
-ninguno, basta con que el proceso sea viejo.
+Sibling but distinct from sealed bundle trap: there `app.pyz` seals COPIES of modules
+from the test lifecycle (`dayz_test_worker.py` et al.) and rebuild+CAS is needed; here there is no
+sealing at all, it is enough for the process to be old.
 
 Origen: DayZ_MCP, gate in-game de `query_all_players` (2026-07-29).
 
-## Cadena «abrir UI de mod sin teclado» VERIFICADA in-game + tres trampas de uso (SP-292, added 2026-08-18)
+## "Open mod UI without keyboard" chain VERIFIED in-game + three pitfalls of use (SP-292, added 2026-08-18)
 
-Gate del ciclo 1 de DayZ_MCP (2026-08-17, run `28f2e26f`, PBO `BCA758A1…`): la cadena completa funciona end-to-end.
-Receta medida (LFPowerGrid + @DayZ_MCP; adaptar nombres al mod):
+Cycle 1 gate of DayZ_MCP (2026-08-17, run `28f2e26f`, PBO `BCA758A1…`): full chain works end-to-end.
+Measured recipe (LFPowerGrid + @DayZ_MCP; adapt names to mod):
 
 1. `dayz_test_run(project="LFPowerGrid", mode="all", extra_mods=["@DayZ_MCP"])` → `wait_for(log_matches, "OnStoreLoad SUCCESS")`
-   (77 s / 26 sondeos) → `session_acquire_wait(purpose=…)` (adopta el run: mira `adopted_run`) → `wait_for(players_at_least, 1)`.
-   (rev. 2026-09-06: el orden anterior de esta receta sondeaba `players_at_least` ANTES de adoptar; ese sondeo atraviesa el
-   bridge y la valla de run ocioso lo rechaza con `run_not_owned` — §COMPOSICIÓN, «Secuencia de arranque del puente».)
-2. `world_spawn(type="LFPG_BTCAtmAdmin", pos=[x,0,z])` a ~3 m del jugador → `action_use(action="LFPG_ActionOpenBTCAtm",
-   classname="LFPG_BTCAtmAdmin", radius=5)` → `started:1` (el lookup por `Type().ToString()` funciona en runtime).
-3. `wait_for(log_matches, "[BTCOpenResponse]", lookback_lines=200)` — **con lookback**: la respuesta aterriza ~200 ms tras el
-   disparo y con el cursor «desde ahora» se pierde SIEMPRE (BUG-086, 2/2 timeouts con la linea ya en el log).
-4. **`ui_tree(path="BTCAtmRoot")`** — con path vacio devuelve `no_menu` aunque la UI este ABIERTA: un panel Dabs/ScriptView es
-   un host pre-creado, no un `UIScriptedMenu`. Pasar el nombre del root del `.layout` (`grep -oE 'FrameWidgetClass \w+' gui/layouts/X.layout | head -1`).
-5. `ui_set_text("EditBtcAmount", "1")` con ENTERO (`GetBtcInput()` es int: "0.001" → 0 → `ShowStatus` sin RPC) →
-   `ui_click("BtnBuyBtc")` → `clicked:1 handler=LFPG_BTCAtmView user_id=100` (la rama `#ifdef DabsFramework` de `InvokeUiClick`
-   dispara con Dabs cargado por otro mod) → `wait_for(log_matches, "[BTCTxResult]", lookback_lines=200)` y leer `err=`.
+   (77 s / 26 probes) → `session_acquire_wait(purpose=…)` (adopts run: check `adopted_run`) → `wait_for(players_at_least, 1)`.
+   (rev. 2026-09-06: previous order in this recipe probed `players_at_least` BEFORE adopting; that probe crosses the
+   bridge and idle run fence rejects it with `run_not_owned` — §COMPOSITION, "Bridge startup sequence".)
+2. `world_spawn(type="LFPG_BTCAtmAdmin", pos=[x,0,z])` ~3 m from player → `action_use(action="LFPG_ActionOpenBTCAtm",
+   classname="LFPG_BTCAtmAdmin", radius=5)` → `started:1` (lookup by `Type().ToString()` works at runtime).
+3. `wait_for(log_matches, "[BTCOpenResponse]", lookback_lines=200)` — **with lookback**: response lands ~200 ms after
+   trigger and with cursor "from now" it is ALWAYS lost (BUG-086, 2/2 timeouts with line already in log).
+4. **`ui_tree(path="BTCAtmRoot")`** — with empty path returns `no_menu` even though UI is OPEN: a Dabs/ScriptView panel is
+   a pre-created host, not a `UIScriptedMenu`. Pass root name of `.layout` (`grep -oE 'FrameWidgetClass \w+' gui/layouts/X.layout | head -1`).
+5. `ui_set_text("EditBtcAmount", "1")` with INTEGER (`GetBtcInput()` is int: "0.001" → 0 → `ShowStatus` without RPC) →
+   `ui_click("BtnBuyBtc")` → `clicked:1 handler=LFPG_BTCAtmView user_id=100` (`#ifdef DabsFramework` branch of `InvokeUiClick`
+   fires with Dabs loaded by another mod) → `wait_for(log_matches, "[BTCTxResult]", lookback_lines=200)` and read `err=`.
 6. `session_release` → `dayz_test_stop`.
 
-Trampa de convivencia (medida 2026-08-18 00:01): `bridge_status` decia caja LIBRE (peers null, sin lease, sin runs) y 40 s
-despues arranco un run navprobe FUERA del lifecycle y SIN lease; una sonda hizo `player_teleport` y movio a SU jugador.
-Antes de cualquier mutacion sobre «el primer humano»: `bridge_status.coordination.active`, `server_peer.last_poll_age_s`
-y `Get-CimInstance Win32_Process -Filter "Name='DayZDiag_x64.exe'"`; si hay un servidor sondeando que no es tuyo, NO mutes.
+Coexistence pitfall (measured 2026-08-18 00:01): `bridge_status` said box FREE (peers null, no lease, no runs) and 40 s
+later a navprobe run started OUTSIDE lifecycle and WITHOUT lease; a probe executed `player_teleport` and moved ITS player.
+Before any mutation on "the first human": `bridge_status.coordination.active`, `server_peer.last_poll_age_s`
+and `Get-CimInstance Win32_Process -Filter "Name='DayZDiag_x64.exe'"`; if there is a server polling that is not yours, do NOT mutate.
 
-## Integridad del verificador y del bridge: evidencia, contrato e identidad
+## Verifier and bridge integrity: evidence, contract, and identity
 
-El bridge mide y discrimina sujetos; un verde solo vale si el comando obtuvo respuesta y el protocolo conserva la identidad que pretende aislar.
+The bridge measures and discriminates subjects; a green is only valid if the command received a response and the protocol preserves the identity it intends to isolate.
 
-1. **Todo criterio negativo exige vida por comando (LL-267).** Antes de resolver "no ocurrió X", exige una respuesta atribuible a ese comando, por ejemplo `answered(tag)`, no una respuesta anterior de la corrida. Sin ella, el caso es `INCONCLUSIVE`, nunca `PASS`. Publica el recuento global de respuestas y, si es cero, aborta temprano en vez de imprimir una colección de veredictos. Un caso de denegación solo pasa después de demostrar que el sujeto podía recibir y ejecutar la petición.
+1. **Every negative criterion requires per-command liveness (LL-267).** Before resolving "X did not occur", require a response attributable to that command, for example `answered(tag)`, not a previous response from the run. Without it, the case is `INCONCLUSIVE`, never `PASS`. Publish the global response count and, if zero, abort early instead of printing a collection of verdicts. A denial case only passes after demonstrating that the subject could receive and execute the request.
 
-2. **Censa las claves antes de cerrar el wire (LL-315).** Busca cada clave top-level nueva en el DTO plano serializado y en todos sus consumidores. Nombres obvios como `state`, `status`, `error` o `type` suelen estar ocupados; si colisionan, anida el payload bajo un objeto propio de la feature —el caso medido quedó como `{ok, dialog:{state,…}}`— en vez de sobrecargar el campo. El gate lee el contrato compartido real; la suite del productor no acredita compatibilidad hacia delante.
+2. **Census keys before closing the wire (LL-315).** Search each new top-level key in the serialized flat DTO and across all its consumers. Obvious names such as `state`, `status`, `error`, or `type` are usually taken; if they collide, nest the payload under a feature-specific object —the measured case ended up as `{ok, dialog:{state,…}}`— instead of overloading the field. The gate reads the real shared contract; the producer's suite does not accredit forward compatibility.
 
-3. **Una mutación de handshake es global y autenticación no es identidad (LL-317, LL-319).** Antes de cambiar una constante de versión o desplegar el PBO/daemon que la porta, inspecciona los procesos y sesiones que cargan ese mod ahora. Si hay un juego ajeno, no publiques: coordina o revierte; poseer tu lease no demuestra que nadie más consuma el protocolo. Mantén además dos campos con contratos distintos: la identidad de instancia permanece estable durante la vida del proceso y no se recarga en caliente; la clave solo autentica y puede rotar. Conocer la instancia no concede autoridad, y un token de perfil compartido no identifica a un proceso. Nunca reutilices el secreto como identidad.
+3. **A handshake mutation is global and authentication is not identity (LL-317, LL-319).** Before changing a version constant or deploying the PBO/daemon carrying it, inspect processes and sessions currently loading that mod. If an outside game is present, do not publish: coordinate or revert; holding your lease does not prove no one else consumes the protocol. Furthermore, maintain two fields with distinct contracts: instance identity remains stable over the process lifetime and is not hot-reloaded; the key only authenticates and can rotate. Knowing the instance does not grant authority, and a shared profile token does not identify a process. Never reuse the secret as identity.
 
-4. **Una caché debe preservar el discriminador (LL-320).** Antes de cachear fencing, autorización, rate-limit o resolución de sesión, escribe qué propiedad distingue el resultado y demuestra que la clave conserva esa identidad. Cachear por instancia permitió que dos procesos compartieran un PID —el intruso recibió 100 de 100 mutaciones y el binding nunca pasó a AMBIGUOUS—; cachear la tabla durante 50 ms ocultó al peer que sondeaba segundo —40/40 ticks sin un solo comando—. Mide hits y coste en el patrón real bajo carga: en el caso medido la tasa útil fue 0,0 y el coste en reposo no representaba el régimen cargado. Si la caché no ahorra trabajo medido o fusiona actores distintos, se elimina.
-## Escalera de vehiculos — requisitos de sesion (added 2026-08-24)
+4. **A cache must preserve the discriminator (LL-320).** Before caching fencing, authorization, rate-limit, or session resolution, write what property distinguishes the result and demonstrate that the key preserves that identity. Caching by instance allowed two processes to share a PID —the intruder received 100 out of 100 mutations and binding never switched to AMBIGUOUS—; caching the table for 50 ms hid the second polling peer —40/40 ticks without a single command—. Measure hits and cost under real pattern under load: in the measured case the useful rate was 0.0 and rest cost did not represent loaded regime. If the cache does not save measured work or merges distinct actors, it is eliminated.
+## Vehicle ladder — session requirements (added 2026-08-24)
 
-- **Sitio canonico verificado**: la escalera con drive exige un punto con >=150 m despejados en la direccion de conduccion (protocolo pedido en ficha fb-20260824-025758-2509). El sitio historico del G0 congelaba el vehiculo (drivability posicional, LL-359) y el final de su linea bloqueaba el get-out contra estaticos. No reutilizar sitios sin evidencia de la propia sesion (surface_query + entities_query; el scene_raycast en `view` NO ve los estaticos que paran un coche).
-- **Vida de proceso unica**: el daemon spawneado y su secuencia mueren con el arbol del comando que los pario en este harness ("broke away" no sobrevive a la cosecha; la adopcion de un daemon externo esta ademas rota — fb-20260824-032050-9aed, LL-358). Toda la secuencia run -> verbos -> teardown va DENTRO de un solo proceso (patron `AI/10_Projects/DayZ_MCP/lanes/2026-08-24/g0_full_abba.py`: stop-preventivo, run, espera bridge-ready, espera jugador, teleport con lease, trabajo, dayz_test_stop).
+- **Verified canonical site**: ladder with drive requires a point with >=150 m clear in the driving direction (protocol requested in ledger entry fb-20260824-025758-2509). The historical G0 site froze the vehicle (positional drivability, LL-359) and the end of its line blocked get-out against statics. Do not reuse sites without evidence from the session itself (surface_query + entities_query; scene_raycast in `view` does NOT see statics that stop a car).
+- **Single process lifetime**: the spawned daemon and its sequence die with the command tree that spawned them in this harness ("broke away" does not survive harvesting; adoption of an external daemon is also broken — fb-20260824-032050-9aed, LL-358). The entire run -> verbs -> teardown sequence goes INSIDE a single process (`AI/10_Projects/DayZ_MCP/lanes/2026-08-24/g0_full_abba.py` pattern: preventive stop, run, wait bridge-ready, wait player, teleport with lease, work, dayz_test_stop).
 
-## Sitio canonico certificado + reglas de instrumentacion (added 2026-08-24 tarde)
-- **Sitio canonico de vehiculos: NWAF `[4200.0, 0.0, 10650.0]`** (certificado 2026-08-24,
-  PBO 28226C93B9B8, `docs/VEHICLE_TESTING.md` del repo): pasillo 160 m x +-25 m al norte
-  enumerado completo, drive delta_2s_xz 3,2 m, teardown verificado. Re-certificar con
-  `python tools/g0_site_gate.py --pbo-sha256 <sha> --out <verdict.json>` (juego ya corriendo,
-  bridge ready; el SHA es obligatorio). Suplentes y causas de degradacion en el doc.
-- **entities_query SOLO con el jugador dentro del area** (fb-20260824-123204-638e): lejos de
-  todo jugador contesta 0 o cap-128 (bimodal) y NO es un error visible. surface_query si es
-  global-fiable (terreno estatico). Pasillos: 3 esferas r=65 con `count_total` como indicador
-  de truncado y prueba de distancia de la ultima fila (nearest-first).
-- **Canopy gate antes de TODO teleport a coordenadas no verificadas**
-  (fb-20260824-115220-1bc1): scene_raycast geom y+30 -> y-5 debe pegar a <=0,05 m de la
-  superficie en el punto del JUGADOR y el del VEHICULO; detecta techos, copas y agua (pega
-  en la lamina sobre lecho marino con y negativa).
+## Certified canonical site + instrumentation rules (added 2026-08-24 afternoon)
+- **Canonical vehicle site: NWAF `[4200.0, 0.0, 10650.0]`** (certified 2026-08-24,
+  PBO 28226C93B9B8, repo's `docs/VEHICLE_TESTING.md`): corridor 160 m x +-25 m north
+  fully enumerated, drive delta_2s_xz 3.2 m, teardown verified. Re-certify with
+  `python tools/g0_site_gate.py --pbo-sha256 <sha> --out <verdict.json>` (game already running,
+  bridge ready; SHA is mandatory). Alternates and degradation causes in doc.
+- **entities_query ONLY with player inside the area** (fb-20260824-123204-638e): far from
+  any player answers 0 or cap-128 (bimodal) and is NOT a visible error. surface_query is
+  globally reliable (static terrain). Corridors: 3 spheres r=65 with `count_total` as truncation
+  indicator and distance check of the last row (nearest-first).
+- **Canopy gate before ALL teleport to unverified coordinates**
+  (fb-20260824-115220-1bc1): scene_raycast geom y+30 -> y-5 must hit at <=0.05 m from the
+  surface at the PLAYER and VEHICLE point; detects roofs, tree crowns, and water (hits
+  the surface sheet above seabed with negative y).
 ## Bridge v9 + certificado multi-agente (added 2026-08-24 noche)
 
-- **Bridge v9** (commit d73da6c; el gate de version exige pareja daemon-PBO): `object_anim`
-  y `object_inspect` aceptan `object_id` (el de world_spawn) y resuelven contra el registro
-  del bridge - independiente de posicion, alcanza fixtures client-auth con la replica en el
-  spawn. `player_teleport` rechaza aterrizajes de superficie con columna cubierta
-  (`clearance_blocked`; `skip_clearance_check=true` para interiores). `entities_query`
-  trae `nearest_player_m` + `reliability` (player_in_bubble | remote_unverified).
-- **Caveat medido**: el write de `object_anim` APLICA (SetAnimationPhaseNow) pero el
-  `phase` del propio reply puede ir un tick por detras (0 -> write 1.0 -> reply 0.0 ->
-  lectura siguiente 0.599). Confirmar con una lectura posterior, no con el reply.
-- **La sonda de clearance ignora jugadores** (ignore='player'): un survivor plantado en la
-  columna daba dy=1.671 y rechazaba el punto (asi se "demoto" x4300 en r13 por error).
-- **Sesiones largas**: el cliente diag muere tras ~6 min sin comandos (client_not_polling).
-  Runner con keepalive (p.ej. vehicle_telemetry cada ~45 s) mientras dure la sesion.
-- **Certificado multi-agente 3/3 (2026-08-24)**: Grok 4.6 (solo-MCP), GPT-5.6 (codex) y
-  Ox Alpha (opencode) condujeron spawn->fixture->asiento->drive (100-163 m)->puerta por
-  object_id->delete->release con brief minimo. El claim "lo conducen agentes de 3
-  familias" tiene evidencia en lanes/2026-08-24/ma/ del vault.
+- **Bridge v9** (commit d73da6c; version gate requires daemon-PBO pair): `object_anim`
+  and `object_inspect` accept `object_id` (the one from world_spawn) and resolve against bridge
+  registry - position-independent, reaches client-auth fixtures with replica at
+  spawn. `player_teleport` rejects surface landings with covered column
+  (`clearance_blocked`; `skip_clearance_check=true` for interiors). `entities_query`
+  brings `nearest_player_m` + `reliability` (player_in_bubble | remote_unverified).
+- **Measured caveat**: `object_anim` write APPLIES (SetAnimationPhaseNow) but
+  `phase` of reply itself can lag by one tick (0 -> write 1.0 -> reply 0.0 ->
+  next reading 0.599). Confirm with a subsequent reading, not with the reply.
+- **Clearance probe ignores players** (ignore='player'): a survivor standing in the
+  column gave dy=1.671 and rejected the point (this is how x4300 was demoted in r13 by mistake).
+- **Long sessions**: diag client dies after ~6 min without commands (client_not_polling).
+  Runner with keepalive (e.g. vehicle_telemetry every ~45 s) for the duration of the session.
+- **Multi-agent certificate 3/3 (2026-08-24)**: Grok 4.6 (MCP-only), GPT-5.6 (codex), and
+  Ox Alpha (opencode) drove spawn->fixture->seat->drive (100-163 m)->door by
+  object_id->delete->release with minimal brief. The claim "agents from 3
+  families drive it" has evidence in lanes/2026-08-24/ma/ in the vault.
 
-## (added 2026-08-28) Barrido de resoluciones UI sin reboot + calibracion window-grab<->engine
+## (added 2026-08-28) UI resolution sweep without reboot + window-grab<->engine calibration
 
-Medido en el vuelo F del caso sorter (run dbca698d, ficha fb-20260828-160429-2899):
+Measured on flight F of sorter case (run dbca698d, ledger entry fb-20260828-160429-2899):
 
-- **`dayz_test_run` width/height NO fijan la resolucion del cliente** (pedidos 1280x720,
-  viewport real 846x461). No gastes un reboot en cambiar de resolucion.
-- **Tecnica validada**: SetWindowPos host-side (user32, SWP_NOZORDER) sobre la ventana viva
-  del cliente + `ui_reload_layout` -> el viewport re-mide al instante, el escenario y el run
-  se conservan. Un barrido de N resoluciones cuesta N reloads, no N boots.
-- **Marco de ventana medido (Win11)**: outer - client = 11 px izq/der + 45 titulo + 11 abajo.
-  El `capture_screenshot` fullres es 1:1 con el viewport: engine_px = imagen_px - (11, 45).
-- **El root de `ui_tree` con `size 1 1` proporcional ES el viewport real** — usalo como
-  oraculo de resolucion en vez de fiarte de lo pedido al launcher.
-- **Control del factor**: los widgets con exact flags renderizan a declarado x (alto/1080),
-  posiciones incluidas — si el panel de referencia no da ese factor exacto, la calibracion
-  esta mal, no el layout.
-- **TextWidget no expone su texto por `ui_tree`** (`text_readable=false` por contrato): para
-  medir GLIFOS el instrumento es el frame (fullres + crop + medicion per-pixel), nunca el
-  arbol. Etiqueta los casos DENTRO de las strings para reconocerlos en la captura.
+- **`dayz_test_run` width/height do NOT set client resolution** (requested 1280x720,
+  real viewport 846x461). Do not waste a reboot changing resolution.
+- **Validated technique**: SetWindowPos host-side (user32, SWP_NOZORDER) on live client
+  window + `ui_reload_layout` -> viewport immediately re-measures, scenario and run
+  are preserved. A sweep of N resolutions costs N reloads, not N boots.
+- **Measured window frame (Win11)**: outer - client = 11 px left/right + 45 title + 11 bottom.
+  Fullres `capture_screenshot` is 1:1 with viewport: engine_px = image_px - (11, 45).
+- **The root of `ui_tree` with proportional `size 1 1` IS the real viewport** — use it as
+  resolution oracle instead of trusting launcher requests.
+- **Factor control**: widgets with exact flags render at declared x (height/1080),
+  positions included — if reference panel does not give that exact factor, calibration
+  is wrong, not layout.
+- **TextWidget does not expose its text via `ui_tree`** (`text_readable=false` by contract): to
+  measure GLYPHS the instrument is the frame (fullres + crop + per-pixel measurement), never the
+  tree. Tag cases INSIDE strings to recognize them in capture.
 
-## (added 2026-08-29, SP-350) TRES CAPAS que no se nombran entre si: no declares que un verbo NO hace algo leyendo solo el lado Python
+## (added 2026-08-29, SP-350) THREE LAYERS that do not name each other: do not declare that a verb does NOT do something reading only Python side
 
-El servidor MCP tiene **tres capas** y ninguna nombra a las otras en su propio texto:
+The MCP server has **three layers** and none names the others in its own text:
 
-    1. la tool en Python          `dayz_mcp/server.py`
-    2. el ingress HTTP            `loopback.py`, `session_coordination.py`
-    3. el puente en Enforce       `MCPBridge.c`, dentro del juego
+    1. the tool in Python         `dayz_mcp/server.py`
+    2. HTTP ingress               `loopback.py`, `session_coordination.py`
+    3. the bridge in Enforce      `MCPBridge.c`, inside the game
 
-Muchas tools son un envoltorio delgado que termina en `runtime.call_bridge(...)`. **La
-semantica de verdad vive aguas abajo.** Por eso una lane que abre una sola capa cree
-tener el sistema entero delante, y firma sobre comportamiento que no ha visto.
+Many tools are a thin wrapper ending in `runtime.call_bridge(...)`. **Real
+semantics live downstream.** That is why a lane opening only one layer believes
+it has the entire system before it, and signs off on behavior it has not seen.
 
-**Medido el 2026-08-29: dos revisores independientes cometieron el MISMO error la misma
-noche, sobre el mismo sistema.**
+**Measured on 2026-08-29: two independent reviewers made the SAME mistake the same
+night, on the same system.**
 
-- Un revisor declaro **FALSA** la afirmacion «`y=0` snaps to the ground» de `world_spawn`,
-  razonando que el Python pasa `pos` verbatim por `_require_vec3` sin tocarlo. La premisa
-  era correcta y la conclusion falsa: el snap ocurre en el puente. `MCPBridge.c`:
-  `ValidateSpawnArgs` pone `validation.flags = ECE_PLACE_ON_SURFACE` como default de
-  `flags=0`, y `IsAllowedSpawnFlags` **exige ese bit en toda combinacion aceptada salvo
-  una**, `ECE_CREATEPHYSICS|ECE_TRACE`. Ademas el vault ya tenia el hecho **medido cuatro
-  veces** (`dayz-control-plane-gotchas.md`: `pos=[7500,0,7500]` -> `pos_real y=313.14`).
-- Otro revisor declaro que **«ningun fichero produce `box_claimed`»** buscandolo en
-  `daemon.py`. El emisor vive dos saltos mas alla, en `session_coordination.py` dentro de
-  `box_wait_touch`, y se llega por `loopback.py`.
+- One reviewer declared the claim "`y=0` snaps to the ground" of `world_spawn` **FALSE**,
+  reasoning that Python passes `pos` verbatim through `_require_vec3` without touching it. Premise
+  was correct and conclusion false: snapping occurs in the bridge. `MCPBridge.c`:
+  `ValidateSpawnArgs` sets `validation.flags = ECE_PLACE_ON_SURFACE` as default for
+  `flags=0`, and `IsAllowedSpawnFlags` **demands that bit in every accepted combination except
+  one**, `ECE_CREATEPHYSICS|ECE_TRACE`. Furthermore the vault already had the fact **measured four
+  times** (`dayz-control-plane-gotchas.md`: `pos=[7500,0,7500]` -> `pos_real y=313.14`).
+- Another reviewer declared that **"no file produces `box_claimed`"** by searching for it in
+  `daemon.py`. The emitter lives two hops further, in `session_coordination.py` inside
+  `box_wait_touch`, and is reached via `loopback.py`.
 
-Los dos abrieron ficheros y citaron `path:line`. Verificar no basta: hay que verificar en
-**la capa donde viviria el comportamiento**.
+Both opened files and cited `path:line`. Verifying is not enough: one must verify in
+**the layer where the behavior would live**.
 
 ### Reglas
 
-1. **Antes de declarar que un verbo NO hace algo**, mira si su cuerpo termina en
-   `call_bridge`. Si termina ahi, lo unico honesto es `no verificable desde el lado
-   Python`, y decir que habria que abrir `MCPBridge.c` para decidirlo.
-2. **Antes de declarar que un campo no se produce**, no te fies del modulo donde la
-   arquitectura supuesta lo colocaria. Grep del nombre del campo en TODO `tools/dayz_mcp/`.
-3. **Antes de contradecir un comportamiento documentado**, grep el vault. Es memoria de
-   MEDICIONES: contradecir una medicion exige refutar la medicion, no leer codigo de otra
-   capa. Cuesta cinco segundos.
-4. **Asimetria util**: para afirmar que algo SI ocurre basta verlo una vez. Para afirmar
-   que NO ocurre hay que haber mirado donde ocurriria.
+1. **Before declaring that a verb does NOT do something**, check if its body ends in
+   `call_bridge`. If it ends there, the only honest response is `not verifiable from Python
+   side`, and stating that one would have to open `MCPBridge.c` to decide it.
+2. **Before declaring that a field is not produced**, do not trust the module where assumed
+   architecture would place it. Grep field name across ALL `tools/dayz_mcp/`.
+3. **Before contradicting documented behavior**, grep the vault. It is memory of
+   MEASUREMENTS: contradicting a measurement requires refuting the measurement, not reading code from another
+   layer. Takes five seconds.
+4. **Useful asymmetry**: to assert that something DOES happen, seeing it once is enough. To assert
+   that it does NOT happen, one must have looked where it would happen.
 
-### Al escribir un brief de revision
+### When writing a review brief
 
-Si el workspace de la lane contiene **una sola capa**, dilo en el brief y exige que todo
-lo relativo a las otras vaya a `LO_NO_VERIFICADO`. En la corrida que origina esta seccion
-el brief no lo decia, y las dos lanes rellenaron el hueco con inferencia en vez de con una
-declaracion de ignorancia. **Un «no verificable» bien puesto vale mas que un hallazgo
-brillante y falso**, porque el falso viaja: cuando llego la refutacion, otra sesion ya
-habia aplicado un arreglo a algo que no estaba roto.
+If the lane's workspace contains **only one layer**, say so in the brief and require that everything
+relative to the others goes to `LO_NO_VERIFICADO`. In the run originating this section
+the brief did not say so, and both lanes filled the gap with inference instead of with a
+declaration of ignorance. **A well-placed "unverifiable" is worth more than a brilliant
+and false finding**, because the false one travels: by the time the refutation arrived, another session had
+already applied a fix to something that was not broken.
 
-## (added 2026-08-29, SP-351) La caja es compartida: entra en la FIFO, no esperes aviso — y el oraculo es el EFECTO
+## (added 2026-08-29, SP-351) The box is shared: join the FIFO, do not wait for notice — and the oracle is the EFFECT
 
-### El `blocked_on` de `session_status` es una ORDEN, no decoracion
+### `session_status`'s `blocked_on` is an ORDER, not decoration
 
-Con la caja ocupada, `session_status` devuelve literalmente:
+With the box occupied, `session_status` returns literally:
 
     "blocked_on": "DayZ test box; next: call dayz_test_run(..., wait_for_box_s=<n>) to join the box FIFO"
 
-Medido el 2026-08-29: una sesion NOCTURNA AUTONOMA leyo esa linea en cada consulta durante
-**siete horas y tres cuartos** y se quedo esperando a que otra sesion le avisara de que
-soltaba. La cola existia, estaba nombrada en la respuesta, y no se uso.
+Measured on 2026-08-29: an AUTONOMOUS NIGHT session read that line on each query for
+**seven and three quarter hours** and kept waiting for another session to notify it that
+it was releasing. The queue existed, was named in the response, and was not used.
 
-Cuando por fin se uso: `wait_for_box_s=600` -> `active_run_exists` con
-`hint: "stop it with dayz_test_stop(run_id=...)"`. Otra vez el siguiente paso servido en la
-respuesta. Y al poner un plazo de 15 min a la sesion vecina, solto en dos — llevaba horas
-defendiendo una fixture que **nunca se habia usado** (su propia captura daba
-`frame_client_all_black`, cero actividad de cableado en su server).
+When it was finally used: `wait_for_box_s=600` -> `active_run_exists` with
+`hint: "stop it with dayz_test_stop(run_id=...)"`. Once again the next step served in the
+response. And upon setting a 15 min deadline for the neighboring session, it released in two — it had spent hours
+defending a fixture that **had never been used** (its own capture gave
+`frame_client_all_black`, zero wiring activity on its server).
 
-**Reglas**:
-1. Si una tool te dice como desbloquearte, hazlo antes de esperar a nadie.
-2. **En una sesion autonoma no existe "esperar aviso".** O entras en la cola del recurso o
-   le pones un plazo a quien lo tiene. Esperar sin horizonte no es cortesia: es ceder el
-   encargo. Un horizonte del tipo «cuando el usuario termine» **no es un horizonte**: es
-   una dependencia sin plazo, y quien lo ofrece deberia soltar el recurso y volver a
-   pedirlo (relanzar cuesta minutos; una fixture se rehace en dos verbos).
+**Rules**:
+1. If a tool tells you how to unblock yourself, do it before waiting for anyone.
+2. **In an autonomous session there is no "wait for notice".** Either you join the resource queue or
+   you put a deadline on whoever holds it. Waiting without a horizon is not courtesy: it is giving up the
+   assignment. A horizon of type "when user finishes" **is not a horizon**: it is
+   an open-ended dependency, and whoever offers it should release resource and request it
+   again (relaunching takes minutes; a fixture is remade in two verbs).
 
-### El oraculo es el EFECTO, nunca la respuesta
+### The oracle is the EFFECT, never the response
 
-`ok` NO significa exito, y hay al menos cuatro codificaciones distintas conviviendo.
-Medido in-game el 2026-08-29, misma tool, misma respuesta, efecto opuesto:
+`ok` does NOT mean success, and there are at least four different encodings coexisting.
+Measured in-game on 2026-08-29, same tool, same response, opposite effect:
 
     object_delete(999999999) -> ok:1, deleted:0     <- no borro nada
     object_delete(<id real>) -> ok:1, deleted:1     <- borro
 
-Receta verificada, un oraculo por verbo:
+Verified recipe, one oracle per verb:
 
-| lo que quieres saber | NO mires | mira |
+| what you want to know | do NOT look at | look at |
 |---|---|---|
-| ¿coloco donde pedi? | `ok` | `surface_query(x,z).y` contra `pos_real` de `world_spawn` |
-| ¿borro algo? | `ok` | `deleted` |
-| ¿respawneo? | `ok` / `requested` | `query_player_state.pos` ANTES y DESPUES |
-| ¿la espera se cumplio? | `ok` | `satisfied` |
+| did it place where requested? | `ok` | `surface_query(x,z).y` against `pos_real` of `world_spawn` |
+| did it delete anything? | `ok` | `deleted` |
+| did it respawn? | `ok` / `requested` | `query_player_state.pos` BEFORE and AFTER |
+| was the wait satisfied? | `ok` | `satisfied` |
 
-### `player_respawn` funciona headless, y SOLO desde la death screen
+### `player_respawn` works headless, and ONLY from the death screen
 
-Verificado 2026-08-29 (run `02524f97`): mata al jugador con dano externo
-(`world_spawn` de infectado vivo con `flags=3108` al lado; la caida NO sirve con un panel
-abierto), espera a que la captura pase por sus tres fases —normal, **desaturada con
-sangre** (inconsciente), **completamente negra** (muerto)— y entonces `player_respawn()`
-dispara la secuencia vanilla («Aparicion en 8 s»). Medido: la posicion salto ~1.878 m.
+Verified 2026-08-29 (run `02524f97`): kill player with external damage
+(`world_spawn` of live infected with `flags=3108` next to them; falling does NOT work with an open
+panel), wait for capture to go through its three phases —normal, **desaturated with
+blood** (unconscious), **completely black** (dead)— and then `player_respawn()`
+triggers the vanilla sequence ("Spawning in 8 s"). Measured: position jumped ~1,878 m.
 
-**Trampa**: sobre un jugador VIVO devuelve exactamente lo mismo (`ok:1, requested:1`) y no
-hace NADA — posicion byte-identica. La respuesta no distingue los dos casos; la posicion si.
+**Pitfall**: on a LIVE player it returns exactly the same (`ok:1, requested:1`) and does
+NOTHING — byte-identical position. The response does not distinguish both cases; position does.
 
-### `key_press` entrega un DIK a la mission, no es input del sistema operativo
+### `key_press` delivers a DIK to mission, is not operating system input
 
-`key_press(dik=1)` devuelve `delivered:1` y **no** abre el menu vanilla (`ui_tree` ->
-`no_menu`). No es un fallo: su descripcion dice «a mission callback, not OS input», y el
-menu vanilla no cuelga de `OnKeyPress`. Sirve para UIs modded que SI cuelgan de ahi. No lo
-uses como sustituto de ESC del sistema, y no declares el verbo roto por ese test.
+`key_press(dik=1)` returns `delivered:1` and does **not** open the vanilla menu (`ui_tree` ->
+`no_menu`). It is not a failure: its description states "a mission callback, not OS input", and
+vanilla menu does not hang from `OnKeyPress`. It works for modded UIs that DO hang from there. Do not
+use it as a substitute for system ESC, and do not declare the verb broken from that test.
 
-## Smokes visuales: la burbuja sigue al jugador, no a la cámara (SP-082, added 2026-08-31)
+## Visual smokes: bubble follows player, not camera (SP-082, added 2026-08-31)
 
-- Antes del spawn, lee `query_player_state.pos` y coloca el objeto junto al jugador. La cámara
-  libre a más de 1 km no fuerza streaming: puede fotografiar terreno aunque el servidor confirme
-  el objeto por raycast.
-- Tras varios `camera_set`, trata como cámara huérfana cualquier serie de frames idénticos desde
-  posiciones distintas. No existe `camera_release`; reinicia o reconecta el cliente antes de
-  diagnosticar el asset.
-- Algunos vehículos vanilla resisten `object_delete`. Comprueba siempre `deleted`; `deleted:0`
-  significa que no se limpió. Si ocurre, la limpieza es manual por el usuario mediante VPP.
+- Before spawn, read `query_player_state.pos` and place the object next to the player. Free
+  camera more than 1 km away does not force streaming: it may photograph terrain even if the server confirms
+  the object by raycast.
+- After several `camera_set`, treat as orphan camera any series of identical frames from
+  different positions. There is no `camera_release`; restart or reconnect the client before
+  diagnosing the asset.
+- Some vanilla vehicles resist `object_delete`. Always check `deleted`; `deleted:0`
+  means it was not cleaned up. If this occurs, cleanup is manual by the user via VPP.
 
-## Driver file-based embebido en la misión para lógica server-side (SP-074, added 2026-08-31)
+## File-based driver embedded in the mission for server-side logic (SP-074, added 2026-08-31)
 
-Cuando el test necesita APIs del mod que no tienen verbo MCP, usa un driver Enforce en el `init.c`
-de la misión workspace (`<dayz-projects>\<mod>_dev\_server\mpmissions\<mission>\`), no
-`exec_enforce`. `Resolve-Mission` de `dayz-test.ps1` prefiere esa misión frente al template.
+When the test needs mod APIs that have no MCP verb, use an Enforce driver in the `init.c`
+of the workspace mission (`<dayz-projects>\<mod>_dev\_server\mpmissions\<mission>\`), not
+`exec_enforce`. `Resolve-Mission` of `dayz-test.ps1` prefers that mission over the template.
 
-Patrón validado:
+Validated pattern:
 
-1. Clase driver server-only, arrancada con `CallLater` a 250 ms.
-2. Protocolo file-based **write-once por secuencia**: `$profile:<caso>\cmd_<seq>.json` ->
-   `res_<seq>.json`, leído y escrito con `JsonFileLoader`. Nunca reescribas un `seq`.
-3. Un solo boot por run: la secuencia vive en memoria y vuelve a 1 al reiniciar. Entre runs,
-   archiva el directorio completo por **rename**; no muevas su contenido con wildcard.
-4. Imprime `MARK` en el script log para delimitar cada ventana. Todo fallo de una operación se
-   serializa dentro de su `res_<seq>.json`; el poll del driver no muere por un caso fallido.
-5. Los mission scripts ven las clases de todos los mods cargados y compilan server-side con
-   `#ifdef SERVER` visible. El runner host solo escribe comandos, lee resultados y recorta el log
-   entre marcas. Cruza este patrón con `dayz-test-ingame`.
+1. Server-only driver class, started with `CallLater` at 250 ms.
+2. File-based protocol **write-once per sequence**: `$profile:<caso>\cmd_<seq>.json` ->
+   `res_<seq>.json`, read and written with `JsonFileLoader`. Never rewrite a `seq`.
+3. A single boot per run: sequence lives in memory and resets to 1 on restart. Between runs,
+   archive the entire directory via **rename**; do not move its contents with wildcard.
+4. Print `MARK` in script log to delimit each window. Every operation failure is
+   serialized inside its `res_<seq>.json`; driver poll does not die from a failed case.
+5. Mission scripts see classes of all loaded mods and compile server-side with
+   `#ifdef SERVER` visible. Host runner only writes commands, reads results, and trims log
+   between marks. Cross this pattern with `dayz-test-ingame`.
 6. [EXACT] Archive the case directory on completion — always, not only between runs — and never execute a command that already has its `res_<seq>.json`. Measured failure (2026-09-27, LFPowerGrid): a driver whose sequence reset to 1 on a stale `cmd_1.json` re-ran the bank-mounting command every ~1.5 s; half an hour later the world held thousands of duplicate objects and the user aborted the next session for performance. The log lines dismissed as harness noise were the signal: a repeated `OP seq=1` means the command IS running again, and duplicated live device ids mean two entities share one id. Before filing a repeated or `ERR` line as noise, write in one sentence what it would mean if true; if that sentence describes damage, it is signal. (measured in game, DayZ 1.30.164014 Exp)
 
-## Preflight de lease, telemetría capada y comandos zombie (SP-152, added 2026-08-31)
+## Lease preflight, capped telemetry, and zombie commands (SP-152, added 2026-08-31)
 
-- En la plataforma congelada, `telemetry_read(mode="object_at")` solo acepta
-  `type="MERCEDES_AMGLF"`: el límite está en el loopback Python, aunque el bridge Enforce sea
-  genérico. Para otro classname, planifica el diagnóstico con logs del servidor y pruebas del
-  usuario; no prometas telemetría de objeto.
-- `query_*`, telemetría, raycast y capturas atraviesan el bridge y requieren
-  `session_acquire`. Solo `dayz_test_run`/`dayz_test_stop` gestionan su propio lease; no extrapoles
-  esa gestión al resto de verbos. (rev. 2026-09-06: «requieren `session_acquire`» incluye ADOPTAR el
-  run que el launch dejó `RUNNING_IDLE`; el grant de `session_acquire_wait` lo hace y lo declara en
-  `adopted_run` — §COMPOSICIÓN, «Secuencia de arranque del puente».)
-- Un timeout de `world_spawn` deja un comando zombie: puede ejecutarse después de perderse el
-  `object_id`. Antes de reintentar, reconcilia el efecto con la telemetría admitida para ese tipo;
-  si el cap de `object_at` lo impide, usa logs más inspección del usuario. No dupliques el spawn a
-  ciegas.
+- On the frozen platform, `telemetry_read(mode="object_at")` only accepts
+  `type="MERCEDES_AMGLF"`: the limit is in the Python loopback, even though the Enforce bridge is
+  generic. For another classname, plan diagnosis with server logs and user
+  tests; do not promise object telemetry.
+- `query_*`, telemetry, raycast, and captures cross the bridge and require
+  `session_acquire`. Only `dayz_test_run`/`dayz_test_stop` manage their own lease; do not extrapolate
+  that management to other verbs. (rev. 2026-09-06: "require `session_acquire`" includes ADOPTING the
+  run that launch left `RUNNING_IDLE`; the grant of `session_acquire_wait` does so and declares it in
+  `adopted_run` — §COMPOSITION, "Bridge startup sequence".)
+- A `world_spawn` timeout leaves a zombie command: it may execute after losing the
+  `object_id`. Before retrying, reconcile the effect with supported telemetry for that type;
+  if the `object_at` cap prevents it, use logs plus user inspection. Do not blindly duplicate
+  spawn.
 
-## `inventory_give`: una llamada no equivale a una unidad (SP-300, added 2026-08-31)
+## `inventory_give`: one call does not equal one unit (SP-300, added 2026-08-31)
 
-`inventory_give(classname)` usa `CreateInInventory`; un item apilable nace con su cantidad por
-defecto, que puede ser el stack completo. Nunca conviertas número de llamadas en unidades ni en
-valor nominal. Después de dotar, mide la `quantity` real del item con inspección de entidad o con
-el campo agregado que exponga el mod, y calibra contra esa medida todos los umbrales de coste,
-leftover y limpieza.
+`inventory_give(classname)` uses `CreateInInventory`; a stackable item is spawned with its default
+quantity, which may be the full stack. Never turn number of calls into units or into
+nominal value. After provisioning, measure the actual `quantity` of the item with entity inspection or with
+the aggregated field exposed by the mod, and calibrate against that measurement all thresholds for cost,
+leftover, and cleanup.
 
-## HUD con gate de cámara FPV: `camera_set` no puede fotografiarlo (SP-327, added 2026-08-31)
+## HUD with FPV camera gate: `camera_set` cannot photograph it (SP-327, added 2026-08-31)
 
-`camera_set` instala una cámara scripted. Un HUD que gatea con
-`DayZPlayerCamera1stPersonVehicle.Cast(player.GetCurrentCamera())` se oculta bajo esa cámara; es
-comportamiento correcto del HUD, no un bug del HUD ni del MCP. Captúralo mediante freelook manual
-del usuario o mediante un modo headless propio del mod. El `RestoreGameplay()` interno recupera
-la cámara del jugador, pero no hay `camera_release` público: si el flujo no expone ese restore,
-reconecta o relanza como indica la sección anterior.
+`camera_set` installs a scripted camera. A HUD that gates with
+`DayZPlayerCamera1stPersonVehicle.Cast(player.GetCurrentCamera())` hides under that camera; it is
+correct HUD behavior, not a bug of the HUD nor of the MCP. Capture it via manual user freelook
+or via a custom headless mode of the mod. Internal `RestoreGameplay()` restores
+player camera, but there is no public `camera_release`: if the flow does not expose that restore,
+reconnect or relaunch as indicated in the previous section.
 
-## Un negativo de UNA muestra no es un negativo (LL-398, added 2026-09-01)
+## A negative of ONE sample is not a negative (LL-398, added 2026-09-01)
 
-Cerrando un gate se reescribio un override de material sobre una prenda vestida y la prenda no
-cambio. La prenda estaba en nivel de salud 4. Se escribio como hallazgo acotado —«a nivel de
-salud 4, un override nuevo no llega a renderizarse»—, con el mecanismo declarado como no
-establecido y con **dos capturas separadas por minutos**. Parecia prudente. Era falso.
+While closing a gate, a material override was rewritten on a worn garment and the garment did not
+change. The garment was at health level 4. It was written as a scoped finding —"at health
+level 4, a new override never gets rendered"—, with the mechanism declared as not
+established and with **two captures separated by minutes**. It seemed prudent. It was false.
 
-**Las dos capturas descartaban el artefacto de RENDERIZADO, no la muestra de tamano uno**, que
-era de lo que dependia toda la afirmacion. Repetir la observacion no aumenta la muestra del
-experimento; solo confirma que la observacion se leyo bien.
+**The two captures ruled out the RENDERING artifact, not the sample size of one**, which
+was what the entire claim depended on. Repeating the observation does not increase experiment
+sample size; it only confirms that the observation was read correctly.
 
-**Y la variable estaba confundida.** Entre el estampado que funciono y el que no cambiaron DOS
-cosas: el nivel de salud (0 -> 4) y el momento de la escritura (justo tras un cambio de estado,
-frente a un instante arbitrario). El resultado se le colgo a la que se estaba mirando.
+**And the variable was confounded.** Between the print that worked and the one that did not, TWO things
+changed: the health level (0 -> 4) and the moment of writing (right after a state change,
+versus an arbitrary instant). The result was blamed on the one being watched.
 
-Antes de escribir un negativo en el HANDOFF desde esta ruta:
+Before writing a negative in HANDOFF from this path:
 
-1. **Cuenta las muestras del experimento, no las capturas.** Una captura repetida es n=1.
-2. **Enumera todo lo que cambio entre el caso que funciona y el que no**, y si son dos o mas, el
-   negativo no nombra ninguna hasta que se cruce la matriz.
-3. Acotar el hallazgo a un eje **parece** cautela y es una afirmacion mas: el eje elegido puede
-   ser el equivocado, y entonces la cautela apunta al sitio contrario del mecanismo real.
+1. **Count experiment samples, not captures.** A repeated capture is n=1.
+2. **Enumerate everything that changed between the working and non-working cases**, and if there are two or more, the
+   negative names neither until the matrix is crossed.
+3. Scoping the finding to one axis **seems** cautious and is yet another claim: the chosen axis may
+   be the wrong one, and then caution points in the opposite direction of the real mechanism.
 
-### SP-124 — El lease libre NO implica caja libre
+### SP-124 — Free lease does NOT imply free box
 
-`session_status` puede devolver `owner: null`, cola vacía y `claimable: true` mientras hay un
-servidor y un cliente DayZ vivos, lanzados fuera del lifecycle gestionado por otra línea del
-proyecto y ocupando el puerto 2302. El lease habla del lease, no de la caja.
+`session_status` may return `owner: null`, empty queue, and `claimable: true` while a DayZ
+server and client are alive, launched outside the managed lifecycle by another project
+line and occupying port 2302. The lease speaks of the lease, not of the box.
 
-Antes de dar la caja por libre, leer el `-mod=` de los procesos vivos:
+Before considering the box free, read `-mod=` of living processes:
 
 ```powershell
 Get-CimInstance Win32_Process -Filter "Name LIKE 'DayZ%'" |
   Select-Object ProcessId, CommandLine
 ```
 
-La línea de comandos dice de quién es la corrida y si carga tu mod.
+The command line tells whose run it is and whether it loads your mod.
 
-Corolario para el build: el guard «ningún proceso DayZ» se puede **estrechar** a las dos
-condiciones que de verdad representa —ningún proceso vivo carga tu mod, y el PBO destino abre en
-exclusiva— en vez de saltárselo o de esperar a que la otra línea termine.
+Corollary for build: the "no DayZ process" guard can be **narrowed** to the two
+conditions it actually represents —no running process loads your mod, and the target PBO opens
+exclusively— instead of skipping it or waiting for the other line to finish.
 
-Cross-ref: `dayz-test-ingame` (misma regla, lado del launch).
+Cross-ref: `dayz-test-ingame` (same rule, launch side).
 
 ## Lesson LL-494 — widen closed allowlists in readers before writers (2026-09-10)
 

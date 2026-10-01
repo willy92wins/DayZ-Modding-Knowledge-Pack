@@ -1,9 +1,9 @@
-# Gates de proceso: fixtures negativas y reglas promovidas
+# Process gates: negative fixtures and promoted rules
 
-Extraido de `SKILL.md` (corte 3, 2026-08-15). Aqui vive el DETALLE; el enunciado
-corto y cuando leer esto estan en el indice `## ARCHIVO DE LECCIONES` del SKILL.md.
-Nada de este fichero esta derogado: son lecciones vigentes, ordenadas por tema en
-vez de por fecha.
+Extracted from `SKILL.md` (cut 3, 2026-08-15). Here lives the DETAIL; the short
+statement and when to read this are in the `## LESSONS ARCHIVE` index of SKILL.md.
+Nothing in this file is superseded: they are active lessons, ordered by topic
+instead of by date.
 
 ---
 
@@ -49,15 +49,15 @@ Origin: LFHeli OH-1 2026-07-27, R21 dual (Codex + Claude subagent). The rebuilt 
 `LFHeli_dev\tools\import_gates_v2\`; the retired one at `tools\import_gates_RETIRED_20260726\` as a
 negative reference.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so that they arrive via trigger instead
+of depending on someone remembering to look them up. Each rule cites its originating `LL-NNN`;
+the full entry (symptom, origin, evidence) lives there. Do not remove the citation: the
+`lessons-index.md` index detects promotion by searching for that reference inside skills.
 
-- **LL-076** — Antes de diferir una feature, clasifica la severidad de su ausencia y valida los mínimos exigidos por el engine. Todo `CarScript` debe incluir al menos `DamageSystem.GlobalHealth`; su ausencia puede matar el proceso aunque el daño sea una feature posterior.
-- **LL-172** — Ante paneles negros o see-through, decodifica primero el `_co` desplegado y mide píxeles oscuros. Si la textura está limpia, trata el síntoma como winding y exige captura in-game antes de voltear regiones.
+- **LL-076** — Before deferring a feature, classify the severity of its absence and validate the minimums required by the engine. Every `CarScript` must include at least `DamageSystem.GlobalHealth`; its absence can kill the process even if damage is a later feature.
+- **LL-172** — When facing black or see-through panels, first decode the deployed `_co` and measure dark pixels. If the texture is clean, treat the symptom as winding and require an in-game capture before flipping regions.
 
 ## Match transformed data by identity, never rounded position (SP-163, added 2026-08-31)
 

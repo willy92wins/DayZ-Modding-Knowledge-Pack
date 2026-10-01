@@ -54,11 +54,11 @@ pip install -e "tools/dayz-3d-viewer[all]"
 #   pip install lzokay
 #   python -m dayz_3d_viewer install-lzo-shim
 # CRITICAL: py3d = the pack DayZ fork >= 1.6.0 (tools/py3d).
-# NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
+# NEVER `pip install py3d` (PyPI = point-cloud lib) NOR git+upstream (without guards).
 python -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 ```
 
-Plugin projection (`scripts/` + wheel vendorizada en esta skill - D2=B):
+Plugin projection (`scripts/` + vendored wheel in this skill - D2=B):
 
 ```bash
 apt-get install -y liblzo2-dev
@@ -67,7 +67,7 @@ pip install pygltflib python-lzo pillow numpy opensimplex --break-system-package
 #   pip install lzokay --break-system-packages
 #   python scripts/install_lzo_shim.py   # installs the lzokay-based shim (import lzo keeps working)
 # CRITICAL: py3d = the pack DayZ fork >= 1.6.0 (tools/py3d).
-# NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
+# NEVER `pip install py3d` (PyPI = point-cloud lib) NOR git+upstream (without guards).
 # The installer resolves wheels/py3d_dayz-*-py3-none-any.whl, falls back to
 # /sessions/*/mnt/*/_tools/py3d/dist/ when mounted, fails closed when neither is
 # present, and refuses to guess when legacy py3d wheels sit beside it.
@@ -350,48 +350,48 @@ UV-atlas bake of many flat materials produces black holes / circles / smudges (t
 over a black background; any UV drift samples the background). Atlas baking is for models with
 real texture detail.
 
-## (added 2026-06-05) Self-test de un visor HTML con el preview MCP (sin Puppeteer/disco) (SP-024)
+## (added 2026-06-05) Self-test of an HTML viewer with preview MCP (without Puppeteer/disk) (SP-024)
 
-Para self-testear un visor Three.js sin Puppeteer (Chromium llena el disco del sandbox):
-servir el HTML con un `http.server` estático + el **preview MCP**: `preview_start`, luego
-`preview_eval` para estado/DATA/THREE, `preview_console_logs` level=error, `preview_screenshot`.
-Verifica render + consola limpia + estado sin descargar Chromium. Caveat: el screenshot puede
-flakear (timeout) con el loop rAF -> el `preview_eval` del estado es la verificacion robusta.
-Origen: SP-024, LFQuad wheel-well tuner 2026-06-01. Cross-ref `cowork-entorno-y-tooling-gotchas`.
+To self-test a Three.js viewer without Puppeteer (Chromium fills sandbox disk):
+serve the HTML with a static `http.server` + the **preview MCP**: `preview_start`, then
+`preview_eval` for state/DATA/THREE, `preview_console_logs` level=error, `preview_screenshot`.
+Verifies render + clean console + state without downloading Chromium. Caveat: screenshot can
+flake (timeout) with the rAF loop -> `preview_eval` of state is the robust verification.
+Origin: SP-024, LFQuad wheel-well tuner 2026-06-01. Cross-ref `cowork-entorno-y-tooling-gotchas`.
 
-## Fit editor: los dos defectos que destruyen la colocacion del usuario (added 2026-09-09)
+## Fit editor: the two defects that destroy user placement (added 2026-09-09)
 
-Los dos golpean al patron "fit editor" de SP-006 de arriba, los dos se entregaron, y cada uno
-costo un ciclo entero de colocacion en LFQuad3. Cablea sus gates ANTES de entregar el visor.
+Both hit the "fit editor" pattern of SP-006 above, both were shipped, and each
+cost an entire placement cycle in LFQuad3. Wire their gates BEFORE delivering the viewer.
 
-**1. La lectura copiable tiene que regenerarse en CADA cambio, y solo en los que tocan.**
-Defecto entregado: `dump()` estaba cableado al arranque, al reset y a un boton de espejo, pero
-NO al manejador de los deslizadores. El usuario coloco todo, lo vio correcto en pantalla, copio
-el cuadro de texto... y el cuadro seguia con los valores del MOMENTO DE CARGAR. Nada avisa, y la
-colocacion es irrecuperable porque nunca llego a escribirse en ningun sitio. Peor: el sello de
-tiempo se imprimia DENTRO de `dump()`, asi que el texto rancio llevaba la hora de apertura de la
-pagina y se leia como recien generado. Gate en las dos direcciones: (a) mueve un control por
-codigo, comprueba que el texto CAMBIO y trae el valor nuevo, restaura y comprueba que vuelve
-identico; (b) cambia un control que NO debe alterar la colocacion (que malla se previsualiza, la
-camara) y comprueba que la lectura queda IGUAL. La direccion (b) no es opcional: un visor que
-reescribe los numeros al cambiar de malla es el mismo fallo con el signo cambiado.
+**1. Copiable readout must regenerate on EVERY change, and only on relevant ones.**
+Shipped defect: `dump()` was wired to startup, reset, and a mirror button, but
+NOT to the slider handler. The user positioned everything, saw it looked correct on screen, copied
+the textbox... and the box still held values from LOAD TIME. Nothing warns you, and the
+placement is unrecoverable because it was never written anywhere. Worse: the timestamp
+was printed INSIDE `dump()`, so the stale text bore the page open time
+and read as freshly generated. Gate in both directions: (a) move a control via
+code, verify that the text CHANGED and brings the new value, restore and verify that it returns
+identical; (b) change a control that should NOT alter placement (which mesh is previewed, the
+camera) and verify that the readout remains the SAME. Direction (b) is not optional: a viewer that
+rewrites numbers when changing mesh is the same bug with reversed sign.
 
-**2. `THREE.BoxHelper` se desacopla por DOS motivos independientes que se ven igual.**
-(a) Trabaja en coordenadas de MUNDO: colgarlo del holder transformado le aplica esa
-transformacion por segunda vez. Va a la ESCENA. (b) `update()` lee `object.matrixWorld`, que
-three solo recalcula durante `render()`; llamarlo justo despues de mover el objeto usa la matriz
-del fotograma ANTERIOR, asi que el recuadro se queda un paso por detras de forma permanente --
-el sintoma visible es una caja que va rezagada mientras arrastras. Llama a
-`object.updateMatrixWorld(true)` ANTES de `helper.update()`, y haz pasar todo movimiento y todo
-giro por esa unica funcion para que ningun sitio pueda saltarsela. **Arreglar solo (a) deja el
-visor visiblemente roto igual**, que es como se entrego la primera vez.
-Gate que caza los dos a la vez: toma las esquinas DIBUJADAS del helper (su atributo `position`
-transformado por su propio `matrixWorld`, asi la prueba no depende de quien sea su padre) y
-comparalas con la bbox de mundo de la malla. Controles negativos, los dos obligatorios: el
-camino viejo tiene que dar una desviacion igual a lo que moviste (medido 0,55 m para un
-movimiento de 0,55 m) y colgarlo del holder una grande (1,13 m).
-**No nulo ESPERADO, no lo persigas:** `BoxHelper` dibuja la AABB de la AABB local transformada,
-no la de los vertices transformados, asi que con giros que no son multiplos de 90 grados queda
-legitimamente MAS HOLGADO que la malla (medido +5 a +16 mm en nueve piezas). Comprueba que
-ENVUELVE la malla, nunca que coincida.
-Origen: visor de colocacion de LFQuad3, 2026-09-08/09.
+**2. `THREE.BoxHelper` decouples for TWO independent reasons that look identical.**
+(a) Operates in WORLD coordinates: attaching it to transformed holder applies that
+transformation a second time. It belongs in the SCENE. (b) `update()` reads `object.matrixWorld`, which
+three only recalculates during `render()`; calling it right after moving the object uses the matrix
+from the PREVIOUS frame, so the bounding box permanently lags one step behind --
+the visible symptom is a box lagging while dragging. Call
+`object.updateMatrixWorld(true)` BEFORE `helper.update()`, and route all movement and all
+rotation through that single function so nowhere can bypass it. **Fixing only (a) leaves the
+viewer visibly broken all the same**, which is how it shipped the first time.
+Gate catching both at once: take the DRAWN helper corners (its `position` attribute
+transformed by its own `matrixWorld`, so test does not depend on who its parent is) and
+compare them with mesh world bbox. Negative controls, both mandatory: the
+old path must give a deviation equal to what you moved (measured 0.55 m for a
+0.55 m movement) and attaching it to holder a large one (1.13 m).
+**EXPECTED non-zero, do not chase it:** `BoxHelper` draws the AABB of the transformed local AABB,
+not that of transformed vertices, so with rotations not multiples of 90 degrees it remains
+legitimately LOOSER than the mesh (measured +5 to +16 mm across nine parts). Verify that it
+ENCLOSES the mesh, never that it matches.
+Origin: LFQuad3 placement viewer, 2026-09-08/09.

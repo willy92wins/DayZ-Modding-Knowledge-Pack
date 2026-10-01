@@ -242,32 +242,32 @@ dayz-ui-development skill, LOCALIZATION section.
 
 ### 7. Script Validation (Basic)
 
-**Corre el linter REAL primero: existe, vive en este mismo pack, y no es opcional antes de
-empaquetar un PBO.**
+**Run the REAL linter first: it exists, lives in this same pack, and is not optional before
+packaging a PBO.**
 
 ```
 python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>
 ```
 
-Cubre Enforce `.c`, `.layout`, `config.cpp`, `inputs.xml` y `.rvmat`, y saca JSON. La ruta es
-**relativa a la raiz del Knowledge Pack**, no a tu proyecto: desde el directorio de un mod hay que
-dar la ruta absoluta de TU checkout, o el comando muere con `No such file or directory` y se lee
-como «no esta instalado».
+Covers Enforce `.c`, `.layout`, `config.cpp`, `inputs.xml`, and `.rvmat`, and outputs JSON. Path is
+**relative to the root of the Knowledge Pack**, not your project: from a mod directory you must
+give the absolute path of YOUR checkout, or command dies with `No such file or directory` and reads
+as "not installed".
 
-- Las claves del informe son **`errors` y `warnings` en la raiz**, no `findings`.
-- ⚠ **`status` vale `WARN` aunque `errors` sea 0**, y el exit code es `0 PASS / 1 FAIL / 2 WARN`:
-  un arbol limpio con warnings sale con **2**. Gatea por `len(errors)`, nunca por `status` ni por
-  el exit del wrapper.
-- **Compara contra una base** (el commit base en un worktree): el delta es lo que atribuye un error
-  nuevo a tu cambio; un numero absoluto no.
-- **No es un compilador.** Enforce solo compila al cargar el mundo. Si caza referencias colgando
-  tras un borrado, que es lo que un grep de simbolos se deja. Medido 2026-09-08 en LFPowerGrid:
-  271 ficheros en ~60 s; retirar 8 los dejo en 263, con 0 errores en ambos lados.
-- ⚠ **Y tiene un punto ciego que cuesta un arranque: no ve una variable no declarada.** Detalle,
-  caso medido y el barrido que si lo caza, en `dayz-test-ingame` §Paso 0.
+- The report keys are **`errors` and `warnings` at root**, not `findings`.
+- ⚠ **`status` is `WARN` even if `errors` is 0**, and the exit code is `0 PASS / 1 FAIL / 2 WARN`:
+  a clean tree with warnings exits with **2**. Gate on `len(errors)`, never on `status` nor on
+  the wrapper exit.
+- **Compare against a base** (the base commit in a worktree): the delta is what attributes a new
+  error to your change; an absolute number does not.
+- **It is not a compiler.** Enforce only compiles upon loading the world. It does catch dangling
+  references after a deletion, which is what a symbol grep misses. Measured 2026-09-08 on LFPowerGrid:
+  271 files in ~60 s; removing 8 left them at 263, with 0 errors on both sides.
+- ⚠ **And it has a blind spot that costs a startup: it does not see an undeclared variable.** Detail,
+  measured case, and the sweep that does catch it, in `dayz-test-ingame` §Step 0.
 
-Las heuristicas de abajo son el respaldo cuando el validador no esta disponible, y una segunda
-pasada util cuando si lo esta.
+The heuristics below are the fallback when the validator is not available, and a useful
+second pass when it is.
 
 Checked if scripts exist in `scripts/` folder.
 
@@ -467,7 +467,7 @@ A matching artifact locates the candidate source; it does not prove release clos
 release, apply the full-tree provenance gate in LL-367: canonical commit/source tree ->
 complete build tree -> PBO.
 
-**Command line (canonical invocation — see DAYZ_INFRA.md §Comandos de invocación canónicos):**
+**Command line (canonical invocation — see DAYZ_INFRA.md §Canonical invocation commands):**
 ```batch
 AddonBuilder.exe P:\<ModName> P:\Mods\@<ModName>\Addons -prefix=<ModName> -temp=P:\temp\<ModName> [-clear]
 ```
@@ -916,99 +916,99 @@ Each outputs machine-readable JSON for CI/CD integration.
 
 Dated 2026-06-11 session appendices moved to `references/build-appendices.md`: post-build PBO verification checklist (size/content/name/staging) and the model-path resolution gate (validate what the engine RESOLVES in the deployed PBO).
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from the lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so that they arrive via trigger instead
+of relying on someone remembering to look them up. Each rule cites its source `LL-NNN`;
+the full entry (symptom, origin, evidence) lives there. Do not remove the citation: the index
+`lessons-index.md` detects promotion by searching for that reference inside the skills.
 
-- **LL-084** — Ante `quoted string not closed`, EOF o una línea señalada en vanilla, trata archivo y línea como posible cascada del módulo y revisa antes BOM/truncación upstream. Haz diagnóstico y corrección byte-level desde el host autoritativo, no desde un mount stale.
-- **LL-213** — Trata `-include` como filtro exclusivo y valida siempre desde un temp vacío. Separa el sync de `.p3d` del paso que los binariza a ODOL; falla si faltan entries o si el tamaño indica MLOD copiado as-is.
-- **LL-290** — Un pin por sha256 o por tamaño se rompe solo al pasar por git: con `core.autocrlf=true` (el default en Windows) `git add` normaliza a LF y `git checkout` reescribe con CRLF, así que el blob y el working tree dejan de coincidir con lo pineado (medido: LICENSE 1577 B pineado contra 1548 B en el blob, y 8 rojos en un clon Windows). Corre el gate sobre el **clon recién checked-out**, no sobre una copia exportada con robocopy: la copia conserva los bytes originales y da verde sobre un árbol que nadie recibe. Y pon `.gitattributes` con `* text=auto eol=lf` desde el primer commit, más `-text` en lo que se compare byte a byte. Es el mismo eje que la sección de identidad de bytes de AddonBuilder más arriba: antes de comparar hashes, asegura que comparas el árbol que se publica.
-- **LL-367** — Un artefacto de release se traza al commit por hash de TODO su árbol fuente, no de los ficheros tocados. Gate de procedencia pre-release: commit/fuente canónica ↔ árbol completo de build ↔ PBO. Un sync incremental «verificado» solo verifica su propio delta.
+- **LL-084** — Facing `quoted string not closed`, EOF or a line pointed out in vanilla, treat file and line as possible module cascade and inspect BOM/upstream truncation first. Perform diagnosis and byte-level correction from authoritative host, not from stale mount.
+- **LL-213** — Treat `-include` as exclusive filter and always validate from an empty temp. Separate `.p3d` sync from step binarizing them to ODOL; fail if entries are missing or size indicates MLOD copied as-is.
+- **LL-290** — A pin by sha256 or size breaks on its own going through git: with `core.autocrlf=true` (default on Windows) `git add` normalizes to LF and `git checkout` rewrites with CRLF, so blob and working tree cease to match pinned values (measured: LICENSE 1577 B pinned vs 1548 B in blob, and 8 reds on a Windows clone). Run gate on **freshly checked-out clone**, not on a copy exported with robocopy: copy preserves original bytes and gives green on a tree that no one receives. And put `.gitattributes` with `* text=auto eol=lf` from first commit, plus `-text` on whatever is compared byte-by-byte. It is the same axis as AddonBuilder byte identity section above: before comparing hashes, ensure you compare the tree that gets published.
+- **LL-367** — A release artifact is traced to commit by hash of its ENTIRE source tree, not touched files. Pre-release provenance gate: commit/canonical source ↔ full build tree ↔ PBO. An incremental "verified" sync only verifies its own delta.
 
-## Un mod puede tener DOS PBO, y el que valida tu gate puede no ser el que carga el juego (added 2026-09-02)
+## A mod can have TWO PBOs, and the one your gate validates may not be the one the game loads (added 2026-09-02)
 
-Medido sobre LFQuad el 2026-09-01, buscando por qué un gate de frescura daba una lectura
-que no cuadraba:
+Measured on LFQuad on 2026-09-01, investigating why a freshness gate gave a reading
+that did not add up:
 
-| ruta | tamaño | fecha | modelo dentro |
+| path | size | date | model inside |
 |---|---:|---|---|
-| `<Mod>\<Mod>.pbo` (en el árbol fuente) | 5,92 MB | 22-jun | `.p3d` **binarizado** (ODOL, 2.036.911 B) |
-| `P:\Mods\@<Mod>\Addons\<Mod>.pbo` (el desplegado) | 17,22 MB | 21-jun | **MLOD sin binarizar** (10.914.580 B) |
+| `<Mod>\<Mod>.pbo` (in source tree) | 5.92 MB | 22-Jun | **binarized** `.p3d` (ODOL, 2,036,911 B) |
+| `P:\Mods\@<Mod>\Addons\<Mod>.pbo` (the deployed one) | 17.22 MB | 21-Jun | **unbinarized MLOD** (10,914,580 B) |
 
-Dos builds por dos rutas distintas, con **73 entradas, 5 `.c`, 36 `.paa` y 23 `.rvmat`
-los dos** — o sea los dos completos, ninguno obviamente roto. La diferencia visible es el
-tamaño, y el tamaño se explica por la binarización, no por que falte nada.
+Two builds via two different paths, with **73 entries, 5 `.c`, 36 `.paa` and 23 `.rvmat`
+both** — meaning both complete, neither obviously broken. The visible difference is
+size, and size is explained by binarization, not by anything missing.
 
-**El que el juego carga es el de `Mods\@<Mod>\Addons\`, y era el más antiguo de los dos.**
+**The one the game loads is the one in `Mods\@<Mod>\Addons\`, and it was the older of the two.**
 
-Consecuencia para cualquier gate de empaquetado: **comprueba todos los paquetes que
-existan para ese mod**, no uno elegido a mano. La forma complementaria evita tener que
-adivinar cuál pipeline es el autoritativo — si alguno de ellos no lleva lo que el modelo
-pide, o es más viejo que las fuentes, el veredicto es rojo. Un gate apuntado solo al del
-árbol fuente puede ponerse verde sobre un despliegue que nunca recibió el trabajo.
+Consequence for any packaging gate: **check all packages that
+exist for that mod**, not one chosen by hand. The complementary way avoids having to
+guess which pipeline is authoritative — if any of them does not carry what the model
+requires, or is older than the sources, the verdict is red. A gate pointed only to the source
+tree one can turn green on a deployment that never received the work.
 
-Dos detalles de instrumento que salieron del mismo sitio:
+Two instrumentation details that came out of the same place:
 
-- **La presencia del `.p3d` se comprueba por NOMBRE, nunca por tamaño**: una ruta lo
-  binariza y la otra no, y el mismo modelo pesa 5,4x distinto en cada paquete.
-- Un gate de frescura que recorra el árbol fuente tiene que excluir `*.pbo`, `*.bisign`,
-  `*.bak*` y temporales. Una copia de seguridad se escribe **después** de aquello que
-  copia, así que contarla como fuente deja el gate rojo para siempre por un motivo que no
-  tiene nada que ver con que el paquete esté rancio.
+- **The presence of `.p3d` is checked by NAME, never by size**: one path
+  binarizes it and the other does not, and the same model weighs 5.4x different in each package.
+- A freshness gate traversing the source tree must exclude `*.pbo`, `*.bisign`,
+  `*.bak*` and temp files. A backup is written **after** what it
+  copies, so counting it as source leaves the gate red forever for a reason that
+  has nothing to do with package being stale.
 
-## «Build Successful» no dice que haya empaquetado TUS fuentes: el árbol `-temp` puede sobrevivir (added 2026-09-06)
+## "Build Successful" does not say it packaged YOUR sources: the `-temp` tree can survive (added 2026-09-06)
 
-Hermana de la sección anterior. Aquella dice que puedes estar validando el PBO
-equivocado; ésta, que puedes estar construyendo el PBO **correcto a partir de las
-fuentes equivocadas**. Medido sobre LFPowerGrid el 2026-09-06, tras una semana de
-medidas in-game hechas sobre un paquete fantasma.
+Sister to previous section. That one says you may be validating the wrong
+PBO; this one, that you may be building the **correct PBO from the
+wrong sources**. Measured on LFPowerGrid on 2026-09-06, after a week of
+in-game measurements taken on a ghost package.
 
-**El mecanismo.** AddonBuilder recibe `-temp=<dir>` y trabaja ahí. Es habitual que el
-envoltorio del proyecto lo limpie con `shutil.rmtree(temp, ignore_errors=True)`. Ese
-flag se traga el fallo: si algo retiene el directorio (el explorador, un antivirus, un
-juego abierto), el árbol viejo **sobrevive**. AddonBuilder regenera entonces solo lo que
-produce él mismo —`config.bin` a partir de tu `config.cpp`, y `texHeaders.bin`—,
-empaqueta el `gui/`, `scripts/` y `data/` que ya estaban ahí, y reporta
-**`Build Successful` con código 0**.
+**The mechanism.** AddonBuilder receives `-temp=<dir>` and works there. It is common for the
+project wrapper to clean it with `shutil.rmtree(temp, ignore_errors=True)`. That
+flag swallows the failure: if anything locks the directory (explorer, an antivirus, an
+open game), the old tree **survives**. AddonBuilder then regenerates only what
+it produces itself —`config.bin` from your `config.cpp`, and `texHeaders.bin`—,
+packs the `gui/`, `scripts/` and `data/` that were already there, and reports
+**`Build Successful` with code 0**.
 
-**La huella que lo delata**, dentro del árbol `-temp`, es inconfundible:
+**The footprint that gives it away**, inside the `-temp` tree, is unmistakable:
 
-| fichero | mtime |
+| file | mtime |
 |---|---|
-| `config.bin`, `texHeaders.bin` | de hace un minuto |
-| `gui/`, `scripts/`, `data/` | de hace días o semanas |
+| `config.bin`, `texHeaders.bin` | from one minute ago |
+| `gui/`, `scripts/`, `data/` | from days or weeks ago |
 
-En el caso medido, el paquete desplegado llevaba fuentes del 2026-08-29 mientras el repo
-iba una semana por delante: 14 ficheros distintos, un `.layout` entero ausente, ~8.500 B
-menos en una sola vista, y `config.cpp` sin copiar (sustituido por el `config.bin`
-regenerado). Cada «rebuild» movía el mtime del `.pbo` y no movía su contenido.
+In the measured case, deployed package carried sources from 2026-08-29 while repo
+was a week ahead: 14 different files, an entire missing `.layout`, ~8,500 B
+less in a single view, and `config.cpp` not copied (replaced by regenerated
+`config.bin`). Each "rebuild" moved the `.pbo` mtime and did not move its content.
 
-**Dos trampas al comprobarlo, las dos medidas:**
+**Two traps when checking it, both measured:**
 
-- **Contar menciones sueltas de la versión no discrimina.** El paquete viejo daba 80
-  apariciones de `"1.2.3"` y 1 de `"1.2.4"`, pero esos números mezclan comentarios,
-  changelogs y migraciones de legado. Lo que decide es el **literal exacto** de la
-  constante: `grep -c -a -F 'LFPG_VERSION_STR = "1.2.4"'`. Uno contra cero, sin ruido.
-- **Más grande no es más completo.** El paquete correcto salió **8,4 MB más pequeño**
-  que el fantasma (99,6 MB contra 108,0 MB), porque el árbol `-temp` nunca limpiado
-  había ido acumulando restos de builds anteriores que se empaquetaban con lo demás.
-  Un gate que vigile «que no encoja» habría bloqueado el paquete bueno.
+- **Counting loose version mentions does not discriminate.** The old package gave 80
+  occurrences of `"1.2.3"` and 1 of `"1.2.4"`, but those numbers mix comments,
+  changelogs, and legacy migrations. What decides is the **exact literal** of the
+  constant: `grep -c -a -F 'LFPG_VERSION_STR = "1.2.4"'`. One against zero, without noise.
+- **Larger is not more complete.** The correct package came out **8.4 MB smaller**
+  than the ghost (99.6 MB against 108.0 MB), because the never-cleaned `-temp` tree
+  had been accumulating debris from previous builds that got packed with everything else.
+  A gate watching "that it does not shrink" would have blocked the good package.
 
-**La comprobación que sí lo caza** va con control positivo obligatorio: elige un marcador
-que exista **solo** en las fuentes nuevas y otro que deba existir en las dos. Si el
-segundo tampoco aparece, tu grep está roto y el primer resultado no significa nada.
+**The check that does catch it** comes with mandatory positive control: choose a marker
+that exists **only** in new sources and another that must exist in both. If the
+second does not appear either, your grep is broken and the first result means nothing.
 
 ```bash
-grep -c -a -F "<marcador nuevo>"      <ruta>/Addons/<Mod>.pbo   # debe ser >= 1
-grep -c -a -F "<marcador de control>" <ruta>/Addons/<Mod>.pbo   # debe ser >= 1 siempre
+grep -c -a -F "<new marker>"      <path>/Addons/<Mod>.pbo   # must be >= 1
+grep -c -a -F "<control marker>" <path>/Addons/<Mod>.pbo   # must be >= 1 always
 ```
 
-**El arreglo en el envoltorio** son cuatro líneas y es fail-closed: borrar, **verificar
-que se borró**, y abortar con un código propio si sobrevive. Nunca dejar que un
-`ignore_errors=True` decida por ti qué se empaqueta.
+**The fix in the wrapper** is four lines and is fail-closed: delete, **verify
+that it was deleted**, and abort with own code if it survives. Never let an
+`ignore_errors=True` decide for you what gets packed.
 
 ```python
 shutil.rmtree(temp, ignore_errors=True)
@@ -1017,10 +1017,10 @@ if os.path.exists(temp):
     raise SystemExit(4)
 ```
 
-Verificado con control positivo: apuntando `--temp` a un fichero (así `rmtree` falla y el
-flag se lo traga), el guard aborta con `RC=4` sin llegar a invocar AddonBuilder, y el
-bloque `finally` del envoltorio sigue corriendo — importante si, como aquí, pone configs
-de otros proyectos en cuarentena mientras dura el build.
+Verified with positive control: pointing `--temp` to a file (so `rmtree` fails and the
+flag swallows it), guard aborts with `RC=4` without ever invoking AddonBuilder, and the
+wrapper's `finally` block continues running — important if, as here, it puts configs
+from other projects in quarantine while the build lasts.
 
 <!-- corpus-stardz-2026-09-07 -->
 
@@ -1039,42 +1039,42 @@ Measured 2026-09-07 on LFSecure with AddonBuilder 1.29 (`build_pbo.py`, staging 
 - **Do not chase a byte diff in a `.p3d` entry** when the MLOD did not change; rebuild twice and compare before opening a debinarizer.
 - When the doubt is already open (a test PBO whose ten `.p3d` all hash differently and whose body is ~33 KB smaller, SUB_BRZ s96, 2026-09-18), close it by CONTENT: extract the ODOL from inside each PBO and compare what matters — baked animations, bones, face counts, dimensions — against the stage (measured identical there, `pbo_diff.py`: 127 entries equal, the 10 `.p3d` different). Size and hash differences between builds of the same stage are expected binarize noise, not evidence of a geometry change. [EXACT] (measured, SP-410]
 
-## Una cadena de content gate que la BASE tambien contiene no puede ponerse roja (SP-390, added 2026-09-10)
+## A content gate string that BASE also contains cannot turn red (SP-390, added 2026-09-10)
 
-`core-build-deploy.ps1 -RequireString <cadena>` comprueba que el texto esta dentro del
-PBO empaquetado y del desplegado, y es un buen gate: caza el build que empaqueto una
-version vieja del arbol. Falla en silencio cuando la cadena elegida **no es exclusiva
-del cambio**.
+`core-build-deploy.ps1 -RequireString <cadena>` checks that text is inside packaged
+and deployed PBO, and is a good gate: catches build that packaged an
+old version of tree. Fails silently when chosen string **is not exclusive
+to the change**.
 
-Medido el 2026-09-10 sobre LFHeliCore. Para probar una variante que activaba el
-suavizado del cliente solo con `ClientPresentMode == 1`, el gate se cerro con:
+Measured on 2026-09-10 on LFHeliCore. To test a variant that enabled client
+smoothing only with `ClientPresentMode == 1`, the gate was closed with:
 
 ```
 core-build-deploy.ps1 -RequireString "ClientPresentMode == 1"
 ```
 
-y paso. Pero la BASE ya contenia esa subcadena, en una funcion que no tiene nada que
-ver con la variante:
+and passed. But BASE already contained that substring, in a function that has nothing to
+do with the variant:
 
 ```c
-// LFHeliOwnerWakeEnabled(), presente desde antes del cambio
+// LFHeliOwnerWakeEnabled(), present since before the change
 return m_Tuning.ClientPresentMode == 0 || m_Tuning.ClientPresentMode == 1;
 ```
 
-O sea que el gate **habria pasado igual sobre el build sin la variante**. No podia
-ponerse rojo, y por tanto no acreditaba nada: durante toda la corrida parecio que
-verificaba que el cambio viajaba al PBO, y solo verificaba que el fichero seguia ahi.
+Meaning that gate **would have passed just the same on the build without the variant**. It could not
+turn red, and therefore proved nothing: throughout entire run it seemed as though it
+verified that change traveled to PBO, and only verified that file was still there.
 
-**Como se elige la cadena.** Que sea unica del cambio, no del area del cambio. Un
-nombre de constante nueva (`REST_PROBE_ARM_MPS`) o un tag de log nuevo
-(`[LFHELI-REST]`) son buenos: no existen antes. Un fragmento de expresion sobre un
-campo que ya se usaba, no.
+**How the string is chosen.** Let it be unique to the change, not to change area. A
+new constant name (`REST_PROBE_ARM_MPS`) or a new log tag
+(`[LFHELI-REST]`) are good: they do not exist before. An expression fragment on an
+already-used field, no.
 
-**Y la comprobacion que lo cierra, que cuesta un minuto**: antes de fiarte del gate,
-**correrlo contra el artefacto SIN el cambio y ver que FALLA**. Un gate del que solo
-has visto el verde no esta calibrado; probar que puede ponerse rojo es la mitad que
-casi nunca se hace. En la misma corrida, dos cadenas sobre simbolos nuevos si
-discriminaban y una sobre un simbolo preexistente no, con el mismo comando.
+**And the check that closes it, taking one minute**: before trusting the gate,
+**run it against the artifact WITHOUT the change and see that it FAILS**. A gate for which you have
+only seen green is not calibrated; proving it can turn red is the half that
+is almost never done. In the same run, two strings on new symbols did
+discriminate and one on a pre-existing symbol did not, with the same command.
 
-Hermano de lo que esta seccion ya dice sobre gates que acreditan forma y no
-compilacion: alli el gate mide lo que no toca, aqui mide algo que ya estaba.
+Sibling to what this section already says about gates proving form and not
+compilation: there gate measures what it shouldn't, here it measures something already there.

@@ -1,10 +1,10 @@
-# Sandstorm: arquitectura y refugio
+# Sandstorm: architecture and shelter
 
-Fuente 1.30 Exp `1.30.164014`. Citas reabiertas en `exp\`. El controller nativo no se inspecciona (exe).
+Source 1.30 Exp `1.30.164014`. Citations reopened in `exp\`. Native controller is not inspected (exe).
 
-## Cómo obtener y disparar el fenómeno
+## How to obtain and trigger the phenomenon
 
-`SandstormController` tiene constructores privados (`exp\scripts\scripts\3_Game\Sandstorm.c:12-13`). Alias: `typedef SandstormController Sandstorm` (`:135`). El engine instancia el tipo scriptado:
+`SandstormController` has private constructors (`exp\scripts\scripts\3_Game\Sandstorm.c:12-13`). Alias: `typedef SandstormController Sandstorm` (`:135`). Engine instantiates scripted type:
 
 ```c
 // [EXACT] exp\scripts\scripts\3_Game\Sandstorm.c:124
@@ -19,18 +19,18 @@ Fuente 1.30 Exp `1.30.164014`. Citas reabiertas en `exp\`. El controller nativo 
 	}
 ```
 
-`Start` / `Stop` son server-only (`Sandstorm.c:20-27`). Callbacks `OnStart`/`OnStop` en servidor reenvían a `WorldData.WeatherSandstormStart/Stop` (`Sandstorm.c:90-116`). `WorldData.StartSandstorm` pone el flag `m_IsSandstormStartedByWeather` y llama `GetSandstorm().Start(timeToGather, true)` (`WorldData.c:477-489`).
+`Start` / `Stop` are server-only (`Sandstorm.c:20-27`). Server `OnStart`/`OnStop` callbacks forward to `WorldData.WeatherSandstormStart/Stop` (`Sandstorm.c:90-116`). `WorldData.StartSandstorm` sets `m_IsSandstormStartedByWeather` flag and calls `GetSandstorm().Start(timeToGather, true)` (`WorldData.c:477-489`).
 
-API nativa útil (todas requieren storm activo salvo `IsActive`/`GetMagnitude` según comentarios): `GetDirection`, `IsPositionAtEnd`, `GetPosition`, `GetSpeed`, `GetRemainingMovementDuration`, `GetPointOnEdge` (distancia negativa = interior), `GetIntensity(worldPosition)`, `GetMagnitude` (`Sandstorm.c:32-83`). `GetIntensityForPlayer` es script, no proto (`:78`).
+Useful native API (all require active storm except `IsActive`/`GetMagnitude` per comments): `GetDirection`, `IsPositionAtEnd`, `GetPosition`, `GetSpeed`, `GetRemainingMovementDuration`, `GetPointOnEdge` (negative distance = interior), `GetIntensity(worldPosition)`, `GetMagnitude` (`Sandstorm.c:32-83`). `GetIntensityForPlayer` is script, not proto (`:78`).
 
 ## Intensidad percibida (cobijo)
 
 `GetIntensityForPlayer` (`ScriptedSandstormController.c:142-178`):
 
-1. Posición de cabeza → `GetIntensity`. Si ≤ 0, return 0.
-2. `ApplyUndergroundModifier`: `EUndergroundPresence.TRANSITIONING` o `FULL`, fade 1,5 s; además si `playerPos[1] < SurfaceY` atenúa por profundidad (`MAX_SURFACE_DISTANCE = 2.0`) (`:180-210`). Si hay `HumanCommandVehicle`, el underground return early (`:182-184`).
-3. Si sigue > 0: `ApplyBuildingCheckModifier` — `MiscGameplayFunctions.IsUnder(..., ObjIntersectIFire)` **y** `IsSoundInsideBuilding()` (`:222-228`).
-4. Si sigue > 0: `ApplyVehicleModifier` solo si el transport `IsAnyInherited({Car})` (`:265`).
+1. Head position → `GetIntensity`. If ≤ 0, return 0.
+2. `ApplyUndergroundModifier`: `EUndergroundPresence.TRANSITIONING` or `FULL`, fade 1.5 s; also if `playerPos[1] < SurfaceY` attenuates by depth (`MAX_SURFACE_DISTANCE = 2.0`) (`:180-210`). If `HumanCommandVehicle` is present, underground returns early (`:182-184`).
+3. If still > 0: `ApplyBuildingCheckModifier` — `MiscGameplayFunctions.IsUnder(..., ObjIntersectIFire)` **and** `IsSoundInsideBuilding()` (`:222-228`).
+4. If still > 0: `ApplyVehicleModifier` only if transport `IsAnyInherited({Car})` (`:265`).
 
 Fade:
 
@@ -54,11 +54,11 @@ Fade:
 	}
 ```
 
-Estado por jugador: `PlayerSandstormData` (`4_World\Systems\Sandstorm\PlayerSandstormData.c`). En MP la clave es UID; en SP `"-1"` (`ScriptedSandstormController.c:49-58`).
+State per player: `PlayerSandstormData` (`4_World\Systems\Sandstorm\PlayerSandstormData.c`). In MP key is UID; in SP `"-1"` (`ScriptedSandstormController.c:49-58`).
 
 ## Cliente: PPE
 
-`OnStart` cliente pide `PPERequesterBank.REQ_SANDSTORMEFFECT` y `SetTargetIntensity` (`:310-327`). Postproceso: `PPERequester_SandstormEffect` (`PPERSandstorm.c:1-36`, color ámbar, saturación, godrays). Material `exp\graphics\graphics\Materials\postprocess\sandstorm.emat:1` shader `SnowEffect`, `ParticlesColor 0.69 0.49 0.29 1` en `:29`.
+Client `OnStart` requests `PPERequesterBank.REQ_SANDSTORMEFFECT` and `SetTargetIntensity` (`:310-327`). Postprocess: `PPERequester_SandstormEffect` (`PPERSandstorm.c:1-36`, amber color, saturation, godrays). Material `exp\graphics\graphics\Materials\postprocess\sandstorm.emat:1` shader `SnowEffect`, `ParticlesColor 0.69 0.49 0.29 1` at `:29`.
 
 ## cfgWorlds
 
@@ -97,10 +97,10 @@ class ITEM_SandstormData : ITEM_DataBase
 };
 ```
 
-`CfgGameplayHandler.GetSandstormFrequency()` (`CfgGameplayHandler.c:518-521`) se copia a `WorldDataWeatherSettings.m_sandstormFrequency` en `SetupWeatherSettings` (`WorldData.c:427-442`).
+`CfgGameplayHandler.GetSandstormFrequency()` (`CfgGameplayHandler.c:518-521`) is copied to `WorldDataWeatherSettings.m_sandstormFrequency` in `SetupWeatherSettings` (`WorldData.c:427-442`).
 
-## Nasdara: disparo climático
+## Nasdara: weather trigger
 
-En `CalculateWind` mal tiempo, `sandstormChance = Clamp(8 * m_sandstormFrequency, 0, 100)` (`Nasdara.c:561-575`). Si sale sandstorm: `m_IsSandstorm = true`, y en OVERCAST `StartSandstorm(phmnTime * WIND_MAGNITUDE_TIME_MULTIPLIER)` (`:318-322`). ChernarusPlus no llama `StartSandstorm`.
+In `CalculateWind` bad weather, `sandstormChance = Clamp(8 * m_sandstormFrequency, 0, 100)` (`Nasdara.c:561-575`). If sandstorm results: `m_IsSandstorm = true`, and in OVERCAST `StartSandstorm(phmnTime * WIND_MAGNITUDE_TIME_MULTIPLIER)` (`:318-322`). ChernarusPlus does not call `StartSandstorm`.
 
-[DESIGN] En un mapa custom sin `NasdaraData.CalculateWind`, `sandstormFrequency` no hace nada hasta que alguien llame `Start` (misión o WorldData propio).
+[DESIGN] On a custom map without `NasdaraData.CalculateWind`, `sandstormFrequency` does nothing until someone calls `Start` (mission or custom WorldData).

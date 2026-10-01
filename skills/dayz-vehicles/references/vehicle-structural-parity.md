@@ -79,69 +79,69 @@ config wires them.
 
 ---
 
-## Addendum (2026-05-26) — Lecciones de la depuración "el quad no conduce" (LFQuad)
+## Addendum (2026-05-26) — Lessons from "the quad doesn't drive" debugging (LFQuad)
 
-> Verificado contra civiliansedan v54 (full), hatchback_02/offroadhatchback/offroad_02 (FireGeo) y
-> Croco quadbike v53 (solo cabecera). Marcado [VERIFICADO] vs [HIPOTESIS] (regla R31: una divergencia
-> con el referente es candidato, no veredicto; no afirmar causa sin leer el mecanismo).
+> Verified against civiliansedan v54 (full), hatchback_02/offroadhatchback/offroad_02 (FireGeo), and
+> Croco quadbike v53 (header only). Marked [VERIFIED] vs [HYPOTHESIS] (rule R31: divergence
+> with reference is candidate, not verdict; do not assert cause without reading mechanism).
 
-### Vehiculo que NO rueda / se hunde / bota, con TODO el checklist presente
+### Vehicle that DOES NOT roll / sinks / bounces, with ENTIRE checklist present
 
-Si el vehiculo se crea, dirige y suena pero NO RUEDA, se HUNDE y BOTA, sin error en el RPT, la
-simulacion PhysX de rueda no engancha. Discriminador clave [VERIFICADO]: "dirige (steering anima) pero
-no rueda" = rueda reconocida por config/anim pero su fisica (contacto/suspension/rotacion) bloqueada.
+If the vehicle spawns, steers, and makes sound but DOES NOT ROLL, SINKS, and BOUNCES, without RPT error, the
+wheel PhysX simulation is not engaging. Key discriminator [VERIFIED]: "steers (steering animates) but
+does not roll" = wheel recognized by config/anim but its physics (contact/suspension/rotation) blocked.
 
-- El hub de rueda NO puede estar dentro del convex hull del chasis [HIPOTESIS fuerte]. La rueda raycast
-  lanza un rayo hacia abajo desde el hub; si nace dentro de la colision del chasis, auto-colisiona -> sin
-  contacto suelo -> sin suspension (hunde) + sin traccion (no rueda). Un unico convex hull del cuerpo
-  entero es INCORRECTO: engloba el espacio de las ruedas. El chasis necesita wheel-wells (colision ausente
-  donde van las ruedas): hull mas estrecho que la via, o multi-componente con huecos. Comprobar offline
-  que cada hub queda FUERA del hull y que el neumatico no lo penetra.
-- Fallo silencioso (sin error RPT) -> instrumentar, no adivinar [PROCESO, R35]. Script debug temporal en
-  el .c del vehiculo que loguee GetWheelCount(), velocidad de rueda vs EngineGetRPM(), server vs cliente,
-  contacto. Observar el fallo. Prohibido el bucle "una hipotesis -> un cambio -> un test".
-- Que NO es la causa si se clono de un vehiculo funcional [VERIFICADO]: drivetrain (motor/par/embrague/
-  caja/diferencial), scripts (CarScript hijo; diferencias cosmeticas), model.cfg. El fallo de "no rueda"
-  suele ser de modelo/geometria o binding nativo, no del config/script clonado.
+- Wheel hub CANNOT be inside the chassis convex hull [strong HYPOTHESIS]. Raycast wheel
+  casts a ray downwards from hub; if it originates inside chassis collision, it auto-collides -> no
+  ground contact -> no suspension (sinks) + no traction (doesn't roll). A single convex hull of entire
+  body is INCORRECT: encompasses wheel space. Chassis needs wheel-wells (absent collision
+  where wheels go): hull narrower than track, or multi-component with gaps. Verify offline
+  that each hub remains OUTSIDE the hull and tire does not penetrate it.
+- Silent failure (no RPT error) -> instrument, do not guess [PROCESS, R35]. Temporary debug script in
+  vehicle's .c logging GetWheelCount(), wheel speed vs EngineGetRPM(), server vs client,
+  contact. Observe failure. Loop "one hypothesis -> one change -> one test" prohibited.
+- What is NOT the cause if cloned from a working vehicle [VERIFIED]: drivetrain (engine/torque/clutch/
+  gearbox/differential), scripts (child CarScript; cosmetic differences), model.cfg. "Doesn't roll" failure
+  is usually model/geometry or native binding, not the cloned config/script.
 
-### Wheel-proxies en FireGeometry [VERIFICADO 4/4 vanilla]
+### Wheel-proxies in FireGeometry [VERIFIED 4/4 vanilla]
 
-TODOS los coches vanilla revisados llevan proxies de rueda en su FireGeometry LOD, identicos a los del
-Visual LOD (sedan sedanwheel.001-005, hatchback_02, niva, offroad_02). Replicar: copiar los wheel-proxies
-del Visual a la FireGeo (cara-proxy de 3 vertices + seleccion proxy:path.NNN, mass 0). Nota: la tabla de
-memory-and-selections.md ("proxies NO en FireGeo") es para attachments tipo item, NO para ruedas.
+ALL reviewed vanilla cars carry wheel proxies in their FireGeometry LOD, identical to those in
+Visual LOD (sedan sedanwheel.001-005, hatchback_02, niva, offroad_02). Replicate: copy wheel-proxies
+from Visual to FireGeo (3-vertex proxy face + selection proxy:path.NNN, mass 0). Note: table in
+memory-and-selections.md ("proxies NOT in FireGeo") applies to item-type attachments, NOT to wheels.
 
-### Tamano del hub wheel_X_X_damper_land en Geometry [VERIFICADO vs sedan]
+### Size of wheel_X_X_damper_land hub in Geometry [VERIFIED vs sedan]
 
-Componente convexo PEQUENO (~0.20x0.18x0.18, sedan), NO una caja grande. Un from-scratch con cajas de
-~0.40 es 2x demasiado grande y baja casi al suelo.
+SMALL convex component (~0.20x0.18x0.18, sedan), NOT a large box. A from-scratch build with boxes of
+~0.40 is 2x too large and reaches almost down to the ground.
 
-### Masa, COM y suspension escalan con el vehiculo [VERIFICADO vs Croco]
+### Mass, COM, and suspension scale with the vehicle [VERIFIED vs Croco]
 
-- La masa se computa de los pesos de vertice de la Geometry LOD. Un quad real pesa ~1000 kg (Croco
-  ModelInfo: mass 1061.5, COM (0, 0.474, -0.011)), NO el ~250 por defecto de un hull procedural. Masa
-  demasiado baja -> fisica inestable (bote).
-- La suspension (stiffness/compression/damping) escala con la masa: NO clonar la de un crawler pesado
-  sobre un quad ligero (muelles brutalmente duros -> bote). Clonar de masa comparable.
-- wheelHubRadius = radio del COMPONENTE DE HUB (pequeno ~0.11-0.15), NO el radio del neumatico (doc BI).
-  Croco 0.11 (neumatico 0.367); sedan 0.15.
-- Radio de rueda vs holgura de bajos: contacto de rueda ~Y=0 y fondo del chasis bien por encima (sedan
-  belly clearance 0.428 m). Ruedas pequenas -> el cuerpo monta demasiado bajo.
+- Mass is computed from vertex weights in Geometry LOD. A real quad weighs ~1000 kg (Croco
+  ModelInfo: mass 1061.5, COM (0, 0.474, -0.011)), NOT the ~250 default of a procedural hull. Too
+  low mass -> unstable physics (bounce).
+- Suspension (stiffness/compression/damping) scales with mass: DO NOT clone that of a heavy crawler
+  onto a light quad (brutally stiff springs -> bounce). Clone from comparable mass.
+- wheelHubRadius = radius of HUB COMPONENT (small ~0.11-0.15), NOT tire radius (BI doc).
+  Croco 0.11 (tire 0.367); sedan 0.15.
+- Wheel radius vs belly clearance: wheel contact ~Y=0 and chassis underside well above (sedan
+  belly clearance 0.428 m). Small wheels -> body rides too low.
 
 ### Wreck [VERIFICADO sedan]
 
-El sedan ship 3 .p3d de wreck dedicados direccionales (wreck/_wreckedfront/back/both.p3d) + spawn
-script-side (no hay wreck= ni class Wrecked* en wheeled/config.cpp). healthLevels {} vacios es valido.
+The sedan ships 3 dedicated directional wreck .p3d files (wreck/_wreckedfront/back/both.p3d) + script-side
+spawn (no wreck= or class Wrecked* in wheeled/config.cpp). Empty healthLevels {} is valid.
 
-### Herramientas / parity de referencias [VERIFICADO]
+### Tools / reference parity [VERIFIED]
 
-- Croco quadbike v53: NO full-debinarizable (desync en EmbeddedMaterial v53), pero la cabecera/ModelInfo
-  SI (mass, COM, geometry_center, resoluciones de LOD) monkeypatcheando LOD.read para saltar el parse de
-  geometria. Para su geometria real -> Object Builder (maneja v53).
-- El debinarizer INVIERTE el winding (ODOL->MLOD) -> un MLOD debinarizado NO es referencia de winding
-  fiable. Para winding de colision usar Check C (cross vs centroide del componente).
-- LOD set de un quad que funciona (Croco): visual 0-6, shadow 1100, Geometry 1e13, Memory 1e15, ViewGeo
-  6e15, FireGeo 7e15 (sin LandContact).
+- Croco quadbike v53: NOT full-debinarizable (desync in EmbeddedMaterial v53), but header/ModelInfo
+  YES (mass, COM, geometry_center, LOD resolutions) by monkeypatching LOD.read to skip geometry
+  parsing. For its real geometry -> Object Builder (handles v53).
+- The debinarizer INVERTS winding (ODOL->MLOD) -> a debinarized MLOD is NOT a reliable winding
+  reference. For collision winding use Check C (cross vs component centroid).
+- Working quad LOD set (Croco): visual 0-6, shadow 1100, Geometry 1e13, Memory 1e15, ViewGeo
+  6e15, FireGeo 7e15 (without LandContact).
 
 > Origen: LFQuad bug-ledger P1 2026-05-26 (UPDATE 1-6); handoff 30_Sessions/2026-05-26-LFQuad-wheelsim-debug-handoff.md; LL-039/040/041; R31, R35.
 
@@ -149,53 +149,53 @@ script-side (no hay wreck= ni class Wrecked* en wheeled/config.cpp). healthLevel
 
 ## Addendum (2026-05-29) — Wheel proxy `.p3d` Memory anatomy (T1-D) [VERIFICADO vs Croco]
 
-> Esta sección cubre el `.p3d` del **wheel attachment** (el archivo separado que se referencia
-> desde `CfgNonAIVehicles` `ProxyVehiclePart` y se ata al body por `inventorySlot`), no el
-> body. Es donde estaba el bug que pasó desapercibido entre 2026-05-26 y 2026-05-29 (4
-> sesiones), origen de `contact=0` permanente y bounce divergente. Ver LL-057 para la
-> lección de proceso, este addendum para la anatomía técnica.
+> This section covers the `.p3d` of the **wheel attachment** (the separate file referenced
+> from `CfgNonAIVehicles` `ProxyVehiclePart` and tied to the body via `inventorySlot`), not the
+> body. It is where the bug that went unnoticed between 2026-05-26 and 2026-05-29 (4
+> sessions) resided, source of permanent `contact=0` and divergent bounce. See LL-057 for the
+> process lesson, this addendum for technical anatomy.
 
-### El wheel proxy `.p3d` NO es "una rueda con LODs visuales". PhysX usa su Memory LOD para construir el wheel collider.
+### The wheel proxy `.p3d` is NOT "a wheel with visual LODs". PhysX uses its Memory LOD to build the wheel collider.
 
-Sin las 5 selecciones canónicas en el Memory LOD del wheel proxy, **PhysX no sabe el tamaño
-del wheel collider** y por defecto usa el Geometry LOD del proxy (típicamente un cubo
-proxy 8v de 0.20³ generado por `dayz-model-pipeline` cuando lo creas de cero). El collider
-efectivo de la rueda termina siendo del tamaño de un cubito en lugar de una rueda Ø(2×radius).
-Síntoma: `wheelCount=N wheelPresent=N` (ruedas atachadas OK) pero `contact=0` siempre tras
-el primer frame in-game (el raycast wheel→ground solo alcanza ±0.10 m bajo el hub anchor en
-lugar de ±radius). Resultado: el body cae libre hasta que el chasis Geometry colisiona,
-bounce divergente acumulativo, eventualmente `speedo` excede el rango finito y la engine
-hace `Will delete object with !finite or outside world coords`.
+Without the 5 canonical selections in the wheel proxy's Memory LOD, **PhysX does not know the size
+of the wheel collider** and defaults to the proxy's Geometry LOD (typically an 8v 0.20³
+proxy cube generated by `dayz-model-pipeline` when creating from scratch). The effective
+wheel collider ends up the size of a tiny cube instead of a wheel Ø(2×radius).
+Symptom: `wheelCount=N wheelPresent=N` (wheels attached OK) but `contact=0` always after
+first in-game frame (wheel→ground raycast only reaches ±0.10 m below hub anchor
+instead of ±radius). Result: body falls freely until chassis Geometry collides,
+cumulative divergent bounce, eventually `speedo` exceeds finite range and engine
+executes `Will delete object with !finite or outside world coords`.
 
-### Las 5 mem-points canónicas (extraídas de Croco `quadbike_wheel.p3d` v53, debinarizado 2026-05-27)
+### The 5 canonical mem-points (extracted from Croco `quadbike_wheel.p3d` v53, debinarized 2026-05-27)
 
-Cada una es una `Selection` de 1 punto único en el Memory LOD (resolution 1e15). Todas siguen
-la convención Croco-vanilla (Y vertical/radial, X axial/width, Z radial con inversión
-intencional entre min y max).
+Each is a `Selection` of 1 unique point in the Memory LOD (resolution 1e15). All follow
+the Croco-vanilla convention (Y vertical/radial, X axial/width, Z radial with intentional
+inversion between min and max).
 
-| Selection | Cita Croco (front wheel) | Significado | Escalado a un wheel custom |
+| Selection | Croco citation (front wheel) | Meaning | Scaling to custom wheel |
 |---|---|---|---|
-| `ce_center` | `(−1e-05, 0.0, 0.0)` ≈ (0,0,0) | centro del collider | siempre origen |
-| `ce_radius` | `(3e-05, 0.37679, 0.40015)` | marker de radio (Y) + width-marker (Z) | `(0, wheel_radius, ce_radius_Z)` — preservar la relación Z/Y de Croco (~1.062×Y) |
-| `boundingbox_min` | `(−0.19095, −0.3816, +0.38558)` | esquina min con **Z positivo** | `(−width/2, −wheel_radius, +wheel_radius)` |
-| `boundingbox_max` | `(+0.20446, +0.39014, −0.38393)` | esquina max con **Z negativo** | `(+width/2, +wheel_radius, −wheel_radius)` |
-| `invview` | `(−0.23026, −1e-05, 0.0)` | offset X negativo (probablemente para inversión de view) | preservar offset relativo al width axial |
+| `ce_center` | `(−1e-05, 0.0, 0.0)` ≈ (0,0,0) | collider center | always origin |
+| `ce_radius` | `(3e-05, 0.37679, 0.40015)` | radius marker (Y) + width marker (Z) | `(0, wheel_radius, ce_radius_Z)` — preserve Croco Z/Y ratio (~1.062×Y) |
+| `boundingbox_min` | `(−0.19095, −0.3816, +0.38558)` | min corner with **positive Z** | `(−width/2, −wheel_radius, +wheel_radius)` |
+| `boundingbox_max` | `(+0.20446, +0.39014, −0.38393)` | max corner with **negative Z** | `(+width/2, +wheel_radius, −wheel_radius)` |
+| `invview` | `(−0.23026, −1e-05, 0.0)` | negative X offset (likely for view inversion) | preserve offset relative to axial width |
 
-**Quirk no-estándar**: `boundingbox_min.Z > boundingbox_max.Z` (Z invertido entre min y max).
-NO normalizar — es convención BI/PhysX para wheel proxies. Copiar literal escalando Y/Z
-con `factor_radial = wheel_radius / 0.38587` y X con `factor_axial = width / 0.39541`.
+**Non-standard quirk**: `boundingbox_min.Z > boundingbox_max.Z` (Z inverted between min and max).
+DO NOT normalize — it is BI/PhysX convention for wheel proxies. Copy literally scaling Y/Z
+with `factor_radial = wheel_radius / 0.38587` and X with `factor_axial = width / 0.39541`.
 
-### Cómo construirlas con py3d 1.0.0 (cross-ref a `dayz-animation-pipeline` anchor 6)
+### How to build them with py3d 1.0.0 (cross-ref to `dayz-animation-pipeline` anchor 6)
 
-Los 6 quirks de py3d 1.0.0 aplican (constructor con args, weight int, rebind tras grow,
-matname lowercase, overwrite-in-place para `ce_center` si ya existe, frame +Z/-Z si el
-wheel viene de Blender). Ver `references/py3d-1.0.0-quirks.md` de la skill
-`dayz-animation-pipeline`. NO duplicar el patrón aquí — la skill de pipeline de animación
-es la fuente canónica para escribir Memory LODs vía py3d.
+All 6 quirks of py3d 1.0.0 apply (constructor with args, int weight, rebind after grow,
+lowercase matname, overwrite-in-place for `ce_center` if it already exists, +Z/-Z frame if
+wheel comes from Blender). See `references/py3d-1.0.0-quirks.md` in skill
+`dayz-animation-pipeline`. DO NOT duplicate pattern here — animation pipeline skill
+is canonical source for writing Memory LODs via py3d.
 
-### Criterio de aceptación (R26) para wheel proxies generados desde cero
+### Acceptance criterion (R26) for wheel proxies generated from scratch
 
-Antes de declarar un wheel proxy "ready", verificar con py3d:
+Before declaring a wheel proxy "ready", verify with py3d:
 
 ```python
 mem = next(l for l in p3d.lods if abs(l.resolution - 1e15) < 1e12)
@@ -204,239 +204,239 @@ missing = required - set(mem.selections.keys())
 assert not missing, f"wheel proxy Memory incomplete: missing {missing}"
 ```
 
-Esto debe ser parte del round-trip post-bake de cualquier wheel proxy y debe entrar
-al `product-spec.md` del proyecto como criterio anatómico verificable, no como backlog
-opcional (LL-057).
+This must be part of the post-bake round-trip for any wheel proxy and must enter
+the project's `product-spec.md` as a verifiable anatomical criterion, not as optional
+backlog (LL-057).
 
-### El audit lo cubre (cross-ref)
+### The audit covers it (cross-ref)
 
-`dayz-p3d-audit` Silent Killer #11 (added 2026-05-29) cubre el caso. Si auditas un wheel
-proxy y devuelve PASS con solo `ce_center`, el chequeo no cubrió esta dimensión —
-correr la skill actualizada.
+`dayz-p3d-audit` Silent Killer #11 (added 2026-05-29) covers the case. If you audit a wheel
+proxy and it returns PASS with only `ce_center`, the check did not cover this dimension —
+run the updated skill.
 
-> Origen: LFQuad bounce debug 2026-05-29; medición py3d directa en sesión Cowork;
+> Origin: LFQuad bounce debug 2026-05-29; direct py3d measurement in Cowork session;
 > Croco v53 wheel JSON (`AI/10_Projects/LFQuad/research/2026-05-27-croco-geometry-extracted-v53.json:17207-17251`).
-> Cross-ref: LL-057 (proceso, gap diferido sin gate), LL-055/056 (py3d 1.0.0 quirks),
+> Cross-ref: LL-057 (process, deferred gap without gate), LL-055/056 (py3d 1.0.0 quirks),
 > bug-ledger entry 2026-05-29 [process/anti-pattern].
 
 ---
 
 ## Addendum (2026-05-30) — Canonical car-build invariants (Landrover tutorial + Bohemia + PhysX) [VERIFICADO fuente primaria]
 
-> Qué resuelve: el LFQuad shippeó botando/lanzándose al spawn pese a 4+ iteraciones. La pieza que
-> faltaba NO era ride-height (eso era una divergencia real pero NO el mecanismo del lanzamiento). Es
-> **cómo se construye la Geometry/masa**. Este addendum encodea el método canónico de construcción de
-> un coche DayZ, cruzando el tutorial paso-a-paso **Tyson89/Landrover** (wiki + repo), la doc oficial
-> de Bohemia y la doc de PhysX de NVIDIA. Provenance: subagentes que fetchearon y citaron VERBATIM las
-> páginas/archivos reales (no memoria). Marcar [DOC] = documentado con fuente; [MEDIDO] = medido en
-> referente; [CONSENSO] = comunidad sin doc oficial.
+> What it resolves: LFQuad shipped bouncing/launching on spawn despite 4+ iterations. The missing
+> piece was NOT ride-height (that was a real divergence but NOT the launch mechanism). It is
+> **how Geometry/mass is built**. This addendum encodes the canonical build method for
+> a DayZ car, cross-referencing the step-by-step **Tyson89/Landrover** tutorial (wiki + repo), official
+> Bohemia doc, and NVIDIA PhysX doc. Provenance: subagents that fetched and cited VERBATIM the
+> actual pages/files (not memory). Mark [DOC] = documented with source; [MEASURED] = measured in
+> reference; [CONSENSUS] = community without official doc.
 
-### Referencias externas autoritativas (citar SIEMPRE al construir un coche; añadidas a esta skill por petición)
+### Authoritative external references (ALWAYS cite when building a car; added to this skill by request)
 
-- **Tutorial paso-a-paso (drivable car de cero):** `https://github.com/Tyson89/Landrover/wiki` — 4 páginas:
+- **Step-by-step tutorial (drivable car from scratch):** `https://github.com/Tyson89/Landrover/wiki` — 4 pages:
   [Home], [config.cpp](https://github.com/Tyson89/Landrover/wiki/config.cpp),
   [Object-Builder](https://github.com/Tyson89/Landrover/wiki/Object-Builder),
   [SimulationModule](https://github.com/Tyson89/Landrover/wiki/SimulationModule). Repo (config.cpp +
-  Landrover.cfg model.cfg, branch `main`, licencia ADPL-SA): `https://github.com/Tyson89/Landrover`.
-  Es el ejemplo concreto "cómo se hace bien" — referencia primaria para cualquier coche nuevo.
-- **Bohemia oficial:** `https://community.bistudio.com/wiki/DayZ:Vehicle_Configuration` (Geometry LOD +
-  masa por vértice → masa total + CoM; wheel hubs como componentes propios; wheel-proxy en FireGeo;
-  Diag tool in-game). `https://community.bistudio.com/wiki/LOD` (grosor ≥0.5 m; "Mass distribution is
-  critically important … Inertia/Moment of Inertia"; "flying tanks" por geometría que sobresale en el
+  Landrover.cfg model.cfg, branch `main`, ADPL-SA license): `https://github.com/Tyson89/Landrover`.
+  It is the concrete example of "how to do it right" — primary reference for any new car.
+- **Official Bohemia:** `https://community.bistudio.com/wiki/DayZ:Vehicle_Configuration` (Geometry LOD +
+  per-vertex mass → total mass + CoM; wheel hubs as separate components; wheel-proxy in FireGeo;
+  Diag tool in-game). `https://community.bistudio.com/wiki/LOD` (thickness ≥0.5 m; "Mass distribution is
+  critically important … Inertia/Moment of Inertia"; "flying tanks" from geometry protruding in the
   PhysX LOD). `https://community.bistudio.com/wiki/Validating_Geometries` (Find Non-Convexities /
-  Convex Hull; cerrado+convexo o no funciona). `https://community.bistudio.com/wiki/Oxygen_2_-_Manual`
-  (Find Components; "Geometry components must be closed convex objects"; <15 cm no colisiona a velocidad).
-  `https://community.bistudio.com/wiki/Arma_3:_Cars_Config_Guidelines` (PhysX LOD 4e13 aparte; CoM
-  centrado izq-der; `sprungMass` suma = peso).
-- **Mecanismo del lanzamiento (PhysX):** `https://nvidia-omniverse.github.io/PhysX/physx/5.1.3/docs/BestPractices.html`
-  — sección "Overlapping objects explode": cuerpos creados solapados "may explode, because the SDK tries
-  to resolve the penetrations in a single time-step, which can lead to large velocities." Workaround del
-  motor: `setMaxDepenetrationVelocity` (no expuesto a modders; la engine lo clampa internamente, pero la
-  geometría mala lo dispara igual). Comunidad Arma "Anti-Bounce System" (Steam 2191542091): el bote al
-  contacto lo causan "sharp edges in geometries which apparently impart a large moment to the vehicle,
-  thus sending it up into the air" [CONSENSO, coincide con el mecanismo PhysX].
+  Convex Hull; closed+convex or it doesn't work). `https://community.bistudio.com/wiki/Oxygen_2_-_Manual`
+  (Find Components; "Geometry components must be closed convex objects"; <15 cm doesn't collide at speed).
+  `https://community.bistudio.com/wiki/Arma_3:_Cars_Config_Guidelines` (PhysX LOD 4e13 separate; CoM
+  centered left-right; `sprungMass` sum = weight).
+- **Launch mechanism (PhysX):** `https://nvidia-omniverse.github.io/PhysX/physx/5.1.3/docs/BestPractices.html`
+  — section "Overlapping objects explode": bodies created overlapping "may explode, because the SDK tries
+  to resolve the penetrations in a single time-step, which can lead to large velocities." Engine
+  workaround: `setMaxDepenetrationVelocity` (not exposed to modders; engine clamps internally, but
+  bad geometry triggers it anyway). Arma community "Anti-Bounce System" (Steam 2191542091): bounce upon
+  contact is caused by "sharp edges in geometries which apparently impart a large moment to the vehicle,
+  thus sending it up into the air" [CONSENSUS, matches PhysX mechanism].
 
-### La invariante de construcción de la Geometry LOD (lo que faltaba)
+### The build invariant of the Geometry LOD (what was missing)
 
-**La Geometry de un coche que funciona es un COMPUESTO de varios componentes convexos cerrados, NUNCA un
-casco monolítico.** [DOC] Object-Builder checklist del Landrover (verbatim): "Convex Components / Property
+**The Geometry of a working car is a COMPOSITE of several closed convex components, NEVER a
+monolithic hull.** [DOC] Landrover Object-Builder checklist (verbatim): "Convex Components / Property
 Name 'autocenter' value '0' / Simple Shape - No unnecessary components / **Applied a Mass on ALL
 components** / Wheel hubs present and selections assigned / Center of Mass". Bohemia: "convex components.
 Every component's vertex should have weight assigned. From these weights the total mass of vehicle and its
-center of mass is computed." (Croco quad = **23 componentes de chasis + 4 hubs**; LFQuad shippeó con **1**
-`component01` que acaparaba ~90% de la masa — anti-patrón.)
+center of mass is computed." (Croco quad = **23 chassis components + 4 hubs**; LFQuad shipped with **1**
+`component01` hoarding ~90% of mass — anti-pattern.)
 
-Consecuencias de construirlo como monolito (las dos patas del bote del LFQuad, MISMA raíz):
-1. **Trigger (forma):** un único casco convexo ajustado con bordes afilados, al despertar el rigid body en
-   el spawn, solapa terreno/hubs → PhysX resuelve la penetración en un paso → impulso enorme → lanzamiento
-   ([DOC] NVIDIA; [CONSENSO] ABS "sharp edges … large moment").
-2. **Amplificador (inercia):** masa concentrada en 1 componente → tensor de inercia patológico/bajo
-   (LFQuad Izz **128.5** = 37% del Croco **350.7** [MEDIDO]) → cualquier impulso lo hace girar/tumbar →
-   re-penetra → gana energía → `Will delete object with !finite or outside world coords`. [DOC] LOD wiki:
+Consequences of building it as a monolith (the two legs of LFQuad's bounce, SAME root):
+1. **Trigger (shape):** a single tightly fitted convex hull with sharp edges, upon waking rigid body on
+   spawn, overlaps terrain/hubs → PhysX resolves penetration in one step → huge impulse → launch
+   ([DOC] NVIDIA; [CONSENSUS] ABS "sharp edges … large moment").
+2. **Amplifier (inertia):** mass concentrated in 1 component → pathological/low inertia tensor
+   (LFQuad Izz **128.5** = 37% of Croco **350.7** [MEASURED]) → any impulse spins/flips it →
+   re-penetrates → gains energy → `Will delete object with !finite or outside world coords`. [DOC] LOD wiki:
    "the Mass distribution is critically important for the Objects physical behavior [Inertia / Moment of
    Inertia]".
 
-### Checklist canónico (cada punto verificable offline; añadir al round-trip y al product-spec)
+### Canonical checklist (each point offline-verifiable; add to round-trip and product-spec)
 
-| # | Regla | Fuente | Check |
+| # | Rule | Source | Check |
 |---|---|---|---|
-| 1 | Geometry = varios `componentNN` convexos **cerrados** (no monolito) | [DOC] Validating_Geometries / Oxygen2 / Landrover | `Find Non-Convexities` + `Find Non-Closed` limpios; contar componentes > 1 para el chasis |
-| 2 | **Masa en TODOS los componentes** (incl. los 4 hubs), no concentrada en uno | [DOC] Landrover + Bohemia | sumar peso por componente; ninguno a 0; ninguno >~60% del total |
-| 3 | `autocenter = 0` como named property en **cada** componente de Geometry | [DOC] Landrover Object-Builder | leer named properties por componente (extiende Killer #3 del audit a vehículos) |
-| 4 | CoM **centrado en X** (izq-der); Y/Z razonables, no sesgo grande | [DOC] Landrover + Arma3 Cars | `CoM.x ≈ 0`; LFQuad CoM (0, 0.513, **+0.399**) vs Croco (0, 0.474, −0.011) [MEDIDO] → sesgo Z grande |
-| 5 | Grosor de componente ≥ 0.5 m (un quad es estrecho: Croco chasis ±0.275 = 0.55 m) | [DOC] LOD wiki | ancho del componente de chasis ≥0.5 m (LFQuad post-D4H ±0.175 = 0.35 m ✗ — revertir) |
-| 6 | Hubs `wheel_X_X_damper_land` = componentes convexos reales con masa, NO solo selecciones de cara | [DOC] Landrover + Bohemia | cada hub es un componente cerrado con peso (no parche del C.9) |
-| 7 | Proxies (rueda/crew/puertas) **NO** en Geometry LOD (no animan, no colisionan allí) | [DOC] Landrover Object-Builder | Geometry sin proxies; wheel-proxies sí en Visual+ViewGeo+FireGeo |
-| 8 | Fire Geometry obligatoria en vehículos | [DOC] Landrover Object-Builder | FireGeo presente |
-| 9 | `drown_engine` memory point definido (si falta → 0 0 0 → motor se ahoga en el origen) | [DOC] Landrover Object-Builder | punto presente y posicionado en el motor |
+| 1 | Geometry = multiple **closed** convex `componentNN` (no monolith) | [DOC] Validating_Geometries / Oxygen2 / Landrover | clean `Find Non-Convexities` + `Find Non-Closed`; component count > 1 for the chassis |
+| 2 | **Mass on ALL components** (incl. 4 hubs), not concentrated in one | [DOC] Landrover + Bohemia | sum weight per component; none at 0; none >~60% of total |
+| 3 | `autocenter = 0` as named property on **each** Geometry component | [DOC] Landrover Object-Builder | read named properties per component (extends Killer #3 from audit to vehicles) |
+| 4 | CoM **centered in X** (left-right); reasonable Y/Z, no large bias | [DOC] Landrover + Arma3 Cars | `CoM.x ≈ 0`; LFQuad CoM (0, 0.513, **+0.399**) vs Croco (0, 0.474, −0.011) [MEASURED] → large Z bias |
+| 5 | Component thickness ≥ 0.5 m (a quad is narrow: Croco chassis ±0.275 = 0.55 m) | [DOC] LOD wiki | chassis component width ≥0.5 m (LFQuad post-D4H ±0.175 = 0.35 m ✗ — revert) |
+| 6 | Hubs `wheel_X_X_damper_land` = real convex components with mass, NOT just face selections | [DOC] Landrover + Bohemia | each hub is a closed component with weight (not C.9 patch) |
+| 7 | Proxies (wheel/crew/doors) **NOT** in Geometry LOD (they don't animate, don't collide there) | [DOC] Landrover Object-Builder | Geometry without proxies; wheel-proxies yes in Visual+ViewGeo+FireGeo |
+| 8 | Fire Geometry mandatory in vehicles | [DOC] Landrover Object-Builder | FireGeo present |
+| 9 | `drown_engine` memory point defined (if missing → 0 0 0 → engine drowns at origin) | [DOC] Landrover Object-Builder | point present and positioned at the engine |
 
 ### Suspensión: calibrada a la masa (fórmula documentada)
 
 [DOC] Landrover SimulationModule: "Stiffness … needs to overcome the Kilogram that is going down by the
-force of gravity"; punto de partida `compression = stiffness / 10`, `damping = compression * 3` (luego
-ajustar). **Config de referencia VERBATIM del Landrover** (AWD, ~landrover; sólo como ancla de orden de
-magnitud, no copiar a ciegas a un quad):
+force of gravity"; starting point `compression = stiffness / 10`, `damping = compression * 3` (then
+adjust). **VERBATIM reference config from Landrover** (AWD, ~landrover; only as an order-of-magnitude
+anchor, do not copy blindly to a quad):
 
 ```cpp
 class Suspension { stiffness=40000; compression=2100; damping=5400; travelMaxUp=0.10; travelMaxDown=0.06; };
-wheelHubMass=15;      // KG, sólo aplica si NO hay rueda atachada
-wheelHubRadius=0.284; // medido del componente hub (Shift+E, eje Y), nunca negativo
+wheelHubMass=15;      // KG, only applies if wheel is NOT attached
+wheelHubRadius=0.284; // measured from hub component (Shift+E, Y axis), never negative
 ```
 
-Comparativa [MEDIDO]: Croco stiffness 40000–41000; **LFQuad 20000** (la mitad), damping 9000, travelMaxUp
-0.293/0.414. Trampa documentada: masa demasiado BAJA + stiffness copiada de un vehículo más pesado →
-catapulta. (LFQuad NO está en esa trampa: su masa es correcta 1061.5 y su stiffness es más baja que el
-referente — la suspensión NO es el trigger del bote; confirmado in-game D4H y por un caso comunitario
-idéntico donde permutar suspensión/damping no curó el "floating/bouncing": *"both ways did not work … I'm
+Comparison [MEASURED]: Croco stiffness 40000–41000; **LFQuad 20000** (half), damping 9000, travelMaxUp
+0.293/0.414. Documented trap: mass too LOW + stiffness copied from a heavier vehicle →
+catapult. (LFQuad is NOT in that trap: its mass is correct 1061.5 and its stiffness is lower than the
+reference — suspension is NOT the bounce trigger; confirmed in-game D4H and by an identical community
+case where swapping suspension/damping did not cure "floating/bouncing": *"both ways did not work … I'm
 starting to think it's something else"*.)
 
-### model.cfg — patrón del `suspension_damper` (resuelve la duda recurrente minValue/maxValue vs offsets)
+### model.cfg — `suspension_damper` pattern (resolves recurring minValue/maxValue vs offsets doubt)
 
-[DOC] repo Landrover `Landrover.cfg` VERBATIM. **`minValue=0` / `maxValue=1` fijos; el recorrido real lo
-llevan los offsets** (NO al revés):
+[DOC] Landrover repo `Landrover.cfg` VERBATIM. **`minValue=0` / `maxValue=1` fixed; actual travel is
+driven by offsets** (NOT vice versa):
 
 ```cpp
 class suspension_damper_1_1 {
     type="translation"; source="damper_1_1"; selection="wheel_1_1_damper";
     axis="wheel_1_1_damper_axis";
-    minValue=0.0; maxValue=1.0;        // FRONT (rear usa maxValue=0.6, sólo visual)
-    offset0=0.05;  offset1=-0.35;      // recorrido: +0.05 (sobre reposo) a −0.35 (compresión)
+    minValue=0.0; maxValue=1.0;        // FRONT (rear uses maxValue=0.6, visual only)
+    offset0=0.05;  offset1=-0.35;      // travel: +0.05 (above rest) to −0.35 (compression)
 };
 // config.cpp AnimationSources: class damper_1_1 { source="user"; initPhase=0.4857; animPeriod=1; }
-//   initPhase fija la posición visual del damper EN REPOSO (front ~0.486, rear ~0.400).
+//   initPhase sets the visual position of the damper AT REST (front ~0.486, rear ~0.400).
 ```
 
-Esqueleto [DOC]: front = `damper → steering → wheel` (3 niveles, con bone de dirección); rear =
-`damper → wheel` (sin bone de steering). El `source` del damper (`damper_1_1`…) casa con `animDamper` en
-`Axles→Wheels` del config y con la clase de `AnimationSources`.
+Skeleton [DOC]: front = `damper → steering → wheel` (3 levels, with steering bone); rear =
+`damper → wheel` (without steering bone). Damper `source` (`damper_1_1`…) matches `animDamper` in
+config `Axles→Wheels` and the `AnimationSources` class.
 
-### config.cpp — masa NO va en el config
+### config.cpp — mass is NOT in config
 
-[DOC] El repo Landrover NO tiene `mass`/`sprungMass`/`centerOfMass`/`geometryClass` en config.cpp. La masa
-se fija SÓLO por pesos de vértice en la Geometry LOD (Object Builder, Alt+M). No buscar setear masa por
-config en DayZ CarScript.
+[DOC] The Landrover repo does NOT have `mass`/`sprungMass`/`centerOfMass`/`geometryClass` in config.cpp. Mass
+is set ONLY via vertex weights in Geometry LOD (Object Builder, Alt+M). Do not attempt setting mass via
+config in DayZ CarScript.
 
-### Lo que el Landrover NO cubre (gaps — seguir usando Bohemia/Croco)
+### What Landrover does NOT cover (gaps — keep using Bohemia/Croco)
 
-- Sin sección de troubleshooting "el coche bota/vuela" (es guía de construcción, no de fallos).
-- Sin cobertura del **PhysX LOD 4e13** separado del Geometry 1e13 (Arma sí lo exige —
-  `[TBD-verify vs Croco/DayZ]` si los coches DayZ lo llevan). Resolution LOD y View Geometry = "TBD".
-- Sin `sprungMass`; sin números de masa total. La Geometry-mass→CoM→inertia sigue siendo la fuente Bohemia.
+- No troubleshooting section for "car bounces/flies" (it is a build guide, not a bug guide).
+- No coverage of **PhysX LOD 4e13** separate from Geometry 1e13 (Arma does require it —
+  `[TBD-verify vs Croco/DayZ]` whether DayZ cars have it). Resolution LOD and View Geometry = "TBD".
+- No `sprungMass`; no total mass numbers. Geometry-mass→CoM→inertia remains the Bohemia source.
 
-> Origen: LFQuad bounce 2026-05-29/30; doc-research multi-agente (Bohemia + NVIDIA PhysX + ABS) y parse
-> multi-agente del repo+wiki Tyson89/Landrover (citas verbatim de fuente primaria). Cross-ref: LL-062
-> (operacionalizar invariantes en checks medibles), LL-030 (parity-first), `dayz-p3d-audit` Killers #3/#8/#9/#12/#13,
-> Addendum 2026-05-26 (masa/CoM/suspensión escalan) y Addendum 2026-05-29 (ride-height triple).
+> Origin: LFQuad bounce 2026-05-29/30; multi-agent doc-research (Bohemia + NVIDIA PhysX + ABS) and multi-agent
+> parse of Tyson89/Landrover repo+wiki (verbatim primary source quotes). Cross-ref: LL-062
+> (operationalize invariants into measurable checks), LL-030 (parity-first), `dayz-p3d-audit` Killers #3/#8/#9/#12/#13,
+> Addendum 2026-05-26 (mass/CoM/suspension scale) and Addendum 2026-05-29 (triple ride-height).
 
 ---
 
 ## Addendum (2026-05-30b) — Per-LOD content map, memory-point catalog, proxy placement, LOD verbatim [VERIFICADO fuente primaria]
 
-> Complemento de la "Required LOD set" de arriba y del Addendum 2026-05-30 (invariantes de Geometry/masa).
-> Aquí: QUÉ contenido concreto va en cada LOD de un coche, el catálogo completo de memory points, dónde van
-> los proxies por LOD, y las descripciones VERBATIM de Bohemia de cada LOD. La parte de **config.cpp +
-> model.cfg** vive en `references/vehicle-config-and-modelcfg.md` (no duplicar). Fuentes: Bohemia LOD /
-> Oxygen_2 / Validating_Geometries / Arma_3_Cars_Config_Guidelines (sub-agentes, citas verbatim) +
-> `DayZ_Vehicle_Skill/skill-draft/references/extract-3d.md` (catálogo QuadBike real, vault) + Landrover.
+> Complement to the "Required LOD set" above and Addendum 2026-05-30 (Geometry/mass invariants).
+> Here: WHAT concrete content goes into each car LOD, full catalog of memory points, where
+> proxies go per LOD, and Bohemia's VERBATIM descriptions of each LOD. The **config.cpp +
+> model.cfg** portion lives in `references/vehicle-config-and-modelcfg.md` (do not duplicate). Sources: Bohemia LOD /
+> Oxygen_2 / Validating_Geometries / Arma_3_Cars_Config_Guidelines (sub-agents, verbatim quotes) +
+> `DayZ_Vehicle_Skill/skill-draft/references/extract-3d.md` (real QuadBike catalog, vault) + Landrover.
 
-### Qué va en cada LOD de un coche
+### What goes into each car LOD
 
-| LOD | resolution | Contenido del coche | Cita Bohemia (verbatim) |
+| LOD | resolution | Car content | Bohemia quote (verbatim) |
 |---|---|---|---|
-| Resolution 0–N | 0,1,4,8 | malla visual + proxies de rueda/crew/puerta en CADA visual LOD que deban verse | "Proxies need to be included in every resolution LOD that they should appear in." "should not contain any empty Named Selections … used in animations or by the game engine (wheels, etc), as this might cause the game to crash" |
-| Geometry | 1.0e13 | `componentNN` convexos cerrados (chasis multi-componente) + hubs `wheel_X_Y_damper_land` como componentes propios; masa por vértice → masa+CoM | "convex components … From these weights the total mass of vehicle and its center of mass is computed. Wheel hubs should have their own components" (DayZ wiki) |
-| Memory | 1.0e15 | TODOS los memory points (catálogo abajo): crew pos/dir, wheel axes, damper axes, light points, `drown_engine`, dials | "Named Selections used to define lights, vehicle entry points … control points for Animations" |
-| LandContact | 2.0e15 | vértices de contacto con el suelo (OPCIONAL en coches DayZ — civiliansedan no la lleva) | "Contains only vertices that represent contact with land … mainly for vehicles. Wrong positioned points can cause 'levitation' or 'submerge'" |
-| Roadway | 3.0e15 | superficie pisable (techo/capó si el jugador puede subirse) — no obligatoria | "If a unit is supposed to be able to stand on top of a model … Make sure that a RoadwayLOD doesn't overlap with a GeometryLOD, or the unit will start to wobble" |
-| Hitpoints | 5.0e15 | una selección `dmgZone_*` por cada zona de daño del config | "define, via unconnected named vertexes, where certain destroyable parts of a model are (e.g. wheels, lights, etc.)" |
-| ViewGeometry | 6.0e15 | CREW PROXIES (`crewdriver`/`crewcodriver`/`crewcargoN`) + componentes de oclusión + asientos | "If there is no component in view or fire geometry, players cursor will be not able to activate action menu" |
-| FireGeometry | 7.0e15 | componentes de damage-zone + **wheel-proxies** (idénticos al Visual) + crew proxies | "Inside the fire geometry LOD there must be a proxy object placed with the correct name of the wheel slot so the simulation can attach a wheel and suspension to that position" (DayZ wiki) |
-| Shadow Volume | 1.0e4 / 1.1e4 | sombra cerrada+triangulada, ligeramente encogida vs visual (opcional) | "Shadow LOD must be slightly shrinked compared to resolution LOD … otherwise the Model may look partly or completely shaded" |
+| Resolution 0–N | 0,1,4,8 | visual mesh + wheel/crew/door proxies in EVERY visual LOD where they should appear | "Proxies need to be included in every resolution LOD that they should appear in." "should not contain any empty Named Selections … used in animations or by the game engine (wheels, etc), as this might cause the game to crash" |
+| Geometry | 1.0e13 | closed convex `componentNN` (multi-component chassis) + hubs `wheel_X_Y_damper_land` as own components; mass per vertex → mass+CoM | "convex components … From these weights the total mass of vehicle and its center of mass is computed. Wheel hubs should have their own components" (DayZ wiki) |
+| Memory | 1.0e15 | ALL memory points (catalog below): crew pos/dir, wheel axes, damper axes, light points, `drown_engine`, dials | "Named Selections used to define lights, vehicle entry points … control points for Animations" |
+| LandContact | 2.0e15 | ground contact vertices (OPTIONAL in DayZ cars — civiliansedan does not have it) | "Contains only vertices that represent contact with land … mainly for vehicles. Wrong positioned points can cause 'levitation' or 'submerge'" |
+| Roadway | 3.0e15 | walkable surface (roof/hood if player can stand on it) — not mandatory | "If a unit is supposed to be able to stand on top of a model … Make sure that a RoadwayLOD doesn't overlap with a GeometryLOD, or the unit will start to wobble" |
+| Hitpoints | 5.0e15 | one `dmgZone_*` selection for each config damage zone | "define, via unconnected named vertexes, where certain destroyable parts of a model are (e.g. wheels, lights, etc.)" |
+| ViewGeometry | 6.0e15 | CREW PROXIES (`crewdriver`/`crewcodriver`/`crewcargoN`) + occlusion components + seats | "If there is no component in view or fire geometry, players cursor will be not able to activate action menu" |
+| FireGeometry | 7.0e15 | damage-zone components + **wheel-proxies** (identical to Visual) + crew proxies | "Inside the fire geometry LOD there must be a proxy object placed with the correct name of the wheel slot so the simulation can attach a wheel and suspension to that position" (DayZ wiki) |
+| Shadow Volume | 1.0e4 / 1.1e4 | closed+triangulated shadow, slightly shrunk vs visual (optional) | "Shadow LOD must be slightly shrinked compared to resolution LOD … otherwise the Model may look partly or completely shaded" |
 
 Reglas de geometría reforzadas (verbatim): "Geometry objects should have a thickness of at least 0.5 meters
 in order to work properly" (LOD wiki) · "Thinner parts than 15cm cannot collide in faster speeds" (Oxygen2) ·
 "Geometry components must be closed convex objects" (Oxygen2) · validar con `Structure → Topology → Find
 Non-Closed` + `Structure → Convexities → Find Non-Convexities` / `Component Convex Hull` (Validating_Geometries).
 
-### PhysX LOD 4e13: Arma-3 sí, DayZ no (resuelve el [TBD-verify] previo)
+### PhysX LOD 4e13: Arma-3 yes, DayZ no (resolves previous [TBD-verify])
 
-El Addendum 2026-05-30 dejó `[TBD-verify vs Croco/DayZ]` si los coches DayZ llevan un PhysX LOD 4e13 aparte
-del Geometry 1e13. Resuelto: es **Arma-3**. `Arma_3_Cars_Config_Guidelines` (verbatim): "There needs to be a
+Addendum 2026-05-30 left `[TBD-verify vs Croco/DayZ]` whether DayZ cars have a separate PhysX LOD 4e13
+from Geometry 1e13. Resolved: it is **Arma-3**. `Arma_3_Cars_Config_Guidelines` (verbatim): "There needs to be a
 lod (4e13) consisting of convex components as simple as possible … Just the main body of car should be in
-this lod, wheels are added by engine later." Los referentes **DayZ** (Landrover, QuadBike, Croco,
-civiliansedan) usan **Geometry 1e13 sin un 4e13 separado**. → NO añadir un LOD 4e13 a un coche DayZ salvo
-verificación in-game.
+this lod, wheels are added by engine later." DayZ **references** (Landrover, QuadBike, Croco,
+civiliansedan) use **Geometry 1e13 without a separate 4e13**. → Do NOT add a 4e13 LOD to a DayZ car unless
+verified in-game.
 
-### Corrección de matiz: "flying tanks" ≠ el bote del spawn
+### Nuance correction: "flying tanks" ≠ spawn bounce
 
-El Addendum 2026-05-30 invocó el quote "flying tanks" del LOD wiki como apoyo del mecanismo de bote. Matiz
-verificado: ese quote es específico de **barras de cañón/torreta que SOBRESALEN en el PhysX LOD** ("the
+Addendum 2026-05-30 cited the "flying tanks" quote from the LOD wiki to support the bounce mechanism. Verified
+nuance: that quote is specific to **cannon/turret barrels that PROTRUDE in the PhysX LOD** ("the
 collision of a barrel with the environment will cause the tank … to move very violently … flying tanks"),
-NO del bote por depenetración al spawn. El mecanismo del bote del spawn sigue siendo: PhysX resuelve la
-interpenetración en un paso → impulso (NVIDIA "Overlapping objects explode") + bordes afilados (ABS,
-comunidad). Ambos son reales pero distintos; no fusionarlos. (No se halló quote Bohemia explícito del
-"spawn-bounce por geometría que sobresale bajo el origen" → ese eslabón sigue `[verify in-game]`.)
+NOT spawn depenetration bounce. The spawn bounce mechanism remains: PhysX resolves interpenetration
+in one step → impulse (NVIDIA "Overlapping objects explode") + sharp edges (ABS,
+community). Both are real but distinct; do not conflate them. (No explicit Bohemia quote was found for
+"spawn-bounce due to geometry protruding below the origin" → that link remains `[verify in-game]`.)
 
-### Catálogo de memory points de un coche [VERIFICADO QuadBike vía extract-3d.md]
+### Memory point catalog for a car [VERIFIED QuadBike via extract-3d.md]
 
-> Fuente: `AI/10_Projects/DayZ_Vehicle_Skill/skill-draft/references/extract-3d.md:106-191` (strings reales del
-> QuadBike v53). ✓ = confirmado presente en QuadBike. Patrón rueda `wheel_<eje>_<lado>`, eje 1=front/2=rear,
-> lado 1=left/2=right.
+> Source: `AI/10_Projects/DayZ_Vehicle_Skill/skill-draft/references/extract-3d.md:106-191` (real strings from
+> QuadBike v53). ✓ = confirmed present in QuadBike. Wheel pattern `wheel_<eje>_<lado>`, axle 1=front/2=rear,
+> side 1=left/2=right.
 
 - **Crew/seats:** `pos_driver`(+`_dir`), `pos_codriver`(+`_dir`), `pos_cargo`(+`_dir`); proxies
-  `crewdriver`,`crewcodriver`,`crewcargo1`,`crewcargo2`; selecciones `seat_driver`,`seat_codriver`,`seat_cargoN`;
+  `crewdriver`,`crewcodriver`,`crewcargo1`,`crewcargo2`; selections `seat_driver`,`seat_codriver`,`seat_cargoN`;
   door-condition `seat_con_1_1`,`seat_con_2_1`.
-- **Ruedas (×4):** `wheel_X_Y_axis` (2 pts, eje de rotación), `wheel_X_Y_damper` (selección de translación de
-  suspensión), `wheel_X_Y_damper_axis` (2 pts), `wheel_X_Y_damper_land` (contacto suelo = el `wheelHub` del
-  config), `wheel_X_Y_steering`+`_steering_axis` (solo front), `steering_hub_X_1` (front).
+- **Wheels (×4):** `wheel_X_Y_axis` (2 pts, rotation axis), `wheel_X_Y_damper` (suspension translation
+  selection), `wheel_X_Y_damper_axis` (2 pts), `wheel_X_Y_damper_land` (ground contact = config
+  `wheelHub`), `wheel_X_Y_steering`+`_steering_axis` (front only), `steering_hub_X_1` (front).
 - **Steering/dashboard:** `steeringwheel`, `drivewheel`(+`_axis`), `mph`(+`_axis`), `rpm`(+`_axis`),
   `fuel_1`(+`_axis`), `dial_temp`(+`_axis`), `light_dashboard`.
 - **Lights:** `light_1_1`,`light_2_1` (front), `light_1_2`,`light_2_2` (tail), `light_brake_1_2/2_2`,
   `light_reverse_1_2/2_2`, beam `light_left`(+`_dir`),`light_right`(+`_dir`), `reflector_1_1`,`reflector_2_1`.
-- **Engine/particles:** `engine`(+`_axis`), `enginerun`,`engineshake`; `drown_engine` (¡crítico, §9 del 30-05!);
-  `ptcexhaust_*`/`ptccoolantpos` `[TBD-verify — no salieron en strings del QuadBike]`.
-- **Otros:** `pos center` (con espacio), `ce_center`/`ce_radius` (Central Economy loot), `fuelpoint`.
+- **Engine/particles:** `engine`(+`_axis`), `enginerun`,`engineshake`; `drown_engine` (critical, §9 from 05-30!);
+  `ptcexhaust_*`/`ptccoolantpos` `[TBD-verify — did not appear in QuadBike strings]`.
+- **Other:** `pos center` (with space), `ce_center`/`ce_radius` (Central Economy loot), `fuelpoint`.
 
-### Named selections por LOD (coche)
+### Named selections per LOD (car)
 
-- **Visual LODs:** ruedas `wheel_X_Y`, suspensión `wheel_X_Y_damper`, steering `wheel_X_1_steering`,
-  `steeringwheel`/`drivewheel`, puertas `doors_*`, asientos `seat_*`, luces `light_*` (hiddenSelections),
-  `color`/`base`/`special` (hiddenSelections), catch-all del chasis (`zbytek`).
+- **Visual LODs:** wheels `wheel_X_Y`, suspension `wheel_X_Y_damper`, steering `wheel_X_1_steering`,
+  `steeringwheel`/`drivewheel`, doors `doors_*`, seats `seat_*`, lights `light_*` (hiddenSelections),
+  `color`/`base`/`special` (hiddenSelections), chassis catch-all (`zbytek`).
 - **Geometry/Collision LODs:** `componentNN` (lowercase `component01` — vanilla vehicles use lowercase,
   measured via py3d on CivilianSedan and the extracted QuadBike MLOD; the uppercase `Component01` rule is
   Inventory_Base-only, see §validate() ERR_COMPONENT_NAMING. QuadBike Geometry has 27 components — ~30-50
-  basta para sedan/hatch). Hubs `wheel_X_Y_damper_land` como componentes propios.
-- **Hitpoints LOD:** una `dmgZone_*` por zona del config (`dmgZone_chassis/front/back/fender_*/engine/fuelTank/lights_*`).
+  suffice for sedan/hatch). Hubs `wheel_X_Y_damper_land` as own components.
+- **Hitpoints LOD:** one `dmgZone_*` per config zone (`dmgZone_chassis/front/back/fender_*/engine/fuelTank/lights_*`).
 
-### Proxies por LOD (coche)
+### Proxies per LOD (car)
 
-- **Wheel proxies:** en CADA Visual LOD + ViewGeometry + FireGeometry (idénticos), masa 0. NO en Geometry
-  (los hubs en Geometry son componentes, no proxies). Su `.p3d` necesita las 5 mem-points de Memory
-  (Addendum 2026-05-29). Cara-proxy de 3 vértices + `proxy:path.NNN`.
-- **Crew proxies:** ViewGeometry + FireGeometry; modelos vanilla `\dz\vehicles\wheeled\proxies\crew_driver.p3d`
-  / `crew_cargo.p3d`. Sin ellos → `Proxy with bone name 'crewdriver' was not found in view geometry level`.
-- **Door proxies:** la puerta es un `.p3d` aparte (item `CarDoor`) referenciado por `inventorySlot`; su
-  apertura la anima el model.cfg del body, no el proxy. Oxygen2 (verbatim): "Proxy model must have geometry
+- **Wheel proxies:** in EVERY Visual LOD + ViewGeometry + FireGeometry (identical), mass 0. NOT in Geometry
+  (hubs in Geometry are components, not proxies). Their `.p3d` needs the 5 mem-points from Memory
+  (Addendum 2026-05-29). 3-vertex proxy-face + `proxy:path.NNN`.
+- **Crew proxies:** ViewGeometry + FireGeometry; vanilla models `\dz\vehicles\wheeled\proxies\crew_driver.p3d`
+  / `crew_cargo.p3d`. Without them → `Proxy with bone name 'crewdriver' was not found in view geometry level`.
+- **Door proxies:** door is a separate `.p3d` (`CarDoor` item) referenced by `inventorySlot`; its
+  opening is animated by body model.cfg, not the proxy. Oxygen2 (verbatim): "Proxy model must have geometry
   property `autocenter = 0` otherwise 0.0.0 axis of the inserted model will not be correct."
 
 > Origen: LFQuad car-build skill consolidation 2026-05-30. Cross-ref `references/vehicle-config-and-modelcfg.md`,
@@ -477,94 +477,94 @@ SP-012b, LFQuad bug-ledger UPDATE 8/10.
 
 (Merged 2026-07-06 from the `dayz-model-pipeline` fork copy -- LL-110 dedup.)
 
-## Correction (2026-06-01) — el spawn-launch es colisión-de-rueda + placement, NO masa/inercia [VERIFICADO probe + in-game]
+## Correction (2026-06-01) — spawn-launch is wheel-collision + placement, NOT mass/inertia [VERIFIED probe + in-game]
 
-> Refuta el marco de CAUSA del Addendum 2026-05-30 (que atribuía el bote a hull monolítico/bordes
-> afilados como trigger + inercia baja como amplificador). El método de construcción multi-componente
-> de ese addendum sigue siendo paridad válida; lo que se corrige es **qué causa el lanzamiento**.
+> Refutes the CAUSE framework of Addendum 2026-05-30 (which attributed bounce to monolithic hull/sharp
+> edges as trigger + low inertia as amplifier). The multi-component construction method
+> from that addendum remains valid parity; what is corrected is **what causes the launch**.
 
-- **Masa/CoM/inercia REFUTADO como trigger [VERIFICADO probe]:** un body con la masa re-sesgada al CoM
-  autoritativo del Croco (Y 0.474) + roll inertia ~209 (≈ Croco 215) **botó idéntico** (spd 15.1 en t0.5,
-  igual a 3 cifras). El impulso de spawn es ~vertical con masa total constante → por física `v~J/m` es
-  independiente de la DISTRIBUCIÓN de masa. La descomposición convexa y el reparto de masa son palancas
-  **ortogonales** (SP-019): partir el monolito no mueve CoM/inercia y no detiene el bote por sí solo.
-- **El "Izz 350.7 del Croco" era artefacto de masa-uniforme del MLOD** (stripped); la roll inertia real
-  del header ODOL es ~215 (SP-019). La comparación "37% del Croco" usaba el artefacto.
-- **Causa #1 MEDIDA (FASE 2): la Geometry del chasis SOLAPA el volumen de rueda.** Cada centro de rueda
-  (`*_damper_land`) tiene puntos de chasis a 0.16-0.19 m (radio neumático 0.34) vs Croco 0.43-0.46 m
-  limpio. El collider de rueda del engine se auto-penetra con el chasis → PhysX eyecta (el mecanismo
-  "overlapping objects explode" es real, pero el solape es chasis-vs-RUEDA, no monolito-vs-terreno).
-  Arreglado: in-game las ruedas pasan a contactar (`wc` 0→1111 en t0.3).
-- **Causa #2 MEDIDA (in-game, side-by-side): placement.** Incluso con #1 arreglado, el LFQuad nace a
-  h=−0.264 (origen bajo la superficie) vs Croco +0.216 → ruedas enterradas → eyección. Mecanismo del
-  trace **sin resolver** (research 2026-06-01); no afirmar "ECE traza sobre Geometry Y_min" como hecho
-  general (matchea el LFQuad pero el Croco +0.216 no encaja).
-- **Sigue válido del 2026-05-30:** Geometry = varios componentes convexos cerrados + masa en todos (Croco
-  23 chasis + 4 hubs) es **paridad real**, pero es paridad, NO el trigger del bote.
+- **Mass/CoM/inertia REFUTED as trigger [VERIFIED probe]:** a body with mass re-biased to authoritative
+  Croco CoM (Y 0.474) + roll inertia ~209 (≈ Croco 215) **bounced identically** (spd 15.1 at t0.5,
+  matching to 3 digits). Spawn impulse is ~vertical with constant total mass → by physics `v~J/m` is
+  independent of mass DISTRIBUTION. Convex decomposition and mass distribution are **orthogonal**
+  levers (SP-019): splitting the monolith does not move CoM/inertia and does not stop bounce by itself.
+- **Croco's "Izz 350.7" was a uniform-mass artifact of the MLOD** (stripped); real roll inertia
+  from the ODOL header is ~215 (SP-019). The "37% of Croco" comparison used the artifact.
+- **Cause #1 MEASURED (PHASE 2): chassis Geometry OVERLAPS wheel volume.** Each wheel center
+  (`*_damper_land`) has chassis points at 0.16-0.19 m (tire radius 0.34) vs clean Croco 0.43-0.46 m.
+  The engine wheel collider self-penetrates with the chassis → PhysX ejects (the mechanism
+  "overlapping objects explode" is real, but overlap is chassis-vs-WHEEL, not monolith-vs-terrain).
+  Fixed: in-game wheels proceed to make contact (`wc` 0→1111 at t0.3).
+- **Cause #2 MEASURED (in-game, side-by-side): placement.** Even with #1 fixed, LFQuad spawns at
+  h=−0.264 (origin below surface) vs Croco +0.216 → buried wheels → ejection. Trace
+  mechanism **unresolved** (research 2026-06-01); do not claim "ECE traces over Geometry Y_min" as general
+  fact (matches LFQuad but Croco +0.216 does not fit).
+- **Still valid from 2026-05-30:** Geometry = multiple closed convex components + mass in all (Croco
+  23 chassis + 4 hubs) is **real parity**, but it is parity, NOT the bounce trigger.
 
 ---
 
-## Addendum (2026-06-01) — wheel-well clearance vs radio, cilindro de rueda, diagnóstico de contacto, edit mass-safe [VERIFICADO]
+## Addendum (2026-06-01) — wheel-well clearance vs radius, wheel cylinder, contact diagnostics, mass-safe edit [VERIFIED]
 
-### Check killer: holgura de wheel-well contra el RADIO de neumático (no la caja de hub)
+### Killer check: wheel-well clearance against tire RADIUS (not hub box)
 
-El check viejo "hubs fuera del hull" validaba solo la caja de hub de 8 pts, NO el cilindro de rueda
-completo → se le escapó el solape. Check correcto, medible: para cada centro de rueda (`*_damper_land`
-centroid), **ningún punto de colisión de chasis (no-hub) puede caer dentro del radio de neumático**
-(config `radius`, ~0.34, NO el `wheelHubRadius` pequeño). Target = holgura del referente (radio +
-~0.07-0.09 m). [VERIFICADO: LFQuad 0.16-0.19 < 0.34 = solape → bote; Croco 0.43-0.46, 0 dentro;
-script `wheel_overlap.py`]. A través del travel: despejar en X (lateral) → el well aguanta cuando la
-rueda sube al comprimir.
+The old check "hubs outside hull" validated only the 8-pt hub box, NOT the full wheel cylinder
+→ overlap slipped through. Correct, measurable check: for each wheel center (`*_damper_land`
+centroid), **no chassis (non-hub) collision point may fall inside the tire radius**
+(config `radius`, ~0.34, NOT the small `wheelHubRadius`). Target = reference clearance (radius +
+~0.07-0.09 m). [VERIFIED: LFQuad 0.16-0.19 < 0.34 = overlap → bounce; Croco 0.43-0.46, 0 inside;
+script `wheel_overlap.py`]. Across travel: clear in X (lateral) → well holds when
+wheel moves up under compression.
 
-### La Geometry del `.p3d` de RUEDA debe ser un cilindro ~radio, NO una caja
+### WHEEL `.p3d` Geometry must be a cylinder ~radius, NOT a box
 
-Una caja con semieje = radio tiene las **esquinas a radio·√2 (+42%)** → collider sobredimensionado y
-cuadrado. [VERIFICADO: rueda LFQuad caja, esquinas 0.482 vs config 0.34; Croco cilindro 24-pts, radial
-0.340-0.366 uniforme; check: `radial(Y-Z)` desde el centro ≈ radio y uniforme — caja ⇒ max=min·√2;
-script `wheel_geo_inspect.py`]. Y el `.p3d` de rueda necesita **ViewGeo + FireGeo** (el Croco los tiene;
-un from-scratch suele omitirlos). Construir el cilindro: N-gono en Y-Z (radio) extruido en X (width) →
-`scipy.ConvexHull` da caras+normales outward; sel `component01` sobre todos pts/caras; añadir LODs
-ViewGeo (6e15) y FireGeo (7e15, sels `component01`+`wheel`). [VERIFICADO: round-trip py3d + binariza
-in-game]. La FireGeo de rueda debe llevar material de penetración en sus caras (rubber/metalplate como
-el Croco); `material=""` degrada balística/surface (no bloquea spawn/contacto).
+A box with semi-axis = radius has **corners at radius·√2 (+42%)** → oversized square collider.
+[VERIFIED: LFQuad wheel box, corners 0.482 vs config 0.34; Croco 24-pt cylinder, uniform radial
+0.340-0.366; check: `radial(Y-Z)` from center ≈ radius and uniform — box ⇒ max=min·√2;
+script `wheel_geo_inspect.py`]. And wheel `.p3d` needs **ViewGeo + FireGeo** (Croco has them;
+a from-scratch build often omits them). Construct the cylinder: N-gon in Y-Z (radius) extruded in X (width) →
+`scipy.ConvexHull` yields outward faces+normals; sel `component01` over all pts/faces; add LODs
+ViewGeo (6e15) and FireGeo (7e15, sels `component01`+`wheel`). [VERIFIED: round-trip py3d + binarizes
+in-game]. Wheel FireGeo must have penetration material on its faces (rubber/metalplate like
+Croco); `material=""` degrades ballistics/surface (does not block spawn/contact).
 
-### La colisión del referente = descomposición en cajas convexas NO uniformes (no malla fina, no rejilla uniforme, no hull arbitrario)
+### Reference collision = decomposition into NON-uniform convex boxes (not fine mesh, not uniform grid, not arbitrary hull)
 
-[VERIFICADO: Croco Geometry = 23 cajas skewed de 8 pts dimensionadas al cuerpo (espina X±0.13, slabs
-X±0.66) + 4 cilindros; LFQuad era 27 cajas uniformes axis-aligned; `check_croco_skew.py`]. "Seguir el
-contorno" = cajas no-uniformes por región (ancho = ancho real del cuerpo ahí, estrechadas en las
-ruedas para los wells) — NO un convex hull del cuerpo (lo engulle: el cuerpo VISUAL llega a X±0.472,
-sobre la rueda) y NO descomposición en hulls arbitrarios (inflan/puentean en los guardabarros).
-La inclinación (skew) de las cajas del referente es invisible in-game (la colisión no se renderiza) →
-no invertir esfuerzo en replicarla; sí en funcional (holgura/radio/contacto).
+[VERIFIED: Croco Geometry = 23 skewed 8-pt boxes sized to the body (spine X±0.13, slabs
+X±0.66) + 4 cylinders; LFQuad was 27 uniform axis-aligned boxes; `check_croco_skew.py`]. "Following
+contour" = non-uniform boxes per region (width = actual body width there, narrowed at wheels
+for wells) — NOT a convex hull of the body (engulfs it: VISUAL body reaches X±0.472,
+over the wheel) and NOT decomposition into arbitrary hulls (inflate/bridge at fenders).
+Box skew in the reference is invisible in-game (collision is not rendered) →
+do not spend effort replicating it; do spend on functional aspects (clearance/radius/contact).
 
-### Edit de colisión mass-safe: mover puntos, no regenerar
+### Mass-safe collision edit: move points, do not regenerate
 
-Para abrir wheel-wells sin perturbar la física: **mover los puntos existentes de la Geometry**
-(preserva el `#Mass#` per-punto → masa total + CoM EXACTOS); NO regenerar la geometría (regenerar
-redistribuye masa → mueve el CoM). [VERIFICADO: reshape moviendo puntos ±X mantuvo masa 1061.5 + CoM
-(0,0.627,0.260) exactos; una regeneración por convex-hull movió el CoM 0.260→0.348].
+To open wheel-wells without disrupting physics: **move existing Geometry points**
+(preserves per-point `#Mass#` → EXACT total mass + CoM); do NOT regenerate geometry (regenerating
+redistributes mass → shifts CoM). [VERIFIED: reshape by moving points ±X maintained mass 1061.5 + CoM
+(0,0.627,0.260) exact; a convex-hull regeneration shifted CoM 0.260→0.348].
 
-### Diagnóstico de contacto (aísla `contact=0` en UNA corrida)
+### Contact diagnosis (isolates `contact=0` in ONE run)
 
-Loguear `WheelHasContact(i)` por rueda + `WheelCountPresent()` del vehículo Y de un referente que
-funciona (Croco) **lado a lado** en la misión de test. `wc=0000` vs `wc=1111` aísla "las ruedas nunca
-contactan". Con `wp=0` (sin wheel-item adjunto) el engine igual simula los colliders desde el modelo →
-`wc` refleja la salud de la colisión de rueda del modelo. El delta side-by-side (LFQuad −0.264 vs Croco
-+0.216 al spawn) señaló el placement de inmediato; "vuela a 38 m" solo no lo señalaba. API: `Car.Cast(o)`,
+Log `WheelHasContact(i)` per wheel + `WheelCountPresent()` for vehicle AND a working reference
+(Croco) **side by side** in the test mission. `wc=0000` vs `wc=1111` isolates "wheels never
+make contact". With `wp=0` (no wheel-item attached) the engine still simulates colliders from the model →
+`wc` reflects the health of the model's wheel collision. Side-by-side delta (LFQuad −0.264 vs Croco
++0.216 at spawn) pinpointed placement immediately; "flies to 38 m" alone did not indicate it. API: `Car.Cast(o)`,
 `WheelHasContact(int)`, `WheelCount()`, `WheelCountPresent()` — `scripts/3_game/vehicles/car.c:297,349,352`.
 
-### Tensión con el item #5 (grosor ≥0.5 m)
+### Tension with item #5 (thickness ≥0.5 m)
 
-El item #5 del checklist 2026-05-30 ("componente de chasis ≥0.5 m de ancho") **choca con los wheel-wells**:
-la colisión debe ser ESTRECHA junto a las ruedas para despejarlas. El ≥0.5 m es para colisión-a-velocidad
-del cuerpo principal; en la zona de ruedas, estrecho es REQUERIDO. Aplicar #5 al cuerpo lejos de las
-ruedas, no a las cajas del wheel-well.
+Item #5 from 2026-05-30 checklist ("chassis component ≥0.5 m wide") **conflicts with wheel-wells**:
+collision must be NARROW next to wheels to clear them. The ≥0.5 m applies to high-speed collision
+of the main body; in the wheel zone, narrow is REQUIRED. Apply #5 to the body away from
+wheels, not to wheel-well boxes.
 
-> Origen: LFQuad spawn-bounce 2026-06-01 (bake reshape + cilindro + harness in-game); probes FASE 1/1b/2
+> Origin: LFQuad spawn-bounce 2026-06-01 (bake reshape + cylinder + harness in-game); PHASE 1/1b/2 probes
 > (`LFQuad_dev/_autotest/physics-reference-comparison.md`); handoff
-> `30_Sessions/2026-06-01-LFQuad-wheelwell-bake-placement.md`. Cross-ref SP-019 (masa/Izz ortogonal),
-> SP-023, Addendum 2026-05-30 (corregido arriba), 2026-05-29 (anatomía wheel proxy Memory).
+> `30_Sessions/2026-06-01-LFQuad-wheelwell-bake-placement.md`. Cross-ref SP-019 (mass/Izz orthogonal),
+> SP-023, Addendum 2026-05-30 (corrected above), 2026-05-29 (wheel proxy Memory anatomy).
 ## 2026-06-02 — Spawn-launch root cause CORRECTED (confirmed in-game, LFQuad)
 
 The earlier "monolithic Geometry / low inertia -> spawn launch" hypothesis (2026-05-30, marked
@@ -588,31 +588,31 @@ ejected: a stray `#Mass#` tagg on a NON-Geometry LOD (typically FireGeometry 7e1
   live only on the Geometry LOD) + Killer #13. Cross-ref LL-079 (LOD bisection isolated the bug),
   LL-080, LL-081; handoff `30_Sessions/2026-06-02-LFQuad-placement-fix-firegeo-mass-CLOSED.md`.
 
-## (added 2026-06-22) Auditar un vehículo HEREDADO / importado ANTES de planificar
+## (added 2026-06-22) Audit an INHERITED / imported vehicle BEFORE planning
 
-Cuando recibes un vehículo de otro autor (config + model.cfg + p3d) o lo importas de otro juego, audítalo
-host-direct ANTES de comprometer un plan — reframea el alcance y es barato. Origen: MercedesAMGLF
-2026-06-22 (import de un Mercedes-AMG GT3, v1 de un amigo).
+When receiving a vehicle from another author (config + model.cfg + p3d) or importing from another game, audit it
+host-direct BEFORE committing a plan — reframes scope and is cheap. Origin: MercedesAMGLF
+2026-06-22 (import of Mercedes-AMG GT3, v1 from a friend).
 
-- **MLOD parse del p3d (host-direct, ~60 líneas Python)**: por LOD imprime resolución + nº puntos/caras +
-  named selections. Confirma qué LODs / memory points / proxies YA existen. Un p3d "que parece completo"
-  puede serlo de verdad (no rehagas la estructura) o tener huecos concretos (fíjalos uno a uno). Tell de
-  parse correcto: offset final == tamaño del archivo, y las resoluciones casan con los valores mágicos DayZ
-  (Geometry 1e13, Memory 1e15, ViewGeo 6e15, FireGeo 7e15). (Caso: el p3d del amigo tenía 9 LODs + 50
-  memory points + proxies de rueda/crew → buen TEMPLATE, no un esbozo.)
-- **Audit de vértices de la FUENTE (glTF accessors / FBX) por malla**: el split en proxys es un problema de
-  AGRUPACIÓN de mallas bajo el techo (~32768 vértices-normales resueltos por LOD y por proxy), NO de
-  decimación. Suma `accessors[POSITION].count` por mesh y agrúpalos. (Caso: 166 mallas / 236k verts; la
-  mayor 26.7k —ninguna sola pasa— pero el agregado revienta el techo ×7.)
-- **Verificar la SEMÁNTICA de las selections heredadas vs vanilla, no solo su presencia**: un config
-  heredado "completo" puede traer bugs funcionales latentes. Contrasta cada selection con cómo la consume
-  el engine vanilla:
-  - `hiddenSelections`: vanilla usa índices de luz FIJOS (CivilianSedan `dz\vehicles\wheeled\config.cpp:5123-5142`:
-    front 0/1, brake 2/3, reverse 4/5, tail 6/7, dashboard 8). Un config que mete `color/glass/interior` en
-    0-2 y las luces detrás DESVÍA → riesgo de luces rotas.
-  - repostaje: vanilla solo carga la posición si `MemoryPointExists("refill")` y `GetActionCompNameFuel()`
-    devuelve `"refill"` (`scripts/3_game/vehicles/transport.c:75-76,313-315`). Un p3d con `fuelpoint` (no
-    `refill`) deja la acción de combustible sin posición (cae a 0,0,0).
+- **MLOD parse of the p3d (host-direct, ~60 Python lines)**: per LOD prints resolution + number of points/faces +
+  named selections. Confirms which LODs / memory points / proxies ALREADY exist. A p3d "that looks complete"
+  might truly be so (do not rebuild the structure) or have specific gaps (fix them one by one). Tell of
+  a correct parse: final offset == file size, and resolutions match DayZ magic values
+  (Geometry 1e13, Memory 1e15, ViewGeo 6e15, FireGeo 7e15). (Case: friend's p3d had 9 LODs + 50
+  memory points + wheel/crew proxies → good TEMPLATE, not a sketch.)
+- **Vertex audit of the SOURCE (glTF accessors / FBX) per mesh**: splitting into proxies is a problem of
+  GROUPING meshes under the ceiling (~32768 resolved vertex-normals per LOD and per proxy), NOT of
+  decimation. Sum `accessors[POSITION].count` per mesh and group them. (Case: 166 meshes / 236k verts; the
+  largest 26.7k —no single one passes— but the aggregate blows through the ceiling ×7.)
+- **Verify the SEMANTICS of inherited selections vs vanilla, not just their presence**: an inherited
+  "complete" config can bring latent functional bugs. Compare each selection against how the vanilla
+  engine consumes it:
+  - `hiddenSelections`: vanilla uses FIXED light indices (CivilianSedan `dz\vehicles\wheeled\config.cpp:5123-5142`:
+    front 0/1, brake 2/3, reverse 4/5, tail 6/7, dashboard 8). A config putting `color/glass/interior` into
+    0-2 and lights behind DEVIATES → risk of broken lights.
+  - refueling: vanilla loads position only if `MemoryPointExists("refill")` and `GetActionCompNameFuel()`
+    returns `"refill"` (`scripts/3_game/vehicles/transport.c:75-76,313-315`). A p3d with `fuelpoint` (not
+    `refill`) leaves the fuel action without position (falls back to 0,0,0).
 
 ---
 
@@ -1076,62 +1076,62 @@ view/fire geometry" spawn blocker is very likely THIS bug (doubled-`.p3d` proxy 
 
 ## GET-IN RADIAL + LOD LADDER en coches proxy-body (added 2026-06-27, MERCEDES_AMGLF)
 
-### Binding del script (precondición, falla silenciosa)
-Un coche `class X: CarScript` cuyo `CfgMods.<Mod>.defs.worldScriptModule` no declara `dir = "<Mod>";` o usa
-forward-slashes en `files[]` → el módulo NO carga → el script class nunca bindea → el trío de get-in (y todo
-override) está MUERTO sin error (`script.log` 0-byte = falso-limpio; telemetría reporta la clase BASE `CarScript`).
-Fix: `dir = "<Mod>";` + backslashes `files[] = {"<Mod>\scripts\4_World"}` (como SUB_BRZ/LFQuad). Confirmar con
-telemetría `ClassName()` ≠ base. Para que la telemetría lea el nombre EXACTO del config-class hace falta la clase
-hoja `class <Mod> extends <Mod>_Base {}`. Ver LL-163.
+### Script binding (precondition, silent failure)
+A car `class X: CarScript` whose `CfgMods.<Mod>.defs.worldScriptModule` does not declare `dir = "<Mod>";` or uses
+forward-slashes in `files[]` → module does NOT load → script class never binds → get-in trio (and every
+override) is DEAD without error (`script.log` 0-byte = false-clean; telemetry reports BASE class `CarScript`).
+Fix: `dir = "<Mod>";` + backslashes `files[] = {"<Mod>\scripts\4_World"}` (like SUB_BRZ/LFQuad). Confirm with
+telemetry `ClassName()` ≠ base. For telemetry to read the EXACT config-class name, the leaf class
+`class <Mod> extends <Mod>_Base {}` is required. See LL-163.
 
-### La radial "Get in" — el blocker es GEOMÉTRICO (componente de colisión + crew proxy), NO `GetCrewIndex`
-> Corrección 2026-06-27: una auditoría offline hipotetizó que a los coches source-game les faltaba el override
-> `GetCrewIndex`. **REFUTADO in-game** — el MERCEDES s8 resolvió el get-in del CONDUCTOR sin tocar `GetCrewIndex`
-> (telemetría `comp=0 crewIdx=0`, "el mapeo nativo funciona"). La fuente de verdad es el **Addendum 2026-06-27
-> "Crew get-in" de `references/vehicle-structural-parity.md`** (VERIFICADO in-game LFQuad D34 + MercedesAMGLF). Resumen:
+### The "Get in" radial — blocker is GEOMETRIC (collision component + crew proxy), NOT `GetCrewIndex`
+> Correction 2026-06-27: an offline audit hypothesized that source-game cars were missing the `GetCrewIndex`
+> override. **REFUTED in-game** — MERCEDES s8 resolved DRIVER get-in without touching `GetCrewIndex`
+> (telemetry `comp=0 crewIdx=0`, "native mapping works"). Source of truth is **Addendum 2026-06-27
+> "Crew get-in" of `references/vehicle-structural-parity.md`** (VERIFIED in-game LFQuad D34 + MercedesAMGLF). Summary:
 
-`CrewPositionIndex(componentIdx)` (native, transport.c:116) resuelve el asiento por el **componente de colisión que
-el raycast del cursor golpea en la ViewGeo** (`ObjIntersectView`, actiongetintransport.c:50-51) — NO por
-`GetCrewIndex` ni por memory points. Los dos blockers reales, ambos geométricos:
-- una **caja sólida ocluyente** en la ViewGeo (p.ej. una "espina" central) → el cursor la golpea ANTES que el cubo
-  de asiento → sin get-in. Fix = borrarla (MERCEDES conductor, in-game).
-- cada asiento = su **propio ComponentNN dedicado y limpio** (cubo cerrado, dual-tag); pintados sobre una rejilla
-  multi-componente → "siempre conductor", el codriver nunca se golpea (MERCEDES codriver = ABIERTO; LFQuad D34).
-- la pose viene del **crew-proxy triángulo CANÓNICO** (edges ~1.0/2.0), no del diminuto `add_proxy(scale=0.1)`.
+`CrewPositionIndex(componentIdx)` (native, transport.c:116) resolves the seat by the **collision component
+hit by cursor raycast in ViewGeo** (`ObjIntersectView`, actiongetintransport.c:50-51) — NOT by
+`GetCrewIndex` nor by memory points. The two real blockers, both geometric:
+- an **occluding solid box** in ViewGeo (e.g., a central "spine") → cursor hits it BEFORE the seat
+  cube → no get-in. Fix = delete it (MERCEDES driver, in-game).
+- each seat = its **own clean, dedicated ComponentNN** (closed cube, dual-tag); painted onto a multi-component
+  grid → "always driver", codriver is never hit (MERCEDES codriver = OPEN; LFQuad D34).
+- pose comes from **CANONICAL crew-proxy triangle** (edges ~1.0/2.0), not from tiny `add_proxy(scale=0.1)`.
 
-`GetCrewIndex` / `GetDoorConditionPointFromSelection` / el sistema de puertas NO son el camino del get-in básico (el
-LFQuad y el MERCEDES conductor dan la radial sin ellos). Estado: MERCEDES conductor RESUELTO, codriver ABIERTO
-(blocker geométrico, ver su HANDOFF); **SUB_BRZ get-in = VERDE-FALSO** — su HANDOFF lo reconoce: `vehicle_enter` del
-MCP fuerza el asiento saltándose la ActionCondition; la radial nunca se observó → el SUB_BRZ debe aplicar/verificar
-este Addendum (espina ocluyente + cubos de asiento limpios) ANTES de declararlo. Ver LL-164.
+`GetCrewIndex` / `GetDoorConditionPointFromSelection` / door system are NOT the path for basic get-in (both
+LFQuad and MERCEDES driver display the radial without them). Status: MERCEDES driver RESOLVED, codriver OPEN
+(geometric blocker, see its HANDOFF); **SUB_BRZ get-in = FALSE-GREEN** — its HANDOFF acknowledges it: MCP's
+`vehicle_enter` forces the seat bypassing ActionCondition; radial was never observed → SUB_BRZ must apply/verify
+this Addendum (occluding spine + clean seat cubes) BEFORE claiming it. See LL-164.
 
-### ★ Blocker DECISIVO del codriver = ComponentNN de asiento INWARD-wound + point flags 0x0000003F (SP-130; SUB_BRZ s9 in-game + MERCEDES s12 headless `hit=1 comp=6 crewIdx=1`) — RESUELTO en ambos
-**Supera lo de arriba (2026-06-27) y REFUTA LL-164 (NO necesita door system).** "Cubos de asiento limpios, todas las caras outward" es NECESARIO PERO NO SUFICIENTE: una caja py3d `outward winding + point flags 0` pasa todo gate offline (forma/winding/dual-tag) pero **NO es raycast-colisionable** → `DayZPhysics.RaycastRV(ObjIntersectView)` no la golpea → el cursor no resuelve ningún asiento → cae a component0 (el conductor "funciona" SOLO por ese fallback; el codriver NUNCA). El mapeo `CrewPositionIndex(comp)` SIEMPRE estuvo bien — irrelevante mientras la geometría no colisione. **FIX (SP-130; copiar la convención del control vanilla sellado, NO el default py3d): los ComponentNN de asiento = winding INWARD + cada point flag = `0x0000003F`.** Control sellado `civiliansedan_mlod.p3d` SHA `823585B6EC9727F70C3ABCAD309ECBF7E87DBA1E66FA14A1ECAB9AB1FCA921DD`, ViewGeometry (res 6e15): 478 puntos / 422 caras; histograma `0x0000003F` → 478 puntos (100,0 %), `0x02000000` → 0 puntos. El parche s9 cambió winding y flags a la vez y nunca aisló el flag como causa; la regla segura es la convención del control vanilla. Confirmaciones in-game (SUB_BRZ s9; MERCEDES s12 headless `hit=1 comp=6 crewIdx=1`) y dual-tag se conservan. Aplicarlo MÍNIMO: si los asientos ya enumeran como su ComponentNN con el mapeo correcto (verifica con el crew-probe/PROBE), voltea SOLO las caras de asiento a inward + setea sus point flags + recomputa la normal — NO rebuildees toda la ViewGeo, NO toques el cuerpo. Closed-car: NO necesita shell ni asientos índice-alto en la ViewGeo (red herring en MERCEDES s11). Gate = in-game o el **crew-probe headless** (`RaycastRV` por asiento desde la puerta, sin apuntar; ancla en `pos_driver`/`pos_codriver` si caen dentro del cubo). Mecanismo + tooling + caveat de anclaje del control: `references/vehicle-structural-parity.md` "CRITICAL EXTENSION 2026-06-28" + "MercedesAMGLF CONFIRMATION 2026-06-28 s12". **Estado: codriver RESUELTO — SUB_BRZ (in-game) + MERCEDES (headless).** Para cualquier coche rip/py3d nuevo: aplica esto de entrada (no descubras el blocker in-game).
+### ★ DECISIVE codriver blocker = INWARD-wound seat ComponentNN + point flags 0x0000003F (SP-130; SUB_BRZ s9 in-game + MERCEDES s12 headless `hit=1 comp=6 crewIdx=1`) — RESOLVED in both
+**Supercedes above (2026-06-27) and REFUTES LL-164 (does NOT need door system).** "Clean seat cubes, all outward faces" is NECESSARY BUT NOT SUFFICIENT: a py3d box with `outward winding + point flags 0` passes every offline gate (shape/winding/dual-tag) but is **NOT raycast-collidable** → `DayZPhysics.RaycastRV(ObjIntersectView)` does not hit it → cursor does not resolve any seat → falls back to component0 (driver "works" ONLY via this fallback; codriver NEVER). Mapping `CrewPositionIndex(comp)` was ALWAYS correct — irrelevant as long as geometry does not collide. **FIX (SP-130; copy sealed vanilla control convention, NOT py3d default): seat ComponentNN = INWARD winding + each point flag = `0x0000003F`.** Sealed control `civiliansedan_mlod.p3d` SHA `823585B6EC9727F70C3ABCAD309ECBF7E87DBA1E66FA14A1ECAB9AB1FCA921DD`, ViewGeometry (res 6e15): 478 points / 422 faces; histogram `0x0000003F` → 478 points (100.0%), `0x02000000` → 0 points. Patch s9 changed winding and flags simultaneously and never isolated the flag as cause; safe rule is vanilla control convention. In-game confirmations (SUB_BRZ s9; MERCEDES s12 headless `hit=1 comp=6 crewIdx=1`) and dual-tag are preserved. Apply MINIMALLY: if seats already enumerate as their ComponentNN with correct mapping (verify with crew-probe/PROBE), flip ONLY seat faces to inward + set their point flags + recompute normal — do NOT rebuild all ViewGeo, do NOT touch body. Closed-car: does NOT need shell or high-index seats in ViewGeo (red herring in MERCEDES s11). Gate = in-game or **headless crew-probe** (`RaycastRV` per seat from door, without aiming; anchors at `pos_driver`/`pos_codriver` if they fall inside cube). Mechanism + tooling + control anchoring caveat: `references/vehicle-structural-parity.md` "CRITICAL EXTENSION 2026-06-28" + "MercedesAMGLF CONFIRMATION 2026-06-28 s12". **Status: codriver RESOLVED — SUB_BRZ (in-game) + MERCEDES (headless).** For any new rip/py3d car: apply this up front (do not discover blocker in-game).
 
-### Ruedas al revés: medir el eje en el .p3d ANTES de fijar `angle1` (offline check, predice el bug sin in-game)
-`model.cfg` wheel `angle1` debe ser coherente con el `dir` de cada `wheel_X_Y_axis` (2 puntos en el Memory LOD):
-- ejes UNIFORMES (los 4 con el mismo signo X) → `angle1` UNIFORME en las 4 (LFQuad `(1,0,0)`; SUB_BRZ `(1,0,0)`→`-6.283`).
-- ejes ESPEJADOS (L/R signo X opuesto) → `angle1` alternado L/R (convención Landrover).
-Aplicar el flip-derecho del Landrover sobre ejes uniformes gira el lado derecho al revés.
-**Audit 2026-06-27:** MERCEDES tiene ejes uniformes `(-1,0,0)` pero `angle1` alternado (model.cfg:84,97) → ruedas
-al revés, OFFLINE-predicho. Fix = `angle1` uniforme. Check offline: `py3d` → `dir` de `wheel_X_Y_axis`, comparar
-signos X entre L y R (script reusable: `references/audit_getin_wheels.py` — corre sobre los .p3d de ambos coches + LFQuad).
+### Inverted wheels: measure axis in .p3d BEFORE setting `angle1` (offline check, predicts bug without in-game)
+`model.cfg` wheel `angle1` must match `dir` of each `wheel_X_Y_axis` (2 points in Memory LOD):
+- UNIFORM axes (all 4 with same X sign) → UNIFORM `angle1` across all 4 (LFQuad `(1,0,0)`; SUB_BRZ `(1,0,0)`→`-6.283`).
+- MIRRORED axes (opposite X sign L/R) → alternating L/R `angle1` (Landrover convention).
+Applying Landrover right-flip on uniform axes spins right side backwards.
+**Audit 2026-06-27:** MERCEDES has uniform axes `(-1,0,0)` but alternating `angle1` (model.cfg:84,97) → inverted
+wheels, OFFLINE-predicted. Fix = uniform `angle1`. Offline check: `py3d` → `dir` of `wheel_X_Y_axis`, compare
+X signs between L and R (reusable script: `references/audit_getin_wheels.py` — runs on .p3d of both cars + LFQuad).
 
-### LOD ladder para un coche shell+proxy (re-import de un diezmado)
-El cuerpo va partido en shell-core (carpaint/glass/luces, directo en el LOD) + N proxys `mb_` (<65535 resueltos
-c/u). Para una escalera de LODs visuales desde un modelo diezmado por el artista:
-- Reutilizar el pipeline `phase2\build_proxies.py`/`build_shell.py` POR LOD con regiones decimadas y proxys con
-  sufijo (`mb_chassis_lod1`, etc.). LODs cuyo cuerpo resuelve <65535 → geometría DIRECTA (sin proxys); los que
-  exceden (LOD0/LOD1/LOD2 típicamente) → shell+proxys.
-- Decimar con **Blender headless** (`--background --python`, modifier Decimate COLLAPSE, `use_collapse_triangulate`),
-  per-objeto para conservar los grupos; re-split por grupo a regiones. Excluir las ruedas del cuerpo (van por wheel proxy).
-- **Conservar los LODs de soporte (Geometry/Memory/ViewGeo/FireGeo) del .p3d DESPLEGADO**, no del friend control —
-  así sobrevive cualquier edit posterior a esos LODs (p.ej. el parche del get-in en ViewGeo). El transform (escala)
-  SÍ se mide contra el friend control estable (no contra la propia salida: encoge ~3%/rebuild).
-- Verificar resolved<65535 POR LOD y POR proxy antes de escribir; `verify_amglf.py` debe seguir 35/35.
-- El primer paso suave (p.ej. −20% LOD0→LOD1) preserva calidad cerca; acelerar después. Builder de referencia:
-  `<vehicle-import>\scripts\build_ladder.py` (MERCEDES_AMGLF 2026-06-27; rescatado de %TEMP%
-  2026-07-06, SHA256 verificado): 5 LODs 182k/145k/73k/23k/7k + shadow.
+### LOD ladder for a shell+proxy car (re-import of decimated model)
+The body is split into shell-core (carpaint/glass/lights, direct in LOD) + N `mb_` proxies (<65535 resolved
+each). For a ladder of visual LODs from a model decimated by the artist:
+- Reuse pipeline `phase2\build_proxies.py`/`build_shell.py` PER LOD with decimated regions and proxies with
+  suffix (`mb_chassis_lod1`, etc.). LODs whose body resolves <65535 → DIRECT geometry (no proxies); those
+  exceeding (typically LOD0/LOD1/LOD2) → shell+proxies.
+- Decimate with **headless Blender** (`--background --python`, modifier Decimate COLLAPSE, `use_collapse_triangulate`),
+  per-object to preserve groups; re-split by group to regions. Exclude wheels from body (handled via wheel proxy).
+- **Keep support LODs (Geometry/Memory/ViewGeo/FireGeo) from DEPLOYED .p3d**, not friend control —
+  ensuring any subsequent edit to those LODs survives (e.g., get-in patch in ViewGeo). Transform (scale)
+  IS measured against stable friend control (not against own output: shrinks ~3%/rebuild).
+- Verify resolved<65535 PER LOD and PER proxy before writing; `verify_amglf.py` must stay 35/35.
+- First gentle step (e.g., −20% LOD0→LOD1) preserves close-up quality; accelerate after. Reference builder:
+  `<vehicle-import>\scripts\build_ladder.py` (MERCEDES_AMGLF 2026-06-27; salvaged from %TEMP%
+  2026-07-06, SHA256 verified): 5 LODs 182k/145k/73k/23k/7k + shadow.
 
 ## Occluder membership beats component granularity (SP-130 correction, added 2026-08-31)
 

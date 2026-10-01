@@ -121,7 +121,7 @@ MyMod/
 
 ## AddonBuilder Integration
 
-After validation passes, pack with AddonBuilder (canonical invocation — DAYZ_INFRA.md §Comandos de invocación canónicos):
+After validation passes, pack with AddonBuilder (canonical invocation — DAYZ_INFRA.md §Canonical invocation commands):
 
 ```batch
 AddonBuilder.exe P:\<ModName> P:\Mods\@<ModName>\Addons -prefix=<ModName> -temp=P:\temp\<ModName> [-clear]

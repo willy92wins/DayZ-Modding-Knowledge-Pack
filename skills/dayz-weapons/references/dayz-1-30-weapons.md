@@ -281,7 +281,7 @@ Vanilla caller (`AmmoEffects.c:49-56`) gets `surfaceType` from `SurfaceGetType3D
 `Init()` maps `Hit_Desert_Sand` / `Hit_Sand` (and snow/ice) per ammo; RGD5/M67 sand entries pass
 `"ExplosionDustEffect_SoundSet"` (`AmmoTypes.c:66-72`).
 
-`MagazineTypeToAmmoType` still exists — (hasta 1.29: `AmmoTypes.c:14`) (desde 1.30 Exp: `:26`) because
+`MagazineTypeToAmmoType` still exists — (up to 1.29: `AmmoTypes.c:14`) (since 1.30 Exp: `:26`) because
 `ExplosiveEffectData` was prepended. Vanilla uses it in `Weapon_Base.c:840` (1.29 cited `:848`).
 
 `ExplosivesBase`: `[Obsolete("1.30: Handled in AmmoTypes instead")]` on

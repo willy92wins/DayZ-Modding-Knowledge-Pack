@@ -46,7 +46,7 @@ and feed the source .p3d through `dayz-3d-viewer` separately.
 
 ```bash
 # py3d DayZ fork >= 1.6.0. Pick ONE route; both end in the same assert below.
-# NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
+# NEVER `pip install py3d` (PyPI = point-cloud lib) NOR git+upstream (no guards).
 #
 # Route A - this pack is checked out:
 pip install -e tools/py3d
@@ -445,19 +445,19 @@ remains fine for inspection/visualization.)
 When generating/editing a collision LOD, compare its winding sign against the Visual LOD
 (centroid method) before deploying — they must match (~100% INWARD, DayZ left-handed).
 
-## (added 2026-06-01) Recipe stale tras edits externos al .p3d (SP-022)
+## (added 2026-06-01) Stale recipe after external edits to .p3d (SP-022)
 
-El recipe JSON puede quedar desincronizado del `.p3d` real si el `.p3d` fue editado
-por otra herramienta (Object Builder, py3d directo, conversor ODOL->MLOD externo) sin re-extraer el
-recipe. Antes de reportar un bug desde la vista del inspector:
+Recipe JSON can get out of sync with actual `.p3d` if `.p3d` was edited
+by another tool (Object Builder, direct py3d, external ODOL->MLOD converter) without re-extracting
+recipe. Before reporting a bug from inspector view:
 
-1. Re-extraer el recipe con `extract_recipe.py` y comparar estructuralmente con la
-   versión cacheada.
-2. Si difieren, la fuente de verdad es el `.p3d`, no el recipe.
-3. Si el recipe es idéntico pero el viewer muestra algo "raro", verificar el
-   round-trip py3d directo antes de afirmar bug.
+1. Re-extract recipe with `extract_recipe.py` and compare structurally with
+   cached version.
+2. If they differ, source of truth is `.p3d`, not recipe.
+3. If recipe is identical but viewer shows something "strange", verify
+   direct py3d round-trip before claiming bug.
 
-Origen: introspección 2026-06-01 §B-6; sesión kt_roadkill_armed Sprint G' 2026-05-31.
+Origin: introspection 2026-06-01 §B-6; kt_roadkill_armed session Sprint G' 2026-05-31.
 
 <!-- [merged 2026-06-05 from <claude-home>\skills user copy during plugin-canonical migration; almacen: .claude\skills] -->
 ## py3d `selections` API gotcha (OrderedDict, non-subscriptable points/faces)
@@ -478,21 +478,21 @@ this skill.
 
 Before declaring any selection/structure bug from Recipe data, verify at the py3d object level: load the .p3d, take `lod.selections[name].faces`, read each face's `vertices[].point_index` coords, and bbox THOSE. That is engine truth. Origin: kt_roadkill_armed 2026-06-07 false P1 (turret_yaw "was" the car spikes; the model was correct all along). Cross-ref SP-002, LL-111.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` to arrive via trigger instead
+of depending on someone remembering to look them up. Each rule cites source `LL-NNN`;
+complete entry (symptom, origin, evidence) lives there. Do not remove citation: the index
+`lessons-index.md` detects promotion by looking for that reference inside skills.
 
-- **LL-109** — Para round-trips que normalizan, ordenan o deduplican, prueba `f(f(x)) == f(x)` y define aparte qué campos deben ser estables desde la primera vuelta. Documenta toda renormalización permitida.
+- **LL-109** — For round-trips that normalize, sort, or deduplicate, test `f(f(x)) == f(x)` and define separately which fields must be stable from first pass. Document any allowed renormalization.
 
 ## Round-trip caveat
 
 Memory selections may not survive the extract → edit → rebuild cycle (SP-002). Verify selection
 membership after a rebuild, not just selection names.
-- **LL-010** — Antes de afirmar que falta una pieza, enumera los proxies del `.p3d`, inspecciona sus tamaños y abre los candidatos sustanciales. El config solo revela lo riggeado; debinariza y separa componentes conexos si la geometría vive en un proxy.
-- **LL-177** — Antes de extraer selecciones o geometría corregida, localiza el archivo realmente editado —incluidos backups que marquen la intervención— y haz que el pipeline lea esa copia. No valides procedencia solo porque el bbox parezca coherente.
+- **LL-010** — Before asserting a piece is missing, enumerate `.p3d` proxies, inspect their sizes, and open substantial candidates. Config only reveals what is rigged; debinarize and split connected components if geometry lives in a proxy.
+- **LL-177** — Before extracting selections or corrected geometry, locate actual edited file —including backups marking intervention— and have pipeline read that copy. Do not validate provenance solely because bbox looks coherent.
 
 
 ## Non-semantic MLOD face padding (SP-229, added 2026-08-31)

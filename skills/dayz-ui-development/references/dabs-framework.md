@@ -543,8 +543,8 @@ Dabs uses two different objects in its click path. Confusing them produces a sil
 A generic handler search that walks parents and casts only `GetScript()`/`GetUserData()` to
 `ScriptedWidgetEventHandler` will therefore miss a valid Dabs view: root userdata is a
 `ScriptView`, while the bridge is held by the controller. This describes the framework's internal
-contract; it does **not** override `SKILL.md` §“Los clics sobre ScriptViews no son automatizables por
-el MCP”. An external harness still needs a way to discover the ScriptView root and target the real
+contract; it does **not** override `SKILL.md` §“Clicks on ScriptViews cannot be automated via
+MCP”. An external harness still needs a way to discover the ScriptView root and target the real
 clicked widget, and the measured 2026-08-29 bridge did not provide that path.
 
 Visual dimming is not input gating. `DimButton`-style helpers only tint the widget; a dim button

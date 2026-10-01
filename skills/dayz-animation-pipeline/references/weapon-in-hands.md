@@ -206,28 +206,28 @@ Do NOT conflate the three artifact kinds (verified frame data, see `references/w
 The `.asi` `$animations` blend ON TOP of the weapon-states `.anm` and override those bone transforms. The IK-pose chain itself is configured in the `AnimNodeWeaponIK` graph node (`combat.agr:24-30`, the `ikpose_*` keys), not in any config file. `reloadAction` (CfgWeapons) is LEGACY/obsolete and NOT how reloads are driven here — omit it (all vanilla rifles do).
 
 
-## [2026-06-28] Reproducir el agarre en un viewer OFFLINE - los factores + el pipeline Blender [VERIFIED]
+## [2026-06-28] Reproducing grip in an OFFLINE viewer - factors + Blender pipeline [VERIFIED]
 
-Cierre de la sesion WeaponAnimPipeline #8/#9 (visor para AUTORAR anims de arma). Que determina el agarre y como reproducirlo offline sin heuristicar.
+Closing of WeaponAnimPipeline #8/#9 session (viewer to AUTHOR weapon anims). What determines grip and how to reproduce it offline without heuristics.
 
-### Los factores que fijan el agarre (vanilla + mod) - la lista completa
-1. **Anclaje**: el arma se monta por su ORIGEN de modelo en `Weapon_Root`/`RightHand_Dummy` (bone del esqueleto). El `.p3d` del arma NO tiene puntos de mano (verificado arriba contra `akm.p3d`).
-2. **Manos = el ikpose del arma** (4 arg de `AddItemInHandsProfileIK`). Verificado extrayendo `sr2m_grip.anm` (DayZATool): 43 huesos que keyean los IK helpers (`RightHandOrigin`/`LeftHandOrigin`/`LeftHandIKTarget`/`*ForeArmDirection`) + los dedos, **NO** los `LeftHand`/`RightHand` crudos (coincide con el caveat de `player-skeleton.md:53`). El SR2M HEREDA el ikpose del aks74u.
-3. **Geometria arma<->origen = "mueve el ARMA a la mano"** (geometric parity, documentado abajo). La mano cae en un punto fijo del ikpose; se traslada la geometria del arma (global offset) para que su grip caiga ahi. Un SMG corto (grips pistol<->foregrip ~0.18 m) NO tiene paridad con la mano de RIFLE (~0.33 m) -> la mano de soporte no agarra hasta hacer parity.
-4. **Stance/aim**: el aditivo de aim-space (`DZ/anims/anm/player/layered/aim/2handed/p_2hd_erc_aimspace.anm`, 39 frames = grid 2D de direcciones) al **frame CENTER (idx 19) = NEUTRAL** (max 0.7 grados, casi todo 0.0). Implicacion VERIFICADA: NO hay una "pose ADS" aparte que sumar al centro - la pose base `Rifle_Erect_Idle_Ras (Soft_Aim).txa` YA es el aim alzado in-game al centro; el aditivo solo desvia al apuntar arriba/abajo/lados.
+### Factors setting grip (vanilla + mod) - the complete list
+1. **Attachment**: weapon mounts by its model ORIGIN to `Weapon_Root`/`RightHand_Dummy` (skeleton bone). Weapon `.p3d` does NOT have hand points (verified above against `akm.p3d`).
+2. **Hands = weapon ikpose** (4th arg of `AddItemInHandsProfileIK`). Verified extracting `sr2m_grip.anm` (DayZATool): 43 bones keying IK helpers (`RightHandOrigin`/`LeftHandOrigin`/`LeftHandIKTarget`/`*ForeArmDirection`) + fingers, **NOT** raw `LeftHand`/`RightHand` (matches caveat in `player-skeleton.md:53`). SR2M INHERITS aks74u ikpose.
+3. **Weapon<->origin geometry = "move WEAPON to hand"** (geometric parity, documented below). Hand falls at fixed point of ikpose; weapon geometry is translated (global offset) so its grip falls there. A short SMG (pistol<->foregrip grips ~0.18 m) does NOT have parity with RIFLE hand (~0.33 m) -> support hand does not grip until parity is achieved.
+4. **Stance/aim**: aim-space additive (`DZ/anims/anm/player/layered/aim/2handed/p_2hd_erc_aimspace.anm`, 39 frames = 2D direction grid) at **CENTER frame (idx 19) = NEUTRAL** (max 0.7 degrees, mostly 0.0). VERIFIED implication: there is NO separate "ADS pose" to add to center - base pose `Rifle_Erect_Idle_Ras (Soft_Aim).txa` ALREADY is in-game raised aim at center; additive only deflects when aiming up/down/sides.
 
-### Pipeline Blender VALIDADO para LEER el agarre real offline
-Rig con IK bones `_AssetSamples/Poses/Rifle/M4 Rifle IK.blend` (155 huesos; constraints reales `RightHand IK->RightHandOrigin`, `LeftHand IK->LeftHandOrigin`) -> aplicar la pose base `.txa` (plugin) + el ikpose de agarre (accion del plugin, sus bones IK-helper) -> el IK del rig RESUELVE las manos sobre el arma -> leer las transformaciones mundiales (`Weapon_Root`, manos, dedos). Patron en el script `dump_combined.py` de la sesion (combina base+ikpose, lee 155 worlds). La base `Ras (Soft_Aim)` da config de manos de rifle ~0.33 m (M4 ikpose combinado = 0.326 m -> confirma que la base YA es la config de rifle).
+### VALIDATED Blender pipeline to READ real grip offline
+Rig with IK bones `_AssetSamples/Poses/Rifle/M4 Rifle IK.blend` (155 bones; real constraints `RightHand IK->RightHandOrigin`, `LeftHand IK->LeftHandOrigin`) -> apply base pose `.txa` (plugin) + grip ikpose (plugin action, its IK-helper bones) -> rig IK RESOLVES hands onto weapon -> read world transformations (`Weapon_Root`, hands, fingers). Pattern in session `dump_combined.py` script (combines base+ikpose, reads 155 worlds). Base `Ras (Soft_Aim)` gives rifle hand config ~0.33 m (M4 combined ikpose = 0.326 m -> confirms base ALREADY is rifle config).
 
-### El gate honesto (por que no cierra del todo offline)
-Aplicar el ikpose ESPECIFICO de un arma (su `.anm`/SEAnim) directamente offline choca con el gate de convencion bone-frame del proyecto (las ROTACIONES; solo in-game lo cierra). El `Weapon_Root` del rig JD "No IK Bones" da el canon "cruzado"/boca-abajo posado (medido); el rig CON IK bones (M4) lo posa bien -> usar ese. **NO heuristices** (orientar el arma por el eje de dedos, Rx(-90) en la muneca de soporte, nudges forward): probadas ~8 variantes, todas fallan o no generalizan (ver LL-171).
+### The honest gate (why it does not fully close offline)
+Applying SPECIFIC weapon ikpose (its `.anm`/SEAnim) directly offline hits project bone-frame convention gate (ROTATIONS; only in-game closes it). `Weapon_Root` of JD "No IK Bones" rig gives posed "crossed"/upside-down canon (measured); rig WITH IK bones (M4) poses it properly -> use that one. **Do NOT heuristic** (orienting weapon by finger axis, Rx(-90) on support wrist, nudges forward): tested ~8 variants, all fail or do not generalize (see LL-171).
 
 ### Herramientas + ground truth
-- DayZATool CLI: `--extract-anim <input.anm> <scale=100>` (SIN output path; escribe `.seanim` junto al input; `--generate-anim` el inverso). El aim/ikpose vanilla esta desempaquetado en `DZ/anims/anm/player/layered/aim/{rifle,2handed,...}`.
-- Ground truth in-game YA capturado (no re-lanzar a la ligera = ~10-15 min retail + 5 GB): `A6_SR2M_dev/_gate/captures/mcp_s0_proj_ads_orbit_i37.png` + `_handcrop_i37.png` (agarre RESUELTO, support hand cerrada en el foregrip, user-confirmed; fix = geometry raise +Y0.024). Re-correr: `A6_SR2M_dev/_gate/gate-mcp.ps1 -Retail`.
+- DayZATool CLI: `--extract-anim <input.anm> <scale=100>` (WITHOUT output path; writes `.seanim` next to input; `--generate-anim` reverse). Vanilla aim/ikpose is unpacked in `DZ/anims/anm/player/layered/aim/{rifle,2handed,...}`.
+- In-game ground truth ALREADY captured (do not re-run lightly = ~10-15 min retail + 5 GB): `A6_SR2M_dev/_gate/captures/mcp_s0_proj_ads_orbit_i37.png` + `_handcrop_i37.png` (grip RESOLVED, support hand closed on foregrip, user-confirmed; fix = geometry raise +Y0.024). Re-run: `A6_SR2M_dev/_gate/gate-mcp.ps1 -Retail`.
 
-### Reproduccion correcta en el viewer (para PARTIR de la pose correcta y animar)
-Modelo: pose base (= aim alzado) + arma en `Weapon_Root` con su geometria de PARIDAD + manos en la config del ikpose (no fit-a-manos heuristico). Para que el viewer sea editable: `applyPose()` debe reconstruir desde la pose base FK (no T-pose) - ver el fix `basePoseQ`/`basePoseP` de la sesion.
+### Correct reproduction in viewer (to START from correct pose and animate)
+Model: base pose (= raised aim) + weapon at `Weapon_Root` with its PARITY geometry + hands in ikpose config (not heuristic hand-fit). For viewer to be editable: `applyPose()` must rebuild from FK base pose (not T-pose) - see `basePoseQ`/`basePoseP` fix from session.
 
 ## [2026-06-28] The IK-resolved grip is NOT offline-derivable - READ it off the live skeleton [VERIFIED-SR2M]
 

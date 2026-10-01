@@ -6,27 +6,27 @@ Config-side fire-mode inheritance for DayZ weapons: when to inherit vs override 
 
 ---
 
-## (added 2026-06-26) Fire modes en armas DERIVADAS: heredar, no redeclarar sobre una base que ya los define
+## (added 2026-06-26) Fire modes on DERIVED weapons: inherit, do not redeclare over a base that already defines them
 
-En un arma que hereda de OTRA arma que YA define sus modos (`class SemiAuto`/`class FullAuto`), NO redeclarar las subclases de modo con parent explícito (`class FullAuto: Mode_FullAuto`): eso re-deriva desde la base abstracta `Mode_*` y el engine puede quedarse con 1 modo válido. Síntoma in-game: el arma solo dispara semi, la tecla de modo (X por defecto) no cicla, y no aparece el nombre del modo en el HUD. En su lugar:
-- Heredar los modos sin tocarlos (no declarar `modes[]` ni las subclases), o
-- Override SIN parent: `class FullAuto { soundSetShot[]=...; reloadTime=...; }` → MODIFICA la heredada (conserva su autofire), solo cambia lo que pongas.
+On a weapon inheriting from ANOTHER weapon that ALREADY defines its modes (`class SemiAuto`/`class FullAuto`), DO NOT redeclare the mode subclasses with an explicit parent (`class FullAuto: Mode_FullAuto`): that re-derives from the abstract base `Mode_*` and the engine may be left with 1 valid mode. In-game symptom: the weapon only fires semi, the mode key (default X) does not cycle, and the mode name does not appear in the HUD. Instead:
+- Inherit the modes without touching them (do not declare `modes[]` or the subclasses), or
+- Override WITHOUT parent: `class FullAuto { soundSetShot[]=...; reloadTime=...; }` → MODIFIES the inherited one (preserves its autofire), only changes what you specify.
 
-Redeclarar CON `: Mode_*` solo es correcto cuando heredas de `Rifle_Base` (que no predefine los modos), como hacen las AK del pack A6 (a6_ak_config.cpp:354-390).
+Redeclaring WITH `: Mode_*` is only correct when inheriting from `Rifle_Base` (which does not predefine the modes), as the AKs of the A6 pack do (a6_ak_config.cpp:354-390).
 
-Mecanismo verificado (vanilla 1.2x, `P:\scripts`):
-- Conteo de modos = config `modes[]` + subclases válidas.
-- Cambio de modo = input nativo `IsFireModeChange()` (tecla X por defecto) → `GetWeaponManager().SetNextMuzzleMode()` (`4_world\entities\dayzplayerimplement.c:1088`).
-- Nombre de modo en HUD = `GetCurrentModeName()` (`4_world\classes\weapons\weaponmanager.c:1335` → `5_mission\gui\itemactionswidget.c:584`); cadena vacía = el engine ve 1 modo.
-- El perfil de animación del player (`pType.AddItemInHandsProfileIK(class, .asi, behaviorCfg, ik.anm, weaponStates.anm)` en `dayzplayercfgbase.c:408+`) y el `behaviorCfg` (`SetFirearms`/`SetPistols`/`SetToolsOneHanded` → `ItemBehaviorType`, def. `dayzplayercfgbase.c:167-239`) NO controlan el conteo de modos; pero registrar un arma con `RegisterOneHanded` sí la hace comportarse como herramienta de una mano (sin selector).
+Verified mechanism (vanilla 1.2x, `P:\scripts`):
+- Mode count = config `modes[]` + valid subclasses.
+- Mode switch = native input `IsFireModeChange()` (default X key) → `GetWeaponManager().SetNextMuzzleMode()` (`4_world\entities\dayzplayerimplement.c:1088`).
+- Mode name in HUD = `GetCurrentModeName()` (`4_world\classes\weapons\weaponmanager.c:1335` → `5_mission\gui\itemactionswidget.c:584`); empty string = engine sees 1 mode.
+- Player animation profile (`pType.AddItemInHandsProfileIK(class, .asi, behaviorCfg, ik.anm, weaponStates.anm)` in `dayzplayercfgbase.c:408+`) and `behaviorCfg` (`SetFirearms`/`SetPistols`/`SetToolsOneHanded` → `ItemBehaviorType`, def. `dayzplayercfgbase.c:167-239`) DO NOT control mode count; but registering a weapon with `RegisterOneHanded` does make it behave like a one-handed tool (no selector).
 
-Anti-confabulación: una "base protegida" cuyo `config.bin` "no se puede leer" debe VERIFICARSE desrapificando con `CfgConvert -txt` antes de asumirlo. Caso A6_PP19 (2026-06-26): el config.bin se desrapifica entero y ya traía `modes[]={"SemiAuto","FullAuto"}` — la suposición "protegido/single-mode" era falsa.
+Anti-confabulation: a "protected base" whose `config.bin` "cannot be read" must be VERIFIED by de-rapifying with `CfgConvert -txt` before assuming it. A6_PP19 case (2026-06-26): config.bin de-rapifies completely and already had `modes[]={"SemiAuto","FullAuto"}` — the "protected/single-mode" assumption was false.
 
-### `Mode_*` (Mode_SemiAuto/FullAuto/Burst) van en scope RAÍZ, NO dentro de `class CfgWeapons` (SP-031, added 2026-06-29)
+### `Mode_*` (Mode_SemiAuto/FullAuto/Burst) belong in ROOT scope, NOT inside `class CfgWeapons` (SP-031, added 2026-06-29)
 
-Caso de fallo distinto del anterior (no es redeclarar la subclase, es declarar mal el `Mode_*` base). Las clases de modo vanilla (`WeaponMode_Base`{autoFire=0}, `Mode_SemiAuto`, `Mode_Burst`, `Mode_FullAuto: Mode_SemiAuto` con `autoFire=1`) se definen en **scope RAÍZ** del config (vanilla `bin.pbo` config.cpp:260/273/307/310), ANTES de `class CfgWeapons` (l.347) — son **hermanas** de CfgWeapons, no están dentro. Forward-declarar `class Mode_FullAuto;` **dentro de `class CfgWeapons`** crea un `CfgWeapons.Mode_FullAuto` vacío que **eclipsa** al real → cualquier `class FullAuto: Mode_FullAuto` hereda ese stub **sin `autoFire`** → el engine descarta el modo → arma single-mode (solo semi, sin selector ni nombre de modo en HUD).
+Failure case distinct from the previous one (not redeclaring the subclass, but misdeclaring the base `Mode_*`). Vanilla mode classes (`WeaponMode_Base`{autoFire=0}, `Mode_SemiAuto`, `Mode_Burst`, `Mode_FullAuto: Mode_SemiAuto` with `autoFire=1`) are defined in **ROOT scope** of config (vanilla `bin.pbo` config.cpp:260/273/307/310), BEFORE `class CfgWeapons` (l.347) — they are **siblings** of CfgWeapons, not inside it. Forward-declaring `class Mode_FullAuto;` **inside `class CfgWeapons`** creates an empty `CfgWeapons.Mode_FullAuto` that **shadows** the real one → any `class FullAuto: Mode_FullAuto` inherits that stub **without `autoFire`** → engine discards the mode → single-mode weapon (semi only, no selector or mode name in HUD).
 
-- **Cómo reconocerlo**: arma con `modes[]={"SemiAuto","FullAuto"}` correcto que in-game SOLO dispara semi, pese a config byte-idéntica a otra que sí cicla. Engañoso: CfgConvert/binarize NO se queja (un forward-decl es un external válido) y el de-rap se ve perfecto. La verdad está en el source vanilla (`bin.pbo`), no en comparar configs de mods.
-- **Fix**: forward-declarar `class Mode_SemiAuto;` / `class Mode_FullAuto;` en **scope RAÍZ** (encima de `class CfgWeapons`, igual que `class OpticsInfoRifle;`). Entonces `class FullAuto: Mode_FullAuto` resuelve al real (`autoFire=1`). Discriminador de diagnóstico: un clon que hereda de un arma-base YA-resuelta cicla, mientras tu base que referencia `Mode_*` no → aísla la causa a la resolución de `Mode_*` (NO al modelo).
+- **How to recognize it**: weapon with correct `modes[]={"SemiAuto","FullAuto"}` that in-game ONLY fires semi, despite byte-identical config to another that does cycle. Deceiving: CfgConvert/binarize DOES NOT complain (a forward-decl is a valid external) and de-rap looks perfect. Truth is in vanilla source (`bin.pbo`), not in comparing mod configs.
+- **Fix**: forward-declare `class Mode_SemiAuto;` / `class Mode_FullAuto;` in **ROOT scope** (above `class CfgWeapons`, just like `class OpticsInfoRifle;`). Then `class FullAuto: Mode_FullAuto` resolves to the real one (`autoFire=1`). Diagnostic discriminator: a clone inheriting from an ALREADY-resolved base weapon cycles, while your base referencing `Mode_*` does not → isolates the cause to `Mode_*` resolution (NOT to the model).
 
-Origen: A6_SR2M bug#10, 2026-06-28, confirmado in-game (~12 ciclos sin la lección). Cross-ref: SP-038 (fila de troubleshooting en `dayz-pbo-build`), LL-174, `20_Knowledge/dayz-weapon-config-crossproject.md` INV-W1.
+Origin: A6_SR2M bug#10, 2026-06-28, confirmed in-game (~12 cycles without the lesson). Cross-ref: SP-038 (troubleshooting row in `dayz-pbo-build`), LL-174, `20_Knowledge/dayz-weapon-config-crossproject.md` INV-W1.

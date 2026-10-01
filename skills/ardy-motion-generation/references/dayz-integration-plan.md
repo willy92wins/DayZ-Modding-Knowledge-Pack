@@ -1,19 +1,19 @@
-# Plan de integración ARDY → DayZ (NO VERIFICADO)
+# ARDY → DayZ integration plan (UNVERIFIED)
 
-Todo este documento es `[DESIGN]` — plan/hipótesis, no un procedimiento probado. Ningún paso de
-esta cadena se ha ejecutado. Antes de escribir código de retargeting, releer esto completo y
-decidir con el usuario si cada tramo merece un gate propio (R3: cambios que tocan >1 archivo de
-mod/skill piden aprobación previa) — no encadenar los 4 pasos en una sola sesión sin checkpoints.
+This entire document is `[DESIGN]` — plan/hypothesis, not a tested procedure. No step of
+this chain has been executed. Before writing retargeting code, re-read this completely and
+decide with user whether each stretch deserves its own gate (R3: changes touching >1 mod/skill
+file require prior approval) — do not chain the 4 steps in a single session without checkpoints.
 
-## Por qué existe este plan sin estar verificado
+## Why this plan exists without being verified
 
-El caso de uso elegido para ARDY es locomoción de cuerpo completo del survivor (correr, saltar,
-vaultear). Para que eso llegue a jugarse en DayZ hace falta una cadena de conversión que hoy no
-existe. Documentar el plan ahora evita que una sesión futura tenga que re-derivar desde cero qué
-falta, pero **no adelantar el veredicto de que la cadena funciona** — cada flecha de abajo es un
-punto de fallo plausible no explorado.
+The use case chosen for ARDY is survivor full-body locomotion (running, jumping,
+vaulting). For that to become playable in DayZ a conversion chain is needed that today does not
+exist. Documenting the plan now avoids a future session having to re-derive from scratch what
+is missing, but **do not advance the verdict that the chain works** — each arrow below is an
+unexplored plausible failure point.
 
-## La cadena completa
+## The complete chain
 
 ```
 ARDY .npz (skeleton "core", world-space joints + rotaciones + root + foot contacts)
@@ -34,67 +34,67 @@ Export .txa → Workbench → .anm (SEAnim / DayZATool)
 Gate in-game
 ```
 
-Solo el tramo final (`.txa` → `.anm` → in-game) tiene pipeline verificado — es el que ya usa
-`dayz-animation-pipeline` para cualquier animación skeletal del player. Los pasos 1 y 2 son
-territorio nuevo.
+Only the final leg (`.txa` → `.anm` → in-game) has a verified pipeline — it is the one already used by
+`dayz-animation-pipeline` for any player skeletal animation. Steps 1 and 2 are
+new territory.
 
-## Paso 1 — Parsear el `.npz`
+## Step 1 — Parse the `.npz`
 
-Bajo riesgo técnico: es un array de numpy con estructura documentada (`posed_joints [T,J,3]`,
-rotaciones, root, foot contacts). Escribir un script que lo cargue e inspeccione la forma real
-del primer output generado ANTES de asumir el layout — el README no da el dtype/orden de ejes
-exacto (¿XYZ o XZY? ¿Y-up o Z-up?), y DayZ usa Z-up (ver caveats de winding Blender→DayZ ya
-documentados en `outputs/flip_winding.py` de otros proyectos). Confirmar con un `.npz` real, no
-asumir la convención de otro pipeline.
+Low technical risk: it is a numpy array with documented structure (`posed_joints [T,J,3]`,
+rotations, root, foot contacts). Write a script that loads it and inspects the actual shape
+of the first generated output BEFORE assuming the layout — the README does not give the exact
+dtype/axis order (XYZ or XZY? Y-up or Z-up?), and DayZ uses Z-up (see Blender→DayZ winding caveats
+already documented in `outputs/flip_winding.py` from other projects). Confirm with a real `.npz`, do
+not assume the convention of another pipeline.
 
-## Paso 2 — Retarget al OFP2_ManSkeleton (el paso que puede matar el plan)
+## Step 2 — Retarget to OFP2_ManSkeleton (the step that can kill the plan)
 
-Esto es estructuralmente el mismo problema que ya resuelve (parcialmente, EXPERIMENTAL) la skill
-`mixamo-retarget`: mapear un esqueleto genérico externo a la jerarquía específica de huesos que
-espera DayZ. Diferencias que pueden hacerlo MÁS difícil que el caso Mixamo:
+This is structurally the same problem already solved (partially, EXPERIMENTAL) by the skill
+`mixamo-retarget`: mapping a generic external skeleton to the specific bone hierarchy that
+DayZ expects. Differences that may make it HARDER than the Mixamo case:
 
-- El skeleton "core" de ARDY no tiene mapping oficial documentado a ningún formato de videojuego
-  (ni FBX, ni BVH, ni SMPL) — hay que derivar el mapping bone-por-bone a mano, comparando nombres
-  y jerarquía contra el mapa completo de `OFP2_ManSkeleton` en
+- The ARDY "core" skeleton has no documented official mapping to any video game format
+  (neither FBX, nor BVH, nor SMPL) — the bone-by-bone mapping must be derived by hand, comparing names
+  and hierarchy against the complete map of `OFP2_ManSkeleton` in
   `<knowledge-notes>/dayz-animations-creatures-weapons.md` §3.10 (Core/spine,
-  piernas, brazos, IK helpers, fingers).
-- No se sabe el bone count exacto de "core" contra fuente oficial (el vídeo decía 27, no
-  confirmado en research.nvidia.com ni GitHub) — contar los joints reales del primer `.npz`
-  generado antes de intentar mapear.
-- DayZ espera fingers, `RightHand_Dummy`/`LeftHand_Dummy` (helpers lod=2), y varios IK helpers
-  (`*HandOrigin`, `*HandIKTarget`) que un skeleton "core" genérico de 27 huesos probablemente NO
-  cubre — la locomoción de piernas/torso puede mapear razonablemente bien, pero manos/dedos
-  probablemente necesiten quedarse en su pose de bind (sin animar) o heredar de otra fuente.
+  legs, arms, IK helpers, fingers).
+- The exact bone count of "core" against official source is not known (the video said 27, not
+  confirmed on research.nvidia.com or GitHub) — count actual joints of the first generated
+  `.npz` before attempting to map.
+- DayZ expects fingers, `RightHand_Dummy`/`LeftHand_Dummy` (lod=2 helpers), and several IK helpers
+  (`*HandOrigin`, `*HandIKTarget`) that a generic "core" skeleton of 27 bones probably does NOT
+  cover — leg/torso locomotion may map reasonably well, but hands/fingers
+  probably need to remain in their bind pose (unanimated) or inherit from another source.
 
-**Pregunta abierta a resolver con el primer test**: ¿el retarget solo de piernas+torso+columna
-(dejando brazos/manos intactos o en additive) es suficiente para el objetivo real ("correr,
-saltar, vaultear")? Si sí, el alcance del retarget se reduce mucho y el riesgo baja. Decidirlo
-ANTES de intentar mapear manos/dedos, que es donde este tipo de retarget suele fallar más.
+**Open question to resolve with the first test**: is retargeting only legs+torso+spine
+(leaving arms/hands intact or in additive) sufficient for the real goal ("running,
+jumping, vaulting")? If yes, retargeting scope is greatly reduced and risk drops. Decide it
+BEFORE attempting to map hands/fingers, which is where this type of retarget usually fails most.
 
-## Paso 3-4 — Export y pipeline final
+## Steps 3-4 — Export and final pipeline
 
-Una vez exista una pose FK en el armature de Blender con nombres de huesos DayZ correctos, el
-resto de la cadena (`.txa` → Workbench → `.anm`) es el pipeline YA verificado de
-`dayz-animation-pipeline` — no hay nada nuevo que diseñar ahí, solo ejecutar el proceso conocido
-(ver esa skill para el detalle del export).
+Once an FK pose exists on the Blender armature with correct DayZ bone names, the
+rest of the chain (`.txa` → Workbench → `.anm`) is the ALREADY verified pipeline of
+`dayz-animation-pipeline` — there is nothing new to design there, only execute the known process
+(see that skill for export details).
 
-## Alternativas si el retarget directo no compensa
+## Alternatives if direct retargeting does not pay off
 
-Si el paso 2 resulta demasiado costoso para el beneficio real:
+If step 2 turns out too costly for the actual benefit:
 
-- Usar ARDY solo como **referencia visual** (playblast) para animar a mano en Blender/Cascadeur,
-  en vez de intentar un retarget automático 1:1. Pierde el "tiempo real" pero evita el problema
-  de mapping de esqueleto.
-- Revisar si `Cascadeur` (ya evaluado en `ai-3d-pipeline/stage-05-animation.md`, veredicto MED
-  condicional, único con soporte custom-skeleton + IK/FK + física) cubre mejor el mismo objetivo
-  de locomoción sin el problema de esqueleto no estándar de ARDY.
+- Use ARDY only as **visual reference** (playblast) to animate by hand in Blender/Cascadeur,
+  instead of attempting an automatic 1:1 retarget. Loses "real time" but avoids the skeleton
+  mapping problem.
+- Review whether `Cascadeur` (already evaluated in `ai-3d-pipeline/stage-05-animation.md`, conditional
+  MED verdict, only one with custom-skeleton + IK/FK + physics support) better covers the same
+  locomotion objective without ARDY's non-standard skeleton problem.
 
 ## Cross-refs
 
-- `<knowledge-notes>/dayz-animations-creatures-weapons.md` §3.10 — mapa completo de
-  bones del player DayZ, necesario para diseñar el mapping del paso 2.
-- `<knowledge-notes>/ai-3d-pipeline/stage-05-animation.md` — veredicto de
-  aplicabilidad de ARDY y comparación con las otras 6 herramientas evaluadas.
-- skill `mixamo-retarget` — mismo tipo de problema (retarget externo → DayZ), ya EXPERIMENTAL;
-  leer qué falló o quedó pendiente ahí antes de repetir el mismo camino.
-- skill `dayz-animation-pipeline` — pipeline `.txa`/Workbench/`.anm` de destino final.
+- `<knowledge-notes>/dayz-animations-creatures-weapons.md` §3.10 — complete bone
+  map of DayZ player, needed to design step 2 mapping.
+- `<knowledge-notes>/ai-3d-pipeline/stage-05-animation.md` — ARDY applicability
+  verdict and comparison with the other 6 evaluated tools.
+- skill `mixamo-retarget` — same type of problem (external retarget → DayZ), already EXPERIMENTAL;
+  read what failed or remained pending there before repeating the same path.
+- skill `dayz-animation-pipeline` — final target `.txa`/Workbench/`.anm` pipeline.

@@ -1,61 +1,61 @@
-# ArmorHneck — modelos worn CORREGIDOS (entrega para ajuste fino)
+# ArmorHneck — CORRECTED worn models (delivery for fine-tuning)
 
-Fecha: 2026-08-03. Worn models del mod ArmorHneck con las correcciones
-estructurales que hacen que la prenda funcione in-game (verificado en DayZ
-1.29). El ajuste fino de encaje (brazos, piernas, protector abdominal) queda
-pendiente: ese es el encargo de esta entrega.
+Date: 2026-08-03. Worn models of ArmorHneck mod with structural
+corrections making the garment work in-game (verified in DayZ
+1.29). Fine-tuning fit (arms, legs, abdominal protector) remains
+pending: that is the task for this delivery.
 
 ## Contenido
-- `armorhneck_m.fbx` / `armorhneck_f.fbx` — **para trabajar en Blender/Max/Maya**
-  (geometria + UVs + PESOS de skinning como vertex groups sobre una armature)
-- `armorhneck_beige_co.png` — textura difusa (el FBX la referencia)
-- `armorhneck_m.p3d` / `armorhneck_f.p3d` — los mismos modelos en MLOD
-  (editables en Object Builder, por si se prefiere esa via)
-- `model.cfg` — el model.cfg CORRECTO para binarizar estos modelos
+- `armorhneck_m.fbx` / `armorhneck_f.fbx` — **for working in Blender/Max/Maya**
+  (geometry + UVs + skinning WEIGHTS as vertex groups on an armature)
+- `armorhneck_beige_co.png` — diffuse texture (FBX references it)
+- `armorhneck_m.p3d` / `armorhneck_f.p3d` — same models in MLOD
+  (editable in Object Builder, if that route is preferred)
+- `model.cfg` — CORRECT model.cfg for binarizing these models
 
-## El FBX
-- **Ejes**: Blender estandar, Z arriba, el personaje esta DE PIE mirando +Y.
-  Unidades: metros. Origen en los pies del personaje.
-- **La armature de 10 huesos es un PORTADOR DE PESOS, no el rig del juego**:
-  sus huesos estan colocados en el centroide de cada region solo para que el
-  FBX conserve los vertex groups. No sirve para animar. Lo importante son los
-  GRUPOS: leftarm, rightarm, leftforearm, rightforearm, leftupleg, rightupleg,
-  neck, pelvis, spine, spine3 (en minuscula).
-- **Regla de oro**: mover/rotar/esculpir VERTICES para encajar las placas al
-  cuerpo. NO renombrar los vertex groups, NO vaciarlos. Se puede repesar si se
-  quiere mejorar la deformacion (ver "mejora opcional"), manteniendo suma 1.0
-  por vertice y esos mismos nombres de grupo.
-- Si se conserva la topologia (mismo numero/orden de vertices), la
-  reintegracion al mod es automatica; si se retopa, entregar igualmente el
-  FBX con los grupos y lo reconstruimos.
+## The FBX
+- **Axes**: standard Blender, Z up, character is STANDING facing +Y.
+  Units: meters. Origin at character's feet.
+- **The 10-bone armature is a WEIGHT CARRIER, not the game rig**:
+  its bones are placed at each region's centroid only so the
+  FBX preserves vertex groups. Not for animating. The important part are the
+  GROUPS: leftarm, rightarm, leftforearm, rightforearm, leftupleg, rightupleg,
+  neck, pelvis, spine, spine3 (in lowercase).
+- **Golden rule**: move/rotate/sculpt VERTICES to fit plates to the
+  body. Do NOT rename vertex groups, do NOT empty them. Re-weighting is allowed if you
+  want to improve deformation (see "optional improvement"), keeping sum 1.0
+  per vertex and those same group names.
+- If topology is preserved (same vertex number/order),
+  reintegration into mod is automatic; if retopo'd, still deliver the
+  FBX with groups and we rebuild it.
 
-## Que se corrigio ya (NO deshacer)
-1. **Orientacion**: la malla original estaba modelada mirando al reves (180
-   grados). Estos modelos ya estan en el frame canonico de ropa DayZ
-   (en el .p3d: -Z = frente, +X = izquierda anatomica, Y arriba, origen en
-   los pies; el FBX ya lo traduce a ejes Blender). Si se re-exporta desde un
-   fuente antiguo SIN girar, el bug vuelve.
-2. **Esqueleto**: el model.cfg declara `DayzTemporarySkeleton` (159 huesos,
-   jerarquia vanilla exacta). Asi se compila TODA la ropa vanilla; con
-   `OFP2_ManSkeleton` como nombre el motor NO re-bindea la prenda al jugador
-   y se renderiza rigida/flotando. Binarizar SIEMPRE con este model.cfg.
-3. Pesos completos y normalizados (suma 1.0 por vertice).
+## What was already corrected (do NOT undo)
+1. **Orientation**: original mesh was modeled facing backwards (180
+   degrees). These models are already in canonical DayZ clothing frame
+   (in .p3d: -Z = front, +X = anatomical left, Y up, origin at
+   feet; FBX already translates to Blender axes). If re-exported from an
+   old source WITHOUT rotating, the bug returns.
+2. **Skeleton**: model.cfg declares `DayzTemporarySkeleton` (159 bones,
+   exact vanilla hierarchy). ALL vanilla clothing is compiled this way; with
+   `OFP2_ManSkeleton` as name engine does NOT re-bind garment to player
+   and it renders rigid/floating. ALWAYS binarize with this model.cfg.
+3. Complete and normalized weights (sum 1.0 per vertex).
 
-## El encargo (ajuste fino)
-Alinear las placas al cuerpo en la pose A canonica de DayZ:
-- **Brazos**: hombreras y antebrazos quedan separados/caidos respecto al brazo
-  del personaje (el bind canonico tiene los brazos mas horizontales que este
-  modelo). Referencia perfecta de "donde debe caer la ropa": el worn de la
-  cota de mallas vanilla (`dz\characters\tops\chainmail_m.p3d`).
-- **Piernas y protector abdominal**: encaje menor.
+## The assignment (fine-tuning)
+Align plates to body in canonical DayZ A-pose:
+- **Arms**: pauldrons and forearms remain separated/sagging relative to character's
+  arm (canonical bind has arms more horizontal than this
+  model). Perfect reference for "where clothing should fall": vanilla chainmail
+  worn (`dz\characters\tops\chainmail_m.p3d`).
+- **Legs and abdominal protector**: minor fit.
 
 ## Mejora opcional
-El skinning actual es rigido por placa (62% de vertices a un solo hueso, sin
-huesos de transicion shoulder/roll/extra/spine1/spine2). Funciona, pero las
-articulaciones son toscas en movimiento. Suavizar pesos en las uniones (2-4
-influencias, como la ropa vanilla) mejoraria mucho la deformacion.
+Current skinning is rigid per plate (62% of vertices to single bone, without
+shoulder/roll/extra/spine1/spine2 transition bones). It works, but
+joints are crude in motion. Smoothing weights at joints (2-4
+influences, like vanilla clothing) would greatly improve deformation.
 
-## Flujo de vuelta
-Entregar el FBX (o .blend) modificado. Nosotros lo convertimos a .p3d
-(transformacion estandar Blender->DayZ), reconstruimos las selections con los
-pesos de los vertex groups, y binarizamos con el model.cfg incluido.
+## Return workflow
+Deliver modified FBX (or .blend). We convert it to .p3d
+(standard Blender->DayZ transformation), rebuild selections with
+vertex group weights, and binarize with included model.cfg.

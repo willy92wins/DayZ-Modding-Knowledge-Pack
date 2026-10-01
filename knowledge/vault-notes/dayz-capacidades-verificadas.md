@@ -1,222 +1,222 @@
-# DayZ — Capacidades verificadas y veredictos de feasibility
+# DayZ — Verified capabilities and feasibility verdicts
 
-> Conocimiento transversal. Recoge **veredictos de viabilidad** que costaron
-> sesiones enteras de investigación (revisar P:\, clonar CF/Dabs, búsqueda
-> web, spikes) y un puñado de **gotchas verificados** que no están cubiertos
-> por las skills de DayZ. El objetivo: no repetir investigaciones ya cerradas.
+> Cross-cutting knowledge. Gathers **feasibility verdicts** that cost
+> entire research sessions (reviewing P:\, cloning CF/Dabs, web
+> search, spikes) and a handful of **verified gotchas** not covered
+> by DayZ skills. The goal: do not repeat investigations already closed.
 
-## Veredicto: NO se pueden capturar píxeles desde un mod puro de DayZ
+## Verdict: pixels CANNOT be captured from a pure DayZ mod
 
-Investigado a fondo en el proyecto **LF-COM** (mod de "red social de fotos
-in-game"). Conclusión firme tras revisar todo `P:\`, clonar CF y Dabs
-Framework (cero APIs de captura/bitmap/readback) y búsqueda web:
+Thoroughly investigated in the **LF-COM** project (mod for "in-game photo
+social network"). Firm conclusion after reviewing all of `P:\`, cloning CF and Dabs
+Framework (zero capture/bitmap/readback APIs) and web search:
 
-- **DayZ retail no permite leer el framebuffer desde script.** Es un
-  bloqueo intencionado de Bohemia (anticheat / control de plataforma).
-- **`CallExtension` (DLL nativa) fue eliminado del API público de DayZ.**
-  Existe en Arma 3, no en DayZ. BattlEye bloquea extensions client-side y
-  no hay proceso de whitelisting. Cero mods del Workshop han logrado
-  shippear una DLL client-side. (Fuente: blog.lystic.dev, 2021-05-22.)
-- **`MakeScreenshot` está roto desde la 1.19** y sigue roto en 1.29.
-  Bohemia no lo va a arreglar.
-- **`Workspace.SaveScreenshot()` NO existe** — fue una confabulación en una
-  sesión; no asumirlo.
-- **`SetObjectTexture` es local/client-only** en DayZ Enforce. No existe
-  `SetObjectTextureGlobal` (eso es solo Arma 3). Las surfaces `r2t` son
-  config-bound (declaradas estáticamente en `config.cpp`, atadas a memory
-  points), **no creables en runtime** desde script, y requieren PiP activo.
-  Verificado en `entityai.c v1.24.157551`.
+- **Retail DayZ does not allow reading the framebuffer from script.** It is an
+  intentional block by Bohemia (anticheat / platform control).
+- **`CallExtension` (native DLL) was removed from the DayZ public API.**
+  It exists in Arma 3, not in DayZ. BattlEye blocks client-side extensions and
+  there is no whitelisting process. Zero Workshop mods have managed
+  to ship a client-side DLL. (Source: blog.lystic.dev, 2021-05-22.)
+- **`MakeScreenshot` is broken since 1.19** and remains broken in 1.29.
+  Bohemia is not going to fix it.
+- **`Workspace.SaveScreenshot()` does NOT exist** — it was a confabulation in a
+  session; do not assume it.
+- **`SetObjectTexture` is local/client-only** in DayZ Enforce. `SetObjectTextureGlobal`
+  does not exist (that is Arma 3 only). `r2t` surfaces are
+  config-bound (statically declared in `config.cpp`, tied to memory
+  points), **not creatable at runtime** from script, and require active PiP.
+  Verified in `entityai.c v1.24.157551`.
 
-**Decisión arquitectónica derivada (LF-COM)**: el camino viable es
-**PBO + launcher companion `.exe` + backend web**. El launcher polea la
-carpeta de screenshots de Steam y un archivo bandera en `$profile:\LFCOM\`,
-convierte PNG→EDDS con `ImageToPAA.exe` de Bohemia, y el mod carga el EDDS
-con `LoadImageFile`.
+**Architectural decision derived (LF-COM)**: the viable path is
+**PBO + launcher companion `.exe` + web backend**. The launcher polls the
+Steam screenshots folder and a flag file in `$profile:\LFCOM\`,
+converts PNG→EDDS with Bohemia's `ImageToPAA.exe`, and the mod loads the EDDS
+with `LoadImageFile`.
 
-### APIs de cámara/preview que SÍ funcionan (verificadas)
+### Camera/preview APIs that DO work (verified)
 
-- `PlayerPreviewWidget`: `GetDummyPlayer()` (desde 1.02), `SetModelOrientation`,
-  `SetModelPosition`, `UpdateItemInHands`. **Solo sirve para humanos** — no
-  hay widget vanilla equivalente para zombis/animales/IA.
+- `PlayerPreviewWidget`: `GetDummyPlayer()` (since 1.02), `SetModelOrientation`,
+  `SetModelPosition`, `UpdateItemInHands`. **Only works for humans** — there is
+  no equivalent vanilla widget for zombies/animals/AI.
 - `FreeDebugCamera.GetInstance().SetFreezed(false)`.
-- Patrón de skins replicadas que sí funciona: distribuir N `.paa` en el PBO
-  vía `hiddenSelectionsTextures[]`, replicar solo el índice por SyncVar/RPC,
-  cada cliente llama `SetObjectTexture(i, array[idx])` local.
+- Replicated skins pattern that does work: distribute N `.paa` in the PBO
+  via `hiddenSelectionsTextures[]`, replicate only index via SyncVar/RPC,
+  each client calls `SetObjectTexture(i, array[idx])` locally.
 
-## Veredicto: física de debris e items dinámicos
+## Verdict: debris physics and dynamic items
 
-- **`ECE_CREATEPHYSICS` no basta** para debris con `simulation = "inventoryItem"`:
-  crea el shape pero deja el body estático, `dBodyApplyImpulse` se descarta
-  → debris congelado en el aire. **Fix**: `InventoryItem.ThrowPhysically(null, impulse, false)`
-  (requiere castear `EntityAI → ItemBase`). Alternativa manual:
+- **`ECE_CREATEPHYSICS` is not enough** for debris with `simulation = "inventoryItem"`:
+  creates the shape but leaves the body static, `dBodyApplyImpulse` is discarded
+  → debris frozen in the air. **Fix**: `InventoryItem.ThrowPhysically(null, impulse, false)`
+  (requires casting `EntityAI → ItemBase`). Manual alternative:
   `CreateDynamicPhysics` + `SetDynamicPhysicsLifeTime` + gravity + impulse.
-- **PhysX ignora silenciosamente los componentes de Geometry LOD < 0.5 m.**
-  Por eso un POC de pelota se hizo de 50 cm. Truco de producción: un
-  Geometry LOD oversized invisible para mantener el visual al tamaño real.
-- **Regla 0.5 m matizada**: aplica a colisión por Geometry LOD
-  (`Container_Base`/`BuildingBase`), NO a `Inventory_Base` con
-  `simulation=inventoryItem`. Y un `Container_Base` destructible **sin
-  FireGeo no recibe balas** — el FireGeo es necesario para recibir disparos.
-- **`StaticObj_Wreck_Train_Wagon_*` son cuerpos PhysX estáticos** —
-  `dBodyApplyImpulse` se descarta sobre ellos. Vía viable: detectar colisión
-  con `OnContact`, borrar el static y sustituir por entidad propia dinámica.
-- **El plastic explosive vanilla NO detona al ser ruined** — safety feature
-  intencional de Bohemia. Solo detona vía Remote Detonation Unit; `Detonate()`
-  es privado. Alternativa: orquestar manualmente (partícula + soundset +
-  `AreaDamageManager`) o llamar `Detonate()` por reflection.
+- **PhysX silently ignores Geometry LOD components < 0.5 m.**
+  That is why a ball POC was made 50 cm. Production trick: an
+  invisible oversized Geometry LOD to keep the visual at real size.
+- **0.5 m rule nuanced**: applies to Geometry LOD collision
+  (`Container_Base`/`BuildingBase`), NOT to `Inventory_Base` with
+  `simulation=inventoryItem`. And a destructible `Container_Base` **without
+  FireGeo does not receive bullets** — FireGeo is necessary to receive gunshots.
+- **`StaticObj_Wreck_Train_Wagon_*` are static PhysX bodies** —
+  `dBodyApplyImpulse` is discarded on them. Viable path: detect collision
+  with `OnContact`, delete the static and replace with own dynamic entity.
+- **Vanilla plastic explosive does NOT detonate when ruined** — intentional Bohemia
+  safety feature. Only detonates via Remote Detonation Unit; `Detonate()`
+  is private. Alternative: orchestrate manually (particle + soundset +
+  `AreaDamageManager`) or call `Detonate()` via reflection.
 
-## Gotchas verificados no cubiertos por skills
+## Verified gotchas not covered by skills
 
-Estos causaron oleadas repetidas de errores de compilación o bugs en
-proyectos reales. Si reaparecen en un tercer mod, candidatos a entrar en
+These caused repeated waves of compilation errors or bugs in
+real projects. If they reappear in a third mod, candidates to enter
 `enforce-script-reference` / `dayz-pbo-build`.
 
 **Config / build:**
-- `requiredAddons` debe ser `"JM_CF_Scripts"`, **no** `"CF"`.
-- `worldScriptModule files[]` lista solo la **carpeta raíz** (`4_World`), no
-  las subcarpetas (`Actions`) por separado. Apuntar a una carpeta incluye
-  automáticamente archivos nuevos → no hay que tocar `config.cpp` al añadir
-  un `.c` a esa carpeta.
-- Rutas de textura en `config.cpp` necesitan **doble backslash**
-  (`\\dz\\gear\\…`); con uno solo el engine no resuelve.
-- Clases proxy: deben heredar de `ProxyAttachment` y las rutas de modelo
-  proxy llevan `\` inicial (`"\LFPowerGrid\data\…"`). `hiddenSelections[]`
-  necesario para material swaps por script.
-- `hiddenSelections[]={"camoGround"}` (p. ej. `Barrel_ColorBase`) **oculta
-  la geometría** hasta que `hiddenSelectionsTextures[]` le asigna textura:
-  sin textura el objeto es invisible, no gris.
-- Falta `$PBOPREFIX$` en raíz = AddonBuilder falla.
+- `requiredAddons` must be `"JM_CF_Scripts"`, **not** `"CF"`.
+- `worldScriptModule files[]` lists only the **root folder** (`4_World`), not
+  subfolders (`Actions`) separately. Pointing to a folder automatically includes
+  new files → `config.cpp` does not need to be touched when adding
+  a `.c` to that folder.
+- Texture paths in `config.cpp` need **double backslash**
+  (`\\dz\\gear\\…`); with a single one the engine does not resolve.
+- Proxy classes: must inherit from `ProxyAttachment` and proxy model
+  paths take an initial `\` (`"\LFPowerGrid\data\…"`). `hiddenSelections[]`
+  necessary for material swaps by script.
+- `hiddenSelections[]={"camoGround"}` (e.g. `Barrel_ColorBase`) **hides
+  the geometry** until `hiddenSelectionsTextures[]` assigns texture to it:
+  without texture the object is invisible, not gray.
+- Missing `$PBOPREFIX$` in root = AddonBuilder fails.
 
 **Enforce Script:**
-- Sin `do...while`. Patrón estándar DayZ:
+- No `do...while`. Standard DayZ pattern:
   `bool keep=true; while(keep){ …; keep=FindNextFile(...); }`.
-- No permite expresiones partidas en varias líneas.
-- Si la clase padre tiene constructor parametrizado, **todos** los hijos
-  deben tener firma idéntica → solución: padre sin constructor
-  parametrizado, cada hijo define el suyo.
-- `ref` solo en class member fields, **nunca** en locales.
-- `JsonKeyExists` debe incluir el `:` en el patrón (`"key":`) para no
-  matchear substrings.
-- `Print()` escribe en el **script log** (donde salen los `SCRIPT :`);
-  `PrintToRPT()` escribe en el `.rpt`. Confundirlos = "no sale nada en el log".
-- Para notificar al jugador: `player.MessageStatus()` — no `GetGame().Chat()`
-  (no depende de mods de chat).
-- Al consumir una tecla con un prompt custom visible: `return` SIN llamar a
-  `super.OnKeyPress()`, si no hay doble activación (la F está ligada al
-  ActionManager vanilla).
-- `DZ_Weapons` siempre está cargado en runtime aunque no esté en
+- Does not allow expressions split across multiple lines.
+- If the parent class has a parameterized constructor, **all** children
+  must have identical signature → solution: parent without parameterized
+  constructor, each child defines its own.
+- `ref` only on class member fields, **never** on locals.
+- `JsonKeyExists` must include the `:` in the pattern (`"key":`) to avoid
+  matching substrings.
+- `Print()` writes to the **script log** (where the `SCRIPT :` appear);
+  `PrintToRPT()` writes to the `.rpt`. Confusing them = "nothing appears in the log".
+- To notify the player: `player.MessageStatus()` — not `GetGame().Chat()`
+  (does not depend on chat mods).
+- When consuming a key with a visible custom prompt: `return` WITHOUT calling
+  `super.OnKeyPress()`, otherwise there is double activation (F is bound to
+  vanilla ActionManager).
+- `DZ_Weapons` is always loaded at runtime even if not in
   `requiredAddons`.
 
-**Otros:**
-- Bug T148506: `inventorySlot` string-vs-array al portar clases.
-- Damage rvmat que solo cambia tinte = el Stage3 usa proc `color()` en vez
-  de la textura overlay vanilla (`weapons_damage_wood_mc.paa`, tiling 4×).
-- DayZ 1.29 renombró SoundSets vanilla: `VSS_Vintorez_*` → `VSS_silencer_*`;
-  `AmphibianS_InteriorTail` → `AmphibianS_silencerInteriorTail`. Los
-  SoundSets custom de mods viven en sus propios PBOs y no necesitan alias.
-- `OnStoreLoad` devolviendo `false` no crashea el server: la entidad no
-  entra al mundo, `m_IsStoreLoad=false`, la entrada se purga al siguiente
-  autosave (es una `Virtual Machine Exception` capturada, self-healing).
-- Diagnóstico de minidump de server DayZ: la RPT trunca direcciones a 32
-  bits ("Unknown module" engañoso); la dirección real es 64-bit. Sin PDBs
-  de Bohemia no se puede ir más allá de "el AV cae dentro de
-  `DayZServer_x64.exe`" = bug de engine.
+**Other:**
+- Bug T148506: `inventorySlot` string-vs-array when porting classes.
+- Damage rvmat that only changes tint = Stage3 uses proc `color()` instead
+  of the vanilla overlay texture (`weapons_damage_wood_mc.paa`, tiling 4×).
+- DayZ 1.29 renamed vanilla SoundSets: `VSS_Vintorez_*` → `VSS_silencer_*`;
+  `AmphibianS_InteriorTail` → `AmphibianS_silencerInteriorTail`. Custom
+  mod SoundSets live in their own PBOs and do not need aliases.
+- `OnStoreLoad` returning `false` does not crash the server: the entity does not
+  enter the world, `m_IsStoreLoad=false`, the entry is purged on the next
+  autosave (it is a caught `Virtual Machine Exception`, self-healing).
+- DayZ server minidump diagnostics: RPT truncates addresses to 32
+  bits (misleading "Unknown module"); the real address is 64-bit. Without Bohemia
+  PDBs you cannot go further than "the AV falls within
+  `DayZServer_x64.exe`" = engine bug.
 
-## Veredicto: animación DayZ (fase 0 research, 2026-05-20)
+## Verdict: DayZ animation (phase 0 research, 2026-05-20)
 
-Investigado para la skill `dayz-animation-pipeline` (draft en
-`AI/20_Knowledge/skills-drafts/dayz-animation-pipeline/`). Dos sub-agentes web
-con fuentes primarias (wiki Bohemia, PMC wiki, repos GitHub, `seanim.py`).
+Investigated for the `dayz-animation-pipeline` skill (draft in
+`AI/20_Knowledge/skills-drafts/dayz-animation-pipeline/`). Two web sub-agents
+with primary sources (Bohemia wiki, PMC wiki, GitHub repos, `seanim.py`).
 
-**Hay DOS sistemas de animación en paralelo — no confundirlos:**
+**There are TWO animation systems in parallel — do not confuse them:**
 
-- **Config-driven** (`model.cfg` + `config.cpp` + script): props/objetos —
-  puertas, palancas, ruedas, hide-on-attach. Tipos `rotation(X/Y/Z)` y
-  `translation(X/Y/Z)` [VERIFIED PMC wiki]. `SetAnimationPhase`. **100% texto,
-  producible en sandbox.** El tipo `hide` está [VERIFIED contra mod real
-  kt_roadkill] pero no en la PMC wiki — confirmar `hideValue` contra vanilla.
-- **Skeletal**: personajes/armas usan el pipeline **Enfusion `.txa`→`.anm`**
-  (NO RTM). RTM es legacy (Real Virtuality), para props/man legacy.
+- **Config-driven** (`model.cfg` + `config.cpp` + script): props/objects —
+  doors, levers, wheels, hide-on-attach. Types `rotation(X/Y/Z)` and
+  `translation(X/Y/Z)` [VERIFIED PMC wiki]. `SetAnimationPhase`. **100% text,
+  producible in sandbox.** The `hide` type is [VERIFIED against real mod
+  kt_roadkill] but not on the PMC wiki — confirm `hideValue` against vanilla.
+- **Skeletal**: characters/weapons use the **Enfusion `.txa`→`.anm`** pipeline
+  (NOT RTM). RTM is legacy (Real Virtuality), for legacy props/man.
 
-**Costura sandbox/GUI (lo crítico):** mi sandbox es Linux sin `P:\` ni DayZ
-Tools. Capa 1 (config) la produzco entera. Capa 2 (intermediarios open:
-**SEAnim** open-spec, keyframes Blender headless) la asisto. Capa 3 (Workbench,
-FBXToRTMGui, firma PBO, test in-game) es solo Windows/GUI/computer-use.
+**Sandbox/GUI seam (the critical part):** my sandbox is Linux without `P:\` or DayZ
+Tools. Layer 1 (config) I produce entirely. Layer 2 (open intermediaries:
+**SEAnim** open-spec, headless Blender keyframes) I assist. Layer 3 (Workbench,
+FBXToRTMGui, PBO signing, in-game test) is Windows/GUI/computer-use only.
 
-**Muros [VERIFIED]:**
-- **Un solo mod de animación de jugador a la vez** — dos crashean cliente/server
-  (límite del engine Enfusion, no política). No afecta a animación de objetos.
-- **RTM es ingeniería inversa** (aviso legal explícito de Bohemia). NO existe
-  writer RTM open-source en Python puro; solo plugins de Blender escriben RTM.
-- **`.anm` es propietario**; DayZATool lo escribe (binario cerrado). **SEAnim
-  SÍ es formato abierto** → vía programática (writer verificado por round-trip
-  en [`scripts/seanim_writer.py`](skills-drafts/dayz-animation-pipeline/scripts/seanim_writer.py), layout transcrito literal de `seanim.py`).
-- Esqueleto `OFP2_ManSkeleton`, nombres de hueso exactos o RPT logea
-  `Bone X doesn't exist`. No se puede reestructurar el esqueleto vanilla
-  ([TBD-verify], consenso comunidad).
+**Walls [VERIFIED]:**
+- **Only one player animation mod at a time** — two crash client/server
+  (Enfusion engine limit, not policy). Does not affect object animation.
+- **RTM is reverse engineering** (explicit legal notice from Bohemia). There is NO
+  open-source pure Python RTM writer; only Blender plugins write RTM.
+- **`.anm` is proprietary**; DayZATool writes it (closed binary). **SEAnim
+  IS an open format** → programmatic path (writer verified by round-trip
+  in [`scripts/seanim_writer.py`](skills-drafts/dayz-animation-pipeline/scripts/seanim_writer.py), layout transcribed verbatim from `seanim.py`).
+- Skeleton `OFP2_ManSkeleton`, exact bone names or RPT logs
+  `Bone X doesn't exist`. Vanilla skeleton cannot be restructured
+  ([TBD-verify], community consensus).
 
 **Herramientas reales (todas Windows):** Arma3ObjectBuilder (Blender 4.2+,
 export RTM), FBXToRTMGui.exe (DayZ Tools), DayZATool (DTZxPorter, `.anm`↔SEAnim),
 DayZAnimationPluginDemo (Blender→`.txa`), SE2Dev/io_anim_seanim (SEAnim spec).
 
-**Pendientes [TBD-verify] heredados** (confirmar contra `P:\` antes de fiarse):
-tipos `translationModelX/Y/Z` y `direct`; fuentes engine DayZ `doors`/`damage`;
-firma exacta de `SetAnimationPhase`; factor de escala Blender→DayZ; si los
-plugins Blender DayZ/Arma corren headless en sandbox; catálogo de `.anm` IK
-vanilla (paths Hatchback_02); si FBXToRTM viene con DayZ Tools o solo Arma 3.
+**Inherited pending [TBD-verify]** (confirm against `P:\` before trusting):
+types `translationModelX/Y/Z` and `direct`; DayZ engine sources `doors`/`damage`;
+exact signature of `SetAnimationPhase`; Blender→DayZ scale factor; whether DayZ/Arma
+Blender plugins run headless in sandbox; vanilla IK `.anm` catalog
+(Hatchback_02 paths); whether FBXToRTM comes with DayZ Tools or only Arma 3.
 
-**Clarificación de la costura (added 2026-05-20, evals + empaquetado):** el lado
-geometría `.p3d` que necesita una animación —la named selection que se anima y el
-par de memory points que define el `axis`— **es producible en sandbox**, NO es
-Object Builder/Windows. Vía: `dayz-p3d-inspector` (extract → Recipe JSON → editar
-memory points/axes/selections → rebuild `.p3d`) o `dayz-model-pipeline` (py3d
-assembly); un conversor ODOL→MLOD externo primero si el `.p3d` es ODOL (binarizado, no
-editable); `dayz-p3d-audit` para verificar winding/`Component01`. Caveats: py3d
-edita MLOD; añadir memory points y el axis es trivial, pero **autoría de una named
-selection nueva que agrupe geometría específica** se apoya en el contexto de
-`dayz-model-pipeline`. Layer 3 real para trabajo Layer 1 = solo firma PBO + test
-in-game. (El draft inicial empujaba esto a Object Builder por conservadurismo;
-corregido en la skill tras eval.)
+**Seam clarification (added 2026-05-20, evals + packaging):** the `.p3d`
+geometry side that an animation needs —the named selection being animated and the
+pair of memory points defining the `axis`— **is producible in sandbox**, it is NOT
+Object Builder/Windows. Route: `dayz-p3d-inspector` (extract → Recipe JSON → edit
+memory points/axes/selections → rebuild `.p3d`) or `dayz-model-pipeline` (py3d
+assembly); an external ODOL→MLOD converter first if the `.p3d` is ODOL (binarized, not
+editable); `dayz-p3d-audit` to verify winding/`Component01`. Caveats: py3d
+edits MLOD; adding memory points and the axis is trivial, but **authoring a new named
+selection grouping specific geometry** relies on the context of
+`dayz-model-pipeline`. Real Layer 3 for Layer 1 work = only PBO signing + in-game
+test. (The initial draft pushed this to Object Builder out of conservatism;
+corrected in the skill after eval.)
 
-**Estado de la skill (2026-05-20):** `dayz-animation-pipeline` empaquetada a
-`.skill` nativo en [`AI/20_Knowledge/skills-drafts/dayz-animation-pipeline.skill`](skills-drafts/dayz-animation-pipeline.skill).
-Evals cerrados (con-skill 100% vs baseline 56% sobre 4 casos, n=1/brazo). Dos
-mejoras validadas: `hideValue` como `[TBD-verify]` must-tag, y la clarificación de
-costura de arriba. Handoff: [`30_Sessions/2026-05-20-dayz-animation-pipeline-evals-packaging.md`](../30_Sessions/2026-05-20-dayz-animation-pipeline-evals-packaging.md).
+**Skill status (2026-05-20):** `dayz-animation-pipeline` packaged to
+native `.skill` in [`AI/20_Knowledge/skills-drafts/dayz-animation-pipeline.skill`](skills-drafts/dayz-animation-pipeline.skill).
+Evals closed (with-skill 100% vs baseline 56% over 4 cases, n=1/arm). Two
+validated improvements: `hideValue` as `[TBD-verify]` must-tag, and the seam
+clarification above. Handoff: [`30_Sessions/2026-05-20-dayz-animation-pipeline-evals-packaging.md`](../30_Sessions/2026-05-20-dayz-animation-pipeline-evals-packaging.md).
 
 ## Relacionado
 
 - Skills: `enforce-script-reference`, `dayz-pbo-build`, `dayz-model-pipeline`,
-  `dayz-p3d-audit` — cubren la mayoría del modding; esta nota es el
-  complemento de lo que se verificó en proyectos y no está en ellas.
-- Skill draft `dayz-animation-pipeline` — pipeline de animación completo
-  (config-driven + skeletal), pendiente de evals + empaquetado.
-- [`AI/20_Knowledge/dayz-modded-class-server-stub-pattern.md`](dayz-modded-class-server-stub-pattern.md) — patrón stub
-  server-only (bug pattern relacionado con `#ifdef SERVER`).
-- Proyectos donde se verificó: LF-COM, Crate, LF_VStorage, LF_PowerGrid,
-  LF_Transfer (ver [`AI/10_Projects/_ESTADO-PROYECTOS.md`](../10_Projects/_ESTADO-PROYECTOS.md)).
-- [[dayz-enforce-script-reference]] — reglas duras de Enforce que complementan los gotchas de build/script de aquí.
-- [[dayz-mod-implementation-checklists]] — catálogo de errores recurrentes (E01–E31) y mínimos del engine anti-crash.
-- [[dayz-animations-creatures-weapons]] — desarrolla el veredicto de animación con identificadores VERIFIED contra vanilla.
-- [[dayz-p3d-inspector-memory-selection-bugs]] — detalle del agujero de RE en el lector ODOL v55 mencionado abajo.
+  `dayz-p3d-audit` — cover most of modding; this note is the
+  supplement to what was verified in projects and is not in them.
+- Skill draft `dayz-animation-pipeline` — complete animation pipeline
+  (config-driven + skeletal), pending evals + packaging.
+- [`AI/20_Knowledge/dayz-modded-class-server-stub-pattern.md`](dayz-modded-class-server-stub-pattern.md) — stub pattern
+  server-only (bug pattern related to `#ifdef SERVER`).
+- Projects where verified: LF-COM, Crate, LF_VStorage, LF_PowerGrid,
+  LF_Transfer (see [`AI/10_Projects/_ESTADO-PROYECTOS.md`](../10_Projects/_ESTADO-PROYECTOS.md)).
+- [[dayz-enforce-script-reference]] — Enforce hard rules supplementing the build/script gotchas here.
+- [[dayz-mod-implementation-checklists]] — recurring error catalog (E01–E31) and anti-crash engine minimums.
+- [[dayz-animations-creatures-weapons]] — expands animation verdict with VERIFIED identifiers against vanilla.
+- [[dayz-p3d-inspector-memory-selection-bugs]] — RE gap detail in ODOL v55 reader mentioned below.
 
-## Limitación verificada — lector ODOL v55: la sección de anims no parsea (added 2026-05-25)
+## Verified limitation — ODOL v55 reader: anims section does not parse (added 2026-05-25)
 
-Confirmado 2 veces de forma independiente el 2026-05-24/25 (Claude en kt_roadkill_armed
-+ Codex C1 en la misma sesión): el lector ODOL externo (conversor ODOL→MLOD, no distribuido en este pack) **no
-parsea la sección de animaciones en formato v55**. El desync NO está en `AnimationClass`
-(un parche ahí no lo resolvió). Consecuencia práctica:
+Confirmed 2 times independently on 2026-05-24/25 (Claude on kt_roadkill_armed
++ Codex C1 in the same session): the external ODOL reader (ODOL→MLOD converter, not distributed in this pack) **does
+not parse the animation section in v55 format**. The desync is NOT in `AnimationClass`
+(a patch there did not resolve it). Practical consequence:
 
-- NO re-intentar recuperar offsets/sources exactos de dampers/anims desde un `.p3d`
-  binarizado v55 hasta que el lector se arregle — es un agujero de reverse-engineering
-  que ya costó tiempo dos veces.
-- Vías alternativas: recuperar esas anims inspeccionando el binarizado **después** del
-  rebuild propio, o tratarlas como cosméticas diferibles (R26: no fabricar a ojo).
-- Dependencia del reader: `odol_reader.py` necesita sus módulos hermanos
-  (`math_types.py`, `bis_reader.py`, `lzo_decompress.py`) en la misma carpeta
-  de scripts del conversor externo. Copiar el script suelto falla (le pasó a Codex).
+- Do NOT retry recovering exact offsets/sources of dampers/anims from a `.p3d`
+  binarized v55 until the reader is fixed — it is a reverse-engineering hole
+  that already cost time twice.
+- Alternative routes: recover those anims by inspecting the binarized file **after**
+  own rebuild, or treat them as deferrable cosmetics (R26: do not eyeball).
+- Reader dependency: `odol_reader.py` needs its sibling modules
+  (`math_types.py`, `bis_reader.py`, `lzo_decompress.py`) in the same scripts
+  folder of the external converter. Copying the loose script fails (happened to Codex).
 
-Propuesta pendiente (NO aplicada — el `SKILL.md` del conversor está en ruta
-`skills-plugin` read-only desde sandbox): replicar esta limitación dentro del propio
-SKILL.md vía una sesión con acceso de escritura al plugin (o draft en `skills-drafts/`).
-Cross-ref introspección [`30_Sessions/2026-05-25-introspeccion.md`](../30_Sessions/2026-05-25-introspeccion.md) §2.5, PB-010.
+Pending proposal (NOT applied — converter `SKILL.md` is in
+`skills-plugin` read-only path from sandbox): replicate this limitation inside
+SKILL.md itself via a session with write access to the plugin (or draft in `skills-drafts/`).
+Cross-ref introspection [`30_Sessions/2026-05-25-introspeccion.md`](../30_Sessions/2026-05-25-introspeccion.md) §2.5, PB-010.

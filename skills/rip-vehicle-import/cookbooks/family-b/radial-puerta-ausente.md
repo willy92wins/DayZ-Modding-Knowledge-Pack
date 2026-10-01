@@ -1,6 +1,6 @@
-# Cookbook B — radial de puerta ausente
+# Cookbook B — missing door radial
 
-> Familia B. Este cuerpo se movió sin reescritura en CAMBIO-1; las notas de estado y las rutas permanecen tal como estaban en el origen.
+> Family B. This body was moved without rewriting in CAMBIO-1; status notes and paths remain exactly as they were in the origin.
 
 <!-- MOVED-EXACT source="dayz-vehicles/SKILL.md:191" sha256="3E3511B1F6C0480BFDA27046E54A28287A946D315A03F84DED4FF709B31672E8" -->
 ## DOOR MECHANISM SELECTOR — decide this BEFORE modelling or scripting anything (added 2026-07-27)

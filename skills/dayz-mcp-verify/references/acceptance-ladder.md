@@ -3,173 +3,173 @@
 > Extracted from dayz-mcp-verify/SKILL.md 2026-07-07 (F3). The core SKILL.md keeps a summary + pointer here.
 
 
-Escalera de aceptación completa de coches conducibles: los verbos de conducción owner-side, las rungs R1→R6, el mapeo fallo→fix de la taxonomía SUB_BRZ, y el detalle del orquestador `drive_ladder.py`. El núcleo de la skill resume esto en 5-8 líneas y apunta aquí.
+Complete drivable cars acceptance ladder: owner-side driving verbs, rungs R1→R6, SUB_BRZ taxonomy failure→fix mapping, and `drive_ladder.py` orchestrator detail. The skill core summarizes this in 5-8 lines and points here.
 
 
-## DRIVABILITY: verbos de conducción owner-side disponibles (added 2026-06-28)
+## DRIVABILITY: available owner-side driving verbs (added 2026-06-28)
 
-Fase 5 del proyecto DayZ-MCP añadió y gateó in-game una surface de verbos componibles que SÍ conducen el coche
-owner-side (el cliente toma ownership y maneja throttle/steer). Tools MCP (todas peer **cliente** salvo la última,
-que es server):
+Phase 5 of the DayZ-MCP project added and in-game gated a surface of composable verbs that DO drive the car
+owner-side (client takes ownership and handles throttle/steer). MCP tools (all **client** peer except the last,
+which is server):
 
-| Tool MCP | Qué hace |
+| MCP Tool | What it does |
 |---|---|
-| `vehicle_get_in_client(pos)` | sienta al cliente en el coche cerca de `pos` (toma ownership + condiciona fuel/batería); devuelve `seated`/`is_owner`/`vehicle_fixture_ready` |
-| `engine_set(mode)` | `"start"`/`"stop"` el motor del coche-owner |
-| `vehicle_control(throttle, steer, brake, handbrake, hold_ttl_s)` | fija control SOSTENIDO (el coche sigue conduciendo sin re-llamar, hasta `vehicle_release` o el deadman `hold_ttl_s`); fail-closed (rango+NaN) |
-| `vehicle_telemetry()` | speed/gear/engine/pos/`is_owner`/net_strategy del coche-owner |
-| `vehicle_release()` | suelta el control sostenido |
-| `query_get_in_condition(pos, component=-1)` (peer **server**) | diagnostica si el get-in NORMAL estaría disponible y CUÁL de los 7 gates de `ActionGetInTransport` bloquea; `component` = índice de un `scene_raycast` previo (OBLIGATORIO para un veredicto `available`; sin él → `partial`, nunca PASS) |
+| `vehicle_get_in_client(pos)` | seats client in car near `pos` (takes ownership + conditions fuel/battery); returns `seated`/`is_owner`/`vehicle_fixture_ready` |
+| `engine_set(mode)` | `"start"`/`"stop"` engine of owner-car |
+| `vehicle_control(throttle, steer, brake, handbrake, hold_ttl_s)` | sets SUSTAINED control (car keeps driving without re-calling, until `vehicle_release` or deadman `hold_ttl_s`); fail-closed (range+NaN) |
+| `vehicle_telemetry()` | speed/gear/engine/pos/`is_owner`/net_strategy of owner-car |
+| `vehicle_release()` | releases sustained control |
+| `query_get_in_condition(pos, component=-1)` (**server** peer) | diagnoses whether NORMAL get-in would be available and WHICH of the 7 gates of `ActionGetInTransport` blocks; `component` = index from a prior `scene_raycast` (MANDATORY for an `available` verdict; without it → `partial`, never PASS) |
 
-**Mecanismo (NO re-investigar, verificado in-game):** el cliente toma ownership con `StartCommand_Vehicle`
-client-side (`OnVehicleSeatDriverEnter`→`Possess(car)`, bajo `FEATURE_NETWORK_RECONCILIATION`); conducir owner-side
-exige aplicar `SetThrottle/SetSteering` DENTRO de `CarScript.OnInput` TRAS `super` (un `modded class CarScript` en el
-PBO MCP — `Car.SetThrottle` desde el mission lo pisa `super.OnInput` con el input=0 del driver). El holder estático
-`MCPCarDrive` + deadman lleva el estado. Ver `dayz-vehicles` (SP-032) + plan
+**Mechanism (do NOT re-investigate, verified in-game):** client takes ownership with `StartCommand_Vehicle`
+client-side (`OnVehicleSeatDriverEnter`→`Possess(car)`, under `FEATURE_NETWORK_RECONCILIATION`); owner-side driving
+requires applying `SetThrottle/SetSteering` INSIDE `CarScript.OnInput` AFTER `super` (a `modded class CarScript` in the
+MCP PBO — `Car.SetThrottle` from mission is overwritten by `super.OnInput` with driver's input=0). The static holder
+`MCPCarDrive` + deadman carries state. See `dayz-vehicles` (SP-032) + plan
 `DayZ_MCP_dev/plans/2026-06-28-fase5-tramoA-redesign-delta.md`.
 
-**Escalera de aceptación (§6 del plan, YA CABLEADA — ver §"ESCALERA DE ACEPTACIÓN" abajo):** con estos verbos las rungs que antes eran
-"manual" ya son automatizables — R3 get-in disponible (`query_get_in_condition` con `component` de un raycast →
-`available`/`first_block`), R4 sentado (`vehicle_get_in_client` → `seated`/`is_owner`), R5 conduce
-(`engine_set`+`vehicle_control`+`vehicle_telemetry`+`vehicle_release` → `pos_delta` crece), R6 sentido de ruedas
-(`vehicle_control{steer}` + visual). Caveats de gate verificados: (a) para MEDIR `pos_delta` de conducción, spawnea
-el coche en zona DESPEJADA (offset; un obstáculo delante da pos_delta≈0 engañoso); (b) `query_get_in_condition` exige
-el coche JUNTO al jugador (gate 7 reachability mide jugador↔puerta). Drivers de gate de referencia (raw enqueue):
+**Acceptance ladder (§6 of plan, ALREADY WIRED — see §"ACCEPTANCE LADDER" below):** with these verbs rungs that were previously
+"manual" are now automatable — R3 get-in available (`query_get_in_condition` with `component` from a raycast →
+`available`/`first_block`), R4 seated (`vehicle_get_in_client` → `seated`/`is_owner`), R5 drives
+(`engine_set`+`vehicle_control`+`vehicle_telemetry`+`vehicle_release` → `pos_delta` grows), R6 wheel direction
+(`vehicle_control{steer}` + visual). Verified gate caveats: (a) to MEASURE driving `pos_delta`, spawn
+car in CLEAR area (offset; an obstacle in front gives misleading pos_delta≈0); (b) `query_get_in_condition` requires
+car NEXT to player (gate 7 reachability measures player↔door). Reference gate drivers (raw enqueue):
 `DayZ_MCP_dev/tools/{tramoA_verbs_gate.py,tramoB_getin_gate.py}`.
 
-## ESCALERA DE ACEPTACIÓN: rip → coche conducible (added 2026-06-28)
+## ACCEPTANCE LADDER: rip → drivable car (added 2026-06-28)
 
-El orquestador de Fase 5 (§6 del plan `DayZ_MCP_dev/plans/2026-06-28-fase5-drivability-autonoma.md`).
-Recorre una escalera ordenada de **rungs**; cada rung lee **ground-truth in-game** con los verbos de
-arriba (sección DRIVABILITY); cada fallo se mapea a un **fix conocido de la taxonomía SUB_BRZ** (en la
-skill `dayz-vehicles`, `references/`). El objetivo: iterar un coche (rip source-game → conducible) sin humano
-en el juego, **parando y escalando** en cuanto un fallo cae fuera de la taxonomía conocida.
+Phase 5 orchestrator (§6 of plan `DayZ_MCP_dev/plans/2026-06-28-fase5-drivability-autonoma.md`).
+Walks an ordered ladder of **rungs**; each rung reads **in-game ground-truth** with the verbs from
+above (DRIVABILITY section); each failure maps to a **known fix in the SUB_BRZ taxonomy** (in the
+`dayz-vehicles` skill, `references/`). Goal: iterate a car (source-game rip → drivable) without human
+in game, **stopping and escalating** as soon as a failure falls outside known taxonomy.
 
-**Cuándo**: tras el smoke visual (la receta de §"VEHÍCULO" de arriba ya dejó el juego lanzado, el bridge
-verde y el coche cargando). La escalera es la extensión de **conducción** del smoke: empieza donde el
-smoke acaba (entity spawnea + se ve) y llega hasta "conduce y gira al lado correcto".
+**When**: after visual smoke (§"VEHICLE" recipe above already left game launched, bridge
+green, and car loading). The ladder is the **driving** extension of the smoke: starts where
+smoke ends (entity spawns + is seen) and reaches "drives and turns to the correct side".
 
-### Precondiciones (heredadas — NO re-hacer aquí)
-- **Launch + readiness + `bridge_status` verde**: receta §"VEHÍCULO" pasos 1-7 (misión stock, seed del
-  bridge, `-PackOnly`, esperar CE, captura flaky). La escalera asume ambos peers `version_state=ok` y el
-  player spawneado (`query_player_state` devuelve `pos`).
-- **Box DayZ EXCLUSIVO** entre sesiones Cowork (precondición dura §"VEHÍCULO".8). Una sola sesión.
-- **Surface de verbos construida y gateada in-game** (sección DRIVABILITY). La escalera NO construye
-  bridge: lo conduce.
+### Preconditions (inherited — do NOT re-do here)
+- **Launch + readiness + green `bridge_status`**: §"VEHICLE" recipe steps 1-7 (stock mission, bridge
+  seed, `-PackOnly`, wait for CE, flaky capture). The ladder assumes both peers `version_state=ok` and the
+  player spawned (`query_player_state` returns `pos`).
+- **EXCLUSIVE DayZ box** between Cowork sessions (hard precondition §"VEHICLE".8). A single session.
+- **Verb surface built and in-game gated** (DRIVABILITY section). The ladder does NOT build
+  bridge: it drives it.
 
-### Cómo se recorre (el lazo de iteración)
-1. Posiciona el coche (ver "Colocación del spawn") y recorre **R1→R6 en orden**.
-2. En cada rung FAIL, **clasifica**: ¿el síntoma está en la taxonomía SUB_BRZ (tabla "Mapeo fallo→fix")?
-   - **Sí** → registra el rung + el fix mapeado en el journal y **sigue** recogiendo señal de los rungs
-     que aún sean alcanzables (ver "hard-block vs soft" abajo). NO rebuild a mitad de pasada.
-   - **No** (fallo fuera de la taxonomía) → **PARA y escala** (barandilla 1). No rebuild a ciegas.
-3. Al final de la pasada: **batch** de todos los fixes registrados → el agente los aplica al `.p3d`/config
-   (lazo humano/agente, NO scriptado: leer screenshots + editar geometría/config con los refs de
-   `dayz-vehicles`) → **un solo** rebuild+deploy (`dayz-test-ingame` / `dayz-pbo-build`) → re-corre la
-   escalera. Agrupar todos los fixes por rebuild es R5 (cada test in-game vale por TODOS los cambios).
-4. **Presupuesto de iteraciones** por coche (default 6 pasadas; si no converge → escalar, no loop infinito).
+### How it is traversed (the iteration loop)
+1. Position the car (see "Spawn placement") and walk **R1→R6 in order**.
+2. On each FAIL rung, **classify**: is the symptom in the SUB_BRZ taxonomy ("Failure→fix mapping" table)?
+   - **Yes** → record the rung + mapped fix in the journal and **continue** collecting signal from rungs
+     that are still reachable (see "hard-block vs soft" below). Do NOT rebuild midway through pass.
+   - **No** (failure outside taxonomy) → **STOP and escalate** (guardrail 1). Do not blindly rebuild.
+3. At end of pass: **batch** of all recorded fixes → agent applies them to `.p3d`/config
+   (human/agent loop, NOT scripted: read screenshots + edit geometry/config with refs from
+   `dayz-vehicles`) → **a single** rebuild+deploy (`dayz-test-ingame` / `dayz-pbo-build`) → re-run the
+   ladder. Grouping all fixes per rebuild is R5 (each in-game test counts for ALL changes).
+4. **Iteration budget** per car (default 6 passes; if it does not converge → escalate, no infinite loop).
 
-**Hard-block vs soft (qué corta la pasada):**
-- **R1 fail = hard** (sin entity no hay nada que probar) → para la pasada, fix, re-spawn.
-- **R4 fail = hard para R5/R6** (sin sentarse no se conduce) → registra, salta R5/R6.
-- **R2, R3, R6 = soft**: registra el fix y sigue. En particular **R3 (get-in diagnóstico) NO bloquea
-  R4/R5**: `vehicle_get_in_client` (R4) **fuerza** el `StartCommand_Vehicle` y se salta los gates del
-  radial → un coche con R3 FAIL (un humano no podría entrar) puede aun así conducirse por MCP. Eso es una
-  señal valiosa: "conduce por MCP pero el get-in del jugador está roto" → el fix de get-in sigue siendo
-  necesario para el producto. Recoge ambas señales en la misma pasada.
+**Hard-block vs soft (what cuts the pass):**
+- **R1 fail = hard** (without entity there is nothing to test) → stop pass, fix, re-spawn.
+- **R4 fail = hard for R5/R6** (without seating no driving) → record, skip R5/R6.
+- **R2, R3, R6 = soft**: record fix and continue. In particular **R3 (diagnostic get-in) does NOT block
+  R4/R5**: `vehicle_get_in_client` (R4) **forces** `StartCommand_Vehicle` and skips radial
+  gates → a car with R3 FAIL (a human could not enter) can still be driven via MCP. That is a
+  valuable signal: "drives via MCP but player get-in is broken" → the get-in fix remains
+  necessary for the product. Collect both signals in the same pass.
 
-### Colocación del spawn (la tensión R3/R4 ↔ R5 — resolverla mal da verde/rojo falso)
-- **R3 `query_get_in_condition` y R4 `vehicle_get_in_client` exigen el coche JUNTO al jugador** (gate 7
-  reachability mide jugador↔puerta; el seat client-side busca transporte cercano).
-- **R5 (conducir) exige pista DESPEJADA por delante** (un obstáculo da `pos_delta≈0` engañoso).
-- **Resolución unificada**: spawnea el coche **en la posición del jugador, en terreno abierto**, orientado
-  (`world_spawn` arg `rotation`) hacia espacio libre. Así R3/R4 tienen reachability Y R5 tiene pista.
-- **Desambiguación obligatoria de `pos_delta≈0`** (es un rojo-falso candidato, NO concluir drivetrain a la
-  primera): tras R4 OK (seated+is_owner) + R5 con throttle, si `pos_delta≈0`:
-  - `vehicle_telemetry` con `speedo_max>0` / gear auto-subió / el motor revoluciona (log `[MCP-DRIVE]` RPM
-    sube) → el powertrain FUNCIONA, el coche está **BLOQUEADO** (obstáculo) → **re-corre solo R5** con el
-    coche reubicado a suelo despejado (offset tipo `tramoA_verbs_gate.py --dz 40`). Si entonces se mueve,
-    era obstáculo (rojo-falso), no un fix de modelo.
-  - `speedo_max≈0` + sin revoluciones + ruedas sin simular → **drivetrain/wheel-sim real** → fix de R5.
-  El gate del primer spawn de SUB_BRZ (6063,1931) tenía obstáculo: `pos_delta` 0.15-0.25 con motor a tope;
-  el offset +40m despejado dio 29 m. Ground-truth = el re-test en suelo despejado, no la primera lectura.
+### Spawn placement (R3/R4 ↔ R5 tension — resolving it wrong gives false green/red)
+- **R3 `query_get_in_condition` and R4 `vehicle_get_in_client` require the car NEXT to player** (gate 7
+  reachability measures player↔door; client-side seat looks for nearby transport).
+- **R5 (driving) requires CLEAR track ahead** (an obstacle gives misleading `pos_delta≈0`).
+- **Unified resolution**: spawn car **at player position, on open ground**, oriented
+  (`world_spawn` arg `rotation`) toward free space. Thus R3/R4 have reachability AND R5 has track.
+- **Mandatory disambiguation of `pos_delta≈0`** (candidate false-red, do NOT conclude drivetrain on
+  first try): after R4 OK (seated+is_owner) + R5 with throttle, if `pos_delta≈0`:
+  - `vehicle_telemetry` with `speedo_max>0` / gear auto-upshifted / engine revs (`[MCP-DRIVE]` log RPM
+    rises) → powertrain WORKS, car is **BLOCKED** (obstacle) → **re-run R5 only** with
+    car relocated to clear ground (offset like `tramoA_verbs_gate.py --dz 40`). If it then moves,
+    it was obstacle (false-red), not a model fix.
+  - `speedo_max≈0` + no revs + unsimulated wheels → **real drivetrain/wheel-sim** → R5 fix.
+  The gate of the first SUB_BRZ spawn (6063,1931) had obstacle: `pos_delta` 0.15-0.25 with engine at max;
+  cleared offset +40m gave 29 m. Ground-truth = re-test on clear ground, not first reading.
 
-### La escalera
+### The ladder
 
-| Rung | Verbo(s) MCP | PASS (ground-truth) | FAIL → fix (taxonomía) |
+| Rung | MCP Verb(s) | PASS (ground-truth) | FAIL → fix (taxonomy) |
 |---|---|---|---|
-| **R1 spawnea** | `world_spawn(type, pos, rotation)` | `ok=1`, `found=1`, entity con `pos` | `unknown_type`/`spawn_failed` → mod no montado / `CfgPatches`. Spawnea pero invisible / "action selection not found in geometry" → **componentNN** (islas sueltas) |
-| **R2 render sólido+orientado** | `scene_raycast(from,to)` (N puntos) + `camera_set(cam_mode:"lookat")`+`capture_screenshot` (N ángulos) | rayos sólidos donde deben pegar + visual sin agujeros/caras invertidas, orientado, escala plausible | agujero desde un ángulo / sólido desde el opuesto → **winding por-pieza**. Coche rotado/espejado → **orient transform**. Tamaño mal → **escala**. Pieza flotando/rotada ~90° → **frame de proxy** |
-| **R2.5 restore-gameplay** | (lookat NO desactiva la sim; ver abajo) | sim+controles vivos antes de conducir; **freecam PROHIBIDA en esta escalera** | si R4/R5 no responden con seated+owner+engine → sospechar freecam/sim, NO drivetrain |
-| **R3 get-in disponible** | `scene_raycast` (anillo) → `component` → `query_get_in_condition(pos, component)` | el asiento de **CONDUCTOR** (`component_crew_index==0`) está `available=1` (`first_block=""`). Un coche con solo el PASAJERO available NO es conducible por un humano → R3 FAIL | el `first_block` del CONDUCTOR (tabla "Mapeo fallo→fix"). Soft: NO bloquea R4/R5 |
-| **R4 sentado (MCP)** | `vehicle_get_in_client(pos)` | `seated=1`, `is_owner=1`, `vehicle_fixture_ready=1` | `not_seated`/`seat_failed` → reachability / seat anim / crew bone. Hard para R5/R6 |
-| **R5 conduce** | `engine_set("start")` → `vehicle_control(throttle:1, hold_ttl_s:12)` → [no re-llamar] → `vehicle_telemetry` → `vehicle_release` | `pos_delta>1.0` m + `speedo_max>0` + `engine_on_server` + `is_owner` (movimiento por gravedad/inercia NO cuenta) | `pos_delta≈0` con engine+owner → AMBIGUO: **re-test OBLIGATORIO en suelo despejado** antes de mapear fix (`needs_clear_ground_retest`); si sigue ~0 con motor revolucionando → **wheel sim (FireGeo)** / drivetrain |
-| **R6 ruedas/sentido** | `vehicle_control(steer:-1)` + muestreo `vehicle_telemetry` (+ `camera_set` lookat opcional) | el coche curva al lado COMANDADO — pero el signo izquierda/derecha está SIN CALIBRAR: el orquestador reporta `signed_cross`, confirma vs un coche vanilla de ref antes de concluir | curva al lado opuesto / ruedas espejadas → **model.cfg wheel `angle` sign** / **naming `wheel_X_Y`** |
+| **R1 spawns** | `world_spawn(type, pos, rotation)` | `ok=1`, `found=1`, entity with `pos` | `unknown_type`/`spawn_failed` → mod not mounted / `CfgPatches`. Spawns but invisible / "action selection not found in geometry" → **componentNN** (loose islands) |
+| **R2 solid+oriented render** | `scene_raycast(from,to)` (N points) + `camera_set(cam_mode:"lookat")`+`capture_screenshot` (N angles) | solid rays where they should hit + visual without holes/inverted faces, oriented, plausible scale | hole from one angle / solid from opposite → **per-part winding**. Rotated/mirrored car → **orient transform**. Bad size → **scale**. Floating/rotated ~90° part → **proxy frame** |
+| **R2.5 restore-gameplay** | (lookat does NOT disable sim; see below) | live sim+controls before driving; **freecam FORBIDDEN in this ladder** | if R4/R5 do not respond with seated+owner+engine → suspect freecam/sim, NOT drivetrain |
+| **R3 get-in available** | `scene_raycast` (ring) → `component` → `query_get_in_condition(pos, component)` | **DRIVER** seat (`component_crew_index==0`) is `available=1` (`first_block=""`). A car with only PASSENGER available is NOT drivable by a human → R3 FAIL | the `first_block` of DRIVER ("Failure→fix mapping" table). Soft: does NOT block R4/R5 |
+| **R4 seated (MCP)** | `vehicle_get_in_client(pos)` | `seated=1`, `is_owner=1`, `vehicle_fixture_ready=1` | `not_seated`/`seat_failed` → reachability / seat anim / crew bone. Hard for R5/R6 |
+| **R5 drives** | `engine_set("start")` → `vehicle_control(throttle:1, hold_ttl_s:12)` → [do not re-call] → `vehicle_telemetry` → `vehicle_release` | `pos_delta>1.0` m + `speedo_max>0` + `engine_on_server` + `is_owner` (movement by gravity/inertia does NOT count) | `pos_delta≈0` with engine+owner → AMBIGUOUS: **MANDATORY re-test on clear ground** before mapping fix (`needs_clear_ground_retest`); if still ~0 with revving engine → **wheel sim (FireGeo)** / drivetrain |
+| **R6 wheels/direction** | `vehicle_control(steer:-1)` + `vehicle_telemetry` sampling (+ optional `camera_set` lookat) | car curves to COMMANDED side — but left/right sign is UNCALIBRATED: orchestrator reports `signed_cross`, confirm vs vanilla ref car before concluding | curves to opposite side / mirrored wheels → **model.cfg wheel `angle` sign** / **naming `wheel_X_Y`** |
 
 `world_spawn` result: `pos_real`/`pos`. `vehicle_get_in_client`: `seated`/`is_owner`/`vehicle_fixture_ready`.
 `vehicle_telemetry`: `speedo_max`/`gear`/`engine_on_server`/`pos`/`is_owner`/`net_strategy`.
 `query_get_in_condition` → `get_in`: `available`/`partial`/`crew_size`/`component_crew_index`/`first_block`/
 `per_seat[]{crew_index, crew_can_get_through, area_free, occupied, reachable}`. `scene_raycast` →
-`raycast`: `hit`/`component`. (Firmas y campos verificados contra los schemas MCP + `tramoA_verbs_gate.py`/
-`tramoB_getin_gate.py` que gatearon PASS in-game.)
+`raycast`: `hit`/`component`. (Signatures and fields verified against MCP schemas + `tramoA_verbs_gate.py`/
+`tramoB_getin_gate.py` that gated PASS in-game.)
 
 ### R2.5 — restore-gameplay (mecanismo VERIFICADO, no hand-wave)
-La cámara y el get-in tocan la simulación del player; hacerlo en el orden malo deja el coche inerte con
-todos los demás verbos en verde (rojo-falso clásico). Lo verificado en `MCPClientBridge.c`:
-- **`camera_set` SIEMPRE suprime controles** (`SuppressGameplay()`, `:1333` → `PlayerControlDisable` +
-  oculta HUD) pero **NO** desactiva la sim — salvo `cam_mode="free"`, que llama `DisableSimulation(true)`
-  (`:1335-1400`, `CAMERA_MODE_FREE`). `lookat`/`orient`/`matrix` crean una `staticcamera`: **sim viva**.
-- **El verbo `vehicle_get_in_client` (R4, `ProcessVehicleGetInClientPrep` `:919-1029`) NO restaura la sim**:
-  hace seat (`StartCommand_Vehicle` `:955`) + conditioning (`OnDebugSpawn` `:1006`) + captura ownership, pero
-  **no llama `RestoreGameplay()`**. El único PREP cliente que restaura es el del gate `drive_probe_client`
-  (`ProcessDriveProbeClientPrep`, `RestoreGameplay()` `:1042`); la def `:1808-1832` → `DisableSimulation(false)`
-  `:1813` + `PlayerControlEnable(true)` `:1825`. Consecuencia: una sim que una freecam deshabilitó **NO se cura
-  sola al entrar en R4** — el get-in se colgaría en `not_seated` (la sim del player parada no completa el
-  `HumanCommandVehicle`). La única protección es la regla de abajo.
-- **Regla de la escalera**: para R2 y R6 usa **siempre `cam_mode="lookat"`** (staticcamera, sim viva,
-  conducir sigue funcionando porque el throttle lo aplica el holder `MCPCarDrive.OnInput`, no el input del
-  player). **NUNCA `cam_mode="free"` entre R2 y R5.** Si R5 no mueve con `seated=1`+`is_owner=1`+
-  `engine_on`, el primer sospechoso es una sim freecam-deshabilitada (violación de R2.5), no el drivetrain.
+Camera and get-in touch player simulation; doing so in the wrong order leaves car inert with
+all other verbs green (classic false-red). What was verified in `MCPClientBridge.c`:
+- **`camera_set` ALWAYS suppresses controls** (`SuppressGameplay()`, `:1333` → `PlayerControlDisable` +
+  hides HUD) but does **NOT** disable sim — except `cam_mode="free"`, which calls `DisableSimulation(true)`
+  (`:1335-1400`, `CAMERA_MODE_FREE`). `lookat`/`orient`/`matrix` create a `staticcamera`: **live sim**.
+- **The `vehicle_get_in_client` verb (R4, `ProcessVehicleGetInClientPrep` `:919-1029`) does NOT restore sim**:
+  does seat (`StartCommand_Vehicle` `:955`) + conditioning (`OnDebugSpawn` `:1006`) + captures ownership, but
+  **does not call `RestoreGameplay()`**. The only client PREP that restores is that of the `drive_probe_client` gate
+  (`ProcessDriveProbeClientPrep`, `RestoreGameplay()` `:1042`); def `:1808-1832` → `DisableSimulation(false)`
+  `:1813` + `PlayerControlEnable(true)` `:1825`. Consequence: a sim disabled by a freecam **does NOT heal
+  itself on entering R4** — get-in would hang in `not_seated` (stopped player sim does not complete
+  `HumanCommandVehicle`). The only protection is the rule below.
+- **Ladder rule**: for R2 and R6 use **always `cam_mode="lookat"`** (staticcamera, live sim,
+  driving keeps working because throttle is applied by the `MCPCarDrive.OnInput` holder, not player
+  input). **NEVER `cam_mode="free"` between R2 and R5.** If R5 does not move with `seated=1`+`is_owner=1`+
+  `engine_on`, first suspect is a freecam-disabled sim (R2.5 violation), not drivetrain.
 
 ### Barandillas anti-verde-falso (innegociables)
-1. **Fallo fuera de la taxonomía conocida → PARA y escala.** No rebuild a ciegas. La escalera mapea
-   síntomas conocidos; un síntoma nuevo es señal de que falta entender algo, no de iterar al azar.
-2. **El gate es ground-truth in-game, nunca proxy offline.** Un audit offline (`rip_p5_gate.py --cull`,
-   `audit_getin_wheels.py`) PRE-filtra antes del rebuild, pero el veredicto de un rung es la lectura
-   in-game. Offline da verde-falso (probado 2× en MercedesAMGLF/SUB_BRZ).
-3. **Presupuesto de iteraciones + journal por ciclo.** Cada pasada escribe `verdict.json` (rung alcanzado,
-   `first_block`, `pos_delta`, fix mapeado) + los PNG de R2/R6 + la telemetría, en
-   `<TargetMod>_dev\_ladder\run_<n>\`, para que cada verde sea **inspeccionable** y cada rojo trazable.
+1. **Failure outside known taxonomy → STOP and escalate.** Do not blindly rebuild. The ladder maps
+   known symptoms; a new symptom is a sign that something needs to be understood, not of iterating at random.
+2. **Gate is in-game ground-truth, never offline proxy.** An offline audit (`rip_p5_gate.py --cull`,
+   `audit_getin_wheels.py`) PRE-filters before rebuild, but rung verdict is the in-game
+   reading. Offline gives false-green (proven 2× on MercedesAMGLF/SUB_BRZ).
+3. **Iteration budget + journal per cycle.** Each pass writes `verdict.json` (reached rung,
+   `first_block`, `pos_delta`, mapped fix) + R2/R6 PNGs + telemetry, to
+   `<TargetMod>_dev\_ladder\run_<n>\`, so that each green is **inspectable** and each red traceable.
 
-### Mapeo fallo → fix (taxonomía SUB_BRZ → `dayz-vehicles/references/`)
+### Failure → fix mapping (SUB_BRZ taxonomy → `dayz-vehicles/references/`)
 
-| Síntoma / señal | Rung | Fix (anchor) |
+| Symptom / signal | Rung | Fix (anchor) |
 |---|---|---|
-| `world_spawn` `unknown_type`/`spawn_failed` | R1 | mod no montado / `CfgPatches` no registra — `dayz-test-ingame` (paths `!Workshop`), no es bug de modelo |
-| Spawnea pero invisible / "action selection X not found in view/fire geometry" | R1 | **componentNN dual-tag**: `vehicle-structural-parity.md` "componentNN DUAL-TAG" + `rip-import.md:385-388` (hubs/asientos = islas con 0% overlap → invisibles al enumerador de colisión; cada hub/asiento lleva TAMBIÉN un `componentNN` en las mismas caras) |
-| Agujero desde un ángulo, sólido desde el opuesto | R2 | **winding por-pieza** (NO flip global — fue verde-falso): `rip-import.md:487-575`; fix permanente = orientar a la normal autorizada del source; gate offline = `rip_p5_gate.py --cull` |
-| Coche rotado/espejado, o pieza flotando/rotada ~90° | R2 | **orient transform** del cuerpo / **frame de proxy** `R=((-1,0,0),(0,0,1),(0,1,0))` — `dayz-vehicles` §proxys (convención Mercedes; `rotation=None` de py3d renderiza ~90° rotado) |
-| `first_block="componentNN"` (`component_crew_index<0`) | R3 | **componentNN** en los asientos (mismo fix que R1 invisible): el asiento no se enumera como componente de crew |
-| `first_block="crew_can_get_through"` | R3 | **`class X: CarScript` pelado** hereda `Transport.CrewCanGetThrough()=false`: `rip-import.md:430-451`; fix = `extends CarScript` con override `CrewCanGetThrough`+`GetSeatAnimationType`+`GetAnimInstance` + `worldScriptModule` en `CfgMods` (puertas NO requeridas, `:449-451`) |
-| `first_block="area_blocked"` (gate 6b) | R3 | `IsAreaAtDoorFree` false → obstrucción del área de la puerta / selección de puerta |
-| `first_block="unreachable"` (gate 7) | R3 | `CanReachSeatFromDoors` false → geometría seat↔door, o **coche demasiado lejos del jugador** (mover adyacente antes de concluir fix de modelo) |
-| `first_block="occupied"` / `"item_heavy"` / `"already_in_vehicle"` | R3 | estado del harness, NO bug de modelo: re-spawn limpio / soltar item pesado de las manos / salir del vehículo primero |
-| `first_block="no_component"` (`partial=1`) | R3 | pasaste `component=-1`: saca un `component` real de un `scene_raycast`; sin él es diagnóstico PARCIAL, NUNCA PASS |
-| `vehicle_get_in_client` `not_seated`/`seat_failed` | R4 | latencia get-in (subir `prep_deadline`) / crew bone-selection / seat anim type — `vehicle-config-and-modelcfg.md` (crew proxy = selección en geometría **Y** bone en `CfgSkeletons`, ambos o get-in rompe) |
-| `pos_delta≈0` (tras descartar obstáculo) | R5 | **wheel sim (FireGeo)**: `rip-import.md:250-251` (cara de cada wheel proxy TAMBIÉN en visual `wheel_X_Y` + `wheel_X_Y_damper` + front `wheel_X_1_steering`) + `vehicle-structural-parity.md:23` (hubs como CARAS + componentNN en Geometry); o drivetrain en config.cpp |
-| Curva al lado opuesto al `steer` comandado / ruedas espejadas | R6 | **model.cfg wheel `angle` sign** (`vehicle-config-and-modelcfg.md:484`) + **naming `wheel_X_Y`** (`rip-import.md:195`: 1er índice = lado 1=+x/2=−x, 2º = eje 1=front; ojo al espejado Mercedes vs sedan) |
+| `world_spawn` `unknown_type`/`spawn_failed` | R1 | mod not mounted / `CfgPatches` does not register — `dayz-test-ingame` (`!Workshop` paths), not a model bug |
+| Spawns but invisible / "action selection X not found in view/fire geometry" | R1 | **componentNN dual-tag**: `vehicle-structural-parity.md` "componentNN DUAL-TAG" + `rip-import.md:385-388` (hubs/seats = islands with 0% overlap → invisible to collision enumerator; each hub/seat ALSO carries a `componentNN` on same faces) |
+| Hole from one angle, solid from opposite | R2 | **per-part winding** (NOT global flip — was false-green): `rip-import.md:487-575`; permanent fix = orient to source authorized normal; offline gate = `rip_p5_gate.py --cull` |
+| Rotated/mirrored car, or part floating/rotated ~90° | R2 | body **orient transform** / `R=((-1,0,0),(0,0,1),(0,1,0))` **proxy frame** — `dayz-vehicles` §proxys (Mercedes convention; py3d `rotation=None` renders ~90° rotated) |
+| `first_block="componentNN"` (`component_crew_index<0`) | R3 | **componentNN** on seats (same fix as invisible R1): seat is not enumerated as crew component |
+| `first_block="crew_can_get_through"` | R3 | **bare `class X: CarScript`** inherits `Transport.CrewCanGetThrough()=false`: `rip-import.md:430-451`; fix = `extends CarScript` with `CrewCanGetThrough`+`GetSeatAnimationType`+`GetAnimInstance` override + `worldScriptModule` in `CfgMods` (doors NOT required, `:449-451`) |
+| `first_block="area_blocked"` (gate 6b) | R3 | `IsAreaAtDoorFree` false → door area obstruction / door selection |
+| `first_block="unreachable"` (gate 7) | R3 | `CanReachSeatFromDoors` false → seat↔door geometry, or **car too far from player** (move adjacent before concluding model fix) |
+| `first_block="occupied"` / `"item_heavy"` / `"already_in_vehicle"` | R3 | harness state, NOT model bug: clean re-spawn / drop heavy item from hands / exit vehicle first |
+| `first_block="no_component"` (`partial=1`) | R3 | passed `component=-1`: obtain real `component` from a `scene_raycast`; without it diagnosis is PARTIAL, NEVER PASS |
+| `vehicle_get_in_client` `not_seated`/`seat_failed` | R4 | get-in latency (increase `prep_deadline`) / crew bone-selection / seat anim type — `vehicle-config-and-modelcfg.md` (crew proxy = selection in geometry **AND** bone in `CfgSkeletons`, both or get-in breaks) |
+| `pos_delta≈0` (after ruling out obstacle) | R5 | **wheel sim (FireGeo)**: `rip-import.md:250-251` (face of each wheel proxy ALSO in visual `wheel_X_Y` + `wheel_X_Y_damper` + front `wheel_X_1_steering`) + `vehicle-structural-parity.md:23` (hubs as FACES + componentNN in Geometry); or drivetrain in config.cpp |
+| Curves opposite to commanded `steer` / mirrored wheels | R6 | **model.cfg wheel `angle` sign** (`vehicle-config-and-modelcfg.md:484`) + **naming `wheel_X_Y`** (`rip-import.md:195`: 1st index = side 1=+x/2=−x, 2nd = axle 1=front; watch Mercedes vs sedan mirroring) |
 
-### Orquestador de referencia
-`references/drive_ladder.py` — conduce R1→R6 contra el daemon `:8765` (raw `/enqueue`+`/await`, mismo patrón
-verificado de `tramoA_verbs_gate.py`/`tramoB_getin_gate.py`), para en el primer hard-fail o tras recoger los
-soft-fails, y emite `verdict.json` nombrando el rung, el `first_block` y el fix mapeado. **NO** aplica fixes
-ni rebuildea (eso es el lazo agente/humano, barandilla 1). Reporta `objective_PASS` (los rungs scriptables);
-la **acceptance** real necesita además los rungs visuales del agente (R2_visual winding/orient/escala, R6
-calibración de giro), que el script no cierra. Endurecido tras R21 (Codex 2026-06-28, DL-001..011): R3 gatea
-el asiento de CONDUCTOR (no cualquiera), R4 fail-closed (seated+owner+fixture), un preflight aborta si el
-player ya está en un coche (el re-run mediría el viejo), R5 exige engine_on+owner y emite
-`needs_clear_ground_retest` en vez de adivinar obstáculo/drivetrain, cada verbo chequea timeout/ok (un fallo
-de harness NO es fix de modelo). Fixtures offline `references/test_drive_ladder.py` (9 escenarios PASS).
-Estado de verificación honesto: cada rung reusa una secuencia de verbos ya gateada in-game por separado; la
-cadena R1→R6 en una sola corrida es el propio test in-game que la escalera existe para correr (no gateado
-como unidad). `py_compile` + fixtures OK.
+### Reference orchestrator
+`references/drive_ladder.py` — drives R1→R6 against daemon `:8765` (raw `/enqueue`+`/await`, same verified
+pattern of `tramoA_verbs_gate.py`/`tramoB_getin_gate.py`), stops on first hard-fail or after collecting
+soft-fails, and emits `verdict.json` naming the rung, `first_block`, and mapped fix. It does **NOT** apply fixes
+or rebuild (that is the agent/human loop, guardrail 1). Reports `objective_PASS` (scriptable rungs);
+real **acceptance** also requires agent visual rungs (R2_visual winding/orient/scale, R6
+turning calibration), which script does not close. Hardened after R21 (Codex 2026-06-28, DL-001..011): R3 gates
+the DRIVER seat (not just any), R4 fail-closed (seated+owner+fixture), a preflight aborts if
+player is already in a car (re-run would measure the old one), R5 requires engine_on+owner and emits
+`needs_clear_ground_retest` instead of guessing obstacle/drivetrain, each verb checks timeout/ok (a harness
+failure is NOT a model fix). Offline fixtures `references/test_drive_ladder.py` (9 PASS scenarios).
+Honest verification status: each rung reuses a verb sequence already gated separately in-game; the
+R1→R6 chain in a single run is the very in-game test the ladder exists to run (not gated
+as a unit). `py_compile` + fixtures OK.

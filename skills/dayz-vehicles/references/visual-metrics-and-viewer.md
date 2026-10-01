@@ -1,9 +1,9 @@
-# Metrica visual: que se puede afirmar desde una captura
+# Visual metric: what can be asserted from a screenshot
 
-Extraido de `SKILL.md` (corte 3, 2026-08-15). Aqui vive el DETALLE; el enunciado
-corto y cuando leer esto estan en el indice `## ARCHIVO DE LECCIONES` del SKILL.md.
-Nada de este fichero esta derogado: son lecciones vigentes, ordenadas por tema en
-vez de por fecha.
+Extracted from `SKILL.md` (cut 3, 2026-08-15). Here lives the DETAIL; short statement
+and when to read this are in the `## LESSONS ARCHIVE` index of SKILL.md.
+Nothing in this file is repealed: they are active lessons, ordered by topic rather
+than by date.
 
 ---
 

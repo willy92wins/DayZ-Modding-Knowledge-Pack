@@ -91,24 +91,24 @@ DayZ Tools is the only per-machine install needed. There's no per-clone API key.
 
 ## Testing
 
-- **Antes de cualquier prueba in-game, pasa el linter offline. Existe y casi nadie lo usa:**
+- **Before any in-game testing, run the offline linter. It exists and almost no one uses it:**
   `python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>`.
-  Cubre Enforce `.c`, `.layout`, `config.cpp`, `inputs.xml` y `.rvmat`, y saca **JSON**. Medido
-  2026-09-08 sobre LFPowerGrid: 271 ficheros en ~60 s.
-  - **Las claves del informe son `errors` y `warnings` en la raiz**, no `findings`.
-  - **Y su exit code es 0 PASS / 1 FAIL / 2 WARN.** Un arbol limpio con warnings sale con **2**:
-    `if rc != 0` lo rechaza. Verificado 2026-09-08 (0 errores, 47 warnings, `exit=2`).
-  - Companero **`ui_reconcile.py`**: reconcilia `FindAnyWidget` <-> layouts y `#STR` <-> stringtable,
-    lo que ningun compilador ve. Obligatorio si borras o renombras un layout.
-  - ⚠ **`status` vale `WARN` aunque `errors` sea 0.** Gatea por `len(errors)`, nunca por `status`,
-    o daras por roto un arbol limpio.
-  - **Su valor real es el DELTA, no el numero absoluto.** Correlo sobre la base y sobre el arbol
-    cambiado y compara: es la unica forma barata de atribuir un error nuevo a tu cambio. Asi se
-    acredito el borrado de la V3 del sorter (271->263 ficheros, 0 errores en los dos lados, y 5
-    warnings MENOS, todos en el codigo retirado).
-  - **No es un compilador.** Enforce solo compila al cargar el mundo: cero errores aqui no
-    sustituye el arranque, pero una referencia colgando tras un borrado si la caza, y eso es
-    justo lo que un grep de simbolos se deja.
+  Covers Enforce `.c`, `.layout`, `config.cpp`, `inputs.xml`, and `.rvmat`, and outputs **JSON**. Measured
+  2026-09-08 on LFPowerGrid: 271 files in ~60 s.
+  - **Report keys are `errors` and `warnings` at the root**, not `findings`.
+  - **And its exit code is 0 PASS / 1 FAIL / 2 WARN.** A clean tree with warnings exits with **2**:
+    `if rc != 0` rejects it. Verified 2026-09-08 (0 errors, 47 warnings, `exit=2`).
+  - Companion **`ui_reconcile.py`**: reconciles `FindAnyWidget` <-> layouts and `#STR` <-> stringtable,
+    which no compiler catches. Mandatory if you delete or rename a layout.
+  - ⚠ **`status` is `WARN` even when `errors` is 0.** Gate by `len(errors)`, never by `status`,
+    or you will treat a clean tree as broken.
+  - **Its real value is the DELTA, not the absolute number.** Run it on base and on changed
+    tree and compare: it is the only cheap way to attribute a new error to your change. That is how
+    sorter V3 deletion was accredited (271->263 files, 0 errors on both sides, and 5
+    warnings FEWER, all in the retired code).
+  - **It is not a compiler.** Enforce compiles only when loading the world: zero errors here does not
+    replace boot, but a dangling reference after deletion is caught, and that is
+    precisely what a symbol grep misses.
 - **DayZ cannot be tested standalone for mod work.** A local server MUST be loaded with the same mod set as the client. Every test/launch skill MUST start a local server alongside the client — never client-only.
 - **Both client and server MUST be `DayZDiag_x64.exe`, not the retail binaries.** Retail `DayZ_x64.exe` (client) and `DayZServer_x64.exe` (server) both block past the loading screen when `-filePatching` is enabled, but `-filePatching` is required for live source iteration (so the engine reads raw `.cpp`/`.c` from the `P:\<ModName>\` junction). The same `DayZDiag_x64.exe` runs in either mode — pass `-server` for server mode.
 - DayZ Diag lives in the DayZ game install dir alongside the retail exe. The DayZ Server Steam install (appid 223350) is NOT required for diag-mode testing; it's only relevant for retail-server testing (which is a separate skill if/when added).
@@ -550,36 +550,36 @@ That single line is enough — the agent/skill is expected to read this file whe
 
 ## AUTHORITATIVE DAYZ MAGIC NUMBERS — placeholder (added 2026-05-12)
 
-Toda skill DayZ que use un número mágico (rango LOD, version range, density, límite de instancias, conteos de catálogo) DEBE citar fuente. Esta sección es el contenedor donde irán los valores canónicos verificados. Si una skill discrepa de esta tabla, la skill está mal — no esta tabla.
+Every DayZ skill using a magic number (LOD range, version range, density, instance limit, catalog counts) MUST cite source. This section is the container where verified canonical values will go. If a skill disagrees with this table, the skill is wrong — not this table.
 
-> ⚠️ AVISO 2026-05-12 actualizado: el audit narrativo `rigorous-data-audit` del 2026-05-12 afirmó contaminación Arma3↔DayZ en 5 ubicaciones, pero verificación contra los archivos reales muestra que la mayoría de hallazgos del audit eran CONFABULADOS (citaba `9e9..1.1e10` para ShadowVolume cuando el código real usa el valor correcto `10000`; citaba rangos `2e13/3e13/7e13` como bug actual cuando el código tiene comentarios explícitos diciendo que esos valores fueron corregidos). La tabla siguiente lista los valores VERIFICADOS contra los archivos reales hoy mismo, más placeholders para los que requieren P:\ vanilla check.
+> ⚠️ NOTICE 2026-05-12 updated: narrative audit `rigorous-data-audit` from 2026-05-12 claimed Arma3↔DayZ contamination across 5 locations, but verification against actual files shows most audit findings were CONFABULATED (cited `9e9..1.1e10` for ShadowVolume when actual code uses correct value `10000`; cited `2e13/3e13/7e13` ranges as current bug when code has explicit comments stating those values were corrected). The following table lists values VERIFIED against actual files today, plus placeholders for those requiring P:\ vanilla check.
 
-| Concepto | Valor canónico DayZ | Fuente verificada | Notas |
+| Concept | DayZ canonical value | Verified source | Notes |
 |---|---|---|---|
-| LOD ShadowVolume resolution | `10000` (exacto, no rango) o `11000` | `audit_p3d.py:33-34` ("resolution == 10000 → ShadowVol"), `_shared/dayz-conventions.md:189` ("ShadowVolume \| 10000, 11000") | El audit citó `9e9..1.1e10` — confabulado, no existe en código |
-| LOD Geometry resolution | `9.9e12..1.1e13` (banda alrededor de `1e13`) | `audit_p3d.py:35` | Ya documentado correctamente |
-| LOD Memory resolution | `9.9e14..1.1e15` (banda alrededor de `1e15`) | `audit_p3d.py:37` | |
-| LOD LandContact resolution | `1.9e15..2.1e15` (banda alrededor de `2e15`) | `audit_p3d.py:39` | |
-| LOD Roadway resolution | `2.9e15..3.1e15` (banda alrededor de `3e15`) | `audit_p3d.py:41` | |
-| LOD Paths resolution | `3.9e15..4.1e15` (banda alrededor de `4e15`) | `audit_p3d.py:43` | |
-| LOD HitPoints resolution | `4.9e15..5.1e15` (banda alrededor de `5e15`) | `audit_p3d.py:45` | |
-| LOD ViewGeometry resolution | `5.9e15..6.1e15` (banda alrededor de `6e15`) — **NO `3e13`** que es Arma 3 | `audit_p3d.py:47` | Bug histórico de Arma 3 ya corregido aquí |
-| LOD FireGeometry resolution | `6.9e15..7.1e15` (banda alrededor de `7e15`) — **NO `2e13`** que es Arma 3 | `audit_p3d.py:49` | Bug histórico de Arma 3 ya corregido aquí |
-| ParticleManager pool size | `10000` | `dayz-particles` skill, validada en producción | Pool fijo del engine |
-| Vanilla particle effects total | 277 (con debate vs 276) | `dayz-particles` (off-by-one detectado en audit) | Cerrar conteo definitivo en próxima pasada |
-| Material types en vanilla `material/` | 11 | `dayz-particles`, validado | |
-| Class bases SI válidas en DayZ | `Inventory_Base`, `Container_Base`, `ItemBase`, `EntityAI`, `HouseNoDestruct` (sí — existe en DayZ vanilla), `Land_Stone_*` | `dayz-pbo-build/SKILL.md:74` + vanilla `DZ\structures\` | El audit etiquetó `HouseNoDestruct` como Arma3-only — incorrecto |
-| Class bases NO válidas en DayZ (Arma3 puras) | `Motorcycle`, `Helicopter` (puro Arma 3) | Audit + vanilla check | DayZ vanilla no tiene helicópteros; las motos usan `Transport`/`CarScript` |
+| LOD ShadowVolume resolution | `10000` (exact, not range) or `11000` | `audit_p3d.py:33-34` ("resolution == 10000 → ShadowVol"), `_shared/dayz-conventions.md:189` ("ShadowVolume \| 10000, 11000") | Audit cited `9e9..1.1e10` — confabulated, does not exist in code |
+| LOD Geometry resolution | `9.9e12..1.1e13` (band around `1e13`) | `audit_p3d.py:35` | Already documented correctly |
+| LOD Memory resolution | `9.9e14..1.1e15` (band around `1e15`) | `audit_p3d.py:37` | |
+| LOD LandContact resolution | `1.9e15..2.1e15` (band around `2e15`) | `audit_p3d.py:39` | |
+| LOD Roadway resolution | `2.9e15..3.1e15` (band around `3e15`) | `audit_p3d.py:41` | |
+| LOD Paths resolution | `3.9e15..4.1e15` (band around `4e15`) | `audit_p3d.py:43` | |
+| LOD HitPoints resolution | `4.9e15..5.1e15` (band around `5e15`) | `audit_p3d.py:45` | |
+| LOD ViewGeometry resolution | `5.9e15..6.1e15` (band around `6e15`) — **NOT `3e13`** which is Arma 3 | `audit_p3d.py:47` | Historical Arma 3 bug already fixed here |
+| LOD FireGeometry resolution | `6.9e15..7.1e15` (band around `7e15`) — **NOT `2e13`** which is Arma 3 | `audit_p3d.py:49` | Historical Arma 3 bug already fixed here |
+| ParticleManager pool size | `10000` | `dayz-particles` skill, validated in production | Fixed engine pool |
+| Vanilla particle effects total | 277 (with debate vs 276) | `dayz-particles` (off-by-one detected in audit) | Close final count in next pass |
+| Material types in vanilla `material/` | 11 | `dayz-particles`, validated | |
+| Class bases VALID in DayZ | `Inventory_Base`, `Container_Base`, `ItemBase`, `EntityAI`, `HouseNoDestruct` (yes — exists in DayZ vanilla), `Land_Stone_*` | `dayz-pbo-build/SKILL.md:74` + vanilla `DZ\structures\` | Audit labeled `HouseNoDestruct` as Arma3-only — incorrect |
+| Class bases NOT valid in DayZ (pure Arma3) | `Motorcycle`, `Helicopter` (pure Arma 3) | Audit + vanilla check | DayZ vanilla has no helicopters; motorbikes use `Transport`/`CarScript` |
 
-Regla: cualquier valor que un agent o skill cite y no esté en esta tabla con fuente verificada debe ir marcado `[EMPIRICAL]` o `[NEEDS VERIFICATION]`. No presentar como hechos hasta cerrar la pasada de verificación. Y antes de aceptar un hallazgo de audit como bug → verificar contra el archivo real con grep + line number.
+Rule: any value cited by an agent or skill that is not in this table with verified source must be marked `[EMPIRICAL]` or `[NEEDS VERIFICATION]`. Do not present as facts until verification pass is closed. And before accepting an audit finding as a bug → verify against actual file with grep + line number.
 
 ## AUDIT-TO-FIX TRACKER (added 2026-05-12)
 
-Cuando un audit produce hallazgos accionables — bugs detectados, paths que no existen, magic numbers incorrectos, APIs confabuladas — generar al cierre del audit, junto al report humano-readable, un **fix-tracker** explícito.
+When an audit produces actionable findings — detected bugs, non-existent paths, incorrect magic numbers, confabulated APIs — generate at audit close, alongside human-readable report, an explicit **fix-tracker**.
 
-Justificación: sin tracker, la deuda detectada queda como objeto teórico y se pierde. Un audit que no se cierra es un audit que se reabre.
+Rationale: without a tracker, detected debt remains a theoretical object and is lost. An audit that does not close is an audit that reopens.
 
-Estructura mínima del fix-tracker (un fichero `audit_fix_tracker.md` al lado de `audit_findings.md`):
+Minimal fix-tracker structure (an `audit_fix_tracker.md` file alongside `audit_findings.md`):
 
 ```markdown
 | ID | Severity | File:Line | Issue | Proposed fix | Owner | Status |
@@ -595,10 +595,10 @@ Estructura mínima del fix-tracker (un fichero `audit_fix_tracker.md` al lado de
 
 Reglas operativas:
 
-- Una fila = una unidad cerrable. No agrupar fixes heterogéneos en una fila.
+- One row = one closeable unit. Do not group heterogeneous fixes into one row.
 - `Status` ∈ `open` / `in-progress` / `closed (commit-hash, date)` / `wont-fix (reason)`.
-- Si el usuario tiene Asana/Linear conectado, el tracker es la fuente de verdad — NO crear tareas automáticamente sin confirmar política. Cada fila → una tarea con título `[F#] Issue`.
-- Al cerrar el tracker, conservarlo como histórico auditable (no borrar).
+- If user has Asana/Linear connected, the tracker is single source of truth — do NOT create tasks automatically without confirming policy. Each row → a task titled `[F#] Issue`.
+- When closing tracker, retain it as auditable history (do not delete).
 
-Caso real (audit 2026-05-12 `rigorous-data-audit`): se generaron 13 reports + 1 index.md con ~333 facts auditados. NO se generó tracker accionable. La deuda detectada (5 ubicaciones de contaminación Arma3↔DayZ, magic numbers off-by-6-orders, clases base Arma 3 en lista DayZ) queda en formato narrativo, no cerrable uno a uno. Próximo audit: añadir fix-tracker desde el inicio.
+Real case (2026-05-12 audit `rigorous-data-audit`): 13 reports + 1 index.md generated with ~333 audited facts. NO actionable tracker was generated. Detected debt (5 locations of Arma3↔DayZ contamination, off-by-6-orders magic numbers, Arma 3 base classes in DayZ list) remains in narrative format, not closeable one by one. Next audit: add fix-tracker from start.
 

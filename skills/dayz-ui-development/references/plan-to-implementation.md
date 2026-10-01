@@ -83,8 +83,8 @@ When the "plan" is a freeform HTML/CSS mockup (Google-Fonts web font, radial-gra
 border-radius), none of those map to a widget attribute, so the implementation *cannot* match by
 definition and the gap is judged by eye between two hand-made artifacts.
 - Evidence (this project's own history): `LFGungame_dev\_review_flags\ui-mockup\lfgg-mockup.html`
-  (CDN font + gradients) vs `lfgg-impl-mockup.html` ("posiciones y colores tomados de los `.layout`
-  reales … No es el píxel exacto del engine").
+  (CDN font + gradients) vs `lfgg-impl-mockup.html` ("positions and colors taken from the real `.layout`
+  files … Not the exact pixel of the engine").
 - **Rule:** the design mockup must stay inside the widget model — every visual element maps to a
   widget class + a verified attribute, or it doesn't go in the plan.
 

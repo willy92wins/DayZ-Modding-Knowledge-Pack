@@ -1,8 +1,8 @@
-# Formato de checklist por encuadre
+# Framing checklist format
 
-Una entrada es `{"q": "<pregunta>", "view": "<encuadre>"}` y puede declarar `"skip": "<motivo>"`. El encuadre es el nombre de la imagen contra la que se evalúa esa pregunta, no un hint dentro de una lámina. Una entrada con `skip` permanece visible como dato, pero no se envía al modelo ni se puntúa.
+An entry is `{"q": "<question>", "view": "<framing>"}` and may declare `"skip": "<reason>"`. Framing is the name of the image against which that question is evaluated, not a hint inside a contact sheet. An entry with `skip` remains visible as data, but is not sent to model or scored.
 
-## Ejemplo mínimo
+## Minimal example
 
 ```json
 [
@@ -11,11 +11,11 @@ Una entrada es `{"q": "<pregunta>", "view": "<encuadre>"}` y puede declarar `"sk
 ]
 ```
 
-`q` es el texto que ve el modelo y el que se escribe en `answers[].q` del shadow-log cuando la entrada está activa. `skip` es un motivo no vacío y excluye la entrada de ambos consumidores; no sustituye una pregunta por otra ni la borra del fichero.
+`q` is the text that the model sees and what is written to `answers[].q` of shadow-log when entry is active. `skip` is a non-empty reason and excludes entry from both consumers; does not substitute one question for another or delete it from file.
 
-El token `view` es **sujeto+vista** (`assembled__iso`, `zoom_muzzle__front_iso`), los dos primeros segmentos del fichero `<sujeto>__<vista>__<sujeto>__<version>.png`. No es solo la vista (`iso`, `profile`). Motivo: `profile` existe como vista de `zoom_mag` (`zoom_mag__profile__zoom_mag__v1.png`) y las laterales del conjunto son `profile_L` / `profile_R`. Un token `profile` o `iso` no distingue `assembled__profile_L` de `zoom_mag__profile` (ni `assembled__iso` de `body__iso` / `hg__iso`) y reintroduce el bug original: la pregunta se evaluaría contra el encuadre equivocado.
+The `view` token is **subject+view** (`assembled__iso`, `zoom_muzzle__front_iso`), the first two segments of the file `<subject>__<view>__<subject>__<version>.png`. It is not just the view (`iso`, `profile`). Reason: `profile` exists as view of `zoom_mag` (`zoom_mag__profile__zoom_mag__v1.png`) and lateral views of assembly are `profile_L` / `profile_R`. A `profile` or `iso` token does not distinguish `assembled__profile_L` from `zoom_mag__profile` (nor `assembled__iso` from `body__iso` / `hg__iso`) and reintroduces the original bug: question would be evaluated against wrong framing.
 
-Este checklist usa cuatro tokens, todos tomados del inventario real (ninguno inventado):
+This checklist uses four tokens, all taken from real inventory (none invented):
 
 | view | fichero |
 |---|---|
@@ -24,107 +24,107 @@ Este checklist usa cuatro tokens, todos tomados del inventario real (ninguno inv
 | `zoom_receiver__right_iso` | `zoom_receiver__right_iso__zoom_receiver__v1.png` |
 | `zoom_muzzle__front_iso` | `zoom_muzzle__front_iso__zoom_muzzle__v1.png` |
 
-El fichero conserva **8 entradas** con el texto intacto: **3** declaran `skip` y **5** quedan activas para envío y puntuación. `assembled__iso` cubre conexiones, huecos y “¿parece un objeto terminado?”; `zoom_receiver__right_iso`, biseles; `assembled__profile_L`, apoyo en el suelo. Las entradas excluidas conservan sus vistas documentales: `assembled__profile_R` para caras invertidas, `zoom_muzzle__front_iso` para cilindros y `assembled__profile_L` para proporciones.
+The file retains **8 entries** with intact text: **3** declare `skip` and **5** remain active for sending and scoring. `assembled__iso` covers connections, gaps, and "does it look like a finished object?"; `zoom_receiver__right_iso`, bevels; `assembled__profile_L`, ground contact. Excluded entries retain their documentary views: `assembled__profile_R` for inverted faces, `zoom_muzzle__front_iso` for cylinders, and `assembled__profile_L` for proportions.
 
-## Cómo pasar varias vistas al CLI
+## How to pass multiple views to CLI
 
-`--view NAME PATH` repetible. `NAME` tiene que coincidir con el `view` de la pregunta. `PATH` es el PNG de ese encuadre. `render` posicional deja de ser obligatorio en `ask` si hay al menos un `--view`.
+`--view NAME PATH` repeatable. `NAME` must match question `view`. `PATH` is the PNG of that framing. Positional `render` ceases to be mandatory in `ask` if there is at least one `--view`.
 
 ```
 python vr_score.py ask --view assembled__iso assembled__iso__assembled__v1.png --view assembled__profile_L assembled__profile_L__assembled__v1.png --view zoom_receiver__right_iso zoom_receiver__right_iso__zoom_receiver__v1.png --view zoom_muzzle__front_iso zoom_muzzle__front_iso__zoom_muzzle__v1.png --checklist checks_hardsurface.json
 ```
 
-Reglas de resolución:
+Resolution rules:
 
-- Sin ningún `--view` (el sweep de `vr_calibrate.py run` sigue siendo esto): todas las preguntas activas van al PNG posicional en **una** llamada. El campo `view` se registra en la respuesta pero no enruta. Así un checklist ya migrado no tumba `ask foo.png` ni multiplica el coste GPU del calibrador.
-- Con `--view`: el nombre es obligatorio. Falta `zoom_muzzle__front_iso` → error, no fallback silencioso. El token `render` es alias del PNG posicional, para checklists mixtos.
-- Cada encuadre es una llamada Ollama de **una** imagen. No se mandan las tres vistas en el mismo mensaje.
+- Without any `--view` (the `vr_calibrate.py run` sweep remains this): all active questions go to positional PNG in **one** call. The `view` field is recorded in response but does not route. Thus an already-migrated checklist does not break `ask foo.png` nor multiply calibrator GPU cost.
+- With `--view`: name is mandatory. Missing `zoom_muzzle__front_iso` → error, not silent fallback. The `render` token is alias of positional PNG, for mixed checklists.
+- Each framing is an Ollama call of **one** image. All three views are not sent in the same message.
 
-`--reference` no cambia: sigue siendo la foto/render de comparación, y no es un encuadre más. Su guarda SÍ cambió (SP-266): ya no mira el nombre del modelo sino las dimensiones de las dos imágenes. Dos imágenes del MISMO tamaño en píxeles se colapsan en una sobre `qwen3.x` —y la que sobrevive es impredecible, sigue la caché del prompt—, así que la llamada se rechaza y basta un píxel de diferencia para evitarla. La guarda vieja por nombre de modelo bloqueaba `qwen3.5`, que funciona con tamaños distintos, y dejaba pasar `qwen3.8`, que tiene la misma colisión.
+`--reference` does not change: remains comparison photo/render, and is not just another framing. Its guard DID change (SP-266): no longer checks model name but dimensions of both images. Two images of the SAME pixel size collapse into one on `qwen3.x` —and whichever survives is unpredictable, follows prompt cache—, so call is rejected and a single pixel difference suffices to prevent it. Old guard by model name blocked `qwen3.5`, which works with different sizes, and let pass `qwen3.8`, which has the same collision.
 
 ## Alternativa simple descartada
 
-La más simple era no tocar el CLI: un solo PNG (la lámina de tres paneles de siempre) y escribir el encuadre en el prompt (“contesta mirando el primer plano”).
+The simplest was not touching the CLI: a single PNG (the usual three-panel sheet) and writing the framing in prompt ("answer looking at foreground").
 
-Eso no cubre el caso medido. En EVIDENCIA.md las preguntas 1 y 3 tienen respuesta distinta según el panel de **la misma lámina**, y es exactamente donde los tres modelos discrepan. El diagnóstico es que la unidad de trabajo es (pregunta, imagen), no (pregunta, instrucción sobre una región). Un hint en el prompt sigue enviando los tres paneles juntos.
+That does not cover the measured case. In EVIDENCIA.md questions 1 and 3 have different answers depending on panel of **the same sheet**, and that is exactly where the three models disagree. The diagnosis is that the unit of work is (question, image), not (question, instruction on a region). A hint in prompt still sends all three panels together.
 
-La otra simple que sí cambia la unidad de trabajo — `ask img0.png img1.png img2.png` y `"view": 2` — cubre una captura de tres archivos en orden fijo. La rompe omitir o reordenar un archivo: el índice 2 deja de ser el zoom del cañón y la pregunta de bisel se evalúa contra otra vista. Es el mismo fallo (pregunta contra el encuadre equivocado), solo que en el argv. `--view zoom_muzzle__front_iso zoom_muzzle__front_iso__zoom_muzzle__v1.png` falla alto si falta ese PNG.
+The other simple one that does change work unit — `ask img0.png img1.png img2.png` and `"view": 2` — covers a three-file capture in fixed order. Broken by omitting or reordering a file: index 2 ceases to be muzzle zoom and bevel question is evaluated against another view. It is the same failure (question against wrong framing), only in argv. `--view zoom_muzzle__front_iso zoom_muzzle__front_iso__zoom_muzzle__v1.png` fails loud if that PNG is missing.
 
-## Retrocompatibilidad y migración
+## Backward compatibility and migration
 
-El formato viejo (array plano de cadenas) sigue cargando. Cada cadena es `{q: esa cadena, view: null}` y se puntúa contra el PNG posicional. No hay `skip` ni campo `version`. No hace falta migrar un checklist viejo para que `ask` y `vr_calibrate.py` funcionen. La lectura sigue usando `utf-8-sig`, que acepta tanto JSON sin BOM como el BOM de PowerShell 5.1.
+The old format (flat array of strings) continues loading. Each string is `{q: that string, view: null}` and is scored against positional PNG. There is no `skip` or `version` field. No need to migrate an old checklist for `ask` and `vr_calibrate.py` to work. Reading still uses `utf-8-sig`, which accepts both BOM-less JSON and PowerShell 5.1 BOM.
 
-Para migrar un `.json` viejo: cada string `s` pasa a `{"q": s, "view": "<token>"}`. Elige el encuadre contra el que la pregunta tiene una sola respuesta. No reescribas el texto. Este `checks_hardsurface.json` ya está migrado así.
+To migrate an old `.json`: each string `s` becomes `{"q": s, "view": "<token>"}`. Choose framing against which question has a single answer. Do not rewrite text. This `checks_hardsurface.json` is already migrated like this.
 
-## Contrato con `vr_calibrate.py`
+## Contract with `vr_calibrate.py`
 
-El calibrador **no** indexa por texto de pregunta. Indexa por:
+The calibrator does **not** index by question text. Indexes by:
 
-1. `Path(record["render"]).name` para cruzar con `verdicts.json`
-2. posición dentro de la lista activa: `verdicts[name]["answers"][i]` vs `record["answers"][i]["answer"]`
+1. `Path(record["render"]).name` to cross with `verdicts.json`
+2. position within active list: `verdicts[name]["answers"][i]` vs `record["answers"][i]["answer"]`
 
-Eso se respeta: `answers` sigue siendo un array en el orden de las entradas activas del checklist; las entradas con `skip` no ocupan una posición. Cada elemento sigue teniendo `q` (string) y `answer`. Se añaden `view` e `image` (el PNG que realmente se mandó); el calibrador los ignora. `render` del registro sigue siendo el posicional si lo hay, si no el primer PNG de `--view`.
+That is respected: `answers` remains an array in the order of active checklist entries; entries with `skip` do not occupy a position. Each element still has `q` (string) and `answer`. `view` and `image` are added (the PNG actually sent); calibrator ignores them. Record `render` remains the positional if present, otherwise first PNG of `--view`.
 
-`vr_calibrate.py report` hacía `questions[qi][:60]` asumiendo cadenas. Con objetos eso revienta. `checklist_labels` reutiliza ahora la misma normalización y exclusión que `ask`, por lo que sus acumuladores solo tienen las cinco posiciones activas. `run` sigue lanzando `ask <un.png>` sin `--view` (enrutado legado, una imagen). Un barrido multi-vista pediría otra convención de carpeta; no es este cambio.
+`vr_calibrate.py report` did `questions[qi][:60]` assuming strings. With objects that explodes. `checklist_labels` now reuses same normalization and exclusion as `ask`, so its accumulators only have the five active positions. `run` continues launching `ask <a.png>` without `--view` (legacy routing, one image). A multi-view sweep would call for another folder convention; not this change.
 
-`checklist_labels` delega la lectura en `load_checklist`, que mantiene `encoding="utf-8-sig"`: PowerShell 5.1 escribe BOM y `utf-8` mata el report.
+`checklist_labels` delegates reading to `load_checklist`, which retains `encoding="utf-8-sig"`: PowerShell 5.1 writes BOM and `utf-8` kills the report.
 
-## De dónde sale el `view` de cada pregunta (calibrado 2026-08-16, SP-270)
+## Where the `view` of each question comes from (calibrated 2026-08-16, SP-270)
 
-El campo `view` **no es una opinión**: se mide con el par roto/arreglado del mismo objeto,
-que no necesita oro. Se pregunta lo mismo sobre las dos versiones y se miran dos cosas:
+The `view` field **is not an opinion**: measured with broken/fixed pair of same object,
+which needs no gold. Same question is asked about both versions and two things are checked:
 
-- **acierto** contra el oro del objeto, sobre los dos estados;
-- **separación** — ¿cambia la respuesta entre roto y arreglado, en las preguntas cuya
-  respuesta DEBE cambiar? Un encuadre puede puntuar bien contestando siempre lo mismo.
+- **accuracy** against object gold, across both states;
+- **separation** — does response change between broken and fixed, in questions whose
+  response MUST change? A framing can score well by always answering the same.
 
-Medido sobre `mk47_mutant` (8 encuadres, 3 modelos), con el agrupado real de `vr_score.py`:
-el checklist saca **77,8% contra un suelo de respuesta constante del 58,3%**, y la pregunta
-de conectividad acierta **12/12**.
+Measured on `mk47_mutant` (8 framings, 3 models), with actual grouping of `vr_score.py`:
+the checklist achieves **77.8% against a constant response floor of 58.3%**, and connectivity
+question scores **12/12**.
 
-Tres trampas que costaron una tanda entera y que hay que evitar al re-calibrar:
+Three traps that cost an entire run and must be avoided when re-calibrating:
 
-1. **Con qué preguntas viaja la llamada cambia la respuesta.** La misma pregunta de
-   sombreado, misma imagen y mismo modelo: **18/18** en una llamada con otras cuatro de
-   sombreado, **9/12** en la llamada con las ocho del checklist. Comparar dos encuadres
-   solo vale si el lote se mantiene igual entre ellos. Y no es el TAMAÑO del lote: sacar
-   Q5 de `assembled__iso` bajó a Q4 y Q6 dos puntos cada una, con un lote más pequeño.
-2. **Un encuadre sin render arreglado no es comparable.** `zoom_muzzle__front_iso` puntúa
-   sobre 6 celdas del estado roto en vez de 12, y ahí una respuesta constante saca 6/6.
-   Ordenar por porcentaje lo corona con la mitad de la evidencia y cero separación.
-3. **Lo que gana en condiciones uniformes puede perder en las reales.** Mover Q1, Q4 y Q5
-   juntas a `assembled__profile_R` ganaba en la auditoría y **empeoraba** con el agrupado
-   real: Q1 caía de 12/12 a 8/12. Solo se movió Q5, que es la que aguantó la validación.
+1. **Which questions the call travels with changes the response.** Same shading
+   question, same image, and same model: **18/18** in a call with four other shading
+   questions, **9/12** in call with eight of the checklist. Comparing two framings
+   is only valid if batch is kept identical between them. And it is not batch SIZE: removing
+   Q5 from `assembled__iso` lowered Q4 and Q6 two points each, with a smaller batch.
+2. **A framing without fixed render is not comparable.** `zoom_muzzle__front_iso` scores
+   over 6 cells of broken state instead of 12, and there a constant response gets 6/6.
+   Sorting by percentage crowns it with half the evidence and zero separation.
+3. **What wins under uniform conditions can lose under real ones.** Moving Q1, Q4, and Q5
+   together to `assembled__profile_R` won in audit and **worsened** under real
+   grouping: Q1 dropped from 12/12 to 8/12. Only Q5 was moved, which is the one that stood up to validation.
 
-**Q3 no está mal enrutada: está rota.** «¿Son lisos y redondos los cilindros?» queda al azar
-en los ocho encuadres (máximo 50%), porque su redacción permite leer el guardamanos
-poligonal —plano por diseño— como un cilindro facetado.
+**Q3 is not misrouted: it is broken.** "Are cylinders smooth and round?" is at random
+across the eight framings (maximum 50%), because its phrasing permits reading polygonal
+handguard —flat by design— as a faceted cylinder.
 
-> **RETRACTADO 2026-08-22 — no se arregla reescribiéndola.** Este párrafo cerraba con «se
-> arregla reescribiéndola, no moviéndola». Se probó y salió al revés (192 celdas sobre
-> `mk47_mutant` + sonda sintética con la verdad puesta por construcción, 2026-08-17):
+> **RETRACTED 2026-08-22 — not fixed by rewriting it.** This paragraph closed with "it is
+> fixed by rewriting it, not moving it". It was tested and came out the opposite (192 cells on
+> `mk47_mutant` + synthetic probe with truth set by construction, 2026-08-17):
 >
-> - **Cuatro redacciones medidas y gana la que ya está** (6/6 y 6/6 en encuadres donde la
->   pieza redonda llena el marco). Umbral numérico 5/6, cláusula de exclusión 5/6, silueta
->   angular 2/6. Sobre el encuadre de objeto completo **las cuatro** caen a 1-2 de 3: el
->   encuadre pesa más que la redacción.
-> - **Un umbral dentro del enunciado no se aplica como cuenta**: preguntando «roughly six or
->   fewer sides», los tres modelos dijeron «sí» a la variante de **12** lados.
-> - **El agrupado parte la sensibilidad por dos**: 6/6 preguntada sola, 3/6 dentro del lote de
->   ocho que arma `vr_score.py`. Tercera confirmación del efecto lote en esta skill.
-> - **El objeto no puede contestarla.** `hg_tube` es un octógono REGULAR y es correcto — la
->   foto de referencia manda sección octogonal (`dossier.md:18,49`). Los cilindros de verdad
->   (`body_brake` 18-22 lados, `body_barrel` 14, `endplate` 24) tienen una sagitta
->   `r*(1-cos(pi/N))` de 0,167-0,213 mm, **menos de 1 px** en cualquiera de los ocho
->   encuadres, contra 1,91 mm y ~6,9 px del octógono. Lo único visiblemente facetado de esta
->   arma es la pieza que debe estarlo.
-> - **8 de 12 celdas son falsas alarmas** bajo agrupado real, contra un oro derivado de la
->   geometría. Una pregunta que marca geometría correcta dos tercios de las veces no puede ir
->   en un gate automático, y menos en un pre-filtro que RECHAZA: ahí una falsa alarma tira
->   trabajo bueno. Es el modo de fallo del gate de winding, rojo en el 73 % de lo publicado.
+> - **Four phrasings measured and the existing one wins** (6/6 and 6/6 in framings where
+>   round piece fills frame). Numerical threshold 5/6, exclusion clause 5/6, angular
+>   silhouette 2/6. On full-object framing **all four** drop to 1-2 of 3:
+>   framing outweighs phrasing.
+> - **A threshold inside statement is not applied as a count**: asking "roughly six or
+>   fewer sides", all three models said "yes" to the **12**-sided variant.
+> - **Grouping splits sensitivity by two**: 6/6 asked alone, 3/6 within batch of
+>   eight built by `vr_score.py`. Third confirmation of batch effect in this skill.
+> - **The object cannot answer it.** `hg_tube` is a REGULAR octagon and is correct — reference
+>   photo dictates octagonal section (`dossier.md:18,49`). Authentic cylinders
+>   (`body_brake` 18-22 sides, `body_barrel` 14, `endplate` 24) have a sagitta
+>   `r*(1-cos(pi/N))` of 0.167-0.213 mm, **less than 1 px** in any of the eight
+>   framings, against 1.91 mm and ~6.9 px of octagon. The only visibly faceted piece of this
+>   weapon is the piece that ought to be.
+> - **8 out of 12 cells are false alarms** under real grouping, against gold derived from
+>   geometry. A question flagging correct geometry two-thirds of the time cannot go
+>   into an automatic gate, and even less into a pre-filter that REJECTS: there a false alarm throws out
+>   good work. It is failure mode of winding gate, red in 73% of what is published.
 >
-> **Qué hacer en su lugar**: sacarla del checklist VLM y de cualquier pre-filtro, y sustituirla
-> por un reporte determinista por pieza (lados, radio, desviación, sagitta) que **informe y no
-> juzgue** — el problema de Q3 era que exigía adivinar la intención del modelador, y una fila
-> «`hg_tube`, 8 lados, r=25,2 mm» devuelve esa decisión a quien puede tomarla. El prototipo
-> (`facet_report.py`) todavía **no está en esta skill**.
+> **What to do instead**: remove it from VLM checklist and any pre-filter, and replace it
+> with a deterministic report per part (sides, radius, deviation, sagitta) that **reports and does not
+> judge** — Q3 problem was that it required guessing modeler's intent, and a row
+> "`hg_tube`, 8 sides, r=25.2 mm" returns that decision to who can make it. Prototype
+> (`facet_report.py`) is **not yet in this skill**.

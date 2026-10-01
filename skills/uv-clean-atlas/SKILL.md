@@ -44,7 +44,7 @@ professional game livery template (whole car side = ONE island, roof, hood, door
 
 ### 2b. A SAT=0 is bounded by what entered the test (measured 2026-08-27, LFQuad material groups)
 
-**LL-371** — Todo gate que filtre parte de su entrada tiene que publicar total / evaluados / filtrados en el veredicto; un filtrado no cero acota el PASS a lo que entro. SAT=0 no es atlas-done si las caras colapsadas fueron saltadas.
+**LL-371** — Any gate that filters part of its input must publish total / evaluated / filtered in verdict; non-zero filtered bounds PASS to what entered. SAT=0 is not atlas-done if collapsed faces were skipped.
 
 `scripts/sat_gate.py:22` skips any triangle whose UV area is `<= 1e-14` before pairing it,
 because a degenerate triangle cannot overlap anything. So an unwrap that COLLAPSES faces to
@@ -292,7 +292,7 @@ oche_20260901\\unwrap_blender.py
 - Fold-loop detector must be **exact SAT**, not Monte-Carlo %. Same trap as below.
 - smart_project headless still unwraps EVERYTHING; only acceptable as whole-mesh Track B.
 
-### RETRACTACION 2026-09-02 — tres de las lineas de arriba se midieron y son falsas
+### RETRACTION 2026-09-02 — three of the lines above were measured and are false
 
 The subsection above was written from that session's mid-flight state, before the
 measurements that closed it. Its text is kept because it records why the hypothesis
@@ -333,7 +333,7 @@ collapsed and 0 SAT pairs**, 0 cross-LOD pairs, a 75/25 sheet split, 349 and 204
 Statue 2026-09-01 (1 shell, Quadriflow 5.7k): Track B at 80° gave SAT=0 / 215 islands / 65.7% occupancy. User rejected it: not minimize, not by views. `uv_view_charts` also failed (25 charts, density). **Shipped 2026-09-02:** G12 photograph + peel (`g12_arm`, 15 islands, SAT=0, autosolape 0.033). User: mejor, guardar receta. Modddif next.
 
 
-## Sin deformar (HARD gate, restated 2026-09-01)
+## Undistorted (HARD gate, restated 2026-09-01)
 
 Guillermo: few islands + by views does NOT license wrap-stretch. Density p05/p95 must stay within ~0.8-1.5 of median. A 1-shell statue that view-clusters to 25 charts and then dust-merges to 5 (p05=0.00, p95=3.95) is a FAIL even though island count looks like a livery.
 

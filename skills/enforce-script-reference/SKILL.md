@@ -219,14 +219,14 @@ Project files cite Enforce rules by an OLD numbering (`ENF-R` namespace: DayZ Pr
 
 Offline Enforce/layout linter (pack tool): `python tools/dayz-script-validator/scripts/script_validator.py <addon_root>` (JSON on stdout; exit 0 PASS / 1 FAIL / 2 WARN). Reconcile UI names with `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>`. This is the OFFLINE gate; DayZ-MCP covers in-game.
 
-⚠ **La ruta `tools/dayz-script-validator/...` es relativa a la raiz del Knowledge Pack.**
-Desde un proyecto (`P:\<Mod>\`) no existe y el comando muere con `No such file or directory`, que
-se lee como «no esta instalado». Forma que funciona desde cualquier sitio:
+⚠ **The path `tools/dayz-script-validator/...` is relative to the Knowledge Pack root.**
+From a project (`P:\<Mod>\`) it does not exist and command dies with `No such file or directory`, which
+reads like "not installed". Working form from anywhere:
 `python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>`.
-⚠ **Y su exit code es 0 PASS / 1 FAIL / 2 WARN**: un arbol limpio con warnings sale con **2**,
-asi que `if rc != 0` lo rechaza. Gatea por `len(errors)` del JSON, o trata el 2 como aprobado.
-Companero: `ui_reconcile.py <addon_root>` reconcilia `FindAnyWidget` ↔ layouts y `#STR` ↔
-stringtable, que es lo que ningun compilador ve; `--strict` convierte sus WARN en fallo.
+⚠ **And its exit code is 0 PASS / 1 FAIL / 2 WARN**: a clean tree with warnings exits with **2**,
+so `if rc != 0` rejects it. Gate on `len(errors)` from JSON, or treat 2 as passed.
+Companion: `ui_reconcile.py <addon_root>` reconciles `FindAnyWidget` ↔ layouts and `#STR` ↔
+stringtable, which no compiler sees; `--strict` converts its WARNs into failure.
 
 
 ## REFERENCE FILES — Read Before Building
@@ -704,12 +704,12 @@ selections (`actiongetintransport.c:49-91`). The mount uses a SINGLE getInPos pe
 (`pos_driver`) + a one-sided get-in anim. For "enter from either side", give the seat two entry
 components/door selections mapping to the same crew index → the action is reachable from both
 sides; a truly mirrored mount, though, needs a mirrored get-in animation.
-Antes de cambiar un valor que consume codigo nativo, lista que argumentos has VISTO y cuales
-vas supuesto (LL-477): un default de firma no es el valor del llamante; instrumenta primero
-(override que loguee) o declara la apuesta y pruebala sola. Por cada campo de un resultado
-del motor en un predicado, enumerar clases de entrada y medir norma/signo/rango con sonda
-viva antes del umbral (LL-482): sin signo medido, invariante sin signo; definicion del tipo
-mas precedente no es verificacion.
+Before changing a value consumed by native code, list which arguments you have SEEN and which
+you have assumed (LL-477): a signature default is not caller's value; instrument first
+(override that logs) or declare assumption and test it in isolation. For each field of an engine
+result in a predicate, enumerate input classes and measure norm/sign/range with live probe
+before threshold (LL-482): without measured sign, signless invariant; type definition
+plus precedent is not verification.
 
 ### Vital parts gate engine start — override IsVital* when cloning a reference vehicle (LL-026)
 A drivable `CarScript` decides which parts are required to run via `IsVital*()` methods, all
@@ -763,7 +763,7 @@ body, and must contain the faces of a wheel proxy** (`proxy:\…`). Bohemia wiki
 proxy object placed with the correct name of the wheel slot so the simulation can attach a
 wheel and suspension to that position."*
 
-**Vanilla pattern (Croco quadbike, sedán, etc.):** one consistent name (typically `wheel_X_X`)
+**Vanilla pattern (Croco quadbike, sedan, etc.):** one consistent name (typically `wheel_X_X`)
 used for all three roles — `CfgSlots…<Slot>.selection`, the wheel proxy's selection in the
 visual LODs (hide-when-detached), AND the wheel proxy's selection in the FireGeometry LOD. The
 *consistency across LODs* is the invariant; the concrete name is free.
@@ -1018,66 +1018,66 @@ Still open, and only a compile settles it: what `"x" + someBool` actually prints
 compiles (0 usages in vanilla), and whether `(int)(-1.7)` truncates toward zero
 or toward −∞.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so they arrive via trigger instead
+of relying on someone remembering to search for them. Each rule cites its origin `LL-NNN`;
+the full entry (symptom, origin, evidence) lives there. Do not remove citation: the index
+`lessons-index.md` detects promotion by searching for that reference inside skills.
 
-- **LL-101** — Trata la presencia de un símbolo `proto native` como prueba de firma, no de funcionamiento. Para APIs de captura, render, hardware o I/O, consulta tracker/prior art y ejecuta un probe que verifique el artefacto real antes de basar el diseño en ellas.
-- **LL-141** — Antes de variar formatos de una API engine, reproduce el call-site vanilla exacto. Si también falla, detén el ajuste sintáctico y aísla el contexto de ejecución: server/client, headless/GUI, build y defines.
-- **LL-016** — Valida en el servidor `sender`, su identidad y la igualdad del ID con el `PlayerBase` objetivo; aplica además un rate-limit por jugador. Rechaza por defecto aunque el payload no contenga datos sensibles.
-- **LL-186** — No inicialices handles opacos Enfusion con literales (`FileHandle handle = 0`). Decláralos sin inicializar, asigna el retorno de la API y aplica la guardia según el valor documentado de esa API.
+- **LL-101** — Treat presence of a `proto native` symbol as proof of signature, not of functioning. For capture, rendering, hardware, or I/O APIs, consult tracker/prior art and run a probe verifying real artifact before basing design on them.
+- **LL-141** — Before varying engine API formats, reproduce exact vanilla call-site. If it also fails, stop syntax adjustment and isolate execution context: server/client, headless/GUI, build, and defines.
+- **LL-016** — Validate on server `sender`, its identity, and ID equality with target `PlayerBase`; additionally apply rate-limit per player. Reject by default even if payload does not contain sensitive data.
+- **LL-186** — Do not initialize opaque Enfusion handles with literals (`FileHandle handle = 0`). Declare them uninitialized, assign API return, and apply guard according to documented value of that API.
 
 
-## Tres formas de romper el compilador que no dan un error legible (added 2026-08-31)
+## Three ways to break the compiler that do not produce a readable error (added 2026-08-31)
 
-Las tres costaron una corrida de servidor diag cada una, y ninguna se adivina leyendo vanilla:
-el compilador señala la línea equivocada o inventa un `;` que falta.
+All three cost one diag server run each, and neither can be guessed by reading vanilla:
+the compiler points to the wrong line or invents a missing `;`.
 
-**1. La concatenación de strings NO puede partirse en varias líneas.** El compilador cierra la
-sentencia en el salto de línea, así que esto no compila:
+**1. String concatenation CANNOT be split across multiple lines.** The compiler closes the
+statement at the line break, so this does not compile:
 
 ```c
 return "type=" + top.GetType()
     + " wet=" + top.GetWet().ToString();      // Missing ';' at the end of line
 ```
 
-El error sale en **cada** línea de la continuación (`Missing ';' at the end of line` ×N más un
-`Syntax error`), lo que hace pensar en un problema de comillas o de paréntesis. Se acumula en una
-variable, una sentencia por línea:
+The error appears on **every** continuation line (`Missing ';' at the end of line` ×N plus a
+`Syntax error`), which suggests an issue with quotes or parentheses. Accumulate in a
+variable, one statement per line:
 
 ```c
 string desc = "type=" + top.GetType();
 desc = desc + " wet=" + top.GetWet().ToString();
 ```
 
-**2. `out` es palabra reservada** (los parámetros `out`, p. ej.
-`GetPlayers(out array<Man> players)` en `P:/scripts/3_game/global/game.c:947`). Usarla como nombre
-de variable local da **`Broken expression (missing ';'?)`**, que no menciona el identificador ni
-sugiere que el nombre sea el problema.
+**2. `out` is a reserved keyword** (the `out` parameters, e.g.
+`GetPlayers(out array<Man> players)` in `P:/scripts/3_game/global/game.c:947`). Using it as a local
+variable name yields **`Broken expression (missing ';'?)`**, which does not mention the identifier or
+suggest that the name is the problem.
 
-**3. `Print(...)` a nivel de fichero no es Enforce válido** — `Syntax error` y
-`Can't compile "<Módulo>" script module!`. Importa más de lo que parece: **`CfgConvert -test`
-acepta el `config.cpp` y NO compila Enforce**, así que un laboratorio de probes puede pasar todas
-sus verificaciones offline y no haberse compilado nunca. Medido el 2026-08-31 sobre un define-lab
-cuyos tres probes tenían este defecto: los gates offline estaban verdes y ningún probe había
-llegado jamás al compilador.
+**3. `Print(...)` at file level is not valid Enforce** — `Syntax error` and
+`Can't compile "<Módulo>" script module!`. It matters more than it seems: **`CfgConvert -test`
+accepts `config.cpp` and DOES NOT compile Enforce**, so a probe lab can pass all
+its offline verifications and never have compiled at all. Measured on 2026-08-31 on a define-lab
+whose three probes had this defect: offline gates were green and no probe had
+ever reached the compiler.
 
-**Regla que se lleva de aquí**: el único gate que acredita Enforce es **arrancar un módulo**. Un
-`CfgConvert -test` verde, un linter propio o un grep de anchors acreditan forma, no compilación.
+**Takeaway rule from here**: the only gate that validates Enforce is **booting a module**. A
+green `CfgConvert -test`, a custom linter, or an anchor grep prove form, not compilation.
 
-### Y el que no es del compilador: la ruta con backslash que llega vacía
+### And the non-compiler one: the path with backslash that arrives empty
 
-`SetObjectMaterial(idx, "dz\\data\\data\\mirror.rvmat")` escrito desde un heredoc de bash llega al
-fichero con **una sola** barra. Enforce descarta los escapes que no conoce, así que al motor le
-llegó `dzdatadatamirror.rvmat` — **la llamada se ejecutó, el log dijo que sí, y no pintó nada**.
-Forma de fallo verde y silenciosa; la corrida entera fue inútil.
+`SetObjectMaterial(idx, "dz\\data\\data\\mirror.rvmat")` written from a bash heredoc arrives in the
+file with **a single** slash. Enforce discards escape sequences it does not recognize, so the engine
+received `dzdatadatamirror.rvmat` — **the call executed, the log said yes, and it rendered nothing**.
+Silent green failure mode; the entire run was useless.
 
-Escribir esos literales componiendo la barra en Python (`chr(92)`) y verificar con `repr()`. Y si
-el valor lo consume el motor, **comprobar en su log que llegó entero** antes de fiarse de la
-corrida: aquí el propio log imprimía la ruta recibida, y ahí se veía sin barras.
+Write those literals composing the backslash in Python (`chr(92)`) and verify with `repr()`. And if
+the value is consumed by the engine, **check in its log that it arrived intact** before trusting the
+run: here the log itself printed the received path, and there it could be seen without backslashes.
 
 The same single-backslash trap repeats at mod scale, and script path literals belong in the audit: [EXACT] vanilla script literals write texture paths escaped and without a leading backslash (`"dz\\gear\\navigation\\data\\GPS_%1_ca.paa"`, `scripts/4_world/entities/itembase/gear/navigation/gpsreceiver.c:4`) (DayZ 1.30.164014 Exp); one mod shipped 64 `"\ModName\data\....rvmat"` literals with SINGLE backslashes in the source across 24 `.c` files — all of them its LEDs (measured, LFPowerGrid). [DESIGN] Recipe: grep the mod's `.c` files for string literals that carry a lone backslash inside a path, and print in the log the path the engine actually receives.
 
@@ -1091,48 +1091,48 @@ Bodies, `[EXACT]` blocks, and the full migration list: `references/dayz-1-30-enf
 
 **Checklist.** `OnCEIterate` + `super`. Split inventory Validate/Execute*. Target* takes. `ActionObtainLiquidBase`. `OverrideActionAnimation` on the entity. `CanBeStarted` for info actions. `CCTLiquid` + `GetPlayerHeadPosition`. `ThirdPersonMode.ENABLED`. Storage `144`. Never hardcode `UA_AM_*`. Do not treat `GetNoiseReductionByWeatherEx` as the AI damper (native AIParams; Ex is kept for HUD).
 
-## El salto de linea cierra la sentencia TAMBIEN en una condicion (SP-386, added 2026-09-10)
+## A newline terminates the statement ALSO in a condition (SP-386, added 2026-09-10)
 
-Ampliacion de **Tres formas de romper el compilador** (mismo fichero). Su punto 1 ya dice
-que el compilador cierra la sentencia en el salto de linea, pero lo ilustra **solo** con
-concatenacion de strings. La regla es del PARSER, no del operador `+`, y quien busca el
-sintoma bajo `if` no lo encuentra donde esta archivado.
+Extension of **Three ways to break the compiler** (same file). Its item 1 already states
+that the compiler closes the statement at a newline, but illustrates it **only** with
+string concatenation. The rule belongs to the PARSER, not to the `+` operator, and whoever searches for
+the symptom under `if` does not find it where it is filed.
 
-Medido el 2026-09-10 sobre `LFHeli_Base.c`: una condicion partida en dos lineas
+Measured on 2026-09-10 on `LFHeli_Base.c`: a condition split across two lines
 
 ```c
 if (m_RestProbeArmed && startVel.Length() < REST_PROBE_SPEED_MPS
     && m_RestProbeLines < REST_PROBE_MAX_LINES)
 ```
 
-da `Expected ')', not a 'REST_PROBE_SPEED_MPS'` mas `Missing ';' at the end of line`, y
-detras `Invalid statement ')'`, `Unexpected scope` y `Syntax error` en las lineas
-siguientes. El error apunta a un parentesis y el defecto es el salto de linea.
+yields `Expected ')', not a 'REST_PROBE_SPEED_MPS'` plus `Missing ';' at the end of line`, and
+behind it `Invalid statement ')'`, `Unexpected scope`, and `Syntax error` on the following
+lines. The error points to a parenthesis and the defect is the newline.
 
-**Senal barata y decisiva antes de escribir:** contar las condiciones multilinea que ya
-existen en el fichero. En este eran **0 de ~4.700 lineas** — todas en una sola linea,
-incluidas las de seis clausulas. Esa uniformidad no era estilo, era el parser. Cuando un
-fichero entero evita una construccion comoda, la explicacion por defecto es que no compila.
+**Cheap and decisive signal before writing:** count the multiline conditions that already
+exist in the file. In this one there were **0 out of ~4,700 lines** — all on a single line,
+including those with six clauses. That uniformity was not style, it was the parser. When an
+entire file avoids a convenient construct, the default explanation is that it does not compile.
 
-### Un cuarto gate falso: "Build Successful" de AddonBuilder
+### A fourth false gate: "Build Successful" from AddonBuilder
 
-La seccion ya avisa de que `CfgConvert -test`, un linter propio o un grep de anchors
-acreditan forma y no compilacion. Falta el que esta **dentro del pipeline de build**, que es
-el que mas enganya: AddonBuilder **empaqueta**, no compila Enforce. En esa misma corrida:
+The section already warns that `CfgConvert -test`, a custom linter, or an anchor grep
+prove form and not compilation. Missing is the one that sits **inside the build pipeline**, which is
+the most deceitful: AddonBuilder **packs**, it does not compile Enforce. In that very run:
 
-| gate | veredicto | lo que acredita |
+| gate | verdict | what it proves |
 |---|---|---|
-| linter offline del addon | `WARN=6 ERROR=0`, identico a la base | forma |
-| AddonBuilder | `exit=0`, `Build Successful` | que el PBO se empaqueto |
-| content gate del PBO | la cadena nueva esta dentro | que el texto viajo |
-| **arranque del servidor** | **`Can't compile "World" script module!`** | **compilacion** |
+| addon offline linter | `WARN=6 ERROR=0`, identical to base | form |
+| AddonBuilder | `exit=0`, `Build Successful` | that the PBO was packed |
+| PBO content gate | new string is inside | that text traveled |
+| **server startup** | **`Can't compile "World" script module!`** | **compilation** |
 
-Los tres primeros en verde y el modulo sin compilar. Cuesta el arranque entero de un lote:
-aqui, un servidor y una caja compartida que otras sesiones estaban esperando.
+The first three green and the module uncompiled. It costs the entire boot of a batch:
+here, a server and a shared box that other sessions were waiting for.
 
-**Corolario operativo:** cuando la caja es un recurso en cola, el arranque de servidor no es
-solo el gate, es el gate MAS BARATO que existe — falla en ~20 s. Gastar 20 s en arrancar
-antes de encolar un lote de 30 min no es prudencia, es aritmetica.
+**Operational corollary:** when the box is a queued resource, server startup is not
+just the gate, it is the CHEAPEST gate that exists — it fails in ~20 s. Spending 20 s to boot
+before queueing a 30 min batch is not caution, it is arithmetic.
 
 
 ## Moving a body between modules: field visibility moves with it (LL-521, added 2026-09-26)

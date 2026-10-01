@@ -1,31 +1,31 @@
-# DayZ tooling — pérdida de membresía de selecciones de Memory LOD (conversor ODOL→MLOD + inspector)
+# DayZ tooling — loss of Memory LOD selection membership (ODOL→MLOD converter + inspector)
 
-> Nota transversal (cualquier mod DayZ que debinarice o edite .p3d con estas skills).
-> Origen: sesión 2026-05-21 kt_roadkill_armed (rig del arma). Dos bugs distintos en
-> dos skills que, combinados, hacen que un coche/objeto debinarizado pierda
-> silenciosamente sus selecciones de Memory LOD (ejes de animación, dmgzones,
-> posiciones de tripulación, proxies).
+> Cross-cutting note (any DayZ mod debinarizing or editing .p3d with these skills).
+> Origin: session 2026-05-21 kt_roadkill_armed (weapon rig). Two distinct bugs in
+> two skills that, combined, cause a debinarized car/object to silently
+> lose its Memory LOD selections (animation axes, dmgzones,
+> crew positions, proxies).
 
 ## TL;DR
 
-Una selección de Memory LOD en MLOD es un **conjunto de membresía** (qué puntos/caras
-pertenecen). En ODOL esa membresía vive en `NamedSelection.selected_vertices` /
-`selected_faces`. Dos herramientas la pierden:
+A Memory LOD selection in MLOD is a **membership set** (which points/faces
+belong). In ODOL that membership lives in `NamedSelection.selected_vertices` /
+`selected_faces`. Two tools lose it:
 
-1. **Conversor ODOL→MLOD externo** (lado lectura→conversión): la transfiere solo si hay
-   `vertex_weights`. Las selecciones de memoria NO son huesos skineados → sin weights →
-   se descartan. Resultado: MLOD con los NOMBRES de las 79 selecciones pero **0 puntos** cada una.
-2. **dayz-p3d-inspector** (lado escritura): al rebuildear reconstruye la Memory LOD desde
-   `recipe.memory_points[].selections` (que el extractor deja vacío) e **ignora**
-   `recipe.lods[memory].selections`. Resultado: rebuildear borra las selecciones de memoria.
+1. **External ODOL→MLOD converter** (reading→conversion side): transfers it only if there are
+   `vertex_weights`. Memory selections are NOT skinned bones → no weights →
+   discarded. Result: MLOD with NAMES of all 79 selections but **0 points** each.
+2. **dayz-p3d-inspector** (writing side): on rebuild reconstructs Memory LOD from
+   `recipe.memory_points[].selections` (which extractor leaves empty) and **ignores**
+   `recipe.lods[memory].selections`. Result: rebuilding deletes memory selections.
 
-Síntoma común y peligroso: el `.p3d` se ve "bien" (nombres presentes, geometría intacta),
-pero in-game el coche pierde ejes de puertas/ruedas/suspensión, dmgzones, asientos. El
-backup no salva: el rebuild queda estructuralmente roto.
+Common and dangerous symptom: the `.p3d` looks "fine" (names present, geometry intact),
+but in-game the car loses door/wheel/suspension axes, dmgzones, seats. The
+backup does not save you: the rebuild remains structurally broken.
 
-## Bug 1 — conversor ODOL→MLOD: weight-gate descarta selecciones sin weights
+## Bug 1 — ODOL→MLOD converter: weight-gate discards selections without weights
 
-**Ubicación**: `odol_to_mlod.py` del conversor externo (~línea 136, `convert_lod`).
+**Location**: `odol_to_mlod.py` of external converter (~line 136, `convert_lod`).
 
 ```python
 # ROTO:
@@ -36,12 +36,12 @@ if ns.selected_vertices and ns.vertex_weights:   # exige weights
             sel.points[dst.points[vi]] = 1
 ```
 
-Las selecciones de memoria (`*_axis`, `dmgzone_*`, `pos_*`, `crew*`) traen
-`selected_vertices` (p.ej. un eje = 2 puntos) pero `vertex_weights` vacío → la condición es
-falsa → selección vacía. (Además, ojo: en BI el byte de weight 0 puede significar 1.0 — el
-filtro `if w > 0` también es sospechoso para selecciones skineadas.)
+Memory selections (`*_axis`, `dmgzone_*`, `pos_*`, `crew*`) provide
+`selected_vertices` (e.g. an axis = 2 points) but empty `vertex_weights` → condition is
+false → empty selection. (Also, heads up: in BI weight byte 0 can mean 1.0 — the
+filter `if w > 0` is also suspicious for skinned selections.)
 
-**Fix verificado (mínimo)**: mapear todos los `selected_vertices` como membresía 1.
+**Verified fix (minimum)**: map all `selected_vertices` as membership 1.
 
 ```python
 if ns.selected_vertices:
@@ -50,47 +50,47 @@ if ns.selected_vertices:
             sel.points[dst.points[vi]] = 1
 ```
 
-Resultado en kt_roadkill_scum: 79/79 selecciones de memoria con puntos
-(`doors_driver_axis`=2, ejes de ruedas=2, dmgzones=1, `pos_driver`=1). El reader (v55patch)
-ya leía bien la membresía — `NamedSelection.read` parsea `selected_faces`/`selected_vertices`/
-`vertex_weights` (`odol_reader_v55patch.py:250-261`). El bug era solo de la conversión.
+Result on kt_roadkill_scum: 79/79 memory selections with points
+(`doors_driver_axis`=2, wheel axes=2, dmgzones=1, `pos_driver`=1). The reader (v55patch)
+already read membership properly — `NamedSelection.read` parses `selected_faces`/`selected_vertices`/
+`vertex_weights` (`odol_reader_v55patch.py:250-261`). The bug was solely in the conversion.
 
 **Conversor parcheado reproducible**:
 `OneDrive\…\kt_roadkill_armed_dev\model-rig\odol_to_mlod_v55patch.py` (junto a `odol_reader_v55patch.py`).
 
-## Bug 2 — inspector: build reconstruye memoria desde la fuente vacía
+## Bug 2 — inspector: build reconstructs memory from empty source
 
-**Ubicación**: `dayz-p3d-inspector/scripts/p3d_inspector_build.py` `build_memory_lod()`.
-Reconstruye la Memory LOD agrupando `recipe.memory_points[].selections` + `recipe.axes`.
-PERO el extractor (`p3d_inspector_extract.py`) deja `memory_points[].selections` vacío y
-`axes` vacío en modelos reales; la membresía real está en `recipe.lods[memory].selections`,
-que el builder **ignora**. → rebuildear borra las 79 selecciones (y 132 faces) de la memoria.
+**Location**: `dayz-p3d-inspector/scripts/p3d_inspector_build.py` `build_memory_lod()`.
+Reconstructs Memory LOD by grouping `recipe.memory_points[].selections` + `recipe.axes`.
+BUT the extractor (`p3d_inspector_extract.py`) leaves `memory_points[].selections` empty and
+`axes` empty on real models; actual membership is in `recipe.lods[memory].selections`,
+which builder **ignores**. → rebuilding wipes 79 selections (and 132 faces) from memory.
 
-**Estado**: NO arreglado. **Mitigación**: para editar un `.p3d` que tiene selecciones de
-memoria críticas, **editar el objeto MLOD con py3d directamente y escribir con py3d**, sin pasar
-por el round-trip recipe→build del inspector. (El inspector sigue valiendo para inspección/visor.)
+**Status**: NOT fixed. **Mitigation**: to edit a `.p3d` that has critical memory
+selections, **edit the MLOD object directly with py3d and write with py3d**, without going
+through inspector recipe→build round-trip. (Inspector remains valid for inspection/viewer.)
 
 ## Gate operativo (defensa)
 
-- Tras debinarizar, **verificar membresía, no solo nombres**: leer el MLOD con py3d y comprobar
-  `len(sel.points)`/`len(sel.faces)` > 0 en las selecciones de memoria (especialmente `*_axis`).
-- Antes de cualquier rebuild irreversible: **round-trip de prueba** extract→build→re-extract y
-  comparar conteos de selecciones (es lo que cazó ambos bugs aquí). R26 en acción.
+- After debinarizing, **verify membership, not just names**: read MLOD with py3d and check
+  `len(sel.points)`/`len(sel.faces)` > 0 on memory selections (especially `*_axis`).
+- Before any irreversible rebuild: **test round-trip** extract→build→re-extract and
+  compare selection counts (this is what caught both bugs here). R26 in action.
 
 ## Propuesta upstream (backlog)
 
-Aplicar ambos fixes a las SKILL.md / scripts correspondientes. skills-plugin es **read-only desde
-sandbox** → candidato para la tarea `introspection` (APPEND a la SKILL.md con la sección del fix) o
-para una sesión de mantenimiento del pipeline. El fix del conversor ya está validado; el del
-inspector requiere reescribir `build_memory_lod` para reconstruir desde `lods[memory].selections`.
+Apply both fixes to corresponding SKILL.md / scripts. skills-plugin is **read-only from
+sandbox** → candidate for `introspection` task (APPEND to SKILL.md with fix section) or
+for a pipeline maintenance session. Converter fix is already validated; inspector
+fix requires rewriting `build_memory_lod` to rebuild from `lods[memory].selections`.
 
 Cross-ref: handoff [`30_Sessions/2026-05-21-kt-roadkill-armed-faithful-mlod-stepB-unblock.md`](../30_Sessions/2026-05-21-kt-roadkill-armed-faithful-mlod-stepB-unblock.md),
-lección `LL-006`, bug-ledger del proyecto `bug-tool-001/002`.
+lesson `LL-006`, project bug-ledger `bug-tool-001/002`.
 
 ## Related
 
-- [[dayz-model-pipeline]] — assembly/edición de `.p3d` con py3d; las selecciones de Memory LOD se autoran aquí.
-- [[dayz-p3d-inspector]] — runbook del inspector (Bug 2: el round-trip recipe→build borra la memoria).
-- [[dayz-p3d-audit]] — verificación de membresía/winding/Component01 que cierra el gate operativo.
-- [[dayz-capacidades-verificadas]] — limitación cruzada: el lector ODOL v55 no parsea la sección de anims.
-- [[dayz-animations-creatures-weapons]] — por qué importan los `*_axis`: ejes de animación de puertas/ruedas/suspensión.
+- [[dayz-model-pipeline]] — `.p3d` assembly/editing with py3d; Memory LOD selections are authored here.
+- [[dayz-p3d-inspector]] — inspector runbook (Bug 2: recipe→build round-trip wipes memory).
+- [[dayz-p3d-audit]] — membership/winding/Component01 verification closing operational gate.
+- [[dayz-capacidades-verificadas]] — cross-cutting limitation: ODOL v55 reader does not parse anims section.
+- [[dayz-animations-creatures-weapons]] — why `*_axis` matter: animation axes for doors/wheels/suspension.

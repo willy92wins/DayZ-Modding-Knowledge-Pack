@@ -373,7 +373,7 @@ class DoOnce
 
 ---
 
-## Qué se rompe para un mod 1.29
+## What breaks for a 1.29 mod
 
 1. `override OnCEUpdate` — obsolete; CE work may never run → `OnCEIterate`.
 2. `modded DayZPlayerInventory.ProcessInputData` — not called in retail → Validate / Execute*.
@@ -386,7 +386,7 @@ class DoOnce
 9. `GetNoiseReductionByWeather()` — still compiles (obsolete). AI damping is native; HUD uses `GetNoiseReductionByWeatherEx(object)`.
 10. `GAME_STORAGE_VERSION` 142 → 144. Recipe replace no longer copies ingredient health. Drink/fill CCT is `CCTLiquid`, not `CCTWaterSurfaceEx`.
 
-## Checklist de migración
+## Migration checklist
 
 - [ ] `OnCEIterate(currentTime, elapsedTime)` + `super`. Inventory: Validate + Execute* (not `ProcessInputData`).
 - [ ] Target* takes. `AddAction(ActionObtainLiquidBase)`. `EntityAI.OverrideActionAnimation` (item and target).

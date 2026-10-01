@@ -893,7 +893,7 @@ invariants, each verified in-game (the user's eye is the gate):
    `prox_int`) and SUB_BRZ had 0 — that half holds. The "vanilla flags=0" half does NOT: vanilla ships
    binarized, where per-face flags do not exist, so that number came from a debinarizer that hardcodes
    `face.flags = 0` (`odol_to_mlod.py:115`) — the instrument answering its own question. It justifies
-   nothing either way, since binarize discards the field. In-game s17: "el interior ya se dibuja" (user).
+   nothing either way, since binarize discards the field. In-game s17: "the interior now draws" (user).
    RESIDUAL (separate, material pass): the rip interior reads GREY (brz_interior_fp/brz_trim near-grey) — needs
    proper interior colour, not a geometry fix.
    SUPERSEDED as primary fix by visual-gates-and-winding.md #10(i)/(j) (s20): the defect was import ORIENTATION; the s19

@@ -16,24 +16,24 @@ description: >
 
 # DayZ Ground Vehicle Modding
 
-## Selector de familia — ruta crítica day-0 (CAMBIO-2)
+## Family selector — day-0 critical path (CAMBIO-2)
 
-1. Identifica la familia por el origen y la arquitectura del asset; no por el síntoma.
-2. Si el asset es un coche source-game Grub nuevo, proxy-split y con partes móviles, usa **familia B**.
-3. Familia B → abre `../rip-vehicle-import/SKILL.md` y sigue únicamente su adaptador, golden y allowlist.
-4. Ese adaptador abre el `asset-contract.json` del asset como tercer y último fichero day-0; schema, export Blender y primitive son inputs de máquina, no documentos adicionales que el agente mantenga.
-5. Si ya existe un plan/runbook congelado para el asset, sigue ese contrato en vuelo; no lo migres aquí.
-6. Si ninguna fila aplica o falta el adaptador de la familia: **STOP**. No improvises desde este atlas.
+1. Identify family by asset origin and architecture; not by symptom.
+2. If asset is a new Grub source-game car, proxy-split and with moving parts, use **family B**.
+3. Family B → open `../rip-vehicle-import/SKILL.md` and follow only its adapter, golden, and allowlist.
+4. That adapter opens asset `asset-contract.json` as third and final day-0 file; schema, Blender export, and primitive are machine inputs, not additional documents maintained by agent.
+5. If a frozen plan/runbook already exists for asset, follow that contract in flight; do not migrate it here.
+6. If no row applies or family adapter is missing: **STOP**. Do not improvise from this atlas.
 
-| Señal de entrada | Adaptador | Ficheros day-0 |
+| Input signal | Adapter | Day-0 files |
 |---|---|---|
-| source-game Grub, coche nuevo, proxy-split + puertas/partes móviles | Familia B | Este router → `../rip-vehicle-import/SKILL.md` → `<asset>\asset-contract.json` |
-| Asset ya en vuelo | Runbook congelado del proyecto | El que cite su plan vigente |
-| Otra familia o datos insuficientes | Ninguno | **STOP** |
+| source-game Grub, new car, proxy-split + doors/moving parts | Family B | This router → `../rip-vehicle-import/SKILL.md` → `<asset>\asset-contract.json` |
+| Asset already in flight | Frozen project runbook | Whichever cited in its current plan |
+| Other family or insufficient data | None | **STOP** |
 
-El resto de este body es atlas de diagnóstico y **no forma parte del camino crítico day-0**. Solo se consulta cuando el adaptador o un síntoma enlaza una sección concreta.
+Rest of this body is diagnostic atlas and **does not form part of day-0 critical path**. Only consulted when adapter or symptom links a specific section.
 
-**Preflight antes de re-importar / re-ensamblar cualquier pieza** (SP-193): mide primero la completitud A NIVEL DE CARAS de la pieza de fábrica contra el modelo ya empaquetado. Una malla "podrida" suele estar completa y el defecto estar en otro sitio; ver SP-193 al final de este atlas.
+**Preflight before re-importing / re-assembling any piece** (SP-193): first measure FACTORY FACE-LEVEL completeness of piece against already packed model. A "rotten" mesh is usually complete and defect lies elsewhere; see SP-193 at end of this atlas.
 
 ---
 
@@ -46,7 +46,7 @@ the ground counterpart to `dayz-aviation` (anything that flies belongs there).
 Scope: cars, trucks, quads/ATVs, motorbikes — anything wheeled and drivable, modeled from scratch
 or imported (Blender / OBJ) from another game.
 
-> REDIRECT CAMBIO-1: el selector de familia de la cabecera y el adaptador elegido son la única ruta day-0.
+> REDIRECT CAMBIO-1: header family selector and chosen adapter are the sole day-0 path.
 
 **Vehicle type matrix (invariant):** `Car` and `Boat` are SIBLINGS, both directly under `Transport`
 (`car.c:98` / `boat.c:31`) — NOT parent/child. `Transport` owns crew/get-in/flip/fuel; `Car` owns
@@ -819,10 +819,10 @@ and require approximately zero residual before trusting any product comparison.
      simple-first). Root cause on SUB_BRZ: the in-line s26 ladder assembler took the dissolve winding VERBATIM +
      raw +cross normals and skipped make-consistent (which the shell's `rip_winding_core` runs) → res=2 shipped
      see-through, `outward=38.9%` was printed and ignored, no offline gate. GATE any baked far-LOD by census-vs-LOD0
-     BEFORE deploy — Blender cannot judge DayZ winding (right- vs left-handed cull). El instrumento
-     replica el ORDEN del consumidor: el culling va ANTES del test de profundidad (LL-485); agrupar
-     impactos a t_min+epsilon y preguntar si ALGUNO mira a camara, y releer los controles cuando el
-     arreglo cambie la clase de geometria que el instrumento resuelve.
+     BEFORE deploy — Blender cannot judge DayZ winding (right- vs left-handed cull). Instrument
+     replicates consumer ORDER: culling runs BEFORE depth test (LL-485); group
+     hits at t_min+epsilon and ask whether ANY face camera, and reread controls when
+     fix changes geometry class that instrument resolves.
 14. **Steering wheel vs hands: measure rim-center delta AND plane tilt vs the control BEFORE moving
     anything — the seat anim is the control's, so hands land on ITS wheel plane.** (added 2026-07-07,
     SUB_BRZ s25 measured) SUB_BRZ: rim-center delta vs crew anchor already in parity (1-1.6 cm) but rim
@@ -1143,7 +1143,7 @@ units, headroom accounting and what does NOT discriminate — is in
 
 32. **Two halves of a car that a name-existence gate cannot see: the open-door action reads the DOOR PROXY, and vanilla parity is not a behaviour spec (added 2026-08-16, SUB_WRXSTI).** (a) `ActionCarDoorsOutside.ActionCondition` does `CarDoor.Cast(target.GetObject())` and then `carDoor.GetActionComponentNameList(...)` — the selection names come from the **attached door item's own `.p3d`**, not from the shell (`4_world\classes\useractionscomponent\actions\interact\vehicles\actioncardoorsoutside.c:30-58`, re-read 2026-08-16). If the proxy does not carry `doors_<role>`, `GetAnimSourceFromSelection` returns `""` for every one of its components and the open/close action never appears from outside — no error, no log. Measured placement on both the WRX and the shipped BRZ: the name lives in the proxy's **Geometry and ViewGeometry** LODs; FireGeo carries only `Component01/02`, `dmgzone_*` and `glass_<role>`. Every gate in this project measured the SHELL; nobody had ever opened the six door proxies. When verifying "the doors open", the evidence is the proxy — the shell only proves the model references it and that the animation axis exists. (b) Three behaviours are **correct vanilla ports and still wrong for a mod**: `OnDebugSpawn` drops the parts loose in cargo (`civiliansedan.c:408-430`) so a freshly spawned car needs ten manual attachments before it moves; `CarScript.EEOnCECreate` fills `Math.RandomFloat(0.0, capacity*0.35)` (`carscript.c:2967-2974`) so a CE-spawned car can arrive dry; `CanDisplayCargo` opens the cargo on the boot alone (`civiliansedan.c:162-171`). All three ship a car that loads, drives and looks right, and every structural gate passes them by construction because the criterion is "does it match vanilla". Declare behaviour PER CAR in the profile (`vehicle_script_policy {cargo_access, debug_spawn, ce_spawn_fuel}`) and measure the script against that declaration; derive the attachable roster from the config's own `inventorySlot[]` blocks so a renamed class reds by itself. Rider on the silent one: `CrewCanGetThrough` must compare against `DOORS_CLOSED`, because a torn-off door reports `DOORS_MISSING` — writing the same intent as `!= DOORS_OPEN` reads correctly, passes every structural check, and makes a doorless car unenterable. See LL-279.
 
-33. **Un carril de gates que solo mide numeros es ciego al color y a la orientacion de un proxy, y el unico instrumento que los ve es un ojo delante de un render MONTADO (added 2026-08-16, SUB_WRXSTI).** Nombres que existen, caras que se conservan, hashes que cuadran y matrices plaza→puerta→slot completas: todo eso pasa en verde sobre un coche monocromo con las llantas del reves. Medido: el WRX llego al PBO con el 64% de sus caras en UN material y el interior entero en otro (la importacion registro `material_map: null` y mando 37 piezas con nombre — emblemas, espejos, escape, jambas, faldones, bajos, brazos — al cubo de pintura), con los cuatro proxies de rueda escritos con la matriz IDENTIDAD donde vanilla escribe DOS espejadas una por lado, y con la rueda de berlina vanilla de 176 mm en vez de la suya. Los cuatro defectos los encontro el usuario en minutos la primera vez que vio el coche montado; ninguno era visible a ningun gate. Tres riders. (a) El render tiene que ser ENSAMBLADO y con materiales: las piezas sueltas y en gris no enseñan ni un color mal ni una llanta invertida — un `visual_sheet` que dibuja geometria gris por piezas ya existia y no vio nada. (b) El veredicto humano se ata al sha256 de lo que se miro, o se pudre: tras un rebuild nadie puede decir si aprobo ESTE coche o el anterior, y el gate debe ponerse rojo por stale, no seguir en verde. (c) Calibra la quiralidad con TEXTO DE MARCA, no con la intuicion: DayZ es zurdo y los motores de visor suelen ser diestros, asi que pasar coordenadas tal cual es una reflexion, y un coche espejado se ve normal hasta que un emblema se lee al reves. Contrapartida honesta: esto NO sustituye al test in-game, solo mueve mas barato el hallazgo de lo que se ve.
+33. **A gate lane measuring only numbers is blind to proxy color and orientation, and the only instrument seeing them is an eye in front of an ASSEMBLED render (added 2026-08-16, SUB_WRXSTI).** Existing names, preserved faces, matching hashes, and complete seat→door→slot matrices: all of that passes green on a monochrome car with reversed wheels. Measured: WRX arrived in PBO with 64% of its faces in ONE material and entire interior in another (import recorded `material_map: null` and sent 37 named parts — badges, mirrors, exhaust, jambs, skirts, underbody, arms — into the paint bucket), with four wheel proxies written with IDENTITY matrix where vanilla writes TWO mirrored ones, one per side, and with 176 mm vanilla sedan wheel instead of its own. All four defects were found by user within minutes upon first seeing assembled car; none was visible to any gate. Three riders. (a) Render must be ASSEMBLED and with materials: loose grey parts reveal neither wrong color nor inverted rim — a `visual_sheet` drawing grey geometry per part already existed and caught nothing. (b) Human verdict is tied to sha256 of what was reviewed, or it rots: after a rebuild no one can tell whether THIS car or previous was approved, and gate must turn red from stale, not remain green. (c) Calibrate chirality with BRAND TEXT, not intuition: DayZ is left-handed and viewer engines are typically right-handed, so passing coordinates as-is is a reflection, and a mirrored car looks normal until a badge reads backwards. Honest trade-off: this DOES NOT replace in-game testing, it merely makes finding what is seen cheaper.
 
 34. **An absent key in a config class is NOT a value — it is a question about the parent (added
     2026-08-21, from a refutation that did not survive).** Reading `config.cpp` by grepping for a
@@ -1484,16 +1484,16 @@ dropped them in the 2026-06-05 migration):
   vehicles already in flight. Nothing here is current doctrine; the findings that used to sit
   under that heading and still are (SP-247/248/249) now have their own sections above.
 
-> REDIRECT CAMBIO-1: el único índice síntoma→cookbook de familia B está en `../rip-vehicle-import/SKILL.md`.
-- `references/rip-geometry-and-winding.md` - geometria del rip: retopo, winding y cirugia de caras.
-- `references/proxies-and-get-in.md` - proxies, get-in y partes desmontables: el contrato.
-- `references/doors-and-panel-edges.md` - puertas: canto abierto, tapas y desmontables que no son puertas.
-- `references/network-physics-ownership.md` - red, fisica y ownership: quien manda sobre la pose.
-- `references/visual-metrics-and-viewer.md` - metrica visual: que se puede afirmar desde una captura.
-- `references/materials-and-selections.md` - materiales y selecciones: dos diagnosticos que enganan.
-- `references/animation-sign-and-axis.md` - el signo de una animacion no se juzga sin su eje.
-- `references/process-gates.md` - gates de proceso: fixtures negativas y reglas promovidas.
-- `references/gauge-needles.md` - agujas y esferas del salpicadero: marco anclado a los marcadores del modelo, sentido de giro medido en vanilla, cuadro dado por bueno en juego (veredicto global), aguja = buje + pala sin disco y delante del panel, cache de PAA por contenido, instrumento de derivacion con guard, receta completa, panel de gasolina desde cero, geometria nueva en la seleccion animada (trampa 15), eje del manillar vertical (trampa 16), dos signos por cara nueva copiados de las vecinas, winding y normal almacenada, y mirar el cuadro de noche (trampa 17).
+> REDIRECT CAMBIO-1: sole symptom→cookbook index for family B is in `../rip-vehicle-import/SKILL.md`.
+- `references/rip-geometry-and-winding.md` - rip geometry: retopo, winding, and face surgery.
+- `references/proxies-and-get-in.md` - proxies, get-in, and detachable parts: the contract.
+- `references/doors-and-panel-edges.md` - doors: open edge, caps, and detachables that are not doors.
+- `references/network-physics-ownership.md` - network, physics, and ownership: who governs the pose.
+- `references/visual-metrics-and-viewer.md` - visual metrics: what can be stated from a capture.
+- `references/materials-and-selections.md` - materials and selections: two misleading diagnoses.
+- `references/animation-sign-and-axis.md` - animation sign is not judged without its axis.
+- `references/process-gates.md` - process gates: negative fixtures and promoted rules.
+- `references/gauge-needles.md` - dashboard needles and dials: frame anchored to model markers, rotation direction measured in vanilla, cluster approved in game (global verdict), needle = hub + blade without disc and in front of panel, content-based PAA cache, derivation instrument with guard, complete recipe, fuel gauge from scratch, new geometry in animated selection (trap 15), vertical handlebar axis (trap 16), two signs per new face copied from neighbors, winding and stored normal, and checking cluster at night (trap 17).
 
 ## CITE-THEN-VERIFY
 
@@ -1658,29 +1658,29 @@ PAIRS of twin events (the two EXIT lines gave a stable 33,99 s offset) and corre
 the owner's position series (FRAME p0) to date the divergence. Complements the Pawn ladder
 in `references/network-physics-ownership.md` (SP-188).
 
-## ARCHIVO DE LECCIONES — leer por tema, no por fecha
+## LESSONS ARCHIVE — read by topic, not by date
 
-Las lecciones acumuladas viven agrupadas por tema en `references/`. Cada
-entrada dice que hay dentro para que se pueda decidir si abrirla sin abrirla.
-Todo lo de abajo es doctrina VIGENTE (lo derogado esta en
-`references/legacy-gate-ladder.md`, y solo eso).
+Accumulated lessons live grouped by topic in `references/`. Each
+entry states what is inside so opening can be decided without opening.
+Everything below is CURRENT doctrine (superseded material is in
+`references/legacy-gate-ladder.md`, and that alone).
 
-- **Geometria del rip: retopo, winding y cirugia de caras** -> `references/rip-geometry-and-winding.md` (16,302 ch, 8 lecciones)
-  Todo lo que toca la MALLA importada: intake del rip, auto-retopo, winding (gate y
-  direccion), `autocenter`, y como borrar/partir caras sin romper las selecciones.
+- **Rip geometry: retopo, winding, and face surgery** -> `references/rip-geometry-and-winding.md` (16,302 ch, 8 lessons)
+  Everything touching the imported MESH: rip intake, auto-retopo, winding (gate and
+  direction), `autocenter`, and how to delete/split faces without breaking selections.
     - RIPPED RACING-GAME IMPORT
     - Auto-retopo of a dense rip = Quadriflow PER-PANEL + ASCENDING target sweep
-    - Rewriting a proxy triangle: regla corregida para proxies y caras visuales
-    - `autocenter=0`: alcance corregido por LOD, host y submodelo
+    - Rewriting a proxy triangle: corrected rule for proxies and visual faces
+    - `autocenter=0`: corrected scope by LOD, host, and submodel
     - A winding gate must measure the WHOLE piece, ALL render LODs, and twin pairs
     - Game winding is the INVERSE of MLOD geometric winding; fix winding per…
-    - Cirugia de caras en un .p3d: un criterio por UN eje parte los quads que…
-    - Borrar caras de un .p3d con py3d: muta `lod.faces` IN PLACE o rompes las…
+    - Face surgery in a .p3d: a criterion along ONE axis splits the quads that…
+    - Deleting faces from a .p3d with py3d: mutate `lod.faces` IN PLACE or you break the…
 
-- **Proxies, get-in y partes desmontables: el contrato** -> `references/proxies-and-get-in.md` (17,979 ch, 7 lecciones)
-  Colocacion de proxies medida sobre un coche de referencia, el contrato de cuatro capas
-  de las partes desmontables, las dos registraciones que necesita una accion en
-  vehiculo, y los dos fallos que bloquean el get-in entero.
+- **Proxies, get-in, and detachable parts: the contract** -> `references/proxies-and-get-in.md` (17,979 ch, 7 lessons)
+  Proxy placement measured on reference car, four-layer contract
+  of detachable parts, two registrations vehicle action needs,
+  and two failures blocking entire get-in.
     - REGEN-FROM-glTF BODY + PROXY-SPLIT / GET-IN RADIAL + LOD LADDER
     - Proxy placement convention - measured on a working reference car
     - Detachable parts (doors/hood/trunk): the FOUR-layer contract, and three rules…
@@ -1689,187 +1689,187 @@ Todo lo de abajo es doctrina VIGENTE (lo derogado esta en
     - Phantom vehicle command blocks ALL vanilla get-in after a client crash while…
     - ViewPilot (1100) of a shell+proxy car MUST carry the body geometry, not only…
 
-- **Puertas: canto abierto, tapas y desmontables que no son puertas** -> `references/doors-and-panel-edges.md` (13,308 ch, 4 lecciones)
-  Un panel rippeado no tiene canto. Como se MIDE que falta (longitud de borde libre
-  contra el control vanilla), como se cierra por script, y en que se diferencian capo y
-  maletero de una puerta.
+- **Doors: open edge, caps, and detachables that are not doors** -> `references/doors-and-panel-edges.md` (13,308 ch, 4 lessons)
+  A ripped panel has no edge. How missing edge is MEASURED (free edge length
+  against vanilla control), how closed via script, and how hood and
+  trunk differ from a door.
     - An imported door has NO end caps, and a shut door cannot show you
-    - Un canto de puerta ausente se mide por LONGITUD DE BORDE LIBRE contra el…
-    - El canto de puerta SE CIERRA POR SCRIPT con una banda de fondo MEDIDO — y…
-    - Desmontables que NO son puertas: capo y maletero (medido sub_wrxsti_04,…
+    - A missing door edge is measured by FREE EDGE LENGTH against…
+    - Door edge IS CLOSED VIA SCRIPT with a MEASURED depth band — and…
+    - Detachables that are NOT doors: hood and trunk (measured sub_wrxsti_04,…
 
-- **Red, fisica y ownership: quien manda sobre la pose** -> `references/network-physics-ownership.md` (11,034 ch, 3 lecciones)
-  Ownership de red vs asiento forzado server-side, por que escribir pose pelea con la
-  reconciliacion del owner, y la escalera de tipos de un armazon Pawn custom con sus
-  reglas duras.
-    - Ownership de red: seat forzado server-side != ownership del cliente; PHYSICS…
-    - PHYSICS = prediccion del owner con reconciliacion: escribir pose pelea con…
-    - Armazon Pawn custom (Move/OwnerState): la escalera de tipos y sus reglas duras
+- **Network, physics, and ownership: who governs the pose** -> `references/network-physics-ownership.md` (11,034 ch, 3 lessons)
+  Network ownership vs server-side forced seat, why writing pose fights
+  owner reconciliation, and type ladder of custom Pawn frame with its
+  hard rules.
+    - Network ownership: server-side forced seat != client ownership; PHYSICS…
+    - PHYSICS = owner prediction with reconciliation: writing pose fights…
+    - Custom Pawn frame (Move/OwnerState): type ladder and its hard rules
 
-- **Metrica visual: que se puede afirmar desde una captura** -> `references/visual-metrics-and-viewer.md` (8,553 ch, 3 lecciones)
-  Una queja de pose puede ser artefacto de PERSPECTIVA. Ancla del rayo del HUD. Y la
-  regla general: diagnosticar antes de re-autorar, y validar toda metrica visual sobre
-  algo visible in-game.
+- **Visual metrics: what can be stated from a capture** -> `references/visual-metrics-and-viewer.md` (8,553 ch, 3 lessons)
+  A pose complaint can be a PERSPECTIVE artifact. HUD ray anchor. And the
+  general rule: diagnose before re-authoring, and validate every visual metric on
+  something visible in-game.
     - An in-game GEOMETRIC POSE complaint can be a PERSPECTIVE artifact - measure…
     - HUD reticle/marker: anchor the ray at the CAMERA, never at the vehicle
     - Diagnose before re-authoring, and validate every visual metric on an…
 
-- **Materiales y selecciones: dos diagnosticos que enganan** -> `references/materials-and-selections.md` (3,959 ch, 2 lecciones)
-  Texturas identicas y co-mismatch de servidor parecen diagnosticos solidos y no lo son.
-  Y las selecciones dirigidas por el padre (hiddenSelections, anims de config) NO llegan
-  a un proxy.
+- **Materials and selections: two misleading diagnoses** -> `references/materials-and-selections.md` (3,959 ch, 2 lessons)
+  Identical textures and server co-mismatch look like solid diagnoses and are not.
+  And parent-driven selections (hiddenSelections / config anims) do NOT reach
+  a proxy.
     - Two diagnoses that look solid and are not: identical textures, and server…
     - Parent-driven selections (hiddenSelections / config anims) do NOT reach a…
 
-- **El SIGNO de una animacion no se juzga sin su EJE** -> `references/animation-sign-and-axis.md` (4,368 ch, 1 leccion)
-  Como fijar el eje antes de discutir si una animacion va al reves, y por que el signo
-  solo significa algo relativo a ese eje.
+- **Animation SIGN is not judged without its AXIS** -> `references/animation-sign-and-axis.md` (4,368 ch, 1 lesson)
+  How to fix axis before discussing whether animation is reversed, and why sign
+  only means something relative to that axis.
     - An animation's SIGN is never judged without its AXIS - use the pseudovector…
 
-- **Gates de proceso: fixtures negativas y reglas promovidas** -> `references/process-gates.md` (4,161 ch, 2 lecciones)
-  Una regla de gate de import no es entregable sin una fixture NEGATIVA. Mas las reglas
-  promovidas del corpus de lecciones.
+- **Process gates: negative fixtures and promoted rules** -> `references/process-gates.md` (4,161 ch, 2 lessons)
+  An import gate rule is not deliverable without a NEGATIVE fixture. Plus rules
+  promoted from lessons corpus.
     - An import gate rule is not deliverable without a negative fixture
-    - Reglas promovidas del corpus de lecciones
-## Stand automatizado de vehiculos — invariantes medidas (added 2026-08-24)
+    - Rules promoted from lessons corpus
+## Automated vehicle stand — measured invariants (added 2026-08-24)
 
-Medidas en el stand dayz-mcp (DayZDiag 1.29.163709, CivilianSedan), sesion ABBA G0
-(origen: fricciones reales que abortaron 3 intentos; evidencia en
+Measured on dayz-mcp stand (DayZDiag 1.29.163709, CivilianSedan), ABBA G0 session
+(origin: real frictions that aborted 3 attempts; evidence in
 `AI/10_Projects/DayZ_MCP/reviews/2026-08-24-g0-veredicto-nocturno.md`):
 
-- **Get-out**: `ActionGetOutTransport.ActionCondition` = `crewIndex >= 0 && CrewCanGetThrough && IsAreaAtDoorFree` (actiongetouttransport.c:68-77; `CCTNone` — el target no participa). Un coche detenido CONTRA estaticos deja la puerta bloqueada y la accion en `condition_failed`; la superficie de control del stand no tiene marcha atras (throttle 0..1) — el sitio queda irrecuperable. Disena el sitio con >=150 m despejados EN LA DIRECCION DE CONDUCCION y un cleanup degradable: borrar el fixture con el jugador dentro eyecta limpio (4/4 medido).
-- **Rumbo del spawn**: el 4o parametro de `CreateObjectEx` son flags `RF_*`, NO yaw; el vehiculo hereda la orientacion del terreno del punto (~11,6 grados entre dos puntos a 40 m). No hay setter de orientacion por tools: si el experimento exige rumbos comparables, se seleccionan sitios empiricamente (los trace samples dan el rumbo real conducido).
-- **Drivability posicional**: un vehiculo puede quedar CONGELADO (delta 2s ~0,12 m a throttle 1.0) por el SITIO — el mismo binario/config condujo 91 m en un punto y 0,12 m en otro a 40 m. Antes de culpar a config/ownership/codigo: ABBA de los sitios (LL-359).
-## Get-out del stand: la cadena real y el teardown sancionado (added 2026-08-24 tarde)
+- **Get-out**: `ActionGetOutTransport.ActionCondition` = `crewIndex >= 0 && CrewCanGetThrough && IsAreaAtDoorFree` (actiongetouttransport.c:68-77; `CCTNone` — target does not participate). A car stopped AGAINST statics leaves door blocked and action in `condition_failed`; stand control surface has no reverse gear (throttle 0..1) — site becomes unrecoverable. Design site with >=150 m clear IN DRIVING DIRECTION and graceful cleanup: deleting fixture with player inside cleanly ejects (4/4 measured).
+- **Spawn heading**: 4th parameter of `CreateObjectEx` is `RF_*` flags, NOT yaw; vehicle inherits ground orientation at point (~11.6 degrees between two points 40 m apart). No orientation setter via tools: if experiment demands comparable headings, sites are selected empirically (trace samples give actual driven heading).
+- **Positional drivability**: a vehicle can end up FROZEN (2s delta ~0.12 m at throttle 1.0) due to SITE — same binary/config drove 91 m at one point and 0.12 m at another 40 m away. Before blaming config/ownership/code: ABBA of sites (LL-359).
+## Stand get-out: the real chain and sanctioned teardown (added 2026-08-24 afternoon)
 
-Triangulado en 13 rondas sobre NWAF (evidencia: sesion 2026-08-24c + ficha
-fb-20260824-133301-ecf5). El `condition_failed` de ActionGetOutTransport en fixtures del
-stand NO depende del sitio (identico en 9 sitios, 7 pristinos):
+Triangulated across 13 rounds on NWAF (evidence: session 2026-08-24c + ledger entry
+fb-20260824-133301-ecf5). ActionGetOutTransport `condition_failed` on stand fixtures
+DOES NOT depend on site (identical across 9 sites, 7 pristine):
 
-- La puerta del conductor spawnea CERRADA y `CrewCanGetThrough` la exige no-cerrada
-  (civiliansedan.c:214-222; fase <=0,5 = CLOSED, carscript.c:2801-2811).
-- Abrirla por accion NO funciona: la mitad server de las acciones inyectadas es inerte
-  (`OnStartServer`/SetAnimationPhase no se materializa, actioncardoors.c:92) - la accion
-  ARRANCA en el cliente (started=1) pero la fase sigue 0.0. Discriminador barato:
-  ActionCloseCarDoors devuelve condition_failed despues de "abrir" (su condicion exige
-  fase >0,5 y comparte IsAreaAtDoorFree con el get-out, que queda exculpada).
-- La replica SERVER del coche client-auth no sale del punto de spawn aunque el owner-peer
-  conduzca 70-100 m: object_anim/object_inspect (resuelven por posicion en el server,
-  radio 25, MCPBridge.c:20) hay que apuntarlos AL SPAWN o no usarlos.
+- Driver door spawns CLOSED and `CrewCanGetThrough` requires it non-closed
+  (civiliansedan.c:214-222; phase <=0.5 = CLOSED, carscript.c:2801-2811).
+- Opening via action DOES NOT work: server half of injected actions is inert
+  (`OnStartServer`/SetAnimationPhase does not materialize, actioncardoors.c:92) - action
+  STARTS on client (started=1) but phase remains 0.0. Cheap discriminator:
+  ActionCloseCarDoors returns condition_failed after "opening" (its condition requires
+  phase >0.5 and shares IsAreaAtDoorFree with get-out, which is exculpated).
+- SERVER replica of client-auth car does not leave spawn point even if owner-peer
+  drives 70-100 m: object_anim/object_inspect (resolve by position on server,
+  radius 25, MCPBridge.c:20) must be targeted AT SPAWN or not used.
 
-**Teardown sancionado**: object_delete del fixture con eyeccion verificada por telemetria
-(`not_seated`); 18/18 limpio acumulado. El get-out por accion NO es criterio de sitio.
+**Sanctioned teardown**: object_delete of fixture with ejection verified via telemetry
+(`not_seated`); 18/18 clean accumulated. Action-based get-out is NOT a site criterion.
 
 
-## Un buje `componentNN`-tagueado no sirve si esta en el LOD equivocado (added 2026-08-29, LFQuad2 port del ATV de Arma 2 OA)
+## A `componentNN`-tagged hub is useless if in wrong LOD (added 2026-08-29, LFQuad2 Arma 2 OA ATV port)
 
-El preflight #4 de este fichero exige que asientos y bujes lleven dual-tag `componentNN`. Dice
-QUE tag, no DONDE. La otra mitad --que la seleccion tiene que vivir en el LOD **Geometry**-- es
-la que fallo hoy, y es la que un port arrastra del donante sin enterarse.
+Preflight #4 of this file requires seats and hubs carry dual-tag `componentNN`. It states
+WHAT tag, not WHERE. The other half --that selection must live in **Geometry** LOD-- is
+what failed today, and what a port inherits from donor unknowingly.
 
-Firma del motor, identica a la de 2026-07-17:
+Engine signature, identical to 2026-07-17:
 
     ENTITY       : Load entity type '<Clase>'
     PHYSICS   (E): Won't simulate, wheel wheel_1_1_damper_land has no proper selection in geometry
 
-Consecuencia: `CreateObjectEx` devuelve **null**. El vehiculo **no nace**; no es que se vea mal.
+Consequence: `CreateObjectEx` returns **null**. Vehicle **fails to spawn**; it is not merely looking wrong.
 
-**Donde van los bujes, medido en TRES modelos que arrancan**, no en uno:
+**Where hubs go, measured on THREE working models**, not just one:
 
-| modelo | `*_damper_land` en Geometry | LOD LandContact |
+| model | `*_damper_land` in Geometry | LandContact LOD |
 |---|---|---|
-| LFQuad (referente vivo) | 4, con caras y dual-tag `componentNN` | **no existe** |
-| `civiliansedan_mlod.p3d` (vanilla) | 4 | **no existe** |
-| quadbike de Crocodoc | 4 | **no existe** |
-| LFQuad2 (port, no nacia) | **0** | existe, y ahi estaban las 4, con 1 punto y 0 caras |
+| LFQuad (living reference) | 4, with faces and dual-tag `componentNN` | **does not exist** |
+| `civiliansedan_mlod.p3d` (vanilla) | 4 | **does not exist** |
+| Crocodoc quadbike | 4 | **does not exist** |
+| LFQuad2 (port, failed to spawn) | **0** | exists, and there all 4 were, with 1 point and 0 faces |
 
-**La trampa del port:** un MLOD de Arma 2 trae LOD LandContact, y el porteador deja ahi los
-puntos de contacto porque el nombre encaja. DayZ no lee el buje de ahi: el `wheelHub` del
-`config.cpp` se resuelve contra **Geometry**. Ojo a que los dos sintomas son el mismo error --
-una seleccion de 1 punto y 0 caras tampoco puede llevar `componentNN`, porque no hay caras que
-taguear.
+**The port trap:** an Arma 2 MLOD includes LandContact LOD, and porter leaves contact
+points there because name matches. DayZ does not read hub from there: `wheelHub` in
+`config.cpp` resolves against **Geometry**. Notice both symptoms are same error --
+a selection with 1 point and 0 faces cannot carry `componentNN` either, because there are no faces
+to tag.
 
-**Comprobacion de 5 s antes de cualquier ciclo in-game:** por cada `wheelHub` que nombre el
-config, que ese nombre exista en el LOD Geometry, con caras, y dual-tagueado. En forma
-complementaria y no enumerada: derivala del config del propio modelo, que es quien nombra los
-bujes, no de una lista escrita a mano.
+**5-second check before any in-game cycle:** for each `wheelHub` named by
+config, that name must exist in Geometry LOD, with faces, and dual-tagged. In
+complementary non-enumerated form: derive it from model's own config, which names the
+hubs, not from a hand-written list.
 
-Y el aviso de proceso, que es la mitad cara de esta entrada: la firma de este error **ya estaba
-escrita**, en `history/cambio-1-superseded-family-b-rules.md:103`, un fichero cuya cabecera dice
-**HISTORY ONLY - NO AUTHORITY**. Volvio a morder seis semanas despues. Al archivar una regla,
-comprueba que la mitad viva conserva las DOS preguntas: que, y donde.
+And process warning, which is expensive half of this entry: signature of this error **was already
+written**, in `history/cambio-1-superseded-family-b-rules.md:103`, a file whose header says
+**HISTORY ONLY - NO AUTHORITY**. Bit again six weeks later. When archiving a rule,
+check that living half preserves BOTH questions: what, and where.
 
-**CONFIRMADO IN-GAME el mismo dia.** Tras mover las cuatro selecciones al LOD Geometry
---nombres sobre geometria que YA existia, sin anadir una sola cara-- el vehiculo **nace**:
+**CONFIRMED IN-GAME same day.** After moving the four selections to Geometry LOD
+--names on geometry that ALREADY existed, without adding a single face-- vehicle **spawns**:
 
     [LFQ2-TEST] LFQuad2 type=LFQuad2 pos=<13282.5, 7.27, 6883.2> wheels=4 fuel=1
 
-`CreateObjectEx` devuelve el objeto en vez de null, con sus cuatro ruedas acopladas. O sea
-que el hueco de Geometry no era solo necesario: era **suficiente** para que el motor
-construya la fisica. Util saberlo porque el motor para en el PRIMER error, asi que antes de
-probarlo no se podia descartar que hubiera mas bloqueos detras.
+`CreateObjectEx` returns object instead of null, with all four wheels attached. Meaning
+Geometry gap was not only necessary: it was **sufficient** for engine to
+build physics. Useful to know because engine stops at FIRST error, so prior to
+testing it could not be ruled out that more blockers lay behind.
 
-**Contrapartida medida, y que hay que mirar al conducir:** en un port, la unica geometria que
-corresponde a cada rueda suele ser **la rueda entera** (aqui 0,198 x 0,599 x 0,599 m) frente a
-la cajita de buje del referente (0,20 x 0,22 x 0,22 m). Es la opcion honesta --inventar una
-caja pequena cambia la masa del LOD Geometry-- pero deja un componente de colision 3x mas
-grande en dos ejes. Si tras el arreglo la suspension va rara o el vehiculo se siente anclado,
-ese tamano es el primer sospechoso, no el config.
+**Measured trade-off, to watch when driving:** in a port, sole geometry
+corresponding to each wheel is usually **the entire wheel** (here 0.198 x 0.599 x 0.599 m) vs
+reference hub box (0.20 x 0.22 x 0.22 m). It is the honest choice --inventing a
+small box alters Geometry LOD mass-- but leaves a 3x larger collision component
+on two axes. If after fix suspension acts strange or vehicle feels anchored,
+that size is first suspect, not config.
 
-## Paridad de port: tres huecos que ningun config delata (added 2026-08-29, LFQuad2)
+## Port parity: three gaps no config reveals (added 2026-08-29, LFQuad2)
 
-Un port copia lo que ve en el `config.cpp` del referente. Estos tres no viven en ningun config,
-asi que sobreviven intactos a cualquier revision que lea configs:
+A port copies what it sees in reference `config.cpp`. These three do not live in any config,
+so they survive intact through any review reading configs:
 
-- **El ancla `refill`.** Sin una seleccion `refill` en Memory y en ViewGeometry, la accion de
-  repostar **no aparece nunca** (`actionfillfuel.c:13,61-70`; `transport.c:75-78,313-315`).
-  Copiar el override `GetActionDistanceFuel()` del referente no basta: ajusta la distancia de
-  una accion que, sin ancla, no existe.
-- **`CfgSoundSets` propios.** Heredar la clase base deja el vehiculo **mudo**: cero soundsets de
-  motor en `soundSetsFilter[]` y ninguno propio. No emite error en ningun log.
-- **`modded class` sin rastro en config.** El referente traia `ActionGetInTransport` (corrige el
-  giro >180 grados al montar por el lado contrario) y `ModItemRegisterCallbacks` (ruedas a una
-  mano). Ningun config los menciona, asi que solo aparecen comparando **arboles de script**.
+- **The `refill` anchor.** Without a `refill` selection in Memory and in ViewGeometry, the refuel
+  action **never appears** (`actionfillfuel.c:13,61-70`; `transport.c:75-78,313-315`).
+  Copying the `GetActionDistanceFuel()` override from the reference is not enough: it adjusts the distance of
+  an action that, without an anchor, does not exist.
+- **Custom `CfgSoundSets`.** Inheriting the base class leaves the vehicle **mute**: zero engine
+  soundsets in `soundSetsFilter[]` and none of its own. It emits no error in any log.
+- **`modded class` with no trace in config.** The reference had `ActionGetInTransport` (fixes the
+  turn of more than 180 degrees when mounting from the opposite side) and `ModItemRegisterCallbacks` (one-handed
+  wheels). No config mentions them, so they only appear by comparing **script trees**.
 
-Metodo que los encontro, y es lo transportable: no enumerar que mirar, sino **derivar el
-contrato del referente en ejecucion** --"toda familia de seleccion que el referente tiene, el
-port la tiene"-- con una lista corta de excepciones autorizadas. El port llevaba 17 puertas, 15
-en verde, y no nacia; el barrido complementario saco 22 huecos en una sola pasada.
+Method that found them, which is the portable part: do not enumerate what to inspect, but **derive the
+contract from running reference** --"every selection family reference has, the
+port has"-- with a short list of authorized exceptions. Port had 17 gates, 15
+green, and failed to spawn; complementary sweep extracted 22 gaps in a single pass.
 
-## El estado visual por script NO se aplica a un vehiculo recien spawneado, y el default del config parece un resultado (SP-384, added 2026-09-10, SUB_BRZ s90)
+## Script visual state is NOT applied to a newly spawned vehicle, and config default looks like a result (SP-384, added 2026-09-10, SUB_BRZ s90)
 
-El codigo visual que corre desde `OnVariablesSynchronized` **no se ejecuta nunca** en un
-vehiculo creado con un spawn pelado: todavia no ha sincronizado nada. El coche pinta las
-entradas de `hiddenSelectionsTextures[]` y `hiddenSelectionsMaterials[]` del `config.cpp` y
-nada mas, asi que todos los `SetObjectTexture` / `SetObjectMaterial` del script faltan.
+Visual code running from `OnVariablesSynchronized` **never executes** on a
+vehicle created with a bare spawn: has not synchronized anything yet. Car paints
+`hiddenSelectionsTextures[]` and `hiddenSelectionsMaterials[]` entries from `config.cpp` and
+nothing else, so all script `SetObjectTexture` / `SetObjectMaterial` calls are missing.
 
-Es una trampa silenciosa porque **el default del config suele ser una version plausible de lo
-que el script habria pintado**: una pantalla casi negra, un piloto apagado, un panel en blanco.
-Leer esos pixeles como el resultado de la rama con script da un veredicto seguro y falso.
+It is a silent trap because **config default is usually a plausible version of
+what script would have painted**: an almost black screen, unlit indicator light, blank panel.
+Reading those pixels as result of scripted branch gives a confident and false verdict.
 
-**Lo que si sincroniza, medido:** montar piezas. Un fixture de debug-spawn que engancha bateria,
-bujia, radiador, cuatro ruedas y puertas es una sincronizacion grande de adjuntos y dispara la
-actualizacion visual. Sentar a un jugador y arrancar el motor tambien vale, con el coste de
-abajo.
+**What does synchronize, measured:** mounting parts. A debug-spawn fixture attaching battery,
+spark plug, radiator, four wheels, and doors is a large attachment synchronization and triggers
+visual update. Seating a player and starting engine also works, with cost
+detailed below.
 
-**El discriminante: lleva un control EN EL MISMO FOTOGRAMA.** Elige una SEGUNDA seleccion cuyo
-estado por script se distinga a simple vista de su default de config, y leela en la misma
-captura que el sujeto:
+**The discriminant: carry a control IN THE SAME FRAME.** Choose a SECOND selection whose
+script state is distinguishable at a glance from its config default, and read it in same
+capture as subject:
 
-- cuadro de instrumentos: el config le da el material OFF, el script le pone el ON.
-- cualquier piloto: OFF en config, ON solo desde script.
+- instrument cluster: config gives it OFF material, script gives it ON.
+- any indicator light: OFF in config, ON only from script.
 
-Asi el fotograma responde dos preguntas a la vez. Control encendido => la rama con script
-corrio, luego el aspecto del sujeto **es** el resultado. Control apagado => el script no corrio
-y el sujeto no dice nada, tenga el aspecto que tenga.
+Thus frame answers two questions at once. Lit control => scripted branch
+ran, therefore subject appearance **is** the result. Unlit control => script did not run
+and subject says nothing, whatever it looks like.
 
-Compara los `emmisive[]` de los dos materiales antes de fiarte del ojo: una diferencia de escala
-0,3 frente a 1,1 es inconfundible a plena luz; 0,9 frente a 1,0 no lo es.
+Compare `emmisive[]` of the two materials before trusting the eye: scale difference of
+0.3 vs 1.1 is unmistakable in broad daylight; 0.9 vs 1.0 is not.
 
-**Coste de la via alternativa (arnes DayZ-MCP, medido 2026-09-10):** arrancar el motor exige
-propiedad del vehiculo en cliente, y tomarla deja la camara libre inutilizable durante toda la
-vida del proceso cliente. Encuadrar el salpicadero y tener el motor en marcha pasan a ser
-excluyentes en un mismo cliente. Prefiere la sincronizacion por adjuntos.
+**Cost of alternative route (DayZ-MCP harness, measured 2026-09-10):** starting the engine requires
+client-side vehicle ownership, and taking it leaves free camera unusable for the entire
+lifetime of client process. Framing dashboard and having engine running become mutually
+exclusive on the same client. Prefer synchronization via attachments.
 
 
 ## Every axle must be listed in an `Axles` override: what the engine ENUMERATES is not inherited (added 2026-09-11, Arma2Quad)

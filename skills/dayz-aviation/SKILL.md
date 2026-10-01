@@ -26,14 +26,14 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
   `POSTSIMULATE`/`POSTFRAME` (`P:\scripts\4_world\entities\vehicles\carscript.c:325-326`, verified
   2026-07-10). Any aviation flight loop living in `EOnSimulate` must add
   `SetEventMask(EntityEvent.SIMULATE)` in the class ctor — RFFS does exactly this (`RFFSHeli_Core.c:180-181`).
-  (hasta 1.29: `carscript.c:325-326`.) (desde 1.30 Exp: `CarScript.c:207-208`. Re-open `exp\scripts\scripts\4_World\Entities\Vehicles\CarScript.c`. Detail: `references/dayz-1-30-aviation.md`.)
+  (up to 1.29: `carscript.c:325-326`.) (since 1.30 Exp: `CarScript.c:207-208`. Re-open `exp\scripts\scripts\4_World\Entities\Vehicles\CarScript.c`. Detail: `references/dayz-1-30-aviation.md`.)
   Symptom if missed: mod compiles, spawns, idles normally — and the flight model silently never runs.
 - **`super.EOnSimulate` is an EMPTY STUB — CarScript's real per-tick work lives in `EOnPostSimulate`**
   (added 2026-07-29, LFHeli OH-1 B3). `CarScript` has no `EOnSimulate` override at all: `super`
   resolves to the empty body at `P:\scripts\1_core\proto\enentity.c:201-203`. Engine, fluids,
   part-health checks, fuel/engine auto-stop and exhaust/wheel FX all live in
   `CarScript.EOnPostSimulate` (`P:\scripts\4_world\entities\vehicles\carscript.c:948`), much of it
-  (hasta 1.29: `:948`.) (desde 1.30 Exp: `CarScript.c:807`.)
+  (up to 1.29: `:948`.) (since 1.30 Exp: `CarScript.c:807`.)
   gated `IsServerOrOwner()` — so it is MEANT to run on the owner client. Consequences: (a) skipping
   `super.EOnSimulate` protects nothing, and any comment claiming it "would run engine/fluids twice"
   is false; (b) if you pump the solver manually because the native event went quiet, pump BOTH
@@ -54,7 +54,7 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
 - **Native `Helicopter`/`HelicopterScript` is a STUB** — empty `EOnPostSimulate` + empty engine hooks
   (`P:\scripts\4_world\entities\vehicles\helicopterscript.c:1-35`, verified 2026-07-10). Do not inherit
   from it expecting flight behavior; use CarScript-as-aviation (below).
-  (hasta 1.29 and since 1.30 Exp: still a stub. Re-verified `exp\scripts\scripts\4_World\Entities\Vehicles\HelicopterScript.c:4-13` — ctor only `POSTSIMULATE`, empty `EOnPostSimulate`. Do not switch a flying CarScript child onto it.)
+  (up to 1.29 and since 1.30 Exp: still a stub. Re-verified `exp\scripts\scripts\4_World\Entities\Vehicles\HelicopterScript.c:4-13` — ctor only `POSTSIMULATE`, empty `EOnPostSimulate`. Do not switch a flying CarScript child onto it.)
 - **Custom flight inputs are silent-fail wiring** (added 2026-07-12, LFHeli W4). A `UA*` action name
   typo'd anywhere in the chain (`inputs.xml` declaration ↔ `SyncedValue("...")` call ↔ stringtable
   `loc=` key) compiles clean and reads 0 forever — the channel is dead with zero errors. Verify the
@@ -663,16 +663,16 @@ Only the variant aircraft body changes; wheels are shared. Reduces config + asse
 
 <!-- llama-mod-extraction: findings f_087-f_091, f_096, f_097, f_101, f_103, f_105-f_107, f_110-f_116, f_120, f_123-f_125 | pbo: LM_Planes | pass: 2 | date: 2026-05-23 | source: workshop 3730564764 per-aircraft .c files | count: 23 -->
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons learned corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so they trigger automatically rather
+than depending on someone remembering to look them up. Each rule cites its originating `LL-NNN`;
+the full entry (symptom, origin, evidence) lives there. Do not remove citation: the index
+`lessons-index.md` detects promotion by searching for that reference inside the skills.
 
-- **LL-194** — Enumera cada campo leído por solver/FSM durante replay y clasifícalo como restaurado, recomputado tras handshake o inicializado incondicionalmente. Nunca inicialices K-values o tablas derivadas solo dentro de `IsServer`.
-- **LL-195** — No uses un handshake one-shot si depende de crew/possession/spawn aún asíncronos. Reintenta desde el cliente hasta ACK o empuja desde el servidor cuando el estado esté listo; compara identidades por ID estable, no por instancia.
-- **LL-201** — Diagnostica reconciliación con series alineadas: dientes de sierra indican correcciones seguidas de re-divergencia; crecimiento monótono o plateau sin resets indica que el transform no se corrige. Busca el evento que dispara la convergencia antes de retocar el solver.
+- **LL-194** — Enumerate each field read by solver/FSM during replay and classify it as restored, recomputed after handshake, or unconditionally initialized. Never initialize K-values or derived tables only inside `IsServer`.
+- **LL-195** — Do not use a one-shot handshake if it depends on crew/possession/spawn that are still asynchronous. Retry from client until ACK or push from server when state is ready; compare identities by stable ID, not by instance.
+- **LL-201** — Diagnose reconciliation with aligned series: sawteeth indicate corrections followed by re-divergence; monotonic growth or plateau without resets indicates transform is not corrected. Find the event triggering convergence before tweaking the solver.
 
 - **LL-233** — For each threshold-gated pulse, enumerate every writer of the same variable in that window and compute whether the precondition is reachable at firing time. If a continuous actuator converges the error before the pulse (here DR blending `α≈0.35/frame` vs `preError≥0.5 m/s`), open a `coast-window` suspending the actuator; a non-fire is recorded as data with its own reason and does not invalidate the whole window. The live harness with mitigation lives at `LFHeli_SF8B/scripts/4_World/LFHeliVariants.c:937-991` (`CampaignPulseIsCoasting` at `:941` / `:963-968` and low-preerror no-fire at `:984-988`).
 

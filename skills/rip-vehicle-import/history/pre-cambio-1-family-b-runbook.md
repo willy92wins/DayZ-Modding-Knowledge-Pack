@@ -1,6 +1,6 @@
-# Pre-CAMBIO-1 — runbook completo de familia B
+# Pre-CAMBIO-1 — complete family B runbook
 
-> HISTORY ONLY — NO AUTHORITY. Snapshot textual del body que CAMBIO-1 retiró del camino crítico. El adaptador vigente está en `../SKILL.md`; no se ejecutan comandos ni gates desde este historial.
+> HISTORY ONLY — NO AUTHORITY. Textual snapshot of the body that CAMBIO-1 removed from the critical path. The active adapter is in `../SKILL.md`; no commands or gates are executed from this history.
 
 <!-- MOVED-EXACT source="rip-vehicle-import/SKILL.md:5" sha256="B9A5C27F31B03FB4DDDA3CD5EFB4F84CC935895AC9915E7725258150D983B2C7" -->
 # rip → DayZ: runbook con cutover CAMBIO-0 (2026-08-05)

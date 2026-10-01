@@ -10,7 +10,7 @@ Use only the sections relevant to the task, in addition to the common contract a
 - Test stance and camera variants that can change IK/blending.
 - Review transitions into and out of the action, not only its central pose.
 - **Surrender state (DayZ 1.30 [EXACT]):**
-  *(Hasta 1.29: la rendición creaba físicamente en manos el ítem virtual `SurrenderDummyItem` para bloquear la recarga e interacción; desde 1.30 Exp: se elimina por completo `SurrenderDummyItem` y la rendición se gestiona nativamente con `PlayerBase.SetSurrenderState(bool)` y `Man.IsSurrendered()` [`exp\scripts\scripts\3_Game\Entities\Man.c:67`, `exp\scripts\scripts\4_World\Classes\EmoteManager.c:314, 1248-1250`]).*
+  *(Until 1.29: surrender physically spawned virtual item `SurrenderDummyItem` in hands to block reloading and interaction; since 1.30 Exp: `SurrenderDummyItem` is completely eliminated and surrender is handled natively with `PlayerBase.SetSurrenderState(bool)` and `Man.IsSurrendered()` [`exp\scripts\scripts\3_Game\Entities\Man.c:67`, `exp\scripts\scripts\4_World\Classes\EmoteManager.c:314, 1248-1250`]).*
   Do not author interactions assuming an invisible dummy weapon in hands during surrender.
 - **Dynamic Animation Instance switching [EXACT]:**
   Script can now force transitions between `.asi` instances at runtime via `Human.SetAnimationInstanceByName(string animationInstanceName, float blendingTime)` (`// [EXACT] exp\scripts\scripts\3_Game\human.c:1384`). To reset back to unarmed base pose without an item, DayZ registers the `"Empty"` profile on `player_main.asi` (`// [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgBase.c:1537`).
@@ -72,7 +72,7 @@ Use only the sections relevant to the task, in addition to the common contract a
 
 - Obtain the actual skeleton, rest pose and gait reference for that species/rig.
 - **Skeleton bone index deregulation (DayZ 1.30 [EXACT]):**
-  *(Hasta 1.29: skeletons.anim.xml definía índices fijos y limitaba el sistema a 250 huesos; desde 1.30 Exp: se elimina el límite de 250 huesos; los índices se calculan en runtime por hash del nombre del hueso y skeletons.anim.xml solo conserva index="0" en EntityPosition [`work\changelog-1.30-exp-modding.md:31, 43`, `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:986-988`]).*
+  *(Until 1.29: skeletons.anim.xml defined fixed indices and limited system to 250 bones; since 1.30 Exp: 250-bone limit is removed; indices are calculated at runtime by bone name hash and skeletons.anim.xml only retains index="0" on EntityPosition [`work\changelog-1.30-exp-modding.md:31, 43`, `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:986-988`]).*
   Four new animal skeletons are introduced in DayZ 1.30: `ovis_gmelini_skeleton.xob` (mouflon), `canis_familiaris_dobermann_skeleton.xob`, `canis_familiaris_german_shepherd_skeleton.xob`, and `varanus_griseus_skeleton.xob` (`skeletons.anim.xml:986-1150`).
 - **Graph modularity (`.agf` files) [EXACT]:**
   Creature graphs migrate from old-format text `.agr` sub-graphs to modular Enfusion Config `.agf` files (`wolf_maingraph.agf`, `ambientlife_maingraph.agf`, `locomotion.agf`) referenced by master `AnimSrcGraph` `.agr` indexes (`wolf_graph.agr:157-159`). (corrected 2026-09-28: this line used to say "monolithic binary `.agr`". In the 1.29 extraction the wolf graph is already two text files, `Wolf_Graph.agr` listing `Wolf_MainGraph.agr` at `:58`, both opening with `$AnimGraph 7 {`, and all six 1.29 animal `.agr` files are text.)

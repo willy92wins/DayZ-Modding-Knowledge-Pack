@@ -2,16 +2,16 @@
 
 ## Overview
 
-La lib `py3d` (fork DayZ >= 1.6.0 sobre el codec de KoffeinFlummi) lee y escribe Arma/DayZ `.p3d` en MLOD
+The `py3d` library (DayZ fork >= 1.6.0 on KoffeinFlummi codec) reads and writes Arma/DayZ `.p3d` in MLOD
 (unbinarized) format directly from Python. No Blender, no Object Builder, no external
 tools needed.
 
-- **Repo:** el fork vive en el pack (`tools/py3d`, 1.7.0) y en GitHub `willy92wins/py3d-dayz` (upstream https://github.com/KoffeinFlummi/py3d, muerto). `P:\py3d` es un clon de jun-2026 congelado en 1.3.0: no es fuente.
+- **Repo:** fork lives in pack (`tools/py3d`, 1.7.0) and on GitHub `willy92wins/py3d-dayz` (upstream https://github.com/KoffeinFlummi/py3d, dead). `P:\py3d` is a Jun-2026 clone frozen at 1.3.0: not a source.
 - **Install:** pack `tools/py3d` + `pip install opensimplex --break-system-packages`:
 
 ```bash
 # py3d DayZ fork >= 1.6.0 (`pip install -e tools/py3d`).
-# NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
+# NEVER `pip install py3d` (PyPI = point-cloud lib) NOR git+upstream (no guards).
 pip install -e tools/py3d
 python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 ```
@@ -1011,8 +1011,8 @@ mass/CoM/ride-height/placement iteration on a vehicle. Use it together with the 
 `ECE_PLACE_ON_SURFACE` placement rule: spawn height is governed by the **baked CoM**, not
 Geometry-Ymin / LandContact / bbox — empirically `h_origin ≈ CoM.y − Geometry_Ymin` — so a
 model whose mass never bakes (CoM=0) spawns at ground origin (underground) and gets ejected,
-and no geometry tweak fixes it until the mass bakes. Cross-ref `dayz-p3d-audit` "#Mass# debe
-vivir solo en Geometry LOD", LL-079 (LOD bisection isolated the bug), LL-080/LL-081.
+and no geometry tweak fixes it until the mass bakes. Cross-ref `dayz-p3d-audit` "#Mass# must
+live only in Geometry LOD", LL-079 (LOD bisection isolated the bug), LL-080/LL-081.
 
 > Reference tooling (LFQuad-specific but the pattern generalizes): `LFQuad_dev/tools/lfq_modelinfo.py`
 > (raw ODOL `ModelInfo` reader → `MASS BAKED YES/NO` without odol_reader), `fix_firegeo_mass.py`.

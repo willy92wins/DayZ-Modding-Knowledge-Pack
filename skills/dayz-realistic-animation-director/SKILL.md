@@ -5,226 +5,226 @@ description: Dirige de principio a fin la creación, corrección, pulido, export
 
 # DayZ Realistic Animation Director
 
-Produce una animación creíble y cierra su integración con evidencia honesta. Esta skill dirige el trabajo; las skills de Blender y DayZ conservan la autoridad técnica.
+Produce a credible animation and close its integration with honest evidence. This skill directs the work; Blender and DayZ skills retain technical authority.
 
-## Frontera de autoridad
+## Authority boundary
 
-Antes de actuar, lee [authority-and-routing.md](references/authority-and-routing.md).
+Before acting, read [authority-and-routing.md](references/authority-and-routing.md).
 
-- Invoca `blender-animation` antes de operar sobre Actions, rigs, constraints, curvas, renders o exportación desde Blender.
-- Invoca `dayz-animation-pipeline` antes de decidir formato, skeleton, export mask, FPS/frame budget, notetracks, anim graph/ASI, compile, wiring o integración DayZ.
-- Invoca la skill de dominio adicional indicada en [authority-and-routing.md](references/authority-and-routing.md) para personajes, criaturas, vehículos, P3D, retargeting o test in-game; aplica después los controles de [domain-gates.md](references/domain-gates.md).
-- Ante conflicto, la autoridad especializada gana. Registra la divergencia y detén el gate afectado; no inventes una tercera regla.
+- Invoke `blender-animation` before operating on Actions, rigs, constraints, curves, renders, or export from Blender.
+- Invoke `dayz-animation-pipeline` before deciding format, skeleton, export mask, FPS/frame budget, notetracks, anim graph/ASI, compile, wiring, or DayZ integration.
+- Invoke additional domain skill indicated in [authority-and-routing.md](references/authority-and-routing.md) for characters, creatures, vehicles, P3D, retargeting, or in-game test; then apply checks from [domain-gates.md](references/domain-gates.md).
+- In case of conflict, specialized authority wins. Record divergence and stop affected gate; do not invent a third rule.
 
-Si la petición es sólo técnica —por ejemplo, elegir un `AnimationSource`, registrar una `.anm` o explicar un estado ASI— deja que `dayz-animation-pipeline` sea la skill primaria. Usa esta skill cuando haya que autorar, evaluar o mejorar el movimiento.
+If the request is strictly technical —for example, choosing an `AnimationSource`, registering an `.anm`, or explaining an ASI state— let `dayz-animation-pipeline` be the primary skill. Use this skill when authoring, evaluating, or improving motion.
 
-## Ruteo de dominio
+## Domain routing
 
-| Animación | Skills que se añaden a la directora |
+| Animation | Skills added to director |
 |---|---|
-| Jugador, manos, humano custom o infectado | `dayz-characters`; para criaturas verifica primero su bind/skeleton real (en 1.30: sin index fijo en skeletons.anim.xml, límite de 250 huesos suprimido) |
-| Arma, recarga, unjam o mecanismo P3D | `dayz-weapons` si cambia el contrato de entidad + la skill P3D/model pertinente (en 1.30: nuevos bone remaps y perfiles ASI dedicados) |
-| Ocupante, entrada o controles de vehículo | `dayz-vehicles` (en 1.30: cuatrorruedas + motocicletas `MOTO1`/`MOTO2`, 2-bone IK en manillar) |
-| Mocap/donor externo | skill de retargeting aplicable; nunca sin mapa source→target |
-| Prueba runtime | `dayz-test-ingame`/`dayz-mcp-verify` vigente, con lease y lifecycle (en 1.30: Workbench Enfusion 2021 Live Editing) |
+| Player, hands, custom human or infected | `dayz-characters`; for creatures verify first their actual bind/skeleton (in 1.30: no fixed index in skeletons.anim.xml, 250-bone limit removed) |
+| Weapon, reload, unjam, or P3D mechanism | `dayz-weapons` if entity contract changes + relevant P3D/model skill (in 1.30: new bone remaps and dedicated ASI profiles) |
+| Occupant, entry, or vehicle controls | `dayz-vehicles` (in 1.30: quad bikes + motorbikes `MOTO1`/`MOTO2`, 2-bone IK on handlebar) |
+| Mocap/external donor | applicable retargeting skill; never without source→target map |
+| Runtime test | active `dayz-test-ingame`/`dayz-mcp-verify`, with lease and lifecycle (in 1.30: Workbench Enfusion 2021 Live Editing) |
 
-`blender-animation` y `dayz-animation-pipeline` siguen siendo obligatorias para autoría e integración respectivamente; las skills de la tabla no las sustituyen.
+`blender-animation` and `dayz-animation-pipeline` remain mandatory for authoring and integration respectively; skills in the table do not replace them.
 
-## Tres controles que nunca se sustituyen entre sí
+## Three checks that never substitute for each other
 
-1. **Cadena completa:** medir nudillos y puntas no valida falanges intermedias. Muestrea todos los segmentos y articulaciones relevantes.
-2. **Contacto positivo:** «sin penetración» no significa «agarrando». Exige una pareja de contacto, una superficie/landmark objetivo y una banda de distancia.
-3. **Bloqueo relativo:** compartir keyframes o una curva escalar no demuestra que dos elementos se muevan juntos. Mide `T_actor^-1 * T_target` durante toda la ventana de agarre.
+1. **Full chain:** measuring knuckles and tips does not validate intermediate phalanges. Sample all relevant segments and joints.
+2. **Positive contact:** "no penetration" does not mean "gripping". Require a contact pair, target surface/landmark, and distance band.
+3. **Relative locking:** sharing keyframes or a scalar curve does not prove two elements move together. Measure `T_actor^-1 * T_target` throughout the entire grip window.
 
-Un fallo visual reproducible del usuario o in-game invalida cualquier `PASS` offline. Conviértelo en fixture antes de volver a autorar.
+A reproducible visual failure from user or in-game invalidates any offline `PASS`. Convert it into a fixture before authoring again.
 
-## Flujo obligatorio por gates
+## Mandatory gated workflow
 
-### 0. Preserva y observa
+### 0. Preserve and observe
 
-- Inspecciona la escena, Actions, frame actual, selección, constraints y ventanas antes de mutar.
-- Trabaja siempre desde una copia versionada; no sobrescribas el `.blend` fuente.
-- Si corriges un defecto, reproduce primero el fallo con la escena actual y conserva esa evidencia RED.
-- Lee el contrato del proyecto (`CLAUDE.md`, product spec, plan y handoff vigentes) cuando existan.
+- Inspect scene, Actions, current frame, selection, constraints, and windows before mutating.
+- Always work from a versioned copy; do not overwrite source `.blend`.
+- If fixing a defect, first reproduce failure with current scene and preserve that RED evidence.
+- Read project contract (current `CLAUDE.md`, product spec, plan, and handoff) when existing.
 
-### 1. Captura el contrato técnico DayZ
+### 1. Capture the DayZ technical contract
 
-Pide a `dayz-animation-pipeline` la ruta aplicable y registra:
+Ask `dayz-animation-pipeline` for applicable route and record:
 
-- tipo de animación y skeleton/rig autoritativo;
-- FPS, duración o frame budget y reglas de loop;
-- notetracks/eventos y estados runtime;
-- bones incluidos/excluidos y objetos/selecciones móviles completos;
-- artefactos de exportación, compile, wiring, build y prueba in-game.
+- animation type and authoritative skeleton/rig;
+- FPS, duration or frame budget, and loop rules;
+- notetracks/events and runtime states;
+- included/excluded bones and complete mobile objects/selections;
+- artifacts for export, compile, wiring, build, and in-game test.
 
-No hardcodees 291 frames, 30 FPS ni notetracks de la SR2M para otras animaciones. Cada tarea obtiene su contrato vigente.
+Do not hardcode 291 frames, 30 FPS, or SR2M notetracks for other animations. Each task obtains its active contract.
 
-### 2. Define aceptación antes de posar
+### 2. Define acceptance before posing
 
-Lee [motion-quality-contract.md](references/motion-quality-contract.md) y crea un contrato por tarea que declare sólo los módulos aplicables:
+Read [motion-quality-contract.md](references/motion-quality-contract.md) and create a per-task contract declaring only applicable modules:
 
-- poses y beats clave;
-- articulaciones/cadenas y límites calibrados;
-- contactos, superficies y ventanas `contact_on..release`;
-- pares de colisión prohibidos y contactos permitidos;
-- objetos que deben conservar transformación relativa;
-- excepciones intencionales de impacto, snap o deslizamiento;
-- pose real de entrada/salida y estados in-game a probar.
+- key poses and beats;
+- joints/chains and calibrated limits;
+- contacts, surfaces, and `contact_on..release` windows;
+- prohibited collision pairs and permitted contacts;
+- objects that must preserve relative transformation;
+- intentional impact, snap, or sliding exceptions;
+- actual entry/exit pose and in-game states to test.
 
-Las tolerancias deben venir de referencia, geometría o una decisión explícita. Nunca ajustes el umbral para hacer pasar el candidato actual.
+Tolerances must come from reference, geometry, or an explicit decision. Never adjust threshold to make current candidate pass.
 
-Todo contrato declara exactamente `contract_mode: "diagnostic"` o `contract_mode: "production"`; valores ausentes o desconocidos son error. Un contrato capaz de conceder `OFFLINE_PASS` usa `production`. Cada check declara procedencia (`source_kind`, `source`, `verified_date`, `method`) y cualquier check `segment_clearance` exige procedencia geométrica compartida para los radios de cápsula. Un contrato `diagnostic` puede reproducir un fallo, pero `eligible_for_offline_pass` siempre será falso.
+Every contract declares exactly `contract_mode: "diagnostic"` or `contract_mode: "production"`; missing or unknown values are errors. A contract capable of granting `OFFLINE_PASS` uses `production`. Each check declares provenance (`source_kind`, `source`, `verified_date`, `method`) and any `segment_clearance` check requires shared geometric provenance for capsule radii. A `diagnostic` contract may reproduce a failure, but `eligible_for_offline_pass` will always be false.
 
-Para una ventana continua de contacto, colisión, bloqueo, orden, rango articular o continuidad usa `frame_range` consecutivo con `step: 1`; producción lo exige. Una lista dispersa de poses doradas no prueba lo que ocurre entre ellas.
+For a continuous window of contact, collision, locking, order, joint range, or continuity use consecutive `frame_range` with `step: 1`; production requires it. A sparse list of golden poses does not prove what happens between them.
 
 ### 3. Blocking
 
-Con `blender-animation`, autora sólo poses doradas: inicio, anticipación, contacto, máximo esfuerzo, liberación, recuperación y final.
+With `blender-animation`, author only golden poses: start, anticipation, contact, maximum effort, release, recovery, and end.
 
-- Renderiza cada pose en vista on-axis y al menos una oblicua.
-- Valida anatomía, silueta, contacto y colisión antes de interpolar.
-- Para manos, lee [biomechanics-and-contact.md](references/biomechanics-and-contact.md) y evalúa los cinco dedos, muñeca, antebrazo, codo, hombro y clavícula cuando formen parte del gesto.
-- No avances a spline si una pose clave ya clipea, está sobreextendida o no toca el objetivo.
+- Render each pose in on-axis view and at least one oblique view.
+- Validate anatomy, silhouette, contact, and collision before interpolating.
+- For hands, read [biomechanics-and-contact.md](references/biomechanics-and-contact.md) and evaluate all five fingers, wrist, forearm, elbow, shoulder, and clavicle when part of the gesture.
+- Do not advance to spline if a key pose already clips, is overextended, or misses target.
 
-### 4. Movimiento y esfuerzo
+### 4. Motion and effort
 
-- Aplica blocking → spline → polish mediante `blender-animation`.
-- Usa timing, spacing, arcos, anticipación, overlap, moving holds y settle según la intención física.
-- Valida posición, rotación, velocidad, aceleración y jerk en los elementos relevantes.
-- Distingue un snap/impacto intencional mediante una ventana declarada; fuera de ella, un pico es stutter.
-- En mecanismos, mueve la jerarquía o selección funcional completa, no sólo la pieza visual que se ve desde una cámara.
+- Apply blocking → spline → polish via `blender-animation`.
+- Use timing, spacing, arcs, anticipation, overlap, moving holds, and settle according to physical intent.
+- Validate position, rotation, velocity, acceleration, and jerk on relevant elements.
+- Distinguish an intentional snap/impact via a declared window; outside of it, a spike is stutter.
+- In mechanisms, move full hierarchy or functional selection, not only visual piece seen from a camera.
 
-### 5. Auditoría offline
+### 5. Offline audit
 
-Ejecuta el muestreador y el validador cuando exista Blender:
+Run sampler and validator when Blender is available:
 
 ```powershell
 & $env:BLENDER_EXE --background '<scene.blend>' --python '<skill>\scripts\sample_blender_motion.py' -- --contract '<contract.json>' --output '<report.json>'
 python '<skill>\scripts\validate_motion_contract.py' --report '<report.json>' --contract '<contract.json>' --output '<audit.json>'
 ```
 
-Interpreta los exit codes del validador:
+Interpret validator exit codes:
 
-- `0`: todos los checks requeridos pasan;
-- `1`: input válido, uno o más checks requeridos fallan;
-- `2`: contrato, muestra o ejecución inválidos; no hay veredicto de calidad.
+- `0`: all required checks pass;
+- `1`: valid input, one or more required checks fail;
+- `2`: invalid contract, sample, or execution; no quality verdict.
 
-Además del JSON:
+In addition to JSON:
 
-- revisa vídeo completo a velocidad real;
-- revisa renders multiángulo de contacto, extremos, transiciones y recuperación;
-- busca clipping entre keyframes, no sólo en frames clave;
-- comprueba inicio/final contra la pose real de entrada runtime.
+- review full video at real speed;
+- review multi-angle renders of contact, extremes, transitions, and recovery;
+- look for clipping between keyframes, not only on key frames;
+- check start/end against actual runtime entry pose.
 
 ### 6. Exporta e integra
 
-- Entrega a `blender-animation` el export desde Blender siguiendo su contrato vigente.
-- Entrega el artefacto a `dayz-animation-pipeline` para compile, ASI/config, build y deploy.
-- Verifica el artefacto realmente desplegado, no sólo el source. En DayZ 1.30, los grafos de animación se estructuran en ficheros modulares Enfusion Config `.agf` indexados desde `AnimSrcGraph` `.agr`, y los `.asi` usan `AnimSetInstanceSource`.
-- No declares que Workbench, DayZATool, Blender MCP o DayZ se ejecutaron si no existe evidencia de esa ejecución en la sesión.
+- Hand off Blender export to `blender-animation` following its active contract.
+- Hand off artifact to `dayz-animation-pipeline` for compile, ASI/config, build, and deploy.
+- Verify artifact actually deployed, not only source. In DayZ 1.30, animation graphs are structured into modular Enfusion Config `.agf` files indexed from `AnimSrcGraph` `.agr`, and `.asi` files use `AnimSetInstanceSource`.
+- Do not declare that Workbench, DayZATool, Blender MCP, or DayZ executed if no evidence of that execution exists in the session.
 
 ### 7. Gate in-game
 
 Lee [evidence-and-integration.md](references/evidence-and-integration.md).
 
-- Prueba las stances, cámaras y estados que puedan cambiar IK o blending. En 1.30, Workbench Animation Editor permite **Live Editing** en clientes activos para depuración visual interactiva de transiciones y grafos.
-- Revisa RPT y compara timing, contacto, clipping y estados mecánicos contra el contrato.
-- Si in-game contradice Blender, in-game manda y el caso se convierte en regresión.
-- Si el entorno no permite el test, termina en `MANUAL_REQUIRED`, no en PASS.
+- Test stances, cameras, and states that might alter IK or blending. In 1.30, Workbench Animation Editor allows **Live Editing** on active clients for interactive visual debugging of transitions and graphs.
+- Review RPT and compare timing, contact, clipping, and mechanical states against contract.
+- If in-game contradicts Blender, in-game rules and the case becomes a regression.
+- If environment does not allow testing, terminate in `MANUAL_REQUIRED`, not PASS.
 
-## Estados de salida
+## Output states
 
-- `FAIL`: falla al menos un gate obligatorio.
-- `OFFLINE_PASS`: contrato, escena, auditoría, renders y artefacto offline aprobados; falta juego.
-- `MANUAL_REQUIRED`: el siguiente gate necesita una acción o herramienta no disponible.
-- `IN_GAME_PASS`: el build desplegado y el comportamiento en DayZ están verificados con evidencia.
+- `FAIL`: at least one mandatory gate fails.
+- `OFFLINE_PASS`: contract, scene, audit, renders, and offline artifact approved; game test pending.
+- `MANUAL_REQUIRED`: next gate requires an action or tool that is unavailable.
+- `IN_GAME_PASS`: deployed build and DayZ behavior are verified with evidence.
 
-Reporta siempre qué gates se ejecutaron, qué evidencia existe, qué se omitió y por qué.
+Always report which gates were executed, what evidence exists, what was omitted, and why.
 
-## Política de regresión
+## Regression policy
 
-Cuando aparezca un defecto nuevo:
+When a new defect appears:
 
-1. congela la escena fallida como input de sólo lectura;
-2. escribe una fixture mínima que falle por ese motivo;
-3. demuestra RED;
-4. implementa o endurece el check;
-5. demuestra GREEN con una muestra corregida para evitar un test tautológico;
-6. sólo entonces modifica la animación productiva.
+1. freeze failed scene as read-only input;
+2. write a minimal fixture that fails for that reason;
+3. demonstrate RED;
+4. implement or tighten the check;
+5. demonstrate GREEN with a corrected sample to avoid a tautological test;
+6. only then modify production animation.
 
-Ejecuta la suite reutilizable con:
+Run reusable suite with:
 
 ```powershell
 python '<skill>\scripts\run_regression_tests.py'
 ```
 
-Para incluir la fixture real de SR2M, define `SR2M_V44_BLEND` y añade `--real-fixtures`. Si la variable falta, el resultado correcto es `SKIP_REAL_FIXTURE`, no PASS.
+To include the real SR2M fixture, define `SR2M_V44_BLEND` and add `--real-fixtures`. If variable is missing, correct result is `SKIP_REAL_FIXTURE`, not PASS.
 
 ## DayZ 1.30 Exp (build 1.30.164014)
 
-### Qué cambia en 1.30 para la dirección de animación realista
+### What changes in 1.30 for realistic animation direction
 
-1. **Integración del piloto de motocicleta [EXACT]:**
-   - Instancias de animación dedicadas: `MOTO1 = 10` (Jawa 50cc) y `MOTO2 = 11` (Jawa Bitrak triciclo) en `exp\scripts\scripts\4_World\Entities\Vehicles\VehicleAnimInstances.c:13-14`.
-   - Cámara vehicular de tercera persona con retardo elástico: `DAYZCAMERA_3RD_VEHICLE_MOTORBIKE = 32` en `exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCameras.c:20`.
-   - Agarre de manillar con solvers IK continuos de dos huesos (`AnimSrcNodeIK2` y `AnimSrcNodeIK2Target` en `Vehicles.agf`) modulados por variables físicas de inclinación y balanceo (`VehicleSteering`, `VehicleThrottle`, `VehicleSuspension`).
-   - Consulta unificada de transiciones mediante `HumanCommandVehicle.IsTransitioning()` (`exp\scripts\scripts\3_Game\human.c:735-738`).
-2. **Refactorización de la rendición (Surrender) [EXACT]:**
-   - *(Hasta 1.29: rendirse creaba físicamente el ítem invisible `SurrenderDummyItem` en manos; desde 1.30 Exp: se elimina por completo `SurrenderDummyItem` y se gobierna de forma nativa mediante `PlayerBase.SetSurrenderState(bool)` y `Man.IsSurrendered()` [`exp\scripts\scripts\3_Game\Entities\Man.c:67`, `exp\scripts\scripts\4_World\Classes\EmoteManager.c:314, 1248-1250`]).*
-3. **Control dinámico de instancias y desacoplo de manos [EXACT]:**
-   - Transición directa entre instancias de animación en runtime con `Human.SetAnimationInstanceByName(string animationInstanceName, float blendingTime)` (`exp\scripts\scripts\3_Game\human.c:1384`), apoyado en el perfil `"Empty"` registrado en `player_main.asi` (`DayZPlayerCfgBase.c:1537`).
-   - Desacoplamiento de intercambio de ítems en manos: `HumanItemAccessor.OnItemInHandsChanged(bool pInstant, bool pChangeAnimationInstance)` (`exp\scripts\scripts\3_Game\humanitems.c:112`).
-4. **Límites de velocidad y giro de cámara por postura [EXACT]:**
-   - `HumanInputController` expone `SetErectSpeedLimit`, `SetCrouchSpeedLimit`, `SetProneSpeedLimit` y `DisableErectCameratHorizontalRotation` [sic], etc. (`exp\scripts\scripts\3_Game\human.c:230-243`).
-5. **Catálogo de 11 nuevas acciones Full-Body [EXACT]:**
-   - `CMD_ACTIONFB_COMBINATIONLOCK = 256` a `CMD_ACTIONFB_WETCLOTHWELL = 266` (`exp\scripts\scripts\3_Game\dayzplayer.c:889-899`), incluyendo cerradura de combinación, mortero, apilado de ladrillos y escala de cuerda.
-6. **Desindexación de esqueletos y cinemática en criaturas [EXACT]:**
-   - Supresión del límite de 250 huesos; índices globales resueltos en runtime por hash del nombre. En `skeletons.anim.xml` solo `EntityPosition` retiene `index="0" movement="true" lod="0"` (`work\changelog-1.30-exp-modding.md:31`, `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:39, 986-988`).
-   - Rotación procedural en cuadrúpedos para alineación con el terreno: `AnimSrcNodeProcTransform AlignToTerrain_Rot` con `SlopeAngleX * 0.0174532925...` (`exp\animals\DZ\animals\animations\!graph_files\wolf\wolf_maingraph.agf:5-18`).
-   - Nuevo estado mental para infectados: `MINDSTATE_COWER` (`exp\scripts\scripts\3_Game\Entities\DayZInfected.c:18`).
-7. **Herramientas de integración y física en Workbench [EXACT]:**
-   - Workbench Animation Editor actualizado a Enfusion 2021 con **Live Editing** de grafos en clientes en ejecución (`work\changelog-1.30-exp-modding.md:48, 62`).
-   - Workbench Ragdoll Editor para configurar y editar archivos `.ragdoll` (`work\changelog-1.30-exp-modding.md:47`).
-   - Separación nativa entre muerte animada y ragdoll en scripts: `PhysicsSetSimpleDeath(bool)` vs `PhysicsSetRagdoll(bool)` (`exp\scripts\scripts\3_Game\human.c:1448-1452`).
+1. **Motorbike rider integration [EXACT]:**
+   - Dedicated animation instances: `MOTO1 = 10` (Jawa 50cc) and `MOTO2 = 11` (Jawa Bitrak tricycle) in `exp\scripts\scripts\4_World\Entities\Vehicles\VehicleAnimInstances.c:13-14`.
+   - Third-person vehicle camera with elastic lag: `DAYZCAMERA_3RD_VEHICLE_MOTORBIKE = 32` in `exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCameras.c:20`.
+   - Handlebar grip with continuous two-bone IK solvers (`AnimSrcNodeIK2` and `AnimSrcNodeIK2Target` in `Vehicles.agf`) modulated by physical lean and roll variables (`VehicleSteering`, `VehicleThrottle`, `VehicleSuspension`).
+   - Unified transition query via `HumanCommandVehicle.IsTransitioning()` (`exp\scripts\scripts\3_Game\human.c:735-738`).
+2. **Surrender refactoring [EXACT]:**
+   - *(Up to 1.29: surrendering physically created invisible `SurrenderDummyItem` in hands; since 1.30 Exp: `SurrenderDummyItem` is completely eliminated and natively governed via `PlayerBase.SetSurrenderState(bool)` and `Man.IsSurrendered()` [`exp\scripts\scripts\3_Game\Entities\Man.c:67`, `exp\scripts\scripts\4_World\Classes\EmoteManager.c:314, 1248-1250`]).*
+3. **Dynamic instance control and in-hands decoupling [EXACT]:**
+   - Direct transition between animation instances at runtime with `Human.SetAnimationInstanceByName(string animationInstanceName, float blendingTime)` (`exp\scripts\scripts\3_Game\human.c:1384`), backed by `"Empty"` profile registered in `player_main.asi` (`DayZPlayerCfgBase.c:1537`).
+   - Decoupling of in-hands item swapping: `HumanItemAccessor.OnItemInHandsChanged(bool pInstant, bool pChangeAnimationInstance)` (`exp\scripts\scripts\3_Game\humanitems.c:112`).
+4. **Per-stance camera rotation and speed limits [EXACT]:**
+   - `HumanInputController` exposes `SetErectSpeedLimit`, `SetCrouchSpeedLimit`, `SetProneSpeedLimit`, and `DisableErectCameratHorizontalRotation` [sic], etc. (`exp\scripts\scripts\3_Game\human.c:230-243`).
+5. **Catalog of 11 new Full-Body actions [EXACT]:**
+   - `CMD_ACTIONFB_COMBINATIONLOCK = 256` to `CMD_ACTIONFB_WETCLOTHWELL = 266` (`exp\scripts\scripts\3_Game\dayzplayer.c:889-899`), including combination lock, mortar, brick stacking, and rope ladder.
+6. **Skeleton de-indexing and creature kinematics [EXACT]:**
+   - Removal of 250-bone limit; global indices resolved at runtime by name hash. In `skeletons.anim.xml` only `EntityPosition` retains `index="0" movement="true" lod="0"` (`work\changelog-1.30-exp-modding.md:31`, `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:39, 986-988`).
+   - Procedural rotation in quadrupeds for terrain alignment: `AnimSrcNodeProcTransform AlignToTerrain_Rot` with `SlopeAngleX * 0.0174532925...` (`exp\animals\DZ\animals\animations\!graph_files\wolf\wolf_maingraph.agf:5-18`).
+   - New mental state for infected: `MINDSTATE_COWER` (`exp\scripts\scripts\3_Game\Entities\DayZInfected.c:18`).
+7. **Integration tools and physics in Workbench [EXACT]:**
+   - Workbench Animation Editor updated to Enfusion 2021 with **Live Editing** of graphs on running clients (`work\changelog-1.30-exp-modding.md:48, 62`).
+   - Workbench Ragdoll Editor to configure and edit `.ragdoll` files (`work\changelog-1.30-exp-modding.md:47`).
+   - Native separation between animated death and ragdoll in scripts: `PhysicsSetSimpleDeath(bool)` vs `PhysicsSetRagdoll(bool)` (`exp\scripts\scripts\3_Game\human.c:1448-1452`).
 
-### Qué se rompe en contratos y assets de 1.29 y cómo migrar
+### What breaks in 1.29 contracts and assets and how to migrate
 
-| Elemento roto | Causa en 1.30 | Acción requerida |
+| Broken element | Cause in 1.30 | Required action |
 |---|---|---|
-| Grafos `.agr` propietarios monolíticos | Formato reemplazado por ficheros de texto Enfusion Config `.agf` modulares (`Locomotion.agf`, `Vehicles.agf`, etc.) [EXACT: `player_main.agr:1587`] | Reexportar workspaces desde Workbench Animation Editor 2021 o reconstruir modificaciones en texto sobre los módulos `.agf` correspondientes. |
-| Templates `.ast` con grupos anónimos | Eliminado soporte para `$groupType { #ngroupnames 0 ... }` [EXACT: `changelog:42`] | Asignar a cada grupo un atributo `Name` explícito (`Name "Default"`, `Name ".unnamed"`). |
-| Ficheros `.asi` con sintaxis `$animsetinstance` | Migrado a clase `AnimSetInstanceSource` [EXACT: `anims_cfg.diff:624`] | Convertir directivas `#template`/`#parent`/`$animations` a la estructura Enfusion Config. |
-| Nodos `Buffer Save` / `Buffer Use` | Erradicados completamente del motor de animación [EXACT: `changelog:41`] | Reemplazar lógica de buffers por variables de control en `ControlTemplate AnimSrcGCT` o conexiones directas en máquina de estados. |
-| Dependencia de `SurrenderDummyItem` | Objeto dummy eliminado [EXACT: `EmoteManager.c:1242`] | Sustituir comprobaciones de ítem en manos por llamadas a `PlayerBase.SetSurrenderState(bool)` e `IsSurrendered()`. |
-| Índices fijos en `skeletons.anim.xml` | Indices manuales ignorados salvo en `EntityPosition` [EXACT: `changelog:43`] | Retirar atributos `index` del XML; asegurar coincidencia exacta de nombres con el modelo `.xob`. |
+| Monolithic proprietary `.agr` graphs | Format replaced by modular Enfusion Config `.agf` text files (`Locomotion.agf`, `Vehicles.agf`, etc.) [EXACT: `player_main.agr:1587`] | Re-export workspaces from Workbench Animation Editor 2021 or reconstruct modifications in text across corresponding `.agf` modules. |
+| `.ast` templates with anonymous groups | Removed support for `$groupType { #ngroupnames 0 ... }` [EXACT: `changelog:42`] | Assign each group an explicit `Name` attribute (`Name "Default"`, `Name ".unnamed"`). |
+| `.asi` files with `$animsetinstance` syntax | Migrated to `AnimSetInstanceSource` class [EXACT: `anims_cfg.diff:624`] | Convert `#template`/`#parent`/`$animations` directives to Enfusion Config structure. |
+| `Buffer Save` / `Buffer Use` nodes | Eradicated completely from animation engine [EXACT: `changelog:41`] | Replace buffer logic with control variables in `ControlTemplate AnimSrcGCT` or direct state machine connections. |
+| `SurrenderDummyItem` dependency | Dummy object removed [EXACT: `EmoteManager.c:1242`] | Replace item-in-hands checks with calls to `PlayerBase.SetSurrenderState(bool)` and `IsSurrendered()`. |
+| Fixed indices in `skeletons.anim.xml` | Manual indices ignored except on `EntityPosition` [EXACT: `changelog:43`] | Remove `index` attributes from XML; ensure exact name match with `.xob` model. |
 
-### Checklist de migración para el director de animación
+### Migration checklist for animation director
 
-- [ ] **Mapeos de armas:** Verificar si el arma o prop interactivo utiliza nuevos remaps (`LugerBoneRemap`, `LeeEnfieldBoneRemap`) o `.asi` dedicado (`bandage.asi`, `hayhook.asi`, etc.).
-- [ ] **Ocupantes de vehículos:** En motocicletas, auditar el bloqueo relativo de ambas manos a manillares (`AnimSrcNodeIK2`) y pies a estriberas en todas las fases de `HumanCommandVehicle.IsTransitioning()`.
-- [ ] **Rendición:** Confirmar que ningún check offline o fixture asume un ítem virtual en manos durante el estado de rendición.
-- [ ] **Terreno en criaturas:** Comprobar que los contactos de patas en animales incluyan el offset angular procedural de `AnimSrcNodeProcTransform` frente a pendientes (`SlopeAngleX`).
-- [ ] **Templates e Instancias:** Auditar que los ficheros `.ast` de entrega declaren `Name` en todos los grupos y los `.asi` usen la clase `AnimSetInstanceSource`.
-- [ ] **Validación en vivo:** Aprovechar Workbench Enfusion 2021 Live Editing para verificar parámetros continuos de mezcla en cliente activo antes del empaquetado final.
+- [ ] **Weapon mappings:** Verify whether weapon or interactive prop uses new remaps (`LugerBoneRemap`, `LeeEnfieldBoneRemap`) or dedicated `.asi` (`bandage.asi`, `hayhook.asi`, etc.).
+- [ ] **Vehicle occupants:** On motorcycles, audit relative locking of both hands to handlebars (`AnimSrcNodeIK2`) and feet to footrests across all phases of `HumanCommandVehicle.IsTransitioning()`.
+- [ ] **Surrender:** Confirm no offline check or fixture assumes a virtual item in hands during surrender state.
+- [ ] **Creature terrain:** Check that animal paw contacts include procedural angular offset of `AnimSrcNodeProcTransform` against slopes (`SlopeAngleX`).
+- [ ] **Templates and Instances:** Audit that delivery `.ast` files declare `Name` on all groups and `.asi` files use `AnimSetInstanceSource` class.
+- [ ] **Live validation:** Leverage Workbench Enfusion 2021 Live Editing to verify continuous blend parameters on active client before final packaging.
 
-## Índice de recursos
+## Resource index
 
-- [authority-and-routing.md](references/authority-and-routing.md) — autoridad, precedencia y selección de skills.
-- [motion-quality-contract.md](references/motion-quality-contract.md) — formato de muestra/contrato y catálogo de checks.
-- [biomechanics-and-contact.md](references/biomechanics-and-contact.md) — anatomía, contacto, auto-colisión y sincronización.
-- [domain-gates.md](references/domain-gates.md) — controles por dominio de animación.
-- [evidence-and-integration.md](references/evidence-and-integration.md) — evidencia offline, export, deploy e in-game.
-- `scripts/sample_blender_motion.py` — Blender → reporte neutral JSON.
-- `scripts/validate_motion_contract.py` — reporte + contrato → auditoría determinista.
-- `scripts/run_regression_tests.py` — fixtures sintéticas y reales opcionales.
+- [authority-and-routing.md](references/authority-and-routing.md) — authority, precedence, and skill selection.
+- [motion-quality-contract.md](references/motion-quality-contract.md) — sample/contract format and catalog of checks.
+- [biomechanics-and-contact.md](references/biomechanics-and-contact.md) — anatomy, contact, self-collision, and synchronization.
+- [domain-gates.md](references/domain-gates.md) — checks by animation domain.
+- [evidence-and-integration.md](references/evidence-and-integration.md) — offline evidence, export, deploy, and in-game.
+- `scripts/sample_blender_motion.py` — Blender → neutral JSON report.
+- `scripts/validate_motion_contract.py` — report + contract → deterministic audit.
+- `scripts/run_regression_tests.py` — synthetic and optional real fixtures.
 
 ## Stop conditions
 
-Detén el avance y pide la decisión o evidencia que falta cuando:
+Stop progression and request missing decision or evidence when:
 
-- no existe referencia de entrada/salida y una elección cambiaría la coreografía;
-- el pipeline vigente y una referencia discrepan sobre skeleton, export mask o estado runtime;
-- no puede identificarse la pieza mecánica completa;
-- una tolerancia sólo puede elegirse mirando el candidato que se desea aprobar;
-- el gate offline pasa pero la revisión visual o in-game falla;
-- el test de integración exige una herramienta o permiso no disponible.
+- no input/output reference exists and a choice would alter choreography;
+- current pipeline and a reference disagree on skeleton, export mask, or runtime state;
+- full mechanical part cannot be identified;
+- a tolerance can only be chosen by looking at candidate intended to pass;
+- offline gate passes but visual or in-game review fails;
+- integration test requires an unavailable tool or permission.

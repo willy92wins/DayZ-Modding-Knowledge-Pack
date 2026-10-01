@@ -91,33 +91,33 @@ Ask for clarification before generating final files when any of these are unknow
 
 ## Checklist normal bake high→low (added 2026-06-24)
 
-Patrón empírico verificado en LFInfectedBig S5 (5 iteraciones × 4 gotchas distintos). Cualquier bake high→low destinado a DayZ debe pasar esta checklist antes de la primera pasada, no iterar contra ella.
+Empirical pattern verified on LFInfectedBig S5 (5 iterations × 4 distinct gotchas). Any high→low bake destined for DayZ must pass this checklist before the first pass, not iterate against it.
 
-### Pre-bake (geometría)
+### Pre-bake (geometry)
 
-- [ ] **Triangular `low` ANTES del bake**. Si no, las tangentes del bake (calculadas sobre quads) ≠ tangentes que el engine usa al renderizar (que son sobre triángulos) → normales desalineadas en runtime.
-- [ ] **`bbox_dims(low_source) == bbox_dims(high_source)`** (±1 mm). Si difieren (típico tras re-pose / conform del low), bakear en una **pose donde coincidan** (BakeProxy = topo+UV del low final con posiciones del low pre-conform o pre-rig). Tangent-space normal map es invariante a la pose con misma topo+UV. Detalle: LL-159 en `lessons-learned.md`.
-- [ ] **`high` visible, TODO lo demás OCULTO** en la escena (otras pasadas, ChestBones internos, proxys). Si no, AO y normal recogen oclusión/superficies que no tocan.
-- [ ] **`low`**: `customdata_custom_splitnormals_clear` + `normals_make_consistent(inside=False)` + `shade_smooth`. Sin esto, las normales heredadas de retopo/voxel-remesh quedan inconsistentes → AO oscuro arbitrario.
-- [ ] **`high`**: NO `normals_make_consistent`. En mallas no-watertight (AI generadas tipo Rodin/Hunyuan, retopo voxel) voltea shells enteros hacia dentro. Usar las normales **originales** del high + `shade_smooth`. Vienen consistentes para render por construcción.
+- [ ] **Triangulate `low` BEFORE bake**. Otherwise, bake tangents (computed on quads) ≠ tangents engine uses when rendering (which are on triangles) → misaligned normals at runtime.
+- [ ] **`bbox_dims(low_source) == bbox_dims(high_source)`** (±1 mm). If they differ (typical after re-pose / conform of low), bake in a **pose where they match** (BakeProxy = topo+UV of final low with positions of low pre-conform or pre-rig). Tangent-space normal map is pose-invariant with same topo+UV. Detail: LL-159 in `lessons-learned.md`.
+- [ ] **`high` visible, EVERYTHING else HIDDEN** in scene (other passes, internal ChestBones, proxies). Otherwise, AO and normal collect occlusion/surfaces they shouldn't.
+- [ ] **`low`**: `customdata_custom_splitnormals_clear` + `normals_make_consistent(inside=False)` + `shade_smooth`. Without this, normals inherited from retopo/voxel-remesh remain inconsistent → arbitrary dark AO.
+- [ ] **`high`**: do NOT `normals_make_consistent`. On non-watertight meshes (AI-generated like Rodin/Hunyuan, voxel retopo) flips entire shells inward. Use **original** normals of high + `shade_smooth`. They come consistent for render by construction.
 
 ### Pre-bake (imagen target)
 
-- [ ] **Pre-rellenar la imagen target con el neutro del mapa**:
-  - Normal map (tangent-space): RGB = `(128, 128, 255)` = vector `(0, 0, 1)` decodificado.
-  - AO map: blanco `(255, 255, 255)` o gris `(192, 192, 192)` según convención.
-- [ ] **`use_clear=False`** en los bake settings. Si no, los misses del bake quedan en negro `(0, 0, 0)` → el Normal Map node los decodifica como normal `(−1, −1, 0)` (hacia dentro) → renderiza negro bajo cualquier luz.
-- [ ] Tamaño imagen acorde al texel target del mod (1024/2048/4096; 2048 para personajes humanoides DayZ es estándar).
+- [ ] **Pre-fill target image with neutral map value**:
+  - Normal map (tangent-space): RGB = `(128, 128, 255)` = decoded vector `(0, 0, 1)`.
+  - AO map: white `(255, 255, 255)` or gray `(192, 192, 192)` depending on convention.
+- [ ] **`use_clear=False`** in bake settings. Otherwise, bake misses remain black `(0, 0, 0)` → Normal Map node decodes them as normal `(−1, −1, 0)` (inward) → renders black under any light.
+- [ ] Image size according to mod texel target (1024/2048/4096; 2048 for DayZ humanoid characters is standard).
 
 ### Bake settings
 
-- [ ] **Cage 0.025 m / max_ray 0.05 m** como default para humanoides. Subir si la malla es gruesa (ChestBones internos al torso, vehículos con paneles separados). Bajar si hay autointersecciones del low (raras).
-- [ ] Bake en **OGL/Blender** (default). Conversión a DirectX para DayZ (Y−) al final con PIL/ImageMagick.
-- [ ] `samples` ≥ 16 para AO; 1 para normal (el normal no se beneficia de samples).
+- [ ] **Cage 0.025 m / max_ray 0.05 m** as default for humanoids. Increase if mesh is thick (internal ChestBones to torso, vehicles with separate panels). Decrease if low self-intersections (rare).
+- [ ] Bake in **OGL/Blender** (default). Conversion to DirectX for DayZ (Y−) at end with PIL/ImageMagick.
+- [ ] `samples` ≥ 16 for AO; 1 for normal (normal does not benefit from samples).
 
 ### Post-bake (formato DayZ)
 
-- [ ] `_nohq` = normal con **canal verde invertido** (Y−, DirectX convention). Conversión:
+- [ ] `_nohq` = normal with **inverted green channel** (Y−, DirectX convention). Conversion:
   ```python
   from PIL import Image
   im = Image.open("normal_ogl.png").convert("RGB")
@@ -125,32 +125,32 @@ Patrón empírico verificado en LFInfectedBig S5 (5 iteraciones × 4 gotchas dis
   g = g.point(lambda v: 255 - v)
   Image.merge("RGB", (r, g, b)).save("zombie_body_nohq.png")
   ```
-- [ ] `_co` = albedo PBR; si solo hay placeholder del generador (Rodin/Hunyuan), tratarlo como tal y re-texturar sobre la UV nueva.
-- [ ] `_smdi` = specular/diffuse mask si aplica al material DayZ.
-- [ ] `.paa` final con TexView / ImageToPAA.
+- [ ] `_co` = PBR albedo; if only generator placeholder exists (Rodin/Hunyuan), treat it as such and re-texture on new UV.
+- [ ] `_smdi` = specular/diffuse mask if applicable to DayZ material.
+- [ ] Final `.paa` with TexView / ImageToPAA.
 
-### Verificación rápida (renders de evidencia)
+### Quick verification (evidence renders)
 
-Antes de empaquetar, render comparativo 3 vistas:
+Before packaging, 3-view comparative render:
 
 - `pv_A_normal_*` = low + normal map aplicado.
 - `pv_B_flat_*` = low plano (sin normal).
 - `pv_C_high_*` = high original.
 
-Pasa si `pv_A` está claramente más cerca de `pv_C` que de `pv_B` (el normal añade el detalle del high). Falla si hay manchas, arcoíris localizados, o el normal "no se ve" (transform incorrecto).
+Passes if `pv_A` is clearly closer to `pv_C` than to `pv_B` (the normal map adds detail of the high). Fails if there are blemishes, localized rainbows, or normal "is not visible" (incorrect transform).
 
-### Origen y cross-refs
+### Origin and cross-refs
 
-LFInfectedBig S5 (autónoma) 2026-06-24, handoff `30_Sessions/2026-06-25-LFInfectedBig-uv-bake.md`. Gotchas individuales en LL-159 (BakeProxy en pose pre-conform). Reportado en CB-5 de la introspección 2026-06-24.
+LFInfectedBig S5 (autonomous) 2026-06-24, handoff `30_Sessions/2026-06-25-LFInfectedBig-uv-bake.md`. Individual gotchas in LL-159 (BakeProxy in pre-conform pose). Reported in CB-5 of 2026-06-24 introspection.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa vive allí. No quites la cita: el índice detecta la promoción por ella.
+Promoted from `AI/20_Knowledge/lessons-learned.md` to arrive via trigger instead
+of depending on someone remembering to look them up. Each rule cites source `LL-NNN`;
+complete entry lives there. Do not remove citation: the index detects promotion by it.
 
-- **LL-066** — En Blender 5.1 usa `RENDERED` + EEVEE + luz para materiales y captura el área `VIEW_3D`, no la ventana completa. Para Multi, conserva UV2/`tex1` y reproduce el blend por máscara; en Windows sin `python-lzo`, decodifica `.paa` con `lzokay` y el shim del viewer.
-- **LL-368** — Mapas de DATOS (normal, AO, curvatura, displacement, ID, máscaras): `colorspace_settings.name = 'Non-Color'`, vista `Standard` / look `None` / exposure 0 / gamma 1, y después releer el fichero escrito contra el búfer pretendido (error máx. dentro del paso de cuantización). Sin ese round-trip el defecto se entrega.
+- **LL-066** — In Blender 5.1 use `RENDERED` + EEVEE + light for materials and capture `VIEW_3D` area, not full window. For Multi, keep UV2/`tex1` and reproduce blend by mask; on Windows without `python-lzo`, decode `.paa` with `lzokay` and viewer shim.
+- **LL-368** — DATA maps (normal, AO, curvature, displacement, ID, masks): `colorspace_settings.name = 'Non-Color'`, `Standard` view / `None` look / exposure 0 / gamma 1, and then reread written file against intended buffer (max error within quantization step). Without that round-trip defect is delivered.
 
 ## Ambient-shadow maps and borrowed RVMATs (added 2026-08-31)
 
@@ -196,287 +196,287 @@ atlas available”. Aircraft atlases can also contain a pre-mirrored copy of one
 correctly on both sides. Mirrored text on both sides does not by itself justify a global U flip.
 
 
-## `healthLevels[]` es un writer NATIVO de material sobre prendas (added 2026-08-31)
+## `healthLevels[]` is a NATIVE material writer on clothing (added 2026-08-31)
 
-Medido con cliente real el 2026-08-31. Importa a cualquier mod que pinte ropa: vista térmica,
-camuflaje dinámico, marcado de equipo, resaltado de objetivos.
+Measured with actual client on 2026-08-31. Matters to any mod painting clothing: thermal vision,
+dynamic camouflage, team marking, target highlighting.
 
-**El hecho.** `DamageSystem.GlobalHealth.Health.healthLevels[]` mapea umbrales de salud a rvmat —
-en `DZ\characters\tops\config.cpp:2276-2333`, `1.0`/`0.7` → `tshirt.rvmat`, `0.5`/`0.3` →
-`tshirt_damage.rvmat`, `0` → `tshirt_destruct.rvmat`. **Lo aplica el motor**: `GetHealthLevel` es
-`proto native` (`P:/scripts/3_game/entities/object.c:1167`) y **ningún script de `P:/scripts` lee
-`healthLevels` para llamar a `SetObjectMaterial`**. Un audit estático de los scripts vanilla con
-cero hits NO descarta este writer, porque no está en los scripts.
+**The fact.** `DamageSystem.GlobalHealth.Health.healthLevels[]` maps health thresholds to rvmat —
+in `DZ\characters\tops\config.cpp:2276-2333`, `1.0`/`0.7` → `tshirt.rvmat`, `0.5`/`0.3` →
+`tshirt_damage.rvmat`, `0` → `tshirt_destruct.rvmat`. **Engine applies it**: `GetHealthLevel` is
+`proto native` (`P:/scripts/3_game/entities/object.c:1167`) and **no script in `P:/scripts` reads
+`healthLevels` to call `SetObjectMaterial`**. A static audit of vanilla scripts with
+zero hits does NOT rule out this writer, because it is not in the scripts.
 
-**Consecuencia**: cruzar un umbral de salud **borra cualquier override de material** en el
-fotograma siguiente. No hay hook que interceptarlo.
+**Consequence**: crossing a health threshold **wipes out any material override** on the
+following frame. There is no hook to intercept it.
 
-**La humedad, en cambio, NO repinta prendas.** Cruzados los cuatro umbrales `EWetnessLevel`
-(`P:/scripts/3_game/constants.c:875-878`), el override sigue intacto. En vanilla el único swap de
-material por humedad está en `GardenBase` (`P:/scripts/4_world/entities/gardenbase.c:605,610`) y es
-**de script**. Bajo `DZ\characters\` hay **0** assets `*wet*` frente a 349 `*damage*.rvmat` con la
-misma búsqueda: la ausencia está controlada, no supuesta.
+**Wetness, on the other hand, does NOT repaint clothing.** Having crossed the four `EWetnessLevel`
+thresholds (`P:/scripts/3_game/constants.c:875-878`), override remains intact. In vanilla sole material
+swap by wetness is in `GardenBase` (`P:/scripts/4_world/entities/gardenbase.c:605,610`) and is
+**script-side**. Under `DZ\characters\` there are **0** `*wet*` assets versus 349 `*damage*.rvmat` with
+same search: absence is verified, not assumed.
 
-## `SetObjectMaterial` sobre prenda vestida se RE-AFIRMA, no se llama una vez (added 2026-08-31)
+## `SetObjectMaterial` on worn clothing is RE-ASSERTED, not called once (added 2026-08-31)
 
-> **PARCIALMENTE CONTESTADA la misma tarde — lee antes «Escribir MÁS no hace que el material
-> prenda» más abajo.** Los datos de esta tabla se mantienen, pero la causa que sugieren (la
-> frecuencia) es falsa: 6648 escrituras continuas sobre una prenda sin cambios de nivel de salud
-> no renderizan nada. Aplicar solo la receta de esta sección hace perder corridas.
+> **PARTIALLY DISPUTED same afternoon — read "Writing MORE does not make material
+> stick" below first.** Data in this table holds, but the cause suggested (frequency)
+> is false: 6,648 continuous writes on clothing without health level changes
+> render nothing. Applying only this section's recipe wastes runs.
 
-Medido en la misma corrida, y es la parte accionable:
+Measured in same run, and is the actionable part:
 
-| escrituras | resultado |
+| writes | result |
 |---|---|
-| 1, justo después de un cambio de nivel de salud | **renderiza** — ⚠ no reproducido: ver la sección contestataria |
-| 1, ~50 s después del último cambio de estado | **no renderiza** — y la llamada se hizo, con índices válidos |
-| ~19/s sostenidas | renderiza a niveles de salud 0, 2 y 4, estable y sin parpadeo |
-| se deja de escribir | **se queda** puesto |
+| 1, right after health level change | **renders** — ⚠ not reproduced: see disputing section |
+| 1, ~50 s after last state change | **does not render** — and call was made, with valid indices |
+| ~19/s sustained | renders at health levels 0, 2, and 4, stable and flicker-free |
+| stop writing | **remains** applied |
 
-**El mecanismo NO está establecido.** «La escritura queda latente hasta que el motor reconstruye el
-visual» encaja con las cuatro observaciones y no está probado.
+**Mechanism is NOT established.** "The write remains latent until engine rebuilds
+visual" fits all four observations and is not proven.
 
-**Cómo aplicarlo**: re-afirmar el override al activar el efecto y tras cada evento que repinte la
-prenda (cambio de nivel de salud, cambio de equipamiento), o mantenerlo por tick mientras el efecto
-esté activo. **No** llamarlo una vez y darlo por puesto.
+**How to apply it**: re-assert override when activating effect and after every event repainting
+clothing (health level change, equipment change), or maintain per tick while effect
+is active. **Do not** call it once and assume it applied.
 
-Y dejar fuera del lease la selección `personality`: ahí ya escribe vanilla
-(`P:/scripts/4_world/entities/itembase/clothing_base.c:154`), y pisarla convierte un repintado
-normal en un falso positivo de «me lo han robado».
+And leave `personality` selection out of lease: vanilla already writes there
+(`P:/scripts/4_world/entities/itembase/clothing_base.c:154`), and stomping it turns normal
+repainting into a false positive of "it was stolen from me".
 
-### Cómo se midió, por si hay que repetirlo
+### How it was measured, in case it needs repeating
 
-Override con `dz\data\data\mirror.rvmat` (negro especular, `PixelShaderID="Super"`, diffuse 0.097 /
-specular 2) sobre las selecciones camo: es binario a simple vista y quita el juicio sobre el JPEG.
-**El PASS no lo da el fotograma donde el override sigue: lo da el par** — un escalón de salud borra
-el mismo override, mismo entity y misma cámara. Sin ese control, «sigue ahí» es indistinguible de
-un instrumento ciego.
+Override with `dz\data\data\mirror.rvmat` (specular black, `PixelShaderID="Super"`, diffuse 0.097 /
+specular 2) on camo selections: binary to the naked eye and removes judgment on JPEG.
+**PASS is not given by frame where override remains: it is given by the pair** — health step clears
+same override, same entity, and same camera. Without that control, "still there" is indistinguishable
+from a blind instrument.
 
-## Escribir MÁS no hace que el material prenda: hace falta reconstruir el visual (added 2026-08-31, tarde)
+## Writing MORE does not make material stick: visual rebuild is needed (added 2026-08-31, evening)
 
-Corrección medida de las dos secciones anteriores. Aquella tabla describe bien lo que se vio, pero
-sugiere una causa equivocada —la frecuencia—, y el siguiente proyecto que la lea intentará escribir
-más rápido. No funciona, y cuesta dos corridas averiguarlo.
+Measured correction to the two previous sections. That table describes well what was seen, but
+suggests wrong cause —frequency—, and the next project reading it will try to write
+faster. Does not work, and takes two runs to find out.
 
-**El negativo diseñado.** Sobre una prenda NUEVA en cada brazo (reset por `CreateAttachment`, para
-que ningún render anterior contamine el siguiente: el override, una vez prende, es pegajoso) y sin
-un solo cambio de nivel de salud:
+**The designed negative.** On a NEW garment on each arm (reset via `CreateAttachment`, so
+no previous render contaminates next: override, once it sticks, is sticky) and without
+a single health level change:
 
-| tratamiento | escrituras | render |
+| treatment | writes | render |
 |---|---|---|
-| ninguna (control −) | 0 | vanilla |
-| ráfaga 0,1 s | ~6 | vanilla |
-| ráfaga 5 s | 291 | vanilla |
-| continuo 43 s | 2478 | vanilla |
-| continuo 128 s + cruce de umbral de humedad inyectado | 6648 | vanilla |
+| none (control −) | 0 | vanilla |
+| burst 0.1 s | ~6 | vanilla |
+| burst 5 s | 291 | vanilla |
+| continuous 43 s | 2478 | vanilla |
+| continuous 128 s + injected wetness threshold crossing | 6648 | vanilla |
 
-Las ráfagas intermedias (0,5 / 1 / 2 s) no necesitan fotograma: son subconjuntos estrictos del
-patrón continuo sobre sujetos idénticos, así que el fallo del tratamiento máximo las cubre por
-monotonía.
+Intermediate bursts (0.5 / 1 / 2 s) do not need a frame: they are strict subsets of
+continuous pattern on identical subjects, so failure of maximum treatment covers them by
+monotonicity.
 
-**El reset por prenda nueva no es comodidad, es NECESARIO, y si lo saltas el barrido mide su propia
-historia.** El override es pegajoso: una vez prende sobrevive ≥97 s sin una sola escritura y a
-través de un escalón de salud. Sin sujeto virgen, cada brazo arranca contaminado por el anterior —
-en la corrida previa el control positivo estaba en mitad del calendario y envenenó todos los brazos
-posteriores. Y la persistencia entre corridas muerde igual: un baseline puede llegar con
-`wetlevel=4 hplevel=2` de la sesión anterior y hacer pasar por «el control no dispara» lo que en
-realidad es un sujeto sucio. Normaliza el sujeto al empezar y compruébalo en el log, no de palabra.
+**Resetting with a new garment is not convenience, it is NECESSARY, and if you skip it the sweep measures its own
+history.** Override is sticky: once it takes it survives ≥97 s without a single write and
+across a health step. Without virgin subject, each arm starts contaminated by previous one —
+in previous run positive control sat in middle of schedule and poisoned all subsequent
+arms. And inter-run persistence bites equally: a baseline can arrive with
+`wetlevel=4 hplevel=2` from previous session and make pass for "control does not fire" what in
+reality is a dirty subject. Normalize subject at start and verify in log, not by word.
 
-**Lo que sí lo hace prender** es que esté ocurriendo un cruce de umbral de salud: la misma escritura
-continua, en una corrida donde el servidor escalonaba la salud, sí renderizó. O sea que el
-`healthLevels[]` de la sección anterior no es solo lo que BORRA el override — es lo único que se ha
-visto INSTALARLO.
+**What DOES make it stick** is an occurring health threshold crossing: the same continuous
+write, in a run where server stepped health, did render. Meaning
+`healthLevels[]` from previous section is not only what CLEARS override — it is the only thing
+seen to INSTALL IT.
 
-**La humedad no vale como disparador, y se probó a propósito**: con el escritor continuo en marcha
-se inyectó lluvia y se cruzó `wetlevel` 0→1. El motor repintó de verdad —los pantalones cambian
-visiblemente al mojarse— y la prenda siguió sin tomar el override. Coherente con la sección
-anterior, y descarta el candidato obvio.
+**Wetness does not work as a trigger, and was tested intentionally**: with continuous writer active
+rain was injected and `wetlevel` crossed 0→1. Engine repainted for real —pants change
+visibly when wet— and clothing still did not take override. Consistent with previous
+section, and rules out obvious candidate.
 
-**Consecuencia de diseño**: no se puede pintar una prenda vestida A DEMANDA escribiendo material. Si
-el efecto tiene que aparecer cuando el jugador lo activa, hay que forzar la reconstrucción por otra
-vía.
+**Design consequence**: worn clothing cannot be painted ON DEMAND by writing material. If
+effect must appear when player activates it, reconstruction must be forced through another
+route.
 
-**`SwitchItemSelectionTextureEx` NO es esa vía, y aquí estuvo publicada unas horas como si lo
-fuera.** Es una **declaración sin cuerpo** (`P:/scripts/3_game/entities/entityai.c:1170`): hook de
-script, no `proto native`, así que llamarla no reconstruye nada — solo corre los overrides que
-existan, y el de `Clothing_Base` sale por `return` temprano si `par` es null. Lo que engaña es
-quién la llama: vanilla la invoca desde `EEItemAttached`
-(`P:/scripts/4_world/entities/manbase/playerbase.c:1469-1471`), o sea que **la reconstrucción es el
-attach** y ella va de pasajera. Queda escrita como descartada **con el motivo**, no como pendiente:
-un pendiente lo hereda alguien dentro de un mes y se gasta la tarde en él.
+**`SwitchItemSelectionTextureEx` is NOT that route, and was published here for a few hours as if it
+were.** It is a **bodyless declaration** (`P:/scripts/3_game/entities/entityai.c:1170`): script
+hook, not `proto native`, so calling it rebuilds nothing — only runs whatever overrides
+exist, and the one in `Clothing_Base` exits via early `return` if `par` is null. What is misleading is
+who calls it: vanilla invokes it from `EEItemAttached`
+(`P:/scripts/4_world/entities/manbase/playerbase.c:1469-1471`), meaning **rebuild is the
+attach** and it rides along. It is recorded as ruled out **with the reason**, not as pending:
+a pending item is inherited by someone in a month and wastes their afternoon.
 
-**Tampoco `SetSimpleHiddenSelectionState`, y por un motivo que conviene saber antes de llamarla:
-son DOS espacios de índices distintos, y mezclarlos crashea el cliente.**
+**Neither is `SetSimpleHiddenSelectionState`, and for a reason worth knowing before calling it:
+they are TWO distinct index spaces, and mixing them crashes the client.**
 
 | API | indexa | comentario de vanilla |
 |---|---|---|
 | `SetObjectTexture` / `SetObjectMaterial` (`entityai.c:2895,2898`) | `hiddenSelections` | «Change texture/material **in hiddenSelections**» |
 | `SetSimpleHiddenSelectionState` / `IsSimpleHiddenSelectionVisible` (`entityai.c:2891-2892`) | `simpleHiddenSelections` | «**Simple** hidden selection state; 0 == hidden» |
 
-`GetHiddenSelectionIndex` (`entityai.c:2792`) devuelve un índice del **primer** array — su propio
-comentario lo dice: «index of the string found in cfg array `hiddenSelections`». Pasárselo a la API
-*simple* es indexar otro array. Medido: **crash nativo del cliente con minidump**, sin traza por
-debajo del script.
+`GetHiddenSelectionIndex` (`entityai.c:2792`) returns an index of the **first** array — its own
+comment says so: "index of the string found in cfg array `hiddenSelections`". Passing it to the
+*simple* API indexes another array. Measured: **native client crash with minidump**, no trace
+beneath script.
 
-Que son arrays distintos no es inferencia: `weapon_base.c:62` declara
-`m_weaponHideBarrelIdx` con el comentario «index in **simpleHiddenSelections** cfg array», y en
-**30 call-sites vanilla de la API simple, CERO** usan `GetHiddenSelectionIndex` — van con ordinales
-fijos (`SIMPLE_SELECTION_MELEE_RIFLE = 0` … `SHOULDER_MELEE = 3`, `dayzplayer.c:1160-1163`), con
-índices miembro (`weapon_base.c:391,2133,2141`) o con getters propios (`GetHairIndex()`,
+That they are distinct arrays is not inference: `weapon_base.c:62` declares
+`m_weaponHideBarrelIdx` with comment "index in **simpleHiddenSelections** cfg array", and in
+**30 vanilla call-sites of the simple API, ZERO** use `GetHiddenSelectionIndex` — they use fixed
+ordinals (`SIMPLE_SELECTION_MELEE_RIFLE = 0` … `SHOULDER_MELEE = 3`, `dayzplayer.c:1160-1163`),
+member indices (`weapon_base.c:391,2133,2141`), or dedicated getters (`GetHairIndex()`,
 `GetBeardIndex()`, `playerbase.c:9055-9057`).
 
-**Y sí hay una forma correcta de sacar el índice simple: la escribió Bohemia.** El equivalente de
-`GetHiddenSelectionIndex` para este espacio no es una función, es leer el array y buscar dentro.
-`weapon_base.c:94-105` hace las dos cosas —guarda y resolución— en el mismo bloque:
+**And there is indeed a correct way to get simple index: Bohemia wrote it.** The equivalent of
+`GetHiddenSelectionIndex` for this space is not a function, it is reading array and searching within.
+`weapon_base.c:94-105` does both things —guard and resolution— in the same block:
 
 ```c
-if ( ConfigIsExisting("simpleHiddenSelections") )              // 1. la guarda: sin array, no hay indices
+if ( ConfigIsExisting("simpleHiddenSelections") )              // 1. the guard: without array, no indices
 {
     TStringArray selectionNames = new TStringArray;
-    ConfigGetTextArray("simpleHiddenSelections", selectionNames);   // 2. el array de ESTE espacio
-    m_weaponHideBarrelIdx        = selectionNames.Find("hide_barrel");  // 3. el indice, por nombre
+    ConfigGetTextArray("simpleHiddenSelections", selectionNames);   // 2. array for THIS space
+    m_weaponHideBarrelIdx        = selectionNames.Find("hide_barrel");  // 3. the index, by name
     m_magazineSimpleSelectionIndex = selectionNames.Find("magazine");
 }
 ```
 
-Mismo patrón en `bodyparts/head.c:20`, y la guarda sola aparece dos veces en
-`actionviewbinoculars.c:35` y `:56`. Regla práctica: **`GetHiddenSelectionIndex` para textura y
-material; `ConfigGetTextArray("simpleHiddenSelections", …)` + `Find()` para visibilidad simple.**
-Nunca el primero alimentando a la segunda.
+Same pattern in `bodyparts/head.c:20`, and guard alone appears twice in
+`actionviewbinoculars.c:35` and `:56`. Practical rule: **`GetHiddenSelectionIndex` for texture and
+material; `ConfigGetTextArray("simpleHiddenSelections", …)` + `Find()` for simple visibility.**
+Never the first feeding the second.
 
-**Y para ropa de cuerpo la vía muere en la config, no en la llamada.** Censo de
-`simpleHiddenSelections` bajo `DZ\characters`, un `config.cpp` por categoría: heads 3, headgear 2,
-data 2, glasses 1 — y **tops, pants, vests, gloves, shoes, belts, backpacks y masks: CERO**. En una
-camiseta no hay array donde indexar, así que ningún índice vale. **Sigue disponible para gorros y
-gafas**, con la guarda delante: que no sirva para una camiseta no es lo mismo que que no sirva.
+**And for body clothing route dies in config, not in call.** Census of
+`simpleHiddenSelections` under `DZ\characters`, one `config.cpp` per category: heads 3, headgear 2,
+data 2, glasses 1 — and **tops, pants, vests, gloves, shoes, belts, backpacks, and masks: ZERO**. On a
+t-shirt there is no array to index, so no index is valid. **Still available for headgear and
+glasses**, with guard upfront: not working for a t-shirt is not same as not working.
 
-Y no hay una cuarta vía: un barrido de `proto native` sobre `entityai.c` y `object.c` devuelve solo
-esos cuatro. **No existe ningún `UpdateVisuals`** — si buscas una llamada de refresco genérica, no
-la hay, y eso ahorra la búsqueda.
+And there is no fourth route: a sweep of `proto native` on `entityai.c` and `object.c` returns only
+those four. **No `UpdateVisuals` exists** — if you look for a generic refresh call, there is
+none, and that saves the search.
 
-Al medirlo, separa dos fallos que dan el mismo fotograma vanilla: «no hubo refresco» y «hubo
-refresco y el apagado se llevó el override por delante». Se distinguen re-estampando después del
-ciclo y leyendo el getter en los tres momentos — para esa pregunta el getter **sí** sirve, porque
-testigo del slot y oráculo del render son cosas distintas y solo lo segundo está desacreditado.
+When measuring it, separate two failures giving same vanilla frame: "there was no refresh" and "there was
+refresh and shutdown wiped out override". Distinguished by re-stamping after
+cycle and reading getter at all three moments — for that question getter **does** work, because
+slot witness and render oracle are distinct things and only second is discredited.
 
-**Y contesta la fila «1, justo después de un cambio de nivel de salud → renderiza»** de la tabla
-anterior: hoy, una escritura en el primer tick tras el cambio observado NO renderizó, con fotograma
-y con el log confirmando que la escritura se hizo con índices válidos. Las dos observaciones son de
-una muestra y se dejan las dos escritas. Lo que no depende del tamaño de muestra es el negativo de
-6648 escrituras.
+**And it disputes row "1, right after health level change → renders"** of previous
+table: today, a write on first tick after observed change did NOT render, with frame
+and log confirming write was made with valid indices. Both observations are from
+one sample and both are left recorded. What does not depend on sample size is the negative of
+6648 writes.
 
-**El hook que parece la solución y no lo es**: `EEHealthLevelChanged` SÍ corre en cliente (medido;
-el cuerpo vanilla de `clothing_base.c:111-125` está guardado por `!IsDedicatedServer` y solo hace
-trabajo de cliente), pero **el motor escribe DESPUÉS del hook** — dentro del hook la lectura ya
-devuelve tu material, y al tick siguiente está vacía. Re-afirmar ahí dentro está perdido por orden.
+**The hook that seems the solution and is not**: `EEHealthLevelChanged` DOES run on client (measured;
+vanilla body of `clothing_base.c:111-125` is guarded by `!IsDedicatedServer` and only does
+client work), but **the engine writes AFTER the hook** — inside hook read already
+returns your material, and on next tick it is empty. Re-asserting in there is lost by order.
 
-## `GetObjectMaterial` NO es oráculo de lo que se renderiza (added 2026-08-31, tarde)
+## `GetObjectMaterial` is NOT an oracle of what renders (added 2026-08-31, evening)
 
-Falsado en las DOS direcciones dentro de una misma corrida. Es la trampa más cara de esta skill,
-porque convierte el log en evidencia falsa y en verde:
+Falsified in BOTH directions within a single run. It is most expensive trap of this skill,
+because it turns log into false green evidence:
 
-| lo que devuelve el getter | lo que muestra el fotograma |
+| what getter returns | what frame shows |
 |---|---|
-| `dz\data\data\mirror.rvmat` | camiseta vanilla negra — dice que tu override está puesto, y no se ve |
-| cadena vacía | camiseta con el material espejo — dice que no está, y se ve |
+| `dz\data\data\mirror.rvmat` | black vanilla t-shirt — says your override is applied, and it is not visible |
+| empty string | t-shirt with mirror material — says it is not there, and it is visible |
 
-**Regla**: para acreditar que un material se aplicó, el instrumento es el fotograma.
-`GetObjectMaterial` solo informa del slot de script, que es una cosa distinta del render. Un gate
-que lea el getter puede firmar PASS sobre una prenda que se ve vanilla, y FAIL sobre una que se ve
-pintada.
+**Rule**: to prove a material applied, the instrument is the frame.
+`GetObjectMaterial` only reports script slot, which is a different thing from render. A gate
+reading getter can sign PASS on clothing looking vanilla, and FAIL on clothing looking
+painted.
 
-**Alcance, para que esto no se propague de más**: lo que queda invalidado es el GETTER como
-instrumento, **no** los veredictos que se apoyaron en píxeles. El PASS de G10 de LFThermalCore no
-usó ningún getter — se apoyó en ocho fotogramas con un rvmat binario a simple vista y en un par
-control (misma entidad, misma cámara: la humedad deja el override, un escalón de salud lo borra), y
-sigue en pie. La regla completa es **el getter no sirve de oráculo y los píxeles sí**, que es el
-instrumento que han usado las dos corridas.
+**Scope, so this does not over-propagate**: what is invalidated is the GETTER as
+instrument, **not** verdicts backed by pixels. The G10 PASS of LFThermalCore did not
+use any getter — relied on eight frames with visually binary rvmat and control pair
+(same entity, same camera: wetness leaves override, health step wipes it), and
+still stands. Complete rule is **the getter does not serve as oracle and pixels do**, which is the
+instrument used by both runs.
 
-Dos hechos menores del mismo getter, útiles para leer un log: devuelve **cadena vacía** cuando el
-motor tiene el material (no una ruta vanilla normalizada, que era lo que cabía esperar), y en
-**servidor devuelve vacío siempre** — el material de prenda es puramente de cliente.
+Two minor facts about same getter, useful for reading a log: returns **empty string** when
+engine holds material (not a normalized vanilla path, which was expected), and on
+**server always returns empty** — clothing material is purely client-side.
 
 ## A selection the log calls painted can be hidden by config (SP-445, added 2026-09-28)
 
 [EXACT] `hiddenSelectionsTextures[] = {""}` in config HIDES the selection — the script-side material/texture apply then succeeds and still nothing renders. Vanilla precedent: `XmasLights.HideOnItem` clears selection textures and materials with `""` (`xmaslights.c:94-103`), and `Blowtorch` hides its flame with `SetObjectTexture(0, "")` (`blowtorch.c:48-51`) (DayZ 1.30.164014 Exp). A selection whose material is swapped from script must declare its REAL texture in config, like `BatteryCharger` (`gear_camping/DZ/gear/camping/config.cpp:6975-6977`). [DESIGN] If the emissive must stay visible over a dark `_co` region, also switch that selection to a bright procedural colour texture (`#(argb,8,8,3)color(r,g,b,1,CO)`); not yet verified in game on its own.
 
-## Del PNG horneado al `.paa` y al rvmat de atlas (added 2026-09-02)
+## From baked PNG to `.paa` and atlas rvmat (added 2026-09-02)
 
-Medido llevando un atlas propio por modelo desde Blender hasta el mod (LFQuad, 4096^2,
-`_nohq` + `_smdi`, 13 materiales reescritos). Cuatro cosas mordieron, y ninguna da un
-error que oriente.
+Measured taking custom per-model atlas from Blender to mod (LFQuad, 4096^2,
+`_nohq` + `_smdi`, 13 rewritten materials). Four things bit, and none gives a
+guiding error.
 
-### ImageToPAA rechaza el PNG que escribe Blender
+### ImageToPAA rejects PNG written by Blender
 
-`Error (Loading of img failed)` y nada mas. El PNG de Blender lleva EXIF, `gamma` y
-`chromaticity`; el mismo pixel guardado de nuevo con PIL (`Image.open(src).convert("RGB")
-.save(dst)`) entra a la primera. Medido: 23,95 MB de Blender fallan, 6,96 MB reguardados
-convierten a un `.paa` de 7,39 MB. Un `_smdi` escrito por PIL de origen no fallo nunca.
+`Error (Loading of img failed)` and nothing else. Blender PNG carries EXIF, `gamma`, and
+`chromaticity`; same pixels resaved with PIL (`Image.open(src).convert("RGB")
+.save(dst)`) succeeds on first try. Measured: 23.95 MB from Blender fails, 6.96 MB resaved
+converts to a 7.39 MB `.paa`. An `_smdi` written by PIL from start never failed.
 
-La skill ya recoge el remedio generico ("re-save as a 32-bit PNG and re-import") para el
-import de Workbench; aqui la causa esta identificada y vale igual para el CLI.
+Skill already includes generic remedy ("re-save as a 32-bit PNG and re-import") for Workbench
+import; here cause is identified and applies equally to CLI.
 
-**El nombre del fichero fuente decide el tratamiento**: ImageToPAA aplica el manejo de
-normales por el sufijo, asi que el origen tiene que llamarse `*_nohq.png`. Un
-`*_nohq_DX.png` se convierte como una textura cualquiera.
+**Source filename decides treatment**: ImageToPAA applies normal-map handling
+by suffix, so source must be named `*_nohq.png`. A
+`*_nohq_DX.png` is converted like any regular texture.
 
-### `dir[]` del `uvTransform` NO tiene identidad canonica
+### `dir[]` of `uvTransform` does NOT have canonical identity
 
-Censo sobre todos los `.rvmat` del arbol vanilla, 2026-09-02:
+Census over all `.rvmat` in vanilla tree, 2026-09-02:
 
 | campo | valores |
 |---|---|
 | `dir[]` | `{0,0,0}` **65.495** · `{0,0,1}` **42.460** · y media docena mas |
 | `aside[]` | `{1,0,0}` **75.099** · `{10,0,0}` 43.045 · `{4,0,0}` 493 · ... |
 
-`aside` (y `up`) tienen identidad clara y sus otros valores son el factor de tileado;
-`dir` no tiene ninguna. Bohemia escribe `{0,0,0}` en
-`DZ\vehicles\parts\data\aircraft_battery.rvmat:17` y `{0,0,1}` en
-`DZ\vehicles\wheeled\van_01\data\van_01_wheel.rvmat:17`, los dos bajo `PixelShaderID="Super"`.
+`aside` (and `up`) have clear identity and their other values are tiling factor;
+`dir` has none. Bohemia writes `{0,0,0}` in
+`DZ\vehicles\parts\data\aircraft_battery.rvmat:17` and `{0,0,1}` in
+`DZ\vehicles\wheeled\van_01\data\van_01_wheel.rvmat:17`, both under `PixelShaderID="Super"`.
 
-Consecuencia para cualquier gate que compruebe "esta textura se muestrea 1:1": mira
-`aside`, `up` y `pos`, y **no** `dir`. Un gate que exigia `dir[]={0,0,1}` rechazo 26 stages
-copiados literalmente del fichero de Bohemia.
+Consequence for any gate checking "this texture samples 1:1": look at
+`aside`, `up`, and `pos`, and **not** `dir`. A gate requiring `dir[]={0,0,1}` rejected 26 stages
+copied verbatim from Bohemia's file.
 
-### Plantilla Super de 7 stages, y de donde sacarla
+### 7-stage Super template, and where to get it
 
-Copiar `DZ\vehicles\parts\data\aircraft_battery.rvmat` entero y sustituir. Stage1 `_nohq`,
-Stage2 `#(argb,8,8,3)color(0.5,0.5,0.5,1,DT)` **con `uvTransform` a ceros** (asi lo escribe
-vanilla, no es un descuido), Stage3 `...(0,0,0,0,MC)`, Stage4 `...(1,1,1,1,AS)`, Stage5
-`_smdi`, Stage6 `#(ai,64,64,1)fresnel(0.4,0.4)`, Stage7 entorno.
+Copy `DZ\vehicles\parts\data\aircraft_battery.rvmat` entirely and replace. Stage1 `_nohq`,
+Stage2 `#(argb,8,8,3)color(0.5,0.5,0.5,1,DT)` **with `uvTransform` at zeroes** (that is how vanilla
+writes it, not an oversight), Stage3 `...(0,0,0,0,MC)`, Stage4 `...(1,1,1,1,AS)`, Stage5
+`_smdi`, Stage6 `#(ai,64,64,1)fresnel(0.4,0.4)`, Stage7 environment.
 
-Al migrar materiales existentes a Super, **conservar `ambient[]`/`diffuse[]`** si el modelo
-todavia no tiene `_co`: vanilla escribe `{1,1,1,1}` porque el color llega en la textura, y
-copiarlo deja el objeto blanco. Conservar tambien `specular[]`/`specularPower` en la primera
-pasada — el `_smdi` ya los modula por texel, y cambiar mapa y constantes a la vez hace
-inatribuible cualquier regresion in-game.
+When migrating existing materials to Super, **preserve `ambient[]`/`diffuse[]`** if model
+does not yet have `_co`: vanilla writes `{1,1,1,1}` because color comes in texture, and
+copying it leaves object white. Also preserve `specular[]`/`specularPower` in the first
+pass — `_smdi` already modulates them per texel, and changing map and constants simultaneously makes
+any in-game regression unattributable.
 
-Para Stage7 DayZ envia mapas de entorno dedicados en `DZ\data\data\`: **`env_land_chrome_co.paa`**
-y `env_chrome_co.paa` para cromo, `env_land_co.paa` para metal, ademas de `env_mirror_co.paa`,
-`env_land_plastic_co.paa` y una veintena mas. El negro plano `#(argb,8,8,3)color(0,0,0,1,CO)`
-es el default de vanilla, o sea sin reflexion.
+For Stage7 DayZ ships dedicated environment maps in `DZ\data\data\`: **`env_land_chrome_co.paa`**
+and `env_chrome_co.paa` for chrome, `env_land_co.paa` for metal, plus `env_mirror_co.paa`,
+`env_land_plastic_co.paa`, and some twenty more. Flat black `#(argb,8,8,3)color(0,0,0,1,CO)`
+is vanilla default, meaning without reflection.
 
-### `Image.save()` de Blender con ruta relativa escribe en otro sitio, sin avisar
+### Blender `Image.save()` with relative path writes elsewhere, without warning
 
-`img.filepath_raw = "carpeta\fichero.png"` se resuelve contra el `.blend` abierto, no contra
-el directorio de trabajo, y `save()` no lanza. Un horneado entero se dio por escrito y no
-estaba en ninguna parte. Ruta absoluta, y **comprobar `os.path.isfile()` antes de loguear
-"escrito"** — decirlo sin mirarlo es como se pierde.
+`img.filepath_raw = "folder\file.png"` resolves against open `.blend`, not against
+working directory, and `save()` does not throw. An entire bake was assumed written and
+was nowhere to be found. Use absolute path, and **check `os.path.isfile()` before logging
+"written"** — saying it without checking is how it gets lost.
 
-### SP-376 — Decal con alfa sobre vehículo: `Super` + `renderFlags[]={"nozwrite"}`
+### SP-376 — Vehicle alpha decal: `Super` + `renderFlags[]={"nozwrite"}`
 
-`PixelShaderID="Super"` a secas IGNORA el canal alfa del `_ca` de la sección. Refutado in-game: las
-etiquetas del SUB_BRZ con alfa real renderizaban opacas. El arreglo no es cambiar de shader, es
-completar el estado de render.
+`PixelShaderID="Super"` alone IGNORES the alpha channel of section's `_ca`. Refuted in-game: SUB_BRZ
+labels with real alpha rendered opaque. The fix is not changing shader, it is
+completing the render state.
 
-El patrón vanilla para un decal con alfa sobre vehículo es `Super`/`Super` +
-`renderFlags[]={"nozwrite"}`, verificado en las pegatinas del Offroad
+Vanilla pattern for an alpha decal on a vehicle is `Super`/`Super` +
+`renderFlags[]={"nozwrite"}`, verified in Offroad stickers
 (`DZ\vehicles\wheeled\offroad_02\data\offroad_02_decals.rvmat:7-12`).
 
-Lo que el flag NO cubre, y hay que declarar en el gate in-game: alpha sorting contra otras
-transparencias, z-fighting si el decal queda casi coplanar, y que sin `emmisive` el símbolo no
-autoilumina de noche. DXT5 conserva el alfa pero suaviza los bordes.
+What the flag does NOT cover, and must be declared in in-game gate: alpha sorting against other
+transparencies, z-fighting if decal is almost coplanar, and that without `emmisive` symbol does
+not self-illuminate at night. DXT5 preserves alpha but softens edges.
 
-Recomposición desde una fuente DECAL (icono en el canal alfa): RGB = color del swatch por píxel,
-ALFA = el alfa real. Nunca aplanar alfa sobre RGB — el bake de blanco-sobre-negro fue justo ese
-error, y produce el decal opaco que parece un problema de shader.
+Recomposition from a DECAL source (icon in alpha channel): RGB = swatch color per pixel,
+ALPHA = actual alpha. Never flatten alpha onto RGB — white-on-black bake was precisely that
+error, producing the opaque decal looking like a shader issue.

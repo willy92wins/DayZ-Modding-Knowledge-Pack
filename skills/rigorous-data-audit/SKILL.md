@@ -151,10 +151,10 @@ Three sub-steps, in order:
 the cited range and confirm it says what the agent's pasted snippet claims.
 Reasoning agents drift on line numbers, copy citations from sibling files, and
 occasionally invent plausible ranges wholesale. A finding whose snippet does
-not match the file is not a finding — re-derive it or drop it. Toda causa en memoria
-durable trae fichero+patrón+nº de coincidencias con n>0 (LL-414); sin el trío es
-hipótesis, y la adjudicación entre mecanismos rivales exige una predicción que solo
-el mecanismo nuevo obligue.
+not match the file is not a finding — re-derive it or drop it. Every cause in durable
+memory brings file+pattern+number of matches with n>0 (LL-414); without the trio it is a
+hypothesis, and adjudication between rival mechanisms requires a prediction that only
+the new mechanism compels.
 
 **3b — Independent verifier pass.** When an independent pass is assigned, use a
 reviewer from another family with a **fresh context that has not seen the angle reports**.
@@ -256,9 +256,9 @@ family reappears, the defect is design, not patching: stop, file the remainder a
 numbered backlog and escalate. Stop rule (owner): `gates-ledger` §Cuándo para un
 bucle — the product gate closes the loop, a finding blocks only with an executable
 repro, the budget is two rounds (rev. 2026-09-02; replaces «until zero critical/major»).
-Por cada valor que cruza N capas, un test ejecuta las dos capas de cada junta SIN dobles
-(LL-473); la mutacion a probar borra el ACOPLAMIENTO, y el arreglo solo se acepta cuando
-el RECEPTOR repite la mutacion exacta y ve morir el control.
+For each value crossing N layers, a test executes the two layers of each joint WITHOUT test doubles
+(LL-473); the mutation to test deletes the COUPLING, and the fix is only accepted when
+the RECEIVER repeats the exact mutation and sees the control die.
 
 ## Phase B — In-game validation (step 7)
 
@@ -329,23 +329,23 @@ Watching for these saves rounds:
 - `references/authority-and-loopback.md` — authority/WAL and authenticated loopback audit
 - `references/incremental-rebuild-traps.md` — lost updates, non-idempotent retries and stuck flags
 
-## (added 2026-06-10) Semántica de eventos engine + completitud del plan de remediación
+## (added 2026-06-10) Engine event semantics + remediation plan completeness
 
-Origen: LFGungame GG-01 (2026-06-10) — un wiring de respawn sobre el evento equivocado pasó la pasada completa de esta skill (8 auditores + cross-actor) y 2 reviews externos porque todos verificaron la FIRMA del hook y nadie su SEMÁNTICA. Y F-25 se cayó del plan de remediación sin clasificar (los grupos cubrían 26/27 findings).
+Origin: LFGungame GG-01 (2026-06-10) — a respawn wiring on the wrong event passed this skill's entire pass (8 auditors + cross-actor) and 2 external reviews because everyone verified the hook's SIGNATURE and no one its SEMANTICS. And F-25 fell out of the remediation plan unclassified (groups covered 26/27 findings).
 
-- **Añadir a los prompts de los auditores (todas las dimensiones que toquen hooks)**: para cada override de evento engine (`OnClient*Event`, `EE*`, `On*`), NO basta verificar que la firma existe en vanilla. Verificar el CONTRATO de los parámetros: (1) leer el cuerpo del handler vanilla del evento — su uso interno revela qué entrega (ejemplo canónico: `OnClientRespawnEvent` mata al unconscious "choosing to respawn" → el player es el personaje VIEJO; el nuevo nace en `OnClientNewEvent`); (2) grep de prior art en mods reales del árbol: quién hookea ese evento y para qué. Si el mod auditado usa un evento que ningún prior art usa para ese propósito, es finding (mínimo confianza Media).
+- **Add to auditor prompts (all dimensions touching hooks)**: for each engine event override (`OnClient*Event`, `EE*`, `On*`), verifying that the signature exists in vanilla is NOT enough. Verify parameter CONTRACT: (1) read the body of vanilla event handler — its internal usage reveals what it delivers (canonical example: `OnClientRespawnEvent` kills the unconscious "choosing to respawn" → player is the OLD character; new one is born in `OnClientNewEvent`); (2) grep prior art across real tree mods: who hooks that event and for what purpose. If the audited mod uses an event that no prior art uses for that purpose, it is a finding (Medium confidence minimum).
 
-- **Call-sites vanilla de cada parámetro CONSUMIDO (added 2026-08-15, SP-369)**: el cuerpo del handler no dice lo que el llamante decide no pasar. Para cada parámetro de un hook engine que el override CONSUMA, hacer grep de los call-sites vanilla de ese método y comprobar que realmente lo pasan. Un parámetro con valor por defecto en la firma es una promesa que el llamante puede no cumplir. Si algún call-site lo omite, el override debe derivar el dato por su cuenta (`GetPosition()`, `GetOrientation()`) en vez de fiarse del argumento — o al menos detectar el default y no tomar decisiones destructivas con él. **Corolario de severidad**: cuando la acción ante un fallo de validación es destructiva (`ObjectDelete`, borrar un fichero, disolver un registro), un parámetro no fiable convierte un gate en una trituradora. Los gates que borran deben fallar **cerrados hacia la inacción**, no hacia la destrucción. Origen: SimpleGroup 2026-08-15 — un override de `OnPlacementComplete` validaba territorio con `position`; el call-site vanilla que cava el huerto con pala calculaba la posición y llamaba al hook solo con el player, el override recibía `(0,0,0)` y hacía `ObjectDelete`.
-- **Checklist de completitud del plan (step 2, al procesar findings)**: si la auditoría produjo N findings y el plan los clasifica en grupos, verificar mecánicamente que |unión de grupos| == N (lista de IDs, no de memoria). Un finding sin grupo = finding perdido (caso real: F-25).
+- **Vanilla call-sites for each CONSUMED parameter (added 2026-08-15, SP-369)**: the handler body does not tell what caller chooses not to pass. For each parameter of an engine hook that override CONSUMES, grep vanilla call-sites of that method and verify they actually pass it. A parameter with a default value in signature is a promise caller might not keep. If any call-site omits it, override must derive the data on its own (`GetPosition()`, `GetOrientation()`) instead of trusting the argument — or at least detect default and not make destructive decisions with it. **Severity corollary**: when action upon validation failure is destructive (`ObjectDelete`, deleting a file, dissolving a record), an unreliable parameter turns a gate into a shredder. Gates that delete must fail **closed toward inaction**, not toward destruction. Origin: SimpleGroup 2026-08-15 — an `OnPlacementComplete` override validated territory with `position`; vanilla call-site digging garden plot with shovel computed position and called hook with only player, override received `(0,0,0)` and called `ObjectDelete`.
+- **Plan completeness checklist (step 2, when processing findings)**: if audit produced N findings and plan classifies them into groups, mechanically verify that |union of groups| == N (list of IDs, not from memory). A finding without group = lost finding (real case: F-25).
 
-## (added 2026-06-11) Triage de producción: artefacto desplegado, atribución de camino, gates con nombre mentiroso, spawn de auditores
+## (added 2026-06-11) Production triage: deployed artifact, path attribution, lying-named gates, auditor spawn
 
-Origen: LF_VStorage 2026-06-11 (5 bugs de producción; auditoría dual Claude+Codex; ver LL-143/LL-144).
+Origin: LF_VStorage 2026-06-11 (5 production bugs; dual Claude+Codex audit; see LL-143/LL-144).
 
-- **Artefacto desplegado ≠ source (preludio de Step 1 cuando el trigger es un bug de PRODUCCIÓN)**: si el código auditado se distribuye empaquetado (PBO/build), comparar mtime del artefacto vs mtime de los archivos de los fixes relevantes Y sondear el INTERIOR del artefacto (string-probe de classnames sobre el binario, sin desempaquetar) ANTES de root-causear contra source. Declarar la deriva como finding propio. Caso: PBO 28-may sin el CodeLockBridge del 01-jun — 2 de 5 bugs eran parcialmente deployment drift.
-- **Atribución de camino en evidencia de logs**: una línea de log que "prueba que X funciona" se atribuye al camino emisor (shutdown síncrono vs hook de acción vs scan periódico) antes de clasificar parcial-vs-roto. Caso: "MMG virtualiza" venía SOLO de OnMissionFinish; cero actividad del camino de runtime en toda la sesión.
-- **Gates con nombre mentiroso (añadir a los prompts de los auditores)**: para cada función-gate de un trigger (HasX/CanY/IsZ), pegar y leer el CUERPO — no aceptar el nombre como evidencia de cobertura. Caso: `HasCargoOrAttachments` sin ningún chequeo de attachments → todo el almacenamiento por slots invisible para los 4 triggers; lo pasaron por alto 9 auditores + cross-actor y lo destapó el pushback del usuario.
-- **Spawn de auditores (Step 2, operativo)**: los agentes background auto-deniegan permission prompts fuera del cwd → lanzar los auditores en FOREGROUND, todos en un solo turno (paralelos). Caso: el agente de checks mecánicos rebotó en background con PERMISSION-FAIL.
+- **Deployed artifact ≠ source (prelude to Step 1 when trigger is a PRODUCTION bug)**: if audited code is distributed packaged (PBO/build), compare artifact mtime vs relevant fix files mtime AND probe INSIDE artifact (string-probe classnames on binary, without unpacking) BEFORE root-causing against source. Declare drift as its own finding. Case: PBO 28-May without 01-Jun CodeLockBridge — 2 of 5 bugs were partially deployment drift.
+- **Path attribution in log evidence**: a log line that "proves X works" is attributed to emitting path (synchronous shutdown vs action hook vs periodic scan) before classifying partial-vs-broken. Case: "MMG virtualizes" came ONLY from OnMissionFinish; zero runtime path activity in entire session.
+- **Lying-named gates (add to auditor prompts)**: for each trigger gate function (HasX/CanY/IsZ), paste and read BODY — do not accept name as evidence of coverage. Case: `HasCargoOrAttachments` without any attachments check → all slot storage invisible to all 4 triggers; missed by 9 auditors + cross-actor and uncovered by user pushback.
+- **Auditor spawn (Step 2, operational)**: background agents auto-deny permission prompts outside cwd → launch auditors in FOREGROUND, all in a single turn (parallel). Case: mechanical checks agent bounced in background with PERMISSION-FAIL.
 
 ## (added 2026-07-05) Super-chain verification is a FULL-ANCESTRY walk, not a leaf check
 
@@ -415,179 +415,179 @@ touch, not just the happy path. Origin: a reorder of a degraded-partial handler 
 adversarial verify pass (Step 3/4) on the CHANGED handler, because an apply can regress worse
 than the finding.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so they arrive via trigger instead
+of relying on someone remembering to look for them. Each rule cites its originating `LL-NNN`;
+the complete entry (symptom, origin, evidence) lives there.
 
-- **LL-045** — Acota toda afirmación de no-causalidad al tamaño, versión, fixture y condiciones donde se verificó. No promociones «X no importa» como conclusión universal si el corpus no cubre otros regímenes.
-- **LL-139** — Haz que todo fake/stub remoto emita los mismos tipos que el wire real, no solo valores equivalentes. No uses `is True`/`is False` con datos serializados; prueba explícitamente `0/1`, bool y valores ausentes según contrato. La fixture compone la petición como la compone el productor, nunca la más completa «por comodidad» (LL-469): ante defecto in-game con suite verde, buscar primero el test que ya cubría el caso y comparar entradas campo a campo.
-- **LL-140** — Verifica toda exclusión de recurso con dos adquisiciones reales en el SO objetivo y exige que la segunda falle. Inspecciona defaults de socket, file-sharing y mutex de la stdlib; configura el lock fail-closed.
-- **LL-190** — Para todo verificador que afirme deleted/moved/repaired/restored, exige un count afectado mayor que cero o un pre-check independiente que demuestre que no había trabajo. No aceptes `{ok:true, count:0}` como prueba por sí sola.
+- **LL-045** — Bound every claim of non-causality to the size, version, fixture, and conditions where verified. Do not promote "X does not matter" as a universal conclusion if the corpus does not cover other regimes.
+- **LL-139** — Make every remote fake/stub emit the same types as the real wire, not just equivalent values. Do not use `is True`/`is False` with serialized data; explicitly test `0/1`, bool, and missing values according to contract. The fixture composes request as producer composes it, never the most complete one "for convenience" (LL-469): facing in-game defect with green suite, first look for test that already covered case and compare inputs field by field.
+- **LL-140** — Verify every resource exclusion with two real acquisitions on target OS and require the second to fail. Inspect socket, file-sharing, and stdlib mutex defaults; configure lock fail-closed.
+- **LL-190** — For every verifier asserting deleted/moved/repaired/restored, require an affected count greater than zero or an independent pre-check proving there was no work. Do not accept `{ok:true, count:0}` as proof on its own.
 
 
-## (added 2026-07-29) Dos cosas que la auditoria debe mirar y que ninguna dimension cubre sola
+## (added 2026-07-29) Two things the audit must check and no single dimension covers alone
 
-Origen: GameMaster IG-1 (R21 dual + esta skill, 2026-07-29). El codigo entro con dos veredictos
-UNSOUND independientes y salio con 19 fixes. Los dos hallazgos mas graves de la jornada **no estaban
-en el codigo que se venia a auditar**: estaban en los fixes escritos ese mismo dia. Ninguno de los
-8 angulos los habria encontrado, porque los 8 angulos miran el sistema, no el parche.
+Origin: GameMaster IG-1 (R21 dual + this skill, 2026-07-29). The code entered with two independent
+UNSOUND verdicts and emerged with 19 fixes. The two most severe findings of the day **were not
+in the code being audited**: they were in the fixes written that very day. None of the
+8 angles would have found them, because all 8 angles look at the system, not the patch.
 
-### 1. Un identificador reutilizado se verifica por su CICLO DE VIDA, no por su igualdad
+### 1. A reused identifier is verified by its LIFECYCLE, not by its equality
 
-`G2` obliga a verificar que el simbolo existe. `LL-222` lo extendio a la semantica de un helper que
-reutilizas. Falta el tercer escalon, que es el que muerde en sistemas con dos procesos: cuando un fix
-usa un identificador emitido por OTRO actor, verificar que existe la igualdad **no basta**; hay que
-verificar **cuanto vive** esa igualdad y **quien reinicia el contador**.
+`G2` requires verifying that the symbol exists. `LL-222` extended it to the semantics of a helper you
+reuse. Missing is the third step, which is the one that bites in two-process systems: when a fix
+uses an identifier emitted by ANOTHER actor, verifying that equality exists **is not enough**; one must
+verify **how long** that equality lives and **who resets the counter**.
 
-Caso real: para borrar una entidad huerfana se reutilizo el `command_id` que devuelve el enqueue,
-tras verificar en el codigo del servidor que `object_id == command.id` — cierto, citado, con
-`path:line`. Lo que no se verifico: el emisor de esos ids **reinicia su contador en cada arranque**
-(`self._next_id = 1`) y se auto-reapea por idle a los 30 min, mientras el mapa que los indexa al otro
-lado **no se limpia nunca** mientras viva el proceso host. Ids reciclados ⇒ el borrado "compensatorio"
-apunta a una entidad de otra sesion. Un fix pensado para no dejar basura podia destruir trabajo en curso.
+Real case: to delete an orphaned entity, `command_id` returned by enqueue was reused,
+after verifying in server code that `object_id == command.id` — true, cited, with
+`path:line`. What was not verified: issuer of those IDs **resets its counter on every startup**
+(`self._next_id = 1`) and auto-reaps on idle at 30 min, while map indexing them on other
+side **is never cleared** as long as host process lives. Recycled IDs ⇒ "compensatory" deletion
+points to an entity from another session. A fix intended to leave no garbage could destroy work in progress.
 
-**Preguntas obligatorias antes de aceptar un id ajeno como clave de una operacion destructiva**:
-quien lo genera y con que contador · ese contador se reinicia (proceso, sesion, mision, reboot) ·
-quien mantiene el mapa que lo resuelve y cuando lo limpia · pueden desincronizarse esos dos ciclos de
-vida · que pasa si el id ya no significa lo que significaba. Si alguna no tiene respuesta citada,
-**la operacion destructiva no se hace**: registrar y reportar, nunca borrar a ciegas.
-Un fixture nunca asigna campos de propiedad (LL-446): grep de asignaciones a `owner_*` en
-helpers debe dar cero; el unico camino a dueno en tests es la operacion del producto con
-lease real.
+**Mandatory questions before accepting a foreign ID as key for a destructive operation**:
+who generates it and with which counter · does that counter reset (process, session, mission, reboot) ·
+who maintains map resolving it and when is it cleared · can those two lifecycles get
+desynchronized · what happens if ID no longer means what it meant. If any lacks a cited answer,
+**the destructive operation is not performed**: log and report, never delete blindly.
+A fixture never assigns ownership fields (LL-446): grep for assignments to `owner_*` in
+helpers must yield zero; the only path to owner in tests is product operation with
+real lease.
 
-Corolario del mismo caso: comprobar tambien el **orden de ejecucion** en el otro actor. Alli, un
-`spawn` siempre se difiere a una cola y un `delete` de un lote sin spawn se despacha inmediato, asi
-que la compensacion podia adelantar al spawn que pretendia deshacer y crear el huerfano permanente
-que venia a evitar.
+Corollary of same case: also verify **execution order** on other actor. There, a
+`spawn` is always deferred to a queue and a `delete` of a batch without spawn is dispatched immediately, so
+compensation could outrun spawn it intended to undo and create the permanent orphan
+it came to prevent.
 
-### 2. El Step 6 busca INTERACCIONES entre fixes, no solo defectos en cada fix
+### 2. Step 6 looks for INTERACTIONS between fixes, not just defects in each fix
 
-El Step 6 dice "re-run los angulos cuyo codigo cambio mas". Insuficiente tal como suena: invita a
-re-auditar cada fix por separado, y el defecto aparece en el **producto** de dos fixes correctos.
+Step 6 says "re-run angles whose code changed most". Insufficient as it sounds: it invites
+re-auditing each fix separately, and defect appears in the **product** of two correct fixes.
 
-Caso real, dos fixes ambos correctos y ambos con test en rojo probado: (a) "en dry-run no llames al
-sweep" — correcto, el sweep mutaba el mundo en un modo que se anuncia como seguro; (b) "al arrancar,
-garantiza el salto de linea final del ledger" — correcto, un append fusionado hacia perder el contrato
-de una entidad viva. Juntos: la unica reparacion de cola rota vivia DENTRO del sweep, que (a) acababa
-de desactivar en dry-run, y (b) cerraba la linea rota sin descartarla, de modo que el siguiente append
-caia detras de ella y esa linea dejaba de ser la ultima. Resultado: `replay()` lanzaba siempre y el
-ledger quedaba **permanentemente ilegible**. Ningun arranque posterior podia siquiera barrer.
+Real case, two fixes both correct and both with proven failing test: (a) "in dry-run do not call
+sweep" — correct, sweep mutated the world in a mode advertised as safe; (b) "on startup,
+guarantee trailing newline on ledger" — correct, a merged append caused loss of contract
+for a live entity. Together: only broken-tail repair lived INSIDE sweep, which (a) had just
+disabled in dry-run, and (b) closed broken line without discarding it, so next append
+fell behind it and that line ceased being last. Result: `replay()` always raised and
+ledger remained **permanently unreadable**. No subsequent startup could even sweep.
 
-**Anadir al Step 6, explicitamente**: por cada par de fixes de la tanda, preguntar si uno **desactiva
-un camino del que el otro depende**. Sobre todo cuando un fix anade un guard (`if not X: ...`) y otro
-toca el recurso que ese camino reparaba o limpiaba. Enumerar los pares mecanicamente si la tanda pasa
-de cuatro fixes; el par culpable rara vez es el que uno sospecha.
+**Add to Step 6, explicitly**: for each pair of fixes in batch, ask if one **disables
+a path that the other depends on**. Especially when one fix adds a guard (`if not X: ...`) and another
+touches the resource that path repaired or cleaned. Enumerate pairs mechanically if batch exceeds
+four fixes; guilty pair is rarely the one suspected.
 
-**Y usar mutantes en el Step 6, no solo tests verdes.** En este caso la re-auditoria con mutantes
-mato 12 de 14 y los 2 supervivientes eran precisamente tests que "probaban" un fix sin poder
-distinguirlo de su ausencia. Un test que pasa con y sin el fix no es cobertura: es decorado.
-El control positivo de un oraculo es el artefacto REAL por la ruta completa load→evaluate,
-con mutantes como ficheros (LL-438); lo sintetico en memoria solo mide consistencia del autor.
-## (SP-367, added 2026-08-07) Cuando el arbol auditado es OUTPUT de un generador, el Step 5 no edita el arbol
+**And use mutants in Step 6, not just green tests.** In this case re-audit with mutants
+killed 12 of 14 and the 2 survivors were precisely tests that "tested" a fix without being
+able to distinguish it from its absence. A test that passes with and without fix is not coverage: it is decoration.
+The positive control of an oracle is the REAL artifact along full load→evaluate path,
+with mutants as files (LL-438); synthetic in-memory mocks only measure author consistency.
+## (SP-367, added 2026-08-07) When audited tree is OUTPUT of a generator, Step 5 does not edit the tree
 
-Origen: LFPowerGrid F4-S2 (2026-08-07). La auditoria produjo 3 fixes de 3 lineas dentro de un
-delta de 24. Aplicarlos parecia trivial. No lo era: el arbol candidato era el output de un
-transformer fail-closed con manifiesto de arbol y contrato pineado por SHA-256, y las lineas a
-tocar eran literales Python suyos, gateados por conteos exactos (`count('"key"') != 2 -> fail`).
-Editar el arbol habria roto el manifiesto y hecho el fix irreproducible.
+Origin: LFPowerGrid F4-S2 (2026-08-07). Audit produced 3 fixes of 3 lines within a
+delta of 24. Applying them seemed trivial. It was not: candidate tree was output of a
+fail-closed transformer with tree manifest and contract pinned by SHA-256, and lines to
+touch were its Python literals, gated by exact counts (`count('"key"') != 2 -> fail`).
+Editing tree would have broken manifest and made fix irreproducible.
 
-**Anadir al Step 1 (pre-checks mecanicos), como pregunta cero**: antes de nada, determinar si el
-arbol auditado es output de una herramienta (transformer, codegen, build, migracion) con
-manifiesto, contrato o hashes pineados. Buscar `*-receipt.json`, `contract*.json`,
-`*manifest*.json` junto al arbol, y un `--verify` en la herramienta que lo produjo. Si lo hay, el
-arbol NO es la superficie de edicion.
+**Add to Step 1 (mechanical pre-checks), as question zero**: first of all, determine if
+audited tree is output of a tool (transformer, codegen, build, migration) with
+manifest, contract, or pinned hashes. Look for `*-receipt.json`, `contract*.json`,
+`*manifest*.json` alongside tree, and a `--verify` in tool that produced it. If present, the
+tree is NOT the edit surface.
 
 **Consecuencias, en orden**:
 
-1. **El fix se aplica al literal del generador**, no al artefacto. Despues: regenerar el contrato
-   y su SHA, re-correr `analyze -> apply -> verify` desde un arbol limpio, y re-sellar el
-   artefacto (PBO/paquete). El artefacto anterior se conserva aparte como evidencia.
-2. **Re-anclar los gates es el modo de fallo que esta skill existe para evitar.** Un gate que se
-   toca para que acepte tu fix es un gate aflojado. Regla: re-anclar SIEMPRE mas estricto (dos
-   conteos exactos de 1 en vez de un conteo de 2), anadir un gate de no-regresion por cada
-   comprobacion que el fix elimina, y **probar en rojo cada gate tocado el mismo dia** — tamperar
-   el literal, correr la herramienta, exigir exit != 0 con el token esperado, restaurar y
-   verificar que el restore es byte-identico.
-3. **Decir el coste ANTES de que el usuario apruebe el alcance de fixes.** El coste real no es
-   "editar N lineas": es contrato + SHA + re-corrida + re-sellado + posible re-medicion. Cambia
-   que findings merecen arreglarse. En el caso origen, dos de los cuatro fixes aprobados cambiaron
-   de forma al conocerse el coste, y uno resulto inaplicable.
-4. **Un finding cuyo fix exigiria tocar una region pineada por hash en el contrato no se arregla.**
-   Se documenta, o se convierte en nota de procedimiento. En el caso origen, el cuerpo reubicado
-   era byte-identico por diseno y estaba pineado: el hallazgo "el hook de debug quedo duplicado en
-   dos ficheros y el tester puede editar el que no compila" se cerro con una linea en el
-   procedimiento de test, no con codigo.
+1. **The fix is applied to generator literal**, not artifact. Next: regenerate contract
+   and its SHA, re-run `analyze -> apply -> verify` from clean tree, and re-seal
+   artifact (PBO/package). Previous artifact is preserved separately as evidence.
+2. **Re-anchoring gates is the failure mode this skill exists to prevent.** A gate that is
+   touched so it accepts your fix is a loosened gate. Rule: ALWAYS re-anchor stricter (two
+   exact counts of 1 instead of count of 2), add a non-regression gate for each
+   check the fix removes, and **test every touched gate in red on the same day** — tamper
+   the literal, run tool, require exit != 0 with expected token, restore, and
+   verify that restore is byte-identical.
+3. **State cost BEFORE user approves scope of fixes.** Real cost is not
+   "editing N lines": it is contract + SHA + re-run + re-sealing + possible re-measurement. It changes
+   which findings are worth fixing. In origin case, two of four approved fixes changed
+   shape once cost became known, and one became inapplicable.
+4. **A finding whose fix would require touching a hash-pinned region in contract is not fixed.**
+   It is documented, or turned into a procedural note. In origin case, relocated body
+   was byte-identical by design and pinned: finding "debug hook was left duplicated in
+   two files and tester may edit the one that does not compile" was closed with a line in
+   test procedure, not code.
 
-### Corolario para el Step 3a: una cita correcta puede no probar lo que se le pide
+### Corollary for Step 3a: a correct citation may not prove what is asked of it
 
-Un auditor cito un test oficial de vanilla como prueba de que una API era sincrona: el test medi­a
-un contador antes y despues de la llamada y afirmaba `== 1` en la sentencia siguiente. La cita era
-literal y exacta. Pero el hermano de esa API, **documentado como asincrono**, pasaba el mismo
-assert unas lineas mas abajo. El test no discriminaba, asi que no probaba nada sobre sincronia.
+An auditor cited an official vanilla test as proof that an API was synchronous: test measured
+a counter before and after call and asserted `== 1` on next statement. The citation was
+literal and exact. But sibling of that API, **documented as asynchronous**, passed the same
+assert a few lines down. Test did not discriminate, so it proved nothing about synchrony.
 
-**Regla**: antes de aceptar un test, assert o invariante de terceros como prueba de la propiedad
-P, localizar el caso que NO tiene P y comprobar que falla ese mismo assert. Si el control negativo
-pasa, la evidencia no discrimina — es compatible con la conclusion, no la sostiene. Es el mismo
-eje que "un gate que no puede ponerse en rojo no es un gate", aplicado a evidencia ajena en vez de
-a gates propios. Verificar que la cita existe (`G2`) es el primer escalon; verificar que la cita
-DISCRIMINA es el segundo, y es el que se salta.
+**Rule**: before accepting a third-party test, assert, or invariant as proof of property
+P, locate case that DOES NOT have P and verify that same assert fails. If negative control
+passes, evidence does not discriminate — it is compatible with conclusion, does not support it. It is same
+axis as "a gate that cannot be turned red is not a gate", applied to third-party evidence instead of
+own gates. Verifying citation exists (`G2`) is first rung; verifying citation
+DISCRIMINATES is second, and is the one skipped.
 
-### Corolario hermano: el control se calibra al PEOR caso real, no a uno comodo (LL-348)
+### Sibling corollary: control is calibrated to WORST real case, not a convenient one (LL-348)
 
-El corolario anterior cubre el control que no discrimina. Este cubre el que discrimina pero en
-el rango equivocado.
+Previous corollary covers control that does not discriminate. This one covers one that discriminates but in
+the wrong range.
 
-Un barrido de 18 ficheros buscaba un defecto conocido —una linea reescrita dejada al lado de la
-vieja— midiendo prefijo comun `>= 55` caracteres entre lineas vecinas. Dio **0**. Llevaba control
-positivo, y el control estaba plantado en un par que compartia **77**: paso en verde. El unico
-caso real dificil compartia **~32** antes de divergir, asi que la sonda no lo habria encontrado
-jamas. Se arreglo porque un revisor externo lo nombro, no porque el barrido lo detectara.
+A sweep of 18 files searched for a known defect — a rewritten line left alongside the
+old one — measuring common prefix `>= 55` characters between neighboring lines. It yielded **0**. It carried positive
+control, and control was planted on a pair sharing **77**: passed green. The only
+difficult real case shared **~32** before diverging, so probe would not have found it
+ever. It was fixed because external reviewer named it, not because sweep detected it.
 
-Bajar el umbral tampoco era la respuesta: a 25 salieron 27 hits, casi todos repeticion legitima.
-**El umbral no era el problema; la magnitud medida lo era.** La sonda buena mide *similitud* sobre
-los vecinos de las lineas que el cambio ANADIO —el defecto solo existe donde aterrizo algo— y su
-control se planta en los casos reales.
+Lowering threshold was not answer either: at 25 there were 27 hits, nearly all legitimate repetition.
+**Threshold was not problem; measured magnitude was.** The good probe measures *similarity* over
+neighbors of lines that change ADDED — defect only exists where something landed — and its
+control is planted in real cases.
 
-**Regla**: un control positivo responde «¿sabe encontrar algo?», y esa no es la pregunta; la
-pregunta es «¿sabe encontrar ESTO?». Plantalo en el peor caso real conocido. Si aun no hay
-ninguno, declara hasta que dureza esta demostrada la cobertura —«0 restantes, verificado hasta
-similitud 0,60»— en vez de decir «0 restantes» a secas. Y si al mover el umbral el resultado
-salta de 0 a decenas de falsos positivos sin pasar por un rango util, para: estas midiendo la
-magnitud equivocada.
+**Rule**: a positive control answers "can it find something?", and that is not the question; the
+question is "can it find THIS?". Plant it in worst known real case. If there is none
+yet, declare up to what toughness coverage is demonstrated — "0 remaining, verified up to
+similarity 0.60" — instead of saying "0 remaining" point-blank. And if moving threshold causes result
+to jump from 0 to dozens of false positives without passing through useful range, stop: you are measuring
+the wrong magnitude.
 
-**Senal barata**: si el control positivo lo escribiste tu y el defecto lo encontro otro,
-comprueba si tu control habria cazado el suyo.
+**Cheap signal**: if you wrote positive control and someone else found defect,
+check whether your control would have caught theirs.
 
-### Corolario tercero: un control que hereda la convencion del instrumento nace ciego (LL-347)
+### Third corollary: a control that inherits the instrument's convention is born blind (LL-347)
 
-Los dos anteriores cubren el control que no discrimina y el que discrimina fuera de rango. Este
-cubre el que discrimina perfectamente **dentro del punto ciego que se pretende medir**.
+Previous two cover control that does not discriminate and one discriminating out of range. This one
+covers one that discriminates perfectly **inside the blind spot intended to be measured**.
 
-Un gate comprobaba que unos proxies estuvieran rotados 180 grados sobre el eje vertical. Tenia
-control negativo y estaba bien pensado: generaba un modelo rotado 180 grados sobre un eje
-*horizontal* y exigia que el gate lo marcase en rojo. Lo marcaba. Gate VERDE sobre el artefacto
-bueno, negativo ROJO, y el resultado en juego estaba **mal** — las armas habian girado sobre la
+A gate checked that proxies were rotated 180 degrees around vertical axis. It had
+negative control and was well thought out: generated a model rotated 180 degrees around a
+*horizontal* axis and required gate to flag it in red. It did. Gate GREEN on good
+artifact, negative RED, and result in game was **wrong** — weapons had rotated around
 horizontal.
 
-La causa: el generador del control aplicaba `R_new = Ry(180) * R_old`, multiplicando por la
-IZQUIERDA, y la funcion que deriva el frame devuelve los ejes como filas en coordenadas de mundo.
-Multiplicar por la izquierda niega filas, o sea rota sobre el eje **propio del proxy**, no sobre el
-del mundo. Medido: el eje local Y de esos proxies apuntaba a `(1.0, -0.001, 0.006)` — la X del
-mundo. **El control usaba la misma convencion equivocada que el gate**, asi que confirmaba la
-convencion en vez de ponerla a prueba.
+Cause: control generator applied `R_new = Ry(180) * R_old`, multiplying from the
+LEFT, and function deriving frame returns axes as rows in world coordinates.
+Multiplying from left negates rows, meaning it rotates around proxy's **own axis**, not around
+world's. Measured: local Y axis of those proxies pointed to `(1.0, -0.001, 0.006)` — world's X.
+**The control used the same mistaken convention as the gate**, so it confirmed
+convention instead of testing it.
 
-**Regla**: cuando lo que puede estar mal es una CONVENCION (orden de multiplicacion, filas contra
-columnas, marco local contra mundo, orden de ejes, endianness, base 0 contra base 1), el control no
-puede construirse con el mismo codigo ni la misma convencion que el instrumento. Se construye
-desde fuera: un artefacto cuyo valor esperado se conoce por otra via —una medida a mano, un fichero
-de referencia ajeno, un marcador asimetrico visible— y se compara contra eso. Un control que
-comparte el aparato del gate solo demuestra que el aparato es consistente consigo mismo.
+**Rule**: when what might be wrong is a CONVENTION (multiplication order, rows versus
+columns, local frame versus world, axis order, endianness, 0-based versus 1-based), control cannot
+be built with same code or same convention as instrument. It is built
+from outside: an artifact whose expected value is known via another means — a manual measurement, an external
+reference file, a visible asymmetrical marker — and compared against that. A control that
+shares gate apparatus only proves that apparatus is self-consistent.
 
-**Senal barata**: si el control y el instrumento comparten funcion, modulo o formula, no es un
-control independiente. Y si el gate sale verde y el resultado observable sale mal, sospecha de la
-convencion antes que del umbral.
+**Cheap signal**: if control and instrument share function, module, or formula, it is not an
+independent control. And if gate comes out green and observable result comes out wrong, suspect
+convention before threshold.
 
 ## (added 2026-07-28) Two DayZ persistence facts a Step-1 check must assume, not discover
 

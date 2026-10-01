@@ -11,90 +11,90 @@ description: >
   diseño, ver "Qué NO resuelve ARDY" más abajo.
 ---
 
-# ARDY — motion generation en tiempo real (NVIDIA)
+# ARDY — real-time motion generation (NVIDIA)
 
-## Qué NO resuelve ARDY (leer antes de invertir tiempo)
+## What ARDY does NOT solve (read before investing time)
 
-El objetivo de esta skill es **locomoción de cuerpo completo del survivor** (correr, saltar,
-vaultear, scene traversal), NO animación de armas. El bottleneck real del grip de arma en DayZ
-es **parity geométrica** entre el modelo del arma y el `.anm` de referencia sobre
-`Weapon_Root`/`RightHand_Dummy` (verificado in-game, proyecto A6_SR2M, 2026-06-17/23) — ARDY
-opera sobre un esqueleto de cuerpo completo (~27 huesos "core") con control de manos como
-posición de end-effector, sin ningún concepto de geometría de objeto sostenido, dedos
-individuales, o el sistema ASI/IK de DayZ. Traer ARDY a un problema de weapon-grip sería
-resolver la capa equivocada. Detalle completo y comparación con 6 herramientas más:
+The goal of this skill is **survivor full-body locomotion** (running, jumping,
+vaulting, scene traversal), NOT weapon animation. The actual weapon grip bottleneck in DayZ
+is **geometric parity** between the weapon model and the reference `.anm` on
+`Weapon_Root`/`RightHand_Dummy` (verified in-game, A6_SR2M project, 2026-06-17/23) — ARDY
+operates on a full-body skeleton (~27 "core" bones) with hand control as
+end-effector position, without any concept of held object geometry, individual
+fingers, or the DayZ ASI/IK system. Bringing ARDY to a weapon-grip problem would be
+solving the wrong layer. Full detail and comparison with 6 more tools:
 `<knowledge-notes>/ai-3d-pipeline/stage-05-animation.md`.
 
-## Qué es (verificado contra research.nvidia.com/labs/sil/projects/ardy/ y
-## github.com/nv-tlabs/ardy — no fiar del vídeo/marketing, solo de la fuente primaria)
+## What it is (verified against research.nvidia.com/labs/sil/projects/ardy/ and
+## github.com/nv-tlabs/ardy — do not trust video/marketing, only primary source)
 
 **ARDY** = "Autoregressive Diffusion with Hybrid Representation for Interactive Human Motion
-Generation" (NVIDIA, research lab SIL). Denoiser transformer autoregresivo de dos etapas:
-etapa 1 predice root motion global, etapa 2 predice body motion condicionado al root. Soporta
-constraints cinemáticos sparse en tiempo/joints. Control en tiempo real: text prompts online,
+Generation" (NVIDIA, research lab SIL). Two-stage autoregressive transformer denoiser:
+stage 1 predicts global root motion, stage 2 predicts body motion conditioned on root. Supports
+sparse kinematic constraints in time/joints. Real-time control: online text prompts,
 root trajectories/waypoints, full-body keyframes, end-effector joint positions/rotations, mouse
 waypoint editing, keyboard velocity commands, long-horizon goals.
 
 - Repo: https://github.com/nv-tlabs/ardy
 - Landing/paper: https://research.nvidia.com/labs/sil/projects/ardy/
-- Modelos: https://huggingface.co/collections/nvidia/ardy
-- Licencia: Apache-2.0 (código); pesos bajo licencia separada **"NVIDIA Open Model"** — revisar
-  términos exactos antes de redistribuir cualquier derivado (no aplica a uso personal de research).
+- Models: https://huggingface.co/collections/nvidia/ardy
+- License: Apache-2.0 (code); weights under separate **"NVIDIA Open Model"** license — review
+  exact terms before redistributing any derivative (does not apply to personal research use).
 
-## Presupuesto de VRAM — leer antes de lanzar nada
+## VRAM budget — read before launching anything
 
-El text encoder solo (Llama-3-8B-Instruct, bf16) ya pide **~14GB**. El total documentado es
-16-18GB mínimo y **~24GB para tiempo real fluido**. La RTX 3090 tiene exactamente 24GB — margen
-mucho más ajustado que cualquier modelo ya validado en esta GPU (TRELLIS2-4B, el más pesado
-probado hasta ahora, tuvo un peak de solo 6.5GB — ver memoria `trellis2-local-setup`). WSL2 añade
-su propio overhead de VRAM encima. Esperar riesgo real de OOM en modo tiempo real.
+The text encoder alone (Llama-3-8B-Instruct, bf16) already asks for **~14GB**. The documented total is
+16-18GB minimum and **~24GB for smooth real time**. The RTX 3090 has exactly 24GB — margin
+much tighter than any model already validated on this GPU (TRELLIS2-4B, the heaviest
+tested so far, had a peak of only 6.5GB — see `trellis2-local-setup` memory). WSL2 adds
+its own VRAM overhead on top. Expect real risk of OOM in real-time mode.
 
-Mitigaciones a probar en orden si hay OOM:
-1. Lanzar `run_text_encoder_server.py` en proceso separado (permite ver su footprint aislado
-   antes de sumar el resto del modelo).
-2. Cerrar cualquier otro proceso que reserve VRAM (navegador con aceleración GPU, otro modelo
-   cargado, etc.) antes de lanzar el demo.
-3. Si no cabe fluido: aceptar generación no-tiempo-real (batched/offline) si el repo lo permite
-   — no confirmado en el README, comprobar `python scripts/run_demo.py --help` al instalar.
+Mitigations to try in order if there is OOM:
+1. Launch `run_text_encoder_server.py` in separate process (allows seeing its isolated footprint
+   before adding the rest of the model).
+2. Close any other process reserving VRAM (browser with GPU acceleration, another loaded
+   model, etc.) before launching demo.
+3. If it does not fit smoothly: accept non-real-time generation (batched/offline) if the repo allows it
+   — not confirmed in README, check `python scripts/run_demo.py --help` upon installing.
 
 ## Setup — WSL2, env conda dedicado
 
-**Usar un env conda NUEVO y SEPARADO, nunca el env `trellis2` existente** — TRELLIS2 fija
-PyTorch 2.6.0 exacto con extensiones compiladas contra esa versión build; mezclar dependencias
-de dos modelos pesados en el mismo env es la vía más rápida a un entorno roto.
+**Use a NEW and SEPARATE conda env, never the existing `trellis2` env** — TRELLIS2 pins
+exact PyTorch 2.6.0 with extensions compiled against that build version; mixing dependencies
+of two heavy models in the same env is the fastest path to a broken environment.
 
 ```bash
-# Dentro de WSL2 Ubuntu-22.04 (mismo Ubuntu ya usado para TRELLIS2)
+# Inside WSL2 Ubuntu-22.04 (same Ubuntu already used for TRELLIS2)
 conda create -n ardy python=3.11 -y
 conda activate ardy
 
-# Instalar PyTorch ANTES que el resto — fijar el índice CUDA a lo que soporte el driver real
-# de esta máquina. El repo usa cu126 (CUDA 12.6) como ejemplo; ANTES de copiar el comando tal
-# cual, comprobar `nvidia-smi` (driver instalado) contra la matriz de compatibilidad CUDA — no
-# asumir que cu126 es correcto sin mirar.
+# Install PyTorch BEFORE the rest — pin CUDA index to what the actual driver of this
+# machine supports. The repo uses cu126 (CUDA 12.6) as example; BEFORE copying the command as
+# is, check `nvidia-smi` (installed driver) against the CUDA compatibility matrix — do not
+# assume that cu126 is correct without checking.
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126
 
-# Instalación completa (incluye demo). Alternativas: `pip install -e .` (solo core, sin demo
-# interactivo — no sirve para este caso de uso) o `pip install -e ".[trt]"` (con TensorRT).
+# Full installation (includes demo). Alternatives: `pip install -e .` (core only, without interactive
+# demo — does not work for this use case) or `pip install -e ".[trt]"` (with TensorRT).
 pip install -e ".[all]"
 ```
 
-Requisitos de build: **CMake ≥3.15 y compilador C++17**. Confirmar que WSL2 los tiene
-(`cmake --version`, `g++ --version`) antes de lanzar el install — si faltan, `sudo apt install
+Build requirements: **CMake ≥3.15 and C++17 compiler**. Confirm that WSL2 has them
+(`cmake --version`, `g++ --version`) before launching install — if missing, `sudo apt install
 cmake build-essential`.
 
-Clonar el repo en la SSD montada (`/mnt/e/...`, mismo patrón que TRELLIS2), no en la partición
-`C:` de WSL2 — más espacio y las cargas de modelos grandes van más rápido. Si `/mnt/e` no está
-disponible en esta máquina, confirmar con el usuario dónde clonar antes de decidir por defecto.
+Clone the repo on the mounted SSD (`/mnt/e/...`, same pattern as TRELLIS2), not on the WSL2
+`C:` partition — more space and large model loading goes faster. If `/mnt/e` is not
+available on this machine, confirm with the user where to clone before deciding by default.
 
-### Pesos del modelo — descarga automática, pero requiere gate de HuggingFace
+### Model weights — automatic download, but requires HuggingFace gate
 
-**No hace falta descargar pesos a mano** — el repo los baja automáticamente al usar el demo.
-Modelos disponibles: `ARDY-Core-RP-20FPS-Horizon40/8`, `ARDY-G1-RP-25FPS-Horizon52/8`.
+**No need to download weights manually** — the repo downloads them automatically when using the demo.
+Available models: `ARDY-Core-RP-20FPS-Horizon40/8`, `ARDY-G1-RP-25FPS-Horizon52/8`.
 
-El text encoder usa `meta-llama/Meta-Llama-3-8B-Instruct`, que es un modelo **gated** en
-HuggingFace — requiere solicitar acceso en su página del modelo (aprobación normalmente rápida
-pero no instantánea, dejar margen) y luego autenticar:
+The text encoder uses `meta-llama/Meta-Llama-3-8B-Instruct`, which is a **gated** model on
+HuggingFace — requires requesting access on its model page (approval usually fast
+but not instantaneous, allow margin) and then authenticating:
 
 ```bash
 hf auth login
@@ -102,63 +102,63 @@ hf auth login
 # echo "hf_..." > ~/.cache/huggingface/token
 ```
 
-## Lanzar el demo interactivo
+## Launch the interactive demo
 
 ```bash
 python scripts/run_demo.py
 ```
 
-Opcional — separar el text encoder en su propio proceso (recomendado aquí para poder vigilar su
-footprint de VRAM antes de sumar el resto, dado el margen ajustado de la 3090):
+Optional — separate the text encoder into its own process (recommended here to be able to monitor its
+VRAM footprint before adding the rest, given the tight margin of the 3090):
 
 ```bash
 python scripts/run_text_encoder_server.py
 ```
 
-UI en el navegador: **http://localhost:2333** (viewer de visualización en **http://localhost:2334**).
+Browser UI: **http://localhost:2333** (visualization viewer at **http://localhost:2334**).
 
-**[NO VERIFICADO]** El README no confirma un flag explícito para elegir skeleton `core` vs `g1`
-en el propio comando del demo — probablemente se selecciona por config o por qué checkpoint se
-carga. Comprobar al instalar (`python scripts/run_demo.py --help`) antes de asumir un flag.
+**[UNVERIFIED]** The README does not confirm an explicit flag to choose skeleton `core` vs `g1`
+in the demo command itself — probably selected via config or which checkpoint is
+loaded. Check upon installing (`python scripts/run_demo.py --help`) before assuming a flag.
 
-Para locomoción de survivor: usar el skeleton **`core`** (humanoide genérico), NO `g1` — `g1`
-es literalmente el rig del robot bípedo real Unitree G1, no un esqueleto de personaje.
+For survivor locomotion: use the **`core`** skeleton (generic humanoid), NOT `g1` — `g1`
+is literally the rig of the real Unitree G1 bipedal robot, not a character skeleton.
 
-## Qué produce (output)
+## What it produces (output)
 
-Archivos `.npz` con:
-- `posed_joints` — posiciones world-space de joints, shape `[T, J, 3]`
-- rotaciones de joint, local y global
+`.npz` files with:
+- `posed_joints` — world-space joint positions, shape `[T, J, 3]`
+- joint rotations, local and global
 - root positions
 - foot contacts
 
-El skeleton `g1` exporta además un CSV de MuJoCo qpos (formato de simulación robótica — no
-relevante para el caso de uso de locomoción de personaje, ignorar si aparece).
+The `g1` skeleton additionally exports a MuJoCo qpos CSV (robotics simulation format — not
+relevant for character locomotion use case, ignore if it appears).
 
-Salidas por defecto van a la carpeta `outputs/` del repo.
+Default outputs go to the repo's `outputs/` folder.
 
 ## Próximos pasos — integración a DayZ (PLAN, no verificado, no implementar sin gate)
 
-Todo lo de esta sección es diseño, no código probado. Antes de escribir cualquier script de
-retargeting, releer `references/dayz-integration-plan.md` (checklist completo) y las dos notas
-del vault citadas ahí — no asumir que el pipeline descrito aquí funciona tal cual.
+Everything in this section is design, not tested code. Before writing any retargeting
+script, re-read `references/dayz-integration-plan.md` (complete checklist) and the two vault
+notes cited there — do not assume that the pipeline described here works as-is.
 
-Resumen de la cadena pendiente: `.npz` (world-space joints, esqueleto "core" ~27 huesos) →
-importar a Blender → **retarget al `OFP2_ManSkeleton` del player DayZ** (mismo tipo de problema
-que ya afronta la skill `mixamo-retarget`, marcada EXPERIMENTAL — esqueleto externo genérico
-hacia el esqueleto específico de DayZ, sin mapping oficial de ARDY hacia ningún formato de
-videojuego) → exportar `.txa` → pipeline existente de `dayz-animation-pipeline` → `.anm` →
-gate in-game.
+Summary of the pending chain: `.npz` (world-space joints, "core" skeleton ~27 bones) →
+import into Blender → **retarget to DayZ player `OFP2_ManSkeleton`** (same type of problem
+already faced by `mixamo-retarget` skill, marked EXPERIMENTAL — generic external skeleton
+toward specific DayZ skeleton, without official ARDY mapping to any video
+game format) → export `.txa` → existing `dayz-animation-pipeline` pipeline → `.anm` →
+in-game gate.
 
-Ningún tramo de esa cadena está probado. Ver `references/dayz-integration-plan.md` para el
-detalle y las preguntas abiertas antes de intentarlo.
+No part of that chain is tested. See `references/dayz-integration-plan.md` for
+detail and open questions before attempting it.
 
 ## Referencias
 
-- Research y veredicto de aplicabilidad completo (ARDY + 6 herramientas más comparadas):
+- Research and full applicability verdict (ARDY + 6 more tools compared):
   `<knowledge-notes>/ai-3d-pipeline/stage-05-animation.md`
-- Sistema real de animación DayZ (bones, ASI, skeleton map, grip mechanism verificado in-game):
+- Actual DayZ animation system (bones, ASI, skeleton map, grip mechanism verified in-game):
   `<knowledge-notes>/dayz-animations-creatures-weapons.md`
-- Setup WSL2 + GPU pesada ya validado, mismos gotchas de HF-gated models: memoria
+- WSL2 + heavy GPU setup already validated, same gotchas of HF-gated models: memory
   `trellis2-local-setup`
-- Plan de integración DayZ (no verificado): `references/dayz-integration-plan.md`
+- DayZ integration plan (unverified): `references/dayz-integration-plan.md`

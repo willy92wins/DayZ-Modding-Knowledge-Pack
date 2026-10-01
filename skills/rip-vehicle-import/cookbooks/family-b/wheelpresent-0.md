@@ -1,6 +1,6 @@
 # Cookbook B — wheelPresent=0
 
-> Familia B. Este cuerpo se movió sin reescritura en CAMBIO-1; las notas de estado y las rutas permanecen tal como estaban en el origen.
+> Family B. This body was moved without rewriting in CAMBIO-1; status notes and paths remain exactly as they were in the origin.
 
 <!-- MOVED-EXACT source="dayz-vehicles/SKILL.md:446" sha256="F95C63380857A0FD89039274C0070BE2874F5D3DED6A63B87AFC125E21CAD788" -->
 3. **Geometry LOD carries named property `class=vehicle` — REQUIRED PARITY (6/6 vanilla wheeled

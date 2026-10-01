@@ -1,92 +1,92 @@
-# Hechos técnicos — referencia DayZ
+# Technical facts — DayZ reference
 
-Notas técnicas verificadas por experiencia o source. Aplican a trabajo con
-modelos `.p3d`, debris, configs, persistencia, integraciones LBmaster, loot.
+Technical notes verified through experience or source. Applies to working with
+`.p3d` models, debris, configs, persistence, LBmaster integrations, loot.
 
-Este archivo se extrajo de CLAUDE.md (2026-05-09) para mantener el archivo
-principal por debajo del sweet spot. Cargar on-demand cuando una tarea toque
-geometría / config / runtime DayZ.
+This file was extracted from CLAUDE.md (2026-05-09) to keep the main
+file below the sweet spot. Load on-demand when a task touches
+DayZ geometry / config / runtime.
 
 ## py3d (KoffeinFlummi MLOD reader)
-- Constructor: `P3D(file)` — NO `P3D.read(file)`.
-- `lod.resolution` → float. Tabla en sección "LODs DayZ".
-- `lod.points[i].coords` → tupla `(x, y, z)`.
-- `face.vertices[i].point.coords` → tupla `(x, y, z)`.
-- `face.vertices[i].normal` → **tupla directa `(x, y, z)`**, NO `.coords`. Confundirlas resulta en fallback silencioso.
-- `lod.facenormals` → **pool global de tuplas `(x, y, z)` indexado por `vertex.normal_index`**, NO un array per-face. Tamaño = `num_facenormals` del header MLOD, **independiente** de `len(lod.faces)`. Cada `Vertex` tiene `point_index` (→ pool `lod.points`) y `normal_index` (→ pool `lod.facenormals`). `face.vertices[i].normal` es property que resuelve `all_normals[normal_index]`.
-- `face.vertices[i].uv` → tupla `(u, v)`.
-- `lod.selections['Name'].points` / `.faces` → subconjuntos por nombre.
+- Constructor: `P3D(file)` — NOT `P3D.read(file)`.
+- `lod.resolution` → float. Table in section "DayZ LODs".
+- `lod.points[i].coords` → tuple `(x, y, z)`.
+- `face.vertices[i].point.coords` → tuple `(x, y, z)`.
+- `face.vertices[i].normal` → **direct tuple `(x, y, z)`**, NOT `.coords`. Confusing them results in silent fallback.
+- `lod.facenormals` → **global pool of `(x, y, z)` tuples indexed by `vertex.normal_index`**, NOT a per-face array. Size = MLOD header `num_facenormals`, **independent** of `len(lod.faces)`. Each `Vertex` has `point_index` (→ `lod.points` pool) and `normal_index` (→ `lod.facenormals` pool). `face.vertices[i].normal` is a property resolving `all_normals[normal_index]`.
+- `face.vertices[i].uv` → tuple `(u, v)`.
+- `lod.selections['Name'].points` / `.faces` → named subsets.
 
-## LODs DayZ — resoluciones canónicas
+## DayZ LODs — canonical resolutions
 
-| LOD | resolution | Notas |
+| LOD | resolution | Notes |
 |---|---|---|
 | Visual | `0.0`, `1.0`, `2.0`, ... | LOD0 = base |
 | ShadowVolume | `10000`, `11000` | |
-| Geometry | `1e13` | colisión física |
+| Geometry | `1e13` | physical collision |
 | Memory | `1e15` | named points |
 | LandContact | `2e15` | |
-| ViewGeometry | **`6e15`** | raycast cursor/actions; sin esto fallan acciones |
-| FireGeometry | **`7e15`** | balas/proyectiles; sin esto las balas atraviesan |
+| ViewGeometry | **`6e15`** | cursor/actions raycast; without this actions fail |
+| FireGeometry | **`7e15`** | bullets/projectiles; without this bullets pass through |
 
-⚠️ **Bug conocido en `dayz-p3d-audit/scripts/audit_p3d.py`:** `classify_lod()` usa valores Arma 3 antiguos (FireGeo=`3e13`, ViewGeo=`7e13`), que NO son los valores DayZ modernos. Ver Pendientes en CLAUDE.md.
+⚠️ **Known bug in `dayz-p3d-audit/scripts/audit_p3d.py`:** `classify_lod()` uses legacy Arma 3 values (FireGeo=`3e13`, ViewGeo=`7e13`), which are NOT modern DayZ values. See Pending in CLAUDE.md.
 
-Verificación: `DZ/gear/camping/wooden_case.p3d` debinarizado → 9 LODs con Visual(1..4) + Geometry(`1e13`) + Memory(`1e15`) + LandContact(`2e15`) + ViewGeo(`6e15`) + FireGeo(`7e15`).
+Verification: `DZ/gear/camping/wooden_case.p3d` debinarized → 9 LODs with Visual(1..4) + Geometry(`1e13`) + Memory(`1e15`) + LandContact(`2e15`) + ViewGeo(`6e15`) + FireGeo(`7e15`).
 
-## Winding & normales (handedness Blender→DayZ) — TEMA CRÍTICO
-Es la causa #1 de fallos al portar modelos de Blender a DayZ. Síntomas sutiles, diagnósticos engañosos. Ya nos lo hemos comido en WallLamp y Crate_Wooden — leer entera antes de tocar cualquier modelo importado.
+## Winding & normals (handedness Blender→DayZ) — CRITICAL TOPIC
+It is the #1 cause of failures when porting models from Blender to DayZ. Subtle symptoms, misleading diagnostics. We already ran into this on WallLamp and Crate_Wooden — read entirely before touching any imported model.
 
 ### Síntomas in-game
-- **La textura solo se ve desde DENTRO del objeto.** El objeto parece "vacío" desde fuera (caso clásico, Visual LOD mal).
-- **Las balas atraviesan el objeto** (winding mal en FireGeo + Geometry → raycast desde fuera no encuentra superficie sólida).
-- **Las acciones no aparecen** o el cursor no detecta el objeto (winding mal en ViewGeo o Geometry).
-- **El jugador puede atravesar el objeto** (Geometry o GeoPhys mal).
-- A veces solo UNO de estos síntomas: el winding puede estar bien en Visual y mal en Geometry, o viceversa. **Verificar cada LOD por separado.**
+- **The texture is only visible from INSIDE the object.** The object looks "empty" from outside (classic case, bad Visual LOD).
+- **Bullets pass through the object** (bad winding in FireGeo + Geometry → raycast from outside finds no solid surface).
+- **Actions do not appear** or cursor does not detect object (bad winding in ViewGeo or Geometry).
+- **The player can walk through the object** (bad Geometry or GeoPhys).
+- Sometimes only ONE of these symptoms: winding may be fine in Visual and bad in Geometry, or vice versa. **Verify each LOD separately.**
 
-### Causa raíz
-La decisión sobre el winding depende del determinante de la transformación de origen (fuente: [`skills/dayz-model-pipeline/SKILL.md`](../skills/dayz-model-pipeline/SKILL.md), Rule 12), con dos casos:
-- **Geometría de autoría Blender**, mediante la rotación propia `x'=x, y'=z, z'=-y` (det=+1): aplicar a todos los vértices y normales de cara en todos los LOD y **NO** invertir el winding. Una rotación det=+1 preserva la handedness.
-- **Geometría procedente de GLB/glTF**, mediante el swap puro `(x,y,z)->(x,z,y)` (det=-1): **SIEMPRE** invertir el orden de vértices de cada cara en cada LOD, salvo los triángulos de proxy, cuyo orden codifica el frame del attachment.
-Nunca supongas cuál de los dos casos aplica: verifica el resultado con `check_face_winding`; debe dar ~0% flipped.
+### Root cause
+The winding decision depends on the determinant of the origin transformation (source: [`skills/dayz-model-pipeline/SKILL.md`](../skills/dayz-model-pipeline/SKILL.md), Rule 12), with two cases:
+- **Blender-authored geometry**, via proper rotation `x'=x, y'=z, z'=-y` (det=+1): apply to all vertices and face normals across all LODs and **DO NOT** invert winding. A det=+1 rotation preserves handedness.
+- **Geometry originating from GLB/glTF**, via pure swap `(x,y,z)->(x,z,y)` (det=-1): **ALWAYS** invert vertex order of each face across each LOD, except proxy triangles, whose order encodes attachment frame.
+Never assume which of the two cases applies: verify result with `check_face_winding`; must yield ~0% flipped.
 
-Esto NO afecta a las normales del pool `lod.facenormals` — siguen apuntando hacia donde apuntaban en Blender. Por eso el modelo *parece* correcto al inspeccionar normales pero no funciona en juego: **lo que importa al motor de raycast/render es el winding, no la normal declarada**.
+This does NOT affect the normals in the `lod.facenormals` pool — they still point where they pointed in Blender. That is why the model *looks* correct when inspecting normals but fails in game: **what matters to the raycast/render engine is the winding, not the declared normal**.
 
-### Fix canónico
-Para autoría Blender con la rotación det=+1, aplica la transformación a vértices y normales de cara y **NO** inviertas el winding. Para una fuente GLB/glTF con el swap det=-1, invierte el orden de vértices con:
+### Canonical fix
+For Blender authorship with det=+1 rotation, apply transformation to vertices and face normals and **DO NOT** invert winding. For a GLB/glTF source with det=-1 swap, invert vertex order with:
 ```python
 import py3d
 with open(p3d_path, 'rb') as f:
     p = py3d.P3D(f)
-for lod in p.lods:                   # TODOS los LODs, no solo Visual
+for lod in p.lods:                   # ALL LODs, not just Visual
     for face in lod.faces:
-        face.vertices.reverse()       # invierte el orden de los corners in-place
+        face.vertices.reverse()       # inverts corner order in-place
 with open(p3d_path, 'wb') as f:
     p.write(f)
 ```
 
-Reglas:
-- Cuando Rule 12 exige invertir el winding (caso GLB/glTF, det=-1), aplica a **todos** los LODs salvo los triángulos de proxy: Visual + ShadowVolume + Geometry + LandContact + ViewGeometry + FireGeometry. Dejar uno fuera produce inconsistencias entre render y colisión.
-- `reverse()` opera in-place sobre la lista de Vertex objects. **NO toca el pool `lod.facenormals`** (es global, indexado por `vertex.normal_index`) ni los `normal_index` — las normales declaradas siguen apuntando al mismo sitio del pool, lo que es correcto.
-- **NO uses el viejo "swap `vertices[1]` y `vertices[2]`"** — funciona solo para tris. Quads y polys mayores requieren `reverse()`.
-- **Aplicación UNIFORME es esencial.** Si saltas algunas faces, el modelo queda con winding mixto, que es PEOR que el modelo flipped al revés: algunas zonas se ven desde fuera, otras desde dentro, render impredecible. **Verificar post-fix con Check B (topología edge-pair).**
+Rules:
+- When Rule 12 requires inverting winding (GLB/glTF case, det=-1), apply to **all** LODs except proxy triangles: Visual + ShadowVolume + Geometry + LandContact + ViewGeometry + FireGeometry. Leaving one out produces inconsistencies between render and collision.
+- `reverse()` operates in-place on the list of Vertex objects. **It does NOT touch the `lod.facenormals` pool** (it is global, indexed by `vertex.normal_index`) or `normal_index` — declared normals still point to the same pool location, which is correct.
+- **DO NOT use the old "swap `vertices[1]` and `vertices[2]`"** — works only for tris. Quads and larger polys require `reverse()`.
+- **UNIFORM application is essential.** If you skip some faces, the model ends up with mixed winding, which is WORSE than an inside-out flipped model: some areas show from outside, others from inside, unpredictable rendering. **Verify post-fix with Check B (edge-pair topology).**
 
 Script: `outputs/flip_winding.py`.
 
-### Verificación y trampas — ver skill `dayz-p3d-audit`
+### Verification and gotchas — see `dayz-p3d-audit` skill
 
-Para verificar winding (Check A diagnóstico, Check B topología edge-pair, Check C
-vs vanilla), trampas conocidas (idempotencia de `flip_winding.py`, Crate_Wooden
-mixed winding tolerado, `face.flags |= 0x20000` no consiguió render a dos caras en Visual LOD
-(quedó transparente in-game; el bit «both sides» sigue en disputa entre `0x20000` y
-`0x00000020` del wiki, y el valor del wiki no se ha probado),
-interacción con `make_double_sided.py`), y checklist completo al importar un
-modelo nuevo de Blender → ver `dayz-p3d-audit/SKILL.md` sección
-**WINDING DIAGNOSTICS — Deep Methodology** (movido 2026-05-04 desde aquí).
+To verify winding (Check A diagnostic, Check B edge-pair topology, Check C
+vs vanilla), known pitfalls (`flip_winding.py` idempotency, Crate_Wooden
+tolerated mixed winding, `face.flags |= 0x20000` failed to achieve double-sided rendering in Visual LOD
+(remained transparent in-game; the "both sides" bit remains disputed between `0x20000` and
+`0x00000020` from the wiki, and the wiki value has not been tested),
+interaction with `make_double_sided.py`), and complete checklist when importing a
+new Blender model → see `dayz-p3d-audit/SKILL.md` section
+**WINDING DIAGNOSTICS — Deep Methodology** (moved 2026-05-04 from here).
 
-## Debris spawn offsets — desde selection centroids del crate, NO bbox del debris
-**Regla:** offset de spawn de cada debris desde el **centroide de la selección con ese nombre dentro del Visual LOD0 del crate principal**. NO usar el bbox del .p3d individual del debris.
+## Debris spawn offsets — from crate selection centroids, NOT debris bbox
+**Rule:** spawn offset of each debris from the **centroid of the selection with that name inside Visual LOD0 of the main crate**. Do NOT use the bbox of the debris individual .p3d.
 
-**Razón:** ambos bboxes pueden diferir varios cm porque Object Builder recentra al exportar/importar el .p3d individual, mientras que la selección nombrada en el crate intacto mantiene la pose original. Usar el bbox individual produce offsets incrustados o desalineados en altura.
+**Reason:** both bboxes may differ by several cm because Object Builder recenters when exporting/importing the individual .p3d, whereas the named selection in the intact crate maintains the original pose. Using the individual bbox produces embedded or height-misaligned offsets.
 
 ```python
 with open(crate_main_p3d, 'rb') as f:
@@ -97,68 +97,68 @@ pts = [p.coords for p in sel.points]
 centroid = (sum(p[0] for p in pts)/len(pts),
             sum(p[1] for p in pts)/len(pts),
             sum(p[2] for p in pts)/len(pts))
-# centroid = offset de spawn del debris correspondiente
+# centroid = spawn offset of the corresponding debris
 ```
 
 ## Single-sided vs double-sided faces
-.p3d exportados de Blender son single-sided por defecto (0 back-twin pairs, `face.flags = 0x0`). Es lo correcto para piezas solo visibles por fuera (laterales, suelo, corners de un crate cerrado).
+.p3d exported from Blender are single-sided by default (0 back-twin pairs, `face.flags = 0x0`). This is correct for parts only visible from the outside (sides, floor, corners of a closed crate).
 
-**Excepción:** planks de los **extremos** (Front/Back) en un crate abierto se ven desde fuera (caja intacta) Y desde dentro (huecos entre planks una vez rota o cuando spawnean separados) → requieren back-twin.
+**Exception:** planks at the **ends** (Front/Back) on an open crate are visible from outside (intact box) AND inside (gaps between planks once broken or when spawning detached) → require back-twin.
 
-`outputs/make_double_sided.py` duplica cada face del Visual LOD con vertex order invertido y normal negada, y extiende las selections para incluir los twins. NO toca Geo/Shadow/Memory (colisión y sombra siguen single-sided, como deben).
+`outputs/make_double_sided.py` duplicates each face of Visual LOD with inverted vertex order and negated normal, and extends selections to include twins. Does NOT touch Geo/Shadow/Memory (collision and shadow remain single-sided, as they should).
 
-**Medido in-game:** poner `face.flags |= 0x20000` en caras single-sided del Visual LOD no
-consiguió render a dos caras: siguieron transparentes. La vía que sí funcionó fue duplicar la
-geometría (double-siding). Esto no establece que DayZ ignore el flag «both sides» en general:
-el bit sigue en disputa (`0x20000` frente a `0x00000020` del wiki), y el valor del wiki no se ha probado.
+**Measured in-game:** setting `face.flags |= 0x20000` on single-sided faces of Visual LOD did not
+achieve two-sided rendering: they remained transparent. The route that did work was duplicating
+geometry (double-siding). This does not establish that DayZ ignores the "both sides" flag in general:
+the bit remains in dispute (`0x20000` versus `0x00000020` from wiki), and wiki value has not been tested.
 
 ## Container_Base custom — requisitos no obvios
-Heredar de `Container_Base` NO basta con declarar `scope = 2; model = ...;`. El objeto resultante no recibe daño ni balas si el config.cpp carece de:
+Inheriting from `Container_Base` is NOT enough by just declaring `scope = 2; model = ...;`. The resulting object takes no damage or bullets if config.cpp lacks:
 
-1. `class Cargo { itemsCargoSize; openable; allowOwnedCargoManipulation; }` — algunos builds no inicializan el objeto como contenedor sin esto.
-2. `class GlobalArmor { class FragGrenade { ... } }` — sin esto el engine puede no registrar impactos de proyectiles.
-3. `healthLevels[] = { {1.0, {"rvmat"}}, ... }` — formato moderno. **NO** usar `healthLevelValues[]` (legacy, rompe DamageSystem silenciosamente).
+1. `class Cargo { itemsCargoSize; openable; allowOwnedCargoManipulation; }` — some builds do not initialize the object as container without this.
+2. `class GlobalArmor { class FragGrenade { ... } }` — without this the engine may not register projectile impacts.
+3. `healthLevels[] = { {1.0, {"rvmat"}}, ... }` — modern format. **DO NOT** use `healthLevelValues[]` (legacy, silently breaks DamageSystem).
 
-**Cajas cerradas sin Cargo del jugador (caso Crate_Wooden):** si el loot se spawnea world-space por `EEKilled` y no usa Cargo, poner `itemsCargoSize[] = {0, 0}`. Mantener `class Cargo` vacía porque Container_Base la necesita para inicializar. Si `{0,0}` da warning RPT, plan B: heredar de `Inventory_Base` y eliminar `class Cargo` entera. Ver Pendientes en CLAUDE.md.
+**Closed crates without player Cargo (Crate_Wooden case):** if loot spawns world-space via `EEKilled` and does not use Cargo, set `itemsCargoSize[] = {0, 0}`. Keep `class Cargo` empty because Container_Base needs it to initialize. If `{0,0}` yields RPT warning, plan B: inherit from `Inventory_Base` and remove entire `class Cargo`. See Pending in CLAUDE.md.
 
-Referencia: vanilla `WoodenCrate` en `DZ/gear/camping/config.cpp` líneas 10074–10210.
+Reference: vanilla `WoodenCrate` in `DZ/gear/camping/config.cpp` lines 10074–10210.
 
-## Física dinámica de items (`ThrowPhysically`)
-**Síntoma:** items spawneados con `CreateObjectEx(name, pos, ECE_CREATEPHYSICS|ECE_UPDATEPATHGRAPH)` + `dBodyApplyImpulse(ent, impulse)` aparecen **frozen en el aire** sin caer.
+## Dynamic item physics (`ThrowPhysically`)
+**Symptom:** items spawned with `CreateObjectEx(name, pos, ECE_CREATEPHYSICS|ECE_UPDATEPATHGRAPH)` + `dBodyApplyImpulse(ent, impulse)` appear **frozen in mid-air** without falling.
 
-**Causa:** para items con `simulation = "inventoryItem"` + `physLayer = "item"`, `ECE_CREATEPHYSICS` crea la **shape de colisión** pero deja el rigid body **static/kinematic**. `dBodyApplyImpulse` sobre un body no-dinámico se descarta en silencio. Hay que activar dinámica + gravity + lifetime.
+**Cause:** for items with `simulation = "inventoryItem"` + `physLayer = "item"`, `ECE_CREATEPHYSICS` creates the **collision shape** but leaves the rigid body **static/kinematic**. `dBodyApplyImpulse` on a non-dynamic body is silently discarded. Dynamics + gravity + lifetime must be activated.
 
 **Fix correcto — `ThrowPhysically`** (firma en `P:\scripts\3_game\entities\inventoryitem.c:26`):
 ```
 proto native void ThrowPhysically(DayZPlayer player, vector force, bool collideWithCharacters = true);
 ```
-Internamente hace `CreateDynamicPhysics(ITEM_LARGE)` + `SetDynamicPhysicsLifeTime(...)` + aplica force como impulso. Es el patrón vanilla (`miscgameplayfunctions.c:1188/1204/1212`, `plugindeveloper.c`).
+Internally does `CreateDynamicPhysics(ITEM_LARGE)` + `SetDynamicPhysicsLifeTime(...)` + applies force as impulse. It is the vanilla pattern (`miscgameplayfunctions.c:1188/1204/1212`, `plugindeveloper.c`).
 
 ```enforce
 ItemBase debrisEnt = ItemBase.Cast(spawned);
 debrisEnt.ThrowPhysically(null, impulse, false);
 ```
 
-**APIs relacionadas verificadas en `P:\scripts`:**
-- `1_core\proto\enphysics.c:141` → `proto void dBodyApplyImpulse(notnull IEntity body, vector impulse);` — válida pero SOLO sobre body ya dinámico.
+**Related APIs verified in `P:\scripts`:**
+- `1_core\proto\enphysics.c:141` → `proto void dBodyApplyImpulse(notnull IEntity body, vector impulse);` — valid but ONLY on already dynamic body.
 - `1_core\proto\enphysics.c:64-69` → `dBodyActive`, `dBodyDynamic`, `dBodyIsDynamic`, `dBodyEnableGravity`.
-- `3_game\entities\object.c:462-464` → `CreateDynamicPhysics(int interactionLayers)`, `EnableDynamicCCD(bool)`, `SetDynamicPhysicsLifeTime(float)` — miembros de `Object`, usables manualmente.
-- `3_game\global\dayzphysics.c:1-29` → enum `PhxInteractionLayers { NOCOLLISION, DEFAULT, BUILDING, CHARACTER, VEHICLE, DYNAMICITEM, DYNAMICITEM_NOCHAR, ROADWAY, ... }`. Vanilla usa `DYNAMICITEM` para items inventariables.
-- `4_world\entities\itembase.c:4530` → `StopItemDynamicPhysics()` ⇒ `SetDynamicPhysicsLifeTime(0.01)`. Confirma que el lifetime mantiene viva la dinámica.
+- `3_game\entities\object.c:462-464` → `CreateDynamicPhysics(int interactionLayers)`, `EnableDynamicCCD(bool)`, `SetDynamicPhysicsLifeTime(float)` — `Object` members, manually usable.
+- `3_game\global\dayzphysics.c:1-29` → enum `PhxInteractionLayers { NOCOLLISION, DEFAULT, BUILDING, CHARACTER, VEHICLE, DYNAMICITEM, DYNAMICITEM_NOCHAR, ROADWAY, ... }`. Vanilla uses `DYNAMICITEM` for inventory items.
+- `4_world\entities\itembase.c:4530` → `StopItemDynamicPhysics()` ⇒ `SetDynamicPhysicsLifeTime(0.01)`. Confirms that lifetime keeps dynamics alive.
 
-**Patrón manual** (control fino sin `ThrowPhysically`):
+**Manual pattern** (fine control without `ThrowPhysically`):
 ```enforce
 obj.CreateDynamicPhysics(PhxInteractionLayers.DYNAMICITEM);
 obj.EnableDynamicCCD(true);
-obj.SetDynamicPhysicsLifeTime(20.0);  // sin esto el motor lo duerme
+obj.SetDynamicPhysicsLifeTime(20.0);  // without this the engine puts it to sleep
 dBodyEnableGravity(obj, true);
 dBodyApplyImpulse(obj, impulse);
 ```
 
-## Quantity en magazines (`ServerSetAmmoCount`)
-**Bug silencioso:** `ItemBase.SetQuantity(N)` sobre un Magazine (mags reales `Mag_*` y ammo piles `Ammo_*` — ambos extienden `Magazine_Base`) NO rellena el ammo count interno. Admin pide `quantity=30` y el mag spawnea con 0 balas.
+## Quantity in magazines (`ServerSetAmmoCount`)
+**Silent bug:** `ItemBase.SetQuantity(N)` on a Magazine (actual mags `Mag_*` and ammo piles `Ammo_*` — both extend `Magazine_Base`) does NOT fill internal ammo count. Admin requests `quantity=30` and mag spawns with 0 bullets.
 
-**Fix DWIM** para "quantity" en presets de loot:
+**DWIM fix** for "quantity" in loot presets:
 ```enforce
 if (node.quantity >= 0.0)
 {
@@ -181,49 +181,49 @@ Cast a `Magazine` primero (cubre mags + ammo piles), fallback a `ItemBase.SetQua
 - `4_world\entities\itembase\magazine\magazine.c:70` → `proto native void ServerSetAmmoCount(int ammoCount);`
 - `3_game\entities\entityai.c:2242` → `bool SetQuantity(float value, bool destroy_config = true, bool destroy_forced = false, bool allow_client = false, bool clamp_to_stack_max = true);`
 
-Vanilla usa `ServerSetAmmoCount` en 20+ sitios (`weapon_base.c:805`, `cfgplayerspawnhandler.c:330,340`, `recipebase.c:314,420`, etc.). Implementación viva: `Crate_Wooden.c::ApplyNodeAttributes`.
+Vanilla uses `ServerSetAmmoCount` in 20+ places (`weapon_base.c:805`, `cfgplayerspawnhandler.c:330,340`, `recipebase.c:314,420`, etc.). Live implementation: `Crate_Wooden.c::ApplyNodeAttributes`.
 
-## Schema migration JSON — patrón ExpansionSettingBase
-**Problema:** evoluciono el schema (añado campos), admin con JSON viejo no tiene esos campos. Si el constructor inyecta "ejemplos didácticos", al hacer Load esos ejemplos quedan intactos → admin ve loot apareciendo de la nada, sin saber por qué.
+## Schema migration JSON — ExpansionSettingBase pattern
+**Problem:** I evolve schema (add fields), admin with old JSON lacks those fields. If constructor injects "didactic examples", on Load those examples remain intact → admin sees loot appearing out of nowhere, not knowing why.
 
-**Patrón canónico** (referencia: `salutesh/DayZ-Expansion-Scripts/ExpansionGarageSettings.c::OnLoad`):
+**Canonical pattern** (reference: `salutesh/DayZ-Expansion-Scripts/ExpansionGarageSettings.c::OnLoad`):
 
-1. `static const int SCHEMA_VERSION = N;` en la clase de config. Bumpear N al añadir campos.
-2. **Constructor minimal:** solo defaults numéricos/escalares + `new array<T>` (vacíos para que el serializer no reciba null). `version = 0` como sentinel "no cargado aún".
-3. **Método `Defaults()` separado:** puebla todos los campos con factory + ejemplos. Idempotente (`Clear()` antes de `Insert()` en arrays).
+1. `static const int SCHEMA_VERSION = N;` in config class. Bump N when adding fields.
+2. **Minimal constructor:** numeric/scalar defaults only + `new array<T>` (empty so serializer does not receive null). `version = 0` as "not loaded yet" sentinel.
+3. **Separate `Defaults()` method:** populates all fields with factory + examples. Idempotent (`Clear()` before `Insert()` in arrays).
 4. **`LoadOrCreate` pattern:**
-   - JSON no existe → `cfg.Defaults(); SaveToDisk(cfg);`
-   - JSON existe + load OK + `cfg.version < SCHEMA_VERSION` → `fresh = new Cfg; fresh.Defaults();`. Copiar campos NUEVOS por migración incremental (`if (cfg.version < 2) { ... }`, `if (cfg.version < 3) { ... }`). Luego `cfg.version = SCHEMA_VERSION; SaveToDisk(cfg);`.
-   - JSON existe + load FALLA → `cfg.Defaults()` SOLO en memoria, NO sobreescribir fichero (admin puede estar editándolo con typo).
+   - JSON does not exist → `cfg.Defaults(); SaveToDisk(cfg);`
+   - JSON exists + load OK + `cfg.version < SCHEMA_VERSION` → `fresh = new Cfg; fresh.Defaults();`. Copy NEW fields via incremental migration (`if (cfg.version < 2) { ... }`, `if (cfg.version < 3) { ... }`). Then `cfg.version = SCHEMA_VERSION; SaveToDisk(cfg);`.
+   - JSON exists + load FAILS → `cfg.Defaults()` ONLY in memory, do NOT overwrite file (admin may be editing with typo).
 
-**Resultado:** server con JSON viejo hace auto-upgrade transparente → RPT muestra `Migrating CrateConfig v1 -> v3` + JSON se re-graba con campos nuevos + ejemplos didácticos. Cero sorpresas silenciosas.
+**Result:** server with old JSON performs transparent auto-upgrade → RPT shows `Migrating CrateConfig v1 -> v3` + JSON is resaved with new fields + didactic examples. Zero silent surprises.
 
-Implementación viva: `Crate/scripts/4_World/Crate_Config.c::LoadOrCreate` + `Defaults` (historial de versiones ahí mismo).
+Live implementation: `Crate/scripts/4_World/Crate_Config.c::LoadOrCreate` + `Defaults` (version history right there).
 
 ## LBmaster preset integration — `#ifdef` opcional
-**Contrato:** dependencia opcional en compile-time. NO añadir `LBmaster_Core` a `requiredAddons` del CfgPatches. Envolver TODO el código LB en `#ifdef LBmaster_Core`. Así el mod compila/corre en servers sin LBmaster (con fallback interno) y usa LB cuando está cargado.
+**Contract:** optional compile-time dependency. Do NOT add `LBmaster_Core` to `requiredAddons` of CfgPatches. Wrap ALL LB code in `#ifdef LBmaster_Core`. This way the mod compiles/runs on servers without LBmaster (with internal fallback) and uses LB when loaded.
 
-**APIs verificadas en `LBmaster_Core/scripts/`:**
+**Verified APIs in `LBmaster_Core/scripts/`:**
 - `LB_PresetBase.c:92` → `static void SpawnPresets(PlayerBase player, array<LB_PresetBase> presets, EntityAI parent, vector altPos = vector.Zero, float radius = 0.0)`
 - `LB_PresetBase.c:138` → `void SpawnPreset(PlayerBase player, EntityAI parent, vector altPos = vector.Zero, float radius = 0.0)`
-- `LB_PresetLoader.c:146` → `LB_PresetBase GetPreset(string name)` — null si no encuentra.
-- `LB_PresetLoader.c:189` → `array<LB_PresetBase> FindPresets(TStringArray arr)` — vacío si nada matchea.
-- `LBConfigLoader.c:6` → `static ref T1 Get;` — **propiedad estática, sin paréntesis**. Acceso: `LB_PresetLoader.Get.GetPreset(...)`, NO `LB_PresetLoader.Get().GetPreset(...)`.
+- `LB_PresetLoader.c:146` → `LB_PresetBase GetPreset(string name)` — null if not found.
+- `LB_PresetLoader.c:189` → `array<LB_PresetBase> FindPresets(TStringArray arr)` — empty if nothing matches.
+- `LBConfigLoader.c:6` → `static ref T1 Get;` — **static property, no parentheses**. Access: `LB_PresetLoader.Get.GetPreset(...)`, NOT `LB_PresetLoader.Get().GetPreset(...)`.
 
-**Semántica crítica:**
-- `SpawnPreset` (instance, 1 preset) → entra directo al loop `minSpawnTries/maxSpawnTries` e **ignora el root chance del preset** ⇒ spawn garantizado.
-- `SpawnPresets` (static, N presets) → **aplica chance logic** (global weighted + individual) antes de spawnear. Con `individualChance = false` y chances < 1.0 puede no spawnear nada.
+**Critical semantics:**
+- `SpawnPreset` (instance, 1 preset) → enters directly into `minSpawnTries/maxSpawnTries` loop and **ignores the preset root chance** ⇒ guaranteed spawn.
+- `SpawnPresets` (static, N presets) → **applies chance logic** (global weighted + individual) before spawning. With `individualChance = false` and chances < 1.0 it may spawn nothing.
 
-Precedente de uso de `#ifdef LBmaster_Core`: `LFPowerGrid/scripts/4_World/LFPG_NetworkManager.c:370`, `LFPG_BalanceProvider_LBmaster.c:8`. Implementación viva: `Crate_Wooden.c::TrySpawnLBPresets`.
+Precedent for using `#ifdef LBmaster_Core`: `LFPowerGrid/scripts/4_World/LFPG_NetworkManager.c:370`, `LFPG_BalanceProvider_LBmaster.c:8`. Live implementation: `Crate_Wooden.c::TrySpawnLBPresets`.
 
-## Cascada de loot resolution — patrón multi-tier
-Para mods con múltiples fuentes de loot opcionales, orden recomendado en el dispatcher:
+## Loot resolution cascade — multi-tier pattern
+For mods with multiple optional loot sources, recommended order in dispatcher:
 
-1. **Tier 1 (más complejo):** sistema externo (LBmaster presets). Condicionado por toggle admin (`useLBPresets`). Si framework no cargado o preset no resuelve → aviso RPT + caída a Tier 2.
-2. **Tier 2 (medio):** tabla nativa del mod con attachments anidados recursivos. Si `lootTable.Count() == 0` → caída silenciosa a Tier 3.
-3. **Tier 3 (simple):** lista plana de classnames. Legacy. Vacío → caída a Tier 4.
-4. **Tier 4:** no-op + RPT `All loot tiers empty -> crate broke without spawning any loot` (admin nota que su config está vacía).
+1. **Tier 1 (most complex):** external system (LBmaster presets). Conditioned on admin toggle (`useLBPresets`). If framework not loaded or preset does not resolve → RPT warning + fallthrough to Tier 2.
+2. **Tier 2 (medium):** native mod table with recursive nested attachments. If `lootTable.Count() == 0` → silent fallthrough to Tier 3.
+3. **Tier 3 (simple):** flat list of classnames. Legacy. Empty → fallthrough to Tier 4.
+4. **Tier 4:** no-op + RPT `All loot tiers empty -> crate broke without spawning any loot` (admin notices config is empty).
 
-**Ventaja:** admin sube/baja en la escalera según lo que tenga en su server. Mods nuevos no rompen JSONs viejos (fallback natural). Admin sin framework externo sigue teniendo loot via Tier 2 o 3.
+**Advantage:** admin moves up/down ladder depending on what they have on server. New mods do not break old JSONs (natural fallback). Admin without external framework still gets loot via Tier 2 or 3.
 
-Implementación viva: `Crate_Wooden.c::DispatchLootSpawn`.
+Live implementation: `Crate_Wooden.c::DispatchLootSpawn`.

@@ -280,7 +280,7 @@ Prefer `ask` over `score`: concrete yes/no questions are measurably easier for a
 
 **This is SHADOW MODE and it is not negotiable**: the local model's answers are evidence logged beside your own, NEVER a gate, NEVER a substitute for looking. Every call appends to a JSONL shadow log; that log IS the calibration dataset, built free during real work. Promotion path: shadow → pre-filter (it discards the obviously broken, you judge the survivors) → never final judge. Run `references/vr_calibrate.py report` against ≥15 renders you have judged yourself before delegating any single question; it reports agreement per question, which is the unit that gets delegated — not the model as a whole.
 
-Measured 2026-07-30 (RTX 3090, n=2 renders — provisional): `gemma4:26b` ≈15 s warm per 8-question checklist, `qwen3.5:27b` ≈132 s for comparable quality, so gemma is the default. **⚠ Esa brecha de 9x quedó REFUTADA en su causa el 2026-08-16: no era el modelo, era el `num_ctx` de fábrica** tirando a qwen el 37% a CPU. Con `think:false` + `num_ctx=8192` son 8,3 s y 17,2 s — brecha de 2x, y qwen vuelve a ser viable como segunda opinión de otra familia. Ver §Pre-filtro más abajo. Both correctly flagged a faceted circle and both answered "unsure" rather than guessing when the view could not decide — but they gave **opposite** bevel verdicts on the same renders, so treat bevel/chamfer questions as agent-side until calibration says otherwise. Judge fine surface questions on a native-res crop, never a full-frame render (LL-153).
+Measured 2026-07-30 (RTX 3090, n=2 renders — provisional): `gemma4:26b` ≈15 s warm per 8-question checklist, `qwen3.5:27b` ≈132 s for comparable quality, so gemma is the default. **⚠ That 9x gap was REFUTED in its cause on 2026-08-16: it was not the model, it was the factory `num_ctx`** offloading 37% of qwen to CPU. With `think:false` + `num_ctx=8192` it is 8.3 s and 17.2 s — 2x gap, and qwen becomes viable again as second opinion from another family. See §Pre-filter below. Both correctly flagged a faceted circle and both answered "unsure" rather than guessing when the view could not decide — but they gave **opposite** bevel verdicts on the same renders, so treat bevel/chamfer questions as agent-side until calibration says otherwise. Judge fine surface questions on a native-res crop, never a full-frame render (LL-153).
 
 Setup notes: models live wherever `OLLAMA_MODELS` points; a 17 GB model fills a 24 GB card, so models load one at a time and compete with Blender for VRAM — unload before a heavy render. Always address the server as `127.0.0.1`, never `localhost`: on Windows that resolves to IPv6 first and a stray IPv6-bound `ollama serve` will answer from a different model library.
 
@@ -288,61 +288,61 @@ Setup notes: models live wherever `OLLAMA_MODELS` points; a 17 GB model fills a 
 
 Render into a folder you can also read (the helper defaults to a `_review/` folder next to the .blend, or the OS temp dir if the file is unsaved) and name files `<model>__<angle>__<iter>.png`. Keep the before/after pair for any angle you changed, so the diagnosis is auditable and you can prove the fix actually landed.
 
-## Checklist VLM: cinco preguntas activas, tres excluidas (added 2026-08-16, SP-277; datos de calibrado en SP-270)
+## VLM Checklist: five active questions, three excluded (added 2026-08-16, SP-277; calibration data in SP-270)
 
-La sección de sombra de arriba manda para cualquier pregunta que no esté en esta tabla. El JSON conserva
-ocho entradas: cinco llegan al modelo y tres llevan `skip`; solo las filas **pre-filtro** cambian el bucle.
+The shadow section above governs any question not in this table. The JSON preserves
+eight entries: five reach the model and three have `skip`; only the **pre-filter** rows change the loop.
 
-**El filtro RECHAZA, nunca APRUEBA.** Un «no» dispara un arreglo antes de enseñar nada; un pase
-limpio **no** significa «está bien», significa «ya merece tus ojos». La regla de que el modelo
-local nunca es juez final sigue intacta: se le ha delegado el poder de parar, no el de aprobar.
+**The filter REJECTS, never APPROVES.** A "no" triggers a fix before showing anything; a clean
+pass does **not** mean "it is fine", it means "it now deserves your eyes". The rule that the local
+model is never the final judge remains intact: it has been delegated the power to stop, not to approve.
 
-### Qué está calibrado y qué no
+### What is calibrated and what is not
 
-Medido sobre `mk47_mutant`, con el par roto/arreglado del MISMO objeto, tres modelos, el agrupado
-real de `vr_score.py`. El checklist entero saca **77,8% contra un suelo de respuesta constante del
-58,3%**:
+Measured on `mk47_mutant`, with the broken/fixed pair of the SAME object, three models, the actual
+grouping of `vr_score.py`. The entire checklist achieves **77.8% against a constant response floor of
+58.3%**:
 
-| pregunta | acierto | en el bucle |
+| question | accuracy | in the loop |
 |---|---|---|
-| conectividad / piezas flotando | **12/12** | **pre-filtro** — la más fuerte con diferencia |
-| huecos o agujeros en la superficie | 10/12 | **pre-filtro** |
-| ~~caras negras, del revés o mal sombreadas~~ | ~~10/12~~ | **NO delegar** — `skip`: el defecto no está en la captura; usar el diff mecánico de culling |
-| objeto acabado vs cajas peladas | 10/12 | **pre-filtro** |
-| ~~proporciones consistentes~~ | ~~10-12/12~~ | **NO delegar** (retractado 2026-08-22) — ese 10-12/12 es una puntuación **infalsificada**: el par roto/arreglado con el que se midió no contenía ningún defecto de proporción, así que contestar «yes» siempre puntúa perfecto. Ver la nota de abajo |
-| **biseles / chamfered edges** | **6/12** | **NO delegar** — está en el suelo de la respuesta constante. Confirma el aviso de 2026-07-30: los dos modelos daban veredictos opuestos de bisel |
-| **cilindros facetados** | **al azar en los 8 encuadres** | **NO delegar, y no la reescribas** — se probaron cuatro redacciones (2026-08-17) y la que ya está es la mejor: 6/6 en encuadres donde la pieza redonda llena el marco, 1-2 de 3 en el de objeto completo. **El encuadre pesa más que la redacción.** El fallo de fondo es que el objeto no puede contestarla, ver la nota de abajo |
+| connectivity / floating parts | **12/12** | **pre-filter** — by far the strongest |
+| gaps or holes in the surface | 10/12 | **pre-filter** |
+| ~~black, flipped or improperly shaded faces~~ | ~~10/12~~ | **DO NOT delegate** — `skip`: defect is not in capture; use mechanical culling diff |
+| finished object vs bare boxes | 10/12 | **pre-filter** |
+| ~~consistent proportions~~ | ~~10-12/12~~ | **DO NOT delegate** (retracted 2026-08-22) — that 10-12/12 is an **unfalsified** score: broken/fixed pair against which it was measured contained no proportion defect, so answering "yes" always scores perfect. See note below |
+| **bevels / chamfered edges** | **6/12** | **DO NOT delegate** — is at constant response floor. Confirms 2026-07-30 warning: both models gave opposite bevel verdicts |
+| **faceted cylinders** | **at random across 8 framings** | **DO NOT delegate, and do not rewrite it** — four phrasings tested (2026-08-17) and the existing one is best: 6/6 in framings where round piece fills frame, 1-2 of 3 in whole object framing. **Framing outweighs phrasing.** Underlying failure is that object cannot answer it, see note below |
 
-### Antes de creerte una puntuación alta de esta tabla (2026-08-22)
+### Before believing a high score from this table (2026-08-22)
 
-Una pregunta sí/no tiene dos modos de fallo que su propia puntuación esconde, y la fila
-de proporciones cayó en los dos:
+A yes/no question has two failure modes that its own score hides, and the
+proportions row fell into both:
 
-1. **La constante.** Si el oro del conjunto de prueba **nunca cambia de valor**, la
-   respuesta constante puntúa perfecto y la métrica queda *infalsificada*, no validada.
-   La pregunta lucía 10-12/12 porque el par con el que se midió no tenía ningún defecto
-   de proporción. **La comprobación es una línea: ¿cambia el oro de valor en el
-   conjunto?** Si no, no has medido nada.
-2. **La confabulación.** Al pedirle motivo no duda, lo inventa. Ante una brida un 37 %
-   más ancha de lo debido, un modelo la declaró coherente con «standard fastener
-   geometry» y otro «appropriately scaled». Una nota segura y falsa es peor que un
-   «unsure».
+1. **The constant.** If test set gold **never changes value**, constant
+   response scores perfect and metric remains *unfalsified*, not validated.
+   The question looked 10-12/12 because pair against which it was measured had no
+   proportion defect. **The check is one line: does gold change value in the
+   set?** If not, you measured nothing.
+2. **Confabulation.** When asked for rationale it does not hesitate, it invents. Facing a flange 37%
+   wider than expected, one model declared it consistent with "standard fastener
+   geometry" and another "appropriately scaled". A confident and false note is worse than
+   "unsure".
 
-Medido el 2026-08-17 con `gemma4:26b`, `qwen3.8:27b` y `qwen3.5:27b`: con dos defectos
-construidos, la pregunta contestó **«yes» en las 9 celdas** (3 modelos × 3 variantes).
-Pedir en su lugar **la medida** —tamaño y posición de cada pieza como fracción del
-marco, puntuada por dirección de cambio— acertó **6/6 sobre los mismos renders**.
+Measured on 2026-08-17 with `gemma4:26b`, `qwen3.8:27b`, and `qwen3.5:27b`: with two constructed
+defects, the question answered **"yes" in all 9 cells** (3 models × 3 variants).
+Asking instead for **the measurement** —size and position of each piece as fraction of
+frame, scored by direction of change— got **6/6 right on the same renders**.
 
-El sustituto de medida **todavía no está implementado aquí**: `probe_truth.py` no existe
-en `references/` y la pregunta sigue en `checks_hardsurface.json:29` tal cual. Hasta que
-lo esté, esta fila se mira a ojo y no se delega. Y al implementarlo, la trampa que ya
-mordió: **declarar una convención de coordenadas no gana al prior arriba-abajo del
-modelo** — pedir y=0 abajo y espejar sus respuestas bajó el error vertical de 0,107 a
-0,017 de marco. Usa la convención de imagen o detecta el espejo antes de puntuar.
+The measurement substitute **is not yet implemented here**: `probe_truth.py` does not exist
+in `references/` and the question remains in `checks_hardsurface.json:29` as-is. Until
+it is, this row is checked by eye and not delegated. And when implementing it, the trap that already
+bit: **declaring a coordinate convention does not beat the model's up-down
+prior** — asking for y=0 at bottom and mirroring its responses reduced vertical error from 0.107 to
+0.017 of frame. Use image convention or detect mirror before scoring.
 
-### Dónde entra en el bucle
+### Where it enters the loop
 
-Entre el paso 2 (capturar ángulos) y el paso 3 (mirar) de §The loop:
+Between step 2 (capture angles) and step 3 (look) of §The loop:
 
     python references/vr_score.py ask --checklist references/checks_hardsurface.json \
       --model gemma4:26b --json \
@@ -352,94 +352,94 @@ Entre el paso 2 (capturar ángulos) y el paso 3 (mirar) de §The loop:
       --view zoom_receiver__right_iso _review/m__receiver__iter3.png \
       --view zoom_muzzle__front_iso _review/m__muzzle__iter3.png
 
-Si dispara alguna de las cinco activas: arreglar y re-renderizar **antes** de gastar los ojos del usuario.
-Si no dispara ninguna: mirar igualmente — el filtro no ha aprobado nada. Las tres excluidas no
-aparecen en las respuestas del modelo: caras invertidas van al diff mecánico; proporciones y
-cilindros mantienen declarado el hueco hasta que existan `probe_truth.py` y `facet_report.py`.
+If any of the five active ones triggers: fix and re-render **before** spending user's eyes.
+If none triggers: look anyway — filter has not approved anything. The three excluded do
+not appear in model responses: inverted faces go to mechanical diff; proportions and
+cylinders keep gap declared until `probe_truth.py` and `facet_report.py` exist.
 
-### El gate de calibración cambia: por pregunta, con par roto/arreglado
+### Calibration gate changes: per question, with broken/fixed pair
 
-La sección de sombra pide **≥15 renders ya juzgados** antes de delegar una pregunta. Eso es
-calibrar por acumulación y **no habría encontrado nada de esto**: la misma pregunta pasa de 7/12 a
-11/12 solo cambiando el encuadre, y de 9/12 a 18/18 solo cambiando con qué otras preguntas viaja
-en la llamada. Se sustituye por un gate más barato y que además atribuye:
+The shadow section asks for **≥15 already-judged renders** before delegating a question. That is
+calibrating by accumulation and **would have found none of this**: the same question goes from 7/12 to
+11/12 just by changing framing, and from 9/12 to 18/18 just by changing which other questions travel
+in the call. It is replaced by a cheaper gate that also attributes:
 
-**Coge dos renders del MISMO objeto, uno con el defecto y otro con el defecto arreglado, y haz la
-misma pregunta a los dos.** No necesita oro. Mide dos cosas que no son la misma:
+**Take two renders of the SAME object, one with defect and another with defect fixed, and ask
+the same question to both.** Needs no gold. Measures two things that are not the same:
 
-- **sensibilidad** — ¿cambia la respuesta donde debe cambiar?
-- **especificidad** — ¿se queda quieta donde no debe cambiar?
+- **sensitivity** — does response change where it should change?
+- **specificity** — does it stay still where it should not change?
 
-Un juez que contesta igual a las dos versiones no está leyendo el modelo, tenga el marcador que
-tenga. Cualquier mod con un antes/después sirve de banco: no hay que fabricar nada.
+A judge answering identically to both versions is not reading the model, whatever score it
+may have. Any mod with a before/after serves as testbench: nothing needs to be manufactured.
 
-### Tres cosas que invalidan una comparación de encuadres
+### Three things that invalidate a framing comparison
 
-1. **El lote de la llamada cambia la respuesta.** Misma pregunta, misma imagen, mismo modelo:
-   **18/18** en una llamada con otras cuatro de sombreado, **9/12** en la llamada con las ocho del
-   checklist. Comparar encuadres exige mantener el lote fijo. Y **no es el tamaño**: sacar una
-   pregunta del lote empeoró a las dos que se quedaron.
-2. **Un encuadre sin render arreglado no es comparable** con uno que lo tenga: puntúa sobre la
-   mitad de las celdas y ahí una respuesta constante saca 6/6.
-3. **La temperatura está fijada a 0,1** en el payload, así que dos muestras de la misma celda salen
-   casi idénticas: el `n` efectivo es el número de celdas, no el de muestras. No confundir repetir
-   con medir.
+1. **The batch of the call changes the response.** Same question, same image, same model:
+   **18/18** in a call with four other shading questions, **9/12** in call with eight of the
+   checklist. Comparing framings requires keeping batch fixed. And **it is not size**: removing a
+   question from batch worsened the two that stayed.
+2. **A framing without fixed render is not comparable** to one that has it: scores over
+   half of cells and there a constant response gets 6/6.
+3. **Temperature is set to 0.1** in payload, so two samples of same cell turn out
+   almost identical: effective `n` is number of cells, not number of samples. Do not confuse repeating
+   with measuring.
 
-### Alcance, para no repetir el error que originó esto
+### Scope, so as not to repeat the error that originated this
 
-Todo lo anterior sale de **un solo objeto**. El día antes registré que estos modelos «no detectan
-defectos geométricos» — y era falso: medía mi arnés, no los modelos, y cerró una línea de trabajo
-que funcionaba. Antes de escribir que un modelo no sabe hacer algo, haber variado **redacción,
-encuadre y lote**, y decir cuál de los tres se varió. Origen y evidencia en `LL-289`.
+All of the above comes from **a single object**. The day before I recorded that these models "do not detect
+geometric defects" — and it was false: it measured my harness, not the models, and closed a line of work
+that worked. Before writing that a model cannot do something, have varied **phrasing,
+framing, and batch**, and state which of the three was varied. Origin and evidence in `LL-289`.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from the lessons corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa (síntoma, origen, evidencia) vive allí. No quites la cita: el índice
-`lessons-index.md` detecta la promoción buscando esa referencia dentro de las skills.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so that they arrive via trigger instead
+of relying on someone remembering to look them up. Each rule cites its source `LL-NNN`;
+the full entry (symptom, origin, evidence) lives there. Do not remove the citation: the index
+`lessons-index.md` detects promotion by searching for that reference inside the skills.
 
-- **LL-153** — Juzga toda zona visual crítica en un crop a resolución nativa. Usa RMS y scores solo como filtro de cambio; nunca como veredicto de corrección, y conserva el crop full-res como evidencia.
+- **LL-153** — Judge every critical visual zone on a native-resolution crop. Use RMS and scores only as change filter; never as correctness verdict, and keep full-res crop as evidence.
 
-## Q3 cerrada: no reescribir ni delegar el facetado (SP-282, added 2026-08-31)
+## Q3 closed: do not rewrite or delegate faceting (SP-282, added 2026-08-31)
 
-La redacción actual de cilindros es la mejor de las cuatro medidas, pero eso no la vuelve un
-gate. Preguntada sola acertó 6/6; dentro del lote de ocho de `vr_score.py` cayó a 3/6. En el
-objeto real produjo 8 falsas alarmas de 12: la pieza octogonal visible es intencional y los
-cilindros auténticos, suavizados, tienen una sagitta subpíxel en esos encuadres. Por tanto:
+Current cylinders phrasing is best of four measured, but that does not make it a
+gate. Asked alone it got 6/6; within the batch of eight of `vr_score.py` it fell to 3/6. On
+actual object it produced 8 false alarms out of 12: visible octagonal piece is intentional and
+authentic smoothed cylinders have subpixel sagitta in those framings. Therefore:
 
-- conserva la pregunta sin reescribir, con `skip`; no entra en checklist activo ni pre-filtro;
-- no describas el resultado como azar: el fallo cambia con el encuadre y con el agrupado;
-- si se pide contar un perfil, encuadra la **sección** hasta que llene el marco. La distancia
-  genérica `max_dim * 2.2` de un objeto alargado hace que la vista axial no tenga información;
-- el sustituto correcto es determinista y **reporta, no juzga**: pieza, lados, radio, desviación
-  relativa y sagitta, con allowlist para prismas intencionales. La intención sigue siendo una
-  decisión del modelador.
+- keep question without rewriting, with `skip`; does not enter active checklist or pre-filter;
+- do not describe result as chance: failure changes with framing and grouping;
+- if asked to count a profile, frame the **section** until it fills the frame. Generic
+  distance `max_dim * 2.2` of an elongated object leaves axial view without information;
+- correct substitute is deterministic and **reports, does not judge**: part, sides, radius, relative
+  deviation, and sagitta, with allowlist for intentional prisms. Intention remains a
+  decision of the modeler.
 
-`facet_report.py` continúa sin distribuirse en esta skill. Esta sección fija su contrato y sus
-límites; no afirma que el ejecutable esté instalado.
+`facet_report.py` continues without being distributed in this skill. This section establishes its contract and its
+limits; does not claim that executable is installed.
 
-## Contrato calibrado del reporte de facetado (SP-284, added 2026-08-31)
+## Calibrated contract of faceting report (SP-284, added 2026-08-31)
 
-Si se incorpora `facet_report.py`, la regla calibrada de candidatos es `lados < 12` y
-`radio >= 6 mm`, nunca el umbral provisional de 4 mm. Además, exige una sección transversal casi
-cuadrada: relación entre lados del bbox transversal `<= 1.30`. Ese límite admite pentágonos y
-hexágonos, pero rechaza formas planas que el filtro del 20 % exterior confunde con un cilindro.
-Una allowlist silencia perfiles prismáticos deliberados.
+If `facet_report.py` is incorporated, calibrated candidate rule is `sides < 12` and
+`radius >= 6 mm`, never provisional 4 mm threshold. Furthermore, requires an almost square
+cross section: ratio between sides of transversal bbox `<= 1.30`. That limit admits pentagons and
+hexagons, but rejects planar shapes that the 20% outer filter confuses with a cylinder.
+An allowlist silences deliberate prismatic profiles.
 
-El reporte de **cobertura** es tan importante como las marcas. Debe publicar:
+The **coverage** report is as important as flags. Must publish:
 
-- mallas visibles en render y piezas con perfil circular;
-- polígonos examinados y porcentaje sobre los visibles;
-- la mayor malla no examinada y su porcentaje.
+- meshes visible in render and parts with circular profile;
+- examined polygons and percentage over visible ones;
+- largest unexamined mesh and its percentage.
 
-`0 marcadas` es **NO CONCLUYENTE** si no hay mallas visibles o si una sola malla no examinada
-concentra `>=30 %` de los polígonos. El porcentaje global cubierto no decide el veredicto: un
-asset compuesto principalmente por cajas y raíles puede tener cobertura baja y ser válido para
-las piezas examinadas.
+`0 marked` is **INCONCLUSIVE** if there are no visible meshes or if a single unexamined mesh
+concentrates `>=30%` of polygons. Overall percentage covered does not decide verdict: an
+asset composed mainly of boxes and rails can have low coverage and be valid for
+examined parts.
 
-Calibración declarada: 0 falsas alarmas en 41 piezas de perfil circular de tres assets reales y
-las tres piezas del defecto sintético siguieron marcadas; las sondas de 12 y 48 lados quedaron
-limpias. Límites: trabaja por objeto, no ve tubos dentro de una malla fusionada, puede perder
-perfiles finos o muy ranurados y no certifica que lo no detectado sea redondo. El corpus no
-incluye un mod publicado y verificado in-game; no eleves este reporte a gate final.
+Declared calibration: 0 false alarms across 41 circular-profile parts from three real assets and
+all three parts of synthetic defect remained marked; 12- and 48-sided probes remained
+clean. Limits: works per object, does not see tubes inside merged mesh, can miss
+thin or heavily slotted profiles, and does not certify that undetected geometry is round. Corpus does
+not include a published mod verified in-game; do not elevate this report to final gate.

@@ -4,16 +4,16 @@ Extracted from dayz-pbo-build/SKILL.md 2026-07-07 (F3). Dated session appendices
 
 ---
 
-## Verificación post-build obligatoria del PBO (added 2026-06-11)
+## Mandatory post-build PBO verification (added 2026-06-11)
 
-Origen: sesión LFSlidingFloor 2026-06-10 — AddonBuilder reportó "Build Successful" con un PBO de 613 bytes (su sync interno a temp copió 0 archivos, probablemente choque con OneDrive); además el PBO medido era un RESIDUO de un build anterior (cf. LL-135) porque AddonBuilder nombra el PBO según la CARPETA fuente, no según -prefix.
+Origin: LFSlidingFloor session 2026-06-10 — AddonBuilder reported "Build Successful" with a 613-byte PBO (its internal sync to temp copied 0 files, probably collision with OneDrive); additionally the measured PBO was RESIDUE from a previous build (cf. LL-135) because AddonBuilder names PBO according to source FOLDER, not according to -prefix.
 
-Checklist tras CADA build (exit 0 y "Build Successful" NO bastan):
-1. Tamaño del PBO mayor que un umbral razonable (un mod de scripts ronda 15-30 KB; ~600 B = carpeta vacía empaquetada; cf. memoria "PBO de 2 KB = el modelo se cayó").
-2. Contenido: grep binario de strings esperadas (nombres de los .c, un literal de código RECIENTE para detectar residuos): PowerShell `[Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($pbo)) -match "mi_marker"`.
-3. Nombre: el PBO sale como `<NombreCarpetaFuente>.pbo` — si construyes desde staging, la carpeta DEBE llamarse exactamente como el mod (p.ej. `C:\Temp\<Mod>\`), o desplegarás y medirás el archivo equivocado.
-4. Staging local (fuera de OneDrive) para el source del build: el sync de AddonBuilder contra rutas OneDrive puede copiar 0 archivos sin marcar error.
-5. Gate de PROPIEDADES tras `ExtractPbo` — el SHA no basta: un manifiesto de hashes compara el mismo fichero a los dos lados, así que da verde aunque los `.p3d` empaquetados se construyeran ANTES de que la propiedad entrara en los generadores. Caso medido (LFHeli HH-60G, 2026-07-29): `autocenter=0` se añadió al LOD visual del casco en los dos generadores a las 01:52/02:07, el PBO se empaquetó a las 02:15 desde `.p3d` previos, y el manifiesto dio verde; al medir los 48 `.p3d` extraídos, los 8 sub-modelos la llevaban y **los 40 cascos no**. El gate tiene que leer la propiedad concreta **por LOD**, con las expectativas declaradas en tabla (propiedad, valor esperado, motivo, exclusiones explícitas — p.ej. los LOD de Memory, sin geometría que recentrar, quedan fuera). Un gate que solo compara hashes no puede salir en rojo por esta causa.
+Checklist after EACH build (exit 0 and "Build Successful" are NOT enough):
+1. PBO size larger than a reasonable threshold (a script mod is around 15-30 KB; ~600 B = packed empty folder; cf. memory "2 KB PBO = model fell off").
+2. Content: binary grep of expected strings (names of .c files, a RECENT code literal to detect residue): PowerShell `[Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($pbo)) -match "my_marker"`.
+3. Name: PBO outputs as `<SourceFolderName>.pbo` — if you build from staging, the folder MUST be named exactly like the mod (e.g. `C:\Temp\<Mod>\`), or you will deploy and measure the wrong file.
+4. Local staging (outside OneDrive) for build source: AddonBuilder sync against OneDrive paths can copy 0 files without reporting error.
+5. PROPERTIES gate after `ExtractPbo` — SHA is not enough: a hash manifest compares the same file on both sides, so gives green even if packed `.p3d` were built BEFORE property entered generators. Measured case (LFHeli HH-60G, 2026-07-29): `autocenter=0` was added to visual LOD of hull in both generators at 01:52/02:07, PBO was packed at 02:15 from previous `.p3d`, and manifest gave green; upon measuring the 48 extracted `.p3d`, the 8 sub-models had it and **the 40 hulls did not**. The gate must read the specific property **per LOD**, with expectations declared in table (property, expected value, reason, explicit exclusions — e.g. Memory LODs, having no geometry to recenter, are excluded). A gate only comparing hashes cannot turn red from this cause.
 6. Model-count gate from the PBO ENTRY TABLE — size alone passes a model-less PBO: measured 2026-09-13 (SUB_BRZ s91), a build with exit 0 and "Build Successful" packed an 8.0 MB PBO with 132 entries and ZERO of ten `.p3d`, because the stage path carried the addon folder name higher up (`...\s91_stage0\stage\SUB_BRZ`); renaming only the stage's parent folder produced full PBOs again (21.5 MB, 140/140 entries, 10/10 ODOL). The `<4096 B` size gate misses it, and the SP-069 "`-temp` must stay under the work drive" explanation did not reproduce in four later builds with `-temp` outside the work drive (work drive mounted): re-measure before trusting either explanation of a tiny or model-less PBO. Count the `.p3d`/ODOL entries of the built PBO against the stage before trusting any build. [EXACT] (measured, SP-394]
 
 ### Property-gate controls (SP-133)

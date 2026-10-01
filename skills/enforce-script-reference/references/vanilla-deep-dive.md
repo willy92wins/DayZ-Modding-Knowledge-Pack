@@ -12,56 +12,56 @@ Source-verified vs vanilla v1.24 + real mods: recipes/crafting (PluginRecipesMan
 > `LF_RollingStone_dev/research/deep-dive-2026-06-06/`). Line refs +-3.
 
 ### Recipes / crafting (PluginRecipesManager)
-- `MAX_NUMBER_OF_INGREDIENTS = 2` (`recipebase.c:1`) — las recetas se limitan fisicamente a 2
-  ingredientes; `MAXIMUM_RESULTS = 10`.
-- API real: `InsertIngredient(index, classname)` — **`AddIngredient` no existe**.
-- El typo oficial es `RegisterRecipies()` (doble i). Patron mod verificado en produccion:
+- `MAX_NUMBER_OF_INGREDIENTS = 2` (`recipebase.c:1`) — recipes are physically limited to 2
+  ingredients; `MAXIMUM_RESULTS = 10`.
+- Real API: `InsertIngredient(index, classname)` — **`AddIngredient` does not exist**.
+- The official typo is `RegisterRecipies()` (double i). Mod pattern verified in production:
   `modded class PluginRecipesManagerBase { override void RegisterRecipies() { super.RegisterRecipies(); RegisterRecipe(new MyRecipe); } }`.
-- `CanDo()` base rechaza ingredientes con attachments — override necesario para recetas con
-  armas/items con accesorios.
-- `m_ResultToInventory`: solo `-1` (a inventario) funciona; la rama swap `>= 0` esta comentada en
-  `SpawnItems`. `SetIsCacheable` no existe.
-- (hasta 1.29: `TransferItemProperties` sobre un resultado con `m_ResultReplacesIngredient` podia pisar la salud de `m_ResultInheritsHealth`). (desde 1.30 Exp: se llama `TransferItemProperties(ingr, res, true, true, false, false)` — `transfer_health = false` — `RecipeBase.c:353`. Firma: `MiscGameplayFunctions.c:269`. Nuevo: `PluginRecipesManager.GetRecipeClassName(int recipe_id)` en `:84`, no en `:54`.)
+- Base `CanDo()` rejects ingredients with attachments — override required for recipes with
+  weapons/items with attachments.
+- `m_ResultToInventory`: only `-1` (to inventory) works; the swap branch `>= 0` is commented out in
+  `SpawnItems`. `SetIsCacheable` does not exist.
+- (through 1.29: `TransferItemProperties` on a result with `m_ResultReplacesIngredient` could overwrite health from `m_ResultInheritsHealth`). (since 1.30 Exp: `TransferItemProperties(ingr, res, true, true, false, false)` is called — `transfer_health = false` — `RecipeBase.c:353`. Signature: `MiscGameplayFunctions.c:269`. New: `PluginRecipesManager.GetRecipeClassName(int recipe_id)` at `:84`, not at `:54`.)
 
 ### ComponentEnergyManager (quick facts)
-- `MAX_SOCKETS_COUNT = 4` hardcodeado (`componentenergymanager.c:77`).
-- `energyStorageMax` es opcional: si solo defines `energyAtSpawn`, ese valor actua como maximo.
-- La cadena de energia es recursiva: `ConsumeEnergy()`/`CanWork()` recorren las fuentes hacia arriba
-  (limite de seguridad 500 ciclos).
-- `OnSwitchOn/Off` dispara en AMBOS lados; `OnWorkStart/OnWork/OnWorkStop` solo server/SP — la
-  sincronizacion real va por `SetSynchDirty`.
-- `compatiblePlugTypes` ausente en config => el socket acepta todos los plugs.
+- `MAX_SOCKETS_COUNT = 4` hardcoded (`componentenergymanager.c:77`).
+- `energyStorageMax` is optional: if you only define `energyAtSpawn`, that value acts as maximum.
+- The energy chain is recursive: `ConsumeEnergy()`/`CanWork()` traverse sources upwards
+  (safety limit 500 cycles).
+- `OnSwitchOn/Off` fires on BOTH sides; `OnWorkStart/OnWork/OnWorkStop` server/SP only — real
+  synchronization goes through `SetSynchDirty`.
+- `compatiblePlugTypes` absent in config => the socket accepts all plugs.
 
 ### Action system (additions)
-- `AddAction(typename)` en `SetActions()` registra un **singleton global por tipo de input** — no hay
-  acciones por instancia ni registro dinamico en runtime.
-- `CCTCursor` mide desde el hit-pos del raycast `ObjIntersectView` (exige View Geometry LOD);
-  `CCTObject` mide desde `GetPosition()` del target. Si una accion no aparece y el modelo no tiene
-  ViewGeo, revisa el LOD primero (skill `dayz-physics-engine`, truth #2).
-- (hasta 1.29: distancia CCT desde hit-pos / `GetPosition()`, a menudo via hueso Head). (desde 1.30 Exp: `CCTCursor` y `CCTCursorInherited` miden tambien `MiscGameplayFunctions.GetPlayerHeadPosition` — altura de stance, no hueso Head — `CCTCursor.c:27-28`, `CCTCursorInherited.c:28-32`, `MiscGameplayFunctions.c:748`. Nuevo `CCTLiquid` (ctor `:37`) sustituye el uso vanilla de `CCTWaterSurfaceEx` en fill/drink/wash. `Can()` de un CCT custom no cambia de firma.)
+- `AddAction(typename)` in `SetActions()` registers a **global singleton per input type** — there are no
+  per-instance actions nor dynamic runtime registration.
+- `CCTCursor` measures from the hit-pos of the `ObjIntersectView` raycast (requires View Geometry LOD);
+  `CCTObject` measures from target's `GetPosition()`. If an action does not appear and the model lacks
+  ViewGeo, check the LOD first (skill `dayz-physics-engine`, truth #2).
+- (through 1.29: CCT distance from hit-pos / `GetPosition()`, often via Head bone). (since 1.30 Exp: `CCTCursor` and `CCTCursorInherited` also measure `MiscGameplayFunctions.GetPlayerHeadPosition` — stance height, not Head bone — `CCTCursor.c:27-28`, `CCTCursorInherited.c:28-32`, `MiscGameplayFunctions.c:748`. New `CCTLiquid` (ctor `:37`) replaces vanilla use of `CCTWaterSurfaceEx` in fill/drink/wash. `Can()` of a custom CCT does not change signature.)
 
 ### Damage pipeline (quick facts)
 - `ProcessDirectDamage(damageType, source, componentName, ammoName, modelPos, damageCoef, flags)`
-  (`object.c:1134`) — `componentName` es el nombre de la **DamageZone**, no el componente del modelo.
-- `damageCoef` multiplica el danio base del CfgAmmo. En TransportHit vanilla, coef = velocidad en m/s
+  (`object.c:1134`) — `componentName` is the name of the **DamageZone**, not the model component.
+- `damageCoef` multiplies the base damage of CfgAmmo. In vanilla TransportHit, coef = speed in m/s
   (`entityai.c:4086-4116`).
-- `EEHitBy` es server-only; `EEHitByRemote` corre en el cliente que golpeo. `DecreaseHealth` bypasea
-  el pipeline (sin EEHitBy/animacion/bleeding).
-- `ProcessIndirectDamage` NO existe en script; danio en radio =
+- `EEHitBy` is server-only; `EEHitByRemote` runs on the client that hit. `DecreaseHealth` bypasses
+  the pipeline (no EEHitBy/animation/bleeding).
+- `ProcessIndirectDamage` DOES NOT exist in script; radius damage =
   `DamageSystem.ExplosionDamage(source, null, ammo, pos, DamageType.EXPLOSION)` (`damagesystem.c:25`).
-- `GetProtectionLevel` cubre solo DEF_BIOLOGICAL/DEF_CHEMICAL (hazmat) — la absorcion balistica de la
-  ropa es C++/config, sin API script.
-- Flujo TransportHit completo linea a linea: skill `dayz-physics-engine`,
+- `GetProtectionLevel` covers only DEF_BIOLOGICAL/DEF_CHEMICAL (hazmat) — ballistic absorption of
+  clothing is C++/config, with no script API.
+- Full TransportHit flow line by line: skill `dayz-physics-engine`,
   `references/dano-transporthit.md`.
 
 ### Player internals — sync (quick facts)
-- La stamina sincroniza por **SyncJuncture** (`SJ_STAMINA`), no por `SetSynchDirty`
-  (`staminahandler.c:797-805`). `EStaminaModifiers.PUSH_CAR` y `EStaminaConsumers.PUSH` ya existen
-  (`estaminamodifiers.c:13`) -> `DepleteStaminaEx` para costes custom.
-- `eModifierSyncIDs`: solo 7 bits usados — `0x80..0x80000000` libres para modifiers custom
-  sincronizados (`emodifiers.c:3-17`).
-- `PlayerStatsPCO` usa indices POSICIONALES: un stat custom via `modded PlayerStatsPCO_current`
-  necesita indice > 10 o corrompe la serializacion (`playerstatspco.c:312`).
-- Modifiers custom: el `Init()` de `ModifiersManager` hardcodea la lista -> patron
-  `modded class ModifiersManager`. `CfgAgents` NO existe: los agentes son clases script registradas
-  en `PluginTransmissionAgents`.
+- Stamina syncs via **SyncJuncture** (`SJ_STAMINA`), not via `SetSynchDirty`
+  (`staminahandler.c:797-805`). `EStaminaModifiers.PUSH_CAR` and `EStaminaConsumers.PUSH` already exist
+  (`estaminamodifiers.c:13`) -> `DepleteStaminaEx` for custom costs.
+- `eModifierSyncIDs`: only 7 bits used — `0x80..0x80000000` free for custom synchronized
+  modifiers (`emodifiers.c:3-17`).
+- `PlayerStatsPCO` uses POSITIONAL indices: a custom stat via `modded PlayerStatsPCO_current`
+  needs index > 10 or it corrupts serialization (`playerstatspco.c:312`).
+- Custom modifiers: `ModifiersManager` `Init()` hardcodes the list -> pattern
+  `modded class ModifiersManager`. `CfgAgents` DOES NOT exist: agents are script classes registered
+  in `PluginTransmissionAgents`.

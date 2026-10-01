@@ -35,7 +35,7 @@ Symptoms: equipped clothing shows at the floor, floats, clips, or is rotated.
 
 ```bash
 # py3d DayZ fork >= 1.6.0. Pick ONE route; both end in the same assert below.
-# NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
+# NEVER `pip install py3d` (PyPI = point-cloud lib) NOR git+upstream (without guards).
 #
 # Route A - this pack is checked out:
 pip install -e tools/py3d
@@ -219,7 +219,7 @@ same MLOD format.
 - **External ODOL→MLOD backend** — required for vanilla worn meshes and binarized hosts; not distributed with this pack (`--odol-backend` / `DAYZ_ODOL_BACKEND_ROOT`).
 - **dayz-p3d-audit** / **dayz-pbo-build** — audit the aligned .p3d and validate before packing.
 
-## Crew proxies de vehículos (added 2026-06-05)
+## Vehicle crew proxies (added 2026-06-05)
 
 The angle-sort frame convention above (widest-angle corner = anchor; middle = +Y;
 smallest = +Z) and the 90/45/45 isosceles gotcha are NOT clothing/mannequin-only. They

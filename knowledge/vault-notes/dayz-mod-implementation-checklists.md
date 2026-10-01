@@ -1,17 +1,17 @@
 # DayZ Mod — Implementation Checklists (Claude + Codex)
 
-> Conocimiento técnico transversal del modding DayZ. Legible por Claude (skill `dayz-mod-workflow`) y por Codex (debe leer este archivo antes de implementar features de DayZ).
+> Cross-cutting technical knowledge of DayZ modding. Readable by Claude (`dayz-mod-workflow` skill) and by Codex (must read this file before implementing DayZ features).
 >
-> Proceso (cuándo y cómo) → [`00_System/workflow.md`](../00_System/workflow.md) + skill `dayz-mod-workflow`.
-> Este archivo es **qué** verificar, no **cuándo** verificar.
+> Process (when and how) → [`00_System/workflow.md`](../00_System/workflow.md) + `dayz-mod-workflow` skill.
+> This file is **what** to verify, not **when** to verify.
 >
-> Mantenimiento: añadir entradas con `path:line` o fuente concreta (R2 cite-then-verify). Si una entrada se observa fallar en producción, anotarla en `bug-ledger.md` del proyecto + actualizar el catálogo al final.
+> Maintenance: add entries with `path:line` or concrete source (R2 cite-then-verify). If an entry is observed failing in production, log it in project `bug-ledger.md` + update catalog at the end.
 
 ---
 
-## 1. Client/server data map (obligatorio antes de cualquier feature con estado/acción/UI)
+## 1. Client/server data map (mandatory before any feature with state/action/UI)
 
-Rellena la tabla por feature antes de escribir código:
+Fill in table per feature before writing code:
 
 ```
 | Dato                | CLIENT? | SERVER? | Bridge mechanism     |
@@ -21,65 +21,65 @@ Rellena la tabla por feature antes de escribir código:
 
 Reglas duras (verificadas contra `vanilla EntityAI.c`):
 
-- **Tipos de SyncVar**: Bool, BoolSignal, Int, Float, Object. **No** strings. `RegisterNetSyncVariableString` no existe.
-- **Alineamiento de bitstream**: cliente y servidor registran los mismos SyncVars en el mismo orden. El mismatch corrompe TODOS los datos sincronizados sin error visible.
-- **`ActionCondition()`** corre **solo en cliente** para mostrar la acción en el menú. Todo dato accedido ahí debe estar disponible en cliente.
-- **Métodos con sufijo `Server`** (`OnStartServer`, `OnFinishServer`, `OnUpdateServer`) corren en servidor. Datos server-only aquí.
-- El servidor **no** re-ejecuta `Can()` ni `ActionCondition()`. Confía en la selección del cliente y valida vía `SetupAction()`.
-- Si necesitas un string en cliente → ScriptRPC que rellena cache local, o codifica como hash int vía SyncVar.
-- **Si dudas si un dato es client-available → trátalo como no disponible.**
+- **SyncVar types**: Bool, BoolSignal, Int, Float, Object. **No** strings. `RegisterNetSyncVariableString` does not exist.
+- **Bitstream alignment**: client and server register same SyncVars in same order. Mismatch corrupts ALL synchronized data without visible error.
+- **`ActionCondition()`** runs **client-only** to display action in menu. Any data accessed there must be client-available.
+- **Methods with `Server` suffix** (`OnStartServer`, `OnFinishServer`, `OnUpdateServer`) run on server. Server-only data here.
+- Server does **not** re-execute `Can()` or `ActionCondition()`. It trusts client selection and validates via `SetupAction()`.
+- If you need a string on client → ScriptRPC populating local cache, or encode as int hash via SyncVar.
+- **If in doubt whether data is client-available → treat it as unavailable.**
 
 ---
 
-## 2. Checklists por tipo de archivo
+## 2. Checklists by file type
 
 ### 2.1 config.cpp
 
-- [ ] `CfgPatches` nombre de clase = nombre de la carpeta del addon.
-- [ ] `requiredAddons` usa nombres de clases de CfgPatches:
-  - CommunityFramework: `"JM_CF_Scripts"` (no `"CommunityFramework"`).
-  - DabsFramework: `"DF_Scripts"` o `"DF_GUI"` (no `"DabsFramework"`).
+- [ ] `CfgPatches` class name = addon folder name.
+- [ ] `requiredAddons` uses CfgPatches class names:
+  - CommunityFramework: `"JM_CF_Scripts"` (not `"CommunityFramework"`).
+  - DabsFramework: `"DF_Scripts"` or `"DF_GUI"` (not `"DabsFramework"`).
   - Vanilla: `"DZ_Data"`, `"DZ_Scripts"`.
-- [ ] `hiddenSelections[]` cuenta = `hiddenSelectionsTextures[]` cuenta.
-- [ ] `scope = 2` spawnable, `1` referencia, `0` abstracto.
-- [ ] La herencia: padre existe o está en `requiredAddons`.
-- [ ] **Override de clase anidada de vehículo (`class SimulationModule: SimulationModule`, `class Axles: Axles`, `class Front: Front`, `class Rear: Rear`, `class DamageZones: DamageZones`, etc.)**: la base referenciada con `: X` DEBE estar declarada como forward-ref `class X;` en el root de ESTE `CfgVehicles`. Cada `config.cpp` se parsea con su propio scope — un mod hijo NO hereda las forward-refs del config del PBO padre. Sin ellas → CfgConvert da `Undefined base class 'X'` (compile-blocking, el mod no carga). Las clases anidadas SIN `: parent` (Engine, Steering, Gearbox, Differential, Suspension…) mergean implícito y NO necesitan forward-ref. Ver E24.
-- [ ] **`ProcessDirectDamage` primer argumento = `DamageType.FIRE_ARM`** (enum, `damagesystem.c`), NO `DT_FIRE_ARM` (alias inexistente en vanilla actual, solo en un comentario). Ver E25.
-- [ ] `inventorySlot` = string para uno, `inventorySlot[]` = array para varios. (Bug T148506: mezclar formas rompe attachment silently.)
-- [ ] `ghostIcon`: `"set:setname image:imagename"`. Verifica que el imageset existe.
-- [ ] `imageSets` dentro de `CfgMods > Mod > defs > imageSets` — **no** en root ni en CfgSlots.
+- [ ] `hiddenSelections[]` count = `hiddenSelectionsTextures[]` count.
+- [ ] `scope = 2` spawnable, `1` reference, `0` abstract.
+- [ ] Inheritance: parent exists or is in `requiredAddons`.
+- [ ] **Vehicle nested class override (`class SimulationModule: SimulationModule`, `class Axles: Axles`, `class Front: Front`, `class Rear: Rear`, `class DamageZones: DamageZones`, etc.)**: base referenced with `: X` MUST be declared as forward-ref `class X;` in root of THIS `CfgVehicles`. Each `config.cpp` is parsed with its own scope — a child mod does NOT inherit forward-refs from parent PBO config. Without them → CfgConvert gives `Undefined base class 'X'` (compile-blocking, mod does not load). Nested classes WITHOUT `: parent` (Engine, Steering, Gearbox, Differential, Suspension…) merge implicitly and do NOT need forward-ref. See E24.
+- [ ] **`ProcessDirectDamage` first argument = `DamageType.FIRE_ARM`** (enum, `damagesystem.c`), NOT `DT_FIRE_ARM` (non-existent alias in current vanilla, only in a comment). See E25.
+- [ ] `inventorySlot` = string for one, `inventorySlot[]` = array for several. (Bug T148506: mixing forms silently breaks attachment.)
+- [ ] `ghostIcon`: `"set:setname image:imagename"`. Verify imageset exists.
+- [ ] `imageSets` inside `CfgMods > Mod > defs > imageSets` — **not** in root or CfgSlots.
 
 ### 2.2 Enforce Script — general
 
-Las reglas completas viven en la skill `enforce-script-reference`. Restricciones verificadas clave:
+Full rules live in `enforce-script-reference` skill. Key verified restrictions:
 
-- [ ] **Sin operadores ternarios** (`? :` no compila).
-- [ ] `ref` **solo** en member fields, nunca en locals/params/returns/typedefs.
-- [ ] **Nunca** uses la keyword `delete` (segfault si quedan referencias).
-- [ ] `foreach` funciona, pero **nunca** directamente sobre el return de un getter (NPE en la 2ª iteración). Asigna a local primero.
-- [ ] Prefijo `m_` en todos los member fields.
-- [ ] Sin `new` dentro de ticks periódicos → usa `m_` field + `.Clear()`.
-- [ ] Expresiones complejas en asignaciones de array pueden segfault → romper en local var primero.
+- [ ] **No ternary operators** (`? :` does not compile).
+- [ ] `ref` **only** on member fields, never on locals/params/returns/typedefs.
+- [ ] **Never** use `delete` keyword (segfault if references remain).
+- [ ] `foreach` works, but **never** directly on a getter return (NPE on 2nd iteration). Assign to local first.
+- [ ] Prefix `m_` on all member fields.
+- [ ] No `new` inside periodic ticks → use `m_` field + `.Clear()`.
+- [ ] Complex expressions in array assignments can segfault → break into local var first.
 
 ### 2.3 Networking
 
-- [ ] `RegisterNetSyncVariable*` se llama en el **constructor**, no en `Init`.
-- [ ] Tipos: Bool, Int, Float, Object. **No** strings.
-- [ ] Mismas vars, mismo orden en cliente y servidor (bitstream alignment).
-- [ ] Override de `OnVariablesSynchronized` para cada SyncVar registrada.
-- [ ] Guard servidor: `GetGame().IsDedicatedServer()` (no `IsServer()` — devuelve true en cliente durante load).
-- [ ] Guard cliente: `!GetGame().IsDedicatedServer()` (no `IsClient()` — devuelve false en cliente durante load).
-- [ ] `SetSynchDirty()` tras cada escritura de SyncVar en servidor.
+- [ ] `RegisterNetSyncVariable*` is called in the **constructor**, not in `Init`.
+- [ ] Types: Bool, Int, Float, Object. **No** strings.
+- [ ] Same vars, same order on client and server (bitstream alignment).
+- [ ] Override `OnVariablesSynchronized` for each registered SyncVar.
+- [ ] Server guard: `GetGame().IsDedicatedServer()` (not `IsServer()` — returns true on client during load).
+- [ ] Client guard: `!GetGame().IsDedicatedServer()` (not `IsClient()` — returns false on client during load).
+- [ ] `SetSynchDirty()` after each SyncVar write on server.
 
 ### 2.4 UI / Layout
 
-- [ ] La ruta del `.layout` empareja con `$PBOPREFIX$`.
-- [ ] Nombres de widget = referencias en script, exactos (case sensitive).
-- [ ] Dabs MVC: widget names = ViewController property names, exactos.
-- [ ] `ScriptViewMenu` ghost-menu guard: `if (layoutRoot)` antes de operar.
-- [ ] Input lock: `ChangeGameFocus(1)` al abrir, reverso al cerrar.
-- [ ] Cursor: `ShowUICursor(true)` al abrir, reverso al cerrar.
-- [ ] Cleanup en destructor / `OnHide`: quita handlers, anula refs.
+- [ ] `.layout` path matches `$PBOPREFIX$`.
+- [ ] Widget names = script references, exact (case sensitive).
+- [ ] Dabs MVC: widget names = ViewController property names, exact.
+- [ ] `ScriptViewMenu` ghost-menu guard: `if (layoutRoot)` before operating.
+- [ ] Input lock: `ChangeGameFocus(1)` on open, reverse on close.
+- [ ] Cursor: `ShowUICursor(true)` on open, reverse on close.
+- [ ] Cleanup in destructor / `OnHide`: remove handlers, null refs.
 
 ### 2.5 Actions
 
@@ -95,191 +95,191 @@ Pipeline `Can()` verificado contra `vanilla ActionBase.c`:
 7. FullBody stance    — verifica transición de stance si aplica
 ```
 
-- [ ] `CreateConditionComponents` overrideado con CCT/CCI correcto.
-- [ ] `ActionCondition` usa solo datos client-available (ver §1).
-- [ ] Target type: `GetType()` para exacto, `IsKindOf()` para herencia.
-- [ ] **Items no recogibles**: usa `RemoveAction(ActionTakeItem)` + `RemoveAction(ActionTakeItemToHands)`. **Mantén** `IsTakeable=true`. (`IsTakeable=false` esconde el item de la vicinity panel pero **no** bloquea custom actions.)
-- [ ] Overrides de `CanPutInCargo()` / `CanPutIntoHands()` si el item no debe almacenarse.
-- [ ] La clave de stringtable existe, o usa string hardcoded para testing.
+- [ ] `CreateConditionComponents` overridden with correct CCT/CCI.
+- [ ] `ActionCondition` uses client-available data only (see §1).
+- [ ] Target type: `GetType()` for exact, `IsKindOf()` for inheritance.
+- [ ] **Non-pickup items**: use `RemoveAction(ActionTakeItem)` + `RemoveAction(ActionTakeItemToHands)`. **Keep** `IsTakeable=true`. (`IsTakeable=false` hides item from vicinity panel but does **not** block custom actions.)
+- [ ] Overrides of `CanPutInCargo()` / `CanPutIntoHands()` if item should not be stored.
+- [ ] Stringtable key exists, or use hardcoded string for testing.
 
 ### 2.6 .rvmat materials
 
-- [ ] Stage2 DT: `color(0.5,0.5,0.5,0.5,DT)` — alpha 0.5, no 1.0.
-- [ ] Stage4 AS: `color(0,1,1,1)` — **sin** sufijo "AS", R=0.
-- [ ] Stage6 fresnel: copia de un vanilla ref del mismo tipo de shader.
-- [ ] Damage / destruct: usa vanilla `generic_damage_mc.paa` / `generic_destruct_mc.paa`.
-- [ ] `forcedDiffuse` alpha: `0,0,0,1`, no `0,0,0,0`.
-- [ ] **Compara cada stage** contra un .rvmat vanilla que funciona del mismo shader.
+- [ ] Stage2 DT: `color(0.5,0.5,0.5,0.5,DT)` — alpha 0.5, not 1.0.
+- [ ] Stage4 AS: `color(0,1,1,1)` — **without** "AS" suffix, R=0.
+- [ ] Stage6 fresnel: copy of vanilla ref of same shader type.
+- [ ] Damage / destruct: uses vanilla `generic_damage_mc.paa` / `generic_destruct_mc.paa`.
+- [ ] `forcedDiffuse` alpha: `0,0,0,1`, not `0,0,0,0`.
+- [ ] **Compare each stage** against a working vanilla .rvmat of the same shader.
 
 ### 2.7 Persistence (OnStoreSave / OnStoreLoad)
 
-- [ ] El campo `version` lo gestiona el **engine** — no lo serialices manualmente. `OnStoreLoad(ctx, version)` recibe `version` como parámetro.
-- [ ] Save y Load en **exactamente** el mismo orden (binario secuencial).
-- [ ] Cada `ctx.Write()` tiene su `ctx.Read()` en la misma posición.
-- [ ] `super.OnStoreSave(ctx)` / `super.OnStoreLoad(ctx, version)` **primero**.
-- [ ] Comprueba el return de cada `ctx.Read()` → `return false` en fallo.
-- [ ] `AfterStoreLoad` para post-load init (no en `OnStoreLoad`).
-- [ ] Test: borra los archivos de persistencia → verifica arranque limpio.
+- [ ] `version` field is managed by the **engine** — do not serialize it manually. `OnStoreLoad(ctx, version)` receives `version` as parameter.
+- [ ] Save and Load in **exactly** the same order (sequential binary).
+- [ ] Each `ctx.Write()` has its `ctx.Read()` at the same position.
+- [ ] `super.OnStoreSave(ctx)` / `super.OnStoreLoad(ctx, version)` **first**.
+- [ ] Check return of each `ctx.Read()` → `return false` on failure.
+- [ ] `AfterStoreLoad` for post-load init (not in `OnStoreLoad`).
+- [ ] Test: delete persistence files → verify clean start.
 
-### 2.8 Edge cases — patrones lógicos
+### 2.8 Edge cases — logical patterns
 
-Aplica para cualquier feature con colecciones, estado o lifecycle:
+Applies to any feature with collections, state, or lifecycle:
 
-- [ ] **Colección vacía (count=0)**: el cuerpo del loop no se ejecuta. Notifica **antes** de limpiar, no después.
-- [ ] **Estado null/vacío**: sin grupo, sin bandera, sin items en slots. Guard nullcheck antes de cada acceso.
-- [ ] **Transiciones de estado**: `active→abandoned`, `raised→lowered`, `powered→unpowered`. La cache se actualiza en **cada** transición y la UI refleja el nuevo estado.
-- [ ] **Cache vs lifecycle de entidad**: si la entidad se destruye, ¿la cache se limpia?
-- [ ] **Reconexión de jugador**: el cache cliente se pierde al desconectar. ¿Cómo se reconstruye? (RPC al conectar, re-sync de SyncVar.)
-- [ ] **Operaciones concurrentes**: dos jugadores actuando sobre la misma entidad simultáneamente.
+- [ ] **Empty collection (count=0)**: loop body does not execute. Notify **before** clearing, not after.
+- [ ] **Null/empty state**: no group, no flag, no items in slots. Guard nullcheck before each access.
+- [ ] **State transitions**: `active→abandoned`, `raised→lowered`, `powered→unpowered`. Cache is updated on **each** transition and UI reflects new state.
+- [ ] **Cache vs entity lifecycle**: if entity is destroyed, is cache cleared?
+- [ ] **Player reconnection**: client cache is lost upon disconnect. How is it rebuilt? (RPC on connect, SyncVar re-sync.)
+- [ ] **Concurrent operations**: two players acting on same entity simultaneously.
 
-### 2.9 Refactor — state coherence (obligatorio al consolidar lógica alrededor de side-effects)
+### 2.9 Refactor — state coherence (mandatory when consolidating logic around side-effects)
 
-Un refactor que mueve un guard / validación / rate-limit a través de una llamada engine irreversible (`super.OnStartServer`, `super.OnExecuteServer`, `ObjectDelete`, RPC send, `SetSynchDirty`, file write) puede introducir **orphan state**: el engine hizo medio trabajo, el guard rechaza el resto, el mundo queda incoherente.
+A refactor moving a guard / validation / rate-limit across an irreversible engine call (`super.OnStartServer`, `super.OnExecuteServer`, `ObjectDelete`, RPC send, `SetSynchDirty`, file write) can introduce **orphan state**: engine did half the work, guard rejects the rest, world remains incoherent.
 
-**Para cada `return` / early-exit del refactor**, lista:
+**For each `return` / early-exit of the refactor**, list:
 
-- ¿Qué estado engine irreversible se ha mutado hasta este punto?
-- Si volvemos ahora, ¿el mundo queda en estado coherente?
+- What irreversible engine state has been mutated up to this point?
+- If we return now, does the world remain in a coherent state?
 
-Si la 2ª respuesta es "no" → el guard está en el sitio equivocado. Muévelo **antes** de la llamada irreversible.
+If the 2nd answer is "no" → guard is in the wrong place. Move it **before** the irreversible call.
 
 Patrones de orphan verificados:
 
-- **ORPHAN-1**: rate-limit / validación **después** de `super.OnStartServer` de una acción open/toggle. El super ya flipped `IsOpen()`; rechazar el follow-up deja contenedor físicamente abierto con cargo virtualizado en `.lfv`. Fix: rate-limit pre-super, gated en intent inferido. Ref: `LFV_ActionProbe.RateLimitAllowsOpen` en LF_VStorage Capa 6 v3.1.
-- **ORPHAN-2**: escritura de SyncVar entre `SetSynchDirty()` no coordinados con el orden de registro del constructor. Bitstream desync silencioso. Fix: registra y escribe en el mismo orden fijo; un `SetSynchDirty()` por batch coherente.
-- **ORPHAN-3**: destrucción de entidad dentro de `foreach` sobre un registry, continuando el loop. Stale ref → NPE/crash. Fix: recoger entities-a-borrar en array temporal, borrar tras el foreach.
+- **ORPHAN-1**: rate-limit / validation **after** `super.OnStartServer` of an open/toggle action. The super already flipped `IsOpen()`; rejecting follow-up leaves container physically open with cargo virtualized in `.lfv`. Fix: pre-super rate-limit, gated on inferred intent. Ref: `LFV_ActionProbe.RateLimitAllowsOpen` in LF_VStorage Layer 6 v3.1.
+- **ORPHAN-2**: SyncVar write across `SetSynchDirty()` uncoordinated with constructor registration order. Silent bitstream desync. Fix: register and write in same fixed order; one `SetSynchDirty()` per coherent batch.
+- **ORPHAN-3**: entity destruction inside `foreach` over a registry, continuing loop. Stale ref → NPE/crash. Fix: collect entities-to-delete in temporary array, delete after foreach.
 
 Reglas de proceso:
 
-- **"Preserva el comportamiento original" es un NO-objetivo** cuando el original tiene bugs. Cada "preserved" es una hipótesis a verificar, no un hecho a defender.
-- **"Pre-existente / no introducido por el refactor" no es exención.** Para el audit, exige signoff explícito (fix-now / flag-for-later).
-- **Cuando se cace un orphan, hacer sibling-grep cross-codebase** — el bug rara vez vive en un solo sitio.
+- **"Preserve original behavior" is a NON-goal** when original has bugs. Each "preserved" is a hypothesis to verify, not a fact to defend.
+- **"Pre-existing / not introduced by refactor" is not an exemption.** For the audit, demand explicit signoff (fix-now / flag-for-later).
+- **When an orphan is caught, run sibling-grep cross-codebase** — the bug rarely lives in a single place.
 
 ---
 
-## 3. Debug / fix hierarchy (top-down, obligatorio cuando algo "no funciona")
+## 3. Debug / fix hierarchy (top-down, mandatory when something "does not work")
 
-Cuando algo falla tras implementar, diagnostica de arriba abajo. **Nunca debuguees la capa N+1 hasta confirmar que la N funciona.**
+When something fails after implementing, diagnose top-down. **Never debug layer N+1 until confirming that layer N works.**
 
-**Capa 1 — Config/Engine**
-- [ ] `scope` correcto en `config.cpp`.
-- [ ] Hereda del padre correcto.
-- [ ] Config compila sin errores.
+**Layer 1 — Config/Engine**
+- [ ] Correct `scope` in `config.cpp`.
+- [ ] Inherits from correct parent.
+- [ ] Config compiles without errors.
 
-**Capa 2 — Entity setup**
-- [ ] La entidad spawnea en juego.
-- [ ] `IsTakeable` correcto (true para items con actions).
-- [ ] La clase base proporciona la funcionalidad esperada.
+**Layer 2 — Entity setup**
+- [ ] Entity spawns in game.
+- [ ] Correct `IsTakeable` (true for items with actions).
+- [ ] Base class provides expected functionality.
 
-**Capa 3 — Action registration**
-- [ ] `AddAction(MyAction)` en el override `SetActions()` de la entidad.
-- [ ] La clase de la action compila.
-- [ ] `CreateConditionComponents` setea el CCT/CCI correcto.
+**Layer 3 — Action registration**
+- [ ] `AddAction(MyAction)` in entity `SetActions()` override.
+- [ ] Action class compiles.
+- [ ] `CreateConditionComponents` sets correct CCT/CCI.
 
-**Capa 4 — Client conditions**
-- [ ] `ActionCondition()` usa solo datos client-available (§1).
-- [ ] Target type check correcto.
-- [ ] CCT range / component empareja con la distancia de interacción esperada.
+**Layer 4 — Client conditions**
+- [ ] `ActionCondition()` uses client-available data only (§1).
+- [ ] Correct target type check.
+- [ ] CCT range / component matches expected interaction distance.
 
-**Capa 5 — Server execution**
-- [ ] Los métodos server-side (`*Server()`) se ejecutan.
-- [ ] Permisos / validación pasan.
-- [ ] Las escrituras de datos tienen éxito.
+**Layer 5 — Server execution**
+- [ ] Server-side methods (`*Server()`) execute.
+- [ ] Permissions / validation pass.
+- [ ] Data writes succeed.
 
-**Capa 6 — Response path**
-- [ ] El RPC vuelve al cliente.
-- [ ] El client cache se actualiza.
-- [ ] La UI refresca.
+**Layer 6 — Response path**
+- [ ] RPC returns to client.
+- [ ] Client cache updates.
+- [ ] UI refreshes.
 
-Reglas:
-- Propón el fix **y explica por qué** antes de implementarlo.
-- Confianza < 90% → pregunta antes de aplicar.
-- Tras el fix: re-corre §2.8 (edge cases) por si el fix introdujo otro problema.
+Rules:
+- Propose fix **and explain why** before implementing it.
+- Confidence < 90% → ask before applying.
+- After fix: re-run §2.8 (edge cases) in case fix introduced another problem.
 
 ---
 
-## 4. Catálogo de errores recurrentes
+## 4. Catalog of recurring errors
 
-Errores cometidos más de una vez. Comprueba **activamente** durante la implementación.
+Errors made more than once. Check **actively** during implementation.
 
-| ID  | Error | Correcto | Fuente |
+| ID  | Error | Correct | Source |
 |-----|-------|----------|--------|
-| E01 | `requiredAddons[]={"DabsFramework"}` | `{"DF_Scripts"}` o `{"DF_GUI"}` | UILab, config.cpp |
-| E02 | `imageSets` en CfgSlots o root | Dentro de `CfgMods > Mod > defs > imageSets` | ArmorAddition |
-| E03 | Mismo nombre de variable en scopes hermanos | Hoist antes del condicional | UILab crash |
-| E04 | rvmat Stage4 con sufijo `AS` | `color(0,1,1,1)` sin sufijo, R=0 | ArmorAddition |
+| E01 | `requiredAddons[]={"DabsFramework"}` | `{"DF_Scripts"}` or `{"DF_GUI"}` | UILab, config.cpp |
+| E02 | `imageSets` in CfgSlots or root | Inside `CfgMods > Mod > defs > imageSets` | ArmorAddition |
+| E03 | Same variable name in sibling scopes | Hoist before conditional | UILab crash |
+| E04 | rvmat Stage4 with `AS` suffix | `color(0,1,1,1)` without suffix, R=0 | ArmorAddition |
 | E05 | rvmat Stage2 DT alpha=1.0 | Alpha=0.5: `color(0.5,0.5,0.5,0.5,DT)` | ArmorAddition |
-| E06 | rvmat fresnel adivinado | Copia del vanilla ref del mismo shader | ArmorAddition |
-| E07 | rvmat damage procedural | Usa `generic_damage_mc.paa` / `generic_destruct_mc.paa` | ArmorAddition |
-| E08 | Asumir que una función existe porque "tiene sentido" | Verifica en skill, vanilla, o internet | Múltiples |
-| E09 | Seguir más allá de la saturación de contexto | Para, checkpoint, handoff a `30_Sessions/` | Múltiples |
+| E06 | rvmat fresnel guessed | Copy from vanilla ref of same shader | ArmorAddition |
+| E07 | rvmat procedural damage | Use `generic_damage_mc.paa` / `generic_destruct_mc.paa` | ArmorAddition |
+| E08 | Assuming a function exists because it "makes sense" | Verify in skill, vanilla, or internet | Multiple |
+| E09 | Continuing beyond context saturation | Stop, checkpoint, handoff to `30_Sessions/` | Multiple |
 | E10 | `forcedDiffuse` alpha 0 | Alpha 1: `0,0,0,1` | ArmorAddition |
-| E11 | String en `ActionCondition` (cliente) | Strings no syncables. Cache cliente o int ID | SimpleGroup |
-| E12 | `IsTakeable=false` para evitar pickup | `RemoveAction(ActionTakeItem/ToHands)`. `IsTakeable=false` solo esconde de vicinity, custom actions siguen | SimpleGroup |
-| E13 | Notificar **después** de limpiar colección | Loop sobre 0 = 0 notificaciones. Notifica antes | SimpleGroup |
-| E14 | Debug downstream sin verificar upstream | Sigue jerarquía §3. Comprueba IsTakeable/AddAction antes de ActionCondition | SimpleGroup |
-| E15 | Cache no se limpia en transición de estado | Cada cambio de estado → actualiza cache (cliente + servidor) | SimpleGroup |
-| E16 | Fix sin mapear el boundary client/server | Completa §1 antes de escribir el fix | SimpleGroup |
-| E17 | SyncVar bitstream cliente/servidor mismatch | Mismas vars, mismo orden, ambos lados | CF Issue #143 |
-| E18 | `IsServer()` / `IsClient()` para guard | Usa `IsDedicatedServer()` / `!IsDedicatedServer()` | Expansion Pitfalls |
-| E19 | `version` serializada manualmente | El engine la gestiona. Usa el param `version` de `OnStoreLoad` | vanilla EntityAI.c |
-| E20 | Culpar p3d/config por un bug de placement cuando la causa está en `Hologram.c` de otro mod | Grep `modded class Hologram` en TODOS los mods cargados antes de tocar p3d. A6_Base_Storage, BBP, etc. reescriben `GetProjectionEntityPosition`/`EvaluateCollision` | Chests stacking |
-| E21 | Rate-limit / validación post-`super.OnXxxServer` → orphan state | Pre-super, gated en intent inferido. Ver §2.9 ORPHAN-1 | LF_VStorage Capa 6 v3.1 |
-| E22 | "Preserves original behavior" tratado como audit-pass cuando el original tiene bugs | No-objetivo. Cada preserved es hipótesis. Ver §2.9 reglas de proceso | LF_VStorage Capa 6 v3→v3.1 |
-| E23 | Patrón sketchy etiquetado "pre-existing" y arrastrado en silencio | Stop, signoff explícito, sibling-grep cross-codebase | LF_VStorage Capa 6 v3→v3.1 |
-| E24 | Override de clase anidada de vehículo (`class SimulationModule: SimulationModule`, `Axles`, `Front`, `Rear`…) en un mod hijo SIN declarar la forward-ref `class X;` en el root del propio CfgVehicles → CfgConvert `Undefined base class 'X'` (compile-blocking) | Declarar `class SimulationModule; class Axles; class Front; class Rear;` (las que use el override) en el root del CfgVehicles del mod hijo. Cada config.cpp tiene su propio scope; no hereda forward-refs del PBO padre | kt_roadkill_armed bug-003 |
-| E25 | `ProcessDirectDamage(DT_FIRE_ARM, ...)` copiado de un source (BRDM-2) → `DT_FIRE_ARM` no es símbolo vanilla (solo comentario en `object.c`) → compile fail | `DamageType.FIRE_ARM` (enum en `damagesystem.c`). Los `DT_*` que veas en sources de otros mods pueden ser alias propios no portables | kt_roadkill_armed bug-002 |
-| E26 | `modded`/`extends` class re-declara una variable miembro que la base vanilla ya declara (ej. `m_NoiseSystem` en `CarScript`) → compile `Multiple declaration of variable 'X'` | NO re-declarar; reusar la heredada (CarScript ya inicializa `m_NoiseSystem`/`m_NoisePar`). Check proactivo antes de compilar: grep cada `m_*` propia contra la cadena base (carscript.c, car.c, transport.c, entityai.c, itembase.c) | kt_roadkill_armed bug-004 |
-| E27 | Override con nombre de parámetro distinto al de la firma base (ej. `OnExecuteServer(ActionData actionData)` cuando la base usa `action_data`) → compile `Can't find variable 'X'`. Enforce NO es como C++/C#: el nombre del param en un `override` DEBE coincidir con la base | Copiar la firma con los nombres de param EXACTOS de la base. Verificar contra el archivo vanilla de la clase base (grep la def del método) | kt_roadkill_armed bug-006 |
-| E28 | `attachments[] += {...}` en un mod HIJO (clase que hereda de un vehículo en OTRO PBO) NO hereda la lista del base — el config parseado queda con SOLO los items del `+=`, rompiendo TODOS los slots (batería/ruedas/puertas). Verificado con CfgConvert -xml | Materializar `attachments[] = {...}` con la lista COMPLETA del base + los nuevos al final. No confiar en `+=` sobre un parent de otro PBO | kt_roadkill_armed bug-007 |
-| E29 | Override de clase anidada de vehículo (`SimulationModule`/`Axles`/`Front`/`Rear`) con `: X` que resuelve a forward-refs VACÍAS, omitiendo sub-bloques (`class wheels`) → SimulationModule malformado, vehículo a medias (no entras, slots/ruedas rotos). NO es solo "compila": carga y rompe gameplay | Replicar el patrón del config original: `class SimulationModule: SimulationModule` pero dentro `class Axles`/`Front`/`Rear` SIN `: X` y CON `class wheels` completo (Left/Right). O no overridear si solo cambias física menor | kt_roadkill_armed bug-007 (síntomas 1/3) |
-| E30 | `GetInventory().CreateAttachment("<slot>")` / `CreateInInventory("<slot>")` pasando el nombre de SLOT para montar una pieza → la API toma el **nombre de CLASE del ítem**, no el del slot; si difieren NO crea nada (silencioso, sin error RPT). Enmascarado porque en vanilla el slot suele llamarse igual que la clase (`CarBattery`, `SparkPlug`, `Reflector_1_1`) | Pasar el **nombre de CLASE** del ítem (p.ej. `LFQuad_Wheel_Front`, NO el slot `LFQuad_wheel_1_1`); el engine llena el primer slot compatible libre por llamada. Cruzar clase (CfgVehicles) vs slot (CfgSlots/inventorySlot) antes de escribir | LFQuad Sprint 0 R21 F1 (2026-05-26) |
-| E31 | Vehículo (`: CarScript`) o clase de rueda custom (`: CarWheel`) sin `class DamageSystem { class GlobalHealth ... }` → crash `[Object::GetMaxHealth] No DamageSystemData or not initialized` al acceder a su salud (admin `SetHealth01`, daño, colisión, posible sync). Las bases CarScript/CarWheel NO lo garantizan | Declarar `DamageSystem.GlobalHealth.Health { hitpoints; healthLevels[]; }` explícito en el vehículo Y en cada clase de rueda custom (el Croco lo pone en sus ruedas, `croco_config.cpp:251/292`). Mínimo viable = solo `GlobalHealth`, sin `DamageZones` | LFQuad Sprint 0 crash 2026-05-25 + R21 F2 (2026-05-26) |
+| E11 | String in `ActionCondition` (client) | Strings not syncable. Client cache or int ID | SimpleGroup |
+| E12 | `IsTakeable=false` to prevent pickup | `RemoveAction(ActionTakeItem/ToHands)`. `IsTakeable=false` only hides from vicinity, custom actions continue | SimpleGroup |
+| E13 | Notify **after** clearing collection | Loop over 0 = 0 notifications. Notify before | SimpleGroup |
+| E14 | Downstream debugging without upstream verification | Follow §3 hierarchy. Check IsTakeable/AddAction before ActionCondition | SimpleGroup |
+| E15 | Cache not cleared on state transition | Each state change → update cache (client + server) | SimpleGroup |
+| E16 | Fix without mapping client/server boundary | Complete §1 before writing fix | SimpleGroup |
+| E17 | SyncVar bitstream client/server mismatch | Same vars, same order, both sides | CF Issue #143 |
+| E18 | `IsServer()` / `IsClient()` for guard | Use `IsDedicatedServer()` / `!IsDedicatedServer()` | Expansion Pitfalls |
+| E19 | `version` manually serialized | Engine manages it. Use `version` param of `OnStoreLoad` | vanilla EntityAI.c |
+| E20 | Blaming p3d/config for placement bug when cause is in `Hologram.c` of another mod | Grep `modded class Hologram` across ALL loaded mods before touching p3d. A6_Base_Storage, BBP, etc. rewrite `GetProjectionEntityPosition`/`EvaluateCollision` | Chests stacking |
+| E21 | Rate-limit / validation post-`super.OnXxxServer` → orphan state | Pre-super, gated on inferred intent. See §2.9 ORPHAN-1 | LF_VStorage Layer 6 v3.1 |
+| E22 | "Preserves original behavior" treated as audit-pass when original has bugs | Non-goal. Each preserved is hypothesis. See §2.9 process rules | LF_VStorage Layer 6 v3→v3.1 |
+| E23 | Sketchy pattern labeled "pre-existing" and silently dragged | Stop, explicit signoff, sibling-grep cross-codebase | LF_VStorage Layer 6 v3→v3.1 |
+| E24 | Vehicle nested class override (`class SimulationModule: SimulationModule`, `Axles`, `Front`, `Rear`…) in a child mod WITHOUT declaring forward-ref `class X;` in root of child CfgVehicles → CfgConvert `Undefined base class 'X'` (compile-blocking) | Declare `class SimulationModule; class Axles; class Front; class Rear;` (whichever override uses) in root of child mod CfgVehicles. Each config.cpp has its own scope; does not inherit forward-refs from parent PBO | kt_roadkill_armed bug-003 |
+| E25 | `ProcessDirectDamage(DT_FIRE_ARM, ...)` copied from a source (BRDM-2) → `DT_FIRE_ARM` is not a vanilla symbol (only comment in `object.c`) → compile fail | `DamageType.FIRE_ARM` (enum in `damagesystem.c`). Any `DT_*` seen in other mod sources may be custom non-portable aliases | kt_roadkill_armed bug-002 |
+| E26 | `modded`/`extends` class re-declares member variable already declared by vanilla base (e.g. `m_NoiseSystem` in `CarScript`) → compile `Multiple declaration of variable 'X'` | Do NOT re-declare; reuse inherited one (CarScript already initializes `m_NoiseSystem`/`m_NoisePar`). Proactive check before compiling: grep each own `m_*` against base chain (carscript.c, car.c, transport.c, entityai.c, itembase.c) | kt_roadkill_armed bug-004 |
+| E27 | Override with parameter name differing from base signature (e.g. `OnExecuteServer(ActionData actionData)` when base uses `action_data`) → compile `Can't find variable 'X'`. Enforce is NOT like C++/C#: param name in an `override` MUST match base | Copy signature with EXACT param names from base. Verify against base class vanilla file (grep method def) | kt_roadkill_armed bug-006 |
+| E28 | `attachments[] += {...}` in CHILD mod (class inheriting vehicle in ANOTHER PBO) does NOT inherit base list — parsed config contains ONLY items from `+=`, breaking ALL slots (battery/wheels/doors). Verified with CfgConvert -xml | Materialize `attachments[] = {...}` with COMPLETE list from base + new ones at end. Do not rely on `+=` on parent from another PBO | kt_roadkill_armed bug-007 |
+| E29 | Vehicle nested class override (`SimulationModule`/`Axles`/`Front`/`Rear`) with `: X` resolving to EMPTY forward-refs, omitting sub-blocks (`class wheels`) → malformed SimulationModule, half-broken vehicle (cannot enter, broken slots/wheels). NOT just "compiles": loads and breaks gameplay | Replicate pattern of original config: `class SimulationModule: SimulationModule` but inside `class Axles`/`Front`/`Rear` WITHOUT `: X` and WITH full `class wheels` (Left/Right). Or do not override if only changing minor physics | kt_roadkill_armed bug-007 (symptoms 1/3) |
+| E30 | `GetInventory().CreateAttachment("<slot>")` / `CreateInInventory("<slot>")` passing SLOT name to mount part → API takes item **CLASS name**, not slot; if they differ it creates nothing (silent, no RPT error). Masked because in vanilla slot is usually named same as class (`CarBattery`, `SparkPlug`, `Reflector_1_1`) | Pass item **CLASS name** (e.g. `LFQuad_Wheel_Front`, NOT slot `LFQuad_wheel_1_1`); engine fills first compatible free slot per call. Cross-reference class (CfgVehicles) vs slot (CfgSlots/inventorySlot) before writing | LFQuad Sprint 0 R21 F1 (2026-05-26) |
+| E31 | Vehicle (`: CarScript`) or custom wheel class (`: CarWheel`) without `class DamageSystem { class GlobalHealth ... }` → crash `[Object::GetMaxHealth] No DamageSystemData or not initialized` when accessing health (admin `SetHealth01`, damage, collision, possible sync). CarScript/CarWheel bases do NOT guarantee it | Declare `DamageSystem.GlobalHealth.Health { hitpoints; healthLevels[]; }` explicitly on vehicle AND on each custom wheel class (Croco sets it on its wheels, `croco_config.cpp:251/292`). Minimum viable = `GlobalHealth` only, without `DamageZones` | LFQuad Sprint 0 crash 2026-05-25 + R21 F2 (2026-05-26) |
 
 ---
 
-## 5. Inflación de severidad en audits
+## 5. Severity inflation in audits
 
-Patrón observado en audits de LFPowerGrid: etiquetar como `P1 — crash` hallazgos que en realidad son `P2 — VM exception recuperable, server sigue corriendo`. Causa: extrapolar desde mensaje de log (`String CORRUPTED`) hasta comportamiento real (proceso muere) sin verificar.
+Pattern observed in LFPowerGrid audits: labeling as `P1 — crash` findings that are actually `P2 — recoverable VM exception, server keeps running`. Cause: extrapolating from log message (`String CORRUPTED`) to actual behavior (process dies) without verifying.
 
-Antídoto operativo antes de redactar audit findings:
+Operational antidote before writing audit findings:
 
-1. Reproducir el bug en server local.
-2. Loggear el ciclo completo (carga → execute → autosave → reload).
-3. Distinguir:
-   - **crash** — proceso muere, server cae, requiere restart.
-   - **VM exception** — excepción de Enforce VM, log spam, ejecución continúa.
-   - **corruption** — datos malos persisten, código corre con ellos.
-   - **degradation** — feature funciona peor pero corre.
-   - **cosmetic** — solo visual / sin efecto funcional.
-4. La etiqueta del finding usa el término concreto del paso 3, no "crash" como genérico.
+1. Reproduce bug on local server.
+2. Log full cycle (load → execute → autosave → reload).
+3. Distinguish:
+   - **crash** — process dies, server goes down, requires restart.
+   - **VM exception** — Enforce VM exception, log spam, execution continues.
+   - **corruption** — bad data persists, code runs with it.
+   - **degradation** — feature functions worse but runs.
+   - **cosmetic** — visual only / without functional effect.
+4. Finding label uses the concrete term from step 3, not "crash" as a generic.
 
 Referencia cruzada: R4 + R30 del `CLAUDE.md` global.
 
 ---
 
-## 6. Severidad de la AUSENCIA + mínimos que exige el engine (added 2026-05-25)
+## 6. Severity of ABSENCE + minimums required by engine (added 2026-05-25)
 
-§5 clasifica la severidad de un BUG observado. Esta sección clasifica la severidad de
-algo que FALTA. No es lo mismo "feature incompleta" que "su ausencia crashea".
+§5 classifies severity of an observed BUG. This section classifies severity of
+something MISSING. "Incomplete feature" is not the same as "its absence crashes".
 
-**Regla (LL-076):** en cualquier audit de gaps, etiquetar cada hallazgo por **severidad
-de la ausencia**: ¿no tenerlo crashea / rompe la carga, o solo deja una feature
-incompleta? Un mínimo del engine diferido como "feature de nivel alto" puede ser un
-crash P1 enmascarado. Caso real LFQuad: `DamageSystem` archivado como "feature N3
-(daño)" diferida → su ausencia da `[Object::GetMaxHealth] No DamageSystemData` (crash)
-al tocar la salud (admin tools / daño / colisión / sync).
+**Rule (LL-076):** in any gaps audit, label each finding by **severity
+of absence**: does lacking it crash / break loading, or merely leave a feature
+incomplete? An engine minimum deferred as a "high-level feature" can be a
+masked P1 crash. LFQuad real case: `DamageSystem` filed as deferred "feature N3
+(damage)" → its absence gives `[Object::GetMaxHealth] No DamageSystemData` (crash)
+upon touching health (admin tools / damage / collision / sync).
 
-**Checklist de mínimos del engine (anti-crash) — validar TEMPRANO, separado de los niveles de feature:**
+**Checklist of engine minimums (anti-crash) — validate EARLY, separated from feature tiers:**
 
-- **Vehículo (`CarScript`)**: `class DamageSystem { class GlobalHealth { class Health { hitpoints; healthLevels[]; }; }; }` — sin esto, cualquier `GetMaxHealth`/`SetHealth` crashea. (Las `DamageZones` completas SÍ son feature; el `GlobalHealth` es mínimo anti-crash.) Verificar también las clases de pieza (ruedas) si su salud se toca.
-- **Vehículo**: constructor que setee strings de sonido del motor (`m_EngineStart*`) — vacías = audio roto / posible exception con SoundSet "".
-- **Modelo `.p3d`**: Geometry LOD con componentes convexos + masa (sin esto no simula); selecciones de acción (`seat_*`, `refill`, doors) en el LOD que el cursor resuelve (ViewGeometry para acciones — verificado LFQuad).
-- **Genérico**: si un mínimo del engine se "difiere", separarlo en el plan como **P1 anti-crash** aparte de la feature completa, no en el bucket de la fase tardía.
+- **Vehicle (`CarScript`)**: `class DamageSystem { class GlobalHealth { class Health { hitpoints; healthLevels[]; }; }; }` — without this, any `GetMaxHealth`/`SetHealth` crashes. (Complete `DamageZones` ARE a feature; `GlobalHealth` is anti-crash baseline.) Also verify part classes (wheels) if their health is touched.
+- **Vehicle**: constructor that sets engine sound strings (`m_EngineStart*`) — empty = broken audio / possible exception with SoundSet "".
+- **Model `.p3d`**: Geometry LOD with convex components + mass (without this it does not simulate); action selections (`seat_*`, `refill`, doors) in the LOD that the cursor resolves (ViewGeometry for actions — verified LFQuad).
+- **Generic**: if an engine baseline is "deferred", separate it in the plan as **P1 anti-crash** apart from the full feature, not in the late phase bucket.
 
-Antídoto de proceso: la auditoría de paridad (tipo Fase 2) debe incluir una pasada de
-"mínimos del engine por subsistema" además del checklist de features, para no descubrir
-los crashes de uno en uno in-game.
+Process antidote: parity audit (Phase 2 type) must include a pass of
+"engine baselines per subsystem" in addition to the feature checklist, to avoid discovering
+crashes one by one in-game.
 
 Cross-ref: R4, R31, LL-076, §5.
 
@@ -287,15 +287,15 @@ Cross-ref: R4, R31, LL-076, §5.
 
 ## Mantenimiento
 
-- Cuando una sesión cace un error que ya está en §4, no añadirlo otra vez — usar el ID existente como referencia en el handoff.
-- Cuando una sesión cace un error nuevo recurrente (visto ≥ 2 veces), añadir entrada nueva con ID secuencial.
-- Si una entrada se queda obsoleta (engine cambió, parche oficial), tachar con fecha + reemplazo, no borrar (memoria histórica).
-- Última revisión: 2026-05-17 (al refactorizar la skill `dayz-mod-workflow` para el pipeline 3-capas).
+- When a session catches an error already in §4, do not add it again — use the existing ID as reference in the handoff.
+- When a session catches a new recurring error (seen ≥ 2 times), add a new entry with sequential ID.
+- If an entry becomes obsolete (engine changed, official patch), strike through with date + replacement, do not delete (historical memory).
+- Last revision: 2026-05-17 (when refactoring skill `dayz-mod-workflow` for the 3-layer pipeline).
 
 ## Related
 
-- [[dayz-enforce-script-reference]] — reglas duras de sintaxis/memoria/networking que estos checklists referencian.
-- [[dayz-capacidades-verificadas]] — gotchas de build/config y veredictos de feasibility complementarios al catálogo de errores.
-- [[dayz-modded-class-server-stub-pattern]] — E-pattern de método server-only sin stub base (compile fail en cliente).
-- [[dayz-model-pipeline]] — checklist 2.6/2.7 (rvmat, persistence) y los mínimos del engine en `.p3d` (§6).
-- [[workflow]] — el "cuándo" del proceso; este archivo es el "qué" verificar.
+- [[dayz-enforce-script-reference]] — hard syntax/memory/networking rules that these checklists reference.
+- [[dayz-capacidades-verificadas]] — build/config gotchas and feasibility verdicts complementary to the error catalog.
+- [[dayz-modded-class-server-stub-pattern]] — E-pattern of server-only method without base stub (compile fail on client).
+- [[dayz-model-pipeline]] — checklist 2.6/2.7 (rvmat, persistence) and engine baselines in `.p3d` (§6).
+- [[workflow]] — the "when" of the process; this file is the "what" to verify.

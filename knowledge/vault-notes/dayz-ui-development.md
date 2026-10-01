@@ -74,7 +74,7 @@ Evidence level: skill-sourced summary. Verify exact widget/event signatures agai
 
 - [`AI/20_Knowledge/dayz-enforce-script-reference.md`](dayz-enforce-script-reference.md)
 - Project exact widget APIs: `AI/10_Projects/<PROJECT>/verified-apis.md`
-- [[dayz-enforce-script-reference]] — APIs de widgets, RPC y lifecycle que el código de UI invoca.
-- [[dayz-mod-implementation-checklists]] — checklist client/server antes de cablear cada feature de UI.
-- [[skill-extraction-index]] — de qué skill salió esta nota y cuál es su par durable.
-- [[20_Knowledge/lessons-learned|lessons-learned]] — gotchas transversales (Edit truncation, OneDrive) que muerden al escribir layouts.
+- [[dayz-enforce-script-reference]] — widget, RPC, and lifecycle APIs invoked by UI code.
+- [[dayz-mod-implementation-checklists]] — client/server checklist before wiring each UI feature.
+- [[skill-extraction-index]] — which skill this note originated from and what its durable counterpart is.
+- [[20_Knowledge/lessons-learned|lessons-learned]] — cross-cutting gotchas (Edit truncation, OneDrive) that bite when writing layouts.

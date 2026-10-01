@@ -1,40 +1,40 @@
-# Classify viewer — revisión/cambios de la sentada A sin abrir Blender
+# Classify viewer — review/changes of session A without opening Blender
 
-Visor Three.js (r128 UMD) sobre el export GLB de una escena de sentada A.
-**Consultivo + captura de deltas**: la autoridad sigue siendo el `.blend` →
-`blender_export_asset_contract.py` → ficha. Los deltas del visor se aplican al
-`.blend` por script headless (patrón `fix_roofvent`), nunca a mano.
+Three.js viewer (r128 UMD) over GLB export of a session A scene.
+**Advisory + delta capture**: authority remains `.blend` →
+`blender_export_asset_contract.py` → ledger entry. Viewer deltas are applied to
+`.blend` via headless script (pattern `fix_roofvent`), never manually.
 
-> **`lib/` no viaja en el pack.** El visor necesita `three.min.js`,
-> `GLTFLoader.js` y `OrbitControls.js` (Three.js r128 UMD, MIT, ~726 KB) en una
-> subcarpeta `lib\` junto a `index.html`. No se empaquetan aquí por la misma
-> política que el resto del pack: se nombra la herramienta de terceros y no se
-> redistribuye su código (ver `THIRD_PARTY_NOTICES.md`). Descárgalas de
-> <https://github.com/mrdoob/three.js/tree/r128/build> y
+> **`lib/` is not bundled in the pack.** The viewer needs `three.min.js`,
+> `GLTFLoader.js` and `OrbitControls.js` (Three.js r128 UMD, MIT, ~726 KB) in a
+> `lib\` subfolder next to `index.html`. They are not packaged here per the same
+> policy as the rest of the pack: name the third-party tool and do not
+> redistribute its code (see `THIRD_PARTY_NOTICES.md`). Download them from
+> <https://github.com/mrdoob/three.js/tree/r128/build> and
 > `examples/js/{loaders/GLTFLoader.js,controls/OrbitControls.js}`.
-> **r128 UMD, no ESM**: `index.html` las carga con `<script src=…>`, y el
-> `importmap` de las versiones ESM falla desde `file://` en muchos Chrome.
+> **r128 UMD, not ESM**: `index.html` loads them with `<script src=…>`, and the
+> `importmap` of ESM versions fails from `file://` in many Chromes.
 
-## Uso por coche
+## Usage per car
 
-1. Exportar el GLB (no toca el .blend):
-   `blender --background --python export_car_glb.py -- --blend <sentA.blend> --out <dir>\car.glb`
-2. Copiar `index.html` + `lib\` junto al `car.glb` (o generar el GLB en la carpeta del visor).
-3. Servir por http (no `file://` — fetch del GLB bloqueado): entrada en
-   `.claude\launch.json` con `python -m http.server <puerto> --directory <dir>` + `preview_start`.
-4. El humano clica pieza → INCLUDE/MOVABLE/EXCLUDE (+ razón). Los cambios viven en
-   `window.DZ_DELTAS` ({stem: {from, to, reason}}); el agente los lee con
-   `javascript_tool` o el humano usa «Copiar cambios (JSON)».
-5. Aplicar deltas al `.blend` headless (mover objetos cuyo `source_id` == stem o
-   empiece por `stem__obj`, actualizar `dz_exclude_reason`/`dz_responsible`),
-   re-verificar sanity y seguir el carril normal (export → import-blender → check).
+1. Export the GLB (does not touch the .blend):
+   `blender --background --python export_car_glb.py -- --blend <sessionA.blend> --out <dir>\car.glb`
+2. Copy `index.html` + `lib\` alongside `car.glb` (or generate the GLB in the viewer folder).
+3. Serve via http (not `file://` — GLB fetch blocked): entry in
+   `.claude\launch.json` with `python -m http.server <port> --directory <dir>` + `preview_start`.
+4. The human clicks part → INCLUDE/MOVABLE/EXCLUDE (+ reason). Changes live in
+   `window.DZ_DELTAS` ({stem: {from, to, reason}}); the agent reads them with
+   `javascript_tool` or the human uses "Copy changes (JSON)".
+5. Apply deltas to `.blend` headless (move objects whose `source_id` == stem or
+   starts with `stem__obj`, update `dz_exclude_reason`/`dz_responsible`),
+   reverify sanity and follow normal lane (export → import-blender → check).
 
-## Contrato de datos que espera del GLB
+## Data contract expected from GLB
 
-Extras por nodo (los pone `export_car_glb.py` desde las custom props):
-`source_id` (estable, `stem__objNN` para sub-objetos), `dz_coll`, `dz_review`,
-`dz_movable_group`, `dz_reason`. Piezas sin malla (placeholders EMPTY) aparecen
-en la lista como «(sin geometría)».
+Per-node extras (`export_car_glb.py` sets them from custom props):
+`source_id` (stable, `stem__objNN` for sub-objects), `dz_coll`, `dz_review`,
+`dz_movable_group`, `dz_reason`. Non-mesh parts (EMPTY placeholders) appear
+in the list as "(no geometry)".
 
-Primer uso real: sub_wrxsti_04 (2026-08-06), 128 piezas / 24,7 MB de GLB,
-verificado con round-trip de deltas y cero errores de consola.
+First real use: sub_wrxsti_04 (2026-08-06), 128 parts / 24.7 MB GLB,
+verified with deltas round-trip and zero console errors.

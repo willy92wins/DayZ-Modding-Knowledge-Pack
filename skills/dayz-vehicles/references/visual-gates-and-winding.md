@@ -295,38 +295,38 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    separate task.
 
 
-## `validate()` limpio NO prueba que el winding sea correcto (council py3d, 2026-08-12)
+## Clean `validate()` does NOT prove winding is correct (py3d council, 2026-08-12)
 
-Regla dura antes de usar `py3d.validate()` como gate de winding en un vehiculo: **no puede
-ponerse en rojo por la causa que te preocupa.**
+Hard rule before using `py3d.validate()` as a winding gate on a vehicle: **it cannot
+turn red for the cause you are concerned about.**
 
-El unico check de winding es RELATIVO al Visual LOD (`py3d/__init__.py:934` en v1.4.0, unico
-call site `:2059-2069`). Si estan invertidos TODOS los LODs -- el caso tipico del import
-Blender Z-up -> Y-up -- todo queda coherente entre si y `validate()` devuelve `[]` con exit 0.
-Y si el invertido es el Visual, acusa a los LODs de colision SANOS y sugiere "swap
-vertices[1] and vertices[2] on every face of this LOD": seguir esa sugerencia lleva el modelo
-al estado que ya no se puede detectar. La referencia ademas es el PRIMER visual del fichero,
-no el de menor resolucion (`:2498-2503`), asi que el orden de LODs cambia el veredicto.
+The only winding check is RELATIVE to Visual LOD (`py3d/__init__.py:934` in v1.4.0, only
+call site `:2059-2069`). If ALL LODs are inverted -- typical case of Blender import
+Z-up -> Y-up -- everything remains coherent with each other and `validate()` returns `[]` with exit 0.
+And if Visual is the inverted one, it blames HEALTHY collision LODs and suggests "swap
+vertices[1] and vertices[2] on every face of this LOD": following that suggestion leads model
+to a state that can no longer be detected. Furthermore, reference is FIRST visual in file,
+not lowest resolution (`:2498-2503`), so LOD order alters verdict.
 
-Los otros dos instrumentos tampoco valen como prueba de geometria: `save(verify=True)`
-(`_verify_against`) y `python -m py3d diff` solo comparan conteos, nombres de selection y
-suma de masa. Reproducido: dos modelos con un punto en `(0,0,0)` vs `(99,99,99)` -> verify OK
-y `diff` responde `total: 0`, exit 0.
+The other two instruments are also invalid as geometry proofs: `save(verify=True)`
+(`_verify_against`) and `python -m py3d diff` only compare counts, selection names, and
+mass sum. Reproduced: two models with one point at `(0,0,0)` vs `(99,99,99)` -> verify OK
+and `diff` returns `total: 0`, exit 0.
 
-Consecuencia para la §3.5 de `rip-import.md` ("validate() findings that are EXPECTED for a
-vehicle, don't chase"): esa lista existe porque el check asume geometria CONVEXA y por eso
-escupe falsos positivos en cascos huecos y formas en L. Pero la lectura correcta no es solo
-"ignora esos findings", sino tambien **"su ausencia no te acredita nada"**.
+Consequence for §3.5 of `rip-import.md` ("validate() findings that are EXPECTED for a
+vehicle, don't chase"): that list exists because the check assumes CONVEX geometry and therefore
+spits false positives on hollow hulls and L-shapes. But correct interpretation is not just
+"ignore those findings", but also **"their absence proves nothing"**.
 
-Verificacion que si discrimina, en orden de coste:
-1. Comparar el orden de vertices de una cara contra el vanilla equivalente debinarizado.
-2. `cross(e1,e2) . normal_declarada` por cara -- ambos vectores en el MISMO espacio, con lo
-   que el lio left-handed (DayZ) vs right-handed (Three.js) desaparece. Medido sobre 15 LODs
-   vanilla: 1274/1274 caras = 100.0000%, frente a un `pct_outward` que oscila entre 0% y
-   31.8% sin significar nada.
-3. Coherencia de aristas: dos caras vecinas recorren la arista compartida en sentidos
-   opuestos. Localiza las caras concretas en inversiones parciales.
-4. Test in-game (la textura solo se ve desde dentro = winding invertido).
+Verification that does discriminate, in order of cost:
+1. Compare vertex order of a face against debinarized vanilla equivalent.
+2. `cross(e1,e2) . normal_declarada` per face -- both vectors in SAME space, so
+   left-handed (DayZ) vs right-handed (Three.js) confusion disappears. Measured over 15 vanilla
+   LODs: 1274/1274 faces = 100.0000%, versus a `pct_outward` swinging between 0% and
+   31.8% without meaning anything.
+3. Edge consistency: two neighboring faces traverse the shared edge in opposite
+   directions. Locates specific faces in partial inversions.
+4. In-game test (texture visible only from inside = inverted winding).
 
    - **Winding ratios do not predict render (SP-070, LFHeli OH-1 2026-07-19).** Neither the interior edge-pair (`<vehicle-import>\scripts\winding_consistency.py`, `#10(f)`) nor the ODOL dot-neg cross-vs-stored-normals ratio vs vanilla predicts the render. Real case: edge-pair ≤0.0025%, ODOL 98-100% dot-neg ≈ civiliansedan 96% → methodical PASS, and the model rendered INVERTED (stored normals coherent with the winding: both inverted vs the engine — the ratio measures internal coherence, not the absolute sign the engine renders).
    - **Cheap definitive discriminant = all-flipped A/B in-game (SP-070).** Reverse vertex order of ALL visual faces (~1 line in the assembler, or session `LFHeli_dev/model_src/work/helispy2_rffs/flip_variant.py` with py3d), binarize, A/B in-game with the user's eye (~40 min). EXCLUDE proxy triangles from the flip: their winding encodes the proxy frame (P′). Before the A/B, census the ODOL of BOTH variants: if they come out equal, the A/B is null (anti-nullity gate).
@@ -346,7 +346,7 @@ In Workbench, enable `scene.display.shading.show_backface_culling`.
 `material.use_backface_culling` controls EEVEE and is inert in Workbench. Pixel-
 identical "culling on/off" outputs are a null test, not confirmation.
 
-Detalle completo y el resto de defectos del fork: entrada `SP-227` en
+Full details and remaining fork defects: entry `SP-227` in
 `AI/20_Knowledge/skill-patches-pending.md`.
 
 ## Choosing the sign for a face you are ADDING or MOVING: copy the visible neighbours (added 2026-09-07)

@@ -11,7 +11,7 @@ Produce and modify DayZ animations end to end. DayZ has **two parallel animation
 
 ```bash
 # py3d = DayZ fork of the pack, >= 1.6.0 (sealed wheel vendored in this skill).
-# NUNCA `pip install py3d` (PyPI = point-cloud lib) NI git+upstream (sin guards).
+# NEVER `pip install py3d` (PyPI = point-cloud lib) NOR git+upstream (without guards).
 command -v python3 >/dev/null 2>&1 || { echo "ABORT: python3 is required to install the sealed DayZ py3d wheel" >&2; exit 1; }; python3 scripts/install_py3d.py
 python3 -c "import py3d; assert getattr(py3d,'IS_DAYZ_FORK',False) and tuple(map(int,py3d.__version__.split('.')))>=(1,6,0), (py3d.__version__, py3d.__file__)"
 ```
@@ -247,11 +247,11 @@ Cross-references already covered in this skill:
    body empty or corrupted. If you see name-present-body-empty after either
    step, check the matching skill before assuming the source `.p3d` is wrong.
 
-## Locomoción en scripted commands: GetCurrentStance/GetCurrentMovement conducen el grafo (added 2026-06-11)
+## Locomotion in scripted commands: GetCurrentStance/GetCurrentMovement drive the graph (added 2026-06-11)
 
-Origen: LFSlidingFloor POC-A4, verificado in-game 2026-06-10. `HumanCommandScript` expone los overrides `int GetCurrentStance()` / `int GetCurrentMovement()` (human.c:1238-1247, "Override this!") sin NINGÚN call-site en script vanilla: los consulta el ENGINE, y el grafo del player reproduce la locomoción reportada durante COMMANDID_SCRIPT. Override `GetCurrentMovement()` devolviendo `DayZPlayerConstants.MOVEMENT_RUN` (dayzplayer.c:647) hizo CORRER al personaje mientras un scripted command lo trasladaba (sin override mostraba la locomoción heredada del command anterior). Modulable por estado (IDLE/WALK/RUN/SPRINT, dayzplayer.c:645-648) sin IDs mágicos.
+Origin: LFSlidingFloor POC-A4, verified in-game 2026-06-10. `HumanCommandScript` exposes the overrides `int GetCurrentStance()` / `int GetCurrentMovement()` (human.c:1238-1247, "Override this!") without ANY vanilla script call-sites: ENGINE queries them, and player graph reproduces reported locomotion during COMMANDID_SCRIPT. Overriding `GetCurrentMovement()` returning `DayZPlayerConstants.MOVEMENT_RUN` (dayzplayer.c:647) made character RUN while a scripted command translated them (without override it showed locomotion inherited from previous command). Modulable by state (IDLE/WALK/RUN/SPRINT, dayzplayer.c:645-648) without magic IDs.
 
-Vías DESCARTADAS para conducir el grafo vanilla del player desde un scripted command: `PreAnim_CallCommand` (0 call-sites en script vanilla, IDs de comandos del grafo no documentados) y `PreAnim_SetFloat/SetInt` (los IDs de variables del grafo vanilla no están expuestos a script). Esas APIs sí sirven con grafos CUSTOM que definen sus propias variables (el sample BI Test_ScriptCmdSwim trae el suyo).
+DISCARDED routes to drive player vanilla graph from a scripted command: `PreAnim_CallCommand` (0 call-sites in vanilla script, graph command IDs undocumented) and `PreAnim_SetFloat/SetInt` (vanilla graph variable IDs are not exposed to script). Those APIs do work with CUSTOM graphs defining their own variables (BI sample Test_ScriptCmdSwim brings its own).
 
 ## [2026-06-28] CORRECTION to anchor 3 — the wall is GRAPH-replacement, not weapon anims [VERIFIED-vanilla]
 
@@ -271,17 +271,17 @@ Viewer-pipeline scripts shipped in `scripts/` but not referenced elsewhere in th
 - `scripts/build_viewer.py` — generates the self-contained weapon-anim authoring viewer HTML (rig + weapon mesh, Three.js r128 UMD, SkinnedMesh + analytic 2-bone IK + FK controls + keyframe timeline + JSON export). See `references/weapon-anim-authoring-viewer.md`.
 - `scripts/seanim_export.py` — converts a viewer anim JSON (per-frame per-bone LOCAL quaternions) to SEAnim via `seanim_writer`; `--rest-pose` rebases against a DayZATool-extracted vanilla SEAnim. NOT valid for full-body action anims — those go Route A (JD plugin → `.txa` → Workbench Register&Import → `.anm`); hand-rolled SEAnim export is for weapon-bone/partial tracks only.
 
-## Reglas promovidas del corpus de lecciones (added 2026-07-27)
+## Rules promoted from lessons learned corpus (added 2026-07-27)
 
-Promovidas desde `AI/20_Knowledge/lessons-learned.md` para que lleguen por trigger en vez
-de depender de que alguien recuerde buscarlas. Cada regla cita su `LL-NNN` de origen;
-la entrada completa vive allí. No quites la cita: el índice detecta la promoción por ella.
+Promoted from `AI/20_Knowledge/lessons-learned.md` so they trigger automatically rather
+than depending on someone remembering to look them up. Each rule cites its originating `LL-NNN`;
+the full entry lives there. Do not remove citation: the index detects promotion by it.
 
-- **LL-052** — Define un único rango angular para la pieza animada y para el solver IK que mantiene el contacto. Propaga el mismo valor a `angle0/angle1` y `steerMax`, y verifica los dos extremos. (acotado 2026-09-28, LL-533) No en el grafo de moto de la 1.30: sus posturas de dirección abarcan ±45° de ángulo de rueda sea cual sea el giro del modelo; los fotogramas se hacen a 45° y se cortan en el tope (`references/vehicle-rider-ik-pose.md`, `CLAIM-ANIM-MOTO-STEER-SCALE-130`).
-- **LL-053** — No añadas scripted snap ni puntos `pos_*_L/R` para get-in bilateral. Replica la estructura vanilla: proxies de crew y selecciones/componentes de asiento válidos en ViewGeometry y FireGeometry; conserva la acción vanilla.
-- **LL-102** — Usa `source="steeringwheel"`; `DrivingWheel` es el nombre habitual de la clase, no el source. Replica la jerarquía estándar `damper → steering → wheel`; no intentes alimentar una segunda animación desde el source de una rueda.
-- **LL-171** — Antes de ajustar una pose offline, enumera los determinantes reales del estado in-game: origen del arma, bone remap, ikpose, geometría y stance/aim-space. Construye el visor desde esos datos; no encadenes heurísticas visuales.
-- **LL-189** — Para articulaciones resueltas por IK en runtime, vuelca posiciones de huesos model-space desde el cliente y reconstruye la pose offline desde posiciones. No adivines el swivel ni dependas de rotaciones raw con convención no verificada.
+- **LL-052** — Define a single angular range for the animated part and for the IK solver maintaining contact. Propagate the same value to `angle0/angle1` and `steerMax`, and verify both extremes. (bounded 2026-09-28, LL-533) Not in the 1.30 motorbike graph: its steering poses span ±45° of wheel angle regardless of model turn; frames are made at 45° and clamped at stop (`references/vehicle-rider-ik-pose.md`, `CLAIM-ANIM-MOTO-STEER-SCALE-130`).
+- **LL-053** — Do not add scripted snap or `pos_*_L/R` points for bilateral get-in. Replicate vanilla structure: crew proxies and valid seat selections/components in ViewGeometry and FireGeometry; preserve vanilla action.
+- **LL-102** — Use `source="steeringwheel"`; `DrivingWheel` is the usual class name, not the source. Replicate standard hierarchy `damper → steering → wheel`; do not attempt to feed a second animation from a wheel source.
+- **LL-171** — Before adjusting a pose offline, enumerate the real determinants of in-game state: weapon origin, bone remap, ikpose, geometry, and stance/aim-space. Build viewer from those data; do not chain visual heuristics.
+- **LL-189** — For joints resolved by IK at runtime, dump model-space bone positions from client and reconstruct offline pose from positions. Do not guess swivel or rely on raw rotations with unverified convention.
 
 ---
 

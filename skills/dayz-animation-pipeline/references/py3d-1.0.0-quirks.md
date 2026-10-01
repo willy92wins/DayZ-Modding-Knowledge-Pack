@@ -1,24 +1,24 @@
-# py3d 1.0.0 quirks — HISTORICO (superado por el fork DayZ >= 1.4.0)
+# py3d 1.0.0 quirks — HISTORICAL (superseded by DayZ fork >= 1.4.0)
 
-> **Estado 2026-06-06 (rollout py3d-fork S2):** este documento queda como
-> HISTORICO. La verificacion R22 (plan py3d-fork, R22-P1-01) demostro que
-> varios de estos "quirks" describian APIs de WRAPPERS de proyecto
-> (`set_face_weight`, `add_memory_point`, `lod.materials`), NO la superficie
-> real de upstream 1.0.0. El **fork DayZ de py3d (>= 1.6.0, `pip install -e tools/py3d`)**
-> (plugin projection: wheel vendorizada por skill)
-> resuelve o supera cada caso:
+> **Status 2026-06-06 (py3d-fork S2 rollout):** this document remains as
+> HISTORICAL. Verification R22 (py3d-fork plan, R22-P1-01) showed that
+> several of these "quirks" described project WRAPPER APIs
+> (`set_face_weight`, `add_memory_point`, `lod.materials`), NOT the actual
+> surface of upstream 1.0.0. The **DayZ py3d fork (>= 1.6.0, `pip install -e tools/py3d`)**
+> (plugin projection: wheel vendored per skill)
+> resolves or supersedes each case:
 >
-> | Quirk historico | En el fork |
+> | Historical quirk | In the fork |
 > |---|---|
-> | 1 `Selection()` sin args | TypeError accionable; usar `lod.new_selection(name)` o `lod.set_selection(name, ...)` (F1-01/F2-04) |
-> | 2 weights int vs float | guard en write: int-like coercionado, invalido -> `ValueError` temprano con nombre de la selection (F1-02) |
-> | 3 materiales lowercase | `lod.faces_by_material()` / `faces_for_material()` case-insensitive (F1-03) |
-> | 4 memory points duplicados | `lod.set_memory_point(name, xyz)` upsert idempotente, NUNCA duplica (F1-04) |
-> | 5 rebind tras crecer el LOD | invariantes de membership en write: stale/foreign -> raise; ademas `P3D.save(verify=True)` re-lee y verifica (F1-05/F1-08) |
+> | 1 `Selection()` without args | Actionable TypeError; use `lod.new_selection(name)` or `lod.set_selection(name, ...)` (F1-01/F2-04) |
+> | 2 weights int vs float | guard on write: int-like coerced, invalid -> early `ValueError` with selection name (F1-02) |
+> | 3 lowercase materials | `lod.faces_by_material()` / `faces_for_material()` case-insensitive (F1-03) |
+> | 4 duplicate memory points | `lod.set_memory_point(name, xyz)` idempotent upsert, NEVER duplicates (F1-04) |
+> | 5 rebind after growing LOD | membership invariants on write: stale/foreign -> raise; also `P3D.save(verify=True)` re-reads and verifies (F1-05/F1-08) |
 >
-> Validacion integral: `python -m py3d validate modelo.p3d` o
-> `P3D.validate()` (v1.2.0). El texto original se conserva abajo para
-> contexto de sesiones antiguas (LFQuad D30, LL-055/056).
+> Integral validation: `python -m py3d validate modelo.p3d` or
+> `P3D.validate()` (v1.2.0). Original text is preserved below for
+> context of older sessions (LFQuad D30, LL-055/056).
 
 ---
 

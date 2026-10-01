@@ -1,36 +1,36 @@
-# DayZ Object Builder — convenciones de LOD, selecciones y named properties (verificado vanilla)
+# DayZ Object Builder — LOD conventions, selections, and named properties (vanilla verified)
 
-> Verificado 2026-07-06 debinarizando 9 modelos vanilla (ODOL v54) con un
-> conversor ODOL→MLOD externo + cross-check con A3OB al importar en Blender. Nace de validar
-> el snippet aproximado de la wiki DayZ (`Doors_on_buildings`, `Ladders_on_buildings`,
-> `LOD`): los nombres EXACTOS difieren de lo que la wiki transcribe (DZ-R2.1: el wiki es
-> hint, no fact). `[EXACT]` = medido en vanilla en esta sesión; `[WIKI]` = wiki-only, no
-> observado en los samples (tratar como hipótesis hasta ver un sample que lo use).
+> Verified 2026-07-06 debinarizing 9 vanilla models (ODOL v54) with an
+> external ODOL→MLOD converter + cross-check with A3OB when importing into Blender. Born from validating
+> the approximate snippet from DayZ wiki (`Doors_on_buildings`, `Ladders_on_buildings`,
+> `LOD`): EXACT names differ from what the wiki transcribes (DZ-R2.1: wiki is
+> hint, not fact). `[EXACT]` = measured in vanilla in this session; `[WIKI]` = wiki-only, not
+> observed in samples (treat as hypothesis until seeing a sample using it).
 >
-> Modelos inspeccionados: ladders `residential/misc/ladder.p3d`, `ladder_half.p3d`,
+> Inspected models: ladders `residential/misc/ladder.p3d`, `ladder_half.p3d`,
 > `furniture/various/ladder_a_wood.p3d`, `Proxy_BuildingParts/ladders/ladder_long_proxy.p3d`,
-> `ladder_top_proxy.p3d`, `residential/offices/proxy/ladderlong.p3d`; edificios
+> `ladder_top_proxy.p3d`, `residential/offices/proxy/ladderlong.p3d`; buildings
 > `industrial/garages/garage_small.p3d`, `industrial/farms/barn_wood1.p3d`, `farm_cowsheda.p3d`.
 
-## Tabla de resoluciones de LOD [EXACT]
+## LOD resolution table [EXACT]
 
-Fuente autoritativa: `py3d` fork `LOD_RESOLUTIONS` (`__init__.py:68-76`, `classify_lod_resolution()`)
-+ observado en los 9 modelos + confirmado por A3OB al leer `Crate_Wooden.p3d` (mismas signatures).
+Authoritative source: `py3d` fork `LOD_RESOLUTIONS` (`__init__.py:68-76`, `classify_lod_resolution()`)
++ observed in the 9 models + confirmed by A3OB when reading `Crate_Wooden.p3d` (same signatures).
 
-| LOD | resolution | notas |
+| LOD | resolution | notes |
 |---|---|---|
-| Visual (Resolution) | `0 .. <1e3` | LOD0 = 0 ó 1; sucesivos 2,3,4… (más alto = más basto) |
-| ShadowVolume | `1e4 .. 2e4` | p.ej. 10000, 11000 |
-| **Geometry** | `1e13` | colisión; lleva `class=house`, `ComponentXX` |
-| **Memory** | `1e15` | puntos: ejes de puerta, acciones, sonido, loot |
+| Visual (Resolution) | `0 .. <1e3` | LOD0 = 0 or 1; successive 2,3,4… (higher = coarser) |
+| ShadowVolume | `1e4 .. 2e4` | e.g. 10000, 11000 |
+| **Geometry** | `1e13` | collision; carries `class=house`, `ComponentXX` |
+| **Memory** | `1e15` | points: door axes, actions, sound, loot |
 | LandContact | `2e15` | |
-| **Roadway** | `3e15` | superficie caminable; DEBE existir bajo los memory points de ladder |
+| **Roadway** | `3e15` | walkable surface; MUST exist beneath ladder memory points |
 | Paths | `4e15` | AI pathfinding: `posXX`/`inXX` |
 | HitPoints | `5e15` | |
-| **ViewGeometry** | `6e15` | oclusión |
-| **FireGeometry** | `7e15` | balística/daño |
+| **ViewGeometry** | `6e15` | occlusion |
+| **FireGeometry** | `7e15` | ballistics/damage |
 
-Tolerancia de clasificación: `|res - canon| <= 0.05*canon` (`LOD_RELATIVE_TOLERANCE`).
+Classification tolerance: `|res - canon| <= 0.05*canon` (`LOD_RELATIVE_TOLERANCE`).
 
 ## Named properties [EXACT]
 
@@ -39,73 +39,73 @@ Tolerancia de clasificación: `|res - canon| <= 0.05*canon` (`LOD_RELATIVE_TOLER
 - **ViewGeometry**: `canocclude=1`.
 - **Props/proxies sueltos**: `autocenter=0`, `drawimportance=N` (p.ej. 0.02).
 
-## Componentes de colisión [EXACT]
-Nombrados `component01`, `component02`… (el ODOL los guarda en minúscula; Object Builder
-espera `ComponentNN`, case-sensitive al autorar). Presentes en Geometry, ViewGeometry y
-FireGeometry. FireGeo puede tener decenas (30–570 según complejidad del modelo).
+## Collision components [EXACT]
+Named `component01`, `component02`… (ODOL stores them lowercase; Object Builder
+expects `ComponentNN`, case-sensitive when authoring). Present in Geometry, ViewGeometry, and
+FireGeometry. FireGeo can have dozens (30–570 depending on model complexity).
 
-## Puertas [EXACT] — corrige el genérico "doorX" de la wiki
+## Doors [EXACT] — corrects generic "doorX" from wiki
 
-Esquema real de selecciones de una puerta N (garage_small, barn_wood1, farm_cowsheda):
-- `doorsN` — la geometría de la hoja (en TODOS los LODs relevantes: visual, geometry, memory,
-  view_geometry, fire_geometry, hitpoints). Confirma wiki "animated in ALL relevant LODs".
-- `doorsN_axis` — (Memory LOD) eje de rotación.
-- `doorsN_action` — (Memory LOD) punto de acción/interacción.
-- Puertas gemelas: `doorstwinN` + `twinN_action` (o `doorstwinN_action`).
+Actual selection scheme for door N (garage_small, barn_wood1, farm_cowsheda):
+- `doorsN` — leaf geometry (in ALL relevant LODs: visual, geometry, memory,
+  view_geometry, fire_geometry, hitpoints). Confirms wiki "animated in ALL relevant LODs".
+- `doorsN_axis` — (Memory LOD) rotation axis.
+- `doorsN_action` — (Memory LOD) action/interaction point.
+- Twin doors: `doorstwinN` + `twinN_action` (or `doorstwinN_action`).
 
-Ejemplos medidos: garage_small Memory = `doors1, doors1_axis, doors2, doors2_axis, doorstwin1,
-twin1_action`; barn_wood1 Memory = `doorsN, doorsN_axis, doorsN_action` para N=1..6.
-Config: `class Doors` en el config ↔ `source` del model.cfg; edificio hereda `HouseNoDestruct`;
-clase de config `land_<modelname>` autolinkea modelo↔config; `class=house` en Geometry. La wiki
-añade `bounding="selección"` (volumen abierto para que raycast/balística sigan la puerta abierta)
-y el estándar "casi todas las puertas DayZ son 120×220 cm" [WIKI — no medido aquí].
+Measured examples: garage_small Memory = `doors1, doors1_axis, doors2, doors2_axis, doorstwin1,
+twin1_action`; barn_wood1 Memory = `doorsN, doorsN_axis, doorsN_action` for N=1..6.
+Config: `class Doors` in config ↔ `source` in model.cfg; building inherits `HouseNoDestruct`;
+config class `land_<modelname>` auto-links model↔config; `class=house` in Geometry. The wiki
+adds `bounding="selection"` (opened volume so raycast/ballistics follow the open door)
+and the standard "almost all DayZ doors are 120×220 cm" [WIKI — not measured here].
 
 ## Escaleras [EXACT] — DOS esquemas coexisten (verificado: 6 ladder-props + 3 edificios multi-piso)
 
-La convención depende de si el ladder es un prop suelto o va integrado en un edificio:
+The convention depends on whether the ladder is a loose prop or integrated into a building:
 
-- **Ladder-prop suelto climbable** (`ladder.p3d`, `ladderlong.p3d`): Memory = `start`/`end` (o
-  `start1`/`end1`), Geometry con `component01` + `class=house`, un **Roadway (3e15)**, subible.
-- **Ladder INTEGRADA en edificio** (verificado en `lighthouse.p3d`, `mil_fortified_nest_watchtower.p3d`,
-  `cementworks_silobig1a.p3d`): SÍ usa el esquema `ladderN_*` de la wiki — `ladderN` (selección base +
-  componente en ViewGeometry), y en Memory LOD `ladderN_bottom_front` (entrada inferior),
-  `ladderN_top_front` (salida superior), `ladderN_middle_right`(+`_align`) para entradas laterales de
-  pisos intermedios (visto en el silo multi-piso), + `ladderN_con`/`ladderN_con_dir`/`ladderN_dir`
-  (conexión/dirección). `N` empieza en 1. Roadway LOD presente.
-- **Proxy ladders** (`ladder_long_proxy`, `ladder_top_proxy`): selección con el nombre de la pieza
-  (`long`, `top`), Geometry vacío `autocenter=0` (se insertan en el edificio host).
+- **Climbable loose ladder-prop** (`ladder.p3d`, `ladderlong.p3d`): Memory = `start`/`end` (or
+  `start1`/`end1`), Geometry with `component01` + `class=house`, a **Roadway (3e15)**, climbable.
+- **Ladder INTEGRATED into building** (verified in `lighthouse.p3d`, `mil_fortified_nest_watchtower.p3d`,
+  `cementworks_silobig1a.p3d`): DOES use the `ladderN_*` scheme from wiki — `ladderN` (base selection +
+  component in ViewGeometry), and in Memory LOD `ladderN_bottom_front` (bottom entrance),
+  `ladderN_top_front` (top exit), `ladderN_middle_right`(+`_align`) for lateral entrances on
+  intermediate floors (seen on multi-story silo), + `ladderN_con`/`ladderN_con_dir`/`ladderN_dir`
+  (connection/direction). `N` starts at 1. Roadway LOD present.
+- **Proxy ladders** (`ladder_long_proxy`, `ladder_top_proxy`): selection named after the piece
+  (`long`, `top`), empty Geometry `autocenter=0` (inserted into host building).
 
-Conclusión: el `ladderN_*` del wiki es CORRECTO para ladders de EDIFICIO; los props sueltos usan
-`start`/`end`. (Corregido 2026-07-06: una versión previa de esta nota decía "ladderN_ no observado" —
-solo se había mirado props sueltos; los edificios multi-piso sí lo usan.)
+Conclusion: `ladderN_*` from wiki is CORRECT for BUILDING ladders; loose props use
+`start`/`end`. (Corrected 2026-07-06: a previous version of this note stated "ladderN_ not observed" —
+only loose props had been looked at; multi-story buildings do use it.)
 
-## Faces: quads nativos (FaceType 3/4) [EXACT — código py3d]
-El MLOD guarda hasta 4 vertex-slots por `LodFace`; py3d `Face.read`/`Face.write` (`__init__.py:1034-1055`)
-manejan `num_vertices ∈ {3,4}` nativamente (relleno de 16 bytes solo para triángulos). → py3d
-**preserva quads** en el round-trip; la salida quad de un retopo puede escribirse directa sin
-re-triangular. Caveat: el viewer/inspector triangula al exportar a glTF (solo visualización), y el
-binarize a ODOL (AddonBuilder) preservando quads queda por confirmar con un test de binarizado.
+## Faces: native quads (FaceType 3/4) [EXACT — py3d code]
+MLOD stores up to 4 vertex-slots per `LodFace`; py3d `Face.read`/`Face.write` (`__init__.py:1034-1055`)
+handle `num_vertices ∈ {3,4}` natively (16-byte padding only for triangles). → py3d
+**preserves quads** in round-trip; quad output of a retopo can be written directly without
+re-triangulating. Caveat: the viewer/inspector triangulates when exporting to glTF (visualization only), and
+binarizing to ODOL (AddonBuilder) preserving quads remains to be confirmed with a binarization test.
 
 ## Paths LOD (AI pathfinding) [EXACT]
 `garage_small` paths = `pos1, pos2, in1, in2, actionbegin1, actionend1`. Confirma wiki:
 `posXX` = stop-vertices (usables por `buildingpos`), `inXX` = entry/access points. `actionbeginN`/
 `actionendN` acotan acciones de AI.
 
-## Memory LOD — extras no documentados en la wiki [EXACT]
-Además de door/ladder points: `lootcenter`/`lootaround` (spawn de loot) y `sound_*`
-(posición de sonido ambiental, p.ej. `sound_rainobjectinner3metal2_1`).
+## Memory LOD — extras not documented in wiki [EXACT]
+Besides door/ladder points: `lootcenter`/`lootaround` (loot spawn) and `sound_*`
+(ambient sound position, e.g. `sound_rainobjectinner3metal2_1`).
 
-## Método de verificación (reproducible)
-`odol_reader.ODOL.from_file(<p3d>)` → iterar `odol.lods`; por LOD leer `lod.resolution`
+## Verification method (reproducible)
+`odol_reader.ODOL.from_file(<p3d>)` → iterate `odol.lods`; per LOD read `lod.resolution`
 (→ `py3d.classify_lod_resolution`), `lod.named_selections[].name`, `lod.named_properties`
-(tuplas `(key,value)`). Scripts en el scratchpad de la sesión (`inspect_p3d.py`,
-`inspect_doors.py`, `inspect_full.py`). Caveat: usar Object Builder/A3OB si se quiere autorar;
-el conversor externo invierte winding y su membresía de selección tiene caveats (SP-001), pero los
-NOMBRES de selección y named properties se leen fielmente.
+(tuples `(key,value)`). Scripts in session scratchpad (`inspect_p3d.py`,
+`inspect_doors.py`, `inspect_full.py`). Caveat: use Object Builder/A3OB if authoring is desired;
+the external converter inverts winding and its selection membership has caveats (SP-001), but selection
+NAMES and named properties are read faithfully.
 
 ## Cross-ref
-- [[dayz-technical-notes]] / `DAYZ_TECHNICAL_NOTES.md` (LODs canónicos).
+- [[dayz-technical-notes]] / `DAYZ_TECHNICAL_NOTES.md` (canonical LODs).
 - Skills `dayz-model-pipeline` (`references/lods-and-geometry.md`, `memory-and-selections.md`),
   `dayz-p3d-audit` (ComponentXX Killer #2), `dayz-animation-pipeline` (class Doors, source).
-- [[dayz-wiki-systems-reference]] (sistemas wiki de gameplay/entorno, [TBD-verify]).
-- Origen: sesión 2026-07-06 (verificación de los deep-research P3D + Wiki Sweep).
+- [[dayz-wiki-systems-reference]] (gameplay/environment wiki systems, [TBD-verify]).
+- Origin: session 2026-07-06 (verification of deep-research P3D + Wiki Sweep).

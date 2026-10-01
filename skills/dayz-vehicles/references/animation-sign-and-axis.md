@@ -1,9 +1,9 @@
-# El SIGNO de una animacion no se juzga sin su EJE
+# The SIGN of an animation is not judged without its AXIS
 
-Extraido de `SKILL.md` (corte 3, 2026-08-15). Aqui vive el DETALLE; el enunciado
-corto y cuando leer esto estan en el indice `## ARCHIVO DE LECCIONES` del SKILL.md.
-Nada de este fichero esta derogado: son lecciones vigentes, ordenadas por tema en
-vez de por fecha.
+Extracted from `SKILL.md` (cut 3, 2026-08-15). Here lives the DETAIL; the short
+statement and when to read this are in the `## LESSONS ARCHIVE` index of SKILL.md.
+Nothing in this file is repealed: they are active lessons, ordered by topic instead
+of by date.
 
 ---
 
@@ -69,7 +69,7 @@ the wheel-direction question from "spend an in-game cycle to discover it" into "
 offline, in-game only confirms" - which is the difference between one cycle and two.
 ---
 
-> REDIRECT CAMBIO-1: SP-122 ocupa ahora el sitio del invariante #24 que corrige.
+> REDIRECT CAMBIO-1: SP-122 now occupies the place of invariant #24 it corrects.
 
 ## ODOL proxy selection indexes are not bone-selection indexes (SP-121, added 2026-08-31)
 

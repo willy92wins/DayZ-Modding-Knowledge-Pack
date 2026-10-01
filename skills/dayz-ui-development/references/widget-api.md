@@ -384,14 +384,14 @@ class PlayerPreviewWidget: PreviewWidget
 };
 ```
 
-### ⚠️ Verificación de Changelog 1.30 Exp vs Realidad en Scripts
+### ⚠️ 1.30 Exp Changelog Verification vs Reality in Scripts
 
 1. **Ticket T181406 (`WorldToScreen` / `ScreenToWorld`)**:
-   El changelog oficial de DayZ 1.30 Exp afirma: *"Added: WorldToScreen and ScreenToWorld methods for ItemPreviewWidget and PlayerPreviewWidget classes (T181406)"*.
-   **Verificación estática negativa:** En `exp\scripts\scripts\3_Game\gameplay.c:276-314` (y en la totalidad del árbol de scripts de esta build 1.30.164014), dichos métodos **NO están declarados en Enforce Script**. La funcionalidad reside presumiblemente en el binario compilado C++ del motor Enfusion sin binding script expuesto (`[CHANGELOG]`).
-2. **Deshabilitación de partículas en widgets de previsualización**:
-   El changelog afirma: *"Added: Possibility to disable specific attached particles inside of the player / item preview widgets"*.
-   **Verificación estática negativa:** No existe ningún método `Particle` en `gameplay.c` ni propiedades en layouts de preview. Es una capacidad interna del renderizador C++ (`[CHANGELOG]`).
+   The official DayZ 1.30 Exp changelog states: *"Added: WorldToScreen and ScreenToWorld methods for ItemPreviewWidget and PlayerPreviewWidget classes (T181406)"*.
+   **Negative static verification:** In `exp\scripts\scripts\3_Game\gameplay.c:276-314` (and in the entirety of the script tree of this build 1.30.164014), these methods are **NOT declared in Enforce Script**. The functionality presumably resides in the compiled C++ binary of the Enfusion engine without an exposed script binding (`[CHANGELOG]`).
+2. **Disabling particles in preview widgets**:
+   The changelog states: *"Added: Possibility to disable specific attached particles inside of the player / item preview widgets"*.
+   **Negative static verification:** There is no `Particle` method in `gameplay.c` nor properties in preview layouts. It is an internal capability of the C++ renderer (`[CHANGELOG]`).
 
 ---
 

@@ -60,14 +60,14 @@ paths): [`TOOLS.md`](../../TOOLS.md).
 4. **Reconcile**: `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon_root>`
    (every FindAnyWidget name ↔ layouts, every #STR ↔ stringtable.xml/csv; "did-you-mean" on typos).
 
-⚠ **La ruta `tools/dayz-script-validator/...` es relativa a la raiz del Knowledge Pack.**
-Desde un proyecto (`P:\<Mod>\`) no existe y el comando muere con `No such file or directory`, que
-se lee como «no esta instalado». Forma que funciona desde cualquier sitio:
+⚠ **The path `tools/dayz-script-validator/...` is relative to Knowledge Pack root.**
+From a project (`P:\<Mod>\`) it does not exist and command dies with `No such file or directory`,
+reading as "not installed". Working way from anywhere:
 `python <KNOWLEDGE_PACK>/tools/dayz-script-validator/scripts/script_validator.py <addon_root>`.
-⚠ **Y su exit code es 0 PASS / 1 FAIL / 2 WARN**: un arbol limpio con warnings sale con **2**,
-asi que `if rc != 0` lo rechaza. Gatea por `len(errors)` del JSON, o trata el 2 como aprobado.
-Companero: `ui_reconcile.py <addon_root>` reconcilia `FindAnyWidget` ↔ layouts y `#STR` ↔
-stringtable, que es lo que ningun compilador ve; `--strict` convierte sus WARN en fallo.
+⚠ **And its exit code is 0 PASS / 1 FAIL / 2 WARN**: a clean tree with warnings exits with **2**,
+so `if rc != 0` rejects it. Gate by JSON `len(errors)`, or treat 2 as pass.
+Companion: `ui_reconcile.py <addon_root>` reconciles `FindAnyWidget` ↔ layouts and `#STR` ↔
+stringtable, which no compiler catches; `--strict` turns its WARN into failure.
 
 5. **Preview offline**: `python tools/dayz-layout-viewer/build_viewer.py <layout>`
    → a self-contained `.preview.html` you switch between 1080p / 1440p / 21:9 / 720p to SEE
@@ -115,7 +115,7 @@ Read the relevant file BEFORE writing code:
   Also missing there: the UIWidget SETTERS — `SetTextColor(int)` (THE way to color a button/editbox
   LABEL; `Widget.SetColor` colors the body), `SetTextOutline`, `SetTextShadow`, `SetTextItalic/Bold`.
   Includes DayZ 1.30 Exp native `PreviewWidget`, `ItemPreviewWidget` (`SetForceFlipEnable`, `SetForceFlip`),
-  and `PlayerPreviewWidget` native APIs, plus verification desmintiendo tickets de changelog no expuestos en scripts.
+  and `PlayerPreviewWidget` native APIs, plus verification debunking changelog tickets not exposed in scripts.
 - **HUD Action Info Panels & Cursor Construction Grids (DayZ 1.30 Exp modular cursor pipeline)** → `references/hud-action-info-panels.md` —
   modular target action info architecture (`ActionTargetsCursor.c`, `ActionInfoPanels.c`, `ActionInfoGrids.c`, `ConstructionInfoIcons.c`, `action_info_spacer.layout`, `SimpleIconTemplate.layout`), tool/material requirement grids, action dimming (`SetAlpha(0.149)`), universal gamepad controller icon binding via RichText (`SetControllerIcon`).
 - **Dabs Framework deep dive (MVC + Animator + Color + Menu)** → `references/dabs-framework.md` —
@@ -786,44 +786,44 @@ Keep consistent prefix for grep-ability and namespace isolation.
 ### Common Mistake
 Using raw text in `.layout` instead of `#STR_` keys works visually but is **NOT translatable** and **FAILS translation mods**. Always externalize UI strings to stringtable.xml.
 
-### Stringtable CSV: la CABECERA de columnas decide si el motor lo registra (medido 2026-08-21, dos vuelos)
+### Stringtable CSV: column HEADER decides if engine registers it (measured 2026-08-21, two flights)
 
-DayZ acepta `stringtable.csv` en la raiz del addon. Dos escalones volados el mismo dia
-(8 variantes estructurales + 9 variantes del propio CSV; evidencia y fotogramas en
+DayZ accepts `stringtable.csv` at addon root. Two ladders flown same day
+(8 structural variants + 9 variants of CSV itself; evidence and frames in
 `AI/10_Projects/DayZ_MCP/reviews/2026-08-19-ui-reload-layout/VERDICT-stringtable-ladder.md`):
 
-- La resolucion sobrevive a quitar TODO lo estructural (scripts + class defs, `data\`,
-  `gui\`, `model.cfg`, `include.lst`, cuerpo de config, riqueza de CfgPatches/CfgMods):
-  un addon de TRES ficheros (`$PBOPREFIX$` + config minimo + csv) resuelve.
-- **El interruptor es la cabecera de columnas.** Con las 7 de referencia
-  (`"Language","original","english","spanish","german","russian","chinesesimp"`) resuelve
-  incluso con DOS filas de datos; con 4 (sin german/russian/chinesesimp) sale cruda a
-  cualquier escala (263 filas o 8), aunque el PBO cargue (probado con census de addons
-  del crash report) y aunque la columna del idioma del cliente este presente con texto.
-  Numero de filas, tamano del corpus y lineas vacias fisicas: irrelevantes.
-- El empaquetador da igual (FileBank y MakePbo se comportan identico) y el dialecto de
-  `$PBOPREFIX$` (`prefix=...;product=...;` vs nombre pelado) es inocuo tambien bajo
-  MakePbo, que si consume el fichero.
-- Cual de las tres columnas eliminadas es la critica queda sin bisecar; la regla segura
-  es la cabecera completa de 7.
+- Resolution survives removing ALL structural elements (scripts + class defs, `data\`,
+  `gui\`, `model.cfg`, `include.lst`, config body, richness of CfgPatches/CfgMods):
+  a THREE-file addon (`$PBOPREFIX$` + minimal config + csv) resolves.
+- **The toggle is the column header.** With the 7 baseline columns
+  (`"Language","original","english","spanish","german","russian","chinesesimp"`) it resolves
+  even with TWO data rows; with 4 (lacking german/russian/chinesesimp) it outputs raw at
+  any scale (263 rows or 8), even if PBO loads (tested with crash report addon census)
+  and even if client language column is present with text.
+  Row count, corpus size, and physical blank lines: irrelevant.
+- Packer does not matter (FileBank and MakePbo behave identically) and `$PBOPREFIX$`
+  dialect (`prefix=...;product=...;` vs bare name) is harmless also under
+  MakePbo, which does consume the file.
+- Which of the three removed columns is critical remains un-bisected; safe rule
+  is complete 7-column header.
 
-**Regla practica**: todo `stringtable.csv` que empaquetes lleva la cabecera de 7 columnas
-(las columnas sin traduccion copian el ingles); filas, las que necesites — dos bastan.
-Una clave no registrada sale cruda SIN la `#` (el motor la reconocio como clave y no la
-encontro), identico a "clave inexistente". Un `.layout` cargado por `$profile:` NO aporta
-stringtables (solo entran por PBO de addon en el arranque) — para texto dinamico usa
-literales o `ui_set_text`, sin claves. El `templates/stringtable.csv` de esta skill lleva
-la cabecera de 7 columnas exactamente por esto.
+**Practical rule**: every `stringtable.csv` you pack carries 7-column header
+(untranslated columns copy English); rows, as many as needed — two suffice.
+An unregistered key outputs raw WITHOUT `#` (engine recognized it as key and did not
+find it), identical to "non-existent key". A `.layout` loaded via `$profile:` does NOT supply
+stringtables (they only enter via addon PBO on boot) — for dynamic text use
+literals or `ui_set_text`, without keys. The `templates/stringtable.csv` of this skill carries
+the 7-column header precisely because of this.
 
 ### Paneles de preview on-demand (generador incluido)
 
-`scripts/gen_panel_layout.py` genera layouts listos para el bucle
-`$profile:` + `ui_reload_layout` + `ui_set_text`: feed tipo chat/log, panel
-etiqueta/valor y HUD minimo, con nombres de widget contractuales (`TitleText`,
-`FeedLine0..N-1`, `LabelK`/`ValueK`) documentados en `scripts/CONTRACT.md`.
-Volado in-game 2026-08-21 (feed de 10 lineas inyectado en caliente con
-`ui_set_text`, sin stringtable). `--self-test` verifica llaves balanceadas y
-unicidad de nombres sin abrir el juego.
+`scripts/gen_panel_layout.py` generates layouts ready for the loop
+`$profile:` + `ui_reload_layout` + `ui_set_text`: chat/log feed, label/value
+panel, and minimal HUD, with contractual widget names (`TitleText`,
+`FeedLine0..N-1`, `LabelK`/`ValueK`) documented in `scripts/CONTRACT.md`.
+Flown in-game 2026-08-21 (10-line feed hot-injected with
+`ui_set_text`, without stringtable). `--self-test` verifies balanced braces and
+name uniqueness without opening game.
 
 ---
 
@@ -1064,74 +1064,74 @@ result is.
 
 ## Hot-loop S2 sorter — reglas nuevas medidas (added 2026-08-29)
 
-Origen: preview `$profile:` del layout integrado 820x600 del sorter V4 TEST
-(250 widgets, 1920x1080 y 1280x720). Evidencia: `dayz_re_scratch/ui_matrix.md` §11,
-capturas `capture_20260829_003222_408` / `_003807_235`.
+Origin: `$profile:` preview of integrated 820x600 layout of sorter V4 TEST
+(250 widgets, 1920x1080 and 1280x720). Evidence: `dayz_re_scratch/ui_matrix.md` §11,
+captures `capture_20260829_003222_408` / `_003807_235`.
 
-1. **`visible 0` declarado en el `.layout` FUNCIONA** (motor y preview): section
-   roots solapados, overlays y badges nacen ocultos sin script (`visible:0` +
-   `visible_hierarchy:0` en el arbol del motor). Patron para secciones swapeables:
-   N roots identicos solapados, el activo `visible 1`, el resto `visible 0`; el
-   script solo conmuta el root (mata el hueco de secciones apiladas, F-007).
-2. **Los glifos NO comprimen linealmente al bajar el factor**: una caja que cabe a
-   1080p puede guillotinar a 0.667 ("POWERED" perdio la D con caja de 62 px;
-   necesito 70). Dimensiona la caja de texto al PEOR factor soportado y verifica
-   alli; +10-15% de margen sobre el ancho medido a 1080p.
-3. **Jerarquia tipografica en modo default font-only = caras con tamano**:
-   `gui/fonts/Metron12/14/16` y `MetronBook12/14` existen y vanilla las usa
-   (`day_z_hud.layout:1965` Metron14). Las caras sin numero ("Metron",
-   "MetronBook") rinden ~22 y no dan jerarquia fina. `text_proportion` sigue
-   vetado (sin ley entre resoluciones).
-4. **Tokens pre-mezclados validados end-to-end en panel real**: el ARGB de
-   `ui_tree` devuelve byte-exacto el float declarado y el render pinta el color
-   PURO (alpha declarado ignorado). Receta: `c = base*(1-a) + wash*a`, siempre
-   A=1 en el layout. Tabla de tokens del caso: S2-LAYOUT-SPEC.md §2 (LFPG).
-5. **Resize host-side (SetWindowPos) NO es universal**: mato un cliente de
-   1942x1136 (proceso muerto, sin crash de script); funciono en el 846x461 del
-   vuelo F. Barrido seguro: relanzar con width/height — y VERIFICAR el viewport
-   en el arbol (una peticion 1280x720 dio 1280x720 exacto esta vez; el vuelo F
-   obtuvo 846x461 con la misma peticion: el mapeo no es estable).
-6. **La preview `$profile:` es pintura sin contexto de menu**: clickear la
-   ventana da el foco al juego y la camara CAPTURA el raton (el cursor
-   desaparece y no hay mas clicks). ESC (menu vanilla) lo devuelve. Ningun click
-   sobre widgets de preview funciona; la interaccion se prueba con el panel real.
-7. **Geometria de layouts 100% exact-flag**: `ui_rects.py predict` NO los modela
-   (su propia cabecera). Via valida: `DayZ_Tooling/scripts/shared/layout_ast.py`
-   — `parse_layout(SOURCE)` devuelve lista plana con `.parent/.children` y attrs
-   tipados (position/size = [float,float]); contencion, anidamiento, z-order y
-   visible-0 se chequean offline con aritmetica de suma de ancestros.
-8. **La generacion del layout es delegable**: spec-tabla exhaustiva (nombre/
-   clase/rect/flags/color/fuente por widget) + gate mecanico (nombres exactamente
-   una vez, cero legacy, bindings, fuentes permitidas, alpha=1, un atributo por
-   linea) permitio a una lane gratis (glm-5.3-flash) producir 3.4k lineas
-   correctas a la primera; los dos defectos reales los cazaron el gate visual
-   (clip de glifo) y el ojo, no el gate textual.
+1. **`visible 0` declared in `.layout` WORKS** (engine and preview): overlapping section
+   roots, overlays, and badges are born hidden without script (`visible:0` +
+   `visible_hierarchy:0` in engine tree). Pattern for swappable sections:
+   N identical overlapping roots, active one `visible 1`, rest `visible 0`;
+   script only toggles root (kills stacked section gap, F-007).
+2. **Glyphs do NOT compress linearly when lowering factor**: a box fitting at
+   1080p can clip at 0.667 ("POWERED" lost the D with a 62 px box;
+   needed 70). Size text box to WORST supported factor and verify
+   there; +10-15% margin over width measured at 1080p.
+3. **Typographic hierarchy in default font-only mode = sized faces**:
+   `gui/fonts/Metron12/14/16` and `MetronBook12/14` exist and vanilla uses them
+   (`day_z_hud.layout:1965` Metron14). Unnumbered faces ("Metron",
+   "MetronBook") yield ~22 and offer no fine hierarchy. `text_proportion` remains
+   barred (no consistency across resolutions).
+4. **Pre-mixed tokens validated end-to-end on real panel**: ARGB of
+   `ui_tree` returns declared float byte-exact and render paints PURE
+   color (declared alpha ignored). Recipe: `c = base*(1-a) + wash*a`, always
+   A=1 in layout. Case token table: S2-LAYOUT-SPEC.md §2 (LFPG).
+5. **Host-side resize (SetWindowPos) is NOT universal**: killed a client of
+   1942x1136 (process died, no script crash); worked on 846x461 of
+   flight F. Safe sweep: relaunch with width/height — and VERIFY viewport
+   in tree (a 1280x720 request yielded exact 1280x720 this time; flight F
+   got 846x461 with same request: mapping is not stable).
+6. **`$profile:` preview is paint without menu context**: clicking
+   window gives focus to game and camera CAPTURES mouse (cursor
+   disappears and no further clicks occur). ESC (vanilla menu) returns it. No click
+   on preview widgets works; interaction is tested with real panel.
+7. **100% exact-flag layout geometry**: `ui_rects.py predict` does NOT model them
+   (its own header). Valid route: `DayZ_Tooling/scripts/shared/layout_ast.py`
+   — `parse_layout(SOURCE)` returns flat list with `.parent/.children` and typed
+   attrs (position/size = [float,float]); containment, nesting, z-order and
+   visible-0 are checked offline with ancestor summation arithmetic.
+8. **Layout generation is delegable**: exhaustive table spec (name/
+   class/rect/flags/color/font per widget) + mechanical gate (names exactly
+   once, zero legacy, bindings, permitted fonts, alpha=1, one attribute per
+   line) allowed a free lane (glm-5.3-flash) to produce 3.4k lines
+   correct on first pass; the two real defects were caught by visual gate
+   (glyph clip) and eye, not textual gate.
 
-## Los clics sobre ScriptViews no son automatizables por el MCP (added 2026-08-29)
+## Clicks on ScriptViews cannot be automated via MCP (added 2026-08-29)
 
-Medido in-game el 2026-08-29 con el puente DayZ-MCP **v10 sano** (`bridge_status ready=true`, los
-dos peers en `10~1.29.163709`, `version accepted`), sobre el panel del sorter de LFPowerGrid, que
-es un ScriptView de Dabs y no un `UIScriptedMenu`:
+Measured in-game on 2026-08-29 with DayZ-MCP bridge **healthy v10** (`bridge_status ready=true`, both
+peers at `10~1.29.163709`, `version accepted`), on LFPowerGrid sorter panel, which
+is a Dabs ScriptView and not a `UIScriptedMenu`:
 
-- `ui_tree` con `path` vacio devuelve `no_menu`: el walker busca el *scripted menu* activo y un
-  ScriptView no lo es. Por esa via no hay arbol de widgets que inspeccionar.
-- `ui_click` devuelve `not_handled` sobre botones que existen y estan visibles en pantalla.
+- `ui_tree` with empty `path` returns `no_menu`: walker looks for active *scripted menu* and a
+  ScriptView is not one. Via that route there is no widget tree to inspect.
+- `ui_click` returns `not_handled` on buttons that exist and are visible on screen.
 
-**El control que hace concluyente lo segundo, y que hay que repetir siempre.** `not_handled` sobre
-un boton con guard de permisos es AMBIGUO: puede ser el harness sin alcanzar el handler, o el
-fail-closed del controlador rechazando la accion. Son conclusiones opuestas. Se distingue clicando
-ademas un widget SIN guard. Aqui el boton de cerrar (`BtnCloseX`), permitido siempre y sin depender
-de power ni link, dio tambien `not_handled`, y una captura posterior mostro el panel todavia
-abierto: el clic no hizo nada. Sin ese segundo clic, el resultado se podria haber apuntado como
-"fail-closed verificado", que habria sido falso.
+**The control that makes the second conclusive, and must always be repeated.** `not_handled` on
+a button with permission guard is AMBIGUOUS: can be harness not reaching handler, or
+controller's fail-closed rejecting action. Opposite conclusions. Distinguished by clicking
+also a widget WITHOUT guard. Here close button (`BtnCloseX`), always allowed and independent
+of power or link, also gave `not_handled`, and later capture showed panel still
+open: click did nothing. Without that second click, result could have been recorded as
+"verified fail-closed", which would have been false.
 
-Consecuencias al planificar un ciclo: los nombres de widget se sacan del `.layout`
-(`ButtonWidgetClass <Nombre>`), no de un arbol en vivo; y **cualquier gate que dependa de pulsar,
-escribir en un EditBox, cambiar de tab o cerrar con ESC es del usuario con raton real**. Que un
-verbo viaje dentro del PBO desplegado no implica que sea invocable -el registro de tools del daemon
-se fija al ARRANCAR, asi que `key_press` y `player_respawn` estaban en el PBO v10 y no existian como
-tools-, ni que, siendo invocable, alcance el handler. Fichas del pipeline: `fb-20260828-212912-f6ac`
-(abierta), evidencia en `fb-20260829-022838-7743`.
+Consequences when planning a cycle: widget names are taken from `.layout`
+(`ButtonWidgetClass <Name>`), not from a live tree; and **any gate depending on clicking,
+typing in an EditBox, switching tabs, or closing with ESC belongs to user with real mouse**. That a
+verb travels inside deployed PBO does not imply it is invokable —daemon tools registry
+is fixed at BOOT, so `key_press` and `player_respawn` were in v10 PBO and did not exist as
+tools—, nor that, being invokable, it reaches handler. Pipeline tickets: `fb-20260828-212912-f6ac`
+(open), evidence in `fb-20260829-022838-7743`.
 
 ## Scripted-camera exit lifecycle (added 2026-08-31)
 
@@ -1247,19 +1247,19 @@ in orientation or in size. That is structural, not a tuning problem. Full case: 
 
 ---
 
-## Medido in-game el 2026-09-04 — colisión de nombres, escalado del motor y sondas que mienten (added 2026-09-04)
+## Measured in-game on 2026-09-04 — name collision, engine scaling, and lying probes (added 2026-09-04)
 
-Una ventana in-game de DayZ 1.29.163709 sobre LFPowerGrid (sorter V4 TEST + producción cargados
-a la vez) produjo ocho hechos que esta skill no tenía, y **tres de ellos rompen un método de
-verificación que parecía sensato**. Todo lo de abajo está medido, no inferido; las citas son
-`path:line` del árbol real.
+An in-game window of DayZ 1.29.163709 on LFPowerGrid (sorter V4 TEST + production loaded
+at once) yielded eight facts this skill lacked, and **three of them break a verification
+method that seemed sound**. Everything below is measured, not inferred; citations are
+`path:line` of actual tree.
 
-### 1. Dos layouts con los mismos nombres hacen INALCANZABLE al segundo
+### 1. Two layouts with same names make the second UNREACHABLE
 
-Es el fallo estructural más caro y el más fácil de cometer: copiar un `.layout` para hacer una
-variante TEST/debug y no renombrar sus widgets.
+It is the most expensive and easiest structural failure to commit: copying a `.layout` to make a
+TEST/debug variant and not renaming its widgets.
 
-Medido sobre LFPowerGrid:
+Measured on LFPowerGrid:
 
 ```
 LFPG_Sorter.layout            185 widgets
@@ -1272,83 +1272,83 @@ solo en TEST                   89        (Builder*, CatchAllRow*, BtnPreview*)
 
 `LFPG_Sorter.layout:12 SorterRoot` · `:26 SorterPanel` · `:204 BtnCloseX`
 `test/LFPG_Sorter_TEST.layout:7 SorterRoot` · `:14 SorterPanel` · `:289 BtnCloseX`
-`LFPG_BTCAtm.layout:105 BtnCloseX` — tercera colisión, desde otra pantalla del mismo mod.
+`LFPG_BTCAtm.layout:105 BtnCloseX` — third collision, from another screen of same mod.
 
 Consecuencias medidas:
 
-- `FindAnyWidget("SorterPanel")` y el resolver por nombre del MCP **no pueden distinguirlos**.
-  El síntoma histórico fue un `ui_click` que devolvía `not_handled`: estaba resolviendo en
-  silencio al nodo de PRODUCCIÓN, cuyo `OnClick` no maneja nada porque su vista no está abierta.
-- **Acotar por un ancestro no siempre salva.** La cadena del `BtnCloseX` del TEST es
-  `SorterRoot → SorterPanel → HeaderFrame → BtnCloseX` y **los tres ancestros colisionan**: no
-  existe ningún ancestro exclusivo por el que scopear la búsqueda. El botón es literalmente
-  inalcanzable por nombre.
-- **Basta con que el otro root EXISTA, no con que esté abierto.** El patrón recomendado de
-  pre-crear la vista en `MissionInit` y luego `Show(false)` (Rule 9 de esta skill) deja el root
-  de producción instanciado toda la sesión. La ambigüedad es permanente, no situacional.
+- `FindAnyWidget("SorterPanel")` and MCP name resolver **cannot distinguish them**.
+  Historical symptom was a `ui_click` returning `not_handled`: was resolving in
+  silence to PRODUCTION node, whose `OnClick` handles nothing because its view is not open.
+- **Scoping by an ancestor does not always save you.** Chain of TEST `BtnCloseX` is
+  `SorterRoot → SorterPanel → HeaderFrame → BtnCloseX` and **all three ancestors collide**: no
+  exclusive ancestor exists by which to scope search. Button is literally
+  unreachable by name.
+- **It suffices for the other root to EXIST, not for it to be open.** Recommended pattern of
+  pre-creating view in `MissionInit` and then `Show(false)` (Rule 9 of this skill) leaves production
+  root instantiated entire session. Ambiguity is permanent, not situational.
 
-**Regla**: los nombres de widget son el contrato de API (§5 de `plan-to-implementation.md`). Una
-variante TEST/debug **prefija todos sus nombres** (`TEST_`, `Dbg_`) o no es direccionable. En
-LFPowerGrid los 89 nombres exclusivos (`BuilderTabCategory` y compañía) son justo los únicos que
-funcionan; los 124 compartidos, ninguno.
+**Rule**: widget names are API contract (§5 of `plan-to-implementation.md`). A
+TEST/debug variant **prefixes all its names** (`TEST_`, `Dbg_`) or is not addressable. In
+LFPowerGrid the 89 exclusive names (`BuilderTabCategory` and company) are precisely only ones
+working; 124 shared ones, none.
 
-**Gate offline barato** — antes de dar por buena una variante de layout, cuenta la intersección:
+**Cheap offline gate** — before approving a layout variant, count intersection:
 
 ```python
 import re, io
 def names(p):
     s = io.open(p, encoding="utf-8", errors="replace").read()
     return set(re.findall(r'^\s*\w+WidgetClass\s+(\w+)\s*\{', s, re.M))
-print(sorted(names(PROD) & names(TEST)))   # debe ser vacio
+print(sorted(names(PROD) & names(TEST)))   # must be empty
 ```
 
-### 1b. Cómo se arregla una colisión de nombres: renombrar el ROOT basta (measured 2026-09-04)
+### 1b. How to fix a name collision: renaming the ROOT is enough (measured 2026-09-04)
 
-Antes de prefijar 227 widgets, mira si te basta con **uno**. El contrato del resolver del puente
-lo dice literalmente (`DayZ_MCP/scripts/5_Mission/MCPClientBridge.c:2038-2043`):
+Before prefixing 227 widgets, see if just **one** is enough. The bridge resolver contract
+states it literally (`DayZ_MCP/scripts/5_Mission/MCPClientBridge.c:2038-2043`):
 
 > `root` names a widget that must be unique in the whole workspace; `path` is then a name
 > resolved **inside that scope**. Without `root`, `path` is resolved over the whole workspace,
 > ScriptView roots included: 0 matches is `widget_not_found`, 2 or more is `ambiguous_path`, and
 > the first homonym is never chosen.
 
-Y `ResolveUniqueUiWidget(scope, name)` (`:2114-2131`) cuenta las coincidencias **bajo `scope`**.
-O sea: si el root del layout variante es único, todo su árbol vuelve a ser direccionable
-—`ui_tree/ui_click/ui_set_text` con `root: "TEST_SorterRoot"`— aunque los otros 135 nombres
-sigan colisionando.
+And `ResolveUniqueUiWidget(scope, name)` (`:2114-2131`) counts matches **under `scope`**.
+In other words: if the variant layout root is unique, its whole tree becomes addressable again
+—`ui_tree/ui_click/ui_set_text` with `root: "TEST_SorterRoot"`— even though the other 135 names
+keep colliding.
 
-En LFPowerGrid eso fue **una línea**: `LFPG_Sorter_TEST.layout:7`,
-`FrameWidgetClass SorterRoot` → `TEST_SorterRoot`. Medido antes de tocar nada: `SorterRoot`
-aparecía **exactamente dos veces en todo el mod** (la declaración de producción y la del TEST),
-cero literales en `.c`, cero `Binding_Name`, cero miembros. +5 bytes, balance de llaves
-intacto, producción byte-idéntica.
+In LFPowerGrid that was **one line**: `LFPG_Sorter_TEST.layout:7`,
+`FrameWidgetClass SorterRoot` → `TEST_SorterRoot`. Measured before touching anything: `SorterRoot`
+appeared **exactly twice across the entire mod** (the production declaration and the TEST one),
+zero literals in `.c`, zero `Binding_Name`, zero members. +5 bytes, brace balance
+intact, production byte-identical.
 
-**Por qué importa el orden de esas dos comprobaciones.** El prefijo completo parecía la opción
-obvia y es la cara: en una vista Dabs MVC hay **tres sistemas de nombres que se solapan** y
-renombrar widgets los toca todos a la vez.
+**Why the order of those two checks matters.** The full prefix seemed the obvious
+option and is the expensive one: in a Dabs MVC view there are **three overlapping naming systems** and
+renaming widgets touches all of them at once.
 
-| Sistema | En este mod | Renombrar el widget lo rompe si… |
+| System | In this mod | Renaming the widget breaks it if… |
 |---|---|---|
-| Nombre de widget en el `.layout` | 227 | — es el objetivo |
-| Miembro atado por `LoadWidgetsAsVariables` (miembro `X` ↔ widget `X`) | 139 | no renombras también el miembro |
-| `Binding_Name` de un `ViewBinding` | 15 | renombras el miembro (apunta a la PROPIEDAD del controlador, no al widget) |
+| Widget name in the `.layout` | 227 | — it is the goal |
+| Member bound via `LoadWidgetsAsVariables` (member `X` ↔ widget `X`) | 139 | you do not also rename the member |
+| `Binding_Name` of a `ViewBinding` | 15 | you rename the member (points to the controller PROPERTY, not to the widget) |
 
-Los dos últimos tiran en direcciones opuestas: renombrar miembros arregla el auto-bind y rompe
-`Binding_Name`; no renombrarlos mata el auto-bind. Se puede resolver (aquí: 122 miembros tenían
-`FindAnyWidget` manual, 11 se resuelven por child-walk desde el botón o por concatenación
-`btnName + "Bg"` que sigue al renombrado sola, y solo 6 quedaban expuestos), pero el modo de
-fallo es **null silencioso** y el único gate real es otra ventana in-game con rebuild de PBO.
+The last two pull in opposite directions: renaming members fixes auto-bind and breaks
+`Binding_Name`; not renaming them kills auto-bind. It can be resolved (here: 122 members had
+manual `FindAnyWidget`, 11 are resolved via child-walk from the button or via concatenation
+`btnName + "Bg"` that tracks the renaming on its own, and only 6 remained exposed), but the failure
+mode is **silent null** and the only real gate is another in-game window with PBO rebuild.
 
-**Regla**: ante `ambiguous_path`, la primera pregunta no es «¿cómo renombro todo?» sino
-**«¿hay un ancestro que pueda hacer único?»**. Si lo hay, el arreglo es O(1) y verificable
-offline. El prefijo completo sigue siendo lo correcto para un layout NUEVO — ahí no cuesta
-nada—, pero para uno vivo con MVC es un refactor con su propio ciclo de test.
+**Rule**: when facing `ambiguous_path`, the first question is not "how do I rename everything?" but
+**"is there an ancestor I can make unique?"**. If there is, the fix is O(1) and verifiable
+offline. The full prefix is still the right thing for a NEW layout — there it costs
+nothing—, but for an active one with MVC it is a refactor with its own test cycle.
 
-**Y ojo con dónde vive el `.layout`**: se sirve **desde el PBO**, no por filePatching (solo
-`$profile:` se relee de disco). Un renombrado en el layout de la carpeta compilable **no está
-vivo hasta el siguiente build**; hasta entonces el cliente sigue viendo el nombre viejo.
+**And watch out for where the `.layout` lives**: it is served **from the PBO**, not via filePatching (only
+`$profile:` is re-read from disk). A rename in the layout of the buildable folder **is not
+live until the next build**; until then the client continues seeing the old name.
 
-**Comprobaciones que cierran un renombrado de root, todas offline:**
+**Checks that close a root rename, all offline:**
 
 ```
 1. grep del nombre en TODO el mod (.layout + .c + config.cpp) -> cuenta las apariciones
@@ -1358,14 +1358,14 @@ vivo hasta el siguiente build**; hasta entonces el cliente sigue viendo el nombr
 4. el nombre nuevo declarado UNA vez y ausente de produccion
 ```
 
-### 2. Redimensionar la ventana NO prueba independencia de resolución
+### 2. Resizing the window does NOT prove resolution independence
 
-Esto invalida el método que parece obvio para el dolor nº1 de esta skill («se ve distinto a otra
-resolución»).
+This invalidates the method that seems obvious for the #1 pain point of this skill ("it looks different at another
+resolution").
 
-DayZDiag conserva la resolución de render que le dan `-x/-y` en la línea de comandos y **escala
-la superficie compuesta** hasta la ventana. **No recalcula el layout.** Medido con la misma
-sonda antes y después de un `SetWindowPos` a un client rect de 1280x720 real:
+DayZDiag retains the render resolution given to it by `-x/-y` on the command line and **scales
+the composited surface** up to the window. **It does not recalculate the layout.** Measured with the same
+probe before and after a `SetWindowPos` to an actual client rect of 1280x720:
 
 | Campo del panel | ventana 1920x1080 | ventana 1280x720 | ratio |
 |---|---|---|---|
@@ -1374,23 +1374,23 @@ sonda antes y después de un `SetWindowPos` a un client rect de 1280x720 real:
 | `pos_x` | 550 | **366.667** | 2/3 |
 | `pos_y` | 240 | **160** | 2/3 |
 
-**Todo** por el mismo factor, `1280/1920`. La firma inequívoca: un widget declarado con tamaño
-**exacto de 1 px** pasó a reportar `screen_w = 0.6666666865`. Si el motor hubiera re-maquetado,
-un tamaño exacto seguiría siendo 1.
+**Everything** by the same factor, `1280/1920`. The unmistakable signature: a widget declared with an exact
+size of **1 px** changed to reporting `screen_w = 0.6666666865`. If the engine had re-laid out,
+an exact size would still be 1.
 
 Dos corolarios que cuestan caro:
 
-- Para probar otra resolución de verdad hay que **relanzar el cliente con otros `-x/-y`**. No
-  hay atajo por ventana.
-- **La ausencia de un scaler en el código del mod no prueba que no haya escalado.** En este caso
-  se había medido correctamente que no hay ni una aparición de `UIScaler` ni de `ScaleWidget` en
-  la vista, y de ahí se dedujo —mal— que las cifras saldrían sin escalar. El escalado lo hace el
-  motor; ningún grep del mod puede verlo. Cuando una predicción dependa de «no hay scaler»,
-  el gate es una medida in-game, no un grep.
+- To truly test another resolution you must **relaunch the client with different `-x/-y`**. There
+  is no shortcut via window.
+- **The absence of a scaler in the mod code does not prove that there is no scaling.** In this case
+  it had been correctly measured that there is not a single appearance of `UIScaler` or `ScaleWidget` in
+  the view, and from there it was deduced —wrongly— that the numbers would come out unscaled. Scaling is done by the
+  engine; no grep of the mod can see it. When a prediction depends on "there is no scaler",
+  the gate is an in-game measurement, not a grep.
 
-### 3. Un helper host que no es DPI-aware miente, y el gate sale VERDE igual
+### 3. A non-DPI-aware host helper lies, and the gate comes out GREEN anyway
 
-Con escalado de Windows al 150%, un proceso no-DPI-aware recibe coordenadas **virtualizadas**:
+With Windows scaling at 150%, a non-DPI-aware process receives **virtualized** coordinates:
 
 ```
 GetWindowRect  -> 1295 x 757     real 1943 x 1136
@@ -1398,20 +1398,20 @@ GetClientRect  -> 1280 x 720     real 1921 x 1080
 posicion       -> (1080, 56)     real (1620, 84)
 ```
 
-Lo peligroso no es la lectura, es el **gate**: se pidió `SetWindowPos` a «1280x720» (lógicos =
-1920x1080 físicos, o sea ningún cambio) y la comprobación `client_rect == pedido` comparó
-lógico contra lógico y **pasó en verde sin haber movido nada**. Un gate que compara dos valores
-del espacio equivocado no detecta nada.
+The danger is not the read, it is the **gate**: `SetWindowPos` was requested at "1280x720" (logical =
+1920x1080 physical, meaning no change) and the check `client_rect == requested` compared
+logical against logical and **passed in green without having moved anything**. A gate that compares two values
+from the wrong space detects nothing.
 
-**Regla**: cualquier helper que mida o mueva la ventana del juego llama primero
-`ctypes.windll.shcore.SetProcessDpiAwareness(2)` (con fallback a `user32.SetProcessDPIAware()`).
-Y el contraste barato: `capture_screenshot` del MCP devuelve `window.rect` **y**
-`client_surface.rect_window` en píxeles físicos — si tu helper no coincide con eso, el que
-miente es tu helper.
+**Rule**: any helper that measures or moves the game window calls first
+`ctypes.windll.shcore.SetProcessDpiAwareness(2)` (with fallback to `user32.SetProcessDPIAware()`).
+And the cheap cross-check: MCP `capture_screenshot` returns `window.rect` **and**
+`client_surface.rect_window` in physical pixels — if your helper does not match that, the one
+lying is your helper.
 
-### 4. ESC no cierra si hay un EditBox enfocado — y tu sonda puede ser el EditBox
+### 4. ESC does not close if an EditBox is focused — and your probe may be the EditBox
 
-Patrón de `HandleEscKey`, verificado en fuente (`LFPG_SorterView_TEST.c`):
+Pattern of `HandleEscKey`, verified in source (`LFPG_SorterView_TEST.c`):
 
 ```cpp
 Widget focused = GetFocus();
@@ -1422,55 +1422,55 @@ if (focused) {
 DoClose();
 ```
 
-El comentario del propio código lo llama «Double-ESC: first clears EditBox focus, second closes
-panel». Es un patrón sano de UX. El problema es el efecto observador: **si tu hook de scripting
-es un `EditBoxWidget` invisible** —que es el patrón habitual para inyectar comandos sin
-teclado— y alguna llamada lo deja enfocado, el primer ESC se lo come y el panel no cierra. La
-sonda altera lo que mide.
+The code's own comment calls it "Double-ESC: first clears EditBox focus, second closes
+panel". It is a sound UX pattern. The problem is the observer effect: **if your scripting hook
+is an invisible `EditBoxWidget`** —which is the usual pattern to inject commands without
+keyboard— and some call leaves it focused, the first ESC is consumed by it and the panel does not close. The
+probe alters what it measures.
 
-Mitigación: que el hook sea un widget sin foco (`ignore_pointer 1` no basta: hay que no
-enfocarlo), o `SetFocus(null)` explícito después de escribir en él, o probar el cierre con el
-botón real en vez de con ESC.
+Mitigation: ensure the hook is a widget without focus (`ignore_pointer 1` is not enough: it must not
+be focused), or explicit `SetFocus(null)` after typing into it, or test closing with the
+actual button instead of ESC.
 
-### 5. Una sonda que escribe a fichero sin sello de frescura no distingue «no procesado» de «viejo»
+### 5. A probe writing to file without freshness stamp does not distinguish "unprocessed" from "stale"
 
-El hook del sorter responde escribiendo un JSON al perfil
-(`_client/profiles/lfpg_sorter_mcp.json`). El JSON lleva estado (`open`, `powered`, `paired`,
-`status`, `rule_count`) pero **ninguna marca de frescura**: ni timestamp, ni secuencia, ni eco
-del comando con id.
+The sorter hook responds by writing a JSON to profile
+(`_client/profiles/lfpg_sorter_mcp.json`). The JSON carries state (`open`, `powered`, `paired`,
+`status`, `rule_count`) but **no freshness mark**: no timestamp, no sequence, no echo
+of the command with id.
 
-Medido: con el panel **cerrado**, enviar un `dump` deja el fichero **byte-idéntico** (mismo
-mtime, mismo sha) porque el poll de la vista no corre mientras está cerrada. Un consumidor
-ingenuo lee el fichero, ve `"open": true` del dump ANTERIOR y concluye que el panel sigue
-abierto. Lo contrario de la verdad.
+Measured: with the panel **closed**, sending a `dump` leaves the file **byte-identical** (same
+mtime, same sha) because the view's poll does not run while it is closed. A naive
+consumer reads the file, sees `"open": true` from the PREVIOUS dump, and concludes that the panel is still
+open. The opposite of the truth.
 
-**Reglas para cualquier sonda UI basada en fichero:**
+**Rules for any file-based UI probe:**
 
-- El consumidor compara **mtime y hash antes y después** de cada comando. Sin cambio = comando
-  no procesado; el contenido no es una respuesta.
-- Mejor: que la sonda incluya un `seq` o el eco del comando recibido, para que la frescura viva
-  DENTRO del artefacto y no dependa del sistema de ficheros.
-- Y no escribas un gate que exija a la sonda un valor que **no puede emitir**: pedir un dump con
-  `"open": false` es imposible si al cerrarse la vista deja de sondear. Antes de fijar el valor
-  esperado, pregunta si el instrumento sigue vivo en ese estado.
+- The consumer compares **mtime and hash before and after** each command. No change = command
+  not processed; the content is not a response.
+- Better: have the probe include a `seq` or the echo of the received command, so that freshness lives
+  INSIDE the artifact and does not depend on the filesystem.
+- And do not write a gate that requires from the probe a value that **it cannot emit**: requesting a dump with
+  `"open": false` is impossible if closing the view stops polling. Before setting the expected
+  value, ask whether the instrument remains alive in that state.
 
-### 6. La textura procedural sigue rota en 1.29 (confirmado 2026-09-04)
+### 6. Procedural texture remains broken in 1.29 (confirmed 2026-09-04)
 
-La Rule 2 de esta skill ya avisaba, con fecha vieja. Reconfirmado en 1.29.163709, en el RPT del
-cliente, 4-5 apariciones por arranque:
+Rule 2 of this skill already warned, with an old date. Reconfirmed in 1.29.163709, in the client
+RPT, 4-5 occurrences per boot:
 
 ```
 RESOURCES (E): Bad texture name '#(argb,8,8,3)color(1,1,1,1,CO)'
 GUI       (E): ImageWidget::LoadImageFile can't load '#(argb,8,8,3)color(1,1,1,1,CO)'
 ```
 
-Los fallbacks (un `.edds` 1x1 blanco, o un `style` Colorable con WhitePixel Center) siguen
-siendo el camino. No es un warning inocuo: el `ImageWidget` se queda sin textura.
+The fallbacks (a 1x1 white `.edds`, or a Colorable `style` with WhitePixel Center) continue
+to be the way. It is not an innocuous warning: the `ImageWidget` is left without texture.
 
-### 7. Los verbos UI del MCP ya devuelven lo que enviaste, y la ruta resuelta
+### 7. MCP UI verbs now return what you sent, and the resolved path
 
-Cambio de contrato respecto a lo que documentaban las notas de agosto. `ui_set_text` y
-`ui_click` devuelven ahora:
+Contract change relative to what the August notes documented. `ui_set_text` and
+`ui_click` now return:
 
 ```json
 "ui_request": {
@@ -1481,40 +1481,40 @@ Cambio de contrato respecto a lo que documentaban las notas de agosto. `ui_set_t
 }
 ```
 
-Dos ganancias: los recibos de evidencia ya no hay que anotarlos a mano, y **`matched_path`
-expone la decisión del resolver**, que es exactamente el dato que hacía falta para diagnosticar
-colisiones de nombre. El `@N` de cada segmento es el índice entre hermanos: un `SorterRoot@1`
-te está diciendo que hay al menos dos.
+Two gains: evidence receipts no longer need to be noted by hand, and **`matched_path`
+exposes the resolver's decision**, which is exactly the data needed to diagnose
+name collisions. The `@N` of each segment is the index among siblings: a `SorterRoot@1`
+tells you that there are at least two.
 
-Y cuando el nombre es ambiguo, el resolver **ya no adivina**: devuelve `ambiguous_path` en vez
-de resolver en silencio. Eso convierte un bug silencioso en un error legible — pero también
-significa que un `path` por nombre a secas deja de funcionar en cuanto exista un homónimo.
+And when the name is ambiguous, the resolver **no longer guesses**: it returns `ambiguous_path` instead
+of resolving silently. That turns a silent bug into a readable error — but it also
+means that a plain name `path` stops working as soon as a homonym exists.
 
-### 8. Trampa del marcador de log
+### 8. Log marker trap
 
-`logs_since(max_lines=1)` para «marcar el ahora» devuelve un marcador cuyo offset cae al
-**principio** del fichero cuando el log está por debajo del tope de 256 KiB. Un gate que asuma
-«desde M0 no hay ruido de arranque» se traga el arranque entero. Los logs de DayZ ya son por-run
-(el nombre lleva la fecha de lanzamiento), así que para contar patrones lo fiable es **contar
-sobre los ficheros del run y fechar cada hit**, no confiar en el offset.
+`logs_since(max_lines=1)` to "mark the now" returns a marker whose offset falls at the
+**beginning** of the file when the log is below the 256 KiB cap. A gate that assumes
+"from M0 there is no startup noise" swallows the entire startup. DayZ logs are already per-run
+(the name carries the launch date), so to count patterns the reliable approach is to **count
+over the run files and date each hit**, not trust the offset.
 
-Relacionado: la sonda del mod escribe en `script_<fecha>.log`, **no** en el `.RPT`. Un control
-positivo buscado solo en el RPT sale a cero y parece que la sonda no corrió.
+Related: the mod probe writes to `script_<date>.log`, **not** to the `.RPT`. A positive
+control searched only in the RPT yields zero and makes it seem like the probe didn't run.
 
 ---
 
-## Medido in-game el 2026-09-05 — contrato de hot-iteration, control positivo del scope, y una corrección (added 2026-09-05)
+## Measured in-game on 2026-09-05 — hot-iteration contract, positive control of scope, and a correction (added 2026-09-05)
 
-Segunda ventana sobre DayZ 1.29.163709. Toda esta sección se midió **sin repacar el mod**,
-cargando layouts de sonda por `$profile:` — que es justamente lo que hace útil el hot-reload.
-Las sondas están archivadas en
+Second window on DayZ 1.29.163709. This entire section was measured **without repacking the mod**,
+loading probe layouts via `$profile:` — which is precisely what makes hot-reload useful.
+The probes are archived in
 `LFPowerGrid_dev/reviews/2026-08-30-uiclick-collision/round-s3b/probes/`.
 
-### CORRECCIÓN — `ui_reload_layout` REEMPLAZA; no apila (corrected 2026-09-05)
+### CORRECTION — `ui_reload_layout` REPLACES; does not stack (corrected 2026-09-05)
 
-Esta skill venía diciendo, en la entrada de `references/hot-iteration.md`, que «una segunda
-carga APILA en vez de reemplazar». **Medido: no.** Cargando el mismo layout dos veces seguidas
-y preguntando después por un widget del árbol:
+This skill had been saying, in the `references/hot-iteration.md` entry, that "a second
+load STACKS instead of replacing". **Measured: no.** Loading the same layout twice in a row
+and subsequently querying for a tree widget:
 
 ```
 ui_reload_layout($profile:uiprobe.layout, reload)   x2
@@ -1523,39 +1523,39 @@ ui_tree(path="ProbeMarker")
   -> NO ambiguous_path
 ```
 
-Si apilara habría dos `ProbeMarker` y el resolver habría devuelto `ambiguous_path` — que es
-exactamente lo que devuelve cuando de verdad hay dos (ver §Control positivo abajo). Así que el
-discriminador es fiable y el veredicto es firme.
+If it stacked there would be two `ProbeMarker`s and the resolver would have returned `ambiguous_path` — which is
+exactly what it returns when there really are two (see §Positive control below). So the
+discriminator is reliable and the verdict is firm.
 
-Lectura más probable de la discrepancia: el aviso original describía `CreateWidgets` a mano,
-que sí deja el root anterior colgado. La **tool** `ui_reload_layout` desvincula antes de cargar.
-No mezcles las dos cosas: el peligro de apilar es del camino artesanal, no de esta tool.
+Most likely interpretation of the discrepancy: the original warning described manual `CreateWidgets`,
+which does leave the previous root dangling. The `ui_reload_layout` **tool** unlinks before loading.
+Do not mix the two: the risk of stacking belongs to the manual path, not to this tool.
 
-### Contrato completo de `ui_reload_layout`, verificado de punta a punta
+### Full contract of `ui_reload_layout`, verified end-to-end
 
-| Llamada | Resultado medido |
+| Call | Measured result |
 |---|---|
-| `reload` con `$profile:<f>.layout` | carga desde disco **sin PBO**; devuelve los rects del motor de todo el árbol |
-| `reload` dos veces | **reemplaza** (un solo árbol) |
-| `close` | `ui.nodes: []`, y después el widget da `widget_not_found` — desvincula de verdad |
-| `reload` con fichero inexistente | `layout_not_found` y **el cliente sigue vivo** (`IsWindow` true) |
+| `reload` with `$profile:<f>.layout` | loads from disk **without PBO**; returns engine rects of the entire tree |
+| `reload` twice | **replaces** (a single tree) |
+| `close` | `ui.nodes: []`, and afterwards the widget gives `widget_not_found` — genuinely unlinks |
+| `reload` with nonexistent file | `layout_not_found` and **the client remains alive** (`IsWindow` true) |
 
-Dos hechos de geometría que salieron de la misma sonda y conviene tener a mano:
+Two geometry facts that came out of the same probe and are useful to have at hand:
 
-- El root de la preview reporta **`screen_w/h = 1920x1080`**, o sea el viewport del motor, no el
-  tamaño de la ventana del sistema (ver la sección del 2026-09-04 §2 y §3).
-- **Las posiciones hijas son relativas al padre**: un hijo con `position 110 110` dentro de un
-  padre en `position 100 100` reporta `screen_x/y = 210/210`. Obvio al decirlo, fácil de olvidar
-  al leer un `matched_path`.
-- Los `TextWidget` volvieron a reportar `text: ""` y `text_readable: 0`: **no tienen getter**, y
-  la tool no inventa una etiqueta falsa.
+- The preview root reports **`screen_w/h = 1920x1080`**, meaning the engine viewport, not the
+  system window size (see the 2026-09-04 section §2 and §3).
+- **Child positions are relative to the parent**: a child with `position 110 110` inside a
+  parent at `position 100 100` reports `screen_x/y = 210/210`. Obvious when said, easy to forget
+  when reading a `matched_path`.
+- `TextWidget`s again reported `text: ""` and `text_readable: 0`: **they have no getter**, and
+  the tool does not fabricate a false label.
 
-### Control positivo del mecanismo `root` + `path` (y por qué importa)
+### Positive control of the `root` + `path` mechanism (and why it matters)
 
-Antes de fiarte de que acotar por `root` resuelve una colisión de nombres, **pruébalo con un
-caso donde puedas distinguir el acierto del azar**. Sonda: dos subárboles hermanos con un hijo
-del mismo nombre y **tamaños distintos** — el tamaño es lo que convierte «eligió uno» en
-«eligió el correcto» (cardinalidad no es identidad).
+Before trusting that scoping by `root` resolves a name collision, **test it with a
+case where you can distinguish success from chance**. Probe: two sibling subtrees with a child
+of the same name and **different sizes** — size is what turns "it chose one" into
+"it chose the correct one" (cardinality is not identity).
 
 ```
 ScopeProbeRoot
@@ -1569,117 +1569,117 @@ ScopeProbeRoot
 | `root:"ScopeAlpha", path:"SharedChild"` | **50x50 @ (210,210)** · `.../ScopeAlpha@0/SharedChild@0` |
 | `root:"ScopeBeta",  path:"SharedChild"` | **70x70 @ (1210,210)** · `.../ScopeBeta@0/SharedChild@0` |
 
-El mecanismo funciona y elige bien. Eso valida la receta de §1b: **un root único devuelve la
-direccionabilidad a todo su árbol**, aunque los hijos sigan compartiendo nombre con otro árbol.
+The mechanism works and chooses well. That validates the recipe in §1b: **a unique root restores
+addressability to its entire tree**, even if children continue sharing names with another tree.
 
-### El A/B que prueba cuándo aparece la colisión
+### The A/B that proves when the collision appears
 
-Misma llamada, misma sesión, lo único que cambia entre las dos es abrir el panel variante:
+Same call, same session, the only thing changing between the two is opening the variant panel:
 
-| Estado | `ui_tree(root:"SorterRoot", path:"BtnCloseX")` |
+| State | `ui_tree(root:"SorterRoot", path:"BtnCloseX")` |
 |---|---|
-| variante CERRADA | resuelve → **producción**: 26x26 @ x=688, `visible_hierarchy: 0`, `SorterRoot@0` |
-| variante ABIERTA | **`ambiguous_path`** |
+| variant CLOSED | resolves → **production**: 26x26 @ x=688, `visible_hierarchy: 0`, `SorterRoot@0` |
+| variant OPEN | **`ambiguous_path`** |
 
-Tres cosas que se leen de ahí:
+Three things that can be read from there:
 
-1. El root de **producción existe siempre** (pre-creado y oculto), aunque su pantalla nunca se
-   haya abierto. El de la variante se crea al abrirla.
-2. Por eso la colisión no es «a veces»: en cuanto la variante abre, **todos** los nombres
-   compartidos —y el propio root— se vuelven irresolubles.
-3. `visible_hierarchy: 0` con `visible: 1` es la firma de un root pre-creado y oculto. Útil para
-   saber a cuál de los dos estás mirando cuando el resolver te devuelve uno.
+1. The **production** root **always exists** (pre-created and hidden), even if its screen has never
+   been opened. The variant one is created upon opening it.
+2. That is why the collision is not "sometimes": as soon as the variant opens, **all** shared
+   names —and the root itself— become unresolvable.
+3. `visible_hierarchy: 0` with `visible: 1` is the signature of a pre-created and hidden root. Useful for
+   knowing which of the two you are looking at when the resolver returns one.
 
-### La textura procedural: falla por script, calla por layout
+### Procedural texture: fails via script, silent via layout
 
-Reconfirmado y **acotado**. En el mismo RPT, mismo build, misma cadena
+Reconfirmed and **narrowed down**. In the same RPT, same build, same string
 `#(argb,8,8,3)color(1,1,1,1,CO)`:
 
-- declarada por **script** (`ImageWidget.LoadImageFile`): **5** `Bad texture name` +
-  **4** `LoadImageFile can't load`, todas en el arranque del mod
-- declarada por **layout** (`image0` en un `ImageWidgetClass`): **0 líneas nuevas** en el RPT
+- declared via **script** (`ImageWidget.LoadImageFile`): **5** `Bad texture name` +
+  **4** `LoadImageFile can't load`, all during mod startup
+- declared via **layout** (`image0` in an `ImageWidgetClass`): **0 new lines** in the RPT
 
-El control de que el log fluía en ese momento: el script log del cliente sí crecía (entradas
-`[MCP-CLIENT]` frescas, incluido el `ok=0` de un `layout_not_found` provocado a propósito).
+The check that the log was flowing at that time: the client script log did grow (fresh
+`[MCP-CLIENT]` entries, including `ok=0` from an intentionally triggered `layout_not_found`).
 
-**Caveat que no se puede saltar**: esto prueba que la vía layout **no emite error**, no que la
-textura se dibuje. Distinguir «carga bien» de «falla en silencio» exige mirar píxeles, y esa
-mitad quedó sin hacer. No lo cuentes como fallback validado.
+**Caveat that cannot be skipped**: this proves that the layout route **does not emit an error**, not that the
+texture is rendered. Distinguishing "loads well" from "fails silently" requires looking at pixels, and that
+half remained undone. Do not count it as a validated fallback.
 
-### `frame_client_all_black` puede no ser del juego
+### `frame_client_all_black` might not be from the game
 
-`capture_screenshot` devolvió `frame_client_all_black` tres veces seguidas con el cliente
-**perfectamente sano**: `camera_get` daba `player_camera_active` con posición y dirección
-reales, la ventana estaba visible, sin minimizar, en su rect y era la foreground. Descartado
-que fuera la hora del mundo (`world_time_set` a las 12:00 no cambió nada). Hipótesis más
-probable: monitor apagado o sesión bloqueada — era de madrugada.
+`capture_screenshot` returned `frame_client_all_black` three times in a row with the client
+**perfectly healthy**: `camera_get` gave `player_camera_active` with real position and
+direction, the window was visible, unminimized, in its rect and was foreground. Ruled out
+that it was world time (`world_time_set` to 12:00 changed nothing). Most likely
+hypothesis: monitor turned off or session locked — it was the middle of the night.
 
-**Regla**: antes de diagnosticar el juego por un frame negro, comprueba con un verbo de cliente
-que NO dependa de píxeles (`camera_get` sirve) si el cliente está vivo y renderizando. Si lo
-está, el problema es del host, no del mod. Y da por perdida esa noche cualquier pregunta cuyo
-árbitro sean los píxeles.
+**Rule**: before diagnosing the game due to a black frame, check with a client verb
+that does NOT depend on pixels (`camera_get` works) whether the client is alive and rendering. If it
+is, the issue is on the host, not the mod. And consider lost for that night any question whose
+arbiter is pixels.
 
-### Preguntas que siguen abiertas por falta de píxeles
+### Questions that remain open for lack of pixels
 
-Se montaron las sondas y quedaron sin leer, listas en `round-s3b/probes/uiprobe.layout`:
+The probes were set up and remained unread, ready in `round-s3b/probes/uiprobe.layout`:
 
-- **¿Hace wrap un `TextWidget` por defecto?** La sonda trae tres filas con el mismo texto largo
-  y solo cambia el atributo (`sin wrap`, `wrap 1`, `wrap 0`) más un `MultilineTextWidget` de
-  comparación. Los rects no responden: el widget mide lo declarado tanto si el texto envuelve
-  como si desborda. **El árbitro es el ojo.**
-- **¿Se dibuja la textura procedural declarada por layout?** Ver el caveat de arriba.
+- **Does a `TextWidget` wrap by default?** The probe provides three rows with the same long text
+  and only the attribute changes (`without wrap`, `wrap 1`, `wrap 0`) plus a `MultilineTextWidget` for
+  comparison. The rects do not respond: the widget measures what was declared whether the text wraps
+  or overflows. **The eye is the arbiter.**
+- **Is the procedural texture declared via layout rendered?** See caveat above.
 
-Para retomarlas basta con el display encendido: cargar `$profile:uiprobe.layout` y capturar.
+To resume them, having the display turned on is enough: load `$profile:uiprobe.layout` and capture.
 
 ---
 
 ## DayZ 1.30 Exp (build 1.30.164014) — UI Architecture & Breaking Changes
 
-### Qué cambia en DayZ 1.30
+### What changes in DayZ 1.30
 
-1. **Mutación de tipos de widgets en el HUD de interacción (`day_z_hud.layout`)**:
-   - `item` (`day_z_hud.layout:2294`), `interact` (:2477), `continuous_interact` (:2755), `single` (:3033), `continuous` (:3311), `ia_interact` (:4083), `ia_continuous_interact` (:4306) mutaron de `ImageWidgetClass` a `PanelWidgetClass`.
-   - Adoptan el nuevo estilo `style ActionWidget` (`looknfeel/dayzwidgets.styles:3700`), que renderiza un marco 9-slice paramétrico mediante texturas `ActionWidgetGradient*` del imageset `dayz_gui`.
-2. **Sistema modular de información de acciones y construcción en el cursor (`ActionTargetsCursor.c`)**:
-   - `ActionTargetsCursor` incorpora un pipeline desacoplado de paneles suplementarios (`TargetActionInfoPanelBase` y `ConstructionActionInfoPanel` en `ActionInfoPanels.c:82`) sobre `new_ui/hud/action_info_spacer.layout:1`.
-   - Renderiza dinámicamente grids de herramientas requeridas (`ConstructionActionInfoToolsGrid`) comparando la máscara `build_action_type` del item en manos contra `part.GetBuildIndicationTypeMask()`, y materiales requeridos (`ConstructionActionInfoMaterialsGrid`) con formato RichText (`<color hex="...">X</color><color hex="...">/Y</color>`).
-   - Iconos desacoplados del árbol de inventario mediante `GenericIconBase: SlotsIconBase` (`GenericIcon.c:1`) sobre `new_ui/hud/SimpleIconTemplate.layout:1`.
-3. **Atenuación visual de acciones no iniciables**:
-   - Cuando `!action.CanBeStarted()`, los iconos de botón (`*_btn_icon` y `*_btn_icon_xbox`) reducen su opacidad a `0.149` (`ActionTargetsCursor.c:1120-1121`).
-4. **Deprecación de métodos de mando específicos de Xbox**:
-   - `SetInteractXboxIcon`, `SetContinuousInteractXboxIcon`, `SetSingleXboxIcon`, `SetContinuousXboxIcon`, `SetXboxIcon` marcados como `[Obsolete("no replacement")]` (`ActionTargetsCursor.c:1368-1377`).
-   - Sustituidos por `SetControllerIcon(string pWidgetName, string pInputName)` (`:146`), que renderiza glifos RichText dinámicos para cualquier mando vía `InputUtils.GetRichtextButtonIconFromInputAction(...)`.
-5. **Desacoplamiento arquitectónico de `SlotsIconBase`**:
-   - `SlotsIconBase: LayoutHolder` (`ContainedItems/SlotsIconBase.c:1`) absorbe 744 líneas de lógica genérica de slots de inventario, reduciendo `SlotsIcon.c:1` a 217 líneas de registro de eventos.
-6. **APIs de preview 3D en UI (`gameplay.c:276-314`)**:
-   - `ItemPreviewWidget` incorpora `SetForceFlipEnable(bool)` y `SetForceFlip(bool)` (`gameplay.c:300-301`).
-   - **Ticket T181406 desmentido en script**: `WorldToScreen` y `ScreenToWorld` NO existen en scripts de 1.30 (`[CHANGELOG]` / nativo no expuesto). Tampoco la deshabilitación de partículas en previews.
-7. **Actualizaciones de Enfusion**:
-   - Layout Editor actualizado a Enfusion 2023 (`changelog-1.30-exp-modding.md:64`).
-   - Parsing de configs de Enfusion actualizado para `*.layout`, `*.emat` (`:23`).
+1. **Widget type mutation in the interaction HUD (`day_z_hud.layout`)**:
+   - `item` (`day_z_hud.layout:2294`), `interact` (:2477), `continuous_interact` (:2755), `single` (:3033), `continuous` (:3311), `ia_interact` (:4083), `ia_continuous_interact` (:4306) mutated from `ImageWidgetClass` to `PanelWidgetClass`.
+   - They adopt the new style `style ActionWidget` (`looknfeel/dayzwidgets.styles:3700`), which renders a parametric 9-slice frame using `ActionWidgetGradient*` textures from the `dayz_gui` imageset.
+2. **Modular action information and construction system on cursor (`ActionTargetsCursor.c`)**:
+   - `ActionTargetsCursor` incorporates a decoupled supplementary panel pipeline (`TargetActionInfoPanelBase` and `ConstructionActionInfoPanel` in `ActionInfoPanels.c:82`) over `new_ui/hud/action_info_spacer.layout:1`.
+   - Dynamically renders required tool grids (`ConstructionActionInfoToolsGrid`) comparing the `build_action_type` mask of the item in hands against `part.GetBuildIndicationTypeMask()`, and required materials (`ConstructionActionInfoMaterialsGrid`) in RichText format (`<color hex="...">X</color><color hex="...">/Y</color>`).
+   - Decoupled icons from the inventory tree via `GenericIconBase: SlotsIconBase` (`GenericIcon.c:1`) over `new_ui/hud/SimpleIconTemplate.layout:1`.
+3. **Visual dimming of unstartable actions**:
+   - When `!action.CanBeStarted()`, button icons (`*_btn_icon` and `*_btn_icon_xbox`) reduce their opacity to `0.149` (`ActionTargetsCursor.c:1120-1121`).
+4. **Deprecation of Xbox-specific controller methods**:
+   - `SetInteractXboxIcon`, `SetContinuousInteractXboxIcon`, `SetSingleXboxIcon`, `SetContinuousXboxIcon`, `SetXboxIcon` marked as `[Obsolete("no replacement")]` (`ActionTargetsCursor.c:1368-1377`).
+   - Replaced by `SetControllerIcon(string pWidgetName, string pInputName)` (`:146`), which renders dynamic RichText glyphs for any controller via `InputUtils.GetRichtextButtonIconFromInputAction(...)`.
+5. **Architectural decoupling of `SlotsIconBase`**:
+   - `SlotsIconBase: LayoutHolder` (`ContainedItems/SlotsIconBase.c:1`) absorbs 744 lines of generic inventory slot logic, reducing `SlotsIcon.c:1` to 217 lines of event registration.
+6. **3D preview APIs in UI (`gameplay.c:276-314`)**:
+   - `ItemPreviewWidget` incorporates `SetForceFlipEnable(bool)` and `SetForceFlip(bool)` (`gameplay.c:300-301`).
+   - **Ticket T181406 refuted in script**: `WorldToScreen` and `ScreenToWorld` do NOT exist in 1.30 scripts (`[CHANGELOG]` / unexposed native). Nor does particle disabling in previews.
+7. **Enfusion updates**:
+   - Layout Editor updated to Enfusion 2023 (`changelog-1.30-exp-modding.md:64`).
+   - Enfusion config parsing updated for `*.layout`, `*.emat` (`:23`).
 
-### Qué se rompe y cómo migrar
+### What breaks and how to migrate
 
-| Ruptura | Severidad | Causa técnica | Cómo migrar |
+| Breakage | Severity | Technical cause | How to migrate |
 |---|---|---|---|
-| `ImageWidget.Cast(m_Root.FindAnyWidget("interact"))` retorna `null` | **CRÍTICA** | Widgets de interacción cambiaron de `ImageWidgetClass` a `PanelWidgetClass` en `day_z_hud.layout:2294, 2477...` | Migrar variables y casting a `PanelWidget.Cast(...)` o `Widget`. Para fondos personalizados usar `w.SetStyle(...)` o modificar el estilo `ActionWidget`. |
-| Warnings de compilación por métodos Xbox obsoletos | **MEDIA** | `SetInteractXboxIcon` etc. marcados `[Obsolete]` en `ActionTargetsCursor.c:1368` | Sustituir por `SetControllerIcon(widgetName, inputName)` (`ActionTargetsCursor.c:146`). |
-| Modificaciones de slots no afectan a nuevos iconos de cursor/HUD | **MEDIA** | `SlotsIcon` ya no es la clase base monolítica; se extrajo `SlotsIconBase` y se creó `GenericIconBase` | Moddear/extender `SlotsIconBase` para lógica de slots o `GenericIconBase` para iconos genéricos. |
-| Suposición de disponibilidad de `WorldToScreen` en previews | **BAJA** | Ticket T181406 no está expuesto en Enforce Script (`gameplay.c:276-314`) | No intentar invocar `WorldToScreen`/`ScreenToWorld` sobre `ItemPreviewWidget`/`PlayerPreviewWidget` desde script. |
+| `ImageWidget.Cast(m_Root.FindAnyWidget("interact"))` returns `null` | **CRITICAL** | Interaction widgets changed from `ImageWidgetClass` to `PanelWidgetClass` in `day_z_hud.layout:2294, 2477...` | Migrate variables and casting to `PanelWidget.Cast(...)` or `Widget`. For custom backgrounds use `w.SetStyle(...)` or modify the `ActionWidget` style. |
+| Compilation warnings from obsolete Xbox methods | **MEDIUM** | `SetInteractXboxIcon` etc. marked `[Obsolete]` in `ActionTargetsCursor.c:1368` | Replace with `SetControllerIcon(widgetName, inputName)` (`ActionTargetsCursor.c:146`). |
+| Slot modifications do not affect new cursor/HUD icons | **MEDIUM** | `SlotsIcon` is no longer the monolithic base class; `SlotsIconBase` was extracted and `GenericIconBase` was created | Mod/extend `SlotsIconBase` for slot logic or `GenericIconBase` for generic icons. |
+| Assumption of `WorldToScreen` availability in previews | **LOW** | Ticket T181406 is not exposed in Enforce Script (`gameplay.c:276-314`) | Do not attempt to invoke `WorldToScreen`/`ScreenToWorld` on `ItemPreviewWidget`/`PlayerPreviewWidget` from script. |
 
-### Checklist de migración 1.30 para desarrolladores de UI
+### 1.30 migration checklist for UI developers
 
-- [ ] Buscar en todo el código del mod `FindAnyWidget("interact")`, `"item"`, `"continuous_interact"`, `"single"`, `"continuous"`, `"ia_interact"` y reemplazar `ImageWidget` por `PanelWidget`.
-- [ ] Eliminar llamadas a `Set*XboxIcon` en scripts que extiendan o modifiquen `ActionTargetsCursor`, adoptando `SetControllerIcon`.
-- [ ] Si el mod decoraba slots de inventario, verificar que las extensiones apunten a `SlotsIconBase` y mantengan las llamadas a `super.InitIconWidgets` y `super.InitIcon`.
-- [ ] Para nuevos paneles de inspección en cursor, consultar la arquitectura modular en `references/hud-action-info-panels.md`.
-- [ ] Verificar compatibilidad de estilos 9-slice con el nuevo estilo `ActionWidget` en `references/styles-format.md`.
+- [ ] Search across all mod code for `FindAnyWidget("interact")`, `"item"`, `"continuous_interact"`, `"single"`, `"continuous"`, `"ia_interact"` and replace `ImageWidget` with `PanelWidget`.
+- [ ] Remove calls to `Set*XboxIcon` in scripts extending or modifying `ActionTargetsCursor`, adopting `SetControllerIcon`.
+- [ ] If the mod decorated inventory slots, verify that extensions point to `SlotsIconBase` and retain calls to `super.InitIconWidgets` and `super.InitIcon`.
+- [ ] For new cursor inspection panels, consult the modular architecture in `references/hud-action-info-panels.md`.
+- [ ] Verify 9-slice style compatibility with the new `ActionWidget` style in `references/styles-format.md`.
 
-### References detalladas de DayZ 1.30 Exp
-- **Paneles modulares de cursor y grids de construcción**: `references/hud-action-info-panels.md`
-- **Mapeo de HUD y arquitectura de inventario**: `references/vanilla-menus-map.md`
-- **Catálogo y verificación de APIs de widgets**: `references/widget-api.md`
-- **Especificación del sistema de estilos (.styles)**: `references/styles-format.md`
+### Detailed references for DayZ 1.30 Exp
+- **Modular cursor panels and construction grids**: `references/hud-action-info-panels.md`
+- **HUD mapping and inventory architecture**: `references/vanilla-menus-map.md`
+- **Widget API catalog and verification**: `references/widget-api.md`
+- **Style system specification (.styles)**: `references/styles-format.md`
 
 
 

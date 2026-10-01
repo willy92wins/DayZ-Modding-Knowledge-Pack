@@ -40,11 +40,11 @@ Do not Voronoi. Do not `smart_project`. Do not Recreate UV in Modddif.
 
 Mesh: `statue_remesh.blend` object `statue`, 5756 faces, 1 shell, identity world.
 
-| run | islands | SAT | autosolape | occupancy | notes |
+| run | islands | SAT | self-overlap | occupancy | notes |
 |---|---:|---:|---:|---:|---|
-| `g12_proj` | 4 | 2 | 0.234 | 0.73 | 2 alzados, L/R midline SAT, coat over legs. User: se reconoce, **sin solapes** |
-| `g12_legs` | 8 | 0 | 0.166 | 0.54 | legs z=0.32 floor-CC, Δv=−0.194. User: mejor, sigue solape (manga) |
-| `g12_arm` | 15 | 0 | 0.033 | 0.19 | peel front occluders; arms Δu ±0.27, arm2 Δv=+0.77. User: **mejor, guardar receta**. Modddif after |
+| `g12_proj` | 4 | 2 | 0.234 | 0.73 | 2 elevations, L/R midline SAT, coat over legs. User: recognizable, **no overlaps** |
+| `g12_legs` | 8 | 0 | 0.166 | 0.54 | legs z=0.32 floor-CC, Δv=−0.194. User: better, overlap remains (sleeve) |
+| `g12_arm` | 15 | 0 | 0.033 | 0.19 | peel front occluders; arms Δu ±0.27, arm2 Δv=+0.77. User: **better, save recipe**. Modddif after |
 
 Leftover 0.033 is sleeve tube thickness + n<8 folds, not the arm-over-chest ghost.
 

@@ -6,7 +6,7 @@ Citations re-opened under `exp\` (build 1.30.164014). Expansion eAI scripts are 
 
 (hasta 1.29: `NoiseAIEvaluate.GetNoiseReduction(g_Game.GetWeather())` was multiplied into `AddNoise` from player steps and several other emitters.)
 
-(desde 1.30 Exp: the engine applies weather/sandstorm/sea reduction natively. Script query:)
+(since 1.30 Exp: the engine applies weather/sandstorm/sea reduction natively. Script query:)
 
 ```c
 // [EXACT] exp\scripts\scripts\3_Game\Noise.c:12

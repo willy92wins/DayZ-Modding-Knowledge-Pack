@@ -1,31 +1,31 @@
-# DayZ — Extracción de road graph desde .wrp (proyecto GPS / RoadGraph_Core)
+# DayZ — Road graph extraction from .wrp (GPS / RoadGraph_Core project)
 
-> Conocimiento transversal del pipeline que convierte un mapa DayZ en el grafo de
-> carreteras que consume el SDK RoadGraph_Core. Reconstruido y verificado 2026-05-14
-> contra 3 mapas (Chernarus2035, Onforin x2). Spec original del formato:
+> Cross-cutting knowledge of the pipeline that converts a DayZ map into the road
+> graph consumed by the RoadGraph_Core SDK. Reconstructed and verified 2026-05-14
+> against 3 maps (Chernarus2035, Onforin x2). Original format spec:
 > `Claude/Projects/GPS/WRP_V29_FORMAT.md`.
 
-## Dónde vive todo
+## Where everything lives
 
-- **Pipeline (scripts):** `Claude/Projects/GPS/extractor/` — repo persistente del proyecto.
-- **JSON de trabajo / archivo:** `Claude/Projects/GPS/data/`.
-- **JSON que consume el SDK:** `DayZ Projects/RoadGraph_Core/data/<worldname>_roads.json`.
-- **SDK Enforce:** `DayZ Projects/RoadGraph_Core/scripts/4_World/` (RGC_Manager.c carga el JSON).
+- **Pipeline (scripts):** `Claude/Projects/GPS/extractor/` — persistent project repo.
+- **Working JSON / archive:** `Claude/Projects/GPS/data/`.
+- **JSON consumed by the SDK:** `DayZ Projects/RoadGraph_Core/data/<worldname>_roads.json`.
+- **Enforce SDK:** `DayZ Projects/RoadGraph_Core/scripts/4_World/` (RGC_Manager.c loads the JSON).
 
-⚠️ **Los scripts de los pases de conectividad se perdieron una vez** por vivir solo
-en un `outputs/` temporal. Todo lo reusable DEBE estar en `extractor/` del repo.
+⚠️ **Connectivity pass scripts were lost once** because they lived only
+in a temporary `outputs/`. Everything reusable MUST be in the repo's `extractor/`.
 
-## Pipeline completo (para un mapa nuevo)
+## Complete pipeline (for a new map)
 
 ```
 cd Claude/Projects/GPS/extractor
 pip install scipy --break-system-packages          # imprescindible para Pass1+2 fusion
 
-# 1. .wrp desde el world.pbo del workshop
+# 1. .wrp from workshop world.pbo
 python extract_wrp.py extract-wrp <ruta>/world.pbo <map>.wrp
 
-# 2. worldname real (= nombre OBLIGATORIO del JSON, NO el del workshop)
-python get_worldname.py        # edita la lista de workshop IDs dentro
+# 2. real worldname (= MANDATORY JSON name, NOT the workshop one)
+python get_worldname.py        # edit the workshop ID list inside
 
 # 3. grafo base (Roadnet + dedup + Pass1+2 fusion)
 python build_road_graph.py <map>.wrp --map <worldname> --out <worldname>_roads.json
@@ -33,65 +33,65 @@ python build_road_graph.py <map>.wrp --map <worldname> --out <worldname>_roads.j
 # 4. pases de conectividad (Object section + reclass + stitch)
 python apply_connectivity_passes.py <map>.wrp <worldname>_roads.json <worldname>_roads_final.json
 
-# 5. validación visual
+# 5. visual validation
 python validate_graph.py   <worldname>_roads_final.json --out <worldname>_validate.png
 python visor_components.py <worldname>_roads_final.json <worldname>_components.png
 
 # 6. entregar
 cp <worldname>_roads_final.json  RoadGraph_Core/data/<worldname>_roads.json
-# y añadir el worldname a RGC_Manager.c -> ListAvailableMaps()
+# and add the worldname to RGC_Manager.c -> ListAvailableMaps()
 ```
 
-## Formato OPRW del .wrp (v28 y v29 — layout idéntico)
+## OPRW format of .wrp (v28 and v29 — identical layout)
 
-- Header: `OPRW` + int32 versión (28/29) + sub-magic `0FNE` ("ENF0").
-- `Models[]`: tabla de todos los `.p3d` del mapa (asciiz). Primer `.p3d` del fichero;
-  el count es el int32 4 bytes antes.
-- **Roadnet section**: rejilla de celdas; cada celda = int32 nLinks + N RoadLinks.
+- Header: `OPRW` + int32 version (28/29) + sub-magic `0FNE` ("ENF0").
+- `Models[]`: table of all `.p3d` files of the map (asciiz). First `.p3d` of the file;
+  the count is the int32 4 bytes before.
+- **Roadnet section**: cell grid; each cell = int32 nLinks + N RoadLinks.
   RoadLink = ConnectionCount + Positions[] + ConnectionTypes[] + ObjectID +
-  extra_v29(4B) + asciiz P3dPath + Matrix4P(48B). El extractor la localiza por
-  escaneo de patrón (no por offset). Esto da el grafo base.
-- **Object section** (post-Roadnet, NO documentada en spec BIS): empieza tras el
-  zero-padding desde roadnet_end. Records **fixed-stride de 60 bytes**:
+  extra_v29(4B) + asciiz P3dPath + Matrix4P(48B). The extractor locates it by
+  pattern scan (not by offset). This gives the base graph.
+- **Object section** (post-Roadnet, NOT documented in BIS spec): starts after the
+  zero-padding from roadnet_end. Records **fixed-stride of 60 bytes**:
   `uint32 obj_id | uint32 model_idx | float matrix[12] | uint32 flags`.
-  `model_idx` indexa en `Models[]`. La traslación está en matrix[9..11].
-  Contiene TODO: vegetación, edificios, rocas, y **road instances** (carreteras
-  puestas como objeto suelto) que el Roadnet pierde.
+  `model_idx` indexes into `Models[]`. Translation is in matrix[9..11].
+  Contains EVERYTHING: vegetation, buildings, rocks, and **road instances** (roads
+  placed as loose objects) that Roadnet misses.
 
-## Los pases de conectividad (apply_connectivity_passes.py)
+## The connectivity passes (apply_connectivity_passes.py)
 
-1. **v2.5 road_connector** — por cada road instance de la Object section, conecta
-   los 2 nodos road de COMPONENTES DISTINTAS más cercanos dentro de 30 m (60 m si
-   es puente). Edge con polyline de 3 puntos [nodoA, posición_instancia, nodoB],
-   surface asfalto (puente→bridge). Justificación física real: hay un `.p3d` de
-   carretera ahí. Union-find vivo → idempotente.
-2. **fase6 reclass** — edges con surface `other` cuyo `p3d` es una familia de
-   carretera no reconocida por el clasificador base (`city_*`, `town_*`, etc.) → asfalto.
-3. **fase6 stitch** — pares de nodos cross-component a < 5 m → edge `<stitch_road_5m>`.
-   Cose fragmentación fina que el dedup 3D no fusionó.
+1. **v2.5 road_connector** — for each road instance in the Object section, connects
+   the 2 closest road nodes from DIFFERENT COMPONENTS within 30 m (60 m if
+   it is a bridge). Edge with 3-point polyline [nodeA, instance_position, nodeB],
+   surface asphalt (bridge→bridge). Real physical justification: there is a road
+   `.p3d` there. Live union-find → idempotent.
+2. **fase6 reclass** — edges with surface `other` whose `p3d` is a road family
+   not recognized by the base classifier (`city_*`, `town_*`, etc.) → asphalt.
+3. **fase6 stitch** — cross-component node pairs at < 5 m → edge `<stitch_road_5m>`.
+   Stitches fine fragmentation that 3D dedup did not merge.
 
-`extras` del JSON registra qué añadió cada pase (`roads_v2.5_added`, `fase6_reclass`,
-`fase6_stitches`, ...). Backups `.bak_*_pre_*` por pase.
+JSON `extras` records what each pass added (`roads_v2.5_added`, `fase6_reclass`,
+`fase6_stitches`, ...). Backups `.bak_*_pre_*` per pass.
 
-Principio (HANDOFF_v4 §8.3): **nunca conectar por proximidad arbitraria** — siempre
-tiene que haber un objeto físico real del .wrp justificando la conexión. El pase
-v2.6 (node_pair_bridge por max_dist) se rechazó por crear conexiones falsas.
+Principle (HANDOFF_v4 §8.3): **never connect by arbitrary proximity** — there must
+always be a real physical object from the .wrp justifying the connection. The
+v2.6 pass (node_pair_bridge by max_dist) was rejected for creating false connections.
 
-## worldname ≠ nombre del workshop  ⚠️ CRÍTICO
+## worldname ≠ workshop name  ⚠️ CRITICAL
 
-El SDK (`RGC_Manager.GetGraph()`) carga `data/<GetWorldName()>_roads.json`. El
-worldname es la clase `CfgWorldList` del `config.bin` del `world.pbo`, NO el título
-del ítem del workshop ni el nombre del `.wrp`.
+The SDK (`RGC_Manager.GetGraph()`) loads `data/<GetWorldName()>_roads.json`. The
+worldname is the `CfgWorldList` class of the `world.pbo` `config.bin`, NOT the title
+of the workshop item nor the name of the `.wrp`.
 
-- Sacarlo con `get_worldname.py` (descomprime el `config.bin`).
-- Ejemplos reales: workshop "CBTONFORIN" y "Onforin STB" → ambos worldname `onforin`
-  (son 2 versiones del mismo mapa, no pueden coexistir instaladas).
-- El fichero JSON DEBE llamarse `<worldname>_roads.json` o el SDK no lo encuentra.
+- Extract it with `get_worldname.py` (decompresses the `config.bin`).
+- Real examples: workshop "CBTONFORIN" and "Onforin STB" → both worldname `onforin`
+  (they are 2 versions of the same map, cannot coexist installed).
+- The JSON file MUST be named `<worldname>_roads.json` or the SDK will not find it.
 
-## BIS LZSS — variante de direccionamiento RELATIVO (PBO Cprs / config.bin rapified)
+## BIS LZSS — RELATIVE addressing variant (PBO Cprs / config.bin rapified)
 
-Los `config.bin` y entries PBO con mime `Cprs` usan LZSS, pero **NO el ring-buffer
-clásico de Okumura**. Es direccionamiento **relativo al output**:
+The `config.bin` and PBO entries with mime `Cprs` use LZSS, but **NOT the classic Okumura
+ring-buffer**. It is addressing **relative to the output**:
 
 ```python
 def bis_lzss(data, expected):
@@ -113,59 +113,59 @@ def bis_lzss(data, expected):
     return bytes(out)
 ```
 
-Errores que costaron tiempo: (a) asumir ring-buffer 4096 con prefill 0x20 — falso;
-(b) asumir índice absoluto en vez de `len(out) - offset`. Implementación buena y
-verificada en `extractor/get_worldname.py`.
+Errors that cost time: (a) assuming 4096 ring-buffer with 0x20 prefill — false;
+(b) assuming absolute index instead of `len(out) - offset`. Good implementation and
+verified in `extractor/get_worldname.py`.
 
-## Estado de cobertura (2026-05-14)
+## Coverage status (2026-05-14)
 
-9 mapas con grafo: chernarusplus, enoch, banov, deerisle, deadfall, namalsk (los 6
-originales) + chernarus2035 + onforin (build CBTONFORIN; STB archivado como `.ALT_*`) + iztek (worldname asumido, config protegido).
-Los mapas custom modernos vienen a 90-97% top-1 ya en crudo; los pases suben poco
-porque su Roadnet está bien construido. Lo que queda suelto suelen ser islas reales.
+9 maps with graph: chernarusplus, enoch, banov, deerisle, deadfall, namalsk (the 6
+original ones) + chernarus2035 + onforin (CBTONFORIN build; STB archived as `.ALT_*`) + iztek (assumed worldname, protected config).
+Modern custom maps come at 90-97% top-1 already raw; passes increase little
+because their Roadnet is well constructed. What remains loose are usually real islands.
 
-## Ver también
-- [`30_Sessions/2026-05-14-gps-3-mapas-nuevos.md`](../30_Sessions/2026-05-14-gps-3-mapas-nuevos.md) — sesión de extracción de los 3.
-- `Claude/Projects/GPS/HANDOFF_2026-04-28_v4.md` — handoff del mod GPS.
-- `Claude/Projects/GPS/WRP_V29_FORMAT.md` — spec byte a byte del Roadnet.
-- `Claude/Projects/GPS/NOTES_2026-05-14_3_mapas_nuevos.md` — notas detalladas.
+## See also
+- [`30_Sessions/2026-05-14-gps-3-mapas-nuevos.md`](../30_Sessions/2026-05-14-gps-3-mapas-nuevos.md) — extraction session of the 3.
+- `Claude/Projects/GPS/HANDOFF_2026-04-28_v4.md` — GPS mod handoff.
+- `Claude/Projects/GPS/WRP_V29_FORMAT.md` — byte-by-byte spec of the Roadnet.
+- `Claude/Projects/GPS/NOTES_2026-05-14_3_mapas_nuevos.md` — detailed notes.
 
-## Update 2026-05-16 — caso "dos workshop items, mismo worldname"
+## Update 2026-05-16 — case "two workshop items, same worldname"
 
-Una solución pragmática cuando dos workshop items comparten worldname (caso Onforin):
-**esperar al autor**. Nosty homogeneizó CBTONFORIN y Onforin STB a la misma versión
-(world.pbo byte-idéntico). El conflicto desaparece sin necesidad de desambiguar por
-runtime. Si vuelves a encontrar dos ítems con el mismo worldname y versiones
-distintas, antes de implementar disambiguation por `version`, **comprueba el MD5
-de los world.pbo**: puede que el autor los haya sincronizado.
+A pragmatic solution when two workshop items share a worldname (Onforin case):
+**wait for the author**. Nosty homogenized CBTONFORIN and Onforin STB to the same version
+(byte-identical world.pbo). The conflict disappears without needing to disambiguate at
+runtime. If you find two items with the same worldname and different versions
+again, before implementing disambiguation by `version`, **check the MD5
+of the world.pbo files**: the author may have synchronized them.
 
 ```
 md5sum .../221100/<id_a>/addons/world.pbo  .../221100/<id_b>/addons/world.pbo
 ```
 
-Si coinciden → un solo `<worldname>_roads.json` sirve para ambos.
+If they match → a single `<worldname>_roads.json` works for both.
 
 ## Update 2026-05-16 — caso "config protegido" (Iztek, firma zorro)
 
-Iztek (workshop 3704583052) tiene **todos los `config.cpp` a 0 bytes** en los PBO
-públicos (los `.pbo.zorro.bisign` indican un esquema de firma propietario; el
-config canónico de CfgWorlds parece no estar en el PBO descargable, o está en
-un formato no estándar). El descompresor LZSS no aplica — no hay `config.bin`
-que descomprimir.
+Iztek (workshop 3704583052) has **all `config.cpp` at 0 bytes** in the public
+PBOs (the `.pbo.zorro.bisign` indicate a proprietary signature scheme; the
+canonical CfgWorlds config seems not to be in the downloadable PBO, or is in
+a non-standard format). The LZSS decompressor does not apply — there is no `config.bin`
+to decompress.
 
-**Fallback al determinar el worldname cuando no hay config legible:**
-1. `world.pbo` prefix (en su header PBO) — suele ser `<WorldClass>\world`.
-2. Nombre interno del `.wrp` — convencionalmente coincide con la clase en minúsculas.
-3. Paths internos del `.wrp` (las `.rvmat` y demás) — prefix `<worldname>\data\...`.
+**Fallback when determining the worldname when there is no readable config:**
+1. `world.pbo` prefix (in its PBO header) — usually `<WorldClass>\world`.
+2. Internal name of the `.wrp` — conventionally matches the class in lowercase.
+3. Internal paths of the `.wrp` (the `.rvmat` and others) — prefix `<worldname>\data\...`.
 
-Para Iztek las 3 señales apuntan a `iztek`. Verificar siempre in-game con el RPT log
-(`GetWorldName()` se imprime al cargar el grafo) tras el primer test.
+For Iztek the 3 signals point to `iztek`. Always verify in-game with the RPT log
+(`GetWorldName()` is printed when loading the graph) after the first test.
 
-Si `GetWorldName()` devuelve algo distinto al nombre asumido, renombrar
-`<asumido>_roads.json` → `<real>_roads.json` (el SDK ya hace `.ToLower()`).
+If `GetWorldName()` returns something other than the assumed name, rename
+`<assumed>_roads.json` → `<real>_roads.json` (the SDK already does `.ToLower()`).
 
 ## Related
 
-- [[dayz-wrp-road-graph-extraction]] — runbook operativo (paso a paso) de este mismo pipeline.
-- [[dayz-enforce-script-reference]] — APIs Enforce del SDK RGC_Manager que consume el JSON generado.
-- [[20_Knowledge/lessons-learned|lessons-learned]] — lección durable: scripts reusables van al repo `extractor/`, no a un `outputs/` temporal.
+- [[dayz-wrp-road-graph-extraction]] — operational runbook (step by step) of this same pipeline.
+- [[dayz-enforce-script-reference]] — Enforce APIs of the RGC_Manager SDK that consumes the generated JSON.
+- [[20_Knowledge/lessons-learned|lessons-learned]] — durable lesson: reusable scripts go to the `extractor/` repo, not to a temporary `outputs/`.

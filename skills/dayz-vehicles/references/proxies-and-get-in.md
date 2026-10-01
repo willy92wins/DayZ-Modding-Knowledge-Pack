@@ -1,9 +1,9 @@
-# Proxies, get-in y partes desmontables: el contrato
+# Proxies, get-in and detachable parts: the contract
 
-Extraido de `SKILL.md` (corte 3, 2026-08-15). Aqui vive el DETALLE; el enunciado
-corto y cuando leer esto estan en el indice `## ARCHIVO DE LECCIONES` del SKILL.md.
-Nada de este fichero esta derogado: son lecciones vigentes, ordenadas por tema en
-vez de por fecha.
+Extracted from `SKILL.md` (cut 3, 2026-08-15). Here lives the DETAIL; the short
+statement and when to read this are in the `## LESSONS ARCHIVE` index of SKILL.md.
+Nothing in this file is superseded: they are active lessons, ordered by topic
+instead of by date.
 
 ---
 
@@ -100,9 +100,9 @@ LOD and on Geometry. Budget the item LODs before promising the feature.
 Custom inventory slots are the T148506 family (`enforce-script-reference`): if the slot name and the
 `inventorySlot` string diverge, the item never attaches and the proxy never draws.
 
-> REDIRECT CAMBIO-1: la corrección de SP-093 ocupa ahora el sitio original de SP-093.
+> REDIRECT CAMBIO-1: the SP-093 correction now occupies the original location of SP-093.
 
-> REDIRECT CAMBIO-1: la corrección de SP-097 ocupa ahora el sitio original de SP-097.
+> REDIRECT CAMBIO-1: the SP-097 correction now occupies the original location of SP-097.
 
 ### `binarize` is NOT deterministic - never gate on ODOL byte identity
 
@@ -156,11 +156,11 @@ then `CreateInInventory`s it (`entityai.c:3907-3958`). Calling `super.OnDebugSpa
 attaches per-type from config with no per-airframe code - useful when one script base serves
 several models. Note the vanilla cars deliberately do NOT call super; they list parts explicitly.
 
-**2. `attachments[]` depende del límite de PBO; `+=` no es una regla incondicional.**
-> Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“attachments[] += como regla incondicional”.
-Dentro del mismo árbol de configuración fuente, `+=` puede conservar los slots del padre. Cuando la clase padre procede de otro PBO ya compilado, esa lista no es una base contractual segura: materializa en la clase hija la lista COMPLETA de slots vitales y propios. Esto corrige la regla anterior con el caso verificado en `AI/20_Knowledge/dayz-mod-implementation-checklists.md:234-240` (E28).
+**2. `attachments[]` depends on the PBO boundary; `+=` is not an unconditional rule.**
+> Superseded text history: `history/cambio-1-superseded-family-b-rules.md` §"attachments[] += as an unconditional rule".
+Within the same source config tree, `+=` can retain parent slots. When parent class comes from another already compiled PBO, that list is not a safe contractual basis: materialize in the child class the COMPLETE list of vital and own slots. This corrects the previous rule with the case verified in `AI/20_Knowledge/dayz-mod-implementation-checklists.md:234-240` (E28).
 
-El gate no busca un token `+=`: inspecciona la lista efectiva después de compilar/config-dump y comprueba batería, ignición, radiador, ruedas y cada puerta/parte declarada. Un cambio de puertas no puede retirar silenciosamente un slot vital. Mantén además la comprobación independiente de que cada parte declarada aparece en la ruta `OnDebugSpawn`; son contratos distintos.
+The gate does not look for a `+=` token: it inspects the effective list after compile/config-dump and verifies battery, ignition, radiator, wheels, and each declared door/part. A door change cannot silently remove a vital slot. Also maintain the independent check that each declared part appears in the `OnDebugSpawn` path; they are distinct contracts.
 
 ## In-vehicle actions need TWO registrations, and a proxied part is your placement oracle (SP-123, added 2026-07-28)
 
@@ -294,16 +294,16 @@ they need different fixes**, so census before assuming which one you have.
 Day-1 check for car #2: census the shell 1100 vs civiliansedan BEFORE first in-game
 (`b3_viewpilot_census.py`), and let the census have **three** outcomes, not two:
 
-| census | qué es | fix |
+| census | what it is | fix |
 |---|---|---|
-| poblado | 1100 con geometría propia | nada |
-| **proxy-only** | 1100 existe pero solo lleva proxies | el merge de arriba |
-| **AUSENTE** | no hay 1100 (MercedesAMGLF, medido) | **crear** el 1100; el merge no aplica |
+| populated | 1100 with its own geometry | none |
+| **proxy-only** | 1100 exists but only carries proxies | merge above |
+| **ABSENT** | no 1100 (MercedesAMGLF, measured) | **create** the 1100; merge does not apply |
 
-El procedimiento de creación —de qué LOD visual copiar, contra qué budget de
-facenormals, dónde insertarlo y en qué orden respecto al texturizado— está descrito
-en el ledger (SP-191) pero **no se ha validado aquí**, así que no se transcribe: si
-te toca el caso AUSENTE, léelo allí y mídelo antes de fiarte.
+The creation procedure —which visual LOD to copy from, against what facenormals
+budget, where to insert it, and in what order relative to texturing— is described
+in the ledger (SP-191) but **has not been validated here**, so it is not transcribed: if
+you encounter the ABSENT case, read it there and measure it before trusting it.
 
 ## Creating an absent ViewPilot is a lifecycle, not a blind LOD copy (SP-191, added 2026-08-31)
 
@@ -447,43 +447,43 @@ The null-check idiom is vanilla's (`improvisedexplosive.c:215`,
 `return FindAttachmentBySlotName(slotName) != null;`).
 
 
-## El LOD de piloto se monta a mano: censalo por CLASES y contra la LOD0 (added 2026-09-05)
+## The pilot LOD is assembled by hand: census it by CLASSES and against LOD0 (added 2026-09-05)
 
-Un ViewPilot (res 1100/1200) no es un diezmado de la LOD0: es una vista **curada**, y lo que
-quien la monto dejo fuera no aparece en ningun sitio. Medido el 2026-09-05 sobre dos mods
-hermanos del mismo arbol, con resultados **opuestos**:
+A ViewPilot (res 1100/1200) is not a decimation of LOD0: it is a **curated** view, and whatever
+whoever assembled it left out does not appear anywhere. Measured on 2026-09-05 across two sibling
+mods from the same tree, with **opposite** results:
 
 | | LFQuad3 | LFQuad2 |
 |---|---|---|
-| cuerpo | 25.234 caras (LOD0: 76.044) | 2.294 caras (LOD0: 9.011) |
-| salpicadero | **completo**: `light_dashboard` 744 caras, las mismas de la LOD0 | `light_dashboard` **0** caras (LOD0: 12) |
-| proxies de acople | **0 de 7** (solo interior y los dos de crew) | 3 de 17 |
+| body | 25,234 faces (LOD0: 76,044) | 2,294 faces (LOD0: 9,011) |
+| dashboard | **complete**: `light_dashboard` 744 faces, same as LOD0 | `light_dashboard` **0** faces (LOD0: 12) |
+| attachment proxies | **0 of 7** (only interior and the two crew ones) | 3 of 17 |
 
-Las dos consecuencias son gates que mienten, y mienten en direcciones contrarias:
+The two consequences are gates that lie, and they lie in opposite directions:
 
-- **Falso VERDE**: "comprueba que con los slots vacios no se ve ningun proxy" sale bien desde el
-  asiento este arreglado o no, porque ahi no hay proxies de acople. Esa comprobacion va **desde
-  fuera, en tercera persona**.
-- **Falso ROJO**: "sientate y mira si el salpicadero se ilumina" sale mal siempre en un modelo
-  cuyo `light_dashboard` no llego a la vista, aunque el material y el script esten perfectos.
+- **False GREEN**: "verify that with empty slots no proxy is seen" comes out green from the
+  seat whether fixed or not, because attachment proxies aren't there. That check must be done **from
+  outside, in third person**.
+- **False RED**: "sit down and check if the dashboard lights up" always comes out red on a model
+  whose `light_dashboard` never reached the view, even if material and script are perfect.
 
-**El censo se hace contra la LOD0, no en absoluto.** "0 caras en el 1100" no distingue *la vista
-lo tiro* de *no existia nunca*; solo la pareja LOD0/1100 separa las dos clases. En el caso medido,
-cuatro de nueve selecciones de luz se habrian leido mal mirando solo el 1100 — estaban a 0 en
-TODAS las LOD (defecto de origen, no de la vista).
+**The census is performed against LOD0, not in absolute terms.** "0 faces in 1100" does not distinguish *the view
+dropped it* from *it never existed*; only the LOD0/1100 pair separates the two classes. In the measured case,
+four out of nine light selections would have been misread by looking only at 1100 — they were at 0 across
+ALL LODs (origin defect, not a view defect).
 
-Antes de gastar un ciclo in-game en una prueba que dependa del asiento, censa por clases:
+Before spending an in-game cycle on a test depending on the seat, census by classes:
 
 ```python
 for L in sorted(p3d.lods, key=lambda l: getattr(l, "resolution", 0)):
     if getattr(L, "resolution", 0) not in (1.0, 1100.0, 1200.0):
         continue
-    # por cada clase que la prueba necesite: luces, proxies, texturas del cuadro
+    # for each class that the test requires: lights, proxies, gauge textures
     lights = {n: len(s.faces) for n, s in L.selections.items() if n.startswith("light_")}
     prox = [n for n in L.selections if n.lower().startswith("proxy:")]
 ```
 
-y clasifica cada seleccion en tres cubos: **presente sentado** (>0 en LOD0 y en 1100),
-**la vista la tira** (>0 en LOD0, 0 en 1100) y **defecto de origen** (0 ya en LOD0). La pregunta
-util no es "esta el LOD entero" sino "que CLASE de cosa falta", porque dos vistas del mismo arbol
-pueden faltar de cosas distintas.
+and classify each selection into three buckets: **present seated** (>0 in LOD0 and in 1100),
+**the view drops it** (>0 in LOD0, 0 in 1100), and **origin defect** (already 0 in LOD0). The useful
+question is not "is the full LOD present" but "what CLASS of thing is missing", because two views of the same tree
+can be missing different things.

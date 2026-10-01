@@ -1,9 +1,9 @@
-# Geometria del rip: retopo, winding y cirugia de caras
+# Rip geometry: retopo, winding and face surgery
 
-Extraido de `SKILL.md` (corte 3, 2026-08-15). Aqui vive el DETALLE; el enunciado
-corto y cuando leer esto estan en el indice `## ARCHIVO DE LECCIONES` del SKILL.md.
-Nada de este fichero esta derogado: son lecciones vigentes, ordenadas por tema en
-vez de por fecha.
+Extracted from `SKILL.md` (cut 3, 2026-08-15). Here lives the DETAIL; the short
+statement and when to read this are in the `## LESSONS ARCHIVE` index of SKILL.md.
+Nothing in this file is superseded: they are active lessons, ordered by topic
+instead of by date.
 
 ---
 
@@ -29,8 +29,8 @@ For retopologizing a dense vehicle rip to get a clean bake->UV low-poly (domain 
 
 Compose with invariant #0 (Gate #0 mesh+UV, SP-052) and `20_Knowledge/uv-mapping-dayz.md`. CAVEAT: the full auto-retopo pipeline is still user-gated (visual) and not in-game validated; the VERIFIED durable fact is the Quadriflow solver behaviour (target-sweep). Origin: LFQuad v2 auto-retopo experiment (2026-07-06), SEAT.001 36899 tris -> 10502 quads (-72%).
 
-## Rewriting a proxy triangle: regla corregida para proxies y caras visuales (SP-093)
-> Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“SP-093 antes de la corrección de alcance”.
+## Rewriting a proxy triangle: corrected rule for proxies and visual faces (SP-093)
+> Superseded text history: `history/cambio-1-superseded-family-b-rules.md` §"SP-093 prior to scope correction".
 
 Rewriting the 3 points of a proxy triangle to change its ORIENTATION flips the geometric winding
 while the stored vertex normals stay as they were. Measured on OH-1: `dot(geometric, stored)` went
@@ -46,8 +46,8 @@ visual faces fails 100% of valid input, and "fixing" it by flipping normals is t
 Rule: proxy triangles -> `dot > 0.9`. Migrated/edited visual faces -> equality of the RESOLVED
 normal vector against the baseline, corner by corner, within 1e-6.
 
-## `autocenter=0`: alcance corregido por LOD, host y submodelo (SP-097)
-> Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“SP-097 antes de separar host, submodelo y prueba runtime”.
+## `autocenter=0`: corrected scope by LOD, host, and submodel (SP-097)
+> Superseded text history: `history/cambio-1-superseded-family-b-rules.md` §"SP-097 prior to separating host, submodel, and runtime test".
 
 Measured control vs OH-1: all five geometry-bearing Landrover sub-models carry `autocenter=0` on
 their visual LOD **and** Geometry (5/5); the three OH-1 proxied sub-models carry it only on an empty
@@ -130,90 +130,90 @@ sun-visor edge seen because the seated camera rides high - legitimate
 geometry. Adjudicate WHAT the camera sees with a ray fan (d2_band_probe.py)
 BEFORE cutting anything; the fix was posture (crew proxy -5mm), not trimming.
 
-## Cirugia de caras en un .p3d: un criterio por UN eje parte los quads que cruzan ese eje (SP-197, added 2026-08-07, LFHeli V1)
+## Face surgery on a .p3d: a criterion along ONE axis splits quads crossing that axis (SP-197, added 2026-08-07, LFHeli V1)
 
-Al borrar caras de una seleccion por lado ("quita el cristal duplicado de babor"), el criterio
-natural es clasificar cada CARA por el signo de su centroide en X. Es correcto para caras que viven
-enteras a un lado y **silenciosamente destructivo** para cualquier superficie que CRUCE el eje: un
-panel plano suele ser un quad de 2 triangulos, y si el quad cruza X=0, el centroide de un triangulo
-cae a un lado y el del otro al otro. El criterio se lleva la mitad del panel y deja medio cuadrilatero.
+When deleting faces of a selection by side ("remove duplicate port-side glass"), the natural
+criterion is to classify each FACE by the sign of its X centroid. It is correct for faces living
+entirely on one side and **silently destructive** for any surface CROSSING the axis: a
+flat panel is usually a quad of 2 triangles, and if the quad crosses X=0, one triangle's centroid
+falls on one side and the other's on the other. The criterion removes half the panel and leaves half a quad.
 
-Firma visual exacta que reporto el usuario: "se ven medio a triangulos medio a huecos triangulares".
-Medido despues (LFHeli 2026-08-07): 9 paneles del canopy con 2 caras cada uno; en el fichero
-desplegado quedaba 1 de cada pareja. El conteo de ISLAS no lo delata (seguian siendo 17); solo el
-conteo de CARAS por isla.
+Exact visual signature reported by the user: "they look half triangles half triangular gaps".
+Measured afterwards (LFHeli 2026-08-07): 9 canopy panels with 2 faces each; in the deployed
+file 1 of each pair remained. The ISLAND count does not betray it (still was 17); only the
+FACE count per island.
 
 Reglas:
 
-1. Antes de borrar por lado, comprueba si la seleccion tiene islas que CRUZAN el plano de simetria
-   (min_x < 0 < max_x en la isla). Si las hay, el criterio por centroide de cara NO sirve: decide a
-   nivel de ISLA, o excluye explicitamente las islas que cruzan.
-2. Un criterio de UNA dimension captura todo lo que comparte esa dimension. La banda Z de las dos
-   puertas del OH-1 (+-0,85 m alrededor de cada ancla) cubria z de -3,68 a -0,62, que es donde
-   tambien vive el canopy. Anade la segunda dimension que discrimina (altura Y) o compara cara a cara
-   contra el sub-p3d que replica esa geometria.
-3. Gate que lo caza offline y que ningun conteo agregado sustituye: **cada isla conserva su numero de
-   caras**, o si pierde, pierde 0 o TODAS. Una isla que pasa de 2 caras a 1 es la firma del quad
-   partido. El area total tampoco lo delata si mides por conjunto unico de puntos.
-4. Cuando el criterio geometrico sea dudoso, no lo adivines: **saca un visor y que el usuario
-   seleccione**. Coste medido: ~40 min de visor autocontenido (Three.js UMD r147 + islas clicables +
-   export de la lista) frente a un ciclo de vuelo perdido y una regresion visible en el modelo.
-   Patron reutilizable en `LFHeli_dev/reviews/oh1-glass-picker-v2.html`: dos capas, lo DESPLEGADO
-   (clic = borrar) y lo que YA SE BORRO (clic = restaurar), silueta del casco en wireframe (una malla
-   de contexto solida oculta justo los paneles que se van a elegir), y el export como dos listas de
-   IDs. Self-test obligatorio antes de entregar (DZ-R1): CDN 200, marcador en el DOM que solo se
-   escribe al final del script, y screenshot headless LEIDO.
+1. Before deleting by side, check whether the selection has islands CROSSING the symmetry plane
+   (min_x < 0 < max_x on the island). If so, the face centroid criterion DOES NOT work: decide at
+   ISLAND level, or explicitly exclude islands that cross.
+2. A ONE-dimensional criterion captures everything sharing that dimension. The Z band of the two
+   OH-1 doors (+-0.85 m around each anchor) covered z from -3.68 to -0.62, which is where
+   the canopy also lives. Add the second discriminating dimension (height Y) or compare face-to-face
+   against the sub-p3d replicating that geometry.
+3. Gate that catches it offline and that no aggregate count replaces: **each island preserves its number of
+   faces**, or if it loses, it loses 0 or ALL. An island going from 2 faces to 1 is the signature of a split
+   quad. Total area does not betray it either if you measure by unique vertex set.
+4. When geometric criterion is doubtful, do not guess: **bring up a viewer and let the user
+   select**. Measured cost: ~40 min of self-contained viewer (Three.js UMD r147 + clickable islands +
+   list export) versus a lost flight cycle and a visible model regression.
+   Reusable pattern in `LFHeli_dev/reviews/oh1-glass-picker-v2.html`: two layers, DEPLOYED
+   (click = delete) and what WAS ALREADY DELETED (click = restore), hull wireframe silhouette (a solid
+   context mesh hides precisely the panels to be picked), and export as two ID
+   lists. Mandatory self-test before handing off (DZ-R1): CDN 200, DOM marker only
+   written at the end of the script, and headless screenshot READ.
 
-Corolario del mismo caso: **los puntos huerfanos de una seleccion (miembros de la seleccion sin
-ninguna cara que los use) son EVIDENCIA, no basura.** Los 357 huerfanos a estribor del OH-1 eran el
-rastro exacto de 619 caras que el pipeline habia perdido; un "saneamiento" los borra y con ellos la
-unica pista de que faltaba algo. Mide y entiende antes de limpiar.
+Corollary of the same case: **orphan vertices of a selection (selection members without
+any face using them) are EVIDENCE, not garbage.** The 357 starboard orphans on the OH-1 were the
+exact trace of 619 faces that the pipeline had lost; "cleanup" deletes them and with them the
+only clue that something was missing. Measure and understand before cleaning.
 
-## Borrar caras de un .p3d con py3d: muta `lod.faces` IN PLACE o rompes las selecciones en silencio (SP-203, added 2026-08-07, SUB_BRZ parabrisas; extiende SP-197)
+## Deleting faces from a .p3d with py3d: mutate `lod.faces` IN PLACE or break selections silently (SP-203, added 2026-08-07, SUB_BRZ windshield; extends SP-197)
 
-SP-197 cubre QUE caras elegir. Esto es COMO quitarlas sin corromper el modelo, y es el paso donde
-un borrado correcto se convierte en un `.p3d` roto.
+SP-197 covers WHICH faces to choose. This covers HOW to remove them without corrupting the model, and is the step where
+a correct deletion turns into a broken `.p3d`.
 
-**El mecanismo, leido del fuente antes de escribir un byte** (`py3d/__init__.py`, clase
-`Selection`): `Selection.all_faces` **es una REFERENCIA a la lista `lod.faces`**, no una copia; y
-`Selection.write()` valida sus claves **por identidad** contra esa lista y lanza `RuntimeError` si
-alguna es "foreign". Consecuencias:
+**The mechanism, read from source before writing a byte** (`py3d/__init__.py`, class
+`Selection`): `Selection.all_faces` **is a REFERENCE to the `lod.faces` list**, not a copy; and
+`Selection.write()` validates its keys **by identity** against that list and throws `RuntimeError` if
+any is "foreign". Consequences:
 
-- `lod.faces = [f for f in lod.faces if ...]` crea una lista NUEVA. Toda `Selection` sigue
-  bindeada a la vieja. En el mejor caso peta; en el peor, pesos serializados a cero en silencio.
-- La forma correcta es mutar **in place** y de indice mayor a menor: `for i in reversed(cut): del
+- `lod.faces = [f for f in lod.faces if ...]` creates a NEW list. Every `Selection` remains
+  bound to the old one. In best case it crashes; in worst case, weights serialized to zero silently.
+- The correct way is mutating **in place** from highest to lowest index: `for i in reversed(cut): del
   lod.faces[i]`.
-- Antes de eso hay que **sacar esas caras de cada `Selection.faces`** (son dicts con la Face como
-  clave), o `write()` aborta por clave foranea.
+- Before that you must **remove those faces from each `Selection.faces`** (they are dicts with Face as
+  key), or `write()` aborts due to foreign key.
 
-**Gate obligatorio, y es barato**: re-leer el archivo tras guardar y comprobar el conteo de CADA
-seleccion nombrada. Esperado = conteo anterior menos las retiradas de esa seleccion. Medido en el
-caso real: `glass` 6022→5910 (−112), `interior` 4458→4383 (−75), `trim` 4072 intacta, con 187
-caras borradas. Si una seleccion no cuadra, el borrado se comio algo que no debia.
+**Mandatory gate, and it is cheap**: re-read the file after saving and check the count of EACH
+named selection. Expected = previous count minus those removed from that selection. Measured in
+the real case: `glass` 6022→5910 (−112), `interior` 4458→4383 (−75), `trim` 4072 intact, with 187
+faces deleted. If a selection does not match, the deletion swallowed something it shouldn't have.
 
-**Antes de borrar, pregunta a que selecciones pertenecen las caras condenadas.** No es lo mismo
-tocar una seleccion decorativa que `glass`, que gobierna la rotura del cristal. Un 2% de una
-seleccion es asumible; el 90% la convierte en otra cosa.
+**Before deleting, ask which selections the condemned faces belong to.** Touching a
+decorative selection is not the same as `glass`, which governs glass shattering. A 2% of a
+selection is manageable; 90% turns it into something else.
 
-**Los puntos huerfanos se dejan.** Borrar los puntos que ya no usa ninguna cara obliga a reindexar
-todo el LOD, y este proyecto ya aprendio que los huerfanos son EVIDENCIA, no basura (LFHeli).
+**Orphan vertices are left.** Deleting vertices no longer used by any face forces reindexing
+the entire LOD, and this project already learned that orphans are EVIDENCE, not garbage (LFHeli).
 
-**Comprueba cuantos LODs tiene la pieza ANTES de dar el borrado por hecho.** El fix del forro del
-techo (s43) hubo que aplicarlo en el LOD visual Y en el ViewPilot 1100, o reaparecia en primera
-persona. En el caso de este parabrisas el chunk tenia UN SOLO LOD y no aplicaba — pero eso se
-comprueba, no se supone.
+**Check how many LODs the part has BEFORE considering deletion done.** The headliner fix
+(s43) had to be applied in visual LOD AND in ViewPilot 1100, or it reappeared in first
+person. In the case of this windshield the chunk had A SINGLE LOD and did not apply — but that is
+checked, not assumed.
 
-### Corolario para el gate de PBO entre builds (refina SP-194)
+### Corollary for inter-build PBO gate (refines SP-194)
 
-Al verificar que un build solo cambio lo que debia:
+When verifying that a build only changed what it was supposed to:
 
-1. **Una clave "order-free" NO puede contener indices de seccion.** Reimplementarla con
-   `face_index_start` / `face_index_end` da un gate que declara DISTINTOS 7 de 10 modelos que no
-   se tocaron, porque esos indices son exactamente lo que AddonBuilder reordena. La clave valida
-   es el multiset de `(material, textura, indices de vertice de la cara, bit de iluminacion)`
-   resuelto por las tablas de NOMBRES, con guard VOID si las secciones no cubren todas las caras.
-2. **Anadir una textura nueva cambia `texHeaders.bin`** — es el indice de texturas del PBO. Es
-   mecanico y esperado; si no esta en la lista de deltas admitidos, el gate da un rojo falso.
-3. Separa el delta por tipo de entrada: `.p3d` se compara **semanticamente**, todo lo demas por
-   **bytes**. Un gate que parsea toda entrada cambiada como ODOL revienta en cuanto el lote
-   incluye una textura.
+1. **An "order-free" key CANNOT contain section indices.** Reimplementing it with
+   `face_index_start` / `face_index_end` gives a gate that declares 7 out of 10 untouched models as
+   DIFFERENT, because those indices are exactly what AddonBuilder reorders. The valid key
+   is the multiset of `(material, texture, face vertex indices, lighting bit)`
+   resolved by NAME tables, with a VOID guard if sections do not cover all faces.
+2. **Adding a new texture changes `texHeaders.bin`** — it is the PBO texture index. It is
+   mechanical and expected; if not in the allowed deltas list, the gate gives a false red.
+3. Separate delta by entry type: `.p3d` is compared **semantically**, everything else by
+   **bytes**. A gate that parses every changed entry as ODOL blows up as soon as the batch
+   includes a texture.

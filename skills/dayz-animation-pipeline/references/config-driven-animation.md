@@ -115,20 +115,20 @@ class CfgModels
 
 [TBD-verify: exact method signatures against `object.c` in the user's script module or DayZ Explorer — the source page was too large to line-read. Confirm before shipping if the phase semantics matter.]
 
-## Diagnóstico de sources `user`: una fase leída no prueba movimiento (SP-211, added 2026-08-31)
+## Diagnostics for `user` sources: a read phase does not prove movement (SP-211, added 2026-08-31)
 
-`GetAnimationPhase(src) == 1.0` incluso antes del primer `SetAnimationPhase(src, 1)` no demuestra
-que la instancia esté en fase 1. También es compatible con un source `user` que no quedó
-registrado o actuable en esa instancia. Antes de culpar a la fase:
+`GetAnimationPhase(src) == 1.0` even before the first `SetAnimationPhase(src, 1)` does not prove
+that the instance is in phase 1. It is also compatible with a `user` source that was not
+registered or actionable on that instance. Before blaming the phase:
 
-1. Enumera los sources con `GetNumUserAnimationSourceNames()` y
-   `GetUserAnimationSourceName(int)` (`entity.c:17-19`) y confirma que `src` existe.
-2. Compara en el mismo modelo con un source que sí produzca movimiento, por ejemplo un proxy de
-   rotor. Una selección de caras propias en el bone puede no ser actuada donde un proxy en ese
-   bone sí lo es; para puertas, considera el patrón de submodelo proxied.
+1. Enumerate sources with `GetNumUserAnimationSourceNames()` and
+   `GetUserAnimationSourceName(int)` (`entity.c:17-19`) and confirm that `src` exists.
+2. Compare on the same model with a source that does produce movement, for example a rotor
+   proxy. A selection of own faces on the bone might not be actuated where a proxy on that
+   bone is; for doors, consider the proxied submodel pattern.
 
-La sonda de enumeración es **READ-ONLY**. No llames `SetAnimationPhase(door, 0)` para comprobar
-que el source existe: esa llamada modifica estado vivo. Si la puerta estaba abierta, el caché de
-`ApplyDoorAnim` puede no restaurarla y deja visual cerrado con lógica abierta hasta otro toggle.
-Limita la sonda a enumeración y `GetAnimationPhase`; prueba la escritura y la transición mediante
-la acción real open/close instrumentada.
+The enumeration probe is **READ-ONLY**. Do not call `SetAnimationPhase(door, 0)` to check
+that the source exists: that call modifies live state. If the door was open, the cache of
+`ApplyDoorAnim` might not restore it and leaves visual closed with logic open until another toggle.
+Limit probe to enumeration and `GetAnimationPhase`; test writing and transition using
+the instrumented real open/close action.

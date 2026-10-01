@@ -345,7 +345,7 @@ and ATM. Pattern `JsonFileLoader<T>.JsonSaveFile/JsonLoadFile` for per-entity pe
 
 ---
 
-## Suposiciones activas (no verificadas en este research)
+## Active assumptions (not verified in this research)
 
 - [SUP-1] Batch pagination: `next < 0` appears to signal end of batches, but exact batch size
   and reconnect-on-timeout mechanism not verified. Confirm with `grep -n "BATCH_SIZE\|next < 0\|RequestTraderItems"` in module.

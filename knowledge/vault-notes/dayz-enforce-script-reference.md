@@ -74,15 +74,15 @@ These are common risk areas, not standalone verified APIs:
 - Project-level exact facts: `AI/10_Projects/<PROJECT>/verified-apis.md`
 - [`AI/20_Knowledge/dayz-ui-development.md`](dayz-ui-development.md)
 - [`AI/20_Knowledge/dayz-capacidades-verificadas.md`](dayz-capacidades-verificadas.md)
-- [[dayz-mod-implementation-checklists]] — checklists por archivo + catálogo de errores recurrentes (E01–E31) que aplican estas reglas.
-- [[dayz-modded-class-server-stub-pattern]] — bug-pattern de override sin stub base (Rule 24, nombres de parámetro exactos).
+- [[dayz-mod-implementation-checklists]] — per-file checklists + catalog of recurring errors (E01–E31) that apply these rules.
+- [[dayz-modded-class-server-stub-pattern]] — override bug-pattern without base stub (Rule 24, exact parameter names).
 
-## IsKindOf semántica config-vs-script (added 2026-05-20)
+## IsKindOf config-vs-script semantics (added 2026-05-20)
 
-`GetGame().IsKindOf(string entityType, string parentType)` consulta la cadena de **CfgVehicles**, no la cadena de scripts. Una clase declarada en script como `class X : Y` puede tener en CfgVehicles otro padre (`class X : Z`) donde `Y` y `Z` son hermanos en config. El runtime usa la versión de config.
+`GetGame().IsKindOf(string entityType, string parentType)` queries the **CfgVehicles** chain, not the script chain. A class declared in script as `class X : Y` can have in CfgVehicles another parent (`class X : Z`) where `Y` and `Z` are siblings in config. The runtime uses the config version.
 
-**Patrón de fallo recurrente**: en mods de compat-layer que registran verified-base classnames (`LFV_StateProbe.RegisterVerifiedBase`, Expansion, frameworks similares), si la base registrada es el padre script pero NO el padre config, todos los descendientes silenciosamente fallan el match. La capa de compat entra en estado defensivo no-op y la feature no se aplica a esa subclase. Suele ser silencioso a `m_LogLevel="ERROR"` (los WARNs diagnósticos se filtran).
+**Recurring failure pattern**: in compat-layer mods registering verified-base classnames (`LFV_StateProbe.RegisterVerifiedBase`, Expansion, similar frameworks), if registered base is the script parent but NOT the config parent, all descendants silently fail matching. The compat layer enters defensive no-op state and feature is not applied to that subclass. Typically silent at `m_LogLevel="ERROR"` (diagnostic WARNs are filtered).
 
-**Diagnóstico canónico**: cuando una clase "no engancha" con un hook que debería cubrirla por herencia, debinarizar el config.bin del mod (`CfgConvert.exe -txt -dst out.cpp config.bin`) y `grep "class X:"` para reconstruir la cadena de config. Comparar contra la cadena de script. Cualquier intermediate `*_Placeable_Base`, `*_Coverable_Base`, `*_Static_Base` que sea hijo en script pero hermano en config es sospechoso. 30 segundos de verificación, descarta 80% del espacio de búsqueda.
+**Canonical diagnostics**: when a class "does not catch" with a hook that should cover it by inheritance, unbinarize mod config.bin (`CfgConvert.exe -txt -dst out.cpp config.bin`) and `grep "class X:"` to rebuild config chain. Compare against script chain. Any intermediate `*_Placeable_Base`, `*_Coverable_Base`, `*_Static_Base` that is child in script but sibling in config is suspicious. 30 seconds of verification, eliminates 80% of search space.
 
-**Caso documentado**: `A6_MilitaryStorageCrate` en LF_VStorage 2026-05-20. `A6_Openable_Placeable_Base` declara `: A6_Openable_Base` en script pero `: A6_Storage_Base` en CfgVehicles. Fix: registrar todos los config-base directos de las clases concretas con cargo, no solo el script base "lógico". Ver [`10_Projects/LF_VStorage/bug-ledger.md`](../10_Projects/LF_VStorage/bug-ledger.md) 2026-05-20 y [`10_Projects/LF_VStorage/verified-apis.md`](../10_Projects/LF_VStorage/verified-apis.md) (entry IsKindOf).
+**Documented case**: `A6_MilitaryStorageCrate` in LF_VStorage 2026-05-20. `A6_Openable_Placeable_Base` declares `: A6_Openable_Base` in script but `: A6_Storage_Base` in CfgVehicles. Fix: register all direct config-bases of concrete classes with cargo, not just the "logical" script base. See [`10_Projects/LF_VStorage/bug-ledger.md`](../10_Projects/LF_VStorage/bug-ledger.md) 2026-05-20 and [`10_Projects/LF_VStorage/verified-apis.md`](../10_Projects/LF_VStorage/verified-apis.md) (IsKindOf entry).

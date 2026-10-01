@@ -9,30 +9,30 @@
 <!-- [merged 2026-06-05 from .claude\skills user copy during plugin-canonical migration] -->
 ## 8. SEVERITY INFLATION IN AUDIT REPORTS (added 2026-05-15)
 
-Patrón observado en audits de LFPowerGrid: etiquetar como `P1 — crash`
-hallazgos que en realidad son `P2 — VM exception recuperable, server sigue
-corriendo`. Causa: extrapolación de mensaje de log (`String CORRUPTED`) a
-comportamiento real (proceso muere) sin verificar.
+Pattern observed in LFPowerGrid audits: labeling as `P1 — crash`
+findings that in reality are `P2 — recoverable VM exception, server keeps
+running`. Cause: extrapolation from log message (`String CORRUPTED`) to
+actual behavior (process dies) without verification.
 
-### Antídoto operativo antes de redactar audit findings
+### Operational antidote before drafting audit findings
 
-1. Reproducir el bug en server local (`dayz-launch-test` si disponible).
-2. Loggear el ciclo completo del bug (carga -> execute -> autosave -> reload).
-3. Distinguir:
-   - `crash` <-> proceso muere, server cae, requiere restart.
-   - `VM exception` <-> excepción de Enforce VM, log spam, ejecución continúa.
-   - `corruption` <-> datos malos persisten, código corre con ellos.
-   - `degradation` <-> feature funciona peor pero corre.
-   - `cosmetic` <-> solo visual / sin efecto funcional.
-4. La etiqueta del finding usa el término concreto del paso 3, no "crash"
-   como genérico.
+1. Reproduce bug on local server (`dayz-launch-test` if available).
+2. Log complete bug cycle (load -> execute -> autosave -> reload).
+3. Distinguish:
+   - `crash` <-> process dies, server drops, requires restart.
+   - `VM exception` <-> Enforce VM exception, log spam, execution continues.
+   - `corruption` <-> bad data persists, code runs with it.
+   - `degradation` <-> feature functions worse but runs.
+   - `cosmetic` <-> visual only / no functional effect.
+4. Finding label uses concrete term from step 3, not "crash"
+   as generic.
 
 ### Caso real
 
-Sesión `Review audit findings and create remediation plan` 2026-05-14
-(`local_daee0706`): "Server arranca: NO" en tabla `antes vs después` se
-desinfló a "el server sí arranca, solo que da error" tras corrección del
-usuario.
+Session `Review audit findings and create remediation plan` 2026-05-14
+(`local_daee0706`): "Server boots: NO" in `before vs after` table was
+deflated to "server does boot, it just throws an error" after correction by
+user.
 
 ### Referencia cruzada
 
@@ -41,51 +41,51 @@ R4 + R30 del `CLAUDE.md` global.
 ---
 
 <!-- [merged 2026-06-05 from .claude\skills user copy during plugin-canonical migration] -->
-## 9. AUDITORÍAS MULTI-AGENTE: AISLAMIENTO DE CONTEXTO OBLIGATORIO (added 2026-05-16)
+## 9. MULTI-AGENT AUDITS: MANDATORY CONTEXT ISOLATION (added 2026-05-16)
 
-Post-mortem documentado en `LF_VStorage_dev/skills/rigorous-data-audit/postmortem.md`
-(sesión `Evaluate GitHub project` 2026-05-14): 4 agentes auditores
-"convergieron" en hallazgos confabulados porque leyeron el mismo conventions
-doc y heredaron el mismo sesgo. La convergencia se interpretó como rigor;
-era acoplamiento.
+Post-mortem documented in `LF_VStorage_dev/skills/rigorous-data-audit/postmortem.md`
+(session `Evaluate GitHub project` 2026-05-14): 4 auditor agents
+"converged" on confabulated findings because they read same conventions
+doc and inherited same bias. Convergence was interpreted as rigor;
+it was coupling.
 
-### Regla operativa para futuras auditorías multi-agente sobre código DayZ
+### Operational rule for future multi-agent audits on DayZ code
 
-- Cada agente verifica desde fuente vanilla / `path:line` independiente.
-- Prohibido que dos agentes citen "lo mismo dice X" como evidencia cruzada
-  cuando ambos leyeron el mismo doc.
-- Al menos un agente debe correr **adversarial** — sin acceso al conventions
-  doc, solo al código real, contrastando los hallazgos del resto.
-- **Muestreo aleatorio (≥20%) de los hallazgos antes de aplicarlos**: si no
-  pasan recheck adversarial, descartar la auditoría completa, no solo los
-  ítems sospechosos. La confabulación es sistémica, no por-ítem.
+- Each agent verifies from independent vanilla source / `path:line`.
+- Prohibited for two agents to cite "X says same thing" as cross-evidence
+  when both read the same doc.
+- At least one agent must run **adversarial** — without access to conventions
+  doc, only to actual code, checking findings of others.
+- **Random sampling (≥20%) of findings before applying them**: if they fail
+  adversarial recheck, discard entire audit, not just suspicious
+  items. Confabulation is systemic, not per-item.
 
-### Síntomas de auditoría confabulada que disparan re-check
+### Symptoms of confabulated audit triggering re-check
 
-- Métricas absolutas grandes ("47 issues encontrados") sin `path:line` por
-  ítem.
-- Ramas OR defensivas etiquetadas como bug cuando son tolerancia diseñada.
-  Caso: `classify_lod()` con bandas Arma 3 + DayZ — la rama OR ES el diseño,
-  no un fallo.
-- Severidad inflada (P1 sobre cosas que son P2-P3). Cruzar con sección 8.
-- Convergencia anómala entre agentes que deberían ser independientes — si 4
-  agentes "encuentran" lo mismo y leyeron el mismo conventions doc, es
-  sesgo compartido, no triangulación.
+- Large absolute metrics ("47 issues found") without `path:line` per
+  item.
+- Defensive OR branches labeled as bug when they are designed tolerance.
+  Case: `classify_lod()` with Arma 3 + DayZ bands — the OR branch IS the design,
+  not a bug.
+- Inflated severity (P1 on items that are P2-P3). Cross-check with section 8.
+- Anomalous convergence among agents that should be independent — if 4
+  agents "find" the same thing and read same conventions doc, it is
+  shared bias, not triangulation.
 
-### Definición operacional de VERIFIED
+### Operational definition of VERIFIED
 
-Para que un hallazgo pase a aplicar:
+For a finding to be applied:
 
-1. Tiene `path:line` concreto en código real (no en doc).
-2. Pegado el snippet del código que viola la regla.
-3. Pegado el snippet del fix con diff aplicable.
-4. Al menos un agente sin contexto compartido lo verificó por separado.
+1. Has concrete `path:line` in real code (not in doc).
+2. Snippet of code violating rule is pasted.
+3. Snippet of fix with applicable diff is pasted.
+4. At least one agent without shared context verified it separately.
 
-Sin estos cuatro, el hallazgo se marca `❓ confabulación posible` y NO se
-aplica.
+Without these four, finding is marked `❓ possible confabulation` and is NOT
+applied.
 
 ### Referencia cruzada
 
-R8 (verificación durante, no solo al final) + R22 (verificación honesta en
-output) + R31 (lenguaje de pitch prohibido sin evidencia) del CLAUDE.md
-global.
+R8 (verification during, not only at the end) + R22 (honest verification in
+output) + R31 (pitch language prohibited without evidence) of global
+CLAUDE.md.

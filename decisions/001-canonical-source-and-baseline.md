@@ -13,40 +13,40 @@
 >
 > The body below is kept for traceability.
 
-# ADR 001 — Fuente Git canónica y baseline inmutable
+# ADR 001 — Canonical Git source and immutable baseline
 
 - **Fecha:** 2026-07-24
 - **Estado:** aceptada
 
 ## Contexto
 
-El pack existía únicamente como tres copias byte-idénticas de un ZIP publicado.
-Editar skills instaladas, notas del vault y el ZIP por separado reproduciría el
-drift que ya se observa: las catorce skills del archivo divergen de sus fuentes
-locales actuales.
+The pack existed solely as three byte-identical copies of a published ZIP.
+Editing installed skills, vault notes, and the ZIP separately would reproduce the
+drift already observed: the fourteen skills in the archive diverge from their
+current local sources.
 
-## Decisión
+## Decision
 
-Este repositorio pasa a ser la única fuente editable del pack. El contenido del
-ZIP anterior se importó sin cambios en el commit raíz
+This repository becomes the sole editable source of the pack. The contents of the
+previous ZIP were imported unchanged in the root commit
 `d48e2c1a02dacc97645a9e70d8bc1058e6dae9a5`.
 
-El ZIP de origen queda como fixture inmutable:
+The source ZIP remains as an immutable fixture:
 
 - SHA-256:
   `E63C26C5C385E3037B4AFE9C918B3A9DE9E12CC0AF876316214518BF852735E5`.
-- Archivos extraídos: 138.
-- Comparación ZIP ↔ árbol: 138 presentes, 0 hashes distintos, 0 extras.
+- Extracted files: 138.
+- ZIP ↔ tree comparison: 138 present, 0 differing hashes, 0 extras.
 
-Las copias instaladas y el vault son entradas que se reconcilian mediante un
-inventario explícito; nunca se sobreescribe una fuente con otra por fecha o
-nombre solamente.
+Installed copies and the vault are inputs that are reconciled through an
+explicit inventory; one source is never overwritten with another by date or
+name alone.
 
 ## Consecuencias
 
-- Toda release se construirá desde un commit limpio de este repositorio.
-- Todo conflicto pack↔fuente tendrá una adjudicación durable.
-- Los artefactos de planificación pueden vivir en Git, pero el builder público
-  usará una allowlist explícita.
-- No se publicará ni empujará ningún remoto durante esta iniciativa sin una
-  petición separada del usuario.
+- Every release will be built from a clean commit of this repository.
+- Every pack↔source conflict will have a durable adjudication.
+- Planning artifacts can live in Git, but the public builder
+  will use an explicit allowlist.
+- No remote will be published or pushed during this initiative without a
+  separate request from the user.

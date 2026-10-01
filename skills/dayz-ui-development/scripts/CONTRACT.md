@@ -1,42 +1,42 @@
 # Contrato — paneles UI on demand
 
-Layouts para cargar desde `$profile:` con `ui_reload_layout` y rellenar en caliente con `ui_set_text` (FindAnyWidget por `name`). Textos autorados vacíos (`text ""`). Prohibido `#STR_`: un stringtable no viaja con un `.layout` suelto.
+Layouts to load from `$profile:` with `ui_reload_layout` and populate on the fly with `ui_set_text` (FindAnyWidget by `name`). Authored texts empty (`text ""`). `#STR_` prohibited: a stringtable does not travel with a loose `.layout`.
 
-`FindAnyWidget` es global: un solo panel de estos a la vez (Unlink / `ui_reload_layout(mode="close")` antes del siguiente).
+`FindAnyWidget` is global: only one of these panels at a time (Unlink / `ui_reload_layout(mode="close")` before the next one).
 
-## Nombres por tipo
+## Names by type
 
-Todos los TextWidget arrancan en `text ""`. El orquestador inyecta el string.
+All TextWidgets start at `text ""`. The orchestrator injects the string.
 
 ### `feed` (chat / log)
 
-| name | clase | `ui_set_text` |
+| name | class | `ui_set_text` |
 |---|---|---|
 | `FeedRoot` | FrameWidgetClass | no (host 1×1, `ignorepointer 1`, `priority 2000`) |
 | `FeedPanel` | PanelWidgetClass | no (`style rover_sim_colorable`) |
-| `TitleText` | TextWidgetClass | sí (siempre presente) |
-| `FeedLine0` … `FeedLine{N-1}` | TextWidgetClass | sí, una línea por fila |
+| `TitleText` | TextWidgetClass | yes (always present) |
+| `FeedLine0` … `FeedLine{N-1}` | TextWidgetClass | yes, one line per row |
 
 ### `info` (etiqueta / valor)
 
-| name | clase | `ui_set_text` |
+| name | class | `ui_set_text` |
 |---|---|---|
 | `InfoRoot` | FrameWidgetClass | no |
 | `InfoPanel` | PanelWidgetClass | no |
-| `TitleText` | TextWidgetClass | sí (siempre presente) |
-| `Label0` … `Label{N-1}` | TextWidgetClass | sí |
-| `Value0` … `Value{N-1}` | TextWidgetClass | sí |
+| `TitleText` | TextWidgetClass | yes (always present) |
+| `Label0` … `Label{N-1}` | TextWidgetClass | yes |
+| `Value0` … `Value{N-1}` | TextWidgetClass | yes |
 
-### `hud` (HUD mínimo)
+### `hud` (minimal HUD)
 
-| name | clase | `ui_set_text` |
+| name | class | `ui_set_text` |
 |---|---|---|
-| `HudRoot` | FrameWidgetClass | no (`priority 100`, árbol `ignorepointer 1`) |
+| `HudRoot` | FrameWidgetClass | no (`priority 100`, tree `ignorepointer 1`) |
 | `HudPanel` | PanelWidgetClass | no (`halign left` / `valign top`) |
-| `TitleText` | TextWidgetClass | solo si se pasa `--title` |
-| `FeedLine0` … `FeedLine{N-1}` | TextWidgetClass | sí |
+| `TitleText` | TextWidgetClass | only if `--title` is passed |
+| `FeedLine0` … `FeedLine{N-1}` | TextWidgetClass | yes |
 
-`--title` no escribe el literal en el widget (sigue `text ""`); va al comentario del fichero. El título visible se pone con `ui_set_text` sobre `TitleText`.
+`--title` does not write the literal into the widget (remains `text ""`); it goes into the file comment. The visible title is set with `ui_set_text` on `TitleText`.
 
 ## CLI
 
@@ -46,7 +46,7 @@ python gen_panel_layout.py <feed|info|hud> --rows N [--title TEXT] --out FILE
 python gen_panel_layout.py --self-test
 ```
 
-Unidades: fracción de pantalla (flags `hexact*` / `vexact*` = 0). `--x`/`--y` anclan la esquina superior izquierda del panel.
+Units: screen fraction (flags `hexact*` / `vexact*` = 0). `--x`/`--y` anchor the top left corner of the panel.
 
 | kind | --width | --height | --x | --y |
 |---|---|---|---|---|
@@ -54,7 +54,7 @@ Unidades: fracción de pantalla (flags `hexact*` / `vexact*` = 0). `--x`/`--y` a
 | info | 0.28 | 0.40 | 0.02 | 0.04 |
 | hud  | 0.22 | 0.10 | 0.76 | 0.04 |
 
-Gramática y atributos: `stringtable_ladder.layout` (probado in-game con `ui_reload_layout`); chrome HUD extra de `hud_overlay.layout`. Codificación: UTF-8 sin BOM, LF. Sin rutas absolutas dentro del `.layout`.
+Grammar and attributes: `stringtable_ladder.layout` (tested in-game with `ui_reload_layout`); extra HUD chrome from `hud_overlay.layout`. Encoding: UTF-8 without BOM, LF. No absolute paths inside `.layout`.
 
 Ejemplos:
 
@@ -66,5 +66,5 @@ python gen_panel_layout.py hud --rows 2 --out mini_hud.layout
 
 ## Verificar
 
-`python gen_panel_layout.py --self-test` — balance `{`/`}` por fichero, `name` únicos, cada `FeedLineK`/`ValueK` declarado aparece exactamente una vez; salida `SELFTEST PASS` o `SELFTEST FAIL`.
-Copiar el `.layout` a `$profile:` y `ui_reload_layout(path="$profile:<file>.layout")` (Unlink previo); luego `ui_set_text` por los `name` de arriba.
+`python gen_panel_layout.py --self-test` — `{`/`}` balance per file, unique `name`s, each declared `FeedLineK`/`ValueK` appears exactly once; output `SELFTEST PASS` or `SELFTEST FAIL`.
+Copy the `.layout` to `$profile:` and `ui_reload_layout(path="$profile:<file>.layout")` (Unlink beforehand); then `ui_set_text` by the `name`s above.

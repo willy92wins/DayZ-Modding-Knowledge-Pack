@@ -172,8 +172,8 @@ linter; it walks Bohemia's tree and takes on the order of 85 seconds.
 
 Skill: [`skills/dayz-pbo-build/SKILL.md`](skills/dayz-pbo-build/SKILL.md).
 Canonical AddonBuilder line
-([`knowledge/DAYZ_INFRA.md`](knowledge/DAYZ_INFRA.md) § "Comandos de
-invocación canónicos"):
+([`knowledge/DAYZ_INFRA.md`](knowledge/DAYZ_INFRA.md) § "Canonical
+invocation commands"):
 
 ```text
 AddonBuilder.exe P:\<ModName> P:\Mods\@<ModName>\Addons ^

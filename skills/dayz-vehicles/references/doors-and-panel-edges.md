@@ -1,9 +1,9 @@
-# Puertas: canto abierto, tapas y desmontables que no son puertas
+# Doors: open edge, caps, and detachables that are not doors
 
-Extraido de `SKILL.md` (corte 3, 2026-08-15). Aqui vive el DETALLE; el enunciado
-corto y cuando leer esto estan en el indice `## ARCHIVO DE LECCIONES` del SKILL.md.
-Nada de este fichero esta derogado: son lecciones vigentes, ordenadas por tema en
-vez de por fecha.
+Extracted from `SKILL.md` (cut 3, 2026-08-15). Here lives the DETAIL; the short
+statement and when to read this are in the `## LESSONS ARCHIVE` index of SKILL.md.
+Nothing in this file is repealed: they are active lessons, ordered by topic instead
+of by date.
 
 ---
 
@@ -48,164 +48,164 @@ passes cannot create a surface that was never there - and if a door edge reads a
 "nothing at all" rather than "wrong colour" or "wrong shading", suspect absence
 before orientation.
 
-## Un canto de puerta ausente se mide por LONGITUD DE BORDE LIBRE contra el control vanilla, y tres fixes "obvios" no lo cierran (SP-202, added 2026-08-07, SUB_BRZ E-1; refina SP-198)
+## A missing door edge is measured by FREE EDGE LENGTH against vanilla control, and three "obvious" fixes do not close it (SP-202, added 2026-08-07, SUB_BRZ E-1; refines SP-198)
 
-> ⚠ SUPERSEDIDO PARCIALMENTE por SP-245 (sección siguiente): el canto trasero SÍ falla, y el
-> cierre por script SÍ funciona con fondo medido. La métrica y los 3 fixes descartados siguen
-> vigentes.
+> ⚠ PARTIALLY SUPERSEDED by SP-245 (next section): rear edge DOES fail, and
+> script closure DOES work with measured depth. The metric and the 3 ruled-out fixes remain
+> active.
 
-SP-198 dice que una puerta importada no trae tapas de canto. Falta lo accionable: **con qué se mide
-y qué no arregla**. Una sesion entera de sondas en SUB_BRZ, reproducible en cualquier coche del
-pipeline con puertas desmontables.
+SP-198 states that an imported door has no edge caps. What is actionable is missing: **what it is measured with
+and what does not fix it**. An entire probing session on SUB_BRZ, reproducible on any car in
+the pipeline with detachable doors.
 
-**El control se saca en un comando** (no hace falta el coche entero):
+**The control is extracted in one command** (the whole car is not needed):
 
 ```
 python odol_to_mlod.py "DZ\vehicles\wheeled\civiliansedan\proxy\sedandoors_driver.p3d" ctrl.p3d
 ```
 
-**La metrica correcta es longitud de borde libre por extremo del eje largo**, en una banda del 6%,
-en TODOS los LODs render + el 1100. Medido:
+**The correct metric is free edge length per long axis end**, in a 6% band,
+across ALL render LODs + 1100. Measured:
 
 | extremo | vanilla | SUB_BRZ | lectura |
 |---|---|---|---|
 | delantero (pilar A) | **0 mm** | 673 mm | defecto |
 | trasero (pilar B) | 612 mm | 627 mm | **normal, no tocar** |
 
-Dos cosas que esto corrige de golpe:
+Two things that this corrects at once:
 
-1. **Tener borde libre en el perimetro de una puerta es NORMAL.** El perimetro entero es un ciclo
-   cerrado de ~4,4 m (piel exterior + cristal) y vanilla tambien lo tiene. Solo el borde DELANTERO
-   es anomalo, porque es el unico que queda a la vista al abrir. Un gate que mida "borde libre
-   total" da rojo en una puerta sana.
-2. **El gate por area (`cap >= 70% de alto x espesor`) esta mal calibrado** y no debe usarse: asume
-   espesor constante en toda la altura y que toda la altura es chapa. En una puerta frameless (BRZ,
-   GT86, y cualquier coupe del rip) la mitad alta es cristal, y el "espesor" que reporta una sonda
-   de banda es la CURVATURA del doblez, no un hueco. Ese gate pedia ~710 cm2 de tapa donde la
-   geometria real admite ~640 y solo en parte de la altura.
+1. **Having free edge on door perimeter is NORMAL.** The entire perimeter is a closed
+   loop of ~4.4 m (outer skin + glass) and vanilla also has it. Only the FRONT edge
+   is anomalous, because it is the only one remaining in view upon opening. A gate measuring "total
+   free edge" gives red on a healthy door.
+2. **The area gate (`cap >= 70% de alto x espesor`) is poorly calibrated** and must not be used: assumes
+   constant thickness across full height and that full height is sheet metal. On a frameless door (BRZ,
+   GT86, and any rip coupe) upper half is glass, and the "thickness" reported by a band
+   probe is the CURVATURE of the bend, not a gap. That gate demanded ~710 cm2 of cap where
+   real geometry admits ~640 and only along part of the height.
 
-**Tres fixes descartados CON MEDIDA — no repetirlos:**
+**Three fixes ruled out WITH MEASUREMENT — do not repeat them:**
 
-- **Doble-carar la banda frontal**: render con la regla de culling calibrada del pipeline, antes y
-  despues, **0 px de diferencia**. El see-through del canto no es un problema de caras de una sola
-  cara.
-- **Labio doblado (hem) copiando a vanilla**: un borde libre no se cierra desplazandolo; el labio
-  mueve el borde, no lo elimina. Ademas la holgura contra la jamba no da: a 2 mm de profundidad ya
-  hay vertices de carroceria dentro del volumen (gap puerta-jamba medido en 0,7 mm).
-- **Bridge piel exterior <-> panel interior**: los dos bordes NO se corresponden. Solo 6 de 13
-  franjas de altura tienen los dos bordes presentes, con huecos de 121 a 218 mm. Un bridge
-  automatico produce una pared retorcida.
+- **Double-siding front band**: render with pipeline's calibrated culling rule, before and
+  after, **0 px difference**. Edge see-through is not a single-sided face
+  problem.
+- **Bent lip (hem) copying vanilla**: a free edge is not closed by displacing it; the lip
+  moves the edge, does not eliminate it. Additionally clearance against the jamb is insufficient: at 2 mm depth there
+  are already bodywork vertices inside the volume (door-jamb gap measured at 0.7 mm).
+- **Bridge outer skin <-> inner panel**: the two edges do NOT correspond. Only 6 of 13
+  height strips have both edges present, with gaps from 121 to 218 mm. An automatic
+  bridge produces a twisted wall.
 
-**La causa estructural, que es lo que hay que mirar en el coche siguiente:** la piel exterior y el
-panel interior son **mallas separadas que no se tocan**. En SUB_BRZ el panel interior
-(`brz_cab_plastic`, `brz_black`) muere 108 mm antes del borde delantero, donde la piel exterior
-(`brz_paint`) si llega. Entre ambos no hay nada. Por eso no existen "dos anillos que puentear":
-existen dos bordes de piezas distintas separados 11 cm.
+**The structural cause, which is what needs checking on next car:** outer skin and
+inner panel are **separate meshes that do not touch**. In SUB_BRZ the inner panel
+(`brz_cab_plastic`, `brz_black`) ends 108 mm before the front edge, where outer skin
+(`brz_paint`) does reach. Between both there is nothing. That is why "two rings to bridge" do not exist:
+two edges from different parts exist, separated by 11 cm.
 
-**Consecuencia de planificacion:** cerrar el canto es **modelado a mano** (autorar la pared del
-canto en Blender), no una cirugia por script. Presupuestalo como tal desde el principio y pide la
-captura del defecto CON LA PUERTA ABIERTA antes de empezar — con la puerta cerrada toda medida da
-verde (SP-198) y sin la captura no se distingue "veo a traves" de "el borde queda feo", que llevan
-a fixes distintos.
+**Planning consequence:** closing the edge is **manual modeling** (authoring the edge
+wall in Blender), not script surgery. Budget it as such from the start and request the
+defect capture WITH THE DOOR OPEN before starting — with the door closed every measurement gives
+green (SP-198) and without capture one cannot distinguish "I see through" from "edge looks ugly", leading
+to different fixes.
 
-Sondas reutilizables en `<vehicle-import>\work\s50_doorcaps\`: `s50_probe_freeedge.py` (la metrica del
-gate, por LOD), `s50_compare_control.py` (control vs candidato, ejes normalizados),
-`s50_probe_bridge.py` (correspondencia de los dos bordes), `s50_render_front.py` (render A/B/C:
-actual con culling, sin culling, y el fix simulado).
+Reusable probes in `<vehicle-import>\work\s50_doorcaps\`: `s50_probe_freeedge.py` (gate
+metric, per LOD), `s50_compare_control.py` (control vs candidate, normalized axes),
+`s50_probe_bridge.py` (correspondence of the two edges), `s50_render_front.py` (A/B/C render:
+current with culling, without culling, and simulated fix).
 
-## El canto de puerta SE CIERRA POR SCRIPT con una banda de fondo MEDIDO — y ambos cantos fallan (SP-245, added 2026-08-15, SUB_BRZ s52; supersede parcialmente SP-202)
+## Door edge IS CLOSED VIA SCRIPT with a MEASURED depth band — and both edges fail (SP-245, added 2026-08-15, SUB_BRZ s52; partially supersedes SP-202)
 
-Dos correcciones a SP-202, ambas con medida y la primera confirmada in-game por el usuario:
+Two corrections to SP-202, both with measurement and the first confirmed in-game by user:
 
-1. **El canto TRASERO también falla.** La adjudicación "vanilla tiene 612 mm libres ahí → normal,
-   no tocar" era una inferencia mala: que vanilla tenga borde libre no implica que quede EXPUESTO.
-   Con el usuario delante fallan los dos. Y medido a perímetro completo (banda z del 8%, no del
-   6%): vanilla delantero **0 mm** / trasero ~502 mm; el rip 743/598 mm — el delta anómalo está en
-   AMBOS extremos.
-2. **"Cerrar el canto es modelado a mano" queda superseded**: una banda perimetral por script
-   alcanza paridad vanilla. El fix de 5 mm de s51 fallaba por PROFUNDIDAD (5 mm en un hueco de
-   ~77 mm), no por orientación — sus quads sí se dibujaban (probe cull ON == cull OFF).
+1. **The REAR edge also fails.** The attribution "vanilla has 612 mm free there → normal,
+   do not touch" was a bad inference: that vanilla has free edge does not imply it remains EXPOSED.
+   With user present both fail. And measured at full perimeter (8% z-band, not
+   6%): vanilla front **0 mm** / rear ~502 mm; rip 743/598 mm — anomalous delta is at
+   BOTH ends.
+2. **"Closing the edge is manual modeling" is superseded**: a perimetric band via script
+   achieves vanilla parity. The 5 mm fix from s51 failed due to DEPTH (5 mm in a gap of
+   ~77 mm), not orientation — its quads did render (cull ON == cull OFF probe).
 
-**La receta que funciona** (`<vehicle-import>\work\s52_cantos\s52_close_perimeter.py`, ambas puertas,
-LODs visuales + 1100):
+**The recipe that works** (`<vehicle-import>\work\s52_cantos\s52_close_perimeter.py`, both doors,
+visual LODs + 1100):
 
-- **Filo libre VERDADERO**: contar el uso de cada arista sobre TODAS las caras del LOD y quedarse
-  con las de la piel con uso==1. Contar solo dentro del material de la piel (como s51) marca como
-  "libres" aristas que en realidad cubre el cristal o el trim, y la banda las atraviesa.
-- **Fondo medido por vértice de borde**: raycast hacia dentro por el eje del grosor; fondo = 90%
-  del hueco hasta la primera pared, clamp [8, 60] mm; 60 mm donde no hay pared en 150 mm. El hueco
-  real varía 10→135 mm — cualquier constante está mal en la mitad del perímetro.
-- **Banda estanca**: UN punto extruido por vértice soldado del borde, compartido entre quads
-  vecinos (extruir por-arista con fondos distintos deja rendijas).
-- **Winding**: normal almacenada apuntando FUERA del filo, winding geométrico opuesto (la
-  convención medida al 100% en los LODs render de ambas puertas). "Fuera del filo" = componente
-  del (punto_medio − centroide de la piel) perpendicular a la arista, con el eje del grosor a 0.
-- **Gates de paridad, siempre contra el control** en el MISMO metric: render de canto (BRZ pasó
-  de 15,0% → 25,4% de superficie dibujada vs 26,8% vanilla) y barrido de rayos por el eje largo
-  (65,7% de rayos limpios vs 68,8% vanilla — la puerta quedó MÁS cerrada que la control). Un
-  umbral absoluto sin control falla puertas sanas: la vanilla da 68,8% de "abierto" en el barrido
-  ingenuo porque la mayoría de los rayos pasan por fuera de la silueta legítimamente.
-- **Diagnóstico previo que lo desbloqueó**: renderizar el canto en DOS escenas — coche MONTADO y
-  CERRADO (¿regresión visible por fuera?) y puerta AISLADA (= puerta abierta, donde vive la
-  queja). El defecto solo existe en la segunda; medir solo una responde a otra pregunta.
+- **TRUE free edge**: count each edge's use across ALL faces of the LOD and keep
+  those of the skin with use==1. Counting only within skin material (like s51) marks as
+  "free" edges actually covered by glass or trim, and band crosses them.
+- **Measured depth per edge vertex**: raycast inward along thickness axis; depth = 90%
+  of gap to first wall, clamp [8, 60] mm; 60 mm where there is no wall within 150 mm. Real
+  gap varies 10→135 mm — any constant is wrong across half the perimeter.
+- **Watertight band**: ONE extruded point per welded edge vertex, shared between neighboring
+  quads (extruding per-edge with different depths leaves slits).
+- **Winding**: stored normal pointing OUTSIDE the edge, opposite geometric winding (the
+  convention 100% measured across render LODs of both doors). "Outside the edge" = component
+  of (midpoint − skin centroid) perpendicular to edge, with thickness axis at 0.
+- **Parity gates, always against control** on SAME metric: edge render (BRZ went
+  from 15.0% → 25.4% drawn surface vs 26.8% vanilla) and long-axis ray sweep
+  (65.7% clean rays vs 68.8% vanilla — door ended up MORE closed than control). An
+  absolute threshold without control fails healthy doors: vanilla gives 68.8% "open" in naive
+  sweep because most rays pass outside the silhouette legitimately.
+- **Prior diagnosis that unblocked it**: render edge in TWO scenes — car ASSEMBLED and
+  CLOSED (visible regression from outside?) and ISOLATED door (= open door, where complaint
+  lives). Defect only exists in second; measuring only one answers a different question.
 
-Pedir la captura del defecto CON LA PUERTA ABIERTA (SP-202) sigue vigente antes de dimensionar.
+Requesting defect capture WITH THE DOOR OPEN (SP-202) remains in effect before sizing.
 
 ---
 
-## Desmontables que NO son puertas: capo y maletero (medido sub_wrxsti_04, 2026-08-07)
+## Detachables that are NOT doors: hood and trunk (measured sub_wrxsti_04, 2026-08-07)
 
-**Nivel de evidencia: MEDIDO offline. La extension del rig NO esta implementada ni verificada
-in-game a fecha de hoy.** Los numeros de abajo son geometria del modelo, no comportamiento del
-motor; lo que aqui se promueve es DONDE mirar, no una receta probada.
+**Evidence level: MEASURED offline. Rig extension is NOT implemented nor verified
+in-game as of today.** Numbers below are model geometry, not engine
+behavior; what is promoted here is WHERE to look, not a tested recipe.
 
-Un rig de desmontables escrito para puertas hornea dos supuestos que son **falsos** para capo y
-maletero, y ninguno de los dos canta: uno aborta con un mensaje que culpa al eje, y el otro ancla
-la bisagra a un metro de donde va, en verde.
+A detachables rig written for doors bakes two assumptions that are **false** for hood and
+trunk, and neither of them screams: one aborts with a message blaming the axis, and the other anchors
+the hinge one meter from where it belongs, in green.
 
-1. **El borde de bisagra no es siempre el delantero.** Una puerta bisagra en su borde delantero
-   (-Z), y de ahi que los rigs banden sobre `z.min()`. Pero un **capo bisagra en su borde TRASERO**
-   (el del parabrisas, +Z) y un **maletero en su borde DELANTERO** (-Z). Medido en el WRX: bisagra
-   del capo a **12 mm** del maximo Z de su hoja, la del maletero a **4 mm** del minimo. El borde
-   delantero del capo, que es donde bandaria un rig de puertas, esta a **1,16 m** de la bisagra
-   real. El borde tiene que ser un dato declarado por rol, no una constante.
+1. **The hinge edge is not always the front one.** A door hinges on its front edge
+   (-Z), hence rigs band over `z.min()`. But a **hood hinges on its REAR edge**
+   (the windshield one, +Z) and a **trunk on its FRONT edge** (-Z). Measured on WRX: hood
+   hinge **12 mm** from maximum Z of its panel, trunk **4 mm** from minimum. The front
+   edge of the hood, which is where a door rig would band, is **1.16 m** from the real
+   hinge. The edge must be a declared datum per role, not a constant.
 
-2. **La inclinacion se mide contra el eje de su CLASE, no siempre contra la vertical.** Capo y
-   maletero dan **89,81 grados** y **88,84 grados** respecto de +Y: revientan cualquier presupuesto
-   de verticalidad. Su eje es lateral (+X). Un gate de "tilt vs Y" no es un gate de calidad para
-   ellos, es una prohibicion.
+2. **Tilt is measured against its CLASS axis, not always against vertical.** Hood and
+   trunk give **89.81 degrees** and **88.84 degrees** with respect to +Y: they blow any verticality
+   budget. Their axis is lateral (+X). A "tilt vs Y" gate is not a quality gate for
+   them, it is a prohibition.
 
-3. **Trampa de signo, y es silenciosa.** Con eje lateral `axis[1]` vale ~0, asi que la
-   normalizacion habitual `if axis[1] < 0: axis = -axis` deja de ser determinista: el signo lo
-   decide el ruido del PCA. La direccion de apertura tiene que venir del angulo declarado, y el
-   gate offline que caza un signo invertido es **fisico**: el **borde libre** (la banda OPUESTA a
-   la bisagra) debe SUBIR al abrir. Un gate de desplazamiento por magnitud (`|delta| > umbral`)
-   pasa en verde con el signo invertido — mide que se mueve, no hacia donde.
+3. **Sign pitfall, and it is silent.** With lateral axis `axis[1]` is ~0, so
+   usual normalization `if axis[1] < 0: axis = -axis` stops being deterministic: sign is
+   decided by PCA noise. Opening direction must come from declared angle, and offline
+   gate catching an inverted sign is **physical**: the **free edge** (band OPPOSITE to
+   hinge) must RISE upon opening. A displacement-by-magnitude gate (`|delta| > umbral`)
+   passes green with inverted sign — measures that it moves, not where to.
    **[EXACT] The free-edge gate validates its OWN arithmetic, and the opening SENSE is calibrated in game** (SP-377, added 2026-10-01, WRX STI first flight): an offline gate that re-derives the rotation and checks a directional property never consults the engine convention. Measured in game (DayZ 1.30.164014 Exp, 2026-08-21): the two GREEN rows were exactly the two pieces opening DOWNWARD (`open_free_edge_lift_m` +1.4021 hood, +0.8393 trunk, gate green), and on a VERTICAL hinge the criterion is inapplicable - a car door does not rise (its side roles read 0.0000/0.0000/-0.0506/-0.0506). Offline still decides axis, role face set and the per-side sign split; calibrate the opening SENSE with ONE in-game observation per car, recorded in the profile: with signs split per side, one observation fixes all six (all six reversed = convention; mixed = bad role split). Declare N/A where the rule does not apply instead of competing with a number in the same table.
 
-4. **El gate del eje NO valida el conjunto de piezas del rol, y es facil creer que si.** El eje se
-   ajusta sobre UNA pieza (la que declara la bisagra). Meter en el rol una pieza que no toca — una
-   jamba, un panel de carroceria, un faro que en realidad va al paragolpes — no mueve el eje ni un
-   grado: **el contraste de bisagra sigue en verde y el de apertura tambien**. Hace falta un gate
-   aparte sobre la propiedad: distancia maxima de cualquier cara del rol al eje contra un radio
-   declarado, mas el recuento de caras contra el censo. Sin el, la agrupacion mala llega al juego.
+4. **Axis gate does NOT validate role's part set, and it is easy to believe it does.** The axis
+   fits on ONE part (the one declaring hinge). Putting a part in the role that does not touch — a
+   jamb, a bodywork panel, a headlight that actually belongs to bumper — does not move axis by a
+   single degree: **hinge contrast remains green and opening contrast too**. A separate
+   gate is needed on the property: maximum distance of any role face to axis against a declared
+   radius, plus face count against census. Without it, bad grouping reaches game.
 
-5. **Antes de escribir una regla de propiedad `+x`/`-x`, mide si hay caras EN el plano x=0.** Una
-   regla por centroide las descarta por los dos lados y esas caras desaparecen del coche sin que
-   nadie lo note. En el WRX salieron 0 de 18 piezas candidatas, pero eso es un dato medido, no una
-   garantia del formato. Y para una pieza entera no hace falta regla especial si el selector cae a
-   "todas" por defecto.
+5. **Before writing a `+x`/`-x` property rule, measure whether faces exist ON the x=0 plane.** A
+   centroid rule discards them from both sides and those faces disappear from the car without anyone
+   noticing. On WRX 0 of 18 candidate parts came out, but that is a measured datum, not a format
+   guarantee. And for an entire part no special rule is needed if selector defaults to
+   "all".
 
-6. **Un capo suele traer cristal y un maletero no.** Si el codigo estructural exige cuerpo Y
-   cristal para acotar sus cajas, el maletero aborta y el capo pasa — pero clasificando el cristal
-   de los faros como "ventana", con su zona de dano y su material de penetracion de vidrio encima.
-   La caja de cristal tiene que ser opcional, y la clasificacion cuerpo/cristal un dato, no un
-   prefijo de nombre.
+6. **A hood usually brings glass and a trunk does not.** If structural code requires body AND
+   glass to bound its boxes, trunk aborts and hood passes — but classifying headlight
+   glass as "window", with its damage zone and glass penetration material on top.
+   Glass box must be optional, and body/glass classification a datum, not a name
+   prefix.
 
-7. **La masa del item no se hereda de la puerta.** Un `geometry_mass_kg` global le pone a un capo
-   los kilos de una puerta.
+7. **Item mass is not inherited from door.** A global `geometry_mass_kg` assigns a hood
+   the kilograms of a door.
 
-Origen: `<vehicle-import>\plans\2026-08-07-T6-detachables-rig-extension.md` (T6 del piloto CAMBIO-3),
-sondas en el scratchpad de la sesion. Los puntos 3 y 4 los levanto una revision R22 ciega sobre el
-plan, no la implementacion: son exactamente la clase de defecto que un gate offline no encuentra
-porque el gate estaba midiendo otra cosa.
+Origin: `<vehicle-import>\plans\2026-08-07-T6-detachables-rig-extension.md` (T6 of CAMBIO-3 pilot),
+probes in session scratchpad. Points 3 and 4 were raised by a blind R22 review on the
+plan, not implementation: they are exactly the kind of defect an offline gate does not find
+because the gate was measuring something else.

@@ -1,96 +1,96 @@
 # Cookbook B — attachment invisible
 
-> Familia B. Este cuerpo se movió sin reescritura en CAMBIO-1; las notas de estado y las rutas permanecen tal como estaban en el origen.
+> Family B. This body was moved without rewriting in CAMBIO-1; status notes and paths remain exactly as they were in the origin.
 
 <!-- MOVED-EXACT source="dayz-vehicles/SKILL.md:669" sha256="9EAB1E902D741923EDFF9CEDE1469D619DB11CEB5083705BA4D49DAA8727F9D7" -->
 21. **Attachment (wheel/door/part) renders FROM the shell's visual-LOD proxy FRAME — an identity frame hides the piece with the sim intact (SUB_BRZ B1, s37).** The engine instances the attached item's model on the proxy of the visual LOD being drawn, oriented by that proxy's frame. py3d `add_proxy(rotation=None)` writes an identity frame: the attached wheel renders rotated ~90 deg, tucked inside the arch — invisible from outside, no raycast hit at the hub, while attach/sim/damage all work (the exact "attached but invisible" signature). Contract, measured against the civiliansedan control (5 wheel proxies in EVERY visual LOD 1/2/3/4/6 + VG + FG): (a) the attachment proxy exists in EVERY visual LOD of the shell, not just the finest; (b) each carries the per-side lateral frame (x>0 `((1,0,0),(0,0,-1),(0,1,0))`, x<0 mirrored) or, for doors, the UNIFORM measured door frame `((-1,0,0),(0,0,1),(0,1,0))`; (c) proxy point flags 63 like the control (identity-frame proxies also had flags 0); (d) `CfgNonAIVehicles` class name must match the proxy file BASENAME case-insensitively (`sub_brz_wheel_ruined.p3d` -> `ProxySUB_BRZ_Wheel_ruined`; a `_destroyed`-named class over a `_ruined` file correlated with a native client CRASH on the damage swap — B5). Mechanical gate: `derive_proxy_frame` of every visual attachment proxy == expected frame, with a negative fixture (identity MUST fail). Diagnosis shortcut: "attached but invisible" is NOT a missing item LOD 0.0 (refuted in-game s37) and NOT a bone/companion issue if anchors+companions match — measure the FRAMES first. RCA: `<vehicle-import>\work\s37_b1_rca\B1_RCA_findings.md`. Fix verified offline (double-measured); in-game gate pending as of 2026-07-18.
 
 <!-- END MOVED-EXACT -->
 
-## El gate in-game de arriba está CERRADO desde el 2026-08-24
+## The in-game gate above is CLOSED since 2026-08-24
 
-Fuera del bloque MOVED-EXACT, igual que la nota del 22-08 y por el mismo motivo: el
-cuerpo de arriba se movió sin reescritura y su `sha256` de procedencia certifica
-exactamente esos bytes, notas de estado incluidas. Editarlo en sitio para actualizar un
-estado rompe el sello, y ningún check lo detecta — `packctl validate` no mira dentro de
-los bloques `MOVED-EXACT`.
+Outside the MOVED-EXACT block, just like the 08-22 note and for the same reason: the
+body above was moved without rewriting and its provenance `sha256` certifies
+exactly those bytes, status notes included. In-place editing to update a
+status breaks the seal, and no check detects it — `packctl validate` does not look inside
+`MOVED-EXACT` blocks.
 
-El gate que la línea 21 deja «pending as of 2026-07-18» se **cerró en partida el
-2026-08-24**: la pieza adjunta renderiza en su sitio. La corrección del frame de proxy
-queda por tanto verificada in-game, no solo offline.
+The gate that line 21 leaves "pending as of 2026-07-18" was **closed in game on
+2026-08-24**: the attached part renders in its place. Proxy frame correction
+is therefore verified in-game, not just offline.
 
-## El frame por lado va atado a SU control, y el de arriba es el civiliansedan
+## Per-side frame is tied to ITS control, and the one above is the civiliansedan
 
-Añadido 2026-08-22, fuera del bloque MOVED-EXACT para no romper su sha de procedencia.
+Added 2026-08-22, outside the MOVED-EXACT block to avoid breaking its provenance sha.
 
-La constante de (b) —x>0 `((1,0,0),(0,0,-1),(0,1,0))`, x<0 espejada— **no es universal**:
-se midió sobre `civiliansedan_mlod`, y vale para geometría derivada de ese control. El
-propio cuerpo de la invariante lo dice al nombrar el control, y `dayz-vehicles`
-lo remacha: «copy the **VANILLA** frame (NOT kt's — its mirror differs because its wheel
-geometry differs)» (`references/rip-import.md:684-685`), con la doctrina general en
-`references/vehicle-structural-parity.md:939`: el frame depende de e1/e2 **y de la
-orientación base del modelo**.
+The constant from (b) —x>0 `((1,0,0),(0,0,-1),(0,1,0))`, mirrored for x<0— **is not universal**:
+it was measured on `civiliansedan_mlod`, and holds for geometry derived from that control. The
+invariant body itself states this when naming the control, and `dayz-vehicles`
+drives it home: "copy the **VANILLA** frame (NOT kt's — its mirror differs because its wheel
+geometry differs)" (`references/rip-import.md:684-685`), with general doctrine in
+`references/vehicle-structural-parity.md:939`: the frame depends on e1/e2 **and on the
+base model orientation**.
 
-Consecuencia práctica, que es donde se pierde el tiempo: **medir estos literales contra un
-control de otra familia da «invertido» sin que haya nada roto.** Ocurrió — una nota del
-ledger (SP-156) registró la constante como medida al revés comparándola contra un
-Landrover. Antes de creer que la constante está mal:
+Practical consequence, which is where time is lost: **measuring these literals against a
+control from another family yields "inverted" without anything being broken.** It happened — a note in the
+ledger (SP-156) recorded the constant as measured backwards when comparing it against a
+Landrover. Before believing that the constant is wrong:
 
-1. Mide el frame de TU control, el que renderiza, con `derive_proxy_frame`.
-2. Compara contra él, no contra estos literales.
-3. Si tu control es de otra geometría, que difiera es lo esperado, no un bug.
+1. Measure the frame of YOUR control, the one that renders, with `derive_proxy_frame`.
+2. Compare against it, not against these literals.
+3. If your control has a different geometry, differing is expected, not a bug.
 
-La fixture mecánica que acompaña a la invariante solo exige que el frame identidad FALLE.
-Una fixture que intercambie los lados y exija fallo sigue **pendiente**, y es la que
-convertiría «invertido» en un rojo automático en vez de en una discusión.
+The mechanical fixture accompanying the invariant only requires that the identity frame FAILS.
+A fixture that swaps sides and requires failure remains **pending**, and is what
+would turn "inverted" into an automatic red rather than a discussion.
 
-## «Adjunto pero invisible» tiene una SEGUNDA causa, y su comprobacion va ANTES
+## "Attached but invisible" has a SECOND cause, and its check comes BEFORE
 
-Anadido 2026-09-09, fuera del bloque MOVED-EXACT para no romper su sha de procedencia.
+Added 2026-09-09, outside the MOVED-EXACT block to avoid breaking its provenance sha.
 
-El caso: LFQuad3, proxies de acople a huecos de INVENTARIO (`Shoulder`, `Melee`, `Back`), no
-ruedas. Los tres dibujaban NADA: ni el item, ni un placeholder, ni una linea en el RPT. Seis
-recetas probadas en partida tocaron la propiedad del slot, la animacion `hide`, `initPhase`, el
-indice del proxy y el LOD; **ninguna toco el nombre de la clase**. La causa era exactamente la
-regla (d) de arriba. Medido con el checker de GunRacks: ese mod **18/18** conformes, el nuestro
-**0/4**; tras renombrar, **3/3** y los items dibujan, verificado en partida.
+The case: LFQuad3, attachment proxies to INVENTORY slots (`Shoulder`, `Melee`, `Back`), not
+wheels. All three drew NOTHING: neither the item, nor a placeholder, nor a line in the RPT. Six
+recipes tested in game touched the slot property, the `hide` animation, `initPhase`, the
+proxy index and the LOD; **none touched the class name**. The cause was exactly
+rule (d) above. Measured with GunRacks checker: that mod **18/18** conforming, ours
+**0/4**; after renaming, **3/3** and the items draw, verified in game.
 
-Dos correcciones al bloque de arriba:
+Two corrections to the block above:
 
-1. **El sintoma de (d) no es solo el crash de B5.** La misma violacion produce tambien
-   **no-render total y silencioso**, modo de fallo mucho mas caro porque no deja rastro que
-   investigar: sin error, sin log, sin nada que buscar.
-2. **El orden del atajo de diagnostico esta al reves para este caso.** El bloque dice, ante
-   «attached but invisible», medir primero los FRAMES. Emparejar el nombre de clase con el
-   basename del `.p3d` es una comprobacion de TEXTO sobre el `config.cpp` -- por cada clase de
-   `CfgNonAIVehicles`, `clase.lower() == "proxy" + basename(model).lower()` --, cuesta segundos
-   y no tiene falsos positivos: **hazla antes de medir ningun frame.** No hacerla costo aqui
-   seis ciclos de partida.
+1. **The symptom of (d) is not just the B5 crash.** The same violation also produces
+   **silent, total non-render**, a much more expensive failure mode because it leaves no trace to
+   investigate: no error, no log, nothing to search for.
+2. **The diagnostic shortcut order is reversed for this case.** The block says, when facing
+   "attached but invisible", measure FRAMES first. Matching class name with the
+   basename of the `.p3d` is a TEXT check on `config.cpp` -- for each class of
+   `CfgNonAIVehicles`, `clase.lower() == "proxy" + basename(model).lower()` --, takes seconds
+   and has no false positives: **do it before measuring any frame.** Not doing it cost six
+   in-game cycles here.
 
-Y un tercer dato de la misma sesion: `ProxyVehiclePart` y `ProxyAttachment` NO son
-intercambiables para un hueco que deba mostrar lo que le cuelgues. `ProxyVehiclePart`
-(`simulation = "ProxyInventory"`) dibuja el modelo de LA CLASE -- medido en partida como un
-fusil gris de placeholder sobre la parrilla --; `ProxyAttachment` pone ahi la ENTIDAD acoplada.
-Para una rueda, cuyo modelo de proxy ES la rueda, el primero es lo correcto; para un hueco de
-inventario es el fallo.
+And a third piece of data from the same session: `ProxyVehiclePart` and `ProxyAttachment` are NOT
+interchangeable for a slot that needs to display what you attach to it. `ProxyVehiclePart`
+(`simulation = "ProxyInventory"`) draws the CLASS model -- measured in game as a
+gray placeholder rifle on the rack --; `ProxyAttachment` places the attached ENTITY there.
+For a wheel, whose proxy model IS the wheel, the former is correct; for an inventory
+slot it is the bug.
 
-## Un soporte compartido por fusiles y herramientas no alinea las dos familias (added 2026-09-13)
+## A rack shared by rifles and tools does not align both families (added 2026-09-13)
 
-Un proxy de acople dibuja el item en el marco propio de SU modelo, con el origen en el punto del
-proxy. Los modelos vanilla que caben en `Shoulder`/`Melee` no comparten eje largo (censo de 120
-piezas en LFQuad3): **84 de 87 armas de `CfgWeapons` lo tienen en X; los 3 arcos (`Archery_Base`)
-y las 33 herramientas de `CfgVehicles`, en Y**. Un soporte colocado para fusiles deja pala, pico o
-hacha cruzados 90 grados, y un visor que pinta cada modelo en su marco ya lo ensena: no es un fallo
-del motor ni del visor, es geometria.
+An attachment proxy draws the item in the local frame of ITS model, with the origin at the point of the
+proxy. Vanilla models that fit in `Shoulder`/`Melee` do not share a long axis (census of 120
+parts in LFQuad3): **84 of 87 weapons in `CfgWeapons` have it along X; the 3 bows (`Archery_Base`)
+and the 33 tools in `CfgVehicles`, along Y**. A rack placed for rifles leaves shovel, pickaxe or
+axe crossed 90 degrees, and a viewer painting each model in its frame already shows it: it is not an engine
+or viewer bug, it is geometry.
 
-Dos salidas, las dos medidas en partida:
-- **Dos proxys en el mismo slot**, uno por familia y cada uno en su hueso, con el script ocultando
-  el de la familia no acoplada (`IsWeapon()`, y `Archery_Base` cuenta como herramienta). Dibuja: la
-  herramienta salio en el plano correcto. En LFQuad3 se descarto por estetica.
-- **Soporte solo para armas**: rechazar en `CanReceiveAttachment` lo que no sea `IsWeapon()` o sea
-  `Archery_Base`. No hace falta un slot propio, que obligaria a parchear `Rifle_Base` para todas las
-  armas del servidor.
+Two solutions, both measured in game:
+- **Two proxies on the same slot**, one per family and each on its own bone, with the script hiding
+  that of the unattached family (`IsWeapon()`, and `Archery_Base` counts as a tool). Draws: the
+  tool rendered in the correct plane. On LFQuad3 it was discarded for aesthetics.
+- **Rack for weapons only**: reject in `CanReceiveAttachment` whatever is not `IsWeapon()` or is
+  `Archery_Base`. No dedicated slot needed, which would force patching `Rifle_Base` for all
+  weapons on the server.
 
-Trampa del censo: el config desbinarizado abre `class cfgWeapons` en minuscula. Un parser que
-compare el nombre de la raiz respetando mayusculas no ve ni un arma y devuelve "cero excepciones":
-exigir controles positivos (tres fusiles conocidos en X) antes de creerse el resultado.
+Census trap: debinarized config opens `class cfgWeapons` in lowercase. A parser that
+compares root name case-sensitively sees zero weapons and returns "zero exceptions":
+require positive controls (three known rifles in X) before trusting the result.

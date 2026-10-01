@@ -19,43 +19,43 @@ confidence_legend:
 
 # DayZ animations — creatures, weapons/items, anim graphs
 
-Conocimiento transversal que **complementa** la skill `dayz-animation-pipeline`. La skill cubre Layer 1 (config-driven) y Layer 2/3 (skeletal `.anm`/RTM, tooling). Esta nota cubre las áreas que la skill apenas toca: pipeline de criaturas custom con anim graph + state machine, weapon/item animations con ASI/TXA y la disciplina de Workbench Animation Editor. Cada claim lleva etiqueta de verificación; nada con `[TBD-verify-vanilla]` debe entrar en `verified-apis.md` ni en un diff antes de greparlo en `P:\` real.
+Cross-cutting knowledge that **complements** the `dayz-animation-pipeline` skill. The skill covers Layer 1 (config-driven) and Layer 2/3 (skeletal `.anm`/RTM, tooling). This note covers areas that the skill barely touches: custom creature pipeline with anim graph + state machine, weapon/item animations with ASI/TXA, and Workbench Animation Editor discipline. Every claim carries a verification tag; nothing with `[TBD-verify-vanilla]` must enter `verified-apis.md` or a diff before grepping it in actual `P:\`.
 
-## Cuándo leer esta nota antes de la skill
+## When to read this note before the skill
 
-- Vas a animar una **criatura/animal/infected custom** (cualquier cosa más allá de un door/lever rígido): empieza aquí, luego la skill para el seam sandbox/Windows.
-- Vas a tocar **animaciones de jugador/armas/items** (reload, fire IK, mag remove, state IDs): empieza aquí, la skill confirma el wall "un solo mod de anim a la vez" y el OFP2_ManSkeleton.
-- Vas a construir un **anim graph / state machine** propio: solo aquí. La skill no entra en este nivel.
+- You are going to animate a **custom creature/animal/infected** (anything beyond a rigid door/lever): start here, then the skill for the sandbox/Windows seam.
+- You are going to touch **player/weapon/item animations** (reload, fire IK, mag remove, state IDs): start here, the skill confirms the "only one anim mod at a time" wall and OFP2_ManSkeleton.
+- You are going to build your own **anim graph / state machine**: only here. The skill does not enter this level.
 
-Si el trabajo es un door/lever rígido, lever, gauge: usa directamente la skill ([`references/config-driven-animation.md`](skills-drafts/dayz-animation-pipeline/references/config-driven-animation.md)) — esta nota no aporta nada.
+If the job is a rigid door/lever, lever, gauge: use the skill directly ([`references/config-driven-animation.md`](skills-drafts/dayz-animation-pipeline/references/config-driven-animation.md)) — this note adds nothing.
 
-## Correcciones a los nombres que aparecen en los videos (sprint 2026-05-28)
+## Corrections to names appearing in videos (2026-05-28 sprint)
 
-Tabla maestra de spellings reales contra los que dicen los videos. **Usar siempre la columna de la derecha**.
+Master table of actual spellings versus what the videos say. **Always use the right-hand column**.
 
-| Video dice | Realidad VERIFIED | Fuente vanilla |
+| Video says | VERIFIED reality | Vanilla source |
 |---|---|---|
 | `discrete = 1` / `discrete = 0` | `isDiscrete = 1` / `isDiscrete = 0` | `BuildingModels/model.cfg`, `Crate/model.cfg` |
-| "rigid body vs deformación por weights" | Mecánico (sin interpolación) vs orgánico/suave | `dayz-model-pipeline/references/animations.md:16` |
-| "Entity Position" (con espacio) | `EntityPosition` (PascalCase, una palabra) | `DZ/anims/cfg/skeletons.anim.xml:4` |
-| "Pin Look At" / "Look At" | `LookAt` (PascalCase, una palabra). `Pin` no existe en vanilla | `DZ/anims/cfg/skeletons.anim.xml:18` |
-| "right hand dummy" | `RightHand_Dummy` (con underscore, helper en lod=2) | `DZ/anims/cfg/skeletons.anim.xml:100,115,525` |
-| "left hand mag tracking" bones | `LeftHand_Dummy` existe; NO hay magazine bones en skeleton de producción | `DZ/anims/cfg/skeletons.anim.xml:74` + ausencia en player skeleton |
-| `cmd death` (minúsculas, con espacio) | `CMD_Death` (UPPER_SNAKE con prefijo `CMD_`) | `DZ/animals/animations/!graph_files/ambientlife/ambientlife_graph.agr` |
-| `cmd look at` | `CMD_LookAt` | mismo |
-| `cmd attack` | `CMD_Attack` | mismo |
-| `cmd success` | `CMD_AttackSuccess` (NO existe `CMD_Success` solo) | mismo |
-| `skeletonAnims.xml` / `skeletonanim.xml` | `skeletons.anim.xml` (literal, con puntos) | `DZ/anims/cfg/skeletons.anim.xml` |
-| "weapon cocked" (state ID) | `FireCocked` (estado) — el state path es `WeaponOperations.<rig>.FireCocked` | `SurvivorAnims/animgraph/player_main/combat.agr:795` |
+| "rigid body vs weight deformation" | Mechanical (no interpolation) vs organic/smooth | `dayz-model-pipeline/references/animations.md:16` |
+| "Entity Position" (with space) | `EntityPosition` (PascalCase, one word) | `DZ/anims/cfg/skeletons.anim.xml:4` |
+| "Pin Look At" / "Look At" | `LookAt` (PascalCase, one word). `Pin` does not exist in vanilla | `DZ/anims/cfg/skeletons.anim.xml:18` |
+| "right hand dummy" | `RightHand_Dummy` (with underscore, helper in lod=2) | `DZ/anims/cfg/skeletons.anim.xml:100,115,525` |
+| "left hand mag tracking" bones | `LeftHand_Dummy` exists; there are NO magazine bones in production skeleton | `DZ/anims/cfg/skeletons.anim.xml:74` + absence in player skeleton |
+| `cmd death` (lowercase, with space) | `CMD_Death` (UPPER_SNAKE with `CMD_` prefix) | `DZ/animals/animations/!graph_files/ambientlife/ambientlife_graph.agr` |
+| `cmd look at` | `CMD_LookAt` | same |
+| `cmd attack` | `CMD_Attack` | same |
+| `cmd success` | `CMD_AttackSuccess` (`CMD_Success` alone does NOT exist) | same |
+| `skeletonAnims.xml` / `skeletonanim.xml` | `skeletons.anim.xml` (literal, with dots) | `DZ/anims/cfg/skeletons.anim.xml` |
+| "weapon cocked" (state ID) | `FireCocked` (state) — state path is `WeaponOperations.<rig>.FireCocked` | `SurvivorAnims/animgraph/player_main/combat.agr:795` |
 | "mag remove" (state ID) | `ReloadMagazineDetach` — state path `WeaponOperations.<rig>.ReloadMagazineDetach` | `.../weapons/player_main_1911.asi:21` |
 
-**Cualquier identificador del video** que no aparezca confirmado en esta tabla o más abajo con `path:line` real, **debe gripearse en `P:\` antes de usarse**. Las videos son una fuente útil pero sistemáticamente imprecisa en casing y separadores.
+**Any identifier from the video** that does not appear confirmed in this table or below with actual `path:line`, **must be grepped in `P:\` before being used**. The videos are a useful source but systematically imprecise in casing and separators.
 
 ---
 
-## 1. Pipeline de criatura custom (animal / infected / predator)
+## 1. Custom creature pipeline (animal / infected / predator)
 
-### 1.1 Capas del pipeline
+### 1.1 Pipeline layers
 
 ```
 Blender (rig + skeleton + animaciones)
@@ -69,163 +69,163 @@ Blender (rig + skeleton + animaciones)
   → in-game con AI agent template vanilla (hen / herbívoro / predator)
 ```
 
-[VERIFIED-source] El video repite: hay que **arrancar con animgraph mínimo (1 estado, 1 anim source)** y validarlo in-game **antes** de cablear estados/variables/eventos. Construir el graph entero offline y descubrir el fallo al final es el anti-patrón.
+[VERIFIED-source] The video repeats: you must **start with a minimal animgraph (1 state, 1 anim source)** and validate it in-game **before** wiring states/variables/events. Building the entire graph offline and discovering failure at the end is the anti-pattern.
 
-### 1.2 Bones especiales de criaturas — [VERIFIED-vanilla]
+### 1.2 Special creature bones — [VERIFIED-vanilla]
 
-Las criaturas (y el player) usan dos bones del skeleton que el engine entiende nativamente:
+Creatures (and the player) use two skeleton bones that the engine natively understands:
 
 - **`EntityPosition`** [VERIFIED-vanilla `DZ/anims/cfg/skeletons.anim.xml:4`]
   - `<bone name="EntityPosition" index="0" movement="true" lod="0" />`
-  - Bone que el engine usa para predicción/desplazamiento del entity. Aparece en el skeleton del player y se referencia desde animgraphs de animales — wolf usa `"PredictionTurn" "EntityPosition"` (en `wolf_maingraph.agr`).
-  - `movement="true"` es lo que marca el bone como conductor de movimiento real.
-  - Para criaturas voladoras se usan trucos porque DayZ no soporta vuelo nativamente [VERIFIED-source, hunterz688 vol.1].
+  - Bone that the engine uses for entity prediction/displacement. Appears in player skeleton and is referenced from animal animgraphs — wolf uses `"PredictionTurn" "EntityPosition"` (in `wolf_maingraph.agr`).
+  - `movement="true"` is what marks the bone as actual movement driver.
+  - For flying creatures tricks are used because DayZ does not natively support flight [VERIFIED-source, hunterz688 vol.1].
 
 - **`LookAt`** [VERIFIED-vanilla `DZ/anims/cfg/skeletons.anim.xml:18`]
   - `<bone name="LookAt" index="18" lod="0" />`
-  - **`Pin` NO existe en vanilla** — el video lo dice mal. El bone es solo `LookAt`.
-  - Lo usa el AI / engine para orientar la mirada al target.
+  - **`Pin` does NOT exist in vanilla** — the video gets it wrong. The bone is just `LookAt`.
+  - Used by AI / engine to aim look at target.
 
-[VERIFIED-source] **Orientación de EntityPosition**: forward = +Y (verde en Blender), up = +Z (azul). Misorientación = animal camina de lado / atraviesa el suelo. El video no es vanilla-grounded en esto pero el principio es estándar de Bohemia.
+[VERIFIED-source] **EntityPosition orientation**: forward = +Y (green in Blender), up = +Z (blue). Misorientation = animal walks sideways / clips through ground. The video is not vanilla-grounded on this, but the principle is Bohemia standard.
 
-[VERIFIED-source] **Workbench refresh**: cambiar bones/skeleton en `P:` puede requerir reiniciar Workbench para que detecte los cambios. No es bug, es caché de proyecto.
+[VERIFIED-source] **Workbench refresh**: changing bones/skeleton in `P:` may require restarting Workbench to detect changes. Not a bug, it is project caching.
 
-[VERIFIED-source] **Espacios en nombres de bones**: Workbench convierte espacios en underscores; Object Builder no necesariamente. **Recomendación dura: nombres de bones SIN espacios desde el principio** (PascalCase `EntityPosition` o snake como `entity_position`).
+[VERIFIED-source] **Spaces in bone names**: Workbench converts spaces to underscores; Object Builder does not necessarily. **Hard recommendation: bone names WITHOUT spaces from the start** (PascalCase `EntityPosition` or snake like `entity_position`).
 
-### 1.3 Skeleton XML y registro — [VERIFIED-vanilla]
+### 1.3 Skeleton XML and registration — [VERIFIED-vanilla]
 
-- **Nombre real del archivo**: `skeletons.anim.xml` (literal, con los dos puntos). [VERIFIED-vanilla `DZ/anims/cfg/skeletons.anim.xml:1`: `<skeletons version="1.0">`]
-- **Cómo lo encuentra el engine**: por **convención de path en el pbo**, no por una key explícita en `config.cpp`. El `config.cpp` del módulo vanilla `DZ/anims/cfg/config.cpp` contiene SOLO `CfgPatches { class DZ_Anims_Cfg {...} }`; no hay `skeletonFile = "..."` ni similar. [VERIFIED-vanilla]
-- **Implicación para mods**: si añades una criatura custom con skeleton propio, el XML debe ir empaquetado en la ruta correcta dentro del pbo del mod (mismo layout `<mod>/anims/cfg/<algo>.anim.xml`) y depender de `DZ_Anims_Cfg` en `CfgPatches`. **No hay que apuntarlo desde config.cpp**.
-- **Estructura del XML**: root `<skeletons version="1.0">`, hijos `<skeleton name="...xob">` que listan `<bone name="..." index="N" lod="N" />` (algunos con `movement="true"`).
-- **Riesgo "crash al primer spawn"** que el video atribuía al XML faltante: el mecanismo real es que el `.xob` (skeleton binario) o sus bones no estén accesibles para el animgraph; el XML solo expone el catálogo. Verificar empaquetado del XML + del `.xob` referenciado.
+- **Actual file name**: `skeletons.anim.xml` (literal, with both dots). [VERIFIED-vanilla `DZ/anims/cfg/skeletons.anim.xml:1`: `<skeletons version="1.0">`]
+- **How the engine finds it**: by **path convention in the pbo**, not by an explicit key in `config.cpp`. The vanilla module's `config.cpp` `DZ/anims/cfg/config.cpp` contains ONLY `CfgPatches { class DZ_Anims_Cfg {...} }`; there is no `skeletonFile = "..."` or similar. [VERIFIED-vanilla]
+- **Implication for mods**: if you add a custom creature with its own skeleton, the XML must be packed in the correct path within the mod's pbo (same layout `<mod>/anims/cfg/<something>.anim.xml`) and depend on `DZ_Anims_Cfg` in `CfgPatches`. **It does not need to be pointed to from config.cpp**.
+- **XML structure**: root `<skeletons version="1.0">`, children `<skeleton name="...xob">` listing `<bone name="..." index="N" lod="N" />` (some with `movement="true"`).
+- **"Crash on first spawn" risk** that the video attributed to the missing XML: the actual mechanism is that the `.xob` (binary skeleton) or its bones are not accessible to the animgraph; the XML only exposes the catalog. Verify packing of the XML + referenced `.xob`.
 
-### 1.4 FBX export desde Blender — checklist [VERIFIED-source]
+### 1.4 FBX export from Blender — checklist [VERIFIED-source]
 
-Antes de exportar la criatura como FBX:
+Before exporting the creature as FBX:
 
-- **Export custom properties**: sí.
-- **Leaf bones**: deshabilitar (DayZ no los necesita y son ruido en el skeleton).
-- **Cámara/lámpara**: fuera del FBX.
-- **Bake animation**: sí (necesario para que Workbench reciba clips correctos).
-- **Rotación de criatura**: cuidar la orientación específica que DayZ espera; revisar tras importar en Workbench antes de seguir.
-- Si añades el bone Entity Position / Look At después del rig inicial, **moverlo a su posición canónica antes de exportar** (centro/raíz para Entity Position, child de head para Look At).
+- **Export custom properties**: yes.
+- **Leaf bones**: disable (DayZ does not need them and they are noise in the skeleton).
+- **Camera/lamp**: out of the FBX.
+- **Bake animation**: yes (necessary for Workbench to receive correct clips).
+- **Creature rotation**: take care with the specific orientation DayZ expects; check after importing into Workbench before continuing.
+- If you add the Entity Position / Look At bone after the initial rig, **move it to its canonical position before exporting** (center/root for Entity Position, child of head for Look At).
 
-### 1.5 model.cfg para criatura — referencias
+### 1.5 model.cfg for creature — references
 
-La estructura del bloque `CfgSkeletons` + pares `"bone","parent"` está [VERIFIED-vault] en:
+The structure of the `CfgSkeletons` block + `"bone","parent"` pairs is [VERIFIED-vault] in:
 - [`dayz-animation-pipeline/references/config-driven-animation.md`](skills-drafts/dayz-animation-pipeline/references/config-driven-animation.md) (Layer 1 base)
-- `dayz-model-pipeline/references/animations.md` (ejemplos completos)
+- `dayz-model-pipeline/references/animations.md` (complete examples)
 
-Para criatura: hereda el `CfgSkeletons` de un animal vanilla (seagull, hen, herbívoro genérico) y añade los bones propios. El ejemplo del seagull en el video muestra que los pares `bone, parent` son la columna vertebral del config.
+For creature: inherit the `CfgSkeletons` of a vanilla animal (seagull, hen, generic herbivore) and add its own bones. The seagull example in the video shows that the `bone, parent` pairs are the backbone of the config.
 
-Nota anatómica: `isDiscrete = 0` para criaturas (movimiento orgánico con interpolación). `= 1` solo para mecánicos.
+Anatomical note: `isDiscrete = 0` for creatures (organic movement with interpolation). `= 1` only for mechanical.
 
 ---
 
-## 2. Anim graph y state machine (para criaturas)
+## 2. Anim graph and state machine (for creatures)
 
-El **anim graph** es la capa que el video llama "preview model / sheet master / state machine". Es donde defines:
+The **anim graph** is the layer that the video calls "preview model / sheet master / state machine". It is where you define:
 
-- **Estados**: idle, walk, trot, run, attack, hit, death (uno o varios según side/zona de impacto), swim, turn.
-- **Anim sources**: qué `.anm` reproduce cada estado.
-- **Transitions**: condiciones para pasar entre estados (variable change, event, end-of-clip).
-- **Variables**: valores numéricos que conducen blending/selección (`speed`, `swimming`, `state`).
-- **Commands**: nombres engine-side que disparan estados desde el AI (death/attack/look at).
-- **Events**: marcadores dentro de un clip que disparan sonido, daño, fin de simulación, etc.
+- **States**: idle, walk, trot, run, attack, hit, death (one or more depending on impact side/zone), swim, turn.
+- **Anim sources**: which `.anm` each state plays.
+- **Transitions**: conditions to pass between states (variable change, event, end-of-clip).
+- **Variables**: numerical values that drive blending/selection (`speed`, `swimming`, `state`).
+- **Commands**: engine-side names that trigger states from AI (death/attack/look at).
+- **Events**: markers within a clip that trigger sound, damage, end of simulation, etc.
 
-### 2.1 Commands canónicos del anim graph — [VERIFIED-vanilla]
+### 2.1 Canonical anim graph commands — [VERIFIED-vanilla]
 
-Casing real (UPPER_SNAKE con prefijo `CMD_`). El video los dice en minúsculas con espacios; **incorrecto** — usar siempre la columna real.
+Actual casing (UPPER_SNAKE with `CMD_` prefix). The video speaks them in lowercase with spaces; **incorrect** — always use the actual column.
 
 **Animales** (de `DZ/animals/animations/!graph_files/ambientlife/ambientlife_graph.agr`):
 
-| Real | Video decía | Notas |
+| Real | Video said | Notes |
 |---|---|---|
 | `CMD_Death` | `cmd death` | death state trigger |
 | `CMD_LookAt` | `cmd look at` | head/look tracking |
-| `CMD_LookAtXChange` | (no mencionado) | sub-comando del look at |
-| `CMD_Attack` | `cmd attack` | inicia attack state |
-| `CMD_AttackSuccess` | `cmd success` | el attack conectó → aplica daño. **NO existe `CMD_Success` standalone** |
-| `CMD_Hit` | (no mencionado) | recibe hit |
-| `CMD_AnimCallBack` | (no mencionado) | event callback genérico |
+| `CMD_LookAtXChange` | (not mentioned) | look at sub-command |
+| `CMD_Attack` | `cmd attack` | starts attack state |
+| `CMD_AttackSuccess` | `cmd success` | the attack connected → applies damage. **`CMD_Success` does NOT exist standalone** |
+| `CMD_Hit` | (not mentioned) | receives hit |
+| `CMD_AnimCallBack` | (not mentioned) | generic event callback |
 
 **Player** (de `SurvivorAnims/animgraph/player_main/`):
 
-| Real | Uso |
+| Real | Usage |
 |---|---|
-| `CMD_WeaponFire` | dispara arma |
-| `CMD_Reload_Magazine` | reload de magazine completo |
-| `CMD_Reload_BoltAction` | reload bolt-action |
+| `CMD_WeaponFire` | fires weapon |
+| `CMD_Reload_Magazine` | full magazine reload |
+| `CMD_Reload_BoltAction` | bolt-action reload |
 | `CMD_Reload_Chambering` | chambering bullet |
-| `CMD_Reload_ChamberingFast` | chambering rápido |
-| `CMD_Reload_Clip` | reload de clip |
-| `CMD_Modifier_Additive` | modifier (sickness/cough/sneeze) — **NO es para reload** (ver §3.1 refutación) |
+| `CMD_Reload_ChamberingFast` | fast chambering |
+| `CMD_Reload_Clip` | clip reload |
+| `CMD_Modifier_Additive` | modifier (sickness/cough/sneeze) — **NOT for reload** (see §3.1 refutation) |
 
-### 2.2 Variables del anim graph — [VERIFIED-vanilla parcial]
+### 2.2 Anim graph variables — [VERIFIED-vanilla partial]
 
-- **`speed`** [VERIFIED-vanilla]: variable real en herbivores y ambientlife.
+- **`speed`** [VERIFIED-vanilla]: actual variable in herbivores and ambientlife.
   `DZ/animals/animations/!graph_files/herbivores/herbivores_graph.agr`: `#Var speed float 0.0 0.0 5.0 ""`
-- **`SlopeAngleX`** y **`SlopeAngleZ`** [VERIFIED-vanilla]: provistas por el engine, presentes en todos los animal graphs. `#Var SlopeAngleX float 0.0 -90.0 90.0 ""`. **Esta es la base del terrain alignment** (§2.4).
-- **`swimming`** [REFUTED-vanilla como `#Var` standalone]: NO existe como variable en animal graphs. En el player graph aparece como **tag de estado** (`TagSwimming`, `SwimmingMaster` en `locomotion.agr`), no como variable float/bool expuesta. El video lo trataba como variable genérica — incorrecto para animales.
+- **`SlopeAngleX`** and **`SlopeAngleZ`** [VERIFIED-vanilla]: provided by the engine, present in all animal graphs. `#Var SlopeAngleX float 0.0 -90.0 90.0 ""`. **This is the basis of terrain alignment** (§2.4).
+- **`swimming`** [REFUTED-vanilla as standalone `#Var`]: does NOT exist as a variable in animal graphs. In the player graph it appears as a **state tag** (`TagSwimming`, `SwimmingMaster` in `locomotion.agr`), not as an exposed float/bool variable. The video treated it as a generic variable — incorrect for animals.
 
-### 2.2 State machine mínima — método de validación [VERIFIED-source]
+### 2.2 Minimal state machine — validation method [VERIFIED-source]
 
-El video recomienda este orden estricto:
+The video recommends this strict order:
 
-1. Crear graph + state machine con **un solo estado idle** y **un solo anim source** (una sola `.anm`).
-2. Modelo en in-game con `model.cfg` mínimo (geometry, mass, FireGeo básico). [Cross-ref `dayz-p3d-audit` y `dayz-model-pipeline`.]
-3. Verificar que la criatura no crashea, se ve, juega el idle.
-4. **Recién entonces** añadir walk → run, blending por `speed`, terrain alignment, hit, death.
+1. Create graph + state machine with **a single idle state** and **a single anim source** (a single `.anm`).
+2. Model in game with minimal `model.cfg` (geometry, mass, basic FireGeo). [Cross-ref `dayz-p3d-audit` and `dayz-model-pipeline`.]
+3. Verify that the creature does not crash, is visible, plays the idle.
+4. **Only then** add walk → run, blending by `speed`, terrain alignment, hit, death.
 
-Construir todos los estados offline y descubrir bug en uno de ellos = horas/días de bisección.
+Building all states offline and discovering a bug in one of them = hours/days of bisection.
 
-### 2.3 BlendT (blend tree) por speed — [VERIFIED-source]
+### 2.3 BlendT (blend tree) by speed — [VERIFIED-source]
 
-Para locomoción: nodo de blending entre walk / trot / run según el valor de la variable `speed`, con **duración de transición** explícita. Las animaciones de turn (giro) deben empezar y terminar en poses compatibles con los loops de walk/run; un turn que empieza/acaba en una pose arbitraria genera popping visible.
+For locomotion: blending node between walk / trot / run according to the value of the `speed` variable, with explicit **transition duration**. Turn animations must start and end in poses compatible with the walk/run loops; a turn that starts/ends in an arbitrary pose generates visible popping.
 
 ### 2.4 Terrain alignment — [VERIFIED-vanilla]
 
-Mecanismo real: nodo `AnimNodeRot` que consume las variables `SlopeAngleX` / `SlopeAngleZ` (provistas por el engine) multiplicadas por **π/180 (= 0.01745329)** para convertir grados a radianes.
+Actual mechanism: `AnimNodeRot` node that consumes the `SlopeAngleX` / `SlopeAngleZ` variables (provided by the engine) multiplied by **π/180 (= 0.01745329)** to convert degrees to radians.
 
 - Wolf: `DZ/animals/animations/!graph_files/wolf/wolf_maingraph.agr:3`
   `"AlignToTerrain_Rot" "" "Master_SM" "SlopeAngleX * 0.01745329..."`
-- Herbívoros: nodos `TerrainRot_Deers`, `TerrainRot_CowAndBull`, `TerrainRot_BoarAndPig`, `TerrainRot_SheepAndGoat` con la misma fórmula. [VERIFIED-vanilla]
+- Herbivores: nodes `TerrainRot_Deers`, `TerrainRot_CowAndBull`, `TerrainRot_BoarAndPig`, `TerrainRot_SheepAndGoat` with the same formula. [VERIFIED-vanilla]
 
-**No es un nodo "especial"** llamado "terrain alignment"; es un `AnimNodeRot` con nombre descriptivo. Para una criatura custom: copiar la fórmula desde el animal vanilla más parecido en proporciones (cuadrúpedo grande → cow, mediano → boar, pequeño → sheep).
+**It is not a "special" node** called "terrain alignment"; it is an `AnimNodeRot` with a descriptive name. For a custom creature: copy the formula from the vanilla animal most similar in proportions (large quadruped → cow, medium → boar, small → sheep).
 
 ### 2.5 Death states — [VERIFIED-source]
 
-Death puede ser multi-state según parámetro/dirección del hit. La state machine vanilla de predators muestra varios estados de muerte (por lado de impacto, por zona del cuerpo). El video lo enseña como referencia copiable.
+Death can be multi-state according to hit parameter/direction. The vanilla predators state machine shows multiple death states (by impact side, by body zone). The video shows it as copyable reference.
 
-### 2.6 Hit states y attack — [VERIFIED-source]
+### 2.6 Hit states and attack — [VERIFIED-source]
 
-- **Hit**: funciona como transition desde múltiples estados (idle, walk, run). Si el asset comprado solo tiene "hit estando quieto", hay que **recombinar en Blender** (non-linear editor) hits desde otras poses base para que la transition no se vea rota.
-- **Attack**: requiere estado `attack` + estado `success` (el daño se aplica en `success`, no en `attack`). Eventos dentro de la animación de attack marcan el frame de impacto y el sonido.
+- **Hit**: works as a transition from multiple states (idle, walk, run). If the purchased asset only has "hit while standing still", you have to **recombine in Blender** (non-linear editor) hits from other base poses so the transition does not look broken.
+- **Attack**: requires `attack` state + `success` state (damage is applied in `success`, not in `attack`). Events within the attack animation mark the impact frame and the sound.
 
-### 2.7 Events en animaciones — [VERIFIED-source]
+### 2.7 Events in animations — [VERIFIED-source]
 
-Animation events sirven para:
-- Disparar sonido.
-- Terminar simulación (death simulation finished → entity puede limpiarse).
-- Aplicar damage en el frame correcto del attack.
+Animation events serve to:
+- Trigger sound.
+- End simulation (death simulation finished → entity can be cleaned up).
+- Apply damage on the correct frame of the attack.
 
-**Gotcha del video**: añadir events puede romper el graph si el event table no concuerda. Si Workbench falla cargando un graph vanilla copiado, **ajustar el event table** antes que tocar la lógica del graph.
+**Video gotcha**: adding events can break the graph if the event table does not match. If Workbench fails loading a copied vanilla graph, **adjust the event table** before touching the graph logic.
 
-### 2.8 Animaciones de assets comprados — [VERIFIED-source]
+### 2.8 Animations of purchased assets — [VERIFIED-source]
 
-Modelos comprados de stock raramente traen animaciones que encajen con las transitions de DayZ (poses de inicio/fin distintas). Hay que **recombinar en Blender** mezclando clips para que walk → run, idle → attack, etc., concuerden en pose.
+Stock purchased models rarely come with animations that fit DayZ transitions (different start/end poses). You have to **recombine in Blender** blending clips so that walk → run, idle → attack, etc., match in pose.
 
 ---
 
 ## 3. Weapon / item animations (vol.3)
 
-### 3.1 ASI y TXA — formato real [VERIFIED-vanilla]
+### 3.1 ASI and TXA — actual format [VERIFIED-vanilla]
 
-- **`.txa`** = texto, fuente de keyframes que Workbench compila a `.anm` binario. [VERIFIED-vault]
-- **`.asi`** = `$animsetinstance` con tabla `"StateName.SubName.Phase" → "{GUID}path.anm"`. [VERIFIED-vanilla]
+- **`.txa`** = text, keyframe source that Workbench compiles to binary `.anm`. [VERIFIED-vault]
+- **`.asi`** = `$animsetinstance` with table `"StateName.SubName.Phase" → "{GUID}path.anm"`. [VERIFIED-vanilla]
 
-**Estructura real** del `.asi` (de `DZ/anims/workspaces/player/player_main/player_main_rifle.asi:1-6`):
+**Actual structure** of the `.asi` (from `DZ/anims/workspaces/player/player_main/player_main_rifle.asi:1-6`):
 
 ```
 $animsetinstance {
@@ -239,150 +239,150 @@ $animsetinstance {
 }
 ```
 
-- `#template` apunta al `.ast` (animset template — define qué states pueden mapearse).
-- `#parent` apunta a otro `.asi` del que se hereda (jerarquía: `player_main.asi` es la raíz, los específicos cuelgan de ella).
-- `$animations` mapea `StateName.Sub.Phase` → `{GUID}path.anm`.
+- `#template` points to the `.ast` (animset template — defines which states can be mapped).
+- `#parent` points to another `.asi` from which it inherits (hierarchy: `player_main.asi` is the root, specific ones hang from it).
+- `$animations` maps `StateName.Sub.Phase` → `{GUID}path.anm`.
 
-**Catálogo completo de ASI del player** [VERIFIED-vanilla `DZ/anims/workspaces/player/player_main/`]:
+**Complete catalog of player ASIs** [VERIFIED-vanilla `DZ/anims/workspaces/player/player_main/`]:
 
-| ASI | Uso |
+| ASI | Usage |
 |---|---|
-| `player_main.asi` | base / parent de todos |
-| `player_main_1h.asi` | armas/items una mano |
-| `player_main_1h_restrained.asi` | una mano + restrained |
-| `player_main_2h.asi` | armas/items dos manos |
-| `player_main_heavy.asi` | items pesados (wheel/door/barrel) — el de `AddItemInHandsProfileIK` |
-| `player_main_pistol.asi` | pistolas |
+| `player_main.asi` | base / parent of all |
+| `player_main_1h.asi` | one-handed weapons/items |
+| `player_main_1h_restrained.asi` | one-handed + restrained |
+| `player_main_2h.asi` | two-handed weapons/items |
+| `player_main_heavy.asi` | heavy items (wheel/door/barrel) — the one for `AddItemInHandsProfileIK` |
+| `player_main_pistol.asi` | pistols |
 | `player_main_rifle.asi` | rifles |
-| `player_main_bow.asi` | arco (estado parcial — ver §3.8) |
-| `player_main_surrender.asi` | manos arriba |
-| `menu_rifle.asi` | rifle en menú/preview |
-| `props/` | 30+ ASIs por prop |
-| `weapons/` | uno por arma específica (`player_main_akm.asi`, `player_main_1911.asi`, etc.) |
+| `player_main_bow.asi` | bow (partial state — see §3.8) |
+| `player_main_surrender.asi` | hands up |
+| `menu_rifle.asi` | rifle in menu/preview |
+| `props/` | 30+ ASIs per prop |
+| `weapons/` | one per specific weapon (`player_main_akm.asi`, `player_main_1911.asi`, etc.) |
 
-**Implicación**: para una item/weapon custom, hereda del ASI vanilla más cercano y solo añade/override states. No reescribir el ASI completo (cross-ref §4).
+**Implication**: for a custom item/weapon, inherit from the closest vanilla ASI and only add/override states. Do not rewrite the complete ASI (cross-ref §4).
 
-### 3.2 Bones y workflow de Fire / Reload / IK
+### 3.2 Bones and Fire / Reload / IK workflow
 
 - **`RightHand_Dummy`** [VERIFIED-vanilla `DZ/anims/cfg/skeletons.anim.xml:100,115,525`]
-  - Casing real: `RightHand_Dummy` (con underscore). El video lo decía "right hand dummy" — ese exacto string no existe.
-  - Es un **helper bone en lod=2** (no es el bone principal `RightHand` que está en lod=1). Sirve como ancla auxiliar para el arma/item — mover este bone mueve el arma.
-  - Alinear buttstock vs collarbone y ángulos del antebrazo es lo más sensible del rig [VERIFIED-source].
+  - Actual casing: `RightHand_Dummy` (with underscore). The video said "right hand dummy" — that exact string does not exist.
+  - It is a **helper bone in lod=2** (it is not the main `RightHand` bone which is in lod=1). It serves as an auxiliary anchor for the weapon/item — moving this bone moves the weapon.
+  - Aligning buttstock vs collarbone and forearm angles is the most sensitive part of the rig [VERIFIED-source].
 
 - **`LeftHand_Dummy`** [VERIFIED-vanilla `DZ/anims/cfg/skeletons.anim.xml:74`]
-  - Simétrico al derecho, lod=2.
+  - Symmetrical to the right, lod=2.
 
-- **Magazine tracking — no hay bones de mag en skeleton de producción** [VERIFIED-vanilla]
-  - Bones `Magazine`, `Bullets_Magazine`, `Bullets_holder`, `Bullets_on_holder` existen SOLO en el skeleton de testing `player_testing.xob` y están marcados literalmente `<!--To Be removed-->` (`skeletons.anim.xml:296-300`).
-  - **En producción el engine trackea el magazine vía `LeftHand` / `LeftHand_Dummy` directamente** — no necesita un bone específico de mag.
-  - El claim del video de "helper bones en Blender que NO se exportan al juego" es coherente con esto: los helpers viven solo en el `.blend` del autor para visualizar la trayectoria; el `.txa` exportado solo trackea la mano.
+- **Magazine tracking — no mag bones in production skeleton** [VERIFIED-vanilla]
+  - Bones `Magazine`, `Bullets_Magazine`, `Bullets_holder`, `Bullets_on_holder` exist ONLY in the testing skeleton `player_testing.xob` and are literally marked `<!--To Be removed-->` (`skeletons.anim.xml:296-300`).
+  - **In production the engine tracks the magazine via `LeftHand` / `LeftHand_Dummy` directly** — it does not need a specific mag bone.
+  - The video claim of "helper bones in Blender that are NOT exported to the game" is consistent with this: helpers live only in the author's `.blend` to visualize the trajectory; the exported `.txa` only tracks the hand.
 
-- **Fire IK**: puede verse "confuso" en Animation Editor; el rig en Blender (con weapon model presente) ayuda a entender lo que pasa [VERIFIED-source].
+- **Fire IK**: can look "confusing" in Animation Editor; the rig in Blender (with weapon model present) helps understand what is happening [VERIFIED-source].
 
-- **Blender vs juego**: constraints y números en Blender ayudan a posar, pero **no se exportan tal cual** al TXA. Toca exportar, cargar in-game/preview, mirar gaps de codo, hombro, agarre, e iterar [VERIFIED-source].
+- **Blender vs game**: constraints and numbers in Blender help pose, but **are not exported as-is** to the TXA. You have to export, load in-game/preview, look at elbow, shoulder, grip gaps, and iterate [VERIFIED-source].
 
 ### 3.3 Weapon states — [VERIFIED-vanilla]
 
-Los nombres reales (con paths). Patrón general: `WeaponOperations.<RigKey>.<StateName>` donde `<RigKey>` es la combinación pose/rig (p.ej. `ErcRas` = erected + rail accessory system, `Pst` = pistol, etc.).
+The actual names (with paths). General pattern: `WeaponOperations.<RigKey>.<StateName>` where `<RigKey>` is the pose/rig combination (e.g. `ErcRas` = erected + rail accessory system, `Pst` = pistol, etc.).
 
-| Video decía | Real | Ejemplo path | Fuente |
+| Video said | Actual | Example path | Source |
 |---|---|---|---|
 | "weapon cocked" / "Cocked" | `FireCocked` | `WeaponOperations.ErcRas.FireCocked` → `p_erc_empty_cocked_1911_ras.anm` | `.../weapons/player_main_1911.asi:10` |
 | "mag remove" | `ReloadMagazineDetach` | `WeaponOperations.ErcRas.ReloadMagazineDetach` → `p_erc_reload_mag_remove_1911_ras.anm` | `.../weapons/player_main_1911.asi:21` |
-| "bullet in chamber" | **NO existe como state name** | — | — |
+| "bullet in chamber" | **DOES NOT exist as state name** | — | — |
 
-**Chambering** se hace vía comandos (no state names): `CMD_Reload_Chambering`, `CMD_Reload_ChamberingFast`. El video confundía el comando con un state.
+**Chambering** is done via commands (not state names): `CMD_Reload_Chambering`, `CMD_Reload_ChamberingFast`. The video confused the command with a state.
 
-**Trigger del FireCocked state** desde el animgraph del player (`SurvivorAnims/animgraph/player_main/combat.agr`):
-- Línea 795: `"FireCockedAnim" "" "WeaponOperations.FireCocked" "noloop"`
-- Línea 850: transition condition `"GetCommandI(CMD_WeaponFire) == 2"` (fire con weapon cocked vacío)
+**Trigger of the FireCocked state** from the player animgraph (`SurvivorAnims/animgraph/player_main/combat.agr`):
+- Line 795: `"FireCockedAnim" "" "WeaponOperations.FireCocked" "noloop"`
+- Line 850: transition condition `"GetCommandI(CMD_WeaponFire) == 2"` (fire with empty weapon cocked)
 
-**`mag remove` es solo la pose de retorno** [VERIFIED-vanilla por el nombre del `.anm`: `p_erc_reload_mag_remove_1911_ras.anm`]: el script de inventory decide cuándo el magazine sale realmente del slot; la animation solo dibuja la mano alejándose. El video tenía razón en este matiz.
+**`mag remove` is only the return pose** [VERIFIED-vanilla by the name of the `.anm`: `p_erc_reload_mag_remove_1911_ras.anm`]: the inventory script decides when the magazine actually leaves the slot; the animation only draws the hand moving away. The video was right on this nuance.
 
 ### 3.4 Animation Editor (Workbench) — [VERIFIED-vanilla, mecanismo aclarado]
 
-Mecanismo real: la línea `#eventtable` solo existe en el workspace **compilado** (`DZ/anims/workspaces/player/player_main/player_main.aw:136`):
+Actual mechanism: the `#eventtable` line only exists in the **compiled** workspace (`DZ/anims/workspaces/player/player_main/player_main.aw:136`):
 
 ```
 #eventtable "{3037156104937B91}DZ/anims/workspaces/player/Player_EventTable.ae"
 ```
 
-El workspace **fuente** que se edita en Workbench (`SurvivorAnims/animgraph/player_main/player_main.aw`) **no contiene** esa línea. Por eso el video dice "quitar la línea": para que Workbench abra el graph en el Animation Editor, el `.aw` fuente debe NO tener `#eventtable` (la asociación con el `.ae` se hace al compilar/exportar, no al editar).
+The **source** workspace edited in Workbench (`SurvivorAnims/animgraph/player_main/player_main.aw`) **does not contain** that line. That is why the video says "remove the line": for Workbench to open the graph in the Animation Editor, the source `.aw` must NOT have `#eventtable` (the association with the `.ae` is made upon compiling/exporting, not upon editing).
 
-**Acción práctica si vas a editar el player graph en Workbench**:
-1. Si recibes un `.aw` compilado (extraído de `DZ/`), borra la línea `#eventtable`.
-2. Edita el graph en Animation Editor.
-3. Al re-exportar/empaquetar, Workbench/Workshop regenera la referencia al `.ae`.
+**Practical action if you are going to edit the player graph in Workbench**:
+1. If you receive a compiled `.aw` (extracted from `DZ/`), delete the `#eventtable` line.
+2. Edit the graph in Animation Editor.
+3. Upon re-exporting/packing, Workbench/Workshop regenerates the reference to the `.ae`.
 
-Path del `.ae` de eventos: `DZ/anims/workspaces/player/Player_EventTable.ae`.
+Path of the events `.ae`: `DZ/anims/workspaces/player/Player_EventTable.ae`.
 
-### 3.5 FPS — UNKNOWN (no detectable en archivos de texto)
+### 3.5 FPS — UNKNOWN (not detectable in text files)
 
-[VERIFIED-vanilla negativo] Búsqueda exhaustiva en `SurvivorAnims/animgraph/` (todos los `.agr`, `.ast`, `.aw`) y en `DZ/anims/workspaces/` (todos los `.asi`, `.aw`, `.asy`) no encuentra ninguna key `fps`, `FPS`, `frameRate`, `framerate` ni el literal `30` en contexto relevante. El único `AnimFPS 30` que aparece está en `SurvivorAnims/Particle/MoneyPtc.ptc` — irrelevante (particle effect).
+[VERIFIED-vanilla negative] Exhaustive search in `SurvivorAnims/animgraph/` (all `.agr`, `.ast`, `.aw`) and in `DZ/anims/workspaces/` (all `.asi`, `.aw`, `.asy`) finds no `fps`, `FPS`, `frameRate`, `framerate` key nor the literal `30` in relevant context. The only `AnimFPS 30` that appears is in `SurvivorAnims/Particle/MoneyPtc.ptc` — irrelevant (particle effect).
 
-**Conclusión**: el framerate de las player animations no está declarado en archivos de texto del workspace o animgraph. O bien:
-- (a) Está embebido en el binario `.anm` (probable — Bohemia bake del fps al compilar).
-- (b) Es convención del exportador (plugin Blender / Workbench compiler).
+**Conclusion**: the framerate of player animations is not declared in text files of the workspace or animgraph. Either:
+- (a) It is embedded in the binary `.anm` (probable — Bohemia bake of the fps upon compiling).
+- (b) It is an exporter convention (Blender plugin / Workbench compiler).
 
-El claim "30 fps default" del video sigue **sin confirmar ni refutar** sin un inspector de `.anm`. **Acción práctica**: si tu plugin de Blender expone fps, ponlo a 30 (consistente con la convención que el video reporta) y verifica round-trip con una animación corta antes de masivar el set.
+The video claim "30 fps default" remains **unconfirmed and unrefuted** without an `.anm` inspector. **Practical action**: if your Blender plugin exposes fps, set it to 30 (consistent with the convention reported by the video) and verify round-trip with a short animation before mass-producing the set.
 
-### 3.5.bis Reload NO es additive en vanilla — [REFUTED-vanilla]
+### 3.5.bis Reload is NOT additive in vanilla — [REFUTED-vanilla]
 
-El video vol.3 afirma que "reload es additive animation: solo torso/hombros hacia abajo". **Vanilla no lo respalda.**
+The vol.3 video claims that "reload is additive animation: only torso/shoulders downward". **Vanilla does not back this up.**
 
-Lo que sí existe [VERIFIED-vanilla]:
-- `CMD_Modifier_Additive` (en `player_main.agr:47` y usado en `locomotion.agr:3959-3976`) controla **modifiers de estado del personaje**: `SickSneezeStanceSTM`, `SickCoughStanceSTM`. Tos, estornudo, fiebre. Nada relacionado con reload.
-- Los reloads vanilla usan **comandos dedicados sin flag additive**: `CMD_Reload_Magazine`, `CMD_Reload_BoltAction`, `CMD_Reload_Chambering`, `CMD_Reload_ChamberingFast`, `CMD_Reload_Clip`.
-- No existe nodo `AnimNodeAdditive` ni tag `TagAdditive` para reloads en el animgraph del player.
+What does exist [VERIFIED-vanilla]:
+- `CMD_Modifier_Additive` (in `player_main.agr:47` and used in `locomotion.agr:3959-3976`) controls **character state modifiers**: `SickSneezeStanceSTM`, `SickCoughStanceSTM`. Cough, sneeze, fever. Nothing related to reload.
+- Vanilla reloads use **dedicated commands without additive flag**: `CMD_Reload_Magazine`, `CMD_Reload_BoltAction`, `CMD_Reload_Chambering`, `CMD_Reload_ChamberingFast`, `CMD_Reload_Clip`.
+- There is no `AnimNodeAdditive` node or `TagAdditive` tag for reloads in the player animgraph.
 
-**Interpretación**: el video puede estar describiendo cómo se *autora* en Blender (solo se anima torso/brazos, dejando piernas a otra capa por convención de production), pero el **sistema** no marca el reload como additive en runtime. Implementar tu propio reload custom asumiendo que es additive y se mezclará "automáticamente" → te puede romper la pose. **Verifica en el animgraph vanilla más cercano cómo entra/sale del state**.
+**Interpretation**: the video may be describing how it is *authored* in Blender (only torso/arms are animated, leaving legs to another layer by production convention), but the **system** does not mark reload as additive at runtime. Implementing your own custom reload assuming it is additive and will blend "automatically" → can break your pose. **Verify in the nearest vanilla animgraph how it enters/exits the state**.
 
-### 3.6 Frames mínimos por state — [VERIFIED-source]
+### 3.6 Minimum frames per state — [VERIFIED-source]
 
-Cuidado con states de pocos frames (los videos mencionan "end on frame 2"). Si el state termina antes de tiempo, el engine se queda mostrando 2 frames únicos. Revisar duración del clip vs duración esperada del state.
+Beware of states with few frames (the videos mention "end on frame 2"). If the state ends prematurely, the engine is left showing 2 unique frames. Review clip duration vs expected state duration.
 
-### 3.7 Custom item animations sin re-autorizar todo el ASI [VERIFIED-source]
+### 3.7 Custom item animations without re-authoring the entire ASI [VERIFIED-source]
 
-Para añadir animaciones a un **item custom** (encender/apagar, custom action):
+To add animations to a **custom item** (turn on/turn off, custom action):
 
-- **Heredar/override una anim instance existente** en vez de crear ASI desde cero.
-- Modificar solo el state nuevo y dejar el resto de la jerarquía intacto.
-- Cuidado: locomoción y additive heredados de parent ASI son **delicados**; pueden romperse al sobreescribir.
+- **Inherit/override an existing anim instance** instead of creating ASI from scratch.
+- Modify only the new state and leave the rest of the hierarchy intact.
+- Caution: locomotion and additive inherited from parent ASI are **delicate**; they can break when overwriting.
 
-### 3.8 Límites conocidos del sistema [VERIFIED-source]
+### 3.8 Known system limits [VERIFIED-source]
 
-A 2024-03-30 no estaban resueltos:
-- **Dual wielding** (dos armas a la vez).
-- **Bow** (la mecánica de arco completa).
-- **Additive locomotion** customizada (modificar la capa additive del walk/run rompe visualmente al personaje fácilmente).
+As of 2024-03-30 they were not resolved:
+- **Dual wielding** (two weapons at once).
+- **Bow** (the full bow mechanic).
+- Customized **additive locomotion** (modifying the additive layer of walk/run easily breaks the character visually).
 
-Si tu plan toca esto, marcar como riesgo alto en `assumptions.md` desde el día 1.
+If your plan touches this, mark as high risk in `assumptions.md` from day 1.
 
-### 3.9 Versión de Blender — [VERIFIED-source no verificado]
+### 3.9 Blender version — [VERIFIED-source unverified]
 
-El video recomienda **Blender 3.6.8** porque los sample `.blend` se hicieron ahí; otra persona reportó que **Blender 4.1** rompía con el plugin de DayZ animation. Vault no tiene confirmación independiente. **Si vas a empezar in serio**: arranca con 3.6.8, deja un test rápido en 4.x antes de cerrar.
+The video recommends **Blender 3.6.8** because the sample `.blend` files were made there; another person reported that **Blender 4.1** broke with the DayZ animation plugin. Vault has no independent confirmation. **If you are going to start seriously**: start with 3.6.8, leave a quick test in 4.x before closing.
 
-### 3.10 Player skeleton — mapa de bones [VERIFIED-vanilla]
+### 3.10 Player skeleton — bone map [VERIFIED-vanilla]
 
-De `DZ/anims/cfg/skeletons.anim.xml` (skeleton de producción + `player_testing.xob`). Organizado por zona para usar como referencia al mapear armatures de Blender → DayZ.
+From `DZ/anims/cfg/skeletons.anim.xml` (production skeleton + `player_testing.xob`). Organized by zone to use as reference when mapping Blender armatures → DayZ.
 
 **Core / spine**
 - `Scene_Root`, `EntityPosition`, `Pelvis`, `Spine`, `Spine1`, `Spine2`, `Spine3`, `Neck`, `Neck1`, `Head`, `LookAt`
 
-**Piernas** (simétrico izquierda/derecha)
+**Legs** (symmetric left/right)
 - `LeftUpLeg`, `LeftUpLegRoll`, `LeftKneeExtra`, `LeftLeg`, `LeftLegRoll`, `LeftFoot`, `LeftToeBase`
-- + `Right*` equivalentes
-- Helpers de cadera: `LeftHipExtra`, `RightHipExtra`, `LeftHip_Helper`, `RightHip_Helper`
+- + `Right*` equivalents
+- Hip helpers: `LeftHipExtra`, `RightHipExtra`, `LeftHip_Helper`, `RightHip_Helper`
 
-**Brazos** (simétrico)
+**Arms** (symmetric)
 - `LeftShoulder`, `LeftArm`, `LeftArmRoll`, `LeftForeArm`, `LeftForeArmRoll`, `LeftHand`
-- + `Right*` equivalentes (+ `RightArmExtra`)
-- Helpers de mano: `LeftHand_Dummy`, `LeftWristExtra`, `LeftForeArmExtra`, `LeftElbowExtra`, `LeftArmExtra` (+ `Right*`)
+- + `Right*` equivalents (+ `RightArmExtra`)
+- Hand helpers: `LeftHand_Dummy`, `LeftWristExtra`, `LeftForeArmExtra`, `LeftElbowExtra`, `LeftArmExtra` (+ `Right*`)
 
 **Fingers** (lod 2)
 - `[Left/Right]Hand[Ring/Pinky/Middle/Index/Thumb]1..4`
 
-**IK helpers** (críticos para weapon authoring)
+**IK helpers** (critical for weapon authoring)
 - `RightHandOrigin`, `LeftHandOrigin`, `LeftHandIKTarget`, `LeftHandIK`, `RightHandIK`
 - `LeftForeArmDirection`, `RightForeArmDirection` (+ Origin variants)
 
@@ -401,91 +401,91 @@ De `DZ/anims/cfg/skeletons.anim.xml` (skeleton de producción + `player_testing.
 **Misc / system**
 - `Opponent`, `Camera3rd_Helper`, `Camera1st_lock_dummy`, `Marker`
 
-**Legacy / to-be-removed** (NO usar — están marcados `<!--To Be removed-->` en `player_testing.xob`)
+**Legacy / to-be-removed** (DO NOT use — they are marked `<!--To Be removed-->` in `player_testing.xob`)
 - `Bullet`, `Trigger`, `Magazine`, `Bolt`, `Bullets_Magazine`, `Bullets_holder`, `Bullets_on_holder`, `Universal1`, `Universal2`
 
 ---
 
-## 4. Anim instances y el patrón de override
+## 4. Anim instances and the override pattern
 
-[VERIFIED-source] La forma idiomática de añadir o cambiar una animation en DayZ para un item custom es:
+[VERIFIED-source] The idiomatic way to add or change an animation in DayZ for a custom item is:
 
-1. Encontrar el anim instance vanilla más cercano a lo que quieres.
-2. **Heredar/sobreescribir** ese instance, no crear desde cero.
-3. Cambiar solo lo necesario (state ID, anim file, transition).
-4. Dejar el resto del ASI tocando lo mínimo.
+1. Find the vanilla anim instance closest to what you want.
+2. **Inherit/override** that instance, do not create from scratch.
+3. Change only what is necessary (state ID, anim file, transition).
+4. Leave the rest of the ASI touching the minimum.
 
-Cross-ref Layer 1 de la skill ([`item-ik-and-hide.md`](skills-drafts/dayz-animation-pipeline/references/item-ik-and-hide.md)): el patrón A "carry IK reusando vanilla `.anm`" es la versión ya verificada de este mismo principio para items pesados (wheel/door/barrel).
-
----
-
-## 5. AI behavior wiring (criatura ambient sin agresión)
-
-[VERIFIED-source] Para un animal ambient tipo seagull (no agresivo, no malgasta CPU):
-
-- Copia el AI agent template de hen o ambient life vanilla.
-- Configura equipo / friendliness para que no pelee.
-- Da inventory mínimo, skinning component, hit components.
-- Si la criatura es predator (agresiva) copia desde wolf/bear vanilla, ajusta rango de ataque.
-
-Mucho de esto está **poco documentado oficialmente**, según el video. La estrategia es: clonar vanilla más cercano, cambiar lo mínimo, iterar.
+Cross-ref Layer 1 of the skill ([`item-ik-and-hide.md`](skills-drafts/dayz-animation-pipeline/references/item-ik-and-hide.md)): pattern A "carry IK reusing vanilla `.anm`" is the already-verified version of this same principle for heavy items (wheel/door/barrel).
 
 ---
 
-## 6. Eco de la skill: lo que NO repetimos aquí
+## 5. AI behavior wiring (ambient creature without aggression)
 
-Para evitar duplicar conocimiento (R20 anti-refactor incidental, R25 simplicidad), esto NO se duplica desde la skill — léelo allí:
+[VERIFIED-source] For a seagull-type ambient animal (non-aggressive, does not waste CPU):
 
-- Wall "un solo mod de animation a la vez (player/creature)": skill `SKILL.md` § anchor 3, [`references/tooling-and-walls.md`](skills-drafts/dayz-animation-pipeline/references/tooling-and-walls.md) § "The walls".
-- Bone names del player must match `OFP2_ManSkeleton` exact: skill [`references/skeletal-anm-enfusion.md`](skills-drafts/dayz-animation-pipeline/references/skeletal-anm-enfusion.md).
-- Pipeline `.txa` → Workbench → `.anm`, `SEAnim` → DayZATool → `.anm`: skill mismas referencias.
-- `AddItemInHandsProfileIK` API completo para items pesados con IK reusada: skill [`references/item-ik-and-hide.md`](skills-drafts/dayz-animation-pipeline/references/item-ik-and-hide.md).
-- `model.cfg` structure (CfgSkeletons + CfgModels + class Animations + properties): skill [`references/config-driven-animation.md`](skills-drafts/dayz-animation-pipeline/references/config-driven-animation.md) y `dayz-model-pipeline/references/animations.md`.
-- Hide-on-attach pattern (`type="hide"`, `hideValue`): skill mismo doc, con [TBD-verify] sobre el threshold exacto.
-- LL-012: animar sub-pieza de proxy requiere separarla + mod derivado necesita su propio `.p3d` + `model.cfg`.
+- Copy the hen or vanilla ambient life AI agent template.
+- Configure team / friendliness so it does not fight.
+- Give minimal inventory, skinning component, hit components.
+- If the creature is a predator (aggressive) copy from vanilla wolf/bear, adjust attack range.
 
----
-
-## 7. Estado de verificación y pendientes
-
-**Sprint 2026-05-28** promovió la mayoría de claims de [TBD-verify-vanilla] a [VERIFIED-vanilla] usando `DZ/`, `SurvivorAnims/` y `0_SurvivorAnimsDefines/` desempaquetados.
-
-**Verificado (path:line en vanilla)**:
-- §1.2 bones de criatura (`EntityPosition`, `LookAt` — sin `Pin`)
-- §1.3 skeleton XML (`skeletons.anim.xml`, sin entry explícita en config.cpp)
-- §2.1 commands (`CMD_*` UPPER_SNAKE, casing real)
-- §2.2 variables (`speed`, `SlopeAngle*` confirmados; `swimming` solo como tag de player, no var de animal)
-- §2.4 terrain alignment (`AnimNodeRot` con `SlopeAngleX * 0.01745329`)
-- §3.1 ASI estructura + catálogo completo
-- §3.2 `RightHand_Dummy` / `LeftHand_Dummy` (sin mag bones en producción)
-- §3.3 weapon states (`FireCocked`, `ReloadMagazineDetach` — sin `BulletChambered`)
-- §3.4 Workbench Animation Editor (mecanismo `#eventtable`)
-- §3.10 player skeleton (mapa completo de bones)
-
-**Refutado por vanilla**:
-- §3.5.bis reload NO es additive (los additive modifiers son para sickness, no reload)
-- §2.2 `swimming` no es var standalone en animal graphs
-- "Pin Look At" — `Pin` no existe en vanilla
-- `cmd success` solo — el comando real es `CMD_AttackSuccess`
-- `BulletChambered` — no existe como state, el chambering se hace por command
-
-**Aún UNKNOWN (no detectable en archivos de texto vanilla)**:
-- §3.5 30 fps default para player anims — embebido en binario `.anm` o convención del exportador. Asumir 30 + round-trip test.
-- §3.9 Blender 3.6.8 vs 4.1 — vault no tiene confirmación independiente. Probar.
-
-**Pendientes operativos**:
-1. **Roadmap pipeline**: este conocimiento ya está sólido — considerar proponer APPEND a la skill `dayz-animation-pipeline` con un nuevo `references/anim-graph.md` (cubre commands `CMD_*`, variables del graph, terrain alignment, ASI structure). Pasar por R34 (propuesta al usuario, no auto-aplicar).
-2. **Cola de patches**: registrar en [`20_Knowledge/skill-patches-pending.md`](skill-patches-pending.md) el patch propuesto a `dayz-animation-pipeline` si se decide hacerlo.
+Much of this is **scantly documented officially**, according to the video. The strategy is: clone nearest vanilla, change the minimum, iterate.
 
 ---
 
-## 8. Procedencia y links
+## 6. Skill echo: what we do NOT repeat here
 
-**Verificación contra vanilla (sprint 2026-05-28)** — fuente primaria de las promociones a [VERIFIED-vanilla]:
-- `DZ/anims/cfg/skeletons.anim.xml` — todos los bones de §1.2, §3.2, §3.10
+To avoid duplicating knowledge (R20 incidental anti-refactor, R25 simplicity), this is NOT duplicated from the skill — read it there:
+
+- Wall "only one animation mod at a time (player/creature)": skill `SKILL.md` § anchor 3, [`references/tooling-and-walls.md`](skills-drafts/dayz-animation-pipeline/references/tooling-and-walls.md) § "The walls".
+- Player bone names must match `OFP2_ManSkeleton` exact: skill [`references/skeletal-anm-enfusion.md`](skills-drafts/dayz-animation-pipeline/references/skeletal-anm-enfusion.md).
+- Pipeline `.txa` → Workbench → `.anm`, `SEAnim` → DayZATool → `.anm`: skill same references.
+- Complete `AddItemInHandsProfileIK` API for heavy items with reused IK: skill [`references/item-ik-and-hide.md`](skills-drafts/dayz-animation-pipeline/references/item-ik-and-hide.md).
+- `model.cfg` structure (CfgSkeletons + CfgModels + class Animations + properties): skill [`references/config-driven-animation.md`](skills-drafts/dayz-animation-pipeline/references/config-driven-animation.md) and `dayz-model-pipeline/references/animations.md`.
+- Hide-on-attach pattern (`type="hide"`, `hideValue`): skill same doc, with [TBD-verify] on the exact threshold.
+- LL-012: animating proxy sub-piece requires separating it + derived mod needs its own `.p3d` + `model.cfg`.
+
+---
+
+## 7. Verification status and pending items
+
+**Sprint 2026-05-28** promoted most claims from [TBD-verify-vanilla] to [VERIFIED-vanilla] using unpacked `DZ/`, `SurvivorAnims/`, and `0_SurvivorAnimsDefines/`.
+
+**Verified (path:line in vanilla)**:
+- §1.2 creature bones (`EntityPosition`, `LookAt` — without `Pin`)
+- §1.3 skeleton XML (`skeletons.anim.xml`, without explicit entry in config.cpp)
+- §2.1 commands (`CMD_*` UPPER_SNAKE, actual casing)
+- §2.2 variables (`speed`, `SlopeAngle*` confirmed; `swimming` only as player tag, not animal var)
+- §2.4 terrain alignment (`AnimNodeRot` with `SlopeAngleX * 0.01745329`)
+- §3.1 ASI structure + complete catalog
+- §3.2 `RightHand_Dummy` / `LeftHand_Dummy` (without mag bones in production)
+- §3.3 weapon states (`FireCocked`, `ReloadMagazineDetach` — without `BulletChambered`)
+- §3.4 Workbench Animation Editor (`#eventtable` mechanism)
+- §3.10 player skeleton (complete bone map)
+
+**Refuted by vanilla**:
+- §3.5.bis reload is NOT additive (additive modifiers are for sickness, not reload)
+- §2.2 `swimming` is not a standalone var in animal graphs
+- "Pin Look At" — `Pin` does not exist in vanilla
+- `cmd success` alone — actual command is `CMD_AttackSuccess`
+- `BulletChambered` — does not exist as state, chambering is done by command
+
+**Still UNKNOWN (not detectable in vanilla text files)**:
+- §3.5 30 fps default for player anims — embedded in binary `.anm` or exporter convention. Assume 30 + round-trip test.
+- §3.9 Blender 3.6.8 vs 4.1 — vault has no independent confirmation. Test.
+
+**Operational pending items**:
+1. **Pipeline roadmap**: this knowledge is already solid — consider proposing APPEND to skill `dayz-animation-pipeline` with a new `references/anim-graph.md` (covers `CMD_*` commands, graph variables, terrain alignment, ASI structure). Pass through R34 (proposal to user, do not auto-apply).
+2. **Patch queue**: register in [`20_Knowledge/skill-patches-pending.md`](skill-patches-pending.md) the proposed patch to `dayz-animation-pipeline` if decided to do so.
+
+---
+
+## 8. Provenance and links
+
+**Verification against vanilla (sprint 2026-05-28)** — primary source of promotions to [VERIFIED-vanilla]:
+- `DZ/anims/cfg/skeletons.anim.xml` — all bones of §1.2, §3.2, §3.10
 - `DZ/animals/animations/!graph_files/{ambientlife,herbivores,wolf}/*.agr` — commands §2.1, variables §2.2, terrain alignment §2.4
 - `DZ/anims/workspaces/player/player_main/*.asi` + `weapons/*.asi` — ASI structure §3.1, weapon states §3.3
-- `SurvivorAnims/animgraph/player_main/{combat,locomotion,player_main}.agr` — player commands §2.1, refutación additive §3.5.bis
+- `SurvivorAnims/animgraph/player_main/{combat,locomotion,player_main}.agr` — player commands §2.1, additive refutation §3.5.bis
 - `DZ/anims/workspaces/player/player_main/player_main.aw` vs `SurvivorAnims/animgraph/player_main/player_main.aw` — diff `#eventtable` §3.4
 
 **Procedencia original (videos procesados por Codex 2026-05-28)**
@@ -494,62 +494,62 @@ Para evitar duplicar conocimiento (R20 anti-refactor incidental, R25 simplicidad
 - hunterz688, "DayZ Custom Animations Introduction", 2023-06-02, 01:29:26 — [`video-transcripts/dayz-modding/2023-06-02-hunterz688-dayz-custom-animations-introduction.md`](video-transcripts/dayz-modding/2023-06-02-hunterz688-dayz-custom-animations-introduction.md)
 - hunterz688, "DayZ Animation workshop vol.2", 2023-12-22, 01:46:07 — [`video-transcripts/dayz-modding/2023-12-22-hunterz688-dayz-animation-workshop-vol-2.md`](video-transcripts/dayz-modding/2023-12-22-hunterz688-dayz-animation-workshop-vol-2.md)
 - hunterz688, "DayZ Animation Workshop vol.3", 2024-03-30, 01:34:18 — [`video-transcripts/dayz-modding/2024-03-30-hunterz688-dayz-animation-workshop-vol-3.md`](video-transcripts/dayz-modding/2024-03-30-hunterz688-dayz-animation-workshop-vol-3.md)
-- handoff de la sesión que procesó los videos: [`30_Sessions/2026-05-28-dayz-animation-video-notes.md`](../30_Sessions/2026-05-28-dayz-animation-video-notes.md)
-- skill `dayz-animation-pipeline` (instalada): cubre Layer 1/2/3, las dos walls, ASI heavy.
-- skill `dayz-model-pipeline/references/animations.md`: estructura completa `model.cfg` con `isDiscrete`.
+- handoff from the session that processed the videos: [`30_Sessions/2026-05-28-dayz-animation-video-notes.md`](../30_Sessions/2026-05-28-dayz-animation-video-notes.md)
+- skill `dayz-animation-pipeline` (installed): covers Layer 1/2/3, the two walls, heavy ASI.
+- skill `dayz-model-pipeline/references/animations.md`: complete `model.cfg` structure with `isDiscrete`.
 - lessons-learned LL-012 (proxy sub-piece animation).
 
 ---
 
-## Orientación de la mano de apoyo: GEOMÉTRICA, no rotación de muñeca de la ikpose [VERIFIED-ingame 2026-06-17, A6_SR2M]
+## Support hand orientation: GEOMETRIC, not wrist rotation of the ikpose [VERIFIED-ingame 2026-06-17, A6_SR2M]
 
-Probado in-game (A6_SR2M, SMG custom sin hand memory points, anims AKS74U; iter17–22 retail, captura por
-órbita): **rotar el bone `LeftHand` (muñeca) en la ikpose NO reorienta la mano de apoyo.** El ASI/IK
-realinea la mano al arma y absorbe la rotación de muñeca. 4 variantes con `LeftHand` a 90° en ejes
-distintos (120–180° entre sí) renderizan IGUAL in-game; pixel-diff de la zona de la mano: 180° de roll =
-RMS 7.8, MENOR que un cambio de curl de dedos (RMS 11). Lo único de la ikpose que se aplica visiblemente
-es el **curl de dedos** (`LeftHand{Thumb,Index,Middle,Ring,Pinky}*`), no la orientación de la muñeca.
+Tested in-game (A6_SR2M, custom SMG without hand memory points, AKS74U anims; iter17–22 retail, orbit
+capture): **rotating the `LeftHand` bone (wrist) in the ikpose does NOT reorient the support hand.** The ASI/IK
+realigns the hand to the weapon and absorbs wrist rotation. 4 variants with `LeftHand` at 90° on different axes
+(120–180° to each other) render EQUAL in-game; pixel-diff of the hand zone: 180° roll =
+RMS 7.8, LESS than a finger curl change (RMS 11). The only thing from the ikpose that visibly applies
+is the **finger curl** (`LeftHand{Thumb,Index,Middle,Ring,Pinky}*`), not wrist orientation.
 
-Mecanismo real (cf. `skills-plugin: dayz-animation-pipeline/references/weapon-in-hands.md` — el AKM
-vanilla tiene 0 hand memory points): la mano de apoyo la posa el `.anm` de referencia anclado al origin
-del arma (`Weapon_Root`/`RightHand_Dummy`); lo que decide dónde/cómo cae es la **parity geométrica**
-arma↔anim-de-referencia, no la ikpose. `weapon_grip_viewer.py` cuantifica el gap (SR2M vs
-`aks74u_vanilla_mlod`: bore alineado 0°, pero arma ~3 cm más baja + cañón más corto → mano alta/adelante,
-palma horizontal de guardamanos, no vertical de foregrip).
+Actual mechanism (cf. `skills-plugin: dayz-animation-pipeline/references/weapon-in-hands.md` — the vanilla
+AKM has 0 hand memory points): the support hand is posed by the reference `.anm` anchored to the weapon origin
+(`Weapon_Root`/`RightHand_Dummy`); what decides where/how it falls is the **geometric parity**
+weapon↔reference-anim, not the ikpose. `weapon_grip_viewer.py` quantifies the gap (SR2M vs
+`aks74u_vanilla_mlod`: bore aligned 0°, but weapon ~3 cm lower + shorter barrel → hand high/forward,
+horizontal handguard palm, not vertical foregrip palm).
 
-**Corrige una sobre-generalización:** un diff de dos ikposes vanilla del MISMO arma (OTS-14 `normal` vs
-`barrelhandle`) muestra un delta de `LeftHand` (24.8°), pero ese delta existe porque ambas poses se
-autoraron contra un arma CON parity — NO implica que rotar `LeftHand` en un arma sin parity reproduzca
-la orientación. Para palma vertical en un foregrip custom: parity geométrica con un anim cuya mano ya
-caiga vertical (verificar con `weapon_grip_viewer.py`), o ajuste de geo/offset del arma — no rotar la ikpose.
+**Corrects an over-generalization:** a diff of two vanilla ikposes of the SAME weapon (OTS-14 `normal` vs
+`barrelhandle`) shows a `LeftHand` delta (24.8°), but that delta exists because both poses were
+authored against a weapon WITH parity — does NOT imply that rotating `LeftHand` on a weapon without parity reproduces
+the orientation. For vertical palm on a custom foregrip: geometric parity with an anim whose hand already
+falls vertically (verify with `weapon_grip_viewer.py`), or weapon geo/offset adjustment — not rotating the ikpose.
 
 ---
 
-## RESUELTO 2026-06-23: el grip se cierra SUBIENDO el arma (idle Y aim) [VERIFIED-ingame + gate]
+## RESOLVED 2026-06-23: the grip closes by RAISING the weapon (idle AND aim) [VERIFIED-ingame + gate]
 
-Cierre de la línea de arriba. La palanca que funciona NO es rotar la ikpose ni la muñeca, sino **subir/
-trasladar el ARMA hasta donde el anim posa la mano de apoyo**. RE empírica de un mod que funciona
-(KarmaKrew, workshop 2864245850; armas Vikhr/SR-2M) confirmó: logran el grip con ikposes VANILLA IK-driven
-(`vikhr.anm`, `pm73_ik.anm`) + behavior firearms + **parity de geometría**, sin anim mod de player, sin
-override de pose base, sin huesos por script.
+Closing of the line above. The lever that works is NOT rotating the ikpose or wrist, but **raising/
+translating the WEAPON up to where the anim poses the support hand**. Empirical RE of a working mod
+(KarmaKrew, workshop 2864245850; Vikhr/SR-2M weapons) confirmed: they achieve grip with VANILLA IK-driven ikposes
+(`vikhr.anm`, `pm73_ik.anm`) + behavior firearms + **geometry parity**, without player anim mod, without
+base pose override, without scripted bones.
 
-- **El número:** el bore del SR2M estaba 2.4 cm más bajo sobre el origen del arma que la referencia KK
-  (Y0.066 vs 0.090) → la mano del anim caía ENCIMA del cañón. Trasladar TODO el modelo +Y0.024 (patrón
-  global-offset; bore 0.066→0.090) sube el arma a la mano y cierra el agarre. Heurística: si las palancas
-  de anim (ikpose pos/rot, behavior, LeftHand FK) salen inertes, **mueve el ARMA, no el anim**.
-- **Cierra AMBAS stances.** El ikpose es compartido idle↔aim y se temía que cerrar el idle dejara el aim
-  abierto (el aim-space additive abre la mano). Empíricamente no pasó: el mismo arma subida cerró el idle
-  (validado in-game, shipped) Y el apuntado (gate iter37, 3ª persona, comparable a KK). El override
-  per-stance del `.asi` queda como FALLBACK, no necesario aquí.
-- **Capturar la pose de aim para validar (herramienta MCP):** forzar el raise **CLIENT-side** (`modded
-  MissionGameplay` sobre `GetGame().GetPlayer()` → `OverrideRaise(ENABLED,true)`), NO en el `init.c` del
-  servidor — el personaje capturado es el player local del cliente y los overrides del server no mueven su
-  render (gate iter36: server `raised=1` pero arma bajada). `WeaponADS()` es flag de input (sin override de
-  script) → métrica de éxito errónea; usar `IsRaised()` / log del cliente. No `SetIronsights()` (pelea con
-  la free-cam). La pose de aim 3ª persona depende solo de `IsRaised()` (`dayzplayerimplement.c:1726`,
+- **The number:** the SR2M bore was 2.4 cm lower above weapon origin than KK reference
+  (Y0.066 vs 0.090) → the anim's hand fell ON TOP of the barrel. Translating the ENTIRE model +Y0.024 (global-offset
+  pattern; bore 0.066→0.090) raises the weapon to the hand and closes the grip. Heuristic: if anim
+  levers (ikpose pos/rot, behavior, LeftHand FK) turn out inert, **move the WEAPON, not the anim**.
+- **Closes BOTH stances.** The ikpose is shared idle↔aim and it was feared that closing idle would leave aim
+  open (aim-space additive opens the hand). Empirically it did not happen: the same raised weapon closed idle
+  (validated in-game, shipped) AND aiming (gate iter37, 3rd person, comparable to KK). The `.asi`
+  per-stance override remains as FALLBACK, not needed here.
+- **Capturing the aim pose to validate (MCP tool):** force raise **CLIENT-side** (`modded
+  MissionGameplay` on `GetGame().GetPlayer()` → `OverrideRaise(ENABLED,true)`), NOT in server
+  `init.c` — the captured character is the client's local player and server overrides do not move its
+  render (gate iter36: server `raised=1` but weapon lowered). `WeaponADS()` is input flag (without script
+  override) → erroneous success metric; use `IsRaised()` / client log. Not `SetIronsights()` (fights with
+  free-cam). 3rd person aim pose depends only on `IsRaised()` (`dayzplayerimplement.c:1726`,
   AimingModel).
-- **Juzgar por la mano a resolución NATIVA**, nunca el contact-sheet reescalado (la mano ~30px engaña; un
-  grip bueno se declaró "inerte" por mirar la miniatura).
+- **Judge by the hand at NATIVE resolution**, never rescaled contact-sheet (the ~30px hand is deceptive; a
+  good grip was declared "inert" from looking at thumbnail).
 
 Detalle con citas: skill `dayz-animation-pipeline/references/weapon-in-hands.md` (§"Geometric parity IS the
 grip fix") + skill `dayz-mcp-verify` (§"capturar arma alzada"). Proyecto A6_SR2M:
@@ -557,8 +557,8 @@ grip fix") + skill `dayz-mcp-verify` (§"capturar arma alzada"). Proyecto A6_SR2
 
 ## Related
 
-- [[dayz-custom-infected]] — riguear una criatura/zombi al OFP2_ManSkeleton; usa los bones y el anim graph que esta nota detalla.
-- [[dayz-capacidades-verificadas]] — veredicto de feasibility del pipeline de animación (dos sistemas, muros, herramientas Windows).
-- [[dayz-model-pipeline]] — la named selection + memory points que se animan se autoran aquí (lado geometría `.p3d`).
-- [[dayz-p3d-inspector-memory-selection-bugs]] — el lector ODOL pierde selecciones de Memory LOD (ejes de anim) al debinarizar.
-- [[dayz-mod-implementation-checklists]] — checklist de model.cfg / config.cpp para entidades con animación.
+- [[dayz-custom-infected]] — rigging a creature/zombie to OFP2_ManSkeleton; uses the bones and anim graph that this note details.
+- [[dayz-capacidades-verificadas]] — feasibility verdict of the animation pipeline (two systems, walls, Windows tools).
+- [[dayz-model-pipeline]] — the named selection + memory points that are animated are authored here (geometry side `.p3d`).
+- [[dayz-p3d-inspector-memory-selection-bugs]] — ODOL reader loses Memory LOD selections (anim axes) upon debinarizing.
+- [[dayz-mod-implementation-checklists]] — checklist of model.cfg / config.cpp for animated entities.
