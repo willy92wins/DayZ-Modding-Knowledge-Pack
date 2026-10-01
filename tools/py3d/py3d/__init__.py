@@ -3011,10 +3011,32 @@ def blender_to_dayz(p3d):
     LOD.add_proxy(..., space="engine"), and check the binarized frame
     against a model that works.
 
-    Same scope as P3D.transform(), including its documented flaw with
-    points shared between LODs. Does not touch uv, sharp_edges,
-    selections, properties, flags or mass. Returns None.
+    Refuses, with ValueError and before changing anything, a model where
+    one Point object or one facenormals list is listed more than once -
+    shared between LODs, typically: P3D.transform() would map it once per
+    listing and leave it wrong without a word. Degenerate (near-zero)
+    normals are kept as P3D.transform() keeps them, unmapped, and then
+    negated. Does not touch uv, sharp_edges, selections, properties, flags
+    or mass. Returns None.
     """
+    seen_points = {}
+    seen_pools = {}
+    for i, lod in enumerate(p3d.lods):
+        pool = id(lod.facenormals)
+        if pool in seen_pools:
+            raise ValueError(
+                "blender_to_dayz: LOD %d and LOD %d share one facenormals "
+                "list, which would be mapped twice; give each LOD its own "
+                "list. Nothing was changed." % (seen_pools[pool], i))
+        seen_pools[pool] = i
+        for p in lod.points:
+            if id(p) in seen_points:
+                raise ValueError(
+                    "blender_to_dayz: one Point object is listed in LOD %d "
+                    "and again in LOD %d, so it would be moved twice; give "
+                    "each LOD its own points. Nothing was changed."
+                    % (seen_points[id(p)], i))
+            seen_points[id(p)] = i
     proxies = sorted({name for lod in p3d.lods for name in lod.selections
                       if PROXY_NAME_RE.match(name)})
     if proxies:

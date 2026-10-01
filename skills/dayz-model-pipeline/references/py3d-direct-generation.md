@@ -266,7 +266,7 @@ inside-out AND mirrored in game (2026-10-01). From py3d 1.8.0 `py3d.blender_to_d
 
 ## Face Winding Order Fix (per source path — see SKILL.md Rule 12)
 
-Blender/FBX-authored geometry mapped with Rule 12's det=-1 reflection keeps its vertex order: no reversal. Reverse faces only to repair a mesh whose cross product points OUTWARD — for example after `P3D.transform()` with a det<0 map, which reverses on its own — and never proxy triangles (their vertex order encodes the attachment frame P0/P1/P2). glTF/GLB: see SKILL.md "GLB/glTF imports".
+Blender/FBX-authored geometry mapped with Rule 12's det=-1 reflection keeps its vertex order: no reversal. Reverse faces only to repair a mesh whose cross product points OUTWARD — for example after `P3D.transform()` with a det<0 map, which reverses on its own — and never proxy triangles (their vertex order encodes the attachment frame P0/P1/P2). The one case where proxy triangles are reversed too is undoing that `P3D.transform()` reversal, which hit them as well: reversing everything back leaves them in their authored order, as Rule 12 and `py3d.blender_to_dayz()` do (their engine frame under the det=-1 map is still unmeasured, LL-505). glTF/GLB: see SKILL.md "GLB/glTF imports".
 
 ```python
 for lod in model.lods:

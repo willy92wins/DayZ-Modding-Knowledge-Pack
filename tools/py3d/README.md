@@ -190,7 +190,7 @@ turns a quad `[0,1,2,3]` into `[0,2,1,3]`, a crossed face.
 
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 278 tests pass -- 271 of them
+The library is used in a real modding pipeline, and 280 tests pass -- 273 of them
 on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
 upstream (see [Tests](#tests)). It has also been through a deliberately
 adversarial audit, and **not every problem it found is fixed yet**. Before

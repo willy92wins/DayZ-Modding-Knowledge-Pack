@@ -223,17 +223,57 @@ def test_b2d_maps_points_keeps_order_negates_normals(fork):
 
 
 def test_b2d_multilod_every_lod_validate_clean(fork):
-    """Every LOD converts - memory points included - and validate() stays
-    [] on the clean multi-LOD model. Its proxy triggers the warning."""
+    """Every LOD converts - visual, the three collision LODs and the memory
+    points - and validate() stays [] on the clean multi-LOD model. Its
+    proxy triggers the warning."""
     p3d = build_multilod_v2_p3d(fork)
     assert p3d.validate() == []
+    before = [([p.coords for p in lod.points], list(lod.facenormals),
+               [[v.point_index for v in fa.vertices] for fa in lod.faces])
+              for lod in p3d.lods]
     mem = p3d.get_lod("memory")
     mem_before = mem.get_memory_points()
     with pytest.warns(UserWarning, match="proxy"):
         fork.blender_to_dayz(p3d)
     assert p3d.validate() == []
+    kinds = [lod.kind() for lod in p3d.lods]
+    assert kinds == ["visual", "geometry", "view_geometry", "fire_geometry",
+                     "memory"]
+    for lod, kind, (points, normals, orders) in zip(p3d.lods, kinds, before):
+        assert len(lod.points) == len(points), kind
+        for (x, y, z), p in zip(points, lod.points):
+            assert close3(p.coords, (x, z, y)), kind
+        for (nx, ny, nz), n in zip(normals, lod.facenormals):
+            assert close3(n, (-nx, -nz, -ny)), kind
+        assert [[v.point_index for v in fa.vertices]
+                for fa in lod.faces] == orders, kind
     for name, (x, y, z) in mem_before.items():
         assert close3(mem.get_memory_points()[name], (x, z, y)), name
+
+
+@pytest.mark.parametrize("shared", ["point", "facenormals"])
+def test_b2d_refuses_shared_data_before_any_change(fork, shared):
+    """A Point object or a facenormals list in two LODs would be mapped
+    twice by transform(): (1,2,3) would come back unconverted. The call
+    raises and leaves the model as it was."""
+    p3d = fork.P3D()
+    vis = build_chiral_f_p3d(fork).lods[0]
+    other = build_chiral_f_p3d(fork).lods[0]
+    other.resolution = 1.0
+    if shared == "point":
+        other.points[0] = vis.points[0]
+    else:
+        other.facenormals = vis.facenormals
+    p3d.lods += [vis, other]
+    snapshot = [([p.coords for p in lod.points], list(lod.facenormals),
+                 [[v.point_index for v in fa.vertices] for fa in lod.faces])
+                for lod in p3d.lods]
+    with pytest.raises(ValueError, match="Nothing was changed"):
+        fork.blender_to_dayz(p3d)
+    assert snapshot == [([p.coords for p in lod.points], list(lod.facenormals),
+                         [[v.point_index for v in fa.vertices]
+                          for fa in lod.faces])
+                        for lod in p3d.lods]
 
 
 def test_b2d_second_call_undoes_the_first(fork):

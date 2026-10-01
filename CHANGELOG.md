@@ -20,7 +20,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   order and negates the normals; it writes, byte for byte, the MLOD that rendered solid and read
   correctly, and it warns on `proxy:` selections because proxy frames were not part of the test.
   Wheel `py3d_dayz-1.8.0-py3-none-any.whl`, SHA-256
-  `0864beae7b48b507cc1dafb5acaf24c405b672ae08d04837f0a91117cb9445a3`; the copies vendored in
+  `f68974e16687d55fbf3c0b1d7c3c9dd1e48d833ec67db4795f69eb02320e2f16`; the copies vendored in
   installed skills are not restocked yet. `dayz-clothing` now spells out the matrix of its det=+1
   round trip; `dayz-characters` flags its `(x, z, -y)` map, and a winding gate that fails the
   model measured correct.

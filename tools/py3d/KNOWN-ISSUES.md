@@ -79,8 +79,10 @@ original survives intact. Verified both ways.
 
 It iterates per LOD and mutates `Point` objects in place, so a point present in
 two LODs is transformed once per LOD. `(0,1,0)` ends up at `(0,-1,0)` instead of
-`(0,0,-1)`, and `save(verify=True)` accepts the result. `blender_to_dayz()` is
-built on `transform()` and inherits this.
+`(0,0,-1)`, and `save(verify=True)` accepts the result. A `facenormals` list
+shared between LODs is mapped once per LOD the same way. `blender_to_dayz()`,
+built on `transform()`, refuses both cases with `ValueError` before changing
+anything; `transform()` itself still does not.
 
 ### `make_double_sided()` breaks proxies
 
