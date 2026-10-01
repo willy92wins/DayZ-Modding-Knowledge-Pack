@@ -23,7 +23,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   none), and static proxies drawn in Blender as py3d canonical triangles come out with the ODOL
   frames of `add_proxy(space="engine")` and render in the pose drawn.
   Wheel `py3d_dayz-1.8.0-py3-none-any.whl`, SHA-256
-  `3fd4caa3ca40ac0436fb582cf41dfdf4f67a9aa8382cfcebb9314076a9827f8e`; no installed skill tree
+  `e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304`; no installed skill tree
   vendors the wheel any more, and the site-packages install follows the merge. `dayz-clothing` now spells out the matrix of its det=+1
   round trip; `dayz-characters` flags its `(x, z, -y)` map, and a winding gate that fails the
   model measured correct.

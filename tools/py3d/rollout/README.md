@@ -96,11 +96,11 @@ If installing or replacing a wheel is needed, `../dist/<pinned filename>` is als
 
 ### Identity gate
 
-`tools/py3d/dist/` is gitignored: the pinned wheel lives on the machine that built it, and `wheel-manifest.json` is its tracked identity. Current pin: `py3d_dayz-1.8.0-py3-none-any.whl`, resealed on 2026-10-01 for the Blender -> DayZ change (`blender_to_dayz()`, `BLENDER_TO_DAYZ` deprecated) at the owner's explicit request. Before resealing, the same script rebuilt the 1.7.0 pin (`96bb546b...`) byte for byte on that machine, so the toolchain is the one that sealed it; then `-UpdateManifest` built 1.8.0 twice to the same hash. Nothing was restocked with it: checked the same day, no installed skill tree vendors a `wheels/` directory any more (only the desktop app's own plugin copies do, at 1.2.0-1.5.0, and this rollout does not manage them), and the owner chose to update the user site-packages install only after the change merges.
+`tools/py3d/dist/` is gitignored: the pinned wheel lives on the machine that built it, and `wheel-manifest.json` is its tracked identity. Current pin: `py3d_dayz-1.8.0-py3-none-any.whl`, resealed on 2026-10-01 for the Blender -> DayZ change (`blender_to_dayz()`, `BLENDER_TO_DAYZ` deprecated) at the owner's explicit request, and again on 2026-10-02 after a docstring fix from the second cross-family review round. Before resealing, the same script rebuilt the 1.7.0 pin (`96bb546b...`) byte for byte on that machine, so the toolchain is the one that sealed it; then `-UpdateManifest` built 1.8.0 twice to the same hash. Nothing was restocked with it: checked the same day, no installed skill tree vendors a `wheels/` directory any more (only the desktop app's own plugin copies do, at 1.2.0-1.5.0, and this rollout does not manage them), and the owner chose to update the user site-packages install only after the change merges.
 
 Do not run `-UpdateManifest` or edit `wheel-manifest.json` to bypass a mismatch. Resealing identity is an explicit user decision. If source wheel is missing or hash does not match, applicator aborts without overwriting any vendored copy.
 
-What the 2026-10-01 reseal did NOT check: that another machine reproduces the 1.8.0 hash, or a real restock. The applicator was only dry-run (`-WheelOnly -NoWrite`) against a temporary root holding one skill that vendors 1.7.0: it planned that one replacement and wrote nothing.
+What the 2026-10-01 and 2026-10-02 reseals did NOT check: that another machine reproduces the 1.8.0 hash, or a real restock. The applicator was only dry-run (`-WheelOnly -NoWrite`) against a temporary root holding one skill that vendors 1.7.0: it planned that one replacement and wrote nothing.
 
 ## Maintenance checks
 

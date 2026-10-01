@@ -278,7 +278,9 @@ def test_b2d_refuses_shared_data_before_any_change(fork, shared):
 def test_b2d_second_call_undoes_the_first(fork):
     """The map is its own inverse and so is the normal sign: two calls give
     the model back - points, normals and vertex order. By value, not by
-    bytes: a zero normal component can come back as -0.0."""
+    bytes: a zero normal component can come back as -0.0. The model's
+    normals are unit vectors; one that is not comes back unit-length,
+    because P3D.transform() renormalizes."""
     p3d = build_chiral_f_p3d(fork)
     lod = p3d.lods[0]
     points = [p.coords for p in lod.points]
@@ -290,6 +292,10 @@ def test_b2d_second_call_undoes_the_first(fork):
     assert [p.coords for p in lod.points] == points
     assert lod.facenormals == normals
     assert [[v.point_index for v in fa.vertices] for fa in lod.faces] == orders
+    lod.facenormals[0] = (0.0, 2.0, 0.0)
+    fork.blender_to_dayz(p3d)
+    fork.blender_to_dayz(p3d)
+    assert lod.facenormals[0] == (0.0, 1.0, 0.0)
 
 
 # ---- proxies: measured in game the same day --------------------------------

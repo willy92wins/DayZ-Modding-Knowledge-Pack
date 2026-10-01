@@ -129,7 +129,9 @@ original, so a proxy selection goes from one face to two and
   raises a `FutureWarning`. Because the warning comes from a module
   `__getattr__`, the name is no longer in the module's namespace:
   `from py3d import *` does not bring it in any more. `from py3d import
-  BLENDER_TO_DAYZ` still works, and warns.
+  BLENDER_TO_DAYZ` still works, and warns. Listing it in an `__all__` would
+  bring it back, but then every `from py3d import *` would warn, twice, and
+  fail under `-W error`, even in code that never uses the name.
 
 ## Blender → DayZ: what was measured
 

@@ -2979,7 +2979,8 @@ def blender_to_dayz(p3d):
     old BLENDER_TO_DAYZ) gives the mirror image instead: right size, right
     way up, text reading backwards.
 
-    Faces keep their vertex order, and every normal is mapped and negated.
+    Faces keep their vertex order, and every normal is mapped and negated
+    (near-zero ones are only negated: see the last paragraph).
     The input is what Blender stores: front faces counter-clockwise seen
     from outside, so the vertex-order cross product points outward, and
     outward normals. The reflection alone turns that cross product inward,
@@ -3001,7 +3002,8 @@ def blender_to_dayz(p3d):
     Call it once, on geometry that is in Blender space, before adding
     anything built in DayZ space - collision boxes, memory points in DayZ
     coordinates, proxies placed with LOD.add_proxy(space="engine"): it
-    converts everything in the model, and a second call undoes the first.
+    converts everything in the model, and a second call undoes the first
+    (normals then come back unit-length, as P3D.transform() leaves them).
 
     Proxy triangles move like any other face - points mapped, vertex order
     kept, normal negated - and nothing more. Measured the same day with
@@ -3019,10 +3021,11 @@ def blender_to_dayz(p3d):
     Refuses, with ValueError and before changing anything, a model where
     one Point object or one facenormals list is listed more than once -
     shared between LODs, typically: P3D.transform() would map it once per
-    listing and leave it wrong without a word. Degenerate (near-zero)
-    normals are kept as P3D.transform() keeps them, unmapped, and then
-    negated. Does not touch uv, sharp_edges, selections, properties, flags
-    or mass. Returns None.
+    listing and leave it wrong without a word. Normals come out
+    unit-length, as P3D.transform() leaves them; degenerate (near-zero)
+    ones are kept as it keeps them, unmapped, and then negated. Does not
+    touch uv, sharp_edges, selections, properties, flags or mass. Returns
+    None.
     """
     seen_points = {}
     seen_pools = {}
