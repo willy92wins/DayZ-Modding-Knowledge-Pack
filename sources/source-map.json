@@ -1271,10 +1271,20 @@
           "source_path": "knowledge/dayz-mcp-bridge-protocol.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-MCP): LL-496. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "20960dcc02cbc7c4147c31dc58409eb7080656a6d063ba2af57f92f100c74dcc",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/dayz-mcp-bridge-protocol.md",
+          "source_revision": "kp-update-wp-mcp@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4715f245b7716e6fd4f594d18e523354aae9bc4cbac8b2604c853891ca3febda",
+      "output_hash": "20960dcc02cbc7c4147c31dc58409eb7080656a6d063ba2af57f92f100c74dcc",
       "output_path": "knowledge/dayz-mcp-bridge-protocol.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -5878,10 +5888,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "sp423-sp424@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-MCP): LL-528, SP-395, SP-438, SP-440. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry. One correction (SP-440): the PrintWindow row no longer says the D3D area comes back black; measured 2026-09-28 (>20 captures) it captures the scene with the session unlocked and the display on, which also revises LL-247 of 2026-08-12.",
+          "license": "MIT",
+          "source_hash": "c0e4ea9dab45f6413da6ec6e01ba11b02bf2f78a4e5ac13164890fd37362d37d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-wp-mcp@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "816c358ca57423b266b52cadb009bc300c5ba5e5b3ee3b249d5943d7ca63b8ed",
+      "output_hash": "c0e4ea9dab45f6413da6ec6e01ba11b02bf2f78a4e5ac13164890fd37362d37d",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -8216,10 +8236,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "kp-update-wp-test@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-MCP): SP-438. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "a0056a3b62ce607891770c11efd3096cafce9b9275bb736bde94ef502310d000",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-wp-mcp@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "88a40feef83ef55ad0be43f1cfc2ee8398c3ca9855a53eeafd1004ab1f96b7a5",
+      "output_hash": "a0056a3b62ce607891770c11efd3096cafce9b9275bb736bde94ef502310d000",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -10870,10 +10900,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "kp-update-wp-vmod@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-MCP): SP-395. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "caeac4a478c144974be51ed6e9c12743bff9f17c91325ae8f3874b8725f181dd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "kp-update-wp-mcp@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "da98094f7ed6feec0e26d2926480162b1401735ff6d3ce39f5338e6ebf201b28",
+      "output_hash": "caeac4a478c144974be51ed6e9c12743bff9f17c91325ae8f3874b8725f181dd",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -12655,10 +12695,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-wp-test@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-MCP): new claim CLAIM-ENFORCE-NO-GET-TIMEMULTIPLIER (no GetTimeMultiplier in the 1.29 stable or 1.30.164014 Exp scripts, re-grepped by the receiver: 0 files each); other claim ranges shifted where lines moved.",
+          "license": "MIT",
+          "source_hash": "a6affcd59412d435b37f55d766f8befae10bc360febe0d43c000e9d3ecbb117f",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-wp-mcp@2026-10-01",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "589fa16a7b380da99ccf4aaad6cd9e4bdcea469aec169b6bc1a084d7c719551d",
+      "output_hash": "a6affcd59412d435b37f55d766f8befae10bc360febe0d43c000e9d3ecbb117f",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

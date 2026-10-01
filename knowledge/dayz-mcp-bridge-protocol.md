@@ -114,6 +114,8 @@ between two driving rungs is measuring a frozen world.
 **`Print()` goes to `script_*.log`, not the RPT.** Measured, repeatedly, by
 people grepping the wrong file.
 
+**A native setter without a getter must not become a DTO field.** Vanilla exposes `proto native void SetTimeMultiplier(float timeMultiplier);` (`3_game/global/world.c:14`, DayZ 1.30.164014 Exp) and has no `GetTimeMultiplier` anywhere in the scripts — a producer that calls the setter can only re-read the five `GetDate` ints. Adding `float time_multiplier` to the applied-verb DTO would make JSON emit the serializer default `0.0`, and the consumer would read a false echo. The honest closure is `null` plus an `unconfirmed` flag, never a default. [EXACT][CLAIM-ENFORCE-NO-GET-TIMEMULTIPLIER] Vanilla declares `SetTimeMultiplier` with no `GetTimeMultiplier` counterpart (`scripts/3_game/global/world.c:14`), so the applied value cannot be read back (measured live: `world_time_set(..., time_multiplier=4)` answers `multiplier_applied=null`).
+
 ## Limits
 
 - **It is not a test framework.** It drives the engine and reports; deciding what

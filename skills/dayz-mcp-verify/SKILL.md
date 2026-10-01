@@ -99,6 +99,7 @@ atraviese el bridge (`query_*`, telemetría, raycast, capturas, `world_spawn`…
    del sobrante y repetir.
 4. `wait_for(players_at_least, 1)` y el resto de verbos.
 5. `session_release` → `dayz_test_stop(run_id)`.
+6. [EXACT] The adopted lease expires by itself (added 2026-09-27, LFPowerGrid, three runs): it lasts 120 s and is NOT renewed internally, fresh MCP client or not. Send `session_heartbeat` at least every ~90 s during the whole run, including while a human plays. Past the deadline the run goes ownerless again (`grace.remaining_s` counts down) and the daemon stops it (`lifecycle_stop_outcome: stopped`), even with the user in front of the game. (measured in game, DayZ 1.30.164014 Exp)
 
 Con un cliente MCP anterior al `8f5727f` de DayZ_MCP (2026-09-06) el rechazo llegaba como un
 `remote_error` DESNUDO, sin código ni hint (ficha `fb-20260906-193626-f45d`, atribuida primero a un
@@ -435,7 +436,7 @@ más resolución.
 | `bridge_status.server_peer.last_poll_age_s = null` | el bridge server no pollea | revisar `dayz_mcp.json` en server_profiles + la key; confirmar `@DayZ_MCP` montado (paths absolutos `!Workshop`) |
 | `client_peer … null` (server ok) | el cliente no conecta o `client_profiles\dayz_mcp.json` falta | BUG-009 (autoconexión flaky): `-ServerWait` mayor / reintento; sembrar la config del cliente |
 | `version_state = legacy_blocked` | `--require-version` ON contra un bridge que no manda `ver=` | desplegar el PBO 4B (manda `ver=4~…`), o registrar el server sin `--require-version` para ese run |
-| capturas byte-idénticas entre poses | grab cogió un frame stale del escritorio (no el render) | `PrintWindow(PW_RENDERFULLCONTENT)` devuelve marco real y área D3D NEGRA (LL-247, 2026-08-12): no arregla la captura del juego. Usar `CopyFromScreen` del rect interior, solo con sesión desbloqueada, y validar el recorte del área de juego |
+| capturas byte-idénticas entre poses | grab cogió un frame stale del escritorio (no el render) | [EXACT] `PrintWindow(hwnd, hdc, PW_RENDERFULLCONTENT=2)` on the client's main window DOES capture the D3D game area — full scene in >20 captures even with another window covering it and without taking focus, as long as the Windows session is unlocked and the display is on (measured in game, DayZDiag 1.29, 2026-09-28). A black game area means the display is off or the session is locked, not that the route cannot read D3D. `CopyFromScreen` only works with the window in front, and a covered DayZDiag also drops to ~20 FPS; validate on a crop of the game area, not whole-frame variance (corrects the LL-247 entry of 2026-08-12) |
 | timeout de tool y luego comandos "zombie" al reconectar | BUG-024: un timeout deja el comando en cola; el bridge lo ejecuta al volver | tras un timeout, reconciliar con `bridge_status` antes de seguir |
 
 ## REFERENCES
@@ -546,6 +547,7 @@ Dos caveats de smoke MCP autonomo verificados in-vivo (SUB_BRZ s32):
 1. **`world_spawn` toma el vector en orden MOTOR `[x, y_up, z_north]`** (`MCPBridge.c:1638` `Vector(x,y,z)`), pero el connect-log del bridge imprime la posicion del player como `<x, z_north, y_up>`. Pasar la tripleta del log VERBATIM spawnea el objeto a ~6 km de altura -> `IsSpawnReady` (radio 2.0 m) nunca se cumple -> job timeout + `found=0`, y el motor auto-borra el huerfano (`NETWORK (E): Will delete object ... outside world coords`). Costo 3 timeouts seguidos. Regla: convertir `<x,z,y>` -> `[x,y,z]` antes de todo `world_spawn`/`camera_set`; tras un timeout de spawn, grep del RPT por `outside world coords` ANTES de reintentar (distingue coords-malas de spawn-lento). Verificable con `scene_raycast` al terreno (da la y_up real).
 2. **Captura con el display en reposo o la sesion bloqueada = frame NEGRO** aunque el client corra. Fix: traer la ventana del client a foreground + input wiggle (raton / F15) antes de CADA `capture_screenshot`. Sintoma enganoso: parece "render roto del mod" y es el compositor.
 3. (menor) Spawn adyacente al player puede caer DENTRO de un edificio -> sondear 3-4 `scene_raycast` a terreno despejado antes de elegir la pos.
+4. [EXACT] A locked Windows session is a distinct capture failure (added 2026-09-14, SUB_BRZ s93): with `LogonUI` alive, `capture_screenshot` does not return a black frame — it fails outright with `capture_backend_failed` on every attempt while the game client stays alive and probing. Before budgeting captures in an unattended run, run `Get-Process LogonUI` first: with a locked session there is no host capture at all, for the MCP capture and for any window-grab script. (measured in game, DayZ 1.30.164014 Exp)
 
 Origen: SUB_BRZ s32 smoke MCP (2026-07-11): 3 timeouts de `world_spawn` con la pos cruda del log + 2 capturas negras con LockApp; ambos resueltos con lo de arriba.
 
@@ -880,6 +882,7 @@ Patrón validado:
 5. Los mission scripts ven las clases de todos los mods cargados y compilan server-side con
    `#ifdef SERVER` visible. El runner host solo escribe comandos, lee resultados y recorta el log
    entre marcas. Cruza este patrón con `dayz-test-ingame`.
+6. [EXACT] Archive the case directory on completion — always, not only between runs — and never execute a command that already has its `res_<seq>.json`. Measured failure (2026-09-27, LFPowerGrid): a driver whose sequence reset to 1 on a stale `cmd_1.json` re-ran the bank-mounting command every ~1.5 s; half an hour later the world held thousands of duplicate objects and the user aborted the next session for performance. The log lines dismissed as harness noise were the signal: a repeated `OP seq=1` means the command IS running again, and duplicated live device ids mean two entities share one id. Before filing a repeated or `ERR` line as noise, write in one sentence what it would mean if true; if that sentence describes damage, it is signal. (measured in game, DayZ 1.30.164014 Exp)
 
 ## Preflight de lease, telemetría capada y comandos zombie (SP-152, added 2026-08-31)
 

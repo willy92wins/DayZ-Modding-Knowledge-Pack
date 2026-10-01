@@ -70,6 +70,7 @@ El launcher oficial es Diag-only y aplica esta matriz:
    requieren el run exacto. `-Kill` sin `-RunId` queda fail-closed.
 6. Verifica estado terminal después del stop. NUNCA sustituyas el lifecycle
    guard por un kill o por atribución basada en nombre, mod, cmdline o perfil.
+7. [EXACT] After adopting, keep the run owned yourself: the lease lasts 120 s and is not renewed internally, fresh client or not, so send `session_heartbeat` at least every ~90 s during the whole run, including while a human plays. Without heartbeats the run goes ownerless and the daemon stops it after the grace period (measured 2026-09-27, three runs; detail in `dayz-mcp-verify` §COMPOSICIÓN).
 
 Retail manual-only activa cuarentena retail: el usuario que lo abrió lo cierra por la UI y
 después ejecuta doctor/rescan. Sin acceso a esa UI, declarar `manual_cleanup_required`; otro
