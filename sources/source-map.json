@@ -6174,10 +6174,20 @@
           "source_path": "dayz-model-pipeline/SKILL.md",
           "source_revision": "filesystem@2026-09-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ENF): SP-430, SP-439, SP-441. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "3298e75b9a5cbb12783b5cf0abc151f8b5b3edbd1cfee9aa4e375af9699ac2e4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "kp-update-wp-enf@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d1950876afc2cc4245e47183a7aa30fa0372dd629ce5adff9a543491457434b0",
+      "output_hash": "3298e75b9a5cbb12783b5cf0abc151f8b5b3edbd1cfee9aa4e375af9699ac2e4",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8378,10 +8388,20 @@
           "source_path": "skills/dayz-texture-pipeline/SKILL.md",
           "source_revision": "atlas-to-paa@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ENF): SP-445. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "f4ed39696bc9c2c9bc914e0f5dd276332a1e44ba67a082f32caa436a5b024b1b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/SKILL.md",
+          "source_revision": "kp-update-wp-enf@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1bbe9219683ec42b6bb613ee9879a50977e5edb3f7f6bc9b7ca0388e70c6b1c8",
+      "output_hash": "f4ed39696bc9c2c9bc914e0f5dd276332a1e44ba67a082f32caa436a5b024b1b",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -10660,10 +10680,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "escape-repair@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ENF): LL-521, SP-425, SP-430, SP-437, SP-439, SP-441, SP-445. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "42b9842fac54662e1967561a07b6eac7da46489942bee94477706fe414fb4c82",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "kp-update-wp-enf@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ed34bb2c3cbf05615dce2acbb2579e8b78e5510285813a0f8e9e6a80c6faea75",
+      "output_hash": "42b9842fac54662e1967561a07b6eac7da46489942bee94477706fe414fb4c82",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -12395,10 +12425,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "roboclient-run3@2026-09-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-ENF): four new claims (CLAIM-ENF-MODULO-INT-ONLY, CLAIM-ENF-BOTTLE-LIQUID-ACTIONS, CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-EMPTYBOTTLE-LOOP-OVERRIDE) against the 1.29 stable and 1.30.164014 Exp scripts; existing claim ranges shifted with the inserted lines.",
+          "license": "MIT",
+          "source_hash": "513c86fdcb89864c7ddcde374553878aa8ed9993f8d1a57af206f60b5d564a4f",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-wp-enf@2026-10-01",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "ff1798f3fe7171f7f9a46602324746b105d346b066f602a31ae48e2a3f70b51e",
+      "output_hash": "513c86fdcb89864c7ddcde374553878aa8ed9993f8d1a57af206f60b5d564a4f",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

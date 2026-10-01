@@ -51,6 +51,7 @@ Before persisting or ordering data across restarts, verify both the clock and th
 12. **Class constant read from a `static` method → `static const` (LL-478)** — plain `const`
     is fatal in retail (only the engine compiles); the "compiles" gate is a retail boot
     with `SERVER` before any review, and cascade errors are diagnosed fixing the first only
+13. **`%` works only in integer context** — `float ox = (n % 4) * 0.7 - 1.05;` with `int n` fails with `Unknown operator '%'` and kills the mission init compile (measured in game, DayZ 1.30.164014 Exp). [EXACT][CLAIM-ENF-MODULO-INT-ONLY] Every vanilla modulo is integer-context (`scripts/1_core/proto/enscript.c:652-661`, `scripts/3_game/cfgbunkerbroadcastjsondata.c:196`); no vanilla line applies `%` to a float. Compute the modulo into an `int` first (`int col = n % 4;`) and multiply the float afterwards.
 
 <!-- corpus-stardz-2026-09-07 -->
 
@@ -127,6 +128,10 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
 32. **Match client-side and server-side tool checks** — if ActionCondition uses `IsKindOf`, the server RPC handler must also use `IsKindOf`, not `GetType() !=`
 33. **`RemoveAction(ActionTakeItem)` + `RemoveAction(ActionTakeItemToHands)`** — prevents item pickup/drag on placed objects; combine with `IsTakeable()` returning false and `CanPutInCargo()` returning false
 34. **Cursor component → selection membership goes through the engine's name list, in LOWER CASE** — `GetActionComponentNameList(idx, list, "")` (`object.c:198`) returned `component14`, `component19`, `door1` for a runtime `House` (LFSecure room, in-game 2026-09-09): names are lower-cased and the cursor index is 0-based while Object Builder auto-names are 1-based (`comp 13 → component14`, `comp 18 → component19`, `comp 8 → door1`). `IsActionComponentPartOfSelection(idx, "Component14", LOD.NAME_VIEW)` never matched, so three actions (bed, sink, exit) were dead for a whole test cycle with no error anywhere. Compare `list.Get(i)` after `ToLower()` against lower-case names in the default geometry, and while diagnosing log `idx` + the name list once per distinct index.
+40. **A custom liquid container derived from `Bottle_Base` inherits the whole vanilla liquid action set — decide every one** — [EXACT][CLAIM-ENF-BOTTLE-LIQUID-ACTIONS] `SetActions` adds 14 liquid actions in 1.29 (`bottle_base.c:354-372`) and 16 in 1.30.164014 Exp (`bottle_base.c:356-376`); each is a way in or out. The fill action takes gasoline from a pump (`m_AllowedLiquidMask = LIQUID_GROUP_DRINKWATER | LIQUID_GASOLINE`, `actionfillbottlebase.c:41-44`), and with your container as TARGET, drain and pour belong to the HELD item (`actiondrainliquid.c:33-42`, `actionpourliquid.c:33-42`): removing them in the container's own `SetActions` hides nothing — close them with a `modded` action's `ActionCondition` on `target.GetObject()`, or gate the liquid itself by overriding `GetLiquidContainerMask()`, the only input of `Liquid.CanFillContainer` (`liquid.c:248`). The vanilla continuous pour can stop short of full (960 of 1000 ml measured once in a local DayZDiag game): a rule that demands exact fullness needs tolerance or completion in `OnEndServer` (`actionbase.c:1409`).
+41. **`ActionEmptyBottleBase` overrides `OnStartAnimationLoop`/`OnEndAnimationLoop` without `super`** (`actionemptybottlebase.c:70-78`) — [EXACT][CLAIM-ENF-EMPTYBOTTLE-LOOP-OVERRIDE] in its subclasses the protected `OnStartAnimationLoopServer/Client` and `OnEndAnimationLoop*` variants of `ActionContinuousBase` (`actioncontinuousbase.c:272-286`, they set `m_WasActionStarted`) never run, with no error. Hook the public loop callbacks instead (called on both sides, `actioncontinuousbase.c:197-242`) and act only on the server; `OnEndServer` (`actionbase.c:1409`) also runs after an interrupt and is the safe reset point.
+
+42. **A cooling `FireplaceBase` cooks its cookware twice per tick** — [EXACT] while cooling it cooks the registered cookware (any `IsCookware` item in any slot, `fireplacebase.c:334-340`) and then every direct slot in the same tick (`fireplacebase.c:2059-2081`): an `IsCookware` on `DirectCookingA/B/C` passes twice through `Cooking.CookWithEquipment` per tick while the fire dies (the vanilla frying pan included). [DESIGN] Credit cooking time as `min(dt, real time since the item's last step)` so an item alternating between two fires cannot bank time.
 
 ### Layout & UI Path Rules
 
@@ -504,6 +509,10 @@ The client CAN create local-only entities with `CreateObjectEx(cls, pos, ECE_LOC
 
 **TRAP — camera:** after creating and deleting a `staticcamera` script in mission (`CreateObject("staticcamera", pos, true)` + `SetActive(true/false)` + `ObjectDelete`), `Camera.GetCurrentCamera()` is POISONED: native crash with identical fault bytes both in the same tick and 1 s later (2 repros). The activate/restore/delete cycle itself is safe (`restored=1` verified); verify the restore visually (capture), never via that getter. SP-064 family.
 
+### Client-local 3D segments (cables, ropes, beams) — scaled `SetTransform` basis (SP-441, added 2026-09-28)
+
+[EXACT] One client-local `HouseNoDestruct` (`DZ/data/config.cpp:2464`) per segment, created with `CreateObjectEx(type, pos, ECE_LOCAL)` (`game.c:703`, `centraleconomy.c:25`), is a client-only static that is still an `EntityAI`. [EXACT] `SetTransform(m)` (`enentity.c:356`) with a NON-orthonormal basis scales the render on that axis: basis = (side*thickness, up*thickness, dir*length) and `m[3]` = segment midpoint turns a 1 m cylinder over +Z into a cable segment of the wanted length and thickness; `GetTransform` returns the scaled basis and `GetScale()` stays 1 (`enentity.c:447-448`) (measured in game, DayZDiag 1.29). [EXACT] `GetBounds` returns zeros on these objects — take the model box from `Object.ClippingInfo(minMax)` (`object.c:358`). [EXACT] `SetObjectTexture(0, "#(argb,8,8,3)color(r,g,b,1,CO)")` (`entityai.c:2858`) recolours a selection ONLY if `model.cfg` declares `sections[] = {"camo"}` for that p3d; without that entry the face texture always shows (measured in game, DayZDiag 1.29). [DESIGN] Use a purpose-built unit segment model (vanilla props have arbitrary pivots) and spread creation over frames: a four-digit burst of segments visibly stalls one frame.
+
 
 ### Infected alive from script — full ECE flag set (SP-287)
 
@@ -568,6 +577,14 @@ modded class WorldData
 ```
 
 Restrict the condition to your own structure (class name check from 3_Game via `GetType()`) before shipping; put the override in the contract of any elevated room/platform design.
+
+### Custom cookware: every vanilla heat source ends in `Cooking.CookWithEquipment` (SP-430, added 2026-09-26)
+
+[EXACT][CLAIM-ENF-COOKWITHEQUIPMENT-HUB] The gas stove (`portablegasstove.c:216-222`) and every `FireplaceBase` cooking path — cooking stand (`fireplacebase.c:1898-1902`), direct slots, and the common wrapper (`fireplacebase.c:2153-2159`) — converge on `Cooking.CookWithEquipment`. The second argument is NOT a time (on the stove it is 0.5 x consumed energy); the cadence is `Cooking.m_UpdateTime`, set by the caller (`cooking.c:37-42`; fireplaces use 3 s) (DayZ 1.30.164014 Exp). Intercept it for your class in one `modded class Cooking` and advance your own process by `m_UpdateTime`; return `IsCookware() == true` so the stove and the fireplace register the item.
+
+[EXACT] Attachment gates follow CONFIG inheritance, not script classes: a cookware under `Edible_Base` (every `Bottle_Base`, `DZ/data/config.cpp:2794`) gets the frying-pan rule on `Fireplace` — oven only (`fireplace.c:100-106`) — and closed-lid-only on `BarrelHoles_ColorBase` (`barrelholes_colorbase.c:160-166`); only cookware OUTSIDE `Edible_Base` falls through to `return true` (`fireplace.c:124`) and needs those two gates patched. To restrict which liquid can enter the container, override `GetLiquidContainerMask()` (`itembase.c:830`): its only consumer is `Liquid.CanFillContainer` (`liquid.c:248`).
+
+[DESIGN] Do not let vanilla cooking run on a custom container: `ProcessItemToCook` burns non-cookware cargo by `PARAM_BURN_DAMAGE_COEF * 100` = 5 health per tick and boils off `LIQUID_VAPOR_QUANTITY` per tick (`cooking.c:94-105`).
 
 ### Safe Inventory Operations
 ```
@@ -1059,6 +1076,7 @@ Forma de fallo verde y silenciosa; la corrida entera fue inútil.
 Escribir esos literales componiendo la barra en Python (`chr(92)`) y verificar con `repr()`. Y si
 el valor lo consume el motor, **comprobar en su log que llegó entero** antes de fiarse de la
 corrida: aquí el propio log imprimía la ruta recibida, y ahí se veía sin barras.
+The same single-backslash trap repeats at mod scale, and script path literals belong in the audit: [EXACT] vanilla script literals write texture paths escaped and without a leading backslash (`"dz\\gear\\navigation\\data\\GPS_%1_ca.paa"`, `scripts/4_world/entities/itembase/gear/navigation/gpsreceiver.c:4`) (DayZ 1.30.164014 Exp); one mod shipped 64 `"\ModName\data\....rvmat"` literals with SINGLE backslashes in the source across 24 `.c` files — all of them its LEDs (measured, LFPowerGrid). [DESIGN] Recipe: grep the mod's `.c` files for string literals that carry a lone backslash inside a path, and print in the log the path the engine actually receives.
 
 ## DayZ 1.30 Exp (build 1.30.164014)
 
@@ -1112,3 +1130,10 @@ aqui, un servidor y una caja compartida que otras sesiones estaban esperando.
 **Corolario operativo:** cuando la caja es un recurso en cola, el arranque de servidor no es
 solo el gate, es el gate MAS BARATO que existe — falla en ~20 s. Gastar 20 s en arrancar
 antes de encolar un lote de 30 min no es prudencia, es aritmetica.
+
+
+## Moving a body between modules: field visibility moves with it (LL-521, added 2026-09-26)
+
+[EXACT] Enforce `protected` reaches only the declaring class and its descendants. A body moved into `5_Mission` (facade + impl split) reaches device state through parameters (`dev.m_Field`), and that compiles only if the field is PUBLIC — the impl class is not a descendant of the state owner. Measured: a tree with linter 48 warnings / 0 errors and a passing isolated binarize still killed the first server boot with `Variable 'm_DeviceId' is protected` → `Can't compile "Mission" script module!`; the fields were public on the branch where the bodies were written, and that visibility change did not travel with the bodies (measured in game, LFPowerGrid, DayZDiag).
+
+[DESIGN] In a cross-module body move, the move list includes the visibility of every field the body touches, not only the helpers it calls; resolve the type of every variable and require public before declaring the tree good. The gate is the ENGINE, not the linter: on 2026-09-26 the offline linter run in that project returned the identical verdict on the broken and the fixed tree, and cross-review missed it because its rounds read the branch where the field WAS public. The Pack's validator has a tree-level check for this pattern, `ES-PROTECTED-CROSS-MODULE` (`tools/dayz-script-validator/README.md`); run it, and still boot the server before declaring a cross-module move good — whether that check catches a receiver reached through a parameter, as here, was not measured.

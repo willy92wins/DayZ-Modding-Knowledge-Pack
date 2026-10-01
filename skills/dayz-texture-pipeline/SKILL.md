@@ -394,6 +394,10 @@ Dos hechos menores del mismo getter, útiles para leer un log: devuelve **cadena
 motor tiene el material (no una ruta vanilla normalizada, que era lo que cabía esperar), y en
 **servidor devuelve vacío siempre** — el material de prenda es puramente de cliente.
 
+## A selection the log calls painted can be hidden by config (SP-445, added 2026-09-28)
+
+[EXACT] `hiddenSelectionsTextures[] = {""}` in config HIDES the selection — the script-side material/texture apply then succeeds and still nothing renders. Vanilla precedent: `XmasLights.HideOnItem` clears selection textures and materials with `""` (`xmaslights.c:94-103`), and `Blowtorch` hides its flame with `SetObjectTexture(0, "")` (`blowtorch.c:48-51`) (DayZ 1.30.164014 Exp). A selection whose material is swapped from script must declare its REAL texture in config, like `BatteryCharger` (`gear_camping/DZ/gear/camping/config.cpp:6975-6977`). [DESIGN] If the emissive must stay visible over a dark `_co` region, also switch that selection to a bright procedural colour texture (`#(argb,8,8,3)color(r,g,b,1,CO)`); not yet verified in game on its own.
+
 ## Del PNG horneado al `.paa` y al rvmat de atlas (added 2026-09-02)
 
 Medido llevando un atlas propio por modelo desde Blender hasta el mod (LFQuad, 4096^2,

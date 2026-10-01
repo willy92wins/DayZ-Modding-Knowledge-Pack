@@ -640,6 +640,10 @@ triangle. Measure the ratio on the exact geometry that will ship. When the sourc
 contains an authored LOD ladder, prefer and measure that ladder instead of planning splits
 from a decimated proxy; this also preserves the rule that visual decimation is user-gated.
 
+## Cookware models: origin at the centre of the underside (SP-430, added 2026-09-26)
+
+[EXACT] Put a custom cookware's origin at the centre of the underside, Y up, like vanilla `fryingpan.p3d` and `cookingpot.p3d` (their bbox starts at Y 0.000). Vanilla heat-source anchor heights, measured offline on the vanilla models after ODOL->MLOD conversion (DayZ 1.30.164014 Exp): gas stove `cookingpot.001` at 0.084 m; fireplace `direct_cooking_a/b/c` at 0.624 m (over the stone oven) and tripod pot at 0.607 m; FireplaceIndoor 0.343 m; OvenIndoor 0.844 m.
+
 ## Selection-safe py3d surgery (SP-362, added 2026-08-31)
 
 py3d selection membership follows `Point` and `Face` object identity. It is not a stored
@@ -655,6 +659,10 @@ integer-index map. During section replacement:
 
 The writer's identity guard should fail loudly on a dead selection key. A successful write
 still requires an index-resolution gate and a zero-drift check for surviving proxies.
+
+## `validate()` ERR_AXIS_SELECTION_MISSING is a heuristic, not an engine rule (SP-439, added 2026-09-28)
+
+[EXACT] `py3d.P3D.validate()` flags every memory selection ending in `_axis` that has no homonymous visual selection (heuristic ported from `audit_p3d.py`). Several animations of the same bone with different axes cannot satisfy it: `model.cfg` links `axis=` and `selection=` independently, so there it is a false positive, not an engine rule (measured: renaming the axes from `clab_*_axis` to `axis_clab_*` took the model from 3 ERROR to 0 ERROR, 2026-09-28). [DESIGN] Name such axes `axis_<name>` to keep the validator quiet.
 
 ## Orientation metrics for open geometry (SP-166, added 2026-08-31)
 
@@ -715,6 +723,10 @@ Proxy triangles naturally occupy the empty/empty case. Non-visual penetration ma
 may legitimately have an empty texture and stay outside this gate. Preserve path casing in
 evidence, verify every referenced `.rvmat` and `_co.paa` exists on disk, and keep a negative
 fixture that renames one referenced texture and must turn the gate red.
+
+## Client-local cable segment model (SP-441, added 2026-09-28)
+
+[EXACT] Build the unit cable segment with py3d as an open cylinder, 1 m over +Z, centred, radius 0.01, visual LODs of 8/5/3 sides, no collision geometry, every visual face in selection `camo`, faces wound INWARD (measured in game, DayZDiag 1.29, LFPowerGrid cables). Give the model a mod-prefixed name: `CfgModels` classes are global across mods. Vanilla props cannot serve as segments (arbitrary pivots; `proxies/metalwire.p3d` is a ring).
 
 ## Per-delivery artist-return amendment (SP-297, added 2026-08-31)
 
