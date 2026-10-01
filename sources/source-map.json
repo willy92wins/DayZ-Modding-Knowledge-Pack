@@ -9470,10 +9470,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "sp423-sp424@2026-09-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-VEH): SP-402, SP-403, SP-415, SP-426. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "0bdb8fde5ca6bbd4c7a7899d838b9ef91211441f93e6cd726b8b6ccc9d482f31",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "kp-update-wp-veh@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "250c891bebfa4109b86d1a98e0798713806ca4f560f52d816ffdccd1d7a0ea7f",
+      "output_hash": "0bdb8fde5ca6bbd4c7a7899d838b9ef91211441f93e6cd726b8b6ccc9d482f31",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9706,10 +9716,20 @@
           "source_path": "dayz-vehicles/references/doors-and-panel-edges.md",
           "source_revision": "filesystem@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-VEH): SP-377. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "f4b07b52d37bae79f0a3634c2decb84c8fc7fa6aac058af12acd32400e1d0ff8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/doors-and-panel-edges.md",
+          "source_revision": "kp-update-wp-veh@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "12ead67c2b5901b069602f8869da2c8af1e34036a637912d04c6c230234ead34",
+      "output_hash": "f4b07b52d37bae79f0a3634c2decb84c8fc7fa6aac058af12acd32400e1d0ff8",
       "output_path": "skills/dayz-vehicles/references/doors-and-panel-edges.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9834,10 +9854,20 @@
           "source_path": "dayz-vehicles/references/gauge-needles.md",
           "source_revision": "filesystem@2026-09-05",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-VEH): SP-400. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "5a3341ec43f6d2ec076c9358f5c52d8e297f4901bd15a7622523d4c91cbcce16",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/gauge-needles.md",
+          "source_revision": "kp-update-wp-veh@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9d5d12df9b25d7945936712f8befdcb89627577c766188d02143ced4e1af2394",
+      "output_hash": "5a3341ec43f6d2ec076c9358f5c52d8e297f4901bd15a7622523d4c91cbcce16",
       "output_path": "skills/dayz-vehicles/references/gauge-needles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -9992,10 +10022,20 @@
           "source_path": "dayz-vehicles/references/materials-and-selections.md",
           "source_revision": "filesystem@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-VEH): SP-401, SP-407. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "0dfdafd4f07e65b3c8c8dab3fc7f42ab6c47966c1615ba3de2dcc2b37e6b5470",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/materials-and-selections.md",
+          "source_revision": "kp-update-wp-veh@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6491ffd4986b1e0467332edfcc8e560811a5e1b784e13d507e5a94d39dd06276",
+      "output_hash": "0dfdafd4f07e65b3c8c8dab3fc7f42ab6c47966c1615ba3de2dcc2b37e6b5470",
       "output_path": "skills/dayz-vehicles/references/materials-and-selections.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10206,10 +10246,20 @@
           "source_path": "skills/dayz-vehicles/references/rip-import.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-VEH): SP-416. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "852391751e944238c19a4d8c2a4126a0b09b244a981004e7b0b1015054e3e994",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/rip-import.md",
+          "source_revision": "kp-update-wp-veh@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1a1cfc867e76deabea60eff0ee945a10ccb72ef99c4be394eb4bba7828e8b760",
+      "output_hash": "852391751e944238c19a4d8c2a4126a0b09b244a981004e7b0b1015054e3e994",
       "output_path": "skills/dayz-vehicles/references/rip-import.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -10300,10 +10350,20 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-VEH): SP-426. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "fe3dcd06f863422c725bdff11a6ddc89ff9f4fbf5a4a279c95d3fa255cb0d27d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
+          "source_revision": "kp-update-wp-veh@2026-10-01",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "bec2deb7f60f85ed06c8566c5a47c89ed2b431efc76428f27874103179f2a499",
+      "output_hash": "fe3dcd06f863422c725bdff11a6ddc89ff9f4fbf5a4a279c95d3fa255cb0d27d",
       "output_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -11780,10 +11840,20 @@
           "source_path": "rip-vehicle-import/cookbooks/family-b/get-in-ausente.md",
           "source_revision": "filesystem@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-VEH): SP-426. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "5851b9e83f5bdae7b253e69f3d2d22bd06bebe79310e90e9b32a8d7820873f31",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/cookbooks/family-b/get-in-ausente.md",
+          "source_revision": "kp-update-wp-veh@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b40f5be2cf4e86876732bad58dfe9006a36953b85faa73a5fe25a6d6a4ff74a4",
+      "output_hash": "5851b9e83f5bdae7b253e69f3d2d22bd06bebe79310e90e9b32a8d7820873f31",
       "output_path": "skills/rip-vehicle-import/cookbooks/family-b/get-in-ausente.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -12435,10 +12505,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-wp-enf@2026-10-01",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-VEH): new claims CLAIM-DASHBOARD-LIGHT-RESYNC, CLAIM-INVVIEW-VIEW0-DEF, CLAIM-GETIN-LHD-BASE-TABLE against the 1.30.164014 Exp scripts; existing claim ranges shifted with the inserted lines.",
+          "license": "MIT",
+          "source_hash": "d62eb99a38a45dde8c646f6dd1e6e473dfef2ac27edfcf34adc85ffe40609384",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-wp-veh@2026-10-01",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "513c86fdcb89864c7ddcde374553878aa8ed9993f8d1a57af206f60b5d564a4f",
+      "output_hash": "d62eb99a38a45dde8c646f6dd1e6e473dfef2ac27edfcf34adc85ffe40609384",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -24614,10 +24694,20 @@
           "source_path": "dayz-motorbikes/SKILL.md",
           "source_revision": "filesystem@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 backlog harvest (WP-VEH): LL-507. Patch proposed by GLM-5.3-Flash on the local GX10, reviewed and applied by Claude (Anthropic); every [EXACT] citation machine-checked against the DayZ 1.30.164014 Exp / 1.29 stable extractions or the source ledger entry.",
+          "license": "MIT",
+          "source_hash": "7d66672423b26c94b5993f0d78d246a34afe8a41d5356987c5e0bb82201cf593",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "kp-update-wp-veh@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f7247be487b6ab4dc976fa4dbdd9bfbc261e7b4d154300912011e2d34513f2ae",
+      "output_hash": "7d66672423b26c94b5993f0d78d246a34afe8a41d5356987c5e0bb82201cf593",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"

@@ -118,6 +118,8 @@ their initial hide phase is not guaranteed applied. The force-hide only exists a
 the hide animations actually BAKED — see the skeletonBones invariant below. Satmap-in-bank
 verified in-game 2026-08-19 (SUB_BRZ, 1.29 diag, human driver gate).
 
+**Sliding-plate tile window: fix the border row and size the bezel with `wy + COVER + T` (SP-402, added 2026-10-01, SUB_BRZ s95).** [DESIGN] On a sliding-plate tile map with the marker centred, the hidden margin under the window must reach one full tile past the lowest window corner: with a free bottom row it is 1.5 tiles deep (97.5 mm under the centre on a 7x5 grid of 32 mm tiles, window +/-88.63 x +/-52.92 mm, bezel 99 mm). Pinning the bottom row with `minValue`/`offset0` in its `_y` class (same slope), whenever its top edge stays COVER below the lowest projected window corner, cuts the requirement to 88.68 mm and the bezel to 90 mm. Under the window the requirement is always `wy + COVER + T`; with a centred marker nothing below one full tile reduces it. If a smaller bezel is wanted, the lever is tile size (zoom), not the window - say so with a preview.
+
 **Seated-view geometry lives in the View Pilot LOD (invariant, added 2026-08-19, SUB_BRZ v1.2):**
 A car with a View Pilot LOD (resolution 1100) renders THAT copy of the geometry for seated
 occupants, not LOD0. Any geometry/UV/selection patch that must be visible from the driver seat
@@ -517,6 +519,19 @@ in both `GetSeatAnimationType` and `CrewCanGetThrough`. `CarScript` already maps
 all four `seat_*` selections to `seat_con_1_1`, `seat_con_2_1`,
 `seat_con_1_2`, and `seat_con_2_2` (`carscript.c:2674-2689`), so an override of
 `GetDoorConditionPointFromSelection` that only repeats that table is dead code.
+
+**That base table is the LEFT-HAND-DRIVE mapping (SP-426, added 2026-10-01, WRX STI B-01).**
+[EXACT][CLAIM-GETIN-LHD-BASE-TABLE] On a right-hand-drive car whose memory points are named by
+physical side (driver door = `seat_con_2_1`), the base table pairs every seat with the FAR door:
+each seat is evaluated against the opposite door and `CanReachSeatFromDoors` fails the 1.0 m
+plan-distance test from the correct one, so no get-in appears with names, points and `componentNN`
+all correct. Signature in `query_get_in_condition`: `unreachable` from the correct door and
+`available` from the opposite one. Override it crossing the sides (driver->`seat_con_2_1`,
+codriver->`seat_con_1_1`, cargo1->`seat_con_2_2`, cargo2->`seat_con_1_2`), as vanilla does for its
+own layouts (`OffroadHatchback.c:364-379`, `Van_01.c:269-287`, DayZ 1.30.164014 Exp). On RHD cross
+`GetSeatAnimationType` for the rear seats too (vanilla pairs L with the physical left side,
+`CivilianSedan.c:119-134`); the driver keeps `VEHICLESEAT_DRIVER`, whose get-in animation will look
+LHD-sided - an engine limit, not a mod bug.
 
 **BEFORE any numbered gate below — calibrate the gate itself (SP-132, added 2026-07-29; LFHeli HH-60G + OH-1).**
 Two rules in this file already cover this — §"Calibration + scope (so a gate is trustworthy, not a false
@@ -1352,6 +1367,8 @@ gate was scoped to a single defect. No gate compared a model's 1100 against its 
 is hand-edited outside the builder — this one is proxy-only in `rip_p3_structural.py` and was
 cloned by hand — it has no owner and no gate, which is exactly where silent cuts live.
 
+**A decimated LOD can keep every texture and material path and still render wrong: collapsed UVs.** [EXACT] On LFQuad3 the far LODs lost the body texture and the quad looked different up close, while the texture/material path census was clean; only a per-texture UV-AREA census found it - LODs 2-4 carried body faces with UV area 0 across the board (LOD2: body1 1.827/1.827, body3 1.706/1.706, body2 2.618/2.650, metal 880/880) and LODs 5-6 cited only `metal_co` (measured in game, DayZ 1.30.164014 Exp). A ViewPilot (res-1100) derived from a decimated LOD inherits the defect. Action: when a vehicle looks different from afar or seated, census UV area per texture on every visual LOD and on the 1100/1200 before touching textures or materials; fix by UV transfer from the intact LOD, then re-census.
+
 ## METHOD — three habits that stop the re-derivation (apply BEFORE the per-invariant fixes)
 
 Not invariants but the working method that would have saved most of the LFQuad→SUB_BRZ→MercedesAMGLF
@@ -1609,6 +1626,21 @@ Left-hand doors take `8`, right-hand doors take `4`. Vanilla applies this in eve
 while its opposite renders normally, with everything else identical: same LOD table, same named
 properties, same bounding box, same distance to origin, same selections, same winding. Symmetric
 config plus symmetric geometry plus one side blank means look at `rotationFlags` before the model.
+
+### 7. An inventory preview goes BLANK when `invview` sits at the bounding-box centre (SP-415, added 2026-10-01, SUB_BRZ s98)
+
+A part mounts, renders in the world and keeps its tooltip, and its inventory preview is still empty.
+`ItemPreviewWidget` view 0 is `boundingbox_min + boundingbox_max + invView`
+[EXACT][CLAIM-INVVIEW-VIEW0-DEF] (`scripts/3_game/gameplay.c:293`, DayZ 1.30.164014 Exp), and the
+icon forces `SetModelOrientation("0 0 0")` + `SetView(GetViewIndex())`
+(`containeditems/Icon.c:1385-1386`): with `invview` at the box centre the eye-to-centre direction is
+null and the render comes out empty. Measured on the two SUB_BRZ doors (s98, in game, DayZ
+1.30.164014 Exp): both had `invview` within 3e-8 m of the bbox centre (and of `ce_center` / `pos
+center`); vanilla puts it ~1.07 m from the centre, OUTSIDE the box, on the side to show, and reuses
+the same point on both mirrored doors. Never write `invview = (min+max)/2`; offline gate:
+|invview - bbox centre| > 0.3 m for every part with a preview. With `invview2` present,
+ATTACHMENT/GROUND render view 1 and CARGO/HANDS view 0 (`scripts/3_game/entities/entityai.c:3746-3788`) -
+design both point sets together or not at all.
 
 ## Get-out desync: one-shot bilateral OnDriverExit probe (SP-276, origen LFHeli LF-001)
 

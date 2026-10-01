@@ -42,6 +42,8 @@ proxy = needles STATIC in-game (s45 falsification); (b) the selections that DO w
 - light_dashboard ships duplicated shell+proxy with identical coords and works FROM the
 shell copy. MercedesAMGLF carries the same latent defect (interior selections in proxy).
 
+A static proxy animates NONE of its pieces, and one dead anim hides the rest (SP-407, added 2026-10-01, SUB_BRZ s95->s96). [DESIGN] s95 moved the needles off the interior proxy and left `DrivingWheel` on it - the steering wheel had never turned, and finding it cost another full cycle. When a dead animation exposes a static proxy, enumerate EVERY `Animations` class bound to that proxy and move them ALL to the shell in the SAME change, with their bones appended to the shell skeleton.
+
 Rules for a proxy-split car (day-1 for car #2, surgery for cars in flight):
 1. Every hiddenSelections entry needs its faces in the SHELL, in LOD0 AND the ViewPilot
    1100 (SP-189: 1100 mirrors LOD0 content).
@@ -55,3 +57,15 @@ Rules for a proxy-split car (day-1 for car #2, surgery for cars in flight):
 4. Reference surgery with asserts (component pick by aspect+centre, per-LOD face deltas,
    selection cardinality, proxies/bones untouched):
    <vehicle-import>/work/lfvui_f2/surgery_screen_nav.py.
+5. Scan body-vs-proxy for COINCIDENT faces and keep ONE copy (SP-401, added 2026-10-01, SUB_BRZ
+   s94): a vertex-match scan (0.05 mm tolerance, negative control) found 384 `light_dashboard_static`
+   body faces sitting exactly on proxy faces wearing a DIFFERENT material, plus 42 proxy panel faces
+   0.5 mm behind `light_dashboard` - the user saw intermittent flicker at rest. Coincident duplicates
+   that can ever wear different materials z-fight; leave one owner per face.
+6. The dashboard light index has ONE writer (SP-401). [EXACT][CLAIM-DASHBOARD-LIGHT-RESYNC] Vanilla
+   registers `SELECTION_ID_DASHBOARD_LIGHT` (index 8) with `dashboardMatOn`/`dashboardMatOff`
+   (`carscript.c:230-231`) and `UpdateLightsServer` rewrites it on every resync - `DashboardOff`
+   whenever `!LightIsOn()` (`carscript.c:1974-2025`, called on braking, gear change and each sync;
+   DayZ 1.30.164014 Exp). Any script that must re-assert the dashboard material after a resync calls
+   that same owner; a timer writing a fixed `dashboardMatOn` fights the resync path and the index
+   flickers between the two materials (measured in game).

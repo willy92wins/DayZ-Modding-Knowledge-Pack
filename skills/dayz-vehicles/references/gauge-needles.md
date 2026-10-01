@@ -1162,6 +1162,17 @@ el defecto que se creia estar arreglando. Regla: el testigo de winding es una ca
 VISIBLE de normal conocida; la estadistica sobre el centroide solo vale en un convexo, y el
 volumen con signo solo en una malla estanca, que hay que comprobar ANTES de citarla.
 
+## Trampa 18 — a verdict on a STATIC cluster does not accredit needle motion (SP-400, added 2026-10-01, SUB_BRZ s77/s94)
+
+The interior proxy carried the three needles with their `Indicator*` classes. [EXACT] The user's
+verdict on that build was "driver dash correct", and the turn sign was taken as proven from it;
+in s94, watching the moving car, the needles had NEVER moved - frozen at full left. The sources were
+the same ones that move on the quad control car and the wiring chain was identical: they had never
+animated at all (measured in game, DayZ 1.30.164014 Exp). A global verdict on a static cluster
+accredits neither movement nor turn sign: ask to move the car and look at the needle before closing
+a gauge task. Needles and their `Indicator*` classes live in the VEHICLE model, never in a static
+proxy (SP-192).
+
 ## Receta completa para un cuadro nuevo, en orden
 
 Pasos numerados. Cada uno con su gate offline y la funcion de LFQuad3 que lo

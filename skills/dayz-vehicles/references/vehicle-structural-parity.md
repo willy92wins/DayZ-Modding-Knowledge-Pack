@@ -827,6 +827,13 @@ car; they override `CrewCanGetThrough`/`GetSeatAnimationType`/`GetAnimInstance` 
 carry the memory points `seat_con_1_1`/`seat_con_2_1`, positioned so the player is ≤ 1.0 m away when facing the
 door/seat. The `crew` config must expose `seat_driver`/`seat_codriver`.
 
+LHD-only caveat (SP-426, added 2026-10-01, WRX STI B-01): [EXACT] "no override is needed" holds for
+a LEFT-HAND-DRIVE layout only. On a right-hand-drive car whose memory points are named by physical
+side (driver door = `seat_con_2_1`), the base table pairs each seat with the far door and get-in
+dies on the 1.0 m test from the correct door; override `GetDoorConditionPointFromSelection` crossing
+the sides, as vanilla does for its own layouts (`OffroadHatchback.c:364-379`, `Van_01.c:269-287`,
+DayZ 1.30.164014 Exp).
+
 ### Doors are NOT required for get-in
 
 `GetCarDoorsState` returns `DOORS_MISSING` when no `CarDoor` attachment exists (`civiliansedan.c:178-181`,

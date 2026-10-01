@@ -56,3 +56,17 @@ the chain being necessary was rejected by review for exactly that. Measure `firs
 seat BEFORE editing the model, the config or the script.
 
 <!-- END MOVED-EXACT -->
+
+## Fourth subcause of guard 5 (measured, WRX STI B-01): the base seat->door table is LEFT-HAND-DRIVE
+
+[EXACT] On a right-hand-drive car with memory points named by physical side, base
+`CarScript.GetDoorConditionPointFromSelection` pairs every seat with the FAR door
+(`carscript.c:2141-2160`, DayZ 1.30.164014 Exp): `CanReachSeatFromDoors` fails the 1.0 m plan test
+from the correct door and no get-in appears, with names, points and `componentNN` all correct.
+`query_get_in_condition` signature: `unreachable` from the correct door and `available` from the
+opposite one - the exact mirror of the healthy sweep. Override crossing the sides
+(driver->`seat_con_2_1`, codriver->`seat_con_1_1`, cargo1->`seat_con_2_2`, cargo2->`seat_con_1_2`),
+as vanilla does for its own layouts (`OffroadHatchback.c:364-379`, `Van_01.c:269-287`). On RHD also
+cross `GetSeatAnimationType` of the rear seats; the driver keeps `VEHICLESEAT_DRIVER`, whose get-in
+animation will look LHD-sided - an engine limit, not a mod bug. (Measured in game, DayZ
+1.30.164014 Exp; first measured on 1.29 Diag, 2026-09-04.)

@@ -181,6 +181,7 @@ la bisagra a un metro de donde va, en verde.
    gate offline que caza un signo invertido es **fisico**: el **borde libre** (la banda OPUESTA a
    la bisagra) debe SUBIR al abrir. Un gate de desplazamiento por magnitud (`|delta| > umbral`)
    pasa en verde con el signo invertido — mide que se mueve, no hacia donde.
+   **[EXACT] The free-edge gate validates its OWN arithmetic, and the opening SENSE is calibrated in game** (SP-377, added 2026-10-01, WRX STI first flight): an offline gate that re-derives the rotation and checks a directional property never consults the engine convention. Measured in game (DayZ 1.30.164014 Exp, 2026-08-21): the two GREEN rows were exactly the two pieces opening DOWNWARD (`open_free_edge_lift_m` +1.4021 hood, +0.8393 trunk, gate green), and on a VERTICAL hinge the criterion is inapplicable - a car door does not rise (its side roles read 0.0000/0.0000/-0.0506/-0.0506). Offline still decides axis, role face set and the per-side sign split; calibrate the opening SENSE with ONE in-game observation per car, recorded in the profile: with signs split per side, one observation fixes all six (all six reversed = convention; mixed = bad role split). Declare N/A where the rule does not apply instead of competing with a number in the same table.
 
 4. **El gate del eje NO valida el conjunto de piezas del rol, y es facil creer que si.** El eje se
    ajusta sobre UNA pieza (la que declara la bisagra). Meter en el rol una pieza que no toca — una

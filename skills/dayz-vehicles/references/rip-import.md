@@ -953,6 +953,8 @@ Method lesson: the cheap discriminator was measuring the visual proxies' FRAMES 
 control BEFORE touching the item's LODs — s36 spent its cycle on the item asset instead.
 Promoted: dayz-vehicles preflight #21 + rip-vehicle-import §attachment-render (2026-07-18).
 
+**Changing the TRACK means moving the WHOLE corner, and the limit is the hub, not the arch (SP-416, added 2026-10-01, SUB_BRZ s97).** [EXACT] The four wheel proxies share ONE frame per LOD (vanilla mirrors the MODELS per side, not the frames), so shifting the wheel mesh inside the wheel `.p3d` moves the left wheels inboard and the right ones outboard at the same time. To change the track, move per side: the proxy triangle in every LOD that carries it, the `wheel_<side>_<axle>_*` memory points (axle, damper, damper_axis, damper_land, steering, steering_axis), the `..._damper_land` Geometry box, and the brake/hub chunk plus its merged copies in the far LODs - on SUB_BRZ s97 that was 748 shell points and 1,570 chunk points in total for 10 cm of track (5 cm per side). The travel limit is the brake/hub box reaching the rim's inner face, not the wheel arch; profile the rim sweep (local x, radius) against the brake points before spending a cycle.
+
 
 ## Wheel proxy frames are a `(frame, referenced model)` pair (SP-156, added 2026-08-31)
 
