@@ -464,9 +464,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Unreleased Fixed entry for the killer #1 quote: killers-detail.md line 63 (killer #1, note on generating or editing a collision LOD) quoted the text of py3d's relative-check message, 'winding is INVERTED relative to the Visual LOD' (tools/py3d/py3d/__init__.py:1187 on main eca85e6), which PR #40 rewrites; the line now names the finding by its code, ERR_WINDING_INVERTED, as line 44 of the same note already does. Edited within the line: no line moved, no claim range shifted. git grep on main found no other skill or knowledge file quoting that message text. Authored by Claude (Anthropic) on the owner's request (2026-10-02: fix the pending stale quote flagged during PR #40); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "61b88c32fae85ba76b6f8f6c0ae54018cb90099cfc595f02a92372b1024cbd69",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-killers-quote@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask (lines 45-60); not its reference positions (lines 79-92: vanilla action extracts mark most bones RELATIVE through SEAnim bone modifiers, 61 of 73 in p_erc_jam_pm73_ras, so they are offsets from rest written as absolute offsets) nor its per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets (bone axis of anatomical chains only, so RightHand_Dummy and its child Weapon_Root do not count; roll of Spine3 and both hands within 2 deg of vanilla's across-bone direction: both real rigs read within 0.07 deg, the real JD rig rolled by 180, 30, 5 or 2.5 deg is refused, by 1 deg accepted), refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones and per-frame positions, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones and their rotations are identical (positions differ by design). Regression test tests/test_seanim_export.py (18 cases: the first 11 red on eca85e6's script, the 4 added after review round 1 red on 4ce4bbd's, the 2 added after round 2 red on fa2676b's, all green on this one). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol, cap of 2 rounds set before round 1: round 1 on 4ce4bbd UNSOUND (P1 reference positions copied from RELATIVE vanilla extracts, P1 detector blind to a rolled rig, P2 a moved helper vetoes a valid rig), fixed in fa2676b; round 2 on 1d50f73 UNSOUND (F1 closed; variants: a 30 deg roll inside the 45 deg cone gives 15.36 deg wrong rotations, Weapon_Root under RightHand_Dummy still vetoes; merge with main verified intact), fixed after the cap and verified mechanically with fixtures and the reviewer's repros on the real rigs. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "3665d297f55883f5d248254f4443d2ab0a095a783d9bfd60c19c47d5968c264f",
+          "source_hash": "e5592537b800cd169bbf06a277f9b7443b12d9660c990ee76835b1b7108e6ed9",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-seanim-handedness@2026-10-02",
@@ -474,7 +484,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3665d297f55883f5d248254f4443d2ab0a095a783d9bfd60c19c47d5968c264f",
+      "output_hash": "e5592537b800cd169bbf06a277f9b7443b12d9660c990ee76835b1b7108e6ed9",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8024,10 +8034,20 @@
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "killers-detail.md line 63 (killer #1, note on generating or editing a collision LOD) quoted the text of py3d's relative-check message, 'winding is INVERTED relative to the Visual LOD' (tools/py3d/py3d/__init__.py:1187 on main eca85e6), which PR #40 rewrites; the line now names the finding by its code, ERR_WINDING_INVERTED, as line 44 of the same note already does. Edited within the line: no line moved, no claim range shifted. git grep on main found no other skill or knowledge file quoting that message text. Authored by Claude (Anthropic) on the owner's request (2026-10-02: fix the pending stale quote flagged during PR #40); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "b25d3fdee2d8f94c0e7ffe1b22a4d50ef36d87382dbea00a838ccaef2f66d2b8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "kp-update-killers-quote@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "010920c5b4a4df7ca742637ef7baeecec262fc4c407ec20970e382a493cc213b",
+      "output_hash": "b25d3fdee2d8f94c0e7ffe1b22a4d50ef36d87382dbea00a838ccaef2f66d2b8",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"

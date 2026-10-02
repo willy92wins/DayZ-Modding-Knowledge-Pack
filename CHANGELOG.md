@@ -136,6 +136,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   winds every face of each collision box outward and trades the finding for
   `ERR_WINDING_VS_NORMALS`, and `validate()` goes quiet only once those LODs' normals are negated
   too, with every LOD wound outward.
+- `dayz-p3d-audit` killer #1 (`references/killers-detail.md`): the note on generating or editing a
+  collision LOD quoted the text of py3d's relative-check message ("winding is INVERTED relative to
+  the Visual LOD"), which can change with py3d; it now names the finding by its code,
+  `ERR_WINDING_INVERTED`, as the automated-check note above it already does.
 - `dayz-animation-pipeline` `scripts/seanim_export.py` wrote the viewer's bone-local quaternions and
   rest offsets as they are, in the viewer's right-handed frame. It now carries the Route C
   conversion calibrated 2026-06-29 on the JD Master Rig (rotation `(x,y,z,w) → (−y,−z,x,w)`, rest
