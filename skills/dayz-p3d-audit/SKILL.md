@@ -345,7 +345,8 @@ that false-positive on DayZ left-handed models; Check A winding-vs-averaged-norm
 edge-pair topology, Check C vs-vanilla; minority-group isolation per welded component, then
 the group's vertex order flipped with its stored normals read by Check A first — negated in
 the same pass only where they turned along with the winding (unless the pipeline recalculates
-them afterwards), kept where the winding alone was reversed; full-sphere back-dominance battery
+them afterwards), kept where the winding alone was reversed — and a corner-by-corner check of
+the whole LOD to close; full-sphere back-dominance battery
 for inverted faces with NO topological minority, judging residue in visible pixels, never face
 counts; known lessons learned incl. `flip_winding.py`
 idempotency and Crate_Wooden mixed winding tolerated in render) →

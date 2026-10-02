@@ -92,34 +92,52 @@ external artist models, player report "plank normals are inverted"):
    Real legitimate residual: front-dominant faces with minor slit backfaces
    (healthy pattern measured: 4335 px front / 59 back).
 3. **Read the group's stored normals, then fix it**: before touching the group, read each of
-   its faces with Check A, the sign of `dot(n_winding, average of its corner normals)`. Then
-   invert the vertex order of every face of the group (`v[:1] + reversed(v[1:])`), and per
-   face:
-   - **Normals agree with the inverted winding** (dot > 0: they turned along with it; second
-     row of the Check A table): **negate stored normals of those corners in the same pass** —
-     UNLESS pipeline recalculates normals in a subsequent step. This is the GunRacks case:
-     there each minority group had its winding AND its stored normals reversed against its
-     neighbours', and the fixers of T1/T2 and of the second pass refused to save unless 0
+   its faces with Check A, `dot(n_face, average of its corner normals)` with both vectors
+   normalized, where `n_face` is the face's vector area: the sum of
+   `cross(v[j] − v[0], v[j+1] − v[0])` over its fan triangles. On a triangle or a planar
+   convex quad it points like Check A's `n_winding`; on a non-planar or non-convex quad the
+   first three corners can point the other way, and which three they are changes with the
+   reversal, while the vector area turns exactly. [OFFLINE MEASURED 2026-10-02] A planar dart
+   quad whose reflex corner sat at index 1 after `reverse()`, and a twisted quad reversed by
+   `v[:1] + reversed(v[1:])`, sent the first-three reading to the wrong branch in both states
+   below; the vector area sent all four right. Then invert the vertex order of every face of
+   the group (`v[:1] + reversed(v[1:])`), and per face:
+   - **Normals agree with the inverted winding** (reading ≥ +0.5: they turned along with it;
+     second row of the Check A table): **negate stored normals of those corners in the same
+     pass** — UNLESS pipeline recalculates normals in a subsequent step. This is the GunRacks
+     case: there each minority group had its winding AND its stored normals reversed against
+     its neighbours', and the fixers of T1/T2 and of the second pass refused to save unless 0
      flipped faces had summed stored normals against the new winding (2026-08-28).
      A fixer that only inverts vertices (e.g. GunRacks `fix_winding.py`) is correct ONLY
      because its pipeline recalculated normals afterwards; copying that mechanic to a pipeline
      without recalculation leaves face visible but shaded inside out (second lost cycle).
-   - **Normals disagree with the inverted winding** (dot < 0: only the winding was reversed,
-     and the normals still point like the neighbours'; fourth row): **keep them**; the new
-     vertex order alone makes them agree. [OFFLINE MEASURED 2026-10-02] On a Visual LOD made of
-     one Rule 12 unit box, with one face reversed and its normals untouched, negating them as
-     well left 5 of 6 faces agreeing (83.3 %, in py3d's absolute check and in Check A), while
-     keeping them restored 6 of 6, corner for corner the undamaged model; both left 0 edges
-     traversed the same way by both faces. The same held with smoothed normals (one pool
-     entry per point, shared by three faces) and for a two-face group with one face in each
-     state: 83.3 % after negating both, 100 % after deciding face by face.
-   - A face that reads 0, or whose corner normals point to opposite sides of it, has no
-     reading: inspect it (Check A), never infer its normals from the rest of the group.
+   - **Normals disagree with the inverted winding** (reading ≤ −0.5: only the winding was
+     reversed, and the normals still point like the neighbours'; fourth row): **keep them**;
+     the new vertex order alone makes them agree. [OFFLINE MEASURED 2026-10-02] On a Visual
+     LOD made of one Rule 12 unit box, with one face reversed and its normals untouched,
+     negating them as well left 5 of 6 faces agreeing (83.3 %, in py3d's absolute check and in
+     Check A), while keeping them restored 6 of 6, corner for corner the undamaged model; both
+     left 0 edges traversed the same way by both faces. The same held with smoothed normals
+     (one pool entry per point, shared by three faces) and for a two-face group with one face
+     in each state: 83.3 % after negating both, 100 % after deciding face by face.
+   - A face that reads between −0.5 and +0.5 (normals near its plane, where the sign is noise
+     and a change of 1e-15 picks the other branch), or whose corner normals point to opposite
+     sides of it, has no reading: inspect it, never infer its normals from the rest of the
+     group.
 
    Safe mechanics with global POOL: if `normal_index` of the corners to negate are exclusive
    to them, negate in place; if any is shared with a corner whose normal you keep (a face
    outside the group, or a face of the group that keeps its normals), add negated normal as
    new pool entry (32768 budget) and reindex only those corners.
+
+   Close on the whole LOD, not on the group: Check B finds no edge traversed the same way by
+   both faces, and every corner normal points along its face's vector area (`dot > 0`).
+   py3d's absolute check reads one corner per face and the group's reading sees only the
+   group, so neither sees corners spoiled outside it. [OFFLINE MEASURED 2026-10-02] On the
+   smoothed box, with the reversed face's normals negated in place on entries its four
+   neighbours share, this step repaired that face with four pool copies and left 8 corners of
+   the neighbours pointing outward; py3d read 100 % with no winding finding (each neighbour's
+   first corner was intact), while the corner check found the 8 and Check A read 33.3 %.
 
    *(Corrected 2026-10-02: this item read "**Coupled fix**: invert vertex order
    (`v[:1] + reversed(v[1:])`) **and negate stored normals of those corners in the same

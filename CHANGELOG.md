@@ -84,9 +84,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   83.3 % agreement, reversing alone restored 100 % and the undamaged model; smoothed normals
   shared by three faces, and a two-face group with one face in each state, read the same way.
   Step 3 now reads the group with Check A before the fix and decides face by face: normals that
-  agree with the inverted winding are negated with it, normals that disagree are kept, and a face
-  that reads 0, or whose corner normals point to opposite sides of it, is inspected. Its pool rule
-  gives a negated copy to an entry that any kept corner also uses. The section title and the
+  agree with the inverted winding (reading at least +0.5) are negated with it, normals that
+  disagree (at most −0.5) are kept, and a face that reads in between, or whose corner normals
+  point to opposite sides of it, is inspected. The reading goes through each face's vector area,
+  because the first three corners of a non-planar or non-convex quad can read backwards once the
+  face is reversed (measured on a planar dart quad and a twisted one: wrong branch in both states).
+  Its pool rule gives a negated copy to an entry that any kept corner also uses, and the fix closes
+  on the whole LOD, Check B plus every corner normal along its face: py3d's absolute check reads
+  one corner per face, and on a smoothed box whose shared entries had been negated in place it
+  read 100 % with 8 corners still wrong. The section title and the
   `SKILL.md` index line said the same and are corrected with it; the GunRacks measurement and the
   recalculation caveat are kept verbatim, and the old text is quoted in dated notes. Item 1 of "The
   three py3d gates" said `ERR_WINDING_INVERTED` "suggests swapping vertices on every face"; the
