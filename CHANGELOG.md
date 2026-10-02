@@ -5,6 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-02
+
+The Blender→DayZ map end to end: py3d 1.8.0 `blender_to_dayz()` and the deprecation of
+`BLENDER_TO_DAYZ`; Rule 12 carried into the character route (measured in game), the clothing,
+animation and model-pipeline routes; Check A labels aligned with it; and packctl promotion
+unblocked for schema-1 receipts sealed in a checkout that no longer exists.
+
 ### Added
 
 - `dayz-mcp-verify`: gating a PR through an external executor. A programmatic swap of Windows
