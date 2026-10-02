@@ -1014,6 +1014,32 @@
       "source_id": "obsidian-knowledge",
       "source_revision": "filesystem@2026-10-01",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/skill.md",
+      "claim_id": "CLAIM-B2D-PROXY-FRAME-EQUIV",
+      "evidence_locator": "Byte-identical binarized parents prx_parent_b / prx_parent_e (sha256 dc2b45d1c151658bba525422b2f50b86eebc2cf3cf47081e48a986e89c429fa4) from the 2026-10-01 py3d 1.8.0 probe (DayZDiag 1.29.163709), re-checked 2026-10-02 against the PBO DayZ loaded; identity crew and wheel proxies through add_proxy(space=engine) driven on LFDucati after T90 (vault LL-505 frame fix, LL-506 drives, T92); a non-identity crew frame is not validated (LFDucati T93)",
+      "license": "MIT",
+      "line_end": 224,
+      "line_start": 224,
+      "observed_at": "2026-10-02",
+      "promotion_artifact_id": "skill/dayz-model-pipeline",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-10-02",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+      "claim_id": "CLAIM-B2D-PROXY-FRAME-EQUIV-REF",
+      "evidence_locator": "Byte-identical binarized parents prx_parent_b / prx_parent_e (sha256 dc2b45d1c151658bba525422b2f50b86eebc2cf3cf47081e48a986e89c429fa4) from the 2026-10-01 py3d 1.8.0 probe (DayZDiag 1.29.163709), re-checked 2026-10-02 against the PBO DayZ loaded; identity crew and wheel proxies through add_proxy(space=engine) driven on LFDucati after T90 (vault LL-505 frame fix, LL-506 drives, T92); a non-identity crew frame is not validated (LFDucati T93)",
+      "license": "MIT",
+      "line_end": 263,
+      "line_start": 263,
+      "observed_at": "2026-10-02",
+      "promotion_artifact_id": "skill/dayz-model-pipeline",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-10-02",
+      "verification_level": "cross_checked"
     }
   ],
   "schema_version": 1
