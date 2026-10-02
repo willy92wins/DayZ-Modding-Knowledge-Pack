@@ -79,6 +79,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   COMMIT receipt hash. It explains only the concrete target paths it wrote that the check
   writes again, under this installation's roots. `promotions/adjudications.json` adjudicates
   the live `dayz-motorbikes` copy, which no receipt explains, for replacement by this version.
+- `dayz-p3d-audit` Check A labels (`references/winding-diagnostics.md`): `UNIFORM_FLIPPED` was
+  called the expected state after a Blender export and `UNIFORM_NON_FLIPPED` a skipped handedness
+  step. Rule 12 writes the cross product and the stored normals both inward, so a correct export
+  reads `UNIFORM_NON_FLIPPED`; `UNIFORM_FLIPPED` is the older outward-normal convention (it renders
+  solid, and the 2026-04-25 Crate_Wooden in-game check stands) or a correct export with its faces
+  reversed afterwards. Measured offline on the three MLODs of the Rule 12 in-game test, Check A
+  reads `UNIFORM_NON_FLIPPED` on all three, the inside-out one included, so the item now maps
+  agreement (counted on the same averaged normal), and the direction of the cross product relative
+  to the side meant to be seen, to a state and a fix. The direction is decided per closed shell,
+  faces linked only through edges that exactly two faces share (signed volume by winding on the
+  visual LOD, where a LOD-wide sum hid one inverted box of four and a union through every welded
+  edge moved the inversion onto a healthy box; Rule 18's per-component check on collision LODs),
+  and `proxy:*` triangles stay out of the census and the fixes. The same file's
+  centroid-check note no longer gives a correct model outward normals, and its pointer to Check A
+  in `audit_p3d.py`, which has none, now names the check the script does run. Two other passages
+  taught the old reading and are corrected: the `dayz-p3d-audit` decision tree asked for outward
+  collision winding and swapped `verts[1]`/`verts[2]` when inward (it now reverses only the
+  outward component), and `dayz-model-pipeline`
+  `py3d-direct-generation.md` said any disagreement between winding and normals renders
+  inside-out.
 
 ## [1.4.0] - 2026-10-01
 

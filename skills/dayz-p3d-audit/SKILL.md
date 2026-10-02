@@ -256,7 +256,13 @@ Missing stages produce engine warnings but don't crash.
    NO  ↓ (P3D Geometry LOD issue — engine can't raycast)
 
 5. Run audit_p3d.py and check:
-   a. Face winding outward?      → If inward: swap verts[1]/verts[2]
+   a. Collision cross product INWARD per component (dayz-model-pipeline Rule 18)?
+                                 → If OUTWARD: face.vertices.reverse() on the faces of that
+                                   component only (proxy:* faces excluded), never a
+                                   verts[1]/verts[2] swap (a quad crosses); for the normals, see
+                                   the Check A table in references/winding-diagnostics.md.
+                                   (Corrected 2026-10-02: this line asked for OUTWARD winding and
+                                   swapped verts[1]/verts[2] when inward.)
    b. Component01 uppercase C?   → If wrong case: rename
    c. autocenter=0 LOD property? → If missing: add
    d. pos center in Memory?      → If missing: add at (0,0,0)
