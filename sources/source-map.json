@@ -2837,10 +2837,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-mcp-verify-port@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 promotion of da73457 to the installed skill trees and the vault snapshots, approved by the owner after reviewing the plan: promote --check WARN with only PROMOTION-DRIFT, then promote --apply PASS. The receipt is the bytes packctl wrote, sealed by the COMMIT event of its journal; adjudications.json carries the advance packctl made at COMMIT for the two adjudicated skills (dayz-motorbikes, dayz-mcp-verify). Every destination re-measured after apply with packctl tree_digest equals its plan after_digest. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "82db64755310729a9f70a53725dc90be8b87c152b5a7defc89fe4a940c6e2847",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "430158df2b66cb68ff0c832552b6bd8ed82b910818904ebb084113d9f5767f63",
+      "output_hash": "82db64755310729a9f70a53725dc90be8b87c152b5a7defc89fe4a940c6e2847",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -27709,6 +27719,28 @@
       "license": "MIT",
       "output_hash": "46ee260b57f1c2b00be8951d643d586ac8fcc00f7b39acf845e3856fae1e057b",
       "output_path": "promotions/receipts/184d310847e3046884b4837d.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/1ff300dc61088b3b7bb0478a.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-02 promotion of da73457 to the installed skill trees and the vault snapshots, approved by the owner after reviewing the plan: promote --check WARN with only PROMOTION-DRIFT, then promote --apply PASS. The receipt is the bytes packctl wrote, sealed by the COMMIT event of its journal; adjudications.json carries the advance packctl made at COMMIT for the two adjudicated skills (dayz-motorbikes, dayz-mcp-verify). Every destination re-measured after apply with packctl tree_digest equals its plan after_digest. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "773163570834a12270445358169290661261bf33c1469565359046637260983c",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/1ff300dc61088b3b7bb0478a.json",
+          "source_revision": "kp-update-promotion@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "773163570834a12270445358169290661261bf33c1469565359046637260983c",
+      "output_path": "promotions/receipts/1ff300dc61088b3b7bb0478a.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
