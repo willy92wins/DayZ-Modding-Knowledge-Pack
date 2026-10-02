@@ -1296,18 +1296,20 @@ def _relocated_v1_receipt(
     plan: dict[str, object],
     transaction_id: str,
 ) -> Path | None:
-    """Where a schema-1 receipt sealed in another checkout lives in ``root``.
+    """Where a schema-1 receipt sealed in a removed checkout lives in ``root``.
 
     Schema 1 binds a receipt to the checkout that applied it: the sealed plan
     records that checkout as ``source_root`` and the receipt under it. A
     promotion run from a temporary worktree leaves its receipt committed to
     the repository, and once the worktree is removed the receipt can only be
-    read from another checkout. That move is accepted between the canonical
-    layouts only: the sealed ``receipt_path`` is
-    ``<source_root>/promotions/receipts/<transaction_id>.json``, and in
-    ``root`` the same relative path is a regular file that HEAD tracks with
-    these bytes. Callers still match it against the sealed plan and the COMMIT
-    receipt hash. Returns the path in ``root``, or None if the move is refused.
+    read from another checkout. Check and journal sweep accept that move under
+    one rule: the sealed ``receipt_path`` is
+    ``<source_root>/promotions/receipts/<transaction_id>.json`` and no longer
+    exists; in ``root`` the same relative path, with no link on the way, is a
+    regular file whose bytes are the blob HEAD stores. Callers still match it
+    against the sealed plan and the COMMIT receipt hash, and a check only lets
+    it explain targets under this installation's roots
+    (``_sealed_targets_within``). Returns the path in ``root``, or None.
     """
     if plan.get("schema_version") == 2:
         return None
@@ -1321,20 +1323,60 @@ def _relocated_v1_receipt(
     )
     if os.path.normcase(os.path.normpath(sealed_path)) != expected_sealed:
         return None
+    historical = Path(sealed_path)
+    if historical.exists() or historical.is_symlink():
+        return None
     candidate = root / relative
-    if candidate.is_symlink() or _is_junction(candidate) or not candidate.is_file():
+    for step in (root / "promotions", root / "promotions" / "receipts", candidate):
+        if step.is_symlink() or _is_junction(step):
+            return None
+    if not candidate.is_file():
         return None
-    posix = relative.as_posix()
     try:
-        head_blob = git_output(
-            root, "rev-parse", "--verify", "--quiet", f"HEAD:{posix}"
-        ).strip()
-        file_blob = git_output(root, "hash-object", "--", posix).strip()
-    except (OSError, subprocess.CalledProcessError, UnicodeError):
+        head_blob = subprocess.run(
+            ["git", "cat-file", "blob", f"HEAD:{relative.as_posix()}"],
+            cwd=root,
+            capture_output=True,
+            check=True,
+        ).stdout
+        on_disk = candidate.read_bytes()
+    except (OSError, subprocess.CalledProcessError):
         return None
-    if not head_blob or head_blob != file_blob:
+    if head_blob != on_disk:
         return None
     return candidate
+
+
+def _sealed_targets_within(
+    plan: dict[str, object],
+    target_roots: dict[str, Path],
+) -> bool:
+    """True when every target the sealed plan wrote is under the root that this
+    installation configures for the same logical target.
+
+    A receipt explains the bytes of the directories it wrote. Read from
+    another checkout, it may only explain this installation's targets if they
+    are those directories, so a repository that shares the backup root but
+    installs elsewhere cannot borrow it.
+    """
+    operations = plan.get("operations")
+    if not isinstance(operations, list):
+        return False
+    for operation in operations:
+        paths = operation.get("logical_target_paths") if isinstance(operation, dict) else None
+        if not isinstance(paths, dict) or not paths:
+            return False
+        for target_id, raw_path in paths.items():
+            target_root = target_roots.get(str(target_id))
+            if target_root is None or not isinstance(raw_path, str):
+                return False
+            root_text = os.path.normcase(os.path.normpath(str(target_root)))
+            path_text = os.path.normcase(os.path.normpath(raw_path))
+            if path_text != root_text and not path_text.startswith(
+                root_text.rstrip("\\/") + os.sep
+            ):
+                return False
+    return True
 
 
 def _sealed_receipt_transitions(
@@ -1344,6 +1386,7 @@ def _sealed_receipt_transitions(
     receipt: dict[str, object],
     *,
     portable: bool = False,
+    target_roots: dict[str, Path] | None = None,
 ) -> tuple[
     list[tuple[tuple[str, str], str, str, str]],
     str | None,
@@ -1412,6 +1455,14 @@ def _sealed_receipt_transitions(
                 [],
                 "PROMOTION-RECEIPT-JOURNAL-MISMATCH",
                 "receipt-does-not-match-sealed-plan",
+            )
+        if not sealed_here and (
+            target_roots is None or not _sealed_targets_within(plan, target_roots)
+        ):
+            return (
+                [],
+                "PROMOTION-RECEIPT-JOURNAL-MISMATCH",
+                "relocated-receipt-targets-outside-installation",
             )
     if (
         receipt_bytes != canonical_json_bytes(expected_receipt)
@@ -1546,6 +1597,7 @@ def _latest_receipt_digests(
     observed_digests: dict[tuple[str, str], str],
     *,
     installation_id: str | None = None,
+    target_roots: dict[str, Path] | None = None,
 ) -> tuple[dict[tuple[str, str], str], list[dict[str, object]], dict[str, int]]:
     receipts_root = root / "promotions" / "receipts"
     transitions_by_key: dict[
@@ -1610,6 +1662,7 @@ def _latest_receipt_digests(
             path,
             receipt,
             portable=installation_id is not None,
+            target_roots=target_roots,
         )
         if issue_code is not None:
             _append_scoped_receipt_finding(
@@ -2147,6 +2200,7 @@ def check_promotion(
         adjudications,
         observed_digests,
         installation_id=installation_id,
+        target_roots=targets,
     )
     findings.extend(receipt_findings)
     if any(item["severity"] == "error" for item in findings):
@@ -3718,12 +3772,10 @@ def _scan_transactions(
                     / f"{transaction_root.name}.json"
                 )
             else:
+                # Same selection rule as a check (_relocated_v1_receipt): the
+                # copy in live_root counts only while the sealed path is gone.
                 receipt_path = historical_path
-                if (
-                    live_root is not None
-                    and not historical_path.exists()
-                    and not historical_path.is_symlink()
-                ):
+                if live_root is not None:
                     relocated = _relocated_v1_receipt(
                         Path(live_root),
                         prior_plan,
