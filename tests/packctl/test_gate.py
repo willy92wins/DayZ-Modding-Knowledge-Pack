@@ -6,6 +6,20 @@ from pathlib import Path
 from packctl.gate import run_gate
 
 
+PASSING_SUITE = "def test_passes():\n    assert 1 + 1 == 2\n"
+FAILING_SUITE = "def test_fails():\n    assert 1 + 1 == 3\n"
+# What a Blender-only module does on a machine without Blender: it skips itself
+# at import, so pytest collects no test and exits 5 with one skip recorded.
+SKIPPED_SUITE = (
+    "import pytest\n\n"
+    'pytest.importorskip("packctl_fixture_module_that_is_not_installed")\n\n\n'
+    "def test_needs_the_module():\n"
+    "    assert False\n"
+)
+# A script-style check: pytest imports it, finds no test and exits 5 too.
+SCRIPT_SUITE = "FAILURES = ['the check this script makes failed']\n"
+
+
 def test_gate_runs_validation_and_two_reproducible_builds(
     repo_factory,
     tmp_path: Path,
@@ -136,3 +150,133 @@ def test_gate_rejects_missing_evidence_even_when_fail_is_expected(
         item["code"] for item in report["findings"]
     ]
     assert report["checks"]["evals"]["verdict"] == "FAIL"
+
+
+def test_gate_fails_when_a_skill_test_fails(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root = repo_factory(
+        {
+            "skills/bad/tests/test_bad.py": FAILING_SUITE,
+            "skills/good/tests/test_good.py": PASSING_SUITE,
+        },
+        payload={"LICENSE", "README.md"},
+    )
+    report_dir = tmp_path / "reports"
+
+    report = run_gate(root, report_dir)
+
+    assert report["verdict"] == "FAIL"
+    assert [item["code"] for item in report["findings"]] == [
+        "SKILL-TESTS-FAILED"
+    ]
+    assert report["checks"]["skill_tests"] == {
+        "verdict": "FAIL",
+        "suite_count": 2,
+        "suites": {
+            "bad": {"verdict": "FAIL", "returncode": 1},
+            "good": {"verdict": "PASS", "returncode": 0},
+        },
+    }
+    assert "bad (exit 1)" in report["findings"][0]["evidence"]
+    assert "1 failed" in (report_dir / "skill-tests" / "bad.txt").read_text(
+        encoding="utf-8"
+    )
+
+
+def test_gate_fails_when_a_tool_test_fails_and_runs_py3d_once(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root = repo_factory(
+        {
+            "tools/broken/tests/test_broken.py": FAILING_SUITE,
+            "tools/py3d/tests/test_py3d.py": PASSING_SUITE,
+        },
+        payload={"LICENSE", "README.md"},
+    )
+
+    report = run_gate(root, tmp_path / "reports")
+
+    assert [item["code"] for item in report["findings"]] == [
+        "TOOL-TESTS-FAILED"
+    ]
+    assert report["checks"]["py3d_tests"]["verdict"] == "PASS"
+    assert report["checks"]["tool_tests"]["suites"] == {
+        "broken": {"verdict": "FAIL", "returncode": 1},
+    }
+
+
+def test_gate_passes_same_named_and_cleanly_skipped_suites(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    # Two skills shipping test files with one basename abort a single pytest
+    # run ("import file mismatch", exit 2) -- the state of main before the
+    # gate ran these folders.
+    root = repo_factory(
+        {
+            "skills/alpha/tests/test_install.py": PASSING_SUITE,
+            "skills/beta/tests/test_install.py": PASSING_SUITE,
+            "skills/blender/tests/test_needs_blender.py": SKIPPED_SUITE,
+            "tools/demo/tests/test_install.py": PASSING_SUITE,
+        },
+        payload={"LICENSE", "README.md"},
+    )
+
+    report = run_gate(root, tmp_path / "reports")
+
+    assert report["verdict"] == "PASS"
+    assert report["checks"]["skill_tests"]["suites"] == {
+        "alpha": {"verdict": "PASS", "returncode": 0},
+        "beta": {"verdict": "PASS", "returncode": 0},
+        "blender": {"verdict": "PASS", "returncode": 5},
+    }
+    assert report["checks"]["tool_tests"]["suites"] == {
+        "demo": {"verdict": "PASS", "returncode": 0},
+    }
+
+
+def test_gate_fails_a_test_folder_that_runs_nothing(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root = repo_factory(
+        {"skills/script/tests/test_script.py": SCRIPT_SUITE},
+        payload={"LICENSE", "README.md"},
+    )
+
+    report = run_gate(root, tmp_path / "reports")
+
+    assert [item["code"] for item in report["findings"]] == [
+        "SKILL-TESTS-FAILED"
+    ]
+    assert report["checks"]["skill_tests"]["suites"] == {
+        "script": {"verdict": "FAIL", "returncode": 5},
+    }
+
+
+def test_gate_refuses_a_report_dir_inside_the_root_before_any_suite_runs(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    marker = tmp_path / "suite-ran.txt"
+    root = repo_factory(
+        {
+            "skills/demo/tests/test_marks.py": (
+                "from pathlib import Path\n\n\n"
+                "def test_marks():\n"
+                f"    Path({str(marker)!r}).write_text('ran', encoding='utf-8')\n"
+            )
+        },
+        payload={"LICENSE", "README.md"},
+    )
+
+    report = run_gate(root, root / "gate-reports")
+
+    assert [item["code"] for item in report["findings"]] == [
+        "GATE-REPORT-IN-ROOT"
+    ]
+    assert not marker.exists()
+    assert not (root / "gate-reports").exists()

@@ -343,7 +343,9 @@ python -m packctl gate --root . --report-dir ../pack-gate-reports
 (`GATE-REPORT-IN-ROOT` is a silent exit 1) and the external Agent Skills
 validator (`PACK_SKILLS_REF_ROOT` / PyPI `skills-ref`, console script
 `agentskills`). `validate` is provenance, privacy, links and claim
-ranges. `gate` adds skill validation, Python compilation, the layout
+ranges. `gate` adds skill validation, Python compilation, the test
+suites (`tests/packctl`, `tools/py3d/tests`, and each `skills/<skill>/tests`
+and `tools/<tool>/tests` folder in its own pytest process), the layout
 corpus and a reproducible build.
 
 [`AGENTS.md`](AGENTS.md) also lists `python -m pytest -q`. **That does not

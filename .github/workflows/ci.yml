@@ -39,3 +39,33 @@ jobs:
 
       - name: Test packctl
         run: python -m pytest -q -p no:cacheprovider tests/packctl
+
+      # Each skills/<skill>/tests folder in its own pytest process, with the
+      # rule packctl/gate.py applies: exit 0 passes, exit 5 (no test collected)
+      # passes only when the JUnit report records a skip, anything else fails.
+      # tools/<tool>/tests stay gate-only: five of them need packages this
+      # runner does not install (jsonschema, numpy, Pillow, py3d).
+      - name: Test skills
+        run: |
+          $failed = @()
+          foreach ($skill in Get-ChildItem -Path skills -Directory) {
+            $suite = Join-Path $skill.FullName 'tests'
+            if (-not (Test-Path -LiteralPath $suite -PathType Container)) { continue }
+            $junit = Join-Path $env:RUNNER_TEMP "skill-tests-$($skill.Name).xml"
+            python -m pytest -q -p no:cacheprovider -rs "--junitxml=$junit" $suite
+            $exit = $LASTEXITCODE
+            $passed = $exit -eq 0
+            if ($exit -eq 5 -and (Test-Path -LiteralPath $junit)) {
+              $skipped = ([xml](Get-Content -Raw -LiteralPath $junit)).testsuites.testsuite |
+                Measure-Object -Property skipped -Sum
+              $passed = $skipped.Sum -gt 0
+            }
+            if (-not $passed) { $failed += "$($skill.Name) (exit $exit)" }
+          }
+          if ($failed.Count -gt 0) {
+            Write-Output "::error::Skill test folders failed: $($failed -join ', ')"
+            exit 1
+          }
+          # The runner ends the script with `exit $LASTEXITCODE`, which would
+          # turn a cleanly skipped last folder (exit 5) into a failed step.
+          exit 0

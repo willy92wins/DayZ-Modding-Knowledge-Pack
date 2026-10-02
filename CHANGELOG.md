@@ -122,6 +122,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   winds every face of each collision box outward and trades the finding for
   `ERR_WINDING_VS_NORMALS`, and `validate()` goes quiet only once those LODs' normals are negated
   too, with every LOD wound outward.
+- `packctl gate` ran only `tests/packctl` and `tools/py3d/tests`, and CI only `tests/packctl`, so
+  the other twelve test folders the pack ships (`skills/<skill>/tests` in four skills, eight
+  `tools/<tool>/tests`) could go red with both green. One pytest run over the skill folders runs
+  nothing either: the four skills ship the same `test_install_py3d.py`, and the default import
+  mode aborts the collection ("import file mismatch", exit 2). The gate now runs each
+  `skills/<skill>/tests` and `tools/<tool>/tests` folder in its own pytest process (checks
+  `skill_tests` and `tool_tests`, findings `SKILL-TESTS-FAILED` and `TOOL-TESTS-FAILED`, a log and
+  a JUnit report per folder in the report directory). A folder passes on exit 0, or on exit 5
+  when its JUnit report records a skip, which is what a module that skips itself at import
+  (`pytest.importorskip("bpy")` without Blender) produces; anything else fails, a folder that runs
+  no test included. CI runs the skill folders with the same rule; the tool folders stay gate-only,
+  since five of them import packages the runner does not install (jsonschema, numpy, Pillow,
+  py3d). Measured on `26e76a4`, folder by folder: 24 skill tests and 629 tool tests pass, and
+  `dayz-odol-strict` skips 5 without `DAYZ_ODOL_BACKEND_ROOT`; none needs Blender, DayZ or the P:
+  drive.
 
 ## [1.5.0] - 2026-10-02
 

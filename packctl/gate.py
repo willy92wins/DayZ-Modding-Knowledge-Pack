@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from xml.etree import ElementTree
 
 from .builder import build_archive
 from .common import (
@@ -59,6 +60,80 @@ def _skills_ref_executable(configured: str) -> Path | None:
             if resolved.is_file():
                 return resolved
     return None
+
+
+def _suite_passed(returncode: int, junit: Path) -> bool:
+    if returncode == 0:
+        return True
+    # Exit 5 is pytest's "no test collected". A folder whose every module skips
+    # itself at import -- pytest.importorskip("bpy") at module level on a
+    # machine without Blender -- ends there too, and that is a clean skip. A
+    # folder that runs nothing at all (empty, or script-style checks pytest
+    # cannot see) records no skip and fails.
+    if returncode != 5:
+        return False
+    try:
+        suites = ElementTree.parse(junit).getroot().iter("testsuite")
+        return sum(int(suite.get("skipped", "0")) for suite in suites) > 0
+    except (OSError, ElementTree.ParseError, ValueError):
+        return False
+
+
+def _run_test_suites(
+    root: Path,
+    suites: list[Path],
+    log_dir: Path,
+    *,
+    pycache_dir: Path,
+) -> tuple[dict[str, object], str]:
+    # One pytest process per folder. Several folders ship a test module with
+    # the same basename (test_install_py3d.py in four skills), and one process
+    # collecting them all aborts under the default import mode ("import file
+    # mismatch", exit 2) before a single test runs. A process per folder also
+    # keeps one suite's sys.path and sys.modules out of the next.
+    outcomes: dict[str, dict[str, object]] = {}
+    failed: list[str] = []
+    tails: list[str] = []
+    for suite in suites:
+        name = suite.parent.name
+        log_dir.mkdir(parents=True, exist_ok=True)
+        junit = log_dir / f"{name}.xml"
+        junit.unlink(missing_ok=True)
+        result = _run_process(
+            root,
+            [
+                sys.executable,
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "-rs",
+                f"--junitxml={junit}",
+                str(suite),
+            ],
+            pycache_dir=pycache_dir,
+        )
+        output = result.stdout + result.stderr
+        (log_dir / f"{name}.txt").write_text(
+            output,
+            encoding="utf-8",
+            newline="\n",
+        )
+        passed = _suite_passed(result.returncode, junit)
+        outcomes[name] = {
+            "verdict": "PASS" if passed else "FAIL",
+            "returncode": result.returncode,
+        }
+        if not passed:
+            failed.append(f"{name} (exit {result.returncode})")
+            tails.append(output[-600:])
+    check: dict[str, object] = {
+        "verdict": "FAIL" if failed else "PASS",
+        "suite_count": len(suites),
+        "suites": outcomes,
+    }
+    return check, "\n".join([", ".join(failed), *tails])[:2000]
 
 
 def run_gate(root: Path, report_dir: Path) -> dict[str, object]:
@@ -245,6 +320,36 @@ def run_gate(root: Path, report_dir: Path) -> dict[str, object]:
             )
     else:
         checks["py3d_tests"] = {"verdict": "PASS", "returncode": 0}
+
+    # Every other test folder the pack ships, skills/<skill>/tests and
+    # tools/<tool>/tests, each in its own pytest process. tools/py3d/tests ran
+    # above.
+    for check_name, tree, code in (
+        ("skill_tests", "skills", "SKILL-TESTS-FAILED"),
+        ("tool_tests", "tools", "TOOL-TESTS-FAILED"),
+    ):
+        suites = sorted(
+            path
+            for path in (root / tree).glob("*/tests")
+            if path.is_dir() and path != py3d_tests
+        )
+        check, evidence = _run_test_suites(
+            root,
+            suites,
+            report_dir / check_name.replace("_", "-"),
+            pycache_dir=pycache_dir,
+        )
+        checks[check_name] = check
+        if check["verdict"] == "FAIL":
+            findings.append(
+                finding(
+                    code,
+                    path=tree,
+                    line=0,
+                    message=f"A test folder under {tree}/ failed or ran no test.",
+                    evidence=evidence,
+                )
+            )
 
     eval_findings: list[dict[str, object]] = []
     eval_count = 0
