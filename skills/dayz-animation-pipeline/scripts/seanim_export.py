@@ -15,10 +15,14 @@ Bone-frame convention (2026-10-02):
   A root bone (no parent) is relative to the viewer world, which neither map
   covers. In game (A6_SR2M, 2026-06-30) the jd map played a full-body action
   wrong (head and body needed Route A). In-game playback is the gate.
---rest-pose takes a DayZATool-extracted vanilla SEAnim of the same slot: only
-its bones are emitted (that mask fixed the flop in game) and a bone it gives a
-position keeps that position (the measured cause of the weapon going to the
-back was the rig's non-bind RightHand_Dummy; this fix has no in-game verdict).
+--rest-pose takes a DayZATool-extracted vanilla SEAnim of the same slot and
+emits only the bones it contains (that mask fixed the flop in game). Its
+positions are not used: DayZATool marks most bones of vanilla action extracts
+RELATIVE (offsets from rest), and this file is ABSOLUTE. A bone the viewer rig
+holds off bind is written off bind: the JD rig's RightHand_Dummy sent the
+weapon to the back in game; leave it out of the reference.
+The round-trip gate is structural: it re-reads what was written, not whether
+the map is right (tests/test_seanim_export.py checks the map).
 """
 import argparse, json, math, os, sys
 
@@ -61,13 +65,29 @@ def seanim_pos_cm(frame, p):
         raise ValueError('unknown rig frame %r' % (frame,))
     return tuple(c * UNIT_CM for c in v)
 
+# Helpers the viewer rig may hold off bind (the JD rig moves RightHand_Dummy to the grip): the
+# bone axis is read from anatomical chains only.
+HELPER_MARKS = ('Dummy', 'IK', 'Target', 'Origin', 'Direction', 'Helper')
+
+# Roll fingerprints (parent, child_a, child_b, DayZ axis, sign): in DayZ's bone-local frame,
+# child_a - child_b of these rest offsets lies across the parent bone along +/- that axis.
+# DayZATool extracts of vanilla p_erc_attackl_inplace_01_ras and aks74u_reference: RightShoulder -
+# LeftShoulder in Spine3 = (0,0,+2.0) cm; RightHandIndex1 - RightHandRing in RightHand =
+# (-5.22,-2.75,-0.15) cm, mirrored on the left hand. Both rigs read 0.998-1.000 along it.
+ROLL_CHECKS = (('Spine3', 'RightShoulder', 'LeftShoulder', 2, 1),
+               ('RightHand', 'RightHandIndex1', 'RightHandRing', 1, -1),
+               ('LeftHand', 'LeftHandIndex1', 'LeftHandRing', 1, 1))
+
 def detect_rig_frame(rig, min_per_side=4):
     """'jd' or 'fbx' from the rig's rest offsets; ValueError for any other rig.
 
-    A chain child (offset within ~18deg of one axis, >= 5 mm) of a Left* bone sits
-    on + of that axis and a child of a Right* bone on -, the split DayZ has on X.
-    The axis is Y in the JD rig and X in the FBX rig. A Blender-native rig (every
-    child at +Y) or a rig mixing frames is refused, naming what it found.
+    Bone axis: a chain child (offset within ~18deg of one axis, >= 5 mm) of a Left*
+    bone sits on + of that axis and a child of a Right* bone on -, the split DayZ
+    has on X; the axis is Y in the JD rig and X in the FBX rig. Helpers
+    (HELPER_MARKS) do not count. Roll: through the chosen map, each ROLL_CHECKS
+    pair must point within ~45deg of DayZ's. A Blender-native rig (every child at
+    +Y), a rig mixing frames, or one rolled about its bone axes is refused. Not
+    seen: a roll that differs only on bones the checks do not reach.
     """
     seen = {'Left': {}, 'Right': {}}
     for b in rig['bones']:
@@ -75,7 +95,7 @@ def detect_rig_frame(rig, min_per_side=4):
         side = 'Left' if par.startswith('Left') else 'Right' if par.startswith('Right') else None
         v = b['pos']
         n = math.sqrt(sum(c * c for c in v))
-        if side is None or n < 0.005:
+        if side is None or n < 0.005 or any(m in b['name'] for m in HELPER_MARKS):
             continue
         i = max(range(3), key=lambda k: abs(v[k]))
         if abs(v[i]) < 0.95 * n:
@@ -83,21 +103,34 @@ def detect_rig_frame(rig, min_per_side=4):
         label = ('+' if v[i] > 0 else '-') + 'XYZ'[i]
         seen[side].setdefault(label, []).append(b['name'])
     left, right = sorted(seen['Left']), sorted(seen['Right'])
-    if len(left) == 1 and len(right) == 1 and left[0][0] == '+' and right[0][0] == '-' \
-            and left[0][1] == right[0][1] and left[0][1] in 'XY' \
-            and len(seen['Left'][left[0]]) >= min_per_side and len(seen['Right'][right[0]]) >= min_per_side:
-        return 'jd' if left[0][1] == 'Y' else 'fbx'
-    found = lambda s: ', '.join('%s x%d (e.g. %s)' % (k, len(v), v[0]) for k, v in sorted(seen[s].items())) or 'none'
-    raise ValueError('cannot read the rig frame from rest offsets: chain children of Left* bones: %s; '
-                     'of Right* bones: %s. Expected all +Y/-Y (JD rig) or all +X/-X (FBX rig from '
-                     'build_rig_dayz.py), at least %d per side.' % (found('Left'), found('Right'), min_per_side))
+    if not (len(left) == 1 and len(right) == 1 and left[0][0] == '+' and right[0][0] == '-'
+            and left[0][1] == right[0][1] and left[0][1] in 'XY'
+            and len(seen['Left'][left[0]]) >= min_per_side and len(seen['Right'][right[0]]) >= min_per_side):
+        found = lambda s: ', '.join('%s x%d (e.g. %s)' % (k, len(v), v[0]) for k, v in sorted(seen[s].items())) or 'none'
+        raise ValueError('cannot read the rig frame from rest offsets: chain children of Left* bones: %s; '
+                         'of Right* bones: %s. Expected all +Y/-Y (JD rig) or all +X/-X (FBX rig from '
+                         'build_rig_dayz.py), at least %d per side.' % (found('Left'), found('Right'), min_per_side))
+    frame = 'jd' if left[0][1] == 'Y' else 'fbx'
+    pos = {b['name']: b['pos'] for b in rig['bones']}
+    parent = {b['name']: b.get('parent') for b in rig['bones']}
+    for par, a, b2, axis, sign in ROLL_CHECKS:
+        if parent.get(a) != par or parent.get(b2) != par:
+            raise ValueError('cannot check the rig frame\'s roll: %s and %s are not both children of %s'
+                             % (a, b2, par))
+        d = [x - y for x, y in zip(seanim_pos_cm(frame, pos[a]), seanim_pos_cm(frame, pos[b2]))]
+        across = math.hypot(d[1], d[2])
+        if across < 0.5 or sign * d[axis] < 0.7 * across:
+            raise ValueError('the rig frame reads %s by its bone axes but is rolled on %s: %s - %s = '
+                             '(%.2f, %.2f, %.2f) cm through the map, expected along %s%s'
+                             % (frame, par, a, b2, d[0], d[1], d[2], '+' if sign > 0 else '-', 'XYZ'[axis]))
+    return frame
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--anim', required=True, help='viewer export JSON')
     ap.add_argument('--rig', required=True, help='the rig JSON the anim was authored on (rig_dayz.json or jd_dayz.json)')
     ap.add_argument('--out', required=True, help='output .seanim')
-    ap.add_argument('--rest-pose', default=None, help='DayZATool-extracted vanilla SEAnim of the same slot: emit only its bones, with its positions (optional)')
+    ap.add_argument('--rest-pose', default=None, help='DayZATool-extracted vanilla SEAnim of the same slot: emit only its bones (optional)')
     ap.add_argument('--keys-only', action='store_true', help='emit only authored keyframes (default: dense)')
     a = ap.parse_args()
     sw = load_writer()
@@ -120,13 +153,14 @@ def main():
     use_frames = set(anim['keyframes']) if a.keys_only else set(range(len(frames)))
     print('rig frame: %s (%s map)' % (frame, 'calibrated' if frame == 'jd' else 'derived'))
 
-    ref_pos = {}
+    if any(fr.get('pos') for fr in frames):
+        print('WARN: the anim carries per-frame positions; they are ignored (only rest offsets are written)',
+              file=sys.stderr)
+
     if a.rest_pose:
         if not os.path.exists(a.rest_pose):
             sys.exit('seanim_export: --rest-pose not found: %s' % a.rest_pose)
-        ref_bones = sw.read_seanim(a.rest_pose)['bones']
-        refset = {b['name'] for b in ref_bones}
-        ref_pos = {b['name']: tuple(b['pos_keys'][0][1]) for b in ref_bones if b['pos_keys']}
+        refset = {b['name'] for b in sw.read_seanim(a.rest_pose)['bones']}
         print('rest-pose loaded:', len(refset), 'bones')
         # Structural parity with a vanilla action anim: emit ONLY the bones the
         # reference contains (vanilla action anims are spine-UP — they exclude
@@ -151,14 +185,10 @@ def main():
             q = frames[fr]['bones'].get(name)
             if q:
                 rot_keys.append((fr, seanim_rot(frame, q)))
-        # Rest offset: the --rest-pose reference's own position when it has one, ALREADY in
-        # DayZ cm, else the rig's rest offset through the map. The viewer rig stores some bones
-        # (e.g. RightHand_Dummy = weapon anchor) at NON-bind positions; emitting those as bone
-        # offsets flings the weapon off (to the back).
-        if name in ref_pos:
-            pos_keys = [(0, ref_pos[name])]
-        else:
-            pos_keys = [(0, seanim_pos_cm(frame, rest_pos[name]))]
+        # Rest offset: the rig's, through the map. Not the --rest-pose reference's: DayZATool marks
+        # most bones of vanilla action extracts RELATIVE (SEAnim bone modifiers, inherited by child
+        # bones, dropped by seanim_writer.read_seanim), so their positions are offsets from rest.
+        pos_keys = [(0, seanim_pos_cm(frame, rest_pos[name]))]
         bones.append({'name': name, 'pos_keys': pos_keys, 'rot_keys': rot_keys})
 
     # No SEAnim note events: DayZATool rejects free-text notes ("malformed

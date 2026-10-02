@@ -36,21 +36,28 @@ Q_A = (0.1, 0.2, 0.3, W)        # a rotation whose components are all distinct
 Q_B = (-0.3, 0.1, 0.2, W)
 
 # One small skeleton in the JD rig's bone frames: meters, each child offset in
-# its parent's frame. Chain children of Left* bones sit at +Y, of Right* at -Y.
+# its parent's frame. Chain children of Left* bones sit at +Y, of Right* at -Y;
+# the shoulders and the index/ring pairs carry the roll DayZ's skeleton has.
 JD_SKELETON = [
     ("Pelvis", None, (0.0, 1.0, 0.0)),
     ("Spine", "Pelvis", (0.0, 0.1, 0.0)),
-    ("LeftArm", "Spine", (0.02, 0.15, 0.05)),
+    ("Spine3", "Spine", (0.0, 0.2, 0.0)),
+    ("LeftShoulder", "Spine3", (0.01, 0.15, 0.05)),
+    ("LeftArm", "LeftShoulder", (0.0, 0.16, 0.0)),
     ("LeftForeArm", "LeftArm", (0.0, 0.25, 0.0)),
     ("LeftHand", "LeftForeArm", (0.0, 0.24, 0.0)),
-    ("LeftHandIndex1", "LeftHand", (0.0, 0.09, 0.0)),
-    ("LeftHandIndex2", "LeftHandIndex1", (0.0, 0.04, 0.0)),
-    ("RightArm", "Spine", (0.02, 0.15, -0.05)),
+    ("LeftHandIndex1", "LeftHand", (-0.0015, 0.086, 0.0375)),
+    ("LeftHandIndex2", "LeftHandIndex1", (0.0, 0.045, 0.0)),
+    ("LeftHandRing", "LeftHand", (0.0, 0.034, 0.01)),
+    ("RightShoulder", "Spine3", (-0.01, 0.15, 0.05)),
+    ("RightArm", "RightShoulder", (0.0, -0.16, 0.0)),
     ("RightForeArm", "RightArm", (0.0, -0.25, 0.0)),
     ("RightHand", "RightForeArm", (0.0, -0.24, 0.0)),
-    ("RightHandIndex1", "RightHand", (0.0, -0.09, 0.0)),
-    ("RightHandIndex2", "RightHandIndex1", (0.0, -0.04, 0.0)),
-    ("RightHandThumb1", "RightHand", (0.015, -0.03, 0.02)),
+    ("RightHandIndex1", "RightHand", (0.0015, -0.086, -0.0375)),
+    ("RightHandIndex2", "RightHandIndex1", (0.0, -0.045, 0.0)),
+    ("RightHandRing", "RightHand", (0.0, -0.034, -0.01)),
+    ("RightHandThumb1", "RightHand", (-0.02, -0.015, -0.03)),
+    ("RightHand_Dummy", "RightHand", (-0.0373, -0.0735, 0.0042)),
 ]
 ORDER = [name for name, _, _ in JD_SKELETON]
 
@@ -122,15 +129,19 @@ def _bones(out):
 # Hand-written expectations (calibrated formula):
 #   Q_A (0.1, 0.2, 0.3, w)   -> (-0.2, -0.3, 0.1, w)
 #   Q_B (-0.3, 0.1, 0.2, w)  -> (-0.1, -0.2, -0.3, w)
-#   RightHandThumb1 (0.015, -0.03, 0.02) m -> (-3.0, 2.0, -1.5) cm
+#   RightHandThumb1 (-0.02, -0.015, -0.03) m -> (-1.5, -3.0, 2.0) cm
+#   LeftShoulder (0.01, 0.15, 0.05) m -> (15, 5, -1) cm ; RightShoulder -> (15, 5, 1) cm
 #   LeftHand (0, 0.24, 0) m -> (24, 0, 0) cm ; RightHand (0, -0.24, 0) m -> (-24, 0, 0) cm
+#   RightHandIndex1 (0.0015, -0.086, -0.0375) m -> (-8.6, -3.75, -0.15) cm
 EXPECT_ROT_A = (-0.2, -0.3, 0.1, W)
 EXPECT_ROT_B = (-0.1, -0.2, -0.3, W)
 EXPECT_POS = {
-    "RightHandThumb1": (-3.0, 2.0, -1.5),
+    "RightHandThumb1": (-1.5, -3.0, 2.0),
+    "LeftShoulder": (15.0, 5.0, -1.0),
+    "RightShoulder": (15.0, 5.0, 1.0),
     "LeftHand": (24.0, 0.0, 0.0),
     "RightHand": (-24.0, 0.0, 0.0),
-    "LeftArm": (15.0, 5.0, -2.0),
+    "RightHandIndex1": (-8.6, -3.75, -0.15),
 }
 
 
@@ -192,6 +203,14 @@ def test_rig_frames_are_read_from_rest_offsets():
     assert mod.detect_rig_frame(_rig(True)) == "fbx"
 
 
+def test_helper_off_bind_does_not_decide_the_rig_frame():
+    """Breaks if a helper the viewer moved (RightHand_Dummy at the grip) can veto a valid rig."""
+    mod = _load("skill_seanim_export", EXPORTER)
+    rig = _rig(False)
+    next(b for b in rig["bones"] if b["name"] == "RightHand_Dummy")["pos"] = [-0.05, 0.0, 0.0]
+    assert mod.detect_rig_frame(rig) == "jd"
+
+
 def _blender_native_rig():
     """Same skeleton, but every chain child at +Y (Blender's head-to-tail layout)."""
     rig = _rig(False)
@@ -209,7 +228,18 @@ def _mixed_rig():
     return rig
 
 
-@pytest.mark.parametrize("make_rig", [_blender_native_rig, _mixed_rig], ids=["blender-native", "mixed"])
+def _rolled_rig():
+    """Every bone frame rolled 180 deg about its axis (JD Y): the bone axes still read JD."""
+    rig = _rig(False)
+    for b in rig["bones"]:
+        if b["parent"]:
+            x, y, z = b["pos"]
+            b["pos"] = [-x, y, -z]
+    return rig
+
+
+@pytest.mark.parametrize("make_rig", [_blender_native_rig, _mixed_rig, _rolled_rig],
+                         ids=["blender-native", "mixed", "rolled"])
 def test_unknown_rig_frame_is_refused(tmp_path, make_rig):
     """Breaks if a rig of neither calibrated family gets a conversion anyway."""
     mod = _load("skill_seanim_export", EXPORTER)
@@ -245,22 +275,32 @@ def test_rest_pose_reference_masks_bones(tmp_path):
     assert _close(dict(got["RightHand"]["rot_keys"])[1], EXPECT_ROT_B)
 
 
-def test_rest_pose_reference_supplies_positions(tmp_path):
-    """Breaks if a reference position (already DayZ cm) is replaced by the rig's offset."""
+def test_rest_pose_reference_positions_are_not_copied(tmp_path):
+    """Breaks if a reference position (RELATIVE in vanilla extracts: an offset from rest) is
+    written as this ABSOLUTE clip's offset."""
     ref = tmp_path / "ref.seanim"
     sw.write_seanim(str(ref), [
-        {"name": "RightHand", "pos_keys": [(0, (-7.35, 0.42, 3.73)), (1, (-7.0, 0.4, 3.7))],
-         "rot_keys": [(0, (0.0, 0.0, 0.0, 1.0))]},
-        {"name": "RightHandThumb1", "rot_keys": [(0, (0.0, 0.0, 0.0, 1.0))]},
+        {"name": "Spine3", "pos_keys": [(0, (0.0, 0.0, 0.0))], "rot_keys": [(0, (0.0, 0.0, 0.0, 1.0))]},
+        {"name": "RightHand", "pos_keys": [(0, (-7.35, 0.42, 3.73))], "rot_keys": [(0, (0.0, 0.0, 0.0, 1.0))]},
     ])
     proc, out = _run(tmp_path, _anim(True), _rig(True), "--rest-pose", str(ref))
     assert proc.returncode == 0, proc.stderr + proc.stdout
     got = _bones(out)
-    assert list(got) == ["RightHand", "RightHandThumb1"]
-    assert [k[0] for k in got["RightHand"]["pos_keys"]] == [0]
-    assert _close(got["RightHand"]["pos_keys"][0][1], (-7.35, 0.42, 3.73), eps=1e-4)
-    # no position in the reference: the rig's offset through the map
-    assert _close(got["RightHandThumb1"]["pos_keys"][0][1], EXPECT_POS["RightHandThumb1"], eps=1e-4)
+    assert list(got) == ["Spine3", "RightHand"]
+    assert _close(got["Spine3"]["pos_keys"][0][1], (20.0, 0.0, 0.0), eps=1e-4)
+    assert _close(got["RightHand"]["pos_keys"][0][1], EXPECT_POS["RightHand"], eps=1e-4)
+
+
+def test_per_frame_positions_are_flagged_and_ignored(tmp_path):
+    """Breaks if per-frame positions (the project viewer's Weapon_* slide) leave silently or
+    replace the rest offset."""
+    anim = _anim(False)
+    for fr in anim["frames"]:
+        fr["pos"] = {"RightHand": [0.5, 0.5, 0.5]}
+    proc, out = _run(tmp_path, anim, _rig(False))
+    assert proc.returncode == 0, proc.stderr + proc.stdout
+    assert "per-frame positions" in proc.stderr
+    assert _close(_bones(out)["RightHand"]["pos_keys"][0][1], EXPECT_POS["RightHand"], eps=1e-4)
 
 
 def test_missing_rest_pose_reference_is_refused(tmp_path):

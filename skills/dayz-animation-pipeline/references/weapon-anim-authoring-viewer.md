@@ -185,13 +185,18 @@ vanilla ikposes + geometry). Design + open questions:
 reconcile the viewer with DayZ, one per rig; that section's 0.88 best fit cannot be
 reproduced from the record. The bone axis is not +Y in both rigs: child offsets
 lie on ±X in `rig_dayz.json` (the FBX rig) and on ±Y in `jd_dayz.json`.
-`--rest-pose` does not rebase rotations; it masks bones and supplies positions.
+`--rest-pose` does not rebase rotations; it only masks bones.
 
-`scripts/seanim_export.py` reads the rig family from the rest offsets (children
-of `Left*` bones sit on + of one axis, children of `Right*` bones on −: Y in the
-JD rig, X in the FBX rig). It refuses any other rig, an anim bone missing from
-the rig, and a `--rest-pose` file that does not exist. Both maps are det −1:
-offsets go through `M`, quaternion vector parts through `−M`, `w` unchanged.
+`scripts/seanim_export.py` reads the rig family from the rest offsets. Bone axis:
+chain children of `Left*` bones sit on + of one axis, children of `Right*` bones
+on − (Y in the JD rig, X in the FBX rig); helpers such as `RightHand_Dummy`, which
+the JD rig holds at the grip, do not count. Roll: through the chosen map,
+`RightShoulder − LeftShoulder` (in `Spine3`) and `RightHandIndex1 − RightHandRing`
+(in each hand) must point the way vanilla's do. It refuses any other rig (a
+Blender-native one, one mixing frames, one rolled about its bone axes), an anim
+bone missing from the rig, and a `--rest-pose` file that does not exist; a roll
+that differs only on bones those pairs do not reach goes unseen. Both maps are
+det −1: offsets go through `M`, quaternion vector parts through `−M`, `w` unchanged.
 
 | Rig | Rotation `(x,y,z,w)` → | Rest offset `(x,y,z)` m → cm (×100) | Status |
 |---|---|---|---|
@@ -213,10 +218,18 @@ What the maps do not cover:
   switch changed more than the rotation map, so the cause is not isolated. Route C
   stays for weapon-bone and partial tracks; in-game playback is the gate.
 - `--rest-pose <vanilla.seanim>` emits only the reference's bones (in game this
-  fixed the flop), and a bone the reference gives a position keeps that position,
-  already in DayZ cm. That second part targets the `RightHand_Dummy` failure and
-  has no in-game verdict. Many vanilla extracts are bind-relative (see
-  `weapon-anim-blender-complete.md`, "Convention split"); their positions, such as
-  `Spine3` at `(0,0,0)`, then land in an absolute clip.
+  fixed the flop). Every position comes from the rig. The reference's do not: DayZATool
+  marks most bones of vanilla action extracts RELATIVE through SEAnim bone
+  modifiers (61 of 73 in `p_erc_jam_pm73_ras`, `Spine` to `Head` at `(0,0,0)`),
+  and in SEAnim a RELATIVE translation is an offset from rest, inherited by child
+  bones, while this script writes an ABSOLUTE clip (`seanim_writer.read_seanim`
+  drops modifiers; `tools/dayz-animation-formats` reads them). That is the
+  "Convention split" of `weapon-anim-blender-complete.md`. The project copy takes
+  the reference's positions and writes those zeros as offsets; that part is not
+  ported. A bone the viewer rig holds off bind is written off bind: the JD rig's
+  `RightHand_Dummy`, which the viewer moved to the grip (`(51.8, −29.3, 4.8)` cm
+  through the map), sent the weapon to the back in game. The confirmed golpe dropped
+  it, and the `Weapon_*` bones, from the clip; leave them out of the reference.
 - The project copy's per-frame `Weapon_*` positions (bolt slide) are not ported:
-  this skill's viewer does not export them.
+  this skill's viewer does not export them, and the script warns and ignores
+  per-frame positions in an anim.
