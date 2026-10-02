@@ -366,7 +366,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-02: the Check A labels of dayz-p3d-audit references/winding-diagnostics.md aligned with dayz-model-pipeline Rule 12 (in-game test 2026-10-01, DayZDiag 1.29.163709: the cross product and the stored normals both inward). Offline measurement 2026-10-02 with Check A as the file defines it (averaged corner normals, % of faces with dot < -0.5) on the three MLODs of that test, rebuilt byte for byte by tools/py3d/tests/test_s7_blender_to_dayz.py (SHA-256 asserted against MEASURED): UNIFORM_NON_FLIPPED, 0 %, 48/48 faces agree on the correct export, the mirrored one and the inside-out one; signed volume by winding -0.1086, -0.1086, +0.1086. Negative controls on the same fixture: the LFInfectedBig recipe (det=+1 map, faces reversed, normals left outward) and the correct export with every face reversed read UNIFORM_FLIPPED, 0/48 agree, at -0.1086 and +0.1086. Closed unit tetrahedron: a Rule 12 export and an inside-out one both read 4/4 agree, signed volume -0.1667 vs +0.1667. The Crate_Wooden 2026-04-25 in-game measurement is kept verbatim and the old labels are quoted in a dated correction note. The centroid-check note no longer gives a correct model outward normals; the pointer to Check A in audit_p3d.py, which delegates winding to P3D.validate() (audit_p3d.py:337) and has no Check A, now names ERR_WINDING_VS_NORMALS. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "d252eb8c53d697881970f725ea8c6203ae85171545079b1db47a76c4764bbefd",
+          "source_hash": "ebd14acd31e1fc596a96d9a85fd921974d4a6d46e1c3b83c0012501384a54439",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-p3d-audit-checkA@2026-10-02",
@@ -374,7 +374,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d252eb8c53d697881970f725ea8c6203ae85171545079b1db47a76c4764bbefd",
+      "output_hash": "ebd14acd31e1fc596a96d9a85fd921974d4a6d46e1c3b83c0012501384a54439",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7813,7 +7813,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-02: the Check A labels of dayz-p3d-audit references/winding-diagnostics.md aligned with dayz-model-pipeline Rule 12 (in-game test 2026-10-01, DayZDiag 1.29.163709: the cross product and the stored normals both inward). Offline measurement 2026-10-02 with Check A as the file defines it (averaged corner normals, % of faces with dot < -0.5) on the three MLODs of that test, rebuilt byte for byte by tools/py3d/tests/test_s7_blender_to_dayz.py (SHA-256 asserted against MEASURED): UNIFORM_NON_FLIPPED, 0 %, 48/48 faces agree on the correct export, the mirrored one and the inside-out one; signed volume by winding -0.1086, -0.1086, +0.1086. Negative controls on the same fixture: the LFInfectedBig recipe (det=+1 map, faces reversed, normals left outward) and the correct export with every face reversed read UNIFORM_FLIPPED, 0/48 agree, at -0.1086 and +0.1086. Closed unit tetrahedron: a Rule 12 export and an inside-out one both read 4/4 agree, signed volume -0.1667 vs +0.1667. The Crate_Wooden 2026-04-25 in-game measurement is kept verbatim and the old labels are quoted in a dated correction note. The centroid-check note no longer gives a correct model outward normals; the pointer to Check A in audit_p3d.py, which delegates winding to P3D.validate() (audit_p3d.py:337) and has no Check A, now names ERR_WINDING_VS_NORMALS. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "6bbde428f95ba7fff3973c9ba206a1e17a15b691f12c39374cec3e6a12e176ab",
+          "source_hash": "ba9ba3b16768bf54f087f6b903dcc26157b067924acd16cc8e347e4a294aeae5",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
           "source_revision": "kp-update-p3d-audit-checkA@2026-10-02",
@@ -7821,7 +7821,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6bbde428f95ba7fff3973c9ba206a1e17a15b691f12c39374cec3e6a12e176ab",
+      "output_hash": "ba9ba3b16768bf54f087f6b903dcc26157b067924acd16cc8e347e4a294aeae5",
       "output_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"

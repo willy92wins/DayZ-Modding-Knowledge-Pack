@@ -67,7 +67,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   solid, and the 2026-04-25 Crate_Wooden in-game check stands) or a correct export with its faces
   reversed afterwards. Measured offline on the three MLODs of the Rule 12 in-game test, Check A
   reads `UNIFORM_NON_FLIPPED` on all three, the inside-out one included, so the item now maps each
-  label and the sign of the signed volume by winding to a state and a fix. The same file's
+  label and the direction of the cross product (signed volume by winding on the visual LOD, Rule
+  18's per-component check on collision LODs) to a state and a fix. The same file's
   centroid-check note no longer gives a correct model outward normals, and its pointer to Check A
   in `audit_p3d.py`, which has none, now names the check the script does run.
 

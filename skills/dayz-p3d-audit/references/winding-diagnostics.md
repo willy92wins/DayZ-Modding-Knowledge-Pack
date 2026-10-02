@@ -26,14 +26,21 @@ complete import checklist.
    - **~0% UNIFORM_NON_FLIPPED** → they agree. This is what a correct Rule 12 export reads (`dayz-model-pipeline`: cross product AND stored normals both INWARD), the ≈ 100 % agreement of the production MLODs in `SKILL.md` "Absolute winding check: what 0 % means". A det=+1 mirror with reversed faces and negated normals reads it too, and so does an inside-out model with both OUTWARD. → severity NOTE: consistent with Rule 12, not proof of it.
    - **~100% UNIFORM_FLIPPED** → they disagree. The older outward-normal convention reads this: cross product inward, normals outward, as in the LFInfectedBig det=+1 recipe (`dayz-characters`, `check_dayz_winding.py`). It renders solid but is not what Rule 12 writes. Crate_Wooden read this state: **Empirically verified with Crate_Wooden 2026-04-25 in-game: render/bullets/cursor/collision all OK.** A correct export whose faces were reversed afterwards also reads it, and is inside-out. → severity WARNING on a new export.
    - **5-95% MIXED** → real bug, inconsistent render/collision between faces. → severity CRITICAL.
-   Coordinate-system-agnostic. Neither uniform label is a fix instruction. Decide the direction with the signed volume by winding of `SKILL.md` "Absolute winding check" (rule 4: negative is the production sign for a closed solid seen from outside; a room seen from inside reads positive by design; on an open sheet the sign decides nothing, so use Rule 18's per-component outward check or the visibility battery below), then fix the side that is wrong:
 
-   | Check A | Signed volume | State | To reach Rule 12 |
+   Coordinate-system-agnostic. Neither uniform label is a fix instruction: first decide which way the cross product points, with the check that fits the LOD:
+
+   - visual LOD of a closed solid: the signed volume by winding (`SKILL.md` "Absolute winding check", rule 4: negative is the production sign for a solid seen from outside; a room seen from inside reads positive by design);
+   - collision LODs: Rule 18's per-component outward check, because their whole-LOD sign is mixed even on shipped models (rule 7 there);
+   - open sheets and double-sided parts: no sign decides; use the visibility battery of "From Check B to fix" below.
+
+   Then fix the side that is wrong:
+
+   | Check A | Cross product | State | To reach Rule 12 |
    |---|---|---|---|
-   | UNIFORM_NON_FLIPPED | negative | Rule 12 | nothing |
-   | UNIFORM_NON_FLIPPED | positive | inside-out, both OUTWARD | `face.vertices.reverse()` on every face AND negate the normals |
-   | UNIFORM_FLIPPED | negative | outward-normal convention | keep the winding, negate the normal pool in place (`SKILL.md` "Absolute winding check", rule 5) |
-   | UNIFORM_FLIPPED | positive | a correct export with every face reversed | `face.vertices.reverse()` on every face, keep the normals |
+   | UNIFORM_NON_FLIPPED | inward | Rule 12 | nothing |
+   | UNIFORM_NON_FLIPPED | outward | inside-out, normals OUTWARD too | `face.vertices.reverse()` on every face AND negate the normals |
+   | UNIFORM_FLIPPED | inward | outward-normal convention | keep the winding, negate the normal pool in place (`SKILL.md` "Absolute winding check", rule 5) |
+   | UNIFORM_FLIPPED | outward | a correct export with every face reversed | `face.vertices.reverse()` on every face, keep the normals |
 
    A det=+1 mirror lands in the same row as its unmirrored twin: whatever the row, check chirality on an asymmetric feature (Rule 12).
 
