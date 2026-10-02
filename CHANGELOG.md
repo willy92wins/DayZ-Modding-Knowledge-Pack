@@ -24,7 +24,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   with py3d 1.8.0 on synthetic boxes: the finding fires on an outward box and clears after
   `reverse()`, also fires on a healthy box under a Visual LOD whose cross product points outward,
   and on two boxes 4 m apart reads only `WARN_WINDING_MIXED`, healthy or not. The killer's offline
-  pointer to `check_dayz_winding.py`, which fails a correct export, and the "Z-up → Y-up flips
+  pointer to `check_dayz_winding.py`, which then failed a correct export, and the "Z-up → Y-up flips
   collision winding but not visual" pitfall are corrected with it. Check A called any 5-95 %
   reading a CRITICAL real bug; the SUB_BRZ co-driver door, verified in game, reads `MIXED`
   (72.67 % of 11,921 faces flipped, 25.9 % agreeing) without an inverted face group (Check B: one
@@ -129,20 +129,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   LOD in the Rule 12 convention. The winding: the signed volume by winding of each closed shell (points
   welded, faces linked only through edges that exactly two faces share, `proxy:*` faces left out, an
   incoherent shell made coherent first); negative passes, positive is inside-out and gets
-  `face.vertices.reverse()` on that shell, on the whole LOD only when every shell reads positive. The
-  normals: py3d `_pct_normal_agreement`'s count, read after that reversal; below 10 % with the winding
-  right means negate the normal pool and keep the faces, and a mixed reading, or one part below 10 %, lists
-  the shells to fix. Open and flat parts are reported as not scored and a LOD with no closed shell is not
-  measurable (exit 2); visual LODs above resolution 10 are read too, and a missing or wrong py3d exits 2
-  instead of raising. Fixtures next to the script: the three in-game MLODs byte for byte, regenerated with
-  py3d 1.8.0, plus the correct one with its normals negated; 20 of the 26 cases of
-  `test_check_dayz_winding.py` fail against the old gate. Offline on the LFInfectedBig builds of the
-  2026-10-02 chiral check, the Rule 12 build passes (its open ribcage tubes, 63.5 % of the faces, not
-  scored) and the two with outward normals fail on their normals. The OFFLINE GATE section of
-  `dayz-characters`, `character-rigging.md` §6 and the `check_face_winding` docstring of
-  `dayz-model-pipeline` `py3d-direct-generation.md` no longer say the gate fails a correct export or that
-  characters use the opposite sign. The rewritten gate was not run in game; its verdicts are checked
-  against the recorded in-game results of the probe and of the chiral check.
+  `face.vertices.reverse()` on that shell, on the whole LOD only when every shell reads positive and
+  nothing else is in it. The normals: corner by corner per shell, in the vertex order that reversal
+  leaves; a shell agrees above 90 % of its corners, below 10 % in every shell with the winding right means
+  negate the normal pool and keep the faces, and anything else lists the shells to fix corner by corner.
+  py3d `_pct_normal_agreement`'s first-corner count is printed alongside. Open and flat parts are reported
+  as not scored, and a PASS that leaves faces unscored says so; a LOD with no closed shell, or a shell with
+  no readable normal, is not measurable (exit 2). Visual LODs above resolution 10 are read too, a defect in
+  one LOD now wins over another that is not measurable (exit 1; it was 2), and a missing or wrong py3d
+  exits 2 instead of raising. Fixtures next to the script: the three in-game MLODs byte for byte,
+  regenerated with py3d 1.8.0, plus the correct one with its normals negated; on them the exit codes go
+  from 1, 1, 1, 0 (correct, mirrored, inside-out, outward normals) to 0, 0, 1, 1, and
+  `test_check_dayz_winding.py` covers 33 cases. A cross-family review (gpt-6.1-sol) showed that reading one
+  corner per face passed normals wrong at the other corners, that a pool negation on a LOD-wide share
+  turned a right part outward, and that a 0.1 mm flatness cut-off passed a thin inside-out part; each is a
+  test now. Offline on the LFInfectedBig builds of the 2026-10-02 chiral check, the Rule 12 build passes
+  (99.8 % of its corners agree; its open ribcage tubes, 63.5 % of the faces, not scored) and the two with
+  outward normals fail on their normals. The OFFLINE GATE section of `dayz-characters`,
+  `character-rigging.md` §6 and the `check_face_winding` docstring of `dayz-model-pipeline`
+  `py3d-direct-generation.md` no longer say the gate fails a correct export or that characters use the
+  opposite sign. The rewritten gate was not run in game; its verdicts are checked against the recorded
+  in-game results of the probe and of the chiral check.
 
 ## [1.5.0] - 2026-10-02
 

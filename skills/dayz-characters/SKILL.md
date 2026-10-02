@@ -320,25 +320,28 @@ cross product and the stored normals both point into the material.
   dayz-p3d-audit "Absolute winding check". A positive shell is inside-out: `face.vertices.reverse()` on
   every face of it, the whole LOD when every shell reads positive. Never decide on the sum over the LOD,
   which can hide an inverted part. A shell whose faces disagree with their neighbours is made coherent first.
-- **Normals**, by the absolute check's agreement (py3d `_pct_normal_agreement`), read after that reversal:
-  above 90 % they agree; below 10 % they disagree, which with the winding right means normals stored
-  outward: negate the normal pool and keep the faces, never reverse them on that reading. A mixed reading,
-  or one part below 10 %, lists the shells to fix corner by corner.
+- **Normals**, per shell and corner by corner, in the vertex order that reversal leaves: a shell agrees when
+  more than 90 % of its corner normals lie on its faces' winding side. Below 10 % in every shell they
+  disagree, which with the winding right means normals stored outward: negate the normal pool and keep the
+  faces, never reverse them on that reading. Anything else lists the shells to fix corner by corner, so a
+  right part is never negated with the rest. py3d `_pct_normal_agreement`, the absolute check's count, reads
+  only each face's first corner; the gate prints it alongside.
 - **Not scored**: an open part (a sheet, an open tube) or a flat one (welded twins) has no volume sign; its
   faces are counted as not scored, for dayz-p3d-audit's visibility battery. A visual LOD with no closed
   shell is not measurable.
-- **Exit** 0 PASS, 1 defect, 2 invalid input, ODOL or not measurable. A PASS cannot see a mirror: the det +1
-  export with reversed faces and negated normals passes too; check chirality on an asymmetric feature
-  (Rule 12, `references/character-rigging.md §6`).
+- **Exit** 0 PASS, 1 defect, 2 invalid input, ODOL or not measurable. A PASS with faces not scored says so on
+  its own line. A PASS cannot see a mirror: the det +1 export with reversed faces and negated normals passes
+  too; check chirality on an asymmetric feature (Rule 12, `references/character-rigging.md §6`).
 
 [OFFLINE MEASURED 2026-10-02] `references/winding_fixtures/` holds the three MLODs of the Rule 12 in-game
 probe byte for byte (`make_fixtures.py` rewrites them with py3d 1.8.0) and the correct one with its normals
 negated; `references/test_check_dayz_winding.py` holds the expected verdicts. The gate passes the correct
 export and the mirrored one, both solid in game, and fails the inside-out one (reverse every face, then
 negate the pool) and the outward-normal one (negate the pool). On the three LFInfectedBig builds of the
-chiral check it passes the Rule 12 build (48 closed shells negative, 99.8 % of 43,826 faces agreeing; the
-open ribcage tubes, 63.5 % of the faces, not scored) and fails the two with outward normals on their
-normals (0.2 % and 0.3 %). Measured on a skinned character too (LFInfectedBig, in game 2026-10-02, chiral
+chiral check it passes the Rule 12 build (48 closed shells negative; 99.8 % of its 131,478 corner normals
+agree, 99.3 % in the body, its lowest shell; the open ribcage tubes, 63.5 % of the faces, not scored) and
+fails the two with outward normals on their normals (0.2 % of their corners agree, every shell below
+10 %). Measured on a skinned character too (LFInfectedBig, in game 2026-10-02, chiral
 check in `references/character-rigging.md`): the Rule 12 build is solid and lit like vanilla; the builds
 with normals stored outward, which the gate passed before this rewrite, are lit inverted (base shading,
 untextured client), and the shipped one is also mirrored. (claim: CLAIM-CHAR-NORMALS-INWARD-SKILL)

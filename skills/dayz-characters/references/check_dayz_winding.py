@@ -20,11 +20,15 @@ winding check", engine verdict 2026-09-07)
       used by exactly two of its faces, and its volume counts only when it is coherent (the two faces of
       each edge run it in opposite directions). Never the sum over the LOD: it can hide an inverted part
       (dayz-p3d-audit references/winding-diagnostics.md, Check A).
-  (2) NORMALS: the share of faces whose first corner's stored normal agrees with the face's cross product,
-      counted as py3d _pct_normal_agreement counts it (dayz-p3d-audit's absolute check), read after the
-      winding fix this gate asks for. Above 90 % they agree. Below 10 % they disagree: with the winding
-      right that means the normals point out of the material, and the fix is to negate the normal pool,
-      never to reverse the faces.
+  (2) NORMALS, per shell and corner by corner: the share of a shell's corner normals that lie on the side of
+      their face's cross product, read in the vertex order the winding fix leaves (a reversal flips the cross
+      product and changes which corner comes first; it moves no normal). Above 90 % in every shell they agree.
+      Below 10 % in every shell they disagree: with the winding right that means the normals point out of
+      the material, and the fix is to negate the normal pool, never to reverse the faces. Anything else
+      lists the shells to fix corner by corner, so a right part is never negated with the rest. The count of
+      py3d _pct_normal_agreement (dayz-p3d-audit's absolute check), which reads each face's first corner
+      only, is printed alongside. Real smoothed meshes carry a few corners against their face: LFInfectedBig's
+      Rule 12 build, lit like vanilla in game, has 302 of 131,478 (its body shell reads 99.3 %).
   The fixes come in the order of the table in winding-diagnostics.md and of the py3d README ("Winding"): the
   winding first, normals untouched; then the normals against the settled winding.
 
@@ -57,16 +61,17 @@ import struct
 import sys
 from collections import defaultdict
 
-AGREE_ABOVE = 90.0       # % of voting faces; above it the normals agree (py3d _check_winding_absolute)
+AGREE_ABOVE = 90.0       # % of a shell's corner normals; above it they agree (py3d _check_winding_absolute's 90)
 DISAGREE_BELOW = 10.0    # below it they disagree (where py3d raises ERR_WINDING_VS_NORMALS)
 WELD_DECIMALS = 5        # points equal to 5 decimals are one point (winding-diagnostics.md, Check B)
-MIN_THICKNESS = 1e-4     # m; a closed shell with 3*|volume|/area below it is flat (welded twins): no sign
+MIN_THICKNESS = 2e-5     # m; a closed shell with 3*|volume|/area below it is flat: no sign. Twins welded at
+                         # 5 decimals stay under 1.5e-5; a real part is thicker (a 50-micron one is not flat)
 
 POOL_FIX = ("negate the normal pool in place: lod.facenormals[j] = (-x, -y, -z) for every j "
             "(not through Vertex.normal).")
-CORNER_FIX = ("negate the corner normals of the listed shells, corner by corner: each one that points "
-              "against its face; a pool entry that a corner you keep also uses gets a negated copy "
-              "(py3d README, \"Winding\", step 3).")
+CORNER_FIX = ("in each listed shell, negate the corner normals that point against their face: all of them "
+              "in a shell below 10 %, corner by corner in the others; a pool entry that a corner you keep also "
+              "uses gets a negated copy (py3d README, \"Winding\", step 3).")
 BATTERY = ("no volume sign decides an open or flat part: check them with the visibility battery "
            "(dayz-p3d-audit references/winding-diagnostics.md, \"From Check B to fix\").")
 
@@ -81,9 +86,17 @@ def load_py3d(extra):
     except ImportError as exc:
         print(f"invalid environment: cannot import py3d ({exc}); install the py3d DayZ fork or pass --py3d")
         sys.exit(2)
-    version = tuple(map(int, py3d.__version__.split(".")))
-    if not getattr(py3d, "IS_DAYZ_FORK", False) or version < (1, 6, 0):
-        print(f"invalid environment: py3d {py3d.__version__} from {py3d.__file__} is not the DayZ fork >= 1.6.0")
+    where = getattr(py3d, "__file__", "?")
+    if not getattr(py3d, "IS_DAYZ_FORK", False):
+        print(f"invalid environment: the py3d at {where} is not the DayZ fork (no IS_DAYZ_FORK)")
+        sys.exit(2)
+    try:
+        version = tuple(int(part) for part in str(py3d.__version__).split("."))
+    except (AttributeError, ValueError):
+        print(f"invalid environment: the py3d at {where} has no readable __version__")
+        sys.exit(2)
+    if version < (1, 6, 0):
+        print(f"invalid environment: py3d {py3d.__version__} at {where} is older than 1.6.0")
         sys.exit(2)
     return py3d
 
@@ -121,19 +134,23 @@ def _pct(part, whole):
     return 100.0 * part / whole if whole else 0.0
 
 
-def _agrees(face, points):
-    """py3d _pct_normal_agreement's vote for one face: True, False, or None when it cannot vote."""
-    v = [points[x.point_index].coords for x in face.vertices]
+def _votes(face, points, turn):
+    """The corners' votes of one face, in the vertex order it will have after fix 1 (*turn*: the face gets
+    face.vertices.reverse(), which flips the cross product of its first three vertices and changes which
+    corner is first, and moves no normal). A vote is True when the corner's stored normal lies on the side of
+    cross(v1 - v0, v2 - v0), False on the other side, None when there is no sign (degenerate face, zero normal,
+    or exactly perpendicular). The first vote is the one py3d _pct_normal_agreement counts."""
+    verts = face.vertices[::-1] if turn else face.vertices
+    v = [points[x.point_index].coords for x in verts]
     c = _cross(_sub(v[1], v[0]), _sub(v[2], v[0]))
     if c[0] == 0.0 and c[1] == 0.0 and c[2] == 0.0:
-        return None
-    n = face.vertices[0].normal
-    if n is None or (n[0] == 0.0 and n[1] == 0.0 and n[2] == 0.0):
-        return None
-    d = c[0] * n[0] + c[1] * n[1] + c[2] * n[2]
-    if d == 0.0:
-        return None
-    return d > 0
+        return [None] * len(verts)
+    out = []
+    for x in verts:
+        n = x.normal
+        d = 0.0 if n is None else c[0] * n[0] + c[1] * n[1] + c[2] * n[2]
+        out.append(None if d == 0.0 else d > 0)
+    return out
 
 
 class Shell:
@@ -148,8 +165,12 @@ class Shell:
         self.volume = 0.0
         self.flat = False
         self.centre = (0.0, 0.0, 0.0)
-        self.votes = 0
-        self.agree = 0
+        self.corners = 0              # corner normals with a sign, read after fix 1
+        self.corner_agree = 0
+        self.firsts = 0               # the same for each face's first corner, py3d's count, after fix 1
+        self.first_agree = 0
+        self.firsts_now = 0           # and on the model as it is
+        self.first_agree_now = 0
 
     def kind(self):
         if self.bad_edges:
@@ -157,6 +178,12 @@ class Shell:
         if not self.closed or self.flat:
             return "unscored"
         return "positive" if self.volume > 0 else "negative"
+
+    def normals(self):
+        if not self.corners:
+            return "unread"
+        pct = _pct(self.corner_agree, self.corners)
+        return "agree" if pct > AGREE_ABOVE else ("disagree" if pct < DISAGREE_BELOW else "mixed")
 
     def where(self):
         return f"shell at lod.faces {_ranges(self.members)}"
@@ -247,7 +274,7 @@ def read_shells(lod, faces):
 
 
 def read_lod(lod, index):
-    """Print one visual LOD's verdict. Returns 'PASS', 'FAIL' or 'ERROR' (not measurable)."""
+    """Print one visual LOD's verdict. Returns ('PASS' | 'FAIL' | 'ERROR', faces not scored, faces)."""
     proxy = set()
     for name, sel in lod.selections.items():
         if str(name).lower().startswith("proxy:"):
@@ -255,13 +282,24 @@ def read_lod(lod, index):
     faces = [fi for fi, face in enumerate(lod.faces) if id(face) not in proxy and len(face.vertices) >= 3]
     left_out = len(lod.faces) - len(faces)
     shells = read_shells(lod, faces)
+    zero = 0
     for shell in shells:
+        turn = shell.kind() == "positive"   # the reversal fix turns these shells: read them as they will be
         for fi in shell.members:
-            vote = _agrees(lod.faces[fi], lod.points)
-            if vote is not None:
-                shell.votes += 1
-                # read against the winding this gate settles: a positive shell gets reversed
-                shell.agree += vote != (shell.kind() == "positive")
+            face = lod.faces[fi]
+            zero += sum(1 for x in face.vertices if x.normal is None or tuple(x.normal) == (0.0, 0.0, 0.0))
+            votes = _votes(face, lod.points, turn)
+            if votes[0] is not None:
+                shell.firsts += 1
+                shell.first_agree += votes[0]
+            now = _votes(face, lod.points, False)[0] if turn else votes[0]
+            if now is not None:
+                shell.firsts_now += 1
+                shell.first_agree_now += now
+            for vote in votes:
+                if vote is not None:
+                    shell.corners += 1
+                    shell.corner_agree += vote
 
     by = defaultdict(list)
     for shell in shells:
@@ -317,9 +355,8 @@ def read_lod(lod, index):
             reversal = fixes
             if uns:
                 lines.append(f"  fix {fixes}: face.vertices.reverse() on every face of these closed shells (the "
-                             "winding first, normals untouched). This reading cannot check the faces not scored "
-                             "below; if they came out of the same export call (blender_to_dayz(), transform()), "
-                             "they are in the same state.")
+                             "winding first, normals untouched). The faces not scored below are not covered: check "
+                             "them with the visibility battery before turning any of them.")
             elif bad:
                 lines.append(f"  fix {fixes}: face.vertices.reverse() on every face of these closed shells (the "
                              "winding first, normals untouched).")
@@ -328,6 +365,8 @@ def read_lod(lod, index):
                 lines.append(f"  fix {fixes}: face.vertices.reverse() on every face of {scope} (the winding "
                              "first, normals untouched; never a vertices[1]/[2] swap, which turns a quad into a "
                              "crossed face).")
+        lines.append(f"  (a closed shell meant to be seen from inside, a cavity, reads positive by design: leave "
+                     f"it out of fix {reversal})")
     elif neg:
         lines.append(f"  winding: RIGHT. {len(neg)} of {_plural(len(neg), 'closed shell')} ({nfaces(neg)} faces) "
                      f"read a negative signed volume by winding, sum {nsum(neg):+.4g}: the cross product points "
@@ -338,44 +377,63 @@ def read_lod(lod, index):
                      "flat part.")
 
     read = [s for s in shells if s.kind() != "incoherent"]
-    votes = sum(s.votes for s in read)
-    agree = sum(s.agree for s in read)
-    pct = _pct(agree, votes)
+    voted = [s for s in read if s.corners]
+    unread = [s for s in read if not s.corners]
+    corners = sum(s.corners for s in voted)
+    agree = sum(s.corner_agree for s in voted)
     after = f" after fix {reversal}" if reversal else ""
     would = "would agree" if reversal else "agree"
     skipped = f"; the {nfaces(bad)} faces of incoherent shells are read once those are coherent" if bad else ""
-    reading = f"{agree} of {votes} faces ({pct:.1f} %) {would} with their winding"
-    odd = [s for s in read if s.votes and _pct(s.agree, s.votes) <= AGREE_ABOVE]
-    if not votes:
+    reading = f"{agree} of {corners} corner normals ({_pct(agree, corners):.1f} %) {would} with their face's winding"
+    classes = {s.normals() for s in voted}
+    if not voted:
         error = True
-        lines.append(f"  normals: UNSCORED. No face has both a non-degenerate winding and a non-zero "
+        lines.append(f"  normals: UNSCORED. No corner has both a non-degenerate face and a non-zero "
                      f"normal{skipped}.")
-    elif pct < DISAGREE_BELOW:
+    elif classes == {"agree"}:
+        keep = ": keep the normals" if reversal else ""
+        lines.append(f"  normals: AGREE{after}. {reading}, above 90 % in every shell{keep}{skipped}.")
+    elif classes == {"disagree"}:
         fail = True
         if reversal:
-            lines.append(f"  normals: DISAGREE{after}. {reading}{skipped}.")
+            lines.append(f"  normals: DISAGREE{after}. {reading}, below 10 % in every shell{skipped}.")
             fixes += 1
             lines.append(f"  fix {fixes}: {POOL_FIX}")
         elif neg:
-            lines.append(f"  normals: DISAGREE. {reading}: the stored normals point out of the material (the "
-                         f"older outward-normal convention){skipped}.")
+            lines.append(f"  normals: DISAGREE. {reading}, below 10 % in every shell: the stored normals point out "
+                         f"of the material (the older outward-normal convention){skipped}.")
             fixes += 1
             lines.append(f"  fix {fixes}: {POOL_FIX} Keep every face as it is: reversing faces on this reading "
                          "turns the model inside-out.")
         else:
             lines.append(f"  normals: DISAGREE. {reading}; with no closed shell this gate cannot say which of the "
                          f"two is wrong{skipped}.")
-    elif pct > AGREE_ABOVE and not any(_pct(s.agree, s.votes) < DISAGREE_BELOW for s in odd):
-        keep = ": keep the normals" if reversal else ""
-        lines.append(f"  normals: AGREE{after}. {reading}{keep}{skipped}.")
     else:
         fail = True
-        lines.append(f"  normals: MIXED{after}. {reading}{skipped}.")
-        for s in sorted(odd, key=lambda s: -len(s.members)):
+        lines.append(f"  normals: MIXED{after}. {reading}; these shells do not reach 90 %{skipped}:")
+        for s in sorted((s for s in voted if s.normals() != "agree"), key=lambda s: -len(s.members)):
             note = "" if s.kind() in ("positive", "negative") else " (direction not scored)"
-            lines.append(f"    {s.where()}: {s.agree} of {s.votes} faces {would}{note}")
+            lines.append(f"    {s.where()}: {s.corner_agree} of {s.corners} corners {would}{note}")
         fixes += 1
         lines.append(f"  fix {fixes}: {CORNER_FIX}")
+    if unread:
+        error = True
+        lines.append(f"  normals: no corner with a sign in {nfaces(unread)} faces of "
+                     f"{_plural(len(unread), 'shell')} (zero normals or degenerate faces): not measurable there.")
+    firsts_now = sum(s.firsts_now for s in read)
+    if firsts_now:
+        agree_now = sum(s.first_agree_now for s in read)
+        text = f"  py3d first-corner count: {agree_now} of {firsts_now} faces ({_pct(agree_now, firsts_now):.1f} %)"
+        if reversal:
+            firsts = sum(s.firsts for s in read)
+            first_agree = sum(s.first_agree for s in read)
+            text += (f" as the model is, {first_agree} of {firsts} ({_pct(first_agree, firsts):.1f} %) after fix "
+                     f"{reversal};")
+        else:
+            text += ","
+        lines.append(text + " the count of dayz-p3d-audit's absolute check.")
+    if zero:
+        lines.append(f"  {zero} corners have a zero normal and are not read.")
 
     if uns:
         flat = [s for s in uns if s.closed]
@@ -389,7 +447,7 @@ def read_lod(lod, index):
     print(f"[{tag}] LOD {index} res={lod.resolution:.1f}: {len(faces)} faces, {left_out} proxy faces left out")
     for line in lines:
         print(line)
-    return tag
+    return tag, nfaces(uns), len(faces)
 
 
 def main():
@@ -420,12 +478,16 @@ def main():
         print("invalid input: no visual LOD")
         sys.exit(2)
     tags = []
+    unscored = total = 0
     for index, lod in visual:
         try:
-            tags.append(read_lod(lod, index))
+            tag, lod_unscored, lod_total = read_lod(lod, index)
         except IndexError as exc:
             print(f"[ERROR] LOD {index} res={lod.resolution:.1f}: a point or normal index is out of range ({exc})")
-            tags.append("ERROR")
+            tag, lod_unscored, lod_total = "ERROR", 0, 0
+        tags.append(tag)
+        unscored += lod_unscored
+        total += lod_total
     if "FAIL" in tags:
         print("DAYZ WINDING/NORMAL CONVENTION: FAIL (model defect) - do NOT ship")
         if "ERROR" in tags:
@@ -435,6 +497,9 @@ def main():
         print("DAYZ WINDING/NORMAL CONVENTION: INVALID (not measurable)")
         sys.exit(2)
     print("DAYZ WINDING/NORMAL CONVENTION: PASS")
+    if unscored:
+        print(f"  The winding of {unscored} of {total} faces ({_pct(unscored, total):.1f} %), in open or flat "
+              "parts, was not scored: this PASS covers the closed shells' winding only.")
     print("  It cannot see a mirror: a det=+1 export with its faces reversed and its normals negated passes "
           "too (winding_fixtures/mirror_a.p3d, mirrored in game). Check chirality on an asymmetric feature "
           "(dayz-model-pipeline Rule 12).")
