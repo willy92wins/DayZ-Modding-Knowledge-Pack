@@ -330,39 +330,46 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   ("object will spawn as model was created", :56) and `RF_RANDOMROT` (:62); the result agrees with
   the first comment and does not settle how the engine reads the value. Before trusting face
   coordinates, check the pose: two parallel rays at one height on a vertical face catch a yaw
-  (unequal readings) but not a tilt, so also read the face normal from
-  `scene_raycast(method="bullet")` and check that it lies along the axis, and read the fixture again
-  a few seconds later. It may change an item's configured resting side; slopes and settling were not
-  measured.
+  (unequal readings) but not a tilt, so also read `scene_raycast(method="bullet")` normals on two
+  faces that are not parallel, such as a side and the top (a tilt about one face's normal leaves
+  that normal unchanged), and check that each lies along its axis, allowing for the ground: the
+  statics below read up to 0.31 degrees off the axis, the terrain about as much, the items on it.
+  Read the fixture again a few seconds later. It may change an item's configured resting side;
+  slopes and settling were not measured.
   The `normal` of a default `rvproxy` reply is not a face normal (added 2026-10-02, two runs)
   [EXACT][CLAIM-MCPV-RVPROXY-NORMAL]: the bridge copies the engine's `RaycastRVResult.dir`
   (`MCPBridge.c:2958`), for a ray the "direction and size of the intersection"
-  (`scripts/3_game/global/dayzphysics.c:104`). In this run and in run cf2d6bb3 it lay along the ray
-  in all 190 `rvproxy` hits on an object, the box yawed about 10 degrees included ((-1.963, 0, 0)
-  and (-1.966, 0, 0)), and its length is the ray's path through the object: (-2.1, 0, 0) across a
-  2 m box is its width plus the 0.05 m sphere at each side. `bullet` returns the hit face's normal
-  (`MCPBridge.c:2998`): a unit vector in all 40 of its hits, up to 0.3 degrees off the axis on the
-  `HouseNoDestruct` statics and on the axis on the items. *(Corrected 2026-10-02: this entry read
-  the pose from the returned `normal` lying along the axis, citing (-2.1, 0, 0); with the default
-  method it always does.)*
-  A half-turn passes all of these checks (measured 2026-10-02 on DayZDiag 1.29.163709, dayz-mcp run
-  cf2d6bb3) [EXACT][CLAIM-MCPV-ITEM-YAW]: one MLOD held two 2 m boxes, A (x -3..-1) in
-  `Component01` and B (x 1..3) in `Component02`, and a twin had B in no component; each model was
-  spawned, binarized and as MLOD, with `flags=8389668` and `rotation=64` as `HouseNoDestruct` and as
-  `Inventory_Base` (`item_large`). On the four statics the west box was A, as modelled: it answered
-  as component 0 (`Component01`; `Component02` reads 1), and on the twins it was the only box that
-  took rays. The four items came out turned 180 degrees about Y: the west box answered as
-  component 1, and on the twins every hit was component 0 on the east box while the west box took no
-  ray. Parallel rays read equal on the items too, and the normals pointed the same way as on the
-  statics, since a half-turn keeps every face on the axes; a fixture symmetric about its origin, like
-  the single box above, cannot show it, and `object_inspect` returns memory points in model space
-  (`GetMemoryPointPos`, `MCPBridge.c:2240`), not the pose. So give the fixture sides a ray can tell
-  apart and check which answers where: one component per side, read from the `component` of
-  `rvproxy` hits (`geom`, `view` or `fire`; the bridge leaves it 0 on `bullet` hits,
-  `MCPBridge.c:2983-3004`), or a collider on one side only. `telemetry_read(mode="object_at")`
-  returns the object's `GetOrientation()` (`MCPBridge.c:3137`); that run did not read it. Not
-  measured: whether the turn is fixed or random (all four items read 180 degrees; 64 is also
-  `RF_RANDOMROT`), other `rotation` and `flags` values, base classes and layers, and the cause.
+  (`scripts/3_game/global/dayzphysics.c:104`), as `enforce-script-reference` ("Surface normals")
+  found on house walls. In this run and in run cf2d6bb3 it lay along the ray in all 190 `rvproxy`
+  hits on an object, the box yawed about 10 degrees included ((-1.963, 0, 0) and (-1.966, 0, 0)),
+  and its length is the ray's path through the object: (-2.1, 0, 0) across a 2 m box is its width
+  plus the 0.05 m sphere at each side. `bullet` returns the hit face's normal (`MCPBridge.c:2998`):
+  a unit vector in all 40 of its hits, up to 0.31 degrees off the axis on the `HouseNoDestruct`
+  statics and on the axis on the items. *(Corrected 2026-10-02: this entry read the pose from the
+  returned `normal` lying along the axis, citing (-2.1, 0, 0); with the default method it always
+  does.)*
+  An item can come out with its sides swapped, and none of these checks shows it (measured
+  2026-10-02 on DayZDiag 1.29.163709, dayz-mcp run cf2d6bb3) [EXACT][CLAIM-MCPV-ITEM-YAW]: one MLOD
+  held two 2 m boxes, A (x -3..-1) in `Component01` and B (x 1..3) in `Component02`, and a twin had
+  B in no component; each model was spawned, binarized and as MLOD, with `flags=8389668` and
+  `rotation=64` as `HouseNoDestruct` and as `Inventory_Base` (`item_large`). On the four statics the
+  west box was A, as modelled: it answered as component 0 (`Component01`; `Component02` reads 1),
+  and on the twins it was the only box that took rays. On the four items the boxes had swapped
+  sides, as a turn of 180 degrees about Y leaves them: the west box answered as component 1, and on
+  the twins every hit was component 0 on the east box while the west box took no ray. The boxes are
+  symmetric in z, so these rays cannot tell that half-turn from a mirror in x. Parallel rays read
+  equal on the items too, and the normals pointed the same way as on the statics, since the swap
+  keeps every face on the axes; a fixture symmetric about its origin, like the single box above,
+  cannot show it, and `object_inspect` returns memory points in model space (`GetMemoryPointPos`,
+  `MCPBridge.c:2240`), not the pose. So give the fixture sides a ray can tell apart and check which
+  answers where: one component per side, read from the `component` of `rvproxy` hits (`geom`,
+  `view` or `fire`; the bridge leaves it 0 on `bullet` hits, `MCPBridge.c:2983-3004`), or a
+  collider on one side only. Put the parts off-centre in z as well to tell a half-turn from a
+  mirror, and probe along z too: a quarter-turn moves parts that lie along x onto the z axis.
+  `telemetry_read(mode="object_at")` returns the object's `GetOrientation()` (`MCPBridge.c:3137`);
+  that run did not read it. Not measured: whether the swap is fixed or random (all four items
+  swapped; 64 is also `RF_RANDOMROT`), other `rotation` and `flags` values, base classes and layers,
+  and the cause.
 - **Standing on top: move the player before reading its height** (added 2026-10-02, measured on
   DayZDiag 1.29.163709 in a later run, on 2 m boxes) [EXACT][CLAIM-MCPV-STAND-PROBE]: a second
   reading of the object's physics body next to the walk-into probe above, on its top instead of a
