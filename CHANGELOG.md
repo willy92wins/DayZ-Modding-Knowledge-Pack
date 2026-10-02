@@ -14,8 +14,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `build_viewer.py` then put the weapon at a fixed `(0, 1.3, 0.2)` instead of on
   `RightHand_Dummy` `(-0.156, 1.368, 0.207)`. The script composes each helper's world through its
   parent chain and exits 1 without writing when the FBX has no `RightHand_Dummy`; it removes the
-  previous run's file before it starts, so after any failed run `build_rig_dayz.py` stops instead
-  of building on stale anchors. On the BI FBX (Blender 5.1.1), `fbx_extract.py`,
+  previous run's file before the FBX import, read-only or not, so after a failed run
+  `build_rig_dayz.py` stops instead of building on stale anchors (a file it cannot remove stops the
+  extractor with that error). On the BI FBX (Blender 5.1.1), `fbx_extract.py`,
   `extract_empties.py` and `build_rig_dayz.py` rebuild the project's `data/rig_dayz.json` byte for
   byte except its `space` label. SKILL.md's scripts index and `weapon-anim-authoring-viewer.md`
   "Reusable tools" list the pipeline in the order it runs, with `--python-exit-code 1` for the

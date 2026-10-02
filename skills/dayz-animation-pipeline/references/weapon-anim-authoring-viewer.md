@@ -136,7 +136,8 @@ run:
 2. `extract_empties.py` (Blender headless, same FBX: the helper empties through
    their parent chain, see above) → `empties_armworld.json`; exits 1 and writes
    nothing when the FBX has no `RightHand_Dummy`. It removes the previous run's
-   file before it starts, so a failed run leaves step 3 nothing to build on.
+   file before the FBX import, read-only or not, so a failed run leaves step 3
+   nothing to build on; a file it cannot remove stops it with that error.
 3. `build_rig_dayz.py` (align + viewer-frame rig JSON, the helpers as its
    `anchors`) → `rig_dayz.json`.
 4. `extract_weapon.py` (py3d weapon mesh+memory points) → `weapon.json`, apart

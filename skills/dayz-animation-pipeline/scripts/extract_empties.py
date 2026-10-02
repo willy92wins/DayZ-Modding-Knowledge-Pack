@@ -1,4 +1,4 @@
-import bpy, json, os, tempfile
+import bpy, json, os, stat, tempfile
 from mathutils import Matrix
 
 # Working directory shared by every stage of this pipeline. Override with
@@ -6,10 +6,13 @@ from mathutils import Matrix
 # previous one's output.
 SCR = os.environ.get("DAYZ_ANIM_SCRATCH") or os.path.join(tempfile.gettempdir(), "dayz-anim-pipeline")
 os.makedirs(SCR, exist_ok=True)
-# Drop the previous run's file first: if this run fails, build_rig_dayz.py
-# finds none and stops instead of building on stale anchors.
+# Drop the previous run's file first, before the import can fail: if this run
+# fails, build_rig_dayz.py finds none and stops instead of building on stale
+# anchors. A copy restored read-only is made writable first; a file that still
+# cannot be removed stops the script here with that error.
 path = os.path.join(SCR, "empties_armworld.json")
 if os.path.exists(path):
+    os.chmod(path, stat.S_IWRITE)
     os.remove(path)
 
 # Same FBX as fbx_extract.py: build_rig_dayz.py pairs both outputs.

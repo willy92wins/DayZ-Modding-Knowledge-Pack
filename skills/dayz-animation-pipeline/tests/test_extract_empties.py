@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import runpy
+import stat
 import subprocess
 import sys
 from types import ModuleType, SimpleNamespace
@@ -84,10 +85,13 @@ def _mesh(parent):
                            parent_type="OBJECT", parent_bone="")
 
 
-# Helpers the scene hangs straight from the armature object, each at its own (0,k,0).
+# Helpers the scene hangs straight from the armature object, each at its own
+# (0,k,0): name -> (k, the y the file must hold). The file keeps six decimals,
+# so Camera1st_lock_dummy's 6.1234564 must read 6.123456.
 _ON_ARMATURE = {
-    "weapon": 1.0, "LeftHandIK": 2.0, "RightHandIK": 3.0,
-    "LeftHandIKTarget": 4.0, "RightHandIK_Helper": 5.0, "Camera1st_lock_dummy": 6.0,
+    "weapon": (1.0, 1.0), "LeftHandIK": (2.0, 2.0), "RightHandIK": (3.0, 3.0),
+    "LeftHandIKTarget": (4.0, 4.0), "RightHandIK_Helper": (5.0, 5.0),
+    "Camera1st_lock_dummy": (6.1234564, 6.123456),
 }
 
 
@@ -121,7 +125,7 @@ def _scene(without=()):
                               basis=Matrix.Translation((4.0, 0.0, 0.0))))
     objects += [
         _empty(name, arm, "OBJECT", basis=Matrix.Translation((0.0, k, 0.0)))
-        for name, k in _ON_ARMATURE.items() if name not in without
+        for name, (k, _) in _ON_ARMATURE.items() if name not in without
     ]
     objects += [_empty("Lamp_Helper", arm, "BONE", "LeftHand"), _mesh(arm)]
     return _Objects(objects)
@@ -147,17 +151,24 @@ EXPECTED = {
     # offset would stay (4,0,0).
     "LeftHand_Dummy": _affine(_TURN, (10.0, 7.0, 5.0)),
     # Children of the armature object: (10,0,0) + their own (0,k,0).
-    **{name: _affine(_SAME, (10.0, k, 0.0)) for name, k in _ON_ARMATURE.items()},
+    **{name: _affine(_SAME, (10.0, y, 0.0)) for name, (_, y) in _ON_ARMATURE.items()},
 }
 
 
-def _run_extractor(monkeypatch, scratch, objects):
-    """Run the script as Blender would, after the FBX import left `objects`."""
+def _run_extractor(monkeypatch, scratch, objects, import_error=None):
+    """Run the script as Blender would, after the FBX import left `objects`
+    or failed with `import_error`."""
     imported = []
+
+    def import_fbx(filepath):
+        imported.append(filepath)
+        if import_error is not None:
+            raise import_error
+
     bpy = ModuleType("bpy")
     bpy.ops = SimpleNamespace(
         wm=SimpleNamespace(read_factory_settings=lambda use_empty=False: None),
-        import_scene=SimpleNamespace(fbx=lambda filepath: imported.append(filepath)),
+        import_scene=SimpleNamespace(fbx=import_fbx),
     )
     bpy.context = SimpleNamespace(view_layer=SimpleNamespace(update=lambda: None))
     bpy.data = SimpleNamespace(objects=objects)
@@ -247,24 +258,33 @@ def test_no_file_without_right_hand_dummy(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "objects, stop",
+    "objects, import_error, read_only, stop",
     [
-        (lambda: _scene(without=("RightHand_Dummy",)), SystemExit),
-        (lambda: _Objects([_mesh(None)]), StopIteration),
+        (lambda: _scene(without=("RightHand_Dummy",)), None, False, SystemExit),
+        (lambda: _Objects([_mesh(None)]), None, False, StopIteration),
+        # The import itself fails (a missing FBX): the earlier file must be gone
+        # already, so the removal has to come before the import.
+        (_scene, RuntimeError("Couldn't open file"), False, RuntimeError),
+        # An earlier file restored read-only must not survive either.
+        (lambda: _scene(without=("RightHand_Dummy",)), None, True, SystemExit),
     ],
-    ids=["no-right-hand", "no-armature"],
+    ids=["no-right-hand", "no-armature", "import-fails", "read-only-earlier-file"],
 )
-def test_a_failed_run_leaves_no_earlier_file_behind(tmp_path, monkeypatch, objects, stop):
+def test_a_failed_run_leaves_no_earlier_file_behind(
+        tmp_path, monkeypatch, objects, import_error, read_only, stop):
     """Breaks if an earlier run's empties_armworld.json outlives a failed one:
     build_rig_dayz.py would build on it and the viewer fall back without a word.
     The {} is the stand-in a session wrote by hand on 2026-10-02."""
-    (tmp_path / "empties_armworld.json").write_text("{}", encoding="utf-8")
+    earlier = tmp_path / "empties_armworld.json"
+    earlier.write_text("{}", encoding="utf-8")
+    if read_only:
+        earlier.chmod(stat.S_IREAD)
     _write_rig_raw(tmp_path)
 
     with pytest.raises(stop):
-        _run_extractor(monkeypatch, tmp_path, objects())
+        _run_extractor(monkeypatch, tmp_path, objects(), import_error)
 
-    assert not (tmp_path / "empties_armworld.json").exists()
+    assert not earlier.exists()
     done = _build_rig(tmp_path)
     assert done.returncode != 0
     assert "empties_armworld.json" in done.stderr
