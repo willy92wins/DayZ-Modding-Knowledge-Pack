@@ -412,6 +412,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   tree vendors a wheel today, so nothing was affected. Earlier `py3d_dayz` wheels are now backed up
   and removed like legacy ones: a new case in `tests/py3d_rollout/test_apply_rollout.py` and test E
   of `verify-wheel-restock.ps1` fail on the previous applicator and pass now.
+- `dayz-model-pipeline` `references/lods-and-geometry.md`, the py3d fix for the GLB/glTF source
+  case: the bullet above it reverses every face in every LOD except proxy triangles, but the loop
+  under it reversed the proxy triangles too. The loop now skips the faces of
+  `proxy:<path>.<index>` selections (`py3d.PROXY_NAME_RE`), and a sentence says that
+  `P3D.transform()` with the swap matrix (det<0) has already reversed every face, proxy triangles
+  included, so after it only the proxy triangles go back; run after `transform()`, the loop would
+  put every other face back in its original order and leave the proxies reversed. Measured offline
+  with py3d 1.9.0 (the repository source and the installed wheel), running the documented block
+  itself on a synthetic model of five LODs (two visual, Geometry, View Geometry, Memory) with five
+  proxy triangles: the proxies keep their vertex order and the other 48 faces are reversed, also on
+  the model read back from MLOD bytes; the old block, a no-op and a loop that skips the faces of
+  every selection fail the same check. The replaced block is quoted in a dated note. The GLB
+  reversal itself is unchanged.
 
 ## [1.5.0] - 2026-10-02
 

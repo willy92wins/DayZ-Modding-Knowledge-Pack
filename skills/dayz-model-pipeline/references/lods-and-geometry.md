@@ -154,10 +154,25 @@ must read ~0% flipped.
 
 **Fix in py3d for the GLB/glTF source case:**
 ```python
+import py3d
+
+# After the swap, applied to points and normals with every face's vertex order kept.
 for lod in model.lods:
+    # Proxy triangles, the faces of 'proxy:<path>.<index>' selections, keep their order.
+    proxy_faces = {face
+                   for name, sel in lod.selections.items()
+                   if py3d.PROXY_NAME_RE.match(name)
+                   for face in sel.faces}
     for face in lod.faces:
-        face.vertices.reverse()
+        if face not in proxy_faces:
+            face.vertices.reverse()
 ```
+`P3D.transform()` with the swap matrix reverses every face itself, proxy triangles included,
+because det<0: after it, reverse only the proxy triangles back. The loop above, run after
+`transform()`, undoes the reversal of every other face and leaves the proxies reversed (measured
+offline, py3d 1.9.0).
+*(Fixed 2026-10-03: the block read `for lod in model.lods: for face in lod.faces: face.vertices.reverse()`,
+on three lines, which reversed the proxy triangles too, against the rule above.)*
 
 **Fix in Blender for the GLB/glTF source case:**
 - Select all faces → Mesh → Normals → Flip

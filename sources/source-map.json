@@ -621,10 +621,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: Unreleased Fixed entry for the dayz-model-pipeline references/lods-and-geometry.md py3d loop of the GLB/glTF source case, which reversed proxy triangles against the rule above it; the loop now skips the faces of proxy selections (py3d.PROXY_NAME_RE) and a sentence says what P3D.transform() has already done. Measured offline with py3d 1.9.0 as recorded on the lods-and-geometry.md input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2de9072d4e8cda5a1668ffe3382d009598b81cc9e32274e6d784de3af05a4845",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-glb-proxy-loop@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "bb080f811188bc1d45ffe591f9e21622ffb2cfd30228750591ad7a294f409e0d",
+      "output_hash": "2de9072d4e8cda5a1668ffe3382d009598b81cc9e32274e6d784de3af05a4845",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7978,10 +7988,20 @@
           "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
           "source_revision": "kp-update-rule12@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: dayz-model-pipeline references/lods-and-geometry.md, 'Fix in py3d for the GLB/glTF source case'. The bullet above it (GLB/glTF-sourced geometry via the pure swap, det=-1) reverses the vertex order of every face in every LOD except proxy triangles, and SKILL.md 'GLB/glTF imports - LL-020 refined' says the same, but the loop under it (for lod in model.lods: for face in lod.faces: face.vertices.reverse()) reversed the proxy triangles too. The loop now skips the faces of the selections whose name matches py3d.PROXY_NAME_RE (tools/py3d/py3d/__init__.py:200, the library's own proxy-name pattern, used by LOD.add_proxy and LOD.get_proxies), iterating LOD.selections (name -> Selection, :1794) and Selection.faces (a dict keyed by the LOD's Face objects, :1701). A new sentence says that P3D.transform() with a det<0 matrix reverses every face of every LOD itself, proxy triangles included (:2957-2959), so after it only the proxy triangles are reversed back. Measured offline 2026-10-03 with py3d 1.9.0 (the repository source at 4626f4b and the installed wheel) by a script that runs the documented block itself on a synthetic model: visual 0.0 with a box in a 'camo' selection, two LOD.add_proxy triangles and a hand-made isosceles proxy triangle; visual 1.0 with a box and one proxy; Geometry and View Geometry boxes in Component01, the View Geometry one with a proxy; Memory with one point (53 faces, 5 proxy triangles). Judged by the face indices recorded while building the model, the 5 proxy triangles keep their vertex order and the other 48 faces are reversed, also on the model written to MLOD bytes and read back; the old block (5 violations), a no-op (48) and a loop that skips the faces of every selection (36) fail the same check, and so does the old block fed through the same extraction path. transform() with the swap matrix reversed all 5 proxy triangles and all 48 other faces; transform() followed by the new loop broke the rule on all 53 faces; the swap applied by hand followed by the loop gives the same vertex orders and points as transform() followed by reversing only the proxy triangles. The replaced block is quoted in a dated note (checked mechanically against base 4626f4b, with a negative control). The GLB reversal itself is unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "49365b317adfdc88e92bdacd5943775de4e6b9dbb1f093d3296adffb37b2cfa1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
+          "source_revision": "kp-update-glb-proxy-loop@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2b755efa18ae527b52bdd351083ec2e6ad3c2690ae7cf390daa0cf66dca25859",
+      "output_hash": "49365b317adfdc88e92bdacd5943775de4e6b9dbb1f093d3296adffb37b2cfa1",
       "output_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
