@@ -199,7 +199,12 @@ This fork checks winding two ways:
   its own declared normal? Both vectors live in the same space, so this is
   immune to the left-handed/right-handed confusion.
 - **Relative** (`ERR_WINDING_INVERTED`): is a collision LOD wound the opposite
-  way from the Visual LOD?
+  way from the Visual LOD? The reference is the visual LOD of lowest
+  resolution, which the message names by index: `get_lod("visual")` returns
+  the first in file order, which need not be it. The check compares the share
+  of faces wound outward from each LOD's centroid, a test that assumes convex
+  geometry, and files the finding on the collision LOD whichever of the two is
+  wrong.
 
 The relative check alone **cannot** see a model where *every* LOD is inverted —
 everything is consistent with everything else — which is why the absolute
@@ -256,9 +261,25 @@ winding before touching anything else, not after. And never reverse a face by
 swapping `vertices[1]` and `vertices[2]`: that inverts a triangle but turns a
 quad `[0,1,2,3]` into `[0,2,1,3]`, a crossed face.
 
+`ERR_WINDING_INVERTED` is read the same way: the collision LOD and the Visual
+LOD disagree on which way is out, not which one is wrong. A Visual LOD turned
+inside-out, faces and normals together, raises it on the healthy collision LODs
+and not on itself, and the absolute check passes it. So run step 1 on the
+Visual LOD the message names and step 2 on the collision LOD, which leave a
+part that reads right as it is, then step 3. A part those steps cannot read (an
+open sheet, double-sided twins, a component that is not closed and convex)
+leaves the finding unresolved: check in game, or against a model that renders
+right, which side it is meant to show before turning it. Only when every part
+of both LODs reads right is there nothing to fix: a Visual LOD meant to be seen
+from inside reads positive and is right. Reversing the healthy collision LODs
+instead, which this finding used to recommend, trades it for
+`ERR_WINDING_VS_NORMALS` on each of them; negating their normals as well leaves
+`validate()` at `[]` with every LOD wound outward, the collision LODs as
+`transform(ROT_X_NEG90)` alone leaves them, which registered no raycast in game.
+
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 311 tests pass -- 304 of them
+The library is used in a real modding pipeline, and 316 tests pass -- 309 of them
 on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
 upstream (see [Tests](#tests)). It has also been through a deliberately
 adversarial audit, and **not every problem it found is fixed yet**. Before

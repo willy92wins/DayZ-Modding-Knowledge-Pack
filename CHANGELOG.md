@@ -140,6 +140,31 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   collision LOD quoted the text of py3d's relative-check message ("winding is INVERTED relative to
   the Visual LOD"), which can change with py3d; it now names the finding by its code,
   `ERR_WINDING_INVERTED`, as the automated-check note above it already does.
+- py3d `ERR_WINDING_INVERTED` message: the relative check compares the share of faces wound
+  outward from each LOD's centroid, files the finding on the collision LOD and told the reader to
+  reverse every face of that LOD. On the clean multi-LOD model of the py3d tests, converted with
+  `blender_to_dayz()`, a visual LOD turned inside-out (faces and normals together, which the
+  absolute check passes) raised it on the three healthy collision LODs and nowhere else;
+  reversing them traded it for `ERR_WINDING_VS_NORMALS` on each, and negating their normals as
+  well left `validate()` at `[]` with every LOD wound outward, the collision LODs as
+  `transform(ROT_X_NEG90)` alone leaves them, which registered no raycast in game. The pack
+  already warned about this (`dayz-vehicles` `visual-gates-and-winding.md`; `dayz-p3d-audit`,
+  item 1 of "The three py3d gates", "Absolute winding check" rule 7, and killer #1, which reads
+  the finding as a trigger). The message now names the visual LOD it compares against, the one of
+  lowest resolution, by index and resolution (`get_lod("visual")` returns the first in file
+  order, which need not be it); says the collision LOD and that visual LOD disagree on which way
+  is out, by a centroid test that assumes convex geometry, not which one is wrong; and gives for
+  both LODs the order of `ERR_WINDING_VS_NORMALS`: the winding first, normals untouched (visual
+  LOD per closed shell by its signed volume, collision LOD per convex component), steps that
+  leave a part that reads right as it is, never a `vertices[1]`/`[2]` swap; then each corner
+  normal still against its face. A part the steps cannot read (an open sheet, twins, a component
+  that is not closed and convex) leaves it unresolved, to be checked in game or against a model
+  that renders right; only with every part of both LODs reading right is there nothing to fix,
+  as on a visual LOD meant to be seen from inside, which reads positive. Both messages take their
+  winding steps from one helper, and every `ERR_WINDING_VS_NORMALS` text is unchanged. The README
+  and KNOWN-ISSUES say the same. Finding code and severity unchanged: on that model it is the
+  only finding that sees the inside-out visual LOD. No new wheel: the pinned and installed
+  `py3d_dayz-1.8.0` still prints the old message.
 - py3d `ERR_COMPONENT_NAMING` (py3d 1.9.0). It checked the Geometry LOD alone and also fired on a
   lowercase `component01` ("Engine requires 'Component01' (uppercase C); collision silently fails"),
   which in game collides exactly like `Component01` (the killer #2 entry above); vanilla vehicles
