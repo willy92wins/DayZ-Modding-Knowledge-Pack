@@ -300,6 +300,24 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   buildings: multi-point — walls, corners, floor). PASS = rays that should hit yield
   `hit=true` with `object_type`/`object_class` of object. No hit where it should hit = ViewGeo/FireGeo
   missing or improperly resolved (LODs).
+- **Physics and player collision** (added 2026-10-02, measured on DayZDiag 1.29.163709)
+  [EXACT][CLAIM-MCPV-COLLISION-PROBES]: `scene_raycast(method="bullet", radius=0)` casts
+  `DayZPhysics.RayCastBullet` against the physics world (layers BUILDING, DOOR, VEHICLE, ROADWAY,
+  TERRAIN, ITEM_SMALL, ITEM_LARGE, FENCE; `MCPBridge.c:2983-3004`), so it answers whether a physics
+  shape exists, which the default `rvproxy` (LOD intersection) does not. For player collision,
+  `player_teleport` 4 m in front of the face, then `player_move(to=<a point 4 m past the object>,
+  speed="walk", hold_s=10)`, and read the end position with `query_player_state` (server). Blocked
+  reads `arrived:false`, `released_by:"hold"`, the player about 0.36 m before the face; free reads
+  `arrived:true` (open ground: 7.5 m in about 5 s). Walk once on open ground as the free reference.
+  A walk-through alone does not prove missing collision geometry: a vanilla `WoodenCrate`
+  (`item_small`, low) took every ray and did not stop the player, while a `HescoBox` (`item_large`)
+  stopped it; that run did not separate the crate's layer from its height.
+- **Axis-aligned fixtures: spawn with `rotation=64`** (added 2026-10-02, same run): the default
+  `rotation=0` (RF_DEFAULT, the config's placement) yawed an `Inventory_Base` item about 10 degrees,
+  which moved a side-face reading by 0.22 m across 1.2 m of the face; `rotation=64` spawned it as
+  built (face readings exact, normal (-2.1, 0, 0) on an x face). `scripts/3_game/ce/centraleconomy.c`
+  names 64 both `RF_IGNORE` ("object will spawn as model was created", :56) and `RF_RANDOMROT`
+  (:62); the run observed the first. Use it whenever rays or walks assume the object's axes.
 - **Placement**: `telemetry_read(mode="object_at", type=<classname>, pos=<spawn_pos>, radius=2)`
   → `found=true`, `pos` ~ spawn, reasonable `orientation`. PASS = not buried or floating
   (cross-reference `pos.y` with visuals).

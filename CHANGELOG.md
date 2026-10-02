@@ -5,6 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `dayz-mcp-verify` static-object playbook: two probes from the killer #2 run (2026-10-02,
+  DayZDiag 1.29.163709). `scene_raycast(method="bullet")` reads the physics world
+  (`DayZPhysics.RayCastBullet`), next to the LOD rays; a `player_move` walk into the object gives
+  player collision, blocked (`arrived:false`, about 0.36 m before the face) or free (`arrived:true`),
+  with an open-ground walk as the free reference, and a walk-through alone is not read as missing
+  collision geometry (a low vanilla `WoodenCrate` took every ray and did not stop the player). And
+  `rotation=64` spawns a fixture axis-aligned: the default `rotation=0` (RF_DEFAULT) yawed an item
+  about 10 degrees.
+
 ### Fixed
 
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
