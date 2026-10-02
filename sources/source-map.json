@@ -504,9 +504,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Unreleased Fixed entry for the chiral in-game checks. In game, DayZDiag 1.29.163709, 2026-10-02, one dayz-mcp run (1c289781) on project DayZ_MCP (Chernarus, 09:00, clear sky, client with textures), probe mods built for these checks. Clothing: a vest-like garment with an F in relief on the left chest, every point 100 % spine3, in the Armband slot, binarized with AddonBuilder (ODOL skeleton DayzTemporarySkeleton, 159 bones) and packed with config.cpp as text; the Rule 12 export (py3d 1.8.0 blender_to_dayz), worn by the player with a crowbar in the right hand, shows the F correct on the wearer's left chest; the control (ROT_X_NEG90, every face reversed and every normal negated, then 180 deg about +Y; the L/R swap renames nothing on a spine3-only garment) shows the F mirrored on the wearer's right chest, worn by a SurvivorM_Francis spawned beside the player with empty hands (dayz-mcp cannot take a worn item off the player, and player_respawn does nothing on a live player); the binarized glyph centres read x +0.082 and -0.082. Animation: LeftArm alone keyed 70 deg above horizontal on animation_rig_character.fbx in Blender 5.1.1 (rest local rotations equal to the viewer rig's on all 114 bones), exported with the calibrated Route C seanim_export.py of the weapon-anim viewer project with --rest-pose set to the DayZATool v1.3 extract of p_1hd_erc_idle_low.anm, its LeftArm track spliced into that extract (the unmodified splice is byte-identical to the extract), DayZATool --generate-anim (re-extracted within 0.0035 deg), played through a child .asi of player_main_1h_fruit.asi (Locomotion.Erc.Idle, Idle01-05) registered with AddItemInHandsProfileIK in a modded ModItemRegisterCallbacks.RegisterOneHanded on Apple subclasses: the Route C clip raised the left arm, opposite the apple in the right hand (offline FK predicted +61.8 deg); the same pose through the Pack's scripts/seanim_export.py at eca85e6 left it at shoulder height (FK predicted +3.5 deg); the round-tripped vanilla idle showed the same standing pose as the vanilla Apple idle. Scope: the run shows the route keeps the keyed track on LeftArm and raises that arm as keyed. It says nothing about the handedness of the frame change (the bone offsets came from the vanilla clip; a rotation map reads the same for a frame change S and -S), nor whether the formula fits the FBX rig's frames: the Route C formula was calibrated on the JD rig (--rig data/jd_dayz.json); the official FBX rig's rest local rotations equal the JD rig's turned 90 deg about Z on 105 of 113 bones within 0.5 deg (113 within 1 deg), and this raise turns mostly about the bone's own Z, so both maps raise the arm (offline FK: +61.8 deg with Route C's map, +73.1 deg with the rig-aware map (-x,-z,-y,w)). Character: the #34 PBO reused unchanged (SHA-256 904d4cce...); an AI-enabled Rule 12 build attacked the player (wind-up and swing frames) with its limbs in place, the moves a vanilla ZmbM_SoldierNormal made on the same player; a static Rule 12 build idled about 80 s with its limbs in place and the F correct. Observed, cause not determined: about 12 minutes after spawning, the static Rule 12 build and the static vanilla zombie read health 0 and lay on the ground, the static shipped build 0.75; no log line explains the health loss. Authored by Claude (Anthropic) on the owner's request (2026-10-02: run the three chiral in-game checks PR #28 designed). No cross-family review yet. Also the dayz-mcp-verify section from the same run (worn items, infected engagement, no-AI infected health).",
+          "license": "MIT",
+          "source_hash": "0f86c9c9d4b2bc26016cc1dc34875f2f28e8de0020734db0bd50a0216a3a06d4",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-chiral-ingame@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "99020e9dce38f20c95bd153c0cf020c836d00b825b038bff7323f85ee471b01d",
+          "source_hash": "cfccdf3efac7086b5c92f634e9944186e606a245051d637c30bc22e50c14d6c5",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
@@ -514,7 +524,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "99020e9dce38f20c95bd153c0cf020c836d00b825b038bff7323f85ee471b01d",
+      "output_hash": "cfccdf3efac7086b5c92f634e9944186e606a245051d637c30bc22e50c14d6c5",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -4494,10 +4504,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "In game, DayZDiag 1.29.163709, 2026-10-02, one dayz-mcp run (1c289781) on project DayZ_MCP (Chernarus, 09:00, clear sky, client with textures), probe mods built for these checks. Clothing: a vest-like garment with an F in relief on the left chest, every point 100 % spine3, in the Armband slot, binarized with AddonBuilder (ODOL skeleton DayzTemporarySkeleton, 159 bones) and packed with config.cpp as text; the Rule 12 export (py3d 1.8.0 blender_to_dayz), worn by the player with a crowbar in the right hand, shows the F correct on the wearer's left chest; the control (ROT_X_NEG90, every face reversed and every normal negated, then 180 deg about +Y; the L/R swap renames nothing on a spine3-only garment) shows the F mirrored on the wearer's right chest, worn by a SurvivorM_Francis spawned beside the player with empty hands (dayz-mcp cannot take a worn item off the player, and player_respawn does nothing on a live player); the binarized glyph centres read x +0.082 and -0.082. Animation: LeftArm alone keyed 70 deg above horizontal on animation_rig_character.fbx in Blender 5.1.1 (rest local rotations equal to the viewer rig's on all 114 bones), exported with the calibrated Route C seanim_export.py of the weapon-anim viewer project with --rest-pose set to the DayZATool v1.3 extract of p_1hd_erc_idle_low.anm, its LeftArm track spliced into that extract (the unmodified splice is byte-identical to the extract), DayZATool --generate-anim (re-extracted within 0.0035 deg), played through a child .asi of player_main_1h_fruit.asi (Locomotion.Erc.Idle, Idle01-05) registered with AddItemInHandsProfileIK in a modded ModItemRegisterCallbacks.RegisterOneHanded on Apple subclasses: the Route C clip raised the left arm, opposite the apple in the right hand (offline FK predicted +61.8 deg); the same pose through the Pack's scripts/seanim_export.py at eca85e6 left it at shoulder height (FK predicted +3.5 deg); the round-tripped vanilla idle showed the same standing pose as the vanilla Apple idle. Scope: the run shows the route keeps the keyed track on LeftArm and raises that arm as keyed. It says nothing about the handedness of the frame change (the bone offsets came from the vanilla clip; a rotation map reads the same for a frame change S and -S), nor whether the formula fits the FBX rig's frames: the Route C formula was calibrated on the JD rig (--rig data/jd_dayz.json); the official FBX rig's rest local rotations equal the JD rig's turned 90 deg about Z on 105 of 113 bones within 0.5 deg (113 within 1 deg), and this raise turns mostly about the bone's own Z, so both maps raise the arm (offline FK: +61.8 deg with Route C's map, +73.1 deg with the rig-aware map (-x,-z,-y,w)). Character: the #34 PBO reused unchanged (SHA-256 904d4cce...); an AI-enabled Rule 12 build attacked the player (wind-up and swing frames) with its limbs in place, the moves a vanilla ZmbM_SoldierNormal made on the same player; a static Rule 12 build idled about 80 s with its limbs in place and the F correct. Observed, cause not determined: about 12 minutes after spawning, the static Rule 12 build and the static vanilla zombie read health 0 and lay on the ground, the static shipped build 0.75; no log line explains the health loss. Authored by Claude (Anthropic) on the owner's request (2026-10-02: run the three chiral in-game checks PR #28 designed). No cross-family review yet.",
+          "license": "MIT",
+          "source_hash": "a2fefc573a78ad9889cc315daf38ea5c8f64c724bd2c1095ccc80e6ece24e365",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
+          "source_revision": "kp-update-chiral-ingame@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "278ebdd742375201dc2a29c51ea0ee6093859374835f9b738526558554eec3fc",
+      "output_hash": "a2fefc573a78ad9889cc315daf38ea5c8f64c724bd2c1095ccc80e6ece24e365",
       "output_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5922,10 +5942,20 @@
           "source_path": "skills/dayz-characters/references/character-rigging.md",
           "source_revision": "kp-update-characters-ab@2026-10-02",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "In game, DayZDiag 1.29.163709, 2026-10-02, one dayz-mcp run (1c289781) on project DayZ_MCP (Chernarus, 09:00, clear sky, client with textures), probe mods built for these checks. Clothing: a vest-like garment with an F in relief on the left chest, every point 100 % spine3, in the Armband slot, binarized with AddonBuilder (ODOL skeleton DayzTemporarySkeleton, 159 bones) and packed with config.cpp as text; the Rule 12 export (py3d 1.8.0 blender_to_dayz), worn by the player with a crowbar in the right hand, shows the F correct on the wearer's left chest; the control (ROT_X_NEG90, every face reversed and every normal negated, then 180 deg about +Y; the L/R swap renames nothing on a spine3-only garment) shows the F mirrored on the wearer's right chest, worn by a SurvivorM_Francis spawned beside the player with empty hands (dayz-mcp cannot take a worn item off the player, and player_respawn does nothing on a live player); the binarized glyph centres read x +0.082 and -0.082. Animation: LeftArm alone keyed 70 deg above horizontal on animation_rig_character.fbx in Blender 5.1.1 (rest local rotations equal to the viewer rig's on all 114 bones), exported with the calibrated Route C seanim_export.py of the weapon-anim viewer project with --rest-pose set to the DayZATool v1.3 extract of p_1hd_erc_idle_low.anm, its LeftArm track spliced into that extract (the unmodified splice is byte-identical to the extract), DayZATool --generate-anim (re-extracted within 0.0035 deg), played through a child .asi of player_main_1h_fruit.asi (Locomotion.Erc.Idle, Idle01-05) registered with AddItemInHandsProfileIK in a modded ModItemRegisterCallbacks.RegisterOneHanded on Apple subclasses: the Route C clip raised the left arm, opposite the apple in the right hand (offline FK predicted +61.8 deg); the same pose through the Pack's scripts/seanim_export.py at eca85e6 left it at shoulder height (FK predicted +3.5 deg); the round-tripped vanilla idle showed the same standing pose as the vanilla Apple idle. Scope: the run shows the route keeps the keyed track on LeftArm and raises that arm as keyed. It says nothing about the handedness of the frame change (the bone offsets came from the vanilla clip; a rotation map reads the same for a frame change S and -S), nor whether the formula fits the FBX rig's frames: the Route C formula was calibrated on the JD rig (--rig data/jd_dayz.json); the official FBX rig's rest local rotations equal the JD rig's turned 90 deg about Z on 105 of 113 bones within 0.5 deg (113 within 1 deg), and this raise turns mostly about the bone's own Z, so both maps raise the arm (offline FK: +61.8 deg with Route C's map, +73.1 deg with the rig-aware map (-x,-z,-y,w)). Character: the #34 PBO reused unchanged (SHA-256 904d4cce...); an AI-enabled Rule 12 build attacked the player (wind-up and swing frames) with its limbs in place, the moves a vanilla ZmbM_SoldierNormal made on the same player; a static Rule 12 build idled about 80 s with its limbs in place and the F correct. Observed, cause not determined: about 12 minutes after spawning, the static Rule 12 build and the static vanilla zombie read health 0 and lay on the ground, the static shipped build 0.75; no log line explains the health loss. Authored by Claude (Anthropic) on the owner's request (2026-10-02: run the three chiral in-game checks PR #28 designed). No cross-family review yet.",
+          "license": "MIT",
+          "source_hash": "f678487bf70a33f406bdb3c55efcfb5be2fe45e35063a89de234cdeaaaba51f0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/character-rigging.md",
+          "source_revision": "kp-update-chiral-ingame@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "99d088d10e9b10a1b9565a013cfe49cd0011a47096ff99ad2155c013e4d477a8",
+      "output_hash": "f678487bf70a33f406bdb3c55efcfb5be2fe45e35063a89de234cdeaaaba51f0",
       "output_path": "skills/dayz-characters/references/character-rigging.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -6058,10 +6088,20 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "In game, DayZDiag 1.29.163709, 2026-10-02, one dayz-mcp run (1c289781) on project DayZ_MCP (Chernarus, 09:00, clear sky, client with textures), probe mods built for these checks. Clothing: a vest-like garment with an F in relief on the left chest, every point 100 % spine3, in the Armband slot, binarized with AddonBuilder (ODOL skeleton DayzTemporarySkeleton, 159 bones) and packed with config.cpp as text; the Rule 12 export (py3d 1.8.0 blender_to_dayz), worn by the player with a crowbar in the right hand, shows the F correct on the wearer's left chest; the control (ROT_X_NEG90, every face reversed and every normal negated, then 180 deg about +Y; the L/R swap renames nothing on a spine3-only garment) shows the F mirrored on the wearer's right chest, worn by a SurvivorM_Francis spawned beside the player with empty hands (dayz-mcp cannot take a worn item off the player, and player_respawn does nothing on a live player); the binarized glyph centres read x +0.082 and -0.082. Animation: LeftArm alone keyed 70 deg above horizontal on animation_rig_character.fbx in Blender 5.1.1 (rest local rotations equal to the viewer rig's on all 114 bones), exported with the calibrated Route C seanim_export.py of the weapon-anim viewer project with --rest-pose set to the DayZATool v1.3 extract of p_1hd_erc_idle_low.anm, its LeftArm track spliced into that extract (the unmodified splice is byte-identical to the extract), DayZATool --generate-anim (re-extracted within 0.0035 deg), played through a child .asi of player_main_1h_fruit.asi (Locomotion.Erc.Idle, Idle01-05) registered with AddItemInHandsProfileIK in a modded ModItemRegisterCallbacks.RegisterOneHanded on Apple subclasses: the Route C clip raised the left arm, opposite the apple in the right hand (offline FK predicted +61.8 deg); the same pose through the Pack's scripts/seanim_export.py at eca85e6 left it at shoulder height (FK predicted +3.5 deg); the round-tripped vanilla idle showed the same standing pose as the vanilla Apple idle. Scope: the run shows the route keeps the keyed track on LeftArm and raises that arm as keyed. It says nothing about the handedness of the frame change (the bone offsets came from the vanilla clip; a rotation map reads the same for a frame change S and -S), nor whether the formula fits the FBX rig's frames: the Route C formula was calibrated on the JD rig (--rig data/jd_dayz.json); the official FBX rig's rest local rotations equal the JD rig's turned 90 deg about Z on 105 of 113 bones within 0.5 deg (113 within 1 deg), and this raise turns mostly about the bone's own Z, so both maps raise the arm (offline FK: +61.8 deg with Route C's map, +73.1 deg with the rig-aware map (-x,-z,-y,w)). Character: the #34 PBO reused unchanged (SHA-256 904d4cce...); an AI-enabled Rule 12 build attacked the player (wind-up and swing frames) with its limbs in place, the moves a vanilla ZmbM_SoldierNormal made on the same player; a static Rule 12 build idled about 80 s with its limbs in place and the F correct. Observed, cause not determined: about 12 minutes after spawning, the static Rule 12 build and the static vanilla zombie read health 0 and lay on the ground, the static shipped build 0.75; no log line explains the health loss. Authored by Claude (Anthropic) on the owner's request (2026-10-02: run the three chiral in-game checks PR #28 designed). No cross-family review yet.",
+          "license": "MIT",
+          "source_hash": "b6ce2cfc7169d57fbfd0b49576de2cf939c5a86adc1b4e3b2e673cfb3a2c2c23",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "kp-update-chiral-ingame@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "f864b42abbeab618464866c7931a2b44a20e2b9bfcfeb9e4aecc85b52214d16b",
+      "output_hash": "b6ce2cfc7169d57fbfd0b49576de2cf939c5a86adc1b4e3b2e673cfb3a2c2c23",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -6998,10 +7038,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-mcp-verify-collision-probes@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "New section 'Comparing worn items, and getting an infected to attack' from the chiral in-game checks, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 1c289781: a second garment could not be put on the player (Armband slot occupied, no unequip verb); player_respawn on the living player after player_godmode(on=false) returned requested=1 and no new character was created (wait_for 'Create entity type' timed out at 40 s); player_teleport to y=160 left query_player_state at y=160 after 30 s (no fall); a SurvivorM_Francis spawned with world_spawn (flags 8389668) took inventory_attach(object_id, attachment, Armband) and faced north (direction 0,0,1), slot Hands returned attachment_create_failed. An AI infected (flags 8391716) spawned 3.5 m behind a standing player walked about 9.5 m away; spawned 2.4 m in front it attacked after player_move jog 1.2 s (capture frames of wind-up and swings), godmode on; P:/scripts 4_World PlayerBase.c:402 sets m_CanBeTargetedDebug = true under DIAG_DEVELOPER. Static infected (flags 8389668) read health01 0, 0 and 0.75 in telemetry_read object_at about 12 minutes after spawning, no log line. Authored by Claude (Anthropic) under the owner's cross-project promotion hook. No cross-family review yet.",
+          "license": "MIT",
+          "source_hash": "91325e9ea0b6d159762a286b9fd3b17cb2bf247c2717cab71ae52d4111106083",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-chiral-ingame@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "5616105f06cebea704bfe18080f5487dcb121d98cb9c3ec21463a920f42bfa5c",
+      "output_hash": "91325e9ea0b6d159762a286b9fd3b17cb2bf247c2717cab71ae52d4111106083",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -15128,9 +15178,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Four runtime_verified claims for the chiral in-game checks (CLAIM-CLOTHING-CHIRAL-INGAME, CLAIM-ANIM-ROUTEC-CHIRAL-INGAME, CLAIM-CHAR-ATTACK-INGAME, CLAIM-MCPV-WORN-MANNEQUIN). In game, DayZDiag 1.29.163709, 2026-10-02, one dayz-mcp run (1c289781) on project DayZ_MCP (Chernarus, 09:00, clear sky, client with textures), probe mods built for these checks. Clothing: a vest-like garment with an F in relief on the left chest, every point 100 % spine3, in the Armband slot, binarized with AddonBuilder (ODOL skeleton DayzTemporarySkeleton, 159 bones) and packed with config.cpp as text; the Rule 12 export (py3d 1.8.0 blender_to_dayz), worn by the player with a crowbar in the right hand, shows the F correct on the wearer's left chest; the control (ROT_X_NEG90, every face reversed and every normal negated, then 180 deg about +Y; the L/R swap renames nothing on a spine3-only garment) shows the F mirrored on the wearer's right chest, worn by a SurvivorM_Francis spawned beside the player with empty hands (dayz-mcp cannot take a worn item off the player, and player_respawn does nothing on a live player); the binarized glyph centres read x +0.082 and -0.082. Animation: LeftArm alone keyed 70 deg above horizontal on animation_rig_character.fbx in Blender 5.1.1 (rest local rotations equal to the viewer rig's on all 114 bones), exported with the calibrated Route C seanim_export.py of the weapon-anim viewer project with --rest-pose set to the DayZATool v1.3 extract of p_1hd_erc_idle_low.anm, its LeftArm track spliced into that extract (the unmodified splice is byte-identical to the extract), DayZATool --generate-anim (re-extracted within 0.0035 deg), played through a child .asi of player_main_1h_fruit.asi (Locomotion.Erc.Idle, Idle01-05) registered with AddItemInHandsProfileIK in a modded ModItemRegisterCallbacks.RegisterOneHanded on Apple subclasses: the Route C clip raised the left arm, opposite the apple in the right hand (offline FK predicted +61.8 deg); the same pose through the Pack's scripts/seanim_export.py at eca85e6 left it at shoulder height (FK predicted +3.5 deg); the round-tripped vanilla idle showed the same standing pose as the vanilla Apple idle. Scope: the run shows the route keeps the keyed track on LeftArm and raises that arm as keyed. It says nothing about the handedness of the frame change (the bone offsets came from the vanilla clip; a rotation map reads the same for a frame change S and -S), nor whether the formula fits the FBX rig's frames: the Route C formula was calibrated on the JD rig (--rig data/jd_dayz.json); the official FBX rig's rest local rotations equal the JD rig's turned 90 deg about Z on 105 of 113 bones within 0.5 deg (113 within 1 deg), and this raise turns mostly about the bone's own Z, so both maps raise the arm (offline FK: +61.8 deg with Route C's map, +73.1 deg with the rig-aware map (-x,-z,-y,w)). Character: the #34 PBO reused unchanged (SHA-256 904d4cce...); an AI-enabled Rule 12 build attacked the player (wind-up and swing frames) with its limbs in place, the moves a vanilla ZmbM_SoldierNormal made on the same player; a static Rule 12 build idled about 80 s with its limbs in place and the F correct. Observed, cause not determined: about 12 minutes after spawning, the static Rule 12 build and the static vanilla zombie read health 0 and lay on the ground, the static shipped build 0.75; no log line explains the health loss. Authored by Claude (Anthropic) on the owner's request (2026-10-02: run the three chiral in-game checks PR #28 designed). No cross-family review yet.",
+          "license": "MIT",
+          "source_hash": "2a2b456b816d5b96e74f3be4554c478f7a874062ad9f3451fa1bc0bba62998a2",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-chiral-ingame@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Moves the line ranges of claims whose markers shifted in files this change edits (dayz-p3d-audit SKILL.md killer #8 and references/killers-detail.md section 8 gained lines above later claims); no claim added or reworded.",
           "license": "MIT",
-          "source_hash": "3a0d118fbc383f39ea0b6ca6ce621da636fd1d6c25b9e157d548581a2d39a2a0",
+          "source_hash": "f395fb91107dbbc777656101442d707765104c4dc10f5bf83f409385a4e274fd",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
@@ -15138,7 +15198,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3a0d118fbc383f39ea0b6ca6ce621da636fd1d6c25b9e157d548581a2d39a2a0",
+      "output_hash": "f395fb91107dbbc777656101442d707765104c4dc10f5bf83f409385a4e274fd",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
