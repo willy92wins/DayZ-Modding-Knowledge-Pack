@@ -165,9 +165,9 @@ in-game improvement.
 - **Valid deform gates, in order**: (1) in-game spawn — the real one; (2) Buldozer (BI model viewer, real
   engine skinning). The Blender armature pose-test is good only for gross "does a limb move at all" sanity.
 - **What DID hold up offline** (so the offline work isn't all waste): the winding gate `check_dayz_winding.py`
-  (it held for the winding of the det +1 builds of that time, which in game turn out lit inverted; it fails
-  a Rule 12 export that renders correctly, see OFFLINE GATE below and `references/character-rigging.md`
-  Stage B), scale (f from
+  (it held for the winding of the det +1 builds of that time, which in game turn out lit inverted; rewritten
+  2026-10-02 for Rule 12, it now fails those builds on their normals, see OFFLINE GATE below and
+  `references/character-rigging.md` Stage B), scale (f from
   armature span), orientation (T2), and **always LOOK at
   the REST SIDE/depth render** — a TPS conform to near-coplanar bone-midpoint targets flattened the mesh to
   paper (2D in-game); the flat side-view was in the render folder a whole build cycle before it was noticed.
@@ -307,35 +307,47 @@ this wall. Warn the user whenever a plan ships custom character anims. (`dayz-an
 
 ## OFFLINE GATE — run before EVERY PBO (catches the inside-out bug without an in-game cycle)
 
-**Rule 12 conflict (measured 2026-10-01).** `check_dayz_winding.py` encodes the LFInfectedBig build: det +1
-map, faces reversed, normals left OUTWARD, so `cross·normal < 0`. Any build that stores its normals inward
-with the cross product inward fails it: a Rule 12 export, and also a det +1 build with negated normals. On
-the three MLODs of the Rule 12 in-game probe it exits 1 on all three. That includes the one that renders
-solid and reads correctly in game (`cross.normal_positive=1.00`, `normals_outward=0.00`) and the mirrored one
-that renders solid (det +1, faces reversed, normals negated); its fix hints would turn either inside-out.
-The determinant does not say which convention a build follows; the stored normals do. Until the script is
-updated, gate an export with inward normals with dayz-p3d-audit "Absolute winding check": normal agreement
-≈ 100 % and a negative signed volume by winding. On the probe that check passes both solid variants and
-fails the inside-out one. Measured on a skinned character too (LFInfectedBig, in game 2026-10-02, chiral
-check in `references/character-rigging.md`): the Rule 12 build the script fails is solid and lit like
-vanilla; the builds it passes, normals stored outward, are lit inverted (base shading, untextured client),
-and the shipped one is also
-mirrored. Store the normals inward; the absolute check passes the Rule 12 build and fails both others. (claim: CLAIM-CHAR-NORMALS-INWARD-SKILL)
-
 ```
-python references/check_dayz_winding.py <source_mlod.p3d>   # legacy outward-normal builds only (see above)
+python references/check_dayz_winding.py <source_mlod.p3d>
 ```
 A double-sided preview never shows DayZ's single-sided culling, so an inside-out model (textures on the
-interior) only surfaces in-game — losing a test cycle. For a build that stores its normals outward (the
-LFInfectedBig recipe; the script's `normals_outward` info line reads that sign) this detector encodes the
-in-game-confirmed rule (LFInfectedBig S6): a correct SOURCE-MLOD visual LOD has
-`cross(v1-v0,v2-v0)·stored_normal < 0`. Run it after building the `.p3d` and before AddonBuilder; if it
-FAILs on such a build, reverse the visual winding and rebuild. A FAIL on a build with inward normals says
-nothing about the winding: use the absolute check above, never the face reversal. S6 confirmed the
-winding only: an outward-normal build renders solid but lit inverted (2026-10-02). Re-export it with
-Rule 12 (a det +1 build is also mirrored); a Rule 12 build with outward normals only needs its normal
-pool negated.
-Detail + why (incl. why NOT to compare against a debinarized vanilla) in `references/character-rigging.md §6`.
+interior) only surfaces in game, losing a test cycle, and normals stored the wrong way only as inverted
+lighting. Run the gate after building the `.p3d` and before AddonBuilder. It reads every visual LOD in the
+MLOD convention of dayz-model-pipeline Rule 12, which `py3d.blender_to_dayz()` writes: the vertex-order
+cross product and the stored normals both point into the material.
+- **Winding**, per closed shell (points welded, faces linked only through edges that exactly two faces
+  share, `proxy:*` faces left out): the signed volume by winding must be negative, the production sign of
+  dayz-p3d-audit "Absolute winding check". A positive shell is inside-out: `face.vertices.reverse()` on
+  every face of it, the whole LOD when every shell reads positive. Never decide on the sum over the LOD,
+  which can hide an inverted part. A shell whose faces disagree with their neighbours is made coherent first.
+- **Normals**, by the absolute check's agreement (py3d `_pct_normal_agreement`), read after that reversal:
+  above 90 % they agree; below 10 % they disagree, which with the winding right means normals stored
+  outward: negate the normal pool and keep the faces, never reverse them on that reading. A mixed reading,
+  or one part below 10 %, lists the shells to fix corner by corner.
+- **Not scored**: an open part (a sheet, an open tube) or a flat one (welded twins) has no volume sign; its
+  faces are counted as not scored, for dayz-p3d-audit's visibility battery. A visual LOD with no closed
+  shell is not measurable.
+- **Exit** 0 PASS, 1 defect, 2 invalid input, ODOL or not measurable. A PASS cannot see a mirror: the det +1
+  export with reversed faces and negated normals passes too; check chirality on an asymmetric feature
+  (Rule 12, `references/character-rigging.md §6`).
+
+[OFFLINE MEASURED 2026-10-02] `references/winding_fixtures/` holds the three MLODs of the Rule 12 in-game
+probe byte for byte (`make_fixtures.py` rewrites them with py3d 1.8.0) and the correct one with its normals
+negated; `references/test_check_dayz_winding.py` holds the expected verdicts. The gate passes the correct
+export and the mirrored one, both solid in game, and fails the inside-out one (reverse every face, then
+negate the pool) and the outward-normal one (negate the pool). On the three LFInfectedBig builds of the
+chiral check it passes the Rule 12 build (48 closed shells negative, 99.8 % of 43,826 faces agreeing; the
+open ribcage tubes, 63.5 % of the faces, not scored) and fails the two with outward normals on their
+normals (0.2 % and 0.3 %). Measured on a skinned character too (LFInfectedBig, in game 2026-10-02, chiral
+check in `references/character-rigging.md`): the Rule 12 build is solid and lit like vanilla; the builds
+with normals stored outward, which the gate passed before this rewrite, are lit inverted (base shading,
+untextured client), and the shipped one is also mirrored. (claim: CLAIM-CHAR-NORMALS-INWARD-SKILL)
+*(Rewritten 2026-10-02. The gate encoded the LFInfectedBig det +1 build, normals stored OUTWARD and
+`cross·normal < 0`, and exited 1 on all three MLODs of the Rule 12 probe, including the one that renders
+solid and reads correctly (`cross.normal_positive=1.00`, `normals_outward=0.00`), with fix hints that would
+turn it inside-out; until then this section sent inward-normal builds to the absolute check. S6 confirmed
+that build's winding only.)* Detail + why (incl. why NOT to compare against a debinarized vanilla) in
+`references/character-rigging.md §6`.
 
 
 **SP-290 (measured 2026-08-17):** exit 0 is not "safe to ship." The gate fails only on relative
@@ -349,16 +361,21 @@ internally coherent, globally inside-out — the silent Blender Z-up → Y-up sh
 WallLamp, Crate_Wooden). Do not ship on PASS; read the `[info]` line. Required of
 `references/check_dayz_winding.py`: (1) `normals_outward == 0` (or below a threshold) MUST fail,
 not annotate — combined with inverted winding this is the state the gate exists to block, not "a
-separate lighting issue" *(2026-10-01: implemented as `NORMALS_OUTWARD_MIN = 0.35`, but it contradicts the
+separate lighting issue" *(2026-10-01: implemented as `NORMALS_OUTWARD_MIN = 0.35`, but it contradicted the
 MLOD convention measured since: shading normals stored inward, dayz-p3d-audit "Absolute winding check"
-(engine verdict 2026-09-07) and Rule 12 (in-game 2026-10-01). It fails every correct Rule 12 export; see
-the conflict note above)*; (2) three exit codes, not two — today `exit 1` is both "defect found"
+(engine verdict 2026-09-07) and Rule 12 (in-game 2026-10-01), and it failed every correct Rule 12 export.
+2026-10-02: replaced. The gate reads the direction from the signed volume of each closed shell and fails
+stored normals that disagree with the winding; C's state, winding and normals turned together, fails on
+its volume where its shells are closed (the probe's `mirror_c`, inside-out in game: +0.1086). See OFFLINE
+GATE above)*; (2) three exit codes, not two — today `exit 1` is both "defect found"
 and "invalid input". An ODOL `.p3d` (`a6\LMGs\M249\m249_new.p3d`) raises a bare `AssertionError`
 and exits 1, indistinguishable from inside-out. Need: `0` PASS, `1` defect, `2` invalid/non-MLOD
 with an explicit "this file is ODOL, debinarize first"; (3) keep the three fixtures next to the
 check (`f0_fixtures/crate_{A_intacto,B_solo_winding,C_winding_y_normales}.p3d`, regenerable with
 `f0_winding_v2.py`). Fixture C inverts stored normals to reach the internally-coherent
 globally-inside-out state; it does not byte-reproduce an exporter that also mirrors coordinates.
+*(2026-10-02: the fixtures next to the check are the Rule 12 probe's, `references/winding_fixtures/`; the
+crate fixtures are not in the Pack.)*
 
 ## CITE-THEN-VERIFY
 

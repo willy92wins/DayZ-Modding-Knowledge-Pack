@@ -75,6 +75,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   per-component check and sends the fix to killer #1, and rule 7 no longer offers the kit box's
   outward sign, or a component Rule 18 cannot score, as one to keep. The old text is quoted in dated
   notes.
+- `dayz-characters` `check_dayz_winding.py`, the pre-PBO gate of the character pipeline, encoded the
+  LFInfectedBig det +1 build: stored normals OUTWARD and `cross·normal < 0` (`NORMALS_OUTWARD_MIN =
+  0.35`). It exited 1 on all three MLODs of the Rule 12 in-game test, the correct one included, with fix
+  hints that would turn it inside-out, and it passed the outward-normal state. It now reads every visual
+  LOD in the Rule 12 convention. The winding: the signed volume by winding of each closed shell (points
+  welded, faces linked only through edges that exactly two faces share, `proxy:*` faces left out, an
+  incoherent shell made coherent first); negative passes, positive is inside-out and gets
+  `face.vertices.reverse()` on that shell, on the whole LOD only when every shell reads positive. The
+  normals: py3d `_pct_normal_agreement`'s count, read after that reversal; below 10 % with the winding
+  right means negate the normal pool and keep the faces, and a mixed reading, or one part below 10 %, lists
+  the shells to fix. Open and flat parts are reported as not scored and a LOD with no closed shell is not
+  measurable (exit 2); visual LODs above resolution 10 are read too, and a missing or wrong py3d exits 2
+  instead of raising. Fixtures next to the script: the three in-game MLODs byte for byte, regenerated with
+  py3d 1.8.0, plus the correct one with its normals negated; 20 of the 26 cases of
+  `test_check_dayz_winding.py` fail against the old gate. Offline on the LFInfectedBig builds of the
+  2026-10-02 chiral check, the Rule 12 build passes (its open ribcage tubes, 63.5 % of the faces, not
+  scored) and the two with outward normals fail on their normals. The OFFLINE GATE section of
+  `dayz-characters`, `character-rigging.md` §6 and the `check_face_winding` docstring of
+  `dayz-model-pipeline` `py3d-direct-generation.md` no longer say the gate fails a correct export or that
+  characters use the opposite sign. The rewritten gate was not run in game; its verdicts are checked
+  against the recorded in-game results of the probe and of the chiral check.
 
 ## [1.5.0] - 2026-10-02
 
