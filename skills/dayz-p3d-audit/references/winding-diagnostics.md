@@ -83,15 +83,19 @@ external artist models, player report "plank normals are inverted"):
    edge the same way, or in opposite groups although they traverse it opposite ways. A
    component with no conflict yields ONE group when healthy and two when broken, and **the
    minority one is the inverted one** — reference is part's own majority, never an absolute
-   sign convention. A component with a conflict, or one that splits evenly, has no minority
-   group: where it splits follows the order of the fill. Cut its edges traversed the same way,
-   fill again, and inspect them as seams. [OFFLINE MEASURED 2026-10-02] The SUB_BRZ co-driver
-   door's LOD 1.0 (healthy, verified in game: Check A, `MIXED`) has one edge traversed the same
-   way; with it, the fill splits a 2,235-face component 2,121 + 114 with 7 conflicts, and over
-   41 other orders of the faces the minority ran from 6 to 246 faces, never none; with it cut,
-   no conflict and no minority. The three GunRacks MLODs of the record above have no conflict:
-   their minority groups are the 156 faces their fix reversed, and two of them also hold two
-   1 + 1 splits each.
+   sign convention. A component with a conflict has no minority group from that fill: where
+   it splits follows the order of the fill. Cut its edges traversed the same way and fill
+   again: a piece that cut edges ring off from a larger one is a minority group, and a cut edge
+   with the same piece on both sides is a seam to inspect. A component that splits evenly has
+   no minority either: inspect it. [OFFLINE MEASURED 2026-10-02] The SUB_BRZ co-driver door's
+   LOD 1.0 (healthy, verified in game: Check A, `MIXED`) has one edge traversed the same way;
+   with it, the fill splits a 2,235-face component 2,121 + 114 with 7 conflicts, and over 41
+   other orders of the faces the minority ran from 6 to 246 faces, never none; with it cut, no
+   conflict and no minority. With a 30-face patch of that component's paint reversed in memory,
+   the fill returned 144 faces (the patch and the 114); cut and refilled, the patch came out as
+   its own piece behind 22 cut edges, and the door's edge as a seam. The three GunRacks MLODs
+   of the record above have no conflict: their minority groups are the 156 faces their fix
+   reversed, and two of them also hold two 1 + 1 splits each.
    *(Corrected 2026-10-02: this item read "A healthy component yields ONE group; a broken one
    yields two, and the minority one is the inverted one", with no conflict count.)*
 2. **Severity by visibility, not by count**: render with id-buffer and screen culling,
@@ -151,10 +155,11 @@ external artist models, player report "plank normals are inverted"):
      such corner, as three agreeing corners and one at 1e-15 average to 0.9487), has no
      reading: inspect it, never infer its normals from the rest of the group. One face with no
      reading stops the whole group, before any face is inverted. [OFFLINE MEASURED 2026-10-02]
-     16 of the 114 faces of the door's split (step 1) have no reading (glass: a corner on the
-     other side of 13 of them, within 0.1 of 3); stopping the group leaves the healthy door as
-     it was, while fixing the other 98 alone takes Check B from 1 to 20 edges traversed the
-     same way, and every face reversed with the 98 negated, to 7. It stops real groups too: a
+     16 of the 114 faces of the door's split (the fill of step 1 without its conflict count)
+     have no reading (glass: a corner on the other side of 13 of them, within 0.1 of 3);
+     stopping the group leaves the healthy door as it was, while fixing the other 98 alone
+     takes Check B from 1 to 20 edges traversed the same way, and every face reversed with the
+     98 negated, to 7. It stops real groups too: a
      30-face patch of the door's cabin plastic (99.5 % agreeing), damaged both ways, has one
      face at ±0.392, and the other 29 read the right branch (29 of 30 restored with that face
      set aside).

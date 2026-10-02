@@ -144,8 +144,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   models (2026-10-02). Step 1 said a healthy welded component yields one group: on the SUB_BRZ
   co-driver door (healthy, verified in game) the fill splits a 2,235-face component 2,121 + 114
   with 7 parity conflicts, and the minority follows the order of the fill (6 to 246 faces over
-  41 other orders). Step 1 now counts conflicts; a component with one, or one that splits evenly,
-  has no minority group (cut the edges traversed the same way, fill again, inspect the seams).
+  41 other orders), and a real 30-face patch reversed inside that component came back mixed with
+  those 114 (144 faces). Step 1 now counts conflicts: a component with one is cut along its edges
+  traversed the same way and filled again, where a piece the cut edges ring off is a minority
+  group (that patch, behind 22 cut edges) and a cut edge inside one piece is a seam to inspect; a
+  component that splits evenly is inspected.
   Step 3's branches were written for a part whose normals agree with its winding; on a part that
   reads UNIFORM_FLIPPED (the door's paint) they swap, so each face is read against its part's
   sign, or the part is brought to Rule 12 first. One face with no reading stops the whole group,
