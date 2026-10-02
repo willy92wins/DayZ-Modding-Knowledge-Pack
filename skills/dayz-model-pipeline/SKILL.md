@@ -313,8 +313,12 @@ The Blender/FBX recipe changed three times. 2026-07-06: `(x,z,-y)` (det=+1), "a 
 When you GENERATE/EDIT a collision LOD (Geometry/Fire/View), compare its winding against the
 Visual LOD of the same model (centroid method) BEFORE deploying — they must agree in sign
 (~100% INWARD in DayZ left-handed). `audit_p3d.py` does NOT validate this (centroid check
-disabled for false positives). Surface this proactively when the symptom is "walks through /
-no action / bullets pass".
+disabled for false positives). Surface this proactively when the symptom is "no action /
+bullets pass". A walk-through does not point at the winding: in game, 2 m boxes whose
+collision LODs were wound outward still stopped the player, the same box with no `ComponentNN`
+selection let them through, and a 0.49 m `item_small` kit let them through with either winding
+(`dayz-p3d-audit` killers #1 and #2, "Absolute winding check" rule 6). *(Corrected 2026-10-02,
+measured in game: the symptom list read "walks through / no action / bullets pass".)*
 
 ### Flat-color models: per-material .rvmat, NOT a UV-atlas bake (LL-021)
 For monochrome / flat-color-per-piece models, use one .rvmat per material with `diffuse[]` =

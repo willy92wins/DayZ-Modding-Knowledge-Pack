@@ -288,6 +288,42 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   "Route C bone-frame maps, per rig"), `SKILL.md` and `blender-animation`'s `dayz-handoff.md`. In
   game, the JD map played one full-body action wrong (A6_SR2M, 2026-06-30); in-game playback stays
   the gate. Regression test: `tests/test_seanim_export.py` (18 cases).
+- py3d `WARN_COMPONENT_COVERAGE` (py3d 1.9.0). It read the Geometry LOD only when it held a
+  selection named exactly `Component01`, and compared that selection alone with the whole LOD
+  ("Component01 covers 8/48 vertices; uncovered vertices won't participate in collision" on the
+  six-component `gate_and.p3d`): it fired whenever `Component01` held fewer points or faces than the
+  LOD, as on a healthy LOD with several components (the killer #2 entry above), never read a LOD
+  without an exact `Component01` (lowercase components included), counted proxy triangles and points
+  that no face uses, and did not run on View or Fire. It now reads the union of every selection
+  named `Component` and a number, in any case, on the Geometry, View and Fire LODs: one finding per
+  LOD (it raised up to two) counts the faces, proxy triangles aside, that no component holds and the
+  points those faces use that none holds; points that no face uses are not counted. A LOD with no
+  component (`ERR_COMPONENT_NAMING`'s finding) or only proxy triangles raises nothing; one whose
+  component selections are all empty is reported with every face counted. It stays a WARN: in game a
+  box with no component collided with nothing (killer #2), but a face outside every component on a
+  LOD that has others was not measured. Measured offline with the old and the new module through
+  `P3D._scan_v12_findings` on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's
+  door samples): the old check raised 78 findings on 39 Geometry LODs, the new one raises 3, and no
+  other finding changed. Two of the 3 are the door sample `Expert_Mode`, whose lever (18 faces) is
+  in no component in its Geometry and Fire LODs, though `dayz-doors` lists the lever among its
+  Geometry parts; the third is a vehicle's Fire LOD with two 1 mm triangles in no selection.
+  `dayz-p3d-audit` killer #8 and `references/killers-detail.md` §8 say which py3d version does what,
+  name the proxy triangles and points that no face uses as left out, and no longer state as measured
+  that a face outside every component does not collide (measured only for a LOD with no component at
+  all); the old text is quoted in their dated notes. No new wheel: the pinned and installed
+  `py3d_dayz-1.8.0` keeps the old check.
+- `dayz-p3d-audit` killer #1 no longer says that inverted collision winding lets the player walk
+  through. Measured in game (2026-10-02, DayZDiag 1.29.163709): killer #2's 2 m box against the same
+  bytes with every face of its Geometry, View and Fire LODs reversed and their normals negated,
+  packed unbinarized and binarized, as an `item_large` `Inventory_Base` and as a `HouseNoDestruct`.
+  The outward boxes took no `scene_raycast` ray in `geom`, `view` or `fire` (a cursor-like `view` ray
+  went through too), while `DayZPhysics.RayCastBullet` hit them at the same faces as the inward ones,
+  every probe box stopped a walking player about 0.36 m before its face, and a player stood on the
+  two outward items' tops. A walk does not diagnose the winding either way. The sentence that a
+  `dBodyCreateDynamicEx` body "masks inverted collision winding — the object rolls but the player
+  walks through it" is replaced, and so are "no collision" in the killer's opening and "physically
+  invisible" in its root cause; the old text is quoted in a dated note. `dayz-model-pipeline`'s
+  SP-003 note no longer lists "walks through" among the symptoms of collision winding.
 
 ## [1.5.0] - 2026-10-02
 
