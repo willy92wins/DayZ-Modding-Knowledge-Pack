@@ -94,9 +94,11 @@ inherited vanilla anims deform correctly only if your mesh matches that canonica
 - **Scale** — at ~vanilla size (the rig's `Male_body` ≈ 1.8 m). A mesh baked oversize (LFInfectedBig was
   2.277 m ≈ 1.27×) is bound against the 1.8 m canonical positions → limbs swing from the wrong pivots →
   gross deform under anims (not just foot-slide). Rescaling to ~1.8 m removed the catastrophic deform.
-- **Orientation** — facing the same way as the rig. A 180°-about-vertical error makes the character
-  **face / walk backward** AND deform (see `references/character-rigging.md §6`: the `(x,z,−y)` transform
-  shipped backward; `(−x,z,y)` fixed it).
+- **Orientation and handedness** — facing the same way as the rig, and not mirrored. A 180°-about-vertical
+  error makes the character **face / walk backward** AND deform; a mirror makes limbs fling (next section).
+  The `(x,z,−y)` transform shipped backward; `(−x,z,y)` turned it round but mirrored it. Both are det +1.
+  The map that gets facing and side right is the det −1 `(x,z,y)` of dayz-model-pipeline Rule 12
+  (corrected 2026-10-01; derivation in `references/character-rigging.md §6`).
 - **Proportions / joint positions** — the mesh's anatomical elbow/knee/shoulder/wrist must sit at the
   canonical bone positions. An AI mesh has its OWN proportions; a UNIFORM-scale fit (`character-rigging.md
   §1`) preserves canonical proportions but cannot match a differently-proportioned mesh → bones land off the
@@ -163,9 +165,9 @@ in-game improvement.
 - **Valid deform gates, in order**: (1) in-game spawn — the real one; (2) Buldozer (BI model viewer, real
   engine skinning). The Blender armature pose-test is good only for gross "does a limb move at all" sanity.
 - **What DID hold up offline** (so the offline work isn't all waste): the winding gate `check_dayz_winding.py`
-  (encodes the in-game-confirmed rule; but see the 2026-10-01 FLAG in `references/character-rigging.md`
-  Stage B: it fails a model that rendered correctly in a later in-game test, and the `(x, z, -y)` map it
-  sits beside mirrors), scale (f from armature span), orientation (T2), and **always LOOK at
+  (it held for the det +1 builds of that time; it fails a Rule 12 export that rendered correctly in a later
+  in-game test, see OFFLINE GATE below and `references/character-rigging.md` Stage B), scale (f from
+  armature span), orientation (T2), and **always LOOK at
   the REST SIDE/depth render** — a TPS conform to near-coplanar bone-midpoint targets flattened the mesh to
   paper (2D in-game); the flat side-view was in the render folder a whole build cycle before it was noticed.
 
@@ -179,6 +181,9 @@ X relative to the skeleton's left/right convention**: a `left*` selection's geom
 `right*` bone lives, so the inherited anim drove it about a pivot ~2× a limb-width away → big lever → the limb
 swings off even under tiny idle motion. AI/GLB meshes that went through a reflection (then had winding reversed
 to render right-side-out) are prone to this, and a 180°-about-Y orientation fix can leave a residual reflection.
+*Root cause, found 2026-10-01:* the reflection was the export map itself. Blender is right-handed and DayZ
+left-handed, so every det +1 map (`(x,z,−y)`, `(−x,z,y)`) mirrors the mesh, and the face reversal it then
+needs hides the mirror (dayz-model-pipeline Rule 12; `references/character-rigging.md §6`).
 
 **The test (offline, decisive):** debinarize a vanilla male (external ODOL→MLOD converter), read the embedded
 `Skeleton` bones + the visual LOD's per-vertex `vertex_bone_ref`, and compute each bone's vert-X relative to
@@ -188,7 +193,7 @@ large-n bones; pelvis/hand centroids are noisy). Opposite side ⇒ mirrored. The
 valid. (Gotcha: vanilla ODOL `named_selections` carry bone NAMES but EMPTY `selected_vertices`; real membership
 is `vertex_bone_ref` pairs → `sub_skeletons_to_skeleton` → skeleton bone index.)
 
-**The fix (two options):**
+**The fix (two options; prefer the second):**
 - **Swap L↔R selection names** in every LOD (`leftarm`↔`rightarm`, all sub-bones + fingers + the `l*`/`r*`
   memory points). Geometry/winding/normals stay byte-identical (confirmed-good rendering is untouched); only
   which bone each side binds to changes. Lowest risk, reversible. Leaves the mesh visually mirrored — fine for a
@@ -197,7 +202,10 @@ is `vertex_bone_ref` pairs → `sub_skeletons_to_skeleton` → skeleton bone ind
   properly handed. Bigger change (re-verify the winding gate + facing) but it can also clear a reflection side
   effect: single-sided faces culled from grazing angles the upright anim never reaches — e.g. a ragdoll corpse
   going invisible from one angle. Swap alone leaves the reflection, so that culling can persist; un-reflect
-  fixes both at once.
+  fixes both at once. On a `(−x,z,y)` export with reversed faces, un-reflecting gives the Rule 12 positions
+  and face order: `(x,z,y)` with the faces back in Blender order (Rule 12 also negates the normals). When the
+  Blender source exists, re-export it that way instead of patching the p3d. Not yet run in game on a
+  character: chiral check in `references/character-rigging.md §6`.
 
 ## UV + NORMAL/AO BAKE (read `references/character-uv-bake.md`)
 
@@ -283,27 +291,41 @@ this wall. Warn the user whenever a plan ships custom character anims. (`dayz-an
 | Limbs lag / float during anims | mesh not in canonical bind A-pose, or baked-scale drift | RIGGING bind-pose; SCALING |
 | Anims don't play at all | not inheriting `ZombieMaleBase`/`enfanimsys`, or new-anim wall | CONFIG INHERITANCE |
 | Bigger character, collision wrong | scaled at runtime instead of baked | SCALING |
-| **Character faces / walks BACKWARD in-game** | export transform 180° about vertical (`(x,z,−y)` was backward for an AI mesh) | `references/character-rigging.md §6` ORIENTATION; THE CANONICAL-BIND INVARIANT |
+| **Character faces / walks BACKWARD in-game** | det +1 export `(x,z,−y)`: it sends the rig front (−Y) to +Z; the bind faces −Z | re-export with `(x,z,y)` (Rule 12), not `(−x,z,y)`, which turns it round but mirrors it. `references/character-rigging.md §6`; THE CANONICAL-BIND INVARIANT |
 | **Limbs overextend / stretch under anims, fine at rest** | mesh scale or proportions ≠ canonical bind | THE CANONICAL-BIND INVARIANT; proportion conform `character-rigging.md §3` |
 | **Deforms wrong in-game but the Blender deform-test looked clean** | the Blender armature ≠ engine skeleton — the pose-test is a FALSE GATE | THE CANONICAL-BIND INVARIANT (FALSE GATE); debinarize vanilla + gate in-game/Buldozer |
 | **Looks wrong at REST / idle, not only walking** | bind / skeleton mismatch (model.cfg ≠ vanilla, or rest pose ≠ engine bind) — NOT weights | debinarize a vanilla zombie, copy its model.cfg skeleton + match its bind |
-| **Skeleton now matches vanilla but a limb flings back/up (idle AND animating), rest pose is a sane A-pose** | mesh is left/right **mirrored** vs the canonical skeleton — `left*` geometry sits where the `right*` bone is | debinarize a vanilla male, compare bone vert-X to spine center (vanilla `left*`=+X); fix = swap L↔R selection names (geometry untouched) or un-reflect (negate X + reverse winding). See THE CANONICAL-BIND INVARIANT (MIRROR) |
+| **Skeleton now matches vanilla but a limb flings back/up (idle AND animating), rest pose is a sane A-pose** | mesh is left/right **mirrored** vs the canonical skeleton — `left*` geometry sits where the `right*` bone is | debinarize a vanilla male, compare bone vert-X to spine center (vanilla `left*`=+X); cause = a det +1 export map; fix = re-export with `(x,z,y)` (Rule 12) or un-reflect (negate X + reverse winding, same result); swapping L↔R selection names only relabels the mirror. See THE CANONICAL-BIND INVARIANT (MIRROR) |
 | **Custom infected/zombie deforms even at idle; mesh was rigged to the full player skeleton** | a zed binds to the 95-bone `hermit_newbindpose.xob` SUBSET (no face/finger/IK bones), not the player rig | conform/weight to the 95-bone set OR override `enfanimsys skeletonName`. See THE CANONICAL-BIND INVARIANT (ZED bind) |
-| **Corpse/ragdoll goes invisible from a specific angle** | single-sided faces of a reflected mesh culled at grazing angles the upright anim never reaches | un-reflect the mesh (negate X + reverse winding); a pure L/R selection swap leaves the reflection so the culling persists |
+| **Corpse/ragdoll goes invisible from a specific angle** | single-sided faces of a reflected mesh culled at grazing angles the upright anim never reaches | un-reflect the mesh (negate X + reverse winding; with the Blender source, re-export with `(x,z,y)`, Rule 12); a pure L/R selection swap leaves the reflection so the culling persists |
 | **Whole mesh renders flat / paper / 2D in-game** | a conform/warp collapsed depth (Y) — e.g. TPS to near-coplanar bone-midpoint targets | conform in X/Z only, preserve Y; ALWAYS check the REST SIDE render, not just front |
 | **In-game diffuse = "camo" / black-grey facet noise, persists without `_nohq`** | corrupt high→low bake (mis-aligned high/low) — the noise is in the `_co` DIFFUSE, not the normal map | open and LOOK at the baked `_co` PNG; `references/character-uv-bake.md` pre-conform proxy |
 | **Green/grey/brown "camo" patches that SURVIVE replacing the `_co` entirely (uniform `_co` too) AND disabling `_nohq`** | an ENVIRONMENT/terrain texture in an rvmat stage with `uvSource="tex"` projects that texture onto the body UV. [LFInfectedBig S10] `dz\data\data\env_land_co.paa` (a landscape photo = DayZ env map) was in Stage7 with `uvSource="tex"` → painted the landscape over the mesh; survived 6 `_co` iterations because the fix is the rvmat, not the diffuse | **Audit EVERY rvmat stage** — an env/macro/detail map must be `uvSource="none"` (sampled by reflection), never `"tex"`. `ImageToPAA in.paa out.png` to LOOK at each stage's texture. The `_co`+normal Blender preview HIDES rvmat stages = FALSE GATE. First prove the mesh is clean with the CLAY-TEST (render `.p3d` geometry, NO textures) |
-| **Textures on the INTERIOR / model see-through from outside (inside-out)** | visual winding is glTF-CCW (AI/GLB/retopo source); DayZ renders it back-facing. Blender/Three.js previews are double-sided and HIDE this | reverse every visual face (`face.vertices.reverse()`); see `references/character-rigging.md §6` WINDING |
+| **Textures on the INTERIOR / model see-through from outside (inside-out)** | the faces are not in the MLOD inward order: a det +1 map without face reversal (LFInfectedBig S6), or a det −1 map with one. Blender/Three.js previews are double-sided and HIDE this | export with Rule 12: `(x,z,y)`, faces in Blender order, normals negated. Reversing every face is right only under a det +1 map, and that map mirrors the mesh. See `references/character-rigging.md §6` |
 
 ## OFFLINE GATE — run before EVERY PBO (catches the inside-out bug without an in-game cycle)
 
+**Rule 12 conflict (measured 2026-10-01).** `check_dayz_winding.py` encodes the LFInfectedBig build: det +1
+map, faces reversed, normals left OUTWARD, so `cross·normal < 0`. Any build that stores its normals inward
+with the cross product inward fails it: a Rule 12 export, and also a det +1 build with negated normals. On
+the three MLODs of the Rule 12 in-game probe it exits 1 on all three. That includes the one that renders
+solid and reads correctly in game (`cross.normal_positive=1.00`, `normals_outward=0.00`) and the mirrored one
+that renders solid (det +1, faces reversed, normals negated); its fix hints would turn either inside-out.
+The determinant does not say which convention a build follows; the stored normals do. Until the script is
+updated, gate an export with inward normals with dayz-p3d-audit "Absolute winding check": normal agreement
+≈ 100 % and a negative signed volume by winding. On the probe that check passes both solid variants and
+fails the inside-out one.
+
 ```
-python references/check_dayz_winding.py <source_mlod.p3d>   # exit 1 = will render inside-out
+python references/check_dayz_winding.py <source_mlod.p3d>   # builds that store normals OUTWARD only (see above)
 ```
 A double-sided preview never shows DayZ's single-sided culling, so an inside-out model (textures on the
-interior) only surfaces in-game — losing a test cycle. This detector encodes the in-game-confirmed rule
-(LFInfectedBig S6): a correct SOURCE-MLOD visual LOD has `cross(v1-v0,v2-v0)·stored_normal < 0`. Run it
-after building the `.p3d` and before AddonBuilder; if it FAILs, reverse the visual winding and rebuild.
+interior) only surfaces in-game — losing a test cycle. For a build that stores its normals outward (the
+LFInfectedBig recipe; the script's `normals_outward` info line reads that sign) this detector encodes the
+in-game-confirmed rule (LFInfectedBig S6): a correct SOURCE-MLOD visual LOD has
+`cross(v1-v0,v2-v0)·stored_normal < 0`. Run it after building the `.p3d` and before AddonBuilder; if it
+FAILs on such a build, reverse the visual winding and rebuild. A FAIL on a build with inward normals says
+nothing about the winding: use the absolute check above, never the face reversal.
 Detail + why (incl. why NOT to compare against a debinarized vanilla) in `references/character-rigging.md §6`.
 
 
@@ -318,7 +340,10 @@ internally coherent, globally inside-out — the silent Blender Z-up → Y-up sh
 WallLamp, Crate_Wooden). Do not ship on PASS; read the `[info]` line. Required of
 `references/check_dayz_winding.py`: (1) `normals_outward == 0` (or below a threshold) MUST fail,
 not annotate — combined with inverted winding this is the state the gate exists to block, not "a
-separate lighting issue"; (2) three exit codes, not two — today `exit 1` is both "defect found"
+separate lighting issue" *(2026-10-01: implemented as `NORMALS_OUTWARD_MIN = 0.35`, but it contradicts the
+MLOD convention measured since: shading normals stored inward, dayz-p3d-audit "Absolute winding check"
+(engine verdict 2026-09-07) and Rule 12 (in-game 2026-10-01). It fails every correct Rule 12 export; see
+the conflict note above)*; (2) three exit codes, not two — today `exit 1` is both "defect found"
 and "invalid input". An ODOL `.p3d` (`a6\LMGs\M249\m249_new.p3d`) raises a bare `AssertionError`
 and exits 1, indistinguishable from inside-out. Need: `0` PASS, `1` defect, `2` invalid/non-MLOD
 with an explicit "this file is ODOL, debinarize first"; (3) keep the three fixtures next to the
@@ -365,7 +390,8 @@ First character imported. ~1.2× infected, pass-through chest hole (ribs+spine),
 - **Export rig→`.p3d` + texture + LODs + config + PBO** [✓ 2026-06-25]: gate R15 closed. Export = **py3d
   direct** (now verified in §6, no longer `[TBD-verify]`): fractional per-vertex bone-weight selections
   (lowercase), transform `(x,z,−y)` det+1 DERIVED from the armature matrix, validated against a debinarized
-  vanilla zombie (ground truth for selection names + Y-up frame + character LOD anatomy). `_co` baked DIFFUSE
+  vanilla zombie (ground truth for selection names + Y-up frame + character LOD anatomy). *(2026-10-01: that
+  derivation missed the handedness change; the map is `(x,z,y)`, Rule 12. See `references/character-rigging.md §6`.)* `_co` baked DIFFUSE
   high→pre-conform-proxy onto the new UV; Super rvmat (Stage4 AS `uvSource="tex"`, not "none"). 6 LODs:
   Geometry hull `class='man'` (not skinned), FireGeo skinned-to-bones + `dmgzone_spine` + `meatbones.rvmat`,
   ViewGeo, LandContact, Memory (points from bone positions). model.cfg = full OFP2_ManSkeleton hierarchy,
@@ -380,7 +406,8 @@ First character imported. ~1.2× infected, pass-through chest hole (ribs+spine),
   not `_nohq`; body UV was clean) → replaced with a clean procedural flesh. Deform had two systemic causes,
   both confirmed in-game: (a) **scale** — the 2.277 m (1.27×) mesh fought the canonical ~1.8 m bind → uniform
   rescale f=0.7901; (b) **orientation** — the `(x,z,−y)` transform was 180° about vertical → faced/walked
-  backward → fix `(−x,z,y)`. Both landed (faces forward, vanilla-sized, camo gone). py3d weights transmit
+  backward → fix `(−x,z,y)` (also det +1: it fixed the facing and kept the mirror that S9 found).
+  Both landed (faces forward, vanilla-sized, camo gone). py3d weights transmit
   fine (Object Builder not needed). See THE CANONICAL-BIND INVARIANT.
   (`_export/{rescale_1x.py,build_full_p3d_1x_t2.py,diag_bind_mismatch.py}`.)
 - **S8 — re-rig attempt + the FALSE-GATE wall** [2026-06-24, deform still broken in-game]: tried to fix the
@@ -474,6 +501,18 @@ drawstrings at Z -0.14..-0.07; chainmail pelvis/spine centroids Z -0.04/-0.08), 
 left, +Y up, origin at feet. A mesh built facing +Z disperses into "exploded" rigid pieces when
 worn (each plate transformed by its bone from a flipped frame). Fix = R_y(180°) (det=+1, do NOT
 touch winding) + swap left*/right* selection PAIRS in every LOD.
+
+Handedness of that fix (added 2026-10-01). Not touching the winding is right: R_y(180°) is a rotation.
+The swap it needs shows that the received mesh was a mirror, though: it faced +Z with `left*` on +X.
+ArmorHneck's received p3d was the det +1 map `(x, z, −y)` of the artist's Blender coordinates, and the
+shipped one is `(−x, z, y)` of them (`ArmorHneck_dev\CLAUDE.md`, artist alignment 2026-08-04).
+Rotation + swap fixes the binding and keeps the mirror, which symmetric plates hide; text, logos, buckles
+and one-sided straps come out reversed. With the Blender source, re-export it with `(x, z, y)`, Rule 12,
+and no swap. With only the p3d, the reflection depends on its state: the received `(x, z, −y)` p3d takes
+`z → −z`; the shipped `(−x, z, y)` one takes `x → −x` with the L/R swap undone, as "un-reflect" in THE
+CANONICAL-BIND INVARIANT (`z → −z` on it would face +Z again). Either one moves every point (memory points
+included), reverses every face and reflects the normals the same way. Decide on an asymmetric feature in
+game: chiral check in `dayz-clothing`, CANONICAL WORN FRAME.
 
 Diagnosis ladder that isolated this (reusable, each step in-game-cheap):
 1. Cross-matrix bisection: {armband class + vanilla worn p3d} vs {vanilla top class + custom p3d}

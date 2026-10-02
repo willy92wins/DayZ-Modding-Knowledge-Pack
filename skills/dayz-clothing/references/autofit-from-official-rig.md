@@ -50,7 +50,7 @@ the four rounds did validate: sections 3-5 and 7 as a pipeline, and (j) as a mem
 |---|---|---|
 | `_load_local_dayz_player_rig` 3880-3924 + `_real_dayz_rig_landmarks` 3853-3876 | needs the external `DayzAnimationTools.import_xob` and a hard-coded `P:\DZ\characters\bodies\player_testing.xob`; that XOB is a TEST skeleton with `To Be removed` bones (dayz-animation-pipeline/references/player-skeleton.md:88-92) | bone heads of `animation_rig_character.fbx` (section 1, 3) |
 | donor `resources\DayzSkeleton.p3d` (`_ensure_builtin_reference` 1649-1673) | single visual LOD, 44 lowercase groups, 1,517 of 10,153 verts with zero weight, sums not normalised; embeds vanilla `m_adam` textures/rvmats (licence); the pack decodes weights with its own table (`weight_decode` 225-231), not the py3d codec | `Male_body` of the same FBX: 0 unweighted verts, <=4 influences (section 1, 5) |
-| `to_bl`/`from_bl` = `(x, z, y)` + `rev()` 219-221 | it is the rig-frame convention, NOT our worn-export frame | section 2 |
+| `to_bl`/`from_bl` = `(x, z, y)` + `rev()` 219-221 | the swap is right (Rule 12); `rev()` belongs to the pack's own p3d writer (not checked here): with py3d, Rule 12 keeps the Blender face order | section 2 |
 | `_apply_autofit_armature(..., apply=True)` 3213-3287, run by default in `clothing_prepare` 4454-4457 | destructive bone-heat sleeve warp; the panel says it does not run (4828) and the code runs it | do not port; sleeve detection as a mask only (section 6) |
 
 ## 1. The reference rig [EXACT: Blender 5.1.1 / Python 3.13.9, headless, 2026-09-01]
@@ -93,38 +93,39 @@ the four rounds did validate: sections 3-5 and 7 as a pipeline, and (j) as a mem
   (PascalCase: `RightArm`, `Spine3`, `Pelvis`), max 4 influences per vertex, 0 zero-weight
   vertices.
 
-## 2. Axes: the rig frame is NOT the worn-export frame [EXACT + doctrine; lesson LL-413]
+## 2. Axes: one swap between the rig frame and DayZ [EXACT + doctrine; lesson LL-413; corrected 2026-10-01 for Rule 12]
 
-- Our worn tooling maps DayZ -> Blender with `(x, -z, y)` (`references/export_clothing_fbx.py:12-13`):
-  the body stands Z-up FACING +Y with left at +X (SKILL.md, CANONICAL WORN FRAME: -Z chest,
-  +X left, +Y up). The official rig faces -Y with left at +X. The two Blender frames differ by
-  the reflection `y -> -y`, not by a rotation. [EXACT] cross-check on a DayZ-frame body (the
-  pack's `DayzSkeleton.p3d`, read with py3d 1.5.0): `lefttoebase` centroid sits 0.147 m in -Z
-  from `leftfoot`, `head` 0.030 m in -Z from `neck`, `leftfoot` at x = +0.167: front -Z, left +X.
-  `(x, -z, y)` puts those toes at +Y; the swap `(x, z, y)` puts them at -Y, i.e. onto the rig.
-- Consequence: a garment fitted on `Male_body` returns to DayZ through the det = -1 swap
-  `(x, y, z)_blender -> (x, z, y)_dayz`. For a mesh with Blender's own winding (faces
-  counter-clockwise seen from outside, outward normals) that is `py3d.blender_to_dayz()`
-  (py3d >= 1.8.0): swap, face order KEPT, normals negated - measured in game 2026-10-01 on a
-  chiral test model (dayz-model-pipeline SKILL.md Rule 12). [UNVERIFIED] The pack's `from_bl`
-  also runs `rev()`, which reverses every face: under the measured MLOD convention (vertex-order
-  cross product INWARD) that is right only for a mesh whose faces already point inward in
-  Blender, such as one that came in through the pack's own `to_bl` + `rev()`. Check the result
-  with the per-component outward check of dayz-model-pipeline Rule 18 (expected: cross product
-  INWARD) before trusting either. Do NOT apply the det = +1
-  `(x, z, -y)` to it (`py3d.ROT_X_NEG90`, formerly `py3d.BLENDER_TO_DAYZ`, now deprecated): that
-  is the route for meshes authored in our +Y-facing frame. dayz-characters hit this on the
-  same rig: `(x, z, -y)` shipped LFInfectedBig walking backwards and a residual mirror
-  (character-rigging.md:169-175; dayz-characters/SKILL.md:167-192).
-- Alternative that keeps every existing clothing script unchanged: mirror the rig into our frame
-  first (`y -> -y` on `Armature` and `Male_body`, then reverse `Male_body` face order), fit
-  there, export with the det = +1 `py3d.ROT_X_NEG90` (formerly `BLENDER_TO_DAYZ`).
-  [UNVERIFIED] On its own that map leaves outward Blender faces and normals OUTWARD in the MLOD
-  (rendered inside-out in the 2026-10-01 test); this route also needs every face reversed and
-  every normal negated after it, unless the worn export already does that.
-- [ASSUMPTION] Which of the two is less error-prone in practice. Neither has been run on a real
-  garment yet; in both cases run the anatomical facing test of SKILL.md CANONICAL WORN FRAME and
-  the Rule 18 per-component winding check on the exported p3d before packing (killer #2).
+- The official rig faces -Y with left at +X (section 1; re-measured 2026-10-01 with both FBX
+  importers). The DayZ worn frame is -Z chest, +X left, +Y up (SKILL.md, CANONICAL WORN FRAME).
+  [EXACT] cross-check on a DayZ-frame body (the pack's `DayzSkeleton.p3d`, read with py3d 1.5.0):
+  `lefttoebase` centroid sits 0.147 m in -Z from `leftfoot`, `head` 0.030 m in -Z from `neck`,
+  `leftfoot` at x = +0.167: front -Z, left +X. The swap `(x, y, z)_blender <-> (x, z, y)_dayz`
+  (det = -1, its own inverse) puts those toes at -Y, i.e. onto the rig.
+- Consequence: a garment fitted on `Male_body` returns to DayZ with that swap, faces in their
+  Blender order and normals negated (dayz-model-pipeline Rule 12, in-game test 2026-10-01). For a
+  mesh with Blender's own winding (faces counter-clockwise seen from outside, outward normals)
+  that is `py3d.blender_to_dayz()` (py3d >= 1.8.0). Until 2026-10-01 this item also asked for
+  face-order reversal in every LOD, citing the pack's `from_bl` + `rev()`; under Rule 12 that
+  reversal turns a py3d export of such a mesh inside-out. [UNVERIFIED] `rev()` is right only for
+  a mesh whose faces already point inward in Blender, such as one that came in through the pack's
+  own `to_bl` + `rev()`. Do NOT apply the det = +1 `(x, z, -y)` (`py3d.ROT_X_NEG90`, formerly
+  `py3d.BLENDER_TO_DAYZ`, now deprecated): it mirrors. dayz-characters hit this on the same rig:
+  `(x, z, -y)` shipped LFInfectedBig walking backwards, and `(-x, z, y)` mirrored it
+  (character-rigging.md §6).
+- Until 2026-10-01 our worn tooling imported DayZ -> Blender with `(x, -z, y)`
+  (`references/export_clothing_fbx.py`). That frame faced +Y with left at +X, a mirror image of
+  the rig frame (the two differed by `y -> -y`). The script now uses the same swap, so the two
+  frames are one. The alternative that used to stand here (mirror the rig into that frame, fit,
+  export with `BLENDER_TO_DAYZ`) is withdrawn: it fits in a mirrored frame and exports with a
+  det = +1 map, so anything with a side modelled in that frame (text, a pocket, a buckle) ships
+  reversed. Only geometry that entered through the old det = +1 import comes back unmirrored,
+  because the two maps cancel, as in the legacy return trip of SKILL.md.
+- Before packing, run the anatomical facing test of SKILL.md CANONICAL WORN FRAME and the
+  per-component winding check of dayz-model-pipeline Rule 18 (expected: cross product INWARD) on
+  the exported p3d (killer #2). With weights transferred from `Male_body` the facing test catches
+  a det = +1 export, since the selections then come from the true side; no winding check sees a
+  mirror, and the facing test cannot see one once the L/R selections have been swapped by hand
+  (SKILL.md, chiral check).
 
 ## 3. Landmarks: replacing `_real_dayz_rig_landmarks` [RUN 2026-09-01: works; mirrors addon.py:3853-3876]
 
@@ -168,8 +169,8 @@ after the axis swap.
   the torso, not on the arms (`02_fit_front.png`).
 - Rest forward offset (`_set_clothing_rest_forward_offset` 1608-1621): translate along the body's
   FRONT vector by `offset` (pack default 0.035 m), stored on the object to avoid accumulation on
-  repeated fits. On the official rig the front vector is world `(0, -1, 0)`; in our +Y frame it
-  is `(0, +1, 0)`.
+  repeated fits. On the official rig the front vector is world `(0, -1, 0)`, and since 2026-10-01
+  in our worn tooling too (its retired +Y frame had `(0, +1, 0)`).
 
 ## 5. Weight transfer from `Male_body` [RUN 2026-09-01: works in Blender 5.1.1 with the three corrections of item 7]
 
@@ -188,12 +189,12 @@ after the axis swap.
    selections survive. Better than Blender's global Clean/Limit Total for that reason.
 4. Add what the pack lacks: cross-midline cleanup (`left*` weight on the right half and vice
    versa; character-rigging.md:108-117) and the two counts of section 7.
-5. Export with py3d: group names to lowercase (character-rigging.md:192); the byte encoding is
-   py3d's `round((1-w)*255)+1` (character-rigging.md:196), never the pack's `weight_encode`
+5. Export with py3d: group names to lowercase (character-rigging.md:209); the byte encoding is
+   py3d's `round((1-w)*255)+1` (character-rigging.md:214), never the pack's `weight_encode`
    table (addon.py:233-238).
 6. The in-game skeleton is still `DayzTemporarySkeleton` with the 159-pair template (killer #3
    in SKILL.md); the rig only generates weights. The 44-name set is what vanilla worn items
-   actually weight (SKILL.md:60-63): more bones is fine, fewer works but articulates coarsely.
+   actually weight (SKILL.md:93-98): more bones is fine, fewer works but articulates coarsely.
 7. [RUN 2026-09-01] Steps 2-5 work in Blender 5.1.1 (`modifier_apply` under `temp_override`
    applied first time; 111 groups transferred). Three corrections found by the run:
    - Restrict the "bone-named groups" of step 3 to the deform set of character-rigging.md

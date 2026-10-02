@@ -307,23 +307,24 @@ After cleanup and LOD generation, export for py3d to assemble into final `.p3d`:
 ### Export Settings (per LOD)
 
 ```python
-# Export each LOD as OBJ with correct axis orientation for DayZ
+# Export each LOD as OBJ in Blender's own axes; py3d converts to DayZ (Rule 12)
 # File > Export As > Wavefront (.obj)
 ```
 
 **Critical export settings:**
-- **Forward axis**: -Y (DayZ convention)
+- **Forward axis**: Y (no axis conversion; see Coordinate System Gotcha)
 - **Up axis**: Z
 - **Scale**: 1.0 (already scaled in cleanup step)
 - **Apply modifiers**: Yes
 - **Smooth groups**: Yes
 
-Or via Python:
+Or via Python (Blender 5.1.1; select the LOD object first):
 
 ```python
 bpy.ops.wm.obj_export(
     filepath='/output/model_lod0.obj',
-    forward_axis='-Y',
+    export_selected_objects=True,
+    forward_axis='Y',
     up_axis='Z',
     apply_modifiers=True
 )
@@ -345,12 +346,17 @@ Export each LOD (LOD0, LOD1, LOD2, LOD3) as separate `.obj` files. py3d will com
 | **DayZ** | Y | -Z |
 
 When exporting OBJ for py3d assembly, use these settings:
-- Forward: **-Y**
+- Forward: **Y**
 - Up: **Z**
 
-These are Blender's own axes: the OBJ keeps raw Blender coordinates (Z up), and the conversion happens in py3d.
-[INFERRED, not tested in game] Do not let the exporter convert to Y-up instead (Forward -Z / Up Y): that is a
-rotation (det=+1), the kind of map Rule 12 measured as shipping a mirrored model.
+That is no conversion at all: the OBJ keeps raw Blender coordinates (Z up), and the conversion happens once, in
+py3d. Measured 2026-10-02 in Blender 5.1.1 (`wm.obj_export`, one vertex at `(1, 2, 3)`): Forward Y / Up Z writes
+`(1, 2, 3)`. Forward -Y / Up Z writes `(-1, -2, 3)`, a 180° turn about the vertical; after Rule 12 the model faces
+backwards. The default Forward -Z / Up Y writes `(1, 3, -2)`, the det=+1 rotation `(x, z, -y)`; after Rule 12 the
+model lies on its back, and on its own it is the map Rule 12 measured as shipping a mirrored model. The exporter's
+Forward names the file axis that Blender's +Y becomes, not the way a model faces: a character in Blender faces -Y
+(table above) and still exports with Forward Y. *(Corrected 2026-10-02: this section said Forward -Y, inferred and
+not tested, and the Python example passed `'-Y'`, which Blender rejects; the enum value is `'NEGATIVE_Y'`.)*
 
 **Transforming in py3d**: apply the Rule 12 map `x'=x, y'=z, z'=y` (det=-1) with negated normals, keeping the face order
 (`SKILL.md` Rule 12; the old `z'=-y` rotation ships a mirrored model).
@@ -388,7 +394,7 @@ If no textures came with the model, generate procedurally (see `procedural-textu
 | **Model is inside-out (black)** | Normals flipped | Recalculate normals outside: `normals_make_consistent(inside=False)` |
 | **Black faces or holes** | Duplicate vertices | Run remove doubles with threshold 0.0001 |
 | **UV seams visible in-game** | Tight UV margins | Re-pack islands with larger margin (0.02+) |
-| **Model faces wrong direction** | Export axis wrong | Re-export with Forward=-Y, Up=Z |
+| **Model faces wrong direction** | Export axes converted, or the model faces another way in Blender | Re-export with Forward=Y, Up=Z (no conversion; py3d applies Rule 12 once). If it still faces wrong, turn the model in Blender so its front looks down -Y; do not fix the facing through the export axes |
 | **Textures look stretched** | UVs not unwrapped properly | Run Smart UV Project, manual layout |
 | **LODs are distorted** | Decimate broke geometry | Use Voxel Remesh modifier instead for preservation |
 | **Smooth shading looks jagged** | Auto-smooth threshold too low | Increase auto-smooth angle (60-80 degrees typical) |
@@ -419,7 +425,7 @@ See `py3d-assembly.md` for p3d assembly, and `config-cpp-objects.md` for final D
 - [ ] UV islands packed with proper margins
 - [ ] LODs generated and decimated
 - [ ] Each LOD verified for geometry integrity
-- [ ] Export settings: Forward=-Y, Up=Z
+- [ ] Export settings: Forward=Y, Up=Z (no conversion; py3d applies Rule 12)
 - [ ] Each LOD exported as separate OBJ
 - [ ] Textures renamed per DayZ convention
 - [ ] Ready for py3d assembly

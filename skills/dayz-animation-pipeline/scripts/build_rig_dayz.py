@@ -22,7 +22,8 @@ t = verts.mean(0) - s*bpts.mean(0)
 t[2] = verts[:,2].min() - s*bpts[:,2].min()
 print("align scale=%.6f  translate=%s"%(s,[round(x,4) for x in t]))
 
-# Fm: Blender world Z-up -> DayZ Y-up: x'=x, y'=z, z'=-y
+# Fm: Blender world Z-up -> viewer Y-up: x'=x, y'=z, z'=-y (det=+1, right-handed like Three.js).
+# Not DayZ model space despite the "dayz" names: that one is left-handed, any map into it has det=-1.
 Rf=np.array([[1,0,0],[0,0,1],[0,-1,0]],dtype=float)
 def to_dayz(R,tr):
     Rfin=Rf@R; tfin=Rf@(s*tr+t); return Rfin,tfin
@@ -40,7 +41,7 @@ def quat(R):
         else: d=2*np.sqrt(1+R[2,2]-R[0,0]-R[1,1]); w=(R[1,0]-R[0,1])/d;x=(R[0,2]+R[2,0])/d;y=(R[1,2]+R[2,1])/d;z=0.25*d
     v=np.array([x,y,z,w]); return list((v/np.linalg.norm(v)).round(6))
 
-# bone final world (rigid, DayZ)
+# bone final world (rigid, viewer frame)
 order=[b['name'] for b in rig['bones']]
 parent={b['name']:b['parent'] for b in rig['bones']}
 fw={}
@@ -56,7 +57,7 @@ for nm in order:
     bones_out.append({"name":nm,"parent":par,"pos":[round(float(x),6) for x in tl],"quat":quat(Rl),
                       "world_pos":[round(float(x),5) for x in tt]})
 
-# mesh -> DayZ (verts already mesh-world meters; only Fm)
+# mesh -> viewer frame (verts already mesh-world meters; only Fm)
 mverts=[[round(float(x),5) for x in (Rf@np.array(v))] for v in rig['mesh']['verts']]
 name2idx={nm:i for i,nm in enumerate(order)}
 skin=[]
@@ -70,14 +71,15 @@ anchors={}
 for k,m in emp.items():
     R,tr=RT(m); Rd,td=to_dayz(R,tr); anchors[k]={"pos":[round(float(x),5) for x in td],"quat":quat(Rd)}
 
-out={"space":"dayz_yup_meters","align":{"scale":s,"translate":list(t)},"bone_order":order,
+# "space" was "dayz_yup_meters" until 2026-10-02; no script in this skill reads it.
+out={"space":"viewer_yup_rh_meters","align":{"scale":s,"translate":list(t)},"bone_order":order,
      "bones":bones_out,"anchors":anchors,"mesh":{"verts":mverts,"faces":rig['mesh']['faces'],"skin":skin}}
 json.dump(out,open(os.path.join(SCR,'rig_dayz.json'),'w'))
 
-# sanity: key bone world positions (DayZ) vs mesh bbox
-mv=np.array(mverts); print("mesh DayZ bbox min",mv.min(0).round(3).tolist(),"max",mv.max(0).round(3).tolist())
+# sanity: key bone world positions (viewer frame) vs mesh bbox
+mv=np.array(mverts); print("mesh viewer-frame bbox min",mv.min(0).round(3).tolist(),"max",mv.max(0).round(3).tolist())
 bd={b['name']:b['world_pos'] for b in bones_out}
 for k in ["Head","Pelvis","RightHand","LeftHand","RightFoot","LeftFoot","Neck"]:
-    print("  bone %-10s DayZ world=%s"%(k,[round(x,3) for x in bd[k]]))
+    print("  bone %-10s viewer world=%s"%(k,[round(x,3) for x in bd[k]]))
 for k in ["RightHand_Dummy","Weapon_Root","LeftHand_Dummy"]:
     if k in anchors: print("  anchor %-16s %s"%(k,[round(x,3) for x in anchors[k]['pos']]))

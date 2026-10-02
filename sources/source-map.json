@@ -331,10 +331,30 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Fixed entry for py3d 1.8.0 extended: crew and wheel proxies by equivalence (the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path with identity crew and wheel frames is the one LFDucati was driven with in game (T90 frame fix, LL-505; T92 drives up to 137 km/h, LL-506); scoped after the gpt-6.1-sol review to the proxy frame (identity only for crew, LFDucati T93), not a drive through blender_to_dayz). Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "77edf52b0eb8cb04854450d114c852173e648a1729249f5b6ad42339178c89e3",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-py3d-proxy-equivalence@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Merged with main after py3d 1.8.0 (#29) and its proxy docs (#30): the character Stage B keeps this derivation and takes py3d.blender_to_dayz() as the one-call form of the swap and ROT_X_NEG90 as the renamed det=+1 matrix; the clothing return trip is blender_to_dayz() for new packages and ROT_X_NEG90 for packages made before 2026-10-01. Cross-family review by Codex gpt-6.1-sol, two rounds (cap set by the author): round 1 UNSOUND (fix of a received worn p3d by its state, old winding gate scoped by the stored-normal sign, model-pipeline OBJ export recipes, viewer space label, moved citations), all acted upon; round 2 closed those and found three coverage P1 (two OBJ export remnants, a troubleshooting row that reversed faces on Check A), fixed after the last round with mechanical checks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f62e2ad276d6f3ece76139bbfa04acf2cf2f5f99de200b372b849d972e4f1e65",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b5fecaf747517c931fc7b4062d4475c21af73652fc83c72432a0bdd743c6a953",
+      "output_hash": "f62e2ad276d6f3ece76139bbfa04acf2cf2f5f99de200b372b849d972e4f1e65",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2548,20 +2568,10 @@
           "source_path": "packctl/promotion.py",
           "source_revision": "g5-root-inclusive-residue@2026-09-11",
           "verification_level": "offline_tested"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02 promotion unblock. Schema 1 binds a promotion receipt to the checkout that applied it; the nine receipts in promotions/receipts were sealed from a temporary worktree that no longer exists, so promote --check failed with PROMOTION-RECEIPT-JOURNAL-MISMATCH on all nine and the pre-apply journal sweep with PROMOTION-RECOVERY-REQUIRED (diagnosis by Codex on 2026-10-01; re-read in packctl/promotion.py). packctl now reads such a receipt from any checkout whose HEAD tracks it at promotions/receipts/<transaction_id>.json with the same bytes, still matched against the sealed plan and the COMMIT receipt hash; the sweep uses the same rule when the sealed path is gone. A relocated receipt explains targets in a check only when every target its sealed plan wrote lies under the root this installation configures for the same logical target, so a repository sharing the backup root cannot borrow it; the sealed path must be gone, no link may sit on the way, and the file must equal the raw blob at HEAD. Cross-family review by Codex gpt-6.1-sol, round 1 on cf209a5: UNSOUND (P1: receipts copied into another repository's HEAD explained its targets; P2: check and sweep picked different copies; P2: filtered hashes; P3: tests that let mutants survive), all acted upon. Round 2 on 350f6c0: UNSOUND (P1: a configured root moved to its parent still contained the sealed paths, so a receipt explained a concrete path it never wrote; P2: an unreadable sealed path counted as gone; P3: no filter regression), fixed after the last round: a relocated receipt explains a (artifact, target) pair only when the concrete path it wrote is the one this check writes, the sealed path must be absent by os.lstat, and a real clean/smudge filter test pins the raw-byte comparison. Fourteen cases in tests/packctl/test_promotion.py; nine mutants, one per rule, each fail their case. Written by Claude (Anthropic).",
-          "license": "MIT",
-          "source_hash": "7496bbaa24f67d734ab148462da5e525c0932ac8b97a09e678015d9481cea8bb",
-          "source_id": "pack-r21-authored",
-          "source_path": "packctl/promotion.py",
-          "source_revision": "kp-update-promotion-receipts@2026-10-02",
-          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7496bbaa24f67d734ab148462da5e525c0932ac8b97a09e678015d9481cea8bb",
+      "output_hash": "6c021bf191e8dbaeae12a959e8cd2bfe9e52d6a12de27b25da3513a9dbec4239",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -2757,20 +2767,10 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion@2026-09-29",
           "verification_level": "offline_tested"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Two adjudications for skill/dayz-motorbikes (claude_user_skills and agents_user_skills, one physical directory) at the live digest measured on 2026-10-02 with packctl tree_digest. The owner decided to replace the never-promoted live copy, which predates the governed port of 2026-10-01, with this repository's version; the promotion backs up the live tree first.",
-          "license": "MIT",
-          "source_hash": "1e9d38a775acac412367c69f355d0cd06088cd45dac5c5685abe40b9d4dea4e2",
-          "source_id": "pack-r21-authored",
-          "source_path": "promotions/adjudications.json",
-          "source_revision": "kp-update-promotion-receipts@2026-10-02",
-          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "1e9d38a775acac412367c69f355d0cd06088cd45dac5c5685abe40b9d4dea4e2",
+      "output_hash": "cfbd1c79c704477d154b2841353dc797969d6be4937e0b55255a9844d769b26a",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -3526,10 +3526,20 @@
           "source_path": "skills/blender-animation/references/dayz-handoff.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Merged with main after py3d 1.8.0 (#29) and its proxy docs (#30): the character Stage B keeps this derivation and takes py3d.blender_to_dayz() as the one-call form of the swap and ROT_X_NEG90 as the renamed det=+1 matrix; the clothing return trip is blender_to_dayz() for new packages and ROT_X_NEG90 for packages made before 2026-10-01. Cross-family review by Codex gpt-6.1-sol, two rounds (cap set by the author): round 1 UNSOUND (fix of a received worn p3d by its state, old winding gate scoped by the stored-normal sign, model-pipeline OBJ export recipes, viewer space label, moved citations), all acted upon; round 2 closed those and found three coverage P1 (two OBJ export remnants, a troubleshooting row that reversed faces on Check A), fixed after the last round with mechanical checks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "11e124b78342a1f586215e7abb7f4aef007c206ccae2df542205d7c9517e1834",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-animation/references/dayz-handoff.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f321084dcd2250c4d4732d267ce82fc316b27d2ddcfab4018acb3d4623c91077",
+      "output_hash": "11e124b78342a1f586215e7abb7f4aef007c206ccae2df542205d7c9517e1834",
       "output_path": "skills/blender-animation/references/dayz-handoff.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -4180,10 +4190,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Merged with main after py3d 1.8.0 (#29) and its proxy docs (#30): the character Stage B keeps this derivation and takes py3d.blender_to_dayz() as the one-call form of the swap and ROT_X_NEG90 as the renamed det=+1 matrix; the clothing return trip is blender_to_dayz() for new packages and ROT_X_NEG90 for packages made before 2026-10-01. Cross-family review by Codex gpt-6.1-sol, two rounds (cap set by the author): round 1 UNSOUND (fix of a received worn p3d by its state, old winding gate scoped by the stored-normal sign, model-pipeline OBJ export recipes, viewer space label, moved citations), all acted upon; round 2 closed those and found three coverage P1 (two OBJ export remnants, a troubleshooting row that reversed faces on Check A), fixed after the last round with mechanical checks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "097e92c04cecd2ef3ac0360c0fb846c9168c9703a7173ccfd15fa5d4574b57c8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8f90c450e687a946444eb3d5bce6131df4c1eb56d3bbf592880fef0e5ecb4389",
+      "output_hash": "097e92c04cecd2ef3ac0360c0fb846c9168c9703a7173ccfd15fa5d4574b57c8",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4244,10 +4264,20 @@
           "source_path": "dayz-animation-pipeline/references/blender-authoring.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Merged with main after py3d 1.8.0 (#29) and its proxy docs (#30): the character Stage B keeps this derivation and takes py3d.blender_to_dayz() as the one-call form of the swap and ROT_X_NEG90 as the renamed det=+1 matrix; the clothing return trip is blender_to_dayz() for new packages and ROT_X_NEG90 for packages made before 2026-10-01. Cross-family review by Codex gpt-6.1-sol, two rounds (cap set by the author): round 1 UNSOUND (fix of a received worn p3d by its state, old winding gate scoped by the stored-normal sign, model-pipeline OBJ export recipes, viewer space label, moved citations), all acted upon; round 2 closed those and found three coverage P1 (two OBJ export remnants, a troubleshooting row that reversed faces on Check A), fixed after the last round with mechanical checks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "278ebdd742375201dc2a29c51ea0ee6093859374835f9b738526558554eec3fc",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6cdbbba6bc2177b6545e2a8590f4bfb68f23a5acdbff012821e6357a6b6ecfa1",
+      "output_hash": "278ebdd742375201dc2a29c51ea0ee6093859374835f9b738526558554eec3fc",
       "output_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4610,10 +4640,20 @@
           "source_path": "dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Merged with main after py3d 1.8.0 (#29) and its proxy docs (#30): the character Stage B keeps this derivation and takes py3d.blender_to_dayz() as the one-call form of the swap and ROT_X_NEG90 as the renamed det=+1 matrix; the clothing return trip is blender_to_dayz() for new packages and ROT_X_NEG90 for packages made before 2026-10-01. Cross-family review by Codex gpt-6.1-sol, two rounds (cap set by the author): round 1 UNSOUND (fix of a received worn p3d by its state, old winding gate scoped by the stored-normal sign, model-pipeline OBJ export recipes, viewer space label, moved citations), all acted upon; round 2 closed those and found three coverage P1 (two OBJ export remnants, a troubleshooting row that reversed faces on Check A), fixed after the last round with mechanical checks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "96b3c3b20d722905421fdfdc375eae5241d9ea6f3bb10a3f0c835f1b2172a7aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3c613e9c2b5be20a43cb756ce5aa349ff9996d55aa2dad6b6eac7157b93b0020",
+      "output_hash": "96b3c3b20d722905421fdfdc375eae5241d9ea6f3bb10a3f0c835f1b2172a7aa",
       "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4696,10 +4736,20 @@
           "source_path": "dayz-animation-pipeline/scripts/build_rig_dayz.py",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Merged with main after py3d 1.8.0 (#29) and its proxy docs (#30): the character Stage B keeps this derivation and takes py3d.blender_to_dayz() as the one-call form of the swap and ROT_X_NEG90 as the renamed det=+1 matrix; the clothing return trip is blender_to_dayz() for new packages and ROT_X_NEG90 for packages made before 2026-10-01. Cross-family review by Codex gpt-6.1-sol, two rounds (cap set by the author): round 1 UNSOUND (fix of a received worn p3d by its state, old winding gate scoped by the stored-normal sign, model-pipeline OBJ export recipes, viewer space label, moved citations), all acted upon; round 2 closed those and found three coverage P1 (two OBJ export remnants, a troubleshooting row that reversed faces on Check A), fixed after the last round with mechanical checks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e9062f9e1cfb7cefd9d7324bc8228333e587b74659b474226e8c17de7591d4c4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/scripts/build_rig_dayz.py",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8ef4d1bc25179438c8f6bc964d268fda09adb06083455dfd9f091ea7149dd438",
+      "output_hash": "e9062f9e1cfb7cefd9d7324bc8228333e587b74659b474226e8c17de7591d4c4",
       "output_path": "skills/dayz-animation-pipeline/scripts/build_rig_dayz.py",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5560,10 +5610,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Merged with main after py3d 1.8.0 (#29) and its proxy docs (#30): the character Stage B keeps this derivation and takes py3d.blender_to_dayz() as the one-call form of the swap and ROT_X_NEG90 as the renamed det=+1 matrix; the clothing return trip is blender_to_dayz() for new packages and ROT_X_NEG90 for packages made before 2026-10-01. Cross-family review by Codex gpt-6.1-sol, two rounds (cap set by the author): round 1 UNSOUND (fix of a received worn p3d by its state, old winding gate scoped by the stored-normal sign, model-pipeline OBJ export recipes, viewer space label, moved citations), all acted upon; round 2 closed those and found three coverage P1 (two OBJ export remnants, a troubleshooting row that reversed faces on Check A), fixed after the last round with mechanical checks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4035613935b6c3a05bbee6b6dfa4841575e43817b7fe2d30b06b869ab4a92e68",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fce09cbecac3dfd88f14aa49df8dcd3141f6dbb2caaca1b2544a596803523299",
+      "output_hash": "4035613935b6c3a05bbee6b6dfa4841575e43817b7fe2d30b06b869ab4a92e68",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -5612,10 +5672,20 @@
           "source_path": "skills/dayz-characters/references/character-rigging.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Merged with main after py3d 1.8.0 (#29) and its proxy docs (#30): the character Stage B keeps this derivation and takes py3d.blender_to_dayz() as the one-call form of the swap and ROT_X_NEG90 as the renamed det=+1 matrix; the clothing return trip is blender_to_dayz() for new packages and ROT_X_NEG90 for packages made before 2026-10-01. Cross-family review by Codex gpt-6.1-sol, two rounds (cap set by the author): round 1 UNSOUND (fix of a received worn p3d by its state, old winding gate scoped by the stored-normal sign, model-pipeline OBJ export recipes, viewer space label, moved citations), all acted upon; round 2 closed those and found three coverage P1 (two OBJ export remnants, a troubleshooting row that reversed faces on Check A), fixed after the last round with mechanical checks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "06199aa9478242f2f8aea91b9bc87552944f5ae9423a334ffd7f046410c931ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/character-rigging.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "06b2cf92cc7182d04546cbe75f225b340ebb0f3c960f4a316eeaaafd85410869",
+      "output_hash": "06199aa9478242f2f8aea91b9bc87552944f5ae9423a334ffd7f046410c931ee",
       "output_path": "skills/dayz-characters/references/character-rigging.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -5738,10 +5808,20 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Merged with main after py3d 1.8.0 (#29) and its proxy docs (#30): the character Stage B keeps this derivation and takes py3d.blender_to_dayz() as the one-call form of the swap and ROT_X_NEG90 as the renamed det=+1 matrix; the clothing return trip is blender_to_dayz() for new packages and ROT_X_NEG90 for packages made before 2026-10-01. Cross-family review by Codex gpt-6.1-sol, two rounds (cap set by the author): round 1 UNSOUND (fix of a received worn p3d by its state, old winding gate scoped by the stored-normal sign, model-pipeline OBJ export recipes, viewer space label, moved citations), all acted upon; round 2 closed those and found three coverage P1 (two OBJ export remnants, a troubleshooting row that reversed faces on Check A), fixed after the last round with mechanical checks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f864b42abbeab618464866c7931a2b44a20e2b9bfcfeb9e4aecc85b52214d16b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8a65edcb5ce53902c1f7107b19677cb15986ee4f548e16912ee98b41c9591211",
+      "output_hash": "f864b42abbeab618464866c7931a2b44a20e2b9bfcfeb9e4aecc85b52214d16b",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -5770,10 +5850,20 @@
           "source_path": "skills/dayz-clothing/references/LEEME-ARTISTA.template.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Artist README template aligned with the export script's new (x,z,y) map: the delivered FBX faces -Y with left at +X (the official rig frame), the return trip is the same self-inverse map, packages made before 2026-10-01 return the way they were delivered. Offline test of the script as above.",
+          "license": "MIT",
+          "source_hash": "59ec3bde9d55fc9759d83256ff5081b95df74e1c371c210cb55e7e861c86e79f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/references/LEEME-ARTISTA.template.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "00319626c550b8cf197b072eb2601116208c8aafae403dca5b9f0b317ec3edb1",
+      "output_hash": "59ec3bde9d55fc9759d83256ff5081b95df74e1c371c210cb55e7e861c86e79f",
       "output_path": "skills/dayz-clothing/references/LEEME-ARTISTA.template.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -5898,10 +5988,20 @@
           "source_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 rig handedness audit, the follow-up of the Rule 12 in-game test: every det=+1 Blender->DayZ map still taught in the character, clothing and animation skills was checked against measured frames. Official rig FBX re-measured in Blender 5.1.1 with both FBX importers: front -Y, left +X, armature matrix_world = R(+90 X), FBX-local frame right-handed (front +Z, left +X). DayZ bind: front -Z, left +X (vanilla left* on +X; worn frame verified in game). Hence Blender->DayZ = (x,z,y), det=-1, as Rule 12; this explains LFInfectedBig S7 (backward with (x,z,-y)) and S9 (mirror with (-x,z,y)). check_dayz_winding.py measured failing all three MLODs of the Rule 12 in-game probe, the correct one included. ArmorHneck's received p3d is the (x,z,-y) export of the artist's Blender file (project notes). The viewer frame of the animation pipeline is right-handed (det=+1 from Blender), relabelled; the calibrated Route C conversion is det=-1. Chiral in-game checks designed, not run. Merged with main after py3d 1.8.0 (#29) and its proxy docs (#30): the character Stage B keeps this derivation and takes py3d.blender_to_dayz() as the one-call form of the swap and ROT_X_NEG90 as the renamed det=+1 matrix; the clothing return trip is blender_to_dayz() for new packages and ROT_X_NEG90 for packages made before 2026-10-01. Cross-family review by Codex gpt-6.1-sol, two rounds (cap set by the author): round 1 UNSOUND (fix of a received worn p3d by its state, old winding gate scoped by the stored-normal sign, model-pipeline OBJ export recipes, viewer space label, moved citations), all acted upon; round 2 closed those and found three coverage P1 (two OBJ export remnants, a troubleshooting row that reversed faces on Check A), fixed after the last round with mechanical checks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "bf43698c445141d4c149cfe9c785a38861d7ac01aa07bd3f8908ab67104fda6c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "40c3660728caaf9c02687906c38e1918603b0310e8f41ace78b676b7ae251117",
+      "output_hash": "bf43698c445141d4c149cfe9c785a38861d7ac01aa07bd3f8908ab67104fda6c",
       "output_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "offline_tested"
@@ -5930,10 +6030,20 @@
           "source_path": "dayz-clothing/references/export_clothing_fbx.py",
           "source_revision": "filesystem@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Axis map changed from (x,-z,y) (det=+1) to (x,z,y) (det=-1, Rule 12). Offline tested 2026-10-01 on the ArmorHneck _m worn MLOD with Blender 5.1.1 + py3d 1.7.0: FBX_EXPORT_ALL_OK; the reimported FBX mapped back with the same swap matches the MLOD to 2.7e-7 m with identical face order; leftarm centroid x=+0.34 and pelvis/spine centroid y=-0.045 (the official rig frame); signed volume +0.026 in Blender (faces outward). The old map gave front +Y (a mirror of the rig frame) and signed volume -0.026 (faces inward); both maps round-trip exactly with their own inverse.",
+          "license": "MIT",
+          "source_hash": "2a370aba1774b511cfff043bd6adfc4e903d8961f3893373ac1fdcd607516d9f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/references/export_clothing_fbx.py",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ed2dd4f24969629ffd48dd1f9887944771b1cba82fba5f2bc722bcb68cc31908",
+      "output_hash": "2a370aba1774b511cfff043bd6adfc4e903d8961f3893373ac1fdcd607516d9f",
       "output_path": "skills/dayz-clothing/references/export_clothing_fbx.py",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -7014,10 +7124,30 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Rule 12 (line 224, edited within the line so no claim range moved): crew and wheel proxies drawn as py3d canonical raw triangles follow by equivalence: the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path with identity crew and wheel frames is the one LFDucati was driven with in game (T90 frame fix, LL-505; T92 drives up to 137 km/h, LL-506); scoped after the gpt-6.1-sol review to the proxy frame (identity only for crew, LFDucati T93), not a drive through blender_to_dayz. Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "ea0aeccf3311be0f8ce97bf70324a606091dcc43bab516230fea5a1f72ae787d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "kp-update-py3d-proxy-equivalence@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Troubleshooting row for Check A's UNIFORM_NON_FLIPPED: a direction check (signed volume by winding, or the per-component check of Rule 18) decides before any face reversal, and a fix reverses faces and negates normals. Checked arithmetically 2026-10-02 on a closed tetrahedron: a correct Rule 12 export and an inside-out one both read Check A agreement 4/4, with signed volume -0.1667 and +0.1667; reversing the correct one gives agreement 0/4 and +0.1667. Found by the gpt-6.1-sol review, round 2.",
+          "license": "MIT",
+          "source_hash": "17cfe785a7e99f317cf57939b2e0117d266d716be8921876b9e8e9f35460dfe6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7e6c6365e50c85e71b97034157d5627ac23cfd9efd0e1ffff3e98b9aa0098ca0",
+      "output_hash": "17cfe785a7e99f317cf57939b2e0117d266d716be8921876b9e8e9f35460dfe6",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -7080,10 +7210,20 @@
           "source_path": "dayz-model-pipeline/references/blender-headless.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "OBJ export recipes moved to forward_axis='Y', up_axis='Z' (raw Blender coordinates; py3d applies Rule 12 once) with parameter names Blender 5.1.1 accepts. Measured 2026-10-02 in Blender 5.1.1 with wm.obj_export and a vertex at (1,2,3): Y/Z writes (1,2,3), NEGATIVE_Z/Y (the default) writes (1,3,-2), NEGATIVE_Y/Z writes (-1,-2,3); the four calls documented before raised TypeError; the corrected helper exported only the selected object, with raw coordinates. Every wm.obj_export call in the tree swept for its axes.",
+          "license": "MIT",
+          "source_hash": "139b81b4a17ffa3228b1f4ab0b635bba2dade0dec08813ab2aad1834779125d0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/blender-headless.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "73ab39a4ebf26a4e1431815d0d9b7545bf065618a225aca707454415a1598911",
+      "output_hash": "139b81b4a17ffa3228b1f4ab0b635bba2dade0dec08813ab2aad1834779125d0",
       "output_path": "skills/dayz-model-pipeline/references/blender-headless.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -7112,10 +7252,20 @@
           "source_path": "skills/dayz-model-pipeline/references/blender-workflow.md",
           "source_revision": "kp-update-rule12@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "OBJ export recipes moved to forward_axis='Y', up_axis='Z' (raw Blender coordinates; py3d applies Rule 12 once) with parameter names Blender 5.1.1 accepts. Measured 2026-10-02 in Blender 5.1.1 with wm.obj_export and a vertex at (1,2,3): Y/Z writes (1,2,3), NEGATIVE_Z/Y (the default) writes (1,3,-2), NEGATIVE_Y/Z writes (-1,-2,3); the four calls documented before raised TypeError; the corrected helper exported only the selected object, with raw coordinates. Every wm.obj_export call in the tree swept for its axes.",
+          "license": "MIT",
+          "source_hash": "61a679024fe0a45ef76ad61b9d7ed3f822bb7ba8a3bd6935f1f51cabd280de4b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/blender-workflow.md",
+          "source_revision": "kp-update-rig-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6cc08b85595ab921b502389292353c5f38013d870661a02b2849a51dce18d8f9",
+      "output_hash": "61a679024fe0a45ef76ad61b9d7ed3f822bb7ba8a3bd6935f1f51cabd280de4b",
       "output_path": "skills/dayz-model-pipeline/references/blender-workflow.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -7356,10 +7506,20 @@
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "py3d recipe paragraph (line 263, edited within the line): the binarized files are byte-identical and crew and wheel proxies follow by equivalence: the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path with identity crew and wheel frames is the one LFDucati was driven with in game (T90 frame fix, LL-505; T92 drives up to 137 km/h, LL-506); scoped after the gpt-6.1-sol review to the proxy frame (identity only for crew, LFDucati T93), not a drive through blender_to_dayz. Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "6862ab9882709adcf56cae1f1efbb90104caa3bdcc376e8710c35f4bfc10f2bf",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "kp-update-py3d-proxy-equivalence@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ea801c44faa30411fc6dd6c88fbe9f6e579fa130763828691f086dcf0886ad19",
+      "output_hash": "6862ab9882709adcf56cae1f1efbb90104caa3bdcc376e8710c35f4bfc10f2bf",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -14395,10 +14555,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-rule12@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 proxy equivalence: new claims CLAIM-B2D-PROXY-FRAME-EQUIV (dayz-model-pipeline SKILL.md line 224) and CLAIM-B2D-PROXY-FRAME-EQUIV-REF (references/py3d-direct-generation.md line 263), cross-checked: Byte-identical binarized parents prx_parent_b / prx_parent_e (sha256 dc2b45d1c151658bba525422b2f50b86eebc2cf3cf47081e48a986e89c429fa4) from the 2026-10-01 py3d 1.8.0 probe (DayZDiag 1.29.163709), re-checked 2026-10-02 against the PBO DayZ loaded; identity crew and wheel proxies through add_proxy(space=engine) driven on LFDucati after T90 (vault LL-505 frame fix, LL-506 drives, T92); a non-identity crew frame is not validated (LFDucati T93); registered after the gpt-6.1-sol review asked for it (CONTRIBUTING item 3).",
+          "license": "MIT",
+          "source_hash": "8e92d35542ae1a17f20b44674730d383dabd3adc550d4f42184d9122e9b8d322",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-py3d-proxy-equivalence@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "555cb4b4d26189c24bc1b6a8e272fc4b5e11ec6bf33f3f57e524b2cb1b138cca",
+      "output_hash": "8e92d35542ae1a17f20b44674730d383dabd3adc550d4f42184d9122e9b8d322",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -14914,20 +15084,10 @@
           "source_path": "tests/packctl/test_promotion.py",
           "source_revision": "g5-root-inclusive-residue@2026-09-11",
           "verification_level": "offline_tested"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02 promotion unblock. Schema 1 binds a promotion receipt to the checkout that applied it; the nine receipts in promotions/receipts were sealed from a temporary worktree that no longer exists, so promote --check failed with PROMOTION-RECEIPT-JOURNAL-MISMATCH on all nine and the pre-apply journal sweep with PROMOTION-RECOVERY-REQUIRED (diagnosis by Codex on 2026-10-01; re-read in packctl/promotion.py). packctl now reads such a receipt from any checkout whose HEAD tracks it at promotions/receipts/<transaction_id>.json with the same bytes, still matched against the sealed plan and the COMMIT receipt hash; the sweep uses the same rule when the sealed path is gone. A relocated receipt explains targets in a check only when every target its sealed plan wrote lies under the root this installation configures for the same logical target, so a repository sharing the backup root cannot borrow it; the sealed path must be gone, no link may sit on the way, and the file must equal the raw blob at HEAD. Cross-family review by Codex gpt-6.1-sol, round 1 on cf209a5: UNSOUND (P1: receipts copied into another repository's HEAD explained its targets; P2: check and sweep picked different copies; P2: filtered hashes; P3: tests that let mutants survive), all acted upon. Round 2 on 350f6c0: UNSOUND (P1: a configured root moved to its parent still contained the sealed paths, so a receipt explained a concrete path it never wrote; P2: an unreadable sealed path counted as gone; P3: no filter regression), fixed after the last round: a relocated receipt explains a (artifact, target) pair only when the concrete path it wrote is the one this check writes, the sealed path must be absent by os.lstat, and a real clean/smudge filter test pins the raw-byte comparison. Fourteen cases in tests/packctl/test_promotion.py; nine mutants, one per rule, each fail their case. Written by Claude (Anthropic).",
-          "license": "MIT",
-          "source_hash": "9162c3a34e67f6af0c8cbec0601b59f26c29e4f2e44482bed9babb625127f5c3",
-          "source_id": "pack-r21-authored",
-          "source_path": "tests/packctl/test_promotion.py",
-          "source_revision": "kp-update-promotion-receipts@2026-10-02",
-          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "9162c3a34e67f6af0c8cbec0601b59f26c29e4f2e44482bed9babb625127f5c3",
+      "output_hash": "4afd0bed1efd2d534e9dcfdb828d1edf856da8dffc0bf2da31d064c31c7e944b",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -23365,7 +23525,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "192e573830041c4aefee59bb9df57e894c01cbccf8eea086569c42e1240724ef",
+      "output_hash": "650bb11b3660a659561ff5d2d85dd916d1fea5bf6d1b5b921e05626b0e8d92f1",
       "output_path": "tools/py3d/KNOWN-ISSUES.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23486,10 +23646,20 @@
           "source_path": "tools/py3d/README.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Proxies bullet of the Blender -> DayZ section: crew and wheel proxies drawn as canonical raw triangles behave as engine-space ones, by equivalence: the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path with identity crew and wheel frames is the one LFDucati was driven with in game (T90 frame fix, LL-505; T92 drives up to 137 km/h, LL-506); scoped after the gpt-6.1-sol review to the proxy frame (identity only for crew, LFDucati T93), not a drive through blender_to_dayz. Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "8d1d1b5b7018217c99b30ca366b772c8fccba28260a03c7296a49dfae1fadee3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/README.md",
+          "source_revision": "kp-update-py3d-proxy-equivalence@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "190054af1b8b3e5089395f6bffa1031c769210b4cc5b44003e1714506d8b2a00",
+      "output_hash": "8d1d1b5b7018217c99b30ca366b772c8fccba28260a03c7296a49dfae1fadee3",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

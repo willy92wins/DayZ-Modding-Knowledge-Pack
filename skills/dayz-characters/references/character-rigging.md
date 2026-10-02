@@ -160,48 +160,52 @@ normals (`mesh.corner_normals[loop].vector`, transformed by `matrix_world.to_3x3
 `(N_verts × N_bones)` weight matrix from `v.groups`. Save `.npz`. Confirm `weight-sum == 1.0` and
 `0 zero-weight verts` before proceeding (Blender already did `limit_total(4)+normalize_all`).
 
-**Stage B — py3d builder.** Critical gotchas, each verified:
-- **Coordinate transform `(x, z, -y)`** for POSITIONS (det = +1). Derive it, don't guess: the imported
-  armature's `matrix_world` is the leftover FBX Y-up→Z-up conversion `R(+90° X)`; the correct Blender→DayZ
-  transform is `R⁻¹ = (x, z, -y)`, mapping the mesh into the *exact* space of `OFP2_ManSkeleton`'s bind
-  (the rig FBX **is** that skeleton, so `R⁻¹ @ rig_blender == OFP2_dayz_bind`). Verify: bbox Y-up
-  (feet≈0, head max Y) and X-width / Y-height / Z-depth proportions match a vanilla character.
-  **CAUTION — the bbox check does NOT verify FACING** [✓ in-game LFInfectedBig S7 2026-06-24]: `(x,z,−y)`
-  gives the right height & proportions but LFInfectedBig shipped **facing / walking BACKWARD** in-game — the
-  mesh (or this transform) was 180° about the vertical axis off from the rig. Fix for that case = **`(−x, z,
-  y)`** (`(x,z,−y)` composed with a 180° rotation about DayZ-up; still det +1, no winding change — apply to
-  every LOD's points + the bone/memory points consistently). Before shipping, confirm the mesh faces the SAME
-  way as the rig's `Male_body` in Blender; the in-game tell is "faces / walks backward". Do NOT assume
-  `(x,z,−y)` is universally right — whether the 180° is needed depends on how the mesh was oriented pre-export.
-- **WINDING — REVERSE IT (the recurring inside-out bug).** A Rodin/AI/GLB-sourced + Blender-retopo'd mesh
-  ships with glTF-CCW winding, which DayZ renders as BACK-facing → exterior is culled, textures show on the
-  INTERIOR (a Blender/Three.js preview is double-sided and NEVER shows this — only in-game or the gate below).
-  The `(x,z,-y)` transform is det +1 so it does NOT auto-fix this — you MUST `face.vertices.reverse()` on
-  EVERY visual face (and collision faces too: dayz-model-pipeline Rule 18 wants the collision cross INWARD).
-  Do NOT trust LL-020's "det+1 → no flip" for AI/GLB-sourced character meshes — it caused a shipped
-  inside-out build (LFInfectedBig S6). [✓ in-game-confirmed pipeline]
-- **GATE (run before every PBO — catches inside-out OFFLINE):**
-  `python references/check_dayz_winding.py <source_mlod.p3d>` (exit 1 = will render inside-out). Rule it
-  encodes, validated against the in-game-confirmed inside-out build: in the SOURCE MLOD a correct visual LOD
-  has `cross(v1-v0,v2-v0) · stored_normal < 0` (cross points INWARD; AddonBuilder reverses winding at
-  binarize so this becomes outward/front-facing in the ODOL the engine renders). `cross·normal > 0` ⇒
-  inside-out. The detector gates on this crisp sign (the "normals outward" extreme-vertex check is too noisy
-  on a humanoid to gate — informational only). Do NOT compare to a *debinarized* vanilla model for winding:
-  the ODOL→MLOD converter's winding handling inverts the comparison and will mislead you.
-- **FLAG (2026-10-01, py3d 1.8.0) — not re-run on a character; read before changing this pipeline.** An
-  in-game test made since disagrees with two items above. (1) `(x, z, -y)` is det = +1, and a det = +1 map
-  from Blender to DayZ ships a MIRRORED model: one chiral test model rendered mirrored through it and read
-  correctly through the det = -1 swap `(x, z, y)` (dayz-model-pipeline SKILL.md Rule 12). py3d 1.8.0 adds
-  `blender_to_dayz()` for that swap and deprecates `py3d.BLENDER_TO_DAYZ`, which is this same `(x, z, -y)`.
-  The 180° fix `(−x, z, y)` above plus SKILL.md's "un-reflect" (negate X) compose to exactly `(x, z, y)`.
-  (2) The GATE disagrees with that test on the stored-normal sign. Run on the MLOD that rendered solid and
-  read correctly in game (`blender_to_dayz()` output: cross INWARD, normals INWARD), `check_dayz_winding.py`
-  prints `cross.normal_positive=1.00 normals_outward=0.00`, "WINDING will render INSIDE-OUT", and exits 1;
-  its fix, reversing every face, would turn the cross product outward, as in the variant that rendered
-  inside-out. The test did not include inward winding with OUTWARD normals, so it does not show that this
-  pipeline's builds are wrong — only that the gate's `cross·normal > 0 ⇒ inside-out` is false as stated. Do
-  not run this gate on `blender_to_dayz()` output, or switch this pipeline to it, without an in-game A/B on a
-  character.
+**Stage B — py3d builder.** Critical gotchas, each verified unless labelled otherwise:
+- **Coordinate transform `(x, y, z) → (x, z, y)`, det = −1 (dayz-model-pipeline Rule 12)**, applied to
+  every point and normal of every LOD and to the bone/memory points. *Corrected 2026-10-01:* this bullet
+  used to prescribe `(x, z, −y)` (det = +1) as "`R⁻¹`, the exact space of the bind". That derivation dropped
+  a handedness change. What the frames measure:
+  - The rig in Blender is a non-mirrored body: front −Y, anatomical left +X, Z up. [OFFLINE MEASURED
+    2026-10-01, Blender 5.1.1, both FBX importers] `LeftArm` head x = +0.16; `LeftToeBase` head 0.135 m in −Y
+    from `LeftFoot`; `Male_body` vertices weighted to `LeftArm` at x = +0.22, toe vertices at y = −0.10.
+  - The armature's `matrix_world` is indeed `R(+90° X)` (same run), and `R⁻¹ = (x, z, −y)` returns to the
+    FBX file's own frame: Y up, front +Z, left +X. That frame is RIGHT-handed. Read as DayZ numbers
+    (left-handed), it is a mirrored body that faces backwards.
+  - The DayZ bind is a non-mirrored body in a left-handed frame: front −Z, left +X (vanilla male `left*` on
+    +X, SKILL.md "mesh can be left/right MIRRORED"; worn frame −Z front / +X left, in-game verified,
+    SKILL.md "WORN CLOTHING binds via ... DayzTemporarySkeleton").
+  - So the FBX frame differs from DayZ by `z → −z`, and Blender → DayZ is `(x, z, −y)` followed by `z → −z`:
+    `(x, z, y)`. It sends front −Y to −Z and keeps left on +X. Every det = +1 map lands the body mirrored:
+    left and right swapped relative to where it faces.
+  - The project history matches this [✓ in-game]: `(x, z, −y)` shipped LFInfectedBig facing and walking
+    BACKWARD (S7); `(−x, z, y)` turned it round but left it mirrored, and the limbs flung back/up until the
+    L/R selections were swapped (S9). The shipped build (`(−x, z, y)` + reversed faces + L/R swap) is the
+    mirror image of the authored mesh.
+  - Not yet run in game on a skinned character [DESIGN]: confirm with the chiral check at the end of this
+    section before relying on it for a release.
+- **Winding and normals follow Rule 12; do not reverse the faces.** Under `(x, z, y)` the Blender face order
+  lands in the MLOD convention by itself (cross product inward, collision LODs included, as Rule 18 wants);
+  the shading normals are negated (MLOD stores them inward). The old "reverse every visual face" was right
+  only under the det = +1 map, where it hid the mirror (LFInfectedBig S6: that map without the reversal
+  rendered inside-out). With py3d ≥ 1.8.0, build the model from the Blender-space dump and call
+  `py3d.blender_to_dayz(model)` once, before adding anything built in DayZ space: it maps every LOD,
+  memory points included, keeps the face order and negates the normals. By hand: `P3D.transform(((1, 0, 0),
+  (0, 0, 1), (0, 1, 0)))` maps points and normals and reverses every face because det < 0; reverse them
+  back and negate the normal pool. `py3d.BLENDER_TO_DAYZ` is the old `(x, z, −y)`, deprecated in 1.8.0 and
+  kept as `py3d.ROT_X_NEG90`: not for this export.
+- **GATE — `check_dayz_winding.py` predates Rule 12 and fails a correct export.** It expects outward stored
+  normals and `cross · normal < 0`, the state of the LFInfectedBig det = +1 build. [OFFLINE MEASURED
+  2026-10-01] On the three MLODs of the Rule 12 in-game probe it exits 1 on all three. That includes the one
+  that renders solid and reads correctly in game (`cross.normal_positive=1.00`, `normals_outward=0.00`).
+  Its fix hints ("reverse every face", "orient normals outward") would turn that model inside-out. The
+  probe had no variant with inward winding and OUTWARD normals (the state this gate passes), so it refutes
+  the gate's `cross · normal > 0 ⇒ inside-out`, not the normal sign of the builds the gate passed. Until the
+  script is updated, gate the export with dayz-p3d-audit "Absolute winding check": normal agreement ≈ 100 %
+  and a negative signed volume by winding, the production sign. On the probe that check passes both solid
+  variants and fails the inside-out one; like every winding gate, it cannot see a mirror. A double-sided
+  Blender/Three.js preview never shows DayZ's single-sided culling, so a gate is still needed. Do NOT
+  compare to a *debinarized* vanilla model for winding: the ODOL→MLOD converter's winding handling inverts
+  the comparison.
 - **Selection names LOWERCASE.** Vanilla `.p3d` selections are lowercase (`leftarm`, `pelvis`, `spine3`);
   Blender vgroups are MixedCase → `.lower()` them. (DayZ matching is case-insensitive, but match vanilla.)
 - **Identity binding (py3d F1-05).** Alias `points = lod.points` BEFORE creating any `Face(lod.points, …)`
@@ -223,13 +227,28 @@ normals (`mesh.corner_normals[loop].vector`, transformed by `matrix_world.to_3x3
 an external ODOL→MLOD converter; selection *names* recover even though visual-LOD bone *membership* does not) and
 asserting: round-trip read OK; all bone selection names ⊆ the vanilla bone-name set; 0 orphan selections;
 0 points with no bone weight (zero-weight → spiky/exploded in-game); ≤4 influences/vertex; bbox Y-up with
-vanilla-like proportions; winding ~0% flipped; fractional weights present and round-tripping; left/right
-bone centroids on opposite X (no mirror). The `model.cfg` references `skeletonName = "OFP2_ManSkeleton"`.
+vanilla-like proportions; winding ~0% flipped; fractional weights present and round-tripping; `left*`
+centroids on +X and the front on −Z (toe and face vertices in −Z from the foot and neck). "Left and right on
+opposite X" alone also passes a mirrored export. Facing plus side rule out a det = +1 map only while the L/R
+selections were never swapped by hand. The `model.cfg` references `skeletonName = "OFP2_ManSkeleton"`.
 The `.p3d` selections present MUST be a subset of `skeletonBones[]` or the mesh explodes; a misnamed bone
 logs `Bone X doesn't exist in skeleton OFP2_ManSkeleton`.
 
 Reference scripts (LFInfectedBig): `3dmodel\LFInfectedBig\_export\{bl_export_rig,build_p3d,verify_p3d}.py`
 + `debin_vanilla.py` (the vanilla ground-truth extractor).
+
+**Chiral in-game check for this route [DESIGN, not yet run].** Winding gates, the bbox and the facing test
+cannot see a mirror once the L/R selections have been swapped, which is how LFInfectedBig shipped.
+1. Re-export LFInfectedBig with `(x, z, y)`, faces in Blender order, negated normals and no L/R swap. Add
+   one marker: an "F" in relief on the chest, weighted 100 % to `spine3`. Build the shipped recipe once
+   more with the same marker as the negative control.
+2. Spawn both and a vanilla `ZombieMaleBase` with the same yaw; put the camera in front of them.
+3. Pass on the new build: it faces the camera like the vanilla one; no limb flings back/up over 30 s of idle
+   and one attack; the "F" reads correctly; the off-centre chest hole sits on the anatomical side it has in
+   the rig frame in Blender (the character's left is screen-right when it faces you). Expected on the
+   control: "F" mirrored, hole on the other side.
+4. Lighting: the lit side of the body is bright. The normal sign comes from Rule 12, measured on static
+   models only.
 
 ## Failure → cause quick map
 
@@ -241,6 +260,8 @@ Reference scripts (LFInfectedBig): `3dmodel\LFInfectedBig\_export\{bl_export_rig
 | Mesh explodes | selection not in `skeletonBones[]`, or wrong skeleton name in `model.cfg` |
 | `Bone X doesn't exist` (RPT) | bone-name casing/underscore mismatch |
 | Limbs drift during anims | mesh not in canonical bind, or baked-scale drift (accepted for 1.2×) |
+| Faces / walks backward, proportions fine | det = +1 export `(x, z, −y)` sends the rig front (−Y) to +Z → re-export with `(x, z, y)` (Rule 12), not `(−x, z, y)` |
+| Limbs fling back/up at idle, sane rest pose; an off-centre detail on the wrong side | mirrored export (any det = +1 map, e.g. `(−x, z, y)`) → re-export with `(x, z, y)`; an L/R selection swap only relabels the mirror |
 
 ## DayZ 1.30 Exp — bone indices and infected graphs
 

@@ -266,7 +266,7 @@ Practical rule: when the user's plan is a custom WEAPON animation, do NOT warn a
 Viewer-pipeline scripts shipped in `scripts/` but not referenced elsewhere in this file:
 
 - `scripts/fbx_extract.py` — Blender headless: dumps the BI rig FBX (`animation_rig_character.fbx`) to JSON — per-bone rest world matrices (Blender Z-up), parents, lengths, plus empties. First step of the viewer rig build.
-- `scripts/build_rig_dayz.py` — converts the raw rig JSON to `rig_dayz.json` in DayZ Y-up space: uniform scale + translate alignment against the mesh, frame `Rf=[[1,0,0],[0,0,1],[0,-1,0]]`.
+- `scripts/build_rig_dayz.py` — converts the raw rig JSON to `rig_dayz.json` in the viewer's Y-up frame: uniform scale + translate alignment against the mesh, frame `Rf=[[1,0,0],[0,0,1],[0,-1,0]]` (det +1). That frame is right-handed like Blender and Three.js, not DayZ's left-handed model space despite the file name; its coordinates written into a p3d as they are land mirrored.
 - `scripts/extract_weapon.py` — py3d: extracts a weapon `.p3d` LOD0 visual geometry (proxy faces excluded) + memory points to `weapon.json` for the viewer.
 - `scripts/build_viewer.py` — generates the self-contained weapon-anim authoring viewer HTML (rig + weapon mesh, Three.js r128 UMD, SkinnedMesh + analytic 2-bone IK + FK controls + keyframe timeline + JSON export). See `references/weapon-anim-authoring-viewer.md`.
 - `scripts/seanim_export.py` — converts a viewer anim JSON (per-frame per-bone LOCAL quaternions) to SEAnim via `seanim_writer`; `--rest-pose` rebases against a DayZATool-extracted vanilla SEAnim. NOT valid for full-body action anims — those go Route A (JD plugin → `.txa` → Workbench Register&Import → `.anm`); hand-rolled SEAnim export is for weapon-bone/partial tracks only.

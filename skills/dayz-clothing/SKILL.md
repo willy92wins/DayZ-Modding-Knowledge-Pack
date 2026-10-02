@@ -24,7 +24,9 @@ of them wastes cycles if you chase the others first.
    A mesh built facing +Z renders as EXPLODED rigid pieces floating ~1 m above
    the player (each 0/1-weighted plate is transformed by its bone from a
    flipped frame). Fix: rotate 180° about +Y (det=+1 — do NOT touch winding)
-   AND swap left*/right* selection pairs in every LOD.
+   AND swap left*/right* selection pairs in every LOD. That fix keeps a mirror
+   (CANONICAL WORN FRAME → handedness); with the Blender source, re-export it
+   with `(x, z, y)` (Rule 12) instead.
 3. **The clothing skeleton must be named `DayzTemporarySkeleton`.** ALL vanilla
    worn clothing compiles with that name (verified via ODOL
    `model_info.skeleton.name` on armbend_dynamic_m + chainmail_m): same 159
@@ -46,6 +48,34 @@ of them wastes cycles if you chase the others first.
   `left*` selection centroids on +X.
 - Torso clothing spans Y ≈ 0.61..1.66 m. Reference garment for overlay checks:
   `dz\characters\tops\chainmail_m.p3d` (body armor, full-body bone set).
+- **Handedness (added 2026-10-01).** This frame holds a non-mirrored body in
+  DayZ's left-handed space. A Blender garment (right-handed; front −Y and left
+  +X, like the official rig) lands on it with `(x, y, z) → (x, z, y)`: det −1,
+  faces in Blender order, normals negated (dayz-model-pipeline Rule 12). A
+  det +1 map mirrors it: `(x, z, −y)` faces +Z (killer #2), and `(−x, z, y)`
+  faces −Z with `left*` on −X. A mesh that needs "rotate 180° + swap L/R" was
+  exported with such a map. ArmorHneck's received p3d was the `(x, z, −y)` of
+  the artist's Blender file (`ArmorHneck_dev\CLAUDE.md`, 2026-08-04). Rotation
+  + swap fixes the binding but keeps the mirror: text, logos, buckles and
+  one-sided straps read reversed. The properly handed fix is a re-export of
+  the Blender source with Rule 12, with no swap. With only the p3d, reflect it
+  on the axis its state calls for: a p3d as received from `(x, z, −y)` (facing
+  +Z, never rotated or swapped) takes `z → −z`; one that already had "rotate
+  180° + swap L/R", i.e. `(−x, z, y)` like the shipped ArmorHneck, takes
+  `x → −x` AND the L/R swap undone (`z → −z` on it would face +Z again).
+  Either reflection moves every point (memory points included), reverses
+  every face and reflects the normals the same way; `P3D.transform()` with
+  that diagonal matrix (det −1) does all three.
+- **Chiral in-game check [DESIGN, not yet run].** The anatomical test above
+  rules out a det +1 export only while the L/R selections were never swapped by
+  hand; a swapped build needs an asymmetric feature. Put an "F" in relief on the
+  left chest of a test garment (weighted 100 % to `spine3`). Export it once with
+  Rule 12 and once with the old `(x, z, −y)` + rotate + swap as the control,
+  wear each with an item in hands and set the camera in front. Pass: the "F"
+  reads correctly and sits on the side opposite the item hand (items sit on
+  `RightHand_Dummy`). Expected on the control: the "F" mirrored, on the item
+  side. On ArmorHneck itself, compare one asymmetric detail against the
+  artist's Blender file.
 
 ## THE CLOTHING CONTRACT (structure of a working wearable)
 
@@ -134,14 +164,23 @@ FBX with geometry, UVs (V flipped for Blender), the diffuse as PNG
 (ImageToPAA paa→png), and the bone weights carried by a 10-bone WEIGHT-CARRIER
 armature (FBX drops loose vertex groups — verified: without an armature
 deformer the groups vanish on reimport; with it, round-trip keeps all 10
-groups at exact weight sums). Axis map DayZ→Blender: `(x, −z, y)` (det=+1;
-character stands on Z-up facing +Y, a mirror image in Blender's right-handed
-frame; return trip = its exact inverse `(x, z, −y)`, i.e.
-`transform(((1, 0, 0), (0, 0, 1), (0, -1, 0)))` — the matrix py3d 1.8.0 names
-`py3d.ROT_X_NEG90`; the old name `py3d.BLENDER_TO_DAYZ` still works but is
-deprecated and warns). Do NOT use `py3d.blender_to_dayz()` for this return trip:
-it is for geometry authored in Blender's own frame, while here the two det=+1
-maps have to cancel out. ALWAYS verify by reimporting the FBX in a clean
+groups at exact weight sums). Axis map DayZ→Blender: `(x, z, y)`, det −1 and
+its own inverse, so the return trip is the same map with faces in the order
+they come back and normals negated (dayz-model-pipeline Rule 12); with py3d
+≥ 1.8.0 that is `py3d.blender_to_dayz()` on the model rebuilt from the FBX in
+Blender coordinates. The artist sees the garment like the official rig: Z up,
+front −Y, left +X, faces outward. [OFFLINE MEASURED 2026-10-01, ArmorHneck
+`_m`, Blender 5.1.1 + py3d 1.7.0] FBX round trip back to DayZ exact to 2.7e-7 m
+with the same face order; `leftarm` centroid x = +0.34, pelvis/spine centroid
+y = −0.045; signed volume +0.026 in Blender, i.e. faces outward. Until
+2026-10-01 the script used `(x, −z, y)` (det +1) with `py3d.BLENDER_TO_DAYZ`
+for the return. The artist then saw a mirror image (front +Y, left +X) with
+inward faces (signed volume −0.026), and only that exact inverse brought it
+back. A package made by the old script returns through `(x, z, −y)`, i.e.
+`transform(py3d.ROT_X_NEG90)` (the name py3d 1.8.0 gives that matrix; the
+old `py3d.BLENDER_TO_DAYZ` still works but is deprecated and warns), never
+through Rule 12 or `py3d.blender_to_dayz()`, which would land it facing +Z,
+mirrored and inside-out. ALWAYS verify by reimporting the FBX in a clean
 scene (counts + vgroups + weight sums) before shipping.
 Package: FBX m/f + PNG + the MLOD p3ds + model.cfg + README from
 `references/LEEME-ARTISTA.template.md` (states the three do-not-undo fixes,
