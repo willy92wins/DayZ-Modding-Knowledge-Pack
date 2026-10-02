@@ -752,8 +752,12 @@ def outward_faces(lod, faces=None):
 
 
 def named_visual(msg):
-    """The index of the Visual LOD the message names."""
-    return int(re.search(r"Visual LOD (\d+) \(resolution ", msg).group(1))
+    """The index of the Visual LOD the message names, the same where it
+    names the LOD and where it gives that LOD's steps."""
+    opening = re.search(r"Visual LOD (\d+) \(resolution ", msg).group(1)
+    steps = re.search(r"Visual LOD (\d+): in each closed shell", msg).group(1)
+    assert opening == steps, (opening, steps)
+    return int(opening)
 
 
 def settle_winding(fork, p3d, visual):
