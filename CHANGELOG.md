@@ -22,9 +22,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   converted with it register raycasts in `geom`, `view` and `fire` (the uncorrected det=+1 map:
   none), and static proxies drawn in Blender as py3d canonical triangles come out with the ODOL
   frames of `add_proxy(space="engine")` and render in the pose drawn. The binarized files with
-  Blender-drawn and with engine-space proxies are byte-identical, so crew and wheel proxies drawn
-  that way behave as the engine-space ones a py3d-built motorbike was driven with: by equivalence,
-  since no vehicle was driven through `blender_to_dayz`.
+  Blender-drawn and with engine-space proxies are byte-identical, so a crew or wheel proxy drawn
+  that way with the identity frame gets the frame of the engine-space path a py3d-built motorbike
+  was driven with: an equivalence of the proxy frame, not a drive through `blender_to_dayz`.
   Wheel `py3d_dayz-1.8.0-py3-none-any.whl`, SHA-256
   `e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304`; no installed skill tree
   vendors the wheel any more, and the site-packages install follows the merge. `dayz-clothing` now spells out the matrix of its det=+1

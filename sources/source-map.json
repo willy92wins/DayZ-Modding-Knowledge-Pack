@@ -334,9 +334,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Unreleased Fixed entry for py3d 1.8.0 extended: crew and wheel proxies by equivalence (the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path is the one LFDucati was driven with in game after T90 (LL-505; rider seated, wheels turning, up to 137 km/h in T92); no vehicle was driven through blender_to_dayz itself). Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
+          "decision_evidence": "Unreleased Fixed entry for py3d 1.8.0 extended: crew and wheel proxies by equivalence (the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path with identity crew and wheel frames is the one LFDucati was driven with in game (T90 frame fix, LL-505; T92 drives up to 137 km/h, LL-506); scoped after the gpt-6.1-sol review to the proxy frame (identity only for crew, LFDucati T93), not a drive through blender_to_dayz). Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
           "license": "MIT",
-          "source_hash": "193346f0fd0c1a70e65b39c2f7a58a5ad75fc2e398f8dedeaa86e6bfcf04afbc",
+          "source_hash": "77edf52b0eb8cb04854450d114c852173e648a1729249f5b6ad42339178c89e3",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-proxy-equivalence@2026-10-02",
@@ -344,7 +344,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "193346f0fd0c1a70e65b39c2f7a58a5ad75fc2e398f8dedeaa86e6bfcf04afbc",
+      "output_hash": "77edf52b0eb8cb04854450d114c852173e648a1729249f5b6ad42339178c89e3",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7007,9 +7007,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Rule 12 (line 224, edited within the line so no claim range moved): crew and wheel proxies drawn as py3d canonical raw triangles follow by equivalence: the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path is the one LFDucati was driven with in game after T90 (LL-505; rider seated, wheels turning, up to 137 km/h in T92); no vehicle was driven through blender_to_dayz itself. Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
+          "decision_evidence": "Rule 12 (line 224, edited within the line so no claim range moved): crew and wheel proxies drawn as py3d canonical raw triangles follow by equivalence: the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path with identity crew and wheel frames is the one LFDucati was driven with in game (T90 frame fix, LL-505; T92 drives up to 137 km/h, LL-506); scoped after the gpt-6.1-sol review to the proxy frame (identity only for crew, LFDucati T93), not a drive through blender_to_dayz. Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
           "license": "MIT",
-          "source_hash": "e8b8f8ae8029fb8d61b993edb679533233ef9828cb0c703c2751180f81464e11",
+          "source_hash": "ea0aeccf3311be0f8ce97bf70324a606091dcc43bab516230fea5a1f72ae787d",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-py3d-proxy-equivalence@2026-10-02",
@@ -7017,7 +7017,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e8b8f8ae8029fb8d61b993edb679533233ef9828cb0c703c2751180f81464e11",
+      "output_hash": "ea0aeccf3311be0f8ce97bf70324a606091dcc43bab516230fea5a1f72ae787d",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -7359,9 +7359,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "py3d recipe paragraph (line 263, edited within the line): the binarized files are byte-identical and crew and wheel proxies follow by equivalence: the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path is the one LFDucati was driven with in game after T90 (LL-505; rider seated, wheels turning, up to 137 km/h in T92); no vehicle was driven through blender_to_dayz itself. Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
+          "decision_evidence": "py3d recipe paragraph (line 263, edited within the line): the binarized files are byte-identical and crew and wheel proxies follow by equivalence: the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path with identity crew and wheel frames is the one LFDucati was driven with in game (T90 frame fix, LL-505; T92 drives up to 137 km/h, LL-506); scoped after the gpt-6.1-sol review to the proxy frame (identity only for crew, LFDucati T93), not a drive through blender_to_dayz. Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
           "license": "MIT",
-          "source_hash": "9948c810c95c8a649aa910e92c48d6648a5d54013dff5ee3a4893d40320fb730",
+          "source_hash": "6862ab9882709adcf56cae1f1efbb90104caa3bdcc376e8710c35f4bfc10f2bf",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-py3d-proxy-equivalence@2026-10-02",
@@ -7369,7 +7369,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9948c810c95c8a649aa910e92c48d6648a5d54013dff5ee3a4893d40320fb730",
+      "output_hash": "6862ab9882709adcf56cae1f1efbb90104caa3bdcc376e8710c35f4bfc10f2bf",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -14405,10 +14405,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-rule12@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 proxy equivalence: new claims CLAIM-B2D-PROXY-FRAME-EQUIV (dayz-model-pipeline SKILL.md line 224) and CLAIM-B2D-PROXY-FRAME-EQUIV-REF (references/py3d-direct-generation.md line 263), cross-checked: Byte-identical binarized parents prx_parent_b / prx_parent_e (sha256 dc2b45d1c151658bba525422b2f50b86eebc2cf3cf47081e48a986e89c429fa4) from the 2026-10-01 py3d 1.8.0 probe (DayZDiag 1.29.163709), re-checked 2026-10-02 against the PBO DayZ loaded; identity crew and wheel proxies through add_proxy(space=engine) driven on LFDucati after T90 (vault LL-505 frame fix, LL-506 drives, T92); a non-identity crew frame is not validated (LFDucati T93); registered after the gpt-6.1-sol review asked for it (CONTRIBUTING item 3).",
+          "license": "MIT",
+          "source_hash": "8e92d35542ae1a17f20b44674730d383dabd3adc550d4f42184d9122e9b8d322",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-py3d-proxy-equivalence@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "555cb4b4d26189c24bc1b6a8e272fc4b5e11ec6bf33f3f57e524b2cb1b138cca",
+      "output_hash": "8e92d35542ae1a17f20b44674730d383dabd3adc550d4f42184d9122e9b8d322",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -23365,7 +23375,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "be6a6b6acd79c06af3eeee268cc9671d430e58c497a735b327cbeed5429f528b",
+      "output_hash": "650bb11b3660a659561ff5d2d85dd916d1fea5bf6d1b5b921e05626b0e8d92f1",
       "output_path": "tools/py3d/KNOWN-ISSUES.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23489,9 +23499,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Proxies bullet of the Blender -> DayZ section: crew and wheel proxies drawn as canonical raw triangles behave as engine-space ones, by equivalence: the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path is the one LFDucati was driven with in game after T90 (LL-505; rider seated, wheels turning, up to 137 km/h in T92); no vehicle was driven through blender_to_dayz itself. Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
+          "decision_evidence": "Proxies bullet of the Blender -> DayZ section: crew and wheel proxies drawn as canonical raw triangles behave as engine-space ones, by equivalence: the binarized parents of the 2026-10-01 probe with Blender-drawn proxies converted by blender_to_dayz and with add_proxy(space=engine) are byte-identical (re-checked 2026-10-02 against the PBO DayZ loaded), and the engine-space path with identity crew and wheel frames is the one LFDucati was driven with in game (T90 frame fix, LL-505; T92 drives up to 137 km/h, LL-506); scoped after the gpt-6.1-sol review to the proxy frame (identity only for crew, LFDucati T93), not a drive through blender_to_dayz. Authored by Claude (Anthropic) on the owner's request (2026-10-02: close the driven-vehicle proxy item by equivalence rather than a new drive); PR reviewed cross-family before merge.",
           "license": "MIT",
-          "source_hash": "db487aff683ac734b30ce58437fe8cbfe7d1d733e59b86890dd65b3051c8b6d4",
+          "source_hash": "8d1d1b5b7018217c99b30ca366b772c8fccba28260a03c7296a49dfae1fadee3",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/README.md",
           "source_revision": "kp-update-py3d-proxy-equivalence@2026-10-02",
@@ -23499,7 +23509,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "db487aff683ac734b30ce58437fe8cbfe7d1d733e59b86890dd65b3051c8b6d4",
+      "output_hash": "8d1d1b5b7018217c99b30ca366b772c8fccba28260a03c7296a49dfae1fadee3",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

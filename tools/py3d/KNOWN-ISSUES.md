@@ -171,17 +171,24 @@ reader independent of this library, covered what the first left out:
   (the identity and the yawed proxy). The two binarized parents, Blender-drawn
   proxies converted and `add_proxy(space="engine")`, are byte-identical files.
 
-Crew and wheel proxies of a driven vehicle follow by equivalence, not by a
-drive of their own: vanilla gives them the identity frame, one of the three
-poses above, so drawn this way they come out of binarize as
-`add_proxy(space="engine")` writes them, and that engine-space path is the
-one a py3d-built motorbike was driven with in game (2026-09-22/23: rider
-seated, wheels turning, up to 137 km/h). No vehicle was driven through
-`blender_to_dayz` itself.
+Crew and wheel proxies of a driven vehicle: an equivalence of the proxy
+frame, not a drive. Drawn as a canonical raw triangle with the identity frame
+(the one vanilla `Motorbike_02` gives its crew and wheels, and one of the
+three poses above), such a proxy comes out of binarize as
+`add_proxy(space="engine")` writes it, and that engine-space path is the one
+a py3d-built motorbike was driven with in game (2026-09-23: all three
+variants started and drove, one up to 137 km/h). That covers the proxy frame
+only: the vehicle's selections, bones, model.cfg bindings and LODs still have
+to match a working model. And a frame is not a pose: on the same motorbike a
+crew proxy tilted on purpose came out of binarize with exactly the frame asked
+for, and in game the rider turned to the left instead of leaning forward, so
+for crew only the identity frame is known to work. No vehicle was driven
+through `blender_to_dayz` itself.
 
 Not covered, and not claimed: proxies drawn with another convention or as
-ambiguous (isosceles) triangles, player collision (only raycasts), and any
-model built partly in DayZ space before the conversion.
+ambiguous (isosceles) triangles, crew proxies with a frame other than the
+identity, proxies as a dedicated server reads them, player collision (only
+raycasts), and any model built partly in DayZ space before the conversion.
 
 ---
 
