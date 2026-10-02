@@ -24,8 +24,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   server kept the teleport height over 3-4 s, and above open ground the client still held it 15 s
   later. A short `player_move(angle_deg=0, speed="walk", hold_s=0.5)` before `query_player_state`
   applies it: above open ground the player dropped to the ground, and on two outward-wound boxes
-  and an inward-wound one it stayed at the top's height. The move is kept short so the player does
-  not walk off the top.
+  and an inward-wound one it stayed at the top's height (godmode on, the DayZ_MCP default). A
+  reading counts only from the centre of an isolated top and with the endpoint still inside the
+  top's footprint; anything else is inconclusive, and the move is kept short so the player does not
+  walk off the top.
 
 ### Changed
 
