@@ -631,10 +631,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-doors-expert-lever@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: py3d 1.10.0 _check_component_coverage. Up to 1.9.0 every Geometry, View or Fire face that no ComponentNN selection holds raised WARN_COMPONENT_COVERAGE, whose message said that faces outside every component beside covered ones were not measured, but to expect them to take no part in collision. The in-game A/B of #65 (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3; CLAIM-P3D-UNCOVERED-FACES-INGAME) measured that case on whole closed parts: beside box A in Component01, box B in no component took 0 of 46 rays (geom, view, fire, RayCastBullet) and the player walked through it, while as Component02 it took 26 of 26 and stopped the player; the Expert tutorial's closed lever, in no component in Geometry and Fire, took no Geometry, Fire or physics ray; a part left out only in part was not measured (#65 review round 1, F2). Owner's choices (AskUserQuestion, 2026-10-02): an ERROR only where measured; version 1.10.0, because the 1.9.0 wheel pinned by #60 carries the 1.9.0 check; the change built on #65 and opened after it merged. Implementation: the LOD's faces, proxy triangles aside, are grouped into pieces that share a corner position; a piece that is a closed solid (every edge used by two of its faces, once each way, around a volume that is not zero for its size) with no face and no point in any component raises ERR_COMPONENT_COVERAGE (ERROR), its message saying what was measured for the LOD's kind; every other face in no component (a part left out only in part, an open piece, a flat double-sided sheet) and the points-only case stay WARN_COMPONENT_COVERAGE, whose message now says not measured and no longer counts the ERROR's faces. Consumers read before the choice: dayz-model-preflight runner.py turns an ERROR into PREFLIGHT_PY3D_ERROR and a FAIL verdict, dayz-vehicle-proxy-contract audit.py refuses an MLOD with any ERROR other than a deferred ERR_AXIS_SELECTION_MISSING, python -m py3d validate exits 1, and validate() skips its in-memory round trip. Offline: py3d suite 362 passed, 11 skipped (base 334 passed, 11 skipped; the 7 CANON tests were not run, no upstream clone); test_s2_validate12.py against the base module fails 18 of the new tests; of 13 mutants of the check, 12 were killed on the first run and the 13th (no guard for faces with fewer than three corners) got a test of its own after it; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact on 414 unique MLODs (the owner's projects on the P: drive and the dayz-doors samples) through P3D._scan_v12_findings with the 1.9.0 and 1.10.0 modules: Expert_Mode's Geometry and Fire LODs move from the WARN to the ERROR (the lever, one closed 18-face piece in no component), a vehicle Fire LOD keeps the WARN, with the new message, for two stray 1 mm triangles, and no other finding changed in any model; with the full validate(), making every coverage finding an ERROR would flip one verdict (Expert_Mode, PASS to FAIL) while 160 of the 414 already fail on other ERRORs. Cross-family review: pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f570d204ee1de56c38d9233adcba2ced21eefc4bc85c59af3fca9a22656da7a2",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-py3d-coverage-ingame@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7402e96b90096bc8fbb466f5bed863e06f41e11118cc73a0d61a261ab98f97ae",
+      "output_hash": "f570d204ee1de56c38d9233adcba2ced21eefc4bc85c59af3fca9a22656da7a2",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6936,10 +6946,20 @@
           "source_path": "skills/dayz-doors/references/lods-and-object-builder.md",
           "source_revision": "kp-update-doors-expert-lever@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: py3d 1.10.0 _check_component_coverage. Up to 1.9.0 every Geometry, View or Fire face that no ComponentNN selection holds raised WARN_COMPONENT_COVERAGE, whose message said that faces outside every component beside covered ones were not measured, but to expect them to take no part in collision. The in-game A/B of #65 (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3; CLAIM-P3D-UNCOVERED-FACES-INGAME) measured that case on whole closed parts: beside box A in Component01, box B in no component took 0 of 46 rays (geom, view, fire, RayCastBullet) and the player walked through it, while as Component02 it took 26 of 26 and stopped the player; the Expert tutorial's closed lever, in no component in Geometry and Fire, took no Geometry, Fire or physics ray; a part left out only in part was not measured (#65 review round 1, F2). Owner's choices (AskUserQuestion, 2026-10-02): an ERROR only where measured; version 1.10.0, because the 1.9.0 wheel pinned by #60 carries the 1.9.0 check; the change built on #65 and opened after it merged. Implementation: the LOD's faces, proxy triangles aside, are grouped into pieces that share a corner position; a piece that is a closed solid (every edge used by two of its faces, once each way, around a volume that is not zero for its size) with no face and no point in any component raises ERR_COMPONENT_COVERAGE (ERROR), its message saying what was measured for the LOD's kind; every other face in no component (a part left out only in part, an open piece, a flat double-sided sheet) and the points-only case stay WARN_COMPONENT_COVERAGE, whose message now says not measured and no longer counts the ERROR's faces. Consumers read before the choice: dayz-model-preflight runner.py turns an ERROR into PREFLIGHT_PY3D_ERROR and a FAIL verdict, dayz-vehicle-proxy-contract audit.py refuses an MLOD with any ERROR other than a deferred ERR_AXIS_SELECTION_MISSING, python -m py3d validate exits 1, and validate() skips its in-memory round trip. Offline: py3d suite 362 passed, 11 skipped (base 334 passed, 11 skipped; the 7 CANON tests were not run, no upstream clone); test_s2_validate12.py against the base module fails 18 of the new tests; of 13 mutants of the check, 12 were killed on the first run and the 13th (no guard for faces with fewer than three corners) got a test of its own after it; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact on 414 unique MLODs (the owner's projects on the P: drive and the dayz-doors samples) through P3D._scan_v12_findings with the 1.9.0 and 1.10.0 modules: Expert_Mode's Geometry and Fire LODs move from the WARN to the ERROR (the lever, one closed 18-face piece in no component), a vehicle Fire LOD keeps the WARN, with the new message, for two stray 1 mm triangles, and no other finding changed in any model; with the full validate(), making every coverage finding an ERROR would flip one verdict (Expert_Mode, PASS to FAIL) while 160 of the 414 already fail on other ERRORs. Cross-family review: pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0903c1cca5eb7ca076c3467408c99a06bfc4d5daf82d48d6f71f5b820999b510",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/references/lods-and-object-builder.md",
+          "source_revision": "kp-update-py3d-coverage-ingame@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f8b0d898510656937fc71ddc41348ebaabb1c4d10650fdea934e3b38e4665143",
+      "output_hash": "0903c1cca5eb7ca076c3467408c99a06bfc4d5daf82d48d6f71f5b820999b510",
       "output_path": "skills/dayz-doors/references/lods-and-object-builder.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -8442,10 +8462,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-doors-expert-lever@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: py3d 1.10.0 _check_component_coverage. Up to 1.9.0 every Geometry, View or Fire face that no ComponentNN selection holds raised WARN_COMPONENT_COVERAGE, whose message said that faces outside every component beside covered ones were not measured, but to expect them to take no part in collision. The in-game A/B of #65 (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3; CLAIM-P3D-UNCOVERED-FACES-INGAME) measured that case on whole closed parts: beside box A in Component01, box B in no component took 0 of 46 rays (geom, view, fire, RayCastBullet) and the player walked through it, while as Component02 it took 26 of 26 and stopped the player; the Expert tutorial's closed lever, in no component in Geometry and Fire, took no Geometry, Fire or physics ray; a part left out only in part was not measured (#65 review round 1, F2). Owner's choices (AskUserQuestion, 2026-10-02): an ERROR only where measured; version 1.10.0, because the 1.9.0 wheel pinned by #60 carries the 1.9.0 check; the change built on #65 and opened after it merged. Implementation: the LOD's faces, proxy triangles aside, are grouped into pieces that share a corner position; a piece that is a closed solid (every edge used by two of its faces, once each way, around a volume that is not zero for its size) with no face and no point in any component raises ERR_COMPONENT_COVERAGE (ERROR), its message saying what was measured for the LOD's kind; every other face in no component (a part left out only in part, an open piece, a flat double-sided sheet) and the points-only case stay WARN_COMPONENT_COVERAGE, whose message now says not measured and no longer counts the ERROR's faces. Consumers read before the choice: dayz-model-preflight runner.py turns an ERROR into PREFLIGHT_PY3D_ERROR and a FAIL verdict, dayz-vehicle-proxy-contract audit.py refuses an MLOD with any ERROR other than a deferred ERR_AXIS_SELECTION_MISSING, python -m py3d validate exits 1, and validate() skips its in-memory round trip. Offline: py3d suite 362 passed, 11 skipped (base 334 passed, 11 skipped; the 7 CANON tests were not run, no upstream clone); test_s2_validate12.py against the base module fails 18 of the new tests; of 13 mutants of the check, 12 were killed on the first run and the 13th (no guard for faces with fewer than three corners) got a test of its own after it; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact on 414 unique MLODs (the owner's projects on the P: drive and the dayz-doors samples) through P3D._scan_v12_findings with the 1.9.0 and 1.10.0 modules: Expert_Mode's Geometry and Fire LODs move from the WARN to the ERROR (the lever, one closed 18-face piece in no component), a vehicle Fire LOD keeps the WARN, with the new message, for two stray 1 mm triangles, and no other finding changed in any model; with the full validate(), making every coverage finding an ERROR would flip one verdict (Expert_Mode, PASS to FAIL) while 160 of the 414 already fail on other ERRORs. Cross-family review: pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "bea14d07d954883914926d1c7b349a7d37e3e83102b4b58caac35eb82ca11ed9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-py3d-coverage-ingame@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "59424f507e60369a3ecabbfcaa0d61213de98f455640c240ae1e5feebb23f2e8",
+      "output_hash": "bea14d07d954883914926d1c7b349a7d37e3e83102b4b58caac35eb82ca11ed9",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -8554,10 +8584,20 @@
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-doors-expert-lever@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: py3d 1.10.0 _check_component_coverage. Up to 1.9.0 every Geometry, View or Fire face that no ComponentNN selection holds raised WARN_COMPONENT_COVERAGE, whose message said that faces outside every component beside covered ones were not measured, but to expect them to take no part in collision. The in-game A/B of #65 (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3; CLAIM-P3D-UNCOVERED-FACES-INGAME) measured that case on whole closed parts: beside box A in Component01, box B in no component took 0 of 46 rays (geom, view, fire, RayCastBullet) and the player walked through it, while as Component02 it took 26 of 26 and stopped the player; the Expert tutorial's closed lever, in no component in Geometry and Fire, took no Geometry, Fire or physics ray; a part left out only in part was not measured (#65 review round 1, F2). Owner's choices (AskUserQuestion, 2026-10-02): an ERROR only where measured; version 1.10.0, because the 1.9.0 wheel pinned by #60 carries the 1.9.0 check; the change built on #65 and opened after it merged. Implementation: the LOD's faces, proxy triangles aside, are grouped into pieces that share a corner position; a piece that is a closed solid (every edge used by two of its faces, once each way, around a volume that is not zero for its size) with no face and no point in any component raises ERR_COMPONENT_COVERAGE (ERROR), its message saying what was measured for the LOD's kind; every other face in no component (a part left out only in part, an open piece, a flat double-sided sheet) and the points-only case stay WARN_COMPONENT_COVERAGE, whose message now says not measured and no longer counts the ERROR's faces. Consumers read before the choice: dayz-model-preflight runner.py turns an ERROR into PREFLIGHT_PY3D_ERROR and a FAIL verdict, dayz-vehicle-proxy-contract audit.py refuses an MLOD with any ERROR other than a deferred ERR_AXIS_SELECTION_MISSING, python -m py3d validate exits 1, and validate() skips its in-memory round trip. Offline: py3d suite 362 passed, 11 skipped (base 334 passed, 11 skipped; the 7 CANON tests were not run, no upstream clone); test_s2_validate12.py against the base module fails 18 of the new tests; of 13 mutants of the check, 12 were killed on the first run and the 13th (no guard for faces with fewer than three corners) got a test of its own after it; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact on 414 unique MLODs (the owner's projects on the P: drive and the dayz-doors samples) through P3D._scan_v12_findings with the 1.9.0 and 1.10.0 modules: Expert_Mode's Geometry and Fire LODs move from the WARN to the ERROR (the lever, one closed 18-face piece in no component), a vehicle Fire LOD keeps the WARN, with the new message, for two stray 1 mm triangles, and no other finding changed in any model; with the full validate(), making every coverage finding an ERROR would flip one verdict (Expert_Mode, PASS to FAIL) while 160 of the 414 already fail on other ERRORs. Cross-family review: pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "731ee3062b982c865fa5065a780d2493c0a01ce30570aa40592878c9e7260a71",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "kp-update-py3d-coverage-ingame@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "520122399c39a2d82083211574ac18f701a0b5899793ab00c4ec838384772482",
+      "output_hash": "731ee3062b982c865fa5065a780d2493c0a01ce30570aa40592878c9e7260a71",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -15715,10 +15755,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-doors-expert-lever@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Moves the line ranges of claims whose markers shifted in files this change edits (dayz-p3d-audit SKILL.md killer #8 and references/killers-detail.md section 8 gained lines above later claims); no claim added or reworded.",
+          "license": "MIT",
+          "source_hash": "68524e055f971ad13460b112d34df7b1c40c492ca0b14b9c6cb0f02f23daa317",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-py3d-coverage-ingame@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "71910487acf3a9454c65bebf9dcbd2e10ab177d2d3de86702b12d2f8a2a74e13",
+      "output_hash": "68524e055f971ad13460b112d34df7b1c40c492ca0b14b9c6cb0f02f23daa317",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -24886,10 +24936,20 @@
           "source_path": "tools/py3d/README.md",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: py3d 1.10.0 _check_component_coverage. Up to 1.9.0 every Geometry, View or Fire face that no ComponentNN selection holds raised WARN_COMPONENT_COVERAGE, whose message said that faces outside every component beside covered ones were not measured, but to expect them to take no part in collision. The in-game A/B of #65 (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3; CLAIM-P3D-UNCOVERED-FACES-INGAME) measured that case on whole closed parts: beside box A in Component01, box B in no component took 0 of 46 rays (geom, view, fire, RayCastBullet) and the player walked through it, while as Component02 it took 26 of 26 and stopped the player; the Expert tutorial's closed lever, in no component in Geometry and Fire, took no Geometry, Fire or physics ray; a part left out only in part was not measured (#65 review round 1, F2). Owner's choices (AskUserQuestion, 2026-10-02): an ERROR only where measured; version 1.10.0, because the 1.9.0 wheel pinned by #60 carries the 1.9.0 check; the change built on #65 and opened after it merged. Implementation: the LOD's faces, proxy triangles aside, are grouped into pieces that share a corner position; a piece that is a closed solid (every edge used by two of its faces, once each way, around a volume that is not zero for its size) with no face and no point in any component raises ERR_COMPONENT_COVERAGE (ERROR), its message saying what was measured for the LOD's kind; every other face in no component (a part left out only in part, an open piece, a flat double-sided sheet) and the points-only case stay WARN_COMPONENT_COVERAGE, whose message now says not measured and no longer counts the ERROR's faces. Consumers read before the choice: dayz-model-preflight runner.py turns an ERROR into PREFLIGHT_PY3D_ERROR and a FAIL verdict, dayz-vehicle-proxy-contract audit.py refuses an MLOD with any ERROR other than a deferred ERR_AXIS_SELECTION_MISSING, python -m py3d validate exits 1, and validate() skips its in-memory round trip. Offline: py3d suite 362 passed, 11 skipped (base 334 passed, 11 skipped; the 7 CANON tests were not run, no upstream clone); test_s2_validate12.py against the base module fails 18 of the new tests; of 13 mutants of the check, 12 were killed on the first run and the 13th (no guard for faces with fewer than three corners) got a test of its own after it; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact on 414 unique MLODs (the owner's projects on the P: drive and the dayz-doors samples) through P3D._scan_v12_findings with the 1.9.0 and 1.10.0 modules: Expert_Mode's Geometry and Fire LODs move from the WARN to the ERROR (the lever, one closed 18-face piece in no component), a vehicle Fire LOD keeps the WARN, with the new message, for two stray 1 mm triangles, and no other finding changed in any model; with the full validate(), making every coverage finding an ERROR would flip one verdict (Expert_Mode, PASS to FAIL) while 160 of the 414 already fail on other ERRORs. Cross-family review: pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1a7e00d040b0abb5c7bd71c92cdfa4969aef373973a45a6967318280607b630c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/README.md",
+          "source_revision": "kp-update-py3d-coverage-ingame@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4318e2feaefaa6a71d303bd1a4fd894c5e18b649cb2731d137ac00859a633bd6",
+      "output_hash": "1a7e00d040b0abb5c7bd71c92cdfa4969aef373973a45a6967318280607b630c",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25008,10 +25068,20 @@
           "source_path": "tools/py3d/py3d/__init__.py",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: py3d 1.10.0 _check_component_coverage. Up to 1.9.0 every Geometry, View or Fire face that no ComponentNN selection holds raised WARN_COMPONENT_COVERAGE, whose message said that faces outside every component beside covered ones were not measured, but to expect them to take no part in collision. The in-game A/B of #65 (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3; CLAIM-P3D-UNCOVERED-FACES-INGAME) measured that case on whole closed parts: beside box A in Component01, box B in no component took 0 of 46 rays (geom, view, fire, RayCastBullet) and the player walked through it, while as Component02 it took 26 of 26 and stopped the player; the Expert tutorial's closed lever, in no component in Geometry and Fire, took no Geometry, Fire or physics ray; a part left out only in part was not measured (#65 review round 1, F2). Owner's choices (AskUserQuestion, 2026-10-02): an ERROR only where measured; version 1.10.0, because the 1.9.0 wheel pinned by #60 carries the 1.9.0 check; the change built on #65 and opened after it merged. Implementation: the LOD's faces, proxy triangles aside, are grouped into pieces that share a corner position; a piece that is a closed solid (every edge used by two of its faces, once each way, around a volume that is not zero for its size) with no face and no point in any component raises ERR_COMPONENT_COVERAGE (ERROR), its message saying what was measured for the LOD's kind; every other face in no component (a part left out only in part, an open piece, a flat double-sided sheet) and the points-only case stay WARN_COMPONENT_COVERAGE, whose message now says not measured and no longer counts the ERROR's faces. Consumers read before the choice: dayz-model-preflight runner.py turns an ERROR into PREFLIGHT_PY3D_ERROR and a FAIL verdict, dayz-vehicle-proxy-contract audit.py refuses an MLOD with any ERROR other than a deferred ERR_AXIS_SELECTION_MISSING, python -m py3d validate exits 1, and validate() skips its in-memory round trip. Offline: py3d suite 362 passed, 11 skipped (base 334 passed, 11 skipped; the 7 CANON tests were not run, no upstream clone); test_s2_validate12.py against the base module fails 18 of the new tests; of 13 mutants of the check, 12 were killed on the first run and the 13th (no guard for faces with fewer than three corners) got a test of its own after it; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact on 414 unique MLODs (the owner's projects on the P: drive and the dayz-doors samples) through P3D._scan_v12_findings with the 1.9.0 and 1.10.0 modules: Expert_Mode's Geometry and Fire LODs move from the WARN to the ERROR (the lever, one closed 18-face piece in no component), a vehicle Fire LOD keeps the WARN, with the new message, for two stray 1 mm triangles, and no other finding changed in any model; with the full validate(), making every coverage finding an ERROR would flip one verdict (Expert_Mode, PASS to FAIL) while 160 of the 414 already fail on other ERRORs. Cross-family review: pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8dde2b43a2cb36d454360c8add031e81ffe3eadd2356a894fc25f6453bb16c7c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/py3d/__init__.py",
+          "source_revision": "kp-update-py3d-coverage-ingame@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2960885955ee9abcc4b33734a23e9b5968363037652ebeb0569eeec8a0f9ec23",
+      "output_hash": "8dde2b43a2cb36d454360c8add031e81ffe3eadd2356a894fc25f6453bb16c7c",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25846,10 +25916,20 @@
           "source_path": "tools/py3d/setup.py",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: py3d 1.10.0 _check_component_coverage. Up to 1.9.0 every Geometry, View or Fire face that no ComponentNN selection holds raised WARN_COMPONENT_COVERAGE, whose message said that faces outside every component beside covered ones were not measured, but to expect them to take no part in collision. The in-game A/B of #65 (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3; CLAIM-P3D-UNCOVERED-FACES-INGAME) measured that case on whole closed parts: beside box A in Component01, box B in no component took 0 of 46 rays (geom, view, fire, RayCastBullet) and the player walked through it, while as Component02 it took 26 of 26 and stopped the player; the Expert tutorial's closed lever, in no component in Geometry and Fire, took no Geometry, Fire or physics ray; a part left out only in part was not measured (#65 review round 1, F2). Owner's choices (AskUserQuestion, 2026-10-02): an ERROR only where measured; version 1.10.0, because the 1.9.0 wheel pinned by #60 carries the 1.9.0 check; the change built on #65 and opened after it merged. Implementation: the LOD's faces, proxy triangles aside, are grouped into pieces that share a corner position; a piece that is a closed solid (every edge used by two of its faces, once each way, around a volume that is not zero for its size) with no face and no point in any component raises ERR_COMPONENT_COVERAGE (ERROR), its message saying what was measured for the LOD's kind; every other face in no component (a part left out only in part, an open piece, a flat double-sided sheet) and the points-only case stay WARN_COMPONENT_COVERAGE, whose message now says not measured and no longer counts the ERROR's faces. Consumers read before the choice: dayz-model-preflight runner.py turns an ERROR into PREFLIGHT_PY3D_ERROR and a FAIL verdict, dayz-vehicle-proxy-contract audit.py refuses an MLOD with any ERROR other than a deferred ERR_AXIS_SELECTION_MISSING, python -m py3d validate exits 1, and validate() skips its in-memory round trip. Offline: py3d suite 362 passed, 11 skipped (base 334 passed, 11 skipped; the 7 CANON tests were not run, no upstream clone); test_s2_validate12.py against the base module fails 18 of the new tests; of 13 mutants of the check, 12 were killed on the first run and the 13th (no guard for faces with fewer than three corners) got a test of its own after it; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact on 414 unique MLODs (the owner's projects on the P: drive and the dayz-doors samples) through P3D._scan_v12_findings with the 1.9.0 and 1.10.0 modules: Expert_Mode's Geometry and Fire LODs move from the WARN to the ERROR (the lever, one closed 18-face piece in no component), a vehicle Fire LOD keeps the WARN, with the new message, for two stray 1 mm triangles, and no other finding changed in any model; with the full validate(), making every coverage finding an ERROR would flip one verdict (Expert_Mode, PASS to FAIL) while 160 of the 414 already fail on other ERRORs. Cross-family review: pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1089b32444825d9d0518e0850ef938e44ac8a99152d2779309846c7c9f9178ec",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/setup.py",
+          "source_revision": "kp-update-py3d-coverage-ingame@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "36aa2c2642af50992017722265976cf91709afe930bea9949add2cf07161a371",
+      "output_hash": "1089b32444825d9d0518e0850ef938e44ac8a99152d2779309846c7c9f9178ec",
       "output_path": "tools/py3d/setup.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -26000,10 +26080,20 @@
           "source_path": "tools/py3d/tests/conftest.py",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: py3d 1.10.0 _check_component_coverage. Up to 1.9.0 every Geometry, View or Fire face that no ComponentNN selection holds raised WARN_COMPONENT_COVERAGE, whose message said that faces outside every component beside covered ones were not measured, but to expect them to take no part in collision. The in-game A/B of #65 (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3; CLAIM-P3D-UNCOVERED-FACES-INGAME) measured that case on whole closed parts: beside box A in Component01, box B in no component took 0 of 46 rays (geom, view, fire, RayCastBullet) and the player walked through it, while as Component02 it took 26 of 26 and stopped the player; the Expert tutorial's closed lever, in no component in Geometry and Fire, took no Geometry, Fire or physics ray; a part left out only in part was not measured (#65 review round 1, F2). Owner's choices (AskUserQuestion, 2026-10-02): an ERROR only where measured; version 1.10.0, because the 1.9.0 wheel pinned by #60 carries the 1.9.0 check; the change built on #65 and opened after it merged. Implementation: the LOD's faces, proxy triangles aside, are grouped into pieces that share a corner position; a piece that is a closed solid (every edge used by two of its faces, once each way, around a volume that is not zero for its size) with no face and no point in any component raises ERR_COMPONENT_COVERAGE (ERROR), its message saying what was measured for the LOD's kind; every other face in no component (a part left out only in part, an open piece, a flat double-sided sheet) and the points-only case stay WARN_COMPONENT_COVERAGE, whose message now says not measured and no longer counts the ERROR's faces. Consumers read before the choice: dayz-model-preflight runner.py turns an ERROR into PREFLIGHT_PY3D_ERROR and a FAIL verdict, dayz-vehicle-proxy-contract audit.py refuses an MLOD with any ERROR other than a deferred ERR_AXIS_SELECTION_MISSING, python -m py3d validate exits 1, and validate() skips its in-memory round trip. Offline: py3d suite 362 passed, 11 skipped (base 334 passed, 11 skipped; the 7 CANON tests were not run, no upstream clone); test_s2_validate12.py against the base module fails 18 of the new tests; of 13 mutants of the check, 12 were killed on the first run and the 13th (no guard for faces with fewer than three corners) got a test of its own after it; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact on 414 unique MLODs (the owner's projects on the P: drive and the dayz-doors samples) through P3D._scan_v12_findings with the 1.9.0 and 1.10.0 modules: Expert_Mode's Geometry and Fire LODs move from the WARN to the ERROR (the lever, one closed 18-face piece in no component), a vehicle Fire LOD keeps the WARN, with the new message, for two stray 1 mm triangles, and no other finding changed in any model; with the full validate(), making every coverage finding an ERROR would flip one verdict (Expert_Mode, PASS to FAIL) while 160 of the 414 already fail on other ERRORs. Cross-family review: pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "af3919b3fd280fba444fc38e2c668af31cc691515690bfa7f504050f11a22ef8",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/conftest.py",
+          "source_revision": "kp-update-py3d-coverage-ingame@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "cf04ef11f4e4b9cd74cdbd68d753a44cf335250a96c50e215fb752603e36870a",
+      "output_hash": "af3919b3fd280fba444fc38e2c668af31cc691515690bfa7f504050f11a22ef8",
       "output_path": "tools/py3d/tests/conftest.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -26676,10 +26766,20 @@
           "source_path": "tools/py3d/tests/test_s2_validate12.py",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: py3d 1.10.0 _check_component_coverage. Up to 1.9.0 every Geometry, View or Fire face that no ComponentNN selection holds raised WARN_COMPONENT_COVERAGE, whose message said that faces outside every component beside covered ones were not measured, but to expect them to take no part in collision. The in-game A/B of #65 (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3; CLAIM-P3D-UNCOVERED-FACES-INGAME) measured that case on whole closed parts: beside box A in Component01, box B in no component took 0 of 46 rays (geom, view, fire, RayCastBullet) and the player walked through it, while as Component02 it took 26 of 26 and stopped the player; the Expert tutorial's closed lever, in no component in Geometry and Fire, took no Geometry, Fire or physics ray; a part left out only in part was not measured (#65 review round 1, F2). Owner's choices (AskUserQuestion, 2026-10-02): an ERROR only where measured; version 1.10.0, because the 1.9.0 wheel pinned by #60 carries the 1.9.0 check; the change built on #65 and opened after it merged. Implementation: the LOD's faces, proxy triangles aside, are grouped into pieces that share a corner position; a piece that is a closed solid (every edge used by two of its faces, once each way, around a volume that is not zero for its size) with no face and no point in any component raises ERR_COMPONENT_COVERAGE (ERROR), its message saying what was measured for the LOD's kind; every other face in no component (a part left out only in part, an open piece, a flat double-sided sheet) and the points-only case stay WARN_COMPONENT_COVERAGE, whose message now says not measured and no longer counts the ERROR's faces. Consumers read before the choice: dayz-model-preflight runner.py turns an ERROR into PREFLIGHT_PY3D_ERROR and a FAIL verdict, dayz-vehicle-proxy-contract audit.py refuses an MLOD with any ERROR other than a deferred ERR_AXIS_SELECTION_MISSING, python -m py3d validate exits 1, and validate() skips its in-memory round trip. Offline: py3d suite 362 passed, 11 skipped (base 334 passed, 11 skipped; the 7 CANON tests were not run, no upstream clone); test_s2_validate12.py against the base module fails 18 of the new tests; of 13 mutants of the check, 12 were killed on the first run and the 13th (no guard for faces with fewer than three corners) got a test of its own after it; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact on 414 unique MLODs (the owner's projects on the P: drive and the dayz-doors samples) through P3D._scan_v12_findings with the 1.9.0 and 1.10.0 modules: Expert_Mode's Geometry and Fire LODs move from the WARN to the ERROR (the lever, one closed 18-face piece in no component), a vehicle Fire LOD keeps the WARN, with the new message, for two stray 1 mm triangles, and no other finding changed in any model; with the full validate(), making every coverage finding an ERROR would flip one verdict (Expert_Mode, PASS to FAIL) while 160 of the 414 already fail on other ERRORs. Cross-family review: pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "19367eb6aa4d27cc0913ebae47fa9f6f92b3b8c61fbc9fc523e712ebac69680d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/test_s2_validate12.py",
+          "source_revision": "kp-update-py3d-coverage-ingame@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3597f6dc83b548f5f3c0a59ada66f4cc8b78fec5983ad8485b9e99b38fee11b4",
+      "output_hash": "19367eb6aa4d27cc0913ebae47fa9f6f92b3b8c61fbc9fc523e712ebac69680d",
       "output_path": "tools/py3d/tests/test_s2_validate12.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

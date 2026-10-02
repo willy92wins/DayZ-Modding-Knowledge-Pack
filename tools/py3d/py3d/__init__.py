@@ -50,7 +50,7 @@ import tempfile
 import warnings
 
 
-__version__ = "1.9.0"
+__version__ = "1.10.0"
 IS_DAYZ_FORK = True
 
 _REQUIRED = object()
@@ -965,7 +965,10 @@ def _recipe_build_memory(recipe):
 #     check now flags a missing component, on every collision LOD;
 #   - component coverage (1.9.0): the audit compared 'Component01' alone
 #     with the whole Geometry LOD; the check now reads the union of every
-#     component selection, in any case, on Geometry, View and Fire.
+#     component selection, in any case, on Geometry, View and Fire;
+#   - component coverage (1.10.0): a closed part left out of every
+#     component, measured in game to collide with nothing, is an ERROR
+#     (ERR_COMPONENT_COVERAGE); the rest stays a WARN.
 #
 # Codes added in 1.2.0 (this block):
 #   ERR_WINDING_INVERTED, WARN_WINDING_MIXED, WARN_WINDING_LOWCONF,
@@ -975,6 +978,7 @@ def _recipe_build_memory(recipe):
 #   WARN_MEMORY_AXIS_SHORT, WARN_MEMORY_HAS_FACES,
 #   ERR_AXIS_SELECTION_MISSING, WARN_AXIS_SELECTION_EMPTY,
 #   WARN_PDRIVE_PATH, WARN_LOD_KIND_UNKNOWN.
+# Code added in 1.10.0: ERR_COMPONENT_COVERAGE.
 
 
 def _pct_outward(lod):
@@ -1308,7 +1312,7 @@ def _check_component_naming(lod, lod_index, kind_label):
 
     A component selection counts here even if it holds none of the faces;
     whether every face belongs to a component is _check_component_coverage's
-    question (WARN_COMPONENT_COVERAGE).
+    question (ERR_COMPONENT_COVERAGE, WARN_COMPONENT_COVERAGE).
     """
     proxy_faces = _proxy_triangle_faces(lod)
     own = sum(1 for fa in lod.faces if id(fa) not in proxy_faces)
@@ -1336,9 +1340,89 @@ def _check_component_naming(lod, lod_index, kind_label):
     return []
 
 
+def _corner_key(point):
+    """A corner's position: the key that joins faces into pieces."""
+    return tuple(point.coords)
+
+
+def _face_pieces(faces):
+    """*faces* grouped into pieces, in file order: two faces are in the
+    same piece when they share a corner position. Positions, not points:
+    a mesh whose coincident corners were never merged is still one piece,
+    and a part whose corners touch another part's joins that part."""
+    parent = {}
+
+    def root(key):
+        parent.setdefault(key, key)
+        while parent[key] != key:
+            parent[key] = parent[parent[key]]
+            key = parent[key]
+        return key
+
+    for fa in faces:
+        keys = [_corner_key(vx.point) for vx in fa.vertices]
+        if not keys:
+            continue
+        first = root(keys[0])
+        for key in keys[1:]:
+            other = root(key)
+            if other != first:
+                parent[other] = first
+    pieces = {}
+    for fa in faces:
+        if fa.vertices:
+            key = root(_corner_key(fa.vertices[0].point))
+        else:
+            key = ("face", id(fa))
+        pieces.setdefault(key, []).append(fa)
+    return list(pieces.values())
+
+
+def _is_closed_solid(piece):
+    """True when *piece* is closed, consistently wound and encloses a
+    volume: by corner position, each of its edges is used by exactly two
+    of its faces, once in each direction, and the volume they enclose is
+    not zero for the piece's size (a flat double-sided sheet encloses
+    none). Whether the winding runs inward or outward is not read."""
+    used = collections.Counter()
+    for fa in piece:
+        keys = [_corner_key(vx.point) for vx in fa.vertices]
+        if len(keys) < 3:
+            return False
+        for j, a in enumerate(keys):
+            b = keys[(j + 1) % len(keys)]
+            if a == b:
+                return False
+            used[(a, b)] += 1
+    if any(n != 1 or used[(b, a)] != 1 for (a, b), n in list(used.items())):
+        return False
+    six_volume = 0.0
+    corners = []
+    for fa in piece:
+        c = [vx.point.coords for vx in fa.vertices]
+        corners.extend(c)
+        for j in range(1, len(c) - 1):
+            n = _v_cross(c[j], c[j + 1])
+            six_volume += c[0][0] * n[0] + c[0][1] * n[1] + c[0][2] * n[2]
+    extent = max(max(p[i] for p in corners) - min(p[i] for p in corners)
+                 for i in range(3))
+    return abs(six_volume) > 6e-9 * extent ** 3
+
+
+#: What the in-game A/B of 2026-10-02 measured, per LOD kind, for a closed
+#: part left out of every component of that LOD.
+_COVERAGE_MEASURED = {
+    "geometry": ("no Geometry ray and no physics ray hit it, and the player "
+                 "walked through it"),
+    "view_geometry": "no View ray hit it",
+    "fire_geometry": "no Fire ray hit it (weapon fire was not measured)",
+}
+
+
 def _check_component_coverage(lod, lod_index, kind_label):
     """A collision LOD (Geometry, View or Fire) with faces in no component
-    selection -> WARN_COMPONENT_COVERAGE.
+    selection -> ERR_COMPONENT_COVERAGE for the closed parts left out
+    whole, WARN_COMPONENT_COVERAGE for the rest.
 
     Coverage is the union of every selection named "Component" and a
     number, in any case (_COMPONENT_NAME_RE), read against the LOD's faces
@@ -1348,29 +1432,52 @@ def _check_component_coverage(lod, lod_index, kind_label):
     nonzero weight (a zero weight is not written). Points that no face
     uses are not counted: they have no face to collide with.
 
+    The faces are grouped into pieces that share a corner position
+    (_face_pieces). A piece that is a closed solid (_is_closed_solid:
+    every edge used twice, once each way, around a volume) with no face
+    and no point in any component is a closed part left out whole; the
+    ERROR counts those parts and their faces. Measured in game (DayZDiag
+    1.29.163709, 2026-10-02; dayz-p3d-audit killer #8): beside a box in
+    Component01, a second box in no component, in its Geometry, View and
+    Fire LODs, took no ray in geom, view or fire and no physics ray, and
+    the player walked through it; the same box as Component02 took every
+    ray and stopped the player. A closed lever left out of the Geometry
+    and Fire components of a door model took no Geometry, Fire or physics
+    ray either, while in the View LOD, where it is one (non-convex)
+    component, its knob answered. No log line named any of them.
+
+    Every other face in no component raises the WARN: its piece is partly
+    in a component (some of its faces, or the face's own points, are in
+    one) or is not a closed solid (an open sheet, a stray triangle).
+    Neither was measured. So does a LOD whose faces are all in components
+    while some of their points are in none (a component holding a face
+    without its points, not measured either). One finding of each code
+    per LOD at most; the WARN does not count the ERROR's faces and points.
+
     No finding for a LOD with no component selection, which is
     _check_component_naming's ERR_COMPONENT_NAMING, nor for one whose
     faces are all proxy triangles. That check accepts a component
     selection that holds no face, so a LOD whose component selections are
-    all empty is reported here, every face counted. A selection spelled
+    all empty is read here like any other: its closed parts left out whole
+    raise the ERROR (in game such a part collided with nothing with no
+    component in its LOD, killer #2, and beside a covered one; an empty
+    component selection itself was not measured). A selection spelled
     otherwise (e.g. 'Component_01', WARN_COMPONENT_NAMING) does not count
     as a component. Not checked here: that each component holds the
     points of its own faces (only that some component holds them), or
     that a component is closed and convex.
 
-    In game (DayZDiag 1.29.163709, 2026-10-02; dayz-p3d-audit killer #2) a
-    box with no component in its Geometry, View and Fire LODs collided with
-    nothing. A face outside every component on a LOD whose other faces are
-    in components was not measured, hence a WARN.
-
-    Up to 1.8.0 this check, a port of audit_p3d.check_component_coverage,
-    read the Geometry LOD only when it held a selection named exactly
-    'Component01' and compared that selection alone with the whole LOD: it
-    fired whenever 'Component01' held fewer points or faces than the LOD,
-    as on a healthy LOD with several components (the Pack's three door
-    samples, two of them fully covered), never read a LOD without an exact
-    'Component01' (lowercase components included), counted proxy triangles
-    and loose points as uncovered, and did not run on View or Fire.
+    Up to 1.9.0 every face in no component raised the WARN, whose message
+    said that faces outside every component beside covered ones were not
+    measured. Up to 1.8.0 this check, a port of
+    audit_p3d.check_component_coverage, read the Geometry LOD only when it
+    held a selection named exactly 'Component01' and compared that
+    selection alone with the whole LOD: it fired whenever 'Component01'
+    held fewer points or faces than the LOD, as on a healthy LOD with
+    several components (the Pack's three door samples, two of them fully
+    covered), never read a LOD without an exact 'Component01' (lowercase
+    components included), counted proxy triangles and loose points as
+    uncovered, and did not run on View or Fire.
     """
     names = [n for n in lod.selections if _COMPONENT_NAME_RE.fullmatch(n)]
     if not names:
@@ -1386,32 +1493,66 @@ def _check_component_coverage(lod, lod_index, kind_label):
         sel = lod.selections[name]
         covered_faces.update(id(fa) for fa, w in sel.faces.items() if w)
         covered_points.update(id(p) for p, w in sel.points.items() if w)
-    bare_faces = sum(1 for fa in faces if id(fa) not in covered_faces)
-    bare_points = len(points - covered_points)
+    findings = []
+    outside = set()
+    parts = 0
+    if any(id(fa) not in covered_faces for fa in faces):
+        for piece in _face_pieces(faces):
+            if any(id(fa) in covered_faces for fa in piece):
+                continue
+            if any(id(vx.point) in covered_points
+                   for fa in piece for vx in fa.vertices):
+                continue
+            if not _is_closed_solid(piece):
+                continue
+            parts += 1
+            outside.update(id(fa) for fa in piece)
+    if parts:
+        findings.append(Finding(
+            "ERR_COMPONENT_COVERAGE", "ERROR", lod_index,
+            "%s LOD: %d of its %d face(s) (proxy triangles not counted) "
+            "make up %d closed part(s) with no face and no point in any "
+            "ComponentNN selection. In game such a part collided with "
+            "nothing in its LOD, also beside covered parts: %s; no log "
+            "line said so. Select each closed, convex part as its own "
+            "ComponentNN, the components together covering the LOD; never "
+            "merge parts into one component to cover them (it would not be "
+            "convex)."
+            % (kind_label, len(outside), len(faces), parts,
+               _COVERAGE_MEASURED[kind_label])))
+    rest = [fa for fa in faces if id(fa) not in outside]
+    bare_faces = sum(1 for fa in rest if id(fa) not in covered_faces)
+    bare_points = len({id(vx.point) for fa in rest for vx in fa.vertices}
+                      - covered_points)
+    besides = ("besides the closed part(s) of ERR_COMPONENT_COVERAGE, "
+               if parts else "")
     if bare_faces:
-        msg = ("%s LOD: %d of its %d face(s) (proxy triangles not counted) "
-               "are in no ComponentNN selection"
-               % (kind_label, bare_faces, len(faces)))
+        msg = ("%s LOD: %s%d of its %d face(s) (proxy triangles not "
+               "counted) are in no ComponentNN selection"
+               % (kind_label, besides, bare_faces, len(faces)))
         if bare_points:
             msg += (", nor are %d of the %d point(s) its faces use"
                     % (bare_points, len(points)))
-        msg += (". In game a box with no component in its collision LODs "
-                "collided with nothing; faces outside every component "
-                "beside covered ones were not measured, but expect them to "
-                "take no part in collision. Select each closed, convex part "
-                "as its own ComponentNN, the components together covering "
-                "the LOD; never merge parts into one component to cover "
-                "them (it would not be convex).")
+        msg += (". Each lies in a part partly in a component or in a piece "
+                "that is not a closed solid; neither was measured in game "
+                "(a closed part with no face and no point in any component "
+                "collided with nothing in its LOD: ERR_COMPONENT_COVERAGE). "
+                "Select each closed, convex part as its own ComponentNN, "
+                "the components together covering the LOD; never merge "
+                "parts into one component to cover them (it would not be "
+                "convex).")
     elif bare_points:
-        msg = ("%s LOD: every face (proxy triangles not counted) is in a "
+        msg = ("%s LOD: %severy face (proxy triangles not counted) is in a "
                "ComponentNN selection, but %d of the %d point(s) its faces "
                "use are in none. A component holding a face without its "
                "points was not measured in game; select each component "
                "over all of its part's points and faces."
-               % (kind_label, bare_points, len(points)))
+               % (kind_label, besides, bare_points, len(points)))
     else:
-        return []
-    return [Finding("WARN_COMPONENT_COVERAGE", "WARN", lod_index, msg)]
+        return findings
+    findings.append(Finding("WARN_COMPONENT_COVERAGE", "WARN", lod_index,
+                            msg))
+    return findings
 
 
 def _check_autocenter(lod, lod_index):
@@ -3142,6 +3283,10 @@ class P3D:
         triangles, and the points they use, that no ComponentNN selection
         holds (any case), on the Geometry, View and Fire LODs (it compared
         'Component01' alone with the whole Geometry LOD).
+        Changed in 1.10.0: ERR_COMPONENT_COVERAGE (new) flags, on those
+        LODs, a closed part with no face and no point in any ComponentNN
+        selection, measured in game to collide with nothing; the other
+        faces and points in no component stay WARN_COMPONENT_COVERAGE.
 
         Returns list[Finding]. It does NOT raise on findings, though it
         does raise on misuse of its own parameters. The in-memory round

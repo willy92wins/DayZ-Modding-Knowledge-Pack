@@ -295,19 +295,26 @@ part (one face of a box whose other faces are in a component, or faces whose poi
 was not measured. Never merge separate parts into one `Component01` to make it cover everything: a
 component that holds two separate parts is not convex.
 
-py3d 1.9.0 `WARN_COMPONENT_COVERAGE` (`_check_component_coverage`) reads the union of the
-`ComponentNN` selections, whatever the case, on the Geometry, View and Fire LODs: it counts the
-faces that no component holds, and the points those faces use that no component holds. Proxy
-triangles (a `proxy:` selection holding one triangle and, as its 3 points, that triangle's corners;
-a whole box under a proxy name counts as collision geometry) and points that no face uses are not
-counted. A LOD with no component at all is `ERR_COMPONENT_NAMING`'s finding (killer #2); one whose
-component selections are all empty is reported here, every face counted. py3d 1.9.0 raises it as a
-WARN, and its message says that a face left out beside covered ones was not measured: both predate
-the in-game A/B below, which measured whole parts left out beside covered ones. On the three door
-samples of the `dayz-doors` tutorial it is silent on `Simple_Door` and `Door_w_Button` and flags
-the Geometry and Fire LODs of `Expert_Mode`, whose lever (18 faces: selection `lever` in Geometry,
-`door1_open` in Fire) is in no component there, though the tutorial's text lists the lever among
-the parts that take up space.
+py3d 1.10.0 (`_check_component_coverage`) reads the union of the `ComponentNN` selections, whatever
+the case, on the Geometry, View and Fire LODs, against the faces that no component holds and the
+points those faces use that no component holds. Proxy triangles (a `proxy:` selection holding one
+triangle and, as its 3 points, that triangle's corners; a whole box under a proxy name counts as
+collision geometry) and points that no face uses are not counted. It groups the faces into pieces
+that share a corner position and raises `ERR_COMPONENT_COVERAGE`, an ERROR, for the case measured
+below: a piece that is a closed solid (each edge used by two of its faces, once each way, around a
+volume) with no face and no point in any component. Every other face in no component (a part left
+out only in part, an open piece such as a stray triangle, a flat double-sided sheet), and every
+point of a covered face that no component holds, stay `WARN_COMPONENT_COVERAGE`, whose message says
+they were not measured. A LOD with no component at all is `ERR_COMPONENT_NAMING`'s finding (killer
+#2); one whose component selections are all empty is read like any other, its closed parts raising
+the ERROR (an empty selection itself was not measured). On the three door samples of the
+`dayz-doors` tutorial it is silent on `Simple_Door` and `Door_w_Button` and raises the ERROR on the
+Geometry and Fire LODs of `Expert_Mode`, whose lever (18 faces, one closed piece: selection `lever`
+in Geometry, `door1_open` in Fire) is in no component there, though the tutorial's text lists the
+lever among the parts that take up space. The 1.9.0 wheel, pinned on 2026-10-02, raises every face
+in no component as `WARN_COMPONENT_COVERAGE`, and its message says that a face left out beside
+covered ones was not measured: with that wheel, read a closed part it counts in no component as the
+measured case below.
 
 **Measured in game** (2026-10-02, DayZDiag 1.29.163709, driven by dayz-mcp): a pair of 2 m boxes,
 A in `Component01` and B either in `Component02` or in no component (the two MLODs byte-identical
@@ -348,6 +355,13 @@ component is expected not to collide, but that was measured only for a LOD with 
 all (killer #2), not for a face left out next to covered ones.", and the py3d paragraph read "A
 face outside every component on a LOD that has others was not measured in game, so the finding
 stays a WARN." and closed "whether that lever collides in game was not measured.")*
+
+*(Updated 2026-10-03, py3d 1.10.0: the py3d paragraph opened "py3d 1.9.0 `WARN_COMPONENT_COVERAGE`
+(`_check_component_coverage`) reads the union", said "one whose component selections are all empty
+is reported here, every face counted. py3d 1.9.0 raises it as a WARN, and its message says that a
+face left out beside covered ones was not measured: both predate the in-game A/B below, which
+measured whole parts left out beside covered ones." and "flags the Geometry and Fire LODs of
+`Expert_Mode`".)*
 
 ### 9. Non-Watertight Collision Mesh
 

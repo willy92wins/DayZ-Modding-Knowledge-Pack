@@ -82,10 +82,12 @@ python -m py3d diff     a.p3d b.p3d  # structural comparison
 - `P3D.validate()` reports a Geometry, View or Fire LOD with faces but no
   `ComponentNN` selection (in game a model with no component in any collision
   LOD collides with nothing, and nothing logs it; one LOD missing it alone was
-  not measured), `#Mass#` outside the Geometry LOD, non-watertight collision,
-  degenerate faces, memory-point structure, winding problems, and more. The
-  case of a component's name is not checked: `component01` collided in game
-  exactly like `Component01`.
+  not measured), a closed part left out of every component of such a LOD (in
+  game it collided with nothing in that LOD, also beside covered parts),
+  `#Mass#` outside the Geometry LOD, non-watertight collision, degenerate
+  faces, memory-point structure, winding problems, and more. The case of a
+  component's name is not checked: `component01` collided in game exactly
+  like `Component01`.
 
 **Editing helpers**
 - `bbox`, `triangulate`, `set_selection`, `set_total_mass`, `set_memory_point`,
@@ -279,7 +281,7 @@ instead, which this finding used to recommend, trades it for
 
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 341 tests pass -- 334 of them
+The library is used in a real modding pipeline, and 369 tests pass -- 362 of them
 on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
 upstream (see [Tests](#tests)). It has also been through a deliberately
 adversarial audit, and **not every problem it found is fixed yet**. Before

@@ -18,16 +18,17 @@ def codes(findings):
     return sorted({f.code for f in findings})
 
 
-def add_box(m, lod, scale, name=None, mass=None):
+def add_box(m, lod, scale, name=None, mass=None, offset=(0.0, 0.0, 0.0)):
     """Append a closed box to *lod*: the builders' unit cube scaled per
-    axis, with its winding and normals, so a box centred on the origin
-    keeps every winding check quiet. *name* gets (or creates) a selection
-    holding the box's points and faces. Returns (points, faces)."""
+    axis and moved by *offset*, with its winding and normals, so a box
+    centred on the origin keeps every winding check quiet. *name* gets (or
+    creates) a selection holding the box's points and faces. Returns
+    (points, faces)."""
     base = len(lod.points)
     pts = []
     for c in CUBE_POINTS:
         p = m.Point()
-        p.coords = tuple(c[j] * scale[j] for j in range(3))
+        p.coords = tuple(c[j] * scale[j] + offset[j] for j in range(3))
         p.mass = mass
         lod.points.append(p)
         pts.append(p)
@@ -149,6 +150,28 @@ def mut_coverage_view(m, p3d):
 def mut_coverage_fire(m, p3d):
     return _cover_all_but_one_face(p3d.get_lod("fire_geometry"))
 
+# A closed part in no component beside a covered one: measured in game
+# (2026-10-02) to collide with nothing, so an ERROR (1.10.0).
+def mut_coverage_part_outside(m, p3d):
+    add_box(m, p3d.get_lod("geometry"), CROSS, mass=25.0)
+    return ["ERR_COMPONENT_COVERAGE"]
+
+def mut_coverage_part_outside_view(m, p3d):
+    add_box(m, p3d.get_lod("view_geometry"), CROSS)
+    return ["ERR_COMPONENT_COVERAGE"]
+
+def mut_coverage_part_outside_fire(m, p3d):
+    add_box(m, p3d.get_lod("fire_geometry"), CROSS)
+    return ["ERR_COMPONENT_COVERAGE"]
+
+def mut_coverage_points_in_component(m, p3d):
+    # the same box, its points in Component02 and its faces in none: a
+    # part left out only in part, not measured
+    geo = p3d.get_lod("geometry")
+    pts, _ = add_box(m, geo, CROSS, mass=25.0)
+    geo.new_selection("Component02").points.update((p, 1) for p in pts)
+    return ["WARN_COMPONENT_COVERAGE"]
+
 def mut_autocenter_missing(m, p3d):
     del p3d.get_lod("geometry").properties["autocenter"]
     return ["WARN_AUTOCENTER_MISSING"]
@@ -245,6 +268,10 @@ CASES = [
     ("coverage_lowercase", mut_coverage_lowercase),
     ("coverage_view", mut_coverage_view),
     ("coverage_fire", mut_coverage_fire),
+    ("coverage_part_outside", mut_coverage_part_outside),
+    ("coverage_part_outside_view", mut_coverage_part_outside_view),
+    ("coverage_part_outside_fire", mut_coverage_part_outside_fire),
+    ("coverage_points_in_component", mut_coverage_points_in_component),
     ("autocenter_missing", mut_autocenter_missing),
     ("not_watertight", mut_not_watertight),
     ("degenerate", mut_degenerate),
@@ -430,9 +457,17 @@ def test_val_audit_parity_clean(fork, tmp_path):
 
 
 # ---- WARN_COMPONENT_COVERAGE: the union of the components (1.9.0) -----
+# ---- ERR_COMPONENT_COVERAGE: closed parts left out whole (1.10.0) ------
 
 def coverage(findings):
     return [f for f in findings if f.code == "WARN_COMPONENT_COVERAGE"]
+
+
+def coverage_err(findings):
+    return [f for f in findings if f.code == "ERR_COMPONENT_COVERAGE"]
+
+
+COVERAGE_CODES = {"ERR_COMPONENT_COVERAGE", "WARN_COMPONENT_COVERAGE"}
 
 
 def test_coverage_pos_components_together(fork):
@@ -499,30 +534,54 @@ def test_coverage_counts_exclude_proxy_faces(fork):
 
 def test_coverage_proxy_named_box_counts(fork):
     """A whole box under a proxy name is not a proxy triangle: its faces
-    are collision geometry and, in no component, are counted (6 of 12)."""
+    are collision geometry and, in no component, a closed part left out
+    whole (6 of 12 faces; up to 1.9.0 the WARN counted them)."""
     p3d = build_multilod_v2_p3d(fork)
     geo = p3d.get_lod("geometry")
     add_box(fork, geo, CROSS, "proxy:\\dz\\data\\proxies\\crate.001",
             mass=25.0)
-    (f,) = coverage(p3d.validate())
+    findings = p3d.validate()
+    assert coverage(findings) == []
+    (f,) = coverage_err(findings)
     assert f.msg.startswith(
         "geometry LOD: 6 of its 12 face(s) (proxy triangles not counted) "
-        "are in no ComponentNN selection, nor are 8 of the 16 point(s) its "
-        "faces use."), f.msg
+        "make up 1 closed part(s) with no face and no point in any "
+        "ComponentNN selection."), f.msg
 
 
 def test_coverage_empty_component_selection(fork):
     """A component selection that holds nothing is accepted by the naming
-    check; coverage reports every face and point of the LOD."""
+    check; coverage reads the LOD as in no component: the closed cube is a
+    part left out whole (up to 1.9.0, the WARN with every face counted)."""
     p3d = build_multilod_v2_p3d(fork)
     sel = p3d.get_lod("geometry").selections["Component01"]
     sel.points = {}
     sel.faces = {}
     findings = p3d.validate()
-    assert codes(findings) == ["WARN_COMPONENT_COVERAGE"]
+    assert codes(findings) == ["ERR_COMPONENT_COVERAGE"]
+    (f,) = coverage_err(findings)
+    assert (f.severity, f.lod) == ("ERROR", 1)
+    assert f.msg.startswith(
+        "geometry LOD: 6 of its 6 face(s) (proxy triangles not counted) make "
+        "up 1 closed part(s) with no face and no point in any ComponentNN "
+        "selection."), f.msg
+
+
+def test_coverage_empty_component_selection_open_piece(fork):
+    """The same empty selection on a LOD whose only piece is open (the cube
+    without one face): not a closed solid, so the WARN, every face and
+    point counted."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    sel = geo.selections["Component01"]
+    sel.points = {}
+    sel.faces = {}
+    geo.faces.pop()
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
     (f,) = coverage(findings)
     assert f.msg.startswith(
-        "geometry LOD: 6 of its 6 face(s) (proxy triangles not counted) are "
+        "geometry LOD: 5 of its 5 face(s) (proxy triangles not counted) are "
         "in no ComponentNN selection, nor are 8 of the 8 point(s) its faces "
         "use."), f.msg
 
@@ -635,12 +694,348 @@ def test_coverage_silent_on_proxy_only_lod(fork):
     add_proxy_triangle(fork, lod, "proxy:\\dz\\data\\proxies\\flag.001")
     lod.new_selection("Component01")
     p3d.lods[p3d.lods.index(geo)] = lod
-    assert coverage(p3d.validate()) == []
+    assert not COVERAGE_CODES & set(codes(p3d.validate()))
 
 
 def test_coverage_silent_without_components(fork):
     """No component selection at all is ERR_COMPONENT_NAMING's finding;
-    coverage adds nothing."""
+    coverage adds nothing, though the cube is a closed part in no
+    component."""
     p3d = build_multilod_v2_p3d(fork)
     p3d.get_lod("geometry").selections.pop("Component01")
-    assert coverage(p3d.validate()) == []
+    assert codes(p3d.validate()) == ["ERR_COMPONENT_NAMING"]
+
+
+# ---- ERR_COMPONENT_COVERAGE (1.10.0): which faces are a closed part left
+# out whole. In game (2026-10-02, dayz-p3d-audit killer #8) a closed box in
+# no component beside a covered one collided with nothing; a part left out
+# only in part, an open piece and a flat sheet were not measured and stay
+# the WARN.
+
+MEASURED = {
+    "geometry": ("no Geometry ray and no physics ray hit it, and the player "
+                 "walked through it"),
+    "view_geometry": "no View ray hit it",
+    "fire_geometry": "no Fire ray hit it (weapon fire was not measured)",
+}
+LOD_INDEX = {"geometry": 1, "view_geometry": 2, "fire_geometry": 3}
+SMALL = (0.25, 0.25, 0.25)
+
+
+def _mass(kind):
+    return 25.0 if kind == "geometry" else None
+
+
+def add_mesh(m, lod, coords, polys, mass=None):
+    """Append points at *coords* and faces over them (*polys*: index
+    tuples into *coords*), in no selection. Returns the faces."""
+    base = len(lod.points)
+    for c in coords:
+        p = m.Point()
+        p.coords = c
+        p.mass = mass
+        lod.points.append(p)
+    lod.facenormals.append((0.0, 0.0, 1.0))
+    faces = []
+    for poly in polys:
+        fa = m.Face(lod.points, lod.facenormals)
+        for i in poly:
+            v = m.Vertex(lod.points, lod.facenormals)
+            v.point_index = base + i
+            v.normal_index = len(lod.facenormals) - 1
+            v.uv = (0.0, 0.0)
+            fa.vertices.append(v)
+        fa.texture = fa.material = ""
+        lod.faces.append(fa)
+        faces.append(fa)
+    return faces
+
+
+@pytest.mark.parametrize("kind", COLLISION_KINDS)
+def test_coverage_err_closed_part_beside_covered(fork, kind):
+    """A closed box in no component beside the covered cube: the ERROR on
+    that LOD with what was measured for its kind, and no WARN. Up to 1.9.0
+    the WARN said this case was not measured."""
+    p3d = build_multilod_v2_p3d(fork)
+    add_box(fork, p3d.get_lod(kind), CROSS, mass=_mass(kind))
+    findings = p3d.validate()
+    assert codes(findings) == ["ERR_COMPONENT_COVERAGE"]
+    (f,) = coverage_err(findings)
+    assert (f.severity, f.lod) == ("ERROR", LOD_INDEX[kind])
+    assert f.msg.startswith(
+        "%s LOD: 6 of its 12 face(s) (proxy triangles not counted) make up 1 "
+        "closed part(s) with no face and no point in any ComponentNN "
+        "selection. In game such a part collided with nothing in its LOD, "
+        "also beside covered parts: %s; no log line said so. Select each "
+        "closed, convex part as its own ComponentNN" % (kind, MEASURED[kind])
+    ), f.msg
+    assert "expect them" not in f.msg
+
+
+def test_coverage_err_after_write_and_read(fork):
+    """The same model written and read back (float32 corners, component
+    membership from the file): the same ERROR."""
+    import io
+    p3d = build_multilod_v2_p3d(fork)
+    mut_coverage_part_outside(fork, p3d)
+    buf = io.BytesIO()
+    p3d.write(buf)
+    buf.seek(0)
+    (f,) = coverage_err(fork.P3D(buf).validate())
+    assert f.msg.startswith("geometry LOD: 6 of its 12 face(s)"), f.msg
+
+
+def test_coverage_err_counts_parts(fork):
+    """Two closed parts left out, one finding: 12 of 18 faces, 2 parts."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    add_box(fork, geo, CROSS, mass=25.0)
+    add_box(fork, geo, SMALL, mass=25.0, offset=(2.0, 0.0, 0.0))
+    findings = p3d.validate()
+    assert coverage(findings) == []
+    (f,) = coverage_err(findings)
+    assert f.msg.startswith(
+        "geometry LOD: 12 of its 18 face(s) (proxy triangles not counted) "
+        "make up 2 closed part(s)"), f.msg
+
+
+def test_coverage_err_and_warn_on_one_lod(fork):
+    """A closed part left out whole and one face of the cube left out of
+    Component01: the ERROR counts the part, the WARN that face alone."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    add_box(fork, geo, CROSS, mass=25.0)
+    del geo.selections["Component01"].faces[geo.faces[0]]
+    findings = p3d.validate()
+    (e,) = coverage_err(findings)
+    assert e.msg.startswith(
+        "geometry LOD: 6 of its 12 face(s) (proxy triangles not counted) "
+        "make up 1 closed part(s)"), e.msg
+    (w,) = coverage(findings)
+    assert (w.severity, w.lod) == ("WARN", 1)
+    assert w.msg.startswith(
+        "geometry LOD: besides the closed part(s) of ERR_COMPONENT_COVERAGE, "
+        "1 of its 12 face(s) (proxy triangles not counted) are in no "
+        "ComponentNN selection. Each lies in a part partly in a component "
+        "or in a piece that is not a closed solid; neither was measured in "
+        "game"), w.msg
+
+
+def test_coverage_err_and_points_only_warn(fork):
+    """A closed part left out whole and one cube corner left out of
+    Component01: 'every face' in the WARN means every face but the part's,
+    and its points are not counted again (1 of 16)."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    add_box(fork, geo, CROSS, mass=25.0)
+    del geo.selections["Component01"].points[geo.points[0]]
+    findings = p3d.validate()
+    assert len(coverage_err(findings)) == 1
+    (w,) = coverage(findings)
+    assert w.msg.startswith(
+        "geometry LOD: besides the closed part(s) of ERR_COMPONENT_COVERAGE, "
+        "every face (proxy triangles not counted) is in a ComponentNN "
+        "selection, but 1 of the 16 point(s) its faces use are in none."), \
+        w.msg
+
+
+def test_coverage_err_unwelded_part(fork):
+    """A closed box whose faces each have their own four points (corners
+    never merged) is one closed piece by position: the ERROR."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    coords, polys = [], []
+    for quad, _ in CUBE_QUADS:
+        polys.append(tuple(range(len(coords), len(coords) + 4)))
+        coords += [tuple(CUBE_POINTS[i][j] * SMALL[j] + (2.0, 0.0, 0.0)[j]
+                         for j in range(3)) for i in quad]
+    add_mesh(fork, geo, coords, polys, mass=25.0)
+    findings = p3d.validate()
+    assert coverage(findings) == []
+    (f,) = coverage_err(findings)
+    assert f.msg.startswith(
+        "geometry LOD: 6 of its 12 face(s) (proxy triangles not counted) "
+        "make up 1 closed part(s)"), f.msg
+
+
+def test_coverage_warn_face_left_out_of_a_part(fork):
+    """One face of a covered box in no component: a part left out only in
+    part, not measured, so the WARN; 1.9.0's 'expect them to take no part
+    in collision' is gone."""
+    p3d = build_multilod_v2_p3d(fork)
+    mut_coverage_face_outside(fork, p3d)
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith(
+        "geometry LOD: 1 of its 12 face(s) (proxy triangles not counted) are "
+        "in no ComponentNN selection. Each lies in a part partly in a "
+        "component or in a piece that is not a closed solid; neither was "
+        "measured in game (a closed part with no face and no point in any "
+        "component collided with nothing in its LOD: "
+        "ERR_COMPONENT_COVERAGE)."), f.msg
+    assert "expect them" not in f.msg
+
+
+def test_coverage_warn_points_in_component(fork):
+    """A closed box whose points are in Component02 and whose faces are in
+    none: partly in a component, the WARN (6 faces, no point)."""
+    p3d = build_multilod_v2_p3d(fork)
+    mut_coverage_points_in_component(fork, p3d)
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith(
+        "geometry LOD: 6 of its 12 face(s) (proxy triangles not counted) are "
+        "in no ComponentNN selection. Each lies"), f.msg
+
+
+def test_coverage_warn_faces_in_component_points_not(fork):
+    """A box whose faces but one are in Component02 and whose points are in
+    none: one covered face is enough to make it a part partly in a
+    component, the WARN (1 face, 8 corners)."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    _, faces = add_box(fork, geo, CROSS, mass=25.0)
+    geo.new_selection("Component02").faces.update(
+        (fa, 1) for fa in faces[1:])
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith(
+        "geometry LOD: 1 of its 12 face(s) (proxy triangles not counted) are "
+        "in no ComponentNN selection, nor are 8 of the 16 point(s) its faces "
+        "use."), f.msg
+
+
+def test_coverage_warn_one_point_in_component(fork):
+    """One corner of the box in Component02 is enough to make the box a
+    part partly in a component: the WARN, 7 of its 8 corners counted."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    pts, _ = add_box(fork, geo, CROSS, mass=25.0)
+    geo.new_selection("Component02").points[pts[0]] = 1
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith(
+        "geometry LOD: 6 of its 12 face(s) (proxy triangles not counted) are "
+        "in no ComponentNN selection, nor are 7 of the 16 point(s) its faces "
+        "use."), f.msg
+
+
+def test_coverage_warn_stray_triangle(fork):
+    """A stray triangle in no component (the vehicle Fire LOD of the 1.9.0
+    impact run had two, 1 mm across) is not a closed solid: the WARN."""
+    p3d = build_multilod_v2_p3d(fork)
+    add_proxy_triangle(fork, p3d.get_lod("fire_geometry"), "glass",
+                       origin=(2.0, 2.0, 2.0))
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.lod == 3
+    assert f.msg.startswith(
+        "fire_geometry LOD: 1 of its 7 face(s) (proxy triangles not counted) "
+        "are in no ComponentNN selection, nor are 3 of the 11 point(s) its "
+        "faces use."), f.msg
+
+
+def test_coverage_warn_open_box(fork):
+    """The box with one face missing is open: the WARN, 5 faces."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    _, faces = add_box(fork, geo, CROSS, mass=25.0)
+    geo.faces.remove(faces[0])
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith(
+        "geometry LOD: 5 of its 11 face(s) (proxy triangles not counted) are "
+        "in no ComponentNN selection, nor are 8 of the 16 point(s)"), f.msg
+
+
+def test_coverage_warn_flat_sheet(fork):
+    """A flat quad modelled double-sided (the same four corners, wound both
+    ways) closes every edge, once each way, but encloses no volume: not a
+    closed solid, the WARN."""
+    p3d = build_multilod_v2_p3d(fork)
+    sheet = [(2.0, 0.0, 0.0), (3.0, 0.0, 0.0), (3.0, 1.0, 0.0),
+             (2.0, 1.0, 0.0)]
+    add_mesh(fork, p3d.get_lod("geometry"), sheet,
+             [(0, 1, 2, 3), (3, 2, 1, 0)], mass=25.0)
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith("geometry LOD: 2 of its 8 face(s)"), f.msg
+
+
+def test_coverage_warn_closed_but_not_consistently_wound(fork):
+    """A closed box with one face wound the other way: every edge is used
+    twice, but not once each way; not counted as a closed solid, so the
+    WARN (and the winding checks speak)."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    _, faces = add_box(fork, geo, CROSS, mass=25.0)
+    faces[0].vertices.reverse()
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith("geometry LOD: 6 of its 12 face(s)"), f.msg
+
+
+def test_coverage_warn_face_with_fewer_than_three_corners(fork):
+    """A face with fewer than three corners (only buildable in memory: the
+    reader takes 3 or 4) never makes its piece a closed solid: a closed box
+    in no component plus a two-corner face across one of its sides is the
+    WARN, 7 faces; a face with no corner alone is the WARN too, and does
+    not break the check."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    pts, _ = add_box(fork, geo, SMALL, mass=25.0, offset=(2.0, 0.0, 0.0))
+    side = CUBE_QUADS[0][0]
+    add_mesh(fork, geo, [pts[side[0]].coords, pts[side[2]].coords], [(0, 1)],
+             mass=25.0)
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith("geometry LOD: 7 of its 13 face(s)"), f.msg
+
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    empty = fork.Face(geo.points, geo.facenormals)
+    empty.texture = empty.material = ""
+    geo.faces.append(empty)
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith(
+        "geometry LOD: 1 of its 7 face(s) (proxy triangles not counted) are "
+        "in no ComponentNN selection. Each lies"), f.msg
+
+
+def test_coverage_warn_parts_sharing_an_edge(fork):
+    """Two boxes in no component that share an edge make one piece whose
+    shared edge is used by four faces: not a closed solid, the WARN."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    add_box(fork, geo, SMALL, mass=25.0, offset=(2.0, 0.0, 0.0))
+    add_box(fork, geo, SMALL, mass=25.0, offset=(2.25, 0.25, 0.0))
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith("geometry LOD: 12 of its 18 face(s)"), f.msg
+
+
+def test_coverage_warn_part_touching_a_covered_one(fork):
+    """A closed box in no component whose corner sits on a corner of the
+    covered cube (its own point, the same position) joins the cube's
+    piece: partly in a component, the WARN."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    add_box(fork, geo, SMALL, mass=25.0, offset=(0.625, 0.625, 0.625))
+    assert geo.points[-8].coords == geo.points[6].coords == (0.5, 0.5, 0.5)
+    assert geo.points[-8] is not geo.points[6]
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith("geometry LOD: 6 of its 12 face(s)"), f.msg

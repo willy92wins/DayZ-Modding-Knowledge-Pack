@@ -164,17 +164,22 @@ each killer (root cause, detection snippet, fix, caveats) →
    parts; a part left out only in part was not measured; `references/killers-detail.md` §8).
    Never merge separate parts into one `Component01` to make it cover everything: that component
    is no longer convex, and the one non-convex component measured in game (a lever) collided only
-   in part. py3d 1.9.0 `WARN_COMPONENT_COVERAGE`
-   counts the union of the `ComponentNN` selections, whatever the case, on the Geometry, View and
-   Fire LODs, proxy triangles and points that no face uses left out; up to 1.8.0 (pinned until
-   2026-10-02) it counted `Component01` alone, on the Geometry LOD, and fired on a healthy
-   multi-component LOD (`references/killers-detail.md` §8). *(Corrected 2026-10-02: titled
-   "Incomplete Component01 Coverage", this entry read "`Component01` must include ALL verts AND
-   faces with weight=1, or collision is partial." The first correction that day kept "every
-   vertex and face" and "or collision is partial", a consequence measured only for a LOD with no
-   component at all.)* *(Updated 2026-10-02, after an in-game A/B: this entry read "A face
-   outside every component is expected not to collide; that was measured only for a LOD with no
-   component at all (killer #2).")*
+   in part. py3d 1.10.0 reads the union of the `ComponentNN` selections, whatever the case, on the
+   Geometry, View and Fire LODs, proxy triangles and points that no face uses left out: a closed
+   part with no face and no point in any component is `ERR_COMPONENT_COVERAGE` (the measured
+   case), every other face or point in none stays `WARN_COMPONENT_COVERAGE` (not measured). The
+   pinned 1.9.0 wheel raises all of them as that WARN, whose message calls the measured case not
+   measured; up to 1.8.0 (pinned until 2026-10-02) it counted `Component01` alone, on the Geometry
+   LOD, and fired on a healthy multi-component LOD (`references/killers-detail.md` §8).
+   *(Corrected 2026-10-02: titled "Incomplete Component01 Coverage", this entry read
+   "`Component01` must include ALL verts AND faces with weight=1, or collision is partial." The
+   first correction that day kept "every vertex and face" and "or collision is partial", a
+   consequence measured only for a LOD with no component at all.)* *(Updated 2026-10-02, after an
+   in-game A/B: this entry read "A face outside every component is expected not to collide; that
+   was measured only for a LOD with no component at all (killer #2).")* *(Updated 2026-10-03, py3d
+   1.10.0: this entry read "py3d 1.9.0 `WARN_COMPONENT_COVERAGE` counts the union of the
+   `ComponentNN` selections, whatever the case, on the Geometry, View and Fire LODs, proxy
+   triangles and points that no face uses left out".)*
 9. **Non-Watertight Collision Mesh** — open Geometry mesh (boundary edges/holes) →
    raycasts pass through gaps.
 10. **Missing Surface/Material Assignment on Collision LODs** (CRITICAL) — every collision
