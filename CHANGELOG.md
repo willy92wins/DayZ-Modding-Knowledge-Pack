@@ -75,6 +75,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   per-component check and sends the fix to killer #1, and rule 7 no longer offers the kit box's
   outward sign, or a component Rule 18 cannot score, as one to keep. The old text is quoted in dated
   notes.
+- `dayz-p3d-audit` killer #2 said the Geometry component MUST be `Component01` and that any other
+  case silently loses all collision; `dayz-vehicles` limited that rule to `Inventory_Base` items.
+  Measured in game (2026-10-02, DayZDiag 1.29.163709) with one 2 m box written three times,
+  byte-identical except for the collision selection (`Component01`, `component01`, none), each
+  packed unbinarized and binarized, as an `Inventory_Base` item and as a `HouseNoDestruct`: both
+  names took every `scene_raycast` ray in `geom`, `view` and `fire` (6 of 6 per mode on the items),
+  the physics ray, and stopped a walking player 0.36 m before the face; the box without a
+  selection took none, and the player walked through it, with no log line. Binarize writes both
+  names as the same ODOL, `component01`. Killer #2 is now the measured silent failure: collision
+  faces in no `ComponentNN` selection. Decision-tree step 5b, the "case-sensitive" pitfall in
+  PART 5 and the two `dayz-vehicles` notes are aligned; py3d `ERR_COMPONENT_NAMING` on a lowercase
+  name is documented as a false positive (code unchanged). The old text is quoted in dated notes.
 
 ## [1.5.0] - 2026-10-02
 

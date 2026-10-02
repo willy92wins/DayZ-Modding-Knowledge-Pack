@@ -128,8 +128,15 @@ each killer (root cause, detection snippet, fix, caveats) →
    rule 7). MANDATORY re-run whenever you generate/edit a collision LOD. *(Corrected 2026-10-02:
    titled "Inverted Face Winding", this entry read "Geometry LOD normals point INWARD; raycasts
    pass through" and fixed it with "swap `vertices[1]`/`[2]` per inverted face".)*
-2. **Component Selection Case Sensitivity** (CRITICAL) — Geometry component MUST be
-   `Component01` (uppercase C); any variation silently loses ALL collision.
+2. **No `ComponentNN` Selection in the Collision LODs** (CRITICAL) — collision LODs whose
+   faces belong to no `ComponentNN` selection collide with nothing, and no log line says so. The
+   name's case does not matter: in game `component01` collides exactly like `Component01`,
+   unbinarized and binarized, and binarize writes both as `component01`
+   (`references/killers-detail.md` §2). Fix: select each closed, convex part as its own
+   `ComponentNN` (killer #8). py3d `ERR_COMPONENT_NAMING` is right when no component exists and a
+   false positive on a lowercase name. *(Corrected 2026-10-02: titled "Component Selection Case
+   Sensitivity", this entry read "Geometry component MUST be `Component01` (uppercase C); any
+   variation silently loses ALL collision.")*
 3. **Missing `autocenter=0` LOD Property** (CRITICAL for Inventory_Base) — items with
    `autocenter=0` in config need it ALSO as a named property on every collision LOD,
    else collision is displaced.
@@ -276,7 +283,12 @@ Missing stages produce engine warnings but don't crash.
                                    component" and reversed "the faces of that component only",
                                    which turns the healthy faces of a mostly-outward component
                                    outward.)
-   b. Component01 uppercase C?   → If wrong case: rename
+   b. Collision faces in a ComponentNN selection (killer #2)?
+                                 → If none: select each closed, convex part as ComponentNN;
+                                   the name's case does not matter.
+                                   (Corrected 2026-10-02: this line read "Component01 uppercase
+                                   C?   → If wrong case: rename"; in game component01 collides
+                                   exactly like Component01.)
    c. autocenter=0 LOD property? → If missing: add
    d. pos center in Memory?      → If missing: add at (0,0,0)
    e. Component01 covers all?    → If partial: extend selection
@@ -311,7 +323,11 @@ Missing stages produce engine warnings but don't crash.
    winding/cull SIGN does not: on the measured path it inverts in every pair. Audit the
    published ODOL with a predicate calibrated on ODOL, never one ported from the MLOD
    (LL-273, "MLOD to ODOL is a winding-sign boundary", below)
-5. **Named selections are case-sensitive** in MLOD format. `Component01` ≠ `component01`
+5. **A component selection's case does not matter in game** — the MLOD keeps the name as
+   written and py3d compares names exactly, but the engine collides `component01` exactly like
+   `Component01`, and binarize writes `Component01` as `component01` (killer #2). Other
+   selections were not measured. *(Corrected 2026-10-02: this item read "**Named selections are
+   case-sensitive** in MLOD format. `Component01` ≠ `component01`".)*
 6. **Memory LOD must have zero faces** — only single-vertex points. Faces in Memory LOD
    may confuse the engine.
 7. **Animation axis points must be in the SAME named selection** — both points of

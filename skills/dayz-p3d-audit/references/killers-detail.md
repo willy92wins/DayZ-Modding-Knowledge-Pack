@@ -100,14 +100,52 @@ The last paragraph ended: "Check offline with
 `skills/dayz-characters/references/check_dayz_winding.py`." That script predates Rule 12 and
 fails a correct export (dayz-characters, "OFFLINE GATE").)*
 
-### 2. Component Selection Case Sensitivity (CRITICAL)
+### 2. No `ComponentNN` Selection in the Collision LODs (CRITICAL)
 
-Geometry LOD component MUST be `Component01` (uppercase C). The engine string-matches
-exactly. `component01`, `COMPONENT01`, or any variation silently fails — engine finds
-zero components and ignores ALL collision geometry.
+Collision LODs whose faces belong to no `ComponentNN` selection collide with nothing: no raycast
+in `geom`, `view` or `fire`, no physics contact, and the player walks through. No line in the RPT
+or the script log says so. The case of the selection name is not part of it.
 
-**Verified against**: LFPowerGrid production models (fridge, furnace, battery_adapter)
-all use `Component01`.
+**Measured in game** (2026-10-02, DayZDiag 1.29.163709, driven by dayz-mcp): one 2 m box written
+as three MLODs that are byte-identical except for the selection on the Geometry, View and Fire
+LODs: `Component01`, `component01` (those two files differ in exactly three bytes, the `C` of
+each name), or none. Each was loaded packed unbinarized and binarized, as an `Inventory_Base` item
+(`physLayer="item_large"`) and as a `HouseNoDestruct`, with every face wound inward (Rule 18):
+
+| collision selection | `scene_raycast` (item; geom, view, fire) | `RayCastBullet` (physics) | player walking into it |
+|---|---|---|---|
+| `Component01` | 6/6 per mode, both packings | hit, both packings | stopped 0.36 m before the face |
+| `component01` | 6/6 per mode, both packings | hit, both packings | stopped 0.36 m before the face |
+| none | 0/6 per mode, both packings | no hit | walked through |
+
+Rays per item and mode: one from above, one from each of the four sides at mid-height, one from
+inside; the two names gave the same faces to the centimetre. The `HouseNoDestruct` copies gave the
+same answer on one horizontal ray per mode, the physics ray and the walk. Same-run vanilla
+controls: `HescoBox` (`item_large`) took every ray and stopped the player at the same 0.36 m;
+`WoodenCrate` (`item_small`, 0.28 m tall) took every ray and did not stop the player. (claim: CLAIM-P3D-COMPONENT-CASE-INGAME)
+
+**Binarize removes the difference anyway**: from the `Component01` and the `component01` MLOD it
+writes the same ODOL, byte for byte, with the name stored as `component01`.
+
+**Detection**: a collision LOD with faces and no `ComponentNN` selection. py3d `P3D.validate()`
+checks the Geometry LOD only (`_check_component_naming`), not View or Fire: it reports a missing
+component as `ERR_COMPONENT_NAMING` ("No Component selection found"), and the same code also fires
+on a lowercase `component01`, which works, so that reading is a false positive.
+
+**Fix**: select each closed, convex part of the collision LOD as its own `ComponentNN`
+(`Component01`, `Component02`, ...) over all its points and faces (killer #8). Keep the case the
+toolchain writes.
+
+**Not measured**: other spellings (`COMPONENT01`, `Component1`, `Component_01`), a model with a
+component in some collision LODs and none in others, weapon fire, vehicles.
+
+*(Corrected 2026-10-02: titled "Component Selection Case Sensitivity", this entry read: "Geometry
+LOD component MUST be `Component01` (uppercase C). The engine string-matches exactly.
+`component01`, `COMPONENT01`, or any variation silently fails — engine finds zero components and
+ignores ALL collision geometry." and "**Verified against**: LFPowerGrid production models (fridge,
+furnace, battery_adapter) all use `Component01`." Those models show that the uppercase name
+works, not that the lowercase one fails; LFPowerGrid's `lf_solarpanel.p3d`, whose collision
+component is `component01`, took 21 of 21 rays in game the same day.)*
 
 ### 3. Missing `autocenter=0` LOD Property (CRITICAL for Inventory_Base)
 

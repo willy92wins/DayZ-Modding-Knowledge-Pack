@@ -315,8 +315,11 @@ Geometry LOD has mass (`new Point()` defaults to `mass=None`; `add_proxy` points
 ### 3.5 `validate()` findings that are EXPECTED for a vehicle (don't chase)
 
 - **`ERR_COMPONENT_NAMING` (lowercase `component01`)** is a **false-positive for vehicles** — vanilla
-  CivilianSedan itself triggers it (it uses lowercase). Match vanilla: lowercase. (Uppercase `Component01`
-  is the Inventory_Base rule.)
+  CivilianSedan itself triggers it (it uses lowercase). Match vanilla: lowercase. (The case does not matter
+  on `Inventory_Base` items either: dayz-p3d-audit killer #2, measured in game 2026-10-02. The same code
+  for a Geometry LOD with no component at all is not expected: on an item and a building that collision
+  was gone; vehicles not measured.) *(Corrected 2026-10-02: the parenthesis read
+  "Uppercase `Component01` is the Inventory_Base rule.")*
 - **`ERR_AXIS_SELECTION_MISSING`** fires for every Memory `*_axis` whose homonymous selection is absent from
   the **visual** LOD. For wheels this is REAL — assign each wheel proxy face ALSO to visual `wheel_X_Y`
   (rotation), `wheel_X_Y_damper` (suspension translation) and front `wheel_X_1_steering` selections so

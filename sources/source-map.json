@@ -431,10 +431,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-p3d-audit-rule6@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-p3d-audit killer #2 corrected. It said the Geometry component MUST be Component01 (uppercase C) and that any variation silently loses ALL collision (SKILL.md index, killers-detail.md section 2, decision-tree step 5b, PART 5 item 5); dayz-vehicles limited that rule to Inventory_Base items (vehicle-structural-parity.md, rip-import.md). In-game A/B, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (project DayZ_MCP, mods @DayZ_MCP plus the probe only), NWAF concrete: one 2 m box (x -1..1, y 0..2, z -1..1; Visual, Geometry 50 kg autocenter=0, Memory, View and Fire LODs; every face wound inward per Rule 18 and normals agreeing, 6 of 6 per LOD) written by py3d 1.8.0 as three MLODs: Component01 (sha256 0f6838e1d6132f053513a91fe9f8def273ff69edeceaa5827afe0988d70f718d), component01 (sha256 1aa694559d2c00c6a6c095ca86a9c29002f204dabea89cf98dd5145828ea7c7a, same 4553 bytes, differing from the first in exactly 3 bytes: the C of the TAGG name in Geometry, View and Fire) and no selection (sha256 f7a7b15bc917762170d3e94c122e35df4f75ef4edaf22eac1bd0fa6b15ab78d4). AddonBuilder 1.0.240639 packed them with -packonly (each MLOD byte-identical inside the PBO) and in binarize mode, where Component01 and component01 become the same ODOL (sha256 da63c2562ac4aa01446ae49c08024b60760f52b56fc342037ed7057805efb4d5, 2748 bytes, name stored as component01 three times). As Inventory_Base items (physLayer item_large) spawned with ECE_NOPERSISTENCY_WORLD and RF_IGNORE (axis-aligned): scene_raycast rvproxy radius 0.05 in geom, view and fire, six rays per mode (above, the four sides at mid-height, one from inside): Component01 and component01 6 of 6 per mode on both packings with identical readings (top at y0 + 2.05, side faces at centre +/- 1.05 m, inside ray entry 0 exit 1), the no-selection box 0 of 6 per mode on both packings (vertical rays reach the terrain); DayZPhysics.RayCastBullet: a hit for both names at the exact face, none for the no-selection box; player_move walk for 10 s from 4 m south toward a point 4 m north: both names stop the player 0.36 m before the face (arrived false), the no-selection box lets the player through (arrived, 7.51 m in 5.1 s, like the open-ground control). HouseNoDestruct copies of the same models: the same pattern on one E->W ray per mode, the physics ray and the walk. Same-run vanilla controls: HescoBox (item_large) took every ray and stopped the player 0.36 m before its face; WoodenCrate (item_small, 0.28 m tall) took every ray and did not stop the player. No RPT or script-log line on either peer names the probe classes or models. Not measured: other spellings, a component in only some collision LODs, weapon fire, vehicles. Killer #2 is now the measured silent failure, collision faces in no ComponentNN selection; step 5b, PART 5 item 5 and the two dayz-vehicles notes are aligned; py3d ERR_COMPONENT_NAMING on a lowercase name is documented as a false positive, code unchanged. The old text is quoted verbatim in dated notes; no measurement removed. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fbbed18c8792a6fe479c866cf8f4bfc4d2f63350300bedf7a253310fa91c56b9",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cc43a1ed92fd96e9626dfe738591ebacbc58e1fe868c34b94b4f2f460fac0b45",
+      "output_hash": "fbbed18c8792a6fe479c866cf8f4bfc4d2f63350300bedf7a253310fa91c56b9",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7862,10 +7872,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-p3d-audit-rule6@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-p3d-audit killer #2 corrected. It said the Geometry component MUST be Component01 (uppercase C) and that any variation silently loses ALL collision (SKILL.md index, killers-detail.md section 2, decision-tree step 5b, PART 5 item 5); dayz-vehicles limited that rule to Inventory_Base items (vehicle-structural-parity.md, rip-import.md). In-game A/B, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (project DayZ_MCP, mods @DayZ_MCP plus the probe only), NWAF concrete: one 2 m box (x -1..1, y 0..2, z -1..1; Visual, Geometry 50 kg autocenter=0, Memory, View and Fire LODs; every face wound inward per Rule 18 and normals agreeing, 6 of 6 per LOD) written by py3d 1.8.0 as three MLODs: Component01 (sha256 0f6838e1d6132f053513a91fe9f8def273ff69edeceaa5827afe0988d70f718d), component01 (sha256 1aa694559d2c00c6a6c095ca86a9c29002f204dabea89cf98dd5145828ea7c7a, same 4553 bytes, differing from the first in exactly 3 bytes: the C of the TAGG name in Geometry, View and Fire) and no selection (sha256 f7a7b15bc917762170d3e94c122e35df4f75ef4edaf22eac1bd0fa6b15ab78d4). AddonBuilder 1.0.240639 packed them with -packonly (each MLOD byte-identical inside the PBO) and in binarize mode, where Component01 and component01 become the same ODOL (sha256 da63c2562ac4aa01446ae49c08024b60760f52b56fc342037ed7057805efb4d5, 2748 bytes, name stored as component01 three times). As Inventory_Base items (physLayer item_large) spawned with ECE_NOPERSISTENCY_WORLD and RF_IGNORE (axis-aligned): scene_raycast rvproxy radius 0.05 in geom, view and fire, six rays per mode (above, the four sides at mid-height, one from inside): Component01 and component01 6 of 6 per mode on both packings with identical readings (top at y0 + 2.05, side faces at centre +/- 1.05 m, inside ray entry 0 exit 1), the no-selection box 0 of 6 per mode on both packings (vertical rays reach the terrain); DayZPhysics.RayCastBullet: a hit for both names at the exact face, none for the no-selection box; player_move walk for 10 s from 4 m south toward a point 4 m north: both names stop the player 0.36 m before the face (arrived false), the no-selection box lets the player through (arrived, 7.51 m in 5.1 s, like the open-ground control). HouseNoDestruct copies of the same models: the same pattern on one E->W ray per mode, the physics ray and the walk. Same-run vanilla controls: HescoBox (item_large) took every ray and stopped the player 0.36 m before its face; WoodenCrate (item_small, 0.28 m tall) took every ray and did not stop the player. No RPT or script-log line on either peer names the probe classes or models. Not measured: other spellings, a component in only some collision LODs, weapon fire, vehicles. Killer #2 is now the measured silent failure, collision faces in no ComponentNN selection; step 5b, PART 5 item 5 and the two dayz-vehicles notes are aligned; py3d ERR_COMPONENT_NAMING on a lowercase name is documented as a false positive, code unchanged. The old text is quoted verbatim in dated notes; no measurement removed. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4a76754e96002a0ddb2c6430f5e1a84cc1a7bac29991d9ee172fa05be3e35b2f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "00c46acb20b481b1ac8a439e50544f7db1afd86e3ac0edb63eb9c78348842b42",
+      "output_hash": "4a76754e96002a0ddb2c6430f5e1a84cc1a7bac29991d9ee172fa05be3e35b2f",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -7894,10 +7914,20 @@
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-p3d-audit-killer1@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-p3d-audit killer #2 corrected. It said the Geometry component MUST be Component01 (uppercase C) and that any variation silently loses ALL collision (SKILL.md index, killers-detail.md section 2, decision-tree step 5b, PART 5 item 5); dayz-vehicles limited that rule to Inventory_Base items (vehicle-structural-parity.md, rip-import.md). In-game A/B, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (project DayZ_MCP, mods @DayZ_MCP plus the probe only), NWAF concrete: one 2 m box (x -1..1, y 0..2, z -1..1; Visual, Geometry 50 kg autocenter=0, Memory, View and Fire LODs; every face wound inward per Rule 18 and normals agreeing, 6 of 6 per LOD) written by py3d 1.8.0 as three MLODs: Component01 (sha256 0f6838e1d6132f053513a91fe9f8def273ff69edeceaa5827afe0988d70f718d), component01 (sha256 1aa694559d2c00c6a6c095ca86a9c29002f204dabea89cf98dd5145828ea7c7a, same 4553 bytes, differing from the first in exactly 3 bytes: the C of the TAGG name in Geometry, View and Fire) and no selection (sha256 f7a7b15bc917762170d3e94c122e35df4f75ef4edaf22eac1bd0fa6b15ab78d4). AddonBuilder 1.0.240639 packed them with -packonly (each MLOD byte-identical inside the PBO) and in binarize mode, where Component01 and component01 become the same ODOL (sha256 da63c2562ac4aa01446ae49c08024b60760f52b56fc342037ed7057805efb4d5, 2748 bytes, name stored as component01 three times). As Inventory_Base items (physLayer item_large) spawned with ECE_NOPERSISTENCY_WORLD and RF_IGNORE (axis-aligned): scene_raycast rvproxy radius 0.05 in geom, view and fire, six rays per mode (above, the four sides at mid-height, one from inside): Component01 and component01 6 of 6 per mode on both packings with identical readings (top at y0 + 2.05, side faces at centre +/- 1.05 m, inside ray entry 0 exit 1), the no-selection box 0 of 6 per mode on both packings (vertical rays reach the terrain); DayZPhysics.RayCastBullet: a hit for both names at the exact face, none for the no-selection box; player_move walk for 10 s from 4 m south toward a point 4 m north: both names stop the player 0.36 m before the face (arrived false), the no-selection box lets the player through (arrived, 7.51 m in 5.1 s, like the open-ground control). HouseNoDestruct copies of the same models: the same pattern on one E->W ray per mode, the physics ray and the walk. Same-run vanilla controls: HescoBox (item_large) took every ray and stopped the player 0.36 m before its face; WoodenCrate (item_small, 0.28 m tall) took every ray and did not stop the player. No RPT or script-log line on either peer names the probe classes or models. Not measured: other spellings, a component in only some collision LODs, weapon fire, vehicles. Killer #2 is now the measured silent failure, collision faces in no ComponentNN selection; step 5b, PART 5 item 5 and the two dayz-vehicles notes are aligned; py3d ERR_COMPONENT_NAMING on a lowercase name is documented as a false positive, code unchanged. The old text is quoted verbatim in dated notes; no measurement removed. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f60bb6f350e04f80eac14f0ea9a7d3cdd2490a8e6d0718b61262b815f3f54a06",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d3f3c77b5393efa2c54edb94e10ef5dc7b735316d31d81dc9e9367935e308908",
+      "output_hash": "f60bb6f350e04f80eac14f0ea9a7d3cdd2490a8e6d0718b61262b815f3f54a06",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -12156,10 +12186,20 @@
           "source_path": "skills/dayz-vehicles/references/rip-import.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-p3d-audit killer #2 corrected. It said the Geometry component MUST be Component01 (uppercase C) and that any variation silently loses ALL collision (SKILL.md index, killers-detail.md section 2, decision-tree step 5b, PART 5 item 5); dayz-vehicles limited that rule to Inventory_Base items (vehicle-structural-parity.md, rip-import.md). In-game A/B, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (project DayZ_MCP, mods @DayZ_MCP plus the probe only), NWAF concrete: one 2 m box (x -1..1, y 0..2, z -1..1; Visual, Geometry 50 kg autocenter=0, Memory, View and Fire LODs; every face wound inward per Rule 18 and normals agreeing, 6 of 6 per LOD) written by py3d 1.8.0 as three MLODs: Component01 (sha256 0f6838e1d6132f053513a91fe9f8def273ff69edeceaa5827afe0988d70f718d), component01 (sha256 1aa694559d2c00c6a6c095ca86a9c29002f204dabea89cf98dd5145828ea7c7a, same 4553 bytes, differing from the first in exactly 3 bytes: the C of the TAGG name in Geometry, View and Fire) and no selection (sha256 f7a7b15bc917762170d3e94c122e35df4f75ef4edaf22eac1bd0fa6b15ab78d4). AddonBuilder 1.0.240639 packed them with -packonly (each MLOD byte-identical inside the PBO) and in binarize mode, where Component01 and component01 become the same ODOL (sha256 da63c2562ac4aa01446ae49c08024b60760f52b56fc342037ed7057805efb4d5, 2748 bytes, name stored as component01 three times). As Inventory_Base items (physLayer item_large) spawned with ECE_NOPERSISTENCY_WORLD and RF_IGNORE (axis-aligned): scene_raycast rvproxy radius 0.05 in geom, view and fire, six rays per mode (above, the four sides at mid-height, one from inside): Component01 and component01 6 of 6 per mode on both packings with identical readings (top at y0 + 2.05, side faces at centre +/- 1.05 m, inside ray entry 0 exit 1), the no-selection box 0 of 6 per mode on both packings (vertical rays reach the terrain); DayZPhysics.RayCastBullet: a hit for both names at the exact face, none for the no-selection box; player_move walk for 10 s from 4 m south toward a point 4 m north: both names stop the player 0.36 m before the face (arrived false), the no-selection box lets the player through (arrived, 7.51 m in 5.1 s, like the open-ground control). HouseNoDestruct copies of the same models: the same pattern on one E->W ray per mode, the physics ray and the walk. Same-run vanilla controls: HescoBox (item_large) took every ray and stopped the player 0.36 m before its face; WoodenCrate (item_small, 0.28 m tall) took every ray and did not stop the player. No RPT or script-log line on either peer names the probe classes or models. Not measured: other spellings, a component in only some collision LODs, weapon fire, vehicles. Killer #2 is now the measured silent failure, collision faces in no ComponentNN selection; step 5b, PART 5 item 5 and the two dayz-vehicles notes are aligned; py3d ERR_COMPONENT_NAMING on a lowercase name is documented as a false positive, code unchanged. The old text is quoted verbatim in dated notes; no measurement removed. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "507cf50074d3252ae27b1ce0b7397f878bacdcbd98a82c3abac69c1f29a2b854",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/rip-import.md",
+          "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b99b1152a2a38fa5377a8c23bdf8ddaddd589164e2616a1565a35dc21f3fa415",
+      "output_hash": "507cf50074d3252ae27b1ce0b7397f878bacdcbd98a82c3abac69c1f29a2b854",
       "output_path": "skills/dayz-vehicles/references/rip-import.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -12280,10 +12320,20 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-p3d-audit killer #2 corrected. It said the Geometry component MUST be Component01 (uppercase C) and that any variation silently loses ALL collision (SKILL.md index, killers-detail.md section 2, decision-tree step 5b, PART 5 item 5); dayz-vehicles limited that rule to Inventory_Base items (vehicle-structural-parity.md, rip-import.md). In-game A/B, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (project DayZ_MCP, mods @DayZ_MCP plus the probe only), NWAF concrete: one 2 m box (x -1..1, y 0..2, z -1..1; Visual, Geometry 50 kg autocenter=0, Memory, View and Fire LODs; every face wound inward per Rule 18 and normals agreeing, 6 of 6 per LOD) written by py3d 1.8.0 as three MLODs: Component01 (sha256 0f6838e1d6132f053513a91fe9f8def273ff69edeceaa5827afe0988d70f718d), component01 (sha256 1aa694559d2c00c6a6c095ca86a9c29002f204dabea89cf98dd5145828ea7c7a, same 4553 bytes, differing from the first in exactly 3 bytes: the C of the TAGG name in Geometry, View and Fire) and no selection (sha256 f7a7b15bc917762170d3e94c122e35df4f75ef4edaf22eac1bd0fa6b15ab78d4). AddonBuilder 1.0.240639 packed them with -packonly (each MLOD byte-identical inside the PBO) and in binarize mode, where Component01 and component01 become the same ODOL (sha256 da63c2562ac4aa01446ae49c08024b60760f52b56fc342037ed7057805efb4d5, 2748 bytes, name stored as component01 three times). As Inventory_Base items (physLayer item_large) spawned with ECE_NOPERSISTENCY_WORLD and RF_IGNORE (axis-aligned): scene_raycast rvproxy radius 0.05 in geom, view and fire, six rays per mode (above, the four sides at mid-height, one from inside): Component01 and component01 6 of 6 per mode on both packings with identical readings (top at y0 + 2.05, side faces at centre +/- 1.05 m, inside ray entry 0 exit 1), the no-selection box 0 of 6 per mode on both packings (vertical rays reach the terrain); DayZPhysics.RayCastBullet: a hit for both names at the exact face, none for the no-selection box; player_move walk for 10 s from 4 m south toward a point 4 m north: both names stop the player 0.36 m before the face (arrived false), the no-selection box lets the player through (arrived, 7.51 m in 5.1 s, like the open-ground control). HouseNoDestruct copies of the same models: the same pattern on one E->W ray per mode, the physics ray and the walk. Same-run vanilla controls: HescoBox (item_large) took every ray and stopped the player 0.36 m before its face; WoodenCrate (item_small, 0.28 m tall) took every ray and did not stop the player. No RPT or script-log line on either peer names the probe classes or models. Not measured: other spellings, a component in only some collision LODs, weapon fire, vehicles. Killer #2 is now the measured silent failure, collision faces in no ComponentNN selection; step 5b, PART 5 item 5 and the two dayz-vehicles notes are aligned; py3d ERR_COMPONENT_NAMING on a lowercase name is documented as a false positive, code unchanged. The old text is quoted verbatim in dated notes; no measurement removed. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "808714a25e6022cc42857501ca27ebafe2f2009e56b6f5be8d0c23a97fcdffc1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
+          "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7796f605a53c3898fb5b01ce2e9198fc33f6ce56b8b5c05bfdaf6b717669db8e",
+      "output_hash": "808714a25e6022cc42857501ca27ebafe2f2009e56b6f5be8d0c23a97fcdffc1",
       "output_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -14815,10 +14865,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-p3d-audit-rule6@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registers CLAIM-P3D-COMPONENT-CASE-INGAME (runtime_verified) for dayz-p3d-audit killers-detail.md section 2, and moves CLAIM-P3D-KITBOX-OUTWARD-INGAME to the line its marker now holds in SKILL.md. In-game A/B, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (project DayZ_MCP, mods @DayZ_MCP plus the probe only), NWAF concrete: one 2 m box (x -1..1, y 0..2, z -1..1; Visual, Geometry 50 kg autocenter=0, Memory, View and Fire LODs; every face wound inward per Rule 18 and normals agreeing, 6 of 6 per LOD) written by py3d 1.8.0 as three MLODs: Component01 (sha256 0f6838e1d6132f053513a91fe9f8def273ff69edeceaa5827afe0988d70f718d), component01 (sha256 1aa694559d2c00c6a6c095ca86a9c29002f204dabea89cf98dd5145828ea7c7a, same 4553 bytes, differing from the first in exactly 3 bytes: the C of the TAGG name in Geometry, View and Fire) and no selection (sha256 f7a7b15bc917762170d3e94c122e35df4f75ef4edaf22eac1bd0fa6b15ab78d4). AddonBuilder 1.0.240639 packed them with -packonly (each MLOD byte-identical inside the PBO) and in binarize mode, where Component01 and component01 become the same ODOL (sha256 da63c2562ac4aa01446ae49c08024b60760f52b56fc342037ed7057805efb4d5, 2748 bytes, name stored as component01 three times). As Inventory_Base items (physLayer item_large) spawned with ECE_NOPERSISTENCY_WORLD and RF_IGNORE (axis-aligned): scene_raycast rvproxy radius 0.05 in geom, view and fire, six rays per mode (above, the four sides at mid-height, one from inside): Component01 and component01 6 of 6 per mode on both packings with identical readings (top at y0 + 2.05, side faces at centre +/- 1.05 m, inside ray entry 0 exit 1), the no-selection box 0 of 6 per mode on both packings (vertical rays reach the terrain); DayZPhysics.RayCastBullet: a hit for both names at the exact face, none for the no-selection box; player_move walk for 10 s from 4 m south toward a point 4 m north: both names stop the player 0.36 m before the face (arrived false), the no-selection box lets the player through (arrived, 7.51 m in 5.1 s, like the open-ground control). HouseNoDestruct copies of the same models: the same pattern on one E->W ray per mode, the physics ray and the walk. Same-run vanilla controls: HescoBox (item_large) took every ray and stopped the player 0.36 m before its face; WoodenCrate (item_small, 0.28 m tall) took every ray and did not stop the player. No RPT or script-log line on either peer names the probe classes or models. Not measured: other spellings, a component in only some collision LODs, weapon fire, vehicles.",
+          "license": "MIT",
+          "source_hash": "cb97be0bb506b54b97b868ecbb176a6787ff75cb3697f4c7924ed8fcf328dafd",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e1ff3fe4bc61c74fa8e8d83803449d3a36017129338aa4bced8cfdd7de1f1745",
+      "output_hash": "cb97be0bb506b54b97b868ecbb176a6787ff75cb3697f4c7924ed8fcf328dafd",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
