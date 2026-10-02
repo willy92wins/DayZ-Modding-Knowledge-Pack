@@ -75,6 +75,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   per-component check and sends the fix to killer #1, and rule 7 no longer offers the kit box's
   outward sign, or a component Rule 18 cannot score, as one to keep. The old text is quoted in dated
   notes.
+- `dayz-p3d-audit` killer #2 said the Geometry component MUST be `Component01` and that any other
+  case silently loses all collision; `dayz-vehicles` limited that rule to `Inventory_Base` items.
+  Measured in game (2026-10-02, DayZDiag 1.29.163709) with one 2 m box written three times,
+  byte-identical except for the collision selection (`Component01`, `component01`, none), each
+  packed unbinarized and binarized, as an `Inventory_Base` item and as a `HouseNoDestruct`: both
+  names took every `scene_raycast` ray in `geom`, `view` and `fire` (6 of 6 per mode on the items),
+  the physics ray, and stopped a walking player 0.36 m before the face; the box without a
+  selection took none, and the player walked through it, with no log line. Binarize writes both
+  names as the same ODOL, `component01`. Killer #2 is now that measured silent failure: no
+  `ComponentNN` selection in the collision LODs (measured with all three unselected; other
+  spellings untested). Decision-tree step 5b, the "case-sensitive" pitfall in PART 5 and the two
+  `dayz-vehicles` notes are aligned; py3d `ERR_COMPONENT_NAMING` on `component01` is documented as
+  a false positive (code unchanged). Killer #8 and step 5e asked for one `Component01` covering
+  every face, which merges separate parts into one non-convex component; they now ask for one
+  component per convex part, together covering the LOD, and note that py3d
+  `WARN_COMPONENT_COVERAGE` counts `Component01` alone (it fires on the healthy six-component
+  `gate_and.p3d`). The old text is quoted in dated notes.
 - `dayz-p3d-audit` "From Check B to fix", step 3: it negated the stored normals of every minority
   group in the same pass as its winding, unless the pipeline recalculates normals afterwards. That
   fits a group whose normals turned along with its winding (the GunRacks case, the second row of

@@ -128,8 +128,18 @@ each killer (root cause, detection snippet, fix, caveats) →
    rule 7). MANDATORY re-run whenever you generate/edit a collision LOD. *(Corrected 2026-10-02:
    titled "Inverted Face Winding", this entry read "Geometry LOD normals point INWARD; raycasts
    pass through" and fixed it with "swap `vertices[1]`/`[2]` per inverted face".)*
-2. **Component Selection Case Sensitivity** (CRITICAL) — Geometry component MUST be
-   `Component01` (uppercase C); any variation silently loses ALL collision.
+2. **No `ComponentNN` Selection in the Collision LODs** (CRITICAL) — measured on a box whose
+   Geometry, View and Fire LODs all lacked a `ComponentNN` selection: no ray hit in `geom`, `view`
+   or `fire`, no physics-ray hit, the player walked through, and no log line said so. A selection
+   missing from only some collision LODs was not measured. `component01` behaved exactly like
+   `Component01` (rays, physics ray, walk; unbinarized and binarized, and binarize writes both as
+   `component01`), so do not rename it to repair collision; other spellings were not measured
+   (`references/killers-detail.md` §2). Fix: select each closed, convex part as its own
+   `ComponentNN`, the components together covering the LOD (killer #8). py3d
+   `ERR_COMPONENT_NAMING` is right when the Geometry LOD has no component and a false positive on
+   `component01`. *(Corrected 2026-10-02: titled "Component Selection Case
+   Sensitivity", this entry read "Geometry component MUST be `Component01` (uppercase C); any
+   variation silently loses ALL collision.")*
 3. **Missing `autocenter=0` LOD Property** (CRITICAL for Inventory_Base) — items with
    `autocenter=0` in config need it ALSO as a named property on every collision LOD,
    else collision is displaced.
@@ -143,8 +153,14 @@ each killer (root cause, detection snippet, fix, caveats) →
    `model.cfg`, so the NAME heuristic false-positives on a valid decoupled rig (LL-027).
 7. **Missing `box_placing_min` / `box_placing_max` Memory Points** — hologram placement
    fallback; fires only for items without a proper Geometry LOD / broken `GetCollisionBox()`.
-8. **Incomplete Component01 Coverage** — `Component01` must include ALL verts AND faces
-   with weight=1, or collision is partial.
+8. **Incomplete Component Coverage** — every vertex and face of a collision LOD must belong to
+   a `ComponentNN` selection with weight=1, one component per closed, convex part, the components
+   together covering the LOD, or collision is partial. Never merge separate parts into one
+   `Component01` to make it cover everything: that component is no longer convex. py3d
+   `WARN_COMPONENT_COVERAGE` counts `Component01` alone and fires on a healthy multi-component LOD
+   (`references/killers-detail.md` §8). *(Corrected 2026-10-02: titled "Incomplete Component01
+   Coverage", this entry read "`Component01` must include ALL verts AND faces with weight=1, or
+   collision is partial.")*
 9. **Non-Watertight Collision Mesh** — open Geometry mesh (boundary edges/holes) →
    raycasts pass through gaps.
 10. **Missing Surface/Material Assignment on Collision LODs** (CRITICAL) — every collision
@@ -276,10 +292,21 @@ Missing stages produce engine warnings but don't crash.
                                    component" and reversed "the faces of that component only",
                                    which turns the healthy faces of a mostly-outward component
                                    outward.)
-   b. Component01 uppercase C?   → If wrong case: rename
+   b. Collision faces in a ComponentNN selection (killer #2)?
+                                 → If none: select each closed, convex part as ComponentNN.
+                                   component01 works like Component01: do not rename it to
+                                   repair collision.
+                                   (Corrected 2026-10-02: this line read "Component01 uppercase
+                                   C?   → If wrong case: rename"; in game component01 collided
+                                   exactly like Component01.)
    c. autocenter=0 LOD property? → If missing: add
    d. pos center in Memory?      → If missing: add at (0,0,0)
-   e. Component01 covers all?    → If partial: extend selection
+   e. Components cover every collision face (killer #8)?
+                                 → If not: give each uncovered closed, convex part its own
+                                   ComponentNN; never merge parts into one component.
+                                   (Corrected 2026-10-02: this line read "Component01 covers
+                                   all?    → If partial: extend selection", which merges separate
+                                   parts into one non-convex component.)
    f. Mesh watertight?           → If open: close gaps
    g. Geometry LOD exists?       → If missing: create one
 
@@ -311,7 +338,11 @@ Missing stages produce engine warnings but don't crash.
    winding/cull SIGN does not: on the measured path it inverts in every pair. Audit the
    published ODOL with a predicate calibrated on ODOL, never one ported from the MLOD
    (LL-273, "MLOD to ODOL is a winding-sign boundary", below)
-5. **Named selections are case-sensitive** in MLOD format. `Component01` ≠ `component01`
+5. **`component01` collides like `Component01`** — the MLOD keeps the name as written and py3d
+   compares names exactly, but in game `component01` behaved exactly like `Component01`, and
+   binarize writes `Component01` as `component01` (killer #2). Other spellings, other selections
+   and names that differ only by case inside one model were not measured. *(Corrected 2026-10-02: this item read "**Named selections are
+   case-sensitive** in MLOD format. `Component01` ≠ `component01`".)*
 6. **Memory LOD must have zero faces** — only single-vertex points. Faces in Memory LOD
    may confuse the engine.
 7. **Animation axis points must be in the SAME named selection** — both points of
