@@ -187,14 +187,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   with 7 parity conflicts, and the minority follows the order of the fill (6 to 246 faces over
   41 other orders), and a real 30-face patch reversed inside that component came back mixed with
   those 114 (144 faces). Step 1 now counts conflicts: a component with one is cut along its edges
-  traversed the same way and filled again, where a piece the cut edges ring off is a minority
-  group (that patch, behind 22 cut edges) and a cut edge inside one piece is a seam to inspect; a
-  component that splits evenly is inspected.
-  Step 3's branches were written for a part whose normals agree with its winding; on a part that
-  reads UNIFORM_FLIPPED (the door's paint) they swap, so each face is read against its part's
-  sign, or the part is brought to Rule 12 first. One face with no reading stops the whole group,
-  and the closing corner check reads UNIFORM_FLIPPED parts with `dot ≤ −0.1` (the healthy door's
-  flags: 26,576 → 441). The three GunRacks MLODs of the step's own record go through it as before:
+  traversed the same way; a cut edge inside one piece is a seam to inspect and stays cut; the
+  other cut edges go back and a second fill gives the group (that patch exactly; with only the 29
+  faces around one of its faces reversed, those 29 and not that face). A component that splits
+  evenly is inspected.
+  Step 3's branches were written for a part whose normals agree with its winding; on a part in
+  the older convention (the door's paint) they pick the wrong side. The part's row is now decided
+  first with the Check A table, never from its normals alone: brought to Rule 12, then read as
+  written, or, kept in the older convention on purpose, read against it. One face with no reading
+  stops the whole group, and the closing corner check reads a part kept in the older convention
+  with `dot ≤ −0.1` (the healthy door's flags: 26,576 → 441 if all its 11 such parts are kept).
+  The three GunRacks MLODs of the step's own record go through it as before:
   their 156 faces read ≥ +0.99, and the result matches the files the 2026-08-28 fix saved byte
   for byte once py3d rewrites both.
   Check A's `MIXED` bullet aligned. Old text quoted in dated notes.
