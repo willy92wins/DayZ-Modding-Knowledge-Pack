@@ -66,11 +66,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   reads `UNIFORM_NON_FLIPPED`; `UNIFORM_FLIPPED` is the older outward-normal convention (it renders
   solid, and the 2026-04-25 Crate_Wooden in-game check stands) or a correct export with its faces
   reversed afterwards. Measured offline on the three MLODs of the Rule 12 in-game test, Check A
-  reads `UNIFORM_NON_FLIPPED` on all three, the inside-out one included, so the item now maps each
-  label and the direction of the cross product (signed volume by winding on the visual LOD, Rule
-  18's per-component check on collision LODs) to a state and a fix. The same file's
+  reads `UNIFORM_NON_FLIPPED` on all three, the inside-out one included, so the item now maps
+  agreement, and the direction of the cross product relative to the side meant to be seen, to a
+  state and a fix. The direction is decided per closed component (signed volume by winding on the
+  visual LOD, where a LOD-wide sum hid one inverted box of four; Rule 18's per-component check on
+  collision LODs), and `proxy:*` triangles stay out of the census and the fixes. The same file's
   centroid-check note no longer gives a correct model outward normals, and its pointer to Check A
-  in `audit_p3d.py`, which has none, now names the check the script does run.
+  in `audit_p3d.py`, which has none, now names the check the script does run. Two other passages
+  taught the old reading and are corrected: the `dayz-p3d-audit` decision tree asked for outward
+  collision winding and swapped `verts[1]`/`verts[2]` when inward, and `dayz-model-pipeline`
+  `py3d-direct-generation.md` said any disagreement between winding and normals renders
+  inside-out.
 
 ## [1.4.0] - 2026-10-01
 

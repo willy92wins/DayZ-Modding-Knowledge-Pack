@@ -364,9 +364,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02: the Check A labels of dayz-p3d-audit references/winding-diagnostics.md aligned with dayz-model-pipeline Rule 12 (in-game test 2026-10-01, DayZDiag 1.29.163709: the cross product and the stored normals both inward). Offline measurement 2026-10-02 with Check A as the file defines it (averaged corner normals, % of faces with dot < -0.5) on the three MLODs of that test, rebuilt byte for byte by tools/py3d/tests/test_s7_blender_to_dayz.py (SHA-256 asserted against MEASURED): UNIFORM_NON_FLIPPED, 0 %, 48/48 faces agree on the correct export, the mirrored one and the inside-out one; signed volume by winding -0.1086, -0.1086, +0.1086. Negative controls on the same fixture: the LFInfectedBig recipe (det=+1 map, faces reversed, normals left outward) and the correct export with every face reversed read UNIFORM_FLIPPED, 0/48 agree, at -0.1086 and +0.1086. Closed unit tetrahedron: a Rule 12 export and an inside-out one both read 4/4 agree, signed volume -0.1667 vs +0.1667. The Crate_Wooden 2026-04-25 in-game measurement is kept verbatim and the old labels are quoted in a dated correction note. The centroid-check note no longer gives a correct model outward normals; the pointer to Check A in audit_p3d.py, which delegates winding to P3D.validate() (audit_p3d.py:337) and has no Check A, now names ERR_WINDING_VS_NORMALS. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-02: the Check A labels of dayz-p3d-audit references/winding-diagnostics.md aligned with dayz-model-pipeline Rule 12 (in-game test 2026-10-01, DayZDiag 1.29.163709: the cross product and the stored normals both inward). Offline measurement 2026-10-02 with Check A as the file defines it (averaged corner normals, % of faces with dot < -0.5) on the three MLODs of that test, rebuilt byte for byte by tools/py3d/tests/test_s7_blender_to_dayz.py (SHA-256 asserted against MEASURED): UNIFORM_NON_FLIPPED, 0 %, 48/48 faces agree on the correct export, the mirrored one and the inside-out one; signed volume by winding -0.1086, -0.1086, +0.1086. Negative controls on the same fixture: the LFInfectedBig recipe (det=+1 map, faces reversed, normals left outward) and the correct export with every face reversed read UNIFORM_FLIPPED, 0/48 agree, at -0.1086 and +0.1086. Closed unit tetrahedron: a Rule 12 export and an inside-out one both read 4/4 agree, signed volume -0.1667 vs +0.1667. The Crate_Wooden 2026-04-25 in-game measurement is kept verbatim and the old labels are quoted in a dated correction note. The centroid-check note no longer gives a correct model outward normals; the pointer to Check A in audit_p3d.py, which delegates winding to P3D.validate() (audit_p3d.py:337) and has no Check A, now names ERR_WINDING_VS_NORMALS. Cross-family review by Codex gpt-6.1-sol, round 1 UNSOUND with five findings, all reproduced by the receptor and acted upon: direction relative to the side meant to be seen (a room seen from inside reads positive; the reviewer's calibration follow-up lowered this one to clarity and answered YES that the away/toward definition resolves it), direction per closed component (one inverted box of four left the LOD-wide sum at -0.0822 while that box read +0.0132), proxy:* triangles out of the census and the fixes, agreement counted besides the dot < -0.5 census (normals at dot -0.25 read 0 % with 0/48 agreeing), and the dayz-p3d-audit decision-tree line that asked for outward collision winding and swapped verts[1]/verts[2]. The receptor also corrected the py3d-direct-generation.md sentence that said any disagreement renders inside-out. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "ebd14acd31e1fc596a96d9a85fd921974d4a6d46e1c3b83c0012501384a54439",
+          "source_hash": "117f04cf5cc46c0f7d4a6db71339ce6452ab2b4cc0314022a2db2069f6a28617",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-p3d-audit-checkA@2026-10-02",
@@ -374,7 +374,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ebd14acd31e1fc596a96d9a85fd921974d4a6d46e1c3b83c0012501384a54439",
+      "output_hash": "117f04cf5cc46c0f7d4a6db71339ce6452ab2b4cc0314022a2db2069f6a28617",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7556,10 +7556,20 @@
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-py3d-proxy-equivalence@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: the Check A labels of dayz-p3d-audit references/winding-diagnostics.md aligned with dayz-model-pipeline Rule 12 (in-game test 2026-10-01, DayZDiag 1.29.163709: the cross product and the stored normals both inward). Offline measurement 2026-10-02 with Check A as the file defines it (averaged corner normals, % of faces with dot < -0.5) on the three MLODs of that test, rebuilt byte for byte by tools/py3d/tests/test_s7_blender_to_dayz.py (SHA-256 asserted against MEASURED): UNIFORM_NON_FLIPPED, 0 %, 48/48 faces agree on the correct export, the mirrored one and the inside-out one; signed volume by winding -0.1086, -0.1086, +0.1086. Negative controls on the same fixture: the LFInfectedBig recipe (det=+1 map, faces reversed, normals left outward) and the correct export with every face reversed read UNIFORM_FLIPPED, 0/48 agree, at -0.1086 and +0.1086. Closed unit tetrahedron: a Rule 12 export and an inside-out one both read 4/4 agree, signed volume -0.1667 vs +0.1667. The Crate_Wooden 2026-04-25 in-game measurement is kept verbatim and the old labels are quoted in a dated correction note. The centroid-check note no longer gives a correct model outward normals; the pointer to Check A in audit_p3d.py, which delegates winding to P3D.validate() (audit_p3d.py:337) and has no Check A, now names ERR_WINDING_VS_NORMALS. Cross-family review by Codex gpt-6.1-sol, round 1 UNSOUND with five findings, all reproduced by the receptor and acted upon: direction relative to the side meant to be seen (a room seen from inside reads positive; the reviewer's calibration follow-up lowered this one to clarity and answered YES that the away/toward definition resolves it), direction per closed component (one inverted box of four left the LOD-wide sum at -0.0822 while that box read +0.0132), proxy:* triangles out of the census and the fixes, agreement counted besides the dot < -0.5 census (normals at dot -0.25 read 0 % with 0/48 agreeing), and the dayz-p3d-audit decision-tree line that asked for outward collision winding and swapped verts[1]/verts[2]. The receptor also corrected the py3d-direct-generation.md sentence that said any disagreement renders inside-out. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "040a17d7dcdc380aec893c31a8c5f66bd90013eff977f0d7a85e4a22101b7ab5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "kp-update-p3d-audit-checkA@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6862ab9882709adcf56cae1f1efbb90104caa3bdcc376e8710c35f4bfc10f2bf",
+      "output_hash": "040a17d7dcdc380aec893c31a8c5f66bd90013eff977f0d7a85e4a22101b7ab5",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -7702,10 +7712,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: the Check A labels of dayz-p3d-audit references/winding-diagnostics.md aligned with dayz-model-pipeline Rule 12 (in-game test 2026-10-01, DayZDiag 1.29.163709: the cross product and the stored normals both inward). Offline measurement 2026-10-02 with Check A as the file defines it (averaged corner normals, % of faces with dot < -0.5) on the three MLODs of that test, rebuilt byte for byte by tools/py3d/tests/test_s7_blender_to_dayz.py (SHA-256 asserted against MEASURED): UNIFORM_NON_FLIPPED, 0 %, 48/48 faces agree on the correct export, the mirrored one and the inside-out one; signed volume by winding -0.1086, -0.1086, +0.1086. Negative controls on the same fixture: the LFInfectedBig recipe (det=+1 map, faces reversed, normals left outward) and the correct export with every face reversed read UNIFORM_FLIPPED, 0/48 agree, at -0.1086 and +0.1086. Closed unit tetrahedron: a Rule 12 export and an inside-out one both read 4/4 agree, signed volume -0.1667 vs +0.1667. The Crate_Wooden 2026-04-25 in-game measurement is kept verbatim and the old labels are quoted in a dated correction note. The centroid-check note no longer gives a correct model outward normals; the pointer to Check A in audit_p3d.py, which delegates winding to P3D.validate() (audit_p3d.py:337) and has no Check A, now names ERR_WINDING_VS_NORMALS. Cross-family review by Codex gpt-6.1-sol, round 1 UNSOUND with five findings, all reproduced by the receptor and acted upon: direction relative to the side meant to be seen (a room seen from inside reads positive; the reviewer's calibration follow-up lowered this one to clarity and answered YES that the away/toward definition resolves it), direction per closed component (one inverted box of four left the LOD-wide sum at -0.0822 while that box read +0.0132), proxy:* triangles out of the census and the fixes, agreement counted besides the dot < -0.5 census (normals at dot -0.25 read 0 % with 0/48 agreeing), and the dayz-p3d-audit decision-tree line that asked for outward collision winding and swapped verts[1]/verts[2]. The receptor also corrected the py3d-direct-generation.md sentence that said any disagreement renders inside-out. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5b586b488b5071858f02c58ace9e1c7d890393655de5f2fdc9a713bbef6faeb6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-p3d-audit-checkA@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1b66d4b4d30192944e67d72610c3f6fc169bdd16c70f5d35ce5425dc59d462e5",
+      "output_hash": "5b586b488b5071858f02c58ace9e1c7d890393655de5f2fdc9a713bbef6faeb6",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -7811,9 +7831,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02: the Check A labels of dayz-p3d-audit references/winding-diagnostics.md aligned with dayz-model-pipeline Rule 12 (in-game test 2026-10-01, DayZDiag 1.29.163709: the cross product and the stored normals both inward). Offline measurement 2026-10-02 with Check A as the file defines it (averaged corner normals, % of faces with dot < -0.5) on the three MLODs of that test, rebuilt byte for byte by tools/py3d/tests/test_s7_blender_to_dayz.py (SHA-256 asserted against MEASURED): UNIFORM_NON_FLIPPED, 0 %, 48/48 faces agree on the correct export, the mirrored one and the inside-out one; signed volume by winding -0.1086, -0.1086, +0.1086. Negative controls on the same fixture: the LFInfectedBig recipe (det=+1 map, faces reversed, normals left outward) and the correct export with every face reversed read UNIFORM_FLIPPED, 0/48 agree, at -0.1086 and +0.1086. Closed unit tetrahedron: a Rule 12 export and an inside-out one both read 4/4 agree, signed volume -0.1667 vs +0.1667. The Crate_Wooden 2026-04-25 in-game measurement is kept verbatim and the old labels are quoted in a dated correction note. The centroid-check note no longer gives a correct model outward normals; the pointer to Check A in audit_p3d.py, which delegates winding to P3D.validate() (audit_p3d.py:337) and has no Check A, now names ERR_WINDING_VS_NORMALS. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-02: the Check A labels of dayz-p3d-audit references/winding-diagnostics.md aligned with dayz-model-pipeline Rule 12 (in-game test 2026-10-01, DayZDiag 1.29.163709: the cross product and the stored normals both inward). Offline measurement 2026-10-02 with Check A as the file defines it (averaged corner normals, % of faces with dot < -0.5) on the three MLODs of that test, rebuilt byte for byte by tools/py3d/tests/test_s7_blender_to_dayz.py (SHA-256 asserted against MEASURED): UNIFORM_NON_FLIPPED, 0 %, 48/48 faces agree on the correct export, the mirrored one and the inside-out one; signed volume by winding -0.1086, -0.1086, +0.1086. Negative controls on the same fixture: the LFInfectedBig recipe (det=+1 map, faces reversed, normals left outward) and the correct export with every face reversed read UNIFORM_FLIPPED, 0/48 agree, at -0.1086 and +0.1086. Closed unit tetrahedron: a Rule 12 export and an inside-out one both read 4/4 agree, signed volume -0.1667 vs +0.1667. The Crate_Wooden 2026-04-25 in-game measurement is kept verbatim and the old labels are quoted in a dated correction note. The centroid-check note no longer gives a correct model outward normals; the pointer to Check A in audit_p3d.py, which delegates winding to P3D.validate() (audit_p3d.py:337) and has no Check A, now names ERR_WINDING_VS_NORMALS. Cross-family review by Codex gpt-6.1-sol, round 1 UNSOUND with five findings, all reproduced by the receptor and acted upon: direction relative to the side meant to be seen (a room seen from inside reads positive; the reviewer's calibration follow-up lowered this one to clarity and answered YES that the away/toward definition resolves it), direction per closed component (one inverted box of four left the LOD-wide sum at -0.0822 while that box read +0.0132), proxy:* triangles out of the census and the fixes, agreement counted besides the dot < -0.5 census (normals at dot -0.25 read 0 % with 0/48 agreeing), and the dayz-p3d-audit decision-tree line that asked for outward collision winding and swapped verts[1]/verts[2]. The receptor also corrected the py3d-direct-generation.md sentence that said any disagreement renders inside-out. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "ba9ba3b16768bf54f087f6b903dcc26157b067924acd16cc8e347e4a294aeae5",
+          "source_hash": "09fc8604fabc78fb8c241372730b532ba24e968de849ac8d9c6a1f77f7d1521a",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
           "source_revision": "kp-update-p3d-audit-checkA@2026-10-02",
@@ -7821,7 +7841,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ba9ba3b16768bf54f087f6b903dcc26157b067924acd16cc8e347e4a294aeae5",
+      "output_hash": "09fc8604fabc78fb8c241372730b532ba24e968de849ac8d9c6a1f77f7d1521a",
       "output_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"

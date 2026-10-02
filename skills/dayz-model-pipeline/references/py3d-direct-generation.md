@@ -688,9 +688,12 @@ def check_uv_range(model):
 After Rule 12's map the faces are already in the MLOD order (cross product INWARD, normals
 negated to match). This check only confirms that vertex order and stored normals AGREE: it
 cannot see a mirror, and it cannot tell inward from outward when both are flipped together. See
-`SKILL.md` Rule 12. When the vertex order and the stored normals disagree, or both point OUTWARD,
-textures render on the inside only. Check by comparing geometric normal
-(from cross product) with stored normal.
+`SKILL.md` Rule 12. When the vertex order points OUTWARD (both vectors outward, or the faces
+reversed after a correct export), textures render on the inside only. Normals alone pointing
+outward, the older convention, disagree with the vertex order and render solid, but they are not
+what Rule 12 writes; dayz-p3d-audit `references/winding-diagnostics.md` (Check A) maps each case to
+its fix. *(Corrected 2026-10-02: this sentence said any disagreement renders on the inside only.)*
+Check by comparing geometric normal (from cross product) with stored normal.
 
 ```python
 import numpy as np
