@@ -3,7 +3,7 @@ and build_rig_dayz.py.
 
 extract_empties.py runs inside Blender. These tests run it against stand-in
 `bpy` and `mathutils` modules that hold a scene built by hand, so they need
-numpy only. Every expected position is worked out in the comment above it.
+numpy only. Every expected matrix is worked out in the comment above it.
 """
 
 import json
@@ -79,7 +79,21 @@ def _empty(name, parent, parent_type, parent_bone="", inverse=None, basis=None):
     )
 
 
-def _scene(with_right_hand=True):
+def _mesh(parent):
+    return SimpleNamespace(name="Male_body", type="MESH", parent=parent,
+                           parent_type="OBJECT", parent_bone="")
+
+
+# Helpers the scene hangs straight from the armature object, each at its own (0,k,0).
+_ON_ARMATURE = {
+    "weapon": 1.0, "LeftHandIK": 2.0, "RightHandIK": 3.0,
+    "LeftHandIKTarget": 4.0, "RightHandIK_Helper": 5.0, "Camera1st_lock_dummy": 6.0,
+}
+
+
+def _scene(without=()):
+    """Every helper the extractor looks for, minus `without`. Weapon_Root hangs
+    from RightHand_Dummy and goes with it."""
     arm = SimpleNamespace(
         name="Armature", type="ARMATURE", parent=None, parent_type="OBJECT", parent_bone="",
         matrix_world=Matrix.Translation((10.0, 0.0, 0.0)),
@@ -95,19 +109,46 @@ def _scene(with_right_hand=True):
         }),
     )
     objects = [arm]
-    if with_right_hand:
+    if "RightHand_Dummy" not in without:
         hand = _empty("RightHand_Dummy", arm, "BONE", "RightHand",
                       basis=Matrix.Translation((0.0, 0.0, 1.0)))
-        objects += [hand, _empty("Weapon_Root", hand, "OBJECT",
-                                 basis=Matrix.Translation((1.0, 0.0, 0.0)))]
+        objects.append(hand)
+        if "Weapon_Root" not in without:
+            objects.append(_empty("Weapon_Root", hand, "OBJECT",
+                                  basis=Matrix.Translation((1.0, 0.0, 0.0))))
+    if "LeftHand_Dummy" not in without:
+        objects.append(_empty("LeftHand_Dummy", arm, "BONE", "LeftHand", inverse=_turn_z(),
+                              basis=Matrix.Translation((4.0, 0.0, 0.0))))
     objects += [
-        _empty("LeftHand_Dummy", arm, "BONE", "LeftHand", inverse=_turn_z(),
-               basis=Matrix.Translation((4.0, 0.0, 0.0))),
-        _empty("Lamp_Helper", arm, "BONE", "LeftHand"),
-        SimpleNamespace(name="Male_body", type="MESH", parent=arm, parent_type="OBJECT",
-                        parent_bone=""),
+        _empty(name, arm, "OBJECT", basis=Matrix.Translation((0.0, k, 0.0)))
+        for name, k in _ON_ARMATURE.items() if name not in without
     ]
+    objects += [_empty("Lamp_Helper", arm, "BONE", "LeftHand"), _mesh(arm)]
     return _Objects(objects)
+
+
+_TURN = [[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
+_SAME = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+
+
+def _affine(rotation, translation):
+    rows = [rotation[r] + [translation[r]] for r in range(3)]
+    return rows + [[0.0, 0.0, 0.0, 1.0]]
+
+
+EXPECTED = {
+    # Armature (10,0,0) + head (0,0,5); the bone is turned 90 deg about Z, so
+    # its tail (0,2,0) lands at (-2,0,0) while the empty's own (0,0,1) stays.
+    "RightHand_Dummy": _affine(_TURN, (8.0, 0.0, 6.0)),
+    # Child of RightHand_Dummy: its own (1,0,0) turns with it to (0,1,0).
+    "Weapon_Root": _affine(_TURN, (8.0, 1.0, 6.0)),
+    # (10,0,0) + head (0,0,5) + tail (0,3,0); the parent inverse turns the
+    # empty, and its own (4,0,0) with it to (0,4,0). In the other order the
+    # offset would stay (4,0,0).
+    "LeftHand_Dummy": _affine(_TURN, (10.0, 7.0, 5.0)),
+    # Children of the armature object: (10,0,0) + their own (0,k,0).
+    **{name: _affine(_SAME, (10.0, k, 0.0)) for name, k in _ON_ARMATURE.items()},
+}
 
 
 def _run_extractor(monkeypatch, scratch, objects):
@@ -129,35 +170,10 @@ def _run_extractor(monkeypatch, scratch, objects):
     return imported
 
 
-def _positions(empties):
-    return {name: [round(m[r][3], 6) for r in range(3)] for name, m in empties.items()}
-
-
-def test_helpers_are_composed_through_their_parent_chain(tmp_path, monkeypatch):
-    """Breaks if the file moves, matrix_world leaks in, or the chain order changes."""
-    _run_extractor(monkeypatch, tmp_path, _scene())
-
-    out = json.loads((tmp_path / "empties_armworld.json").read_text(encoding="utf-8"))
-    assert sorted(out) == ["LeftHand_Dummy", "RightHand_Dummy", "Weapon_Root"]
-    pos = _positions(out)
-    # Armature (10,0,0) + head (0,0,5); the bone is turned 90 deg about Z, so
-    # its tail (0,2,0) lands at (-2,0,0) while the empty's own (0,0,1) stays.
-    assert pos["RightHand_Dummy"] == [8.0, 0.0, 6.0]
-    # Child of RightHand_Dummy: its own (1,0,0) turns with it to (0,1,0).
-    assert pos["Weapon_Root"] == [8.0, 1.0, 6.0]
-    # (10,0,0) + head (0,0,5) + tail (0,3,0); the parent inverse turns the
-    # empty's own (4,0,0) to (0,4,0). In the other order it would stay (4,0,0).
-    assert pos["LeftHand_Dummy"] == [10.0, 7.0, 5.0]
-    turn = [[round(v, 6) for v in row[:3]] for row in out["RightHand_Dummy"][:3]]
-    assert turn == [[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
-    assert out["RightHand_Dummy"][3] == [0.0, 0.0, 0.0, 1.0]
-
-
-def test_build_rig_dayz_turns_the_file_into_anchors(tmp_path, monkeypatch):
-    """Breaks if build_rig_dayz.py stops finding the extractor's file or reading it."""
-    _run_extractor(monkeypatch, tmp_path, _scene())
-    # Mesh vertices on the bone heads: build_rig_dayz.py aligns at scale 1 with
-    # no shift, and only the viewer frame (x, y, z) -> (x, z, -y) is left.
+def _write_rig_raw(scratch):
+    """A rig_raw.json whose mesh vertices sit on the bone heads: build_rig_dayz.py
+    aligns it at scale 1 with no shift, so only the viewer frame
+    (x, y, z) -> (x, z, -y) is left."""
     heads = {
         "Pelvis": (0.0, 0.0, 1.0), "Neck": (0.0, 0.0, 1.8), "Head": (0.0, 0.0, 2.0),
         "RightHand": (-1.0, 0.0, 1.5), "LeftHand": (1.0, 0.0, 1.5),
@@ -175,17 +191,46 @@ def test_build_rig_dayz_turns_the_file_into_anchors(tmp_path, monkeypatch):
             "weights": [[["Pelvis", 1.0]] for _ in heads],
         },
     }
-    (tmp_path / "rig_raw.json").write_text(json.dumps(rig), encoding="utf-8")
+    (scratch / "rig_raw.json").write_text(json.dumps(rig), encoding="utf-8")
 
-    done = subprocess.run(
+
+def _build_rig(scratch):
+    return subprocess.run(
         [sys.executable, str(BUILD_RIG)],
-        env=dict(os.environ, DAYZ_ANIM_SCRATCH=str(tmp_path)),
+        env=dict(os.environ, DAYZ_ANIM_SCRATCH=str(scratch)),
         capture_output=True, text=True,
     )
 
+
+def test_every_helper_is_composed_through_its_parent_chain(tmp_path, monkeypatch):
+    """Breaks if the file moves, matrix_world leaks in, the chain order changes,
+    or a helper drops out of the list."""
+    _run_extractor(monkeypatch, tmp_path, _scene())
+
+    out = json.loads((tmp_path / "empties_armworld.json").read_text(encoding="utf-8"))
+    assert out == EXPECTED
+
+
+def test_a_helper_the_fbx_lacks_is_listed_not_fatal(tmp_path, monkeypatch, capsys):
+    """Breaks if an absent helper other than RightHand_Dummy stops the run: the
+    BI FBX has no LeftHandIKTarget, and its other eight must still be written."""
+    _run_extractor(monkeypatch, tmp_path, _scene(without=("LeftHandIKTarget",)))
+
+    out = json.loads((tmp_path / "empties_armworld.json").read_text(encoding="utf-8"))
+    assert sorted(out) == sorted(set(EXPECTED) - {"LeftHandIKTarget"})
+    assert "LeftHandIKTarget" in capsys.readouterr().out
+
+
+def test_build_rig_dayz_turns_the_file_into_anchors(tmp_path, monkeypatch):
+    """Breaks if build_rig_dayz.py stops finding the extractor's file or reading it."""
+    _run_extractor(monkeypatch, tmp_path, _scene())
+    _write_rig_raw(tmp_path)
+
+    done = _build_rig(tmp_path)
+
     assert done.returncode == 0, done.stderr
     anchors = json.loads((tmp_path / "rig_dayz.json").read_text(encoding="utf-8"))["anchors"]
-    assert sorted(anchors) == ["LeftHand_Dummy", "RightHand_Dummy", "Weapon_Root"]
+    assert sorted(anchors) == sorted(EXPECTED)
     # (8,0,6) -> (8,6,0) and (8,1,6) -> (8,6,-1)
     assert anchors["RightHand_Dummy"]["pos"] == [8.0, 6.0, 0.0]
     assert anchors["Weapon_Root"]["pos"] == [8.0, 6.0, -1.0]
@@ -195,10 +240,34 @@ def test_no_file_without_right_hand_dummy(tmp_path, monkeypatch):
     """Breaks if a rig without the weapon anchor still yields a file: build_viewer.py
     would then place the weapon at its fixed (0, 1.3, 0.2) without a word."""
     with pytest.raises(SystemExit) as stopped:
-        _run_extractor(monkeypatch, tmp_path, _scene(with_right_hand=False))
+        _run_extractor(monkeypatch, tmp_path, _scene(without=("RightHand_Dummy",)))
 
     assert "RightHand_Dummy" in str(stopped.value.code)
     assert not (tmp_path / "empties_armworld.json").exists()
+
+
+@pytest.mark.parametrize(
+    "objects, stop",
+    [
+        (lambda: _scene(without=("RightHand_Dummy",)), SystemExit),
+        (lambda: _Objects([_mesh(None)]), StopIteration),
+    ],
+    ids=["no-right-hand", "no-armature"],
+)
+def test_a_failed_run_leaves_no_earlier_file_behind(tmp_path, monkeypatch, objects, stop):
+    """Breaks if an earlier run's empties_armworld.json outlives a failed one:
+    build_rig_dayz.py would build on it and the viewer fall back without a word.
+    The {} is the stand-in a session wrote by hand on 2026-10-02."""
+    (tmp_path / "empties_armworld.json").write_text("{}", encoding="utf-8")
+    _write_rig_raw(tmp_path)
+
+    with pytest.raises(stop):
+        _run_extractor(monkeypatch, tmp_path, objects())
+
+    assert not (tmp_path / "empties_armworld.json").exists()
+    done = _build_rig(tmp_path)
+    assert done.returncode != 0
+    assert "empties_armworld.json" in done.stderr
 
 
 def test_both_extractors_ship_the_same_fbx(tmp_path, monkeypatch):

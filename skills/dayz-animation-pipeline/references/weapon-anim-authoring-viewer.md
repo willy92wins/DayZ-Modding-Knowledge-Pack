@@ -65,7 +65,9 @@ are **empties** in the FBX, parented to bones or to another helper (`Weapon_Root
 hangs from `RightHand_Dummy`); read their world via the child-of-bone formula
 `arm_w @ pose_bone.matrix @ T(0,bone_len,0) @ matrix_parent_inverse @
 matrix_basis`, the parent helper's world taking the place of the first three
-factors for a helper child (`scripts/extract_empties.py`).
+factors for a helper child (`scripts/extract_empties.py`, which assumes what this
+FBX has: one armature, parent bones without `use_relative_parent`, every hidden
+helper parented).
 [EXACT][CLAIM-ANIM-FBX-HIDDEN-EMPTIES] Plain `matrix_world` will not do: the 17 of
 the FBX's 38 empties that import disabled in viewports (`hide_viewport`),
 `RightHand_Dummy`, `Weapon_Root` and `LeftHand_Dummy` among them, keep it at the
@@ -133,7 +135,8 @@ run:
 1. `fbx_extract.py` (Blender headless rig dump) → `rig_raw.json`.
 2. `extract_empties.py` (Blender headless, same FBX: the helper empties through
    their parent chain, see above) → `empties_armworld.json`; exits 1 and writes
-   nothing when the FBX has no `RightHand_Dummy`.
+   nothing when the FBX has no `RightHand_Dummy`. It removes the previous run's
+   file before it starts, so a failed run leaves step 3 nothing to build on.
 3. `build_rig_dayz.py` (align + viewer-frame rig JSON, the helpers as its
    `anchors`) → `rig_dayz.json`.
 4. `extract_weapon.py` (py3d weapon mesh+memory points) → `weapon.json`, apart
@@ -142,9 +145,10 @@ run:
    `weapon.json`; the weapon sits on the `RightHand_Dummy` anchor).
 6. `seanim_export.py` (anim JSON → SEAnim, round-trip gated; paths as arguments).
 
-Run steps 1 and 2 as `blender -b --python-exit-code 1 --python <script>`: without
-the flag a Python error still exits 0. `selftest.js` / `capture.js` (Puppeteer
-self-test + preview capture) stay in the project.
+Run steps 1 and 2 as `blender -b --python-exit-code 1 --python <script>` and stop
+at the first non-zero exit: without the flag an uncaught Python exception still
+exits 0. `selftest.js` / `capture.js` (Puppeteer self-test + preview capture) stay
+in the project.
 
 [EXACT][CLAIM-ANIM-EMPTIES-ANCHORS] Steps 1-3 on the BI FBX (Blender 5.1.1,
 2026-10-02) rebuild the project's `data/rig_dayz.json` byte for byte except its

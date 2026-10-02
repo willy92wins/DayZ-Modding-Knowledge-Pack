@@ -13,11 +13,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   markers. A rig rebuilt with `{}` in its place kept its bones and lost every anchor, and
   `build_viewer.py` then put the weapon at a fixed `(0, 1.3, 0.2)` instead of on
   `RightHand_Dummy` `(-0.156, 1.368, 0.207)`. The script composes each helper's world through its
-  parent chain and exits 1 without writing when the FBX has no `RightHand_Dummy`. On the BI FBX
-  (Blender 5.1.1), `fbx_extract.py`, `extract_empties.py` and `build_rig_dayz.py` rebuild the
-  project's `data/rig_dayz.json` byte for byte except its `space` label. SKILL.md's scripts index
-  and `weapon-anim-authoring-viewer.md` "Reusable tools" list the pipeline in the order it runs,
-  with `--python-exit-code 1` for the Blender steps (without it a Python error exits 0).
+  parent chain and exits 1 without writing when the FBX has no `RightHand_Dummy`; it removes the
+  previous run's file before it starts, so after any failed run `build_rig_dayz.py` stops instead
+  of building on stale anchors. On the BI FBX (Blender 5.1.1), `fbx_extract.py`,
+  `extract_empties.py` and `build_rig_dayz.py` rebuild the project's `data/rig_dayz.json` byte for
+  byte except its `space` label. SKILL.md's scripts index and `weapon-anim-authoring-viewer.md`
+  "Reusable tools" list the pipeline in the order it runs, with `--python-exit-code 1` for the
+  Blender steps and a stop at the first non-zero exit (without the flag an uncaught Python
+  exception exits 0).
   Regression test: `tests/test_extract_empties.py`. Its FBX path placeholder adds it to the pinned
   census of payloads that only run once an operator edits a path (`tests/packctl/test_promotion.py`).
 

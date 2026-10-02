@@ -6,6 +6,11 @@ from mathutils import Matrix
 # previous one's output.
 SCR = os.environ.get("DAYZ_ANIM_SCRATCH") or os.path.join(tempfile.gettempdir(), "dayz-anim-pipeline")
 os.makedirs(SCR, exist_ok=True)
+# Drop the previous run's file first: if this run fails, build_rig_dayz.py
+# finds none and stops instead of building on stale anchors.
+path = os.path.join(SCR, "empties_armworld.json")
+if os.path.exists(path):
+    os.remove(path)
 
 # Same FBX as fbx_extract.py: build_rig_dayz.py pairs both outputs.
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -18,6 +23,8 @@ def world_of(o):
     # Compose the parent chain by hand: the empties this FBX imports disabled in
     # viewports (hide_viewport), RightHand_Dummy, LeftHand_Dummy and Weapon_Root
     # among them, keep matrix_world at the origin even after view_layer.update().
+    # Assumes what that FBX has: one armature, parent bones without
+    # use_relative_parent, and no hidden helper without a parent.
     if o.parent is None:
         return o.matrix_world
     if o.parent_type == 'BONE' and o.parent_bone:
@@ -42,7 +49,6 @@ for o in bpy.data.objects:
 if "RightHand_Dummy" not in out:
     raise SystemExit("extract_empties: no RightHand_Dummy empty in %s; nothing written" % fbx)
 
-path = os.path.join(SCR, "empties_armworld.json")
 with open(path, "w", encoding="utf-8") as f:
     json.dump(out, f)
 print("WROTE", path)
