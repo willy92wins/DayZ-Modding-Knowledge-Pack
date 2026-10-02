@@ -3,7 +3,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from packctl.gate import run_gate
+import pytest
+
+from packctl.gate import _suite_passed, run_gate
 
 
 PASSING_SUITE = "def test_passes():\n    assert 1 + 1 == 2\n"
@@ -18,6 +20,24 @@ SKIPPED_SUITE = (
 )
 # A script-style check: pytest imports it, finds no test and exits 5 too.
 SCRIPT_SUITE = "FAILURES = ['the check this script makes failed']\n"
+# A module that cannot be imported: a collection error, exit 2.
+BROKEN_SUITE = "raise ImportError('a module this test needs')\n"
+# A conftest that deselects every test it collects.
+DESELECT_ALL = (
+    "def pytest_collection_modifyitems(config, items):\n"
+    "    config.hook.pytest_deselected(items=list(items))\n"
+    "    items[:] = []\n"
+)
+
+
+def junit(*suites: dict[str, object]) -> str:
+    body = "".join(
+        "<testsuite "
+        + " ".join(f'{key}="{value}"' for key, value in suite.items())
+        + " />"
+        for suite in suites
+    )
+    return f'<?xml version="1.0" encoding="utf-8"?><testsuites>{body}</testsuites>'
 
 
 def test_gate_runs_validation_and_two_reproducible_builds(
@@ -196,8 +216,9 @@ def test_gate_fails_when_a_tool_test_fails_and_runs_py3d_once(
         },
         payload={"LICENSE", "README.md"},
     )
+    report_dir = tmp_path / "reports"
 
-    report = run_gate(root, tmp_path / "reports")
+    report = run_gate(root, report_dir)
 
     assert [item["code"] for item in report["findings"]] == [
         "TOOL-TESTS-FAILED"
@@ -206,6 +227,10 @@ def test_gate_fails_when_a_tool_test_fails_and_runs_py3d_once(
     assert report["checks"]["tool_tests"]["suites"] == {
         "broken": {"verdict": "FAIL", "returncode": 1},
     }
+    assert sorted(path.name for path in (report_dir / "tool-tests").iterdir()) == [
+        "broken.txt",
+        "broken.xml",
+    ]
 
 
 def test_gate_passes_same_named_and_cleanly_skipped_suites(
@@ -238,12 +263,18 @@ def test_gate_passes_same_named_and_cleanly_skipped_suites(
     }
 
 
-def test_gate_fails_a_test_folder_that_runs_nothing(
+def test_gate_fails_test_folders_that_run_nothing_or_do_not_collect(
     repo_factory,
     tmp_path: Path,
 ) -> None:
     root = repo_factory(
-        {"skills/script/tests/test_script.py": SCRIPT_SUITE},
+        {
+            "skills/broken/tests/test_broken.py": BROKEN_SUITE,
+            "skills/deselected/tests/conftest.py": DESELECT_ALL,
+            "skills/deselected/tests/test_bad.py": FAILING_SUITE,
+            "skills/deselected/tests/test_needs_blender.py": SKIPPED_SUITE,
+            "skills/script/tests/test_script.py": SCRIPT_SUITE,
+        },
         payload={"LICENSE", "README.md"},
     )
 
@@ -252,9 +283,100 @@ def test_gate_fails_a_test_folder_that_runs_nothing(
     assert [item["code"] for item in report["findings"]] == [
         "SKILL-TESTS-FAILED"
     ]
+    # "deselected" exits 5 with one skip recorded, like a clean skip: its
+    # summary line, "1 skipped, 1 deselected", is what fails it.
     assert report["checks"]["skill_tests"]["suites"] == {
+        "broken": {"verdict": "FAIL", "returncode": 2},
+        "deselected": {"verdict": "FAIL", "returncode": 5},
         "script": {"verdict": "FAIL", "returncode": 5},
     }
+
+
+def test_gate_ignores_pytest_addopts_from_the_environment(
+    repo_factory,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    # --collect-only would turn the failing test into an exit 0 that runs
+    # nothing; the gate drops the variable, so the test runs and fails.
+    monkeypatch.setenv("PYTEST_ADDOPTS", "--collect-only")
+    root = repo_factory(
+        {"skills/bad/tests/test_bad.py": FAILING_SUITE},
+        payload={"LICENSE", "README.md"},
+    )
+
+    report = run_gate(root, tmp_path / "reports")
+
+    assert report["checks"]["skill_tests"]["suites"] == {
+        "bad": {"verdict": "FAIL", "returncode": 1},
+    }
+
+
+def test_gate_fails_a_collection_only_run_configured_in_the_repository(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root = repo_factory(
+        {
+            "pytest.ini": "[pytest]\naddopts = --collect-only\n",
+            "skills/bad/tests/test_bad.py": FAILING_SUITE,
+        },
+        payload={"LICENSE", "README.md"},
+    )
+
+    report = run_gate(root, tmp_path / "reports")
+
+    assert report["checks"]["skill_tests"]["suites"] == {
+        "bad": {"verdict": "FAIL", "returncode": 0},
+    }
+
+
+@pytest.mark.parametrize(
+    ("returncode", "report", "summary", "passed"),
+    [
+        (0, junit({"tests": 3}), "3 passed in 0.10s", True),
+        (0, junit({"tests": 2, "skipped": 2}), "2 skipped in 0.10s", True),
+        (5, junit({"tests": 1, "skipped": 1}), "1 skipped in 0.10s", True),
+        (
+            5,
+            junit({"tests": 1, "skipped": 1}, {"tests": 2, "skipped": 2}),
+            "3 skipped in 0.10s",
+            True,
+        ),
+        # Collection-only run: exit 0 and no test case.
+        (0, junit({"tests": 0}), "1 test collected in 0.10s", False),
+        # Empty folder or script-style checks.
+        (5, junit({"tests": 0}), "no tests ran in 0.10s", False),
+        (5, junit({"tests": 2, "skipped": 1}), "1 skipped in 0.10s", False),
+        (5, junit({"tests": 1, "skipped": 1, "errors": 1}), "1 error", False),
+        (5, junit({"tests": 1, "skipped": 1, "failures": 1}), "1 failed", False),
+        (5, junit({"tests": 1, "skipped": 1}), "1 skipped, 1 deselected in 0.1s", False),
+        (0, junit({"tests": 2}), "2 passed, 1 deselected in 0.10s", False),
+        (1, junit({"tests": 1, "skipped": 1}), "1 skipped in 0.10s", False),
+        (2, junit({"tests": 1, "skipped": 1}), "1 skipped in 0.10s", False),
+        (3, junit({"tests": 1, "skipped": 1}), "1 skipped in 0.10s", False),
+        (4, junit({"tests": 1, "skipped": 1}), "1 skipped in 0.10s", False),
+        (5, junit({"tests": 1, "skipped": "0.5"}), "1 skipped in 0.10s", False),
+        (5, junit({"tests": 1, "skipped": "one"}), "1 skipped in 0.10s", False),
+        (5, junit({"tests": -1, "skipped": -1}), "1 skipped in 0.10s", False),
+        (5, "<testsuites>", "1 skipped in 0.10s", False),
+    ],
+)
+def test_suite_pass_rule(
+    tmp_path: Path,
+    returncode: int,
+    report: str,
+    summary: str,
+    passed: bool,
+) -> None:
+    junit_path = tmp_path / "suite.xml"
+    junit_path.write_text(report, encoding="utf-8")
+
+    assert _suite_passed(returncode, junit_path, f"\n{summary}\n") is passed
+
+
+def test_suite_pass_rule_needs_the_junit_report(tmp_path: Path) -> None:
+    assert _suite_passed(0, tmp_path / "missing.xml", "3 passed in 0.10s") is False
 
 
 def test_gate_refuses_a_report_dir_inside_the_root_before_any_suite_runs(

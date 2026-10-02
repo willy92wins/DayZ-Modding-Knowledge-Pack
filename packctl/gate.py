@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -28,6 +29,9 @@ def _run_process(
     environment = dict(os.environ)
     environment["PYTHONUTF8"] = "1"
     environment["PYTHONPYCACHEPREFIX"] = str(pycache_dir)
+    # The caller's pytest options do not reach the gate's pytest runs: one
+    # --collect-only or -k in PYTEST_ADDOPTS lets a red suite exit 0.
+    environment.pop("PYTEST_ADDOPTS", None)
     return subprocess.run(
         args,
         cwd=root,
@@ -62,21 +66,36 @@ def _skills_ref_executable(configured: str) -> Path | None:
     return None
 
 
-def _suite_passed(returncode: int, junit: Path) -> bool:
-    if returncode == 0:
-        return True
-    # Exit 5 is pytest's "no test collected". A folder whose every module skips
-    # itself at import -- pytest.importorskip("bpy") at module level on a
-    # machine without Blender -- ends there too, and that is a clean skip. A
-    # folder that runs nothing at all (empty, or script-style checks pytest
-    # cannot see) records no skip and fails.
-    if returncode != 5:
+# pytest's closing summary names deselected tests ("1 skipped, 1 deselected in
+# 0.16s"); the JUnit report does not list them.
+_DESELECTED = re.compile(r"\b\d+ deselected\b")
+
+
+def _suite_passed(returncode: int, junit: Path, stdout: str) -> bool:
+    # A folder passes when pytest ran it to the end -- exit 0, or exit 5 ("no
+    # test collected") -- and its JUnit report counts at least one test case,
+    # none failed or in error, and nothing was deselected. Exit 5 also needs
+    # every case to be a skip: a folder whose modules all skip themselves at
+    # import (pytest.importorskip("bpy") on a machine without Blender) ends
+    # there, and that is a clean skip. An empty folder, script-style checks
+    # and a collection-only run report no test case and fail.
+    if returncode not in (0, 5):
         return False
+    lines = stdout.strip().splitlines()
+    if lines and _DESELECTED.search(lines[-1]):
+        return False
+    counts = dict.fromkeys(("tests", "skipped", "failures", "errors"), 0)
     try:
-        suites = ElementTree.parse(junit).getroot().iter("testsuite")
-        return sum(int(suite.get("skipped", "0")) for suite in suites) > 0
+        for suite in ElementTree.parse(junit).getroot().iter("testsuite"):
+            for key in counts:
+                counts[key] += int(suite.get(key, "0"))
     except (OSError, ElementTree.ParseError, ValueError):
         return False
+    if min(counts.values()) < 0 or counts["tests"] == 0:
+        return False
+    if counts["failures"] or counts["errors"]:
+        return False
+    return returncode == 0 or counts["skipped"] == counts["tests"]
 
 
 def _run_test_suites(
@@ -120,7 +139,7 @@ def _run_test_suites(
             encoding="utf-8",
             newline="\n",
         )
-        passed = _suite_passed(result.returncode, junit)
+        passed = _suite_passed(result.returncode, junit, result.stdout)
         outcomes[name] = {
             "verdict": "PASS" if passed else "FAIL",
             "returncode": result.returncode,
@@ -136,27 +155,114 @@ def _run_test_suites(
     return check, "\n".join([", ".join(failed), *tails])[:2000]
 
 
+# Per tree: the check its test folders report under, the directory their logs
+# go to and the finding a red folder raises.
+_TEST_FOLDER_TREES = {
+    "skills": ("skill_tests", "skill-tests", "SKILL-TESTS-FAILED"),
+    "tools": ("tool_tests", "tool-tests", "TOOL-TESTS-FAILED"),
+}
+TEST_FOLDER_TREES = tuple(_TEST_FOLDER_TREES)
+
+
+def _test_folder_check(
+    root: Path,
+    tree: str,
+    report_dir: Path,
+    *,
+    pycache_dir: Path,
+) -> tuple[str, dict[str, object], list[dict[str, object]]]:
+    # Every <tree>/<name>/tests folder, each in its own pytest process.
+    # tools/py3d/tests has its own check in the gate.
+    check_name, log_name, code = _TEST_FOLDER_TREES[tree]
+    py3d_tests = root / "tools" / "py3d" / "tests"
+    suites = sorted(
+        path
+        for path in (root / tree).glob("*/tests")
+        if path.is_dir() and path != py3d_tests
+    )
+    check, evidence = _run_test_suites(
+        root,
+        suites,
+        report_dir / log_name,
+        pycache_dir=pycache_dir,
+    )
+    findings: list[dict[str, object]] = []
+    if check["verdict"] == "FAIL":
+        findings.append(
+            finding(
+                code,
+                path=tree,
+                line=0,
+                message=(
+                    f"A test folder under {tree}/ failed, ran no test or "
+                    "deselected tests."
+                ),
+                evidence=evidence,
+            )
+        )
+    return check_name, check, findings
+
+
+def _report_dir_in_root(
+    command: str,
+    root: Path,
+    report_dir: Path,
+) -> dict[str, object] | None:
+    if not is_within(report_dir, root):
+        return None
+    return make_report(
+        command,
+        root,
+        [
+            finding(
+                "GATE-REPORT-IN-ROOT",
+                path="",
+                line=0,
+                message="Gate reports must be written outside the source tree.",
+                evidence=str(report_dir),
+            )
+        ],
+    )
+
+
+def run_test_folders(
+    root: Path,
+    report_dir: Path,
+    trees: list[str],
+) -> dict[str, object]:
+    # The gate's test-folder checks on their own, for CI, which has no
+    # skills-ref validator to run the whole gate with.
+    root = Path(root).resolve()
+    report_dir = Path(report_dir).resolve()
+    refusal = _report_dir_in_root("test-folders", root, report_dir)
+    if refusal is not None:
+        return refusal
+    report_dir.mkdir(parents=True, exist_ok=True)
+    findings: list[dict[str, object]] = []
+    checks: dict[str, dict[str, object]] = {}
+    for tree in dict.fromkeys(trees):
+        check_name, check, tree_findings = _test_folder_check(
+            root,
+            tree,
+            report_dir,
+            pycache_dir=report_dir / "pycache",
+        )
+        checks[check_name] = check
+        findings.extend(tree_findings)
+    report = make_report("test-folders", root, findings, checks=checks)
+    write_json(report_dir / "test-folders.json", report)
+    return report
+
+
 def run_gate(root: Path, report_dir: Path) -> dict[str, object]:
     root = Path(root).resolve()
     report_dir = Path(report_dir).resolve()
     findings: list[dict[str, object]] = []
     checks: dict[str, dict[str, object]] = {}
     artifacts: dict[str, object] = {}
-    if is_within(report_dir, root):
-        report = make_report(
-            "gate",
-            root,
-            [
-                finding(
-                    "GATE-REPORT-IN-ROOT",
-                    path="",
-                    line=0,
-                    message="Gate reports must be written outside the source tree.",
-                    evidence=str(report_dir),
-                )
-            ],
-        )
-        return report
+    refusal = _report_dir_in_root("gate", root, report_dir)
+    if refusal is not None:
+        return refusal
     report_dir.mkdir(parents=True, exist_ok=True)
     pycache_dir = report_dir / "pycache"
 
@@ -324,32 +430,15 @@ def run_gate(root: Path, report_dir: Path) -> dict[str, object]:
     # Every other test folder the pack ships, skills/<skill>/tests and
     # tools/<tool>/tests, each in its own pytest process. tools/py3d/tests ran
     # above.
-    for check_name, tree, code in (
-        ("skill_tests", "skills", "SKILL-TESTS-FAILED"),
-        ("tool_tests", "tools", "TOOL-TESTS-FAILED"),
-    ):
-        suites = sorted(
-            path
-            for path in (root / tree).glob("*/tests")
-            if path.is_dir() and path != py3d_tests
-        )
-        check, evidence = _run_test_suites(
+    for tree in TEST_FOLDER_TREES:
+        check_name, check, tree_findings = _test_folder_check(
             root,
-            suites,
-            report_dir / check_name.replace("_", "-"),
+            tree,
+            report_dir,
             pycache_dir=pycache_dir,
         )
         checks[check_name] = check
-        if check["verdict"] == "FAIL":
-            findings.append(
-                finding(
-                    code,
-                    path=tree,
-                    line=0,
-                    message=f"A test folder under {tree}/ failed or ran no test.",
-                    evidence=evidence,
-                )
-            )
+        findings.extend(tree_findings)
 
     eval_findings: list[dict[str, object]] = []
     eval_count = 0

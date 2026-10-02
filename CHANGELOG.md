@@ -129,14 +129,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   mode aborts the collection ("import file mismatch", exit 2). The gate now runs each
   `skills/<skill>/tests` and `tools/<tool>/tests` folder in its own pytest process (checks
   `skill_tests` and `tool_tests`, findings `SKILL-TESTS-FAILED` and `TOOL-TESTS-FAILED`, a log and
-  a JUnit report per folder in the report directory). A folder passes on exit 0, or on exit 5
-  when its JUnit report records a skip, which is what a module that skips itself at import
-  (`pytest.importorskip("bpy")` without Blender) produces; anything else fails, a folder that runs
-  no test included. CI runs the skill folders with the same rule; the tool folders stay gate-only,
+  a JUnit report per folder in the report directory), and `packctl test-folders` runs those
+  checks alone. A folder passes when pytest exits 0 or 5 ("no test collected"), its JUnit report
+  counts at least one test case and no failure or error, and its summary deselects nothing; exit 5
+  also needs every case to be a skip, which is what modules that skip themselves at import
+  (`pytest.importorskip("bpy")` without Blender) produce. A failing or uncollectable folder, an
+  empty one, script-style checks and a collection-only run fail, and the gate's pytest runs ignore
+  `PYTEST_ADDOPTS`. CI runs `packctl test-folders --tree skills`; the tool folders stay gate-only,
   since five of them import packages the runner does not install (jsonschema, numpy, Pillow,
-  py3d). Measured on `26e76a4`, folder by folder: 24 skill tests and 629 tool tests pass, and
-  `dayz-odol-strict` skips 5 without `DAYZ_ODOL_BACKEND_ROOT`; none needs Blender, DayZ or the P:
-  drive.
+  py3d). They add 4 to 8 minutes to the gate, almost all of it `dayz-vehicle-proxy-contract`.
+  Measured on `26e76a4`, folder by folder: 24 skill tests and 629 tool tests pass,
+  `dayz-odol-strict` skips 5 without `DAYZ_ODOL_BACKEND_ROOT`, and none of these twelve folders
+  needs Blender, DayZ or the P: drive. Test files outside `skills/<skill>/tests` are not run:
+  `dayz-realistic-animation-director/scripts/tests` (one of its modules imports `bpy`),
+  `dayz-proxy-align/scripts/test_proxy_frame.py` and
+  `dayz-mcp-verify/references/test_drive_ladder.py`.
 
 ## [1.5.0] - 2026-10-02
 
