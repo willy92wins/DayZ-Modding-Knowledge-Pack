@@ -12,21 +12,34 @@ complete import checklist.
 #### How NOT to verify — misleading heuristics
 
 ⚠️ **Centroid-based check (`cross(e1, e2) · (face_centroid - LOD_centroid) > 0`):**
-- It is **right-handed** (Three.js / OpenGL convention). DayZ is **left-handed**. A CORRECT post-flip model will appear as "winding inward" in that check but with outward declared normals — not incoherence, it is the opposite sign of cross product between systems.
+- It is **right-handed** (Three.js / OpenGL convention). DayZ is **left-handed**. A CORRECT model will appear as "winding inward" in that check, with its declared normals inward too (Rule 12 of `dayz-model-pipeline`) — not incoherence, it is the opposite sign of cross product between systems. *(Corrected 2026-10-02: this line said a correct post-flip model has OUTWARD declared normals, the older convention that Check A below labels UNIFORM_FLIPPED.)*
 - Assumes **convex geometry** (compares against LOD centroid). For hollow boxes with thick walls, correct interior faces are marked as "inverted".
 - **Conclusion: DOES NOT WORK for validating absolute DayZ winding.** The `dayz-p3d-audit` skill had it for months and produced up to 100% false positives on correct models. Only valid for relative consistency before/after SAME operation, or compared against a reference vanilla.
 
-⚠️ **Comparing `face.vertices[i].normal` with cross product directly does NOT work.** Normals in `lod.facenormals` pool are smoothed per-vertex-corner (smoothing groups): on flat faces they match flat normal; on smoothed faces they do not. To use them as "intent" reference one must **average normals of the 3-4 corners of ONE face** and compare against `cross(e1, e2)`. See Check A in `audit_p3d.py`.
+⚠️ **Comparing `face.vertices[i].normal` with cross product directly does NOT work.** Normals in `lod.facenormals` pool are smoothed per-vertex-corner (smoothing groups): on flat faces they match flat normal; on smoothed faces they do not. To use them as "intent" reference one must **average normals of the 3-4 corners of ONE face** and compare against `cross(e1, e2)`: Check A below. `audit_p3d.py` does not run Check A; its winding findings come from py3d `P3D.validate()`, whose absolute check (`ERR_WINDING_VS_NORMALS`, `SKILL.md` "Absolute winding check") takes the first corner's normal. *(Corrected 2026-10-02: this line pointed at Check A in `audit_p3d.py`.)*
 
 ⚠️ **Assuming `lod.facenormals[i]` is normal of `lod.faces[i]`.** False. `lod.facenormals` is a global POOL (size = MLOD header `num_facenormals`, **independent** of `len(lod.faces)`); each Vertex points to it via `normal_index`. Confusing them leads to checks that never run (length mismatch) or checks comparing wrong things.
 
 #### How TO verify
 
-1. **Check A — winding-vs-averaged-normal per face (DIAGNOSTIC).** For each face, calculate `n_winding = normalize(cross(v1-v0, v2-v0))` and compare with normalized average of `face.vertices[i].normal` over corners. % of faces with `dot < -0.5` indicates handedness state:
-   - **~100% UNIFORM_FLIPPED** → EXPECTED state in DayZ (left-handed) after export from Blender (right-handed Z-up). Handedness shift inverts cross product. **Empirically verified with Crate_Wooden 2026-04-25 in-game: render/bullets/cursor/collision all OK.** No action needed. → severity NOTE.
-   - **~0% UNIFORM_NON_FLIPPED** → either no handedness transform or normals realigned post-transform. Verify in-game. → severity NOTE.
+1. **Check A — winding-vs-averaged-normal per face (DIAGNOSTIC).** For each face, calculate `n_winding = normalize(cross(v1-v0, v2-v0))` and compare with normalized average of `face.vertices[i].normal` over corners. % of faces with `dot < -0.5` says whether the winding and the stored normals agree; it does not say which way either one points (Rule 18 of `dayz-model-pipeline`):
+   - **~0% UNIFORM_NON_FLIPPED** → they agree. This is what a correct Rule 12 export reads (`dayz-model-pipeline`: cross product AND stored normals both INWARD), the ≈ 100 % agreement of the production MLODs in `SKILL.md` "Absolute winding check: what 0 % means". A det=+1 mirror with reversed faces and negated normals reads it too, and so does an inside-out model with both OUTWARD. → severity NOTE: consistent with Rule 12, not proof of it.
+   - **~100% UNIFORM_FLIPPED** → they disagree. The older outward-normal convention reads this: cross product inward, normals outward, as in the LFInfectedBig det=+1 recipe (`dayz-characters`, `check_dayz_winding.py`). It renders solid but is not what Rule 12 writes. Crate_Wooden read this state: **Empirically verified with Crate_Wooden 2026-04-25 in-game: render/bullets/cursor/collision all OK.** A correct export whose faces were reversed afterwards also reads it, and is inside-out. → severity WARNING on a new export.
    - **5-95% MIXED** → real bug, inconsistent render/collision between faces. → severity CRITICAL.
-   Coordinate-system-agnostic.
+   Coordinate-system-agnostic. Neither uniform label is a fix instruction. Decide the direction with the signed volume by winding of `SKILL.md` "Absolute winding check" (rule 4: negative is the production sign for a closed solid seen from outside; a room seen from inside reads positive by design; on an open sheet the sign decides nothing, so use Rule 18's per-component outward check or the visibility battery below), then fix the side that is wrong:
+
+   | Check A | Signed volume | State | To reach Rule 12 |
+   |---|---|---|---|
+   | UNIFORM_NON_FLIPPED | negative | Rule 12 | nothing |
+   | UNIFORM_NON_FLIPPED | positive | inside-out, both OUTWARD | `face.vertices.reverse()` on every face AND negate the normals |
+   | UNIFORM_FLIPPED | negative | outward-normal convention | keep the winding, negate the normal pool in place (`SKILL.md` "Absolute winding check", rule 5) |
+   | UNIFORM_FLIPPED | positive | a correct export with every face reversed | `face.vertices.reverse()` on every face, keep the normals |
+
+   A det=+1 mirror lands in the same row as its unmirrored twin: whatever the row, check chirality on an asymmetric feature (Rule 12).
+
+   [OFFLINE MEASURED 2026-10-02] On the three MLODs of the Rule 12 in-game test (2026-10-01, DayZDiag 1.29.163709), rebuilt byte for byte by `tools/py3d/tests/test_s7_blender_to_dayz.py`, Check A reads UNIFORM_NON_FLIPPED (0 %; 48 of 48 faces agree) on all three: the correct export, the mirrored one and the inside-out one. Their signed volumes are −0.1086, −0.1086 and +0.1086. The same model built with the LFInfectedBig recipe, and the correct export with every face reversed, read UNIFORM_FLIPPED (0 of 48 agree) at −0.1086 and +0.1086.
+
+   *(Corrected 2026-10-02 against Rule 12, measured in game 2026-10-01. This item called ~100 % UNIFORM_FLIPPED the "EXPECTED state in DayZ (left-handed) after export from Blender (right-handed Z-up)" ("Handedness shift inverts cross product", "No action needed", severity NOTE) and read ~0 % UNIFORM_NON_FLIPPED as "either no handedness transform or normals realigned post-transform". The Crate_Wooden measurement stands; calling its state the expected one does not.)*
 
 2. **Check B — edge-pair topology (MOST RELIABLE).** Two manifold faces sharing an edge must traverse it in opposite directions. If `face1` traverses `(A→B)` and `face2` also traverses `(A→B)` ⇒ one of the two is flipped. Coordinate-system-agnostic. Independent of modeler's intent. **Best tool for detecting mixed winding post-flip.**
 
