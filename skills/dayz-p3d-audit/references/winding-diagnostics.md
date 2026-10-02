@@ -83,21 +83,19 @@ external artist models, player report "plank normals are inverted"):
    edge the same way, or in opposite groups although they traverse it opposite ways. A
    component with no conflict yields ONE group when healthy and two when broken, and **the
    minority one is the inverted one** — reference is part's own majority, never an absolute
-   sign convention. A component with a conflict has no minority group from that fill: where
-   it splits follows the order of the fill. Cut its edges traversed the same way and fill
-   again: a cut edge with the same piece on both sides is a seam to inspect, and stays cut.
-   Put every other cut edge back and fill once more: with no conflict left, its minority is
-   the inverted group (it can span several pieces); with one, inspect. A component that
-   splits evenly has no minority either: inspect it. [OFFLINE MEASURED 2026-10-02] The SUB_BRZ
-   co-driver door's LOD 1.0 (healthy, verified in game: Check A, `MIXED`) has one edge
-   traversed the same way; with it, the fill splits a 2,235-face component 2,121 + 114 with 7
-   conflicts, and over 41 other orders of the faces the minority ran from 6 to 246 faces, never
-   none; cut and refilled, that edge is the one seam and no group is left. With a 30-face patch
-   of that component's paint reversed in memory, the first fill returned 144 faces (the patch
-   and the 114) and the refill exactly the patch, behind 22 cut edges; with only the 29 faces
-   around one face of that patch reversed, with their normals, the refill returned exactly
-   those 29 and left that face alone, which taking every piece ringed off by cut edges as a
-   group would have reversed. The three GunRacks MLODs of the record above have no conflict:
+   sign convention. A component with a conflict, or one that splits evenly, has no minority
+   group: where a conflicted fill splits follows the order of the fill. Inspect it with the
+   visibility battery of item 2; its edges traversed the same way mark where to look.
+   [OFFLINE MEASURED 2026-10-02] The SUB_BRZ co-driver door's LOD 1.0 (healthy, verified in
+   game: Check A, `MIXED`) has one edge traversed the same way; with it, the fill splits a
+   2,235-face component 2,121 + 114 with 7 conflicts, and over 41 other orders of the faces the
+   minority ran from 6 to 246 faces, never none; with it cut, no conflict and no minority. With
+   a 30-face patch of that component's paint reversed in memory, the fill returned 144 faces
+   (the patch and the 114). Cutting every edge traversed the same way, keeping cut those with
+   the same piece on both sides and filling again returned exactly that patch, behind 22 cut
+   edges, and exactly the 29 damaged faces of an annulus around a healthy face, but four intact
+   faces and none of the 29 when the damaged annulus took in a face of the door's one edge
+   traversed the same way: no fill decides such a component. The three GunRacks MLODs of the record above have no conflict:
    their minority groups are the 156 faces their fix reversed, and two of them also hold two
    1 + 1 splits each.
    *(Corrected 2026-10-02: this item read "A healthy component yields ONE group; a broken one
@@ -123,22 +121,26 @@ external artist models, player report "plank normals are inverted"):
    `v[:1] + reversed(v[1:])`, sent the first-three reading to the wrong branch in both states
    below; the vector area sent all four right. The branches below are written for a part
    whose normals agree with its winding (rows 1-2 of the Check A table). Decide the row of the
-   group's part (welded component, then material, as in Check A's `MIXED`) first, with the
-   table and its direction test, never from the part's normals alone: a Rule 12 part whose
-   normals were all turned reads like the older convention. Bring the part to Rule 12 with its
-   row's fix (the third row: keep the winding, negate the normals) and read it as written. A
-   part kept in the older convention on purpose, checked in game, is read against it: there
-   the two branches swap, ≤ −0.5 meaning winding and normals turned together and ≥ +0.5 the
-   winding alone. A part that reads MIXED has no row: inspect. [OFFLINE MEASURED 2026-10-02]
-   On a 30-face patch of the SUB_BRZ door's paint (a 1,926-face part, 98.5 % below −0.5),
-   damaged in memory, every face read −1.000 with winding and normals reversed and +1.000 with
-   the winding alone; the branches as written left 90 of 90 corners against the undamaged
-   normals both times, while bringing the part to Rule 12 first, or reading it against its kept
-   convention, restored 30 of 30 (to the part converted, or as it was). On `verify_step3.py`'s
-   flat Rule 12 box with one face reversed and every normal turned, that face read against the
-   rest of the part (UNIFORM_FLIPPED) was reversed only and left 24 of 24 corners against the
-   undamaged normals, with Check B clean; brought to Rule 12 first, the box came back corner
-   for corner.
+   group's part (welded component, then material, as in Check A's `MIXED`) first, from its
+   faces outside the group, with the table and its direction test, never from the normals
+   alone: a Rule 12 part whose normals were all turned reads like the older convention. A part
+   with no face outside the group, or whose other faces read MIXED, has no row: inspect. Bring
+   the part to Rule 12 with its row's fix (the third row: keep the winding, negate the normals),
+   run step 1 again (a fix that reverses faces can repair the group with them), and read the
+   group it finds as written. A part kept in the older convention on purpose, checked in game,
+   is read against it: there the two branches swap, ≤ −0.5 meaning winding and normals turned
+   together and ≥ +0.5 the winding alone. [OFFLINE MEASURED 2026-10-02] On a 30-face patch of
+   the SUB_BRZ door's paint (a 1,926-face part, 98.5 % below −0.5), damaged in memory, every
+   face read −1.000 with winding and normals reversed and +1.000 with the winding alone; the
+   branches as written left 90 of 90 corners against the undamaged normals both times, while
+   bringing the part to Rule 12 first, or reading it against its kept convention, restored 30
+   of 30 (to the part converted, or as it was). On `verify_step3.py`'s flat Rule 12 box with
+   one face reversed and every normal turned, the other five faces read UNIFORM_FLIPPED with
+   their cross product toward the box's centre (the third row): that face read against them
+   was reversed only and left 24 of 24 corners against the undamaged normals, with Check B
+   clean, while the box brought to Rule 12 first came back corner for corner. With that face a
+   part of its own, reversed with its normals or alone (rows 2 and 4), its row's fix restored
+   the box, and reversing the old group as well took Check B to 4.
    Once every face of the group has a reading, invert the vertex order of every face of the
    group (`v[:1] + reversed(v[1:])`), and per face:
    - **Normals agree with the inverted winding** (reading ≥ +0.5: they turned along with it;
