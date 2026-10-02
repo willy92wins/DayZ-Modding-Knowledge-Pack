@@ -153,6 +153,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and no longer gives a wrong normal sign the inside-out symptom of a wrong face order. Finding
   code and severity unchanged. No new wheel: the pinned and installed `py3d_dayz-1.8.0` still
   prints the old message.
+- py3d `ERR_WINDING_INVERTED` message: the relative check compares the share of faces wound
+  outward from each LOD's centroid, files the finding on the collision LOD and told the reader to
+  reverse every face of that LOD. On the clean multi-LOD model of the py3d tests, converted with
+  `blender_to_dayz()`, a visual LOD turned inside-out (faces and normals together, which the
+  absolute check passes) raised it on the three healthy collision LODs and nowhere else;
+  reversing them traded it for `ERR_WINDING_VS_NORMALS` on each, and negating their normals as
+  well left `validate()` at `[]` with every LOD wound outward, the collision LODs as
+  `transform(ROT_X_NEG90)` alone leaves them, which registered no raycast in game. The pack
+  already warned about this (`dayz-vehicles` `visual-gates-and-winding.md`; `dayz-p3d-audit`,
+  item 1 of "The three py3d gates", "Absolute winding check" rule 7, and killer #1, which reads
+  the finding as a trigger). The message now says the collision LOD and the visual LOD disagree
+  on which way is out, by a centroid test that assumes convex geometry, not which one is wrong,
+  and gives for both LODs the order of `ERR_WINDING_VS_NORMALS`: the winding first, normals
+  untouched (visual LOD per closed shell by its signed volume, collision LOD per convex
+  component), steps that leave a LOD that reads right as it is, never a `vertices[1]`/`[2]`
+  swap; then each corner normal still against its face. With neither LOD reading wrong there is
+  nothing to fix: a visual LOD meant to be seen from inside reads positive and is right. Both
+  messages take their winding steps from one helper, and every `ERR_WINDING_VS_NORMALS` text is
+  unchanged. The README and KNOWN-ISSUES say the same. Finding code and severity unchanged: on
+  that model it is the only finding that sees the inside-out visual LOD. No new wheel: the pinned
+  and installed `py3d_dayz-1.8.0` still prints the old message.
 
 ## [1.4.0] - 2026-10-01
 

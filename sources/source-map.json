@@ -411,10 +411,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-winding-hint@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Fixed entry for the py3d ERR_WINDING_INVERTED message, with the README and KNOWN-ISSUES changes, as dayz-model-pipeline Rule 12 (in game 2026-10-01, DayZDiag 1.29.163709: cross product and stored normals both inward) and Rule 18 (per-component outward check on collision LODs), the py3d README 'Winding' steps 1-3 (#37), dayz-p3d-audit killer #1 (#38: the finding is a trigger, Rule 18 decides) and 'Absolute winding check: what 0 % means' (rules 4 and 7), and dayz-vehicles references/visual-gates-and-winding.md ('if Visual is the inverted one, it blames HEALTHY collision LODs') establish. Offline, 2026-10-02, on the clean multi-LOD model of the py3d tests (build_multilod_v2_p3d after blender_to_dayz(), validate() == []): with the visual LOD's shell turned inside-out, faces and normals together (the absolute check passes it), ERR_WINDING_INVERTED fired on the three healthy collision LODs (geometry, view_geometry, fire_geometry: 0 % of faces wound outward from the LOD centroid, visual 100 %) and nowhere else, and no other finding saw the inside-out visual LOD; with the geometry LOD turned instead, on that LOD only (100 % vs 0 %). The visual shell's signed volume by winding reads negative on the clean model and positive turned (also what a room seen from inside is); the collision boxes read 0 of 6 faces outward clean and 6 of 6 turned. The message's winding steps, run on every LOD, reversed the turned LOD and nothing else (320 shell faces, or 6), and fixing the corners then gave back the clean model exactly (points, normal pools, vertex and normal indices). Reversing the faces of the three flagged LODs, the old message's fix, traded the finding for ERR_WINDING_VS_NORMALS on each; negating their normals as well left validate() at [] with every LOD wound outward, the collision boxes 6 of 6 outward as transform(ROT_X_NEG90) alone leaves them, the map whose collision LODs registered no raycast in game (py3d README, Blender -> DayZ). On 12 turned states (the visual LOD or one collision LOD, its faces, its normals or both) the 8 ERR_WINDING_VS_NORMALS messages are byte-identical to main's. py3d suite 286 passed, 11 skipped (293 passed, 4 skipped with PY3D_UPSTREAM_PATH at upstream 7acd58b; main 9588a5d: 283 and 290); the new message test fails on main's __init__.py (sha256 66d8748d...) and the two behaviour tests pass on both. Nothing new was loaded in game. Authored by Claude (Anthropic) on the owner's request (2026-10-02: make the py3d ERR_WINDING_INVERTED hint say what the relative check establishes); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "b42c7853f9cf4468cbbfd776d9d0de9bfccd9f8df2e8672e49e74db1c52529ed",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-py3d-relative-winding-hint@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "171fc2e9fb5d6df28381e499ab53cc374409eb577c9ad4a788723b42a8e2f700",
+      "output_hash": "b42c7853f9cf4468cbbfd776d9d0de9bfccd9f8df2e8672e49e74db1c52529ed",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -23745,7 +23755,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "650bb11b3660a659561ff5d2d85dd916d1fea5bf6d1b5b921e05626b0e8d92f1",
+      "output_hash": "318b95726667428a025f0474a253a09beefb5fe4e72e7ab1d37502ca165e2d99",
       "output_path": "tools/py3d/KNOWN-ISSUES.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23886,10 +23896,20 @@
           "source_path": "tools/py3d/README.md",
           "source_revision": "kp-update-py3d-winding-hint@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Winding section: the relative check is described by what it compares (the share of faces wound outward from each LOD's centroid, which assumes convex geometry) and by where it files the finding (on the collision LOD whichever side is wrong); a new paragraph reads ERR_WINDING_INVERTED as a disagreement, runs steps 1-3 on both LODs, says when there is nothing to fix and what the old fix does; test counts 293/286 (measured with and without PY3D_UPSTREAM_PATH), as dayz-model-pipeline Rule 12 (in game 2026-10-01, DayZDiag 1.29.163709: cross product and stored normals both inward) and Rule 18 (per-component outward check on collision LODs), the py3d README 'Winding' steps 1-3 (#37), dayz-p3d-audit killer #1 (#38: the finding is a trigger, Rule 18 decides) and 'Absolute winding check: what 0 % means' (rules 4 and 7), and dayz-vehicles references/visual-gates-and-winding.md ('if Visual is the inverted one, it blames HEALTHY collision LODs') establish. Offline, 2026-10-02, on the clean multi-LOD model of the py3d tests (build_multilod_v2_p3d after blender_to_dayz(), validate() == []): with the visual LOD's shell turned inside-out, faces and normals together (the absolute check passes it), ERR_WINDING_INVERTED fired on the three healthy collision LODs (geometry, view_geometry, fire_geometry: 0 % of faces wound outward from the LOD centroid, visual 100 %) and nowhere else, and no other finding saw the inside-out visual LOD; with the geometry LOD turned instead, on that LOD only (100 % vs 0 %). The visual shell's signed volume by winding reads negative on the clean model and positive turned (also what a room seen from inside is); the collision boxes read 0 of 6 faces outward clean and 6 of 6 turned. The message's winding steps, run on every LOD, reversed the turned LOD and nothing else (320 shell faces, or 6), and fixing the corners then gave back the clean model exactly (points, normal pools, vertex and normal indices). Reversing the faces of the three flagged LODs, the old message's fix, traded the finding for ERR_WINDING_VS_NORMALS on each; negating their normals as well left validate() at [] with every LOD wound outward, the collision boxes 6 of 6 outward as transform(ROT_X_NEG90) alone leaves them, the map whose collision LODs registered no raycast in game (py3d README, Blender -> DayZ). On 12 turned states (the visual LOD or one collision LOD, its faces, its normals or both) the 8 ERR_WINDING_VS_NORMALS messages are byte-identical to main's. py3d suite 286 passed, 11 skipped (293 passed, 4 skipped with PY3D_UPSTREAM_PATH at upstream 7acd58b; main 9588a5d: 283 and 290); the new message test fails on main's __init__.py (sha256 66d8748d...) and the two behaviour tests pass on both. Nothing new was loaded in game. Authored by Claude (Anthropic) on the owner's request (2026-10-02: make the py3d ERR_WINDING_INVERTED hint say what the relative check establishes); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "29f9ca40b802d05708b22cad1c24621f86a8bc7efb5a801f55b10d03b35418d4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/README.md",
+          "source_revision": "kp-update-py3d-relative-winding-hint@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2a7ea2e2606d0ef6897741541817e8fe64a9badfd09901a08a4d71f22087d60e",
+      "output_hash": "29f9ca40b802d05708b22cad1c24621f86a8bc7efb5a801f55b10d03b35418d4",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23978,10 +23998,20 @@
           "source_path": "tools/py3d/py3d/__init__.py",
           "source_revision": "kp-update-py3d-winding-hint@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "_check_winding_vs_visual: the ERR_WINDING_INVERTED message no longer tells the reader to reverse every face of the collision LOD. It says the collision LOD and the visual LOD disagree on which way is out, by a centroid test that assumes convex geometry, not which one is wrong; gives for both LODs the order of ERR_WINDING_VS_NORMALS (the winding first, normals untouched: visual LOD per closed shell by its signed volume, collision LOD per convex component; never a vertices[1]/[2] swap; then each corner normal still against its face), steps that leave a LOD that reads right as it is; and says there is nothing to fix when neither reads wrong (a visual LOD meant to be seen from inside reads positive). Both messages take the winding steps from one helper, _winding_steps, as dayz-model-pipeline Rule 12 (in game 2026-10-01, DayZDiag 1.29.163709: cross product and stored normals both inward) and Rule 18 (per-component outward check on collision LODs), the py3d README 'Winding' steps 1-3 (#37), dayz-p3d-audit killer #1 (#38: the finding is a trigger, Rule 18 decides) and 'Absolute winding check: what 0 % means' (rules 4 and 7), and dayz-vehicles references/visual-gates-and-winding.md ('if Visual is the inverted one, it blames HEALTHY collision LODs') establish. The docstring says the same. Finding code, severity and thresholds unchanged. Offline, 2026-10-02, on the clean multi-LOD model of the py3d tests (build_multilod_v2_p3d after blender_to_dayz(), validate() == []): with the visual LOD's shell turned inside-out, faces and normals together (the absolute check passes it), ERR_WINDING_INVERTED fired on the three healthy collision LODs (geometry, view_geometry, fire_geometry: 0 % of faces wound outward from the LOD centroid, visual 100 %) and nowhere else, and no other finding saw the inside-out visual LOD; with the geometry LOD turned instead, on that LOD only (100 % vs 0 %). The visual shell's signed volume by winding reads negative on the clean model and positive turned (also what a room seen from inside is); the collision boxes read 0 of 6 faces outward clean and 6 of 6 turned. The message's winding steps, run on every LOD, reversed the turned LOD and nothing else (320 shell faces, or 6), and fixing the corners then gave back the clean model exactly (points, normal pools, vertex and normal indices). Reversing the faces of the three flagged LODs, the old message's fix, traded the finding for ERR_WINDING_VS_NORMALS on each; negating their normals as well left validate() at [] with every LOD wound outward, the collision boxes 6 of 6 outward as transform(ROT_X_NEG90) alone leaves them, the map whose collision LODs registered no raycast in game (py3d README, Blender -> DayZ). On 12 turned states (the visual LOD or one collision LOD, its faces, its normals or both) the 8 ERR_WINDING_VS_NORMALS messages are byte-identical to main's. py3d suite 286 passed, 11 skipped (293 passed, 4 skipped with PY3D_UPSTREAM_PATH at upstream 7acd58b; main 9588a5d: 283 and 290); the new message test fails on main's __init__.py (sha256 66d8748d...) and the two behaviour tests pass on both. Nothing new was loaded in game. Authored by Claude (Anthropic) on the owner's request (2026-10-02: make the py3d ERR_WINDING_INVERTED hint say what the relative check establishes); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "a196f021458232169b46d4c4d6f3c785789b6661f5feb2d6041a5fbec06e2895",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/py3d/__init__.py",
+          "source_revision": "kp-update-py3d-relative-winding-hint@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "66d8748d69e7f8d6b2f109df1f55eec262784d18d3125cb6026d3b0960f6d245",
+      "output_hash": "a196f021458232169b46d4c4d6f3c785789b6661f5feb2d6041a5fbec06e2895",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25748,10 +25778,20 @@
           "source_path": "tools/py3d/tests/test_s7_blender_to_dayz.py",
           "source_revision": "kp-update-py3d-winding-hint@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Three tests for ERR_WINDING_INVERTED on the clean multi-LOD fixture: where the finding lands with the visual or the geometry LOD inside-out, and the geometry LOD's text, the same in both numbers aside, giving the steps for both LODs; the signs the message gives, measured, and its steps run on every LOD reversing only the turned LOD and giving back the clean model; and the old message's fix, which trades the finding for ERR_WINDING_VS_NORMALS, then silences validate() with every LOD wound outward. shell_volume now goes through a signed_volume helper (same arithmetic). Offline, 2026-10-02, on the clean multi-LOD model of the py3d tests (build_multilod_v2_p3d after blender_to_dayz(), validate() == []): with the visual LOD's shell turned inside-out, faces and normals together (the absolute check passes it), ERR_WINDING_INVERTED fired on the three healthy collision LODs (geometry, view_geometry, fire_geometry: 0 % of faces wound outward from the LOD centroid, visual 100 %) and nowhere else, and no other finding saw the inside-out visual LOD; with the geometry LOD turned instead, on that LOD only (100 % vs 0 %). The visual shell's signed volume by winding reads negative on the clean model and positive turned (also what a room seen from inside is); the collision boxes read 0 of 6 faces outward clean and 6 of 6 turned. The message's winding steps, run on every LOD, reversed the turned LOD and nothing else (320 shell faces, or 6), and fixing the corners then gave back the clean model exactly (points, normal pools, vertex and normal indices). Reversing the faces of the three flagged LODs, the old message's fix, traded the finding for ERR_WINDING_VS_NORMALS on each; negating their normals as well left validate() at [] with every LOD wound outward, the collision boxes 6 of 6 outward as transform(ROT_X_NEG90) alone leaves them, the map whose collision LODs registered no raycast in game (py3d README, Blender -> DayZ). On 12 turned states (the visual LOD or one collision LOD, its faces, its normals or both) the 8 ERR_WINDING_VS_NORMALS messages are byte-identical to main's. py3d suite 286 passed, 11 skipped (293 passed, 4 skipped with PY3D_UPSTREAM_PATH at upstream 7acd58b; main 9588a5d: 283 and 290); the new message test fails on main's __init__.py (sha256 66d8748d...) and the two behaviour tests pass on both. Nothing new was loaded in game. Authored by Claude (Anthropic) on the owner's request (2026-10-02: make the py3d ERR_WINDING_INVERTED hint say what the relative check establishes); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "d34130e54d6d9a33468229d1b8f2460629deb8dafbdbadce72669f699ed43725",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/test_s7_blender_to_dayz.py",
+          "source_revision": "kp-update-py3d-relative-winding-hint@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "df08e20e4228b3c99b52ee0a88339e163c18e9d348ffc3ffb3bcab21914cef2e",
+      "output_hash": "d34130e54d6d9a33468229d1b8f2460629deb8dafbdbadce72669f699ed43725",
       "output_path": "tools/py3d/tests/test_s7_blender_to_dayz.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

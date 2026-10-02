@@ -1088,6 +1088,23 @@ def _pct_edge_coherence(lod):
     return 100.0 * good / tot
 
 
+def _winding_steps(kind_label):
+    """How to settle the winding of a LOD of this kind, normals untouched.
+    Both winding findings give it; it leaves a LOD that reads right as it
+    is."""
+    if kind_label == "visual":
+        return ("in each closed shell, turn the vertex order of the faces "
+                "that disagree with their neighbours "
+                "(WARN_WINDING_EDGE_INCOHERENT), then read its signed "
+                "volume by winding - negative for a solid seen from "
+                "outside, positive for a room seen from inside - and if it "
+                "has the other sign, face.vertices.reverse() on every face "
+                "of the shell")
+    return ("in each convex component, face.vertices.reverse() on every "
+            "face whose cross product points outward, against face "
+            "centroid minus component centroid (inward expected)")
+
+
 def _check_winding_absolute(lod, lod_index, kind_label):
     r"""A LOD's ABSOLUTE winding, without comparing it to any other LOD.
 
@@ -1118,19 +1135,6 @@ def _check_winding_absolute(lod, lod_index, kind_label):
             "non-degenerate winding and a non-degenerate declared normal."
             % kind_label))
     elif pct < 10.0:
-        if kind_label == "visual":
-            how = ("in each closed shell, turn the vertex order of the "
-                   "faces that disagree with their neighbours "
-                   "(WARN_WINDING_EDGE_INCOHERENT), then read its signed "
-                   "volume by winding - negative for a solid seen from "
-                   "outside, positive for a room seen from inside - and "
-                   "if it has the other sign, face.vertices.reverse() on "
-                   "every face of the shell")
-        else:
-            how = ("in each convex component, face.vertices.reverse() on "
-                   "every face whose cross product points outward, against "
-                   "face centroid minus component centroid (inward "
-                   "expected)")
         findings.append(Finding(
             "ERR_WINDING_VS_NORMALS", "ERROR", lod_index,
             "%s LOD: winding and declared normals disagree (only %.0f%% "
@@ -1145,7 +1149,7 @@ def _check_winding_absolute(lod, lod_index, kind_label):
             "Reversing every face on this finding alone has turned "
             "exports whose winding was right inside-out. More: py3d "
             "README, 'Winding'."
-            % (kind_label, pct, how)))
+            % (kind_label, pct, _winding_steps(kind_label))))
     elif pct <= 90.0:
         findings.append(Finding(
             "WARN_WINDING_NORMAL_MISMATCH", "WARN", lod_index,
@@ -1171,6 +1175,14 @@ def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
     global inversion, nor tell a correct hollow box from a broken one. It
     is kept so the finding codes stay stable; the signal that does
     discriminate is `_check_winding_absolute`.
+
+    It sees that the two LODs disagree on which way is out, not which of
+    the two is wrong, and it files the finding on the collision LOD either
+    way. A Visual LOD turned inside-out - faces and normals together, which
+    `_check_winding_absolute` passes - raises it on the healthy collision
+    LODs, and reversing those to match winds them outward. So the message
+    gives the winding steps of both LODs, which leave a LOD that reads
+    right as it is, instead of a fix for this one.
     """
     findings = []
     col = _pct_outward(lod)
@@ -1184,14 +1196,26 @@ def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
     if col_uniform and vis_uniform and col_dom != vis_dom:
         findings.append(Finding(
             "ERR_WINDING_INVERTED", "ERROR", lod_index,
-            "%s LOD winding is INVERTED relative to the Visual LOD "
-            "(%s=%s %.0f%%-outward vs Visual=%s %.0f%%-outward). Raycasts "
-            "from outside pass through -> no collision / no action / no "
-            "ballistic hits. Fix: face.vertices.reverse() on every face of "
-            "this LOD (do NOT swap vertices[1] and vertices[2]: that "
-            "inverts a triangle but turns a quad [0,1,2,3] into [0,2,1,3], "
-            "a CROSSED face)."
-            % (kind_label, kind_label, col_dom, col, vis_dom, vis)))
+            "%s LOD and Visual LOD are wound opposite ways: %.0f%% and "
+            "%.0f%% of their faces wind outward from their LOD's centroid, "
+            "a test that assumes convex geometry. That says they disagree "
+            "on which way is out, not which one is wrong: an inside-out "
+            "Visual LOD raises this on the healthy collision LODs, and "
+            "reversing those to match winds them outward, where raycasts "
+            "pass through them. In a DayZ MLOD both cross(v1-v0, v2-v0) "
+            "and the stored normals point away from the side meant to be "
+            "seen. Settle the winding of both LODs first, normals "
+            "untouched; these steps leave a LOD that reads right as it "
+            "is. Visual LOD: %s. %s LOD: %s. Never a vertices[1]/[2] swap "
+            "(a quad becomes a crossed face). Then negate each corner "
+            "normal that still points against its face "
+            "(lod.facenormals[j] = (-x, -y, -z); an entry a kept corner "
+            "also uses gets a negated copy). If neither LOD reads wrong "
+            "there is nothing to fix: a Visual LOD meant to be seen from "
+            "inside reads positive and is right. More: py3d README, "
+            "'Winding'."
+            % (kind_label, col, vis, _winding_steps("visual"), kind_label,
+               _winding_steps(kind_label))))
     elif not col_uniform:
         findings.append(Finding(
             "WARN_WINDING_MIXED", "WARN", lod_index,
