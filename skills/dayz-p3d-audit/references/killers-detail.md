@@ -6,39 +6,99 @@
 These produce ZERO engine errors but break functionality completely. The core SKILL.md carries the one-line index of all 13; this file holds the full body of each killer (root cause, detection snippet, fix, caveats).
 
 
-### 1. Inverted Face Winding (CRITICAL — Most Common from Blender)
+### 1. Collision LOD Wound Opposite to the Visual LOD (CRITICAL — Most Common from Blender)
 
-Geometry LOD faces have normals pointing INWARD. Raycasts from outside pass through
-without detecting collision — no collision, no action targeting, no physics.
+A collision component (Geometry, View or Fire Geometry LOD) whose cross product
+`cross(v1-v0, v2-v0)` points OUTWARD lets raycasts from outside pass through without
+detecting collision — no collision, no action targeting, no ballistic hits (`dayz-model-pipeline`
+Rule 18 and its symptom triplet). A correct MLOD winds the cross product away from the side
+meant to be seen and stores its normals the same way (Rule 12): INWARD on a solid seen from
+outside, which every collision component is. Rule 12's in-game probe of 2026-10-01 agrees:
+Geometry, View and Fire components converted with its map registered `scene_raycast` hits from
+both sides, and after the det=+1 map alone none — a map that also mirrors the model and leaves
+its normals outward, so not a winding-only experiment.
 
-**Root cause**: Blender Z-up → DayZ Y-up axis conversion flips triangle winding on
-collision LODs while leaving the Visual LOD correct. The model looks perfect but is
+**Root cause**: the collision LOD and the Visual LOD reached the MLOD by different paths.
+Rule 12's map treats every LOD alike; the mismatch comes from a LOD that did not go through it
+the same way: collision boxes built in code in DayZ space with outward winding (code-built
+geometry does not go through the map), a collision LOD exported with another axis map, or a
+face reversal applied to some LODs and not to others. The model looks perfect but is
 physically invisible.
 
-**Detection**: Compare each collision LOD's winding orientation against the Visual LOD of
-the same model. The absolute mesh-center comparison is disabled for false positives; see the automated check below.
+**Detection**: Rule 18's per-component check decides, once its prerequisites hold: every
+non-proxy face of the collision LOD belongs to a `ComponentNN` selection (killer #8), and every
+component is closed (killer #9) and convex (`dayz-model-pipeline` Rule 1). Then compare each
+face's cross product with `face_centroid - component_centroid`; on a convex component this reads
+each face exactly. A healthy component has EVERY face pointing toward its centroid (inward), not
+most of them: one face pointing away is an inverted face. Faces outside every component, an open
+or non-convex component, a component with no face scored, or a face without a reading (its first
+three corners collinear, so a zero cross product: py3d `WARN_DEGENERATE_FACES`) leave the check
+unresolved — meet the prerequisite or fix that face first, and never read an empty census as
+healthy. `audit_p3d.py` does not run
+this check; it reports the relative trigger below. The absolute mesh-center comparison is
+disabled for false positives.
 
-> **AUTOMATED CHECK (added 2026-05-21)**: `audit_p3d.py` now runs a RELATIVE winding
-> check — it compares each collision LOD's winding orientation against the **Visual LOD**
-> (which renders correctly in-game and therefore defines this model's correct convention)
-> and emits a CRITICAL if they are opposite. This replaces the old absolute centroid
-> heuristic, which false-positived on every Blender export (left-handed transform) and so
-> was disabled — that disablement is exactly why an inverted collision sphere could pass a
-> full audit with "ALL PASSED". The relative check is coordinate-system-agnostic.
+> **AUTOMATED CHECK (added 2026-05-21; scope corrected 2026-10-02)**: `audit_p3d.py` runs a
+> RELATIVE winding check through py3d `P3D.validate()` (`audit_p3d.py:337`): it compares each
+> collision LOD's winding orientation, seen from that LOD's centroid, against the **Visual LOD**
+> and emits `ERR_WINDING_INVERTED` (printed as CRITICAL) when both are uniform and opposite.
+> This replaces the old absolute centroid heuristic, which false-positived on every Blender
+> export (left-handed transform) and so was disabled — that disablement is exactly why an
+> inverted collision sphere could pass a full audit with "ALL PASSED". The relative check is
+> coordinate-system-agnostic, but it judges whole LODs against the Visual LOD, so it is a
+> trigger, not the verdict [OFFLINE MEASURED 2026-10-02, py3d 1.8.0, synthetic unit boxes]:
+>
+> - it fires on a one-box collision LOD wound outward under a Rule 12 Visual LOD, and clears
+>   after `face.vertices.reverse()` (for that box's normals, see **Fix**);
+> - it also fires on a healthy inward box when the Visual LOD's cross product points outward:
+>   an inside-out Visual LOD (`SKILL.md`, item 1 of "The three py3d gates"), or a room meant to
+>   be seen from inside (`SKILL.md` "Absolute winding check", rule 4);
+> - on a collision LOD of two boxes 4 m apart, one box wound outward raises only
+>   `WARN_WINDING_MIXED`, and the same LOD with both boxes inward still reads mixed (16.7 %
+>   outward from the LOD's centroid).
 >
 > **MANDATORY when you GENERATE or EDIT a collision LOD** (procedural sphere, py3d round-trip,
-> Blender import, inspector rebuild): re-run `audit_p3d.py` and confirm there is no
-> "winding is INVERTED relative to the Visual LOD" CRITICAL **before deploying**. A
+> Blender import, inspector rebuild): re-run `audit_p3d.py` and Rule 18's per-component check
+> **before deploying**: with its prerequisites met, every non-proxy face of every component must
+> read inward. A "winding is INVERTED relative to the Visual LOD" CRITICAL that a complete
+> per-component check does not confirm says nothing against the collision: check the Visual LOD
+> against the side meant to be seen instead (Check A table in `winding-diagnostics.md`; a room
+> seen from inside is right as it is). An unresolved check confirms nothing either way. A
 > separately-created dynamic physics body (`dBodyCreateDynamicEx`) can still make the object
 > move, which masks inverted collision winding — the object rolls but the player walks
-> through it and no action cursor registers. If the CRITICAL fires, swap `vertices[1]`/`[2]`
-> on every face of that LOD so it matches the Visual LOD convention.
+> through it and no action cursor registers.
 
-**Fix**: Swap `vertices[1]` and `vertices[2]` of each inverted face.
+**Fix**: `face.vertices.reverse()` on each face that reads outward, and only on those
+(`proxy:*` faces excluded): on a convex, closed component the reading is exact, and a component
+wound outward reads outward on every face. Never a `vertices[1]`/`[2]` swap, which inverts a
+triangle but turns a quad `[0,1,2,3]` into `[0,2,1,3]`, a crossed face (`tools/py3d/README.md`).
+Do not reverse a collision LOD to match the Visual LOD: shipped collision LODs carry mixed
+whole-LOD signs, while seven debinarized vanilla models and four LFPG models wind 0 % outward per
+component (`SKILL.md` "Absolute winding check", rule 7). Read the stored normals of the faces you
+reverse with the Check A table in `winding-diagnostics.md`: negate a face's normals in the same
+pass only if they pointed outward along with its winding (otherwise py3d's absolute check then
+reports the winding against its own normals, `ERR_WINDING_VS_NORMALS`); keep them if they already
+pointed inward. A normal shared with a face you leave alone gets a new pool entry
+(`winding-diagnostics.md`, "From Check B to fix", item 3).
 
 **Why the collision failure may not affect the Visual LOD**: Visual and Geometry LODs have independent face data.
 One can be correct while the other is inverted. DayZ renders Visual LODs single-sided with backface culling:
-inverted faces are see-through / textured on the inside. Check offline with `skills/dayz-characters/references/check_dayz_winding.py`.
+inverted faces are see-through / textured on the inside. Check the Visual LOD offline with the absolute check
+(`SKILL.md` "Absolute winding check") and Check A (`winding-diagnostics.md`).
+
+*(Corrected 2026-10-02 against `dayz-model-pipeline` Rule 12, measured in game 2026-10-01, and
+Rule 18. This killer was titled "Inverted Face Winding" and opened: "Geometry LOD faces have
+normals pointing INWARD. Raycasts from outside pass through without detecting collision — no
+collision, no action targeting, no physics." Its root cause read: "Blender Z-up → DayZ Y-up axis
+conversion flips triangle winding on collision LODs while leaving the Visual LOD correct." Its
+detection read: "Compare each collision LOD's winding orientation against the Visual LOD of the
+same model." The automated check took the Visual LOD as the reference, "(which renders correctly
+in-game and therefore defines this model's correct convention)", and ended: "If the CRITICAL
+fires, swap `vertices[1]`/`[2]` on every face of that LOD so it matches the Visual LOD
+convention." The Fix line read: "Swap `vertices[1]` and `vertices[2]` of each inverted face."
+The last paragraph ended: "Check offline with
+`skills/dayz-characters/references/check_dayz_winding.py`." That script predates Rule 12 and
+fails a correct export (dayz-characters, "OFFLINE GATE").)*
 
 ### 2. Component Selection Case Sensitivity (CRITICAL)
 

@@ -182,9 +182,11 @@ above.
 ## Winding: read this before trusting any validator
 
 The single most common way to break a DayZ model is a Blender (Z-up) to DayZ
-(Y-up) export whose face order or normal sign does not match its axis map: the
-texture becomes visible only from *inside*, and raycasts pass through. (The
-other common way, a mirrored model, is invisible to every check below; see
+(Y-up) export whose face order or normal sign does not match its axis map.
+Faces in the wrong order make the texture visible only from *inside*, and
+raycasts pass through; normals with the wrong sign leave the model solid but
+shade it wrong (lit inverted, measured on a character). (The other common way,
+a mirrored model, is invisible to every check below; see
 [Blender → DayZ](#blender--dayz).)
 
 This fork checks winding two ways:
@@ -196,16 +198,63 @@ This fork checks winding two ways:
   way from the Visual LOD?
 
 The relative check alone **cannot** see a model where *every* LOD is inverted —
-everything is consistent with everything else. That is exactly what the bad
-export produces, which is why the absolute check exists.
+everything is consistent with everything else — which is why the absolute
+check exists. The absolute check cannot see faces and normals turned
+*together*: `transform(ROT_X_NEG90)` alone, which rendered inside-out in game
+(the table above), agrees on 100 % of its faces and `validate()` returns `[]`.
 
-The correct fix for an inverted face is always `face.vertices.reverse()`.
-Do **not** swap `vertices[1]` and `vertices[2]`: that inverts a triangle but
-turns a quad `[0,1,2,3]` into `[0,2,1,3]`, a crossed face.
+`ERR_WINDING_VS_NORMALS` says that winding and normals **disagree**, not which
+of the two is wrong, and the two cases need opposite fixes. In a DayZ MLOD the
+vertex-order cross product `cross(v1 − v0, v2 − v0)` and the stored normals both
+point away from the side meant to be seen: inward on a solid, as
+`blender_to_dayz` writes them. So settle the winding first, with the normals
+left alone, and only then fix the normals against it:
+
+1. **Winding, visual LOD**, per closed shell: a shell whose every edge is shared
+   by exactly two of its faces. An open sheet, or a double-sided part whose
+   faces come with reversed twins, has no inside and is left out.
+   - Make the shell coherent. Two faces that run a shared edge the same way
+     disagree (`WARN_WINDING_EDGE_INCOHERENT`). Flood-fill the shell across its
+     shared edges into the groups of faces that agree with each other, and turn
+     the vertex order of one group, normally the smaller. Which one does not
+     matter, because the next step decides the direction of the whole shell;
+     and its normals stay as they are, because the minority can be the side
+     that was right.
+   - Read its signed volume by winding: the sum of `dot(v0, cross(v1, v2)) / 6`
+     over the fan triangles of its faces, in the file's own coordinates.
+     Negative on a solid meant to be seen from outside, positive on a room
+     meant to be seen from inside. With the other sign,
+     `face.vertices.reverse()` on every face of the shell. Never decide on the
+     sum over the whole LOD, which can hide an inverted part, nor on a shell
+     that is not coherent yet: one reversed face can leave its sum negative.
+2. **Winding, collision LODs**, per component: `face.vertices.reverse()` on
+   every face whose cross product points outward, against face centroid minus
+   component centroid. The test assumes a convex component, which Geometry
+   components must be; on a concave one (a ring, an L) it reads faces that are
+   right as outward.
+3. **Normals**, once the winding is right: negate each corner normal that still
+   points against its face, in the pool, `lod.facenormals[j] = (-x, -y, -z)`
+   (not through `Vertex.normal`, whose setter looks the value up in the pool).
+   Go corner by corner: the check reads each face's first corner only, and
+   negating whole faces turns corners that were right. An entry that a corner
+   you keep also uses stays as it is, and the corners you fix are re-pointed to
+   an entry you leave unchanged that already holds the negated value or,
+   failing that, to a negated copy; copies count toward the 32768 entries
+   `validate()` checks (`WARN_NORMALS_BUDGET`). A corner normal close to
+   perpendicular to its face gives no clear sign: inspect it rather than flip
+   it.
+
+Never reverse faces on this finding alone. Two Blender exports read 0 % and
+their winding was right: the build that reversed every face rendered both
+inside-out in game, and the one that negated their normals rendered both right
+side out. Either fix silences the finding, the wrong one too, so settle the
+winding before touching anything else, not after. And never reverse a face by
+swapping `vertices[1]` and `vertices[2]`: that inverts a triangle but turns a
+quad `[0,1,2,3]` into `[0,2,1,3]`, a crossed face.
 
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 282 tests pass -- 275 of them
+The library is used in a real modding pipeline, and 290 tests pass -- 283 of them
 on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
 upstream (see [Tests](#tests)). It has also been through a deliberately
 adversarial audit, and **not every problem it found is fixed yet**. Before

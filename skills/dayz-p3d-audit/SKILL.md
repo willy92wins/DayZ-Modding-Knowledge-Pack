@@ -116,10 +116,18 @@ These produce ZERO engine errors but break functionality completely. Full body o
 each killer (root cause, detection snippet, fix, caveats) →
 `references/killers-detail.md`. Index:
 
-1. **Inverted Face Winding** (CRITICAL — most common from Blender) — Geometry LOD
-   normals point INWARD; raycasts pass through. `audit_p3d.py` runs a RELATIVE
-   winding check vs the Visual LOD. Fix: swap `vertices[1]`/`[2]` per inverted face.
-   MANDATORY re-run whenever you generate/edit a collision LOD.
+1. **Collision LOD Wound Opposite to the Visual LOD** (CRITICAL once confirmed — most common
+   from Blender) — a collision component whose cross product points OUTWARD lets raycasts
+   through; a correct MLOD winds it INWARD and stores its normals INWARD too
+   (`dayz-model-pipeline` Rules 12 and 18). `audit_p3d.py` gets `ERR_WINDING_INVERTED` from py3d
+   `P3D.validate()`: a RELATIVE check of each whole collision LOD against the Visual LOD, so a
+   trigger, not the verdict. Confirm with Rule 18's per-component check (every face of every
+   closed, convex component inward; faces outside any component leave it unresolved), then
+   `face.vertices.reverse()` on the faces that read outward — never a `vertices[1]`/`[2]` swap
+   (a quad becomes a crossed face), never to match the Visual LOD ("Absolute winding check",
+   rule 7). MANDATORY re-run whenever you generate/edit a collision LOD. *(Corrected 2026-10-02:
+   titled "Inverted Face Winding", this entry read "Geometry LOD normals point INWARD; raycasts
+   pass through" and fixed it with "swap `vertices[1]`/`[2]` per inverted face".)*
 2. **Component Selection Case Sensitivity** (CRITICAL) — Geometry component MUST be
    `Component01` (uppercase C); any variation silently loses ALL collision.
 3. **Missing `autocenter=0` LOD Property** (CRITICAL for Inventory_Base) — items with
@@ -256,13 +264,18 @@ Missing stages produce engine warnings but don't crash.
    NO  ↓ (P3D Geometry LOD issue — engine can't raycast)
 
 5. Run audit_p3d.py and check:
-   a. Collision cross product INWARD per component (dayz-model-pipeline Rule 18)?
-                                 → If OUTWARD: face.vertices.reverse() on the faces of that
-                                   component only (proxy:* faces excluded), never a
-                                   verts[1]/verts[2] swap (a quad crosses); for the normals, see
-                                   the Check A table in references/winding-diagnostics.md.
+   a. Collision cross product INWARD on every face of every component (killer #1, Rule 18)?
+                                 → If a face reads OUTWARD: face.vertices.reverse() on that face
+                                   only (proxy:* faces excluded; prerequisites and unresolved
+                                   cases: killer #1), never a verts[1]/verts[2] swap (a quad
+                                   crosses); for the normals, see the Check A table in
+                                   references/winding-diagnostics.md.
                                    (Corrected 2026-10-02: this line asked for OUTWARD winding and
-                                   swapped verts[1]/verts[2] when inward.)
+                                   swapped verts[1]/verts[2] when inward. Aligned the same day
+                                   with killer #1: it asked "Collision cross product INWARD per
+                                   component" and reversed "the faces of that component only",
+                                   which turns the healthy faces of a mostly-outward component
+                                   outward.)
    b. Component01 uppercase C?   → If wrong case: rename
    c. autocenter=0 LOD property? → If missing: add
    d. pos center in Memory?      → If missing: add at (0,0,0)
@@ -285,8 +298,12 @@ Missing stages produce engine warnings but don't crash.
 
 ## PART 5: Common Blender Export Pitfalls
 
-1. **Z-up → Y-up flips collision winding but not visual** — always verify Geometry LOD
-   normals independently from Visual LOD
+1. **Collision and Visual LODs can reach the MLOD wound differently** — Rule 12's map treats
+   every LOD alike, but collision built in code, exported with another map or reversed on its
+   own does not follow the Visual LOD: check each collision LOD per component (killer #1,
+   Rule 18), independently from the Visual LOD. *(Corrected 2026-10-02: this item read "Z-up →
+   Y-up flips collision winding but not visual — always verify Geometry LOD normals
+   independently from Visual LOD".)*
 2. **Blender Geometry LOD may inherit `class=house`** from Object Builder templates
 3. **py3d read-write cycles** preserve validity but change file size (~800 bytes per
    property change). This is normal.
@@ -360,7 +377,7 @@ Engine verdict (LFSecure I-0, DayZDiag 1.29, 2026-09-07 21:20): the build that f
 Reading rules, corrected:
 
 1. Healthy single-sided MLOD reads ≈ 100 %. **0 % means winding and stored normals DISAGREE; it does not say which side is wrong.** Never derive the fix direction from this number alone. The relative check (item 1 of "The three py3d gates") cannot see a global disagreement; this one can.
-2. A **mixed** percentage on a double-sided model is the twins voting, not an inversion: isolate the minority group per welded component (`references/winding-diagnostics.md`) instead of flipping everything.
+2. A **mixed** percentage on a double-sided model is the twins voting, not an inversion: isolate the minority group per welded component (`references/winding-diagnostics.md`) instead of flipping everything. *(Measured 2026-10-02 with Check A on the SUB_BRZ door of the table: there the twins do not explain the mix — coincident twins are 144 of 11,921 faces, and the census without them is unchanged (72.7 % flipped, 25.9 % agreeing). The vote splits by part — exterior paint, black trim and mirror against their normals, cabin trim and glass with them — and no face group is inverted: Check B finds one stray edge, and with it cut every welded component orients as one group. See Check A, `MIXED`, in `references/winding-diagnostics.md`.)*
 3. Measure in **raw MLOD coordinates**. A frame that already flips Z (an OBJ export, `parse_obj` helpers) inverts the sign; one session concluded "healthy = cross opposite normal" from such a frame and doubted a true CRITICAL for a round.
 4. Decide the direction with the **signed volume by winding**, calibrated on shipped MLOD: a solid seen from outside reads NEGATIVE on production models (a convex box also winds 0 % of its faces "outward" from its centroid); a room meant to be seen from inside reads POSITIVE; Roadway faces walkable from above read `cross_Y < 0` (same side as the kit box's top face). Export sign equal to production → the winding is right and the normals are wrong.
 5. Fix the side that is wrong. Normals wrong → keep the winding and negate the normal pool in place (`lod.facenormals[j] = (-x, -y, -z)`; never through the `Vertex.normal` setter, which re-indexes into the pool); the audit then reads ≈ 100 % with every face order identical to the source. Winding wrong (sign opposite to production) → `face.vertices.reverse()` on every face of every LOD, never a `vertices[1]`/`[2]` swap (a quad becomes a crossed face). Either way confirm in the engine (outside render, inside render, raycast, walk the Roadway) BEFORE promoting the rule: the first version of this section was promoted before that check and cost one build. Engine confirmation of the negate-normals build on the LFSecure pair: PASS, 2026-09-07 22:13, DayZDiag 1.29, I-0 with the L4 PBO (door and room render right side out from outside and from inside; `RaycastRVProxy` view/fire hit the door from the front and the back and the room wall from both sides, while the face-reversed L3 build missed every ray; `P:\LFSecure_dev\evidence\i0\i0_result.json`).
