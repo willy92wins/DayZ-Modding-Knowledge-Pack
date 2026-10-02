@@ -277,7 +277,7 @@ def test_val_component_not_required_without_own_faces(fork, kind):
 @pytest.mark.parametrize("kind", COLLISION_KINDS)
 def test_val_component_proxy_name_is_not_enough(fork, kind):
     """Faces are proxy triangles only when their 'proxy:...' selection has
-    a proxy's shape (3 points, 1 triangle). A cube whose 8 points and 6
+    a proxy's shape (1 triangle and its 3 corners). A cube whose 8 points and 6
     quads sit under a proxy name is collision geometry with no component."""
     p3d = build_multilod_v2_p3d(fork)
     lod = p3d.get_lod(kind)
@@ -286,6 +286,29 @@ def test_val_component_proxy_name_is_not_enough(fork, kind):
     index = next(i for i, l in enumerate(p3d.lods) if l is lod)
     found = [f for f in p3d.validate() if f.code in COMPONENT_CODES]
     assert [(f.code, f.lod) for f in found] == [("ERR_COMPONENT_NAMING", index)]
+
+
+@pytest.mark.parametrize("kind", COLLISION_KINDS)
+def test_val_component_proxy_points_are_its_corners(fork, kind):
+    """A proxy selection's 3 points must be its triangle's corners: one
+    that selects 3 other points does not make the triangle a proxy. The
+    control is the same LOD before its selection is re-pointed."""
+    m = fork
+    lod = m.LOD()
+    lod.resolution = RESOLUTION[kind]
+    sel = add_proxy_triangle(m, lod, "proxy:\\dz\\data\\proxies\\flag.001")
+    p3d = m.P3D()
+    p3d.lods.append(lod)
+    assert not COMPONENT_CODES & set(codes(p3d.validate()))
+    others = []
+    for xyz in ((4.0, 0.0, 0.0), (5.0, 0.0, 0.0), (4.0, 1.0, 0.0)):
+        pt = m.Point()
+        pt.coords = xyz
+        lod.points.append(pt)
+        others.append(pt)
+    sel.points = {pt: 1 for pt in others}
+    found = [f for f in p3d.validate() if f.code in COMPONENT_CODES]
+    assert [(f.code, f.lod) for f in found] == [("ERR_COMPONENT_NAMING", 0)]
 
 
 @pytest.mark.parametrize("name,mutate", CASES, ids=[c[0] for c in CASES])

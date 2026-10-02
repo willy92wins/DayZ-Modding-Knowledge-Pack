@@ -1219,9 +1219,12 @@ _COMPONENT_NAME_RE = re.compile(r"component\d+", re.IGNORECASE)
 
 def _proxy_triangle_faces(lod):
     """ids of the faces that are MLOD proxy triangles: a selection named
-    'proxy:<path>.<index>' that holds exactly 3 points and 1 triangular
-    face. A selection under a proxy name with any other shape is not a
-    proxy, and its faces stay collision geometry."""
+    'proxy:<path>.<index>' that holds exactly 1 triangular face and, as its
+    3 points, that triangle's 3 corners. A selection under a proxy name
+    with any other shape is not a proxy, and its faces stay collision
+    geometry. Normals and editing exclusivity are not required here (the
+    library's strict proxy check, _resolve_proxy_anatomy, rejects real
+    proxy triangles for those)."""
     out = set()
     for name, sel in lod.selections.items():
         if not PROXY_NAME_RE.match(name):
@@ -1229,7 +1232,13 @@ def _proxy_triangle_faces(lod):
         if len(sel.points) != 3 or len(sel.faces) != 1:
             continue
         face = next(iter(sel.faces))
-        if len(face.vertices) == 3:
+        if len(face.vertices) != 3:
+            continue
+        try:
+            corners = {id(vx.point) for vx in face.vertices}
+        except (IndexError, TypeError):
+            continue
+        if len(corners) == 3 and corners == set(map(id, sel.points)):
             out.add(id(face))
     return out
 

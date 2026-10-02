@@ -150,18 +150,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   component names are none of them `Component` and a number (e.g. only `Component_01`, a spelling
   never measured); `COMPONENT01` and `Component02` raise nothing. A collision LOD without faces of
   its own (a mass-only Geometry LOD, or one holding only proxy triangles) raises nothing; a
-  selection under a proxy name counts as a proxy only with a proxy's shape (3 points, 1 triangle).
-  Each LOD is checked on its own. Measured offline with the old and the new module through
-  `P3D._scan_v12_findings` on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's
-  door samples): the old check raised 94 errors, all on Geometry LODs, 88 of them with lowercase
-  component names and 5 on Geometry LODs without faces (ruined wheels, one a debinarized vanilla
-  `sedanwheel_destroyed`); the new one raises 1, a Geometry LOD with faces and no component, and
-  nothing on View or Fire, where every LOD with faces has a component. The v2 test fixture's View
-  and Fire LODs, which had no component, get `Component01`. The `dayz-p3d-audit`, `dayz-vehicles`
-  and `dayz-clothing` notes on this finding now say which py3d version does what, and a knowledge
-  note's claim that Object Builder is case-sensitive is marked as unmeasured. No new wheel: the
-  pinned and installed `py3d_dayz-1.8.0` keeps the old check, and `apply-s2-rollout.ps1 -WheelOnly`
-  refuses to restock until a 1.9.0 wheel is built and pinned.
+  selection under a proxy name counts as a proxy only with a proxy's shape (1 triangle, selected
+  with its 3 corners). Each LOD is checked on its own. Measured offline with the old and the new
+  module through `P3D._scan_v12_findings` on 414 unique MLODs (the owner's mod and vehicle projects
+  and the Pack's door samples): the old check raised 94 errors, all on Geometry LODs, 88 of them
+  with lowercase component names and 5 on Geometry LODs without faces (ruined wheels, one a
+  debinarized vanilla `sedanwheel_destroyed`); the new one raises 1, a Geometry LOD with faces and
+  no component, and nothing on View or Fire, where every LOD with faces has a component. The v2 test
+  fixture's View and Fire LODs, which had no component, get `Component01`. The `dayz-p3d-audit`,
+  `dayz-vehicles` and `dayz-clothing` notes on this finding now say which py3d version does what,
+  and a knowledge note's claim that Object Builder is case-sensitive is marked as unmeasured. No new
+  wheel: the pinned and installed `py3d_dayz-1.8.0` keeps the old check, and `apply-s2-rollout.ps1
+  -WheelOnly` refuses to restock until a 1.9.0 wheel is built and pinned.
 
 ## [1.5.0] - 2026-10-02
 
