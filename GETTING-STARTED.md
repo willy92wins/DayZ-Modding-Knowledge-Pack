@@ -343,7 +343,9 @@ python -m packctl gate --root . --report-dir ../pack-gate-reports
 (`GATE-REPORT-IN-ROOT` is a silent exit 1) and the external Agent Skills
 validator (`PACK_SKILLS_REF_ROOT` / PyPI `skills-ref`, console script
 `agentskills`). `validate` is provenance, privacy, links and claim
-ranges. `gate` adds skill validation, Python compilation, the layout
+ranges. `gate` adds skill validation, Python compilation, the test
+suites (`tests/packctl`, `tools/py3d/tests`, and each `skills/<skill>/tests`
+and `tools/<tool>/tests` folder in its own pytest process), the layout
 corpus and a reproducible build.
 
 [`AGENTS.md`](AGENTS.md) also lists `python -m pytest -q`. **That does not
@@ -352,6 +354,9 @@ each tool's README says to run its tests from that tool's directory — and
 two of them share test-module basenames (`test_cli.py`, `_support.py`), so
 a root-level collection aborts before a single test runs. Run each suite
 from its own directory, and use `packctl gate` as the pack-wide check.
+`python -m packctl test-folders --root . --tree skills --tree tools
+--report-dir ../pack-test-reports` runs only the test folders, one pytest
+process each, `tools/py3d/tests` included.
 
 `python tools/dayz-script-validator/scripts/vanilla_control.py` is only
 for commits that touch `tools/dayz-script-validator/` (a new rule, a

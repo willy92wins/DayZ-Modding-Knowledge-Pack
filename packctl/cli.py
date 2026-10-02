@@ -10,7 +10,7 @@ from .builder import build_archive
 from .common import exit_code_for, finding, make_report, write_json
 from .evals import run_eval_case
 from .live_evals import run_live_eval_case
-from .gate import run_gate
+from .gate import TEST_FOLDER_TREES, run_gate, run_test_folders
 from .promotion import apply_promotion, check_promotion, recover_promotion
 from .validation import validate_repo
 
@@ -31,6 +31,16 @@ def _parser() -> argparse.ArgumentParser:
     gate = commands.add_parser("gate")
     gate.add_argument("--root", required=True, type=Path)
     gate.add_argument("--report-dir", required=True, type=Path)
+
+    test_folders = commands.add_parser("test-folders")
+    test_folders.add_argument("--root", required=True, type=Path)
+    test_folders.add_argument(
+        "--tree",
+        action="append",
+        required=True,
+        choices=TEST_FOLDER_TREES,
+    )
+    test_folders.add_argument("--report-dir", required=True, type=Path)
 
     api = commands.add_parser("api-index")
     api_commands = api.add_subparsers(dest="api_command", required=True)
@@ -117,6 +127,13 @@ def main(argv: list[str] | None = None) -> int:
             report_path = args.report
         elif args.command == "gate":
             report = run_gate(args.root, args.report_dir)
+            return exit_code_for(report)
+        elif args.command == "test-folders":
+            report = run_test_folders(args.root, args.report_dir, args.tree)
+            sys.stdout.write(
+                json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2)
+                + "\n"
+            )
             return exit_code_for(report)
         elif args.command == "api-index" and args.api_command == "build":
             source_root = _resolve_api_source(args.root.resolve(), args.source_id)

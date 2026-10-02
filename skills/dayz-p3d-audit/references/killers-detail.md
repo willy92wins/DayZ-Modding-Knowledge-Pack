@@ -131,8 +131,8 @@ in-game and therefore defines this model's correct convention)", and ended: "If 
 fires, swap `vertices[1]`/`[2]` on every face of that LOD so it matches the Visual LOD
 convention." The Fix line read: "Swap `vertices[1]` and `vertices[2]` of each inverted face."
 The last paragraph ended: "Check offline with
-`skills/dayz-characters/references/check_dayz_winding.py`." That script predates Rule 12 and
-fails a correct export (dayz-characters, "OFFLINE GATE").)*
+`skills/dayz-characters/references/check_dayz_winding.py`." That script then predated Rule 12 and
+failed a correct export; since 2026-10-02 it reads Rule 12 (dayz-characters, "OFFLINE GATE").)*
 
 *(Measured in game 2026-10-02, the outward boxes above: the opening said an outward component
 "lets raycasts from outside pass through without detecting collision — no collision, no action
@@ -301,7 +301,7 @@ a whole box under a proxy name counts as collision geometry) and points that no 
 counted. A LOD with no component at all is `ERR_COMPONENT_NAMING`'s finding (killer #2); one whose
 component selections are all empty is reported here, every face counted. A face outside every
 component on a LOD that has others was not measured in game, so the finding stays a WARN. On the
-`dayz-doors` tutorial samples it is silent on `Simple_Door` and `Door_w_Button` and flags the Geometry and
+Pack's door samples it is silent on `Simple_Door` and `Door_w_Button` and flags the Geometry and
 Fire LODs of `Expert_Mode`, whose lever (18 faces: selection `lever` in Geometry, `door1_open` in
 Fire) is in no component there, though `dayz-doors` lists the lever among the Geometry parts;
 whether that lever collides in game was not measured.
