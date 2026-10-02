@@ -330,8 +330,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   relative check (`ERR_WINDING_INVERTED`, through `P3D.validate()`), and since killer #1 was
   rewritten it is a trigger, not the verdict: it also fires on healthy collision LODs under an
   inside-out Visual LOD. Rule 18's per-component check decides (with its prerequisites met, every
-  face of every component reads inward), only the faces that read outward are reversed, and a
-  collision LOD is never reversed to match the Visual LOD. The section's title and body say so now,
+  non-proxy face of every component reads inward), only the faces that read outward are reversed,
+  their stored normals as killer #1's fix says, and a collision LOD is never reversed to match the
+  Visual LOD. The section's title and body say so now,
   and so do the rule's two other copies: the collider recipe in
   `references/py3d-direct-generation.md`, which called the relative comparison "the operational
   gate", and `dayz-p3d-inspector`'s SP-003 section. The old text is quoted in dated notes.

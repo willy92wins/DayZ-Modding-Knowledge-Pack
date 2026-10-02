@@ -313,13 +313,14 @@ The Blender/FBX recipe changed three times. 2026-07-06: `(x,z,-y)` (det=+1), "a 
 When you GENERATE/EDIT a collision LOD (Geometry/Fire/View), run `audit_p3d.py` and Rule 18's
 per-component check BEFORE deploying. Rule 18 decides: with its prerequisites met (every
 non-proxy face in a `ComponentNN` selection; every component closed and convex; no degenerate
-face), every face of every component must read INWARD (Rule 12); otherwise the check is
-unresolved and confirms nothing. `audit_p3d.py` does not run Rule 18: through py3d
+face), every non-proxy face of every component must read INWARD (Rule 12); otherwise the check
+is unresolved and confirms nothing. `audit_p3d.py` does not run Rule 18: through py3d
 `P3D.validate()` it compares each collision LOD with the Visual LOD and raises
 `ERR_WINDING_INVERTED` when both are uniform and opposite: a trigger for Rule 18, not a
 verdict, since it also fires on healthy collision LODs under an inside-out Visual LOD or one
-meant to be seen from inside (a room). Reverse only the faces that read outward; never reverse a collision
-LOD to match the Visual LOD (`dayz-p3d-audit` killer #1, "Absolute winding check" rule 7).
+meant to be seen from inside (a room). Reverse only the faces that read outward, and set their
+stored normals as killer #1's **Fix** says; never reverse a collision LOD to match the Visual
+LOD (`dayz-p3d-audit` killer #1, "Absolute winding check" rule 7).
 Surface this proactively when the symptom is "no action /
 bullets pass". A walk-through does not point at the winding: in game, 2 m boxes whose
 collision LODs were wound outward still stopped the player, the same box with no `ComponentNN`
