@@ -423,9 +423,12 @@ community). Both are real but distinct; do not conflate them. (No explicit Bohem
   `steeringwheel`/`drivewheel`, doors `doors_*`, seats `seat_*`, lights `light_*` (hiddenSelections),
   `color`/`base`/`special` (hiddenSelections), chassis catch-all (`zbytek`).
 - **Geometry/Collision LODs:** `componentNN` (lowercase `component01` — vanilla vehicles use lowercase,
-  measured via py3d on CivilianSedan and the extracted QuadBike MLOD; the uppercase `Component01` rule is
-  Inventory_Base-only, see §validate() ERR_COMPONENT_NAMING. QuadBike Geometry has 27 components — ~30-50
-  suffice for sedan/hatch). Hubs `wheel_X_Y_damper_land` as own components.
+  measured via py3d on CivilianSedan and the extracted QuadBike MLOD; lowercase also collided like
+  uppercase on an item and a building in game, see §validate() ERR_COMPONENT_NAMING. QuadBike Geometry
+  has 27 components — ~30-50 suffice for sedan/hatch). Hubs `wheel_X_Y_damper_land` as own components.
+  *(Corrected 2026-10-02: the
+  middle clause read "the uppercase `Component01` rule is Inventory_Base-only"; dayz-p3d-audit killer #2
+  measured `component01` colliding like `Component01` on an `Inventory_Base` item too.)*
 - **Hitpoints LOD:** one `dmgZone_*` per config zone (`dmgZone_chassis/front/back/fender_*/engine/fuelTank/lights_*`).
 
 ### Proxies per LOD (car)
@@ -664,9 +667,13 @@ refactor on sight.
 ### `validate()` ERR_COMPONENT_NAMING is a false-positive for vehicles
 
 Vanilla vehicle Geometry LODs use **lowercase `component01`** (CivilianSedan does, and it works) — the
-py3d/audit "engine requires `Component01` uppercase" rule is for Inventory_Base items. Match vanilla
-(lowercase) for vehicles; the resulting `ERR_COMPONENT_NAMING` from `P3D.validate()` is expected (the CONTROL
-itself triggers it).
+py3d/audit "engine requires `Component01` uppercase" rule does not hold for Inventory_Base items either:
+measured in game on 2026-10-02, `component01` collides exactly like `Component01` on an item and on a
+`HouseNoDestruct`, unbinarized and binarized, and binarize writes both as `component01` (dayz-p3d-audit
+killer #2). Match vanilla (lowercase) for vehicles; the resulting `ERR_COMPONENT_NAMING` from `P3D.validate()`
+is expected (the CONTROL itself triggers it). The same code for a Geometry LOD with no component at all is
+not one to wave off: on an item and a building that collision was gone (vehicles not measured).
+*(Corrected 2026-10-02: the first sentence ended "rule is for Inventory_Base items.")*
 
 ## Addendum (2026-06-24 s7) — componentNN DUAL-TAG: hub/seat selections must SHARE faces with a componentNN [VERIFIED in-game, was the SUB_BRZ spawn blocker]
 
