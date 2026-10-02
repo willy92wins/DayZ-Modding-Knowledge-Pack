@@ -155,16 +155,20 @@ each killer (root cause, detection snippet, fix, caveats) →
    `model.cfg`, so the NAME heuristic false-positives on a valid decoupled rig (LL-027).
 7. **Missing `box_placing_min` / `box_placing_max` Memory Points** — hologram placement
    fallback; fires only for items without a proper Geometry LOD / broken `GetCollisionBox()`.
-8. **Incomplete Component Coverage** — every vertex and face of a collision LOD must belong to
-   a `ComponentNN` selection with weight=1, one component per closed, convex part, the components
-   together covering the LOD, or collision is partial. Never merge separate parts into one
-   `Component01` to make it cover everything: that component is no longer convex. py3d 1.9.0
-   `WARN_COMPONENT_COVERAGE` counts the union of the `ComponentNN` selections, whatever the case,
-   on the Geometry, View and Fire LODs; up to 1.8.0 (the pinned wheel) it counted `Component01`
-   alone, on the Geometry LOD, and fired on a healthy multi-component LOD
-   (`references/killers-detail.md` §8). *(Corrected 2026-10-02: titled "Incomplete Component01
-   Coverage", this entry read "`Component01` must include ALL verts AND faces with weight=1, or
-   collision is partial.")*
+8. **Incomplete Component Coverage** — every face of a collision LOD (proxy triangles aside),
+   and every point those faces use, must belong to a `ComponentNN` selection with weight=1, one
+   component per closed, convex part, the components together covering the LOD. A face outside
+   every component is expected not to collide; that was measured only for a LOD with no
+   component at all (killer #2). Never merge separate parts into one `Component01` to make it
+   cover everything: that component is no longer convex. py3d 1.9.0 `WARN_COMPONENT_COVERAGE`
+   counts the union of the `ComponentNN` selections, whatever the case, on the Geometry, View and
+   Fire LODs, proxy triangles and points that no face uses left out; up to 1.8.0 (the pinned
+   wheel) it counted `Component01` alone, on the Geometry LOD, and fired on a healthy
+   multi-component LOD (`references/killers-detail.md` §8). *(Corrected 2026-10-02: titled
+   "Incomplete Component01 Coverage", this entry read "`Component01` must include ALL verts AND
+   faces with weight=1, or collision is partial." The first correction that day kept "every
+   vertex and face" and "or collision is partial", a consequence measured only for a LOD with no
+   component at all.)*
 9. **Non-Watertight Collision Mesh** — open Geometry mesh (boundary edges/holes) →
    raycasts pass through gaps.
 10. **Missing Surface/Material Assignment on Collision LODs** (CRITICAL) — every collision

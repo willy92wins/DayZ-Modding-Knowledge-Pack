@@ -238,11 +238,13 @@ for items without a proper Geometry LOD or with broken `GetCollisionBox()` data.
 
 ### 8. Incomplete Component Coverage
 
-Every vertex and face of a collision LOD must belong to a `ComponentNN` selection with weight=1:
-one component per closed, convex part (`dayz-model-pipeline` Rule 1), the components together
-covering the LOD. Partial coverage means partial collision — some faces won't register raycasts.
-Never merge separate parts into one `Component01` to make it cover everything: a component that
-holds two separate parts is not convex.
+Every face of a collision LOD (proxy triangles aside), and every point those faces use, must
+belong to a `ComponentNN` selection with weight=1: one component per closed, convex part
+(`dayz-model-pipeline` Rule 1), the components together covering the LOD. A face outside every
+component is expected not to collide, but that was measured only for a LOD with no component at
+all (killer #2), not for a face left out next to covered ones. Never merge separate parts into one
+`Component01` to make it cover everything: a component that holds two separate parts is not
+convex.
 
 py3d 1.9.0 `WARN_COMPONENT_COVERAGE` (`_check_component_coverage`) reads the union of the
 `ComponentNN` selections, whatever the case, on the Geometry, View and Fire LODs: it counts the
@@ -264,7 +266,10 @@ vertices", yet that model took every ray in game (SKILL.md, "Absolute winding ch
 With that wheel, count the union of the `ComponentNN` selections yourself.
 
 *(Corrected 2026-10-02: titled "Incomplete Component01 Coverage", this entry read "`Component01`
-must include ALL vertices AND ALL faces of the Geometry LOD with weight=1.")*
+must include ALL vertices AND ALL faces of the Geometry LOD with weight=1." The first correction
+that day still opened "Every vertex and face of a collision LOD must belong to a `ComponentNN`
+selection" and said "Partial coverage means partial collision — some faces won't register
+raycasts.", a consequence measured only for a LOD with no component at all.)*
 
 ### 9. Non-Watertight Collision Mesh
 

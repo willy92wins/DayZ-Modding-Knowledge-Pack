@@ -592,6 +592,52 @@ def test_coverage_zero_weight_is_not_cover(fork):
     assert f.msg.startswith("geometry LOD: 1 of its 6 face(s)"), f.msg
 
 
+def test_coverage_zero_point_weight_is_not_cover(fork):
+    """The same for a point: every face is covered, one corner is not."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    geo.selections["Component01"].points[geo.points[0]] = 0
+    (f,) = coverage(p3d.validate())
+    assert f.msg.startswith(
+        "geometry LOD: every face (proxy triangles not counted) is in a "
+        "ComponentNN selection, but 1 of the 8 point(s) its faces use are "
+        "in none."), f.msg
+
+
+def test_coverage_fractional_weights_cover(fork):
+    """Any nonzero weight is a member, in memory and once written and read
+    back (MLOD stores a fractional weight as a nonzero byte)."""
+    import io
+    p3d = build_multilod_v2_p3d(fork)
+    sel = p3d.get_lod("geometry").selections["Component01"]
+    sel.points = {p: 0.5 for p in sel.points}
+    sel.faces = {fa: 0.25 for fa in sel.faces}
+    assert coverage(p3d.validate()) == []
+    buf = io.BytesIO()
+    p3d.write(buf)
+    buf.seek(0)
+    reread = fork.P3D(buf)
+    weights = reread.get_lod("geometry").selections["Component01"].faces
+    assert len(weights) == 6 and all(0 < w < 1 for w in weights.values())
+    assert coverage(reread.validate()) == []
+
+
+def test_coverage_silent_on_proxy_only_lod(fork):
+    """A collision LOD that holds only a proxy triangle has no face of its
+    own to cover, even with a component selection present. Up to 1.8.0,
+    on the Geometry LOD: 'Component01 covers 0/3 vertices' and '0/1
+    faces'."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    lod = fork.LOD()
+    lod.resolution = geo.resolution
+    lod.properties["autocenter"] = "0"
+    add_proxy_triangle(fork, lod, "proxy:\\dz\\data\\proxies\\flag.001")
+    lod.new_selection("Component01")
+    p3d.lods[p3d.lods.index(geo)] = lod
+    assert coverage(p3d.validate()) == []
+
+
 def test_coverage_silent_without_components(fork):
     """No component selection at all is ERR_COMPONENT_NAMING's finding;
     coverage adds nothing."""

@@ -1364,11 +1364,13 @@ def _check_component_coverage(lod, lod_index, kind_label):
     in components was not measured, hence a WARN.
 
     Up to 1.8.0 this check, a port of audit_p3d.check_component_coverage,
-    compared 'Component01' alone with the whole Geometry LOD: it fired on
-    every Geometry LOD with more than one component (the Pack's three door
-    samples, two of them fully covered), never read components named in
-    lowercase, counted proxy triangles and loose points as uncovered, and
-    did not run on View or Fire.
+    read the Geometry LOD only when it held a selection named exactly
+    'Component01' and compared that selection alone with the whole LOD: it
+    fired whenever 'Component01' held fewer points or faces than the LOD,
+    as on a healthy LOD with several components (the Pack's three door
+    samples, two of them fully covered), never read a LOD without an exact
+    'Component01' (lowercase components included), counted proxy triangles
+    and loose points as uncovered, and did not run on View or Fire.
     """
     names = [n for n in lod.selections if _COMPONENT_NAME_RE.fullmatch(n)]
     if not names:
