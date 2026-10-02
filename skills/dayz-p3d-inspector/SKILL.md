@@ -441,9 +441,15 @@ COUNTS, not just names. Mitigation for a .p3d with critical memory selections: e
 with py3d directly and write with py3d, bypassing the recipe→build round-trip. (The inspector
 remains fine for inspection/visualization.)
 
-### Collision LOD winding must match Visual (SP-003)
-When generating/editing a collision LOD, compare its winding sign against the Visual LOD
-(centroid method) before deploying — they must match (~100% INWARD, DayZ left-handed).
+### Collision LOD winding is read per component, never matched to Visual (SP-003)
+When generating/editing a collision LOD, run `dayz-model-pipeline` Rule 18's per-component check
+before deploying: every non-proxy face must sit in a closed, convex `ComponentNN` and read
+INWARD (DayZ left-handed); a LOD short of those prerequisites is unresolved, not healthy. The relative check against the Visual LOD (py3d `ERR_WINDING_INVERTED`) only
+triggers it; reverse only the faces that read outward (`dayz-p3d-audit` killer #1;
+`dayz-model-pipeline` SP-003). *(Aligned 2026-10-02 with `dayz-p3d-audit` killer #1: this
+section was titled "Collision LOD winding must match Visual (SP-003)" and read: "When
+generating/editing a collision LOD, compare its winding sign against the Visual LOD (centroid
+method) before deploying — they must match (~100% INWARD, DayZ left-handed).")*
 
 ## (added 2026-06-01) Stale recipe after external edits to .p3d (SP-022)
 

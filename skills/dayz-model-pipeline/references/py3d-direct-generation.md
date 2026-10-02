@@ -1041,11 +1041,17 @@ py3d can CONSTRUCT collision geometry, not only read it. Object model:
 
 Faces reference normals by `normal_index` into the LOD `facenormals` pool (not per-face inline).
 Cylinder pattern (e.g. a wheel collider): build an N-gon ring in the Y-Z plane -> `scipy.ConvexHull`
--> `simplices` are the faces and `equations` give outward normals. After construction, compare the
-collider's winding sign against the Visual LOD of the same model and make the signs match (SP-003).
-Invariant 18 records the expected absolute DayZ state as `dot(outward, cross_n) < 0`, but this
-coordinate-system-agnostic relative comparison is the operational gate; add one selection
+-> `simplices` are the faces and `equations` give outward normals. After construction, read every
+face of the hull with Rule 18's per-component check (`dot(outward, cross_n) < 0` on every face) and
+fix the faces that read outward as `dayz-p3d-audit` killer #1's **Fix** says (`face.vertices.reverse()`,
+and which stored normals to negate); the relative comparison against the Visual LOD (`ERR_WINDING_INVERTED`) only
+triggers that check, and a collider is never reversed to match the Visual LOD (SP-003). Add one selection
 `component01` over all points + faces; add ViewGeometry (6e15) and FireGeometry (7e15) copies as needed.
+*(Aligned 2026-10-02 with SP-003 and `dayz-p3d-audit` killer #1: this paragraph read "After
+construction, compare the collider's winding sign against the Visual LOD of the same model and make
+the signs match (SP-003). Invariant 18 records the expected absolute DayZ state as
+`dot(outward, cross_n) < 0`, but this coordinate-system-agnostic relative comparison is the
+operational gate; add one selection `component01` over all points + faces".)*
 
 Gotcha (non-idempotent): a script that ADDS LODs is NOT idempotent -- re-running it over already-
 processed output DUPLICATES the LODs (invalid model). Guard it (skip if the LOD resolution already

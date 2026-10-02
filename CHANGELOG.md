@@ -324,6 +324,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   walks through it" is replaced, and so are "no collision" in the killer's opening and "physically
   invisible" in its root cause; the old text is quoted in a dated note. `dayz-model-pipeline`'s
   SP-003 note no longer lists "walks through" among the symptoms of collision winding.
+- `dayz-model-pipeline` SP-003 no longer tells you to match a collision LOD's winding to the Visual
+  LOD. It said to compare the two "(centroid method) BEFORE deploying — they must agree in sign",
+  and that `audit_p3d.py` does not validate this. `audit_p3d.py` does run that comparison, py3d's
+  relative check (`ERR_WINDING_INVERTED`, through `P3D.validate()`), and since killer #1 was
+  rewritten it is a trigger, not the verdict: it also fires on healthy collision LODs under an
+  inside-out Visual LOD. Rule 18's per-component check decides (with its prerequisites met, every
+  face of every component reads inward), only the faces that read outward are reversed, and a
+  collision LOD is never reversed to match the Visual LOD. The section's title and body say so now,
+  and so do the rule's two other copies: the collider recipe in
+  `references/py3d-direct-generation.md`, which called the relative comparison "the operational
+  gate", and `dayz-p3d-inspector`'s SP-003 section. The old text is quoted in dated notes.
 
 ## [1.5.0] - 2026-10-02
 

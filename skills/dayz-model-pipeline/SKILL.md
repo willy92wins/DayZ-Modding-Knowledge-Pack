@@ -309,16 +309,30 @@ The Blender/FBX recipe changed three times. 2026-07-06: `(x,z,-y)` (det=+1), "a 
 
 [EXACT][CLAIM-BLENDER-DAYZ-DET-NEG1] Measured in game (DayZ 1.30.164014 Exp): an exporter that mapped Blender→DayZ with the det=+1 rotation `X = -y` produced a MIRRORED model. Inverting faces and negating normals fixed the inside-out look, but in-game text and logos then read backwards ("92", "ITAJUD"): the shape itself was mirrored, and the mirror was also the real cause of the reversed faces. DayZ is left-handed (X east, Y up, Z north; vehicles face -Z) and Blender right-handed, so conserving shape requires a REFLECTION in the numbers: `X = +y` (det=-1). MLOD convention measured against binarized vanilla: the vertex-order cross points INWARD and the shading normals also point inward; with det=-1 the face order comes out correct on its own, normals get negated, and geometry authored directly in DayZ space (collision boxes) is inverted by the same reflection. Gate: compare your binarized ODOL against the vanilla one with the same reader (tyre tread band, collision boxes) and require readable in-game text. This corrects LL-020 in the opposite sense. Confirmed on 2026-10-01 on DayZDiag 1.29.163709 with one chiral model exported three ways (Rule 12), which now uses this map. Exports made with the old det=+1 recipe (LFPG, LFQuad) are mirrored: harmless on symmetric parts, wrong on anything with text, logos or one-sided geometry.
 
-### Collision LOD winding must match the Visual LOD (SP-003)
-When you GENERATE/EDIT a collision LOD (Geometry/Fire/View), compare its winding against the
-Visual LOD of the same model (centroid method) BEFORE deploying — they must agree in sign
-(~100% INWARD in DayZ left-handed). `audit_p3d.py` does NOT validate this (centroid check
-disabled for false positives). Surface this proactively when the symptom is "no action /
+### Collision LOD winding: every face inward per component, never matched to the Visual LOD (SP-003)
+When you GENERATE/EDIT a collision LOD (Geometry/Fire/View), run `audit_p3d.py` and Rule 18's
+per-component check BEFORE deploying. Rule 18 decides: with its prerequisites met (every
+non-proxy face in a `ComponentNN` selection; every component closed and convex; no degenerate
+face), every face of every component must read INWARD (Rule 12); otherwise the check is
+unresolved and confirms nothing. `audit_p3d.py` does not run Rule 18: through py3d
+`P3D.validate()` it compares each collision LOD with the Visual LOD and raises
+`ERR_WINDING_INVERTED` when both are uniform and opposite: a trigger for Rule 18, not a
+verdict, since it also fires on healthy collision LODs under an inside-out Visual LOD or one
+meant to be seen from inside (a room). Reverse only the faces that read outward; never reverse a collision
+LOD to match the Visual LOD (`dayz-p3d-audit` killer #1, "Absolute winding check" rule 7).
+Surface this proactively when the symptom is "no action /
 bullets pass". A walk-through does not point at the winding: in game, 2 m boxes whose
 collision LODs were wound outward still stopped the player, the same box with no `ComponentNN`
 selection let them through, and a 0.49 m `item_small` kit let them through with either winding
 (`dayz-p3d-audit` killers #1 and #2, "Absolute winding check" rule 6). *(Corrected 2026-10-02,
 measured in game: the symptom list read "walks through / no action / bullets pass".)*
+*(Aligned 2026-10-02 with `dayz-p3d-audit` killer #1 and Rule 18: this section was titled
+"Collision LOD winding must match the Visual LOD (SP-003)" and opened: "When you GENERATE/EDIT
+a collision LOD (Geometry/Fire/View), compare its winding against the Visual LOD of the same
+model (centroid method) BEFORE deploying — they must agree in sign (~100% INWARD in DayZ
+left-handed). `audit_p3d.py` does NOT validate this (centroid check disabled for false
+positives)." That comparison is the relative check `audit_p3d.py` runs, and matching its
+sign is the fix killer #1 forbids.)*
 
 ### Flat-color models: per-material .rvmat, NOT a UV-atlas bake (LL-021)
 For monochrome / flat-color-per-piece models, use one .rvmat per material with `diffuse[]` =
