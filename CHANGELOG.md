@@ -5,6 +5,91 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
+  said a broken Geometry LOD has its normals pointing inward and fixed it by swapping
+  `vertices[1]`/`[2]`; Rule 12 stores the cross product and the normals both inward, and the swap
+  turns a quad into a crossed face. The killer is now a collision LOD wound opposite to the
+  Visual LOD, the relative check `audit_p3d.py` runs through py3d `P3D.validate()`
+  (`ERR_WINDING_INVERTED`), read as a trigger. Rule 18's per-component check decides: every face
+  of every closed, convex component must point inward, and faces outside every component, or a
+  face whose first three corners are collinear, leave it unresolved. `face.vertices.reverse()`
+  fixes the faces that read outward, and a collision LOD is never reversed to match the Visual
+  LOD ("Absolute winding check", rule 7). The decision tree's step 5a now reverses each outward
+  face too (it reversed every face of the component, which turns its healthy faces outward), and
+  `dayz-model-pipeline` Rule 18 gets a dated note saying the same: every face, not most, and only
+  the outward faces reversed, since its whole-LOD fix moves the inversion onto the healthy
+  component of a LOD with one healthy and one outward component. Measured offline
+  with py3d 1.8.0 on synthetic boxes: the finding fires on an outward box and clears after
+  `reverse()`, also fires on a healthy box under a Visual LOD whose cross product points outward,
+  and on two boxes 4 m apart reads only `WARN_WINDING_MIXED`, healthy or not. The killer's offline
+  pointer to `check_dayz_winding.py`, which fails a correct export, and the "Z-up → Y-up flips
+  collision winding but not visual" pitfall are corrected with it. Check A called any 5-95 %
+  reading a CRITICAL real bug; the SUB_BRZ co-driver door, verified in game, reads `MIXED`
+  (72.67 % of 11,921 faces flipped, 25.9 % agreeing) without an inverted face group (Check B: one
+  stray edge in 17,542, and with it cut every welded component orients as one group), because its
+  parts follow two conventions: exterior paint, black trim and mirror against their normals,
+  cabin trim and glass with them. A mixed reading is now a WARNING to split by part, each part or
+  group repaired from the Check A table, so a group's normals turn with its winding only when
+  they agreed with it. Rule 2 of "Absolute winding check" keeps its sentence and gets the
+  measurement in a dated note: on that door the twins (144 faces) do not explain the mix.
+- py3d `ERR_WINDING_VS_NORMALS` message: it read every disagreement between winding and stored
+  normals as faces wound backwards and prescribed `face.vertices.reverse()` on every face, and
+  the py3d README called that fix always correct. The finding only says the two disagree. On the
+  model of the Rule 12 in-game test, rebuilt byte for byte by the py3d tests, the correct export
+  with its normals turned and the same export with its faces turned raise the same finding with
+  the same text and need opposite fixes; either fix silences it, and the wrong one leaves the
+  cross product and the normals both outward, the orientation of the variant that rendered
+  inside-out in game. Reversing every face did exactly that to two Blender exports in DayZDiag
+  (`dayz-p3d-audit`, "Absolute winding check: what 0 % means"). The message now says the two
+  disagree and gives an order that works for both: settle the winding first, normals untouched
+  (visual LOD: per closed shell, made coherent by turning the vertex order of the faces that
+  disagree with their neighbours, then reversed whole if its signed volume by winding has the
+  wrong sign; collision LOD: reverse the faces that point outward in each convex component),
+  never with a `vertices[1]`/`[2]` swap; then negate each corner normal that still points
+  against its face, with a negated copy for a pool entry that a kept corner also uses. Each
+  part of that order answers a case measured on the same model with the steps it replaced: a
+  shared entry negated in place turned a part whose normals were right (75 % agreement left);
+  a closed shell with one reversed face kept its negative volume; turning that odd face with
+  its normal, when the odd face was the right one, left one wrong normal that `validate()` no
+  longer reports (47 of 48); and negating whole faces on a first-corner reading turned right
+  corners (96 of 144 right before, 48 after, with 100 % agreement). On a synthetic ring-shaped
+  FireGeometry, the centroid test read 264 of 336 correct faces as outward, hence "convex". The
+  README says the same in three steps, adds that neither winding check sees faces and normals
+  turned together (`transform(ROT_X_NEG90)` alone: 100 % agreement, `validate()` returns `[]`),
+  and no longer gives a wrong normal sign the inside-out symptom of a wrong face order. Finding
+  code and severity unchanged. No new wheel: the pinned and installed `py3d_dayz-1.8.0` still
+  prints the old message.
+- py3d `ERR_WINDING_INVERTED` message: the relative check compares the share of faces wound
+  outward from each LOD's centroid, files the finding on the collision LOD and told the reader to
+  reverse every face of that LOD. On the clean multi-LOD model of the py3d tests, converted with
+  `blender_to_dayz()`, a visual LOD turned inside-out (faces and normals together, which the
+  absolute check passes) raised it on the three healthy collision LODs and nowhere else;
+  reversing them traded it for `ERR_WINDING_VS_NORMALS` on each, and negating their normals as
+  well left `validate()` at `[]` with every LOD wound outward, the collision LODs as
+  `transform(ROT_X_NEG90)` alone leaves them, which registered no raycast in game. The pack
+  already warned about this (`dayz-vehicles` `visual-gates-and-winding.md`; `dayz-p3d-audit`,
+  item 1 of "The three py3d gates", "Absolute winding check" rule 7, and killer #1, which reads
+  the finding as a trigger). The message now says the collision LOD and the visual LOD disagree
+  on which way is out, by a centroid test that assumes convex geometry, not which one is wrong,
+  and gives for both LODs the order of `ERR_WINDING_VS_NORMALS`: the winding first, normals
+  untouched (visual LOD per closed shell by its signed volume, collision LOD per convex
+  component), steps that leave a LOD that reads right as it is, never a `vertices[1]`/`[2]`
+  swap; then each corner normal still against its face. With neither LOD reading wrong there is
+  nothing to fix: a visual LOD meant to be seen from inside reads positive and is right. Both
+  messages take their winding steps from one helper, and every `ERR_WINDING_VS_NORMALS` text is
+  unchanged. The README and KNOWN-ISSUES say the same. Finding code and severity unchanged: on
+  that model it is the only finding that sees the inside-out visual LOD. No new wheel: the pinned
+  and installed `py3d_dayz-1.8.0` still prints the old message.
+
+## [1.5.0] - 2026-10-02
+
+The Blender→DayZ map end to end: py3d 1.8.0 `blender_to_dayz()` and the deprecation of
+`BLENDER_TO_DAYZ`; Rule 12 carried into the character route (measured in game), the clothing,
+animation and model-pipeline routes; Check A labels aligned with it; and packctl promotion
+unblocked for schema-1 receipts sealed in a checkout that no longer exists.
+
 ### Added
 
 - `dayz-mcp-verify`: gating a PR through an external executor. A programmatic swap of Windows
@@ -99,81 +184,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   outward component), and `dayz-model-pipeline`
   `py3d-direct-generation.md` said any disagreement between winding and normals renders
   inside-out.
-- `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
-  said a broken Geometry LOD has its normals pointing inward and fixed it by swapping
-  `vertices[1]`/`[2]`; Rule 12 stores the cross product and the normals both inward, and the swap
-  turns a quad into a crossed face. The killer is now a collision LOD wound opposite to the
-  Visual LOD, the relative check `audit_p3d.py` runs through py3d `P3D.validate()`
-  (`ERR_WINDING_INVERTED`), read as a trigger. Rule 18's per-component check decides: every face
-  of every closed, convex component must point inward, and faces outside every component, or a
-  face whose first three corners are collinear, leave it unresolved. `face.vertices.reverse()`
-  fixes the faces that read outward, and a collision LOD is never reversed to match the Visual
-  LOD ("Absolute winding check", rule 7). The decision tree's step 5a now reverses each outward
-  face too (it reversed every face of the component, which turns its healthy faces outward), and
-  `dayz-model-pipeline` Rule 18 gets a dated note saying the same: every face, not most, and only
-  the outward faces reversed, since its whole-LOD fix moves the inversion onto the healthy
-  component of a LOD with one healthy and one outward component. Measured offline
-  with py3d 1.8.0 on synthetic boxes: the finding fires on an outward box and clears after
-  `reverse()`, also fires on a healthy box under a Visual LOD whose cross product points outward,
-  and on two boxes 4 m apart reads only `WARN_WINDING_MIXED`, healthy or not. The killer's offline
-  pointer to `check_dayz_winding.py`, which fails a correct export, and the "Z-up → Y-up flips
-  collision winding but not visual" pitfall are corrected with it. Check A called any 5-95 %
-  reading a CRITICAL real bug; the SUB_BRZ co-driver door, verified in game, reads `MIXED`
-  (72.67 % of 11,921 faces flipped, 25.9 % agreeing) without an inverted face group (Check B: one
-  stray edge in 17,542, and with it cut every welded component orients as one group), because its
-  parts follow two conventions: exterior paint, black trim and mirror against their normals,
-  cabin trim and glass with them. A mixed reading is now a WARNING to split by part, each part or
-  group repaired from the Check A table, so a group's normals turn with its winding only when
-  they agreed with it. Rule 2 of "Absolute winding check" keeps its sentence and gets the
-  measurement in a dated note: on that door the twins (144 faces) do not explain the mix.
-- py3d `ERR_WINDING_VS_NORMALS` message: it read every disagreement between winding and stored
-  normals as faces wound backwards and prescribed `face.vertices.reverse()` on every face, and
-  the py3d README called that fix always correct. The finding only says the two disagree. On the
-  model of the Rule 12 in-game test, rebuilt byte for byte by the py3d tests, the correct export
-  with its normals turned and the same export with its faces turned raise the same finding with
-  the same text and need opposite fixes; either fix silences it, and the wrong one leaves the
-  cross product and the normals both outward, the orientation of the variant that rendered
-  inside-out in game. Reversing every face did exactly that to two Blender exports in DayZDiag
-  (`dayz-p3d-audit`, "Absolute winding check: what 0 % means"). The message now says the two
-  disagree and gives an order that works for both: settle the winding first, normals untouched
-  (visual LOD: per closed shell, made coherent by turning the vertex order of the faces that
-  disagree with their neighbours, then reversed whole if its signed volume by winding has the
-  wrong sign; collision LOD: reverse the faces that point outward in each convex component),
-  never with a `vertices[1]`/`[2]` swap; then negate each corner normal that still points
-  against its face, with a negated copy for a pool entry that a kept corner also uses. Each
-  part of that order answers a case measured on the same model with the steps it replaced: a
-  shared entry negated in place turned a part whose normals were right (75 % agreement left);
-  a closed shell with one reversed face kept its negative volume; turning that odd face with
-  its normal, when the odd face was the right one, left one wrong normal that `validate()` no
-  longer reports (47 of 48); and negating whole faces on a first-corner reading turned right
-  corners (96 of 144 right before, 48 after, with 100 % agreement). On a synthetic ring-shaped
-  FireGeometry, the centroid test read 264 of 336 correct faces as outward, hence "convex". The
-  README says the same in three steps, adds that neither winding check sees faces and normals
-  turned together (`transform(ROT_X_NEG90)` alone: 100 % agreement, `validate()` returns `[]`),
-  and no longer gives a wrong normal sign the inside-out symptom of a wrong face order. Finding
-  code and severity unchanged. No new wheel: the pinned and installed `py3d_dayz-1.8.0` still
-  prints the old message.
-- py3d `ERR_WINDING_INVERTED` message: the relative check compares the share of faces wound
-  outward from each LOD's centroid, files the finding on the collision LOD and told the reader to
-  reverse every face of that LOD. On the clean multi-LOD model of the py3d tests, converted with
-  `blender_to_dayz()`, a visual LOD turned inside-out (faces and normals together, which the
-  absolute check passes) raised it on the three healthy collision LODs and nowhere else;
-  reversing them traded it for `ERR_WINDING_VS_NORMALS` on each, and negating their normals as
-  well left `validate()` at `[]` with every LOD wound outward, the collision LODs as
-  `transform(ROT_X_NEG90)` alone leaves them, which registered no raycast in game. The pack
-  already warned about this (`dayz-vehicles` `visual-gates-and-winding.md`; `dayz-p3d-audit`,
-  item 1 of "The three py3d gates", "Absolute winding check" rule 7, and killer #1, which reads
-  the finding as a trigger). The message now says the collision LOD and the visual LOD disagree
-  on which way is out, by a centroid test that assumes convex geometry, not which one is wrong,
-  and gives for both LODs the order of `ERR_WINDING_VS_NORMALS`: the winding first, normals
-  untouched (visual LOD per closed shell by its signed volume, collision LOD per convex
-  component), steps that leave a LOD that reads right as it is, never a `vertices[1]`/`[2]`
-  swap; then each corner normal still against its face. With neither LOD reading wrong there is
-  nothing to fix: a visual LOD meant to be seen from inside reads positive and is right. Both
-  messages take their winding steps from one helper, and every `ERR_WINDING_VS_NORMALS` text is
-  unchanged. The README and KNOWN-ISSUES say the same. Finding code and severity unchanged: on
-  that model it is the only finding that sees the inside-out visual LOD. No new wheel: the pinned
-  and installed `py3d_dayz-1.8.0` still prints the old message.
 
 ## [1.4.0] - 2026-10-01
 

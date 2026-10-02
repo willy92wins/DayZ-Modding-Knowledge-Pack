@@ -414,9 +414,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 release v1.5.0, approved by the owner (version and notes shown before publishing): [Unreleased] renamed [1.5.0] - 2026-10-02 with a summary line; its entries come from #28 to #35, each merged after green gates, CI and a cross-family review. Two entries merged to main after the notes were approved (#37, #38) stay under [Unreleased], above [1.5.0]. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2c567da0123f202f267726fef79fecde4bf15de831b95372e35ab9373598372b",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "release-v1.5.0@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Unreleased Fixed entry for the py3d ERR_WINDING_INVERTED message, with the README and KNOWN-ISSUES changes, as dayz-model-pipeline Rule 12 (in game 2026-10-01, DayZDiag 1.29.163709: cross product and stored normals both inward) and Rule 18 (per-component outward check on collision LODs), the py3d README 'Winding' steps 1-3 (#37), dayz-p3d-audit killer #1 (#38: the finding is a trigger, Rule 18 decides) and 'Absolute winding check: what 0 % means' (rules 4 and 7), and dayz-vehicles references/visual-gates-and-winding.md ('if Visual is the inverted one, it blames HEALTHY collision LODs') establish. Offline, 2026-10-02, on the clean multi-LOD model of the py3d tests (build_multilod_v2_p3d after blender_to_dayz(), validate() == []): with the visual LOD's shell turned inside-out, faces and normals together (the absolute check passes it), ERR_WINDING_INVERTED fired on the three healthy collision LODs (geometry, view_geometry, fire_geometry: 0 % of faces wound outward from the LOD centroid, visual 100 %) and nowhere else, and no other finding saw the inside-out visual LOD; with the geometry LOD turned instead, on that LOD only (100 % vs 0 %). The visual shell's signed volume by winding reads negative on the clean model and positive turned (also what a room seen from inside is); the collision boxes read 0 of 6 faces outward clean and 6 of 6 turned. The message's winding steps, run on every LOD, reversed the turned LOD and nothing else (320 shell faces, or 6), and fixing the corners then gave back the clean model exactly (points, normal pools, vertex and normal indices). Reversing the faces of the three flagged LODs, the old message's fix, traded the finding for ERR_WINDING_VS_NORMALS on each; negating their normals as well left validate() at [] with every LOD wound outward, the collision boxes 6 of 6 outward as transform(ROT_X_NEG90) alone leaves them, the map whose collision LODs registered no raycast in game (py3d README, Blender -> DayZ). On 12 turned states (the visual LOD or one collision LOD, its faces, its normals or both) the 8 ERR_WINDING_VS_NORMALS messages are byte-identical to main's. py3d suite 286 passed, 11 skipped (293 passed, 4 skipped with PY3D_UPSTREAM_PATH at upstream 7acd58b; main 9588a5d: 283 and 290); the new message test fails on main's __init__.py (sha256 66d8748d...) and the two behaviour tests pass on both. Nothing new was loaded in game. Authored by Claude (Anthropic) on the owner's request (2026-10-02: make the py3d ERR_WINDING_INVERTED hint say what the relative check establishes); PR reviewed cross-family before merge.",
           "license": "MIT",
-          "source_hash": "b42c7853f9cf4468cbbfd776d9d0de9bfccd9f8df2e8672e49e74db1c52529ed",
+          "source_hash": "fff158b614de41f3a79945def0cf41120b568c8309a029d651533f576cad4e72",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-relative-winding-hint@2026-10-02",
@@ -424,7 +434,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b42c7853f9cf4468cbbfd776d9d0de9bfccd9f8df2e8672e49e74db1c52529ed",
+      "output_hash": "fff158b614de41f3a79945def0cf41120b568c8309a029d651533f576cad4e72",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
