@@ -105,9 +105,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   turns a quad into a crossed face. The killer is now a collision LOD wound opposite to the
   Visual LOD, the relative check `audit_p3d.py` runs through py3d `P3D.validate()`
   (`ERR_WINDING_INVERTED`), read as a trigger. Rule 18's per-component check decides: every face
-  of every closed, convex component must point inward, and faces outside every component leave
-  it unresolved. `face.vertices.reverse()` fixes the faces that read outward, and a collision LOD
-  is never reversed to match the Visual LOD ("Absolute winding check", rule 7). Measured offline
+  of every closed, convex component must point inward, and faces outside every component, or a
+  face whose first three corners are collinear, leave it unresolved. `face.vertices.reverse()`
+  fixes the faces that read outward, and a collision LOD is never reversed to match the Visual
+  LOD ("Absolute winding check", rule 7). The decision tree's step 5a now reverses each outward
+  face too (it reversed every face of the component, which turns its healthy faces outward), and
+  `dayz-model-pipeline` Rule 18 gets a dated note saying the same: every face, not most, and only
+  the outward faces reversed, since its whole-LOD fix moves the inversion onto the healthy
+  component of a LOD with one healthy and one outward component. Measured offline
   with py3d 1.8.0 on synthetic boxes: the finding fires on an outward box and clears after
   `reverse()`, also fires on a healthy box under a Visual LOD whose cross product points outward,
   and on two boxes 4 m apart reads only `WARN_WINDING_MIXED`, healthy or not. The killer's offline

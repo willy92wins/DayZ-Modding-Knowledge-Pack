@@ -31,8 +31,10 @@ component is closed (killer #9) and convex (`dayz-model-pipeline` Rule 1). Then 
 face's cross product with `face_centroid - component_centroid`; on a convex component this reads
 each face exactly. A healthy component has EVERY face pointing toward its centroid (inward), not
 most of them: one face pointing away is an inverted face. Faces outside every component, an open
-or non-convex component, or a component with no face scored leave the check unresolved — meet
-the prerequisite first, and never read an empty census as healthy. `audit_p3d.py` does not run
+or non-convex component, a component with no face scored, or a face without a reading (its first
+three corners collinear, so a zero cross product: py3d `WARN_DEGENERATE_FACES`) leave the check
+unresolved — meet the prerequisite or fix that face first, and never read an empty census as
+healthy. `audit_p3d.py` does not run
 this check; it reports the relative trigger below. The absolute mesh-center comparison is
 disabled for false positives.
 
