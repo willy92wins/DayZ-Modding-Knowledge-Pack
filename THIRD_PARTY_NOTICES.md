@@ -97,6 +97,7 @@ redistributed by this pack:
 | LM_Planes (Steam workshop 3730564764) | Enforce/config pattern extraction in `enforce-script-reference` | not redistributed; workshop terms |
 | DayZ Modders Discord via [AnswerOverflow](https://www.answeroverflow.com) | Community snippets in `dayz-ui-development` and `dayz-particles`, spot-checked against vanilla | Discord/AnswerOverflow terms; snippets rewritten against `P:\scripts` |
 | IMPWMODPart2, DoorLockSystem | Audio prior-art citations in `dayz-sound-system` | not redistributed |
+| novoGOD's door tutorial *Doors_Buttons_Lesson* (a Discord attachment, files dated 2025-04-23) | The three door examples that `dayz-doors` describes and cites by path and line | no license or redistribution grant observed; not redistributed since 2026-10-02 (v1.3.0 to v1.5.0 shipped its nine example files under `skills/dayz-doors/assets/`, mislabelled as author-owned MIT) |
 | DayZ game scripts, tools and data | API and runtime-contract evidence | Bohemia Interactive terms; not redistributed |
 
 The source map records pinned revisions and decisions. A link or citation is
