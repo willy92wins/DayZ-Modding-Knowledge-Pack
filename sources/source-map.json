@@ -451,10 +451,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-p3d-audit-step3@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline gets scripts/extract_empties.py, the rig step that writes empties_armworld.json, which build_rig_dayz.py:8 reads and no script of the skill wrote (fbx_extract.py writes rig_raw.json only). Port of the owner's project WeaponAnimPipeline_dev tools/extract_empties.py (sha256 9f2135e378187d8fc54a8c4f0a1302947234a5ee89a6682ed704992b84b33489), which printed its JSON between EMPTIES_JSON_START/END markers: same nine helper names and parent-chain formula; it now writes DAYZ_ANIM_SCRATCH/empties_armworld.json the way fbx_extract.py writes rig_raw.json, carries the FBX path as the same <you> placeholder as fbx_extract.py, drops an unused Vector import, and, by the owner's choice (2026-10-02), exits 1 and writes nothing when the FBX has no RightHand_Dummy, the anchor build_viewer.py:139 places the weapon on (otherwise at a fixed (0, 1.3, 0.2)); other absent helpers are listed. A 2026-10-02 session had rebuilt the rig with {} in that file: bones kept, every anchor lost. SKILL.md's scripts index and references/weapon-anim-authoring-viewer.md 'Reusable tools' list the pipeline in run order (fbx_extract -> extract_empties -> build_rig_dayz; extract_weapon on its own; build_viewer; seanim_export by arguments) with --python-exit-code 1 for the Blender steps; the fbx_extract.py entry now says its rig_raw.json carries every empty's matrix_world (the origin for the hidden helpers), and 'Reusable tools' calls build_rig_dayz.py's output viewer-frame instead of DayZ-space. By the owner's choice the reference's reason for composing the helpers' world by hand is corrected with a dated note: it said plain matrix_world returns 0 before a depsgraph update, and even after for bone-parented empties; measured, hide_viewport decides (CLAIM-ANIM-FBX-HIDDEN-EMPTIES). Fixtures first: tests/test_extract_empties.py (stand-in bpy and mathutils, positions worked out by hand) failed 4/4 before the script existed and passes 4/4 after; 9 wrong variants, the project's script verbatim among them, each fail at least one. End to end in Blender 5.1.1 on the BI FBX: rig_dayz.json equal byte for byte to the project's data/rig_dayz.json except its space label (CLAIM-ANIM-EMPTIES-ANCHORS). Not verified: in game (viewer and rig are offline tools), other rig FBX files; build_viewer.py was not run, its fallback is read from its source. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "015a603f5c86d1c282111e8fb09a6dbb8f7712de0c88f4208a6deb3c975c3393",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-anim-empties@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e6ca404b21a2647acf92049d0a7c51b55a5368e3bb222eec1404d575af1f44e3",
+      "output_hash": "015a603f5c86d1c282111e8fb09a6dbb8f7712de0c88f4208a6deb3c975c3393",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -4340,10 +4350,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline gets scripts/extract_empties.py, the rig step that writes empties_armworld.json, which build_rig_dayz.py:8 reads and no script of the skill wrote (fbx_extract.py writes rig_raw.json only). Port of the owner's project WeaponAnimPipeline_dev tools/extract_empties.py (sha256 9f2135e378187d8fc54a8c4f0a1302947234a5ee89a6682ed704992b84b33489), which printed its JSON between EMPTIES_JSON_START/END markers: same nine helper names and parent-chain formula; it now writes DAYZ_ANIM_SCRATCH/empties_armworld.json the way fbx_extract.py writes rig_raw.json, carries the FBX path as the same <you> placeholder as fbx_extract.py, drops an unused Vector import, and, by the owner's choice (2026-10-02), exits 1 and writes nothing when the FBX has no RightHand_Dummy, the anchor build_viewer.py:139 places the weapon on (otherwise at a fixed (0, 1.3, 0.2)); other absent helpers are listed. A 2026-10-02 session had rebuilt the rig with {} in that file: bones kept, every anchor lost. SKILL.md's scripts index and references/weapon-anim-authoring-viewer.md 'Reusable tools' list the pipeline in run order (fbx_extract -> extract_empties -> build_rig_dayz; extract_weapon on its own; build_viewer; seanim_export by arguments) with --python-exit-code 1 for the Blender steps; the fbx_extract.py entry now says its rig_raw.json carries every empty's matrix_world (the origin for the hidden helpers), and 'Reusable tools' calls build_rig_dayz.py's output viewer-frame instead of DayZ-space. By the owner's choice the reference's reason for composing the helpers' world by hand is corrected with a dated note: it said plain matrix_world returns 0 before a depsgraph update, and even after for bone-parented empties; measured, hide_viewport decides (CLAIM-ANIM-FBX-HIDDEN-EMPTIES). Fixtures first: tests/test_extract_empties.py (stand-in bpy and mathutils, positions worked out by hand) failed 4/4 before the script existed and passes 4/4 after; 9 wrong variants, the project's script verbatim among them, each fail at least one. End to end in Blender 5.1.1 on the BI FBX: rig_dayz.json equal byte for byte to the project's data/rig_dayz.json except its space label (CLAIM-ANIM-EMPTIES-ANCHORS). Not verified: in game (viewer and rig are offline tools), other rig FBX files; build_viewer.py was not run, its fallback is read from its source. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "81b793dc273d2e0fae7cc1f6c33e089ab329528a1ccd772bef2ed252e031f6d8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "kp-update-anim-empties@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "097e92c04cecd2ef3ac0360c0fb846c9168c9703a7173ccfd15fa5d4574b57c8",
+      "output_hash": "81b793dc273d2e0fae7cc1f6c33e089ab329528a1ccd772bef2ed252e031f6d8",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4790,10 +4810,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline gets scripts/extract_empties.py, the rig step that writes empties_armworld.json, which build_rig_dayz.py:8 reads and no script of the skill wrote (fbx_extract.py writes rig_raw.json only). Port of the owner's project WeaponAnimPipeline_dev tools/extract_empties.py (sha256 9f2135e378187d8fc54a8c4f0a1302947234a5ee89a6682ed704992b84b33489), which printed its JSON between EMPTIES_JSON_START/END markers: same nine helper names and parent-chain formula; it now writes DAYZ_ANIM_SCRATCH/empties_armworld.json the way fbx_extract.py writes rig_raw.json, carries the FBX path as the same <you> placeholder as fbx_extract.py, drops an unused Vector import, and, by the owner's choice (2026-10-02), exits 1 and writes nothing when the FBX has no RightHand_Dummy, the anchor build_viewer.py:139 places the weapon on (otherwise at a fixed (0, 1.3, 0.2)); other absent helpers are listed. A 2026-10-02 session had rebuilt the rig with {} in that file: bones kept, every anchor lost. SKILL.md's scripts index and references/weapon-anim-authoring-viewer.md 'Reusable tools' list the pipeline in run order (fbx_extract -> extract_empties -> build_rig_dayz; extract_weapon on its own; build_viewer; seanim_export by arguments) with --python-exit-code 1 for the Blender steps; the fbx_extract.py entry now says its rig_raw.json carries every empty's matrix_world (the origin for the hidden helpers), and 'Reusable tools' calls build_rig_dayz.py's output viewer-frame instead of DayZ-space. By the owner's choice the reference's reason for composing the helpers' world by hand is corrected with a dated note: it said plain matrix_world returns 0 before a depsgraph update, and even after for bone-parented empties; measured, hide_viewport decides (CLAIM-ANIM-FBX-HIDDEN-EMPTIES). Fixtures first: tests/test_extract_empties.py (stand-in bpy and mathutils, positions worked out by hand) failed 4/4 before the script existed and passes 4/4 after; 9 wrong variants, the project's script verbatim among them, each fail at least one. End to end in Blender 5.1.1 on the BI FBX: rig_dayz.json equal byte for byte to the project's data/rig_dayz.json except its space label (CLAIM-ANIM-EMPTIES-ANCHORS). Not verified: in game (viewer and rig are offline tools), other rig FBX files; build_viewer.py was not run, its fallback is read from its source. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "627f225a114dd7564ace7c0e49017ab479e48d562680efcf782fb8e6ec327bb6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+          "source_revision": "kp-update-anim-empties@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "96b3c3b20d722905421fdfdc375eae5241d9ea6f3bb10a3f0c835f1b2172a7aa",
+      "output_hash": "627f225a114dd7564ace7c0e49017ab479e48d562680efcf782fb8e6ec327bb6",
       "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -14915,10 +14945,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-p3d-audit-step3@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline gets scripts/extract_empties.py, the rig step that writes empties_armworld.json, which build_rig_dayz.py:8 reads and no script of the skill wrote (fbx_extract.py writes rig_raw.json only). Port of the owner's project WeaponAnimPipeline_dev tools/extract_empties.py (sha256 9f2135e378187d8fc54a8c4f0a1302947234a5ee89a6682ed704992b84b33489), which printed its JSON between EMPTIES_JSON_START/END markers: same nine helper names and parent-chain formula; it now writes DAYZ_ANIM_SCRATCH/empties_armworld.json the way fbx_extract.py writes rig_raw.json, carries the FBX path as the same <you> placeholder as fbx_extract.py, drops an unused Vector import, and, by the owner's choice (2026-10-02), exits 1 and writes nothing when the FBX has no RightHand_Dummy, the anchor build_viewer.py:139 places the weapon on (otherwise at a fixed (0, 1.3, 0.2)); other absent helpers are listed. A 2026-10-02 session had rebuilt the rig with {} in that file: bones kept, every anchor lost. SKILL.md's scripts index and references/weapon-anim-authoring-viewer.md 'Reusable tools' list the pipeline in run order (fbx_extract -> extract_empties -> build_rig_dayz; extract_weapon on its own; build_viewer; seanim_export by arguments) with --python-exit-code 1 for the Blender steps; the fbx_extract.py entry now says its rig_raw.json carries every empty's matrix_world (the origin for the hidden helpers), and 'Reusable tools' calls build_rig_dayz.py's output viewer-frame instead of DayZ-space. By the owner's choice the reference's reason for composing the helpers' world by hand is corrected with a dated note: it said plain matrix_world returns 0 before a depsgraph update, and even after for bone-parented empties; measured, hide_viewport decides (CLAIM-ANIM-FBX-HIDDEN-EMPTIES). Fixtures first: tests/test_extract_empties.py (stand-in bpy and mathutils, positions worked out by hand) failed 4/4 before the script existed and passes 4/4 after; 9 wrong variants, the project's script verbatim among them, each fail at least one. End to end in Blender 5.1.1 on the BI FBX: rig_dayz.json equal byte for byte to the project's data/rig_dayz.json except its space label (CLAIM-ANIM-EMPTIES-ANCHORS). Not verified: in game (viewer and rig are offline tools), other rig FBX files; build_viewer.py was not run, its fallback is read from its source. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "13cc9fb73b1a719acc9f888824030a1013085d1c40760d3139653ae233e4c22e",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-anim-empties@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f37e894fac6daa783d43567f9341d2f0c045c09096cccb897b00b798d696780d",
+      "output_hash": "13cc9fb73b1a719acc9f888824030a1013085d1c40760d3139653ae233e4c22e",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -26057,6 +26097,50 @@
       "output_path": "skills/dayz-animation-pipeline/tests/test_install_py3d.py",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/extract_empties.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline gets scripts/extract_empties.py, the rig step that writes empties_armworld.json, which build_rig_dayz.py:8 reads and no script of the skill wrote (fbx_extract.py writes rig_raw.json only). Port of the owner's project WeaponAnimPipeline_dev tools/extract_empties.py (sha256 9f2135e378187d8fc54a8c4f0a1302947234a5ee89a6682ed704992b84b33489), which printed its JSON between EMPTIES_JSON_START/END markers: same nine helper names and parent-chain formula; it now writes DAYZ_ANIM_SCRATCH/empties_armworld.json the way fbx_extract.py writes rig_raw.json, carries the FBX path as the same <you> placeholder as fbx_extract.py, drops an unused Vector import, and, by the owner's choice (2026-10-02), exits 1 and writes nothing when the FBX has no RightHand_Dummy, the anchor build_viewer.py:139 places the weapon on (otherwise at a fixed (0, 1.3, 0.2)); other absent helpers are listed. A 2026-10-02 session had rebuilt the rig with {} in that file: bones kept, every anchor lost. SKILL.md's scripts index and references/weapon-anim-authoring-viewer.md 'Reusable tools' list the pipeline in run order (fbx_extract -> extract_empties -> build_rig_dayz; extract_weapon on its own; build_viewer; seanim_export by arguments) with --python-exit-code 1 for the Blender steps; the fbx_extract.py entry now says its rig_raw.json carries every empty's matrix_world (the origin for the hidden helpers), and 'Reusable tools' calls build_rig_dayz.py's output viewer-frame instead of DayZ-space. By the owner's choice the reference's reason for composing the helpers' world by hand is corrected with a dated note: it said plain matrix_world returns 0 before a depsgraph update, and even after for bone-parented empties; measured, hide_viewport decides (CLAIM-ANIM-FBX-HIDDEN-EMPTIES). Fixtures first: tests/test_extract_empties.py (stand-in bpy and mathutils, positions worked out by hand) failed 4/4 before the script existed and passes 4/4 after; 9 wrong variants, the project's script verbatim among them, each fail at least one. End to end in Blender 5.1.1 on the BI FBX: rig_dayz.json equal byte for byte to the project's data/rig_dayz.json except its space label (CLAIM-ANIM-EMPTIES-ANCHORS). Not verified: in game (viewer and rig are offline tools), other rig FBX files; build_viewer.py was not run, its fallback is read from its source. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5ff679e8188fe3d7d79770a5c5b6acee355d46a9010d38395743b943c37e3125",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/scripts/extract_empties.py",
+          "source_revision": "kp-update-anim-empties@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5ff679e8188fe3d7d79770a5c5b6acee355d46a9010d38395743b943c37e3125",
+      "output_path": "skills/dayz-animation-pipeline/scripts/extract_empties.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/tests/test_extract_empties.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline gets scripts/extract_empties.py, the rig step that writes empties_armworld.json, which build_rig_dayz.py:8 reads and no script of the skill wrote (fbx_extract.py writes rig_raw.json only). Port of the owner's project WeaponAnimPipeline_dev tools/extract_empties.py (sha256 9f2135e378187d8fc54a8c4f0a1302947234a5ee89a6682ed704992b84b33489), which printed its JSON between EMPTIES_JSON_START/END markers: same nine helper names and parent-chain formula; it now writes DAYZ_ANIM_SCRATCH/empties_armworld.json the way fbx_extract.py writes rig_raw.json, carries the FBX path as the same <you> placeholder as fbx_extract.py, drops an unused Vector import, and, by the owner's choice (2026-10-02), exits 1 and writes nothing when the FBX has no RightHand_Dummy, the anchor build_viewer.py:139 places the weapon on (otherwise at a fixed (0, 1.3, 0.2)); other absent helpers are listed. A 2026-10-02 session had rebuilt the rig with {} in that file: bones kept, every anchor lost. SKILL.md's scripts index and references/weapon-anim-authoring-viewer.md 'Reusable tools' list the pipeline in run order (fbx_extract -> extract_empties -> build_rig_dayz; extract_weapon on its own; build_viewer; seanim_export by arguments) with --python-exit-code 1 for the Blender steps; the fbx_extract.py entry now says its rig_raw.json carries every empty's matrix_world (the origin for the hidden helpers), and 'Reusable tools' calls build_rig_dayz.py's output viewer-frame instead of DayZ-space. By the owner's choice the reference's reason for composing the helpers' world by hand is corrected with a dated note: it said plain matrix_world returns 0 before a depsgraph update, and even after for bone-parented empties; measured, hide_viewport decides (CLAIM-ANIM-FBX-HIDDEN-EMPTIES). Fixtures first: tests/test_extract_empties.py (stand-in bpy and mathutils, positions worked out by hand) failed 4/4 before the script existed and passes 4/4 after; 9 wrong variants, the project's script verbatim among them, each fail at least one. End to end in Blender 5.1.1 on the BI FBX: rig_dayz.json equal byte for byte to the project's data/rig_dayz.json except its space label (CLAIM-ANIM-EMPTIES-ANCHORS). Not verified: in game (viewer and rig are offline tools), other rig FBX files; build_viewer.py was not run, its fallback is read from its source. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "51bcbea540bdd969b727894b7bab7002fe16a81d1abb2f115b3818fd0b2d54ff",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/tests/test_extract_empties.py",
+          "source_revision": "kp-update-anim-empties@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "51bcbea540bdd969b727894b7bab7002fe16a81d1abb2f115b3818fd0b2d54ff",
+      "output_path": "skills/dayz-animation-pipeline/tests/test_extract_empties.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-proxy-align/scripts/install_py3d.py",

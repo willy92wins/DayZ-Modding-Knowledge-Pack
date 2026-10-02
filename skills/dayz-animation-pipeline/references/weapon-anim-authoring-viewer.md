@@ -61,10 +61,18 @@ Result landmarks (viewer frame, Y-up, right-handed, m): Head 1.62, Pelvis 0.99, 
 feet Y≈0.09. Weapon anchor `RightHand_Dummy`=`Weapon_Root`=(−0.156, 1.368, 0.207).
 
 Helper "bones" (`RightHand_Dummy`, `Weapon_Root`, `LeftHand_Dummy`, IK helpers)
-are **empties** in the FBX, parented to bones; read their world via the
-child-of-bone formula `arm_w @ pose_bone.matrix @ T(0,bone_len,0) @
-matrix_parent_inverse @ matrix_basis` (plain `matrix_world` returns 0 before a
-depsgraph update, and even after for bone-parented empties).
+are **empties** in the FBX, parented to bones or to another helper (`Weapon_Root`
+hangs from `RightHand_Dummy`); read their world via the child-of-bone formula
+`arm_w @ pose_bone.matrix @ T(0,bone_len,0) @ matrix_parent_inverse @
+matrix_basis`, the parent helper's world taking the place of the first three
+factors for a helper child (`scripts/extract_empties.py`).
+[EXACT][CLAIM-ANIM-FBX-HIDDEN-EMPTIES] Plain `matrix_world` will not do: the 17 of
+the FBX's 38 empties that import disabled in viewports (`hide_viewport`),
+`RightHand_Dummy`, `Weapon_Root` and `LeftHand_Dummy` among them, keep it at the
+origin before and after `view_layer.update()`; the other 21, 16 of them parented to
+bones, agree with the formula to 1e-5 either way (Blender 5.1.1). *Corrected
+2026-10-02: this said plain `matrix_world` "returns 0 before a depsgraph update, and
+even after for bone-parented empties".*
 
 ## ⚠️ [VERIFIED 2026-06-28] Bone-frame convention gap — why in-game is the gate
 
@@ -117,11 +125,31 @@ reference offsets.
 
 ## Reusable tools (project `WeaponAnimPipeline_dev/tools/`)
 
-`fbx_extract.py` (Blender headless rig dump) → `build_rig_dayz.py` (align +
-DayZ-space rig JSON) ; `extract_weapon.py` (py3d weapon mesh+memory points) ;
-`build_viewer.py` (generates the self-contained HTML) ; `selftest.js` /
-`capture.js` (Puppeteer self-test + preview capture) ; `seanim_export.py`
-(anim JSON → SEAnim, round-trip gated). Paths are set at the top of each script.
+This skill ships ports of the six below in `scripts/`. They pass their files
+through `DAYZ_ANIM_SCRATCH` (default `<tempdir>/dayz-anim-pipeline`); the FBX and
+`.p3d` paths are set at the top of the scripts that read them. In the order they
+run:
+
+1. `fbx_extract.py` (Blender headless rig dump) → `rig_raw.json`.
+2. `extract_empties.py` (Blender headless, same FBX: the helper empties through
+   their parent chain, see above) → `empties_armworld.json`; exits 1 and writes
+   nothing when the FBX has no `RightHand_Dummy`.
+3. `build_rig_dayz.py` (align + viewer-frame rig JSON, the helpers as its
+   `anchors`) → `rig_dayz.json`.
+4. `extract_weapon.py` (py3d weapon mesh+memory points) → `weapon.json`, apart
+   from steps 1-3.
+5. `build_viewer.py` (generates the self-contained HTML from `rig_dayz.json` and
+   `weapon.json`; the weapon sits on the `RightHand_Dummy` anchor).
+6. `seanim_export.py` (anim JSON → SEAnim, round-trip gated; paths as arguments).
+
+Run steps 1 and 2 as `blender -b --python-exit-code 1 --python <script>`: without
+the flag a Python error still exits 0. `selftest.js` / `capture.js` (Puppeteer
+self-test + preview capture) stay in the project.
+
+[EXACT][CLAIM-ANIM-EMPTIES-ANCHORS] Steps 1-3 on the BI FBX (Blender 5.1.1,
+2026-10-02) rebuild the project's `data/rig_dayz.json` byte for byte except its
+`space` label: the 8 helpers it holds (`LeftHandIKTarget`, the ninth name the
+script looks for, is not in this FBX), the 114 bones and the mesh.
 
 ## The wall (unchanged)
 

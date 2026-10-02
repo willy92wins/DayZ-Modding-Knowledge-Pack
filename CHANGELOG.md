@@ -5,8 +5,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `dayz-animation-pipeline` `scripts/extract_empties.py`, the rig step that writes
+  `empties_armworld.json`. `build_rig_dayz.py` read that file, but no script of the skill wrote
+  it: the extractor stayed in the `WeaponAnimPipeline_dev` project and printed its JSON between
+  markers. A rig rebuilt with `{}` in its place kept its bones and lost every anchor, and
+  `build_viewer.py` then put the weapon at a fixed `(0, 1.3, 0.2)` instead of on
+  `RightHand_Dummy` `(-0.156, 1.368, 0.207)`. The script composes each helper's world through its
+  parent chain and exits 1 without writing when the FBX has no `RightHand_Dummy`. On the BI FBX
+  (Blender 5.1.1), `fbx_extract.py`, `extract_empties.py` and `build_rig_dayz.py` rebuild the
+  project's `data/rig_dayz.json` byte for byte except its `space` label. SKILL.md's scripts index
+  and `weapon-anim-authoring-viewer.md` "Reusable tools" list the pipeline in the order it runs,
+  with `--python-exit-code 1` for the Blender steps (without it a Python error exits 0).
+  Regression test: `tests/test_extract_empties.py`.
+
 ### Fixed
 
+- `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
+  by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
+  bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties
+  that import disabled in viewports, `RightHand_Dummy`, `LeftHand_Dummy` and the
+  object-parented `Weapon_Root` among them, keep it at the origin before and after
+  `view_layer.update()`; the 21 others, 16 of them parented to bones, agree with the formula.
+  The SKILL.md entry of `fbx_extract.py` now says its `rig_raw.json` carries that
+  `matrix_world` for the empties, and "Reusable tools" no longer calls `build_rig_dayz.py`'s
+  output DayZ-space.
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
   said a broken Geometry LOD has its normals pointing inward and fixed it by swapping
   `vertices[1]`/`[2]`; Rule 12 stores the cross product and the normals both inward, and the swap
