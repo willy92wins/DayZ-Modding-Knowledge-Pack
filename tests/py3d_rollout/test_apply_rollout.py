@@ -338,3 +338,31 @@ def test_old_wheel_is_verified_in_external_backup_before_replacement(
     )
     assert len(backups) == 1
     assert backups[0].read_bytes() == old_payload
+
+
+def test_earlier_py3d_dayz_wheel_next_to_the_pinned_one_is_replaced(
+    tmp_path: Path,
+) -> None:
+    """A wheel of an earlier pin under the py3d_dayz name is stale too, even
+    with the pinned wheel already exact beside it: left there, the skills'
+    installer, which wants exactly one py3d_dayz-*-py3-none-any.whl, would
+    refuse the directory or install the old one."""
+    fixture = _make_fixture(tmp_path)
+    wheels_root = fixture.target / "dayz-model-pipeline" / "wheels"
+    old_wheel = wheels_root / "py3d_dayz-1.3.0-py3-none-any.whl"
+    old_payload = b"earlier py3d_dayz pin\n"
+    old_wheel.write_bytes(old_payload)
+
+    result = _run_rollout(fixture)
+
+    assert result.returncode == 0, _combined_output(result)
+    assert not old_wheel.exists()
+    assert [p.name for p in wheels_root.iterdir()] == [WHEEL_NAME]
+    assert (wheels_root / WHEEL_NAME).read_bytes() == WHEEL_BYTES
+    backups = list(
+        fixture.backup.rglob(
+            "dayz-model-pipeline/wheels/py3d_dayz-1.3.0-py3-none-any.whl"
+        )
+    )
+    assert len(backups) == 1
+    assert backups[0].read_bytes() == old_payload

@@ -330,6 +330,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   walks through it" is replaced, and so are "no collision" in the killer's opening and "physically
   invisible" in its root cause; the old text is quoted in a dated note. `dayz-model-pipeline`'s
   SP-003 note no longer lists "walks through" among the symptoms of collision winding.
+- py3d rollout applicator (`tools/py3d/rollout/apply-s2-rollout.ps1`): restocking a skill's
+  `wheels/` counted the pinned name and legacy `py3d-*.whl` wheels but not an earlier
+  `py3d_dayz-*.whl`, so a 1.8.0 → 1.9.0 restock would copy 1.9.0 beside 1.8.0, pass its own
+  readback, and leave a directory the skills' `install_py3d.py` refuses (it wants exactly one
+  `py3d_dayz-*-py3-none-any.whl`). Found by the cross-family review of the 1.9.0 pin; no installed
+  tree vendors a wheel today, so nothing was affected. Earlier `py3d_dayz` wheels are now backed up
+  and removed like legacy ones: a new case in `tests/py3d_rollout/test_apply_rollout.py` and test E
+  of `verify-wheel-restock.ps1` fail on the previous applicator and pass now.
 
 ## [1.5.0] - 2026-10-02
 
