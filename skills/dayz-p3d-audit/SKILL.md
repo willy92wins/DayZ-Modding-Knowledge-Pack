@@ -27,7 +27,7 @@ Per the L2 rule (`_shared/dayz-conventions.md`), every DayZ skill that does work
 
 A clean `validate()`, a passing `save(verify=True)`, or a `diff` that reports equal is not evidence that the geometry is correct. Those checks only prove internal count consistency. When declaring a model verified, say whether vertex order was compared against debinarized vanilla or whether it was tested in-game.
 
-1. `validate()` does not detect GLOBAL winding inversion. The winding check is relative to the Visual LOD. If every LOD is inverted (Blender Z-up to Y-up; this skill, PART 5 item 1), `validate()` returns an empty list and exit 0. If only Visual is inverted, it accuses healthy collision LODs (`ERR_WINDING_INVERTED`), and the message of the pinned `py3d_dayz-1.8.0` tells you to run `face.vertices.reverse()` on every face of each one (it warns against a `vertices[1]`/`[2]` swap, which turns a quad into a crossed face); following that instruction still breaks them. [OFFLINE MEASURED 2026-10-02] On `build_multilod_v2_p3d` (py3d tests) after `blender_to_dayz()`, with the Visual LOD turned inside-out, faces and normals together, the finding named the three healthy collision LODs; following it wound all 6 faces of each box outward and traded the finding for `ERR_WINDING_VS_NORMALS` on each, and negating their normals as well left `validate()` empty with every LOD wound outward: the silent-broken state. Read the finding as "Absolute winding check" rule 6 says. *(Corrected 2026-10-02: this item said it "suggests swapping vertices on every face; following that instruction reaches the silent-broken state". The 1.8.0 message names `face.vertices.reverse()` and warns against the swap; on a healthy collision LOD that still breaks the LOD, and `validate()` goes quiet only once the LOD's normals are negated too.)*
+1. `validate()` does not detect GLOBAL winding inversion. The winding check is relative to the Visual LOD. If every LOD is inverted (Blender Z-up to Y-up; this skill, PART 5 item 1), `validate()` returns an empty list and exit 0. If only Visual is inverted, it accuses healthy collision LODs (`ERR_WINDING_INVERTED`). The message of `py3d_dayz-1.8.0`, the wheel pinned until 2026-10-02, tells you to run `face.vertices.reverse()` on every face of each one (it warns against a `vertices[1]`/`[2]` swap, which turns a quad into a crossed face); following that instruction still breaks them. From 1.9.0, pinned since, the message names the Visual LOD it compares against, says the two LODs disagree, not which one is wrong, and gives the winding steps for both, which leave a part that reads right as it is (py3d README, "Winding"). [OFFLINE MEASURED 2026-10-02] On `build_multilod_v2_p3d` (py3d tests) after `blender_to_dayz()`, with the Visual LOD turned inside-out, faces and normals together, the finding named the three healthy collision LODs; following the 1.8.0 instruction wound all 6 faces of each box outward and traded the finding for `ERR_WINDING_VS_NORMALS` on each, and negating their normals as well left `validate()` empty with every LOD wound outward: the silent-broken state. Read the finding as "Absolute winding check" rule 6 says. *(Corrected 2026-10-02: this item said it "suggests swapping vertices on every face; following that instruction reaches the silent-broken state". The 1.8.0 message names `face.vertices.reverse()` and warns against the swap; on a healthy collision LOD that still breaks the LOD, and `validate()` goes quiet only once the LOD's normals are negated too.)*
 2. `save(verify=True)`: _verify_against does not compare geometry. It looks at counts, selection names and mass sum. Points `(0,0,0)` vs `(99,99,99)` still verify OK.
 3. `python -m py3d diff`: py3d diff total: 0 does not prove geometric equality. The same pair reports `total: 0`, exit 0.
 
@@ -138,7 +138,8 @@ each killer (root cause, detection snippet, fix, caveats) →
    `ComponentNN`, the components together covering the LOD (killer #8). py3d 1.9.0 raises
    `ERR_COMPONENT_NAMING` on each Geometry, View or Fire LOD with faces and no selection named
    `component…` in any case, and only `WARN_COMPONENT_NAMING` when the names are all irregular
-   (`Component_01`); up to 1.8.0 (the pinned wheel) it checked the Geometry LOD alone and was a
+   (`Component_01`); up to 1.8.0 (pinned until 2026-10-02) it checked the Geometry LOD alone
+   and was a
    false positive on `component01`. *(Corrected 2026-10-02: titled "Component Selection Case
    Sensitivity", this entry read "Geometry component MUST be `Component01` (uppercase C); any
    variation silently loses ALL collision.")*
@@ -157,18 +158,23 @@ each killer (root cause, detection snippet, fix, caveats) →
    fallback; fires only for items without a proper Geometry LOD / broken `GetCollisionBox()`.
 8. **Incomplete Component Coverage** — every face of a collision LOD (proxy triangles aside),
    and every point those faces use, must belong to a `ComponentNN` selection with weight=1, one
-   component per closed, convex part, the components together covering the LOD. A face outside
-   every component is expected not to collide; that was measured only for a LOD with no
-   component at all (killer #2). Never merge separate parts into one `Component01` to make it
-   cover everything: that component is no longer convex. py3d 1.9.0 `WARN_COMPONENT_COVERAGE`
+   component per closed, convex part, the components together covering the LOD. A closed part
+   left out of every component collides with nothing, also next to covered ones: no LOD ray, no
+   physics ray, the player walks through it, and no log line says so (measured in game on whole
+   parts; a part left out only in part was not measured; `references/killers-detail.md` §8).
+   Never merge separate parts into one `Component01` to make it cover everything: that component
+   is no longer convex, and the one non-convex component measured in game (a lever) collided only
+   in part. py3d 1.9.0 `WARN_COMPONENT_COVERAGE`
    counts the union of the `ComponentNN` selections, whatever the case, on the Geometry, View and
-   Fire LODs, proxy triangles and points that no face uses left out; up to 1.8.0 (the pinned
-   wheel) it counted `Component01` alone, on the Geometry LOD, and fired on a healthy
+   Fire LODs, proxy triangles and points that no face uses left out; up to 1.8.0 (pinned until
+   2026-10-02) it counted `Component01` alone, on the Geometry LOD, and fired on a healthy
    multi-component LOD (`references/killers-detail.md` §8). *(Corrected 2026-10-02: titled
    "Incomplete Component01 Coverage", this entry read "`Component01` must include ALL verts AND
    faces with weight=1, or collision is partial." The first correction that day kept "every
    vertex and face" and "or collision is partial", a consequence measured only for a LOD with no
-   component at all.)*
+   component at all.)* *(Updated 2026-10-02, after an in-game A/B: this entry read "A face
+   outside every component is expected not to collide; that was measured only for a LOD with no
+   component at all (killer #2).")*
 9. **Non-Watertight Collision Mesh** — open Geometry mesh (boundary edges/holes) →
    raycasts pass through gaps.
 10. **Missing Surface/Material Assignment on Collision LODs** (CRITICAL) — every collision

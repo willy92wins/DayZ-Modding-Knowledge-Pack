@@ -184,7 +184,7 @@ writes the same ODOL, byte for byte, with the name stored as `component01`.
 or Fire LOD that has faces outside its proxy triangles and no selection whose name starts with
 `component`, in any case; when there are such names but none is `Component` and a number (only
 `Component_01`, say) it raises `WARN_COMPONENT_NAMING` instead. An empty component selection
-counts as present there. Up to 1.8.0, the version of the pinned wheel, it checked the Geometry LOD
+counts as present there. Up to 1.8.0, the wheel pinned until 2026-10-02, it checked the Geometry LOD
 only ("No Component selection found"), and the same code also fired on a lowercase
 `component01`, which works, so that reading is a false positive.
 
@@ -287,11 +287,13 @@ for items without a proper Geometry LOD or with broken `GetCollisionBox()` data.
 
 Every face of a collision LOD (proxy triangles aside), and every point those faces use, must
 belong to a `ComponentNN` selection with weight=1: one component per closed, convex part
-(`dayz-model-pipeline` Rule 1), the components together covering the LOD. A face outside every
-component is expected not to collide, but that was measured only for a LOD with no component at
-all (killer #2), not for a face left out next to covered ones. Never merge separate parts into one
-`Component01` to make it cover everything: a component that holds two separate parts is not
-convex.
+(`dayz-model-pipeline` Rule 1), the components together covering the LOD. A closed part left out
+of every component collides with nothing, also when the same LOD has other components: no
+`scene_raycast` hit in `geom`, `view` or `fire`, no `RayCastBullet` hit, the player walks through
+it, and no log line says so (measured in game on two such parts, below). A part left out only in
+part (one face of a box whose other faces are in a component, or faces whose points sit in one)
+was not measured. Never merge separate parts into one `Component01` to make it cover everything: a
+component that holds two separate parts is not convex.
 
 py3d 1.9.0 `WARN_COMPONENT_COVERAGE` (`_check_component_coverage`) reads the union of the
 `ComponentNN` selections, whatever the case, on the Geometry, View and Fire LODs: it counts the
@@ -299,14 +301,37 @@ faces that no component holds, and the points those faces use that no component 
 triangles (a `proxy:` selection holding one triangle and, as its 3 points, that triangle's corners;
 a whole box under a proxy name counts as collision geometry) and points that no face uses are not
 counted. A LOD with no component at all is `ERR_COMPONENT_NAMING`'s finding (killer #2); one whose
-component selections are all empty is reported here, every face counted. A face outside every
-component on a LOD that has others was not measured in game, so the finding stays a WARN. On the
-Pack's door samples it is silent on `Simple_Door` and `Door_w_Button` and flags the Geometry and
-Fire LODs of `Expert_Mode`, whose lever (18 faces: selection `lever` in Geometry, `door1_open` in
-Fire) is in no component there, though `dayz-doors` lists the lever among the Geometry parts;
-whether that lever collides in game was not measured.
+component selections are all empty is reported here, every face counted. py3d 1.9.0 raises it as a
+WARN, and its message says that a face left out beside covered ones was not measured: both predate
+the in-game A/B below, which measured whole parts left out beside covered ones. On the three door
+samples of the `dayz-doors` tutorial it is silent on `Simple_Door` and `Door_w_Button` and flags
+the Geometry and Fire LODs of `Expert_Mode`, whose lever (18 faces: selection `lever` in Geometry,
+`door1_open` in Fire) is in no component there, though the tutorial's text lists the lever among
+the parts that take up space.
 
-Up to 1.8.0, the version of the pinned wheel, the check compared `Component01` alone with the
+**Measured in game** (2026-10-02, DayZDiag 1.29.163709, driven by dayz-mcp): a pair of 2 m boxes,
+A in `Component01` and B either in `Component02` or in no component (the two MLODs byte-identical
+apart from the three `Component02` tags; every face wound inward, Rule 18), loaded packed
+binarized and unbinarized, as a `HouseNoDestruct` and as an `Inventory_Base` item
+(`physLayer="item_large"`):
+
+| box B | rays on B (`geom`, `view`, `fire`, `RayCastBullet`) | player walking into B |
+|---|---|---|
+| `Component02` | 26/26 | stopped 0.33 m before the face |
+| in no component | 0/46; the vertical rays reach the ground | walked through: 7.5 m in about 5 s, as on open ground |
+
+Box A took 40/40 in the same objects. Binarize keeps the left-out faces in the ODOL (it lowercases
+the component names); the engine ignores them. The tutorial's `Expert_Mode`, spawned the same way,
+gave the lever no Geometry, Fire or physics hit (0/28), and a player walking into the lever's knob
+stopped on the block behind it. In its View LOD the lever is `Component09`, one closed piece that
+is not convex (an octagonal knob and a bar): only the knob answered (3/3) and the bar took none
+(0/9), so that non-convex component collided only in part; each collision LOD answered by its own
+components (the lever, a component in View only, was hit in View only). No RPT or script-log line
+named any of these models. Not measured: a part left out only in part, weapon fire, the action
+cursor, vehicles, DayZ 1.30 Exp.
+(claim: CLAIM-P3D-UNCOVERED-FACES-INGAME)
+
+Up to 1.8.0, the wheel pinned until 2026-10-02, the check compared `Component01` alone with the
 whole Geometry LOD, so it fired on a healthy multi-component LOD: `gate_and.p3d`'s Geometry LOD
 holds six components of 8 points each (48 points, 36 faces) and reads "Component01 covers 8/48
 vertices", yet that model took every ray in game (SKILL.md, "Absolute winding check", rule 6).
@@ -317,6 +342,12 @@ must include ALL vertices AND ALL faces of the Geometry LOD with weight=1." The 
 that day still opened "Every vertex and face of a collision LOD must belong to a `ComponentNN`
 selection" and said "Partial coverage means partial collision — some faces won't register
 raycasts.", a consequence measured only for a LOD with no component at all.)*
+
+*(Updated 2026-10-02, after the in-game A/B above: the first paragraph read "A face outside every
+component is expected not to collide, but that was measured only for a LOD with no component at
+all (killer #2), not for a face left out next to covered ones.", and the py3d paragraph read "A
+face outside every component on a LOD that has others was not measured in game, so the finding
+stays a WARN." and closed "whether that lever collides in game was not measured.")*
 
 ### 9. Non-Watertight Collision Mesh
 

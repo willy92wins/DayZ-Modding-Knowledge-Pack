@@ -31,6 +31,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-p3d-audit` killer #8 (`SKILL.md` and `references/killers-detail.md` §8): a closed part
+  left out of every `ComponentNN` collides with nothing also when the same LOD has other
+  components, measured in game instead of expected (2026-10-02, DayZDiag 1.29.163709); a part left
+  out only in part was not measured. A pair of 2 m boxes, A in
+  `Component01` and B in `Component02` or in no component (byte-identical apart from those three
+  tags), packed binarized and unbinarized, as `HouseNoDestruct` and as an `Inventory_Base` item:
+  B in no component took 0 of 46 rays (`geom`, `view`, `fire` and the physics-world bullet ray)
+  and the player walked through it as on open ground; as `Component02` it took 26 of 26 and
+  stopped the player; no log line. Binarize keeps the left-out faces in the ODOL. The `dayz-doors`
+  LOD reference (`references/lods-and-object-builder.md`) now says that the Expert tutorial's
+  `Expert_Mode.p3d` leaves its lever out of every component in Geometry and Fire, although the
+  tutorial's text puts it in Geometry: in game the lever took no Geometry, Fire or physics ray (0
+  of 28) and a player walking into its knob stopped on the block behind it. In View Geometry the
+  lever is `Component09`, one non-convex piece (knob and bar), and only the knob answered rays (3
+  of 3, the bar 0 of 9). The reference gives the repair (the knob and the bar rebuilt as two
+  closed, convex components in every collision LOD, each closed on the side they share, kept in
+  `door1_open` and in `lever`, which the tutorial's View and Fire LODs lack; not tested in game)
+  and a pre-export checklist line; the P3D is unchanged.
+  py3d's `WARN_COMPONENT_COVERAGE` severity and message are unchanged (its message still says the
+  case was not measured).
 - `dayz-p3d-audit` "Absolute winding check", rule 6: the kit box's missing collision is measured
   now, not a hypothesis. In a paired run (2026-10-02, DayZDiag 1.29.163709, the kit's own config on
   three classes, the MLODs packed unbinarized) the shipped `lf_kit_box.p3d` took 0 of 27
@@ -54,6 +74,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `CLAIM-ANIM-ROUTEC-FBX-INGAME`), `blender-authoring.md` and `blender-animation`'s
   `dayz-handoff.md` now say so, scoped to one bone and rotations only (the offsets came from the
   vanilla clip).
+- py3d wheel pinned at 1.9.0 (`tools/py3d/rollout/wheel-manifest.json`):
+  `py3d_dayz-1.9.0-py3-none-any.whl`, SHA-256
+  `33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e`, built by
+  `rollout/build-wheel.ps1 -UpdateManifest` from the source on main at `62c3dcc`, at the owner's
+  request. Since the 1.8.0 pin it carries the winding messages of #37 and #40 and the component
+  checks of #46 and #54. The toolchain was checked first: the same script rebuilt the 1.8.0 pin
+  (`e7184429…`) byte for byte from the commit that sealed it (`053dc7f`), with Python 3.14.3 and
+  setuptools 83.0.0; then 1.9.0 built six times to one hash, two of them in the seal. The wheel's
+  `py3d/` files and `LICENSE` are byte-identical to the source, and `verify-wheel-restock.ps1`
+  passed against it on synthetic skill roots. No installed skill tree vendors the wheel, so nothing
+  was restocked; the user site-packages install follows the merge. The skill notes that called 1.8.0
+  "the pinned wheel" now say it was pinned until 2026-10-02 (`dayz-p3d-audit` item 1 of "The three
+  py3d gates", killers #2 and #8 and `references/killers-detail.md` §2 and §8; `dayz-vehicles`
+  `rip-import.md` §3.5 and `vehicle-structural-parity.md`; `dayz-clothing`
+  `autofit-from-official-rig.md`), and item 1 describes the 1.9.0 `ERR_WINDING_INVERTED` message
+  next to the 1.8.0 one.
 
 ### Fixed
 
@@ -388,6 +424,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `dayz-realistic-animation-director/scripts/tests` (one of its modules imports `bpy`),
   `dayz-proxy-align/scripts/test_proxy_frame.py` and
   `dayz-mcp-verify/references/test_drive_ladder.py`.
+- py3d rollout applicator (`tools/py3d/rollout/apply-s2-rollout.ps1`): restocking a skill's
+  `wheels/` counted the pinned name and legacy `py3d-*.whl` wheels but not an earlier
+  `py3d_dayz-*.whl`, so a 1.8.0 → 1.9.0 restock would copy 1.9.0 beside 1.8.0, pass its own
+  readback, and leave a directory the skills' `install_py3d.py` refuses (it wants exactly one
+  `py3d_dayz-*-py3-none-any.whl`). Found by the cross-family review of the 1.9.0 pin; no installed
+  tree vendors a wheel today, so nothing was affected. Earlier `py3d_dayz` wheels are now backed up
+  and removed like legacy ones: a new case in `tests/py3d_rollout/test_apply_rollout.py` and test E
+  of `verify-wheel-restock.ps1` fail on the previous applicator and pass now.
 - `dayz-model-pipeline` Rule 18 no longer reverses whole collision LODs. Its body read the
   per-component check on "most faces" and fixed it with `face.vertices.reverse()` on every face of
   every collision LOD, though its own 2026-10-02 note had narrowed both: on a collision LOD holding
