@@ -207,23 +207,34 @@ check exists. The absolute check cannot see faces and normals turned
 of the two is wrong, and the two cases need opposite fixes. In a DayZ MLOD the
 vertex-order cross product `cross(v1 − v0, v2 − v0)` and the stored normals both
 point away from the side meant to be seen: inward on a solid, as
-`blender_to_dayz` writes them. So decide the wrong side first, part by part:
+`blender_to_dayz` writes them. The check reads each face's first corner only: a
+face whose corners point opposite ways is a defect to inspect, not a sign to
+flip. So decide the wrong side first, part by part:
 
 - **visual LOD**: the signed volume by winding of each closed shell, the sum of
   `dot(v0, cross(v1, v2)) / 6` over the fan triangles of its faces in the
   file's own coordinates. Negative on a solid meant to be seen from outside,
-  positive on a room meant to be seen from inside. Not the sum over the whole
-  LOD, which can hide an inverted part; and a shell is closed only when each of
-  its edges is shared by exactly two of its faces: an open sheet has no
-  meaningful sign.
+  positive on a room meant to be seen from inside. A shell is closed only when
+  each of its edges is shared by exactly two of its faces (an open sheet has no
+  meaningful sign), and its sign speaks for every face only once each face
+  agrees with its neighbours: a shell with one reversed face can keep its
+  negative sum. So when `WARN_WINDING_EDGE_INCOHERENT` is reported too, first
+  turn the faces that disagree with the rest of their shell, vertex order and
+  normals together. Never decide on the sum over the whole LOD either, which
+  can hide an inverted part.
 - **collision LODs**: in each component, the cross product against the face's
   outward direction (face centroid minus component centroid). Inward expected.
+  The test assumes a convex component, which Geometry components must be; on a
+  concave one (a ring, an L) it reads faces that are right as outward.
 
 Then fix that side only:
 
 - winding as expected → the **normals** are wrong: keep the faces and negate
-  the normals in the pool, `lod.facenormals[j] = (-x, -y, -z)` (not through
-  `Vertex.normal`, whose setter looks the value up in the pool);
+  the normals of the faces that disagree, in the pool,
+  `lod.facenormals[j] = (-x, -y, -z)` (not through `Vertex.normal`, whose
+  setter looks the value up in the pool). A pool entry that a face you keep
+  also uses gets a negated copy instead, and only the corners you fix are
+  re-pointed to it: one entry can serve several parts;
 - winding opposite → the **winding** is wrong: `face.vertices.reverse()` on
   every face of that part, normals kept.
 
@@ -237,7 +248,7 @@ direction before fixing, not after. And never reverse a face by swapping
 
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 286 tests pass -- 279 of them
+The library is used in a real modding pipeline, and 288 tests pass -- 281 of them
 on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
 upstream (see [Tests](#tests)). It has also been through a deliberately
 adversarial audit, and **not every problem it found is fixed yet**. Before

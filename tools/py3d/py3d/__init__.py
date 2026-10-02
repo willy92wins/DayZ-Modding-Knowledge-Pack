@@ -1098,11 +1098,13 @@ def _check_winding_absolute(lod, lod_index, kind_label):
     produces when the vertex order is not reversed.
 
     It sees that winding and normals disagree, not which of the two is
-    wrong. After that export the vertex order is the right side - the
-    MLOD order - and the normals are the side to negate; reversing the
-    faces instead turns the model inside-out and silences the check. A
-    LOD whose faces and normals were turned together (both outward:
-    inside-out) agrees 100% and passes.
+    wrong. A det=-1 map such as (x, z, y) that keeps the face order and
+    maps the outward normals leaves the vertex order right - the MLOD
+    order - and the normals the side to negate; reversing the faces
+    instead turns the model inside-out and silences the check. A LOD
+    whose faces and normals were turned together (both outward:
+    inside-out, as transform(ROT_X_NEG90) alone leaves a Blender model)
+    agrees 100% and passes.
 
     Additive: new finding codes, leaving `_check_winding_vs_visual`'s
     alone.
@@ -1117,26 +1119,33 @@ def _check_winding_absolute(lod, lod_index, kind_label):
             % kind_label))
     elif pct < 10.0:
         if kind_label == "visual":
-            how = ("the signed volume by winding of each closed shell: "
+            how = ("the signed volume by winding of each closed shell - "
                    "negative for a solid seen from outside, positive for "
-                   "a room seen from inside")
+                   "a room seen from inside - read only once its faces "
+                   "agree with their neighbours (with "
+                   "WARN_WINDING_EDGE_INCOHERENT, first turn the faces "
+                   "that disagree with the rest of their shell, winding "
+                   "and normals together)")
         else:
-            how = ("the cross product against each component's outward "
-                   "direction (face centroid minus component centroid): "
-                   "inward expected")
+            how = ("the cross product against face centroid minus "
+                   "component centroid, in each convex component: inward "
+                   "expected")
         findings.append(Finding(
             "ERR_WINDING_VS_NORMALS", "ERROR", lod_index,
             "%s LOD: winding and declared normals disagree (only %.0f%% "
-            "agree). That says they disagree, not which one is wrong: in "
-            "a DayZ MLOD both cross(v1-v0, v2-v0) and the stored normals "
-            "point away from the side meant to be seen. Decide the wrong "
-            "side, part by part, before any fix, with %s. Winding as "
-            "expected -> the normals are wrong: negate them in the pool "
-            "(lod.facenormals[j] = (-x, -y, -z)). Winding opposite -> "
-            "face.vertices.reverse() on every face of that part, never a "
-            "vertices[1]/[2] swap (a quad becomes a crossed face). "
+            "of faces agree with their first corner's normal). That says "
+            "they disagree, not which one is wrong: in a DayZ MLOD both "
+            "cross(v1-v0, v2-v0) and the stored normals point away from "
+            "the side meant to be seen. Decide the wrong side, part by "
+            "part, before any fix, with %s. Winding as expected -> the "
+            "normals of the disagreeing faces are wrong: negate them "
+            "(lod.facenormals[j] = (-x, -y, -z); an entry also used by a "
+            "face you keep gets a negated copy instead). Winding opposite "
+            "-> face.vertices.reverse() on every face of that part, never "
+            "a vertices[1]/[2] swap (a quad becomes a crossed face). "
             "Reversing every face on this finding alone has turned "
-            "exports whose winding was right inside-out."
+            "exports whose winding was right inside-out. More: py3d "
+            "README, 'Winding'."
             % (kind_label, pct, how)))
     elif pct <= 90.0:
         findings.append(Finding(

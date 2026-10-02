@@ -337,10 +337,68 @@ def vs_normals(p3d):
     return [f for f in p3d.validate() if f.code == "ERR_WINDING_VS_NORMALS"]
 
 
+def boxes(lod):
+    return [[fa for fa in lod.faces if fa.vertices[0].point_index // 8 == k]
+            for k in range(4)]
+
+
+def negate_normals_of(lod, faces):
+    """Negate the normals of *faces* only: a pool entry no other face uses
+    in place, one that another face also uses as a negated copy that only
+    the corners of *faces* are re-pointed to."""
+    mine = {id(fa) for fa in faces}
+    kept = {v.normal_index for fa in lod.faces if id(fa) not in mine
+            for v in fa.vertices}
+    copies = {}
+    for fa in faces:
+        for v in fa.vertices:
+            j = v.normal_index
+            if j in kept:
+                if j not in copies:
+                    n = lod.facenormals[j]
+                    lod.facenormals.append((-n[0], -n[1], -n[2]))
+                    copies[j] = len(lod.facenormals) - 1
+                v.normal_index = copies[j]
+    for j in {v.normal_index for fa in faces for v in fa.vertices} - kept:
+        if j not in copies.values():
+            n = lod.facenormals[j]
+            lod.facenormals[j] = (-n[0], -n[1], -n[2])
+
+
+def share_pool(lod):
+    """One pool entry per distinct normal, so an entry serves several
+    boxes."""
+    pool = []
+    for fa in lod.faces:
+        for v in fa.vertices:
+            n = v.normal
+            if n not in pool:
+                pool.append(n)
+            v.normal_index = pool.index(n)
+    lod.facenormals[:] = pool
+
+
+def faces_against_every_neighbour(lod):
+    """Faces each of whose edges another face runs in the same direction:
+    a face that disagrees with the rest of its shell."""
+    runs = {}
+    for fa in lod.faces:
+        idx = [v.point_index for v in fa.vertices]
+        for edge in zip(idx, idx[1:] + idx[:1]):
+            runs[edge] = runs.get(edge, 0) + 1
+    against = []
+    for fa in lod.faces:
+        idx = [v.point_index for v in fa.vertices]
+        if all(runs[edge] > 1 for edge in zip(idx, idx[1:] + idx[:1])):
+            against.append(fa)
+    return against
+
+
 def test_vs_normals_cannot_tell_which_side_is_wrong(fork):
     """Normals turned and faces turned read alike: 0 % agreement and the
     same finding with the same text, though they need opposite fixes. So
-    the message names how to decide and both fixes, not one. B passes."""
+    the message names how to decide and both fixes, not one, with the
+    conditions under which each reading holds. B passes."""
     assert vs_normals(variant(fork, "B")) == []
     msgs = []
     for side in ("normals", "winding"):
@@ -350,9 +408,10 @@ def test_vs_normals_cannot_tell_which_side_is_wrong(fork):
         assert [(f.severity, f.lod) for f in found] == [("ERROR", 0)], side
         msgs.append(found[0].msg)
     assert msgs[0] == msgs[1]
-    for needle in ("not which one is wrong", "signed volume",
-                   "lod.facenormals[j] = (-x, -y, -z)",
-                   "face.vertices.reverse()"):
+    for needle in ("not which one is wrong", "first corner", "signed volume",
+                   "WARN_WINDING_EDGE_INCOHERENT",
+                   "lod.facenormals[j] = (-x, -y, -z)", "negated copy",
+                   "face.vertices.reverse()", "vertices[1]/[2] swap"):
         assert needle in msgs[0], needle
     assert "wound backwards" not in msgs[0]
 
@@ -365,9 +424,13 @@ def test_vs_normals_direction_picks_the_fix(fork):
     faces. The other fix silences the finding just as well - 100 %
     agreement, validate() returns [] - and leaves both outward, the
     orientation C rendered inside-out with. On the normals-turned model that
-    other fix is the one this finding's message used to give."""
+    other fix is the one this finding's message used to give. B is a solid
+    seen from outside that rendered right in game, so the sign the message
+    gives for that case is the one measured on B."""
     b = variant(fork, "B").lods[0]
     assert all(shell_volume(b, k) < 0 for k in range(4))
+    assert ("negative for a solid seen from outside"
+            in vs_normals(turned(fork, "normals"))[0].msg)
     cases = (("normals", True, negate_normals, reverse_faces),
              ("winding", False, reverse_faces, negate_normals))
     for side, winding_right, fix, other in cases:
@@ -395,15 +458,110 @@ def test_vs_normals_blind_to_faces_and_normals_turned_together(fork):
 
 def test_vs_normals_collision_lod_asks_for_the_component_check(fork):
     """On a collision LOD the message asks for the per-component check
-    instead of the signed volume."""
+    instead of the signed volume, with the sign blender_to_dayz writes: on
+    the converted Geometry cube, one convex component, every face's cross
+    product points inward."""
     p3d = build_multilod_v2_p3d(fork)
     fork.blender_to_dayz(p3d)
     index = [lod.kind() for lod in p3d.lods].index("geometry")
-    negate_normals(p3d.lods[index])
+    geo = p3d.lods[index]
+    middle = centroid([p.coords for p in geo.points])
+    for fa in geo.faces:
+        vs = [v.point.coords for v in fa.vertices]
+        out = sub(centroid(vs), middle)
+        assert dot(cross(sub(vs[1], vs[0]), sub(vs[2], vs[0])), out) < 0
+    negate_normals(geo)
     found = vs_normals(p3d)
     assert [(f.severity, f.lod) for f in found] == [("ERROR", index)]
-    assert "component" in found[0].msg
+    assert "inward expected" in found[0].msg
+    assert "convex component" in found[0].msg
     assert "signed volume" not in found[0].msg
+
+
+def test_vs_normals_shared_pool_entry_gets_a_copy(fork):
+    """Three boxes with their normals turned and the stem with its faces
+    turned, on a pool where one entry serves several boxes. Each box's
+    volume picks its fix, but negating the shared entries in place also
+    turns the stem's normals, which were right: 75 %, its 12 faces
+    disagreeing. A negated copy for the corners being fixed gives back B."""
+    def broken():
+        p3d = variant(fork, "B")
+        lod = p3d.lods[0]
+        for k, faces in enumerate(boxes(lod)):
+            if k == STEM:
+                for fa in faces:
+                    fa.vertices.reverse()
+            else:
+                negate_normals_of(lod, faces)
+        share_pool(lod)
+        return p3d
+    p3d = broken()
+    lod = p3d.lods[0]
+    assert len(lod.facenormals) == 6
+    assert [f.code for f in p3d.validate()] == ["ERR_WINDING_VS_NORMALS"]
+    assert ([shell_volume(lod, k) < 0 for k in range(4)]
+            == [k != STEM for k in range(4)])
+    parts = boxes(lod)
+    normals_wrong = [fa for k in range(4) if k != STEM for fa in parts[k]]
+    for j in {v.normal_index for fa in normals_wrong for v in fa.vertices}:
+        n = lod.facenormals[j]
+        lod.facenormals[j] = (-n[0], -n[1], -n[2])
+    for fa in parts[STEM]:
+        fa.vertices.reverse()
+    assert fork._pct_normal_agreement(lod) == 75.0
+    assert inward_counts(p3d) == (48, 48, 36)
+    p3d = broken()
+    lod = p3d.lods[0]
+    parts = boxes(lod)
+    negate_normals_of(lod, [fa for k in range(4) if k != STEM
+                            for fa in parts[k]])
+    for fa in parts[STEM]:
+        fa.vertices.reverse()
+    assert inward_counts(p3d) == (48, 48, 48)
+    assert p3d.validate() == []
+
+
+def test_vs_normals_shell_agrees_with_itself_before_its_volume_counts(fork):
+    """Every normal turned, and one face of the plate turned back with an
+    inward normal of its own: 0 % agreement and an incoherent edge. The
+    plate keeps its negative volume, so the volume alone picks "negate the
+    normals", which leaves that face inside-out and the edge warning
+    standing. Turning first the face that disagrees with its neighbours,
+    vertex order and normal together, makes the shell coherent; then the
+    volume picks the same fix and gives back B."""
+    def broken():
+        p3d = variant(fork, "B")
+        lod = p3d.lods[0]
+        negate_normals(lod)
+        fa = lod.faces[0]
+        fa.vertices.reverse()
+        n = fa.vertices[0].normal
+        lod.facenormals.append((-n[0], -n[1], -n[2]))
+        for v in fa.vertices:
+            v.normal_index = len(lod.facenormals) - 1
+        return p3d
+    p3d = broken()
+    lod = p3d.lods[0]
+    assert lod.faces[0].vertices[0].point_index // 8 == PLATE
+    assert [f.code for f in p3d.validate()] == [
+        "ERR_WINDING_VS_NORMALS", "WARN_WINDING_EDGE_INCOHERENT"]
+    assert shell_volume(lod, PLATE) < 0
+    negate_normals(lod)
+    assert fork._pct_normal_agreement(lod) == 100.0
+    assert [f.code for f in p3d.validate()] == ["WARN_WINDING_EDGE_INCOHERENT"]
+    assert inward_counts(p3d) == (48, 47, 47)
+    p3d = broken()
+    lod = p3d.lods[0]
+    against = faces_against_every_neighbour(lod)
+    assert against == [lod.faces[0]]
+    for fa in against:
+        fa.vertices.reverse()
+    negate_normals_of(lod, against)
+    assert [f.code for f in p3d.validate()] == ["ERR_WINDING_VS_NORMALS"]
+    assert shell_volume(lod, PLATE) < 0
+    negate_normals(lod)
+    assert inward_counts(p3d) == (48, 48, 48)
+    assert p3d.validate() == []
 
 
 # ---- proxies: measured in game the same day --------------------------------
