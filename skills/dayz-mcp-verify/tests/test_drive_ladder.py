@@ -10,7 +10,8 @@ fixtures prove the R21 (Codex 2026-06-28) hardening DL-001..006 WITHOUT burning 
   - R5 ambiguous obstacle/drivetrain -> needs_clear_ground_retest, not a one-shot fix (DL-005)
   - a verb timeout in R5 -> inconclusive, not a model fix (DL-006)
 
-Run:  python test_drive_ladder.py    (exit 0 = all pass)
+Run:  python -m pytest skills/dayz-mcp-verify/tests, or python test_drive_ladder.py
+      (exit 0 = all pass)
 """
 from __future__ import annotations
 
@@ -18,11 +19,16 @@ import argparse
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "references"))
 import drive_ladder  # noqa: E402
 
-# Speed: no real waiting. run_ladder/wait_ready use module-level time.sleep.
-drive_ladder.time.sleep = lambda *a, **k: None
+
+@pytest.fixture(autouse=True)
+def no_sleep(monkeypatch):
+    # Speed: no real waiting. run_ladder/wait_ready use module-level time.sleep.
+    monkeypatch.setattr(drive_ladder.time, "sleep", lambda *a, **k: None)
 
 
 class FakeDaemon:
@@ -99,133 +105,112 @@ def run(scripts, **argover):
     return drive_ladder.run_ladder(FakeDaemon(scripts), mkargs(**argover))
 
 
-FAILURES = []
-
-
-def check(name, cond, detail=""):
-    status = "PASS" if cond else "FAIL"
-    if not cond:
-        FAILURES.append(f"{name}: {detail}")
-    print(f"  [{status}] {name}" + (f" -- {detail}" if (not cond and detail) else ""))
-
-
 def rung(R, key):
     return R["rungs"].get(key, {})
 
 
-def test_happy():
-    print("scenario: HAPPY (all objective rungs PASS)")
-    R = run(base_scripts())
-    check("R1 PASS", rung(R, "R1").get("PASS") is True)
-    check("R2_collision PASS", rung(R, "R2_collision").get("PASS") is True)
-    check("R3 PASS (driver available)", rung(R, "R3").get("PASS") is True)
-    check("R4 PASS", rung(R, "R4").get("PASS") is True)
-    check("R5 PASS", rung(R, "R5").get("PASS") is True, str(rung(R, "R5")))
-    check("objective_PASS True", drive_ladder.run_ladder and R.get("stop") is None)
+def objective_pass(R):
     # objective_PASS is set in write_verdict; recompute the same way here
     obj = [v.get("PASS") for v in R["rungs"].values() if v.get("PASS") is not None]
-    check("objective all True", bool(obj) and all(obj))
+    return bool(obj) and all(obj)
+
+
+def test_happy():
+    """HAPPY: all objective rungs PASS."""
+    R = run(base_scripts())
+    assert rung(R, "R1").get("PASS") is True, "R1 PASS"
+    assert rung(R, "R2_collision").get("PASS") is True, "R2_collision PASS"
+    assert rung(R, "R3").get("PASS") is True, "R3 PASS (driver available)"
+    assert rung(R, "R4").get("PASS") is True, "R4 PASS"
+    assert rung(R, "R5").get("PASS") is True, f"R5 PASS -- {rung(R, 'R5')}"
+    assert R.get("stop") is None, "no rung stopped the ladder"
+    assert objective_pass(R), "objective all True"
 
 
 def test_r3_passenger_only():
-    print("scenario: DL-001 R3 passenger-only (driver unreachable)")
+    """DL-001: R3 passenger-only (driver unreachable)."""
     sc = base_scripts(query_get_in_condition=getin_responder(driver_available=False, driver_block="unreachable",
                                                              passenger_available=True))
     R = run(sc)
-    check("R3 NOT PASS", rung(R, "R3").get("PASS") is False, str(rung(R, "R3")))
+    assert rung(R, "R3").get("PASS") is False, f"R3 NOT PASS -- {rung(R, 'R3')}"
     ds = rung(R, "R3").get("driver_seat") or {}
-    check("driver_seat first_block=unreachable", ds.get("first_block") == "unreachable", str(ds))
-    obj = [v.get("PASS") for v in R["rungs"].values() if v.get("PASS") is not None]
-    check("objective_PASS False", not (bool(obj) and all(obj)))
+    assert ds.get("first_block") == "unreachable", f"driver_seat first_block=unreachable -- {ds}"
+    assert not objective_pass(R), "objective_PASS False"
 
 
 def test_r4_seated_no_owner():
-    print("scenario: DL-002 R4 seated but not owner")
+    """DL-002: R4 seated but not owner."""
     sc = base_scripts(vehicle_get_in_client={"ok": True, "seated": True, "is_owner": False, "vehicle_fixture_ready": True})
     R = run(sc)
-    check("R4 NOT PASS", rung(R, "R4").get("PASS") is False, str(rung(R, "R4")))
-    check("stop == R4", R.get("stop") == "R4", str(R.get("stop")))
-    check("R5 not run", "R5" not in R["rungs"])
+    assert rung(R, "R4").get("PASS") is False, f"R4 NOT PASS -- {rung(R, 'R4')}"
+    assert R.get("stop") == "R4", f"stop == R4 -- {R.get('stop')}"
+    assert "R5" not in R["rungs"], "R5 not run"
 
 
 def test_r4_no_fixture():
-    print("scenario: DL-002 R4 seated+owner but fixture not ready")
+    """DL-002: R4 seated+owner but fixture not ready."""
     sc = base_scripts(vehicle_get_in_client={"ok": True, "seated": True, "is_owner": True, "vehicle_fixture_ready": False})
     R = run(sc)
-    check("R4 NOT PASS", rung(R, "R4").get("PASS") is False, str(rung(R, "R4")))
-    check("stop == R4", R.get("stop") == "R4")
+    assert rung(R, "R4").get("PASS") is False, f"R4 NOT PASS -- {rung(R, 'R4')}"
+    assert R.get("stop") == "R4", "stop == R4"
 
 
 def test_rerun_already_in_vehicle():
-    print("scenario: DL-003 re-run, player already seated")
+    """DL-003: re-run, player already seated."""
     sc = base_scripts(vehicle_telemetry=[
         {"ok": True, "pos_real": [50.0, 0.0, 50.0], "speedo_max": 0.0, "engine_on_server": False, "is_owner": True},
     ])
     R = run(sc)
-    check("stop == preflight", R.get("stop") == "preflight", str(R.get("stop")))
-    check("preflight NOT PASS", rung(R, "preflight").get("PASS") is False)
-    check("R1 not run", "R1" not in R["rungs"])
+    assert R.get("stop") == "preflight", f"stop == preflight -- {R.get('stop')}"
+    assert rung(R, "preflight").get("PASS") is False, "preflight NOT PASS"
+    assert "R1" not in R["rungs"], "R1 not run"
 
 
 def test_r5_engine_off_moving():
-    print("scenario: DL-004 R5 moves with engine OFF (gravity/inertia)")
+    """DL-004: R5 moves with engine OFF (gravity/inertia)."""
     sc = base_scripts(vehicle_telemetry=[
         {"ok": False, "error": "not_seated"},
         {"ok": True, "pos_real": [100.0, 0.0, 100.0], "speedo_max": 0.0, "gear": 1, "engine_on_server": False, "is_owner": True},
         {"ok": True, "pos_real": [130.0, 0.0, 100.0], "speedo_max": 40.0, "gear": 1, "engine_on_server": False, "is_owner": True},
     ])
     R = run(sc)
-    check("R5 NOT PASS (engine off)", rung(R, "R5").get("PASS") is False, str(rung(R, "R5")))
+    assert rung(R, "R5").get("PASS") is False, f"R5 NOT PASS (engine off) -- {rung(R, 'R5')}"
     fixtext = " ".join(f["fix"] for f in R["fixes"] if f["rung"] == "R5")
-    check("R5 fix cites engine, not drivetrain", "engine" in fixtext.lower(), fixtext)
+    assert "engine" in fixtext.lower(), f"R5 fix cites engine, not drivetrain -- {fixtext}"
 
 
 def test_r5_blocked_retest():
-    print("scenario: DL-005 R5 engine+owner but no motion -> needs_clear_ground_retest")
+    """DL-005: R5 engine+owner but no motion -> needs_clear_ground_retest."""
     sc = base_scripts(vehicle_telemetry=[
         {"ok": False, "error": "not_seated"},
         {"ok": True, "pos_real": [100.0, 0.0, 100.0], "speedo_max": 0.0, "gear": 1, "engine_on_server": True, "is_owner": True},
         {"ok": True, "pos_real": [100.1, 0.0, 100.0], "speedo_max": 0.2, "gear": 1, "engine_on_server": True, "is_owner": True},
     ])
     R = run(sc)
-    check("R5 NOT PASS", rung(R, "R5").get("PASS") is False)
-    check("R5 verdict needs_clear_ground_retest", rung(R, "R5").get("verdict") == "needs_clear_ground_retest", str(rung(R, "R5")))
+    assert rung(R, "R5").get("PASS") is False, "R5 NOT PASS"
+    assert rung(R, "R5").get("verdict") == "needs_clear_ground_retest", \
+        f"R5 verdict needs_clear_ground_retest -- {rung(R, 'R5')}"
 
 
 def test_r5_timeout():
-    print("scenario: DL-006 a verb times out in R5 -> inconclusive")
+    """DL-006: a verb times out in R5 -> inconclusive."""
     sc = base_scripts(vehicle_telemetry=[
         {"ok": False, "error": "not_seated"},
         {"ok": True, "pos_real": [100.0, 0.0, 100.0], "speedo_max": 0.0, "gear": 1, "engine_on_server": True, "is_owner": True},
         {"_timeout": True},
     ])
     R = run(sc)
-    check("R5 NOT PASS", rung(R, "R5").get("PASS") is False)
-    check("R5 inconclusive", rung(R, "R5").get("inconclusive") is True, str(rung(R, "R5")))
+    assert rung(R, "R5").get("PASS") is False, "R5 NOT PASS"
+    assert rung(R, "R5").get("inconclusive") is True, f"R5 inconclusive -- {rung(R, 'R5')}"
 
 
 def test_r1_found_failclosed():
-    print("scenario: DL-010 world_spawn omits `found` -> R1 fail-closed")
+    """DL-010: world_spawn omits `found` -> R1 fail-closed."""
     sc = base_scripts(world_spawn={"ok": True, "pos": [100.0, 0.0, 100.0]})  # no 'found'
     R = run(sc)
-    check("R1 NOT PASS (found absent)", rung(R, "R1").get("PASS") is False, str(rung(R, "R1")))
-    check("stop == R1", R.get("stop") == "R1")
-
-
-def main() -> int:
-    for t in (test_happy, test_r3_passenger_only, test_r4_seated_no_owner, test_r4_no_fixture,
-              test_rerun_already_in_vehicle, test_r5_engine_off_moving, test_r5_blocked_retest,
-              test_r5_timeout, test_r1_found_failclosed):
-        t()
-    print()
-    if FAILURES:
-        print(f"FAILED ({len(FAILURES)}):")
-        for f in FAILURES:
-            print(f"  - {f}")
-        return 1
-    print("ALL FIXTURES PASS")
-    return 0
+    assert rung(R, "R1").get("PASS") is False, f"R1 NOT PASS (found absent) -- {rung(R, 'R1')}"
+    assert R.get("stop") == "R1", "stop == R1"
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(pytest.main([__file__, "-q", "-p", "no:cacheprovider"]))

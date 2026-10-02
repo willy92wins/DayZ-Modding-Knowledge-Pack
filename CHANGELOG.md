@@ -551,6 +551,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `dayz-realistic-animation-director/scripts/tests` (one of its modules imports `bpy`),
   `dayz-proxy-align/scripts/test_proxy_frame.py` and
   `dayz-mcp-verify/references/test_drive_ladder.py`.
+- The four test files the entry above leaves out now sit in their skill's `tests/` folder, where
+  the gate's `skill_tests` check and CI run them. `dayz-realistic-animation-director/scripts/tests`
+  moved to `tests/` with its `fixtures/`, and `scripts/run_regression_tests.py` reads it there.
+  `test_validate_motion_contract.py` stays a `unittest.TestCase` (40 tests and 8 subtests under
+  pytest, the same 40 under the runner). `test_sample_blender_motion.py` was a collection error
+  without Blender (`No module named 'bpy'`, exit 2), which also kept the 40 beside it from running;
+  it now skips itself without `bpy` and has a `test_` entry for where `bpy` imports. It imports
+  pytest only on the skip branch: Blender's bundled Python (Blender 5.1.1, Python 3.13.9) has no
+  pytest, and the runner still launches the file inside Blender. `dayz-proxy-align`'s
+  `test_proxy_frame.py`, module-level checks that collected no test (exit 5), is ten tests behind
+  `pytest.importorskip("numpy")`, so the CI runner, which installs pytest only, skips it.
+  `dayz-mcp-verify`'s `test_drive_ladder.py` asserts what its `check()` only recorded, so under
+  pytest every test passed with a check failing: with R3 mutated to pass on the passenger seat it
+  gave 9 passed, and now gives 1 failed. Both keep `python test_<name>.py`, exit 0 = pass, through
+  `pytest.main`; `dayz-proxy-align/SKILL.md`, `dayz-mcp-verify/SKILL.md` and
+  `acceptance-ladder.md` cite the new paths. Measured with `packctl test-folders --tree skills`:
+  six folders pass, also with numpy hidden from the test processes, and the same two mutants fail
+  `dayz-mcp-verify` and `dayz-proxy-align`.
 - py3d rollout applicator (`tools/py3d/rollout/apply-s2-rollout.ps1`): restocking a skill's
   `wheels/` counted the pinned name and legacy `py3d-*.whl` wheels but not an earlier
   `py3d_dayz-*.whl`, so a 1.8.0 → 1.9.0 restock would copy 1.9.0 beside 1.8.0, pass its own

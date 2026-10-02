@@ -7,10 +7,21 @@ import tempfile
 import traceback
 from pathlib import Path
 
-import bpy
+try:
+    import bpy
+except ImportError:
+    # Outside Blender the module skips itself, as pytest.importorskip("bpy")
+    # would. pytest is imported on this branch only: Blender's bundled Python
+    # has none, and run_regression_tests.py runs this file inside Blender.
+    import pytest
+
+    pytest.skip(
+        "needs Blender's bpy: blender --background --factory-startup --python <this file>",
+        allow_module_level=True,
+    )
 
 
-SCRIPTS_DIR = Path(__file__).resolve().parents[1]
+SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
 
@@ -194,6 +205,11 @@ def run_test():
     ]
     assert_close(round_tripped["frames"]["0"]["segments"]["finger"]["a"], [0.0, 1.0, 0.0])
     assert math.isclose(round_tripped["frames"]["0"]["segments"]["finger"]["radius_m"], 0.01)
+
+
+def test_sample_blender_motion():
+    # The pytest entry, where bpy imports (Blender's Python, or the bpy module).
+    run_test()
 
 
 if __name__ == "__main__":
