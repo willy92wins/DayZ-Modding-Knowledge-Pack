@@ -554,9 +554,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "[Unreleased] Added entry for the dayz-mcp-verify standing-on-top probe (an idle teleported player does not fall; a 0.5 s player_move before query_player_state applies it; a reading counts only from the centre of an isolated top with the endpoint inside its footprint), measured in dayz-mcp run 3afed8ef, DayZDiag 1.29.163709, 2026-10-02.",
+          "license": "MIT",
+          "source_hash": "060c7a1db4c53b36cf6e3757e9300bd546dc9106d20609794d3ae361eb0bf11b",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-mcp-verify-stand-probe@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Unreleased Changed entry for the BI FBX rig's Route C map played in game (forward LeftArm raise, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cbb11150): through scripts/seanim_export.py (rig read as fbx) the arm came out forward of the chest, through the JD map out to the side, each on the side offline FK gave it; one bone, rotations only. Evidence: C:/tmp/chiral-ingame-work/REPORT.md section 4.",
           "license": "MIT",
-          "source_hash": "7e4bdeeaf25c14d15c25b17afa0c11e2379409301a21ea9c61aebbbf1bce66cd",
+          "source_hash": "80e78b203f2e635a25c92f0bb30415770e23e9ec4bc6ffedc8ce25d4b846c444",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
@@ -564,7 +574,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7e4bdeeaf25c14d15c25b17afa0c11e2379409301a21ea9c61aebbbf1bce66cd",
+      "output_hash": "80e78b203f2e635a25c92f0bb30415770e23e9ec4bc6ffedc8ce25d4b846c444",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7228,10 +7238,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-chiral-ingame@2026-10-02",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-mcp-verify static-object playbook gains a standing-on-top probe next to the walk-into probe (an idle teleported player does not fall; a 0.5 s player_move applies the fall; the reading counts only from the centre of an isolated top with the endpoint inside its footprint), and the CHANGELOG an Added entry. In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 3afed8ef (the killer #1 walk A/B; project DayZ_MCP plus one probe mod), NWAF concrete, 2 m probe boxes (origin at the bottom centre) spawned with rotation 64 as Inventory_Base items (item_large) in a row at 6 m centre spacing: killer #2's inward-wound Component01 box and a copy with the Geometry, View and Fire faces reversed. player_teleport(pos=[4211, 340.6, 10660], skip_clearance_check=true), above the centre of the outward-wound MLOD box, 0.065 m above its top, then query_player_state twice: y 340.6000 both times, the second result 3.9 s after the teleport's (bridge ids 1164-1166); the same call at [4235, 340.6, 10660] above open ground: y 340.6000 twice, the second 3.3 s after (1168-1170), and the start_pos of the player_move issued 15 s after that teleport still read y 340.6000 (the client's PhysicsGetPositionWS at the move's start: addon/scripts/4_World/MCP_PlayerMove.c:540 in the DayZ_MCP bridge, file sha256 1d98c6e3c7d00531e38856a960401f5a358064189f58a1fbe7921cdd4a412708). player_move(angle_deg=0, speed walk, hold_s=0.5; released_by hold, applied_angle_deg 0) then query_player_state: above open ground y 338.4589, the ground (1171-1172); after teleports above the centre of each top, 0.065-0.069 m above it, y 340.5346 on the outward-wound MLOD box, 340.4813 on the outward-wound binarized box and 340.5633 on the inward-wound MLOD box, each 0.00003 m below spawn y + 2.000, where DayZPhysics.RayCastBullet hit the top, with the endpoint 0.70-0.75 m north of the centre and x unchanged, inside the 2 m top (1174-1184). Every query_player_state of these probes returned godmode 1. The server script log shows each of the four moves accepted and released. The idle non-fall was not separated between the bridge, godmode and the engine. The footprint and isolation conditions of the reading rule come from the cross-family review (round 1), not from a further measurement. Agrees with the worn-items section's teleport to y=160 (run 1c289781, no fall after 30 s). Not measured: idle reads past 15 s, other heights, shapes, physics layers or gaits, a static (HouseNoDestruct) top, a top next to another support. Cross-family review by Codex gpt-6.1-sol. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fafa6890418c371f28edde9e5cb8b94b7c2965b9fb9f8560471b3b9eda4d9847",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-mcp-verify-stand-probe@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "91325e9ea0b6d159762a286b9fd3b17cb2bf247c2717cab71ae52d4111106083",
+      "output_hash": "fafa6890418c371f28edde9e5cb8b94b7c2965b9fb9f8560471b3b9eda4d9847",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -15438,9 +15458,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Registers CLAIM-MCPV-STAND-PROBE (runtime_verified) for the dayz-mcp-verify static-object playbook's standing-on-top probe, and moves CLAIM-MCPV-FIXTURE-NOPERSIST and CLAIM-MCPV-WORN-MANNEQUIN to the lines their markers now hold (+25 each, below the inserted bullet); their evidence and levels unchanged. Evidence of the new claim: In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 3afed8ef (the killer #1 walk A/B; project DayZ_MCP plus one probe mod), NWAF concrete, 2 m probe boxes (origin at the bottom centre) spawned with rotation 64 as Inventory_Base items (item_large) in a row at 6 m centre spacing: killer #2's inward-wound Component01 box and a copy with the Geometry, View and Fire faces reversed. player_teleport(pos=[4211, 340.6, 10660], skip_clearance_check=true), above the centre of the outward-wound MLOD box, 0.065 m above its top, then query_player_state twice: y 340.6000 both times, the second result 3.9 s after the teleport's (bridge ids 1164-1166); the same call at [4235, 340.6, 10660] above open ground: y 340.6000 twice, the second 3.3 s after (1168-1170), and the start_pos of the player_move issued 15 s after that teleport still read y 340.6000 (the client's PhysicsGetPositionWS at the move's start: addon/scripts/4_World/MCP_PlayerMove.c:540 in the DayZ_MCP bridge, file sha256 1d98c6e3c7d00531e38856a960401f5a358064189f58a1fbe7921cdd4a412708). player_move(angle_deg=0, speed walk, hold_s=0.5; released_by hold, applied_angle_deg 0) then query_player_state: above open ground y 338.4589, the ground (1171-1172); after teleports above the centre of each top, 0.065-0.069 m above it, y 340.5346 on the outward-wound MLOD box, 340.4813 on the outward-wound binarized box and 340.5633 on the inward-wound MLOD box, each 0.00003 m below spawn y + 2.000, where DayZPhysics.RayCastBullet hit the top, with the endpoint 0.70-0.75 m north of the centre and x unchanged, inside the 2 m top (1174-1184). Every query_player_state of these probes returned godmode 1. The server script log shows each of the four moves accepted and released. The idle non-fall was not separated between the bridge, godmode and the engine. The footprint and isolation conditions of the reading rule come from the cross-family review (round 1), not from a further measurement.",
+          "license": "MIT",
+          "source_hash": "f6ea7c616ef3c41dedb54dd8154d2826d7b76766caebd4aa382e401e42b97cfd",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-mcp-verify-stand-probe@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "One runtime_verified claim, CLAIM-ANIM-ROUTEC-FBX-INGAME, for the forward-raise run (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cbb11150) on skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md; CLAIM-ANIM-ROUTEC-RIG-FRAMES stays offline_tested. Evidence: C:/tmp/chiral-ingame-work/REPORT.md section 4.",
           "license": "MIT",
-          "source_hash": "eee573c3807b1b9600b7fa6299315d2d08549daa7cf65129c8300a1d97fc2aa9",
+          "source_hash": "19b8e6b8518842106b8ef785f6346b6dd2f6d241f9e92750f00bb81a003fa1b3",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
@@ -15448,7 +15478,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "eee573c3807b1b9600b7fa6299315d2d08549daa7cf65129c8300a1d97fc2aa9",
+      "output_hash": "19b8e6b8518842106b8ef785f6346b6dd2f6d241f9e92750f00bb81a003fa1b3",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
