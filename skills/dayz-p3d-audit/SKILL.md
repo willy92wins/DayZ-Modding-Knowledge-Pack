@@ -157,12 +157,13 @@ each killer (root cause, detection snippet, fix, caveats) →
    fallback; fires only for items without a proper Geometry LOD / broken `GetCollisionBox()`.
 8. **Incomplete Component Coverage** — every face of a collision LOD (proxy triangles aside),
    and every point those faces use, must belong to a `ComponentNN` selection with weight=1, one
-   component per closed, convex part, the components together covering the LOD. A face outside
-   every component collides with nothing, also next to covered ones: no LOD ray, no physics ray,
-   the player walks through it, and no log line says so (measured in game,
-   `references/killers-detail.md` §8). Never merge separate parts into one `Component01` to make
-   it cover everything: that component is no longer convex, and the one non-convex component
-   measured in game (a lever) collided only in part. py3d 1.9.0 `WARN_COMPONENT_COVERAGE`
+   component per closed, convex part, the components together covering the LOD. A closed part
+   left out of every component collides with nothing, also next to covered ones: no LOD ray, no
+   physics ray, the player walks through it, and no log line says so (measured in game on whole
+   parts; a part left out only in part was not measured; `references/killers-detail.md` §8).
+   Never merge separate parts into one `Component01` to make it cover everything: that component
+   is no longer convex, and the one non-convex component measured in game (a lever) collided only
+   in part. py3d 1.9.0 `WARN_COMPONENT_COVERAGE`
    counts the union of the `ComponentNN` selections, whatever the case, on the Geometry, View and
    Fire LODs, proxy triangles and points that no face uses left out; up to 1.8.0 (the pinned
    wheel) it counted `Component01` alone, on the Geometry LOD, and fired on a healthy

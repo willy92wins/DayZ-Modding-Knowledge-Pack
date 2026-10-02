@@ -287,11 +287,13 @@ for items without a proper Geometry LOD or with broken `GetCollisionBox()` data.
 
 Every face of a collision LOD (proxy triangles aside), and every point those faces use, must
 belong to a `ComponentNN` selection with weight=1: one component per closed, convex part
-(`dayz-model-pipeline` Rule 1), the components together covering the LOD. A face outside every
-component collides with nothing, also when the same LOD has other components: no `scene_raycast`
-hit in `geom`, `view` or `fire`, no `RayCastBullet` hit, the player walks through it, and no log
-line says so (measured in game, below). Never merge separate parts into one `Component01` to make
-it cover everything: a component that holds two separate parts is not convex.
+(`dayz-model-pipeline` Rule 1), the components together covering the LOD. A closed part left out
+of every component collides with nothing, also when the same LOD has other components: no
+`scene_raycast` hit in `geom`, `view` or `fire`, no `RayCastBullet` hit, the player walks through
+it, and no log line says so (measured in game on two such parts, below). A part left out only in
+part (one face of a box whose other faces are in a component, or faces whose points sit in one)
+was not measured. Never merge separate parts into one `Component01` to make it cover everything: a
+component that holds two separate parts is not convex.
 
 py3d 1.9.0 `WARN_COMPONENT_COVERAGE` (`_check_component_coverage`) reads the union of the
 `ComponentNN` selections, whatever the case, on the Geometry, View and Fire LODs: it counts the
@@ -301,10 +303,11 @@ a whole box under a proxy name counts as collision geometry) and points that no 
 counted. A LOD with no component at all is `ERR_COMPONENT_NAMING`'s finding (killer #2); one whose
 component selections are all empty is reported here, every face counted. py3d 1.9.0 raises it as a
 WARN, and its message says that a face left out beside covered ones was not measured: both predate
-the in-game A/B below, which measured that case. On the three door samples of the `dayz-doors`
-tutorial it is silent on `Simple_Door` and `Door_w_Button` and flags the Geometry and Fire LODs of
-`Expert_Mode`, whose lever (18 faces: selection `lever` in Geometry, `door1_open` in Fire) is in no
-component there, though the tutorial's text lists the lever among the parts that take up space.
+the in-game A/B below, which measured whole parts left out beside covered ones. On the three door
+samples of the `dayz-doors` tutorial it is silent on `Simple_Door` and `Door_w_Button` and flags
+the Geometry and Fire LODs of `Expert_Mode`, whose lever (18 faces: selection `lever` in Geometry,
+`door1_open` in Fire) is in no component there, though the tutorial's text lists the lever among
+the parts that take up space.
 
 **Measured in game** (2026-10-02, DayZDiag 1.29.163709, driven by dayz-mcp): a pair of 2 m boxes,
 A in `Component01` and B either in `Component02` or in no component (the two MLODs byte-identical
@@ -322,8 +325,10 @@ the component names); the engine ignores them. The tutorial's `Expert_Mode`, spa
 gave the lever no Geometry, Fire or physics hit (0/28), and a player walking into the lever's knob
 stopped on the block behind it. In its View LOD the lever is `Component09`, one closed piece that
 is not convex (an octagonal knob and a bar): only the knob answered (3/3) and the bar took none
-(0/9), so that non-convex component collided only in part. No RPT or script-log line named any of
-these models. Not measured: weapon fire, the action cursor, vehicles, DayZ 1.30 Exp.
+(0/9), so that non-convex component collided only in part; each collision LOD answered by its own
+components (the lever, a component in View only, was hit in View only). No RPT or script-log line
+named any of these models. Not measured: a part left out only in part, weapon fire, the action
+cursor, vehicles, DayZ 1.30 Exp.
 (claim: CLAIM-P3D-UNCOVERED-FACES-INGAME)
 
 Up to 1.8.0, the version of the pinned wheel, the check compared `Component01` alone with the

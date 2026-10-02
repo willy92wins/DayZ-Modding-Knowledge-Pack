@@ -31,9 +31,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- `dayz-p3d-audit` killer #8 (`SKILL.md` and `references/killers-detail.md` §8): a face outside
-  every `ComponentNN` collides with nothing also when the same LOD has other components, measured
-  in game instead of expected (2026-10-02, DayZDiag 1.29.163709). A pair of 2 m boxes, A in
+- `dayz-p3d-audit` killer #8 (`SKILL.md` and `references/killers-detail.md` §8): a closed part
+  left out of every `ComponentNN` collides with nothing also when the same LOD has other
+  components, measured in game instead of expected (2026-10-02, DayZDiag 1.29.163709); a part left
+  out only in part was not measured. A pair of 2 m boxes, A in
   `Component01` and B in `Component02` or in no component (byte-identical apart from those three
   tags), packed binarized and unbinarized, as `HouseNoDestruct` and as an `Inventory_Base` item:
   B in no component took 0 of 46 rays (`geom`, `view`, `fire` and the physics-world bullet ray)
@@ -44,8 +45,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   tutorial's text puts it in Geometry: in game the lever took no Geometry, Fire or physics ray (0
   of 28) and a player walking into its knob stopped on the block behind it. In View Geometry the
   lever is `Component09`, one non-convex piece (knob and bar), and only the knob answered rays (3
-  of 3, the bar 0 of 9). The reference gives the repair (components in Geometry and Fire, the knob
-  and the bar each its own convex component) and a pre-export checklist line; the P3D is unchanged.
+  of 3, the bar 0 of 9). The reference gives the repair (the knob and the bar rebuilt as two
+  closed, convex components in every collision LOD, each closed on the side they share, kept in
+  `door1_open` and in `lever`, which the tutorial's View and Fire LODs lack; not tested in game)
+  and a pre-export checklist line; the P3D is unchanged.
   py3d's `WARN_COMPONENT_COVERAGE` severity and message are unchanged (its message still says the
   case was not measured).
 - `dayz-p3d-audit` "Absolute winding check", rule 6: the kit box's missing collision is measured

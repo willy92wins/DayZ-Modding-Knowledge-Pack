@@ -56,11 +56,11 @@ The tutorial's text puts the lever in Geometry (**Expert tutorial:11**), but its
 | View Geometry | `Component01`..`09` | `door1_open`, and `Component09` holding the same 18 faces |
 | Fire Geometry | `Component01`..`08` | `door1_open`, in no component |
 
-The lever is one closed piece that is not convex: an octagonal knob and a bar (its convex hull holds 1.4 times its volume). py3d 1.9.0 flags the Geometry and Fire LODs (`WARN_COMPONENT_COVERAGE`, 18 of 48 and 18 of 66 faces); on the Simple Door and Door with Button P3Ds it finds nothing to report.
+The lever is one closed piece that is not convex: an octagonal knob and a bar (its convex hull holds 1.4 times its volume). py3d 1.9.0 flags the Geometry and Fire LODs (`WARN_COMPONENT_COVERAGE`, 18 of 48 and 18 of 66 faces); on the Simple Door and Door with Button P3Ds the coverage check reports nothing.
 
-In game (DayZDiag 1.29.163709, the P3D packed binarized and unbinarized and spawned as a `HouseNoDestruct`), no Geometry, Fire or physics ray touched the lever, and a player walking into the knob was stopped by the block behind it, not by the knob. In View Geometry only the knob answered rays; the bar took none. Copied as is, the pattern therefore gives a lever that players and bullets pass through, and whose View Geometry component answers rays only at the knob (the action cursor itself was not tested). The general rule, measured in the same run on first-party boxes, is `dayz-p3d-audit` killer #8.
+In game (DayZDiag 1.29.163709, the P3D packed binarized and unbinarized and spawned as a `HouseNoDestruct`), no Geometry, Fire or physics ray touched the lever, and a player walking into the knob was stopped by the block behind it, not by the knob. In View Geometry only the knob answered rays; the bar took none. Copied as is, the pattern therefore gives a lever that no Geometry, Fire or physics query hits and that does not stop a walking player (weapon fire was not tested), and whose View Geometry component answers rays only at the knob (the action cursor was not tested either). The general rule, measured in the same run on first-party boxes, is `dayz-p3d-audit` killer #8.
 
-To make the lever solid in a model of your own, put it in components in Geometry and Fire Geometry, and split it into convex parts in all three collision LODs: the knob and the bar each as its own `ComponentNN`, never the whole lever as one. Then run [Object Builder validation](#object-builder-validation) again.
+To make the lever solid in a model of your own, rebuild it in Geometry, View Geometry and Fire Geometry as two closed, convex solids, the knob and the bar, each its own `ComponentNN`. Splitting the existing faces into two selections is not enough: the knob and the bar share the octagon's flat side, and no face closes it, so each group would have four open edges. Close that side on each part with a face of its own, wound like the rest of that part (inward), and give each part its own points there, so the two stay separate solids (left as one connected piece, the lever became the single non-convex `Component09` of the tutorial's View LOD). Keep both parts in the lever's other selections: `door1_open` in View Geometry, the Doors source, and `lever`, the selection `model.cfg` animates. The tutorial's View and Fire LODs have no `lever` selection, so the lever there would stay put while its animation runs (read from the files, not tested in game). Then run [Object Builder validation](#object-builder-validation) again; this repair itself was not tested in game.
 
 ## View Geometry LOD
 
@@ -163,7 +163,7 @@ Menu paths/tips: **Simple_Door Readme.txt:12-14**. The tutorial warns about non-
 - [ ] Visible animated parts named in Resolution LOD.
 - [ ] Only space-occupying parts in Geometry.
 - [ ] Geometry components found and named.
-- [ ] No Geometry, View or Fire Geometry face outside every `ComponentNN` (py3d 1.9.0 `WARN_COMPONENT_COVERAGE`): in game such a face collides with nothing.
+- [ ] No Geometry, View or Fire Geometry face outside every `ComponentNN` (py3d 1.9.0 `WARN_COMPONENT_COVERAGE`): in game a part left out of every component collided with nothing.
 - [ ] Geometry/View/Fire shapes closed and convex.
 - [ ] View Geometry contains actual source interaction selection.
 - [ ] View Geometry provides intended occlusion.
