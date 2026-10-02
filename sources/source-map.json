@@ -634,9 +634,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: [Unreleased] Removed entry: dayz-doors no longer ships the nine files of novoGOD's Doors_Buttons_Lesson tutorial or the six verbatim copies, and the provenance labels are corrected. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "e45788aa7be0c94a19f0bac6d8e6cbd6f577b57b8a76fc58ab7cb73cd1b1b13c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03: Unreleased Fixed entry for the dayz-model-pipeline references/lods-and-geometry.md py3d block of the GLB/glTF source case, which reversed proxy triangles against the rule above it; the block now keeps the single triangle of each proxy-named selection, reverses every other face once, refuses a Face object listed twice, and a sentence says what P3D.transform() has already done. Measured offline with py3d 1.9.0 and on 411 MLODs as recorded on the lods-and-geometry.md input of the same change. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "8034fcd87c40eb884c32b2af66a968c07cc893a5fcfa9142d7565169a838df74",
+          "source_hash": "ea8f3a2955140760cacfd8a6ae3aff6715329fb6229773cbef803e11d8e4618b",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-glb-proxy-loop@2026-10-03",
@@ -644,7 +654,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8034fcd87c40eb884c32b2af66a968c07cc893a5fcfa9142d7565169a838df74",
+      "output_hash": "ea8f3a2955140760cacfd8a6ae3aff6715329fb6229773cbef803e11d8e4618b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -977,10 +987,20 @@
           "source_path": "THIRD_PARTY_NOTICES.md",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: research-only table gains novoGOD's Doors_Buttons_Lesson (no license or redistribution grant observed; not redistributed since 2026-10-02; v1.3.0 to v1.5.0 shipped its nine example files mislabelled as author-owned MIT). Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "94b1233bd2d3eee992ca9033f71f637d61408c2bebfafe28981e702d700cd318",
+          "source_id": "pack-r21-authored",
+          "source_path": "THIRD_PARTY_NOTICES.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "003ae2301f7d045bc8645367c42b6753c909fbe86294c960210f18ba1c80a340",
+      "output_hash": "94b1233bd2d3eee992ca9033f71f637d61408c2bebfafe28981e702d700cd318",
       "output_path": "THIRD_PARTY_NOTICES.md",
       "routing_artifact_id": "root/third-party-notices",
       "verification_level": "cross_checked"
@@ -1051,10 +1071,20 @@
           "source_path": "compatibility-matrix.md",
           "source_revision": "release-v1.4.0@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: dayz-doors row: the example models are novoGOD's tutorial's, not author MIT assets; the evidence column points at worked-examples.md instead of the removed assets/. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "a442e911552e82864c89756ca04e78532a86a4dc9c3e9d288aa5c61c546fc6fd",
+          "source_id": "pack-r21-authored",
+          "source_path": "compatibility-matrix.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5e3b67ec1caaa1c456f6e195e8809e6046547b1c68891ede278e5faed9fc2b18",
+      "output_hash": "a442e911552e82864c89756ca04e78532a86a4dc9c3e9d288aa5c61c546fc6fd",
       "output_path": "compatibility-matrix.md",
       "routing_artifact_id": "root/compatibility-matrix",
       "verification_level": "cross_checked"
@@ -6704,209 +6734,21 @@
           "source_path": "skills/dayz-doors/SKILL.md",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: the skill's three worked patterns are the examples of novoGOD's door tutorial Doors_Buttons_Lesson (source novogod-doors-buttons-lesson; its archive holds no license or permission text), shipped since v1.3.0 under assets/ as author-owned MIT. The 'Exact source folders are in assets/' sentence now names the tutorial and says the Pack does not ship its files; the Expert Mode gotcha points at worked-examples.md; the reference link reads 'Worked examples'. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "1237c0d015bd0bd9e19d2068259c74edbd42edf2e9d39ab5a0290a2b1a23ec20",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b9c46b2de6bacf92375460e4d6385b68f30c929754466f76fd4c696bcd8fd86a",
+      "output_hash": "1237c0d015bd0bd9e19d2068259c74edbd42edf2e9d39ab5a0290a2b1a23ec20",
       "output_path": "skills/dayz-doors/SKILL.md",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door/simple_door.cfg",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "efd1833a1e73c01e54f0ea4d48b07e0652a51dc88d60b68df4db1aaee522a1fb",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door/Simple_Door.cfg",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "42d6dbd3c404772179133147c835b6d54764ed36748da5206d8b39a3c8b7a0d1",
-      "output_path": "skills/dayz-doors/assets/Door/Simple_Door.cfg",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door/simple_door.p3d",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "82afac6899fa1e0a61cd3e9aaa20dea9c9e1d4b5e0fab7cea4842a9c323c5d1c",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door/Simple_Door.p3d",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "82afac6899fa1e0a61cd3e9aaa20dea9c9e1d4b5e0fab7cea4842a9c323c5d1c",
-      "output_path": "skills/dayz-doors/assets/Door/Simple_Door.p3d",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door/config.cpp",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "a7e0b0f032803a9d979594dfa671ae2a132ab2490bdb2c7d79cb25734276d349",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door/config.cpp",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "a7e0b0f032803a9d979594dfa671ae2a132ab2490bdb2c7d79cb25734276d349",
-      "output_path": "skills/dayz-doors/assets/Door/config.cpp",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door_w_button/door_w_button.cfg",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "26acbfb88a0acc97fd314e4541d4e2d23bcd6a1eebe46b30bc2cf5571dd59d1f",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door_w_Button/Door_w_Button.cfg",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "c62b4d93accc202385a0720759e1ca8fe01234dd7ae00aba775ab91408b4653e",
-      "output_path": "skills/dayz-doors/assets/Door_w_Button/Door_w_Button.cfg",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door_w_button/door_w_button.p3d",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "97349b3ff1f18a44a81a3b7db17e7761d62bbd7c218b979cd4e64d973979396e",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door_w_Button/Door_w_Button.p3d",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "97349b3ff1f18a44a81a3b7db17e7761d62bbd7c218b979cd4e64d973979396e",
-      "output_path": "skills/dayz-doors/assets/Door_w_Button/Door_w_Button.p3d",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door_w_button/config.cpp",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "42d8e317c1b2dbd5f6cf4c7e13a7c4b427b9544a0830f4a6269e124a19d0b1d1",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door_w_Button/config.cpp",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "57b64de1c0c8a7fc233763e460010e8af095b3490b7fa5052ae7be1b3fb36e1e",
-      "output_path": "skills/dayz-doors/assets/Door_w_Button/config.cpp",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/expert_mode/expert_mode.cfg",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "1fb7e8247d3b883696c1d3946d6f37bcd6eda2517fe682bd255fe26eecad4748",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Expert_Mode/Expert_Mode.cfg",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "3857f448bd2d6ec15f2c4e6ff65d0ff46d0963c2c8885f4d8fba6aec9bfc16be",
-      "output_path": "skills/dayz-doors/assets/Expert_Mode/Expert_Mode.cfg",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/expert_mode/expert_mode.p3d",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "18ab0ac254b080bd87dbbd54b63c50c983e71dc4be390d8cb214740b0c36dee0",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Expert_Mode/Expert_Mode.p3d",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "18ab0ac254b080bd87dbbd54b63c50c983e71dc4be390d8cb214740b0c36dee0",
-      "output_path": "skills/dayz-doors/assets/Expert_Mode/Expert_Mode.p3d",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/expert_mode/config.cpp",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "8aba001c007a3f0fc32bb75119c06cdff5e06dec2638c3ebf5a64d589ce4f2f0",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Expert_Mode/config.cpp",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "5ec4af9b9c9e1b7d19b75137687b498fc591d458d5df52a700babd1efefca465",
-      "output_path": "skills/dayz-doors/assets/Expert_Mode/config.cpp",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
     },
@@ -6924,10 +6766,20 @@
           "source_path": "dayz-doors/references/door-model-cfg-and-config.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: the evidence convention defines Verified against the tutorial's example files instead of shipped assets/ files and no longer calls worked-examples.md [EXACT] copies; every assets/ citation names the tutorial's own path (Doors_Buttons_Lesson/<pattern>/<file>, same line numbers: the archive's files differ from the removed copies only in line endings, mixed LF/CRLF); 'shipped' wording now says the tutorial's; the Sources section lists the tutorial as not shipped. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "8a6c18a914744fb5d7862ddf7a0765a6a075303e342f74ae097739b062f41720",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/references/door-model-cfg-and-config.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "52df3e6e4409f6c04d10a4feb378722e1d5761d0547925633bdb4a016c2a91dc",
+      "output_hash": "8a6c18a914744fb5d7862ddf7a0765a6a075303e342f74ae097739b062f41720",
       "output_path": "skills/dayz-doors/references/door-model-cfg-and-config.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -6956,10 +6808,20 @@
           "source_path": "skills/dayz-doors/references/lods-and-object-builder.md",
           "source_revision": "kp-update-doors-expert-lever@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: the three pattern 'Mapping' citations name the tutorial's paths (Doors_Buttons_Lesson/...) instead of assets/; line numbers unchanged. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "87aeed3d7d0126a84d06d1a68e852b352a8dd2be7c9519bc3cad9e6b20d6d030",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/references/lods-and-object-builder.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f8b0d898510656937fc71ddc41348ebaabb1c4d10650fdea934e3b38e4665143",
+      "output_hash": "87aeed3d7d0126a84d06d1a68e852b352a8dd2be7c9519bc3cad9e6b20d6d030",
       "output_path": "skills/dayz-doors/references/lods-and-object-builder.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -6971,17 +6833,27 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack. Corrected 2026-10-02: 'author-owned MIT' was wrong for this input as a whole. Its six BEGIN/END VERBATIM blocks copy the model.cfg and config.cpp files of novoGOD's Doors_Buttons_Lesson tutorial (source novogod-doors-buttons-lesson, no license or redistribution grant observed); the 2026-10-02 merge input removes them, and the current output is first-party.",
+          "license": "MIT for the first-party prose; its six BEGIN/END VERBATIM blocks are novoGOD's Doors_Buttons_Lesson model.cfg/config.cpp files (no license/redistribution grant observed)",
           "source_hash": "192decc7d1b8efb49e5ab2f5dc16bdc7732b533071366e2bd0cf9aa02721e3d8",
           "source_id": "installed-skills",
           "source_path": "dayz-doors/references/worked-examples.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: the six BEGIN/END VERBATIM copies of the tutorial's model.cfg and config.cpp files are removed; each pattern is described in first-party tables (bones, animations with phase windows and turns, Doors entries) that cite the tutorial's files by path and line; a new opening section says where the examples come from. The Cross-pattern diff section and everything from 'Building locks (DayZ 1.30 Exp)' on are byte-identical. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "54ba7fdf56d0d29774b6353d21f1cd8cd6d0c6e43c9c37fab4138d79a8f8a6cb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/references/worked-examples.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5dcace4ea8154047980953a0b3911f1ce5198cc0c405a8f837fd2ce2c5daefa9",
+      "output_hash": "54ba7fdf56d0d29774b6353d21f1cd8cd6d0c6e43c9c37fab4138d79a8f8a6cb",
       "output_path": "skills/dayz-doors/references/worked-examples.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -30127,6 +29999,110 @@
       "source_id": "installed-skills",
       "source_path": "dayz-animation-pipeline/wheels/py3d-1.4.0-py3-none-any.whl",
       "source_revision": "filesystem@2026-08-17"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door/Simple_Door.cfg (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "efd1833a1e73c01e54f0ea4d48b07e0652a51dc88d60b68df4db1aaee522a1fb",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door/Simple_Door.cfg",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door/Simple_Door.p3d (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "82afac6899fa1e0a61cd3e9aaa20dea9c9e1d4b5e0fab7cea4842a9c323c5d1c",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door/Simple_Door.p3d",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door/config.cpp (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "a7e0b0f032803a9d979594dfa671ae2a132ab2490bdb2c7d79cb25734276d349",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door/config.cpp",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Tutorial text by novoGOD; the archive holds no license or permission text. Never shipped; dayz-doors paraphrases its guidance in first-party words and cites it by file name and line.",
+      "reason": "license_restricted",
+      "source_hash": "32472cd62238c120efcd90db4e8f718e26b8a453ee39f812e62a246c8bd335af",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door_w_Button Readme.txt",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door_w_Button/Door_w_Button.cfg (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "26acbfb88a0acc97fd314e4541d4e2d23bcd6a1eebe46b30bc2cf5571dd59d1f",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door_w_Button/Door_w_Button.cfg",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door_w_Button/Door_w_Button.p3d (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "97349b3ff1f18a44a81a3b7db17e7761d62bbd7c218b979cd4e64d973979396e",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door_w_Button/Door_w_Button.p3d",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door_w_Button/config.cpp (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "42d8e317c1b2dbd5f6cf4c7e13a7c4b427b9544a0830f4a6269e124a19d0b1d1",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door_w_Button/config.cpp",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Expert_Mode/Expert_Mode.cfg (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "1fb7e8247d3b883696c1d3946d6f37bcd6eda2517fe682bd255fe26eecad4748",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Expert_Mode/Expert_Mode.cfg",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Expert_Mode/Expert_Mode.p3d (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "18ab0ac254b080bd87dbbd54b63c50c983e71dc4be390d8cb214740b0c36dee0",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Expert_Mode/Expert_Mode.p3d",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Expert_Mode/config.cpp (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "8aba001c007a3f0fc32bb75119c06cdff5e06dec2638c3ebf5a64d589ce4f2f0",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Expert_Mode/config.cpp",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Tutorial text by novoGOD; the archive holds no license or permission text. Never shipped; dayz-doors paraphrases its guidance in first-party words and cites it by file name and line.",
+      "reason": "license_restricted",
+      "source_hash": "3746f8ba2a2ac247b32dc9c79f24151b08abb0ca6b62134a024c609c1c77f1ce",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Simple_Door Readme.txt",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Tutorial text by novoGOD; the archive holds no license or permission text. Never shipped; dayz-doors paraphrases its guidance in first-party words and cites it by file name and line.",
+      "reason": "license_restricted",
+      "source_hash": "027d475d2ea0b50dfd7f318aae56321c37238d764bace857fb6ad618b06fee95",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/WELCOME TO novoGODS Shit Door Tutorial.txt",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Tutorial text by novoGOD; the archive holds no license or permission text. Never shipped; dayz-doors paraphrases its guidance in first-party words and cites it by file name and line.",
+      "reason": "license_restricted",
+      "source_hash": "b4d760aa854024f4526324a6befadba3a96509c351bc1597cf393b7d087cf732",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Welcome to novoGODs Expert_Mode Door mod.txt",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
     }
   ],
   "generated_artifacts": [
@@ -30330,6 +30306,13 @@
       "public_locator": "https://dzconfig.com/wiki",
       "revision": "dzconfig-wiki-harvest@2026-09-07",
       "source_id": "dzconfig-wiki-2026-09"
+    },
+    {
+      "kind": "archive",
+      "license": "No license/redistribution grant observed",
+      "notes": "novoGOD's door tutorial Doors_Buttons_Lesson (three example models, each with model.cfg and config.cpp, and four texts), a Discord attachment (the attachment ID in the download's Zone.Identifier dates the upload to 2025-04-23 15:09 UTC; the members' timestamps are 2025-04-23); the archive holds no license or permission text. Reference only: dayz-doors describes its examples in first-party words and cites them by path and line. v1.3.0 to v1.5.0 shipped its nine example files as author-owned MIT by mistake; removed 2026-10-02. The signed attachment URL is deliberately not recorded.",
+      "revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757",
+      "source_id": "novogod-doors-buttons-lesson"
     }
   ]
 }
