@@ -296,28 +296,40 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   missing textures (no solid magenta/white/black), plausible proportions, without inverted faces
   or holes (winding). Hole/missing-face from one angle and solid from opposite = inverted
   winding.
-- **Collision**: `scene_raycast(from_pos, to)` aimed at object from ≥2 angles (for
+- **Collision**: `scene_raycast(from_pos, to)` (default `method="rvproxy"`: LOD intersection in the
+  `intersect` mode) aimed at object from ≥2 angles (for
   buildings: multi-point — walls, corners, floor). PASS = rays that should hit yield
   `hit=true` with `object_type`/`object_class` of object. No hit where it should hit = ViewGeo/FireGeo
   missing or improperly resolved (LODs).
 - **Physics and player collision** (added 2026-10-02, measured on DayZDiag 1.29.163709)
   [EXACT][CLAIM-MCPV-COLLISION-PROBES]: `scene_raycast(method="bullet", radius=0)` casts
-  `DayZPhysics.RayCastBullet` against the physics world (layers BUILDING, DOOR, VEHICLE, ROADWAY,
-  TERRAIN, ITEM_SMALL, ITEM_LARGE, FENCE; `MCPBridge.c:2983-3004`), so it answers whether a physics
-  shape exists, which the default `rvproxy` (LOD intersection) does not. For player collision,
-  `player_teleport` 4 m in front of the face, then `player_move(to=<a point 4 m past the object>,
-  speed="walk", hold_s=10)`, and read the end position with `query_player_state` (server). Blocked
-  reads `arrived:false`, `released_by:"hold"`, the player about 0.36 m before the face; free reads
-  `arrived:true` (open ground: 7.5 m in about 5 s). Walk once on open ground as the free reference.
+  `DayZPhysics.RayCastBullet` in the server's physics world, restricted to the layers BUILDING,
+  DOOR, VEHICLE, ROADWAY, TERRAIN, ITEM_SMALL, ITEM_LARGE and FENCE (`MCPBridge.c:2983-3004`); the
+  default `rvproxy` intersects the LODs instead. Count a hit only when `object_type` is the target
+  and the position is where its face should be: a vertical ray through a box without collision
+  returns `hit=1` on the terrain. A miss alone does not prove the object has no physics shape (its
+  layer may be outside the mask), and a hit does not mean the player collides (the `WoodenCrate`
+  below).
+  For player collision the run teleported the player 4 m from the object's centre and called
+  `player_move(to=<4 m past the centre, on the far side>, speed="walk", hold_s=10)`, then read the
+  end position with `query_player_state` (server). Blocked means `arrived:false` AND the player
+  stopped just before the face, after the full hold (about 0.36 m before it on that run's 2 m
+  boxes); `released_by:"hold"` only says the hold expired, and `arrived:false` anywhere else is
+  INCONCLUSIVE. Free means `arrived:true` (7.5 m in about 5 s); walk the same distance and bearing on
+  open ground as the free reference. Every walk of that run went straight ahead
+  (`applied_angle_deg` 0, northward), so it did not exercise the override's angle sign.
   A walk-through alone does not prove missing collision geometry: a vanilla `WoodenCrate`
   (`item_small`, low) took every ray and did not stop the player, while a `HescoBox` (`item_large`)
   stopped it; that run did not separate the crate's layer from its height.
-- **Axis-aligned fixtures: spawn with `rotation=64`** (added 2026-10-02, same run): the default
-  `rotation=0` (RF_DEFAULT, the config's placement) yawed an `Inventory_Base` item about 10 degrees,
-  which moved a side-face reading by 0.22 m across 1.2 m of the face; `rotation=64` spawned it as
-  built (face readings exact, normal (-2.1, 0, 0) on an x face). `scripts/3_game/ce/centraleconomy.c`
-  names 64 both `RF_IGNORE` ("object will spawn as model was created", :56) and `RF_RANDOMROT`
-  (:62); the run observed the first. Use it whenever rays or walks assume the object's axes.
+- **Axis-aligned test fixtures: try `rotation=64`, then check the pose** (added 2026-10-02, same
+  run): `rotation=0` leaves the bridge's `RF_DEFAULT` (512, the config's placement), which yawed an
+  `Inventory_Base` probe about 10 degrees (a side-face reading moved 0.22 m across 1.2 m of the face);
+  `rotation=64` spawned the same box with its faces on the world axes (equal readings at both
+  offsets, normal (-2.1, 0, 0)), on flat concrete. `scripts/3_game/ce/centraleconomy.c` gives 64 two
+  names, `RF_IGNORE` ("object will spawn as model was created", :56) and `RF_RANDOMROT` (:62); the
+  result agrees with the first comment and does not settle how the engine reads the value. Before
+  trusting face coordinates, read two parallel rays on one face: equal readings mean the face is on
+  an axis. It may change an item's configured resting side; slopes and settling were not measured.
 - **Placement**: `telemetry_read(mode="object_at", type=<classname>, pos=<spawn_pos>, radius=2)`
   → `found=true`, `pos` ~ spawn, reasonable `orientation`. PASS = not buried or floating
   (cross-reference `pos.y` with visuals).
@@ -376,7 +388,9 @@ Key takeaways:
 |---|---|---|
 | `world_spawn` | classname loads | `unknown_type` / `spawn_failed` → mod not mounted |
 | `camera_set` + `capture_screenshot` | render: visible, textures, winding, proportions | invisible / magenta / holes |
-| `scene_raycast` | collision (ViewGeo/FireGeo) | no hit where it should hit |
+| `scene_raycast` (default `rvproxy`) | LOD collision (Geometry/ViewGeo/FireGeo, by `intersect`) | no hit where it should hit |
+| `scene_raycast(method="bullet")` | a physics shape on the masked layers (static-object playbook) | no hit on the target where it should hit; a miss alone is not proof |
+| `player_move` walk + `query_player_state` | the player stopped by the object (static-object playbook) | `arrived:true` through it; a walk-through alone is not proof |
 | `telemetry_read` (object_at) | placement, orientation, attachments, health | `found=false` / buried pos |
 | `bridge_status` | peer liveness (gate) | `last_poll_age_s=null` → bridge down |
 | `world_time_set` / `world_weather_set` | reproducible scene for captures | — |
