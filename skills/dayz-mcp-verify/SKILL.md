@@ -1018,3 +1018,23 @@ Rules for a driving bench:
 
 Would close the gap: a get-in with a foreign vehicle 2 m away on a build with `d065b0e`, and a
 5-car run with `flags=8389668` killed halfway, checking that nothing persists.
+
+## Gating a PR through an external executor: rewrite TOML with its escaping, check baseline↔PBO drift first (added 2026-10-02)
+
+Two defects, measured in one aborted attempt to gate an external PR by temporarily repointing the
+source path in a gate executor's TOML config:
+
+1. **A programmatic swap of Windows paths inside TOML edits TOML escapes, not path bytes.** In a
+   basic (double-quoted) string every backslash is escaped (`\\`). Writing single backslashes turns
+   `\U` into an invalid unicode escape, and the parser stops with `TOMLDecodeError: Invalid hex
+   value` before anything is evaluated: the run died in preflight. A hash that matches the planned
+   bytes does not prove the TOML parses. Load the result with `tomllib` in a fresh process and
+   compare the decoded path with the intended one before handing it over: a single backslash before
+   `t` or `n` parses fine, into a tab or a newline. Literal (single-quoted) strings take backslashes
+   as they are.
+2. **Check the deployed PBO against the sealed baseline before planning the gate.** The executor
+   validated the deployed PBO against a sealed baseline hash. When they differ, the gate needs the
+   owner's baseline, PBO and source aligned first; no repointing or rebuild resolves it. Abort path:
+   preflight rejects → restore the TOML and the PBO byte for byte → freeze the evidence → escalate.
+
+Source: one gate run aborted in preflight; the clean abort preserved the owner's PBO.

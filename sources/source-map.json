@@ -364,9 +364,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: a lesson written in place into the installed dayz-mcp-verify on 2026-10-02 (one aborted attempt to gate an external PR by repointing the source path in a gate executor's TOML config: backslash escaping in TOML basic strings broke the parse with TOMLDecodeError in preflight; the deployed PBO differed from the sealed baseline), ported here in English and without private names, by the owner's decision, before promoting this repository over that installed copy. TOML literal strings and the tomllib check follow the TOML specification. Cross-family review by Codex gpt-6.1-sol, one round: SOUND-with-fixes (generalise the executor's field names rather than publish them; after parsing, compare the decoded path, since a single backslash before t or n parses into a tab or a newline), both applied. The reviewer rebuilt the last receipt's projection and found the live tree equal to it except for this section. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "dfbce21aff6de981b95c014c9c6ddc4dfc4ee758a83d98c1c52adc6a5348ecda",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-mcp-verify-port@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Unreleased Fixed entry for the dayz-characters in-game A/B (in-game A/B on LFInfectedBig, 2026-10-02, DayZDiag 1.29.163709, driven by dayz-mcp: three builds from one Blender-space dump with an F on the chest; the Rule 12 build (py3d.blender_to_dayz) is solid, reads the F correctly and is lit like a vanilla ZmbM_SoldierNormal; the Rule 12 build with outward normals and the shipped det +1 recipe (equal to the shipped p3d) are lit inverted, the latter also mirrored; in the ODOL only the inward-normal build keeps vanilla's normal-to-winding relation (0.2 %, vanilla 0.3-0.4 %, the others 99.8 %); dayz-p3d-audit's absolute check passes the Rule 12 build (99.3 %, -0.109) and fails the other two (0.7-0.8 %); check_dayz_winding.py fails the Rule 12 build. Attack animation not observed). Authored by Claude (Anthropic) on the owner's request; PR reviewed cross-family before merge.",
           "license": "MIT",
-          "source_hash": "67ca6c31e424442c925018d5fbe2a0f31869e3cf8961ae4d60d6dfdca9931cb7",
+          "source_hash": "97360f3190694251f35b3e28011fc2bd70fe3d17eb19a0112a5d73675dd89d96",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-characters-ab@2026-10-02",
@@ -374,7 +384,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "67ca6c31e424442c925018d5fbe2a0f31869e3cf8961ae4d60d6dfdca9931cb7",
+      "output_hash": "97360f3190694251f35b3e28011fc2bd70fe3d17eb19a0112a5d73675dd89d96",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2807,10 +2817,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-receipts@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill/dayz-mcp-verify re-pinned for both logical targets (one physical directory) at the live digest measured on 2026-10-02 with packctl tree_digest: the last receipt's state plus the one section written in place that day, which this commit ports. Owner's decision: port and promote.",
+          "license": "MIT",
+          "source_hash": "430158df2b66cb68ff0c832552b6bd8ed82b910818904ebb084113d9f5767f63",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-mcp-verify-port@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "1e9d38a775acac412367c69f355d0cd06088cd45dac5c5685abe40b9d4dea4e2",
+      "output_hash": "430158df2b66cb68ff0c832552b6bd8ed82b910818904ebb084113d9f5767f63",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -6788,10 +6808,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-sp450-451@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: a lesson written in place into the installed dayz-mcp-verify on 2026-10-02 (one aborted attempt to gate an external PR by repointing the source path in a gate executor's TOML config: backslash escaping in TOML basic strings broke the parse with TOMLDecodeError in preflight; the deployed PBO differed from the sealed baseline), ported here in English and without private names, by the owner's decision, before promoting this repository over that installed copy. TOML literal strings and the tomllib check follow the TOML specification. Cross-family review by Codex gpt-6.1-sol, one round: SOUND-with-fixes (generalise the executor's field names rather than publish them; after parsing, compare the decoded path, since a single backslash before t or n parses into a tab or a newline), both applied. The reviewer rebuilt the last receipt's projection and found the live tree equal to it except for this section. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1b999ed8104f44dd0820ab35a15933dbe84a0342f5455321c525cfcc2bfc6481",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-mcp-verify-port@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0aa06dcf7e295bdb6d82cb96f9e92ac4f9042c128ed7d88fcfa8355fd37e470f",
+      "output_hash": "1b999ed8104f44dd0820ab35a15933dbe84a0342f5455321c525cfcc2bfc6481",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
