@@ -95,7 +95,7 @@ near-vanilla `.anm` → SEAnim, feed as `--rest-pose` for rebasing, and iterate
 in-game. Plan the rest-pose round-trip from day one.
 
 SEAnim local translations are in **cm** (rig meters × 100) — also from the
-reference offsets.
+reference offsets. *Corrected 2026-10-02: see "Route C bone-frame maps, per rig" at the end of this file.*
 
 ## Viewer architecture (for maintenance)
 
@@ -190,6 +190,9 @@ sliders; polish-verify 12/12; self-test 47 checks PASS):
     for full-body action anims (jam/unjam/melee): the A6_SR2M golpe (2026-06-30) confirmed
     full-body goes Route A (JD plugin -> `.txa` -> Workbench Register&Import -> `.anm`).
     Use Route C only for weapon-bone/partial tracks.
+    That quat convention is the JD rig's (this viewer's rig); this skill's
+    `scripts/seanim_export.py` reads the rig and gives the FBX rig `(-vx,-vz,-vy,vw)`
+    instead (see "Route C bone-frame maps, per rig" below).
 
 ### Authoring a weapon GRIP with the viewer (verified in-game on the SR2M)
 
@@ -208,3 +211,63 @@ fingers + `_Dummy` (verified from `sr2m_grip.seanim`, 43 bones). A usable export
 SYNTHESIZE those 8 targets from the viewer FK pose. ROI is dubious (working mods reuse
 vanilla ikposes + geometry). Design + open questions:
 `WeaponAnimPipeline_dev/reviews/2026-07-05-spec-modo-ikpose.md`.
+
+## Route C bone-frame maps, per rig (2026-10-02)
+
+*Corrects "Bone-frame convention gap" above:* a global change of basis does
+reconcile the viewer with DayZ, one per rig; that section's 0.88 best fit cannot be
+reproduced from the record. The bone axis is not +Y in both rigs: child offsets
+lie on ±X in `rig_dayz.json` (the FBX rig) and on ±Y in `jd_dayz.json`.
+`--rest-pose` does not rebase rotations; it only masks bones.
+
+`scripts/seanim_export.py` reads the rig family from the rest offsets. Bone axis:
+chain children of `Left*` bones sit on + of one axis, children of `Right*` bones
+on − (Y in the JD rig, X in the FBX rig). Only anatomical chains count (shoulder,
+arm, forearm, hand, finger, leg and foot bones and their `Roll` bones), so helpers
+such as `RightHand_Dummy`, which the JD rig holds at the grip, and its child
+`Weapon_Root` do not. Roll: through the chosen map, `RightShoulder − LeftShoulder`
+(in `Spine3`) and `RightHandIndex1 − RightHandRing` (in each hand) must lie within
+2° of vanilla's direction across the bone; both rigs read within 0.07°. It refuses
+any other rig (a Blender-native one, one mixing frames, one rolled about its bone
+axes by 2° or more on `Spine3` or a hand), an anim bone missing from the rig, and a
+`--rest-pose` file that does not exist. Unseen: a smaller roll, which tilts a
+rotation of angle α by up to `4·asin(sin(α/2)·sin(roll/2))` (about 2.8° for a 90°
+turn under a 2° roll), and a roll confined to bones those pairs do not reach. Both
+maps are det −1: offsets go through `M`, quaternion vector parts through `−M`, `w`
+unchanged.
+
+| Rig | Rotation `(x,y,z,w)` → | Rest offset `(x,y,z)` m → cm (×100) | Status |
+|---|---|---|---|
+| JD Master Rig, `jd_dayz.json` | `(−y,−z,x,w)` | `(y,z,−x)` | calibrated 2026-06-29 against a DayZATool-extracted reference (`JD_SVD_Fire` `.txa` through the plugin vs the `.anm` extract), exact to 0.00° over 73 bone/frame pairs (`WeaponAnimPipeline_dev/tools/seanim_export.py:62-64`) |
+| BI FBX rig, `rig_dayz.json` from `scripts/build_rig_dayz.py` | `(−x,−z,−y,w)` | `(x,z,y)` | derived offline 2026-10-02: the calibrated map after the turn measured below; no rotation pair, never played in game |
+
+[EXACT][CLAIM-ANIM-ROUTEC-RIG-FRAMES] Measured offline 2026-10-02 (the FBX rig rebuilt by this skill's `fbx_extract.py` + `build_rig_dayz.py`). The FBX rig's bone frames are the JD rig's turned 90° about Z, `q_fbx = (y,−x,z,w)_jd`: 113 of 114 rest rotations agree within 1° (the root `Pelvis`, relative to the world, differs by that turn) and 109 of 113 rest offsets point the same way within 2.6° (the four face eyelids differ); the FBX rig is 1.2 % larger. Against DayZATool extracts of vanilla clips, rest offsets through the JD map match 78 of 78 bones of `p_erc_attackl_inplace_01_ras` within 5° (median 0.00°, length ratio 1.000); the FBX rig through that same map matches 0 of 77 (median 90°), through its own map 77 of 77 (median 0.00°, ratio 1.012); `aks74u_reference` splits the same way (35 of 36, 0 of 34, 34 of 34). Rotations: against frame 0 of the vanilla `p_1hd_erc_idle_low` (absolute: rest rotations of 180° read 175-180° there), the FBX rig's rest through its own map lands within 0.87° per bone of where the JD map lands the JD rig (60 bones); through the JD map, six bones land 90° or more off (`RightShoulder` 176.9°). Regression test: `tests/test_seanim_export.py`.
+
+What the maps do not cover:
+
+- The root (`EntityPosition`, `Pelvis`, any bone without a parent) is relative to
+  the viewer world. Neither map applies to it; the script warns when it exports one.
+- In game, the JD map has played one full-body action, the A6_SR2M "golpe"
+  (2026-06-30). With the root, pelvis and legs in, the player flopped. Masked to
+  the vanilla bone set, the player stood, but the weapon went to the back:
+  `RightHand_Dummy` was emitted at the rig's non-bind offset. Head and body came
+  right through Route A. The close-out attributes that to the per-bone convention
+  (`A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14`), but the
+  switch changed more than the rotation map, so the cause is not isolated. Route C
+  stays for weapon-bone and partial tracks; in-game playback is the gate.
+- `--rest-pose <vanilla.seanim>` emits only the reference's bones (in game this
+  fixed the flop). Every position comes from the rig. The reference's do not: DayZATool
+  marks most bones of vanilla action extracts RELATIVE through SEAnim bone
+  modifiers (61 of 73 in `p_erc_jam_pm73_ras`, `Spine` to `Head` at `(0,0,0)`),
+  and in SEAnim a RELATIVE translation is an offset from rest, inherited by child
+  bones, while this script writes an ABSOLUTE clip (`seanim_writer.read_seanim`
+  drops modifiers; `tools/dayz-animation-formats` reads them). That is the
+  "Convention split" of `weapon-anim-blender-complete.md`. The project copy takes
+  the reference's positions and writes those zeros as offsets; that part is not
+  ported. A bone the viewer rig holds off bind is written off bind: the JD rig's
+  `RightHand_Dummy`, which the viewer moved to the grip (`(51.8, −29.3, 4.8)` cm
+  through the map), sent the weapon to the back in game. The confirmed golpe dropped
+  it, and the `Weapon_*` bones, from the clip; leave them out of the reference.
+- The project copy's per-frame `Weapon_*` positions (bolt slide) are not ported:
+  this skill's viewer does not export them, and the script warns and ignores
+  per-frame positions in an anim.
