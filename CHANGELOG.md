@@ -5,21 +5,40 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Deprecated
+
+- py3d `BLENDER_TO_DAYZ`: same value, now also published as `ROT_X_NEG90`, and every read
+  raises a `FutureWarning` pointing at `blender_to_dayz()` (see Fixed).
+
 ### Fixed
 
+- py3d 1.8.0: the documented Blender → DayZ path mirrored the model. `transform(BLENDER_TO_DAYZ)`
+  applied the det=+1 rotation `(x, z, -y)`; Blender is right-handed and DayZ left-handed, so the
+  model came out mirrored, and that call alone also inside-out. Measured in game on 2026-10-01
+  (DayZDiag 1.29.163709) with one chiral model written three ways (the test behind Rule 12 in
+  1.4.0). The new `blender_to_dayz(p3d)` applies the det=-1 swap `(x, z, y)`, keeps the face
+  order and negates the normals; it writes, byte for byte, the MLOD that rendered solid and read
+  correctly. A second probe the same day measured what the first left out: collision LODs
+  converted with it register raycasts in `geom`, `view` and `fire` (the uncorrected det=+1 map:
+  none), and static proxies drawn in Blender as py3d canonical triangles come out with the ODOL
+  frames of `add_proxy(space="engine")` and render in the pose drawn.
+  Wheel `py3d_dayz-1.8.0-py3-none-any.whl`, SHA-256
+  `e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304`; no installed skill tree
+  vendors the wheel any more, and the site-packages install follows the merge.
 - Rig handedness: the det=+1 Blender→DayZ maps that Rule 12 retired were still taught on the
   character, clothing and animation routes. `dayz-characters` (`character-rigging.md` §6): the
   official rig's `R⁻¹ = (x,z,-y)` lands in the FBX's own right-handed frame, not in the DayZ bind,
-  so a rigged mesh exports with Rule 12's `(x,z,y)`; this explains LFInfectedBig walking backward
-  with `(x,z,-y)` and mirrored with `(-x,z,y)`. `check_dayz_winding.py` predates Rule 12 and fails
-  a correct export (measured on the Rule 12 probe); the gate to use instead is named.
-  `dayz-clothing`: the "rotate 180° + swap L/R" worn fix keeps a mirror (ArmorHneck's p3d was a
-  det=+1 export); the artist-handoff script `export_clothing_fbx.py` now uses the self-inverse
-  `(x,z,y)` (offline round trip exact, faces outward in Blender); `autofit-from-official-rig.md`
-  drops the face reversal and the mirrored-frame alternative. `dayz-animation-pipeline` and
-  `blender-animation`: the viewer's `(x,z,-y)` is a rotation into a right-handed frame and is
-  relabelled; geometry cross-references now point at Rule 12. Chiral in-game checks are
-  designed for each route, not run.
+  so a rigged mesh exports with Rule 12's `(x,z,y)`, the map of `py3d.blender_to_dayz()`; this
+  explains LFInfectedBig walking backward with `(x,z,-y)` and mirrored with `(-x,z,y)`.
+  `check_dayz_winding.py` predates Rule 12 and fails a correct export (measured on the Rule 12
+  probe); the gate to use instead is named. `dayz-clothing`: the "rotate 180° + swap L/R" worn
+  fix keeps a mirror (ArmorHneck's p3d was a det=+1 export); the artist-handoff script
+  `export_clothing_fbx.py` now uses the self-inverse `(x,z,y)` (offline round trip exact, faces
+  outward in Blender); `autofit-from-official-rig.md` drops the face reversal and the
+  mirrored-frame alternative. `dayz-animation-pipeline` and `blender-animation`: the viewer's
+  `(x,z,-y)` is a rotation into a right-handed frame and is relabelled; geometry
+  cross-references now point at Rule 12. Chiral in-game checks are designed for each route, not
+  run.
 
 ## [1.4.0] - 2026-10-01
 

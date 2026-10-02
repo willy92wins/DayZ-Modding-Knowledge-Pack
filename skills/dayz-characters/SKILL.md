@@ -165,7 +165,9 @@ in-game improvement.
 - **Valid deform gates, in order**: (1) in-game spawn — the real one; (2) Buldozer (BI model viewer, real
   engine skinning). The Blender armature pose-test is good only for gross "does a limb move at all" sanity.
 - **What DID hold up offline** (so the offline work isn't all waste): the winding gate `check_dayz_winding.py`
-  (encodes the in-game-confirmed rule), scale (f from armature span), orientation (T2), and **always LOOK at
+  (it held for the det +1 builds of that time; it fails a Rule 12 export that rendered correctly in a later
+  in-game test, see OFFLINE GATE below and `references/character-rigging.md` Stage B), scale (f from
+  armature span), orientation (T2), and **always LOOK at
   the REST SIDE/depth render** — a TPS conform to near-coplanar bone-midpoint targets flattened the mesh to
   paper (2D in-game); the flat side-view was in the render folder a whole build cycle before it was noticed.
 

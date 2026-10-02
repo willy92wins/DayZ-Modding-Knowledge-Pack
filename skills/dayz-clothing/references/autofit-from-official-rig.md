@@ -102,21 +102,28 @@ the four rounds did validate: sections 3-5 and 7 as a pipeline, and (j) as a mem
   `leftfoot` at x = +0.167: front -Z, left +X. The swap `(x, y, z)_blender <-> (x, z, y)_dayz`
   (det = -1, its own inverse) puts those toes at -Y, i.e. onto the rig.
 - Consequence: a garment fitted on `Male_body` returns to DayZ with that swap, faces in their
-  Blender order and normals negated (dayz-model-pipeline Rule 12, in-game test 2026-10-01). Until
-  2026-10-01 this item also asked for face-order reversal in every LOD, citing the pack's `from_bl`
-  + `rev()`; under Rule 12 that reversal turns a py3d export inside-out. Do NOT apply `py3d.BLENDER_TO_DAYZ` =
-  `(x, z, -y)`: it is det = +1 and mirrors. dayz-characters hit this on the same rig: `(x, z, -y)`
-  shipped LFInfectedBig walking backwards, and `(-x, z, y)` mirrored it (character-rigging.md §6).
+  Blender order and normals negated (dayz-model-pipeline Rule 12, in-game test 2026-10-01). For a
+  mesh with Blender's own winding (faces counter-clockwise seen from outside, outward normals)
+  that is `py3d.blender_to_dayz()` (py3d >= 1.8.0). Until 2026-10-01 this item also asked for
+  face-order reversal in every LOD, citing the pack's `from_bl` + `rev()`; under Rule 12 that
+  reversal turns a py3d export of such a mesh inside-out. [UNVERIFIED] `rev()` is right only for
+  a mesh whose faces already point inward in Blender, such as one that came in through the pack's
+  own `to_bl` + `rev()`. Do NOT apply the det = +1 `(x, z, -y)` (`py3d.ROT_X_NEG90`, formerly
+  `py3d.BLENDER_TO_DAYZ`, now deprecated): it mirrors. dayz-characters hit this on the same rig:
+  `(x, z, -y)` shipped LFInfectedBig walking backwards, and `(-x, z, y)` mirrored it
+  (character-rigging.md §6).
 - Until 2026-10-01 our worn tooling imported DayZ -> Blender with `(x, -z, y)`
   (`references/export_clothing_fbx.py`). That frame faced +Y with left at +X, a mirror image of
   the rig frame (the two differed by `y -> -y`). The script now uses the same swap, so the two
   frames are one. The alternative that used to stand here (mirror the rig into that frame, fit,
   export with `BLENDER_TO_DAYZ`) is withdrawn: it fits in a mirrored frame and exports with a
   det = +1 map, so anything with a side (text, a pocket, a buckle) ships reversed.
-- Before packing, run the anatomical facing test of SKILL.md CANONICAL WORN FRAME on the exported
-  p3d (killer #2). With weights transferred from `Male_body` it catches a det = +1 export, since
-  the selections then come from the true side; it cannot see a mirror once the L/R selections
-  have been swapped by hand (SKILL.md, chiral check).
+- Before packing, run the anatomical facing test of SKILL.md CANONICAL WORN FRAME and the
+  per-component winding check of dayz-model-pipeline Rule 18 (expected: cross product INWARD) on
+  the exported p3d (killer #2). With weights transferred from `Male_body` the facing test catches
+  a det = +1 export, since the selections then come from the true side; no winding check sees a
+  mirror, and the facing test cannot see one once the L/R selections have been swapped by hand
+  (SKILL.md, chiral check).
 
 ## 3. Landmarks: replacing `_real_dayz_rig_landmarks` [RUN 2026-09-01: works; mirrors addon.py:3853-3876]
 

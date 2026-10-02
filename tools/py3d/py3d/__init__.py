@@ -18,6 +18,8 @@ What this fork adds on top of upstream's MLOD codec:
 - Geometry helpers: `bbox`, `triangulate`, `set_selection`,
   `set_total_mass`, `set_memory_point`, and a proxy lifecycle
   (add / inspect / align / remove) with explicit raw<->engine frames.
+- `blender_to_dayz()`: a model authored in Blender converted to DayZ's
+  frame without mirroring it (measured in game; see its docstring).
 - `P3D.validate()`, a model validator that reports `Finding`s, and a CLI:
   `python -m py3d info|validate|diff`.
 - Recipe JSON (`to_dict` / `from_dict`) for inspection. See KNOWN-ISSUES:
@@ -45,9 +47,10 @@ import os
 import re
 import struct
 import tempfile
+import warnings
 
 
-__version__ = "1.7.0"
+__version__ = "1.8.0"
 IS_DAYZ_FORK = True
 
 _REQUIRED = object()
@@ -112,14 +115,48 @@ VISUAL_RESOLUTION_MAX = 1.0e3
 SHADOWVOLUME_RESOLUTION_MIN = 1.0e4
 SHADOWVOLUME_RESOLUTION_MAX = 2.0e4
 
-#: Blender Z-up -> DayZ Y-up, (x,y,z) -> (x,z,-y). det=+1, a proper
-#: rotation, so it does NOT invert winding - "always reverse after
-#: rotating" is the bug. Use: p3d.transform(py3d.BLENDER_TO_DAYZ).
-BLENDER_TO_DAYZ = (
+#: The rotation by -90 degrees about X, (x,y,z) -> (x,z,-y), det=+1.
+#: It is NOT a Blender -> DayZ conversion: Blender is right-handed and DayZ
+#: left-handed, so any det=+1 map from one to the other MIRRORS the model
+#: (measured in game 2026-10-01). For geometry authored in Blender call
+#: blender_to_dayz(). This rotation is right where the mirror cancels out,
+#: e.g. to undo a det=+1 DayZ -> Blender export such as (x,y,z) -> (x,-z,y).
+#: Until 1.8.0 it was published as BLENDER_TO_DAYZ, which is now a
+#: deprecated alias with the same value.
+ROT_X_NEG90 = (
     (1.0, 0.0, 0.0),
     (0.0, 0.0, 1.0),
     (0.0, -1.0, 0.0),
 )
+
+#: Blender -> DayZ coordinates, (x,y,z) -> (x,z,y), det=-1. Private on
+#: purpose: P3D.transform() with this matrix reverses every face, which
+#: leaves a Blender-authored model inside-out. blender_to_dayz() applies it
+#: and then puts faces and normals into the MLOD convention.
+_BLENDER_TO_DAYZ_AXES = (
+    (1.0, 0.0, 0.0),
+    (0.0, 0.0, 1.0),
+    (0.0, 1.0, 0.0),
+)
+
+
+def __getattr__(name):
+    # PEP 562 module attribute hook. BLENDER_TO_DAYZ keeps the value it
+    # always had, so code that relied on it gets the same geometry as
+    # before, and every read of it warns.
+    if name == "BLENDER_TO_DAYZ":
+        warnings.warn(
+            "py3d.BLENDER_TO_DAYZ is deprecated: it is the det=+1 rotation "
+            "(x,y,z)->(x,z,-y), and a model authored in Blender "
+            "(right-handed) comes out MIRRORED in DayZ (left-handed) "
+            "through it - measured in game 2026-10-01. For Blender-authored "
+            "geometry call py3d.blender_to_dayz(p3d) instead of "
+            "p3d.transform(...). The value is unchanged; to keep this exact "
+            "rotation, e.g. to undo a det=+1 (x,-z,y) export, use "
+            "py3d.ROT_X_NEG90.",
+            FutureWarning, stacklevel=2)
+        return ROT_X_NEG90
+    raise AttributeError("module %r has no attribute %r" % (__name__, name))
 
 #: Short aliases accepted by P3D.get_lod().
 LOD_KIND_ALIASES = {
@@ -2696,9 +2733,11 @@ class P3D:
     def transform(self, matrix):
         """Transform the WHOLE model in place with a 3x3 matrix.
 
-        Column-vector convention: new_i = sum_j matrix[i][j] * old_j. The
-        primary case is py3d.BLENDER_TO_DAYZ (Blender Z-up to DayZ Y-up,
-        (x,y,z) -> (x,z,-y), det=+1).
+        Column-vector convention: new_i = sum_j matrix[i][j] * old_j. It
+        moves a model within ONE frame. For geometry authored in Blender
+        call blender_to_dayz() instead: Blender and DayZ have opposite
+        handedness, so that conversion is a reflection AND a change of face
+        convention, which this generic method knows nothing about.
 
         Contract: axis permutations, rotations, reflections and uniform
         scale - that is, an orthogonal matrix times a scalar. Anything
@@ -2928,3 +2967,88 @@ class P3D:
                     "ERR_UNREADABLE_ROUNDTRIP", "ERROR", None,
                     "in-memory round-trip failed: %s" % e))
         return findings
+
+
+def blender_to_dayz(p3d):
+    """Convert a model authored in Blender's frame to DayZ's, in place.
+
+    Blender is right-handed: X right, Y depth, Z up, front at -Y. DayZ is
+    left-handed: X east, Y up, Z north. Keeping the SHAPE across a change of
+    handedness takes a reflection in the numbers, so points map
+    (x,y,z) -> (x,z,y), det=-1. A det=+1 rotation such as ROT_X_NEG90 (the
+    old BLENDER_TO_DAYZ) gives the mirror image instead: right size, right
+    way up, text reading backwards.
+
+    Faces keep their vertex order, and every normal is mapped and negated
+    (near-zero ones are only negated: see the last paragraph).
+    The input is what Blender stores: front faces counter-clockwise seen
+    from outside, so the vertex-order cross product points outward, and
+    outward normals. The reflection alone turns that cross product inward,
+    which is the MLOD convention - vertex-order cross product AND shading
+    normals point INWARD, measured against binarized vanilla models - so
+    the order stays and only the normals change sign. P3D.transform()
+    reverses every face for a det<0 matrix, which is right for a reflection
+    inside one frame and wrong here; this function undoes it.
+
+    Measured in game (DayZDiag 1.29.163709, 2026-10-01): one chiral model,
+    an "F" in relief on a plate, written three ways and binarized with
+    AddonBuilder.
+
+    - this conversion: solid, and the F reads correctly;
+    - ROT_X_NEG90, then every face reversed and every normal negated:
+      solid but MIRRORED;
+    - transform(ROT_X_NEG90) alone: inside-out AND mirrored.
+
+    Call it once, on geometry that is in Blender space, before adding
+    anything built in DayZ space - collision boxes, memory points in DayZ
+    coordinates, proxies placed with LOD.add_proxy(space="engine"): it
+    converts everything in the model, and a second call undoes the first
+    (normals then come back unit-length, as P3D.transform() leaves them).
+
+    Proxy triangles move like any other face - points mapped, vertex order
+    kept, normal negated - and nothing more. Measured the same day with
+    static proxies: a proxy drawn in Blender as this library's canonical
+    raw triangle (what LOD.add_proxy(space="raw") builds in Blender
+    coordinates, and what a DayZ raw triangle looks like after the swap)
+    comes out of binarize with the same engine frame as
+    LOD.add_proxy(space="engine") given the matching rotation, and renders
+    in the pose it had in Blender. A proxy drawn another way gets whatever
+    frame its triangle implies; check that one in the binarized file
+    against a model that works. Collision LODs converted with this
+    function register raycasts in all three collision modes; with
+    transform(ROT_X_NEG90) alone they do not.
+
+    Refuses, with ValueError and before changing anything, a model where
+    one Point object or one facenormals list is listed more than once -
+    shared between LODs, typically: P3D.transform() would map it once per
+    listing and leave it wrong without a word. Normals come out
+    unit-length, as P3D.transform() leaves them; degenerate (near-zero)
+    ones are kept as it keeps them, unmapped, and then negated. Does not
+    touch uv, sharp_edges, selections, properties, flags or mass. Returns
+    None.
+    """
+    seen_points = {}
+    seen_pools = {}
+    for i, lod in enumerate(p3d.lods):
+        pool = id(lod.facenormals)
+        if pool in seen_pools:
+            raise ValueError(
+                "blender_to_dayz: LOD %d and LOD %d share one facenormals "
+                "list, which would be mapped twice; give each LOD its own "
+                "list. Nothing was changed." % (seen_pools[pool], i))
+        seen_pools[pool] = i
+        for p in lod.points:
+            if id(p) in seen_points:
+                raise ValueError(
+                    "blender_to_dayz: one Point object is listed in LOD %d "
+                    "and again in LOD %d, so it would be moved twice; give "
+                    "each LOD its own points. Nothing was changed."
+                    % (seen_points[id(p)], i))
+            seen_points[id(p)] = i
+    p3d.transform(_BLENDER_TO_DAYZ_AXES)
+    for lod in p3d.lods:
+        for face in lod.faces:
+            face.vertices.reverse()
+        for i, n in enumerate(lod.facenormals):
+            lod.facenormals[i] = (-n[0], -n[1], -n[2])
+    return None

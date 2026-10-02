@@ -79,7 +79,10 @@ original survives intact. Verified both ways.
 
 It iterates per LOD and mutates `Point` objects in place, so a point present in
 two LODs is transformed once per LOD. `(0,1,0)` ends up at `(0,-1,0)` instead of
-`(0,0,-1)`, and `save(verify=True)` accepts the result.
+`(0,0,-1)`, and `save(verify=True)` accepts the result. A `facenormals` list
+shared between LODs is mapped once per LOD the same way. `blender_to_dayz()`,
+built on `transform()`, refuses both cases with `ValueError` before changing
+anything; `transform()` itself still does not.
 
 ### `make_double_sided()` breaks proxies
 
@@ -121,6 +124,56 @@ original, so a proxy selection goes from one face to two and
   accepted it and wrote byte-identical output. The guard tests list *identity*
   when the bug it targets is one of *length*. This is the fork's one true
   behavioural regression against upstream.
+- **`py3d.BLENDER_TO_DAYZ` is deprecated (1.8.0).** It keeps its value, the
+  det=+1 rotation now also published as `ROT_X_NEG90`, and every read of it
+  raises a `FutureWarning`. Because the warning comes from a module
+  `__getattr__`, the name is no longer in the module's namespace:
+  `from py3d import *` does not bring it in any more. `from py3d import
+  BLENDER_TO_DAYZ` still works, and warns. Listing it in an `__all__` would
+  bring it back, but then every `from py3d import *` would warn, twice, and
+  fail under `-W error`, even in code that never uses the name.
+
+## Blender → DayZ: what was measured
+
+Measured 2026-10-01 on DayZDiag 1.29.163709, so nobody has to re-run it. One
+chiral model — an "F" in relief on a plate, authored in Blender space with
+outward counter-clockwise faces and outward normals, a single visual LOD of 48
+triangles — was written three ways, binarized with AddonBuilder and looked at
+in game:
+
+| variant | how it was written | MLOD sha256 | in game |
+|---|---|---|---|
+| B | `blender_to_dayz()` | `f1be491df6304534...` | solid, the F reads correctly |
+| A | `transform(ROT_X_NEG90)`, every face reversed, every normal negated | `b08372a6248d826a...` | solid but mirrored |
+| C | `transform(ROT_X_NEG90)` alone | `ac5f0f77f6d93db9...` | inside-out and mirrored |
+
+`tests/test_s7_blender_to_dayz.py` rebuilds that model and asserts all three
+digests, so its chirality and winding checks run on the very bytes that were
+binarized. A and B differ only in the matrix, and A passes the winding
+checks - vertex order against normals, inward per box - on all 48 faces.
+
+A second probe the same day, binarized the same way and read with an ODOL
+reader independent of this library, covered what the first left out:
+
+- **Collision.** The F plate with Geometry, ViewGeometry and FireGeometry LODs,
+  one convex component per box. In the binarized file every component of the
+  B and A variants winds like vanilla `Motorbike_02` (outward, 48 of 48 per
+  LOD) and C the other way (0 of 48). In game, `scene_raycast` north to south
+  and south to north hit B and A in `geom`, `view` and `fire`, missed C in all
+  three, and hit a vanilla container used as control.
+- **Proxies.** Three static proxies drawn in Blender as canonical raw
+  triangles (identity, yaw +90, yaw +90 after a 30 degree tilt), converted with
+  the model: their binarized engine frames equal the ones worked out by hand
+  (aside = M x, up = M z, dir = M y, M the swap) and the ones
+  `add_proxy(space="engine")` writes for them; the same matrices through
+  `add_proxy(space="raw")` in DayZ space do not. In game the proxied F stood
+  in the pose drawn in Blender, and read correctly where it faced the camera
+  (the identity and the yawed proxy).
+
+Not covered, and not claimed: crew and wheel proxies of a driven vehicle,
+proxies drawn with another convention or as ambiguous (isosceles) triangles,
+player collision (only raycasts), and any model built partly in DayZ space
+before the conversion.
 
 ---
 
@@ -173,6 +226,15 @@ noise reads as signal.
 
 ## Fixed
 
+- **The documented Blender → DayZ path mirrored the model.** Up to 1.7.0,
+  `BLENDER_TO_DAYZ` was the det=+1 rotation `(x,y,z) -> (x,z,-y)` and
+  `p3d.transform(py3d.BLENDER_TO_DAYZ)` was the documented usage. Blender is
+  right-handed and DayZ left-handed, so every det=+1 map between the two
+  mirrors the model, and that call alone also leaves it inside-out (variant C
+  above). Symmetric test models hide a mirror, which is how it lasted. Now
+  `blender_to_dayz()` applies the det=-1 reflection `(x,y,z) -> (x,z,y)`,
+  keeps the face order and negates the normals; the old constant is
+  deprecated with its value unchanged (see Compatibility).
 - **Additional UV sets were dropped on save, and point-only LODs lost their
   `#UVSet#` tag.** `LOD.read` discarded every `#UVSet#`, and `LOD.write`
   emitted set 0 only, and only when the LOD had faces. Measured on a skinned

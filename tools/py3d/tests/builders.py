@@ -278,3 +278,57 @@ def build_multilod_v2_p3d(m):
     ])
     p3d.lods += [vis, geo, viewgeo, firegeo, mem]
     return p3d
+
+
+# The model of the in-game Blender -> DayZ test of 2026-10-01: an "F" in
+# relief on a plate, in Blender space (x right, y depth with the front at
+# -y, z up), every quad counter-clockwise seen from outside with an outward
+# normal. The texture strings are the ones that test wrote, so the bytes
+# match; no texture is read.
+CHIRAL_F_PLATE_TEXTURE = "dz\\data\\data\\beton1_co.paa"
+CHIRAL_F_GLYPH_TEXTURE = "dz\\data\\data\\black_co.paa"
+CHIRAL_F_BOXES = [
+    ((-0.60, 0.00, 0.00), (0.60, 0.05, 1.40), CHIRAL_F_PLATE_TEXTURE),
+    ((-0.35, -0.08, 0.15), (-0.20, 0.00, 1.25), CHIRAL_F_GLYPH_TEXTURE),
+    ((-0.20, -0.08, 1.10), (0.35, 0.00, 1.25), CHIRAL_F_GLYPH_TEXTURE),
+    ((-0.20, -0.08, 0.60), (0.20, 0.00, 0.75), CHIRAL_F_GLYPH_TEXTURE),
+]  # plate; then the F: stem on the left, top and middle arms reaching +x
+BOX_QUADS = [
+    ((0, 3, 2, 1), (0, 0, -1)), ((4, 5, 6, 7), (0, 0, 1)),
+    ((0, 1, 5, 4), (0, -1, 0)), ((2, 3, 7, 6), (0, 1, 0)),
+    ((3, 0, 4, 7), (-1, 0, 0)), ((1, 2, 6, 5), (1, 0, 0)),
+]
+QUAD_AS_TRIANGLES = (((0, 1, 2), ((0, 1), (1, 1), (1, 0))),
+                     ((0, 2, 3), ((0, 1), (1, 0), (0, 0))))
+
+
+def build_chiral_f_p3d(m):
+    """One visual LOD at resolution 0.0: 4 boxes of 8 points, 48 triangles."""
+    p3d = m.P3D()
+    lod = m.LOD()
+    lod.resolution = 0.0
+    for (x0, y0, z0), (x1, y1, z1), texture in CHIRAL_F_BOXES:
+        base = len(lod.points)
+        for c in [(x0, y0, z0), (x1, y0, z0), (x1, y1, z0), (x0, y1, z0),
+                  (x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)]:
+            p = m.Point()
+            p.coords = c
+            p.flags = 0
+            lod.points.append(p)
+        for quad, n in BOX_QUADS:
+            ni = len(lod.facenormals)
+            lod.facenormals.append(tuple(float(v) for v in n))
+            for tri, uvs in QUAD_AS_TRIANGLES:
+                fa = m.Face(lod.points, lod.facenormals)
+                fa.flags = 0
+                fa.texture = texture
+                fa.material = ""
+                for k, uv in zip(tri, uvs):
+                    v = m.Vertex(lod.points, lod.facenormals)
+                    v.point_index = base + quad[k]
+                    v.normal_index = ni
+                    v.uv = uv
+                    fa.vertices.append(v)
+                lod.faces.append(fa)
+    p3d.lods.append(lod)
+    return p3d

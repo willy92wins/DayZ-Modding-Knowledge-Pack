@@ -185,15 +185,21 @@ normals (`mesh.corner_normals[loop].vector`, transformed by `matrix_world.to_3x3
     section before relying on it for a release.
 - **Winding and normals follow Rule 12; do not reverse the faces.** Under `(x, z, y)` the Blender face order
   lands in the MLOD convention by itself (cross product inward, collision LODs included, as Rule 18 wants);
-  the shading normals are negated (MLOD stores them inward). The old "reverse every visual face" was right only under the det = +1 map, where it
-  hid the mirror (LFInfectedBig S6: that map without the reversal rendered inside-out). With py3d:
-  `P3D.transform(((1, 0, 0), (0, 0, 1), (0, 1, 0)))` maps points and normals and reverses every face
-  because det < 0. Reverse them back and negate the normal pool.
+  the shading normals are negated (MLOD stores them inward). The old "reverse every visual face" was right
+  only under the det = +1 map, where it hid the mirror (LFInfectedBig S6: that map without the reversal
+  rendered inside-out). With py3d ≥ 1.8.0, build the model from the Blender-space dump and call
+  `py3d.blender_to_dayz(model)` once, before adding anything built in DayZ space: it maps every LOD,
+  memory points included, keeps the face order and negates the normals. By hand: `P3D.transform(((1, 0, 0),
+  (0, 0, 1), (0, 1, 0)))` maps points and normals and reverses every face because det < 0; reverse them
+  back and negate the normal pool. `py3d.BLENDER_TO_DAYZ` is the old `(x, z, −y)`, deprecated in 1.8.0 and
+  kept as `py3d.ROT_X_NEG90`: not for this export.
 - **GATE — `check_dayz_winding.py` predates Rule 12 and fails a correct export.** It expects outward stored
   normals and `cross · normal < 0`, the state of the LFInfectedBig det = +1 build. [OFFLINE MEASURED
   2026-10-01] On the three MLODs of the Rule 12 in-game probe it exits 1 on all three. That includes the one
   that renders solid and reads correctly in game (`cross.normal_positive=1.00`, `normals_outward=0.00`).
-  Its fix hints ("reverse every face", "orient normals outward") would turn that model inside-out. Until the
+  Its fix hints ("reverse every face", "orient normals outward") would turn that model inside-out. The
+  probe had no variant with inward winding and OUTWARD normals (the state this gate passes), so it refutes
+  the gate's `cross · normal > 0 ⇒ inside-out`, not the normal sign of the builds the gate passed. Until the
   script is updated, gate the export with dayz-p3d-audit "Absolute winding check": normal agreement ≈ 100 %
   and a negative signed volume by winding, the production sign. On the probe that check passes both solid
   variants and fails the inside-out one; like every winding gate, it cannot see a mirror. A double-sided

@@ -161,18 +161,22 @@ armature (FBX drops loose vertex groups — verified: without an armature
 deformer the groups vanish on reimport; with it, round-trip keeps all 10
 groups at exact weight sums). Axis map DayZ→Blender: `(x, z, y)`, det −1 and
 its own inverse, so the return trip is the same map with faces in the order
-they come back and normals negated (dayz-model-pipeline Rule 12). The artist
-sees the garment like the official rig: Z up, front −Y, left +X, faces
-outward. [OFFLINE MEASURED 2026-10-01, ArmorHneck `_m`, Blender 5.1.1 + py3d
-1.7.0] FBX round trip back to DayZ exact to 2.7e-7 m with the same face order;
-`leftarm` centroid x = +0.34, pelvis/spine centroid y = −0.045; signed volume
-+0.026 in Blender, i.e. faces outward. Until 2026-10-01 the script used
-`(x, −z, y)` (det +1) with `py3d.BLENDER_TO_DAYZ` for the return. The artist
-then saw a mirror image (front +Y, left +X) with inward faces (signed volume
-−0.026), and only that exact inverse brought it back. A package made by the
-old script returns through `(x, z, −y)`, never through Rule 12, which would
-land it facing +Z, mirrored and inside-out. ALWAYS verify by reimporting the
-FBX in a clean scene (counts + vgroups + weight sums) before shipping.
+they come back and normals negated (dayz-model-pipeline Rule 12); with py3d
+≥ 1.8.0 that is `py3d.blender_to_dayz()` on the model rebuilt from the FBX in
+Blender coordinates. The artist sees the garment like the official rig: Z up,
+front −Y, left +X, faces outward. [OFFLINE MEASURED 2026-10-01, ArmorHneck
+`_m`, Blender 5.1.1 + py3d 1.7.0] FBX round trip back to DayZ exact to 2.7e-7 m
+with the same face order; `leftarm` centroid x = +0.34, pelvis/spine centroid
+y = −0.045; signed volume +0.026 in Blender, i.e. faces outward. Until
+2026-10-01 the script used `(x, −z, y)` (det +1) with `py3d.BLENDER_TO_DAYZ`
+for the return. The artist then saw a mirror image (front +Y, left +X) with
+inward faces (signed volume −0.026), and only that exact inverse brought it
+back. A package made by the old script returns through `(x, z, −y)`, i.e.
+`transform(py3d.ROT_X_NEG90)` (the name py3d 1.8.0 gives that matrix; the
+old `py3d.BLENDER_TO_DAYZ` still works but is deprecated and warns), never
+through Rule 12 or `py3d.blender_to_dayz()`, which would land it facing +Z,
+mirrored and inside-out. ALWAYS verify by reimporting the FBX in a clean
+scene (counts + vgroups + weight sums) before shipping.
 Package: FBX m/f + PNG + the MLOD p3ds + model.cfg + README from
 `references/LEEME-ARTISTA.template.md` (states the three do-not-undo fixes,
 the group-preservation rule, and the return flow). Scripts carry the
