@@ -159,17 +159,20 @@ import py3d
 # After the swap, applied to points and normals with every face's vertex order kept.
 # A proxy triangle, the only face of a 'proxy:<path>.<index>' selection when it is a
 # triangle, keeps its order. A selection under a proxy name with more faces, or a quad,
-# holds geometry: its faces are reversed with the rest.
-keep, faces = set(), set()
+# holds geometry: its faces are reversed with the rest. Weight 0 is not membership.
+keep, faces, lists = set(), set(), set()
 for lod in model.lods:
     for name, sel in lod.selections.items():
-        sel_faces = list(sel.faces)
+        sel_faces = [face for face, weight in sel.faces.items() if weight > 0]
         if (py3d.PROXY_NAME_RE.match(name) and len(sel_faces) == 1
                 and len(sel_faces[0].vertices) == 3):
             keep.add(sel_faces[0])
     for face in lod.faces:
-        if face in faces:  # listed twice, it would be reversed twice; nothing changed yet
-            raise ValueError("one Face object is listed twice: give each LOD its own faces")
+        # A Face listed twice, or two faces sharing one vertex list, would be reversed
+        # twice: refuse before anything changes.
+        if id(face.vertices) in lists:
+            raise ValueError("a vertex list is listed twice: give each face its own")
+        lists.add(id(face.vertices))
         faces.add(face)
 for face in faces - keep:
     face.vertices.reverse()
