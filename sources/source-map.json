@@ -604,9 +604,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Unreleased Changed entry for the BI FBX rig's Route C map played in game (forward LeftArm raise, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cbb11150): through scripts/seanim_export.py (rig read as fbx) the arm came out forward of the chest, through the JD map out to the side, each on the side offline FK gave it; one bone, rotations only. Evidence: C:/tmp/chiral-ingame-work/REPORT.md section 4.",
+          "license": "MIT",
+          "source_hash": "ad0c60ad7dcef9aa9f167b645ae2121180ac061eac1f16af1b7d76d6b2d53221",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Unreleased Changed entry for the 1.9.0 wheel pin and the skill notes that followed it, and a Fixed entry for the applicator's earlier-py3d_dayz-wheel defect the review found. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
           "license": "MIT",
-          "source_hash": "88e027f4fdc201ab86cd91d4bae72dcfd014c07b782dd82f884d9bc6c549b267",
+          "source_hash": "bb080f811188bc1d45ffe591f9e21622ffb2cfd30228750591ad7a294f409e0d",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
@@ -614,7 +624,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "88e027f4fdc201ab86cd91d4bae72dcfd014c07b782dd82f884d9bc6c549b267",
+      "output_hash": "bb080f811188bc1d45ffe591f9e21622ffb2cfd30228750591ad7a294f409e0d",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3926,10 +3936,20 @@
           "source_path": "skills/blender-animation/references/dayz-handoff.md",
           "source_revision": "kp-update-seanim-handedness@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "In game, DayZDiag 1.29.163709, 2026-10-02 20:49-20:56, one dayz-mcp run (cbb11150) on project DayZ_MCP (Chernarus, 08:31, client with textures); pass/fail criteria written before the run (C:/tmp/chiral-ingame-work/FWD_TEST_PLAN.md). LeftArm alone keyed on animation_rig_character.fbx in Blender 5.1.1 (C:/tmp/chiral-ingame-work/anim/bl_fwdraise.py; rest local rotations equal to the viewer rig's on 114 bones), straight ahead (the rig's -Y front) at 20 deg above horizontal, a 115.8 deg turn; local quaternion (-0.320817, -0.733844, -0.079651, 0.593469). FA: WeaponAnimPipeline_dev tools/seanim_export.py (sha256 6383fa03..., literal map (-y,-z,x,w)); FB: this Pack's skills/dayz-animation-pipeline/scripts/seanim_export.py (sha256 e697fcf0..., as on main 30a5f49; printed 'rig frame: fbx (derived map)', map (-x,-z,-y,w)); both with --rest-pose set to the DayZATool v1.3 extract of DZ/anims/anm/player/moves/1handed/p_1hd_erc_idle_low.anm. Each LeftArm track spliced alone into that extract with its 60 relative bone modifiers kept (anim/splice_fwd.py: each track equals its map of the Blender quaternion to 0.0000 deg and nothing else differs), DayZATool --generate-anim (re-extract within 0.0035 deg and 0.0015 cm), child .asi of player_main_1h_fruit.asi on Locomotion.Erc.Idle* registered with AddItemInHandsProfileIK on Apple subclasses KP_ChiralAnim_FA / KP_ChiralAnim_FB (both peers printed FA=848 FB=849), held in the right hand through world_spawn + hands_take. Captures, front, left side and overhead: through the FBX map the left arm extended forward of the chest, slightly above horizontal; through the literal map it stuck out to the character's left, a little behind the shoulder line; a second take of each agreed; the vanilla idle round trip showed the vanilla standing pose. Offline FK on the vanilla idle chain (anim/fwd_predict2.py): FBX map (0.241, 0.249, 0.938), forward and 14 deg up; literal map (-0.928, -0.277, -0.248), to the side and 16 deg down; front read as +Z of the clip's SEAnim space from its toes, elbows and knees (anim/front_check.py). Elevation was not measured from the captures. Evidence: C:/tmp/chiral-ingame-work/REPORT.md section 4, shots/capture_20261002_205201..205444 and fwd_raise_contact_sheet.png, logs/run_cbb11150.",
+          "license": "MIT",
+          "source_hash": "2ddf25abb82a1550d336687dfaca644a3ab645e7dfc74d7d286887a30c2a9648",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-animation/references/dayz-handoff.md",
+          "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "f47ee689aa91eb3896bbaa161871bbcb030599d6da3ff2f0d422d189192884a5",
+      "output_hash": "2ddf25abb82a1550d336687dfaca644a3ab645e7dfc74d7d286887a30c2a9648",
       "output_path": "skills/blender-animation/references/dayz-handoff.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -4694,10 +4714,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
           "source_revision": "kp-update-seanim-handedness@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "In game, DayZDiag 1.29.163709, 2026-10-02 20:49-20:56, one dayz-mcp run (cbb11150) on project DayZ_MCP (Chernarus, 08:31, client with textures); pass/fail criteria written before the run (C:/tmp/chiral-ingame-work/FWD_TEST_PLAN.md). LeftArm alone keyed on animation_rig_character.fbx in Blender 5.1.1 (C:/tmp/chiral-ingame-work/anim/bl_fwdraise.py; rest local rotations equal to the viewer rig's on 114 bones), straight ahead (the rig's -Y front) at 20 deg above horizontal, a 115.8 deg turn; local quaternion (-0.320817, -0.733844, -0.079651, 0.593469). FA: WeaponAnimPipeline_dev tools/seanim_export.py (sha256 6383fa03..., literal map (-y,-z,x,w)); FB: this Pack's skills/dayz-animation-pipeline/scripts/seanim_export.py (sha256 e697fcf0..., as on main 30a5f49; printed 'rig frame: fbx (derived map)', map (-x,-z,-y,w)); both with --rest-pose set to the DayZATool v1.3 extract of DZ/anims/anm/player/moves/1handed/p_1hd_erc_idle_low.anm. Each LeftArm track spliced alone into that extract with its 60 relative bone modifiers kept (anim/splice_fwd.py: each track equals its map of the Blender quaternion to 0.0000 deg and nothing else differs), DayZATool --generate-anim (re-extract within 0.0035 deg and 0.0015 cm), child .asi of player_main_1h_fruit.asi on Locomotion.Erc.Idle* registered with AddItemInHandsProfileIK on Apple subclasses KP_ChiralAnim_FA / KP_ChiralAnim_FB (both peers printed FA=848 FB=849), held in the right hand through world_spawn + hands_take. Captures, front, left side and overhead: through the FBX map the left arm extended forward of the chest, slightly above horizontal; through the literal map it stuck out to the character's left, a little behind the shoulder line; a second take of each agreed; the vanilla idle round trip showed the vanilla standing pose. Offline FK on the vanilla idle chain (anim/fwd_predict2.py): FBX map (0.241, 0.249, 0.938), forward and 14 deg up; literal map (-0.928, -0.277, -0.248), to the side and 16 deg down; front read as +Z of the clip's SEAnim space from its toes, elbows and knees (anim/front_check.py). Elevation was not measured from the captures. Evidence: C:/tmp/chiral-ingame-work/REPORT.md section 4, shots/capture_20261002_205201..205444 and fwd_raise_contact_sheet.png, logs/run_cbb11150.",
+          "license": "MIT",
+          "source_hash": "96c6854b7669f9ed1c391a505acc0fb5fa59c8aec8234d8545cd479f89f4ce54",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
+          "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "4991ac4f13df89d7b7314f61725eb98def3b4c5285c622391170ab6315e09c96",
+      "output_hash": "96c6854b7669f9ed1c391a505acc0fb5fa59c8aec8234d8545cd479f89f4ce54",
       "output_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5080,10 +5110,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
           "source_revision": "kp-update-seanim-handedness@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "In game, DayZDiag 1.29.163709, 2026-10-02 20:49-20:56, one dayz-mcp run (cbb11150) on project DayZ_MCP (Chernarus, 08:31, client with textures); pass/fail criteria written before the run (C:/tmp/chiral-ingame-work/FWD_TEST_PLAN.md). LeftArm alone keyed on animation_rig_character.fbx in Blender 5.1.1 (C:/tmp/chiral-ingame-work/anim/bl_fwdraise.py; rest local rotations equal to the viewer rig's on 114 bones), straight ahead (the rig's -Y front) at 20 deg above horizontal, a 115.8 deg turn; local quaternion (-0.320817, -0.733844, -0.079651, 0.593469). FA: WeaponAnimPipeline_dev tools/seanim_export.py (sha256 6383fa03..., literal map (-y,-z,x,w)); FB: this Pack's skills/dayz-animation-pipeline/scripts/seanim_export.py (sha256 e697fcf0..., as on main 30a5f49; printed 'rig frame: fbx (derived map)', map (-x,-z,-y,w)); both with --rest-pose set to the DayZATool v1.3 extract of DZ/anims/anm/player/moves/1handed/p_1hd_erc_idle_low.anm. Each LeftArm track spliced alone into that extract with its 60 relative bone modifiers kept (anim/splice_fwd.py: each track equals its map of the Blender quaternion to 0.0000 deg and nothing else differs), DayZATool --generate-anim (re-extract within 0.0035 deg and 0.0015 cm), child .asi of player_main_1h_fruit.asi on Locomotion.Erc.Idle* registered with AddItemInHandsProfileIK on Apple subclasses KP_ChiralAnim_FA / KP_ChiralAnim_FB (both peers printed FA=848 FB=849), held in the right hand through world_spawn + hands_take. Captures, front, left side and overhead: through the FBX map the left arm extended forward of the chest, slightly above horizontal; through the literal map it stuck out to the character's left, a little behind the shoulder line; a second take of each agreed; the vanilla idle round trip showed the vanilla standing pose. Offline FK on the vanilla idle chain (anim/fwd_predict2.py): FBX map (0.241, 0.249, 0.938), forward and 14 deg up; literal map (-0.928, -0.277, -0.248), to the side and 16 deg down; front read as +Z of the clip's SEAnim space from its toes, elbows and knees (anim/front_check.py). Elevation was not measured from the captures. Evidence: C:/tmp/chiral-ingame-work/REPORT.md section 4, shots/capture_20261002_205201..205444 and fwd_raise_contact_sheet.png, logs/run_cbb11150.",
+          "license": "MIT",
+          "source_hash": "9c503188e4ffcda8126f1b0c72e6612c23af67e1aadef6490096b16f13c4dc0c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+          "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "bf0bd07bf296def6476c06315572e8cf35d3847b3399726c37a64b8d5c8cc370",
+      "output_hash": "9c503188e4ffcda8126f1b0c72e6612c23af67e1aadef6490096b16f13c4dc0c",
       "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5328,10 +5368,20 @@
           "source_path": "skills/dayz-animation-pipeline/scripts/seanim_export.py",
           "source_revision": "kp-update-seanim-handedness@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "In game, DayZDiag 1.29.163709, 2026-10-02 20:49-20:56, one dayz-mcp run (cbb11150) on project DayZ_MCP (Chernarus, 08:31, client with textures); pass/fail criteria written before the run (C:/tmp/chiral-ingame-work/FWD_TEST_PLAN.md). LeftArm alone keyed on animation_rig_character.fbx in Blender 5.1.1 (C:/tmp/chiral-ingame-work/anim/bl_fwdraise.py; rest local rotations equal to the viewer rig's on 114 bones), straight ahead (the rig's -Y front) at 20 deg above horizontal, a 115.8 deg turn; local quaternion (-0.320817, -0.733844, -0.079651, 0.593469). FA: WeaponAnimPipeline_dev tools/seanim_export.py (sha256 6383fa03..., literal map (-y,-z,x,w)); FB: this Pack's skills/dayz-animation-pipeline/scripts/seanim_export.py (sha256 e697fcf0..., as on main 30a5f49; printed 'rig frame: fbx (derived map)', map (-x,-z,-y,w)); both with --rest-pose set to the DayZATool v1.3 extract of DZ/anims/anm/player/moves/1handed/p_1hd_erc_idle_low.anm. Each LeftArm track spliced alone into that extract with its 60 relative bone modifiers kept (anim/splice_fwd.py: each track equals its map of the Blender quaternion to 0.0000 deg and nothing else differs), DayZATool --generate-anim (re-extract within 0.0035 deg and 0.0015 cm), child .asi of player_main_1h_fruit.asi on Locomotion.Erc.Idle* registered with AddItemInHandsProfileIK on Apple subclasses KP_ChiralAnim_FA / KP_ChiralAnim_FB (both peers printed FA=848 FB=849), held in the right hand through world_spawn + hands_take. Captures, front, left side and overhead: through the FBX map the left arm extended forward of the chest, slightly above horizontal; through the literal map it stuck out to the character's left, a little behind the shoulder line; a second take of each agreed; the vanilla idle round trip showed the vanilla standing pose. Offline FK on the vanilla idle chain (anim/fwd_predict2.py): FBX map (0.241, 0.249, 0.938), forward and 14 deg up; literal map (-0.928, -0.277, -0.248), to the side and 16 deg down; front read as +Z of the clip's SEAnim space from its toes, elbows and knees (anim/front_check.py). Elevation was not measured from the captures. Evidence: C:/tmp/chiral-ingame-work/REPORT.md section 4, shots/capture_20261002_205201..205444 and fwd_raise_contact_sheet.png, logs/run_cbb11150.",
+          "license": "MIT",
+          "source_hash": "34ebadc99db8b606a4c7ec2c6f0d34c769703a5943ea95fee08cd74729d23051",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/scripts/seanim_export.py",
+          "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "e697fcf0afedbe3a9dcee50dc4906f28942ef8aa04f4b71d229632ebed3a6f53",
+      "output_hash": "34ebadc99db8b606a4c7ec2c6f0d34c769703a5943ea95fee08cd74729d23051",
       "output_path": "skills/dayz-animation-pipeline/scripts/seanim_export.py",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -15598,9 +15648,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "One runtime_verified claim, CLAIM-ANIM-ROUTEC-FBX-INGAME, for the forward-raise run (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cbb11150) on skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md; CLAIM-ANIM-ROUTEC-RIG-FRAMES stays offline_tested. Evidence: C:/tmp/chiral-ingame-work/REPORT.md section 4.",
+          "license": "MIT",
+          "source_hash": "c2067d19dccee8b3d771464ecaedf6ed9d65753f2d0a358e52c4227f20582463",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "see files",
           "license": "MIT",
-          "source_hash": "e478081209000cb74679ba07f6732035f310c91fe6ad91175b8b9babac447da8",
+          "source_hash": "76bc6d7c99eefdce64ce514029b5158ef84b885778c1e088f4f52459fccd4d6b",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
@@ -15608,7 +15668,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e478081209000cb74679ba07f6732035f310c91fe6ad91175b8b9babac447da8",
+      "output_hash": "76bc6d7c99eefdce64ce514029b5158ef84b885778c1e088f4f52459fccd4d6b",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
