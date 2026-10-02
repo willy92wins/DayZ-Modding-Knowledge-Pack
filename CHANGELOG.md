@@ -18,6 +18,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   test fixtures, `rotation=64` spawned a box with its faces on the world axes where the default
   `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the yaw with two parallel rays and the
   direction of the returned normal before trusting face coordinates.
+- `dayz-mcp-verify` static-object playbook: a standing-on-top reading of the physics body, next to
+  the walk-into probe, from a later run (2026-10-02, DayZDiag 1.29.163709). A teleported player
+  left idle does not fall: after `player_teleport` above a 2 m box's top or above open ground, the
+  server kept the teleport height over 3-4 s, and above open ground the client still held it 15 s
+  later. A short `player_move(angle_deg=0, speed="walk", hold_s=0.5)` before `query_player_state`
+  applies it: above open ground the player dropped to the ground, and on two outward-wound boxes
+  and an inward-wound one it stayed at the top's height (godmode on, the DayZ_MCP default). A
+  reading counts only from the centre of an isolated top and with the endpoint still inside the
+  top's footprint; anything else is inconclusive, and the move is kept short so the player does not
+  walk off the top.
 
 ### Changed
 

@@ -333,6 +333,31 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   a yaw (unequal readings) but not a tilt, so also check that the returned `normal`, read as a
   direction, lies along the axis (the run read (-2.1, 0, 0)), and read the fixture again a few seconds
   later. It may change an item's configured resting side; slopes and settling were not measured.
+- **Standing on top: move the player before reading its height** (added 2026-10-02, measured on
+  DayZDiag 1.29.163709 in a later run, on 2 m boxes) [EXACT][CLAIM-MCPV-STAND-PROBE]: a second
+  reading of the object's physics body next to the walk-into probe above, on its top instead of a
+  side face. An idle player is not a probe. After
+  `player_teleport(pos=[x, <top + 0.07>, z], skip_clearance_check=true)` the player kept the
+  teleport height (y 340.6000) and did not fall, on a box top and above open ground alike: the
+  server read it twice over 3-4 s (`query_player_state`), and above open ground the client's
+  physics position (the `start_pos` that `player_move` reports) still read it 15 s after the
+  teleport (the worn-items section below saw the same after a teleport to y=160). Every
+  `query_player_state` of these probes read godmode on, the DayZ_MCP default; the run did not
+  separate the bridge, godmode and the engine as the cause. A short move applies the fall: the run
+  teleported the player above the centre of each top, called
+  `player_move(angle_deg=0, speed="walk", hold_s=0.5)`, then `query_player_state`. Above open
+  ground the player dropped to the ground (y 340.6000 to 338.459); on the boxes, three
+  `Inventory_Base` items at least 4 m from their neighbours (two outward-wound, MLOD and binarized,
+  and one inward-wound), the server's y matched the top to within 0.0001 m (spawn y + 2.000 m,
+  where `scene_raycast(method="bullet")` hit it) and its x, z lay 0.70-0.75 m from the centre,
+  inside the 2 m top. Read the server's position after the move: with x, z still inside the top's
+  footprint, y at the top's height there means the player stands on it and y at the ground means
+  it fell through; an endpoint off the footprint, or any other height, is INCONCLUSIVE. Start above
+  the centre of an isolated top (no other support at that height within the walk's reach, or the
+  player can end on it), and run the same teleport and move above open ground as the falling
+  reference. Keep the move short: 0.5 s took the player 0.70-0.75 m by the server's position read
+  after the move, with the edge 1 m away; a top whose nearest edge is closer than that can be
+  walked off in 0.5 s, and the endpoint check then reads INCONCLUSIVE.
 - **Placement**: `telemetry_read(mode="object_at", type=<classname>, pos=<spawn_pos>, radius=2)`
   → `found=true`, `pos` ~ spawn, reasonable `orientation`. PASS = not buried or floating
   (cross-reference `pos.y` with visuals).
