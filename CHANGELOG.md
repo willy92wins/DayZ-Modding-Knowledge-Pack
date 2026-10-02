@@ -85,22 +85,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   shared by three faces, and a two-face group with one face in each state, read the same way.
   Step 3 now reads the group with Check A before the fix and decides face by face: normals that
   agree with the inverted winding (reading at least +0.5) are negated with it, normals that
-  disagree (at most −0.5) are kept, and a face that reads in between, or whose corner normals
-  point to opposite sides of it, is inspected. The reading goes through each face's vector area,
-  because the first three corners of a non-planar or non-convex quad can read backwards once the
-  face is reversed (measured on a planar dart quad and a twisted one: wrong branch in both states).
-  Its pool rule gives a negated copy to an entry that any kept corner also uses, and the fix closes
-  on the whole LOD, Check B plus every corner normal along its face: py3d's absolute check reads
-  one corner per face, and on a smoothed box whose shared entries had been negated in place it
-  read 100 % with 8 corners still wrong. The section title and the
-  `SKILL.md` index line said the same and are corrected with it; the GunRacks measurement and the
-  recalculation caveat are kept verbatim, and the old text is quoted in dated notes. Item 1 of "The
-  three py3d gates" said `ERR_WINDING_INVERTED` "suggests swapping vertices on every face"; the
-  message of the pinned `py3d_dayz-1.8.0` names `face.vertices.reverse()` and warns against the
-  swap. Following it on a healthy collision LOD still breaks the LOD: on the py3d multi-LOD fixture
-  with its Visual LOD turned inside-out, it winds every face of each collision box outward and
-  trades the finding for `ERR_WINDING_VS_NORMALS`, and `validate()` goes quiet only once those
-  LODs' normals are negated too, with every LOD wound outward.
+  disagree (at most −0.5) are kept, and a face that reads in between, or has a corner on the other
+  side of it or within 0.1 of its plane (an average can hide one), is inspected. The reading goes
+  through each face's vector area, because the first three corners of a non-planar or non-convex
+  quad can read backwards once the face is reversed (measured on a planar dart quad and a twisted
+  one: wrong branch in both states); Check A's definition and its `MIXED` bullet now read such
+  quads the same way, and the door and Rule 12 MLODs measured there are all triangles, so their
+  numbers stand. Its pool rule gives a negated copy to an entry that any kept corner also uses,
+  and the fix closes on the whole LOD: Check B, plus every corner normal along its face by at
+  least 0.1, a failing corner inspected rather than negated (a smoothed sharp fold fails it with
+  every face wound right). py3d's absolute check reads one corner per face, and on a smoothed box
+  whose shared entries had been negated in place it read 100 % with 8 corners still wrong. The
+  section title and the `SKILL.md` index line said the same and are corrected with it; the
+  GunRacks measurement and the recalculation caveat are kept verbatim, and the old text is quoted
+  in dated notes. Item 1 of "The three py3d gates" said `ERR_WINDING_INVERTED` "suggests swapping
+  vertices on every face"; the message of the pinned `py3d_dayz-1.8.0` names
+  `face.vertices.reverse()` and warns against the swap. Following it on a healthy collision LOD
+  still breaks the LOD: on the py3d multi-LOD fixture with its Visual LOD turned inside-out, it
+  winds every face of each collision box outward and trades the finding for
+  `ERR_WINDING_VS_NORMALS`, and `validate()` goes quiet only once those LODs' normals are negated
+  too, with every LOD wound outward.
 
 ## [1.5.0] - 2026-10-02
 
