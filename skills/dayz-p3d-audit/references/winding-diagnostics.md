@@ -70,7 +70,7 @@ complete import checklist.
   moved point and a cleared texture on the same faces each change it (round-trip 2026-08-24). The
   `0x20000` vs `0x00000020` dispute is moot: no face-flag value reaches the game.
 
-#### From Check B to fix: isolate minority group and flip it ENTIRELY (winding + stored normals)
+#### From Check B to fix: isolate minority group and flip it ENTIRELY (winding; stored normals as Check A reads them)
 
 Verified method (GunRacks T1/T2/T3 2026-08-28: 156 inverted faces across 11 parts of three
 external artist models, player report "plank normals are inverted"):
@@ -91,15 +91,42 @@ external artist models, player report "plank normals are inverted"):
    "identical to shipped" does NOT exonerate: shipped asset can carry defect from origin.
    Real legitimate residual: front-dominant faces with minor slit backfaces
    (healthy pattern measured: 4335 px front / 59 back).
-3. **Coupled fix**: invert vertex order (`v[:1] + reversed(v[1:])`) **and negate
-   stored normals of those corners in the same pass** — UNLESS pipeline recalculates
-   normals in a subsequent step. A fixer that only inverts vertices (e.g. GunRacks
-   `fix_winding.py`) is correct ONLY because its pipeline recalculated
-   normals afterwards; copying that mechanic to a pipeline without recalculation leaves face visible
-   but shaded inside out (second lost cycle). Safe mechanics with global POOL:
-   if `normal_index` of faces to flip are exclusive to them, negate in place;
-   if any is shared with a face not touched, add negated normal as new pool entry
-   (32768 budget) and reindex only those corners.
+3. **Read the group's stored normals, then fix it**: before touching the group, read each of
+   its faces with Check A, the sign of `dot(n_winding, average of its corner normals)`. Then
+   invert the vertex order of every face of the group (`v[:1] + reversed(v[1:])`), and per
+   face:
+   - **Normals agree with the inverted winding** (dot > 0: they turned along with it; second
+     row of the Check A table): **negate stored normals of those corners in the same pass** —
+     UNLESS pipeline recalculates normals in a subsequent step. This is the GunRacks case.
+     A fixer that only inverts vertices (e.g. GunRacks `fix_winding.py`) is correct ONLY
+     because its pipeline recalculated normals afterwards; copying that mechanic to a pipeline
+     without recalculation leaves face visible but shaded inside out (second lost cycle).
+   - **Normals disagree with the inverted winding** (dot < 0: only the winding was reversed,
+     and the normals still point like the neighbours'; fourth row): **keep them**; the new
+     vertex order alone makes them agree. [OFFLINE MEASURED 2026-10-02] On a Visual LOD made of
+     one Rule 12 unit box, with one face reversed and its normals untouched, negating them as
+     well left 5 of 6 faces agreeing (83.3 %, in py3d's absolute check and in Check A), while
+     keeping them restored 6 of 6, corner for corner the undamaged model; both left 0 edges
+     traversed the same way by both faces. The same held with smoothed normals (one pool
+     entry per point, shared by three faces) and for a two-face group with one face in each
+     state: 83.3 % after negating both, 100 % after deciding face by face.
+   - A face that reads 0, or whose corner normals point to opposite sides of it, has no
+     reading: inspect it (Check A), never infer its normals from the rest of the group.
+
+   Safe mechanics with global POOL: if `normal_index` of the corners to negate are exclusive
+   to them, negate in place; if any is shared with a corner whose normal you keep (a face
+   outside the group, or a face of the group that keeps its normals), add negated normal as
+   new pool entry (32768 budget) and reindex only those corners.
+
+   *(Corrected 2026-10-02: this item read "**Coupled fix**: invert vertex order
+   (`v[:1] + reversed(v[1:])`) **and negate stored normals of those corners in the same
+   pass** — UNLESS pipeline recalculates normals in a subsequent step." for every minority
+   group, and its pool rule read "if `normal_index` of faces to flip are exclusive to them,
+   negate in place; if any is shared with a face not touched, add negated normal as new pool
+   entry". That fits a group whose normals turned with its winding, as in GunRacks; on a
+   group whose winding alone was reversed it turns right normals wrong (the 83.3 % above).
+   The section title read "isolate minority group and flip it ENTIRELY (winding + stored
+   normals)".)*
 4. **Artist defect RECURS**: measured identical across three consecutive deliveries of
    same model (16/08, 18/08, 19/08) — lives in working file, re-exporting does not cure it.
    Check is run on EVERY delivery reintegration, not only initial import; and

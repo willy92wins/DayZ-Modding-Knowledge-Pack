@@ -75,6 +75,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   per-component check and sends the fix to killer #1, and rule 7 no longer offers the kit box's
   outward sign, or a component Rule 18 cannot score, as one to keep. The old text is quoted in dated
   notes.
+- `dayz-p3d-audit` "From Check B to fix", step 3: it negated the stored normals of every minority
+  group in the same pass as its winding, unless the pipeline recalculates normals afterwards. That
+  fits a group whose normals turned along with its winding (the GunRacks case, the second row of
+  the Check A table) and turns right normals wrong on a group whose winding alone was reversed,
+  normals still matching its neighbours' (the fourth row). Measured offline on a Visual LOD made of
+  one Rule 12 unit box with one face reversed and its normals untouched: the coupled fix left
+  83.3 % agreement, reversing alone restored 100 % and the undamaged model; smoothed normals
+  shared by three faces, and a two-face group with one face in each state, read the same way.
+  Step 3 now reads the group with Check A before the fix and decides face by face: normals that
+  agree with the inverted winding are negated with it, normals that disagree are kept, and a face
+  that reads 0, or whose corner normals point to opposite sides of it, is inspected. Its pool rule
+  gives a negated copy to an entry that any kept corner also uses. The section title and the
+  `SKILL.md` index line said the same and are corrected with it; the GunRacks measurement and the
+  recalculation caveat are kept verbatim, and the old text is quoted in dated notes. Item 1 of "The
+  three py3d gates" said `ERR_WINDING_INVERTED` "suggests swapping vertices on every face"; the
+  message of the pinned `py3d_dayz-1.8.0` names `face.vertices.reverse()` and warns against the
+  swap. Following it on a healthy collision LOD still breaks the LOD: on the py3d multi-LOD fixture
+  with its Visual LOD turned inside-out, it winds every face of each collision box outward and
+  trades the finding for `ERR_WINDING_VS_NORMALS`, and `validate()` goes quiet only once those
+  LODs' normals are negated too, with every LOD wound outward.
 
 ## [1.5.0] - 2026-10-02
 
