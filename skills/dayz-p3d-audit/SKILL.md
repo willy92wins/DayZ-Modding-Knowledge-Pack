@@ -27,7 +27,7 @@ Per the L2 rule (`_shared/dayz-conventions.md`), every DayZ skill that does work
 
 A clean `validate()`, a passing `save(verify=True)`, or a `diff` that reports equal is not evidence that the geometry is correct. Those checks only prove internal count consistency. When declaring a model verified, say whether vertex order was compared against debinarized vanilla or whether it was tested in-game.
 
-1. `validate()` does not detect GLOBAL winding inversion. The winding check is relative to the Visual LOD. If every LOD is inverted (Blender Z-up to Y-up; this skill, PART 5 item 1), `validate()` returns an empty list and exit 0. If only Visual is inverted, it accuses healthy collision LODs and suggests swapping vertices on every face; following that instruction reaches the silent-broken state.
+1. `validate()` does not detect GLOBAL winding inversion. The winding check is relative to the Visual LOD. If every LOD is inverted (Blender Z-up to Y-up; this skill, PART 5 item 1), `validate()` returns an empty list and exit 0. If only Visual is inverted, it accuses healthy collision LODs (`ERR_WINDING_INVERTED`), and the message of the pinned `py3d_dayz-1.8.0` tells you to run `face.vertices.reverse()` on every face of each one (it warns against a `vertices[1]`/`[2]` swap, which turns a quad into a crossed face); following that instruction still breaks them. [OFFLINE MEASURED 2026-10-02] On `build_multilod_v2_p3d` (py3d tests) after `blender_to_dayz()`, with the Visual LOD turned inside-out, faces and normals together, the finding named the three healthy collision LODs; following it wound all 6 faces of each box outward and traded the finding for `ERR_WINDING_VS_NORMALS` on each, and negating their normals as well left `validate()` empty with every LOD wound outward: the silent-broken state. Read the finding as "Absolute winding check" rule 6 says. *(Corrected 2026-10-02: this item said it "suggests swapping vertices on every face; following that instruction reaches the silent-broken state". The 1.8.0 message names `face.vertices.reverse()` and warns against the swap; on a healthy collision LOD that still breaks the LOD, and `validate()` goes quiet only once the LOD's normals are negated too.)*
 2. `save(verify=True)`: _verify_against does not compare geometry. It looks at counts, selection names and mass sum. Points `(0,0,0)` vs `(99,99,99)` still verify OK.
 3. `python -m py3d diff`: py3d diff total: 0 does not prove geometric equality. The same pair reports `total: 0`, exit 0.
 
@@ -128,8 +128,18 @@ each killer (root cause, detection snippet, fix, caveats) →
    rule 7). MANDATORY re-run whenever you generate/edit a collision LOD. *(Corrected 2026-10-02:
    titled "Inverted Face Winding", this entry read "Geometry LOD normals point INWARD; raycasts
    pass through" and fixed it with "swap `vertices[1]`/`[2]` per inverted face".)*
-2. **Component Selection Case Sensitivity** (CRITICAL) — Geometry component MUST be
-   `Component01` (uppercase C); any variation silently loses ALL collision.
+2. **No `ComponentNN` Selection in the Collision LODs** (CRITICAL) — measured on a box whose
+   Geometry, View and Fire LODs all lacked a `ComponentNN` selection: no ray hit in `geom`, `view`
+   or `fire`, no physics-ray hit, the player walked through, and no log line said so. A selection
+   missing from only some collision LODs was not measured. `component01` behaved exactly like
+   `Component01` (rays, physics ray, walk; unbinarized and binarized, and binarize writes both as
+   `component01`), so do not rename it to repair collision; other spellings were not measured
+   (`references/killers-detail.md` §2). Fix: select each closed, convex part as its own
+   `ComponentNN`, the components together covering the LOD (killer #8). py3d
+   `ERR_COMPONENT_NAMING` is right when the Geometry LOD has no component and a false positive on
+   `component01`. *(Corrected 2026-10-02: titled "Component Selection Case
+   Sensitivity", this entry read "Geometry component MUST be `Component01` (uppercase C); any
+   variation silently loses ALL collision.")*
 3. **Missing `autocenter=0` LOD Property** (CRITICAL for Inventory_Base) — items with
    `autocenter=0` in config need it ALSO as a named property on every collision LOD,
    else collision is displaced.
@@ -143,8 +153,14 @@ each killer (root cause, detection snippet, fix, caveats) →
    `model.cfg`, so the NAME heuristic false-positives on a valid decoupled rig (LL-027).
 7. **Missing `box_placing_min` / `box_placing_max` Memory Points** — hologram placement
    fallback; fires only for items without a proper Geometry LOD / broken `GetCollisionBox()`.
-8. **Incomplete Component01 Coverage** — `Component01` must include ALL verts AND faces
-   with weight=1, or collision is partial.
+8. **Incomplete Component Coverage** — every vertex and face of a collision LOD must belong to
+   a `ComponentNN` selection with weight=1, one component per closed, convex part, the components
+   together covering the LOD, or collision is partial. Never merge separate parts into one
+   `Component01` to make it cover everything: that component is no longer convex. py3d
+   `WARN_COMPONENT_COVERAGE` counts `Component01` alone and fires on a healthy multi-component LOD
+   (`references/killers-detail.md` §8). *(Corrected 2026-10-02: titled "Incomplete Component01
+   Coverage", this entry read "`Component01` must include ALL verts AND faces with weight=1, or
+   collision is partial.")*
 9. **Non-Watertight Collision Mesh** — open Geometry mesh (boundary edges/holes) →
    raycasts pass through gaps.
 10. **Missing Surface/Material Assignment on Collision LODs** (CRITICAL) — every collision
@@ -276,10 +292,21 @@ Missing stages produce engine warnings but don't crash.
                                    component" and reversed "the faces of that component only",
                                    which turns the healthy faces of a mostly-outward component
                                    outward.)
-   b. Component01 uppercase C?   → If wrong case: rename
+   b. Collision faces in a ComponentNN selection (killer #2)?
+                                 → If none: select each closed, convex part as ComponentNN.
+                                   component01 works like Component01: do not rename it to
+                                   repair collision.
+                                   (Corrected 2026-10-02: this line read "Component01 uppercase
+                                   C?   → If wrong case: rename"; in game component01 collided
+                                   exactly like Component01.)
    c. autocenter=0 LOD property? → If missing: add
    d. pos center in Memory?      → If missing: add at (0,0,0)
-   e. Component01 covers all?    → If partial: extend selection
+   e. Components cover every collision face (killer #8)?
+                                 → If not: give each uncovered closed, convex part its own
+                                   ComponentNN; never merge parts into one component.
+                                   (Corrected 2026-10-02: this line read "Component01 covers
+                                   all?    → If partial: extend selection", which merges separate
+                                   parts into one non-convex component.)
    f. Mesh watertight?           → If open: close gaps
    g. Geometry LOD exists?       → If missing: create one
 
@@ -311,7 +338,11 @@ Missing stages produce engine warnings but don't crash.
    winding/cull SIGN does not: on the measured path it inverts in every pair. Audit the
    published ODOL with a predicate calibrated on ODOL, never one ported from the MLOD
    (LL-273, "MLOD to ODOL is a winding-sign boundary", below)
-5. **Named selections are case-sensitive** in MLOD format. `Component01` ≠ `component01`
+5. **`component01` collides like `Component01`** — the MLOD keeps the name as written and py3d
+   compares names exactly, but in game `component01` behaved exactly like `Component01`, and
+   binarize writes `Component01` as `component01` (killer #2). Other spellings, other selections
+   and names that differ only by case inside one model were not measured. *(Corrected 2026-10-02: this item read "**Named selections are
+   case-sensitive** in MLOD format. `Component01` ≠ `component01`".)*
 6. **Memory LOD must have zero faces** — only single-vertex points. Faces in Memory LOD
    may confuse the engine.
 7. **Animation axis points must be in the SAME named selection** — both points of
@@ -342,13 +373,18 @@ These aren't P3D issues but commonly co-occur during debugging:
 
 Deep winding validation methodology (how NOT to verify — centroid/right-handed heuristics
 that false-positive on DayZ left-handed models; Check A winding-vs-averaged-normal, Check B
-edge-pair topology, Check C vs-vanilla; minority-group isolation per welded component and
-the coupled fix — flip vertex order AND negate the stored normals unless the pipeline
-recalculates them afterwards; full-sphere back-dominance battery for inverted faces with NO
-topological minority, judging residue in visible pixels, never face counts; known lessons
-learned incl. `flip_winding.py`
+edge-pair topology, Check C vs-vanilla; minority-group isolation per welded component, then
+the group's vertex order flipped with its stored normals read by Check A first — negated in
+the same pass only where they turned along with the winding (unless the pipeline recalculates
+them afterwards), kept where the winding alone was reversed — and a corner-by-corner check of
+the whole LOD to close; full-sphere back-dominance battery
+for inverted faces with NO topological minority, judging residue in visible pixels, never face
+counts; known lessons learned incl. `flip_winding.py`
 idempotency and Crate_Wooden mixed winding tolerated in render) →
-`references/winding-diagnostics.md`. Complements killer #1.
+`references/winding-diagnostics.md`. Complements killer #1. *(Corrected 2026-10-02: this line
+read "the coupled fix — flip vertex order AND negate the stored normals unless the pipeline
+recalculates them afterwards", which turns right normals wrong on a group whose winding alone
+was reversed: `references/winding-diagnostics.md`, "From Check B to fix", item 3.)*
 
 ### MLOD to ODOL is a winding-sign boundary (LL-273)
 
