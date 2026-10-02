@@ -238,10 +238,11 @@ left alone, and only then fix the normals against it:
    Go corner by corner: the check reads each face's first corner only, and
    negating whole faces turns corners that were right. An entry that a corner
    you keep also uses stays as it is, and the corners you fix are re-pointed to
-   an entry that already holds the negated value or, failing that, to a
-   negated copy; copies count toward the 32768 entries `validate()` checks
-   (`WARN_NORMALS_BUDGET`). A corner normal close to perpendicular to its face
-   gives no clear sign: inspect it rather than flip it.
+   an entry you leave unchanged that already holds the negated value or,
+   failing that, to a negated copy; copies count toward the 32768 entries
+   `validate()` checks (`WARN_NORMALS_BUDGET`). A corner normal close to
+   perpendicular to its face gives no clear sign: inspect it rather than flip
+   it.
 
 Never reverse faces on this finding alone. Two Blender exports read 0 % and
 their winding was right: the build that reversed every face rendered both
