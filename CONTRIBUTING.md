@@ -18,11 +18,13 @@ and privacy contracts.
    cited source. Use `[DESIGN]` for pseudocode or a proposal that still needs
    implementation-specific verification.
 5. **Test the smallest contract first.** Add positive and negative fixtures
-   before implementation. Then run `python -m packctl gate --root .`. The gate
-   runs each `skills/<skill>/tests` and `tools/<tool>/tests` folder in its own
-   pytest process: a test that needs Blender, DayZ or the P: drive skips where
-   they are absent, and a folder that fails, runs no test or deselects tests
-   fails the gate. `python -m packctl test-folders --root . --tree skills
+   before implementation. Then run `python -m packctl gate --root .
+   --report-dir <dir-outside-the-repo>`. The gate runs each
+   `skills/<skill>/tests` and `tools/<tool>/tests` folder in its own pytest
+   process: a test that needs Blender, DayZ or the P: drive skips where they
+   are absent, and a folder fails the gate when a test fails or does not run
+   (deselected, kept out of collection, or in a `test_*.py` module that yields
+   no test). `python -m packctl test-folders --root . --tree skills
    --report-dir <dir-outside-the-repo>` runs that check alone.
 6. **Check licensing and privacy.** Do not add third-party payload until its
    license is known and compatible. Never commit secrets, personal identities,

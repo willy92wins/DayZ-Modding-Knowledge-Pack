@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
 
-from packctl.gate import _suite_passed, run_gate
+from packctl.gate import _run_test_suites, _suite_passed, run_gate
 
 
 PASSING_SUITE = "def test_passes():\n    assert 1 + 1 == 2\n"
@@ -28,16 +29,17 @@ DESELECT_ALL = (
     "    config.hook.pytest_deselected(items=list(items))\n"
     "    items[:] = []\n"
 )
-
-
-def junit(*suites: dict[str, object]) -> str:
-    body = "".join(
-        "<testsuite "
-        + " ".join(f'{key}="{value}"' for key, value in suite.items())
-        + " />"
-        for suite in suites
-    )
-    return f'<?xml version="1.0" encoding="utf-8"?><testsuites>{body}</testsuites>'
+# A conftest that ends the session once collection is done, with exit 0.
+EXIT_AFTER_COLLECTION = (
+    "import pytest\n\n\n"
+    "def pytest_collection_finish(session):\n"
+    "    pytest.exit('stop before running', returncode=0)\n"
+)
+# Two modules: one that skips itself at import, one that fails.
+SKIP_AND_FAIL = {
+    "tests/test_needs_blender.py": SKIPPED_SUITE,
+    "tests/test_bad.py": FAILING_SUITE,
+}
 
 
 def test_gate_runs_validation_and_two_reproducible_builds(
@@ -228,8 +230,8 @@ def test_gate_fails_when_a_tool_test_fails_and_runs_py3d_once(
         "broken": {"verdict": "FAIL", "returncode": 1},
     }
     assert sorted(path.name for path in (report_dir / "tool-tests").iterdir()) == [
+        "broken.json",
         "broken.txt",
-        "broken.xml",
     ]
 
 
@@ -331,52 +333,218 @@ def test_gate_fails_a_collection_only_run_configured_in_the_repository(
     }
 
 
+def test_gate_fails_tests_deselected_by_quiet_coloured_configuration(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    # With -q twice pytest prints no closing counts, and --color=yes puts
+    # escape codes before them: the deselection is read from the run itself.
+    root = repo_factory(
+        {
+            "pytest.ini": "[pytest]\naddopts = -q -k test_passes --color=yes\n",
+            "skills/selected/tests/test_selected.py": (
+                PASSING_SUITE + "\n\n" + FAILING_SUITE
+            ),
+        },
+        payload={"LICENSE", "README.md"},
+    )
+
+    report = run_gate(root, tmp_path / "reports")
+
+    assert report["checks"]["skill_tests"]["suites"] == {
+        "selected": {"verdict": "FAIL", "returncode": 0},
+    }
+
+
 @pytest.mark.parametrize(
-    ("returncode", "report", "summary", "passed"),
+    "narrowing",
     [
-        (0, junit({"tests": 3}), "3 passed in 0.10s", True),
-        (0, junit({"tests": 2, "skipped": 2}), "2 skipped in 0.10s", True),
-        (5, junit({"tests": 1, "skipped": 1}), "1 skipped in 0.10s", True),
+        {"pytest.ini": "[pytest]\npython_files = test_needs_blender.py\n"},
+        {
+            "pytest.ini": (
+                "[pytest]\naddopts = --ignore=skills/narrowed/tests/test_bad.py\n"
+            )
+        },
+        {"skills/narrowed/tests/conftest.py": "collect_ignore = ['test_bad.py']\n"},
+    ],
+    ids=["python_files", "ignore", "collect_ignore"],
+)
+def test_gate_fails_a_test_module_kept_out_of_collection(
+    repo_factory,
+    tmp_path: Path,
+    narrowing: dict[str, str],
+) -> None:
+    # Only the module that skips itself is collected: exit 5 with one skip,
+    # while the failing module never runs.
+    root = repo_factory(
+        {
+            **{
+                f"skills/narrowed/{path}": content
+                for path, content in SKIP_AND_FAIL.items()
+            },
+            **narrowing,
+        },
+        payload={"LICENSE", "README.md"},
+    )
+
+    report = run_gate(root, tmp_path / "reports")
+
+    assert report["checks"]["skill_tests"]["suites"] == {
+        "narrowed": {"verdict": "FAIL", "returncode": 5},
+    }
+
+
+def test_gate_fails_a_run_ended_after_collection(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root = repo_factory(
+        {
+            **{
+                f"skills/stopped/{path}": content
+                for path, content in SKIP_AND_FAIL.items()
+            },
+            "skills/stopped/tests/conftest.py": EXIT_AFTER_COLLECTION,
+        },
+        payload={"LICENSE", "README.md"},
+    )
+
+    report = run_gate(root, tmp_path / "reports")
+
+    assert report["checks"]["skill_tests"]["suites"] == {
+        "stopped": {"verdict": "FAIL", "returncode": 0},
+    }
+
+
+ITEM = "tests/test_a.py::test_a"
+NOTHING_COLLECTED = {"collected": [], "items": [], "finished": [], "modules": []}
+
+
+def observed_run(module: str, **changes: object) -> dict[str, object]:
+    # The observer's record of a clean run of one module holding one test.
+    run: dict[str, object] = {
+        "exitstatus": 0,
+        "collected": [ITEM],
+        "items": [ITEM],
+        "finished": [ITEM],
+        "deselected": 0,
+        "failed": 0,
+        "modules": [module],
+        "skipped_modules": [],
+    }
+    run.update(changes)
+    return run
+
+
+@pytest.mark.parametrize(
+    ("returncode", "changes", "passed"),
+    [
+        (0, lambda module: {}, True),
+        # Every module skipped itself at import: a clean skip.
         (
             5,
-            junit({"tests": 1, "skipped": 1}, {"tests": 2, "skipped": 2}),
-            "3 skipped in 0.10s",
+            lambda module: {
+                **NOTHING_COLLECTED,
+                "exitstatus": 5,
+                "skipped_modules": [module],
+            },
             True,
         ),
-        # Collection-only run: exit 0 and no test case.
-        (0, junit({"tests": 0}), "1 test collected in 0.10s", False),
-        # Empty folder or script-style checks.
-        (5, junit({"tests": 0}), "no tests ran in 0.10s", False),
-        (5, junit({"tests": 2, "skipped": 1}), "1 skipped in 0.10s", False),
-        (5, junit({"tests": 1, "skipped": 1, "errors": 1}), "1 error", False),
-        (5, junit({"tests": 1, "skipped": 1, "failures": 1}), "1 failed", False),
-        (5, junit({"tests": 1, "skipped": 1}), "1 skipped, 1 deselected in 0.1s", False),
-        (0, junit({"tests": 2}), "2 passed, 1 deselected in 0.10s", False),
-        (1, junit({"tests": 1, "skipped": 1}), "1 skipped in 0.10s", False),
-        (2, junit({"tests": 1, "skipped": 1}), "1 skipped in 0.10s", False),
-        (3, junit({"tests": 1, "skipped": 1}), "1 skipped in 0.10s", False),
-        (4, junit({"tests": 1, "skipped": 1}), "1 skipped in 0.10s", False),
-        (5, junit({"tests": 1, "skipped": "0.5"}), "1 skipped in 0.10s", False),
-        (5, junit({"tests": 1, "skipped": "one"}), "1 skipped in 0.10s", False),
-        (5, junit({"tests": -1, "skipped": -1}), "1 skipped in 0.10s", False),
-        (5, "<testsuites>", "1 skipped in 0.10s", False),
+        (1, lambda module: {"exitstatus": 1}, False),
+        (2, lambda module: {"exitstatus": 2}, False),
+        (3, lambda module: {"exitstatus": 3}, False),
+        (4, lambda module: {"exitstatus": 4}, False),
+        # A record that does not match the process, or reports a failure.
+        (0, lambda module: {"exitstatus": 1}, False),
+        (0, lambda module: {"failed": 1}, False),
+        (0, lambda module: {"deselected": 1}, False),
+        # Collection never finished.
+        (0, lambda module: {"items": None}, False),
+        # An item dropped, or added, between collection and the run.
+        (0, lambda module: {"items": []}, False),
+        (
+            0,
+            lambda module: {
+                "items": [ITEM, "tests/test_a.py::test_b"],
+                "finished": [ITEM, "tests/test_a.py::test_b"],
+            },
+            False,
+        ),
+        # A collected item that never ran to the end: a collection-only run,
+        # or pytest.exit after collection.
+        (0, lambda module: {"finished": []}, False),
+        # A test module that neither yielded an item nor skipped itself.
+        (0, lambda module: {"modules": []}, False),
+        # Exit 5 with no module that skipped itself: nothing ran.
+        (5, lambda module: {**NOTHING_COLLECTED, "exitstatus": 5}, False),
+        (0, lambda module: {"deselected": "0"}, False),
     ],
 )
 def test_suite_pass_rule(
     tmp_path: Path,
     returncode: int,
-    report: str,
-    summary: str,
+    changes,
     passed: bool,
 ) -> None:
-    junit_path = tmp_path / "suite.xml"
-    junit_path.write_text(report, encoding="utf-8")
+    folder = tmp_path / "tests"
+    folder.mkdir()
+    module = folder / "test_a.py"
+    module.write_text(PASSING_SUITE, encoding="utf-8")
+    observed = tmp_path / "run.json"
+    observed.write_text(
+        json.dumps(observed_run(str(module), **changes(str(module)))),
+        encoding="utf-8",
+    )
 
-    assert _suite_passed(returncode, junit_path, f"\n{summary}\n") is passed
+    assert _suite_passed(returncode, observed, folder) is passed
 
 
-def test_suite_pass_rule_needs_the_junit_report(tmp_path: Path) -> None:
-    assert _suite_passed(0, tmp_path / "missing.xml", "3 passed in 0.10s") is False
+@pytest.mark.parametrize(
+    "content",
+    [None, "{", json.dumps({"exitstatus": 0})],
+    ids=["missing", "malformed", "incomplete"],
+)
+def test_suite_pass_rule_needs_a_whole_record(
+    tmp_path: Path,
+    content: str | None,
+) -> None:
+    folder = tmp_path / "tests"
+    folder.mkdir()
+    observed = tmp_path / "run.json"
+    if content is not None:
+        observed.write_text(content, encoding="utf-8")
+
+    assert _suite_passed(0, observed, folder) is False
+
+
+def test_a_record_left_by_an_earlier_run_is_not_read(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    folder = tmp_path / "repo" / "skills" / "demo" / "tests"
+    folder.mkdir(parents=True)
+    module = folder / "test_a.py"
+    module.write_text(PASSING_SUITE, encoding="utf-8")
+    log_dir = tmp_path / "reports" / "skill-tests"
+    log_dir.mkdir(parents=True)
+    (log_dir / "demo.json").write_text(
+        json.dumps(observed_run(str(module))),
+        encoding="utf-8",
+    )
+    # A run that exits 0 and writes no record of its own.
+    monkeypatch.setattr(
+        "packctl.gate._run_process",
+        lambda *args, **kwargs: subprocess.CompletedProcess(args, 0, "", ""),
+    )
+
+    check, _ = _run_test_suites(
+        tmp_path / "repo",
+        [folder],
+        log_dir,
+        pycache_dir=tmp_path / "pycache",
+    )
+
+    assert check["suites"] == {"demo": {"verdict": "FAIL", "returncode": 0}}
 
 
 def test_gate_refuses_a_report_dir_inside_the_root_before_any_suite_runs(

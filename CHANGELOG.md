@@ -129,13 +129,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   mode aborts the collection ("import file mismatch", exit 2). The gate now runs each
   `skills/<skill>/tests` and `tools/<tool>/tests` folder in its own pytest process (checks
   `skill_tests` and `tool_tests`, findings `SKILL-TESTS-FAILED` and `TOOL-TESTS-FAILED`, a log and
-  a JUnit report per folder in the report directory), and `packctl test-folders` runs those
-  checks alone. A folder passes when pytest exits 0 or 5 ("no test collected"), its JUnit report
-  counts at least one test case and no failure or error, and its summary deselects nothing; exit 5
-  also needs every case to be a skip, which is what modules that skip themselves at import
-  (`pytest.importorskip("bpy")` without Blender) produce. A failing or uncollectable folder, an
-  empty one, script-style checks and a collection-only run fail, and the gate's pytest runs ignore
-  `PYTEST_ADDOPTS`. CI runs `packctl test-folders --tree skills`; the tool folders stay gate-only,
+  a run record per folder in the report directory), and `packctl test-folders` runs those checks
+  alone (its tools tree includes `tools/py3d/tests`, which the gate checks separately). The gate
+  loads a pytest plugin, `packctl/pytest_observer.py`, into each run, and it records the run
+  through pytest's hooks. A folder passes when pytest exits 0 or 5 ("no test collected") and that
+  record shows no failure, no test deselected, dropped or added after collection, every
+  collected test run to the end, and every `test_*.py` or `*_test.py` module of the folder
+  either collected or skipping itself at import; exit 5 also needs that skip, which is what
+  modules that skip themselves at import (`pytest.importorskip("bpy")` without Blender)
+  produce. A failing or uncollectable folder, an empty one, script-style checks, a
+  collection-only run, a module kept out of collection by configuration and a run ended early
+  fail, and the gate's pytest runs ignore `PYTEST_ADDOPTS`. CI runs `packctl test-folders --tree
+  skills`; the tool folders stay gate-only,
   since five of them import packages the runner does not install (jsonschema, numpy, Pillow,
   py3d). They add 4 to 8 minutes to the gate, almost all of it `dayz-vehicle-proxy-contract`.
   Measured on `26e76a4`, folder by folder: 24 skill tests and 629 tool tests pass,

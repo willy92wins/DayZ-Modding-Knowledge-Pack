@@ -356,7 +356,7 @@ a root-level collection aborts before a single test runs. Run each suite
 from its own directory, and use `packctl gate` as the pack-wide check.
 `python -m packctl test-folders --root . --tree skills --tree tools
 --report-dir ../pack-test-reports` runs only the test folders, one pytest
-process each.
+process each, `tools/py3d/tests` included.
 
 `python tools/dayz-script-validator/scripts/vanilla_control.py` is only
 for commits that touch `tools/dayz-script-validator/` (a new rule, a

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
+import json
 import os
-import re
 import subprocess
 import sys
 from pathlib import Path
-from xml.etree import ElementTree
 
 from .builder import build_archive
 from .common import (
@@ -25,6 +24,7 @@ def _run_process(
     args: list[str],
     *,
     pycache_dir: Path,
+    pythonpath: Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
     environment = dict(os.environ)
     environment["PYTHONUTF8"] = "1"
@@ -32,6 +32,12 @@ def _run_process(
     # The caller's pytest options do not reach the gate's pytest runs: one
     # --collect-only or -k in PYTEST_ADDOPTS lets a red suite exit 0.
     environment.pop("PYTEST_ADDOPTS", None)
+    if pythonpath is not None:
+        environment["PYTHONPATH"] = os.pathsep.join(
+            entry
+            for entry in (str(pythonpath), environment.get("PYTHONPATH", ""))
+            if entry
+        )
     return subprocess.run(
         args,
         cwd=root,
@@ -66,36 +72,58 @@ def _skills_ref_executable(configured: str) -> Path | None:
     return None
 
 
-# pytest's closing summary names deselected tests ("1 skipped, 1 deselected in
-# 0.16s"); the JUnit report does not list them.
-_DESELECTED = re.compile(r"\b\d+ deselected\b")
+# The directory holding the packctl package, put on PYTHONPATH so each folder
+# run can load packctl.pytest_observer from any working directory.
+_PACKCTL_PARENT = Path(__file__).resolve().parents[1]
 
 
-def _suite_passed(returncode: int, junit: Path, stdout: str) -> bool:
+def _test_modules(folder: Path) -> set[Path]:
+    # The modules pytest collects under its default python_files
+    # (test_*.py, *_test.py), outside hidden and __pycache__ directories.
+    return {
+        path.resolve()
+        for pattern in ("test_*.py", "*_test.py")
+        for path in folder.rglob(pattern)
+        if not any(
+            part.startswith(".") or part == "__pycache__"
+            for part in path.relative_to(folder).parts[:-1]
+        )
+    }
+
+
+def _suite_passed(returncode: int, observed: Path, folder: Path) -> bool:
     # A folder passes when pytest ran it to the end -- exit 0, or exit 5 ("no
-    # test collected") -- and its JUnit report counts at least one test case,
-    # none failed or in error, and nothing was deselected. Exit 5 also needs
-    # every case to be a skip: a folder whose modules all skip themselves at
-    # import (pytest.importorskip("bpy") on a machine without Blender) ends
-    # there, and that is a clean skip. An empty folder, script-style checks
-    # and a collection-only run report no test case and fail.
+    # test collected") -- and the record packctl/pytest_observer.py writes
+    # through pytest's hooks shows: the same exit status; no failed report;
+    # nothing deselected, dropped or added between collection and the run;
+    # every collected item run to the end; and every test module of the folder
+    # either yielding items or skipping itself at import, so configuration
+    # that keeps a module out of collection fails it. Exit 5 also needs a
+    # module that skipped itself: a folder whose modules all skip at import
+    # (pytest.importorskip("bpy") on a machine without Blender) is a clean
+    # skip. An empty folder, script-style checks and a collection-only run
+    # run no item and fail.
     if returncode not in (0, 5):
         return False
-    lines = stdout.strip().splitlines()
-    if lines and _DESELECTED.search(lines[-1]):
-        return False
-    counts = dict.fromkeys(("tests", "skipped", "failures", "errors"), 0)
     try:
-        for suite in ElementTree.parse(junit).getroot().iter("testsuite"):
-            for key in counts:
-                counts[key] += int(suite.get(key, "0"))
-    except (OSError, ElementTree.ParseError, ValueError):
+        run = json.loads(observed.read_text(encoding="utf-8"))
+        items = run["items"]
+        collected = set(run["collected"])
+        finished = set(run["finished"])
+        modules = {Path(path).resolve() for path in run["modules"]}
+        skipped = [Path(path).resolve() for path in run["skipped_modules"]]
+        if run["exitstatus"] != returncode or run["deselected"] or run["failed"]:
+            return False
+        if set(items) != collected or not set(items) <= finished:
+            return False
+    except (OSError, ValueError, KeyError, TypeError):
         return False
-    if min(counts.values()) < 0 or counts["tests"] == 0:
-        return False
-    if counts["failures"] or counts["errors"]:
-        return False
-    return returncode == 0 or counts["skipped"] == counts["tests"]
+    for module in _test_modules(folder):
+        if module not in modules and not any(
+            module == skip or skip in module.parents for skip in skipped
+        ):
+            return False
+    return bool(items) or (returncode == 5 and bool(skipped))
 
 
 def _run_test_suites(
@@ -116,8 +144,8 @@ def _run_test_suites(
     for suite in suites:
         name = suite.parent.name
         log_dir.mkdir(parents=True, exist_ok=True)
-        junit = log_dir / f"{name}.xml"
-        junit.unlink(missing_ok=True)
+        observed = log_dir / f"{name}.json"
+        observed.unlink(missing_ok=True)
         result = _run_process(
             root,
             [
@@ -127,11 +155,14 @@ def _run_test_suites(
                 "-q",
                 "-p",
                 "no:cacheprovider",
+                "-p",
+                "packctl.pytest_observer",
+                f"--packctl-observer={observed}",
                 "-rs",
-                f"--junitxml={junit}",
                 str(suite),
             ],
             pycache_dir=pycache_dir,
+            pythonpath=_PACKCTL_PARENT,
         )
         output = result.stdout + result.stderr
         (log_dir / f"{name}.txt").write_text(
@@ -139,7 +170,7 @@ def _run_test_suites(
             encoding="utf-8",
             newline="\n",
         )
-        passed = _suite_passed(result.returncode, junit, result.stdout)
+        passed = _suite_passed(result.returncode, observed, suite)
         outcomes[name] = {
             "verdict": "PASS" if passed else "FAIL",
             "returncode": result.returncode,
@@ -170,15 +201,15 @@ def _test_folder_check(
     report_dir: Path,
     *,
     pycache_dir: Path,
+    exclude: tuple[Path, ...] = (),
 ) -> tuple[str, dict[str, object], list[dict[str, object]]]:
-    # Every <tree>/<name>/tests folder, each in its own pytest process.
-    # tools/py3d/tests has its own check in the gate.
+    # Every <tree>/<name>/tests folder but the excluded ones, each in its own
+    # pytest process.
     check_name, log_name, code = _TEST_FOLDER_TREES[tree]
-    py3d_tests = root / "tools" / "py3d" / "tests"
     suites = sorted(
         path
         for path in (root / tree).glob("*/tests")
-        if path.is_dir() and path != py3d_tests
+        if path.is_dir() and path not in exclude
     )
     check, evidence = _run_test_suites(
         root,
@@ -194,8 +225,8 @@ def _test_folder_check(
                 path=tree,
                 line=0,
                 message=(
-                    f"A test folder under {tree}/ failed, ran no test or "
-                    "deselected tests."
+                    f"A test folder under {tree}/ failed or did not run all "
+                    "of its tests."
                 ),
                 evidence=evidence,
             )
@@ -231,7 +262,8 @@ def run_test_folders(
     trees: list[str],
 ) -> dict[str, object]:
     # The gate's test-folder checks on their own, for CI, which has no
-    # skills-ref validator to run the whole gate with.
+    # skills-ref validator to run the whole gate with. With no separate py3d
+    # check here, the tools tree includes tools/py3d/tests.
     root = Path(root).resolve()
     report_dir = Path(report_dir).resolve()
     refusal = _report_dir_in_root("test-folders", root, report_dir)
@@ -436,6 +468,7 @@ def run_gate(root: Path, report_dir: Path) -> dict[str, object]:
             tree,
             report_dir,
             pycache_dir=pycache_dir,
+            exclude=(py3d_tests,),
         )
         checks[check_name] = check
         findings.extend(tree_findings)

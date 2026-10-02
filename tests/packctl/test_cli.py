@@ -384,3 +384,32 @@ def test_test_folders_refuses_a_report_dir_inside_the_root(
     report = json.loads(result.stdout)
     assert [item["code"] for item in report["findings"]] == ["GATE-REPORT-IN-ROOT"]
     assert not (root / "reports").exists()
+
+
+def test_test_folders_runs_tools_py3d_tests_too(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    # The gate runs tools/py3d/tests in its own py3d_tests check; test-folders
+    # has no such check, so its tools tree includes the folder.
+    root = repo_factory(
+        {"tools/py3d/tests/test_py3d.py": "def test_fails():\n    assert False\n"},
+        payload={"LICENSE", "README.md"},
+    )
+
+    result = run_cli(
+        root,
+        "test-folders",
+        "--root",
+        str(root),
+        "--tree",
+        "tools",
+        "--report-dir",
+        str(tmp_path / "reports"),
+    )
+
+    assert result.returncode == 1
+    report = json.loads(result.stdout)
+    assert report["checks"]["tool_tests"]["suites"] == {
+        "py3d": {"verdict": "FAIL", "returncode": 1},
+    }
