@@ -301,7 +301,7 @@ a whole box under a proxy name counts as collision geometry) and points that no 
 counted. A LOD with no component at all is `ERR_COMPONENT_NAMING`'s finding (killer #2); one whose
 component selections are all empty is reported here, every face counted. A face outside every
 component on a LOD that has others was not measured in game, so the finding stays a WARN. On the
-Pack's door samples it is silent on `Simple_Door` and `Door_w_Button` and flags the Geometry and
+`dayz-doors` tutorial samples it is silent on `Simple_Door` and `Door_w_Button` and flags the Geometry and
 Fire LODs of `Expert_Mode`, whose lever (18 faces: selection `lever` in Geometry, `door1_open` in
 Fire) is in no component there, though `dayz-doors` lists the lever among the Geometry parts;
 whether that lever collides in game was not measured.

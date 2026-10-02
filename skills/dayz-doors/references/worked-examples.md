@@ -1,8 +1,8 @@
-# Verified worked examples
+# Worked examples
 
 ## Contents
 
-- [How to use these examples](#how-to-use-these-examples)
+- [Where these examples come from](#where-these-examples-come-from)
 - [Simple Door](#simple-door-door-plus-handle)
 - [Door with Button](#door-with-button-static-controller)
 - [Expert Mode](#expert-mode-door-plus-handle-plus-lever)
@@ -10,17 +10,19 @@
 - [Source discrepancies](#source-discrepancies)
 - [Building locks (DayZ 1.30 Exp)](#building-locks-dayz-130-exp)
 
-## How to use these examples
+## Where these examples come from
 
-Each block is **[EXACT]** content from the supplied .cfg/config.cpp, with line endings normalized for Markdown. Originals are copied byte-for-byte under **assets/**.
+The three doors on this page are the examples of novoGOD's door tutorial *Doors_Buttons_Lesson*: three models, each with its model.cfg and config.cpp, and four tutorial texts, files dated 2025-04-23. The tutorial's archive holds no license or permission text, so the Pack does not ship its files. This page describes each example in its own words and tables, and cites the tutorial's files by path and line, such as `Doors_Buttons_Lesson/Door/Simple_Door.cfg:29-40`. Pack v1.3.0 to v1.5.0 shipped those files under `assets/`, wrongly labelled as the Pack author's MIT work; they were removed on 2026-10-02.
 
-Treat each pair side by side: model.cfg defines bones, selections, and sources; config.cpp binds Doors components, timing, sounds, and damage.
+Read each example as a pair. model.cfg declares the bones, the selections that move and the source that drives them; config.cpp binds that source to a **class Doors** entry and sets its timing, sounds and damage. The three share their scaffolding (a CfgPatches entry requiring **"DZ_Data"**, an empty **Default** model class, **skeletonInherit = ""**, **isDiscrete = 0**, **scope = 1** on a **HouseNoDestruct** child) and one DamageSystem, the same lines in all three files; [door-model-cfg-and-config.md](door-model-cfg-and-config.md) describes those once, with line citations. The tables below keep to what each pattern adds.
 
 ## Simple Door: door plus handle
 
+A door that swings on its hinge, and a handle that turns first and then rides along with the door. One source, **door1**, drives both.
+
 ### Side-by-side mapping
 
-| Real model.cfg | Real config.cpp |
+| Tutorial model.cfg | Tutorial config.cpp |
 |---|---|
 | **door1 -> ""**, **handle -> door1**. | One Doors entry **Door1**. |
 | Door and handle source **door1**. | **component = "door1"**. |
@@ -28,166 +30,39 @@ Treat each pair side by side: model.cfg defines bones, selections, and sources; 
 
 The handle follows the door transform. It reaches angle1 **-1.4** by phase **0.15**; then the door begins its rotation to **1.9**.
 
-### [EXACT] model.cfg - assets/Door/Simple_Door.cfg
+### Bones (`Doors_Buttons_Lesson/Door/Simple_Door.cfg:1-14`)
 
-<!-- BEGIN VERBATIM: assets/Door/Simple_Door.cfg -->
-~~~cpp
-class cfgSkeletons
-{
-	class Simple_DoorSkeleton
-	{
-		skeletonInherit = "";
-		isDiscrete = 0;
-		SkeletonBones[]=
-		{
-			
-			"door1","",
-			"handle","door1",
-		};
-	};
-};
-class CfgModels
-{
-	class Default
-	{
-		sections[] = {};
-		sectionsInherit="";
-		skeletonName = "";
-	};
-	class Simple_Door:Default
-	{
-		skeletonName="Simple_DoorSkeleton";
-		sections[]={};
-		class Animations
-		{
-			class Door1
-			{
-				type = "rotation";
-				selection = "door1";
-				source = "door1";
-				axis = "door1_axis";
-				memory = 1; 
-				minValue = 0.15; 
-				maxValue = 1; 
-				angle0 = 0; 
-				angle1 = 1.9;
-			};
-			class handle
-			{
-				type = "rotation";
-				selection = "handle";
-				source = "door1";
-				axis = "handle_axis";
-				memory = 1; 
-				minValue = 0; 
-				maxValue = 0.15; 
-				angle0 = 0; 
-				angle1 = -1.4; 
-			};
-		};
-	};
-};
-~~~
-<!-- END VERBATIM: assets/Door/Simple_Door.cfg -->
+| Bone | Parent | Effect |
+|---|---|---|
+| **door1** | none (**""**) | Turns about its own axis. |
+| **handle** | **door1** | Carried by the door's rotation, on top of its own turn. |
 
-### [EXACT] config.cpp - assets/Door/config.cpp
+The skeleton class is **Simple_DoorSkeleton**; the model class **Simple_Door**, named after the P3D, points at it through **skeletonName** (`:23-25`).
 
-<!-- BEGIN VERBATIM: assets/Door/config.cpp -->
-~~~cpp
-class CfgPatches
-{
-	class Doors_Buttons_Lesson_Simple_Door
-	{
-		requiredAddons[] = {"DZ_Data"};
-	};
-};
+### Animations (`Doors_Buttons_Lesson/Door/Simple_Door.cfg:27-53`)
 
-class CfgVehicles
-{
-	class HouseNoDestruct;
-	class land_Simple_Door: HouseNoDestruct
-	{
-		scope = 1;
-		model = "Doors_Buttons_Lesson\Door\Simple_Door.p3d";
-		class Doors
-		{
-			class Door1
-			{
-				displayName = "Door 1";
-				component = "door1";
-				soundPos = "door1_action";
-				animPeriod = 1.3;
-				initPhase = 0.0;
-				initOpened = 0.0;
-				soundOpen = "doorMetalSmallOpen";
-				soundClose = "doorMetalSmallClose";
-				soundLocked = "doorMetalSmallRattle";
-				soundOpenABit = "doorMetalSmallOpenABit";
-			};
-		};
-		class DamageSystem
-		{
-			class GlobalHealth
-			{
-				class Health
-				{
-					hitpoints = 1000;
-				};
-			};
-			class GlobalArmor
-			{
-				class Projectile
-				{
-					class Health { damage = 0; };
-					class Blood { damage = 0; };
-					class Shock { damage = 0; };
-				};
-				class Melee
-				{
-					class Health { damage = 0; };
-					class Blood { damage = 0; };
-					class Shock { damage = 0; };
-				};
-			};
-			class DamageZones
-			{
-				class Door1
-				{
-					class Health
-					{
-						hitpoints = 1000;
-						transferToGlobalCoef = 0;
-					};
-					componentNames[] = {"door1"};
-					fatalInjuryCoef = -1;
-					class ArmorType
-					{
-						class Projectile
-						{
-							class Health { damage = 2; };
-							class Blood { damage = 0; };
-							class Shock { damage = 0; };
-						};
-						class Melee
-						{
-							class Health { damage = 2.5; };
-							class Blood { damage = 0; };
-							class Shock { damage = 0; };
-						};
-					};
-				};
-			};
-		};
-	};
-};
-~~~
-<!-- END VERBATIM: assets/Door/config.cpp -->
+| Class | selection | source | axis | Phase window | Turn, radians |
+|---|---|---|---|---|---|
+| **Door1** | **door1** | **door1** | **door1_axis** | 0.15 to 1 | 0 to 1.9 |
+| **handle** | **handle** | **door1** | **handle_axis** | 0 to 0.15 | 0 to -1.4 |
+
+Both are rotations about a Memory LOD axis (**type = "rotation"**, **memory = 1**). The windows do not overlap: the handle turns during the first 15 % of the action, and the door swings during the rest.
+
+### Doors entry (`Doors_Buttons_Lesson/Door/config.cpp:16-31`)
+
+| Doors class | component | soundPos | animPeriod | initPhase | initOpened | Sounds |
+|---|---|---|---|---|---|---|
+| **Door1** | **door1** | **door1_action** | 1.3 s | 0.0 | 0.0 | **doorMetalSmall** Open, Close, Rattle (locked), OpenABit |
+
+The entity class is **land_Simple_Door** (`:12`); its **model** points at the addon's `Door\Simple_Door.p3d` (`:15`).
 
 ## Door with Button: static controller
 
+A door opened from a button next to it. The button never moves, so it is not a bone: it only carries the interaction selection **door1_open**, and that name is the source of the door's rotation.
+
 ### Side-by-side mapping
 
-| Real model.cfg | Real config.cpp |
+| Tutorial model.cfg | Tutorial config.cpp |
 |---|---|
 | Only bone **door1 -> ""**; no button bone. | One Doors entry **Door1_Open**. |
 | Moving **door1**; source **door1_open**. | **component = "door1_open"**. |
@@ -195,152 +70,35 @@ class CfgVehicles
 
 The button is static. The tutorial places View Geometry selection and interaction point at the button as **door1_open**; interacting there drives moving selection **door1**.
 
-### [EXACT] model.cfg - assets/Door_w_Button/Door_w_Button.cfg
+### Bones (`Doors_Buttons_Lesson/Door_w_Button/Door_w_Button.cfg:1-12`)
 
-<!-- BEGIN VERBATIM: assets/Door_w_Button/Door_w_Button.cfg -->
-~~~cpp
-class cfgSkeletons
-{
-	class Door_w_ButtonSkeleton
-	{
-		skeletonInherit = "";
-		isDiscrete = 0;
-		SkeletonBones[]=
-		{
-			"door1"	,""
-		};
-	};
-};
-class CfgModels
-{
-	class Default
-	{
-		Sections[] ={};
-		sectionsInherit="";
-		skeletonName = "";
-	};
-	class Door_w_Button:Default
-	{
-		skeletonName="Door_w_ButtonSkeleton";
-		sections[]={};
-		class Animations
-		{
-			class Door1
-			{
-				type = "rotation";
-				selection = "door1";
-				source = "door1_open";
-				axis = "door1_axis";
-				memory = 1; 
-				minValue = 0.0; 
-				maxValue = 1; 
-				angle0 = 0; 
-				angle1 = 1.9;
-			};
-		};
-	};
-};
-~~~
-<!-- END VERBATIM: assets/Door_w_Button/Door_w_Button.cfg -->
+| Bone | Parent | Effect |
+|---|---|---|
+| **door1** | none (**""**) | The only bone; the button is not listed. |
 
-### [EXACT] config.cpp - assets/Door_w_Button/config.cpp
+### Animations (`Doors_Buttons_Lesson/Door_w_Button/Door_w_Button.cfg:25-39`)
 
-<!-- BEGIN VERBATIM: assets/Door_w_Button/config.cpp -->
-~~~cpp
-class CfgPatches
-{
-	class Doors_Buttons_Lesson_Door_w_Button
-	{
-		requiredAddons[] = {"DZ_Data"};
-	};
-};
+| Class | selection | source | axis | Phase window | Turn, radians |
+|---|---|---|---|---|---|
+| **Door1** | **door1** | **door1_open** | **door1_axis** | 0 to 1 | 0 to 1.9 |
 
-class CfgVehicles
-{
-	class HouseNoDestruct;
-	class land_Door_w_Button: HouseNoDestruct
-	{
-		scope = 1;
-		model = "Doors_Buttons_Lesson\Door_w_Button\Door_w_Button.p3d";
-		class Doors
-		{
-			class Door1_Open
-			{
-				displayName = "Door 1";
-				component = "door1_open";
-				soundPos = "door1_action";
-				animPeriod = 1.0;
-				initPhase = 0.0;
-				initOpened = 0.0;
-				soundOpen = "doorMetalSmallOpen";
-				soundClose = "doorMetalSmallClose";
-				soundLocked = "doorMetalSmallRattle";
-				soundOpenABit = "doorMetalSmallOpenABit";
-			};
-		};
-		class DamageSystem
-		{
-			class GlobalHealth
-			{
-				class Health
-				{
-					hitpoints = 1000;
-				};
-			};
-			class GlobalArmor
-			{
-				class Projectile
-				{
-					class Health { damage = 0; };
-					class Blood { damage = 0; };
-					class Shock { damage = 0; };
-				};
-				class Melee
-				{
-					class Health { damage = 0; };
-					class Blood { damage = 0; };
-					class Shock { damage = 0; };
-				};
-			};
-			class DamageZones
-			{
-				class Door1
-				{
-					class Health
-					{
-						hitpoints = 1000;
-						transferToGlobalCoef = 0;
-					};
-					componentNames[] = {"door1"};
-					fatalInjuryCoef = -1;
-					class ArmorType
-					{
-						class Projectile
-						{
-							class Health { damage = 2; };
-							class Blood { damage = 0; };
-							class Shock { damage = 0; };
-						};
-						class Melee
-						{
-							class Health { damage = 2.5; };
-							class Blood { damage = 0; };
-							class Shock { damage = 0; };
-						};
-					};
-				};
-			};
-		};
-	};
-};
-~~~
-<!-- END VERBATIM: assets/Door_w_Button/config.cpp -->
+The selection that moves (**door1**) and the source that drives it (**door1_open**) have different names; that split is the whole pattern.
+
+### Doors entry (`Doors_Buttons_Lesson/Door_w_Button/config.cpp:16-31`)
+
+| Doors class | component | soundPos | animPeriod | initPhase | initOpened | Sounds |
+|---|---|---|---|---|---|---|
+| **Door1_Open** | **door1_open** | **door1_action** | 1.0 s | 0.0 | 0.0 | the same four **doorMetalSmall** sounds |
+
+The DamageZone still names the moving part, **componentNames[] = {"door1"}** (`:65`), not the button's **door1_open**.
 
 ## Expert Mode: door plus handle plus lever
 
+A door with a handle, opened from a separate lever. All three parts move from one source, **door1_open**, which the lever carries as its interaction selection.
+
 ### Side-by-side mapping
 
-| Real model.cfg | Real config.cpp |
+| Tutorial model.cfg | Tutorial config.cpp |
 |---|---|
 | door root, handle child, lever root. | Main **Door1_Open**, secondary **Lever**. |
 | All source **door1_open**. | Both component **door1_open**. |
@@ -348,182 +106,34 @@ class CfgVehicles
 
 The handle follows the moving door. The lever is an independent root at the controller. All three animations share one source.
 
-? The real config has two Doors entries for one source/component, contradicting a universal one-entry-per-source rule. The secondary Lever also omits **soundPos** and all sounds. Preserve it; ask before reusing that duplicate mapping.
+? The tutorial's config has two Doors entries for one source/component, contradicting a universal one-entry-per-source rule. The secondary Lever also omits **soundPos** and all sounds. Ask before reusing that duplicate mapping.
 
-### [EXACT] model.cfg - assets/Expert_Mode/Expert_Mode.cfg
+### Bones (`Doors_Buttons_Lesson/Expert_Mode/Expert_Mode.cfg:1-14`)
 
-<!-- BEGIN VERBATIM: assets/Expert_Mode/Expert_Mode.cfg -->
-~~~cpp
-class cfgSkeletons
-{
-	class Expert_ModeSkeleton
-	{
-		skeletonInherit = "";
-		isDiscrete = 0;
-		SkeletonBones[]=
-		{
-			"door1"	,"",
-			"handle","door1",
-			"lever",""
-		};
-	};
-};
-class CfgModels
-{
-	class Default
-	{
-		Sections[] ={};
-		sectionsInherit="";
-		skeletonName = "";
-	};
-	class Expert_Mode:Default
-	{
-		skeletonName="Expert_ModeSkeleton";
-		sections[]={};
-		class Animations
-		{
-			class Door1
-			{
-				type = "rotation";
-				selection = "door1";
-				source = "door1_open";
-				axis = "door1_axis";
-				memory = 1; 
-				minValue = 0.10; 
-				maxValue = 1; 
-				angle0 = 0; 
-				angle1 = 1.9;
-			};
-			class Handle
-			{
-				type = "rotation";
-				selection = "handle";
-				source = "door1_open";
-				axis = "handle_axis";
-				memory = 1; 
-				minValue = 0.0; 
-				maxValue = 1.0; 
-				angle0 = 0; 
-				angle1 = -1.7;
-			};
-			class Lever
-			{
-				type = "rotation";
-				selection = "lever";
-				source = "door1_open";
-				axis = "lever_axis";
-				memory = 1; 
-				minValue = 0.0; 
-				maxValue = 0.5; 
-				angle0 = 0; 
-				angle1 = -0.88;
-			};
-		};
-	};
-};
-~~~
-<!-- END VERBATIM: assets/Expert_Mode/Expert_Mode.cfg -->
+| Bone | Parent | Effect |
+|---|---|---|
+| **door1** | none (**""**) | Turns about its own axis. |
+| **handle** | **door1** | Carried by the door's rotation, on top of its own turn. |
+| **lever** | none (**""**) | Turns about its own axis, independent of the door. |
 
-### [EXACT] config.cpp - assets/Expert_Mode/config.cpp
+### Animations (`Doors_Buttons_Lesson/Expert_Mode/Expert_Mode.cfg:27-65`)
 
-<!-- BEGIN VERBATIM: assets/Expert_Mode/config.cpp -->
-~~~cpp
-class CfgPatches
-{
-	class Doors_Buttons_Lesson_Expert_Mode
-	{
-		requiredAddons[] = {"DZ_Data"};
-	};
-};
+| Class | selection | source | axis | Phase window | Turn, radians |
+|---|---|---|---|---|---|
+| **Door1** | **door1** | **door1_open** | **door1_axis** | 0.10 to 1 | 0 to 1.9 |
+| **Handle** | **handle** | **door1_open** | **handle_axis** | 0 to 1 | 0 to -1.7 |
+| **Lever** | **lever** | **door1_open** | **lever_axis** | 0 to 0.5 | 0 to -0.88 |
 
-class CfgVehicles
-{
-	class HouseNoDestruct;
-	class land_Expert_Mode: HouseNoDestruct
-	{
-		scope = 1;
-		model = "Doors_Buttons_Lesson\Expert_Mode\Expert_Mode.p3d";
-		class Doors
-		{
-			class Door1_Open
-			{
-				displayName = "Door 1";
-				component = "door1_open";
-				soundPos = "door1_action";
-				animPeriod = 1.0;
-				initPhase = 0.0;
-				initOpened = 0.5;
-				soundOpen = "doorMetalSmallOpen";
-				soundClose = "doorMetalSmallClose";
-				soundLocked = "doorMetalSmallRattle";
-				soundOpenABit = "doorMetalSmallOpenABit";
-			};
-			class Lever
-			{
-				displayName = "Lever";
-				component = "door1_open";
-				animPeriod = 0.50;
-				initPhase = 0.0;
-				initOpened = 0.0;
-			};
-		};
-		class DamageSystem
-		{
-			class GlobalHealth
-			{
-				class Health
-				{
-					hitpoints = 1000;
-				};
-			};
-			class GlobalArmor
-			{
-				class Projectile
-				{
-					class Health { damage = 0; };
-					class Blood { damage = 0; };
-					class Shock { damage = 0; };
-				};
-				class Melee
-				{
-					class Health { damage = 0; };
-					class Blood { damage = 0; };
-					class Shock { damage = 0; };
-				};
-			};
-			class DamageZones
-			{
-				class Door1
-				{
-					class Health
-					{
-						hitpoints = 1000;
-						transferToGlobalCoef = 0;
-					};
-					componentNames[] = {"door1"};
-					fatalInjuryCoef = -1;
-					class ArmorType
-					{
-						class Projectile
-						{
-							class Health { damage = 2; };
-							class Blood { damage = 0; };
-							class Shock { damage = 0; };
-						};
-						class Melee
-						{
-							class Health { damage = 2.5; };
-							class Blood { damage = 0; };
-							class Shock { damage = 0; };
-						};
-					};
-				};
-			};
-		};
-	};
-};
-~~~
-<!-- END VERBATIM: assets/Expert_Mode/config.cpp -->
+Here the windows overlap: the lever finishes its throw by mid-action, the handle turns over the whole action, and the door starts at 10 %.
+
+### Doors entries (`Doors_Buttons_Lesson/Expert_Mode/config.cpp:16-39`)
+
+| Doors class | component | soundPos | animPeriod | initPhase | initOpened | Sounds |
+|---|---|---|---|---|---|---|
+| **Door1_Open** | **door1_open** | **door1_action** | 1.0 s | 0.0 | 0.5 | the four **doorMetalSmall** sounds |
+| **Lever** | **door1_open** | none | 0.50 s | 0.0 | 0.0 | none |
+
+With **initOpened = 0.5** the main door spawns open about half the time (the **initOpened** note in [door-model-cfg-and-config.md](door-model-cfg-and-config.md)). Its DamageZone names **door1** (`:73`).
 
 ## Cross-pattern diff
 
@@ -541,9 +151,9 @@ No pattern introduces **AnimationSources** or script calls; those belong to **da
 
 ## Source discrepancies
 
-- Real files above are authoritative for packaged examples.
+- Where the tutorial's texts and its files disagree, the files are authoritative.
 - Expert prose at **Welcome to novoGODs Expert_Mode Door mod.txt:128-137** shows **switchOpen/switchClose**.
-- Real **assets/Expert_Mode/config.cpp:31-38** has neither sound.
+- The tutorial's **Doors_Buttons_Lesson/Expert_Mode/config.cpp:31-38** has neither sound.
 - ? No in-game test established the exact purpose/behavior of the duplicate Expert Lever Doors entry.
 
 ## Building locks (DayZ 1.30 Exp)
