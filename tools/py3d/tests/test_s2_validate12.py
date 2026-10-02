@@ -7,7 +7,7 @@ import sys
 
 import pytest
 
-from builders import build_multilod_v2_p3d
+from builders import add_proxy_triangle, build_multilod_v2_p3d
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AUDIT = os.path.join(REPO, "tools", "audit_p3d.py")
@@ -45,18 +45,29 @@ def mut_winding_lowconf(m, p3d):
     return ["WARN_WINDING_LOWCONF", "WARN_WINDING_NORMAL_MISMATCH",
             "WARN_WINDING_EDGE_INCOHERENT"]
 
-def mut_component_lowercase(m, p3d):
-    geo = p3d.get_lod("geometry")
-    geo.selections["component01"] = geo.selections.pop("Component01")
-    return ["ERR_COMPONENT_NAMING"]
-
+# A collision LOD with faces and no component collides with nothing in
+# game (measured 2026-10-02 with all three missing); each LOD is checked.
 def mut_component_none(m, p3d):
     p3d.get_lod("geometry").selections.pop("Component01")
     return ["ERR_COMPONENT_NAMING"]
 
-def mut_component_case(m, p3d):
+def mut_component_none_view(m, p3d):
+    p3d.get_lod("view_geometry").selections.pop("Component01")
+    return ["ERR_COMPONENT_NAMING"]
+
+def mut_component_none_fire(m, p3d):
+    p3d.get_lod("fire_geometry").selections.pop("Component01")
+    return ["ERR_COMPONENT_NAMING"]
+
+def mut_component_spelling(m, p3d):
     geo = p3d.get_lod("geometry")
-    geo.selections["COMPONENT01"] = geo.selections.pop("Component01")
+    geo.selections["Component_01"] = geo.selections.pop("Component01")
+    return ["WARN_COMPONENT_NAMING"]
+
+def mut_component_newline(m, p3d):
+    # "$" in re.match() accepts a trailing newline; fullmatch() does not
+    geo = p3d.get_lod("geometry")
+    geo.selections["Component01\n"] = geo.selections.pop("Component01")
     return ["WARN_COMPONENT_NAMING"]
 
 def mut_component_coverage(m, p3d):
@@ -152,9 +163,11 @@ CASES = [
     ("winding_inverted", mut_winding_inverted),
     ("winding_mixed", mut_winding_mixed),
     ("winding_lowconf", mut_winding_lowconf),
-    ("component_lowercase", mut_component_lowercase),
     ("component_none", mut_component_none),
-    ("component_case", mut_component_case),
+    ("component_none_view", mut_component_none_view),
+    ("component_none_fire", mut_component_none_fire),
+    ("component_spelling", mut_component_spelling),
+    ("component_newline", mut_component_newline),
     ("component_coverage", mut_component_coverage),
     ("autocenter_missing", mut_autocenter_missing),
     ("not_watertight", mut_not_watertight),
@@ -174,6 +187,128 @@ CASES = [
 def test_val_pos_v2_clean(fork):
     """The complete v2 fixture produces no findings."""
     assert build_multilod_v2_p3d(fork).validate() == []
+
+
+COLLISION_KINDS = ("geometry", "view_geometry", "fire_geometry")
+
+
+@pytest.mark.parametrize("name", ["Component01", "component01",
+                                  "COMPONENT01", "Component02"])
+def test_val_component_name_any_case(fork, name):
+    """In game (2026-10-02) component01 collided exactly like Component01,
+    and binarize writes both as component01: "Component" and a number, in
+    any case, raises nothing on any collision LOD. Up to 1.8.0 a
+    lowercase component01 raised ERR_COMPONENT_NAMING."""
+    p3d = build_multilod_v2_p3d(fork)
+    for kind in COLLISION_KINDS:
+        lod = p3d.get_lod(kind)
+        lod.selections[name] = lod.selections.pop("Component01")
+    assert p3d.validate() == []
+
+
+@pytest.mark.parametrize("kind", COLLISION_KINDS)
+def test_val_component_missing_names_the_lod(fork, kind):
+    """The ERROR sits on the LOD without a component, names its kind and
+    says its collision is lost silently; it no longer says the case of
+    the name matters."""
+    p3d = build_multilod_v2_p3d(fork)
+    lod = p3d.get_lod(kind)
+    lod.selections.pop("Component01")
+    index = next(i for i, l in enumerate(p3d.lods) if l is lod)
+    found = [f for f in p3d.validate() if f.code == "ERR_COMPONENT_NAMING"]
+    assert [(f.severity, f.lod) for f in found] == [("ERROR", index)]
+    msg = found[0].msg
+    assert msg.startswith("%s LOD: 6 face(s) and no ComponentNN selection"
+                          % kind), msg
+    # the measured case (none in any collision LOD) is said as measured,
+    # one LOD missing it alone as not measured
+    assert "in any of its collision LODs lost its collision silently" in msg
+    assert "while the others have one was not measured" in msg
+    assert "uppercase" not in msg.lower()
+
+
+def test_val_component_mixed_names(fork):
+    """One "Component" and a number is enough: next to component01, an
+    irregular Component_01 raises nothing (the WARN is for a LOD whose
+    component-like names are none of them "Component" and a number)."""
+    p3d = build_multilod_v2_p3d(fork)
+    for kind in COLLISION_KINDS:
+        lod = p3d.get_lod(kind)
+        lod.selections["component01"] = lod.selections.pop("Component01")
+        lod.set_selection("Component_01", point_idx=[0])
+    assert p3d.validate() == []
+
+
+COMPONENT_CODES = {"ERR_COMPONENT_NAMING", "WARN_COMPONENT_NAMING"}
+RESOLUTION = {"geometry": 1.0e13, "view_geometry": 6.0e15,
+              "fire_geometry": 7.0e15}
+
+
+@pytest.mark.parametrize("kind", COLLISION_KINDS)
+def test_val_component_not_required_without_own_faces(fork, kind):
+    """A collision LOD with no faces (a Geometry LOD that only carries
+    mass, the shape a worn item's has) or whose only face is a proxy
+    triangle has no collision geometry of its own: no component finding,
+    on each of the three kinds. The control: one face outside the proxy
+    makes the same LOD raise the ERROR."""
+    m = fork
+    bare = m.LOD()
+    bare.resolution = RESOLUTION[kind]
+    pt = m.Point()
+    pt.coords = (0.0, 0.0, 0.0)
+    if kind == "geometry":
+        pt.mass = 10.0
+    bare.points.append(pt)
+    proxied = m.LOD()
+    proxied.resolution = RESOLUTION[kind]
+    add_proxy_triangle(m, proxied, "proxy:\\dz\\data\\proxies\\flag.001")
+    p3d = m.P3D()
+    p3d.lods += [bare, proxied]
+    assert not COMPONENT_CODES & set(codes(p3d.validate()))
+    # the same builder, under a selection that is not a proxy: a face of
+    # the LOD's own
+    add_proxy_triangle(m, proxied, "glass", origin=(1.0, 1.0, 1.0))
+    found = [f for f in p3d.validate() if f.code in COMPONENT_CODES]
+    assert [(f.code, f.lod) for f in found] == [("ERR_COMPONENT_NAMING", 1)]
+    assert found[0].msg.startswith(
+        "%s LOD: 1 face(s) and no ComponentNN selection" % kind)
+
+
+@pytest.mark.parametrize("kind", COLLISION_KINDS)
+def test_val_component_proxy_name_is_not_enough(fork, kind):
+    """Faces are proxy triangles only when their 'proxy:...' selection has
+    a proxy's shape (1 triangle and its 3 corners). A cube whose 8 points and 6
+    quads sit under a proxy name is collision geometry with no component."""
+    p3d = build_multilod_v2_p3d(fork)
+    lod = p3d.get_lod(kind)
+    lod.selections["proxy:\\dz\\data\\proxies\\flag.001"] = \
+        lod.selections.pop("Component01")
+    index = next(i for i, l in enumerate(p3d.lods) if l is lod)
+    found = [f for f in p3d.validate() if f.code in COMPONENT_CODES]
+    assert [(f.code, f.lod) for f in found] == [("ERR_COMPONENT_NAMING", index)]
+
+
+@pytest.mark.parametrize("kind", COLLISION_KINDS)
+def test_val_component_proxy_points_are_its_corners(fork, kind):
+    """A proxy selection's 3 points must be its triangle's corners: one
+    that selects 3 other points does not make the triangle a proxy. The
+    control is the same LOD before its selection is re-pointed."""
+    m = fork
+    lod = m.LOD()
+    lod.resolution = RESOLUTION[kind]
+    sel = add_proxy_triangle(m, lod, "proxy:\\dz\\data\\proxies\\flag.001")
+    p3d = m.P3D()
+    p3d.lods.append(lod)
+    assert not COMPONENT_CODES & set(codes(p3d.validate()))
+    others = []
+    for xyz in ((4.0, 0.0, 0.0), (5.0, 0.0, 0.0), (4.0, 1.0, 0.0)):
+        pt = m.Point()
+        pt.coords = xyz
+        lod.points.append(pt)
+        others.append(pt)
+    sel.points = {pt: 1 for pt in others}
+    found = [f for f in p3d.validate() if f.code in COMPONENT_CODES]
+    assert [(f.code, f.lod) for f in found] == [("ERR_COMPONENT_NAMING", 0)]
 
 
 @pytest.mark.parametrize("name,mutate", CASES, ids=[c[0] for c in CASES])
