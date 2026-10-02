@@ -315,8 +315,8 @@ Geometry LOD has mass (`new Point()` defaults to `mass=None`; `add_proxy` points
 ### 3.5 `validate()` findings that are EXPECTED for a vehicle (don't chase)
 
 - **`ERR_COMPONENT_NAMING` (lowercase `component01`)** is a **false-positive for vehicles** — vanilla
-  CivilianSedan itself triggers it (it uses lowercase). Match vanilla: lowercase. (The case does not matter
-  on `Inventory_Base` items either: dayz-p3d-audit killer #2, measured in game 2026-10-02. The same code
+  CivilianSedan itself triggers it (it uses lowercase). Match vanilla: lowercase. (`component01` collided
+  like `Component01` on an `Inventory_Base` item too: dayz-p3d-audit killer #2, measured in game 2026-10-02. The same code
   for a Geometry LOD with no component at all is not expected: on an item and a building that collision
   was gone; vehicles not measured.) *(Corrected 2026-10-02: the parenthesis read
   "Uppercase `Component01` is the Inventory_Base rule.")*

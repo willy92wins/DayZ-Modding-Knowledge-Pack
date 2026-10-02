@@ -423,9 +423,10 @@ community). Both are real but distinct; do not conflate them. (No explicit Bohem
   `steeringwheel`/`drivewheel`, doors `doors_*`, seats `seat_*`, lights `light_*` (hiddenSelections),
   `color`/`base`/`special` (hiddenSelections), chassis catch-all (`zbytek`).
 - **Geometry/Collision LODs:** `componentNN` (lowercase `component01` — vanilla vehicles use lowercase,
-  measured via py3d on CivilianSedan and the extracted QuadBike MLOD; the case does not matter in game,
-  see §validate() ERR_COMPONENT_NAMING. QuadBike Geometry has 27 components — ~30-50
-  suffice for sedan/hatch). Hubs `wheel_X_Y_damper_land` as own components. *(Corrected 2026-10-02: the
+  measured via py3d on CivilianSedan and the extracted QuadBike MLOD; lowercase also collided like
+  uppercase on an item and a building in game, see §validate() ERR_COMPONENT_NAMING. QuadBike Geometry
+  has 27 components — ~30-50 suffice for sedan/hatch). Hubs `wheel_X_Y_damper_land` as own components.
+  *(Corrected 2026-10-02: the
   middle clause read "the uppercase `Component01` rule is Inventory_Base-only"; dayz-p3d-audit killer #2
   measured `component01` colliding like `Component01` on an `Inventory_Base` item too.)*
 - **Hitpoints LOD:** one `dmgZone_*` per config zone (`dmgZone_chassis/front/back/fender_*/engine/fuelTank/lights_*`).

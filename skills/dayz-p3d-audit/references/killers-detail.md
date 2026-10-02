@@ -102,9 +102,10 @@ fails a correct export (dayz-characters, "OFFLINE GATE").)*
 
 ### 2. No `ComponentNN` Selection in the Collision LODs (CRITICAL)
 
-Collision LODs whose faces belong to no `ComponentNN` selection collide with nothing: no raycast
-in `geom`, `view` or `fire`, no physics contact, and the player walks through. No line in the RPT
-or the script log says so. The case of the selection name is not part of it.
+A box whose Geometry, View and Fire LODs all carried no `ComponentNN` selection had no collision
+in any consumer that was measured: no `scene_raycast` hit in `geom`, `view` or `fire`, no
+`RayCastBullet` hit, and the player walked through it. No line in the RPT or the script log said
+so. `component01` and `Component01` gave the same result as each other.
 
 **Measured in game** (2026-10-02, DayZDiag 1.29.163709, driven by dayz-mcp): one 2 m box written
 as three MLODs that are byte-identical except for the selection on the Geometry, View and Fire
@@ -121,8 +122,11 @@ each name), or none. Each was loaded packed unbinarized and binarized, as an `In
 Rays per item and mode: one from above, one from each of the four sides at mid-height, one from
 inside; the two names gave the same faces to the centimetre. The `HouseNoDestruct` copies gave the
 same answer on one horizontal ray per mode, the physics ray and the walk. Same-run vanilla
-controls: `HescoBox` (`item_large`) took every ray and stopped the player at the same 0.36 m;
-`WoodenCrate` (`item_small`, 0.28 m tall) took every ray and did not stop the player. (claim: CLAIM-P3D-COMPONENT-CASE-INGAME)
+controls (layers from their vanilla configs): `HescoBox` (`item_large`) took every ray and
+stopped the player at the same 0.36 m; `WoodenCrate` (`item_small`, inherited from
+`Inventory_Base`) took every ray and did not stop the player, so a walk reads the physics layer
+as well as the mesh. A free walk covered the 7.5 m in about 5 s; a blocked one held for the full
+10 s. (claim: CLAIM-P3D-COMPONENT-CASE-INGAME)
 
 **Binarize removes the difference anyway**: from the `Component01` and the `component01` MLOD it
 writes the same ODOL, byte for byte, with the name stored as `component01`.
@@ -133,19 +137,23 @@ component as `ERR_COMPONENT_NAMING` ("No Component selection found"), and the sa
 on a lowercase `component01`, which works, so that reading is a false positive.
 
 **Fix**: select each closed, convex part of the collision LOD as its own `ComponentNN`
-(`Component01`, `Component02`, ...) over all its points and faces (killer #8). Keep the case the
-toolchain writes.
+(`Component01`, `Component02`, ...) over all of that part's points and faces, the components
+together covering the LOD (killer #8). Do not rename `component01` to `Component01` to repair
+collision: both gave the same results.
 
-**Not measured**: other spellings (`COMPONENT01`, `Component1`, `Component_01`), a model with a
-component in some collision LODs and none in others, weapon fire, vehicles.
+**Not measured**: other spellings (`COMPONENT01`, `Component1`, `Component_01`), names that
+differ only by case inside one model, more than one component per LOD, a component in some
+collision LODs and none in others, consumers other than the three above (weapon fire, the action
+cursor, vehicles hitting it, AI), vehicles.
 
 *(Corrected 2026-10-02: titled "Component Selection Case Sensitivity", this entry read: "Geometry
 LOD component MUST be `Component01` (uppercase C). The engine string-matches exactly.
 `component01`, `COMPONENT01`, or any variation silently fails — engine finds zero components and
 ignores ALL collision geometry." and "**Verified against**: LFPowerGrid production models (fridge,
-furnace, battery_adapter) all use `Component01`." Those models show that the uppercase name
-works, not that the lowercase one fails; LFPowerGrid's `lf_solarpanel.p3d`, whose collision
-component is `component01`, took 21 of 21 rays in game the same day.)*
+furnace, battery_adapter) all use `Component01`." Those files show which name LFPowerGrid used,
+not that another name fails. An earlier run the same day (the kit-box measurement behind rule 6
+of "Absolute winding check") also reported LFPowerGrid's `lf_solarpanel.p3d`, whose collision
+component is `component01`, taking 21 of 21 rays.)*
 
 ### 3. Missing `autocenter=0` LOD Property (CRITICAL for Inventory_Base)
 
@@ -223,10 +231,22 @@ back to `box_placing_*`. Vanilla deployables (`55galdrum`, `wooden_case`, `sea_c
 names — NOT `box_placing_*` — and rely on the Geometry LOD bbox. So this rule fires only
 for items without a proper Geometry LOD or with broken `GetCollisionBox()` data.
 
-### 8. Incomplete Component01 Coverage
+### 8. Incomplete Component Coverage
 
-`Component01` must include ALL vertices AND ALL faces of the Geometry LOD with weight=1.
-Partial coverage means partial collision — some faces won't register raycasts.
+Every vertex and face of a collision LOD must belong to a `ComponentNN` selection with weight=1:
+one component per closed, convex part (`dayz-model-pipeline` Rule 1), the components together
+covering the LOD. Partial coverage means partial collision — some faces won't register raycasts.
+Never merge separate parts into one `Component01` to make it cover everything: a component that
+holds two separate parts is not convex.
+
+py3d `WARN_COMPONENT_COVERAGE` (`_check_component_coverage`) compares `Component01` alone with the
+whole LOD, so it fires on a healthy multi-component LOD: `gate_and.p3d`'s Geometry LOD holds six
+components of 8 points each (48 points, 36 faces) and reads "Component01 covers 8/48 vertices",
+yet that model took every ray in game (SKILL.md, "Absolute winding check", rule 6). Count the
+union of the `ComponentNN` selections instead.
+
+*(Corrected 2026-10-02: titled "Incomplete Component01 Coverage", this entry read "`Component01`
+must include ALL vertices AND ALL faces of the Geometry LOD with weight=1.")*
 
 ### 9. Non-Watertight Collision Mesh
 

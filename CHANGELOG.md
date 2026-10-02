@@ -83,10 +83,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   names took every `scene_raycast` ray in `geom`, `view` and `fire` (6 of 6 per mode on the items),
   the physics ray, and stopped a walking player 0.36 m before the face; the box without a
   selection took none, and the player walked through it, with no log line. Binarize writes both
-  names as the same ODOL, `component01`. Killer #2 is now the measured silent failure: collision
-  faces in no `ComponentNN` selection. Decision-tree step 5b, the "case-sensitive" pitfall in
-  PART 5 and the two `dayz-vehicles` notes are aligned; py3d `ERR_COMPONENT_NAMING` on a lowercase
-  name is documented as a false positive (code unchanged). The old text is quoted in dated notes.
+  names as the same ODOL, `component01`. Killer #2 is now that measured silent failure: no
+  `ComponentNN` selection in the collision LODs (measured with all three unselected; other
+  spellings untested). Decision-tree step 5b, the "case-sensitive" pitfall in PART 5 and the two
+  `dayz-vehicles` notes are aligned; py3d `ERR_COMPONENT_NAMING` on `component01` is documented as
+  a false positive (code unchanged). Killer #8 and step 5e asked for one `Component01` covering
+  every face, which merges separate parts into one non-convex component; they now ask for one
+  component per convex part, together covering the LOD, and note that py3d
+  `WARN_COMPONENT_COVERAGE` counts `Component01` alone (it fires on the healthy six-component
+  `gate_and.p3d`). The old text is quoted in dated notes.
 
 ## [1.5.0] - 2026-10-02
 
