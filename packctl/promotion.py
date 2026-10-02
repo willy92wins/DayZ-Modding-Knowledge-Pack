@@ -1291,6 +1291,52 @@ def _append_scoped_receipt_finding(
     )
 
 
+def _relocated_v1_receipt(
+    root: Path,
+    plan: dict[str, object],
+    transaction_id: str,
+) -> Path | None:
+    """Where a schema-1 receipt sealed in another checkout lives in ``root``.
+
+    Schema 1 binds a receipt to the checkout that applied it: the sealed plan
+    records that checkout as ``source_root`` and the receipt under it. A
+    promotion run from a temporary worktree leaves its receipt committed to
+    the repository, and once the worktree is removed the receipt can only be
+    read from another checkout. That move is accepted between the canonical
+    layouts only: the sealed ``receipt_path`` is
+    ``<source_root>/promotions/receipts/<transaction_id>.json``, and in
+    ``root`` the same relative path is a regular file that HEAD tracks with
+    these bytes. Callers still match it against the sealed plan and the COMMIT
+    receipt hash. Returns the path in ``root``, or None if the move is refused.
+    """
+    if plan.get("schema_version") == 2:
+        return None
+    relative = Path("promotions") / "receipts" / f"{transaction_id}.json"
+    sealed_root = plan.get("source_root")
+    sealed_path = plan.get("receipt_path")
+    if not isinstance(sealed_root, str) or not isinstance(sealed_path, str):
+        return None
+    expected_sealed = os.path.normcase(
+        os.path.normpath(str(Path(sealed_root) / relative))
+    )
+    if os.path.normcase(os.path.normpath(sealed_path)) != expected_sealed:
+        return None
+    candidate = root / relative
+    if candidate.is_symlink() or _is_junction(candidate) or not candidate.is_file():
+        return None
+    posix = relative.as_posix()
+    try:
+        head_blob = git_output(
+            root, "rev-parse", "--verify", "--quiet", f"HEAD:{posix}"
+        ).strip()
+        file_blob = git_output(root, "hash-object", "--", posix).strip()
+    except (OSError, subprocess.CalledProcessError, UnicodeError):
+        return None
+    if not head_blob or head_blob != file_blob:
+        return None
+    return candidate
+
+
 def _sealed_receipt_transitions(
     root: Path,
     backup_root: Path,
@@ -1343,17 +1389,30 @@ def _sealed_receipt_transitions(
                 "PROMOTION-RECEIPT-COMMIT-NOT-ANCESTOR",
                 str(receipt["source_commit"]),
             )
-    elif (
-        receipt != expected_receipt
-        or os.path.normcase(str(expected_path))
-        != os.path.normcase(str(path.resolve(strict=False)))
-        or Path(str(plan["source_root"])).resolve(strict=False) != root
-    ):
-        return (
-            [],
-            "PROMOTION-RECEIPT-JOURNAL-MISMATCH",
-            "receipt-does-not-match-sealed-plan",
+    else:
+        read_path = os.path.normcase(str(path.resolve(strict=False)))
+        sealed_here = (
+            os.path.normcase(str(expected_path)) == read_path
+            and Path(str(plan["source_root"])).resolve(strict=False) == root
         )
+        relocated = (
+            None
+            if sealed_here
+            else _relocated_v1_receipt(root, plan, transaction_id)
+        )
+        if receipt != expected_receipt or not (
+            sealed_here
+            or (
+                relocated is not None
+                and os.path.normcase(str(relocated.resolve(strict=False)))
+                == read_path
+            )
+        ):
+            return (
+                [],
+                "PROMOTION-RECEIPT-JOURNAL-MISMATCH",
+                "receipt-does-not-match-sealed-plan",
+            )
     if (
         receipt_bytes != canonical_json_bytes(expected_receipt)
         or sha256_bytes(receipt_bytes) != receipt_hash
@@ -3660,6 +3719,18 @@ def _scan_transactions(
                 )
             else:
                 receipt_path = historical_path
+                if (
+                    live_root is not None
+                    and not historical_path.exists()
+                    and not historical_path.is_symlink()
+                ):
+                    relocated = _relocated_v1_receipt(
+                        Path(live_root),
+                        prior_plan,
+                        transaction_root.name,
+                    )
+                    if relocated is not None:
+                        receipt_path = relocated
             if terminal["event_type"] == "COMMIT":
                 if (
                     not receipt_path.exists()

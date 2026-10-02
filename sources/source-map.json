@@ -2548,10 +2548,20 @@
           "source_path": "packctl/promotion.py",
           "source_revision": "g5-root-inclusive-residue@2026-09-11",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 promotion unblock. Schema 1 binds a promotion receipt to the checkout that applied it; the nine receipts in promotions/receipts were sealed from a temporary worktree that no longer exists, so promote --check failed with PROMOTION-RECEIPT-JOURNAL-MISMATCH on all nine and the pre-apply journal sweep with PROMOTION-RECOVERY-REQUIRED (diagnosis by Codex on 2026-10-01; re-read in packctl/promotion.py). packctl now reads such a receipt from any checkout whose HEAD tracks it at promotions/receipts/<transaction_id>.json with the same bytes, still matched against the sealed plan and the COMMIT receipt hash; the sweep uses the same rule when the sealed path is gone. Six new cases in tests/packctl/test_promotion.py; four fail on the previous promotion.py. Written by Claude (Anthropic); cross-family review pending.",
+          "license": "MIT",
+          "source_hash": "dd611d5e8be9fc9adb3f316c7d9ce9f805d9b049b71ed0e4853d0d3c7970f980",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/promotion.py",
+          "source_revision": "kp-update-promotion-receipts@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6c021bf191e8dbaeae12a959e8cd2bfe9e52d6a12de27b25da3513a9dbec4239",
+      "output_hash": "dd611d5e8be9fc9adb3f316c7d9ce9f805d9b049b71ed0e4853d0d3c7970f980",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -2747,10 +2757,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion@2026-09-29",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Two adjudications for skill/dayz-motorbikes (claude_user_skills and agents_user_skills, one physical directory) at the live digest measured on 2026-10-02 with packctl tree_digest. The owner decided to replace the never-promoted live copy, which predates the governed port of 2026-10-01, with this repository's version; the promotion backs up the live tree first.",
+          "license": "MIT",
+          "source_hash": "1e9d38a775acac412367c69f355d0cd06088cd45dac5c5685abe40b9d4dea4e2",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-receipts@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "cfbd1c79c704477d154b2841353dc797969d6be4937e0b55255a9844d769b26a",
+      "output_hash": "1e9d38a775acac412367c69f355d0cd06088cd45dac5c5685abe40b9d4dea4e2",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -14894,10 +14914,20 @@
           "source_path": "tests/packctl/test_promotion.py",
           "source_revision": "g5-root-inclusive-residue@2026-09-11",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 promotion unblock. Schema 1 binds a promotion receipt to the checkout that applied it; the nine receipts in promotions/receipts were sealed from a temporary worktree that no longer exists, so promote --check failed with PROMOTION-RECEIPT-JOURNAL-MISMATCH on all nine and the pre-apply journal sweep with PROMOTION-RECOVERY-REQUIRED (diagnosis by Codex on 2026-10-01; re-read in packctl/promotion.py). packctl now reads such a receipt from any checkout whose HEAD tracks it at promotions/receipts/<transaction_id>.json with the same bytes, still matched against the sealed plan and the COMMIT receipt hash; the sweep uses the same rule when the sealed path is gone. Six new cases in tests/packctl/test_promotion.py; four fail on the previous promotion.py. Written by Claude (Anthropic); cross-family review pending.",
+          "license": "MIT",
+          "source_hash": "afe6f8ae50a64a1d09fc824141b443eda36b37cfb04d658a017286050b98bf21",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "kp-update-promotion-receipts@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4afd0bed1efd2d534e9dcfdb828d1edf856da8dffc0bf2da31d064c31c7e944b",
+      "output_hash": "afe6f8ae50a64a1d09fc824141b443eda36b37cfb04d658a017286050b98bf21",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
