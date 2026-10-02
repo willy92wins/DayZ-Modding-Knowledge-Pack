@@ -388,6 +388,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `dayz-realistic-animation-director/scripts/tests` (one of its modules imports `bpy`),
   `dayz-proxy-align/scripts/test_proxy_frame.py` and
   `dayz-mcp-verify/references/test_drive_ladder.py`.
+- `dayz-model-pipeline` Rule 18 no longer reverses whole collision LODs. Its body read the
+  per-component check on "most faces" and fixed it with `face.vertices.reverse()` on every face of
+  every collision LOD, though its own 2026-10-02 note had narrowed both: on a collision LOD holding
+  one box wound inward and one wound outward, that loop swaps them (signed volumes by winding -8 and
+  +8 become +8 and -8; measured offline, py3d 1.9.0, synthetic 2 m boxes), while reversing only the
+  faces that read outward and negating their normals leaves both at -8. The body now carries killer
+  #1's prerequisites and fix: every non-proxy face of every closed, convex component reads inward,
+  only the faces that read outward are reversed, and a collision LOD is never reversed to match the
+  Visual LOD. The two troubleshooting rows that reversed every face say the same; the
+  symptom-triplet row also reversed Roadway, whose walkable faces it now sends to `dayz-p3d-audit`
+  "Absolute winding check" rule 4. In `references/py3d-direct-generation.md`, the "Face Winding
+  Order Fix" loop, which reverses every face of every LOD, proxy triangles included, is marked as
+  the undo of a whole-model `P3D.transform()` reversal, its one use, and the section says how a
+  collision LOD is repaired instead. Rule 18 also pointed at `check_face_winding` as its
+  implementation: that function compares winding with stored normals on the first LOD only, and it
+  returned no finding on a model whose first LOD is the Memory LOD over an outward collision box,
+  nor with that box stored first (measured offline the same way). Rule 18 now says no function of
+  the skill runs its check, and `check_face_winding`'s section says what it reads. The old text is
+  quoted in dated notes.
 
 ## [1.5.0] - 2026-10-02
 
