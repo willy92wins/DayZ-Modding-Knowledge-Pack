@@ -332,10 +332,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   inside-out Visual LOD. Rule 18's per-component check decides (with its prerequisites met, every
   non-proxy face of every component reads inward), only the faces that read outward are reversed,
   their stored normals as killer #1's fix says, and a collision LOD is never reversed to match the
-  Visual LOD. The section's title and body say so now,
-  and so do the rule's two other copies: the collider recipe in
-  `references/py3d-direct-generation.md`, which called the relative comparison "the operational
-  gate", and `dayz-p3d-inspector`'s SP-003 section. The old text is quoted in dated notes.
+  Visual LOD. The section's title and body say so now, and so do the rule's two other copies: the
+  collider recipe in `references/py3d-direct-generation.md`, which called the relative comparison
+  "the operational gate", and `dayz-p3d-inspector`'s SP-003 section. The collider recipe also says
+  to store the negated `hull.equations` normal on every face, reversed or not: scipy's `ConvexHull`
+  returns its faces in no consistent order (measured offline, scipy 1.17.1: 22 of 44 faces of a
+  12-gon cylinder wound outward), and the outward normals kept on the faces left alone read 50 %
+  agreement in py3d. The old text is quoted in dated notes.
 
 ## [1.5.0] - 2026-10-02
 
