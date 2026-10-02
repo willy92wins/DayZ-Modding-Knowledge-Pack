@@ -644,9 +644,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-model-pipeline SP-003 told the reader, when generating or editing a collision LOD, to compare its winding against the Visual LOD of the same model (centroid method) before deploying and make the two agree in sign (~100% inward), and said audit_p3d.py does not validate this; the collider recipe in references/py3d-direct-generation.md (SP-025) said to make the collider's sign match the Visual LOD and called that relative comparison the operational gate; dayz-p3d-inspector's SP-003 section said the same. Since PR #38 (6dfe299) dayz-p3d-audit killer #1 (references/killers-detail.md) reads the relative check against the Visual LOD as a trigger and Rule 18's per-component check as the verdict (prerequisites: every non-proxy face in a ComponentNN selection, every component closed and convex, no degenerate face; otherwise unresolved), reverses only the faces that read outward, and says never to reverse a collision LOD to match the Visual LOD ('Absolute winding check' rule 7). Checked against base 164f8fb: audit_p3d.py runs py3d P3D.validate() (skills/dayz-p3d-audit/scripts/audit_p3d.py:337; the absolute-centroid winding check is retired, lines 11-12); py3d _check_winding_vs_visual (tools/py3d/py3d/__init__.py:1176, called at line 3103 for every geometry-class LOD other than the Visual LOD) raises ERR_WINDING_INVERTED when the collision LOD and the Visual LOD are both uniform (over 90 % or under 10 % of faces outward from the LOD's centroid) and opposite; killers-detail.md lines 58-69 (detection), 71-103 (the automated check is a trigger and also fires on a healthy inward box under an inside-out Visual LOD or a room seen from inside) and 105-116 (fix only the faces that read outward, never match the Visual LOD); dayz-p3d-audit SKILL.md line 430 (rule 7) and line 30 (item 1 of the three py3d gates: offline, the relative check accuses healthy collision LODs under an inside-out Visual LOD); dayz-model-pipeline SKILL.md line 233 (Rule 18, narrowed 2026-10-02 to every face). The three sections now say so, and each keeps a dated note quoting the replaced text verbatim (checked mechanically, whitespace-normalized, against base 164f8fb; three single-character mutants fail the check). The walk-through sentence of SP-003 and its 2026-10-02 note are unchanged. No new measurement: documentation alignment only. A cross-family reviewer (Codex gpt-6.1-sol) flagged the contradiction in both rounds of PR #56. Review round 1 (Codex gpt-6.1-sol, SOUND-WITH-FIXES), finding R21-04: the SP-025 collider recipe now stores the negated hull.equations normal on every face, reversed or not. Measured offline 2026-10-02 with scipy 1.17.1 and the Pack's py3d source (receptor's verify_r21_04.py): the ConvexHull of a 12-gon cylinder (ring in the Y-Z plane at x = -0.12 and +0.12, r = 0.35) gave 22 of 44 simplices wound outward and all 44 equation normals outward; reversing the outward faces and keeping the outward normals on the other faces read 50.0 % normal agreement and WARN_WINDING_NORMAL_MISMATCH in py3d's absolute check, and every normal negated read 100.0 % with no finding; the same on a tetrahedron. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f80e6c7803285e70e921794bf5a8cac9df00131d6649981bbf8a98ab55775886",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-sp003-align@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03: Unreleased Fixed entry for the dayz-model-pipeline references/lods-and-geometry.md py3d block of the GLB/glTF source case, which reversed proxy triangles against the rule above it; the block now keeps the single triangle of each proxy-named selection (weight-0 entries not counting), reverses every other face once, refuses a vertex list that would be reversed twice, and a sentence says what P3D.transform() has already done. Measured offline with py3d 1.9.0 and on 411 MLODs as recorded on the lods-and-geometry.md input of the same change. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "abf7c8a6430585416b4402c3f47ba4e09889b7eea38328a67797e258467a5e7d",
+          "source_hash": "5d7be29720d28e8fcc14a026950531e9184a084ac29037e8c7f1fc2c3ebdc481",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-glb-proxy-loop@2026-10-03",
@@ -654,7 +664,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "abf7c8a6430585416b4402c3f47ba4e09889b7eea38328a67797e258467a5e7d",
+      "output_hash": "5d7be29720d28e8fcc14a026950531e9184a084ac29037e8c7f1fc2c3ebdc481",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3217,10 +3227,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-c229c8b@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 promotion of main 1d03d90 following #62 (receipt 9b8733b54b0b0f43fd94884a of the c229c8b promotion): the owner asked to promote main to the live trees; the session that owned #62 was coordinated with first (it merged #62 as 1d03d90, removed its sealing worktree, and its read-only closing check from a fresh worktree of 1d03d90 came back with only PROMOTION-DRIFT and no receipt finding). The promotion carries what main gained since c229c8b: #61, #57, #59, #60, #65 and #62. promote --check from a fresh worktree of 1d03d90 with the unchanged local-targets.json (sha256 27c89b56562a7f412f204096b2e762d0f3d0e2330f0f0ebd23e5adb3a633b8eb): WARN with only PROMOTION-DRIFT and no receipt finding (79 of 119 operations: six skills on agents_user_skills+claude_user_skills and 73 new vault snapshots; no live file removed). The skill changes are exactly the 11 files git changed under skills/ since c229c8b: blender-animation references/dayz-handoff.md (#59); dayz-animation-pipeline references/blender-authoring.md, references/weapon-anim-authoring-viewer.md, scripts/seanim_export.py (#59); dayz-clothing references/autofit-from-official-rig.md (#60); dayz-doors references/lods-and-object-builder.md (#65); dayz-p3d-audit SKILL.md, references/killers-detail.md (#60, #61, #65), references/winding-diagnostics.md (#61); dayz-vehicles references/rip-import.md, references/vehicle-structural-parity.md (#60). #57 (packctl gate) touches no skill and reaches the vault snapshots only. promote --apply PASS, transaction 99e5902a3c6a1c3ebb68e0ab, COMMIT event 239 at 2026-10-02T22:58:38Z; the receipt's sha256 (5124cf7de60037b1a8eced2cb0f0b6d0803384a047aec2bd46f379ed1d78175d) equals the COMMIT receipt_hash, its completed_at, source_commit and operations (id, before, after) equal the plan's, and it holds no absolute path. Re-measured with packctl tree_digest, 119/119 destinations are at their after_digest. promotions/adjudications.json is the advance packctl wrote at COMMIT: of 82 pairs, exactly the 12 whose observed_digest was the before_digest of a changed operation moved, each to its after_digest with every other field unchanged. Codex was at 100 % of its weekly window (reset 2026-10-09 03:39), so no cross-family review ran: as for #62, the receipt merges on the mechanical checks (the verification above, packctl validate and gate, CI). Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b30069928db6a9895ad0c53c0322046f02ae5a10475c370bcca2493cc4690c30",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-1d03d90@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a30615616ed9895a668319123147034fe7a4176abdbe8c79a33fc575a22f0ce2",
+      "output_hash": "b30069928db6a9895ad0c53c0322046f02ae5a10475c370bcca2493cc4690c30",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -7696,10 +7716,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-p3d-audit-killer1-walk@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-model-pipeline SP-003 told the reader, when generating or editing a collision LOD, to compare its winding against the Visual LOD of the same model (centroid method) before deploying and make the two agree in sign (~100% inward), and said audit_p3d.py does not validate this; the collider recipe in references/py3d-direct-generation.md (SP-025) said to make the collider's sign match the Visual LOD and called that relative comparison the operational gate; dayz-p3d-inspector's SP-003 section said the same. Since PR #38 (6dfe299) dayz-p3d-audit killer #1 (references/killers-detail.md) reads the relative check against the Visual LOD as a trigger and Rule 18's per-component check as the verdict (prerequisites: every non-proxy face in a ComponentNN selection, every component closed and convex, no degenerate face; otherwise unresolved), reverses only the faces that read outward, and says never to reverse a collision LOD to match the Visual LOD ('Absolute winding check' rule 7). Checked against base 164f8fb: audit_p3d.py runs py3d P3D.validate() (skills/dayz-p3d-audit/scripts/audit_p3d.py:337; the absolute-centroid winding check is retired, lines 11-12); py3d _check_winding_vs_visual (tools/py3d/py3d/__init__.py:1176, called at line 3103 for every geometry-class LOD other than the Visual LOD) raises ERR_WINDING_INVERTED when the collision LOD and the Visual LOD are both uniform (over 90 % or under 10 % of faces outward from the LOD's centroid) and opposite; killers-detail.md lines 58-69 (detection), 71-103 (the automated check is a trigger and also fires on a healthy inward box under an inside-out Visual LOD or a room seen from inside) and 105-116 (fix only the faces that read outward, never match the Visual LOD); dayz-p3d-audit SKILL.md line 430 (rule 7) and line 30 (item 1 of the three py3d gates: offline, the relative check accuses healthy collision LODs under an inside-out Visual LOD); dayz-model-pipeline SKILL.md line 233 (Rule 18, narrowed 2026-10-02 to every face). The three sections now say so, and each keeps a dated note quoting the replaced text verbatim (checked mechanically, whitespace-normalized, against base 164f8fb; three single-character mutants fail the check). The walk-through sentence of SP-003 and its 2026-10-02 note are unchanged. No new measurement: documentation alignment only. A cross-family reviewer (Codex gpt-6.1-sol) flagged the contradiction in both rounds of PR #56. Review round 1 (Codex gpt-6.1-sol, SOUND-WITH-FIXES), finding R21-04: the SP-025 collider recipe now stores the negated hull.equations normal on every face, reversed or not. Measured offline 2026-10-02 with scipy 1.17.1 and the Pack's py3d source (receptor's verify_r21_04.py): the ConvexHull of a 12-gon cylinder (ring in the Y-Z plane at x = -0.12 and +0.12, r = 0.35) gave 22 of 44 simplices wound outward and all 44 equation normals outward; reversing the outward faces and keeping the outward normals on the other faces read 50.0 % normal agreement and WARN_WINDING_NORMAL_MISMATCH in py3d's absolute check, and every normal negated read 100.0 % with no finding; the same on a tetrahedron. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c3c3b4403a6fe1cd31e30b157b9630e7167312bf9e0a1e08d2aa3cbcc0fbf170",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "kp-update-sp003-align@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4ed06587c2979256dcbbb5d49588b31cc8bee208437ab803d403931453a7afae",
+      "output_hash": "c3c3b4403a6fe1cd31e30b157b9630e7167312bf9e0a1e08d2aa3cbcc0fbf170",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8098,10 +8128,20 @@
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-characters-winding-gate@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-model-pipeline SP-003 told the reader, when generating or editing a collision LOD, to compare its winding against the Visual LOD of the same model (centroid method) before deploying and make the two agree in sign (~100% inward), and said audit_p3d.py does not validate this; the collider recipe in references/py3d-direct-generation.md (SP-025) said to make the collider's sign match the Visual LOD and called that relative comparison the operational gate; dayz-p3d-inspector's SP-003 section said the same. Since PR #38 (6dfe299) dayz-p3d-audit killer #1 (references/killers-detail.md) reads the relative check against the Visual LOD as a trigger and Rule 18's per-component check as the verdict (prerequisites: every non-proxy face in a ComponentNN selection, every component closed and convex, no degenerate face; otherwise unresolved), reverses only the faces that read outward, and says never to reverse a collision LOD to match the Visual LOD ('Absolute winding check' rule 7). Checked against base 164f8fb: audit_p3d.py runs py3d P3D.validate() (skills/dayz-p3d-audit/scripts/audit_p3d.py:337; the absolute-centroid winding check is retired, lines 11-12); py3d _check_winding_vs_visual (tools/py3d/py3d/__init__.py:1176, called at line 3103 for every geometry-class LOD other than the Visual LOD) raises ERR_WINDING_INVERTED when the collision LOD and the Visual LOD are both uniform (over 90 % or under 10 % of faces outward from the LOD's centroid) and opposite; killers-detail.md lines 58-69 (detection), 71-103 (the automated check is a trigger and also fires on a healthy inward box under an inside-out Visual LOD or a room seen from inside) and 105-116 (fix only the faces that read outward, never match the Visual LOD); dayz-p3d-audit SKILL.md line 430 (rule 7) and line 30 (item 1 of the three py3d gates: offline, the relative check accuses healthy collision LODs under an inside-out Visual LOD); dayz-model-pipeline SKILL.md line 233 (Rule 18, narrowed 2026-10-02 to every face). The three sections now say so, and each keeps a dated note quoting the replaced text verbatim (checked mechanically, whitespace-normalized, against base 164f8fb; three single-character mutants fail the check). The walk-through sentence of SP-003 and its 2026-10-02 note are unchanged. No new measurement: documentation alignment only. A cross-family reviewer (Codex gpt-6.1-sol) flagged the contradiction in both rounds of PR #56. Review round 1 (Codex gpt-6.1-sol, SOUND-WITH-FIXES), finding R21-04: the SP-025 collider recipe now stores the negated hull.equations normal on every face, reversed or not. Measured offline 2026-10-02 with scipy 1.17.1 and the Pack's py3d source (receptor's verify_r21_04.py): the ConvexHull of a 12-gon cylinder (ring in the Y-Z plane at x = -0.12 and +0.12, r = 0.35) gave 22 of 44 simplices wound outward and all 44 equation normals outward; reversing the outward faces and keeping the outward normals on the other faces read 50.0 % normal agreement and WARN_WINDING_NORMAL_MISMATCH in py3d's absolute check, and every normal negated read 100.0 % with no finding; the same on a tetrahedron. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "64d13277179d9279b0e00da4acc626d51124231d35ccabc005e9792f23c5a472",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "kp-update-sp003-align@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4c9eca0f75eb0617fe43d181958242d9485fe0850ed6be31db5588f4c10112ce",
+      "output_hash": "64d13277179d9279b0e00da4acc626d51124231d35ccabc005e9792f23c5a472",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8654,10 +8694,20 @@
           "source_path": "skills/dayz-p3d-inspector/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-model-pipeline SP-003 told the reader, when generating or editing a collision LOD, to compare its winding against the Visual LOD of the same model (centroid method) before deploying and make the two agree in sign (~100% inward), and said audit_p3d.py does not validate this; the collider recipe in references/py3d-direct-generation.md (SP-025) said to make the collider's sign match the Visual LOD and called that relative comparison the operational gate; dayz-p3d-inspector's SP-003 section said the same. Since PR #38 (6dfe299) dayz-p3d-audit killer #1 (references/killers-detail.md) reads the relative check against the Visual LOD as a trigger and Rule 18's per-component check as the verdict (prerequisites: every non-proxy face in a ComponentNN selection, every component closed and convex, no degenerate face; otherwise unresolved), reverses only the faces that read outward, and says never to reverse a collision LOD to match the Visual LOD ('Absolute winding check' rule 7). Checked against base 164f8fb: audit_p3d.py runs py3d P3D.validate() (skills/dayz-p3d-audit/scripts/audit_p3d.py:337; the absolute-centroid winding check is retired, lines 11-12); py3d _check_winding_vs_visual (tools/py3d/py3d/__init__.py:1176, called at line 3103 for every geometry-class LOD other than the Visual LOD) raises ERR_WINDING_INVERTED when the collision LOD and the Visual LOD are both uniform (over 90 % or under 10 % of faces outward from the LOD's centroid) and opposite; killers-detail.md lines 58-69 (detection), 71-103 (the automated check is a trigger and also fires on a healthy inward box under an inside-out Visual LOD or a room seen from inside) and 105-116 (fix only the faces that read outward, never match the Visual LOD); dayz-p3d-audit SKILL.md line 430 (rule 7) and line 30 (item 1 of the three py3d gates: offline, the relative check accuses healthy collision LODs under an inside-out Visual LOD); dayz-model-pipeline SKILL.md line 233 (Rule 18, narrowed 2026-10-02 to every face). The three sections now say so, and each keeps a dated note quoting the replaced text verbatim (checked mechanically, whitespace-normalized, against base 164f8fb; three single-character mutants fail the check). The walk-through sentence of SP-003 and its 2026-10-02 note are unchanged. No new measurement: documentation alignment only. A cross-family reviewer (Codex gpt-6.1-sol) flagged the contradiction in both rounds of PR #56. Review round 1 (Codex gpt-6.1-sol, SOUND-WITH-FIXES), finding R21-04: the SP-025 collider recipe now stores the negated hull.equations normal on every face, reversed or not. Measured offline 2026-10-02 with scipy 1.17.1 and the Pack's py3d source (receptor's verify_r21_04.py): the ConvexHull of a 12-gon cylinder (ring in the Y-Z plane at x = -0.12 and +0.12, r = 0.35) gave 22 of 44 simplices wound outward and all 44 equation normals outward; reversing the outward faces and keeping the outward normals on the other faces read 50.0 % normal agreement and WARN_WINDING_NORMAL_MISMATCH in py3d's absolute check, and every normal negated read 100.0 % with no finding; the same on a tetrahedron. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c79e7071f72b6cc8f7b51f2a984e6b12e04f1a6062ea9e4fe7054420aade7979",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "kp-update-sp003-align@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4e63224f637d26c5e8601ed9fccff3896d3f41a6aff452d3540701cbc17c240e",
+      "output_hash": "c79e7071f72b6cc8f7b51f2a984e6b12e04f1a6062ea9e4fe7054420aade7979",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -29128,6 +29178,28 @@
       "license": "MIT",
       "output_hash": "b9c7fa0e0194ebd7d8ea76e284192bdca59077df818eec80b8b2c50db33b8229",
       "output_path": "promotions/receipts/9b8733b54b0b0f43fd94884a.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/99e5902a3c6a1c3ebb68e0ab.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03 promotion of main 1d03d90 following #62 (receipt 9b8733b54b0b0f43fd94884a of the c229c8b promotion): the owner asked to promote main to the live trees; the session that owned #62 was coordinated with first (it merged #62 as 1d03d90, removed its sealing worktree, and its read-only closing check from a fresh worktree of 1d03d90 came back with only PROMOTION-DRIFT and no receipt finding). The promotion carries what main gained since c229c8b: #61, #57, #59, #60, #65 and #62. promote --check from a fresh worktree of 1d03d90 with the unchanged local-targets.json (sha256 27c89b56562a7f412f204096b2e762d0f3d0e2330f0f0ebd23e5adb3a633b8eb): WARN with only PROMOTION-DRIFT and no receipt finding (79 of 119 operations: six skills on agents_user_skills+claude_user_skills and 73 new vault snapshots; no live file removed). The skill changes are exactly the 11 files git changed under skills/ since c229c8b: blender-animation references/dayz-handoff.md (#59); dayz-animation-pipeline references/blender-authoring.md, references/weapon-anim-authoring-viewer.md, scripts/seanim_export.py (#59); dayz-clothing references/autofit-from-official-rig.md (#60); dayz-doors references/lods-and-object-builder.md (#65); dayz-p3d-audit SKILL.md, references/killers-detail.md (#60, #61, #65), references/winding-diagnostics.md (#61); dayz-vehicles references/rip-import.md, references/vehicle-structural-parity.md (#60). #57 (packctl gate) touches no skill and reaches the vault snapshots only. promote --apply PASS, transaction 99e5902a3c6a1c3ebb68e0ab, COMMIT event 239 at 2026-10-02T22:58:38Z; the receipt's sha256 (5124cf7de60037b1a8eced2cb0f0b6d0803384a047aec2bd46f379ed1d78175d) equals the COMMIT receipt_hash, its completed_at, source_commit and operations (id, before, after) equal the plan's, and it holds no absolute path. Re-measured with packctl tree_digest, 119/119 destinations are at their after_digest. promotions/adjudications.json is the advance packctl wrote at COMMIT: of 82 pairs, exactly the 12 whose observed_digest was the before_digest of a changed operation moved, each to its after_digest with every other field unchanged. Codex was at 100 % of its weekly window (reset 2026-10-09 03:39), so no cross-family review ran: as for #62, the receipt merges on the mechanical checks (the verification above, packctl validate and gate, CI). Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5124cf7de60037b1a8eced2cb0f0b6d0803384a047aec2bd46f379ed1d78175d",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/99e5902a3c6a1c3ebb68e0ab.json",
+          "source_revision": "kp-update-promotion-1d03d90@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5124cf7de60037b1a8eced2cb0f0b6d0803384a047aec2bd46f379ed1d78175d",
+      "output_path": "promotions/receipts/99e5902a3c6a1c3ebb68e0ab.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },

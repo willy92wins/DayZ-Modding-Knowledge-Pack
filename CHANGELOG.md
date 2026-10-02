@@ -449,6 +449,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   tree vendors a wheel today, so nothing was affected. Earlier `py3d_dayz` wheels are now backed up
   and removed like legacy ones: a new case in `tests/py3d_rollout/test_apply_rollout.py` and test E
   of `verify-wheel-restock.ps1` fail on the previous applicator and pass now.
+- `dayz-model-pipeline` SP-003 no longer tells you to match a collision LOD's winding to the Visual
+  LOD. It said to compare the two "(centroid method) BEFORE deploying — they must agree in sign",
+  and that `audit_p3d.py` does not validate this. `audit_p3d.py` does run that comparison, py3d's
+  relative check (`ERR_WINDING_INVERTED`, through `P3D.validate()`), and since killer #1 was
+  rewritten it is a trigger, not the verdict: it also fires on healthy collision LODs under an
+  inside-out Visual LOD. Rule 18's per-component check decides (with its prerequisites met, every
+  non-proxy face of every component reads inward), only the faces that read outward are reversed,
+  their stored normals as killer #1's fix says, and a collision LOD is never reversed to match the
+  Visual LOD. The section's title and body say so now, and so do the rule's two other copies: the
+  collider recipe in `references/py3d-direct-generation.md`, which called the relative comparison
+  "the operational gate", and `dayz-p3d-inspector`'s SP-003 section. The collider recipe also says
+  to store the negated `hull.equations` normal on every face, reversed or not: scipy's `ConvexHull`
+  returns its faces in no consistent order (measured offline, scipy 1.17.1: 22 of 44 faces of a
+  12-gon cylinder wound outward), and the outward normals kept on the faces left alone read 50 %
+  agreement in py3d. The old text is quoted in dated notes.
 - `dayz-model-pipeline` `references/lods-and-geometry.md`, the py3d fix for the GLB/glTF source
   case: the bullet above it reverses every face in every LOD except proxy triangles, but the loop
   under it reversed the proxy triangles too. The loop now keeps the order of each proxy triangle,
