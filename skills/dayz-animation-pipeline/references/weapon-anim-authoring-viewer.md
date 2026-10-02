@@ -189,14 +189,19 @@ lie on ±X in `rig_dayz.json` (the FBX rig) and on ±Y in `jd_dayz.json`.
 
 `scripts/seanim_export.py` reads the rig family from the rest offsets. Bone axis:
 chain children of `Left*` bones sit on + of one axis, children of `Right*` bones
-on − (Y in the JD rig, X in the FBX rig); helpers such as `RightHand_Dummy`, which
-the JD rig holds at the grip, do not count. Roll: through the chosen map,
-`RightShoulder − LeftShoulder` (in `Spine3`) and `RightHandIndex1 − RightHandRing`
-(in each hand) must point the way vanilla's do. It refuses any other rig (a
-Blender-native one, one mixing frames, one rolled about its bone axes), an anim
-bone missing from the rig, and a `--rest-pose` file that does not exist; a roll
-that differs only on bones those pairs do not reach goes unseen. Both maps are
-det −1: offsets go through `M`, quaternion vector parts through `−M`, `w` unchanged.
+on − (Y in the JD rig, X in the FBX rig). Only anatomical chains count (shoulder,
+arm, forearm, hand, finger, leg and foot bones and their `Roll` bones), so helpers
+such as `RightHand_Dummy`, which the JD rig holds at the grip, and its child
+`Weapon_Root` do not. Roll: through the chosen map, `RightShoulder − LeftShoulder`
+(in `Spine3`) and `RightHandIndex1 − RightHandRing` (in each hand) must lie within
+2° of vanilla's direction across the bone; both rigs read within 0.07°. It refuses
+any other rig (a Blender-native one, one mixing frames, one rolled about its bone
+axes by 2° or more on `Spine3` or a hand), an anim bone missing from the rig, and a
+`--rest-pose` file that does not exist. Unseen: a smaller roll, which tilts a
+rotation of angle α by up to `4·asin(sin(α/2)·sin(roll/2))` (about 2.8° for a 90°
+turn under a 2° roll), and a roll confined to bones those pairs do not reach. Both
+maps are det −1: offsets go through `M`, quaternion vector parts through `−M`, `w`
+unchanged.
 
 | Rig | Rotation `(x,y,z,w)` → | Rest offset `(x,y,z)` m → cm (×100) | Status |
 |---|---|---|---|

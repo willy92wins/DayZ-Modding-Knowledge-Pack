@@ -58,6 +58,7 @@ JD_SKELETON = [
     ("RightHandRing", "RightHand", (0.0, -0.034, -0.01)),
     ("RightHandThumb1", "RightHand", (-0.02, -0.015, -0.03)),
     ("RightHand_Dummy", "RightHand", (-0.0373, -0.0735, 0.0042)),
+    ("Weapon_Root", "RightHand_Dummy", (0.0, -0.02, 0.0)),
 ]
 ORDER = [name for name, _, _ in JD_SKELETON]
 
@@ -203,11 +204,13 @@ def test_rig_frames_are_read_from_rest_offsets():
     assert mod.detect_rig_frame(_rig(True)) == "fbx"
 
 
-def test_helper_off_bind_does_not_decide_the_rig_frame():
-    """Breaks if a helper the viewer moved (RightHand_Dummy at the grip) can veto a valid rig."""
+@pytest.mark.parametrize("helper", ["RightHand_Dummy", "Weapon_Root"])
+def test_helper_off_bind_does_not_decide_the_rig_frame(helper):
+    """Breaks if a helper the viewer moved (RightHand_Dummy at the grip, or its child
+    Weapon_Root) can veto a valid rig."""
     mod = _load("skill_seanim_export", EXPORTER)
     rig = _rig(False)
-    next(b for b in rig["bones"] if b["name"] == "RightHand_Dummy")["pos"] = [-0.05, 0.0, 0.0]
+    next(b for b in rig["bones"] if b["name"] == helper)["pos"] = [-0.05, 0.0, 0.0]
     assert mod.detect_rig_frame(rig) == "jd"
 
 
@@ -228,18 +231,27 @@ def _mixed_rig():
     return rig
 
 
-def _rolled_rig():
-    """Every bone frame rolled 180 deg about its axis (JD Y): the bone axes still read JD."""
+def _rolled_by(deg):
+    """Every bone frame rolled by deg about its axis (JD Y): the bone axes still read JD."""
+    c, s = math.cos(math.radians(deg)), math.sin(math.radians(deg))
     rig = _rig(False)
     for b in rig["bones"]:
         if b["parent"]:
             x, y, z = b["pos"]
-            b["pos"] = [-x, y, -z]
+            b["pos"] = [c * x - s * z, y, s * x + c * z]
     return rig
 
 
-@pytest.mark.parametrize("make_rig", [_blender_native_rig, _mixed_rig, _rolled_rig],
-                         ids=["blender-native", "mixed", "rolled"])
+def _rolled_rig():
+    return _rolled_by(180.0)
+
+
+def _rolled_5deg_rig():
+    return _rolled_by(5.0)
+
+
+@pytest.mark.parametrize("make_rig", [_blender_native_rig, _mixed_rig, _rolled_rig, _rolled_5deg_rig],
+                         ids=["blender-native", "mixed", "rolled", "rolled-5deg"])
 def test_unknown_rig_frame_is_refused(tmp_path, make_rig):
     """Breaks if a rig of neither calibrated family gets a conversion anyway."""
     mod = _load("skill_seanim_export", EXPORTER)
@@ -249,6 +261,13 @@ def test_unknown_rig_frame_is_refused(tmp_path, make_rig):
     assert proc.returncode != 0
     assert "rig frame" in proc.stderr
     assert not out.exists()
+
+
+def test_roll_inside_the_tolerance_is_accepted():
+    """Breaks if the roll tolerance drops to zero: the two real rigs read up to 0.07 deg off
+    vanilla, so a 1 deg roll must still pass (and 5 deg must not, above)."""
+    mod = _load("skill_seanim_export", EXPORTER)
+    assert mod.detect_rig_frame(_rolled_by(1.0)) == "jd"
 
 
 def test_anim_bone_missing_from_rig_is_refused(tmp_path):

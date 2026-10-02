@@ -24,7 +24,7 @@ weapon to the back in game; leave it out of the reference.
 The round-trip gate is structural: it re-reads what was written, not whether
 the map is right (tests/test_seanim_export.py checks the map).
 """
-import argparse, json, math, os, sys
+import argparse, json, math, os, re, sys
 
 def load_writer():
     here = os.path.dirname(os.path.abspath(__file__))
@@ -65,37 +65,45 @@ def seanim_pos_cm(frame, p):
         raise ValueError('unknown rig frame %r' % (frame,))
     return tuple(c * UNIT_CM for c in v)
 
-# Helpers the viewer rig may hold off bind (the JD rig moves RightHand_Dummy to the grip): the
-# bone axis is read from anatomical chains only.
-HELPER_MARKS = ('Dummy', 'IK', 'Target', 'Origin', 'Direction', 'Helper')
+# Anatomical chain bones of OFP2_ManSkeleton. Only a child and a parent both on this list count
+# for the bone axis: helpers (RightHand_Dummy, which the JD rig moves to the grip, its child
+# Weapon_Root, IK helpers), Extra bones and face bones do not.
+ANATOMICAL = re.compile(r'(Left|Right)(Shoulder|Arm|ArmRoll|ForeArm|ForeArmRoll|Hand|Hand(Thumb|Index|Middle)[1-3]'
+                        r'|HandRing[1-3]?|HandPinky[1-3]?|UpLeg|UpLegRoll|Leg|LegRoll|Foot|ToeBase)')
 
-# Roll fingerprints (parent, child_a, child_b, DayZ axis, sign): in DayZ's bone-local frame,
-# child_a - child_b of these rest offsets lies across the parent bone along +/- that axis.
-# DayZATool extracts of vanilla p_erc_attackl_inplace_01_ras and aks74u_reference: RightShoulder -
-# LeftShoulder in Spine3 = (0,0,+2.0) cm; RightHandIndex1 - RightHandRing in RightHand =
-# (-5.22,-2.75,-0.15) cm, mirrored on the left hand. Both rigs read 0.998-1.000 along it.
-ROLL_CHECKS = (('Spine3', 'RightShoulder', 'LeftShoulder', 2, 1),
-               ('RightHand', 'RightHandIndex1', 'RightHandRing', 1, -1),
-               ('LeftHand', 'LeftHandIndex1', 'LeftHandRing', 1, 1))
+# Roll fingerprints: (parent, child_a, child_b, vanilla (y, z) of child_a - child_b across the
+# parent bone, DayZ cm). DayZATool extracts of vanilla p_erc_attackl_inplace_01_ras and
+# aks74u_reference: RightShoulder - LeftShoulder in Spine3 = (0, 0, 2.0); RightHandIndex1 -
+# RightHandRing in RightHand = (-5.22, -2.75, -0.15), mirrored on the left hand. Through their
+# maps both rigs read within 0.07deg of these; a rig rolled about its bone axes by ROLL_TOL_DEG
+# or more reads further off.
+ROLL_CHECKS = (('Spine3', 'RightShoulder', 'LeftShoulder', (0.0, 2.0)),
+               ('RightHand', 'RightHandIndex1', 'RightHandRing', (-2.75, -0.15)),
+               ('LeftHand', 'LeftHandIndex1', 'LeftHandRing', (2.75, 0.15)))
+ROLL_TOL_DEG = 2.0
 
 def detect_rig_frame(rig, min_per_side=4):
     """'jd' or 'fbx' from the rig's rest offsets; ValueError for any other rig.
 
     Bone axis: a chain child (offset within ~18deg of one axis, >= 5 mm) of a Left*
     bone sits on + of that axis and a child of a Right* bone on -, the split DayZ
-    has on X; the axis is Y in the JD rig and X in the FBX rig. Helpers
-    (HELPER_MARKS) do not count. Roll: through the chosen map, each ROLL_CHECKS
-    pair must point within ~45deg of DayZ's. A Blender-native rig (every child at
-    +Y), a rig mixing frames, or one rolled about its bone axes is refused. Not
-    seen: a roll that differs only on bones the checks do not reach.
+    has on X; the axis is Y in the JD rig and X in the FBX rig. Only ANATOMICAL
+    children of ANATOMICAL parents count. Roll: through the chosen map, each
+    ROLL_CHECKS pair must lie within ROLL_TOL_DEG of vanilla's across-bone
+    direction. Refused: a Blender-native rig (every child at +Y), a rig mixing
+    frames, a rig rolled about its bone axes by ROLL_TOL_DEG or more on Spine3 or a
+    hand, and one whose hand or shoulder layout differs as much. Not seen: a smaller
+    roll, or one confined to bones the pairs do not reach.
     """
     seen = {'Left': {}, 'Right': {}}
     for b in rig['bones']:
         par = b.get('parent') or ''
-        side = 'Left' if par.startswith('Left') else 'Right' if par.startswith('Right') else None
+        if not (ANATOMICAL.fullmatch(b['name']) and ANATOMICAL.fullmatch(par)):
+            continue
+        side = 'Left' if par.startswith('Left') else 'Right'
         v = b['pos']
         n = math.sqrt(sum(c * c for c in v))
-        if side is None or n < 0.005 or any(m in b['name'] for m in HELPER_MARKS):
+        if n < 0.005:
             continue
         i = max(range(3), key=lambda k: abs(v[k]))
         if abs(v[i]) < 0.95 * n:
@@ -113,16 +121,21 @@ def detect_rig_frame(rig, min_per_side=4):
     frame = 'jd' if left[0][1] == 'Y' else 'fbx'
     pos = {b['name']: b['pos'] for b in rig['bones']}
     parent = {b['name']: b.get('parent') for b in rig['bones']}
-    for par, a, b2, axis, sign in ROLL_CHECKS:
+    for par, a, b2, (ey, ez) in ROLL_CHECKS:
         if parent.get(a) != par or parent.get(b2) != par:
             raise ValueError('cannot check the rig frame\'s roll: %s and %s are not both children of %s'
                              % (a, b2, par))
         d = [x - y for x, y in zip(seanim_pos_cm(frame, pos[a]), seanim_pos_cm(frame, pos[b2]))]
         across = math.hypot(d[1], d[2])
-        if across < 0.5 or sign * d[axis] < 0.7 * across:
-            raise ValueError('the rig frame reads %s by its bone axes but is rolled on %s: %s - %s = '
-                             '(%.2f, %.2f, %.2f) cm through the map, expected along %s%s'
-                             % (frame, par, a, b2, d[0], d[1], d[2], '+' if sign > 0 else '-', 'XYZ'[axis]))
+        if across < 0.5:
+            raise ValueError('cannot check the rig frame\'s roll on %s: %s and %s are %.2f cm apart across '
+                             'the bone' % (par, a, b2, across))
+        cosang = (d[1] * ey + d[2] * ez) / (across * math.hypot(ey, ez))
+        off = math.degrees(math.acos(max(-1.0, min(1.0, cosang))))
+        if off > ROLL_TOL_DEG:
+            raise ValueError('the rig frame reads %s by its bone axes but is rolled on %s: %s - %s lies %.1f deg '
+                             'from vanilla across the bone (tolerance %g deg)'
+                             % (frame, par, a, b2, off, ROLL_TOL_DEG))
     return frame
 
 def main():
