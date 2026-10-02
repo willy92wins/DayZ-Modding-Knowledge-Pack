@@ -326,13 +326,43 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   run): `rotation=0` leaves the bridge's `RF_DEFAULT` (512, the config's placement), which yawed an
   `Inventory_Base` probe about 10 degrees (a side-face reading moved 0.22 m across 1.2 m of the face);
   `rotation=64` spawned the same box with its faces on the world axes (equal readings at both
-  offsets, normal (-2.1, 0, 0)), on flat concrete. `scripts/3_game/ce/centraleconomy.c` gives 64 two
-  names, `RF_IGNORE` ("object will spawn as model was created", :56) and `RF_RANDOMROT` (:62); the
-  result agrees with the first comment and does not settle how the engine reads the value. Before
-  trusting face coordinates, check the pose: two parallel rays at one height on a vertical face catch
-  a yaw (unequal readings) but not a tilt, so also check that the returned `normal`, read as a
-  direction, lies along the axis (the run read (-2.1, 0, 0)), and read the fixture again a few seconds
-  later. It may change an item's configured resting side; slopes and settling were not measured.
+  offsets), on flat concrete. `scripts/3_game/ce/centraleconomy.c` gives 64 two names, `RF_IGNORE`
+  ("object will spawn as model was created", :56) and `RF_RANDOMROT` (:62); the result agrees with
+  the first comment and does not settle how the engine reads the value. Before trusting face
+  coordinates, check the pose: two parallel rays at one height on a vertical face catch a yaw
+  (unequal readings) but not a tilt, so also read the face normal from
+  `scene_raycast(method="bullet")` and check that it lies along the axis, and read the fixture again
+  a few seconds later. It may change an item's configured resting side; slopes and settling were not
+  measured.
+  The `normal` of a default `rvproxy` reply is not a face normal (added 2026-10-02, two runs)
+  [EXACT][CLAIM-MCPV-RVPROXY-NORMAL]: the bridge copies the engine's `RaycastRVResult.dir`
+  (`MCPBridge.c:2958`), for a ray the "direction and size of the intersection"
+  (`scripts/3_game/global/dayzphysics.c:104`). In this run and in run cf2d6bb3 it lay along the ray
+  in all 190 `rvproxy` hits on an object, the box yawed about 10 degrees included ((-1.963, 0, 0)
+  and (-1.966, 0, 0)), and its length is the ray's path through the object: (-2.1, 0, 0) across a
+  2 m box is its width plus the 0.05 m sphere at each side. `bullet` returns the hit face's normal
+  (`MCPBridge.c:2998`): a unit vector in all 40 of its hits, up to 0.3 degrees off the axis on the
+  `HouseNoDestruct` statics and on the axis on the items. *(Corrected 2026-10-02: this entry read
+  the pose from the returned `normal` lying along the axis, citing (-2.1, 0, 0); with the default
+  method it always does.)*
+  A half-turn passes all of these checks (measured 2026-10-02 on DayZDiag 1.29.163709, dayz-mcp run
+  cf2d6bb3) [EXACT][CLAIM-MCPV-ITEM-YAW]: one MLOD held two 2 m boxes, A (x -3..-1) in
+  `Component01` and B (x 1..3) in `Component02`, and a twin had B in no component; each model was
+  spawned, binarized and as MLOD, with `flags=8389668` and `rotation=64` as `HouseNoDestruct` and as
+  `Inventory_Base` (`item_large`). On the four statics the west box was A, as modelled: it answered
+  as component 0 (`Component01`; `Component02` reads 1), and on the twins it was the only box that
+  took rays. The four items came out turned 180 degrees about Y: the west box answered as
+  component 1, and on the twins every hit was component 0 on the east box while the west box took no
+  ray. Parallel rays read equal on the items too, and the normals pointed the same way as on the
+  statics, since a half-turn keeps every face on the axes; a fixture symmetric about its origin, like
+  the single box above, cannot show it, and `object_inspect` returns memory points in model space
+  (`GetMemoryPointPos`, `MCPBridge.c:2240`), not the pose. So give the fixture sides a ray can tell
+  apart and check which answers where: one component per side, read from the `component` of
+  `rvproxy` hits (`geom`, `view` or `fire`; the bridge leaves it 0 on `bullet` hits,
+  `MCPBridge.c:2983-3004`), or a collider on one side only. `telemetry_read(mode="object_at")`
+  returns the object's `GetOrientation()` (`MCPBridge.c:3137`); that run did not read it. Not
+  measured: whether the turn is fixed or random (all four items read 180 degrees; 64 is also
+  `RF_RANDOMROT`), other `rotation` and `flags` values, base classes and layers, and the cause.
 - **Standing on top: move the player before reading its height** (added 2026-10-02, measured on
   DayZDiag 1.29.163709 in a later run, on 2 m boxes) [EXACT][CLAIM-MCPV-STAND-PROBE]: a second
   reading of the object's physics body next to the walk-into probe above, on its top instead of a
@@ -469,8 +499,10 @@ Key takeaways:
   `intersect=fire` and `geom`): a vertical ray against the ground returns `hit=1`, `object_type=""`,
   `surface_type=cp_grass|cp_concrete2`, `entry=0`, `exit=0`; against an object it returns `entry=1`. The
   `normal` field is `RaycastRVResult.dir` as-is, which in line-object collision is "direction AND SIZE of the
-  intersection" (`3_game/global/dayzphysics.c:104`): measured magnitudes 0.16-0.42. Use it only as direction
-  (sign/axis), never as a unit normal nor as a threshold (`dot >= 0.9` is never reached). A mod that filters
+  intersection" (`3_game/global/dayzphysics.c:104`): measured magnitudes 0.16-0.42. Its direction is the
+  ray's own ("Axis-aligned test fixtures" above), so it says nothing about the face: never read it as a normal
+  nor use it as a threshold (`dot >= 0.9` is never reached); a face normal comes from `method="bullet"`.
+  *(Corrected 2026-10-02: this line said to use it only as direction (sign/axis).)* A mod that filters
   `!hit.entry` discards natural ground (hologram that never snaps to ground: LFSecure I-1).
 - **Collision probe with vanilla CONTROL before blaming the mesh** (measured 2026-09-07, LFSecure L3 -> L4):
   if `scene_raycast` does not hit a mod static, repeat the SAME ray (view, fire, and geom; from outside AND
