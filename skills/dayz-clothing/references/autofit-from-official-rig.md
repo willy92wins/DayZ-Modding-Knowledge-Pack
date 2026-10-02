@@ -117,7 +117,9 @@ the four rounds did validate: sections 3-5 and 7 as a pipeline, and (j) as a mem
   the rig frame (the two differed by `y -> -y`). The script now uses the same swap, so the two
   frames are one. The alternative that used to stand here (mirror the rig into that frame, fit,
   export with `BLENDER_TO_DAYZ`) is withdrawn: it fits in a mirrored frame and exports with a
-  det = +1 map, so anything with a side (text, a pocket, a buckle) ships reversed.
+  det = +1 map, so anything with a side modelled in that frame (text, a pocket, a buckle) ships
+  reversed. Only geometry that entered through the old det = +1 import comes back unmirrored,
+  because the two maps cancel, as in the legacy return trip of SKILL.md.
 - Before packing, run the anatomical facing test of SKILL.md CANONICAL WORN FRAME and the
   per-component winding check of dayz-model-pipeline Rule 18 (expected: cross product INWARD) on
   the exported p3d (killer #2). With weights transferred from `Male_body` the facing test catches
@@ -187,12 +189,12 @@ after the axis swap.
    selections survive. Better than Blender's global Clean/Limit Total for that reason.
 4. Add what the pack lacks: cross-midline cleanup (`left*` weight on the right half and vice
    versa; character-rigging.md:108-117) and the two counts of section 7.
-5. Export with py3d: group names to lowercase (character-rigging.md:192); the byte encoding is
-   py3d's `round((1-w)*255)+1` (character-rigging.md:196), never the pack's `weight_encode`
+5. Export with py3d: group names to lowercase (character-rigging.md:209); the byte encoding is
+   py3d's `round((1-w)*255)+1` (character-rigging.md:214), never the pack's `weight_encode`
    table (addon.py:233-238).
 6. The in-game skeleton is still `DayzTemporarySkeleton` with the 159-pair template (killer #3
    in SKILL.md); the rig only generates weights. The 44-name set is what vanilla worn items
-   actually weight (SKILL.md:60-63): more bones is fine, fewer works but articulates coarsely.
+   actually weight (SKILL.md:93-98): more bones is fine, fewer works but articulates coarsely.
 7. [RUN 2026-09-01] Steps 2-5 work in Blender 5.1.1 (`modifier_apply` under `temp_override`
    applied first time; 111 groups transferred). Three corrections found by the run:
    - Restrict the "bone-named groups" of step 3 to the deform set of character-rigging.md

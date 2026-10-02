@@ -57,10 +57,15 @@ of them wastes cycles if you chase the others first.
   exported with such a map. ArmorHneck's received p3d was the `(x, z, −y)` of
   the artist's Blender file (`ArmorHneck_dev\CLAUDE.md`, 2026-08-04). Rotation
   + swap fixes the binding but keeps the mirror: text, logos, buckles and
-  one-sided straps read reversed. The properly handed fixes need no swap:
-  re-export the Blender source with Rule 12, or, with only the p3d, reflect
-  `z → −z` on every point, reverse every face and reflect the normals the same
-  way.
+  one-sided straps read reversed. The properly handed fix is a re-export of
+  the Blender source with Rule 12, with no swap. With only the p3d, reflect it
+  on the axis its state calls for: a p3d as received from `(x, z, −y)` (facing
+  +Z, never rotated or swapped) takes `z → −z`; one that already had "rotate
+  180° + swap L/R", i.e. `(−x, z, y)` like the shipped ArmorHneck, takes
+  `x → −x` AND the L/R swap undone (`z → −z` on it would face +Z again).
+  Either reflection moves every point (memory points included), reverses
+  every face and reflects the normals the same way; `P3D.transform()` with
+  that diagonal matrix (det −1) does all three.
 - **Chiral in-game check [DESIGN, not yet run].** The anatomical test above
   rules out a det +1 export only while the L/R selections were never swapped by
   hand; a swapped build needs an asymmetric feature. Put an "F" in relief on the

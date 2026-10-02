@@ -480,52 +480,40 @@ bake_ao(cube, "/tmp/ao_bake.png", resolution=2048)
 
 ## 7. Export (OBJ for DayZ)
 
-### Core OBJ Export with Axis Correction
+### Core OBJ Export (Blender coordinates; py3d converts)
 
-**CRITICAL:** DayZ uses Y-up, Blender is Z-up. Export with axis conversion.
+**CRITICAL:** DayZ is Y-up and Blender Z-up, and the two also differ in handedness. Export the OBJ in
+Blender's own coordinates and convert once, in py3d, with the Rule 12 map (`SKILL.md` Rule 12). Measured
+2026-10-02 in Blender 5.1.1 (`wm.obj_export`, one vertex at `(1, 2, 3)`): `forward_axis='Y', up_axis='Z'`
+writes `(1, 2, 3)`; the default `'NEGATIVE_Z'`/`'Y'` writes `(1, 3, -2)`, the det=+1 rotation `(x, z, -y)`
+that Rule 12 retired; `'NEGATIVE_Y'`/`'Z'` writes `(-1, -2, 3)`, a 180° turn about the vertical. Followed by
+Rule 12 in py3d, the first of those two lands the model on its back and the second faces it backwards.
+*(Corrected 2026-10-02: this recipe exported with `'NEGATIVE_Z'`/`'Y'` as a "DayZ axis correction", and its
+calls used parameter names that Blender 5.1.1 rejects with `TypeError`.)*
 
 ```python
 import bpy
 import os
 
-def export_obj(obj, filepath, forward_axis='NEGATIVE_Z', up_axis='Y'):
-    """Export single object as OBJ with DayZ axis correction"""
-
-    # Deselect all first
-    bpy.ops.object.select_all(action='DESELECT')
+def export_obj(obj, filepath):
+    """Export one object as OBJ in Blender's own coordinates (py3d applies Rule 12 once)."""
 
     # Select only this object
+    bpy.ops.object.select_all(action='DESELECT')
     bpy.context.view_layer.objects.active = obj
     obj.select_set(True)
 
-    # Export with axis correction
     bpy.ops.wm.obj_export(
         filepath=filepath,
         check_existing=False,
-        filter_glob="*.obj;*.mtl",
-        export_animation=False,
-        export_frame_range=False,
-        export_frame_start=0,
-        export_frame_end=0,
-        forward_axis=forward_axis,    # 'NEGATIVE_Z' = -Z forward
-        up_axis=up_axis,               # 'Y' = Y up
+        export_selected_objects=True,  # this object only, not the whole scene
+        forward_axis='Y',              # Y forward + Z up = no axis conversion
+        up_axis='Z',
         global_scale=1.0,
-        apply_scaling=True,
-        export_apply_modifiers=True,
-        export_object_group=False,
-        export_material=True,
+        apply_modifiers=True,
         export_uv=True,
-        export_normal=True,
-        export_colors=False,
-        export_smooth_groups=False,
-        export_smooth_groups_bitflags=False,
-        smooth_group_bitflags_max=255,
-        export_vertex_groups=False,
-        export_vertex_normals=True,
-        export_vertex_color=False,
-        export_active_collection=False,
-        use_mesh_modifiers=True,
-        use_baked_animation=False
+        export_normals=True,
+        export_materials=True,
     )
 
     print(f"Exported: {filepath}")
@@ -845,7 +833,7 @@ connector.data.materials.append(steel_mat)
 # ============================================================================
 
 def export_obj(obj, filepath):
-    """Export with DayZ axis correction"""
+    """Export in Blender's own coordinates; py3d applies Rule 12 (see Core OBJ Export)"""
     bpy.ops.object.select_all(action='DESELECT')
     bpy.context.view_layer.objects.active = obj
     obj.select_set(True)
@@ -853,14 +841,14 @@ def export_obj(obj, filepath):
     bpy.ops.wm.obj_export(
         filepath=filepath,
         check_existing=False,
-        forward_axis='NEGATIVE_Z',
-        up_axis='Y',
+        export_selected_objects=True,
+        forward_axis='Y',
+        up_axis='Z',
         global_scale=1.0,
-        apply_scaling=True,
-        export_apply_modifiers=True,
-        export_material=True,
+        apply_modifiers=True,
+        export_materials=True,
         export_uv=True,
-        export_normal=True
+        export_normals=True
     )
     print(f"Exported: {filepath}")
 
@@ -943,7 +931,7 @@ blender --background --python generate_electrical_box.py
 
 1. **Always apply modifiers before export** — hidden data will be lost
 2. **Subdivision first, then bevel** — order matters for quality
-3. **Test axis rotation** — verify DayZ reads models correctly (Y-up export)
+3. **Test axis handling** — export in Blender's own coordinates and convert once in py3d (Rule 12); check an asymmetric feature in game
 4. **Use Smart UV Project** — faster than manual mapping
 5. **Keep LOD ratios consistent** — 0.5, 0.25, 0.12 work well
 6. **Check normals** — flipped normals cause rendering artifacts
@@ -1011,11 +999,11 @@ bpy.ops.object.mode_set(mode='OBJECT')
 # Export
 bpy.ops.wm.obj_export(
     filepath="/tmp/model.obj",
-    forward_axis='NEGATIVE_Z',
-    up_axis='Y',
-    export_apply_modifiers=True,
+    forward_axis='Y',   # Blender's own coordinates; py3d applies Rule 12
+    up_axis='Z',
+    apply_modifiers=True,
     export_uv=True,
-    export_normal=True
+    export_normals=True
 )
 
 print("Done!")

@@ -38,7 +38,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   mirrored-frame alternative. `dayz-animation-pipeline` and `blender-animation`: the viewer's
   `(x,z,-y)` is a rotation into a right-handed frame and is relabelled; geometry
   cross-references now point at Rule 12. Chiral in-game checks are designed for each route, not
-  run.
+  run. `check_dayz_winding.py` is scoped by the sign of the stored normals, not by the
+  determinant: a det=+1 build with inward normals also fails it, and reversing its faces would
+  turn it inside-out. Fixing a received worn p3d depends on its state: `z → −z` as received,
+  `x → −x` with the L/R swap undone once it was rotated and swapped. `dayz-model-pipeline`: the
+  headless OBJ export recipe exported Y-up (`(x,z,-y)`) before py3d applied Rule 12, and
+  `blender-workflow.md` gave Forward -Y, a 180° turn; both now export Blender's own coordinates
+  (Forward Y / Up Z, measured in Blender 5.1.1), and the four documented `wm.obj_export` calls,
+  which Blender 5.1.1 rejected with `TypeError`, use its parameter names.
 
 ## [1.4.0] - 2026-10-01
 

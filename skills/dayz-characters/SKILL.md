@@ -305,23 +305,27 @@ this wall. Warn the user whenever a plan ships custom character anims. (`dayz-an
 
 ## OFFLINE GATE — run before EVERY PBO (catches the inside-out bug without an in-game cycle)
 
-**Rule 12 conflict (measured 2026-10-01).** `check_dayz_winding.py` encodes the det +1 export of
-LFInfectedBig: outward stored normals and `cross·normal < 0`. A Rule 12 export stores the normals inward
-with the cross product inward, so the script fails it. On the three MLODs of the Rule 12 in-game probe it
-exits 1 on all three. That includes the one that renders solid and reads correctly in game
-(`cross.normal_positive=1.00`, `normals_outward=0.00`), and its fix hints would turn that model inside-out.
-Until the script is updated, gate a Rule 12 export with dayz-p3d-audit "Absolute winding check": normal
-agreement ≈ 100 % and a negative signed volume by winding. On the probe that check passes both solid
-variants and fails the inside-out one.
+**Rule 12 conflict (measured 2026-10-01).** `check_dayz_winding.py` encodes the LFInfectedBig build: det +1
+map, faces reversed, normals left OUTWARD, so `cross·normal < 0`. Any build that stores its normals inward
+with the cross product inward fails it: a Rule 12 export, and also a det +1 build with negated normals. On
+the three MLODs of the Rule 12 in-game probe it exits 1 on all three. That includes the one that renders
+solid and reads correctly in game (`cross.normal_positive=1.00`, `normals_outward=0.00`) and the mirrored one
+that renders solid (det +1, faces reversed, normals negated); its fix hints would turn either inside-out.
+The determinant does not say which convention a build follows; the stored normals do. Until the script is
+updated, gate an export with inward normals with dayz-p3d-audit "Absolute winding check": normal agreement
+≈ 100 % and a negative signed volume by winding. On the probe that check passes both solid variants and
+fails the inside-out one.
 
 ```
-python references/check_dayz_winding.py <source_mlod.p3d>   # det +1 exports only (see above)
+python references/check_dayz_winding.py <source_mlod.p3d>   # builds that store normals OUTWARD only (see above)
 ```
 A double-sided preview never shows DayZ's single-sided culling, so an inside-out model (textures on the
-interior) only surfaces in-game — losing a test cycle. For a det +1 export this detector encodes the
+interior) only surfaces in-game — losing a test cycle. For a build that stores its normals outward (the
+LFInfectedBig recipe; the script's `normals_outward` info line reads that sign) this detector encodes the
 in-game-confirmed rule (LFInfectedBig S6): a correct SOURCE-MLOD visual LOD has
-`cross(v1-v0,v2-v0)·stored_normal < 0` with the normals stored outward. Run it after building the `.p3d` and
-before AddonBuilder; if it FAILs on such an export, reverse the visual winding and rebuild.
+`cross(v1-v0,v2-v0)·stored_normal < 0`. Run it after building the `.p3d` and before AddonBuilder; if it
+FAILs on such a build, reverse the visual winding and rebuild. A FAIL on a build with inward normals says
+nothing about the winding: use the absolute check above, never the face reversal.
 Detail + why (incl. why NOT to compare against a debinarized vanilla) in `references/character-rigging.md §6`.
 
 
@@ -503,9 +507,11 @@ The swap it needs shows that the received mesh was a mirror, though: it faced +Z
 ArmorHneck's received p3d was the det +1 map `(x, z, −y)` of the artist's Blender coordinates, and the
 shipped one is `(−x, z, y)` of them (`ArmorHneck_dev\CLAUDE.md`, artist alignment 2026-08-04).
 Rotation + swap fixes the binding and keeps the mirror, which symmetric plates hide; text, logos, buckles
-and one-sided straps come out reversed. The properly handed fixes need no swap. With the Blender source,
-re-export it with `(x, z, y)`, Rule 12. With only the p3d, reflect `z → −z` on every point (memory points
-included), reverse every face and reflect the normals the same way. Decide on an asymmetric feature in
+and one-sided straps come out reversed. With the Blender source, re-export it with `(x, z, y)`, Rule 12,
+and no swap. With only the p3d, the reflection depends on its state: the received `(x, z, −y)` p3d takes
+`z → −z`; the shipped `(−x, z, y)` one takes `x → −x` with the L/R swap undone, as "un-reflect" in THE
+CANONICAL-BIND INVARIANT (`z → −z` on it would face +Z again). Either one moves every point (memory points
+included), reverses every face and reflects the normals the same way. Decide on an asymmetric feature in
 game: chiral check in `dayz-clothing`, CANONICAL WORN FRAME.
 
 Diagnosis ladder that isolated this (reusable, each step in-game-cheap):
