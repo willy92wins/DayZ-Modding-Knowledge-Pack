@@ -40,9 +40,10 @@ REVERSE_LOD = ("  fix 1: face.vertices.reverse() on every face of this LOD (the 
                "never a vertices[1]/[2] swap, which turns a quad into a crossed face).")
 NEGATE_POOL = ("negate the normal pool in place: lod.facenormals[j] = (-x, -y, -z) for every j "
                "(not through Vertex.normal).")
-CORNER_FIX = ("in each listed shell, negate the corner normals that point against their face: all of them in a "
-              "shell below 10 %, corner by corner in the others; a pool entry that a corner you keep also uses "
-              "gets a negated copy (py3d README, \"Winding\", step 3).")
+CORNER_FIX = ("negate the normal of each corner that points against its face and keep those that agree; a pool "
+              "entry that a corner you keep also uses gets a negated copy; a corner with no clear sign is for "
+              "inspection, not for flipping (py3d README, \"Winding\", step 3).")
+PY3D_COUNT_END = "the count of dayz-p3d-audit's absolute check, over every face of the LOD."
 CAVITY = ("  (a closed shell meant to be seen from inside, a cavity, reads positive by design: leave it out of "
           "fix 1)")
 PASS_LINE = "DAYZ WINDING/NORMAL CONVENTION: PASS"
@@ -244,7 +245,7 @@ def test_after_a_reversal_the_count_is_the_one_the_reversed_model_reads(tmp_path
     pct = m._pct_normal_agreement(lod)
     assert pct == 0.0
     assert first_corner_line(lines) == ("  py3d first-corner count: 0 of 48 faces (0.0 %) as the model is, 0 of 48 "
-                                        "(0.0 %) after fix 1; the count of dayz-p3d-audit's absolute check."), out
+                                        "(0.0 %) after fix 1; " + PY3D_COUNT_END), out
 
 
 def test_a_right_part_among_outward_normals_is_not_negated_with_the_pool(tmp_path):
@@ -286,8 +287,7 @@ def test_normals_wrong_only_at_corners_py3d_does_not_read(tmp_path):
     assert code == 1, out
     assert ("  normals: MIXED. 48 of 144 corner normals (33.3 %) agree with their face's winding; these shells do "
             "not reach 90 %:") in lines, out
-    assert first_corner_line(lines) == ("  py3d first-corner count: 48 of 48 faces (100.0 %), the count of "
-                                        "dayz-p3d-audit's absolute check."), out
+    assert first_corner_line(lines) == "  py3d first-corner count: 48 of 48 faces (100.0 %), " + PY3D_COUNT_END, out
 
 
 def test_a_shell_without_first_corner_normals_is_still_read(tmp_path):
@@ -305,7 +305,7 @@ def test_a_shell_without_first_corner_normals_is_still_read(tmp_path):
     code, lines, out = run_gate(write(p3d, tmp_path / "b_stem_zero_first_corners.p3d"))
     assert code == 1, out
     assert "    shell at lod.faces 12-23: 0 of 24 corners agree" in lines, out
-    assert "  12 corners have a zero normal and are not read." in lines, out
+    assert "  12 corners with a zero normal, not read." in lines, out
 
 
 def test_a_shell_with_no_normal_at_all_is_not_measurable(tmp_path):
@@ -320,10 +320,178 @@ def test_a_shell_with_no_normal_at_all_is_not_measurable(tmp_path):
             v.normal_index = len(lod.facenormals) - 1
     code, lines, out = run_gate(write(p3d, tmp_path / "b_stem_no_normals.p3d"))
     assert code == 2, out
-    assert ("  normals: no corner with a sign in 12 faces of 1 shell (zero normals or degenerate faces): not "
-            "measurable there.") in lines, out
-    assert "  36 corners have a zero normal and are not read." in lines, out
+    assert "  normals: no corner with a clear sign in 12 faces of 1 shell: not measurable there." in lines, out
+    assert "  36 corners with a zero normal, not read." in lines, out
     assert INVALID_LINE in lines, out
+
+
+def own_normal(lod, vertex, normal):
+    """Give one corner its own pool entry, so changing it touches no other corner."""
+    lod.facenormals.append(tuple(float(c) for c in normal))
+    vertex.normal_index = len(lod.facenormals) - 1
+
+
+def test_the_pool_fix_says_what_else_it_turns(tmp_path):
+    """Review r2 R2-1: one corner of b_normals_out put back inward by hand. Every shell stays below 10 %, so
+    the gate gives the pool fix, and says it also turns that corner; applied anyway, the corner ends against
+    its face and the model passes: the 90 % per shell is a tolerance, which the healthy smooth-shaded
+    LFInfectedBig build needs (219 corners against their face)."""
+    m = _import_py3d()
+    p3d = load(m, "mirror_b_normals_out.p3d")
+    lod = p3d.lods[0]
+    corner = lod.faces[0].vertices[0]
+    n = corner.normal
+    own_normal(lod, corner, (-n[0], -n[1], -n[2]))
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_out_one_corner_in.p3d"))
+    assert code == 1, out
+    assert ("  normals: DISAGREE. 1 of 144 corner normals (0.7 %) agree with their face's winding, below 10 % in "
+            "every shell: the stored normals point out of the material (the older outward-normal "
+            "convention).") in lines, out
+    assert ("It also turns 1 corner that agrees now: right for an export that stored every normal the other way, "
+            "whose odd corners go back to how they were authored (LFInfectedBig's Rule 12 build has 219 against "
+            "their face); if you put corners right by hand, negate only the corners that point against their face "
+            "instead (py3d README, \"Winding\", step 3).") in out, out
+    for j in range(len(lod.facenormals)):
+        n = lod.facenormals[j]
+        lod.facenormals[j] = (-n[0], -n[1], -n[2])
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_out_one_corner_in_pool_negated.p3d"))
+    assert code == 0, out
+    assert ("  normals: AGREE. 143 of 144 corner normals (99.3 %) agree with their face's winding, above 90 % in "
+            "every shell.") in lines, out
+
+
+def test_the_tolerance_is_ninety_percent_per_shell(tmp_path):
+    """One corner of the plate against its face (35 of 36) passes; four (32 of 36) do not."""
+    m = _import_py3d()
+    for count, code_expected in ((1, 0), (4, 1)):
+        p3d = load(m, "mirror_b.p3d")
+        lod = p3d.lods[0]
+        for face in lod.faces[0:count]:
+            n = face.vertices[0].normal
+            own_normal(lod, face.vertices[0], (-n[0], -n[1], -n[2]))
+        code, lines, out = run_gate(write(p3d, tmp_path / ("b_plate_%d_corners_out.p3d" % count)))
+        assert code == code_expected, (count, out)
+        if count == 4:
+            assert "    shell at lod.faces 0-11: 32 of 36 corners agree" in lines, out
+
+
+def test_no_pool_fix_when_part_of_the_lod_is_not_read(tmp_path):
+    """b_normals_out with one plate face turned: the plate is incoherent and not read, so the pool fix would
+    reach normals this reading never saw."""
+    m = _import_py3d()
+    p3d = load(m, "mirror_b_normals_out.p3d")
+    lod = p3d.lods[0]
+    reverse_faces(lod, lod.faces[0:1])
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_out_plate_incoherent.p3d"))
+    assert code == 1, out
+    assert ("  fix 2: " + CORNER_FIX + " Not the whole pool: part of this LOD is not read.") in lines, out
+    assert NEGATE_POOL not in out, out
+
+
+def dart_prism(m, start):
+    """A closed prism whose two caps are planar dart quads (reflex corner at (x, z) = (1, 1)), every face wound
+    with its vector area into the material and every corner normal along it: a Rule 12 model. *start* rotates
+    the cap's corner list, which moves the reflex corner to a different index."""
+    dart = [(0.0, 0.0), (2.0, 1.0), (0.0, 4.0), (1.0, 1.0)]
+    dart = dart[start:] + dart[:start]
+    p3d = m.P3D()
+    lod = m.LOD()
+    lod.resolution = 0.0
+    for y in (0.0, 1.0):
+        for x, z in dart:
+            point = m.Point()
+            point.coords = (x, y, z)
+            point.flags = 0
+            lod.points.append(point)
+
+    def area(idx):
+        pts = [lod.points[i].coords for i in idx]
+        s = [0.0, 0.0, 0.0]
+        for k in range(1, len(pts) - 1):
+            a = [pts[k][i] - pts[0][i] for i in range(3)]
+            b = [pts[k + 1][i] - pts[0][i] for i in range(3)]
+            c = (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+            s = [s[i] + c[i] for i in range(3)]
+        return s
+
+    bottom = [0, 1, 2, 3] if area([0, 1, 2, 3])[1] < 0 else [3, 2, 1, 0]   # outward on the bottom is -y
+    faces = [bottom] + [[bottom[(k + 1) % 4], bottom[k], bottom[k] + 4, bottom[(k + 1) % 4] + 4] for k in range(4)]
+    faces.append([i + 4 for i in bottom[::-1]])
+    for idx in (f[::-1] for f in faces):                                     # outward -> inward (Rule 12)
+        a = area(idx)
+        length = sum(c * c for c in a) ** 0.5
+        lod.facenormals.append(tuple(c / length for c in a))
+        face = m.Face(lod.points, lod.facenormals)
+        face.flags, face.texture, face.material = 0, "", ""
+        for i in idx:
+            vertex = m.Vertex(lod.points, lod.facenormals)
+            vertex.point_index = i
+            vertex.normal_index = len(lod.facenormals) - 1
+            face.vertices.append(vertex)
+        lod.faces.append(face)
+    p3d.lods.append(lod)
+    return p3d
+
+
+def test_a_non_convex_quad_is_read_by_its_vector_area(tmp_path):
+    """Review r2 R2-2: in a dart quad the first three corners can point against the face. The prism is right
+    in every rotation of its caps; with the reflex corner at index 1 of a cap, py3d's first-corner count
+    reads that cap as disagreeing, and the gate does not."""
+    m = _import_py3d()
+    against = 0
+    for start in range(4):
+        p3d = dart_prism(m, start)
+        if m._pct_normal_agreement(p3d.lods[0]) < 100.0:
+            against += 1
+        code, lines, out = run_gate(write(p3d, tmp_path / ("dart_%d.p3d" % start)))
+        assert code == 0, (start, out)
+        assert ("  normals: AGREE. 24 of 24 corner normals (100.0 %) agree with their face's winding, above 90 % in "
+                "every shell.") in lines, (start, out)
+    assert against == 2
+    p3d = dart_prism(m, 1)
+    lod = p3d.lods[0]
+    for j in range(len(lod.facenormals)):
+        n = lod.facenormals[j]
+        lod.facenormals[j] = (-n[0], -n[1], -n[2])
+    code, lines, out = run_gate(write(p3d, tmp_path / "dart_1_normals_out.p3d"))
+    assert code == 1, out
+    assert any(line.startswith("  normals: DISAGREE. 0 of 24 corner normals (0.0 %)") for line in lines), out
+
+
+def test_a_corner_normal_in_its_face_plane_has_no_sign(tmp_path):
+    """Review r2 R2-3: a corner normal lying in its face's plane, tipped by +-1e-8, is read the same both ways:
+    no clear sign, not a vote, so it neither fails the model nor gets flipped."""
+    m = _import_py3d()
+    for tip in (-1e-8, 0.0, 1e-8):
+        p3d = load(m, "mirror_b.p3d")
+        lod = p3d.lods[0]
+        face = lod.faces[0]
+        n = face.vertices[0].normal                       # the face's own unit normal (axis-aligned box)
+        in_plane = (n[1], n[2], n[0])                     # an axis-aligned vector at 90 degrees to it
+        own_normal(lod, face.vertices[0], tuple(in_plane[i] + tip * n[i] for i in range(3)))
+        code, lines, out = run_gate(write(p3d, tmp_path / ("b_corner_in_plane_%g.p3d" % tip)))
+        assert code == 0, (tip, out)
+        assert ("  1 corner normal within 5 degrees of the face plane: no clear sign, not read (inspect them if "
+                "their shading matters).") in lines, (tip, out)
+
+
+def test_the_printed_py3d_count_covers_every_face(tmp_path):
+    """Review r2 R2-4: the py3d count the gate prints is py3d's over the whole LOD, proxies and incoherent
+    shells included, even though the gate's own reading leaves them out."""
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    add_quad(m, p3d.lods[0], [(0.0, 2.0, 0.0), (0.1, 2.0, 0.0), (0.1, 2.2, 0.0), (0.0, 2.2, 0.0)],
+             (0.0, 0.0, -1.0), selection=PROXY)
+    path = write(p3d, tmp_path / "b_plus_disagreeing_proxy.p3d")
+    with open(path, "rb") as stream:
+        pct = m._pct_normal_agreement(m.P3D(stream).lods[0])
+    code, lines, out = run_gate(path)
+    assert first_corner_line(lines) == ("  py3d first-corner count: 48 of 50 faces (%.1f %%), " % pct) + PY3D_COUNT_END, out
+    p3d = load(m, "mirror_b.p3d")
+    reverse_faces(p3d.lods[0], p3d.lods[0].faces[0:1])
+    pct = m._pct_normal_agreement(p3d.lods[0])
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_one_face_turned_count.p3d"))
+    assert first_corner_line(lines) == ("  py3d first-corner count: 47 of 48 faces (%.1f %%), " % pct) + PY3D_COUNT_END, out
 
 
 def add_box(m, lod, lo, hi):
@@ -602,8 +770,8 @@ def test_no_normal_to_read_is_not_measurable(tmp_path):
     code, lines, out = run_gate(write(p3d, tmp_path / "b_zero_normals.p3d"))
     assert code == 2, out
     assert WINDING_RIGHT in lines, out
-    assert "  normals: UNSCORED. No corner has both a non-degenerate face and a non-zero normal." in lines, out
-    assert "  144 corners have a zero normal and are not read." in lines, out
+    assert "  normals: UNSCORED. No corner normal has a clear sign against its face." in lines, out
+    assert "  144 corners with a zero normal, not read." in lines, out
     assert INVALID_LINE in lines, out
 
 

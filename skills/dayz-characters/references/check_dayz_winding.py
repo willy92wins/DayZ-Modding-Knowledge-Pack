@@ -20,15 +20,17 @@ winding check", engine verdict 2026-09-07)
       used by exactly two of its faces, and its volume counts only when it is coherent (the two faces of
       each edge run it in opposite directions). Never the sum over the LOD: it can hide an inverted part
       (dayz-p3d-audit references/winding-diagnostics.md, Check A).
-  (2) NORMALS, per shell and corner by corner: the share of a shell's corner normals that lie on the side of
-      their face's cross product, read in the vertex order the winding fix leaves (a reversal flips the cross
-      product and changes which corner comes first; it moves no normal). Above 90 % in every shell they agree.
-      Below 10 % in every shell they disagree: with the winding right that means the normals point out of
-      the material, and the fix is to negate the normal pool, never to reverse the faces. Anything else
-      lists the shells to fix corner by corner, so a right part is never negated with the rest. The count of
-      py3d _pct_normal_agreement (dayz-p3d-audit's absolute check), which reads each face's first corner
-      only, is printed alongside. Real smoothed meshes carry a few corners against their face: LFInfectedBig's
-      Rule 12 build, lit like vanilla in game, has 302 of 131,478 (its body shell reads 99.3 %).
+  (2) NORMALS, per shell and corner by corner: the share of a shell's corner normals that point to the side
+      of their face's vector area (the sum over its fan triangles, which turns exactly with a reversal, also on
+      a non-convex quad whose first three corners point the other way), read as the winding fix leaves it.
+      A normal within 5 degrees of its face's plane has no clear sign and is not read. Above 90 % in every
+      shell they agree; that is a tolerance, not proof of every corner: smooth-shaded exports carry corners
+      against their face (LFInfectedBig's Rule 12 build, lit like vanilla in game, has 219 of 131,478; its
+      body shell reads 99.5 %). Below 10 % in every shell they disagree: with the winding right that means
+      the normals point out of the material, and the fix is to negate the normal pool, never to reverse the
+      faces; the gate says how many corners that agree now the pool fix turns too. Anything else lists the
+      shells to fix corner by corner. py3d _pct_normal_agreement's count (dayz-p3d-audit's absolute check),
+      over every face of the LOD with each face's first corner only, is printed alongside.
   The fixes come in the order of the table in winding-diagnostics.md and of the py3d README ("Winding"): the
   winding first, normals untouched; then the normals against the settled winding.
 
@@ -66,12 +68,15 @@ DISAGREE_BELOW = 10.0    # below it they disagree (where py3d raises ERR_WINDING
 WELD_DECIMALS = 5        # points equal to 5 decimals are one point (winding-diagnostics.md, Check B)
 MIN_THICKNESS = 2e-5     # m; a closed shell with 3*|volume|/area below it is flat: no sign. Twins welded at
                          # 5 decimals stay under 1.5e-5; a real part is thicker (a 50-micron one is not flat)
+PERPENDICULAR = 0.0872   # |cos| between a corner normal and its face's vector area at or below it (within 5
+                         # degrees of the face's plane): no clear sign. A chosen margin, not a measured one;
+                         # LFInfectedBig's Rule 12 build has 200 such corners of 131,478
 
 POOL_FIX = ("negate the normal pool in place: lod.facenormals[j] = (-x, -y, -z) for every j "
             "(not through Vertex.normal).")
-CORNER_FIX = ("in each listed shell, negate the corner normals that point against their face: all of them "
-              "in a shell below 10 %, corner by corner in the others; a pool entry that a corner you keep also "
-              "uses gets a negated copy (py3d README, \"Winding\", step 3).")
+CORNER_FIX = ("negate the normal of each corner that points against its face and keep those that agree; a "
+              "pool entry that a corner you keep also uses gets a negated copy; a corner with no clear sign is "
+              "for inspection, not for flipping (py3d README, \"Winding\", step 3).")
 BATTERY = ("no volume sign decides an open or flat part: check them with the visibility battery "
            "(dayz-p3d-audit references/winding-diagnostics.md, \"From Check B to fix\").")
 
@@ -134,23 +139,55 @@ def _pct(part, whole):
     return 100.0 * part / whole if whole else 0.0
 
 
-def _votes(face, points, turn):
-    """The corners' votes of one face, in the vertex order it will have after fix 1 (*turn*: the face gets
-    face.vertices.reverse(), which flips the cross product of its first three vertices and changes which
-    corner is first, and moves no normal). A vote is True when the corner's stored normal lies on the side of
-    cross(v1 - v0, v2 - v0), False on the other side, None when there is no sign (degenerate face, zero normal,
-    or exactly perpendicular). The first vote is the one py3d _pct_normal_agreement counts."""
+def _area(face, points):
+    """The face's vector area (twice it): the sum of cross(v[k] - v[0], v[k+1] - v[0]) over its fan triangles.
+    It points like cross(v1 - v0, v2 - v0) on a triangle or a planar convex quad; on a non-convex or twisted
+    quad the first three corners can point the other way, and the vector area still turns exactly with
+    face.vertices.reverse() (dayz-p3d-audit references/winding-diagnostics.md, "From Check B to fix", 3)."""
+    v = [points[x.point_index].coords for x in face.vertices]
+    s = (0.0, 0.0, 0.0)
+    for k in range(1, len(v) - 1):
+        c = _cross(_sub(v[k], v[0]), _sub(v[k + 1], v[0]))
+        s = (s[0] + c[0], s[1] + c[1], s[2] + c[2])
+    return s
+
+
+def _corners(face, points, turn):
+    """Each corner's reading against its face, after the reversal fix (*turn*: the face gets reversed, which
+    turns its vector area and moves no normal): True when the stored normal points to the side of the face's
+    vector area, False to the other side, None when it has no clear sign (degenerate face, zero normal, or a
+    normal within 5 degrees of the face's plane: inspect it rather than flip it, py3d README "Winding")."""
+    a = _area(face, points)
+    la = math.sqrt(_dot(a, a))
+    out = []
+    for x in face.vertices:
+        n = x.normal
+        ln = 0.0 if n is None else math.sqrt(_dot(n, n))
+        if la == 0.0 or ln == 0.0:
+            out.append(None)
+            continue
+        d = _dot(a, n) / (la * ln)
+        if turn:
+            d = -d
+        out.append(None if abs(d) <= PERPENDICULAR else d > 0)
+    return out
+
+
+def _first(face, points, turn):
+    """py3d _pct_normal_agreement's vote for one face, in the vertex order *turn* leaves: the first corner's
+    normal against cross(v1 - v0, v2 - v0); None where py3d skips the face."""
     verts = face.vertices[::-1] if turn else face.vertices
+    if len(verts) < 3:
+        return None
     v = [points[x.point_index].coords for x in verts]
     c = _cross(_sub(v[1], v[0]), _sub(v[2], v[0]))
     if c[0] == 0.0 and c[1] == 0.0 and c[2] == 0.0:
-        return [None] * len(verts)
-    out = []
-    for x in verts:
-        n = x.normal
-        d = 0.0 if n is None else c[0] * n[0] + c[1] * n[1] + c[2] * n[2]
-        out.append(None if d == 0.0 else d > 0)
-    return out
+        return None
+    n = verts[0].normal
+    if n is None or (n[0] == 0.0 and n[1] == 0.0 and n[2] == 0.0):
+        return None
+    d = c[0] * n[0] + c[1] * n[1] + c[2] * n[2]
+    return None if d == 0.0 else d > 0
 
 
 class Shell:
@@ -165,12 +202,9 @@ class Shell:
         self.volume = 0.0
         self.flat = False
         self.centre = (0.0, 0.0, 0.0)
-        self.corners = 0              # corner normals with a sign, read after fix 1
+        self.corners = 0              # corner normals with a clear sign, read after the reversal fix
         self.corner_agree = 0
-        self.firsts = 0               # the same for each face's first corner, py3d's count, after fix 1
-        self.first_agree = 0
-        self.firsts_now = 0           # and on the model as it is
-        self.first_agree_now = 0
+        self.unclear = 0              # corner normals within 5 degrees of their face's plane
 
     def kind(self):
         if self.bad_edges:
@@ -283,23 +317,26 @@ def read_lod(lod, index):
     left_out = len(lod.faces) - len(faces)
     shells = read_shells(lod, faces)
     zero = 0
+    turned_faces = set()
     for shell in shells:
         turn = shell.kind() == "positive"   # the reversal fix turns these shells: read them as they will be
+        if turn:
+            turned_faces.update(shell.members)
         for fi in shell.members:
             face = lod.faces[fi]
-            zero += sum(1 for x in face.vertices if x.normal is None or tuple(x.normal) == (0.0, 0.0, 0.0))
-            votes = _votes(face, lod.points, turn)
-            if votes[0] is not None:
-                shell.firsts += 1
-                shell.first_agree += votes[0]
-            now = _votes(face, lod.points, False)[0] if turn else votes[0]
-            if now is not None:
-                shell.firsts_now += 1
-                shell.first_agree_now += now
-            for vote in votes:
+            normals = [x.normal for x in face.vertices]
+            nonzero = [n is not None and tuple(n) != (0.0, 0.0, 0.0) for n in normals]
+            zero += nonzero.count(False)
+            area = _area(face, lod.points)
+            for vote, has_normal in zip(_corners(face, lod.points, turn), nonzero):
                 if vote is not None:
                     shell.corners += 1
                     shell.corner_agree += vote
+                elif has_normal and _dot(area, area) > 0.0:
+                    shell.unclear += 1
+    # py3d's own count, over every face of the LOD as py3d reads it (proxies and incoherent shells included)
+    first_now = [_first(face, lod.points, False) for face in lod.faces]
+    first_after = [_first(face, lod.points, fi in turned_faces) for fi, face in enumerate(lod.faces)]
 
     by = defaultdict(list)
     for shell in shells:
@@ -388,26 +425,38 @@ def read_lod(lod, index):
     classes = {s.normals() for s in voted}
     if not voted:
         error = True
-        lines.append(f"  normals: UNSCORED. No corner has both a non-degenerate face and a non-zero "
-                     f"normal{skipped}.")
+        lines.append(f"  normals: UNSCORED. No corner normal has a clear sign against its face{skipped}.")
     elif classes == {"agree"}:
         keep = ": keep the normals" if reversal else ""
         lines.append(f"  normals: AGREE{after}. {reading}, above 90 % in every shell{keep}{skipped}.")
+    elif classes == {"disagree"} and (reversal or neg):
+        fail = True
+        head = f"  normals: DISAGREE{after}. {reading}, below 10 % in every shell"
+        if not reversal:
+            head += ": the stored normals point out of the material (the older outward-normal convention)"
+        lines.append(f"{head}{skipped}.")
+        fixes += 1
+        if bad or unread:
+            lines.append(f"  fix {fixes}: {CORNER_FIX} Not the whole pool: part of this LOD is not read.")
+        else:
+            text = f"  fix {fixes}: {POOL_FIX}"
+            if not reversal:
+                text += " Keep every face as it is: reversing faces on this reading turns the model inside-out."
+            if left_out:
+                text += (f" The pool also holds the normals of the {left_out} proxy:* faces, which this gate does not "
+                         "read; py3d.blender_to_dayz() negates them too.")
+            if agree:
+                verb = would if reversal or agree > 1 else "agrees"
+                text += (f" It also turns {_plural(agree, 'corner')} that {verb} now: right for an export that stored "
+                         "every normal the other way, whose odd corners go back to how they were authored "
+                         "(LFInfectedBig's Rule 12 build has 219 against their face); if you put corners right by hand, "
+                         "negate only the corners that point against their face instead (py3d README, \"Winding\", "
+                         "step 3).")
+            lines.append(text)
     elif classes == {"disagree"}:
         fail = True
-        if reversal:
-            lines.append(f"  normals: DISAGREE{after}. {reading}, below 10 % in every shell{skipped}.")
-            fixes += 1
-            lines.append(f"  fix {fixes}: {POOL_FIX}")
-        elif neg:
-            lines.append(f"  normals: DISAGREE. {reading}, below 10 % in every shell: the stored normals point out "
-                         f"of the material (the older outward-normal convention){skipped}.")
-            fixes += 1
-            lines.append(f"  fix {fixes}: {POOL_FIX} Keep every face as it is: reversing faces on this reading "
-                         "turns the model inside-out.")
-        else:
-            lines.append(f"  normals: DISAGREE. {reading}; with no closed shell this gate cannot say which of the "
-                         f"two is wrong{skipped}.")
+        lines.append(f"  normals: DISAGREE. {reading}; with no closed shell this gate cannot say which of the two is "
+                     f"wrong{skipped}.")
     else:
         fail = True
         lines.append(f"  normals: MIXED{after}. {reading}; these shells do not reach 90 %{skipped}:")
@@ -418,22 +467,24 @@ def read_lod(lod, index):
         lines.append(f"  fix {fixes}: {CORNER_FIX}")
     if unread:
         error = True
-        lines.append(f"  normals: no corner with a sign in {nfaces(unread)} faces of "
-                     f"{_plural(len(unread), 'shell')} (zero normals or degenerate faces): not measurable there.")
-    firsts_now = sum(s.firsts_now for s in read)
-    if firsts_now:
-        agree_now = sum(s.first_agree_now for s in read)
-        text = f"  py3d first-corner count: {agree_now} of {firsts_now} faces ({_pct(agree_now, firsts_now):.1f} %)"
+        lines.append(f"  normals: no corner with a clear sign in {nfaces(unread)} faces of "
+                     f"{_plural(len(unread), 'shell')}: not measurable there.")
+    unclear = sum(s.unclear for s in read)
+    if unclear:
+        lines.append(f"  {_plural(unclear, 'corner normal')} within 5 degrees of the face plane: no clear sign, "
+                     "not read (inspect them if their shading matters).")
+    if zero:
+        lines.append(f"  {_plural(zero, 'corner')} with a zero normal, not read.")
+    now = [vote for vote in first_now if vote is not None]
+    if now:
+        text = f"  py3d first-corner count: {sum(now)} of {len(now)} faces ({_pct(sum(now), len(now)):.1f} %)"
         if reversal:
-            firsts = sum(s.firsts for s in read)
-            first_agree = sum(s.first_agree for s in read)
-            text += (f" as the model is, {first_agree} of {firsts} ({_pct(first_agree, firsts):.1f} %) after fix "
-                     f"{reversal};")
+            later = [vote for vote in first_after if vote is not None]
+            text += (f" as the model is, {sum(later)} of {len(later)} ({_pct(sum(later), len(later)):.1f} %) after "
+                     f"fix {reversal};")
         else:
             text += ","
-        lines.append(text + " the count of dayz-p3d-audit's absolute check.")
-    if zero:
-        lines.append(f"  {zero} corners have a zero normal and are not read.")
+        lines.append(text + " the count of dayz-p3d-audit's absolute check, over every face of the LOD.")
 
     if uns:
         flat = [s for s in uns if s.closed]

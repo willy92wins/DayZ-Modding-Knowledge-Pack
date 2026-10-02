@@ -195,9 +195,10 @@ normals (`mesh.corner_normals[loop].vector`, transformed by `matrix_world.to_3x3
   kept as `py3d.ROT_X_NEG90`: not for this export.
 - **GATE — `check_dayz_winding.py`, rewritten 2026-10-02 for Rule 12.** Per visual LOD it reads the winding
   by the signed volume by winding of each closed shell (negative, the production sign: right; positive:
-  inside-out, reverse that shell's faces) and the normals corner by corner per shell, read in the vertex
-  order that reversal leaves (below 10 % in every shell with the winding right: negate the normal pool, keep
-  the faces). Open parts are reported as not scored. Usage, exit codes and limits: SKILL.md "OFFLINE GATE". *(Until then it expected
+  inside-out, reverse that shell's faces) and the normals corner by corner per shell, against each face's
+  vector area as that reversal leaves it (below 10 % in every shell with the winding right: negate the normal
+  pool, keep the faces). Open parts are reported as not scored. Usage, exit codes and limits: SKILL.md
+  "OFFLINE GATE". *(Until then it expected
   outward stored normals and `cross · normal < 0`, the state of the LFInfectedBig det = +1 build, and
   [OFFLINE MEASURED 2026-10-01] exited 1 on all three MLODs of the Rule 12 in-game probe, the one that
   renders solid and reads correctly included (`cross.normal_positive=1.00`, `normals_outward=0.00`), with
@@ -209,7 +210,7 @@ normals (`mesh.corner_normals[loop].vector`, transformed by `matrix_world.to_3x3
   Binarize gives all of them vanilla's winding; only the inward-normal build keeps vanilla's relation
   between stored normals and winding in the ODOL (agreement 0.2 %, vanilla zombies 0.3-0.4 %, the
   outward-normal builds 99.8 %). So store the normals inward. [OFFLINE MEASURED 2026-10-02] The rewritten
-  gate passes the Rule 12 build (every closed shell negative; 99.8 % of its corner normals agree, 99.3 % in
+  gate passes the Rule 12 build (every closed shell negative; 99.8 % of its corner normals agree, 99.5 % in
   the body; the open ribcage tubes, 63.5 % of the faces, not scored) and fails both inverted ones on their
   normals (0.2 % of the corners), as dayz-p3d-audit "Absolute winding check" does (Rule 12 build 99.3 %,
   −0.109 on the body; the others 0.7-0.8 %). On the static probe both pass the two solid variants and fail the inside-out one. Like every

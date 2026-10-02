@@ -148,22 +148,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   welded, faces linked only through edges that exactly two faces share, `proxy:*` faces left out, an
   incoherent shell made coherent first); negative passes, positive is inside-out and gets
   `face.vertices.reverse()` on that shell, on the whole LOD only when every shell reads positive and
-  nothing else is in it. The normals: corner by corner per shell, in the vertex order that reversal
-  leaves; a shell agrees above 90 % of its corners, below 10 % in every shell with the winding right means
-  negate the normal pool and keep the faces, and anything else lists the shells to fix corner by corner.
-  py3d `_pct_normal_agreement`'s first-corner count is printed alongside. Open and flat parts are reported
+  nothing else is in it. The normals: corner by corner per shell, each corner normal against its face's
+  vector area as that reversal leaves it, a normal within 5° of the face plane not read; a shell agrees
+  above 90 % of its corners (a tolerance: smooth-shaded exports carry corners against their face), below
+  10 % in every shell with the winding right means negate the normal pool and keep the faces (the gate
+  counts the corners that agree now and that fix turns too, and withholds it when part of the LOD is not
+  read), and anything else lists the shells to fix corner by corner. py3d `_pct_normal_agreement`'s
+  first-corner count, over every face of the LOD, is printed alongside. Open and flat parts are reported
   as not scored, and a PASS that leaves faces unscored says so; a LOD with no closed shell, or a shell with
   no readable normal, is not measurable (exit 2). Visual LODs above resolution 10 are read too, a defect in
   one LOD now wins over another that is not measurable (exit 1; it was 2), and a missing or wrong py3d
   exits 2 instead of raising. Fixtures next to the script: the three in-game MLODs byte for byte,
   regenerated with py3d 1.8.0, plus the correct one with its normals negated; on them the exit codes go
   from 1, 1, 1, 0 (correct, mirrored, inside-out, outward normals) to 0, 0, 1, 1, and
-  `test_check_dayz_winding.py` covers 33 cases. A cross-family review (gpt-6.1-sol) showed that reading one
-  corner per face passed normals wrong at the other corners, that a pool negation on a LOD-wide share
-  turned a right part outward, and that a 0.1 mm flatness cut-off passed a thin inside-out part; each is a
-  test now. Offline on the LFInfectedBig builds of the 2026-10-02 chiral check, the Rule 12 build passes
-  (99.8 % of its corners agree; its open ribcage tubes, 63.5 % of the faces, not scored) and the two with
-  outward normals fail on their normals. The OFFLINE GATE section of `dayz-characters`,
+  `test_check_dayz_winding.py` covers 39 cases. A cross-family review (gpt-6.1-sol, two rounds) showed that
+  reading one corner per face passed normals wrong at the other corners, that a pool negation on a
+  LOD-wide share turned a right part outward, that the first three corners of a non-convex quad point
+  against the face, that the printed py3d count left proxies and incoherent shells out, and that a 0.1 mm
+  flatness cut-off passed a thin inside-out part; each is a test now. Offline on the LFInfectedBig builds
+  of the 2026-10-02 chiral check, the Rule 12 build passes (99.8 % of its corners agree, 99.5 % in the
+  body; its open ribcage tubes, 63.5 % of the faces, not scored) and the two with outward normals fail on
+  their normals. The OFFLINE GATE section of `dayz-characters`,
   `character-rigging.md` §6 and the `check_face_winding` docstring of `dayz-model-pipeline`
   `py3d-direct-generation.md` no longer say the gate fails a correct export or that characters use the
   opposite sign. The rewritten gate was not run in game; its verdicts are checked against the recorded
