@@ -99,6 +99,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   outward component), and `dayz-model-pipeline`
   `py3d-direct-generation.md` said any disagreement between winding and normals renders
   inside-out.
+- `dayz-p3d-audit` "Absolute winding check", rule 6: it pinned `ERR_WINDING_INVERTED` on the absolute
+  check and, because that code flags the production `lf_kit_box.p3d`, called the fork's sign
+  convention inverted. py3d raises that code in the relative check (`_check_winding_vs_visual`); the
+  absolute check raises `ERR_WINDING_VS_NORMALS` and stays silent on the kit box. The relative finding
+  was right: the kit box's Geometry, View and Fire components are wound outward (Rule 18), and in game
+  (2026-10-02, DayZDiag 1.29.163709, the MLOD packed unbinarized) its collision took 0 of 27
+  `scene_raycast` rays in `geom`, `view` and `fire`, while `gate_and.p3d` from the same PBO
+  (components wound inward) and a vanilla `WoodenCrate` took 21 of 21. Rule 6 now reads the finding as
+  a trigger for Rule 18's per-component check, and rule 7 no longer offers the kit box's outward sign
+  as one to keep. The old text is quoted in dated notes.
 
 ## [1.4.0] - 2026-10-01
 
