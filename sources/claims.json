@@ -1131,6 +1131,19 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-chiral-ingame@2026-10-02",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-mcp-verify/skill.md",
+      "claim_id": "CLAIM-MCPV-WORN-MANNEQUIN",
+      "evidence_locator": "DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 1c289781: no verb unequips a worn item from the player; player_respawn on a living player after player_godmode(on=false) created no character; player_teleport to y=160 did not fall; a world_spawn SurvivorM_Francis took inventory_attach by object_id (Armband) and faced north, slot Hands failed (attachment_create_failed); AI infected (flags 8391716) behind a still player walked away, 2.4 m in front it attacked after player_move jog 1.2 s, godmode on (PlayerBase.c:402 m_CanBeTargetedDebug = true in diag, 1.29); no-AI infected (flags 8389668) read health01 0, 0, 0.75 about 12 minutes after spawning, no log line",
+      "license": "MIT",
+      "line_end": 1045,
+      "line_start": 1045,
+      "observed_at": "2026-10-02",
+      "promotion_artifact_id": "skill/dayz-mcp-verify",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-chiral-ingame@2026-10-02",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1

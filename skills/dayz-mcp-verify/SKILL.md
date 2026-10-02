@@ -1038,3 +1038,25 @@ source path in a gate executor's TOML config:
    preflight rejects → restore the TOML and the PBO byte for byte → freeze the evidence → escalate.
 
 Source: one gate run aborted in preflight; the clean abort preserved the owner's PBO.
+
+## Comparing worn items, and getting an infected to attack (added 2026-10-02)
+
+Measured in one run (DayZDiag 1.29.163709, the chiral in-game checks of the character and clothing
+routes) [EXACT][CLAIM-MCPV-WORN-MANNEQUIN]:
+
+- **No verb takes a worn item off the player.** A second garment cannot go into an occupied slot,
+  `player_respawn` on a living player does nothing even after `player_godmode(on=false)` (see the
+  `player_respawn` section above), and `player_teleport` to y=160 left the player hanging in the air
+  with no fall. To compare two garments, wear the second on a survivor spawned with
+  `world_spawn(type="SurvivorM_<name>")`: `inventory_attach(object_id=<its id>, dest="attachment",
+  slot=...)` works on it, and it stands facing north. It cannot be given an item to hold
+  (`slot="Hands"` returns `attachment_create_failed`), so read its sides from its facing.
+- **An infected attacks only once it notices the player.** One spawned with AI (`flags=8391716`, the
+  living-infected 3108 plus `ECE_NOPERSISTENCY_WORLD`) behind a player standing still walked away.
+  Spawned 2.4 m in front of the player, it attacked after a short `player_move` (jog, 1.2 s), wind-up
+  and swings, again and again. Godmode does not hide the player from AI: in diag
+  `m_CanBeTargetedDebug` starts true (`4_World/Entities/ManBase/PlayerBase.c:402`, 1.29).
+- **Infected spawned without AI do not stay healthy.** With `flags=8389668` they idled in place, but
+  about 12 minutes later one custom and one vanilla `ZmbM_SoldierNormal` read `health01 = 0` in
+  `telemetry_read(mode="object_at")` and lay on the ground, a third read 0.75; no log line, cause not
+  found. Capture static infected early, and re-read their health before a late capture.

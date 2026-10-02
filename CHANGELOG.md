@@ -134,7 +134,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   fits the official FBX rig's bone frames (turned 90° about Z on 105 of 113 bones): this raise turns
   about the bone's own Z, which reads alike in both. `dayz-characters`: the Rule 12 LFInfectedBig
   build from #34 attacked the player with its limbs in place, like a vanilla `ZmbM_SoldierNormal`.
-  The `[DESIGN, not yet run]` labels become run results with their scope; three claims registered.
+  The `[DESIGN, not yet run]` labels become run results with their scope. `dayz-mcp-verify` gets what the
+  run taught: no verb takes a worn item off the player, so a second garment goes on a spawned survivor;
+  an infected attacks only once it notices the player; infected spawned without AI later read health 0.
+  Four claims registered.
 
 ## [1.5.0] - 2026-10-02
 
