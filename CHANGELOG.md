@@ -140,6 +140,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   collision LOD quoted the text of py3d's relative-check message ("winding is INVERTED relative to
   the Visual LOD"), which can change with py3d; it now names the finding by its code,
   `ERR_WINDING_INVERTED`, as the automated-check note above it already does.
+- `dayz-p3d-audit` "From Check B to fix" (`references/winding-diagnostics.md`), run on real
+  models (2026-10-02). Step 1 said a healthy welded component yields one group: on the SUB_BRZ
+  co-driver door (healthy, verified in game) the fill splits a 2,235-face component 2,121 + 114
+  with 7 parity conflicts, and the minority follows the order of the fill (6 to 246 faces over
+  41 other orders). Step 1 now counts conflicts; a component with one, or one that splits evenly,
+  has no minority group (cut the edges traversed the same way, fill again, inspect the seams).
+  Step 3's branches were written for a part whose normals agree with its winding; on a part that
+  reads UNIFORM_FLIPPED (the door's paint) they swap, so each face is read against its part's
+  sign, or the part is brought to Rule 12 first. One face with no reading stops the whole group,
+  and the closing corner check reads UNIFORM_FLIPPED parts with `dot ≤ −0.1` (the healthy door's
+  flags: 26,576 → 441). The three GunRacks MLODs of the step's own record go through it as before:
+  their 156 faces read ≥ +0.99, and the result matches the files the 2026-08-28 fix saved byte
+  for byte once py3d rewrites both.
+  Check A's `MIXED` bullet aligned. Old text quoted in dated notes.
 
 ## [1.5.0] - 2026-10-02
 
