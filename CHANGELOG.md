@@ -108,18 +108,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   cross product and the normals both outward, the orientation of the variant that rendered
   inside-out in game. Reversing every face did exactly that to two Blender exports in DayZDiag
   (`dayz-p3d-audit`, "Absolute winding check: what 0 % means"). The message now says the two
-  disagree, asks for the direction first (visual LOD: signed volume by winding of each closed
-  shell, read once its faces agree with their neighbours; collision LOD: the outward check in
-  each convex component) and gives both fixes: normals wrong → negate the normals of the
-  disagreeing faces, with a negated copy for a pool entry that a face left alone also uses;
-  winding wrong → `face.vertices.reverse()` on every face of that part, never a
-  `vertices[1]`/`[2]` swap. Those conditions come from measured cases. On the same model, a
-  shared entry negated in place turned a part whose normals were right (75 % agreement left),
-  and a closed shell with one reversed face kept its negative volume. On a synthetic
-  ring-shaped FireGeometry, the centroid test read 264 of 336 correct faces as outward. The
-  README says the same, adds that neither
-  winding check sees faces and normals turned together (`transform(ROT_X_NEG90)` alone: 100 %
-  agreement, `validate()` returns `[]`) and that the check reads each face's first corner only,
+  disagree and gives an order that works for both: settle the winding first, normals untouched
+  (visual LOD: per closed shell, made coherent by turning the vertex order of the faces that
+  disagree with their neighbours, then reversed whole if its signed volume by winding has the
+  wrong sign; collision LOD: reverse the faces that point outward in each convex component),
+  never with a `vertices[1]`/`[2]` swap; then negate each corner normal that still points
+  against its face, with a negated copy for a pool entry that a kept corner also uses. Each
+  part of that order answers a case measured on the same model with the steps it replaced: a
+  shared entry negated in place turned a part whose normals were right (75 % agreement left);
+  a closed shell with one reversed face kept its negative volume; turning that odd face with
+  its normal, when the odd face was the right one, left one wrong normal that `validate()` no
+  longer reports (47 of 48); and negating whole faces on a first-corner reading turned right
+  corners (96 of 144 right before, 48 after, with 100 % agreement). On a synthetic ring-shaped
+  FireGeometry, the centroid test read 264 of 336 correct faces as outward, hence "convex". The
+  README says the same in three steps, adds that neither winding check sees faces and normals
+  turned together (`transform(ROT_X_NEG90)` alone: 100 % agreement, `validate()` returns `[]`),
   and no longer gives a wrong normal sign the inside-out symptom of a wrong face order. Finding
   code and severity unchanged. No new wheel: the pinned and installed `py3d_dayz-1.8.0` still
   prints the old message.

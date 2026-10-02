@@ -1119,30 +1119,29 @@ def _check_winding_absolute(lod, lod_index, kind_label):
             % kind_label))
     elif pct < 10.0:
         if kind_label == "visual":
-            how = ("the signed volume by winding of each closed shell - "
-                   "negative for a solid seen from outside, positive for "
-                   "a room seen from inside - read only once its faces "
-                   "agree with their neighbours (with "
-                   "WARN_WINDING_EDGE_INCOHERENT, first turn the faces "
-                   "that disagree with the rest of their shell, winding "
-                   "and normals together)")
+            how = ("in each closed shell, turn the vertex order of the "
+                   "faces that disagree with their neighbours "
+                   "(WARN_WINDING_EDGE_INCOHERENT), then read its signed "
+                   "volume by winding - negative for a solid seen from "
+                   "outside, positive for a room seen from inside - and "
+                   "if it has the other sign, face.vertices.reverse() on "
+                   "every face of the shell")
         else:
-            how = ("the cross product against face centroid minus "
-                   "component centroid, in each convex component: inward "
-                   "expected")
+            how = ("in each convex component, face.vertices.reverse() on "
+                   "every face whose cross product points outward, against "
+                   "face centroid minus component centroid (inward "
+                   "expected)")
         findings.append(Finding(
             "ERR_WINDING_VS_NORMALS", "ERROR", lod_index,
             "%s LOD: winding and declared normals disagree (only %.0f%% "
             "of faces agree with their first corner's normal). That says "
             "they disagree, not which one is wrong: in a DayZ MLOD both "
             "cross(v1-v0, v2-v0) and the stored normals point away from "
-            "the side meant to be seen. Decide the wrong side, part by "
-            "part, before any fix, with %s. Winding as expected -> the "
-            "normals of the disagreeing faces are wrong: negate them "
-            "(lod.facenormals[j] = (-x, -y, -z); an entry also used by a "
-            "face you keep gets a negated copy instead). Winding opposite "
-            "-> face.vertices.reverse() on every face of that part, never "
-            "a vertices[1]/[2] swap (a quad becomes a crossed face). "
+            "the side meant to be seen. Settle the winding first, normals "
+            "untouched: %s; never a vertices[1]/[2] swap (a quad becomes "
+            "a crossed face). Then negate each corner normal that still "
+            "points against its face (lod.facenormals[j] = (-x, -y, -z); "
+            "an entry a kept corner also uses gets a negated copy). "
             "Reversing every face on this finding alone has turned "
             "exports whose winding was right inside-out. More: py3d "
             "README, 'Winding'."
