@@ -97,7 +97,10 @@ external artist models, player report "plank normals are inverted"):
    face:
    - **Normals agree with the inverted winding** (dot > 0: they turned along with it; second
      row of the Check A table): **negate stored normals of those corners in the same pass** —
-     UNLESS pipeline recalculates normals in a subsequent step. This is the GunRacks case.
+     UNLESS pipeline recalculates normals in a subsequent step. This is the GunRacks case:
+     there each minority group had its winding AND its stored normals reversed against its
+     neighbours', and the fixers of T1/T2 and of the second pass refused to save unless 0
+     flipped faces had summed stored normals against the new winding (2026-08-28).
      A fixer that only inverts vertices (e.g. GunRacks `fix_winding.py`) is correct ONLY
      because its pipeline recalculated normals afterwards; copying that mechanic to a pipeline
      without recalculation leaves face visible but shaded inside out (second lost cycle).
