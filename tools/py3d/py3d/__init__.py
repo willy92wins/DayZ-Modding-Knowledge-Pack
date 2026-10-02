@@ -50,7 +50,7 @@ import tempfile
 import warnings
 
 
-__version__ = "1.8.0"
+__version__ = "1.9.0"
 IS_DAYZ_FORK = True
 
 _REQUIRED = object()
@@ -959,7 +959,10 @@ def _recipe_build_memory(recipe):
 #     audit used the last one, through an accidental overwrite;
 #   - severities: CRITICAL -> ERROR, WARNING -> WARN. Informational NOTEs
 #     are not ported, except P:\ paths and the low-confidence winding
-#     branch, which is part of the ported check.
+#     branch, which is part of the ported check;
+#   - component naming (1.9.0): the audit required 'Component01' and
+#     flagged 'component01'; in game the case made no difference, so the
+#     check now flags a missing component, on every collision LOD.
 #
 # Codes added in 1.2.0 (this block):
 #   ERR_WINDING_INVERTED, WARN_WINDING_MIXED, WARN_WINDING_LOWCONF,
@@ -1240,30 +1243,94 @@ def _check_winding_vs_visual(lod, lod_index, visual_lod, visual_index,
     return findings
 
 
-def _check_component_naming(lod, lod_index):
-    """Port of audit_p3d.check_component_naming (174-191)."""
-    findings = []
-    sels = list(lod.selections.keys())
-    has_correct = "Component01" in sels
-    has_lowercase = "component01" in sels
-    has_any = any(s.lower().startswith("component") for s in sels)
-    if has_lowercase and not has_correct:
-        findings.append(Finding(
+#: A collision component's selection: "Component" and a number, as Object
+#: Builder's Find Components names them. Matched in any case: in game the
+#: case made no difference (see _check_component_naming). Use fullmatch():
+#: with match() and a "$" a trailing newline would pass.
+_COMPONENT_NAME_RE = re.compile(r"component\d+", re.IGNORECASE)
+
+
+def _proxy_triangle_faces(lod):
+    """ids of the faces that are MLOD proxy triangles: a selection named
+    'proxy:<path>.<index>' that holds exactly 1 triangular face and, as its
+    3 points, that triangle's 3 corners. A selection under a proxy name
+    with any other shape is not a proxy, and its faces stay collision
+    geometry. Normals and editing exclusivity are not required here (the
+    library's strict proxy check, _resolve_proxy_anatomy, rejects real
+    proxy triangles for those)."""
+    out = set()
+    for name, sel in lod.selections.items():
+        if not PROXY_NAME_RE.match(name):
+            continue
+        if len(sel.points) != 3 or len(sel.faces) != 1:
+            continue
+        face = next(iter(sel.faces))
+        if len(face.vertices) != 3:
+            continue
+        try:
+            corners = {id(vx.point) for vx in face.vertices}
+        except (IndexError, TypeError):
+            continue
+        if len(corners) == 3 and corners == set(map(id, sel.points)):
+            out.add(id(face))
+    return out
+
+
+def _check_component_naming(lod, lod_index, kind_label):
+    """A collision LOD (Geometry, View or Fire) with faces of its own and
+    no component selection -> ERR_COMPONENT_NAMING.
+
+    Measured in game (DayZDiag 1.29.163709, 2026-10-02; dayz-p3d-audit
+    killer #2): a 2 m box whose Geometry, View and Fire LODs had no
+    component took no ray in geom, view or fire, missed the physics ray
+    and let the player walk through, packed unbinarized and binarized,
+    and no log line said so. A LOD without a component while the other
+    collision LODs have one was not measured; each LOD is checked on its
+    own.
+
+    The case of the name is not checked. On the same run 'component01'
+    collided exactly like 'Component01' (rays, physics ray, walk), and
+    binarize writes both as 'component01'. Up to 1.8.0 this check, a port
+    of audit_p3d.check_component_naming, ran on the Geometry LOD alone
+    and raised this ERROR on 'component01': a false positive.
+
+    The ERROR needs no selection whose name starts with "component" (any
+    case). WARN_COMPONENT_NAMING: there are such selections, but none is
+    "Component" and a number (e.g. only 'Component_01' or
+    'components_panel'), a spelling never measured.
+
+    Proxy triangles (_proxy_triangle_faces) do not count, so a LOD with no
+    faces (a Geometry LOD that only carries mass) or only proxy triangles
+    gets no finding: it has no collision geometry of its own.
+
+    A component selection counts here even if it holds none of the faces;
+    whether every face belongs to a component is _check_component_coverage's
+    question, and that one reads 'Component01' alone, on the Geometry LOD.
+    """
+    proxy_faces = _proxy_triangle_faces(lod)
+    own = sum(1 for fa in lod.faces if id(fa) not in proxy_faces)
+    if own == 0:
+        return []
+    found = [s for s in lod.selections if s.lower().startswith("component")]
+    if not found:
+        return [Finding(
             "ERR_COMPONENT_NAMING", "ERROR", lod_index,
-            "Found 'component01' (lowercase). Engine requires "
-            "'Component01' (uppercase C); collision silently fails."))
-    elif not has_any:
-        findings.append(Finding(
-            "ERR_COMPONENT_NAMING", "ERROR", lod_index,
-            "No Component selection found. Geometry LOD requires "
-            "'Component01' for collision."))
-    elif not has_correct:
-        found = [s for s in sels if s.lower().startswith("component")]
-        findings.append(Finding(
+            "%s LOD: %d face(s) and no ComponentNN selection. In game a "
+            "box with no component in any of its collision LODs lost its "
+            "collision silently: no ray hit it, the player walked through, "
+            "and no log line said so (one LOD without a component while "
+            "the others have one was not measured). Select each closed, "
+            "convex part as its own Component01, Component02, ... (the "
+            "case does not matter: component01 collides like Component01)."
+            % (kind_label, own))]
+    if not any(_COMPONENT_NAME_RE.fullmatch(s) for s in found):
+        return [Finding(
             "WARN_COMPONENT_NAMING", "WARN", lod_index,
-            "Component selection %r - verify exact case is 'Component01'."
-            % found[0]))
-    return findings
+            "%s LOD: component selection %r is not 'Component' and a "
+            "number; that spelling was never measured in game "
+            "(Component01 and component01 both collide). Rename it to "
+            "ComponentNN." % (kind_label, found[0]))]
+    return []
 
 
 def _check_component_coverage(lod, lod_index):
@@ -2962,8 +3029,9 @@ class P3D:
                     "(Arma-3-era e13 FireGeo/ViewGeo ids are NOT valid in "
                     "DayZ: use 7e15/6e15)" % lod.resolution))
                 continue
+            if k in _GEOMETRY_CLASS_KINDS:
+                findings.extend(_check_component_naming(lod, i, k))
             if k == "geometry":
-                findings.extend(_check_component_naming(lod, i))
                 findings.extend(_check_component_coverage(lod, i))
                 findings.extend(_check_autocenter(lod, i))
             if k in _GEOMETRY_CLASS_KINDS:
@@ -3003,6 +3071,12 @@ class P3D:
         WARN_PDRIVE_PATH, WARN_LOD_KIND_UNKNOWN.
         Codes from 1.3.0: ERR_MASS_ONLY_GEOMETRY (a #Mass# tag in a
         non-Geometry LOD, which makes binarize bake CoM=(0,0,0)).
+        Changed in 1.9.0: ERR_COMPONENT_NAMING flags a Geometry, View or
+        Fire LOD with faces outside its proxy triangles and no selection
+        whose name starts with 'component' (it ran on the Geometry LOD
+        alone) and no longer flags a lowercase 'component01';
+        WARN_COMPONENT_NAMING only flags a LOD whose component names are
+        none of them 'Component' and a number, the case ignored.
 
         Returns list[Finding]. It does NOT raise on findings, though it
         does raise on misuse of its own parameters. The in-memory round

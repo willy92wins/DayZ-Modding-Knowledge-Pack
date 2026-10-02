@@ -19,6 +19,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the yaw with two parallel rays and the
   direction of the returned normal before trusting face coordinates.
 
+### Changed
+
+- `dayz-p3d-audit` "Absolute winding check", rule 6: the kit box's missing collision is measured
+  now, not a hypothesis. In a paired run (2026-10-02, DayZDiag 1.29.163709, the kit's own config on
+  three classes, the MLODs packed unbinarized) the shipped `lf_kit_box.p3d` took 0 of 27
+  `scene_raycast` rays in `geom`, `view` and `fire` again, and the same bytes with only the
+  collision LODs' faces reversed took 27 of 27, with the collision normals negated or kept, at the
+  same coordinates relative to the kit; a vanilla `WoodenCrate` took 27 of 27. Binarize writes the
+  two fixed variants to the same ODOL. A server physics-world ray (`DayZPhysics.RayCastBullet`)
+  finds the shipped kit where it finds the fixed ones, so the winding did not hide it from that
+  static query (player contact was not measured). The misses were measured on the dayz-mcp
+  bridge's `RaycastRVProxy` rays; the vanilla cursor and hologram rays in the same intersection
+  modes are named as the reason to expect the defect in play, untested. The replaced sentence is
+  quoted in a dated note. The first run's cursor-like ray is corrected too: the dayz-mcp bridge
+  replaces a requested radius of 0 with its 0.05 m default, so it was a 0.05 m sphere, not radius 0.
+
 ### Fixed
 
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
@@ -38,7 +54,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   with py3d 1.8.0 on synthetic boxes: the finding fires on an outward box and clears after
   `reverse()`, also fires on a healthy box under a Visual LOD whose cross product points outward,
   and on two boxes 4 m apart reads only `WARN_WINDING_MIXED`, healthy or not. The killer's offline
-  pointer to `check_dayz_winding.py`, which fails a correct export, and the "Z-up → Y-up flips
+  pointer to `check_dayz_winding.py`, which then failed a correct export, and the "Z-up → Y-up flips
   collision winding but not visual" pitfall are corrected with it. Check A called any 5-95 %
   reading a CRITICAL real bug; the SUB_BRZ co-driver door, verified in game, reads `MIXED`
   (72.67 % of 11,921 faces flipped, 25.9 % agreeing) without an inverted face group (Check B: one
@@ -165,6 +181,80 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and KNOWN-ISSUES say the same. Finding code and severity unchanged: on that model it is the
   only finding that sees the inside-out visual LOD. No new wheel: the pinned and installed
   `py3d_dayz-1.8.0` still prints the old message.
+- py3d `ERR_COMPONENT_NAMING` (py3d 1.9.0). It checked the Geometry LOD alone and also fired on a
+  lowercase `component01` ("Engine requires 'Component01' (uppercase C); collision silently fails"),
+  which in game collides exactly like `Component01` (the killer #2 entry above); vanilla vehicles
+  name their components that way. It now flags a Geometry, View or Fire LOD that has faces outside
+  its proxy triangles and no selection whose name starts with `component`, in any case; its message
+  says that a model with no component in any collision LOD lost its collision silently in game, and
+  that one LOD missing it alone was not measured. `WARN_COMPONENT_NAMING` now only flags a LOD whose
+  component names are none of them `Component` and a number (e.g. only `Component_01`, a spelling
+  never measured); `COMPONENT01` and `Component02` raise nothing. A collision LOD without faces of
+  its own (a mass-only Geometry LOD, or one holding only proxy triangles) raises nothing; a
+  selection under a proxy name counts as a proxy only with a proxy's shape (1 triangle, selected
+  with its 3 corners). Each LOD is checked on its own. Measured offline with the old and the new
+  module through `P3D._scan_v12_findings` on 414 unique MLODs (the owner's mod and vehicle projects
+  and the Pack's door samples): the old check raised 94 errors, all on Geometry LODs, 88 of them
+  with lowercase component names and 5 on Geometry LODs without faces (ruined wheels, one a
+  debinarized vanilla `sedanwheel_destroyed`); the new one raises 1, a Geometry LOD with faces and
+  no component, and nothing on View or Fire, where every LOD with faces has a component. The v2 test
+  fixture's View and Fire LODs, which had no component, get `Component01`. The `dayz-p3d-audit`,
+  `dayz-vehicles` and `dayz-clothing` notes on this finding now say which py3d version does what,
+  and a knowledge note's claim that Object Builder is case-sensitive is marked as unmeasured. No new
+  wheel: the pinned and installed `py3d_dayz-1.8.0` keeps the old check, and `apply-s2-rollout.ps1
+  -WheelOnly` refuses to restock until a 1.9.0 wheel is built and pinned.
+- The chiral in-game checks that #28 designed for the clothing and animation routes ran, and the
+  character check got its attack (2026-10-02, DayZDiag 1.29.163709, one run driven by dayz-mcp).
+  `dayz-clothing`: a test garment with an "F" on the left chest, exported with Rule 12, reads
+  correctly on the wearer's left chest, opposite the item hand; the old `(x, z, −y)` + 180° + swap
+  export reads mirrored on the right chest (worn by a spawned survivor with empty hands, since
+  dayz-mcp cannot take a worn item off the player). `dayz-animation-pipeline`: `LeftArm` alone keyed
+  in Blender on the official rig and exported through the calibrated Route C script rose on the side
+  opposite the item hand; the skill's uncalibrated `scripts/seanim_export.py` left the arm at shoulder
+  height. That shows the route keeps the track on `LeftArm` and raises it as keyed. It does not test
+  the handedness of the frame change (the bone offsets came from the vanilla clip), nor whether Route
+  C's formula, calibrated on the JD rig, fits the official FBX rig's bone frames (turned 90° about Z
+  on 105 of 113 bones, within 0.5°): this raise turns mostly about the bone's own Z, so both maps
+  raise the arm. `dayz-characters`: the Rule 12 LFInfectedBig build from #34 attacked the player with
+  its limbs in place, like a vanilla `ZmbM_SoldierNormal`.
+  The `[DESIGN, not yet run]` labels become run results with their scope. `dayz-mcp-verify` gets what the
+  run taught: no verb takes a worn item off the player, so a second garment goes on a spawned survivor;
+  an infected attacks only once it notices the player; in this run, infected spawned without AI later
+  read health 0.
+  Four claims registered.
+- `dayz-characters` `check_dayz_winding.py`, the pre-PBO gate of the character pipeline, encoded the
+  LFInfectedBig det +1 build: stored normals OUTWARD and `cross·normal < 0` (`NORMALS_OUTWARD_MIN =
+  0.35`). It exited 1 on all three MLODs of the Rule 12 in-game test, the correct one included, with fix
+  hints that would turn it inside-out, and it passed the outward-normal state. It now reads every visual
+  LOD in the Rule 12 convention. The winding: the signed volume by winding of each closed shell (points
+  welded, faces linked only through edges that exactly two faces share, `proxy:*` faces left out, an
+  incoherent shell made coherent first); negative passes, positive is inside-out and gets
+  `face.vertices.reverse()` on that shell, on the whole LOD only when every shell reads positive and
+  nothing else is in it. The normals: corner by corner per shell, each corner normal against its face's
+  vector area as that reversal leaves it, a normal within 5° of the face plane not read; a shell agrees
+  above 90 % of its corners (a tolerance: smooth-shaded exports carry corners against their face), below
+  10 % in every shell with the winding right means negate the normal pool and keep the faces (the gate
+  counts the corners that agree now and that fix turns too, and withholds it when part of the LOD is not
+  read), and anything else lists the shells to fix corner by corner. py3d `_pct_normal_agreement`'s
+  first-corner count, over every face of the LOD, is printed alongside. Open and flat parts are reported
+  as not scored, and a PASS that leaves faces unscored says so; a LOD with no closed shell, or a shell with
+  no readable normal, is not measurable (exit 2). Visual LODs above resolution 10 are read too, a defect in
+  one LOD now wins over another that is not measurable (exit 1; it was 2), and a missing or wrong py3d
+  exits 2 instead of raising. Fixtures next to the script: the three in-game MLODs byte for byte,
+  regenerated with py3d 1.8.0, plus the correct one with its normals negated; on them the exit codes go
+  from 1, 1, 1, 0 (correct, mirrored, inside-out, outward normals) to 0, 0, 1, 1, and
+  `test_check_dayz_winding.py` covers 39 cases. A cross-family review (gpt-6.1-sol, two rounds) showed that
+  reading one corner per face passed normals wrong at the other corners, that a pool negation on a
+  LOD-wide share turned a right part outward, that the first three corners of a non-convex quad point
+  against the face, that the printed py3d count left proxies and incoherent shells out, and that a 0.1 mm
+  flatness cut-off passed a thin inside-out part; each is a test now. Offline on the LFInfectedBig builds
+  of the 2026-10-02 chiral check, the Rule 12 build passes (99.8 % of its corners agree, 99.5 % in the
+  body; its open ribcage tubes, 63.5 % of the faces, not scored) and the two with outward normals fail on
+  their normals. The OFFLINE GATE section of `dayz-characters`,
+  `character-rigging.md` §6 and the `check_face_winding` docstring of `dayz-model-pipeline`
+  `py3d-direct-generation.md` no longer say the gate fails a correct export or that characters use the
+  opposite sign. The rewritten gate was not run in game; its verdicts are checked against the recorded
+  in-game results of the probe and of the chiral check.
 - `dayz-animation-pipeline` `scripts/seanim_export.py` wrote the viewer's bone-local quaternions and
   rest offsets as they are, in the viewer's right-handed frame. It now carries the Route C
   conversion calibrated 2026-06-29 on the JD Master Rig (rotation `(x,y,z,w) → (−y,−z,x,w)`, rest

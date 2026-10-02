@@ -9,7 +9,7 @@ from setuptools import setup
 setup(
     name = "py3d-dayz",
     packages = ["py3d"],
-    version = "1.8.0",
+    version = "1.9.0",
     install_requires = [],
     author = "Guillermo",
     author_email = "willy92wins@gmail.com",
