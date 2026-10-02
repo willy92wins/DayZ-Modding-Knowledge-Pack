@@ -431,10 +431,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-p3d-audit-rule6@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask and reference positions (lines 45-60, 79-92), without the per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets, refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones, rotations and positions are identical. Regression test tests/test_seanim_export.py (12 cases, red on the old script 11/11 before the position case was added, green after). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1f6d03fe1d38cac75b013ee9a1f418f211e5f85ece72ee3f0b8c575720d2d890",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "cc43a1ed92fd96e9626dfe738591ebacbc58e1fe868c34b94b4f2f460fac0b45",
+      "output_hash": "1f6d03fe1d38cac75b013ee9a1f418f211e5f85ece72ee3f0b8c575720d2d890",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3656,10 +3666,20 @@
           "source_path": "skills/blender-animation/references/dayz-handoff.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask and reference positions (lines 45-60, 79-92), without the per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets, refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones, rotations and positions are identical. Regression test tests/test_seanim_export.py (12 cases, red on the old script 11/11 before the position case was added, green after). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f47ee689aa91eb3896bbaa161871bbcb030599d6da3ff2f0d422d189192884a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-animation/references/dayz-handoff.md",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "11e124b78342a1f586215e7abb7f4aef007c206ccae2df542205d7c9517e1834",
+      "output_hash": "f47ee689aa91eb3896bbaa161871bbcb030599d6da3ff2f0d422d189192884a5",
       "output_path": "skills/blender-animation/references/dayz-handoff.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -4320,10 +4340,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask and reference positions (lines 45-60, 79-92), without the per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets, refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones, rotations and positions are identical. Regression test tests/test_seanim_export.py (12 cases, red on the old script 11/11 before the position case was added, green after). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ab0228356123883eeeefa588067f4b1494de6853fa7e23c0233485b60010e97f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "097e92c04cecd2ef3ac0360c0fb846c9168c9703a7173ccfd15fa5d4574b57c8",
+      "output_hash": "ab0228356123883eeeefa588067f4b1494de6853fa7e23c0233485b60010e97f",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4394,10 +4424,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask and reference positions (lines 45-60, 79-92), without the per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets, refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones, rotations and positions are identical. Regression test tests/test_seanim_export.py (12 cases, red on the old script 11/11 before the position case was added, green after). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "518535163e6e6be45cfa4b1800e1b5a90a378a231fc8a44167be93285929344c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "278ebdd742375201dc2a29c51ea0ee6093859374835f9b738526558554eec3fc",
+      "output_hash": "518535163e6e6be45cfa4b1800e1b5a90a378a231fc8a44167be93285929344c",
       "output_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4770,10 +4810,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask and reference positions (lines 45-60, 79-92), without the per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets, refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones, rotations and positions are identical. Regression test tests/test_seanim_export.py (12 cases, red on the old script 11/11 before the position case was added, green after). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2529a254021d4b153ab610c4d387764b2aae6249e1e9f0da7e102da21e352ba9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "96b3c3b20d722905421fdfdc375eae5241d9ea6f3bb10a3f0c835f1b2172a7aa",
+      "output_hash": "2529a254021d4b153ab610c4d387764b2aae6249e1e9f0da7e102da21e352ba9",
       "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5008,10 +5058,20 @@
           "source_path": "dayz-animation-pipeline/scripts/seanim_export.py",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask and reference positions (lines 45-60, 79-92), without the per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets, refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones, rotations and positions are identical. Regression test tests/test_seanim_export.py (12 cases, red on the old script 11/11 before the position case was added, green after). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f8853be39acbeb1d2ee5ff9d58dc4ad3594b7d27e36264b6451241727015c730",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/scripts/seanim_export.py",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ee40083d0d534db0215d64ea77117b19d95e24df6cc9007d6b63e00562772acd",
+      "output_hash": "f8853be39acbeb1d2ee5ff9d58dc4ad3594b7d27e36264b6451241727015c730",
       "output_path": "skills/dayz-animation-pipeline/scripts/seanim_export.py",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -14815,10 +14875,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-p3d-audit-rule6@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask and reference positions (lines 45-60, 79-92), without the per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets, refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones, rotations and positions are identical. Regression test tests/test_seanim_export.py (12 cases, red on the old script 11/11 before the position case was added, green after). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "08f4a942fea79c1520282e87dee27e9541e9e99d906ababd0c2f33d493a7df8d",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e1ff3fe4bc61c74fa8e8d83803449d3a36017129338aa4bced8cfdd7de1f1745",
+      "output_hash": "08f4a942fea79c1520282e87dee27e9541e9e99d906ababd0c2f33d493a7df8d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -25957,6 +26027,28 @@
       "output_path": "skills/dayz-animation-pipeline/tests/test_install_py3d.py",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/tests/test_seanim_export.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask and reference positions (lines 45-60, 79-92), without the per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets, refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones, rotations and positions are identical. Regression test tests/test_seanim_export.py (12 cases, red on the old script 11/11 before the position case was added, green after). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol pending at this reseal. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "69c332094fefe5f021122835dd1a8e45fdd5241575fc9d5e5002ac3c38c750fa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/tests/test_seanim_export.py",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "69c332094fefe5f021122835dd1a8e45fdd5241575fc9d5e5002ac3c38c750fa",
+      "output_path": "skills/dayz-animation-pipeline/tests/test_seanim_export.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-proxy-align/scripts/install_py3d.py",
