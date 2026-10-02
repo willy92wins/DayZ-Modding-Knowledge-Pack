@@ -3177,10 +3177,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-29db50a@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 promotion of main c229c8b following #55 (the fifth receipt of this installation that day, after 1ff300dc61088b3b7bb0478a, a5e776aef17a1d2312e3c0da, 681a181feb0550dc5f13ff09 and 31865c3f4deb47d5c718429d): the owner asked to promote #51 to the live skill trees; promotion is per commit, so it also carries what main gained since 29db50a (#50, #54, #56, #58, then #51), as the owner confirmed. #55's closing check had already come back from a fresh checkout of its merge ee422c4 with only PROMOTION-DRIFT and no receipt finding. promote --check from a fresh worktree of c229c8b with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (78 of 119 operations: five skills on agents_user_skills+claude_user_skills and 73 new vault snapshots; no live file removed). Projected with packctl's own alias localization, the skill changes are exactly the 11 files git changed under skills/ since 29db50a: blender-animation references/dayz-handoff.md; dayz-animation-pipeline SKILL.md, references/blender-authoring.md, references/weapon-anim-authoring-viewer.md, scripts/seanim_export.py and, new, tests/test_seanim_export.py; dayz-mcp-verify SKILL.md; dayz-model-pipeline SKILL.md; dayz-p3d-audit SKILL.md, references/killers-detail.md, references/winding-diagnostics.md. promote --apply PASS, transaction 9b8733b54b0b0f43fd94884a, COMMIT event 236 at 2026-10-02T20:47:22Z; the receipt's sha256 equals the COMMIT payload's receipt_hash. Codex was at 100 % of its weekly window (reset 2026-10-09 03:39), so no cross-family review ran: the owner chose merge on the mechanical checks (verify_applied.py, packctl validate and gate, CI). Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a30615616ed9895a668319123147034fe7a4176abdbe8c79a33fc575a22f0ce2",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-c229c8b@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "02af1bd325aed19cc3e7a30a1d8ce327012b8f330ba243dadb6edbd71c0e0ac7",
+      "output_hash": "a30615616ed9895a668319123147034fe7a4176abdbe8c79a33fc575a22f0ce2",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -29244,6 +29254,28 @@
       "license": "MIT",
       "output_hash": "647a66a2601bd2208dceb90e18e64275af24c5282d05a3defa9c012fb9ce6358",
       "output_path": "promotions/receipts/31865c3f4deb47d5c718429d.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/9b8733b54b0b0f43fd94884a.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-02 promotion of main c229c8b following #55 (the fifth receipt of this installation that day, after 1ff300dc61088b3b7bb0478a, a5e776aef17a1d2312e3c0da, 681a181feb0550dc5f13ff09 and 31865c3f4deb47d5c718429d): the owner asked to promote #51 to the live skill trees; promotion is per commit, so it also carries what main gained since 29db50a (#50, #54, #56, #58, then #51), as the owner confirmed. #55's closing check had already come back from a fresh checkout of its merge ee422c4 with only PROMOTION-DRIFT and no receipt finding. promote --check from a fresh worktree of c229c8b with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (78 of 119 operations: five skills on agents_user_skills+claude_user_skills and 73 new vault snapshots; no live file removed). Projected with packctl's own alias localization, the skill changes are exactly the 11 files git changed under skills/ since 29db50a: blender-animation references/dayz-handoff.md; dayz-animation-pipeline SKILL.md, references/blender-authoring.md, references/weapon-anim-authoring-viewer.md, scripts/seanim_export.py and, new, tests/test_seanim_export.py; dayz-mcp-verify SKILL.md; dayz-model-pipeline SKILL.md; dayz-p3d-audit SKILL.md, references/killers-detail.md, references/winding-diagnostics.md. promote --apply PASS, transaction 9b8733b54b0b0f43fd94884a, COMMIT event 236 at 2026-10-02T20:47:22Z; the receipt's sha256 equals the COMMIT payload's receipt_hash. Codex was at 100 % of its weekly window (reset 2026-10-09 03:39), so no cross-family review ran: the owner chose merge on the mechanical checks (verify_applied.py, packctl validate and gate, CI). Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b9c7fa0e0194ebd7d8ea76e284192bdca59077df818eec80b8b2c50db33b8229",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/9b8733b54b0b0f43fd94884a.json",
+          "source_revision": "kp-update-promotion-c229c8b@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b9c7fa0e0194ebd7d8ea76e284192bdca59077df818eec80b8b2c50db33b8229",
+      "output_path": "promotions/receipts/9b8733b54b0b0f43fd94884a.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
