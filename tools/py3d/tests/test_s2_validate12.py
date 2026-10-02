@@ -7,7 +7,8 @@ import sys
 
 import pytest
 
-from builders import add_proxy_triangle, build_multilod_v2_p3d
+from builders import (CUBE_POINTS, CUBE_QUADS, add_proxy_triangle,
+                      build_multilod_v2_p3d)
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AUDIT = os.path.join(REPO, "tools", "audit_p3d.py")
@@ -15,6 +16,51 @@ AUDIT = os.path.join(REPO, "tools", "audit_p3d.py")
 
 def codes(findings):
     return sorted({f.code for f in findings})
+
+
+def add_box(m, lod, scale, name=None, mass=None):
+    """Append a closed box to *lod*: the builders' unit cube scaled per
+    axis, with its winding and normals, so a box centred on the origin
+    keeps every winding check quiet. *name* gets (or creates) a selection
+    holding the box's points and faces. Returns (points, faces)."""
+    base = len(lod.points)
+    pts = []
+    for c in CUBE_POINTS:
+        p = m.Point()
+        p.coords = tuple(c[j] * scale[j] for j in range(3))
+        p.mass = mass
+        lod.points.append(p)
+        pts.append(p)
+    faces = []
+    for quad, n in CUBE_QUADS:
+        lod.facenormals.append(n)
+        fa = m.Face(lod.points, lod.facenormals)
+        for pi in quad:
+            v = m.Vertex(lod.points, lod.facenormals)
+            v.point_index = base + pi
+            v.normal_index = len(lod.facenormals) - 1
+            v.uv = (0.0, 0.0)
+            fa.vertices.append(v)
+        fa.texture = fa.material = ""
+        lod.faces.append(fa)
+        faces.append(fa)
+    if name:
+        sel = lod.new_selection(name)
+        sel.points.update((p, 1) for p in pts)
+        sel.faces.update((fa, 1) for fa in faces)
+    return pts, faces
+
+
+def select_all(lod, name):
+    """*name* holds every point and face of *lod* (created if missing)."""
+    sel = lod.new_selection(name)
+    sel.points = {p: 1 for p in lod.points}
+    sel.faces = {fa: 1 for fa in lod.faces}
+    return sel
+
+
+# A thin box across the Geometry cube, centred on the origin like it.
+CROSS = (0.5, 2.0, 0.5)
 
 
 # ---- mutators: each produces exactly the expected codes ----------
@@ -76,6 +122,32 @@ def mut_component_coverage(m, p3d):
     first = next(iter(sel.points))
     del sel.points[first]
     return ["WARN_COMPONENT_COVERAGE"]
+
+def mut_coverage_face_outside(m, p3d):
+    # two components; one face of the second is in neither
+    geo = p3d.get_lod("geometry")
+    _, faces = add_box(m, geo, CROSS, "Component02", mass=25.0)
+    del geo.selections["Component02"].faces[faces[0]]
+    return ["WARN_COMPONENT_COVERAGE"]
+
+def mut_coverage_lowercase(m, p3d):
+    # the same gap, components named in lowercase (they collide alike)
+    geo = p3d.get_lod("geometry")
+    geo.selections["component01"] = geo.selections.pop("Component01")
+    _, faces = add_box(m, geo, CROSS, "component02", mass=25.0)
+    del geo.selections["component02"].faces[faces[0]]
+    return ["WARN_COMPONENT_COVERAGE"]
+
+def _cover_all_but_one_face(lod):
+    sel = select_all(lod, "Component01")
+    del sel.faces[lod.faces[0]]
+    return ["WARN_COMPONENT_COVERAGE"]
+
+def mut_coverage_view(m, p3d):
+    return _cover_all_but_one_face(p3d.get_lod("view_geometry"))
+
+def mut_coverage_fire(m, p3d):
+    return _cover_all_but_one_face(p3d.get_lod("fire_geometry"))
 
 def mut_autocenter_missing(m, p3d):
     del p3d.get_lod("geometry").properties["autocenter"]
@@ -169,6 +241,10 @@ CASES = [
     ("component_spelling", mut_component_spelling),
     ("component_newline", mut_component_newline),
     ("component_coverage", mut_component_coverage),
+    ("coverage_face_outside", mut_coverage_face_outside),
+    ("coverage_lowercase", mut_coverage_lowercase),
+    ("coverage_view", mut_coverage_view),
+    ("coverage_fire", mut_coverage_fire),
     ("autocenter_missing", mut_autocenter_missing),
     ("not_watertight", mut_not_watertight),
     ("degenerate", mut_degenerate),
@@ -351,3 +427,220 @@ def test_val_audit_parity_clean(fork, tmp_path):
                        capture_output=True, text=True, env=env, cwd=REPO)
     assert r.returncode == 0
     assert "ALL CHECKS PASSED" in r.stdout and "OVERALL: ALL PASSED" in r.stdout
+
+
+# ---- WARN_COMPONENT_COVERAGE: the union of the components (1.9.0) -----
+
+def coverage(findings):
+    return [f for f in findings if f.code == "WARN_COMPONENT_COVERAGE"]
+
+
+def test_coverage_pos_components_together(fork):
+    """Each collision LOD holds two components that together cover every
+    face: no finding. Up to 1.8.0 the Geometry LOD read 'Component01
+    covers 8/16 vertices' and '6/12 faces'."""
+    p3d = build_multilod_v2_p3d(fork)
+    for kind, mass in (("geometry", 25.0), ("view_geometry", None),
+                       ("fire_geometry", None)):
+        lod = p3d.get_lod(kind)
+        select_all(lod, "Component01")
+        add_box(fork, lod, CROSS, "Component02", mass=mass)
+    assert p3d.validate() == []
+
+
+def test_coverage_pos_lowercase_components(fork):
+    """Components named in lowercase count like 'ComponentNN'."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    geo.selections["component01"] = geo.selections.pop("Component01")
+    add_box(fork, geo, CROSS, "component02", mass=25.0)
+    assert p3d.validate() == []
+
+
+def test_coverage_pos_loose_point_not_counted(fork):
+    """A point that no face uses has nothing to collide with: no finding.
+    Up to 1.8.0: 'Component01 covers 8/9 vertices'."""
+    p3d = build_multilod_v2_p3d(fork)
+    p = fork.Point()
+    p.coords = (0.0, 0.0, 0.0)
+    p.mass = 25.0
+    p3d.get_lod("geometry").points.append(p)
+    assert p3d.validate() == []
+
+
+def _geometry_with_proxy(m):
+    p3d = build_multilod_v2_p3d(m)
+    geo = p3d.get_lod("geometry")
+    add_proxy_triangle(m, geo, "proxy:\\dz\\data\\proxies\\flag.001",
+                       origin=(0.0, 0.0, 0.2))
+    for p in geo.points[-3:]:
+        p.mass = 0.0
+    return p3d, geo
+
+
+def test_coverage_proxy_triangle_not_counted(fork):
+    """A proxy triangle outside every component is not a face to cover.
+    Up to 1.8.0: 'Component01 covers 8/11 vertices' and '6/7 faces'."""
+    p3d, _ = _geometry_with_proxy(fork)
+    assert coverage(p3d.validate()) == []
+
+
+def test_coverage_counts_exclude_proxy_faces(fork):
+    """With a face of its own outside every component, the proxy triangle
+    stays out of the count: 1 of 6 faces, not of 7."""
+    p3d, geo = _geometry_with_proxy(fork)
+    del geo.selections["Component01"].faces[geo.faces[0]]
+    (f,) = coverage(p3d.validate())
+    assert f.lod == 1 and f.severity == "WARN"
+    assert f.msg.startswith(
+        "geometry LOD: 1 of its 6 face(s) (proxy triangles not counted) are "
+        "in no ComponentNN selection."), f.msg
+
+
+def test_coverage_proxy_named_box_counts(fork):
+    """A whole box under a proxy name is not a proxy triangle: its faces
+    are collision geometry and, in no component, are counted (6 of 12)."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    add_box(fork, geo, CROSS, "proxy:\\dz\\data\\proxies\\crate.001",
+            mass=25.0)
+    (f,) = coverage(p3d.validate())
+    assert f.msg.startswith(
+        "geometry LOD: 6 of its 12 face(s) (proxy triangles not counted) "
+        "are in no ComponentNN selection, nor are 8 of the 16 point(s) its "
+        "faces use."), f.msg
+
+
+def test_coverage_empty_component_selection(fork):
+    """A component selection that holds nothing is accepted by the naming
+    check; coverage reports every face and point of the LOD."""
+    p3d = build_multilod_v2_p3d(fork)
+    sel = p3d.get_lod("geometry").selections["Component01"]
+    sel.points = {}
+    sel.faces = {}
+    findings = p3d.validate()
+    assert codes(findings) == ["WARN_COMPONENT_COVERAGE"]
+    (f,) = coverage(findings)
+    assert f.msg.startswith(
+        "geometry LOD: 6 of its 6 face(s) (proxy triangles not counted) are "
+        "in no ComponentNN selection, nor are 8 of the 8 point(s) its faces "
+        "use."), f.msg
+
+
+def test_coverage_message_faces(fork):
+    """One face of the second component in neither: the count is over
+    both components' faces, and no point is counted (its points stay in
+    Component02)."""
+    p3d = build_multilod_v2_p3d(fork)
+    mut_coverage_face_outside(fork, p3d)
+    (f,) = coverage(p3d.validate())
+    assert f.lod == 1
+    assert f.msg.startswith(
+        "geometry LOD: 1 of its 12 face(s) (proxy triangles not counted) "
+        "are in no ComponentNN selection."), f.msg
+
+
+def test_coverage_message_faces_and_points(fork):
+    """The face and its four corners out of Component02: the corners are
+    counted against the 16 points the faces use."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    _, faces = add_box(fork, geo, CROSS, "Component02", mass=25.0)
+    sel = geo.selections["Component02"]
+    del sel.faces[faces[0]]
+    for v in faces[0].vertices:
+        del sel.points[v.point]
+    (f,) = coverage(p3d.validate())
+    assert f.msg.startswith(
+        "geometry LOD: 1 of its 12 face(s) (proxy triangles not counted) "
+        "are in no ComponentNN selection, nor are 4 of the 16 point(s) its "
+        "faces use."), f.msg
+
+
+def test_coverage_message_points_only(fork):
+    """Every face in a component but one of its points in none."""
+    p3d = build_multilod_v2_p3d(fork)
+    mut_component_coverage(fork, p3d)
+    (f,) = coverage(p3d.validate())
+    assert f.lod == 1
+    assert f.msg.startswith(
+        "geometry LOD: every face (proxy triangles not counted) is in a "
+        "ComponentNN selection, but 1 of the 8 point(s) its faces use are "
+        "in none."), f.msg
+
+
+@pytest.mark.parametrize("kind,index", [("view_geometry", 2),
+                                        ("fire_geometry", 3)])
+def test_coverage_view_and_fire(fork, kind, index):
+    """View and Fire are read like Geometry (up to 1.8.0, not at all)."""
+    p3d = build_multilod_v2_p3d(fork)
+    _cover_all_but_one_face(p3d.get_lod(kind))
+    (f,) = coverage(p3d.validate())
+    assert f.lod == index
+    assert f.msg.startswith(
+        "%s LOD: 1 of its 6 face(s) (proxy triangles not counted) are in no "
+        "ComponentNN selection." % kind), f.msg
+
+
+def test_coverage_zero_weight_is_not_cover(fork):
+    """A zero weight is not written, so that face is in no component.
+    (The in-memory round trip also reports the membership change.)"""
+    p3d = build_multilod_v2_p3d(fork)
+    sel = p3d.get_lod("geometry").selections["Component01"]
+    sel.faces[next(iter(sel.faces))] = 0
+    (f,) = coverage(p3d.validate())
+    assert f.msg.startswith("geometry LOD: 1 of its 6 face(s)"), f.msg
+
+
+def test_coverage_zero_point_weight_is_not_cover(fork):
+    """The same for a point: every face is covered, one corner is not."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    geo.selections["Component01"].points[geo.points[0]] = 0
+    (f,) = coverage(p3d.validate())
+    assert f.msg.startswith(
+        "geometry LOD: every face (proxy triangles not counted) is in a "
+        "ComponentNN selection, but 1 of the 8 point(s) its faces use are "
+        "in none."), f.msg
+
+
+def test_coverage_fractional_weights_cover(fork):
+    """Any nonzero weight is a member, in memory and once written and read
+    back (MLOD stores a fractional weight as a nonzero byte)."""
+    import io
+    p3d = build_multilod_v2_p3d(fork)
+    sel = p3d.get_lod("geometry").selections["Component01"]
+    sel.points = {p: 0.5 for p in sel.points}
+    sel.faces = {fa: 0.25 for fa in sel.faces}
+    assert coverage(p3d.validate()) == []
+    buf = io.BytesIO()
+    p3d.write(buf)
+    buf.seek(0)
+    reread = fork.P3D(buf)
+    weights = reread.get_lod("geometry").selections["Component01"].faces
+    assert len(weights) == 6 and all(0 < w < 1 for w in weights.values())
+    assert coverage(reread.validate()) == []
+
+
+def test_coverage_silent_on_proxy_only_lod(fork):
+    """A collision LOD that holds only a proxy triangle has no face of its
+    own to cover, even with a component selection present. Up to 1.8.0,
+    on the Geometry LOD: 'Component01 covers 0/3 vertices' and '0/1
+    faces'."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    lod = fork.LOD()
+    lod.resolution = geo.resolution
+    lod.properties["autocenter"] = "0"
+    add_proxy_triangle(fork, lod, "proxy:\\dz\\data\\proxies\\flag.001")
+    lod.new_selection("Component01")
+    p3d.lods[p3d.lods.index(geo)] = lod
+    assert coverage(p3d.validate()) == []
+
+
+def test_coverage_silent_without_components(fork):
+    """No component selection at all is ERR_COMPONENT_NAMING's finding;
+    coverage adds nothing."""
+    p3d = build_multilod_v2_p3d(fork)
+    p3d.get_lod("geometry").selections.pop("Component01")
+    assert coverage(p3d.validate()) == []

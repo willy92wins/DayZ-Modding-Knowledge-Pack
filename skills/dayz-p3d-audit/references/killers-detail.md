@@ -238,20 +238,38 @@ for items without a proper Geometry LOD or with broken `GetCollisionBox()` data.
 
 ### 8. Incomplete Component Coverage
 
-Every vertex and face of a collision LOD must belong to a `ComponentNN` selection with weight=1:
-one component per closed, convex part (`dayz-model-pipeline` Rule 1), the components together
-covering the LOD. Partial coverage means partial collision — some faces won't register raycasts.
-Never merge separate parts into one `Component01` to make it cover everything: a component that
-holds two separate parts is not convex.
+Every face of a collision LOD (proxy triangles aside), and every point those faces use, must
+belong to a `ComponentNN` selection with weight=1: one component per closed, convex part
+(`dayz-model-pipeline` Rule 1), the components together covering the LOD. A face outside every
+component is expected not to collide, but that was measured only for a LOD with no component at
+all (killer #2), not for a face left out next to covered ones. Never merge separate parts into one
+`Component01` to make it cover everything: a component that holds two separate parts is not
+convex.
 
-py3d `WARN_COMPONENT_COVERAGE` (`_check_component_coverage`) compares `Component01` alone with the
-whole LOD, so it fires on a healthy multi-component LOD: `gate_and.p3d`'s Geometry LOD holds six
-components of 8 points each (48 points, 36 faces) and reads "Component01 covers 8/48 vertices",
-yet that model took every ray in game (SKILL.md, "Absolute winding check", rule 6). Count the
-union of the `ComponentNN` selections instead.
+py3d 1.9.0 `WARN_COMPONENT_COVERAGE` (`_check_component_coverage`) reads the union of the
+`ComponentNN` selections, whatever the case, on the Geometry, View and Fire LODs: it counts the
+faces that no component holds, and the points those faces use that no component holds. Proxy
+triangles (a `proxy:` selection holding one triangle and, as its 3 points, that triangle's corners;
+a whole box under a proxy name counts as collision geometry) and points that no face uses are not
+counted. A LOD with no component at all is `ERR_COMPONENT_NAMING`'s finding (killer #2); one whose
+component selections are all empty is reported here, every face counted. A face outside every
+component on a LOD that has others was not measured in game, so the finding stays a WARN. On the
+Pack's door samples it is silent on `Simple_Door` and `Door_w_Button` and flags the Geometry and
+Fire LODs of `Expert_Mode`, whose lever (18 faces: selection `lever` in Geometry, `door1_open` in
+Fire) is in no component there, though `dayz-doors` lists the lever among the Geometry parts;
+whether that lever collides in game was not measured.
+
+Up to 1.8.0, the version of the pinned wheel, the check compared `Component01` alone with the
+whole Geometry LOD, so it fired on a healthy multi-component LOD: `gate_and.p3d`'s Geometry LOD
+holds six components of 8 points each (48 points, 36 faces) and reads "Component01 covers 8/48
+vertices", yet that model took every ray in game (SKILL.md, "Absolute winding check", rule 6).
+With that wheel, count the union of the `ComponentNN` selections yourself.
 
 *(Corrected 2026-10-02: titled "Incomplete Component01 Coverage", this entry read "`Component01`
-must include ALL vertices AND ALL faces of the Geometry LOD with weight=1.")*
+must include ALL vertices AND ALL faces of the Geometry LOD with weight=1." The first correction
+that day still opened "Every vertex and face of a collision LOD must belong to a `ComponentNN`
+selection" and said "Partial coverage means partial collision — some faces won't register
+raycasts.", a consequence measured only for a LOD with no component at all.)*
 
 ### 9. Non-Watertight Collision Mesh
 
