@@ -1167,7 +1167,8 @@ def _check_winding_absolute(lod, lod_index, kind_label):
     return findings
 
 
-def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
+def _check_winding_vs_visual(lod, lod_index, visual_lod, visual_index,
+                             kind_label):
     """Pruned port of audit_p3d.check_winding_vs_visual (104-171).
 
     NOTE: this check is RELATIVE to the Visual LOD and leans on
@@ -1181,8 +1182,11 @@ def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
     way. A Visual LOD turned inside-out - faces and normals together, which
     `_check_winding_absolute` passes - raises it on the healthy collision
     LODs, and reversing those to match winds them outward. So the message
-    gives the winding steps of both LODs, which leave a LOD that reads
-    right as it is, instead of a fix for this one.
+    gives the winding steps of both LODs, which leave a part that reads
+    right as it is, instead of a fix for this one. It names the Visual LOD
+    it compared against, the one of lowest resolution, by index:
+    `P3D.get_lod("visual")` returns the first in file order, which need not
+    be that one.
     """
     findings = []
     col = _pct_outward(lod)
@@ -1196,25 +1200,30 @@ def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
     if col_uniform and vis_uniform and col_dom != vis_dom:
         findings.append(Finding(
             "ERR_WINDING_INVERTED", "ERROR", lod_index,
-            "%s LOD and Visual LOD are wound opposite ways: %.0f%% and "
-            "%.0f%% of their faces wind outward from their LOD's centroid, "
-            "a test that assumes convex geometry. That says they disagree "
-            "on which way is out, not which one is wrong: an inside-out "
-            "Visual LOD raises this on the healthy collision LODs, and "
-            "reversing those to match winds them outward, where raycasts "
-            "pass through them. In a DayZ MLOD both cross(v1-v0, v2-v0) "
-            "and the stored normals point away from the side meant to be "
-            "seen. Settle the winding of both LODs first, normals "
-            "untouched; these steps leave a LOD that reads right as it "
-            "is. Visual LOD: %s. %s LOD: %s. Never a vertices[1]/[2] swap "
-            "(a quad becomes a crossed face). Then negate each corner "
-            "normal that still points against its face "
+            "%s LOD and Visual LOD %d (resolution %g, the visual LOD of "
+            "lowest resolution, which this check compares against) are "
+            "wound opposite ways: %.0f%% and %.0f%% of their faces wind "
+            "outward from their LOD's centroid, a test that assumes convex "
+            "geometry. That says they disagree on which way is out, not "
+            "which one is wrong: an inside-out Visual LOD raises this on "
+            "the healthy collision LODs, and reversing those to match winds "
+            "them outward, where raycasts pass through them. In a DayZ MLOD "
+            "both cross(v1-v0, v2-v0) and the stored normals point away from "
+            "the side meant to be seen. Settle the winding of both LODs "
+            "first, normals untouched; these steps leave a part that reads "
+            "right as it is. Visual LOD %d: %s. %s LOD: %s. Never a "
+            "vertices[1]/[2] swap (a quad becomes a crossed face). Then "
+            "negate each corner normal that still points against its face "
             "(lod.facenormals[j] = (-x, -y, -z); an entry a kept corner "
-            "also uses gets a negated copy). If neither LOD reads wrong "
-            "there is nothing to fix: a Visual LOD meant to be seen from "
-            "inside reads positive and is right. More: py3d README, "
-            "'Winding'."
-            % (kind_label, col, vis, _winding_steps("visual"), kind_label,
+            "also uses gets a negated copy). A part these steps cannot "
+            "read - not a closed shell, not a closed convex component - "
+            "leaves this unresolved: check in game, or against a model that "
+            "renders right, which side it is meant to show before turning "
+            "it. Only when every part of both LODs reads right is there "
+            "nothing to fix: a Visual LOD meant to be seen from inside reads "
+            "positive and is right. More: py3d README, 'Winding'."
+            % (kind_label, visual_index, visual_lod.resolution, col, vis,
+               visual_index, _winding_steps("visual"), kind_label,
                _winding_steps(kind_label))))
     elif not col_uniform:
         findings.append(Finding(
@@ -2963,7 +2972,7 @@ class P3D:
                 findings.extend(_check_winding_absolute(lod, i, k))
                 if visual is not None and lod is not visual:
                     findings.extend(_check_winding_vs_visual(
-                        lod, i, visual, k))
+                        lod, i, visual, visual_index, k))
             if k == "memory":
                 findings.extend(_check_memory_structure(lod, i))
                 if visual is not None:

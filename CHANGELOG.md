@@ -71,17 +71,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `transform(ROT_X_NEG90)` alone leaves them, which registered no raycast in game. The pack
   already warned about this (`dayz-vehicles` `visual-gates-and-winding.md`; `dayz-p3d-audit`,
   item 1 of "The three py3d gates", "Absolute winding check" rule 7, and killer #1, which reads
-  the finding as a trigger). The message now says the collision LOD and the visual LOD disagree
-  on which way is out, by a centroid test that assumes convex geometry, not which one is wrong,
-  and gives for both LODs the order of `ERR_WINDING_VS_NORMALS`: the winding first, normals
-  untouched (visual LOD per closed shell by its signed volume, collision LOD per convex
-  component), steps that leave a LOD that reads right as it is, never a `vertices[1]`/`[2]`
-  swap; then each corner normal still against its face. With neither LOD reading wrong there is
-  nothing to fix: a visual LOD meant to be seen from inside reads positive and is right. Both
-  messages take their winding steps from one helper, and every `ERR_WINDING_VS_NORMALS` text is
-  unchanged. The README and KNOWN-ISSUES say the same. Finding code and severity unchanged: on
-  that model it is the only finding that sees the inside-out visual LOD. No new wheel: the pinned
-  and installed `py3d_dayz-1.8.0` still prints the old message.
+  the finding as a trigger). The message now names the visual LOD it compares against, the one of
+  lowest resolution, by index and resolution (`get_lod("visual")` returns the first in file
+  order, which need not be it); says the collision LOD and that visual LOD disagree on which way
+  is out, by a centroid test that assumes convex geometry, not which one is wrong; and gives for
+  both LODs the order of `ERR_WINDING_VS_NORMALS`: the winding first, normals untouched (visual
+  LOD per closed shell by its signed volume, collision LOD per convex component), steps that
+  leave a part that reads right as it is, never a `vertices[1]`/`[2]` swap; then each corner
+  normal still against its face. A part the steps cannot read (an open sheet, twins, a component
+  that is not closed and convex) leaves it unresolved, to be checked in game or against a model
+  that renders right; only with every part of both LODs reading right is there nothing to fix,
+  as on a visual LOD meant to be seen from inside, which reads positive. Both messages take their
+  winding steps from one helper, and every `ERR_WINDING_VS_NORMALS` text is unchanged. The README
+  and KNOWN-ISSUES say the same. Finding code and severity unchanged: on that model it is the
+  only finding that sees the inside-out visual LOD. No new wheel: the pinned and installed
+  `py3d_dayz-1.8.0` still prints the old message.
 
 ## [1.5.0] - 2026-10-02
 

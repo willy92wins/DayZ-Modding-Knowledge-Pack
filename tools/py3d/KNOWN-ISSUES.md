@@ -287,10 +287,12 @@ noise reads as signal.
   inside-out, faces and normals together, it fired on the three healthy
   collision LODs of a clean multi-LOD model and nowhere else; reversing them
   traded it for `ERR_WINDING_VS_NORMALS`, and negating their normals too left
-  `validate()` at `[]` with every LOD wound outward. The message now says the
-  two LODs disagree on which way is out, not which one is wrong, and gives for
-  both the winding-first steps of `ERR_WINDING_VS_NORMALS`, which leave a LOD
-  that reads right as it is.
+  `validate()` at `[]` with every LOD wound outward. The message now names the
+  Visual LOD it compares against (the one of lowest resolution, by index), says
+  the two LODs disagree on which way is out, not which one is wrong, and gives
+  for both the winding-first steps of `ERR_WINDING_VS_NORMALS`, which leave a
+  part that reads right as it is; a part those steps cannot read leaves the
+  finding unresolved.
 - **Globally inverted winding was invisible.** The only winding check was
   relative to the Visual LOD, so inverting *every* LOD — precisely what a Z-up to
   Y-up export does — left the model self-consistent and `validate()` returned
