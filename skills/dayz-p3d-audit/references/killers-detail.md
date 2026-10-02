@@ -184,7 +184,7 @@ writes the same ODOL, byte for byte, with the name stored as `component01`.
 or Fire LOD that has faces outside its proxy triangles and no selection whose name starts with
 `component`, in any case; when there are such names but none is `Component` and a number (only
 `Component_01`, say) it raises `WARN_COMPONENT_NAMING` instead. An empty component selection
-counts as present there. Up to 1.8.0, the version of the pinned wheel, it checked the Geometry LOD
+counts as present there. Up to 1.8.0, the wheel pinned until 2026-10-02, it checked the Geometry LOD
 only ("No Component selection found"), and the same code also fired on a lowercase
 `component01`, which works, so that reading is a false positive.
 
@@ -306,7 +306,7 @@ Fire LODs of `Expert_Mode`, whose lever (18 faces: selection `lever` in Geometry
 Fire) is in no component there, though `dayz-doors` lists the lever among the Geometry parts;
 whether that lever collides in game was not measured.
 
-Up to 1.8.0, the version of the pinned wheel, the check compared `Component01` alone with the
+Up to 1.8.0, the wheel pinned until 2026-10-02, the check compared `Component01` alone with the
 whole Geometry LOD, so it fired on a healthy multi-component LOD: `gate_and.p3d`'s Geometry LOD
 holds six components of 8 points each (48 points, 36 faces) and reads "Component01 covers 8/48
 vertices", yet that model took every ray in game (SKILL.md, "Absolute winding check", rule 6).

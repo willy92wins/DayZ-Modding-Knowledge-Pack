@@ -34,6 +34,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   modes are named as the reason to expect the defect in play, untested. The replaced sentence is
   quoted in a dated note. The first run's cursor-like ray is corrected too: the dayz-mcp bridge
   replaces a requested radius of 0 with its 0.05 m default, so it was a 0.05 m sphere, not radius 0.
+- py3d wheel pinned at 1.9.0 (`tools/py3d/rollout/wheel-manifest.json`):
+  `py3d_dayz-1.9.0-py3-none-any.whl`, SHA-256
+  `33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e`, built by
+  `rollout/build-wheel.ps1 -UpdateManifest` from the source on main at `62c3dcc`, at the owner's
+  request. Since the 1.8.0 pin it carries the winding messages of #37 and #40 and the component
+  checks of #46 and #54. The toolchain was checked first: the same script rebuilt the 1.8.0 pin
+  (`e7184429…`) byte for byte from the commit that sealed it (`053dc7f`), with Python 3.14.3 and
+  setuptools 83.0.0; then 1.9.0 built six times to one hash, two of them in the seal. The wheel's
+  `py3d/` files and `LICENSE` are byte-identical to the source, and `verify-wheel-restock.ps1`
+  passed against it on synthetic skill roots. No installed skill tree vendors the wheel, so nothing
+  was restocked; the user site-packages install follows the merge. The skill notes that called 1.8.0
+  "the pinned wheel" now say it was pinned until 2026-10-02 (`dayz-p3d-audit` item 1 of "The three
+  py3d gates", killers #2 and #8 and `references/killers-detail.md` §2 and §8; `dayz-vehicles`
+  `rip-import.md` §3.5 and `vehicle-structural-parity.md`; `dayz-clothing`
+  `autofit-from-official-rig.md`), and item 1 describes the 1.9.0 `ERR_WINDING_INVERTED` message
+  next to the 1.8.0 one.
 
 ### Fixed
 
