@@ -5,6 +5,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `dayz-mcp-verify` static-object playbook and tool table: two probes from the killer #2 run
+  (2026-10-02, DayZDiag 1.29.163709). `scene_raycast(method="bullet")` queries the server's physics
+  world on a fixed layer mask (`DayZPhysics.RayCastBullet`), next to the LOD rays; a hit counts only
+  on the target at its face, and a miss alone is not proof. A `player_move` walk into the object
+  reads player collision: blocked is `arrived:false` with the player stopped just before the face
+  (about 0.36 m on that run's 2 m boxes), free is `arrived:true`, anything else inconclusive, with a
+  same-distance open-ground walk as the free reference; a walk-through alone is not read as missing
+  collision geometry (a low vanilla `WoodenCrate` took every ray and did not stop the player). For
+  test fixtures, `rotation=64` spawned a box with its faces on the world axes where the default
+  `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the yaw with two parallel rays and the
+  direction of the returned normal before trusting face coordinates.
+
 ### Fixed
 
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
@@ -122,6 +136,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   winds every face of each collision box outward and trades the finding for
   `ERR_WINDING_VS_NORMALS`, and `validate()` goes quiet only once those LODs' normals are negated
   too, with every LOD wound outward.
+- `dayz-p3d-audit` killer #1 (`references/killers-detail.md`): the note on generating or editing a
+  collision LOD quoted the text of py3d's relative-check message ("winding is INVERTED relative to
+  the Visual LOD"), which can change with py3d; it now names the finding by its code,
+  `ERR_WINDING_INVERTED`, as the automated-check note above it already does.
 - The chiral in-game checks that #28 designed for the clothing and animation routes ran, and the
   character check got its attack (2026-10-02, DayZDiag 1.29.163709, one run driven by dayz-mcp).
   `dayz-clothing`: a test garment with an "F" on the left chest, exported with Rule 12, reads
@@ -130,13 +148,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   dayz-mcp cannot take a worn item off the player). `dayz-animation-pipeline`: `LeftArm` alone keyed
   in Blender on the official rig and exported through the calibrated Route C script rose on the side
   opposite the item hand; the skill's uncalibrated `scripts/seanim_export.py` left the arm at shoulder
-  height. That shows the reflection is carried, not that Route C's formula, calibrated on the JD rig,
-  fits the official FBX rig's bone frames (turned 90° about Z on 105 of 113 bones): this raise turns
-  about the bone's own Z, which reads alike in both. `dayz-characters`: the Rule 12 LFInfectedBig
-  build from #34 attacked the player with its limbs in place, like a vanilla `ZmbM_SoldierNormal`.
+  height. That shows the route keeps the track on `LeftArm` and raises it as keyed. It does not test
+  the handedness of the frame change (the bone offsets came from the vanilla clip), nor whether Route
+  C's formula, calibrated on the JD rig, fits the official FBX rig's bone frames (turned 90° about Z
+  on 105 of 113 bones, within 0.5°): this raise turns mostly about the bone's own Z, so both maps
+  raise the arm. `dayz-characters`: the Rule 12 LFInfectedBig build from #34 attacked the player with
+  its limbs in place, like a vanilla `ZmbM_SoldierNormal`.
   The `[DESIGN, not yet run]` labels become run results with their scope. `dayz-mcp-verify` gets what the
   run taught: no verb takes a worn item off the player, so a second garment goes on a spawned survivor;
-  an infected attacks only once it notices the player; infected spawned without AI later read health 0.
+  an infected attacks only once it notices the player; in this run, infected spawned without AI later
+  read health 0.
   Four claims registered.
 
 ## [1.5.0] - 2026-10-02
