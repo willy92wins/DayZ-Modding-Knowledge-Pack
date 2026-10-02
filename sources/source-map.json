@@ -3217,10 +3217,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-c229c8b@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 promotion of main 1d03d90 following #62 (receipt 9b8733b54b0b0f43fd94884a of the c229c8b promotion): the owner asked to promote main to the live trees; the session that owned #62 was coordinated with first (it merged #62 as 1d03d90, removed its sealing worktree, and its read-only closing check from a fresh worktree of 1d03d90 came back with only PROMOTION-DRIFT and no receipt finding). The promotion carries what main gained since c229c8b: #61, #57, #59, #60, #65 and #62. promote --check from a fresh worktree of 1d03d90 with the unchanged local-targets.json (sha256 27c89b56562a7f412f204096b2e762d0f3d0e2330f0f0ebd23e5adb3a633b8eb): WARN with only PROMOTION-DRIFT and no receipt finding (79 of 119 operations: six skills on agents_user_skills+claude_user_skills and 73 new vault snapshots; no live file removed). The skill changes are exactly the 11 files git changed under skills/ since c229c8b: blender-animation references/dayz-handoff.md (#59); dayz-animation-pipeline references/blender-authoring.md, references/weapon-anim-authoring-viewer.md, scripts/seanim_export.py (#59); dayz-clothing references/autofit-from-official-rig.md (#60); dayz-doors references/lods-and-object-builder.md (#65); dayz-p3d-audit SKILL.md, references/killers-detail.md (#60, #61, #65), references/winding-diagnostics.md (#61); dayz-vehicles references/rip-import.md, references/vehicle-structural-parity.md (#60). #57 (packctl gate) touches no skill and reaches the vault snapshots only. promote --apply PASS, transaction 99e5902a3c6a1c3ebb68e0ab, COMMIT event 239 at 2026-10-02T22:58:38Z; the receipt's sha256 (5124cf7de60037b1a8eced2cb0f0b6d0803384a047aec2bd46f379ed1d78175d) equals the COMMIT receipt_hash, its completed_at, source_commit and operations (id, before, after) equal the plan's, and it holds no absolute path. Re-measured with packctl tree_digest, 119/119 destinations are at their after_digest. promotions/adjudications.json is the advance packctl wrote at COMMIT: of 82 pairs, exactly the 12 whose observed_digest was the before_digest of a changed operation moved, each to its after_digest with every other field unchanged. Codex was at 100 % of its weekly window (reset 2026-10-09 03:39), so no cross-family review ran: as for #62, the receipt merges on the mechanical checks (the verification above, packctl validate and gate, CI). Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b30069928db6a9895ad0c53c0322046f02ae5a10475c370bcca2493cc4690c30",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-1d03d90@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a30615616ed9895a668319123147034fe7a4176abdbe8c79a33fc575a22f0ce2",
+      "output_hash": "b30069928db6a9895ad0c53c0322046f02ae5a10475c370bcca2493cc4690c30",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -29148,6 +29158,28 @@
       "license": "MIT",
       "output_hash": "b9c7fa0e0194ebd7d8ea76e284192bdca59077df818eec80b8b2c50db33b8229",
       "output_path": "promotions/receipts/9b8733b54b0b0f43fd94884a.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/99e5902a3c6a1c3ebb68e0ab.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03 promotion of main 1d03d90 following #62 (receipt 9b8733b54b0b0f43fd94884a of the c229c8b promotion): the owner asked to promote main to the live trees; the session that owned #62 was coordinated with first (it merged #62 as 1d03d90, removed its sealing worktree, and its read-only closing check from a fresh worktree of 1d03d90 came back with only PROMOTION-DRIFT and no receipt finding). The promotion carries what main gained since c229c8b: #61, #57, #59, #60, #65 and #62. promote --check from a fresh worktree of 1d03d90 with the unchanged local-targets.json (sha256 27c89b56562a7f412f204096b2e762d0f3d0e2330f0f0ebd23e5adb3a633b8eb): WARN with only PROMOTION-DRIFT and no receipt finding (79 of 119 operations: six skills on agents_user_skills+claude_user_skills and 73 new vault snapshots; no live file removed). The skill changes are exactly the 11 files git changed under skills/ since c229c8b: blender-animation references/dayz-handoff.md (#59); dayz-animation-pipeline references/blender-authoring.md, references/weapon-anim-authoring-viewer.md, scripts/seanim_export.py (#59); dayz-clothing references/autofit-from-official-rig.md (#60); dayz-doors references/lods-and-object-builder.md (#65); dayz-p3d-audit SKILL.md, references/killers-detail.md (#60, #61, #65), references/winding-diagnostics.md (#61); dayz-vehicles references/rip-import.md, references/vehicle-structural-parity.md (#60). #57 (packctl gate) touches no skill and reaches the vault snapshots only. promote --apply PASS, transaction 99e5902a3c6a1c3ebb68e0ab, COMMIT event 239 at 2026-10-02T22:58:38Z; the receipt's sha256 (5124cf7de60037b1a8eced2cb0f0b6d0803384a047aec2bd46f379ed1d78175d) equals the COMMIT receipt_hash, its completed_at, source_commit and operations (id, before, after) equal the plan's, and it holds no absolute path. Re-measured with packctl tree_digest, 119/119 destinations are at their after_digest. promotions/adjudications.json is the advance packctl wrote at COMMIT: of 82 pairs, exactly the 12 whose observed_digest was the before_digest of a changed operation moved, each to its after_digest with every other field unchanged. Codex was at 100 % of its weekly window (reset 2026-10-09 03:39), so no cross-family review ran: as for #62, the receipt merges on the mechanical checks (the verification above, packctl validate and gate, CI). Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5124cf7de60037b1a8eced2cb0f0b6d0803384a047aec2bd46f379ed1d78175d",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/99e5902a3c6a1c3ebb68e0ab.json",
+          "source_revision": "kp-update-promotion-1d03d90@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5124cf7de60037b1a8eced2cb0f0b6d0803384a047aec2bd46f379ed1d78175d",
+      "output_path": "promotions/receipts/99e5902a3c6a1c3ebb68e0ab.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
