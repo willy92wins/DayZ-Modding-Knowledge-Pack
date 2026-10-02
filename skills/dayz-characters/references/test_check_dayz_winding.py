@@ -1,0 +1,502 @@
+"""check_dayz_winding.py against the MLODs of the Rule 12 in-game test, and variants of them.
+
+Run from the repository root (or from an installed copy of the skill):
+    python -m pytest -q -p no:cacheprovider skills/dayz-characters/references/test_check_dayz_winding.py
+
+The fixtures in winding_fixtures/ are the three MLODs of dayz-model-pipeline Rule 12's in-game test,
+byte for byte (DayZDiag 1.29.163709, 2026-10-01: b and a solid, c inside-out; a is mirrored), plus b with its
+normals negated. make_fixtures.py regenerates them with py3d >= 1.8.0. Each test ties a verdict line to the
+measurement it reports - the volume sign and the agreement - so a test cannot pass on a phrase with the
+sign turned.
+"""
+import hashlib
+import io
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+HERE = Path(__file__).resolve().parent
+GATE = HERE / "check_dayz_winding.py"
+FIXTURES = HERE / "winding_fixtures"
+REPO_PY3D = HERE.parents[2] / "tools" / "py3d"
+PY3D_ARGS = ["--py3d", str(REPO_PY3D)] if (REPO_PY3D / "py3d" / "__init__.py").is_file() else []
+
+FIXTURE_SHA256 = {
+    "mirror_a.p3d": "b08372a6248d826aad7557827346af030b1d448e4e0d75da3afd0a67a0c16d27",
+    "mirror_b.p3d": "f1be491df6304534f2100d053e972a9792b1780e026223408f5c200b465201d7",
+    "mirror_c.p3d": "ac5f0f77f6d93db93226e631ed0b02c3492c6e13d815a621bd9ed82e2b4e1da8",
+    "mirror_b_normals_out.p3d": "b48a4980844dc1a0be5838fc936c11287fdfd796d0f8403cca869d64301d3c6e",
+}
+PROXY = "proxy:\\dz\\data\\proxies\\flag.001"
+
+WINDING_RIGHT = ("  winding: RIGHT. 4 of 4 closed shells (48 faces) read a negative signed volume by winding, "
+                 "sum -0.1086: the cross product points into the material, the MLOD order of Rule 12.")
+WINDING_INSIDE_OUT = ("  winding: INSIDE-OUT. 4 of 4 closed shells (48 faces) read a positive signed volume by "
+                      "winding, sum +0.1086: the cross product points out of the material.")
+REVERSE_LOD = ("  fix 1: face.vertices.reverse() on every face of this LOD (the winding first, normals untouched; "
+               "never a vertices[1]/[2] swap, which turns a quad into a crossed face).")
+NEGATE_POOL = ("negate the normal pool in place: lod.facenormals[j] = (-x, -y, -z) for every j "
+               "(not through Vertex.normal).")
+PASS_LINE = "DAYZ WINDING/NORMAL CONVENTION: PASS"
+FAIL_LINE = "DAYZ WINDING/NORMAL CONVENTION: FAIL (model defect) - do NOT ship"
+INVALID_LINE = "DAYZ WINDING/NORMAL CONVENTION: INVALID (not measurable)"
+
+
+def _import_py3d():
+    if PY3D_ARGS and str(REPO_PY3D) not in sys.path:
+        sys.path.insert(0, str(REPO_PY3D))
+    import py3d
+    return py3d
+
+
+def run_gate(path):
+    result = subprocess.run([sys.executable, "-B", str(GATE), str(path), *PY3D_ARGS],
+                            capture_output=True, text=True, encoding="utf-8")
+    return result.returncode, result.stdout.splitlines(), result.stdout + result.stderr
+
+
+def load(m, name):
+    with open(FIXTURES / name, "rb") as stream:
+        return m.P3D(stream)
+
+
+def write(p3d, path):
+    with open(path, "wb") as stream:
+        p3d.write(stream)
+    return path
+
+
+def reverse_faces(lod, faces):
+    for face in faces:
+        face.vertices.reverse()
+
+
+def negate_normals_of(lod, faces):
+    """Negate the pool entries used by these faces (every entry here belongs to one quad of one box)."""
+    for j in sorted({v.normal_index for face in faces for v in face.vertices}):
+        n = lod.facenormals[j]
+        lod.facenormals[j] = (-n[0], -n[1], -n[2])
+
+
+def add_quad(m, lod, corners, normal, selection=None):
+    """An open sheet: two triangles over four new points, wound so cross . normal > 0."""
+    base = len(lod.points)
+    for coords in corners:
+        point = m.Point()
+        point.coords = coords
+        point.flags = 0
+        lod.points.append(point)
+    ni = len(lod.facenormals)
+    lod.facenormals.append(normal)
+    new = []
+    for tri in ((0, 1, 2), (0, 2, 3)):
+        face = m.Face(lod.points, lod.facenormals)
+        face.flags = 0
+        face.texture = ""
+        face.material = ""
+        for k in tri:
+            vertex = m.Vertex(lod.points, lod.facenormals)
+            vertex.point_index = base + k
+            vertex.normal_index = ni
+            face.vertices.append(vertex)
+        lod.faces.append(face)
+        new.append(face)
+    if selection is not None:
+        sel = lod.new_selection(selection)
+        for face in new:
+            sel.faces[face] = 1
+        for point in lod.points[base:]:
+            sel.points[point] = 1
+    return new
+
+
+# ---- the fixtures are the MLODs the game showed --------------------------------------------------------------
+
+def test_fixtures_are_the_in_game_bytes():
+    for name, digest in FIXTURE_SHA256.items():
+        assert hashlib.sha256((FIXTURES / name).read_bytes()).hexdigest() == digest, name
+
+
+def test_generator_rewrites_the_fixtures(tmp_path):
+    m = _import_py3d()
+    if tuple(map(int, m.__version__.split("."))) < (1, 8, 0):
+        pytest.skip("make_fixtures.py needs py3d >= 1.8.0 (blender_to_dayz)")
+    subprocess.run([sys.executable, "-B", str(FIXTURES / "make_fixtures.py"), "--out", str(tmp_path),
+                    *PY3D_ARGS], check=True, capture_output=True, text=True)
+    for name in FIXTURE_SHA256:
+        assert (tmp_path / name).read_bytes() == (FIXTURES / name).read_bytes(), name
+
+
+# ---- the four probe states -------------------------------------------------------------------------------------
+
+def test_rule12_export_passes():
+    """b, solid in game with the F reading correctly. The previous gate failed it ("inside-out")."""
+    code, lines, out = run_gate(FIXTURES / "mirror_b.p3d")
+    assert code == 0, out
+    assert WINDING_RIGHT in lines, out
+    assert "  normals: AGREE. 48 of 48 faces (100.0 %) agree with their winding." in lines, out
+    assert "fix 1:" not in out and "not scored" not in out, out
+    assert PASS_LINE in lines, out
+
+
+def test_mirrored_export_passes_and_the_gate_says_it_cannot_see_a_mirror():
+    """a, the old det=+1 recipe: solid but mirrored in game. No winding gate can see that."""
+    code, lines, out = run_gate(FIXTURES / "mirror_a.p3d")
+    assert code == 0, out
+    assert WINDING_RIGHT in lines, out
+    assert PASS_LINE in lines, out
+    assert "cannot see a mirror" in out, out
+
+
+def test_inside_out_export_fails_reverse_every_face_then_negate():
+    """c, inside-out in game: cross product and normals both point out of the material."""
+    code, lines, out = run_gate(FIXTURES / "mirror_c.p3d")
+    assert code == 1, out
+    assert WINDING_INSIDE_OUT in lines, out
+    assert REVERSE_LOD in lines, out
+    assert "  normals: DISAGREE after fix 1. 0 of 48 faces (0.0 %) would agree with their winding." in lines, out
+    assert "  fix 2: " + NEGATE_POOL in lines, out
+    assert FAIL_LINE in lines, out
+
+
+def test_outward_normals_fail_negate_the_pool_and_keep_the_faces():
+    """b with its normals negated: the Rule 12 winding with the normals stored outward."""
+    code, lines, out = run_gate(FIXTURES / "mirror_b_normals_out.p3d")
+    assert code == 1, out
+    assert WINDING_RIGHT in lines, out
+    assert ("  normals: DISAGREE. 0 of 48 faces (0.0 %) agree with their winding: the stored normals point "
+            "out of the material (the older outward-normal convention).") in lines, out
+    assert ("  fix 1: " + NEGATE_POOL + " Keep every face as it is: reversing faces on this reading turns the "
+            "model inside-out.") in lines, out
+    assert "face.vertices.reverse()" not in out, out
+    assert FAIL_LINE in lines, out
+
+
+def test_faces_reversed_after_export_fail_reverse_and_keep_the_normals(tmp_path):
+    """b with every face reversed afterwards: inside-out, and the normals are right once the faces are."""
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    reverse_faces(p3d.lods[0], p3d.lods[0].faces)
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_faces_reversed.p3d"))
+    assert code == 1, out
+    assert WINDING_INSIDE_OUT in lines, out
+    assert REVERSE_LOD in lines, out
+    assert ("  normals: AGREE after fix 1. 48 of 48 faces (100.0 %) would agree with their winding: "
+            "keep the normals.") in lines, out
+    assert "fix 2:" not in out, out
+
+
+def test_agreement_is_py3d_pct_normal_agreement():
+    """The gate counts agreement like dayz-p3d-audit's absolute check (py3d _pct_normal_agreement)."""
+    m = _import_py3d()
+    for name, pct in (("mirror_a.p3d", 100.0), ("mirror_b.p3d", 100.0), ("mirror_c.p3d", 100.0),
+                      ("mirror_b_normals_out.p3d", 0.0)):
+        assert m._pct_normal_agreement(load(m, name).lods[0]) == pct, name
+
+
+# ---- per closed shell, never the sum over the LOD ------------------------------------------------------------------
+
+def test_one_inverted_box_is_named_and_the_lod_sum_does_not_hide_it(tmp_path):
+    """The stem box (lod.faces 12-23) turned, faces and normals: the LOD sum stays negative (-0.0822)."""
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    lod = p3d.lods[0]
+    stem = lod.faces[12:24]
+    reverse_faces(lod, stem)
+    negate_normals_of(lod, stem)
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_stem_inverted.p3d"))
+    assert code == 1, out
+    assert ("  winding: INSIDE-OUT. 1 of 4 closed shells (12 faces) read a positive signed volume by winding, "
+            "sum +0.0132; the other 3 (36 faces) read negative, sum -0.0954. The sum over all of them, -0.0822, "
+            "hides it.") in lines, out
+    assert any(line.startswith("    shell at lod.faces 12-23: 12 faces, volume +0.0132") for line in lines), out
+    assert ("  fix 1: face.vertices.reverse() on every face of the listed shells, and only those (the winding "
+            "first, normals untouched): the other shells are right, and reversing the whole LOD would move the "
+            "inversion onto them.") in lines, out
+    assert "  normals: MIXED after fix 1. 36 of 48 faces (75.0 %) would agree with their winding." in lines, out
+    assert "    shell at lod.faces 12-23: 0 of 12 faces would agree" in lines, out
+    assert any(line.startswith("  fix 2: negate the corner normals of the listed shells") for line in lines), out
+
+
+def test_a_face_turned_against_its_neighbours_is_made_coherent_before_any_volume(tmp_path):
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    lod = p3d.lods[0]
+    reverse_faces(lod, lod.faces[0:1])
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_one_face_turned.p3d"))
+    assert code == 1, out
+    assert ("  winding: INCOHERENT. 1 closed shell has faces wound against their neighbours, so its volume is "
+            "not read:") in lines, out
+    assert ("    shell at lod.faces 0-11: 12 faces, 3 edges run the same way by both of their faces; orientation "
+            "groups of 11 and 1 faces") in lines, out
+    assert any(line.startswith("  fix 1: make each listed shell coherent") for line in lines), out
+    assert FAIL_LINE in lines, out
+
+
+def test_most_boxes_inverted_the_lod_sum_would_turn_the_right_one(tmp_path):
+    """c with its stem box put right: the sum over the shells is positive, and reversing by it is wrong."""
+    m = _import_py3d()
+    p3d = load(m, "mirror_c.p3d")
+    lod = p3d.lods[0]
+    reverse_faces(lod, lod.faces[12:24])
+    negate_normals_of(lod, lod.faces[12:24])
+    code, lines, out = run_gate(write(p3d, tmp_path / "c_stem_right.p3d"))
+    assert code == 1, out
+    assert ("  winding: INSIDE-OUT. 3 of 4 closed shells (36 faces) read a positive signed volume by winding, "
+            "sum +0.0954; the other 1 (12 faces) read negative, sum -0.0132. The sum over all of them, +0.0822, "
+            "would turn the right ones too.") in lines, out
+    assert "    shell at lod.faces 12-23" not in out, out
+
+
+def test_one_part_with_outward_normals_is_listed_without_any_reversal(tmp_path):
+    """b with the stem's normals negated only: winding right everywhere, one part to negate."""
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    lod = p3d.lods[0]
+    negate_normals_of(lod, lod.faces[12:24])
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_stem_normals_out.p3d"))
+    assert code == 1, out
+    assert WINDING_RIGHT in lines, out
+    assert "  normals: MIXED. 36 of 48 faces (75.0 %) agree with their winding." in lines, out
+    assert "    shell at lod.faces 12-23: 0 of 12 faces agree" in lines, out
+    assert any(line.startswith("  fix 1: negate the corner normals of the listed shells") for line in lines), out
+    assert "face.vertices.reverse()" not in out, out
+
+
+def add_tetra(m, lod, centre, size):
+    """A closed tetrahedron wound inward (negative volume) with its normals stored OUTWARD: 4 faces that
+    all disagree with their winding."""
+    cx, cy, cz = centre
+    base = len(lod.points)
+    for dx, dy, dz in ((0, 0, 0), (size, 0, 0), (0, size, 0), (0, 0, size)):
+        point = m.Point()
+        point.coords = (cx + dx, cy + dy, cz + dz)
+        point.flags = 0
+        lod.points.append(point)
+    # each triple's cross product points into the tetrahedron ((0,1,2): +z on its z=cz face); each normal out
+    for tri, normal in (((0, 1, 2), (0.0, 0.0, -1.0)), ((0, 3, 1), (0.0, -1.0, 0.0)),
+                        ((0, 2, 3), (-1.0, 0.0, 0.0)), ((1, 3, 2), (0.577, 0.577, 0.577))):
+        lod.facenormals.append(normal)
+        face = m.Face(lod.points, lod.facenormals)
+        face.flags, face.texture, face.material = 0, "", ""
+        for k in tri:
+            vertex = m.Vertex(lod.points, lod.facenormals)
+            vertex.point_index = base + k
+            vertex.normal_index = len(lod.facenormals) - 1
+            face.vertices.append(vertex)
+        lod.faces.append(face)
+
+
+def test_a_small_part_with_outward_normals_fails_under_an_agreeing_lod(tmp_path):
+    """48 of 52 faces agree (92.3 %, above 90 %), but one closed part has every normal against its faces."""
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    add_tetra(m, p3d.lods[0], (1.0, 0.0, 1.0), 0.1)
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_plus_tetra_normals_out.p3d"))
+    assert code == 1, out
+    assert ("  winding: RIGHT. 5 of 5 closed shells (52 faces) read a negative signed volume by winding, "
+            "sum -0.1088: the cross product points into the material, the MLOD order of Rule 12.") in lines, out
+    assert "  normals: MIXED. 48 of 52 faces (92.3 %) agree with their winding." in lines, out
+    assert "    shell at lod.faces 48-51: 0 of 4 faces agree" in lines, out
+
+
+def test_inside_out_with_proxies_reverses_everything_but_the_proxies(tmp_path):
+    m = _import_py3d()
+    p3d = load(m, "mirror_c.p3d")
+    lod = p3d.lods[0]
+    add_quad(m, lod, [(0.0, 2.0, 0.0), (0.1, 2.0, 0.0), (0.1, 2.2, 0.0), (0.0, 2.2, 0.0)], (0.0, 0.0, 1.0),
+             selection=PROXY)
+    code, lines, out = run_gate(write(p3d, tmp_path / "c_plus_proxy.p3d"))
+    assert code == 1, out
+    assert WINDING_INSIDE_OUT in lines, out
+    assert ("  fix 1: face.vertices.reverse() on every face of this LOD except its proxy:* triangles (the winding "
+            "first, normals untouched; never a vertices[1]/[2] swap, which turns a quad into a crossed "
+            "face).") in lines, out
+
+
+def test_inside_out_with_open_parts_says_what_it_cannot_check(tmp_path):
+    m = _import_py3d()
+    p3d = load(m, "mirror_c.p3d")
+    add_quad(m, p3d.lods[0], [(-0.5, 0.2, 0.2), (0.5, 0.2, 0.2), (0.5, 1.2, 0.2), (-0.5, 1.2, 0.2)],
+             (0.0, 0.0, 1.0))
+    code, lines, out = run_gate(write(p3d, tmp_path / "c_plus_open_sheet.p3d"))
+    assert code == 1, out
+    assert WINDING_INSIDE_OUT in lines, out
+    assert ("  fix 1: face.vertices.reverse() on every face of these closed shells (the winding first, normals "
+            "untouched). This reading cannot check the faces not scored below; if they came out of the same "
+            "export call (blender_to_dayz(), transform()), they are in the same state.") in lines, out
+    assert any(line.startswith("  not scored: 2 of 50 faces (4.0 %) in 1 open shell;") for line in lines), out
+
+
+def test_a_non_orientable_shell_is_named(tmp_path):
+    """The five-triangle Moebius band: every inner edge run the same way, and no grouping fixes it."""
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    lod = p3d.lods[0]
+    base = len(lod.points)
+    for k in range(5):
+        point = m.Point()
+        angle = 2 * 3.141592653589793 * k / 5
+        point.coords = (2.0 + 0.5 * __import__("math").cos(angle), 0.1 * k, 0.5 * __import__("math").sin(angle))
+        point.flags = 0
+        lod.points.append(point)
+    lod.facenormals.append((0.0, 1.0, 0.0))
+    for k in range(5):
+        face = m.Face(lod.points, lod.facenormals)
+        face.flags, face.texture, face.material = 0, "", ""
+        for j in (k, (k + 1) % 5, (k + 2) % 5):
+            vertex = m.Vertex(lod.points, lod.facenormals)
+            vertex.point_index = base + j
+            vertex.normal_index = len(lod.facenormals) - 1
+            face.vertices.append(vertex)
+        lod.faces.append(face)
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_plus_moebius.p3d"))
+    assert code == 1, out
+    assert "  winding: INCOHERENT. 1 shell has faces wound against their neighbours, so its volume is not read:" \
+        in lines, out
+    shell = [line for line in lines if line.startswith("    shell at lod.faces 48-52: 5 faces, 5 edges")]
+    assert len(shell) == 1 and "(an open shell)" in shell[0] and "not orientable" in shell[0], out
+    assert WINDING_RIGHT in lines, out
+
+
+# ---- what the volume cannot score ----------------------------------------------------------------------------------
+
+def test_open_parts_are_reported_not_scored(tmp_path):
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    lod = p3d.lods[0]
+    # an open sheet behind the plate, cross product and normal toward +z
+    add_quad(m, lod, [(-0.5, 0.2, 0.2), (0.5, 0.2, 0.2), (0.5, 1.2, 0.2), (-0.5, 1.2, 0.2)], (0.0, 0.0, 1.0))
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_plus_open_sheet.p3d"))
+    assert code == 0, out
+    assert WINDING_RIGHT in lines, out
+    assert ("  not scored: 2 of 50 faces (4.0 %) in 1 open shell; no volume sign decides an open or flat part: "
+            "check them with the visibility battery (dayz-p3d-audit references/winding-diagnostics.md, "
+            "\"From Check B to fix\").") in lines, out
+    assert PASS_LINE in lines, out
+
+
+def test_only_open_parts_are_not_measurable(tmp_path):
+    m = _import_py3d()
+    p3d = m.P3D()
+    lod = m.LOD()
+    lod.resolution = 0.0
+    add_quad(m, lod, [(-0.5, 0.0, 0.0), (0.5, 0.0, 0.0), (0.5, 1.0, 0.0), (-0.5, 1.0, 0.0)], (0.0, 0.0, 1.0))
+    p3d.lods.append(lod)
+    code, lines, out = run_gate(write(p3d, tmp_path / "open_sheet.p3d"))
+    assert code == 2, out
+    assert ("  winding: UNSCORED. No closed shell to read: the volume sign means nothing on an open or flat "
+            "part.") in lines, out
+    assert INVALID_LINE in lines, out
+
+
+def test_open_parts_whose_normals_disagree_fail_without_a_side(tmp_path):
+    m = _import_py3d()
+    p3d = m.P3D()
+    lod = m.LOD()
+    lod.resolution = 0.0
+    faces = add_quad(m, lod, [(-0.5, 0.0, 0.0), (0.5, 0.0, 0.0), (0.5, 1.0, 0.0), (-0.5, 1.0, 0.0)],
+                     (0.0, 0.0, 1.0))
+    negate_normals_of(lod, faces)
+    p3d.lods.append(lod)
+    code, lines, out = run_gate(write(p3d, tmp_path / "open_sheet_disagrees.p3d"))
+    assert code == 1, out
+    assert ("  normals: DISAGREE. 0 of 2 faces (0.0 %) agree with their winding; with no closed shell this gate "
+            "cannot say which of the two is wrong.") in lines, out
+    assert "fix 1:" not in out, out
+
+
+def test_no_normal_to_read_is_not_measurable(tmp_path):
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    lod = p3d.lods[0]
+    for j in range(len(lod.facenormals)):
+        lod.facenormals[j] = (0.0, 0.0, 0.0)
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_zero_normals.p3d"))
+    assert code == 2, out
+    assert WINDING_RIGHT in lines, out
+    assert "  normals: UNSCORED. No face has both a non-degenerate winding and a non-zero normal." in lines, out
+    assert INVALID_LINE in lines, out
+
+
+def test_welded_twins_are_flat_and_not_scored(tmp_path):
+    """A face and its reversed twin on the same points close a shell of zero volume: no sign. The quad's
+    diagonal is shared by four faces, so each triangle closes a shell with its own twin: two shells."""
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    lod = p3d.lods[0]
+    front = add_quad(m, lod, [(-0.5, 0.2, 0.2), (0.5, 0.2, 0.2), (0.5, 1.2, 0.2), (-0.5, 1.2, 0.2)],
+                     (0.0, 0.0, 1.0))
+    for face in front:
+        twin = m.Face(lod.points, lod.facenormals)
+        twin.flags, twin.texture, twin.material = 0, "", ""
+        lod.facenormals.append((0.0, 0.0, -1.0))
+        for v in reversed(face.vertices):
+            vertex = m.Vertex(lod.points, lod.facenormals)
+            vertex.point_index = v.point_index
+            vertex.normal_index = len(lod.facenormals) - 1
+            twin.vertices.append(vertex)
+        lod.faces.append(twin)
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_plus_twins.p3d"))
+    assert code == 0, out
+    assert WINDING_RIGHT in lines, out
+    assert ("  not scored: 4 of 52 faces (7.7 %) in 2 flat closed shells; no volume sign decides an open or "
+            "flat part: check them with the visibility battery (dayz-p3d-audit "
+            "references/winding-diagnostics.md, \"From Check B to fix\").") in lines, out
+
+
+def test_proxy_triangles_stay_out(tmp_path):
+    """A proxy triangle's vertex order encodes its frame: it is neither scored nor voted."""
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    lod = p3d.lods[0]
+    add_quad(m, lod, [(0.0, 2.0, 0.0), (0.1, 2.0, 0.0), (0.1, 2.2, 0.0), (0.0, 2.2, 0.0)], (0.0, 0.0, -1.0),
+             selection=PROXY)
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_plus_proxy.p3d"))
+    assert code == 0, out
+    assert "[PASS] LOD 0 res=0.0: 48 faces, 2 proxy faces left out" in lines, out
+    assert WINDING_RIGHT in lines, out
+
+
+# ---- LODs, inputs, exit codes --------------------------------------------------------------------------------------
+
+def test_every_visual_lod_is_read_and_collision_lods_are_not(tmp_path):
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    for resolution, name in ((20.0, "mirror_c.p3d"), (1e13, "mirror_c.p3d")):
+        extra = load(m, name).lods[0]
+        extra.resolution = resolution
+        p3d.lods.append(extra)
+    code, lines, out = run_gate(write(p3d, tmp_path / "b_with_c_lods.p3d"))
+    assert code == 1, out
+    assert any(line.startswith("[PASS] LOD 0 res=0.0:") for line in lines), out
+    assert any(line.startswith("[FAIL] LOD 1 res=20.0:") for line in lines), out
+    assert not any(line.startswith("[") and " LOD 2 " in line for line in lines), out
+
+
+def test_odol_is_invalid(tmp_path):
+    path = tmp_path / "odol.p3d"
+    path.write_bytes(b"ODOL" + bytes(64))
+    code, lines, out = run_gate(path)
+    assert code == 2, out
+    assert "this file is ODOL" in out, out
+
+
+def test_truncated_mlod_is_invalid(tmp_path):
+    path = tmp_path / "truncated.p3d"
+    path.write_bytes((FIXTURES / "mirror_b.p3d").read_bytes()[:200])
+    code, lines, out = run_gate(path)
+    assert code == 2, out
+    assert out.startswith("invalid input:"), out
+
+
+def test_no_visual_lod_is_invalid(tmp_path):
+    m = _import_py3d()
+    p3d = load(m, "mirror_b.p3d")
+    p3d.lods[0].resolution = 1e13
+    code, lines, out = run_gate(write(p3d, tmp_path / "geometry_only.p3d"))
+    assert code == 2, out
+    assert "no visual LOD" in out, out
