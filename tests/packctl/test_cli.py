@@ -318,3 +318,98 @@ def test_promotion_cli_bootstrap_writes_v2_plan(
     assert plan["bootstrap"] is True
     assert plan["installation_id"] == INSTALLATION_A
     assert (paths["claude"] / "demo" / "SKILL.md").is_file()
+
+
+def test_test_folders_runs_the_named_tree_and_prints_its_report(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    root = repo_factory(
+        {
+            "skills/bad/tests/test_bad.py": "def test_fails():\n    assert 1 + 1 == 3\n",
+            "tools/demo/tests/test_demo.py": "def test_fails():\n    assert False\n",
+        },
+        payload={"LICENSE", "README.md"},
+    )
+    report_dir = tmp_path / "reports"
+
+    result = run_cli(
+        root,
+        "test-folders",
+        "--root",
+        str(root),
+        "--tree",
+        "skills",
+        "--report-dir",
+        str(report_dir),
+    )
+
+    assert result.returncode == 1
+    report = json.loads(result.stdout)
+    assert report["command"] == "test-folders"
+    assert [item["code"] for item in report["findings"]] == ["SKILL-TESTS-FAILED"]
+    assert report["checks"] == {
+        "skill_tests": {
+            "verdict": "FAIL",
+            "suite_count": 1,
+            "suites": {"bad": {"verdict": "FAIL", "returncode": 1}},
+        }
+    }
+    assert json.loads(
+        (report_dir / "test-folders.json").read_text(encoding="utf-8")
+    ) == report
+    assert not (report_dir / "tool-tests").exists()
+
+
+def test_test_folders_refuses_a_report_dir_inside_the_root(
+    repo_factory,
+) -> None:
+    root = repo_factory(
+        {"skills/good/tests/test_good.py": "def test_passes():\n    assert True\n"},
+        payload={"LICENSE", "README.md"},
+    )
+
+    result = run_cli(
+        root,
+        "test-folders",
+        "--root",
+        str(root),
+        "--tree",
+        "skills",
+        "--report-dir",
+        str(root / "reports"),
+    )
+
+    assert result.returncode == 1
+    report = json.loads(result.stdout)
+    assert [item["code"] for item in report["findings"]] == ["GATE-REPORT-IN-ROOT"]
+    assert not (root / "reports").exists()
+
+
+def test_test_folders_runs_tools_py3d_tests_too(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    # The gate runs tools/py3d/tests in its own py3d_tests check; test-folders
+    # has no such check, so its tools tree includes the folder.
+    root = repo_factory(
+        {"tools/py3d/tests/test_py3d.py": "def test_fails():\n    assert False\n"},
+        payload={"LICENSE", "README.md"},
+    )
+
+    result = run_cli(
+        root,
+        "test-folders",
+        "--root",
+        str(root),
+        "--tree",
+        "tools",
+        "--report-dir",
+        str(tmp_path / "reports"),
+    )
+
+    assert result.returncode == 1
+    report = json.loads(result.stdout)
+    assert report["checks"]["tool_tests"]["suites"] == {
+        "py3d": {"verdict": "FAIL", "returncode": 1},
+    }
