@@ -27,7 +27,7 @@ Per the L2 rule (`_shared/dayz-conventions.md`), every DayZ skill that does work
 
 A clean `validate()`, a passing `save(verify=True)`, or a `diff` that reports equal is not evidence that the geometry is correct. Those checks only prove internal count consistency. When declaring a model verified, say whether vertex order was compared against debinarized vanilla or whether it was tested in-game.
 
-1. `validate()` does not detect GLOBAL winding inversion. The winding check is relative to the Visual LOD. If every LOD is inverted (Blender Z-up to Y-up; this skill, PART 5 item 1), `validate()` returns an empty list and exit 0. If only Visual is inverted, it accuses healthy collision LODs and suggests swapping vertices on every face; following that instruction reaches the silent-broken state.
+1. `validate()` does not detect GLOBAL winding inversion. The winding check is relative to the Visual LOD. If every LOD is inverted (Blender Z-up to Y-up; this skill, PART 5 item 1), `validate()` returns an empty list and exit 0. If only Visual is inverted, it accuses healthy collision LODs (`ERR_WINDING_INVERTED`), and the message of the pinned `py3d_dayz-1.8.0` tells you to run `face.vertices.reverse()` on every face of each one (it warns against a `vertices[1]`/`[2]` swap, which turns a quad into a crossed face); following that instruction still breaks them. [OFFLINE MEASURED 2026-10-02] On `build_multilod_v2_p3d` (py3d tests) after `blender_to_dayz()`, with the Visual LOD turned inside-out, faces and normals together, the finding named the three healthy collision LODs; following it wound all 6 faces of each box outward and traded the finding for `ERR_WINDING_VS_NORMALS` on each, and negating their normals as well left `validate()` empty with every LOD wound outward: the silent-broken state. Read the finding as "Absolute winding check" rule 6 says. *(Corrected 2026-10-02: this item said it "suggests swapping vertices on every face; following that instruction reaches the silent-broken state". The 1.8.0 message names `face.vertices.reverse()` and warns against the swap; on a healthy collision LOD that still breaks the LOD, and `validate()` goes quiet only once the LOD's normals are negated too.)*
 2. `save(verify=True)`: _verify_against does not compare geometry. It looks at counts, selection names and mass sum. Points `(0,0,0)` vs `(99,99,99)` still verify OK.
 3. `python -m py3d diff`: py3d diff total: 0 does not prove geometric equality. The same pair reports `total: 0`, exit 0.
 
@@ -373,13 +373,18 @@ These aren't P3D issues but commonly co-occur during debugging:
 
 Deep winding validation methodology (how NOT to verify — centroid/right-handed heuristics
 that false-positive on DayZ left-handed models; Check A winding-vs-averaged-normal, Check B
-edge-pair topology, Check C vs-vanilla; minority-group isolation per welded component and
-the coupled fix — flip vertex order AND negate the stored normals unless the pipeline
-recalculates them afterwards; full-sphere back-dominance battery for inverted faces with NO
-topological minority, judging residue in visible pixels, never face counts; known lessons
-learned incl. `flip_winding.py`
+edge-pair topology, Check C vs-vanilla; minority-group isolation per welded component, then
+the group's vertex order flipped with its stored normals read by Check A first — negated in
+the same pass only where they turned along with the winding (unless the pipeline recalculates
+them afterwards), kept where the winding alone was reversed — and a corner-by-corner check of
+the whole LOD to close; full-sphere back-dominance battery
+for inverted faces with NO topological minority, judging residue in visible pixels, never face
+counts; known lessons learned incl. `flip_winding.py`
 idempotency and Crate_Wooden mixed winding tolerated in render) →
-`references/winding-diagnostics.md`. Complements killer #1.
+`references/winding-diagnostics.md`. Complements killer #1. *(Corrected 2026-10-02: this line
+read "the coupled fix — flip vertex order AND negate the stored normals unless the pipeline
+recalculates them afterwards", which turns right normals wrong on a group whose winding alone
+was reversed: `references/winding-diagnostics.md`, "From Check B to fix", item 3.)*
 
 ### MLOD to ODOL is a winding-sign boundary (LL-273)
 
