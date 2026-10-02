@@ -11,7 +11,8 @@ Bone-frame convention (2026-10-02):
   rig's rest offsets (detect_rig_frame); any other rig is refused:
     jd  - JD Master Rig (jd_dayz.json): calibrated 2026-06-29, exact offline.
     fbx - BI FBX rig built by build_rig_dayz.py (rig_dayz.json): derived from
-          the calibrated map, offline only.
+          the calibrated map offline; in game (2026-10-02) one LeftArm pose
+          played as authored through it and wrong through the jd map.
   A root bone (no parent) is relative to the viewer world, which neither map
   covers. In game (A6_SR2M, 2026-06-30) the jd map played a full-body action
   wrong (head and body needed Route A). In-game playback is the gate.
@@ -45,7 +46,10 @@ UNIT_CM = 100.0  # rig meters -> SEAnim cm (verified vs aks74u_reference finger 
 #       (113/114 rest rotations within 1deg, the root excepted), so this is the calibrated map
 #       after that turn. DERIVED 2026-10-02, offline: rest offsets through it match DayZATool-
 #       extracted vanilla SEAnims (77/77 bones within 5deg, 1.2% longer) and rest rotations land
-#       within 0.87deg of where the jd map lands the JD rig; no rotation pair, never played in game.
+#       within 0.87deg of where the jd map lands the JD rig; no rotation pair. In game 2026-10-02
+#       (DayZDiag 1.29.163709) LeftArm keyed straight ahead on the FBX rig came out forward through
+#       this map and out to the side through the jd map: one bone, rotations only
+#       (weapon-anim-authoring-viewer.md, "Route C bone-frame maps, per rig").
 #       rot (x,y,z,w) -> (-x,-z,-y,w); pos (x,y,z) -> (x,z,y).
 def seanim_rot(frame, q):
     x, y, z, w = q

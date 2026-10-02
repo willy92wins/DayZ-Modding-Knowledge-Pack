@@ -34,6 +34,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   modes are named as the reason to expect the defect in play, untested. The replaced sentence is
   quoted in a dated note. The first run's cursor-like ray is corrected too: the dayz-mcp bridge
   replaces a requested radius of 0 with its 0.05 m default, so it was a 0.05 m sphere, not radius 0.
+- `dayz-animation-pipeline` Route C, the BI FBX rig's map `(−x,−z,−y,w)`: played in game, no longer
+  offline only. In one run (2026-10-02, DayZDiag 1.29.163709) `LeftArm` alone was keyed on
+  `animation_rig_character.fbx` straight ahead and 20° above horizontal, a turn about the bone's own
+  X and Y where the FBX map and the JD map disagree, and spliced alone into the vanilla 1H idle.
+  Through `scripts/seanim_export.py` (rig read as `fbx`) the arm came out forward of the chest; through
+  the JD map it came out to the side; each matched the side offline FK gave it. The script's comment,
+  `weapon-anim-authoring-viewer.md` (table status, new paragraph; claim
+  `CLAIM-ANIM-ROUTEC-FBX-INGAME`), `blender-authoring.md` and `blender-animation`'s
+  `dayz-handoff.md` now say so, scoped to one bone and rotations only (the offsets came from the
+  vanilla clip).
 
 ### Fixed
 
