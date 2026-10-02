@@ -411,10 +411,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-winding-hint@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 release v1.5.0, approved by the owner (version and notes shown before publishing): [Unreleased] renamed [1.5.0] - 2026-10-02 with a summary line; its entries come from #28 to #35, each merged after green gates, CI and a cross-family review. Two entries merged to main after the notes were approved (#37, #38) stay under [Unreleased], above [1.5.0]. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2c567da0123f202f267726fef79fecde4bf15de831b95372e35ab9373598372b",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "release-v1.5.0@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "171fc2e9fb5d6df28381e499ab53cc374409eb577c9ad4a788723b42a8e2f700",
+      "output_hash": "2c567da0123f202f267726fef79fecde4bf15de831b95372e35ab9373598372b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
