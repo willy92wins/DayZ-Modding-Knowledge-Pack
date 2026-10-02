@@ -61,6 +61,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and no longer gives a wrong normal sign the inside-out symptom of a wrong face order. Finding
   code and severity unchanged. No new wheel: the pinned and installed `py3d_dayz-1.8.0` still
   prints the old message.
+- `dayz-p3d-audit` "Absolute winding check", rule 6: it pinned `ERR_WINDING_INVERTED` on the absolute
+  check and, because that code flags the production `lf_kit_box.p3d`, called the fork's sign
+  convention inverted. py3d raises that code in the relative check (`_check_winding_vs_visual`); the
+  absolute check raises `ERR_WINDING_VS_NORMALS` and stays silent on the kit box. On the kit box the
+  relative finding named the outward LODs: its Geometry, View and Fire components are wound outward
+  (Rule 18), and in game (2026-10-02, DayZDiag 1.29.163709, the MLOD packed unbinarized) its
+  collision took 0 of 27 `scene_raycast` rays in `geom`, `view` and `fire`, while `gate_and.p3d` from
+  the same PBO (components wound inward) and a vanilla `WoodenCrate` on the kit's physics layer took
+  21 of 21. That run did not change the kit's winding alone, so outward winding as the cause stays a
+  hypothesis for this kit, supported by the paired test behind Rule 12 (which also turned the Visual
+  LOD and the normals). Rule 6 now reads the finding as a trigger for Rule 18's
+  per-component check and sends the fix to killer #1, and rule 7 no longer offers the kit box's
+  outward sign, or a component Rule 18 cannot score, as one to keep. The old text is quoted in dated
+  notes.
 - py3d `ERR_WINDING_INVERTED` message: the relative check compares the share of faces wound
   outward from each LOD's centroid, files the finding on the collision LOD and told the reader to
   reverse every face of that LOD. On the clean multi-LOD model of the py3d tests, converted with
