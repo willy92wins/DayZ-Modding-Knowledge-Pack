@@ -451,10 +451,30 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-p3d-audit-step3@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-mcp-verify static-object playbook gains two probes measured in the killer #2 run, and the CHANGELOG an Added entry. In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (the killer #2 A/B; project DayZ_MCP plus one probe mod), NWAF concrete. scene_raycast method bullet, radius 0, is PopulateRaycastBullet in the DayZ_MCP bridge (addon/scripts/5_Mission/MCPBridge.c:2983-3004, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): DayZPhysics.RayCastBullet with the layer mask BUILDING|DOOR|VEHICLE|ROADWAY|TERRAIN|ITEM_SMALL|ITEM_LARGE|FENCE. On 2 m probe boxes it hit the exact face (E->W at centre + 1.000, vertical at y0 + 2.000) when the collision LODs carried a component selection and gave no object hit when they carried none (a vertical ray through such a box returned hit 1 on the terrain), matching the rvproxy geom/view/fire rays (6 of 6 per mode against 0 of 6). player_teleport to 4 m south of the object's centre, then player_move(to = 4 m north of the centre, speed walk, hold_s 10), every walk straight ahead (applied_angle_deg 0; 0.04 on the HescoBox walk), end position from query_player_state: the 8 walks into probe boxes with a component read arrived false, released_by hold, the player 0.358-0.363 m before the face, after the full 10.00-10.05 s; the 6 free walks (open ground, the four no-component boxes, a vanilla WoodenCrate) read arrived true over 7.51 m in 5.03-5.10 s. Vanilla HescoBox (item_large) stopped the player 0.36 m before its face; vanilla WoodenCrate (item_small, top about 0.23 m above its origin) took every ray and did not stop the player, so the run does not separate layer from height. world_spawn rotation 0 (the bridge's RF_DEFAULT) left an Inventory_Base probe yawed about 10 degrees: its east face read x 4224.098 at z + 0.6 and 4223.874 at z - 0.6; with rotation 64 the same model read x 4224.0498 at both offsets and normal (-2.1, 0, 0), and the four respawned items with a component read their side faces at centre +/- 1.0498 m (the 0.05 m ray radius included; the two without a component gave no hit). scripts/3_game/ce/centraleconomy.c defines 64 as RF_IGNORE (line 56, 'object will spawn as model was created') and as RF_RANDOMROT (line 62). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e63c719640a8704b3f33c0c7ed47458ca2d6d9484f4dea22fc43c138cf50a358",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-mcp-verify-collision-probes@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Fixed entry for the killer #1 quote: killers-detail.md line 63 (killer #1, note on generating or editing a collision LOD) quoted the text of py3d's relative-check message, 'winding is INVERTED relative to the Visual LOD' (tools/py3d/py3d/__init__.py:1187 on main eca85e6), which PR #40 rewrites; the line now names the finding by its code, ERR_WINDING_INVERTED, as line 44 of the same note already does. Edited within the line: no line moved, no claim range shifted. git grep on main found no other skill or knowledge file quoting that message text. Authored by Claude (Anthropic) on the owner's request (2026-10-02: fix the pending stale quote flagged during PR #40); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "61b88c32fae85ba76b6f8f6c0ae54018cb90099cfc595f02a92372b1024cbd69",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-killers-quote@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e6ca404b21a2647acf92049d0a7c51b55a5368e3bb222eec1404d575af1f44e3",
+      "output_hash": "61b88c32fae85ba76b6f8f6c0ae54018cb90099cfc595f02a92372b1024cbd69",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6908,10 +6928,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-mcp-verify-port@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-mcp-verify static-object playbook gains two probes measured in the killer #2 run, and the CHANGELOG an Added entry. In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (the killer #2 A/B; project DayZ_MCP plus one probe mod), NWAF concrete. scene_raycast method bullet, radius 0, is PopulateRaycastBullet in the DayZ_MCP bridge (addon/scripts/5_Mission/MCPBridge.c:2983-3004, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): DayZPhysics.RayCastBullet with the layer mask BUILDING|DOOR|VEHICLE|ROADWAY|TERRAIN|ITEM_SMALL|ITEM_LARGE|FENCE. On 2 m probe boxes it hit the exact face (E->W at centre + 1.000, vertical at y0 + 2.000) when the collision LODs carried a component selection and gave no object hit when they carried none (a vertical ray through such a box returned hit 1 on the terrain), matching the rvproxy geom/view/fire rays (6 of 6 per mode against 0 of 6). player_teleport to 4 m south of the object's centre, then player_move(to = 4 m north of the centre, speed walk, hold_s 10), every walk straight ahead (applied_angle_deg 0; 0.04 on the HescoBox walk), end position from query_player_state: the 8 walks into probe boxes with a component read arrived false, released_by hold, the player 0.358-0.363 m before the face, after the full 10.00-10.05 s; the 6 free walks (open ground, the four no-component boxes, a vanilla WoodenCrate) read arrived true over 7.51 m in 5.03-5.10 s. Vanilla HescoBox (item_large) stopped the player 0.36 m before its face; vanilla WoodenCrate (item_small, top about 0.23 m above its origin) took every ray and did not stop the player, so the run does not separate layer from height. world_spawn rotation 0 (the bridge's RF_DEFAULT) left an Inventory_Base probe yawed about 10 degrees: its east face read x 4224.098 at z + 0.6 and 4223.874 at z - 0.6; with rotation 64 the same model read x 4224.0498 at both offsets and normal (-2.1, 0, 0), and the four respawned items with a component read their side faces at centre +/- 1.0498 m (the 0.05 m ray radius included; the two without a component gave no hit). scripts/3_game/ce/centraleconomy.c defines 64 as RF_IGNORE (line 56, 'object will spawn as model was created') and as RF_RANDOMROT (line 62). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5616105f06cebea704bfe18080f5487dcb121d98cb9c3ec21463a920f42bfa5c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-mcp-verify-collision-probes@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1b999ed8104f44dd0820ab35a15933dbe84a0342f5455321c525cfcc2bfc6481",
+      "output_hash": "5616105f06cebea704bfe18080f5487dcb121d98cb9c3ec21463a920f42bfa5c",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -7954,10 +7984,20 @@
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "killers-detail.md line 63 (killer #1, note on generating or editing a collision LOD) quoted the text of py3d's relative-check message, 'winding is INVERTED relative to the Visual LOD' (tools/py3d/py3d/__init__.py:1187 on main eca85e6), which PR #40 rewrites; the line now names the finding by its code, ERR_WINDING_INVERTED, as line 44 of the same note already does. Edited within the line: no line moved, no claim range shifted. git grep on main found no other skill or knowledge file quoting that message text. Authored by Claude (Anthropic) on the owner's request (2026-10-02: fix the pending stale quote flagged during PR #40); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "b25d3fdee2d8f94c0e7ffe1b22a4d50ef36d87382dbea00a838ccaef2f66d2b8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "kp-update-killers-quote@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "010920c5b4a4df7ca742637ef7baeecec262fc4c407ec20970e382a493cc213b",
+      "output_hash": "b25d3fdee2d8f94c0e7ffe1b22a4d50ef36d87382dbea00a838ccaef2f66d2b8",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -14925,10 +14965,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-p3d-audit-step3@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registers CLAIM-MCPV-COLLISION-PROBES (runtime_verified) for the dayz-mcp-verify static-object playbook. In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (the killer #2 A/B; project DayZ_MCP plus one probe mod), NWAF concrete. scene_raycast method bullet, radius 0, is PopulateRaycastBullet in the DayZ_MCP bridge (addon/scripts/5_Mission/MCPBridge.c:2983-3004, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): DayZPhysics.RayCastBullet with the layer mask BUILDING|DOOR|VEHICLE|ROADWAY|TERRAIN|ITEM_SMALL|ITEM_LARGE|FENCE. On 2 m probe boxes it hit the exact face (E->W at centre + 1.000, vertical at y0 + 2.000) when the collision LODs carried a component selection and gave no object hit when they carried none (a vertical ray through such a box returned hit 1 on the terrain), matching the rvproxy geom/view/fire rays (6 of 6 per mode against 0 of 6). player_teleport to 4 m south of the object's centre, then player_move(to = 4 m north of the centre, speed walk, hold_s 10), every walk straight ahead (applied_angle_deg 0; 0.04 on the HescoBox walk), end position from query_player_state: the 8 walks into probe boxes with a component read arrived false, released_by hold, the player 0.358-0.363 m before the face, after the full 10.00-10.05 s; the 6 free walks (open ground, the four no-component boxes, a vanilla WoodenCrate) read arrived true over 7.51 m in 5.03-5.10 s. Vanilla HescoBox (item_large) stopped the player 0.36 m before its face; vanilla WoodenCrate (item_small, top about 0.23 m above its origin) took every ray and did not stop the player, so the run does not separate layer from height. world_spawn rotation 0 (the bridge's RF_DEFAULT) left an Inventory_Base probe yawed about 10 degrees: its east face read x 4224.098 at z + 0.6 and 4223.874 at z - 0.6; with rotation 64 the same model read x 4224.0498 at both offsets and normal (-2.1, 0, 0), and the four respawned items with a component read their side faces at centre +/- 1.0498 m (the 0.05 m ray radius included; the two without a component gave no hit). scripts/3_game/ce/centraleconomy.c defines 64 as RF_IGNORE (line 56, 'object will spawn as model was created') and as RF_RANDOMROT (line 62).",
+          "license": "MIT",
+          "source_hash": "4ab95ec1bb9c198872db4733ac6edc5fe115e1497dc5cadf4b805da2011e96f2",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-mcp-verify-collision-probes@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f37e894fac6daa783d43567f9341d2f0c045c09096cccb897b00b798d696780d",
+      "output_hash": "4ab95ec1bb9c198872db4733ac6edc5fe115e1497dc5cadf4b805da2011e96f2",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
