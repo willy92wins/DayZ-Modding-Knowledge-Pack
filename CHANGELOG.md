@@ -54,6 +54,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `CLAIM-ANIM-ROUTEC-FBX-INGAME`), `blender-authoring.md` and `blender-animation`'s
   `dayz-handoff.md` now say so, scoped to one bone and rotations only (the offsets came from the
   vanilla clip).
+- py3d wheel pinned at 1.9.0 (`tools/py3d/rollout/wheel-manifest.json`):
+  `py3d_dayz-1.9.0-py3-none-any.whl`, SHA-256
+  `33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e`, built by
+  `rollout/build-wheel.ps1 -UpdateManifest` from the source on main at `62c3dcc`, at the owner's
+  request. Since the 1.8.0 pin it carries the winding messages of #37 and #40 and the component
+  checks of #46 and #54. The toolchain was checked first: the same script rebuilt the 1.8.0 pin
+  (`e7184429…`) byte for byte from the commit that sealed it (`053dc7f`), with Python 3.14.3 and
+  setuptools 83.0.0; then 1.9.0 built six times to one hash, two of them in the seal. The wheel's
+  `py3d/` files and `LICENSE` are byte-identical to the source, and `verify-wheel-restock.ps1`
+  passed against it on synthetic skill roots. No installed skill tree vendors the wheel, so nothing
+  was restocked; the user site-packages install follows the merge. The skill notes that called 1.8.0
+  "the pinned wheel" now say it was pinned until 2026-10-02 (`dayz-p3d-audit` item 1 of "The three
+  py3d gates", killers #2 and #8 and `references/killers-detail.md` §2 and §8; `dayz-vehicles`
+  `rip-import.md` §3.5 and `vehicle-structural-parity.md`; `dayz-clothing`
+  `autofit-from-official-rig.md`), and item 1 describes the 1.9.0 `ERR_WINDING_INVERTED` message
+  next to the 1.8.0 one.
 
 ### Fixed
 
@@ -388,6 +404,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `dayz-realistic-animation-director/scripts/tests` (one of its modules imports `bpy`),
   `dayz-proxy-align/scripts/test_proxy_frame.py` and
   `dayz-mcp-verify/references/test_drive_ladder.py`.
+- py3d rollout applicator (`tools/py3d/rollout/apply-s2-rollout.ps1`): restocking a skill's
+  `wheels/` counted the pinned name and legacy `py3d-*.whl` wheels but not an earlier
+  `py3d_dayz-*.whl`, so a 1.8.0 → 1.9.0 restock would copy 1.9.0 beside 1.8.0, pass its own
+  readback, and leave a directory the skills' `install_py3d.py` refuses (it wants exactly one
+  `py3d_dayz-*-py3-none-any.whl`). Found by the cross-family review of the 1.9.0 pin; no installed
+  tree vendors a wheel today, so nothing was affected. Earlier `py3d_dayz` wheels are now backed up
+  and removed like legacy ones: a new case in `tests/py3d_rollout/test_apply_rollout.py` and test E
+  of `verify-wheel-restock.ps1` fail on the previous applicator and pass now.
 - `dayz-model-pipeline` SP-003 no longer tells you to match a collision LOD's winding to the Visual
   LOD. It said to compare the two "(centroid method) BEFORE deploying — they must agree in sign",
   and that `audit_p3d.py` does not validate this. `audit_p3d.py` does run that comparison, py3d's
