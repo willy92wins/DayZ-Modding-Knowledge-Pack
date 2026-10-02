@@ -134,7 +134,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   to the same ODOL. A physics-world ray (`DayZPhysics.RayCastBullet`) hits the shipped kit where it
   hits the fixed ones: the outward winding breaks the `RaycastRV`/`RaycastRVProxy` consumers (the
   action cursor, hologram placement), not the physics body. The replaced sentence is quoted in a
-  dated note.
+  dated note. The first run's cursor-like ray is corrected too: the dayz-mcp bridge replaces a
+  requested radius of 0 with its 0.05 m default, so it was a 0.05 m sphere, not radius 0.
 
 ## [1.5.0] - 2026-10-02
 
