@@ -69,8 +69,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   (Rule 18), and in game (2026-10-02, DayZDiag 1.29.163709, the MLOD packed unbinarized) its
   collision took 0 of 27 `scene_raycast` rays in `geom`, `view` and `fire`, while `gate_and.p3d` from
   the same PBO (components wound inward) and a vanilla `WoodenCrate` on the kit's physics layer took
-  21 of 21. That run did not change the kit's winding alone; the paired test behind Rule 12 is what
-  ties a miss to outward winding. Rule 6 now reads the finding as a trigger for Rule 18's
+  21 of 21. That run did not change the kit's winding alone, so outward winding as the cause stays a
+  hypothesis for this kit, supported by the paired test behind Rule 12 (which also turned the Visual
+  LOD and the normals). Rule 6 now reads the finding as a trigger for Rule 18's
   per-component check and sends the fix to killer #1, and rule 7 no longer offers the kit box's
   outward sign, or a component Rule 18 cannot score, as one to keep. The old text is quoted in dated
   notes.
