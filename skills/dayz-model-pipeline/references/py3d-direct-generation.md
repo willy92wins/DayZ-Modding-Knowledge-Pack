@@ -693,15 +693,18 @@ reversed after a correct export), textures render on the inside only. Normals al
 outward, the older convention, disagree with the vertex order and render solid, but they are not
 what Rule 12 writes; dayz-p3d-audit `references/winding-diagnostics.md` (Check A) maps each case to
 its fix. *(Corrected 2026-10-02: this sentence said any disagreement renders on the inside only.)*
-Check by comparing geometric normal (from cross product) with stored normal.
+Check by comparing geometric normal (from cross product) with stored normal. *(Corrected 2026-10-02: the
+docstring below gave character source MLODs the opposite sign, `< 0`, the det +1 convention that
+`check_dayz_winding.py` encoded until it was rewritten for Rule 12 the same day.)*
 
 ```python
 import numpy as np
 
 def check_face_winding(model):
-    """Verify generic-pipeline and vehicle winding (cross dot stored normal > 0).
-    The expected sign depends on asset class; character source MLODs use < 0:
-    see skills/dayz-characters/references/check_dayz_winding.py."""
+    """Verify that vertex order and stored normals agree (cross dot stored normal > 0),
+    the MLOD convention of Rule 12 on every asset class, characters included. Agreement
+    does not give the direction: skills/dayz-characters/references/check_dayz_winding.py
+    reads it from the signed volume by winding of each closed shell."""
     issues = []
     lod0 = model.lods[0]
 

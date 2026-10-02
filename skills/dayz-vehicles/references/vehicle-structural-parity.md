@@ -671,8 +671,10 @@ py3d/audit "engine requires `Component01` uppercase" rule does not hold for Inve
 measured in game on 2026-10-02, `component01` collides exactly like `Component01` on an item and on a
 `HouseNoDestruct`, unbinarized and binarized, and binarize writes both as `component01` (dayz-p3d-audit
 killer #2). Match vanilla (lowercase) for vehicles; the resulting `ERR_COMPONENT_NAMING` from `P3D.validate()`
-is expected (the CONTROL itself triggers it). The same code for a Geometry LOD with no component at all is
-not one to wave off: on an item and a building that collision was gone (vehicles not measured).
+up to py3d 1.8.0, the pinned wheel, is expected (the CONTROL itself triggers it); py3d 1.9.0 does not check
+the case and stays silent. The same code for a collision LOD with faces and no component at all is not one
+to wave off: on an item and a building that collision was gone (vehicles not measured); from 1.9.0 it is
+the only reason the code fires, on the Geometry, View or Fire LOD.
 *(Corrected 2026-10-02: the first sentence ended "rule is for Inventory_Base items.")*
 
 ## Addendum (2026-06-24 s7) — componentNN DUAL-TAG: hub/seat selections must SHARE faces with a componentNN [VERIFIED in-game, was the SUB_BRZ spawn blocker]
