@@ -75,6 +75,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   per-component check and sends the fix to killer #1, and rule 7 no longer offers the kit box's
   outward sign, or a component Rule 18 cannot score, as one to keep. The old text is quoted in dated
   notes.
+- `dayz-p3d-audit` killer #1 (`references/killers-detail.md`): the note on generating or editing a
+  collision LOD quoted the text of py3d's relative-check message ("winding is INVERTED relative to
+  the Visual LOD"), which can change with py3d; it now names the finding by its code,
+  `ERR_WINDING_INVERTED`, as the automated-check note above it already does.
 
 ## [1.5.0] - 2026-10-02
 
