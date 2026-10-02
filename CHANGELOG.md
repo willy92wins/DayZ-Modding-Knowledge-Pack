@@ -398,7 +398,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   only the faces that read outward are reversed, and a collision LOD is never reversed to match the
   Visual LOD. The two troubleshooting rows that reversed every face say the same; the
   symptom-triplet row also reversed Roadway, whose walkable faces it now sends to `dayz-p3d-audit`
-  "Absolute winding check" rule 4. In `references/py3d-direct-generation.md`, the "Face Winding
+  "Absolute winding check" rule 4, and the Check A row reversed whatever its direction check read
+  outward, Visual LODs included: read literally on a closed Visual room seen from inside (signed
+  volume +8, right for a room), it gave -8 with 100 % agreement and no py3d winding finding. That
+  row now reads a closed Visual shell by the side meant to be seen (negative for a solid seen from
+  outside, positive for a room seen from inside, rule 4) and leaves open or double-sided Visual
+  parts unresolved by that sign. In `references/py3d-direct-generation.md`, the "Face Winding
   Order Fix" loop, which reverses every face of every LOD, proxy triangles included, is marked as
   the undo of a whole-model `P3D.transform()` reversal, its one use, and the section says how a
   collision LOD is repaired instead. Rule 18 also pointed at `check_face_winding` as its
