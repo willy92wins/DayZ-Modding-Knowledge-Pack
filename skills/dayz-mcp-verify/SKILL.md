@@ -1002,3 +1002,23 @@ Rules for a driving bench:
 
 Would close the gap: a get-in with a foreign vehicle 2 m away on a build with `d065b0e`, and a
 5-car run with `flags=8389668` killed halfway, checking that nothing persists.
+
+## (added 2026-10-02, LFV #82) Gates vía LFV_D2_Executor: TOML escapa backslashes y la deriva baseline↔PBO se comprueba ANTES de planificar
+
+Dos defectos medidos en un intento de gate de PR externo mediante repunteo temporal del
+`source_root` del executor:
+
+1. Los swaps programáticos de rutas Windows en TOML operan sobre el ESCAPADO TOML, no sobre
+   bytes de ruta reales: en basic strings el backslash va escapado (doble); inyectar simples
+   convierte `\U` en escape unicode inválido y el parser muere con `TOMLDecodeError: Invalid
+   hex value` ANTES de evaluar nada (RC50 en preflight). La coincidencia de hash con lo
+   planificado NO acredita sintaxis TOML válida — validar el TOML resultante (tomllib en
+   proceso fresco) ANTES de entregarlo al executor.
+2. La deriva baseline↔PBO se comprueba ANTES de planificar el gate: el executor valida el
+   PBO desplegado contra su `baseline_sha256` sellado; si difiere (medido: B010F0C7 vs
+   7413ef2d), el gate exige alinear estado del dueño (baseline↔PBO↔fuente) — no se resuelve
+   con repunteos ni builds. Abort path obligatorio: preflight rechaza → restaurar toml+PBO
+   byte-exacto → congelar con expediente → escalar.
+
+Origen: gate #82 LFVStorage (run abortado RC50, PBO del dueño preservado por abort limpio;
+expediente en SimpleGroup-audits/inbox/2026-10-02-pr82-gates-abort-preflight/).
