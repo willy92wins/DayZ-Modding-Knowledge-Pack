@@ -391,10 +391,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-characters-ab@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 release v1.5.0, approved by the owner (version and notes shown before publishing): [Unreleased] renamed [1.5.0] - 2026-10-02 with a summary line; its entries come from #28 to #35, each merged after green gates, CI and a cross-family review. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f726278285985ef33b316ec91219dc616cf0c79d9ebed0c7dae544c306f63cf3",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "release-v1.5.0@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0d504bafb4e1eb5011c42defeab94544774b66dded90a7f368a5de8a571536af",
+      "output_hash": "f726278285985ef33b316ec91219dc616cf0c79d9ebed0c7dae544c306f63cf3",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
