@@ -26,12 +26,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   three classes, the MLODs packed unbinarized) the shipped `lf_kit_box.p3d` took 0 of 27
   `scene_raycast` rays in `geom`, `view` and `fire` again, and the same bytes with only the
   collision LODs' faces reversed took 27 of 27, with the collision normals negated or kept, at the
-  same coordinates; a vanilla `WoodenCrate` took 27 of 27. Binarize writes the two fixed variants
-  to the same ODOL. A physics-world ray (`DayZPhysics.RayCastBullet`) hits the shipped kit where it
-  hits the fixed ones: the outward winding breaks the `RaycastRV`/`RaycastRVProxy` consumers (the
-  action cursor, hologram placement), not the physics body. The replaced sentence is quoted in a
-  dated note. The first run's cursor-like ray is corrected too: the dayz-mcp bridge replaces a
-  requested radius of 0 with its 0.05 m default, so it was a 0.05 m sphere, not radius 0.
+  same coordinates relative to the kit; a vanilla `WoodenCrate` took 27 of 27. Binarize writes the
+  two fixed variants to the same ODOL. A server physics-world ray (`DayZPhysics.RayCastBullet`)
+  finds the shipped kit where it finds the fixed ones, so the winding did not hide it from that
+  static query (player contact was not measured). The misses were measured on the dayz-mcp
+  bridge's `RaycastRVProxy` rays; the vanilla cursor and hologram rays in the same intersection
+  modes are named as the reason to expect the defect in play, untested. The replaced sentence is
+  quoted in a dated note. The first run's cursor-like ray is corrected too: the dayz-mcp bridge
+  replaces a requested radius of 0 with its 0.05 m default, so it was a 0.05 m sphere, not radius 0.
 
 ### Fixed
 
