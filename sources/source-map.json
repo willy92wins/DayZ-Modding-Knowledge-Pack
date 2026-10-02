@@ -3007,10 +3007,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-424d7ba@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 promotion of main 29db50a following #49 (the fourth receipt of this installation that day, after 1ff300dc61088b3b7bb0478a, a5e776aef17a1d2312e3c0da and 681a181feb0550dc5f13ff09): the last cycle the owner asked for, with what main held after #49 merged (#40, #45, #48, #53 and the PRs before them). After #49 merged its sealing worktree was removed (rule R1 of #35) and promote --check ran from a fresh worktree of 29db50a with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (80 of 119 operations: seven skills on agents_user_skills+claude_user_skills and 73 new vault snapshots; no live file removed). Projected with packctl's own alias localization, the skill changes are exactly the 18 files git changed under skills/ since 424d7ba: dayz-animation-pipeline references/blender-authoring.md; dayz-characters SKILL.md, references/character-rigging.md, references/check_dayz_winding.py and, new, references/test_check_dayz_winding.py and references/winding_fixtures/ (make_fixtures.py, mirror_a.p3d, mirror_b.p3d, mirror_b_normals_out.p3d, mirror_c.p3d); dayz-clothing SKILL.md, references/autofit-from-official-rig.md; dayz-mcp-verify SKILL.md; dayz-model-pipeline references/py3d-direct-generation.md; dayz-p3d-audit SKILL.md, references/killers-detail.md; dayz-vehicles references/rip-import.md, references/vehicle-structural-parity.md. promote --apply PASS, transaction 31865c3f4deb47d5c718429d, COMMIT event 242 at 2026-10-02T18:43:09Z. Every destination re-measured after apply with packctl tree_digest equals its plan after_digest; the receipt's sha256 equals the COMMIT payload's receipt_hash; adjudications.json carries the advance packctl made at COMMIT for the 14 adjudicated pairs it promoted over (7 skills x 2 targets), each observed_digest now equal to its plan after_digest. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "02af1bd325aed19cc3e7a30a1d8ce327012b8f330ba243dadb6edbd71c0e0ac7",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-29db50a@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "40c803b1579cbc5014862810a21aa9575911a3be037890936d16f66861a45a9c",
+      "output_hash": "02af1bd325aed19cc3e7a30a1d8ce327012b8f330ba243dadb6edbd71c0e0ac7",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -28547,6 +28557,28 @@
       "license": "MIT",
       "output_hash": "98197aa952686711441155bbd01c982f9d40cc2f74ff5763821b660eb925d73f",
       "output_path": "promotions/receipts/681a181feb0550dc5f13ff09.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/31865c3f4deb47d5c718429d.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-02 promotion of main 29db50a following #49 (the fourth receipt of this installation that day, after 1ff300dc61088b3b7bb0478a, a5e776aef17a1d2312e3c0da and 681a181feb0550dc5f13ff09): the last cycle the owner asked for, with what main held after #49 merged (#40, #45, #48, #53 and the PRs before them). After #49 merged its sealing worktree was removed (rule R1 of #35) and promote --check ran from a fresh worktree of 29db50a with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (80 of 119 operations: seven skills on agents_user_skills+claude_user_skills and 73 new vault snapshots; no live file removed). Projected with packctl's own alias localization, the skill changes are exactly the 18 files git changed under skills/ since 424d7ba: dayz-animation-pipeline references/blender-authoring.md; dayz-characters SKILL.md, references/character-rigging.md, references/check_dayz_winding.py and, new, references/test_check_dayz_winding.py and references/winding_fixtures/ (make_fixtures.py, mirror_a.p3d, mirror_b.p3d, mirror_b_normals_out.p3d, mirror_c.p3d); dayz-clothing SKILL.md, references/autofit-from-official-rig.md; dayz-mcp-verify SKILL.md; dayz-model-pipeline references/py3d-direct-generation.md; dayz-p3d-audit SKILL.md, references/killers-detail.md; dayz-vehicles references/rip-import.md, references/vehicle-structural-parity.md. promote --apply PASS, transaction 31865c3f4deb47d5c718429d, COMMIT event 242 at 2026-10-02T18:43:09Z. Every destination re-measured after apply with packctl tree_digest equals its plan after_digest; the receipt's sha256 equals the COMMIT payload's receipt_hash; adjudications.json carries the advance packctl made at COMMIT for the 14 adjudicated pairs it promoted over (7 skills x 2 targets), each observed_digest now equal to its plan after_digest. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "647a66a2601bd2208dceb90e18e64275af24c5282d05a3defa9c012fb9ce6358",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/31865c3f4deb47d5c718429d.json",
+          "source_revision": "kp-update-promotion-29db50a@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "647a66a2601bd2208dceb90e18e64275af24c5282d05a3defa9c012fb9ce6358",
+      "output_path": "promotions/receipts/31865c3f4deb47d5c718429d.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
