@@ -60,7 +60,7 @@ disabled for false positives.
 > **MANDATORY when you GENERATE or EDIT a collision LOD** (procedural sphere, py3d round-trip,
 > Blender import, inspector rebuild): re-run `audit_p3d.py` and Rule 18's per-component check
 > **before deploying**: with its prerequisites met, every non-proxy face of every component must
-> read inward. A "winding is INVERTED relative to the Visual LOD" CRITICAL that a complete
+> read inward. An `ERR_WINDING_INVERTED` CRITICAL that a complete
 > per-component check does not confirm says nothing against the collision: check the Visual LOD
 > against the side meant to be seen instead (Check A table in `winding-diagnostics.md`; a room
 > seen from inside is right as it is). An unresolved check confirms nothing either way. A
@@ -132,10 +132,14 @@ about 5 s; a blocked one held for the full 10 s. (claim: CLAIM-P3D-COMPONENT-CAS
 **Binarize removes the difference anyway**: from the `Component01` and the `component01` MLOD it
 writes the same ODOL, byte for byte, with the name stored as `component01`.
 
-**Detection**: a collision LOD with faces and no `ComponentNN` selection. py3d `P3D.validate()`
-checks the Geometry LOD only (`_check_component_naming`), not View or Fire: it reports a missing
-component as `ERR_COMPONENT_NAMING` ("No Component selection found"), and the same code also fires
-on a lowercase `component01`, which works, so that reading is a false positive.
+**Detection**: a collision LOD with faces and no `ComponentNN` selection. From py3d 1.9.0,
+`P3D.validate()` (`_check_component_naming`) raises `ERR_COMPONENT_NAMING` on each Geometry, View
+or Fire LOD that has faces outside its proxy triangles and no selection whose name starts with
+`component`, in any case; when there are such names but none is `Component` and a number (only
+`Component_01`, say) it raises `WARN_COMPONENT_NAMING` instead. An empty component selection
+counts as present there. Up to 1.8.0, the version of the pinned wheel, it checked the Geometry LOD
+only ("No Component selection found"), and the same code also fired on a lowercase
+`component01`, which works, so that reading is a false positive.
 
 **Fix**: select each closed, convex part of the collision LOD as its own `ComponentNN`
 (`Component01`, `Component02`, ...) over all of that part's points and faces, the components

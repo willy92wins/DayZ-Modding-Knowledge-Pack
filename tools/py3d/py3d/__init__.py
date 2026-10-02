@@ -50,7 +50,7 @@ import tempfile
 import warnings
 
 
-__version__ = "1.8.0"
+__version__ = "1.9.0"
 IS_DAYZ_FORK = True
 
 _REQUIRED = object()
@@ -959,7 +959,10 @@ def _recipe_build_memory(recipe):
 #     audit used the last one, through an accidental overwrite;
 #   - severities: CRITICAL -> ERROR, WARNING -> WARN. Informational NOTEs
 #     are not ported, except P:\ paths and the low-confidence winding
-#     branch, which is part of the ported check.
+#     branch, which is part of the ported check;
+#   - component naming (1.9.0): the audit required 'Component01' and
+#     flagged 'component01'; in game the case made no difference, so the
+#     check now flags a missing component, on every collision LOD.
 #
 # Codes added in 1.2.0 (this block):
 #   ERR_WINDING_INVERTED, WARN_WINDING_MIXED, WARN_WINDING_LOWCONF,
@@ -1088,6 +1091,23 @@ def _pct_edge_coherence(lod):
     return 100.0 * good / tot
 
 
+def _winding_steps(kind_label):
+    """How to settle the winding of a LOD of this kind, normals untouched.
+    Both winding findings give it; it leaves a LOD that reads right as it
+    is."""
+    if kind_label == "visual":
+        return ("in each closed shell, turn the vertex order of the faces "
+                "that disagree with their neighbours "
+                "(WARN_WINDING_EDGE_INCOHERENT), then read its signed "
+                "volume by winding - negative for a solid seen from "
+                "outside, positive for a room seen from inside - and if it "
+                "has the other sign, face.vertices.reverse() on every face "
+                "of the shell")
+    return ("in each convex component, face.vertices.reverse() on every "
+            "face whose cross product points outward, against face "
+            "centroid minus component centroid (inward expected)")
+
+
 def _check_winding_absolute(lod, lod_index, kind_label):
     r"""A LOD's ABSOLUTE winding, without comparing it to any other LOD.
 
@@ -1118,19 +1138,6 @@ def _check_winding_absolute(lod, lod_index, kind_label):
             "non-degenerate winding and a non-degenerate declared normal."
             % kind_label))
     elif pct < 10.0:
-        if kind_label == "visual":
-            how = ("in each closed shell, turn the vertex order of the "
-                   "faces that disagree with their neighbours "
-                   "(WARN_WINDING_EDGE_INCOHERENT), then read its signed "
-                   "volume by winding - negative for a solid seen from "
-                   "outside, positive for a room seen from inside - and "
-                   "if it has the other sign, face.vertices.reverse() on "
-                   "every face of the shell")
-        else:
-            how = ("in each convex component, face.vertices.reverse() on "
-                   "every face whose cross product points outward, against "
-                   "face centroid minus component centroid (inward "
-                   "expected)")
         findings.append(Finding(
             "ERR_WINDING_VS_NORMALS", "ERROR", lod_index,
             "%s LOD: winding and declared normals disagree (only %.0f%% "
@@ -1145,7 +1152,7 @@ def _check_winding_absolute(lod, lod_index, kind_label):
             "Reversing every face on this finding alone has turned "
             "exports whose winding was right inside-out. More: py3d "
             "README, 'Winding'."
-            % (kind_label, pct, how)))
+            % (kind_label, pct, _winding_steps(kind_label))))
     elif pct <= 90.0:
         findings.append(Finding(
             "WARN_WINDING_NORMAL_MISMATCH", "WARN", lod_index,
@@ -1163,7 +1170,8 @@ def _check_winding_absolute(lod, lod_index, kind_label):
     return findings
 
 
-def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
+def _check_winding_vs_visual(lod, lod_index, visual_lod, visual_index,
+                             kind_label):
     """Pruned port of audit_p3d.check_winding_vs_visual (104-171).
 
     NOTE: this check is RELATIVE to the Visual LOD and leans on
@@ -1171,6 +1179,17 @@ def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
     global inversion, nor tell a correct hollow box from a broken one. It
     is kept so the finding codes stay stable; the signal that does
     discriminate is `_check_winding_absolute`.
+
+    It sees that the two LODs disagree on which way is out, not which of
+    the two is wrong, and it files the finding on the collision LOD either
+    way. A Visual LOD turned inside-out - faces and normals together, which
+    `_check_winding_absolute` passes - raises it on the healthy collision
+    LODs, and reversing those to match winds them outward. So the message
+    gives the winding steps of both LODs, which leave a part that reads
+    right as it is, instead of a fix for this one. It names the Visual LOD
+    it compared against, the one of lowest resolution, by index:
+    `P3D.get_lod("visual")` returns the first in file order, which need not
+    be that one.
     """
     findings = []
     col = _pct_outward(lod)
@@ -1184,14 +1203,31 @@ def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
     if col_uniform and vis_uniform and col_dom != vis_dom:
         findings.append(Finding(
             "ERR_WINDING_INVERTED", "ERROR", lod_index,
-            "%s LOD winding is INVERTED relative to the Visual LOD "
-            "(%s=%s %.0f%%-outward vs Visual=%s %.0f%%-outward). Raycasts "
-            "from outside pass through -> no collision / no action / no "
-            "ballistic hits. Fix: face.vertices.reverse() on every face of "
-            "this LOD (do NOT swap vertices[1] and vertices[2]: that "
-            "inverts a triangle but turns a quad [0,1,2,3] into [0,2,1,3], "
-            "a CROSSED face)."
-            % (kind_label, kind_label, col_dom, col, vis_dom, vis)))
+            "%s LOD and Visual LOD %d (resolution %g, the visual LOD of "
+            "lowest resolution, which this check compares against) are "
+            "wound opposite ways: %.0f%% and %.0f%% of their faces wind "
+            "outward from their LOD's centroid, a test that assumes convex "
+            "geometry. That says they disagree on which way is out, not "
+            "which one is wrong: an inside-out Visual LOD raises this on "
+            "the healthy collision LODs, and reversing those to match winds "
+            "them outward, where raycasts pass through them. In a DayZ MLOD "
+            "both cross(v1-v0, v2-v0) and the stored normals point away from "
+            "the side meant to be seen. Settle the winding of both LODs "
+            "first, normals untouched; these steps leave a part that reads "
+            "right as it is. Visual LOD %d: %s. %s LOD: %s. Never a "
+            "vertices[1]/[2] swap (a quad becomes a crossed face). Then "
+            "negate each corner normal that still points against its face "
+            "(lod.facenormals[j] = (-x, -y, -z); an entry a kept corner "
+            "also uses gets a negated copy). A part these steps cannot "
+            "read - not a closed shell, not a closed convex component - "
+            "leaves this unresolved: check in game, or against a model that "
+            "renders right, which side it is meant to show before turning "
+            "it. Only when every part of both LODs reads right is there "
+            "nothing to fix: a Visual LOD meant to be seen from inside reads "
+            "positive and is right. More: py3d README, 'Winding'."
+            % (kind_label, visual_index, visual_lod.resolution, col, vis,
+               visual_index, _winding_steps("visual"), kind_label,
+               _winding_steps(kind_label))))
     elif not col_uniform:
         findings.append(Finding(
             "WARN_WINDING_MIXED", "WARN", lod_index,
@@ -1207,30 +1243,94 @@ def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
     return findings
 
 
-def _check_component_naming(lod, lod_index):
-    """Port of audit_p3d.check_component_naming (174-191)."""
-    findings = []
-    sels = list(lod.selections.keys())
-    has_correct = "Component01" in sels
-    has_lowercase = "component01" in sels
-    has_any = any(s.lower().startswith("component") for s in sels)
-    if has_lowercase and not has_correct:
-        findings.append(Finding(
+#: A collision component's selection: "Component" and a number, as Object
+#: Builder's Find Components names them. Matched in any case: in game the
+#: case made no difference (see _check_component_naming). Use fullmatch():
+#: with match() and a "$" a trailing newline would pass.
+_COMPONENT_NAME_RE = re.compile(r"component\d+", re.IGNORECASE)
+
+
+def _proxy_triangle_faces(lod):
+    """ids of the faces that are MLOD proxy triangles: a selection named
+    'proxy:<path>.<index>' that holds exactly 1 triangular face and, as its
+    3 points, that triangle's 3 corners. A selection under a proxy name
+    with any other shape is not a proxy, and its faces stay collision
+    geometry. Normals and editing exclusivity are not required here (the
+    library's strict proxy check, _resolve_proxy_anatomy, rejects real
+    proxy triangles for those)."""
+    out = set()
+    for name, sel in lod.selections.items():
+        if not PROXY_NAME_RE.match(name):
+            continue
+        if len(sel.points) != 3 or len(sel.faces) != 1:
+            continue
+        face = next(iter(sel.faces))
+        if len(face.vertices) != 3:
+            continue
+        try:
+            corners = {id(vx.point) for vx in face.vertices}
+        except (IndexError, TypeError):
+            continue
+        if len(corners) == 3 and corners == set(map(id, sel.points)):
+            out.add(id(face))
+    return out
+
+
+def _check_component_naming(lod, lod_index, kind_label):
+    """A collision LOD (Geometry, View or Fire) with faces of its own and
+    no component selection -> ERR_COMPONENT_NAMING.
+
+    Measured in game (DayZDiag 1.29.163709, 2026-10-02; dayz-p3d-audit
+    killer #2): a 2 m box whose Geometry, View and Fire LODs had no
+    component took no ray in geom, view or fire, missed the physics ray
+    and let the player walk through, packed unbinarized and binarized,
+    and no log line said so. A LOD without a component while the other
+    collision LODs have one was not measured; each LOD is checked on its
+    own.
+
+    The case of the name is not checked. On the same run 'component01'
+    collided exactly like 'Component01' (rays, physics ray, walk), and
+    binarize writes both as 'component01'. Up to 1.8.0 this check, a port
+    of audit_p3d.check_component_naming, ran on the Geometry LOD alone
+    and raised this ERROR on 'component01': a false positive.
+
+    The ERROR needs no selection whose name starts with "component" (any
+    case). WARN_COMPONENT_NAMING: there are such selections, but none is
+    "Component" and a number (e.g. only 'Component_01' or
+    'components_panel'), a spelling never measured.
+
+    Proxy triangles (_proxy_triangle_faces) do not count, so a LOD with no
+    faces (a Geometry LOD that only carries mass) or only proxy triangles
+    gets no finding: it has no collision geometry of its own.
+
+    A component selection counts here even if it holds none of the faces;
+    whether every face belongs to a component is _check_component_coverage's
+    question, and that one reads 'Component01' alone, on the Geometry LOD.
+    """
+    proxy_faces = _proxy_triangle_faces(lod)
+    own = sum(1 for fa in lod.faces if id(fa) not in proxy_faces)
+    if own == 0:
+        return []
+    found = [s for s in lod.selections if s.lower().startswith("component")]
+    if not found:
+        return [Finding(
             "ERR_COMPONENT_NAMING", "ERROR", lod_index,
-            "Found 'component01' (lowercase). Engine requires "
-            "'Component01' (uppercase C); collision silently fails."))
-    elif not has_any:
-        findings.append(Finding(
-            "ERR_COMPONENT_NAMING", "ERROR", lod_index,
-            "No Component selection found. Geometry LOD requires "
-            "'Component01' for collision."))
-    elif not has_correct:
-        found = [s for s in sels if s.lower().startswith("component")]
-        findings.append(Finding(
+            "%s LOD: %d face(s) and no ComponentNN selection. In game a "
+            "box with no component in any of its collision LODs lost its "
+            "collision silently: no ray hit it, the player walked through, "
+            "and no log line said so (one LOD without a component while "
+            "the others have one was not measured). Select each closed, "
+            "convex part as its own Component01, Component02, ... (the "
+            "case does not matter: component01 collides like Component01)."
+            % (kind_label, own))]
+    if not any(_COMPONENT_NAME_RE.fullmatch(s) for s in found):
+        return [Finding(
             "WARN_COMPONENT_NAMING", "WARN", lod_index,
-            "Component selection %r - verify exact case is 'Component01'."
-            % found[0]))
-    return findings
+            "%s LOD: component selection %r is not 'Component' and a "
+            "number; that spelling was never measured in game "
+            "(Component01 and component01 both collide). Rename it to "
+            "ComponentNN." % (kind_label, found[0]))]
+    return []
 
 
 def _check_component_coverage(lod, lod_index):
@@ -2929,8 +3029,9 @@ class P3D:
                     "(Arma-3-era e13 FireGeo/ViewGeo ids are NOT valid in "
                     "DayZ: use 7e15/6e15)" % lod.resolution))
                 continue
+            if k in _GEOMETRY_CLASS_KINDS:
+                findings.extend(_check_component_naming(lod, i, k))
             if k == "geometry":
-                findings.extend(_check_component_naming(lod, i))
                 findings.extend(_check_component_coverage(lod, i))
                 findings.extend(_check_autocenter(lod, i))
             if k in _GEOMETRY_CLASS_KINDS:
@@ -2939,7 +3040,7 @@ class P3D:
                 findings.extend(_check_winding_absolute(lod, i, k))
                 if visual is not None and lod is not visual:
                     findings.extend(_check_winding_vs_visual(
-                        lod, i, visual, k))
+                        lod, i, visual, visual_index, k))
             if k == "memory":
                 findings.extend(_check_memory_structure(lod, i))
                 if visual is not None:
@@ -2970,6 +3071,12 @@ class P3D:
         WARN_PDRIVE_PATH, WARN_LOD_KIND_UNKNOWN.
         Codes from 1.3.0: ERR_MASS_ONLY_GEOMETRY (a #Mass# tag in a
         non-Geometry LOD, which makes binarize bake CoM=(0,0,0)).
+        Changed in 1.9.0: ERR_COMPONENT_NAMING flags a Geometry, View or
+        Fire LOD with faces outside its proxy triangles and no selection
+        whose name starts with 'component' (it ran on the Geometry LOD
+        alone) and no longer flags a lowercase 'component01';
+        WARN_COMPONENT_NAMING only flags a LOD whose component names are
+        none of them 'Component' and a number, the case ignored.
 
         Returns list[Finding]. It does NOT raise on findings, though it
         does raise on misuse of its own parameters. The in-memory round

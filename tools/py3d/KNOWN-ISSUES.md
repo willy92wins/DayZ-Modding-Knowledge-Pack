@@ -241,6 +241,19 @@ noise reads as signal.
 
 ## Fixed
 
+- **`validate()` flagged a component name that works and missed lost
+  collision in View and Fire.** Up to 1.8.0 `ERR_COMPONENT_NAMING` ran on the
+  Geometry LOD alone and fired on a lowercase `component01` ("Engine requires
+  'Component01' (uppercase C); collision silently fails"). In game (DayZDiag
+  1.29.163709, 2026-10-02) `component01` collided exactly like `Component01`
+  in `geom`, `view` and `fire` rays, the physics ray and a walking player,
+  packed unbinarized and binarized, and binarize writes both names as
+  `component01`; a box with no component in its Geometry, View and Fire LODs
+  took no ray in any of them, let the player through, and no log line said
+  so. From 1.9.0 the error flags any of those three LODs that has faces
+  outside its proxy triangles and no selection whose name starts with
+  `component`, and ignores the case of the name. A LOD missing a component while the others have one was
+  not measured.
 - **The documented Blender → DayZ path mirrored the model.** Up to 1.7.0,
   `BLENDER_TO_DAYZ` was the det=+1 rotation `(x,y,z) -> (x,z,-y)` and
   `p3d.transform(py3d.BLENDER_TO_DAYZ)` was the documented usage. Blender is
@@ -280,6 +293,19 @@ noise reads as signal.
   advised swapping `vertices[1]` and `vertices[2]`, which inverts a triangle but
   turns a quad `[0,1,2,3]` into `[0,2,1,3]` — a crossed face. It now recommends
   `face.vertices.reverse()` and warns against the swap.
+- **`ERR_WINDING_INVERTED` told the reader to reverse healthy LODs.** The
+  relative check compares the share of faces wound outward from each LOD's
+  centroid and files the finding on the collision LOD, and its message told the
+  reader to reverse every face of that LOD. With the Visual LOD turned
+  inside-out, faces and normals together, it fired on the three healthy
+  collision LODs of a clean multi-LOD model and nowhere else; reversing them
+  traded it for `ERR_WINDING_VS_NORMALS`, and negating their normals too left
+  `validate()` at `[]` with every LOD wound outward. The message now names the
+  Visual LOD it compares against (the one of lowest resolution, by index), says
+  the two LODs disagree on which way is out, not which one is wrong, and gives
+  for both the winding-first steps of `ERR_WINDING_VS_NORMALS`, which leave a
+  part that reads right as it is; a part those steps cannot read leaves the
+  finding unresolved.
 - **Globally inverted winding was invisible.** The only winding check was
   relative to the Visual LOD, so inverting *every* LOD — precisely what a Z-up to
   Y-up export does — left the model self-consistent and `validate()` returned

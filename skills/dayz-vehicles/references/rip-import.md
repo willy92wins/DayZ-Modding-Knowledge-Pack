@@ -314,12 +314,15 @@ Geometry LOD has mass (`new Point()` defaults to `mass=None`; `add_proxy` points
 
 ### 3.5 `validate()` findings that are EXPECTED for a vehicle (don't chase)
 
-- **`ERR_COMPONENT_NAMING` (lowercase `component01`)** is a **false-positive for vehicles** — vanilla
-  CivilianSedan itself triggers it (it uses lowercase). Match vanilla: lowercase. (`component01` collided
+- **`ERR_COMPONENT_NAMING` (lowercase `component01`)** is a **false-positive for vehicles** from py3d up
+  to 1.8.0, the pinned wheel — vanilla CivilianSedan itself triggers it (it uses lowercase); py3d 1.9.0
+  does not check the case. Match vanilla: lowercase. (`component01` collided
   like `Component01` on an `Inventory_Base` item too: dayz-p3d-audit killer #2, measured in game 2026-10-02. The same code
-  for a Geometry LOD with no component at all is not expected: on an item and a building that collision
-  was gone; vehicles not measured.) *(Corrected 2026-10-02: the parenthesis read
-  "Uppercase `Component01` is the Inventory_Base rule.")*
+  for a collision LOD with faces and no component at all is not expected: on an item and a building that
+  collision was gone; vehicles not measured. From 1.9.0 it also checks the View and Fire LODs, and a
+  Geometry LOD without faces, such as the one in a debinarized vanilla `sedanwheel_destroyed`, no
+  longer raises it.)
+  *(Corrected 2026-10-02: the parenthesis read "Uppercase `Component01` is the Inventory_Base rule.")*
 - **`ERR_AXIS_SELECTION_MISSING`** fires for every Memory `*_axis` whose homonymous selection is absent from
   the **visual** LOD. For wheels this is REAL — assign each wheel proxy face ALSO to visual `wheel_X_Y`
   (rotation), `wheel_X_Y_damper` (suspension translation) and front `wheel_X_1_steering` selections so
