@@ -2840,7 +2840,7 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02 promotion of da73457 to the installed skill trees and the vault snapshots, approved by the owner after reviewing the plan: promote --check WARN with only PROMOTION-DRIFT, then promote --apply PASS. The receipt is the bytes packctl wrote, sealed by the COMMIT event of its journal; adjudications.json carries the advance packctl made at COMMIT for every adjudicated pair whose before digest it promoted over (78 pairs, 39 skills). Every destination re-measured after apply with packctl tree_digest equals its plan after_digest. Registered by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-02 promotion of da73457 to the installed skill trees and the vault snapshots, approved by the owner after reviewing the plan: promote --check WARN with only PROMOTION-DRIFT, then promote --apply PASS. The receipt is the bytes packctl wrote, sealed by the COMMIT event of its journal; adjudications.json carries the advance packctl made at COMMIT for every adjudicated pair whose before digest it promoted over (74 pairs, 37 skills; the 8 other matching pairs were no-op operations). Every destination re-measured after apply with packctl tree_digest equals its plan after_digest. Registered by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "82db64755310729a9f70a53725dc90be8b87c152b5a7defc89fe4a940c6e2847",
           "source_id": "pack-r21-authored",
@@ -27729,7 +27729,7 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "kp-update 2026-10-02 promotion of da73457 to the installed skill trees and the vault snapshots, approved by the owner after reviewing the plan: promote --check WARN with only PROMOTION-DRIFT, then promote --apply PASS. The receipt is the bytes packctl wrote, sealed by the COMMIT event of its journal; adjudications.json carries the advance packctl made at COMMIT for every adjudicated pair whose before digest it promoted over (78 pairs, 39 skills). Every destination re-measured after apply with packctl tree_digest equals its plan after_digest. Registered by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-02 promotion of da73457 to the installed skill trees and the vault snapshots, approved by the owner after reviewing the plan: promote --check WARN with only PROMOTION-DRIFT, then promote --apply PASS. The receipt is the bytes packctl wrote, sealed by the COMMIT event of its journal; adjudications.json carries the advance packctl made at COMMIT for every adjudicated pair whose before digest it promoted over (74 pairs, 37 skills; the 8 other matching pairs were no-op operations). Every destination re-measured after apply with packctl tree_digest equals its plan after_digest. Registered by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "773163570834a12270445358169290661261bf33c1469565359046637260983c",
           "source_id": "pack-r21-authored",
