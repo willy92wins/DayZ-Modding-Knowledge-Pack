@@ -56,7 +56,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   1.29.163709, LFInfectedBig rebuilt three ways from one dump with an "F" on the chest). The Rule 12
   build (`py3d.blender_to_dayz()`) is solid, reads the F correctly and is lit like a vanilla zombie.
   The state `check_dayz_winding.py` passes, MLOD winding with the normals stored OUTWARD, is solid
-  but lit inverted, and so is the shipped LFInfectedBig, which also reads the F mirrored. In the
+  but lit inverted (base shading, untextured client), and so is the shipped LFInfectedBig, which
+  also reads the F mirrored. In the
   binarized files only the Rule 12 build keeps vanilla's relation between normals and winding. The
   docs now say to store normals inward on characters too, gate with dayz-p3d-audit's absolute check
   (it passes the Rule 12 build and fails both inverted ones), and read a PASS of

@@ -205,8 +205,8 @@ is `vertex_bone_ref` pairs → `sub_skeletons_to_skeleton` → skeleton bone ind
   going invisible from one angle. Swap alone leaves the reflection, so that culling can persist; un-reflect
   fixes both at once. On a `(−x,z,y)` export with reversed faces, un-reflecting gives the Rule 12 positions
   and face order: `(x,z,y)` with the faces back in Blender order (Rule 12 also negates the normals). When the
-  Blender source exists, re-export it that way instead of patching the p3d. Not yet run in game on a
-  character: chiral check in `references/character-rigging.md §6`.
+  Blender source exists, re-export it that way instead of patching the p3d. The Rule 12 export this leads
+  to was checked in game on a character (2026-10-02, `references/character-rigging.md §6`); the patch was not.
 
 ## UV + NORMAL/AO BAKE (read `references/character-uv-bake.md`)
 
@@ -302,7 +302,7 @@ this wall. Warn the user whenever a plan ships custom character anims. (`dayz-an
 | **Whole mesh renders flat / paper / 2D in-game** | a conform/warp collapsed depth (Y) — e.g. TPS to near-coplanar bone-midpoint targets | conform in X/Z only, preserve Y; ALWAYS check the REST SIDE render, not just front |
 | **In-game diffuse = "camo" / black-grey facet noise, persists without `_nohq`** | corrupt high→low bake (mis-aligned high/low) — the noise is in the `_co` DIFFUSE, not the normal map | open and LOOK at the baked `_co` PNG; `references/character-uv-bake.md` pre-conform proxy |
 | **Green/grey/brown "camo" patches that SURVIVE replacing the `_co` entirely (uniform `_co` too) AND disabling `_nohq`** | an ENVIRONMENT/terrain texture in an rvmat stage with `uvSource="tex"` projects that texture onto the body UV. [LFInfectedBig S10] `dz\data\data\env_land_co.paa` (a landscape photo = DayZ env map) was in Stage7 with `uvSource="tex"` → painted the landscape over the mesh; survived 6 `_co` iterations because the fix is the rvmat, not the diffuse | **Audit EVERY rvmat stage** — an env/macro/detail map must be `uvSource="none"` (sampled by reflection), never `"tex"`. `ImageToPAA in.paa out.png` to LOOK at each stage's texture. The `_co`+normal Blender preview HIDES rvmat stages = FALSE GATE. First prove the mesh is clean with the CLAY-TEST (render `.p3d` geometry, NO textures) |
-| **Solid, but dark on the sunlit side and lit in the shade (inverted lighting)** | shading normals stored OUTWARD: the det +1 recipe (LFInfectedBig as shipped) or a Rule 12 export with its normals re-negated; measured in game 2026-10-02 | store the normals inward: Rule 12 / `py3d.blender_to_dayz()` negates them; gate with dayz-p3d-audit's absolute check (agreement ≈ 100 %, negative signed volume) |
+| **Solid, but dark on the sunlit side and lit in the shade (inverted lighting)** | first suspect: shading normals stored OUTWARD, as in the det +1 recipe (LFInfectedBig as shipped) or a Rule 12 export with its normals re-negated (base shading measured in game 2026-10-02 on an untextured client); rule out the material and `_nohq` too | check the stored sign with dayz-p3d-audit's absolute check (agreement near 0 % = normals against the winding); if they point outward, store them inward: Rule 12 / `py3d.blender_to_dayz()` negates them |
 | **Textures on the INTERIOR / model see-through from outside (inside-out)** | the faces are not in the MLOD inward order: a det +1 map without face reversal (LFInfectedBig S6), or a det −1 map with one. Blender/Three.js previews are double-sided and HIDE this | export with Rule 12: `(x,z,y)`, faces in Blender order, normals negated. Reversing every face is right only under a det +1 map, and that map mirrors the mesh. See `references/character-rigging.md §6` |
 
 ## OFFLINE GATE — run before EVERY PBO (catches the inside-out bug without an in-game cycle)
@@ -318,7 +318,8 @@ updated, gate an export with inward normals with dayz-p3d-audit "Absolute windin
 ≈ 100 % and a negative signed volume by winding. On the probe that check passes both solid variants and
 fails the inside-out one. Measured on a skinned character too (LFInfectedBig, in game 2026-10-02, chiral
 check in `references/character-rigging.md`): the Rule 12 build the script fails is solid and lit like
-vanilla; the builds it passes, normals stored outward, are lit inverted, and the shipped one is also
+vanilla; the builds it passes, normals stored outward, are lit inverted (base shading, untextured client),
+and the shipped one is also
 mirrored. Store the normals inward; the absolute check passes the Rule 12 build and fails both others. (claim: CLAIM-CHAR-NORMALS-INWARD-SKILL)
 
 ```

@@ -199,7 +199,8 @@ normals (`mesh.corner_normals[loop].vector`, transformed by `matrix_world.to_3x3
   that renders solid and reads correctly in game (`cross.normal_positive=1.00`, `normals_outward=0.00`).
   Its fix hints ("reverse every face", "orient normals outward") would turn that model inside-out.
   [✓ in-game 2026-10-02, LFInfectedBig, chiral check below] The state this gate passes, winding in the MLOD
-  order with the normals stored OUTWARD, renders solid but lit inverted (dark on the sunlit side), and so
+  order with the normals stored OUTWARD, renders solid but lit inverted (dark on the sunlit side; base
+  shading on an untextured client), and so
   does the shipped LFInfectedBig; the Rule 12 build it fails renders solid and lit like a vanilla zombie. (claim: CLAIM-CHAR-NORMALS-INWARD-INGAME)
   Binarize gives all of them vanilla's winding; only the inward-normal build keeps vanilla's relation
   between stored normals and winding in the ODOL (agreement 0.2 %, vanilla zombies 0.3-0.4 %, the
@@ -253,8 +254,8 @@ shipped.
    and one attack; the "F" reads correctly; the off-centre chest hole sits on the anatomical side it has in
    the rig frame in Blender (the character's left is screen-right when it faces you). Expected on the
    control: "F" mirrored, hole on the other side.
-4. Lighting: the lit side of the body is bright. The normal sign comes from Rule 12, measured on static
-   models only.
+4. Lighting: the lit side of the body is bright. (At design time the normal sign rested on Rule 12,
+   measured on static models only; the result below covers a character.)
 
 Result. LFInfectedBig was rebuilt three ways from one dump, each with the "F": Rule 12 via
 `py3d.blender_to_dayz()`; the same with the normals re-negated OUTWARD; and the shipped recipe as control,
@@ -266,7 +267,8 @@ vanilla `ZmbM_SoldierNormal` and the player, sun from the east.
 - Shipped recipe: solid, the "F" MIRRORED, lit inverted.
 - An AI-enabled Rule 12 build walked about 18 m with its limbs in place; the attack was not seen (it never
   engaged the player). The chest hole is centred (x ≈ 0), so step 3's hole criterion cannot show chirality
-  on this model. The client ran without textures, so colour was not judged.
+  on this model. The client ran without textures: this covers the base shading of these builds, not
+  colour, `_nohq` normal maps or tangents.
 
 ## Failure → cause quick map
 
