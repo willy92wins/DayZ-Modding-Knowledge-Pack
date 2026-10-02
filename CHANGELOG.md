@@ -5,6 +5,34 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `dayz-mcp-verify` static-object playbook and tool table: two probes from the killer #2 run
+  (2026-10-02, DayZDiag 1.29.163709). `scene_raycast(method="bullet")` queries the server's physics
+  world on a fixed layer mask (`DayZPhysics.RayCastBullet`), next to the LOD rays; a hit counts only
+  on the target at its face, and a miss alone is not proof. A `player_move` walk into the object
+  reads player collision: blocked is `arrived:false` with the player stopped just before the face
+  (about 0.36 m on that run's 2 m boxes), free is `arrived:true`, anything else inconclusive, with a
+  same-distance open-ground walk as the free reference; a walk-through alone is not read as missing
+  collision geometry (a low vanilla `WoodenCrate` took every ray and did not stop the player). For
+  test fixtures, `rotation=64` spawned a box with its faces on the world axes where the default
+  `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the yaw with two parallel rays and the
+  direction of the returned normal before trusting face coordinates.
+
+### Changed
+
+- `dayz-p3d-audit` "Absolute winding check", rule 6: the kit box's missing collision is measured
+  now, not a hypothesis. In a paired run (2026-10-02, DayZDiag 1.29.163709, the kit's own config on
+  three classes, the MLODs packed unbinarized) the shipped `lf_kit_box.p3d` took 0 of 27
+  `scene_raycast` rays in `geom`, `view` and `fire` again, and the same bytes with only the
+  collision LODs' faces reversed took 27 of 27, with the collision normals negated or kept, at the
+  same coordinates; a vanilla `WoodenCrate` took 27 of 27. Binarize writes the two fixed variants
+  to the same ODOL. A physics-world ray (`DayZPhysics.RayCastBullet`) hits the shipped kit where it
+  hits the fixed ones: the outward winding breaks the `RaycastRV`/`RaycastRVProxy` consumers (the
+  action cursor, hologram placement), not the physics body. The replaced sentence is quoted in a
+  dated note. The first run's cursor-like ray is corrected too: the dayz-mcp bridge replaces a
+  requested radius of 0 with its 0.05 m default, so it was a 0.05 m sphere, not radius 0.
+
 ### Fixed
 
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
@@ -122,20 +150,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   winds every face of each collision box outward and trades the finding for
   `ERR_WINDING_VS_NORMALS`, and `validate()` goes quiet only once those LODs' normals are negated
   too, with every LOD wound outward.
-
-### Changed
-
-- `dayz-p3d-audit` "Absolute winding check", rule 6: the kit box's missing collision is measured
-  now, not a hypothesis. In a paired run (2026-10-02, DayZDiag 1.29.163709, the kit's own config on
-  three classes, the MLODs packed unbinarized) the shipped `lf_kit_box.p3d` took 0 of 27
-  `scene_raycast` rays in `geom`, `view` and `fire` again, and the same bytes with only the
-  collision LODs' faces reversed took 27 of 27, with the collision normals negated or kept, at the
-  same coordinates; a vanilla `WoodenCrate` took 27 of 27. Binarize writes the two fixed variants
-  to the same ODOL. A physics-world ray (`DayZPhysics.RayCastBullet`) hits the shipped kit where it
-  hits the fixed ones: the outward winding breaks the `RaycastRV`/`RaycastRVProxy` consumers (the
-  action cursor, hologram placement), not the physics body. The replaced sentence is quoted in a
-  dated note. The first run's cursor-like ray is corrected too: the dayz-mcp bridge replaces a
-  requested radius of 0 with its 0.05 m default, so it was a 0.05 m sphere, not radius 0.
+- `dayz-p3d-audit` killer #1 (`references/killers-detail.md`): the note on generating or editing a
+  collision LOD quoted the text of py3d's relative-check message ("winding is INVERTED relative to
+  the Visual LOD"), which can change with py3d; it now names the finding by its code,
+  `ERR_WINDING_INVERTED`, as the automated-check note above it already does.
 
 ## [1.5.0] - 2026-10-02
 
