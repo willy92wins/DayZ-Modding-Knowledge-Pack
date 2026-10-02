@@ -80,11 +80,12 @@ python -m py3d diff     a.p3d b.p3d  # structural comparison
   they are `7e15` and `6e15`. Getting this wrong means bullets pass through
   your model.
 - `P3D.validate()` reports a Geometry, View or Fire LOD with faces but no
-  `ComponentNN` selection (in game such a LOD collides with nothing, and
-  nothing logs it), `#Mass#` outside the Geometry LOD, non-watertight
-  collision, degenerate faces, memory-point structure, winding problems, and
-  more. The case of a component's name is not checked: `component01` collided
-  in game exactly like `Component01`.
+  `ComponentNN` selection (in game a model with no component in any collision
+  LOD collides with nothing, and nothing logs it; one LOD missing it alone was
+  not measured), `#Mass#` outside the Geometry LOD, non-watertight collision,
+  degenerate faces, memory-point structure, winding problems, and more. The
+  case of a component's name is not checked: `component01` collided in game
+  exactly like `Component01`.
 
 **Editing helpers**
 - `bbox`, `triangulate`, `set_selection`, `set_total_mass`, `set_memory_point`,
@@ -257,7 +258,7 @@ quad `[0,1,2,3]` into `[0,2,1,3]`, a crossed face.
 
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 290 tests pass -- 283 of them
+The library is used in a real modding pipeline, and 308 tests pass -- 301 of them
 on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
 upstream (see [Tests](#tests)). It has also been through a deliberately
 adversarial audit, and **not every problem it found is fixed yet**. Before

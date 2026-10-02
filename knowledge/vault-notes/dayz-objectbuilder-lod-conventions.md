@@ -43,6 +43,10 @@ Classification tolerance: `|res - canon| <= 0.05*canon` (`LOD_RELATIVE_TOLERANCE
 Named `component01`, `component02`… (ODOL stores them lowercase; Object Builder
 expects `ComponentNN`, case-sensitive when authoring). Present in Geometry, ViewGeometry, and
 FireGeometry. FireGeo can have dozens (30–570 depending on model complexity).
+*(Added 2026-10-02: the Object Builder case-sensitivity in the first sentence was not measured
+here, unlike the lowercase ODOL names. In game an MLOD whose components were named `component01`
+collided exactly like one with `Component01`, packed unbinarized and binarized (dayz-p3d-audit
+killer #2), so it is a claim about the authoring tool at most, not an engine rule.)*
 
 ## Doors [EXACT] — corrects generic "doorX" from wiki
 

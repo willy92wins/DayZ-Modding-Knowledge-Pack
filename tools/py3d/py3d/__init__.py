@@ -1212,8 +1212,26 @@ def _check_winding_vs_visual(lod, lod_index, visual_lod, kind_label):
 
 #: A collision component's selection: "Component" and a number, as Object
 #: Builder's Find Components names them. Matched in any case: in game the
-#: case made no difference (see _check_component_naming).
-_COMPONENT_NAME_RE = re.compile(r"^component\d+$", re.IGNORECASE)
+#: case made no difference (see _check_component_naming). Use fullmatch():
+#: with match() and a "$" a trailing newline would pass.
+_COMPONENT_NAME_RE = re.compile(r"component\d+", re.IGNORECASE)
+
+
+def _proxy_triangle_faces(lod):
+    """ids of the faces that are MLOD proxy triangles: a selection named
+    'proxy:<path>.<index>' that holds exactly 3 points and 1 triangular
+    face. A selection under a proxy name with any other shape is not a
+    proxy, and its faces stay collision geometry."""
+    out = set()
+    for name, sel in lod.selections.items():
+        if not PROXY_NAME_RE.match(name):
+            continue
+        if len(sel.points) != 3 or len(sel.faces) != 1:
+            continue
+        face = next(iter(sel.faces))
+        if len(face.vertices) == 3:
+            out.add(id(face))
+    return out
 
 
 def _check_component_naming(lod, lod_index, kind_label):
@@ -1234,21 +1252,20 @@ def _check_component_naming(lod, lod_index, kind_label):
     of audit_p3d.check_component_naming, ran on the Geometry LOD alone
     and raised this ERROR on 'component01': a false positive.
 
-    WARN_COMPONENT_NAMING: no "component*" selection is "Component" and a
-    number (e.g. only 'Component_01'), a spelling never measured.
+    The ERROR needs no selection whose name starts with "component" (any
+    case). WARN_COMPONENT_NAMING: there are such selections, but none is
+    "Component" and a number (e.g. only 'Component_01' or
+    'components_panel'), a spelling never measured.
 
-    Faces in proxy selections do not count, so a LOD with no faces (a
-    Geometry LOD that only carries mass) or only proxy triangles gets no
-    finding: it has no collision geometry of its own.
+    Proxy triangles (_proxy_triangle_faces) do not count, so a LOD with no
+    faces (a Geometry LOD that only carries mass) or only proxy triangles
+    gets no finding: it has no collision geometry of its own.
 
     A component selection counts here even if it holds none of the faces;
     whether every face belongs to a component is _check_component_coverage's
     question, and that one reads 'Component01' alone, on the Geometry LOD.
     """
-    proxy_faces = set()
-    for name, sel in lod.selections.items():
-        if PROXY_NAME_RE.match(name):
-            proxy_faces.update(id(fa) for fa in sel.faces)
+    proxy_faces = _proxy_triangle_faces(lod)
     own = sum(1 for fa in lod.faces if id(fa) not in proxy_faces)
     if own == 0:
         return []
@@ -1256,14 +1273,15 @@ def _check_component_naming(lod, lod_index, kind_label):
     if not found:
         return [Finding(
             "ERR_COMPONENT_NAMING", "ERROR", lod_index,
-            "%s LOD: %d face(s) and no ComponentNN selection - its "
-            "collision is lost silently. In game a box with no component "
-            "in any collision LOD took no ray and let the player walk "
-            "through, and no log line said so. Select each closed, convex "
-            "part as its own Component01, Component02, ... (the case does "
-            "not matter: component01 collides like Component01)."
+            "%s LOD: %d face(s) and no ComponentNN selection. In game a "
+            "box with no component in any of its collision LODs lost its "
+            "collision silently: no ray hit it, the player walked through, "
+            "and no log line said so (one LOD without a component while "
+            "the others have one was not measured). Select each closed, "
+            "convex part as its own Component01, Component02, ... (the "
+            "case does not matter: component01 collides like Component01)."
             % (kind_label, own))]
-    if not any(_COMPONENT_NAME_RE.match(s) for s in found):
+    if not any(_COMPONENT_NAME_RE.fullmatch(s) for s in found):
         return [Finding(
             "WARN_COMPONENT_NAMING", "WARN", lod_index,
             "%s LOD: component selection %r is not 'Component' and a "
@@ -3012,8 +3030,9 @@ class P3D:
         Codes from 1.3.0: ERR_MASS_ONLY_GEOMETRY (a #Mass# tag in a
         non-Geometry LOD, which makes binarize bake CoM=(0,0,0)).
         Changed in 1.9.0: ERR_COMPONENT_NAMING flags a Geometry, View or
-        Fire LOD with faces and no component selection (it ran on the
-        Geometry LOD alone) and no longer flags a lowercase 'component01';
+        Fire LOD with faces outside its proxy triangles and no selection
+        whose name starts with 'component' (it ran on the Geometry LOD
+        alone) and no longer flags a lowercase 'component01';
         WARN_COMPONENT_NAMING only flags a LOD whose component names are
         none of them 'Component' and a number, the case ignored.
 

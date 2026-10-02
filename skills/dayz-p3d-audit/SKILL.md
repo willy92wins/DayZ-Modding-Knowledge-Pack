@@ -135,10 +135,11 @@ each killer (root cause, detection snippet, fix, caveats) →
    `Component01` (rays, physics ray, walk; unbinarized and binarized, and binarize writes both as
    `component01`), so do not rename it to repair collision; other spellings were not measured
    (`references/killers-detail.md` §2). Fix: select each closed, convex part as its own
-   `ComponentNN`, the components together covering the LOD (killer #8). py3d 1.9.0
-   `ERR_COMPONENT_NAMING` flags exactly this, on the Geometry, View and Fire LODs, whatever the
-   name's case; up to 1.8.0 (the pinned wheel) it checked the Geometry LOD alone and was a false
-   positive on `component01`. *(Corrected 2026-10-02: titled "Component Selection Case
+   `ComponentNN`, the components together covering the LOD (killer #8). py3d 1.9.0 raises
+   `ERR_COMPONENT_NAMING` on each Geometry, View or Fire LOD with faces and no selection named
+   `component…` in any case, and only `WARN_COMPONENT_NAMING` when the names are all irregular
+   (`Component_01`); up to 1.8.0 (the pinned wheel) it checked the Geometry LOD alone and was a
+   false positive on `component01`. *(Corrected 2026-10-02: titled "Component Selection Case
    Sensitivity", this entry read "Geometry component MUST be `Component01` (uppercase C); any
    variation silently loses ALL collision.")*
 3. **Missing `autocenter=0` LOD Property** (CRITICAL for Inventory_Base) — items with

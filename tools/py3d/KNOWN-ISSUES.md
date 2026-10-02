@@ -251,8 +251,8 @@ noise reads as signal.
   `component01`; a box with no component in its Geometry, View and Fire LODs
   took no ray in any of them, let the player through, and no log line said
   so. From 1.9.0 the error flags any of those three LODs that has faces
-  outside its proxy selections and no component selection, and ignores the
-  case of the name. A LOD missing a component while the others have one was
+  outside its proxy triangles and no selection whose name starts with
+  `component`, and ignores the case of the name. A LOD missing a component while the others have one was
   not measured.
 - **The documented Blender → DayZ path mirrored the model.** Up to 1.7.0,
   `BLENDER_TO_DAYZ` was the det=+1 rotation `(x,y,z) -> (x,z,-y)` and

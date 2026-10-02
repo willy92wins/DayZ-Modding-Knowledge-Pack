@@ -255,9 +255,9 @@ def build_multilod_p3d(m):
 def build_multilod_v2_p3d(m):
     """A complete, CLEAN model for validate() and the integration tests:
     Visual (icosphere plus a proxy), Geometry (Component01, autocenter,
-    class, mass 200), ViewGeo and FireGeo (Component01 each: a collision
-    LOD without a component collides with nothing) and Memory (pos center,
-    box_placing_min/max, and a two-point dolly axis)."""
+    class, mass 200), ViewGeo and FireGeo (Component01 each: validate()
+    asks every collision LOD with faces for a component) and Memory (pos
+    center, box_placing_min/max, and a two-point dolly axis)."""
     p3d = m.P3D()
     vis = build_icosphere_lod(m, resolution=1.0)
     add_proxy_triangle(m, vis, "proxy:\\dz\\data\\proxies\\flag.001")

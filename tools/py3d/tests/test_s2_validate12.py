@@ -64,6 +64,12 @@ def mut_component_spelling(m, p3d):
     geo.selections["Component_01"] = geo.selections.pop("Component01")
     return ["WARN_COMPONENT_NAMING"]
 
+def mut_component_newline(m, p3d):
+    # "$" in re.match() accepts a trailing newline; fullmatch() does not
+    geo = p3d.get_lod("geometry")
+    geo.selections["Component01\n"] = geo.selections.pop("Component01")
+    return ["WARN_COMPONENT_NAMING"]
+
 def mut_component_coverage(m, p3d):
     geo = p3d.get_lod("geometry")
     sel = geo.selections["Component01"]
@@ -161,6 +167,7 @@ CASES = [
     ("component_none_view", mut_component_none_view),
     ("component_none_fire", mut_component_none_fire),
     ("component_spelling", mut_component_spelling),
+    ("component_newline", mut_component_newline),
     ("component_coverage", mut_component_coverage),
     ("autocenter_missing", mut_autocenter_missing),
     ("not_watertight", mut_not_watertight),
@@ -213,38 +220,72 @@ def test_val_component_missing_names_the_lod(fork, kind):
     msg = found[0].msg
     assert msg.startswith("%s LOD: 6 face(s) and no ComponentNN selection"
                           % kind), msg
-    assert "lost silently" in msg
+    # the measured case (none in any collision LOD) is said as measured,
+    # one LOD missing it alone as not measured
+    assert "in any of its collision LODs lost its collision silently" in msg
+    assert "while the others have one was not measured" in msg
     assert "uppercase" not in msg.lower()
 
 
-def test_val_component_not_required_without_own_faces(fork):
-    """A Geometry LOD that only carries mass (no faces) and a View LOD
-    whose only face is a proxy triangle have no collision geometry of
-    their own: no component finding. The control: one face outside the
-    proxy makes the View LOD raise it."""
+def test_val_component_mixed_names(fork):
+    """One "Component" and a number is enough: next to component01, an
+    irregular Component_01 raises nothing (the WARN is for a LOD whose
+    component-like names are none of them "Component" and a number)."""
+    p3d = build_multilod_v2_p3d(fork)
+    for kind in COLLISION_KINDS:
+        lod = p3d.get_lod(kind)
+        lod.selections["component01"] = lod.selections.pop("Component01")
+        lod.set_selection("Component_01", point_idx=[0])
+    assert p3d.validate() == []
+
+
+COMPONENT_CODES = {"ERR_COMPONENT_NAMING", "WARN_COMPONENT_NAMING"}
+RESOLUTION = {"geometry": 1.0e13, "view_geometry": 6.0e15,
+              "fire_geometry": 7.0e15}
+
+
+@pytest.mark.parametrize("kind", COLLISION_KINDS)
+def test_val_component_not_required_without_own_faces(fork, kind):
+    """A collision LOD with no faces (a Geometry LOD that only carries
+    mass, the shape a worn item's has) or whose only face is a proxy
+    triangle has no collision geometry of its own: no component finding,
+    on each of the three kinds. The control: one face outside the proxy
+    makes the same LOD raise the ERROR."""
     m = fork
-    geo = m.LOD()
-    geo.resolution = 1.0e13
-    for xyz in ((0.0, 0.0, 0.0), (0.0, 1.0, 0.0)):
-        pt = m.Point()
-        pt.coords = xyz
+    bare = m.LOD()
+    bare.resolution = RESOLUTION[kind]
+    pt = m.Point()
+    pt.coords = (0.0, 0.0, 0.0)
+    if kind == "geometry":
         pt.mass = 10.0
-        geo.points.append(pt)
-    geo.properties["autocenter"] = "0"
-    view = m.LOD()
-    view.resolution = 6.0e15
-    add_proxy_triangle(m, view, "proxy:\\dz\\data\\proxies\\flag.001")
+    bare.points.append(pt)
+    proxied = m.LOD()
+    proxied.resolution = RESOLUTION[kind]
+    add_proxy_triangle(m, proxied, "proxy:\\dz\\data\\proxies\\flag.001")
     p3d = m.P3D()
-    p3d.lods += [geo, view]
-    component_codes = {"ERR_COMPONENT_NAMING", "WARN_COMPONENT_NAMING"}
-    assert not component_codes & set(codes(p3d.validate()))
+    p3d.lods += [bare, proxied]
+    assert not COMPONENT_CODES & set(codes(p3d.validate()))
     # the same builder, under a selection that is not a proxy: a face of
     # the LOD's own
-    add_proxy_triangle(m, view, "glass", origin=(1.0, 1.0, 1.0))
-    found = [f for f in p3d.validate() if f.code in component_codes]
+    add_proxy_triangle(m, proxied, "glass", origin=(1.0, 1.0, 1.0))
+    found = [f for f in p3d.validate() if f.code in COMPONENT_CODES]
     assert [(f.code, f.lod) for f in found] == [("ERR_COMPONENT_NAMING", 1)]
     assert found[0].msg.startswith(
-        "view_geometry LOD: 1 face(s) and no ComponentNN selection")
+        "%s LOD: 1 face(s) and no ComponentNN selection" % kind)
+
+
+@pytest.mark.parametrize("kind", COLLISION_KINDS)
+def test_val_component_proxy_name_is_not_enough(fork, kind):
+    """Faces are proxy triangles only when their 'proxy:...' selection has
+    a proxy's shape (3 points, 1 triangle). A cube whose 8 points and 6
+    quads sit under a proxy name is collision geometry with no component."""
+    p3d = build_multilod_v2_p3d(fork)
+    lod = p3d.get_lod(kind)
+    lod.selections["proxy:\\dz\\data\\proxies\\flag.001"] = \
+        lod.selections.pop("Component01")
+    index = next(i for i, l in enumerate(p3d.lods) if l is lod)
+    found = [f for f in p3d.validate() if f.code in COMPONENT_CODES]
+    assert [(f.code, f.lod) for f in found] == [("ERR_COMPONENT_NAMING", index)]
 
 
 @pytest.mark.parametrize("name,mutate", CASES, ids=[c[0] for c in CASES])

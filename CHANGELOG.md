@@ -126,8 +126,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   lowercase `component01` ("Engine requires 'Component01' (uppercase C); collision silently
   fails"), which in game collides exactly like `Component01` (the killer #2 entry above); vanilla vehicles
   name their components that way. It now flags a Geometry, View or Fire LOD that has faces outside
-  its proxy selections and no component selection, says its collision is lost silently, and does
-  not check the case of the name. `WARN_COMPONENT_NAMING` now only flags a LOD whose component
+  its proxy triangles and no selection whose name starts with `component`, in any case; its message
+  says that a model with no component in any collision LOD lost its collision silently in game, and
+  that one LOD missing it alone was not measured. `WARN_COMPONENT_NAMING` now only flags a LOD whose component
   names are none of them `Component` and a number (e.g. only `Component_01`, a spelling never
   measured); `COMPONENT01` and `Component02` raise nothing. A collision LOD without faces of its
   own (a mass-only Geometry LOD, or one holding only proxy triangles) raises nothing. A LOD
