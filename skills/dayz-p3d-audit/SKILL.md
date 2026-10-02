@@ -167,7 +167,8 @@ each killer (root cause, detection snippet, fix, caveats) →
    in part. py3d 1.10.0 reads the union of the `ComponentNN` selections, whatever the case, on the
    Geometry, View and Fire LODs, proxy triangles and points that no face uses left out: a closed
    part with no face and no point in any component is `ERR_COMPONENT_COVERAGE` (the measured
-   case), every other face or point in none stays `WARN_COMPONENT_COVERAGE` (not measured). The
+   case, read per LOD; the measured parts were left out of Geometry and Fire or of all three),
+   every other face or point in none stays `WARN_COMPONENT_COVERAGE` (not measured). The
    pinned 1.9.0 wheel raises all of them as that WARN, whose message calls the measured case not
    measured; up to 1.8.0 (pinned until 2026-10-02) it counted `Component01` alone, on the Geometry
    LOD, and fired on a healthy multi-component LOD (`references/killers-detail.md` §8).

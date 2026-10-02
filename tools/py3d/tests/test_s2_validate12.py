@@ -1,7 +1,10 @@
 """validate() 1.2.0: one negative per finding code, and parity with
 tools/audit_p3d.py."""
 
+import io
+import math
 import os
+import struct
 import subprocess
 import sys
 
@@ -712,12 +715,14 @@ def test_coverage_silent_without_components(fork):
 # only in part, an open piece and a flat sheet were not measured and stay
 # the WARN.
 
-MEASURED = {
-    "geometry": ("no Geometry ray and no physics ray hit it, and the player "
-                 "walked through it"),
-    "view_geometry": "no View ray hit it",
-    "fire_geometry": "no Fire ray hit it (weapon fire was not measured)",
-}
+MEASURED = (
+    "In game such a part collided with nothing: left out of every component "
+    "of the Geometry, View and Fire LODs beside a covered part (a box), or of "
+    "the Geometry and Fire LODs (a lever, a component in View only, hit in "
+    "View only), it took no ray in the LODs it was left out of and no physics "
+    "ray, the player walked through it, and no log line said so. A part left "
+    "out of one LOD alone, or beside component selections that hold nothing, "
+    "was not measured, nor was weapon fire.")
 LOD_INDEX = {"geometry": 1, "view_geometry": 2, "fire_geometry": 3}
 SMALL = (0.25, 0.25, 0.25)
 
@@ -754,8 +759,9 @@ def add_mesh(m, lod, coords, polys, mass=None):
 @pytest.mark.parametrize("kind", COLLISION_KINDS)
 def test_coverage_err_closed_part_beside_covered(fork, kind):
     """A closed box in no component beside the covered cube: the ERROR on
-    that LOD with what was measured for its kind, and no WARN. Up to 1.9.0
-    the WARN said this case was not measured."""
+    that LOD, and no WARN. Its message says which omissions were measured
+    (all three LODs, or Geometry and Fire) and that one LOD alone was not.
+    Up to 1.9.0 the WARN said this case was not measured."""
     p3d = build_multilod_v2_p3d(fork)
     add_box(fork, p3d.get_lod(kind), CROSS, mass=_mass(kind))
     findings = p3d.validate()
@@ -765,17 +771,14 @@ def test_coverage_err_closed_part_beside_covered(fork, kind):
     assert f.msg.startswith(
         "%s LOD: 6 of its 12 face(s) (proxy triangles not counted) make up 1 "
         "closed part(s) with no face and no point in any ComponentNN "
-        "selection. In game such a part collided with nothing in its LOD, "
-        "also beside covered parts: %s; no log line said so. Select each "
-        "closed, convex part as its own ComponentNN" % (kind, MEASURED[kind])
-    ), f.msg
+        "selection. %s Select each closed, convex part as its own "
+        "ComponentNN" % (kind, MEASURED)), f.msg
     assert "expect them" not in f.msg
 
 
 def test_coverage_err_after_write_and_read(fork):
     """The same model written and read back (float32 corners, component
     membership from the file): the same ERROR."""
-    import io
     p3d = build_multilod_v2_p3d(fork)
     mut_coverage_part_outside(fork, p3d)
     buf = io.BytesIO()
@@ -871,9 +874,8 @@ def test_coverage_warn_face_left_out_of_a_part(fork):
         "geometry LOD: 1 of its 12 face(s) (proxy triangles not counted) are "
         "in no ComponentNN selection. Each lies in a part partly in a "
         "component or in a piece that is not a closed solid; neither was "
-        "measured in game (a closed part with no face and no point in any "
-        "component collided with nothing in its LOD: "
-        "ERR_COMPONENT_COVERAGE)."), f.msg
+        "measured in game (a closed part left out whole, "
+        "ERR_COMPONENT_COVERAGE, collided with nothing)."), f.msg
     assert "expect them" not in f.msg
 
 
@@ -892,8 +894,7 @@ def test_coverage_warn_points_in_component(fork):
 
 def test_coverage_warn_faces_in_component_points_not(fork):
     """A box whose faces but one are in Component02 and whose points are in
-    none: one covered face is enough to make it a part partly in a
-    component, the WARN (1 face, 8 corners)."""
+    none: a part partly in a component, the WARN (1 face, 8 corners)."""
     p3d = build_multilod_v2_p3d(fork)
     geo = p3d.get_lod("geometry")
     _, faces = add_box(fork, geo, CROSS, mass=25.0)
@@ -1039,3 +1040,212 @@ def test_coverage_warn_part_touching_a_covered_one(fork):
     assert coverage_err(findings) == []
     (f,) = coverage(findings)
     assert f.msg.startswith("geometry LOD: 6 of its 12 face(s)"), f.msg
+
+
+# ---- review round 1 (1.10.0): a flat sheet anywhere, either winding, a
+# part that is not convex, float32 positions, the thickness boundary.
+
+def _rotation(axis, angle):
+    """Rotation matrix (rows) about *axis* by *angle* radians."""
+    n = math.sqrt(sum(a * a for a in axis))
+    x, y, z = (a / n for a in axis)
+    c, s = math.cos(angle), math.sin(angle)
+    t = 1.0 - c
+    return ((t * x * x + c, t * x * y - s * z, t * x * z + s * y),
+            (t * x * y + s * z, t * y * y + c, t * y * z - s * x),
+            (t * x * z - s * y, t * y * z + s * x, t * z * z + c))
+
+
+TURNED = _rotation((1.0, 2.0, 3.0), 0.7)
+UNTURNED = ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))
+
+
+def _place(local, centre, rot):
+    return tuple(centre[i] + sum(rot[i][j] * local[j] for j in range(3))
+                 for i in range(3))
+
+
+def _box_mesh(half, centre, rot=TURNED):
+    """The builders' cube with half-sizes *half*, turned by *rot* and moved
+    to *centre*, wound as the cube is: (coords, quads)."""
+    coords = [_place(tuple(2.0 * c[j] * half[j] for j in range(3)), centre,
+                     rot) for c in CUBE_POINTS]
+    return coords, [quad for quad, _ in CUBE_QUADS]
+
+
+def _sheet_mesh(half, centre, rot=TURNED):
+    """A flat quad modelled double-sided (the same four corners wound both
+    ways), turned by *rot* and moved to *centre*."""
+    a, b = half
+    local = [(-a, -b, 0.0), (a, -b, 0.0), (a, b, 0.0), (-a, b, 0.0)]
+    return ([_place(p, centre, rot) for p in local],
+            [(0, 1, 2, 3), (3, 2, 1, 0)])
+
+
+def _coverage_codes(findings):
+    return sorted(f.code for f in findings if f.code in COVERAGE_CODES)
+
+
+def _coverage_codes_written(fork, p3d):
+    """Coverage codes of *p3d* written to an MLOD and read back."""
+    buf = io.BytesIO()
+    p3d.write(buf)
+    buf.seek(0)
+    return _coverage_codes(fork.P3D(buf).validate())
+
+
+def _with_mesh(fork, mesh, kind="geometry"):
+    p3d = build_multilod_v2_p3d(fork)
+    add_mesh(fork, p3d.get_lod(kind), mesh[0], mesh[1], mass=_mass(kind))
+    return p3d
+
+
+def test_coverage_warn_reviewers_flat_sheet(fork):
+    """Review round 1, F1: two coplanar quads wound both ways, corners exact
+    in float32 near (62.5, 62.5, 62.5) and 1.8 mm apart. The volume summed
+    from the model's origin cancelled into a 'solid' and raised the ERROR;
+    summed from the piece's own corner it is flat: the WARN, in memory and
+    once written."""
+    a, u, v = (8195847, 8199705, 8199966), (30, 18, 45), (7, 30, 47)
+    lattice = [a, tuple(a[j] + u[j] for j in range(3)),
+               tuple(a[j] + 2 * u[j] + 3 * v[j] for j in range(3)),
+               tuple(a[j] + v[j] for j in range(3))]
+    coords = [tuple(x / 131072 for x in q) for q in lattice]
+    assert all(struct.unpack("<f", struct.pack("<f", x))[0] == x
+               for q in coords for x in q)
+    p3d = _with_mesh(fork, (coords, [(0, 1, 2, 3), (3, 2, 1, 0)]))
+    assert _coverage_codes(p3d.validate()) == ["WARN_COMPONENT_COVERAGE"]
+    assert _coverage_codes_written(fork, p3d) == ["WARN_COMPONENT_COVERAGE"]
+
+
+@pytest.mark.parametrize("offset", [0.0, 62.5, 1000.0])
+def test_coverage_turned_and_moved_parts(fork, offset):
+    """Off the axes and away from the origin, in memory and once written
+    as float32: a 2 cm thick slab is a closed part left out whole (the
+    ERROR), and a double-sided sheet of the same size never is (the WARN),
+    though rounding lifts its corners off one plane."""
+    centre = (3.0 + offset, offset, offset)
+    for mesh, code in ((_box_mesh((0.5, 0.3, 0.01), centre),
+                        "ERR_COMPONENT_COVERAGE"),
+                       (_sheet_mesh((0.5, 0.3), centre),
+                        "WARN_COMPONENT_COVERAGE")):
+        p3d = _with_mesh(fork, mesh)
+        assert _coverage_codes(p3d.validate()) == [code], (offset, code)
+        assert _coverage_codes_written(fork, p3d) == [code], (offset, code)
+
+
+def test_coverage_warn_one_covered_face_is_enough(fork):
+    """A closed box with exactly one face in Component02 and no point in any
+    component is a part partly in a component: the WARN for its other five
+    faces and its eight corners."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    _, faces = add_box(fork, geo, CROSS, mass=25.0)
+    geo.new_selection("Component02").faces[faces[0]] = 1
+    findings = p3d.validate()
+    assert coverage_err(findings) == []
+    (f,) = coverage(findings)
+    assert f.msg.startswith(
+        "geometry LOD: 5 of its 12 face(s) (proxy triangles not counted) are "
+        "in no ComponentNN selection, nor are 8 of the 16 point(s) its faces "
+        "use."), f.msg
+
+
+def test_coverage_err_either_winding(fork):
+    """The box wound the other way round (every face reversed, like the
+    inward winding of the measured lever) is a closed part left out whole
+    as well: the volume's sign is not read."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    _, faces = add_box(fork, geo, CROSS, mass=25.0)
+    for fa in faces:
+        fa.vertices.reverse()
+    (f,) = coverage_err(p3d.validate())
+    assert f.msg.startswith(
+        "geometry LOD: 6 of its 12 face(s) (proxy triangles not counted) "
+        "make up 1 closed part(s)"), f.msg
+
+
+def _l_prism_mesh(height, corner):
+    """A closed prism on an L, which is not convex (as the measured lever, a
+    knob and a bar, is not): the L (0,0) (2,0) (2,1) (1,1) (1,2) (0,2) in
+    x/y, raised *height* along z from *corner*, each cap two quads, wound
+    consistently. Its volume is 3 * height."""
+    ell = [(0, 0), (2, 0), (2, 1), (1, 1), (1, 2), (0, 2)]
+    coords = ([(corner[0] + x, corner[1] + y, corner[2]) for x, y in ell]
+              + [(corner[0] + x, corner[1] + y, corner[2] + height)
+                 for x, y in ell])
+    bottom = [(0, 3, 2, 1), (0, 5, 4, 3)]
+    top = [(6, 7, 8, 9), (6, 9, 10, 11)]
+    sides = [(i, (i + 1) % 6, (i + 1) % 6 + 6, i + 6) for i in range(6)]
+    return coords, bottom + top + sides
+
+
+def test_coverage_err_part_not_convex(fork):
+    """A closed part that is not convex, left out whole, is the ERROR: being
+    convex is what a component needs, not what the omission is about."""
+    p3d = _with_mesh(fork, _l_prism_mesh(0.5, (3.0, 0.0, 0.0)))
+    (f,) = coverage_err(p3d.validate())
+    assert f.msg.startswith(
+        "geometry LOD: 10 of its 16 face(s) (proxy triangles not counted) "
+        "make up 1 closed part(s)"), f.msg
+
+
+def test_coverage_float32_positions_join_as_in_the_file(fork):
+    """A closed box in no component whose corner lies 1e-9 m from a corner
+    of the covered cube: a float32 holds both as one position, so the box
+    joins the cube's piece (the WARN) in memory as it does once the model
+    is written and read back."""
+    p3d = build_multilod_v2_p3d(fork)
+    geo = p3d.get_lod("geometry")
+    add_box(fork, geo, SMALL, mass=25.0, offset=(0.625 + 1e-9, 0.625, 0.625))
+    assert geo.points[-8].coords != geo.points[6].coords
+    assert (struct.pack("<3f", *geo.points[-8].coords)
+            == struct.pack("<3f", *geo.points[6].coords))
+    assert _coverage_codes(p3d.validate()) == ["WARN_COMPONENT_COVERAGE"]
+    assert _coverage_codes_written(fork, p3d) == ["WARN_COMPONENT_COVERAGE"]
+
+
+@pytest.mark.parametrize("half,centre,code", [
+    # 100 m x 1 mm x 1 mm: 0.5 mm thick (twice the volume over the area),
+    # above 16 float32 steps at 50 m (0.1 mm): a solid
+    ((50.0, 0.0005, 0.0005), (0.0, 3.0, 0.0), "ERR_COMPONENT_COVERAGE"),
+    # 1 m x 1 m x 1 micrometre: below 16 steps at 1 m (1.9 micrometres)
+    ((0.5, 0.5, 0.0000005), (0.0, 0.0, 0.75), "WARN_COMPONENT_COVERAGE"),
+    # 10 cm x 10 cm x 0.5 micrometre at the origin: the 1 m floor still
+    # calls it flat
+    ((0.05, 0.05, 0.00000025), (0.0, 0.0, 0.0), "WARN_COMPONENT_COVERAGE"),
+])
+def test_coverage_thickness_boundary(fork, half, centre, code):
+    """A closed piece is a solid when it is thicker than 16 float32 steps
+    at its distance from the origin, at least 1 m: a long thin bar is one,
+    a slab a micrometre thick is not."""
+    p3d = _with_mesh(fork, _box_mesh(half, centre, rot=UNTURNED))
+    assert _coverage_codes(p3d.validate()) == [code]
+
+
+@pytest.mark.parametrize("base,u,v,k,l,step", [
+    # review round 1 F1's sheet, near (62.5, 62.5, 62.5)
+    ((8195847, 8199705, 8199966), (30, 18, 45), (7, 30, 47), 2, 3,
+     2.0 ** -17),
+    # near 1000 m and 2000 m from the origin
+    ((16383974, 16384026, 16383994), (-48, 22, 8), (-48, 23, 10), 2, 3,
+     2.0 ** -14),
+    ((16383980, 16384031, 16384010), (37, -12, 25), (-9, 41, 13), 3, 1,
+     2.0 ** -13),
+])
+def test_coverage_flat_sheet_thickness_is_zero(fork, base, u, v, k, l, step):
+    """An exactly flat double-sided quad (its corners on an integer lattice,
+    exact in float32) has a thickness of exactly 0 wherever it lies: the
+    volume is summed from the piece's own corner, not from the model's
+    origin, whose sum cancels into a small number far out."""
+    lattice = [base, tuple(base[j] + u[j] for j in range(3)),
+               tuple(base[j] + k * u[j] + l * v[j] for j in range(3)),
+               tuple(base[j] + v[j] for j in range(3))]
+    coords = [tuple(x * step for x in q) for q in lattice]
+    assert all(struct.unpack("<f", struct.pack("<f", x))[0] == x
+               for q in coords for x in q)
+    lod = fork.LOD()
+    faces = add_mesh(fork, lod, coords, [(0, 1, 2, 3), (3, 2, 1, 0)])
+    thickness, reach = fork._piece_thickness(faces)
+    assert thickness == 0.0 and reach > 60.0

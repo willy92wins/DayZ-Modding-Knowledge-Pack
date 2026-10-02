@@ -302,12 +302,17 @@ triangle and, as its 3 points, that triangle's corners; a whole box under a prox
 collision geometry) and points that no face uses are not counted. It groups the faces into pieces
 that share a corner position and raises `ERR_COMPONENT_COVERAGE`, an ERROR, for the case measured
 below: a piece that is a closed solid (each edge used by two of its faces, once each way, around a
-volume) with no face and no point in any component. Every other face in no component (a part left
-out only in part, an open piece such as a stray triangle, a flat double-sided sheet), and every
-point of a covered face that no component holds, stay `WARN_COMPONENT_COVERAGE`, whose message says
-they were not measured. A LOD with no component at all is `ERR_COMPONENT_NAMING`'s finding (killer
-#2); one whose component selections are all empty is read like any other, its closed parts raising
-the ERROR (an empty selection itself was not measured). On the three door samples of the
+volume) with no face and no point in any component. It reads each LOD on its own, while the parts
+measured below were left out of all three LODs (the box) or of Geometry and Fire (the lever): its
+message says that a part left out of one LOD alone was not measured. A piece thinner than 16 float32
+steps at its distance from the model's origin (taken as at least 1 m) counts as flat, so a
+double-sided sheet stays the WARN wherever it lies; corners are read as the MLOD stores them
+(float32), so a model reads the same in memory and once written. Every other face in no component (a
+part left out only in part, an open piece such as a stray triangle, a flat double-sided sheet), and
+every point of a covered face that no component holds, stay `WARN_COMPONENT_COVERAGE`, whose message
+says they were not measured. A LOD with no component at all is `ERR_COMPONENT_NAMING`'s finding
+(killer #2); one whose component selections are all empty is read like any other, its closed parts
+raising the ERROR (an empty selection itself was not measured). On the three door samples of the
 `dayz-doors` tutorial it is silent on `Simple_Door` and `Door_w_Button` and raises the ERROR on the
 Geometry and Fire LODs of `Expert_Mode`, whose lever (18 faces, one closed piece: selection `lever`
 in Geometry, `door1_open` in Fire) is in no component there, though the tutorial's text lists the

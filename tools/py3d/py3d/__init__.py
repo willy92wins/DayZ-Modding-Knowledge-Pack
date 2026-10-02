@@ -1340,16 +1340,23 @@ def _check_component_naming(lod, lod_index, kind_label):
     return []
 
 
-def _corner_key(point):
-    """A corner's position: the key that joins faces into pieces."""
-    return tuple(point.coords)
+def _corner(point):
+    """A corner's position as an MLOD stores it (three float32), so a model
+    reads the same in memory and once written: two corners that only
+    float32 rounding makes equal are one position here too. Coordinates a
+    float32 cannot hold are kept as they are."""
+    try:
+        return struct.unpack("<3f", struct.pack("<3f", *point.coords))
+    except (OverflowError, struct.error):
+        return tuple(point.coords)
 
 
 def _face_pieces(faces):
     """*faces* grouped into pieces, in file order: two faces are in the
-    same piece when they share a corner position. Positions, not points:
-    a mesh whose coincident corners were never merged is still one piece,
-    and a part whose corners touch another part's joins that part."""
+    same piece when they share a corner position (_corner). Positions, not
+    points: a mesh whose coincident corners were never merged is still one
+    piece, and a part whose corners touch another part's joins that
+    part."""
     parent = {}
 
     def root(key):
@@ -1360,7 +1367,7 @@ def _face_pieces(faces):
         return key
 
     for fa in faces:
-        keys = [_corner_key(vx.point) for vx in fa.vertices]
+        keys = [_corner(vx.point) for vx in fa.vertices]
         if not keys:
             continue
         first = root(keys[0])
@@ -1371,22 +1378,57 @@ def _face_pieces(faces):
     pieces = {}
     for fa in faces:
         if fa.vertices:
-            key = root(_corner_key(fa.vertices[0].point))
+            key = root(_corner(fa.vertices[0].point))
         else:
             key = ("face", id(fa))
         pieces.setdefault(key, []).append(fa)
     return list(pieces.values())
 
 
+#: A closed piece is a solid only when it is thicker than this many float32
+#: steps at its distance from the model's origin: float32 rounding can lift
+#: the corners of a flat double-sided sheet off its plane by about a step.
+_SOLID_MIN_STEPS = 16
+
+
+def _piece_thickness(piece):
+    """(thickness, reach) of a closed piece of faces of 3+ corners: twice
+    its volume over its area (a slab's thickness), and its largest
+    coordinate, at least 1 m. The volume is summed with math.fsum from
+    corners (_corner) taken relative to the piece's first corner, so the
+    sum does not cancel far from the origin: an exactly flat sheet gives 0
+    wherever it lies. The thickness is None for a piece without area."""
+    origin = _corner(piece[0].vertices[0].point)
+    six_volume = []
+    area = []
+    reach = 1.0
+    for fa in piece:
+        corners = [_corner(vx.point) for vx in fa.vertices]
+        reach = max([reach] + [abs(x) for p in corners for x in p])
+        c = [_v_sub(p, origin) for p in corners]
+        for j in range(1, len(c) - 1):
+            n = _v_cross(c[j], c[j + 1])
+            six_volume.append(c[0][0] * n[0] + c[0][1] * n[1]
+                              + c[0][2] * n[2])
+            area.append(_v_norm(_v_cross(_v_sub(c[j], c[0]),
+                                         _v_sub(c[j + 1], c[0]))) / 2.0)
+    area = math.fsum(area)
+    if not area > 0.0:
+        return None, reach
+    return abs(math.fsum(six_volume)) / (3.0 * area), reach
+
+
 def _is_closed_solid(piece):
     """True when *piece* is closed, consistently wound and encloses a
-    volume: by corner position, each of its edges is used by exactly two
-    of its faces, once in each direction, and the volume they enclose is
-    not zero for the piece's size (a flat double-sided sheet encloses
-    none). Whether the winding runs inward or outward is not read."""
+    volume: by corner position (_corner), each of its edges is used by
+    exactly two of its faces, once in each direction, and the piece is
+    thicker (_piece_thickness) than _SOLID_MIN_STEPS float32 steps at its
+    distance from the origin, at least 1 m; so a flat double-sided sheet
+    is not a solid, wherever it lies. Whether the winding runs inward or
+    outward is not read."""
     used = collections.Counter()
     for fa in piece:
-        keys = [_corner_key(vx.point) for vx in fa.vertices]
+        keys = [_corner(vx.point) for vx in fa.vertices]
         if len(keys) < 3:
             return False
         for j, a in enumerate(keys):
@@ -1396,27 +1438,10 @@ def _is_closed_solid(piece):
             used[(a, b)] += 1
     if any(n != 1 or used[(b, a)] != 1 for (a, b), n in list(used.items())):
         return False
-    six_volume = 0.0
-    corners = []
-    for fa in piece:
-        c = [vx.point.coords for vx in fa.vertices]
-        corners.extend(c)
-        for j in range(1, len(c) - 1):
-            n = _v_cross(c[j], c[j + 1])
-            six_volume += c[0][0] * n[0] + c[0][1] * n[1] + c[0][2] * n[2]
-    extent = max(max(p[i] for p in corners) - min(p[i] for p in corners)
-                 for i in range(3))
-    return abs(six_volume) > 6e-9 * extent ** 3
-
-
-#: What the in-game A/B of 2026-10-02 measured, per LOD kind, for a closed
-#: part left out of every component of that LOD.
-_COVERAGE_MEASURED = {
-    "geometry": ("no Geometry ray and no physics ray hit it, and the player "
-                 "walked through it"),
-    "view_geometry": "no View ray hit it",
-    "fire_geometry": "no Fire ray hit it (weapon fire was not measured)",
-}
+    thickness, reach = _piece_thickness(piece)
+    if thickness is None:
+        return False
+    return thickness > _SOLID_MIN_STEPS * 2.0 ** -23 * reach
 
 
 def _check_component_coverage(lod, lod_index, kind_label):
@@ -1434,17 +1459,21 @@ def _check_component_coverage(lod, lod_index, kind_label):
 
     The faces are grouped into pieces that share a corner position
     (_face_pieces). A piece that is a closed solid (_is_closed_solid:
-    every edge used twice, once each way, around a volume) with no face
-    and no point in any component is a closed part left out whole; the
-    ERROR counts those parts and their faces. Measured in game (DayZDiag
-    1.29.163709, 2026-10-02; dayz-p3d-audit killer #8): beside a box in
-    Component01, a second box in no component, in its Geometry, View and
-    Fire LODs, took no ray in geom, view or fire and no physics ray, and
-    the player walked through it; the same box as Component02 took every
-    ray and stopped the player. A closed lever left out of the Geometry
-    and Fire components of a door model took no Geometry, Fire or physics
-    ray either, while in the View LOD, where it is one (non-convex)
-    component, its knob answered. No log line named any of them.
+    every edge used twice, once each way, around a volume; a flat
+    double-sided sheet is not one) with no face and no point in any
+    component is a closed part left out whole; the ERROR counts those
+    parts and their faces. Measured in game (DayZDiag 1.29.163709,
+    2026-10-02; dayz-p3d-audit killer #8): beside a box in Component01, a
+    second box in no component, in its Geometry, View and Fire LODs, took
+    no ray in geom, view or fire and no physics ray, and the player walked
+    through it; the same box as Component02 took every ray and stopped the
+    player. A closed lever left out of the Geometry and Fire components of
+    a door model took no Geometry, Fire or physics ray either, while in
+    the View LOD, where it is one (non-convex) component, its knob
+    answered. No log line named any of them. Each LOD is read on its own
+    here, but those parts were left out of all three LODs (the box) and of
+    Geometry and Fire (the lever): a part left out of one LOD alone was not
+    measured, and the message says so.
 
     Every other face in no component raises the WARN: its piece is partly
     in a component (some of its faces, or the face's own points, are in
@@ -1513,13 +1542,18 @@ def _check_component_coverage(lod, lod_index, kind_label):
             "%s LOD: %d of its %d face(s) (proxy triangles not counted) "
             "make up %d closed part(s) with no face and no point in any "
             "ComponentNN selection. In game such a part collided with "
-            "nothing in its LOD, also beside covered parts: %s; no log "
-            "line said so. Select each closed, convex part as its own "
+            "nothing: left out of every component of the Geometry, View and "
+            "Fire LODs beside a covered part (a box), or of the Geometry "
+            "and Fire LODs (a lever, a component in View only, hit in View "
+            "only), it took no ray in the LODs it was left out of and no "
+            "physics ray, the player walked through it, and no log line "
+            "said so. A part left out of one LOD alone, or beside "
+            "component selections that hold nothing, was not measured, nor "
+            "was weapon fire. Select each closed, convex part as its own "
             "ComponentNN, the components together covering the LOD; never "
             "merge parts into one component to cover them (it would not be "
             "convex)."
-            % (kind_label, len(outside), len(faces), parts,
-               _COVERAGE_MEASURED[kind_label])))
+            % (kind_label, len(outside), len(faces), parts)))
     rest = [fa for fa in faces if id(fa) not in outside]
     bare_faces = sum(1 for fa in rest if id(fa) not in covered_faces)
     bare_points = len({id(vx.point) for fa in rest for vx in fa.vertices}
@@ -1535,8 +1569,8 @@ def _check_component_coverage(lod, lod_index, kind_label):
                     % (bare_points, len(points)))
         msg += (". Each lies in a part partly in a component or in a piece "
                 "that is not a closed solid; neither was measured in game "
-                "(a closed part with no face and no point in any component "
-                "collided with nothing in its LOD: ERR_COMPONENT_COVERAGE). "
+                "(a closed part left out whole, ERR_COMPONENT_COVERAGE, "
+                "collided with nothing). "
                 "Select each closed, convex part as its own ComponentNN, "
                 "the components together covering the LOD; never merge "
                 "parts into one component to cover them (it would not be "
