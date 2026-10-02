@@ -514,9 +514,29 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "decision_evidence": "[Unreleased] Fixed entry for the dayz-characters winding gate rewrite (Rule 12), its fixtures and test, the review-r1 fixes and the doc lines it made stale; the #38 entry's pointer to the gate put in the past tense ('which then failed a correct export'), since the gate no longer fails it.",
           "license": "MIT",
-          "source_hash": "cfccdf3efac7086b5c92f634e9944186e606a245051d637c30bc22e50c14d6c5",
+          "source_hash": "6d0fd27f439094e3df3e0e9199f1971bc39fc758c80674a788f75e1267eb1998",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask (lines 45-60); not its reference positions (lines 79-92: vanilla action extracts mark most bones RELATIVE through SEAnim bone modifiers, 61 of 73 in p_erc_jam_pm73_ras, so they are offsets from rest written as absolute offsets) nor its per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets (bone axis of anatomical chains only, so RightHand_Dummy and its child Weapon_Root do not count; roll of Spine3 and both hands within 2 deg of vanilla's across-bone direction: both real rigs read within 0.07 deg, the real JD rig rolled by 180, 30, 5 or 2.5 deg is refused, by 1 deg accepted), refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones and per-frame positions, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones and their rotations are identical (positions differ by design). Regression test tests/test_seanim_export.py (18 cases: the first 11 red on eca85e6's script, the 4 added after review round 1 red on 4ce4bbd's, the 2 added after round 2 red on fa2676b's, all green on this one). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol, cap of 2 rounds set before round 1: round 1 on 4ce4bbd UNSOUND (P1 reference positions copied from RELATIVE vanilla extracts, P1 detector blind to a rolled rig, P2 a moved helper vetoes a valid rig), fixed in fa2676b; round 2 on 1d50f73 UNSOUND (F1 closed; variants: a 30 deg roll inside the 45 deg cone gives 15.36 deg wrong rotations, Weapon_Root under RightHand_Dummy still vetoes; merge with main verified intact), fixed after the cap and verified mechanically with fixtures and the reviewer's repros on the real rigs. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f065105a08044bc4bfd4b521cd21e0b75e9ebf95534738af7aeb475bd65af129",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it read the Geometry LOD only when it held a selection named exactly 'Component01' and compared that selection alone with the whole LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces): it fired whenever Component01 held fewer points or faces than the LOD, as on a healthy multi-component LOD, never read a LOD without an exact Component01 (lowercase components included), counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; points that no face uses are ignored; it stays a WARN. Implementation: it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; a nonzero weight is membership, as in the file; one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured, so killer #8 now calls that consequence expected, not measured, and quotes the replaced text in dated notes. Offline: py3d suite 334 passed, 11 skipped (base: 309 passed, 11 skipped); the 25 new tests of test_s2_validate12.py run against the base commit's module fail 20 and pass 5 (guards: lowercase components covering the LOD, a LOD with no component, the face-outside mutant whose message test discriminates, and fractional weights, which instead fail on a mutant that counts only weight 1), and all 25 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. The impact and consumer runs used the module of 7cb410f; the review fixes after it change no executable line (AST compared without docstrings). Cross-family review: Codex gpt-6.1-sol, round 1 SOUND-WITH-FIXES (three P2, fixed). Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0a09bec158425e69b9a44945e3e81502f253fc79e5a56e0a496d3fee957a1420",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
@@ -524,7 +544,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cfccdf3efac7086b5c92f634e9944186e606a245051d637c30bc22e50c14d6c5",
+      "output_hash": "0a09bec158425e69b9a44945e3e81502f253fc79e5a56e0a496d3fee957a1420",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2997,10 +3017,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-26e76a4@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 promotion of main 424d7ba following #47 (the third receipt of this installation that day, after 1ff300dc61088b3b7bb0478a and a5e776aef17a1d2312e3c0da): #44 dayz-mcp-verify and #41 dayz-p3d-audit merged while the promotion of 26e76a4 ran, and the owner chose to promote them in a new cycle. After #47 merged, its sealing worktree was removed (rule R1 of #35) and promote --check ran from a fresh worktree of 424d7ba with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (75 of 119 operations: skill/dayz-mcp-verify and skill/dayz-p3d-audit on agents_user_skills+claude_user_skills, 73 new vault snapshots; no live file removed). Projected with packctl's own alias localization, the skill changes are exactly the files git changed under skills/ since 26e76a4: dayz-mcp-verify SKILL.md and dayz-p3d-audit references/killers-detail.md. promote --apply PASS, transaction 681a181feb0550dc5f13ff09. Every destination re-measured after apply with packctl tree_digest equals its plan after_digest; the receipt's sha256 equals the COMMIT payload's receipt_hash; adjudications.json carries the advance packctl made at COMMIT for the 4 adjudicated pairs it promoted over (2 skills x 2 targets), each observed_digest now equal to its plan after_digest. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "40c803b1579cbc5014862810a21aa9575911a3be037890936d16f66861a45a9c",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-424d7ba@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "04ca0ff9677cfe9891c9462bbc26e57829b562025902638374a1727400a14999",
+      "output_hash": "40c803b1579cbc5014862810a21aa9575911a3be037890936d16f66861a45a9c",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -3766,10 +3796,20 @@
           "source_path": "skills/blender-animation/references/dayz-handoff.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask (lines 45-60); not its reference positions (lines 79-92: vanilla action extracts mark most bones RELATIVE through SEAnim bone modifiers, 61 of 73 in p_erc_jam_pm73_ras, so they are offsets from rest written as absolute offsets) nor its per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets (bone axis of anatomical chains only, so RightHand_Dummy and its child Weapon_Root do not count; roll of Spine3 and both hands within 2 deg of vanilla's across-bone direction: both real rigs read within 0.07 deg, the real JD rig rolled by 180, 30, 5 or 2.5 deg is refused, by 1 deg accepted), refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones and per-frame positions, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones and their rotations are identical (positions differ by design). Regression test tests/test_seanim_export.py (18 cases: the first 11 red on eca85e6's script, the 4 added after review round 1 red on 4ce4bbd's, the 2 added after round 2 red on fa2676b's, all green on this one). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol, cap of 2 rounds set before round 1: round 1 on 4ce4bbd UNSOUND (P1 reference positions copied from RELATIVE vanilla extracts, P1 detector blind to a rolled rig, P2 a moved helper vetoes a valid rig), fixed in fa2676b; round 2 on 1d50f73 UNSOUND (F1 closed; variants: a 30 deg roll inside the 45 deg cone gives 15.36 deg wrong rotations, Weapon_Root under RightHand_Dummy still vetoes; merge with main verified intact), fixed after the cap and verified mechanically with fixtures and the reviewer's repros on the real rigs. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f47ee689aa91eb3896bbaa161871bbcb030599d6da3ff2f0d422d189192884a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-animation/references/dayz-handoff.md",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "11e124b78342a1f586215e7abb7f4aef007c206ccae2df542205d7c9517e1834",
+      "output_hash": "f47ee689aa91eb3896bbaa161871bbcb030599d6da3ff2f0d422d189192884a5",
       "output_path": "skills/blender-animation/references/dayz-handoff.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -4430,10 +4470,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask (lines 45-60); not its reference positions (lines 79-92: vanilla action extracts mark most bones RELATIVE through SEAnim bone modifiers, 61 of 73 in p_erc_jam_pm73_ras, so they are offsets from rest written as absolute offsets) nor its per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets (bone axis of anatomical chains only, so RightHand_Dummy and its child Weapon_Root do not count; roll of Spine3 and both hands within 2 deg of vanilla's across-bone direction: both real rigs read within 0.07 deg, the real JD rig rolled by 180, 30, 5 or 2.5 deg is refused, by 1 deg accepted), refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones and per-frame positions, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones and their rotations are identical (positions differ by design). Regression test tests/test_seanim_export.py (18 cases: the first 11 red on eca85e6's script, the 4 added after review round 1 red on 4ce4bbd's, the 2 added after round 2 red on fa2676b's, all green on this one). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol, cap of 2 rounds set before round 1: round 1 on 4ce4bbd UNSOUND (P1 reference positions copied from RELATIVE vanilla extracts, P1 detector blind to a rolled rig, P2 a moved helper vetoes a valid rig), fixed in fa2676b; round 2 on 1d50f73 UNSOUND (F1 closed; variants: a 30 deg roll inside the 45 deg cone gives 15.36 deg wrong rotations, Weapon_Root under RightHand_Dummy still vetoes; merge with main verified intact), fixed after the cap and verified mechanically with fixtures and the reviewer's repros on the real rigs. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f6237752a80c3539f4d22731e2bc3fc4128b8043470193894b151ed246dc8584",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "097e92c04cecd2ef3ac0360c0fb846c9168c9703a7173ccfd15fa5d4574b57c8",
+      "output_hash": "f6237752a80c3539f4d22731e2bc3fc4128b8043470193894b151ed246dc8584",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4514,10 +4564,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
           "source_revision": "kp-update-chiral-ingame@2026-10-02",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask (lines 45-60); not its reference positions (lines 79-92: vanilla action extracts mark most bones RELATIVE through SEAnim bone modifiers, 61 of 73 in p_erc_jam_pm73_ras, so they are offsets from rest written as absolute offsets) nor its per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets (bone axis of anatomical chains only, so RightHand_Dummy and its child Weapon_Root do not count; roll of Spine3 and both hands within 2 deg of vanilla's across-bone direction: both real rigs read within 0.07 deg, the real JD rig rolled by 180, 30, 5 or 2.5 deg is refused, by 1 deg accepted), refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones and per-frame positions, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones and their rotations are identical (positions differ by design). Regression test tests/test_seanim_export.py (18 cases: the first 11 red on eca85e6's script, the 4 added after review round 1 red on 4ce4bbd's, the 2 added after round 2 red on fa2676b's, all green on this one). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol, cap of 2 rounds set before round 1: round 1 on 4ce4bbd UNSOUND (P1 reference positions copied from RELATIVE vanilla extracts, P1 detector blind to a rolled rig, P2 a moved helper vetoes a valid rig), fixed in fa2676b; round 2 on 1d50f73 UNSOUND (F1 closed; variants: a 30 deg roll inside the 45 deg cone gives 15.36 deg wrong rotations, Weapon_Root under RightHand_Dummy still vetoes; merge with main verified intact), fixed after the cap and verified mechanically with fixtures and the reviewer's repros on the real rigs. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4991ac4f13df89d7b7314f61725eb98def3b4c5285c622391170ab6315e09c96",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a2fefc573a78ad9889cc315daf38ea5c8f64c724bd2c1095ccc80e6ece24e365",
+      "output_hash": "4991ac4f13df89d7b7314f61725eb98def3b4c5285c622391170ab6315e09c96",
       "output_path": "skills/dayz-animation-pipeline/references/blender-authoring.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -4890,10 +4950,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask (lines 45-60); not its reference positions (lines 79-92: vanilla action extracts mark most bones RELATIVE through SEAnim bone modifiers, 61 of 73 in p_erc_jam_pm73_ras, so they are offsets from rest written as absolute offsets) nor its per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets (bone axis of anatomical chains only, so RightHand_Dummy and its child Weapon_Root do not count; roll of Spine3 and both hands within 2 deg of vanilla's across-bone direction: both real rigs read within 0.07 deg, the real JD rig rolled by 180, 30, 5 or 2.5 deg is refused, by 1 deg accepted), refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones and per-frame positions, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones and their rotations are identical (positions differ by design). Regression test tests/test_seanim_export.py (18 cases: the first 11 red on eca85e6's script, the 4 added after review round 1 red on 4ce4bbd's, the 2 added after round 2 red on fa2676b's, all green on this one). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol, cap of 2 rounds set before round 1: round 1 on 4ce4bbd UNSOUND (P1 reference positions copied from RELATIVE vanilla extracts, P1 detector blind to a rolled rig, P2 a moved helper vetoes a valid rig), fixed in fa2676b; round 2 on 1d50f73 UNSOUND (F1 closed; variants: a 30 deg roll inside the 45 deg cone gives 15.36 deg wrong rotations, Weapon_Root under RightHand_Dummy still vetoes; merge with main verified intact), fixed after the cap and verified mechanically with fixtures and the reviewer's repros on the real rigs. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "bf0bd07bf296def6476c06315572e8cf35d3847b3399726c37a64b8d5c8cc370",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "96b3c3b20d722905421fdfdc375eae5241d9ea6f3bb10a3f0c835f1b2172a7aa",
+      "output_hash": "bf0bd07bf296def6476c06315572e8cf35d3847b3399726c37a64b8d5c8cc370",
       "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5128,10 +5198,20 @@
           "source_path": "dayz-animation-pipeline/scripts/seanim_export.py",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask (lines 45-60); not its reference positions (lines 79-92: vanilla action extracts mark most bones RELATIVE through SEAnim bone modifiers, 61 of 73 in p_erc_jam_pm73_ras, so they are offsets from rest written as absolute offsets) nor its per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets (bone axis of anatomical chains only, so RightHand_Dummy and its child Weapon_Root do not count; roll of Spine3 and both hands within 2 deg of vanilla's across-bone direction: both real rigs read within 0.07 deg, the real JD rig rolled by 180, 30, 5 or 2.5 deg is refused, by 1 deg accepted), refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones and per-frame positions, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones and their rotations are identical (positions differ by design). Regression test tests/test_seanim_export.py (18 cases: the first 11 red on eca85e6's script, the 4 added after review round 1 red on 4ce4bbd's, the 2 added after round 2 red on fa2676b's, all green on this one). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol, cap of 2 rounds set before round 1: round 1 on 4ce4bbd UNSOUND (P1 reference positions copied from RELATIVE vanilla extracts, P1 detector blind to a rolled rig, P2 a moved helper vetoes a valid rig), fixed in fa2676b; round 2 on 1d50f73 UNSOUND (F1 closed; variants: a 30 deg roll inside the 45 deg cone gives 15.36 deg wrong rotations, Weapon_Root under RightHand_Dummy still vetoes; merge with main verified intact), fixed after the cap and verified mechanically with fixtures and the reviewer's repros on the real rigs. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e697fcf0afedbe3a9dcee50dc4906f28942ef8aa04f4b71d229632ebed3a6f53",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/scripts/seanim_export.py",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ee40083d0d534db0215d64ea77117b19d95e24df6cc9007d6b63e00562772acd",
+      "output_hash": "e697fcf0afedbe3a9dcee50dc4906f28942ef8aa04f4b71d229632ebed3a6f53",
       "output_path": "skills/dayz-animation-pipeline/scripts/seanim_export.py",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5870,10 +5950,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "kp-update-characters-ab@2026-10-02",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, characters winding gate: check_dayz_winding.py rewritten for dayz-model-pipeline Rule 12 (det=-1; cross product and stored normals both into the material). Winding by the signed volume by winding of each closed shell (points welded to 5 decimals, faces linked only through edges exactly two faces use, proxy:* faces left out, incoherent shells made coherent first); normals corner by corner per shell against each face's vector area as the reversal leaves it, a normal within 5 degrees of the face plane not read (above 90 % agree, a tolerance; below 10 % in every shell = negate the pool, with the corners it also turns counted, withheld when part of the LOD is unread; else per shell), py3d _pct_normal_agreement's first-corner count printed alongside. Offline tested with py3d 1.8.0: the three MLODs of the Rule 12 in-game test regenerated byte for byte plus mirror_b with its normal pool negated; exit codes on them go from 1,1,1,0 (old gate) to 0,0,1,1; test_check_dayz_winding.py 39 passed; nineteen targeted mutations of the gate each caught. On the LFInfectedBig builds of the 2026-10-02 chiral check (in-game results recorded by PR #34): Rule 12 build PASS (48 closed shells negative, 99.8 % of 131,278 corner normals with a clear sign agree, 99.5 % in the body, 219 against their face, 200 within 5 degrees, 63.5 % of faces in open ribcage tubes not scored); the outward-normal build and the shipped recipe FAIL on their normals (0.2 % of corners). The rewritten gate was not run in game. Owner decisions 2026-10-02: keep #34's in-game evidence and add no claim; score closed shells and report open ones; fix the stale lines in the same files and the py3d-direct-generation docstring. Written by Claude (Anthropic); cross-family review by Codex gpt-6.1-sol, round 1 UNSOUND (6 findings, all reproduced and fixed, each now a test), round 2 (the cap) UNSOUND: R2-2 non-convex quads, R2-3 near-perpendicular corners and R2-4 the py3d count fixed and tested; R2-1 (the pool fix turns corners already right, then passes within the 90 % tolerance) answered by design: the pool fix stays for uniform inversions, states how many agreeing corners it turns and the alternative, and is withheld when part of the LOD is unread; the tolerance is explicit and pinned by a calibration test.",
+          "license": "MIT",
+          "source_hash": "b8de2fa6223808b21b936973e74bb01b99d7d2f4384a3b6bc8d470caac67916b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "fb0a6df08fa28fcf5e135bf6c2582f02e8de1467ba2c36899ac83e11aa9d0827",
+      "output_hash": "b8de2fa6223808b21b936973e74bb01b99d7d2f4384a3b6bc8d470caac67916b",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -5952,10 +6042,20 @@
           "source_path": "skills/dayz-characters/references/character-rigging.md",
           "source_revision": "kp-update-chiral-ingame@2026-10-02",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, characters winding gate: check_dayz_winding.py rewritten for dayz-model-pipeline Rule 12 (det=-1; cross product and stored normals both into the material). Winding by the signed volume by winding of each closed shell (points welded to 5 decimals, faces linked only through edges exactly two faces use, proxy:* faces left out, incoherent shells made coherent first); normals corner by corner per shell against each face's vector area as the reversal leaves it, a normal within 5 degrees of the face plane not read (above 90 % agree, a tolerance; below 10 % in every shell = negate the pool, with the corners it also turns counted, withheld when part of the LOD is unread; else per shell), py3d _pct_normal_agreement's first-corner count printed alongside. Offline tested with py3d 1.8.0: the three MLODs of the Rule 12 in-game test regenerated byte for byte plus mirror_b with its normal pool negated; exit codes on them go from 1,1,1,0 (old gate) to 0,0,1,1; test_check_dayz_winding.py 39 passed; nineteen targeted mutations of the gate each caught. On the LFInfectedBig builds of the 2026-10-02 chiral check (in-game results recorded by PR #34): Rule 12 build PASS (48 closed shells negative, 99.8 % of 131,278 corner normals with a clear sign agree, 99.5 % in the body, 219 against their face, 200 within 5 degrees, 63.5 % of faces in open ribcage tubes not scored); the outward-normal build and the shipped recipe FAIL on their normals (0.2 % of corners). The rewritten gate was not run in game. Owner decisions 2026-10-02: keep #34's in-game evidence and add no claim; score closed shells and report open ones; fix the stale lines in the same files and the py3d-direct-generation docstring. Written by Claude (Anthropic); cross-family review by Codex gpt-6.1-sol, round 1 UNSOUND (6 findings, all reproduced and fixed, each now a test), round 2 (the cap) UNSOUND: R2-2 non-convex quads, R2-3 near-perpendicular corners and R2-4 the py3d count fixed and tested; R2-1 (the pool fix turns corners already right, then passes within the 90 % tolerance) answered by design: the pool fix stays for uniform inversions, states how many agreeing corners it turns and the alternative, and is withheld when part of the LOD is unread; the tolerance is explicit and pinned by a calibration test.",
+          "license": "MIT",
+          "source_hash": "798ee041ae42048b4ef9594e1f234ff2f2e4a2f371561620e3fa3d1c8401967b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/character-rigging.md",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f678487bf70a33f406bdb3c55efcfb5be2fe45e35063a89de234cdeaaaba51f0",
+      "output_hash": "798ee041ae42048b4ef9594e1f234ff2f2e4a2f371561620e3fa3d1c8401967b",
       "output_path": "skills/dayz-characters/references/character-rigging.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -6046,10 +6146,20 @@
           "source_path": "dayz-characters/references/check_dayz_winding.py",
           "source_revision": "filesystem@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gate rewritten for Rule 12: it used to require outward stored normals and cross . normal < 0 (NORMALS_OUTWARD_MIN = 0.35) and exited 1 on all three MLODs of the Rule 12 in-game test, the correct one included. Now: per visual LOD (py3d kind visual, 0 <= res < 1000; it read res < 10), winding by the signed volume by winding of each closed shell (negative PASS; positive inside-out, face.vertices.reverse() on that shell, the whole LOD only when every shell is positive and nothing is unscored or incoherent, proxies excepted; incoherent shells listed with their orientation groups; a cavity note), normals corner by corner per shell in the vertex order the reversal leaves (all shells above 90 %: agree; all below 10 % with the winding right: negate the pool, keep the faces; otherwise the shells listed for a corner-by-corner fix; a shell with no readable normal is not measurable). Open and flat (3|V|/A < 20 micrometres) shells reported as not scored, and a PASS that leaves faces unscored says so. Exit 0/1/2 kept, defect wins over not measurable; a missing or wrong py3d exits 2. Review r1 (gpt-6.1-sol) fixes: per-corner reading (first corner only missed 96 of 144 outward corners), post-reversal order instead of a complemented vote, no pool advice when a part is right, unread shells reported, 'same export call' inference removed, flat cut-off 0.1 mm -> 20 micrometres, robust py3d check. Offline: fixtures b and a PASS, c FAIL, b_normals_out FAIL; 33 cases pass; LFInfectedBig V1 PASS, V2/V3 FAIL on normals; same output with the Pack's tools/py3d and the installed 1.8.0. Review r2 fixes: each corner read against its face's vector area (the first three corners of a dart quad point against the face: a correct dart prism failed at 83.3 %, now passes in all four rotations), a 5-degree near-perpendicular margin (a +-1e-8 tip flipped the verdict), the printed py3d first-corner count over every face of the LOD (it left proxies and incoherent shells out: 100 % printed against 97.96 % and 97.92 %), the pool fix withheld when part of the LOD is unread and stating how many agreeing corners it turns. V1: 131,059 of 131,278 corners with a clear sign agree (body 99.5 %), 219 against, 200 within 5 degrees.",
+          "license": "MIT",
+          "source_hash": "4a440faf777a0d299d5a28a3f8c1b42e02ad9563a2ec3dd35d7fddb885421ae3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/check_dayz_winding.py",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6c9488890bb7723675d6bef06ad279fd28673dd6ba9b97366335ba23d623df3a",
+      "output_hash": "4a440faf777a0d299d5a28a3f8c1b42e02ad9563a2ec3dd35d7fddb885421ae3",
       "output_path": "skills/dayz-characters/references/check_dayz_winding.py",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -7856,10 +7966,20 @@
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-p3d-audit-checkA@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "check_face_winding docstring: it gave character source MLODs the opposite sign (< 0), the det=+1 convention the characters' gate encoded until its Rule 12 rewrite; now agreement (> 0) on every asset class, characters included (Rule 12; dayz-characters chiral check, PR #34), with the direction left to the volume per closed shell. Dated note added in the prose.",
+          "license": "MIT",
+          "source_hash": "4c9eca0f75eb0617fe43d181958242d9485fe0850ed6be31db5588f4c10112ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "040a17d7dcdc380aec893c31a8c5f66bd90013eff977f0d7a85e4a22101b7ab5",
+      "output_hash": "4c9eca0f75eb0617fe43d181958242d9485fe0850ed6be31db5588f4c10112ce",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8075,9 +8195,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it read the Geometry LOD only when it held a selection named exactly 'Component01' and compared that selection alone with the whole LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces): it fired whenever Component01 held fewer points or faces than the LOD, as on a healthy multi-component LOD, never read a LOD without an exact Component01 (lowercase components included), counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; points that no face uses are ignored; it stays a WARN. Implementation: it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; a nonzero weight is membership, as in the file; one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured, so killer #8 now calls that consequence expected, not measured, and quotes the replaced text in dated notes. Offline: py3d suite 334 passed, 11 skipped (base: 309 passed, 11 skipped); the 25 new tests of test_s2_validate12.py run against the base commit's module fail 20 and pass 5 (guards: lowercase components covering the LOD, a LOD with no component, the face-outside mutant whose message test discriminates, and fractional weights, which instead fail on a mutant that counts only weight 1), and all 25 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. The impact and consumer runs used the module of 7cb410f; the review fixes after it change no executable line (AST compared without docstrings). Cross-family review: Codex gpt-6.1-sol, round 1 SOUND-WITH-FIXES (three P2, fixed). Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "c0cdd211b1647df869b658e1a8b36813c91460a9e10a89849e7cb9842873fdf5",
+          "source_hash": "e6cc7245d8172def20a78127de4b897f2ea6ad05a14665083d1f426265415c34",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
@@ -8085,7 +8205,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c0cdd211b1647df869b658e1a8b36813c91460a9e10a89849e7cb9842873fdf5",
+      "output_hash": "e6cc7245d8172def20a78127de4b897f2ea6ad05a14665083d1f426265415c34",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -8147,9 +8267,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it read the Geometry LOD only when it held a selection named exactly 'Component01' and compared that selection alone with the whole LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces): it fired whenever Component01 held fewer points or faces than the LOD, as on a healthy multi-component LOD, never read a LOD without an exact Component01 (lowercase components included), counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; points that no face uses are ignored; it stays a WARN. Implementation: it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; a nonzero weight is membership, as in the file; one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured, so killer #8 now calls that consequence expected, not measured, and quotes the replaced text in dated notes. Offline: py3d suite 334 passed, 11 skipped (base: 309 passed, 11 skipped); the 25 new tests of test_s2_validate12.py run against the base commit's module fail 20 and pass 5 (guards: lowercase components covering the LOD, a LOD with no component, the face-outside mutant whose message test discriminates, and fractional weights, which instead fail on a mutant that counts only weight 1), and all 25 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. The impact and consumer runs used the module of 7cb410f; the review fixes after it change no executable line (AST compared without docstrings). Cross-family review: Codex gpt-6.1-sol, round 1 SOUND-WITH-FIXES (three P2, fixed). Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "55af962a08d2faa4dc81d9910b9cec1917885dbbcbfaaf0ab67b087e44963497",
+          "source_hash": "30fe8b01620bb179f8f3851b5378cde0b74079ddaa6f14bada582192c8bb6d5d",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
@@ -8157,7 +8277,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "55af962a08d2faa4dc81d9910b9cec1917885dbbcbfaaf0ab67b087e44963497",
+      "output_hash": "30fe8b01620bb179f8f3851b5378cde0b74079ddaa6f14bada582192c8bb6d5d",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -15188,9 +15308,29 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Line ranges of CLAIM-CHAR-NORMALS-INWARD-SKILL (+27), CLAIM-CHAR-NORMALS-INWARD-INGAME (+5) and CLAIM-CHAR-ATTACK-INGAME (+6, from main's #45) shifted with the rewritten OFFLINE GATE section, the character-rigging.md section 6 GATE bullet and its result line; claims, evidence and levels unchanged (owner decision 2026-10-02: no new claim).",
+          "license": "MIT",
+          "source_hash": "c39469e7ac2764fce826fbbb6e5f3ef74b511d5925e8a16edc11e75229797644",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask (lines 45-60); not its reference positions (lines 79-92: vanilla action extracts mark most bones RELATIVE through SEAnim bone modifiers, 61 of 73 in p_erc_jam_pm73_ras, so they are offsets from rest written as absolute offsets) nor its per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets (bone axis of anatomical chains only, so RightHand_Dummy and its child Weapon_Root do not count; roll of Spine3 and both hands within 2 deg of vanilla's across-bone direction: both real rigs read within 0.07 deg, the real JD rig rolled by 180, 30, 5 or 2.5 deg is refused, by 1 deg accepted), refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones and per-frame positions, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones and their rotations are identical (positions differ by design). Regression test tests/test_seanim_export.py (18 cases: the first 11 red on eca85e6's script, the 4 added after review round 1 red on 4ce4bbd's, the 2 added after round 2 red on fa2676b's, all green on this one). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol, cap of 2 rounds set before round 1: round 1 on 4ce4bbd UNSOUND (P1 reference positions copied from RELATIVE vanilla extracts, P1 detector blind to a rolled rig, P2 a moved helper vetoes a valid rig), fixed in fa2676b; round 2 on 1d50f73 UNSOUND (F1 closed; variants: a 30 deg roll inside the 45 deg cone gives 15.36 deg wrong rotations, Weapon_Root under RightHand_Dummy still vetoes; merge with main verified intact), fixed after the cap and verified mechanically with fixtures and the reviewer's repros on the real rigs. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8f9896462ab182dced49b0e4837fe6bbd80c41d5c4808e544ffc2389c6340ab4",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Moves the line ranges of claims whose markers shifted in files this change edits (dayz-p3d-audit SKILL.md killer #8 and references/killers-detail.md section 8 gained lines above later claims); no claim added or reworded.",
           "license": "MIT",
-          "source_hash": "f395fb91107dbbc777656101442d707765104c4dc10f5bf83f409385a4e274fd",
+          "source_hash": "59d5674b2c4876213948d17e767a48b028811c8dc0600c8f3efcc2dcd1f77f32",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
@@ -15198,7 +15338,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f395fb91107dbbc777656101442d707765104c4dc10f5bf83f409385a4e274fd",
+      "output_hash": "59d5674b2c4876213948d17e767a48b028811c8dc0600c8f3efcc2dcd1f77f32",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -24329,9 +24469,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it read the Geometry LOD only when it held a selection named exactly 'Component01' and compared that selection alone with the whole LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces): it fired whenever Component01 held fewer points or faces than the LOD, as on a healthy multi-component LOD, never read a LOD without an exact Component01 (lowercase components included), counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; points that no face uses are ignored; it stays a WARN. Implementation: it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; a nonzero weight is membership, as in the file; one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured, so killer #8 now calls that consequence expected, not measured, and quotes the replaced text in dated notes. Offline: py3d suite 334 passed, 11 skipped (base: 309 passed, 11 skipped); the 25 new tests of test_s2_validate12.py run against the base commit's module fail 20 and pass 5 (guards: lowercase components covering the LOD, a LOD with no component, the face-outside mutant whose message test discriminates, and fractional weights, which instead fail on a mutant that counts only weight 1), and all 25 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. The impact and consumer runs used the module of 7cb410f; the review fixes after it change no executable line (AST compared without docstrings). Cross-family review: Codex gpt-6.1-sol, round 1 SOUND-WITH-FIXES (three P2, fixed). Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "2f53fbc51012d8b4c86f5f097864dc174ef809504a7ba7517506e5a43d72f418",
+          "source_hash": "4318e2feaefaa6a71d303bd1a4fd894c5e18b649cb2731d137ac00859a633bd6",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/README.md",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
@@ -24339,7 +24479,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2f53fbc51012d8b4c86f5f097864dc174ef809504a7ba7517506e5a43d72f418",
+      "output_hash": "4318e2feaefaa6a71d303bd1a4fd894c5e18b649cb2731d137ac00859a633bd6",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24451,9 +24591,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it read the Geometry LOD only when it held a selection named exactly 'Component01' and compared that selection alone with the whole LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces): it fired whenever Component01 held fewer points or faces than the LOD, as on a healthy multi-component LOD, never read a LOD without an exact Component01 (lowercase components included), counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; points that no face uses are ignored; it stays a WARN. Implementation: it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; a nonzero weight is membership, as in the file; one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured, so killer #8 now calls that consequence expected, not measured, and quotes the replaced text in dated notes. Offline: py3d suite 334 passed, 11 skipped (base: 309 passed, 11 skipped); the 25 new tests of test_s2_validate12.py run against the base commit's module fail 20 and pass 5 (guards: lowercase components covering the LOD, a LOD with no component, the face-outside mutant whose message test discriminates, and fractional weights, which instead fail on a mutant that counts only weight 1), and all 25 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. The impact and consumer runs used the module of 7cb410f; the review fixes after it change no executable line (AST compared without docstrings). Cross-family review: Codex gpt-6.1-sol, round 1 SOUND-WITH-FIXES (three P2, fixed). Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "c0dfd9a8bee0b869ceae4123ec0dedcf33422f9b27db7fbffe77f78868307ff4",
+          "source_hash": "2960885955ee9abcc4b33734a23e9b5968363037652ebeb0569eeec8a0f9ec23",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/py3d/__init__.py",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
@@ -24461,7 +24601,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c0dfd9a8bee0b869ceae4123ec0dedcf33422f9b27db7fbffe77f78868307ff4",
+      "output_hash": "2960885955ee9abcc4b33734a23e9b5968363037652ebeb0569eeec8a0f9ec23",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -26089,9 +26229,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it read the Geometry LOD only when it held a selection named exactly 'Component01' and compared that selection alone with the whole LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces): it fired whenever Component01 held fewer points or faces than the LOD, as on a healthy multi-component LOD, never read a LOD without an exact Component01 (lowercase components included), counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; points that no face uses are ignored; it stays a WARN. Implementation: it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; a nonzero weight is membership, as in the file; one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured, so killer #8 now calls that consequence expected, not measured, and quotes the replaced text in dated notes. Offline: py3d suite 334 passed, 11 skipped (base: 309 passed, 11 skipped); the 25 new tests of test_s2_validate12.py run against the base commit's module fail 20 and pass 5 (guards: lowercase components covering the LOD, a LOD with no component, the face-outside mutant whose message test discriminates, and fractional weights, which instead fail on a mutant that counts only weight 1), and all 25 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. The impact and consumer runs used the module of 7cb410f; the review fixes after it change no executable line (AST compared without docstrings). Cross-family review: Codex gpt-6.1-sol, round 1 SOUND-WITH-FIXES (three P2, fixed). Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "86550d11156b72751981699cc6c551635f28b7ec8bbb8cd491459b439b4731ed",
+          "source_hash": "3597f6dc83b548f5f3c0a59ada66f4cc8b78fec5983ad8485b9e99b38fee11b4",
           "source_id": "pack-r21-authored",
           "source_path": "tools/py3d/tests/test_s2_validate12.py",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
@@ -26099,7 +26239,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "86550d11156b72751981699cc6c551635f28b7ec8bbb8cd491459b439b4731ed",
+      "output_hash": "3597f6dc83b548f5f3c0a59ada66f4cc8b78fec5983ad8485b9e99b38fee11b4",
       "output_path": "tools/py3d/tests/test_s2_validate12.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -26457,6 +26597,28 @@
       "output_path": "skills/dayz-animation-pipeline/tests/test_install_py3d.py",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/tests/test_seanim_export.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-02: dayz-animation-pipeline scripts/seanim_export.py wrote the viewer's bone-local quaternions and rest offsets as they are. Ported the Route C conversion from the owner's project copy WeaponAnimPipeline_dev/tools/seanim_export.py (lines 62-64: calibrated 2026-06-29 against a DayZATool-extracted reference, JD_SVD_Fire .txa via plugin vs .anm extract, exact to 0.00 deg over 73 bone/frame pairs; rot (x,y,z,w)->(-y,-z,x,w), pos (x,y,z)->(y,z,-x) cm; line 71 and 80 apply it) and its --rest-pose bone mask (lines 45-60); not its reference positions (lines 79-92: vanilla action extracts mark most bones RELATIVE through SEAnim bone modifiers, 61 of 73 in p_erc_jam_pm73_ras, so they are offsets from rest written as absolute offsets) nor its per-frame Weapon_* positions. The calibration rig is the JD Master Rig (reviews/2026-06-29-handoff-pipeline-ingame-test.md:138-140,157: --rig data/jd_dayz.json); the Pack builds the BI FBX rig (build_rig_dayz.py), rebuilt today in Blender 5.1.1 identical to the project's data/rig_dayz.json (max dpos 0 m, dquat 0.000 deg). Measured offline: FBX frames = JD frames turned 90 deg about Z, q_fbx=(y,-x,z,w)_jd for 113/114 rest rotations within 1 deg (root excepted), 109/113 offsets within 2.6 deg; rest offsets vs DayZATool 1.3 extracts of vanilla p_erc_attackl_inplace_01_ras.anm: JD+calibrated 78/78 within 5 deg, FBX+calibrated 0/77 (median 90 deg), FBX+(x,z,y) 77/77; aks74u_reference 35/36, 0/34, 34/34; rest rotations vs frame 0 of vanilla p_1hd_erc_idle_low: FBX+(-x,-z,-y,w) within 0.87 deg per bone of JD+calibrated (60 bones), FBX+calibrated 6 bones >= 90 deg. The owner chose the rig-aware port on 2026-10-02 (JD -> calibrated map, FBX -> derived map, any other rig refused). The script reads the rig from its rest offsets (bone axis of anatomical chains only, so RightHand_Dummy and its child Weapon_Root do not count; roll of Spine3 and both hands within 2 deg of vanilla's across-bone direction: both real rigs read within 0.07 deg, the real JD rig rolled by 180, 30, 5 or 2.5 deg is refused, by 1 deg accepted), refuses an anim bone missing from the rig and a missing --rest-pose, warns on root bones and per-frame positions, and its round-trip gate checks every bone. Parity: on the project's reload_anim.json + jd_dayz.json the output is byte-identical to the project copy's (sha256 9890a520...); on anim_unjam.json masked by vanilla p_erc_jam_pm73_ras the 73 bones and their rotations are identical (positions differ by design). Regression test tests/test_seanim_export.py (18 cases: the first 11 red on eca85e6's script, the 4 added after review round 1 red on 4ce4bbd's, the 2 added after round 2 red on fa2676b's, all green on this one). In game (A6_SR2M golpe, 2026-06-30) the JD map played a full-body action wrong (A6_SR2M_dev/reviews/2026-06-30-handoff-golpe-pipeline-CLOSE.md:14); the FBX map was never played. Cross-family review by Codex gpt-6.1-sol, cap of 2 rounds set before round 1: round 1 on 4ce4bbd UNSOUND (P1 reference positions copied from RELATIVE vanilla extracts, P1 detector blind to a rolled rig, P2 a moved helper vetoes a valid rig), fixed in fa2676b; round 2 on 1d50f73 UNSOUND (F1 closed; variants: a 30 deg roll inside the 45 deg cone gives 15.36 deg wrong rotations, Weapon_Root under RightHand_Dummy still vetoes; merge with main verified intact), fixed after the cap and verified mechanically with fixtures and the reviewer's repros on the real rigs. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "81cb03604f65ce5fb5e85ea788ab3a78acfac8c75a175343daec51559fc06cab",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/tests/test_seanim_export.py",
+          "source_revision": "kp-update-seanim-handedness@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "81cb03604f65ce5fb5e85ea788ab3a78acfac8c75a175343daec51559fc06cab",
+      "output_path": "skills/dayz-animation-pipeline/tests/test_seanim_export.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-proxy-align/scripts/install_py3d.py",
@@ -27401,6 +27563,138 @@
       "output_path": "skills/dayz-characters/references/dayz-1-30-characters.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-characters/references/test_check_dayz_winding.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Test of check_dayz_winding.py: 39 cases on the four fixtures and on variants built in the test (faces reversed after export, one box inverted with the LOD sum still negative, most boxes inverted, one part with outward normals, a small part below 10 % under an agreeing LOD, open sheets, welded twins, proxies, a Moebius band, an extra visual LOD and a collision LOD, zero normals, ODOL, truncated, no visual LOD) plus one per review-r1 finding (a right quad among outward normals and the pool fix applied anyway, first corners turned before a reversal, normals wrong only at the corners py3d does not read, zero first corners, a shell with no normal, a 50-micrometre inside-out part, a fake py3d). Each verdict line is matched whole with its measured sign; the printed py3d count is compared with py3d _pct_normal_agreement on the model as it is and after the reversal. Review r2 cases: the pool fix's statement of what it turns, the 90 % tolerance both ways (35/36 passes, 32/36 fails), no pool fix with part of the LOD unread, a dart-quad prism in four rotations, a corner normal in its face plane tipped by +-1e-8, the py3d count with a proxy and with an incoherent shell. Nineteen targeted mutations of the gate each fail it.",
+          "license": "MIT",
+          "source_hash": "8b211df0c94637d25368f4fd821e150f4e2d38d99afaef2ad21c784f8be55614",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/test_check_dayz_winding.py",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8b211df0c94637d25368f4fd821e150f4e2d38d99afaef2ad21c784f8be55614",
+      "output_path": "skills/dayz-characters/references/test_check_dayz_winding.py",
+      "routing_artifact_id": "skill/dayz-characters",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-characters/references/winding_fixtures/make_fixtures.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Self-contained generator (py3d >= 1.8.0): the chiral F of the Rule 12 in-game test written with blender_to_dayz (b), ROT_X_NEG90 + reversed faces + negated normals (a), ROT_X_NEG90 alone (c), and b with its normal pool negated. It refuses to write unless a, b and c match the SHA-256 of the in-game MLODs (also pinned in tools/py3d/tests/test_s7_blender_to_dayz.py). Ran clean with -W error::FutureWarning.",
+          "license": "MIT",
+          "source_hash": "4eb59b59674b3c1ffca5b8e49b56631f12a4c55ab1aa08e0d65153d833de36d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/winding_fixtures/make_fixtures.py",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4eb59b59674b3c1ffca5b8e49b56631f12a4c55ab1aa08e0d65153d833de36d7",
+      "output_path": "skills/dayz-characters/references/winding_fixtures/make_fixtures.py",
+      "routing_artifact_id": "skill/dayz-characters",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-characters/references/winding_fixtures/mirror_a.p3d",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Generated by make_fixtures.py with py3d 1.8.0: the old det=+1 recipe (ROT_X_NEG90, faces reversed, normals negated). SHA-256 b08372a6248d826aad7557827346af030b1d448e4e0d75da3afd0a67a0c16d27, byte-identical to mirror_a.p3d of the Rule 12 in-game test (solid and mirrored in DayZDiag 1.29.163709, 2026-10-01). Original synthetic geometry; texture fields are path strings only.",
+          "license": "MIT",
+          "source_hash": "b08372a6248d826aad7557827346af030b1d448e4e0d75da3afd0a67a0c16d27",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/winding_fixtures/mirror_a.p3d",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b08372a6248d826aad7557827346af030b1d448e4e0d75da3afd0a67a0c16d27",
+      "output_path": "skills/dayz-characters/references/winding_fixtures/mirror_a.p3d",
+      "routing_artifact_id": "skill/dayz-characters",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-characters/references/winding_fixtures/mirror_b.p3d",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Generated by make_fixtures.py with py3d 1.8.0: py3d.blender_to_dayz() (Rule 12). SHA-256 f1be491df6304534f2100d053e972a9792b1780e026223408f5c200b465201d7, byte-identical to mirror_b.p3d of the Rule 12 in-game test (solid, the F reads correctly, DayZDiag 1.29.163709, 2026-10-01). Original synthetic geometry; texture fields are path strings only.",
+          "license": "MIT",
+          "source_hash": "f1be491df6304534f2100d053e972a9792b1780e026223408f5c200b465201d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/winding_fixtures/mirror_b.p3d",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f1be491df6304534f2100d053e972a9792b1780e026223408f5c200b465201d7",
+      "output_path": "skills/dayz-characters/references/winding_fixtures/mirror_b.p3d",
+      "routing_artifact_id": "skill/dayz-characters",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-characters/references/winding_fixtures/mirror_b_normals_out.p3d",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Generated by make_fixtures.py with py3d 1.8.0: mirror_b with every entry of its normal pool negated, the Rule 12 winding with normals stored outward (the state of the outward-normal recipe). SHA-256 b48a4980844dc1a0be5838fc936c11287fdfd796d0f8403cca869d64301d3c6e. Not taken into the game. Original synthetic geometry; texture fields are path strings only.",
+          "license": "MIT",
+          "source_hash": "b48a4980844dc1a0be5838fc936c11287fdfd796d0f8403cca869d64301d3c6e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/winding_fixtures/mirror_b_normals_out.p3d",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b48a4980844dc1a0be5838fc936c11287fdfd796d0f8403cca869d64301d3c6e",
+      "output_path": "skills/dayz-characters/references/winding_fixtures/mirror_b_normals_out.p3d",
+      "routing_artifact_id": "skill/dayz-characters",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-characters/references/winding_fixtures/mirror_c.p3d",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Generated by make_fixtures.py with py3d 1.8.0: transform(ROT_X_NEG90) alone. SHA-256 ac5f0f77f6d93db93226e631ed0b02c3492c6e13d815a621bd9ed82e2b4e1da8, byte-identical to mirror_c.p3d of the Rule 12 in-game test (inside-out and mirrored in DayZDiag 1.29.163709, 2026-10-01). Original synthetic geometry; texture fields are path strings only.",
+          "license": "MIT",
+          "source_hash": "ac5f0f77f6d93db93226e631ed0b02c3492c6e13d815a621bd9ed82e2b4e1da8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/winding_fixtures/mirror_c.p3d",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ac5f0f77f6d93db93226e631ed0b02c3492c6e13d815a621bd9ed82e2b4e1da8",
+      "output_path": "skills/dayz-characters/references/winding_fixtures/mirror_c.p3d",
+      "routing_artifact_id": "skill/dayz-characters",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-clothing/references/dayz-1-30-clothing.md",
@@ -28393,6 +28687,28 @@
       "license": "MIT",
       "output_hash": "ba797612c7aac007a9ee9ccd05039036b8a229ce080f594647987826c67f41fa",
       "output_path": "promotions/receipts/a5e776aef17a1d2312e3c0da.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/681a181feb0550dc5f13ff09.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-02 promotion of main 424d7ba following #47 (the third receipt of this installation that day, after 1ff300dc61088b3b7bb0478a and a5e776aef17a1d2312e3c0da): #44 dayz-mcp-verify and #41 dayz-p3d-audit merged while the promotion of 26e76a4 ran, and the owner chose to promote them in a new cycle. After #47 merged, its sealing worktree was removed (rule R1 of #35) and promote --check ran from a fresh worktree of 424d7ba with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (75 of 119 operations: skill/dayz-mcp-verify and skill/dayz-p3d-audit on agents_user_skills+claude_user_skills, 73 new vault snapshots; no live file removed). Projected with packctl's own alias localization, the skill changes are exactly the files git changed under skills/ since 26e76a4: dayz-mcp-verify SKILL.md and dayz-p3d-audit references/killers-detail.md. promote --apply PASS, transaction 681a181feb0550dc5f13ff09. Every destination re-measured after apply with packctl tree_digest equals its plan after_digest; the receipt's sha256 equals the COMMIT payload's receipt_hash; adjudications.json carries the advance packctl made at COMMIT for the 4 adjudicated pairs it promoted over (2 skills x 2 targets), each observed_digest now equal to its plan after_digest. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "98197aa952686711441155bbd01c982f9d40cc2f74ff5763821b660eb925d73f",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/681a181feb0550dc5f13ff09.json",
+          "source_revision": "kp-update-promotion-424d7ba@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "98197aa952686711441155bbd01c982f9d40cc2f74ff5763821b660eb925d73f",
+      "output_path": "promotions/receipts/681a181feb0550dc5f13ff09.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },

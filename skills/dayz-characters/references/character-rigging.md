@@ -193,25 +193,30 @@ normals (`mesh.corner_normals[loop].vector`, transformed by `matrix_world.to_3x3
   (0, 0, 1), (0, 1, 0)))` maps points and normals and reverses every face because det < 0; reverse them
   back and negate the normal pool. `py3d.BLENDER_TO_DAYZ` is the old `(x, z, −y)`, deprecated in 1.8.0 and
   kept as `py3d.ROT_X_NEG90`: not for this export.
-- **GATE — `check_dayz_winding.py` predates Rule 12 and fails a correct export.** It expects outward stored
-  normals and `cross · normal < 0`, the state of the LFInfectedBig det = +1 build. [OFFLINE MEASURED
-  2026-10-01] On the three MLODs of the Rule 12 in-game probe it exits 1 on all three. That includes the one
-  that renders solid and reads correctly in game (`cross.normal_positive=1.00`, `normals_outward=0.00`).
-  Its fix hints ("reverse every face", "orient normals outward") would turn that model inside-out.
-  [✓ in-game 2026-10-02, LFInfectedBig, chiral check below] The state this gate passes, winding in the MLOD
-  order with the normals stored OUTWARD, renders solid but lit inverted (dark on the sunlit side; base
+- **GATE — `check_dayz_winding.py`, rewritten 2026-10-02 for Rule 12.** Per visual LOD it reads the winding
+  by the signed volume by winding of each closed shell (negative, the production sign: right; positive:
+  inside-out, reverse that shell's faces) and the normals corner by corner per shell, against each face's
+  vector area as that reversal leaves it (below 10 % in every shell with the winding right: negate the normal
+  pool, keep the faces). Open parts are reported as not scored. Usage, exit codes and limits: SKILL.md
+  "OFFLINE GATE". *(Until then it expected
+  outward stored normals and `cross · normal < 0`, the state of the LFInfectedBig det = +1 build, and
+  [OFFLINE MEASURED 2026-10-01] exited 1 on all three MLODs of the Rule 12 in-game probe, the one that
+  renders solid and reads correctly included (`cross.normal_positive=1.00`, `normals_outward=0.00`), with
+  fix hints, "reverse every face" and "orient normals outward", that would turn that model inside-out.)*
+  [✓ in-game 2026-10-02, LFInfectedBig, chiral check below] The state the old gate passed, winding in the
+  MLOD order with the normals stored OUTWARD, renders solid but lit inverted (dark on the sunlit side; base
   shading on an untextured client), and so
-  does the shipped LFInfectedBig; the Rule 12 build it fails renders solid and lit like a vanilla zombie. (claim: CLAIM-CHAR-NORMALS-INWARD-INGAME)
+  does the shipped LFInfectedBig; the Rule 12 build it failed renders solid and lit like a vanilla zombie. (claim: CLAIM-CHAR-NORMALS-INWARD-INGAME)
   Binarize gives all of them vanilla's winding; only the inward-normal build keeps vanilla's relation
   between stored normals and winding in the ODOL (agreement 0.2 %, vanilla zombies 0.3-0.4 %, the
-  outward-normal builds 99.8 %). So store the normals inward, and until the script is updated, gate the
-  export with dayz-p3d-audit "Absolute winding check": normal agreement ≈ 100 % and a negative signed
-  volume by winding, the production sign. On the static probe that check passes both solid variants and
-  fails the inside-out one; on LFInfectedBig it passes the Rule 12 build (99.3 %, −0.109) and fails both
-  inverted ones (0.7-0.8 %). Like every winding gate, it cannot see a mirror. A double-sided
-  Blender/Three.js preview never shows DayZ's single-sided culling, so a gate is still needed. Do NOT
-  compare to a *debinarized* vanilla model for winding: the ODOL→MLOD converter's winding handling inverts
-  the comparison.
+  outward-normal builds 99.8 %). So store the normals inward. [OFFLINE MEASURED 2026-10-02] The rewritten
+  gate passes the Rule 12 build (every closed shell negative; 99.8 % of its corner normals agree, 99.5 % in
+  the body; the open ribcage tubes, 63.5 % of the faces, not scored) and fails both inverted ones on their
+  normals (0.2 % of the corners), as dayz-p3d-audit "Absolute winding check" does (Rule 12 build 99.3 %,
+  −0.109 on the body; the others 0.7-0.8 %). On the static probe both pass the two solid variants and fail the inside-out one. Like every
+  winding gate, it cannot see a mirror. A double-sided Blender/Three.js preview never shows DayZ's
+  single-sided culling, so a gate is still needed. Do NOT compare to a *debinarized* vanilla model for
+  winding: the ODOL→MLOD converter's winding handling inverts the comparison.
 - **Selection names LOWERCASE.** Vanilla `.p3d` selections are lowercase (`leftarm`, `pelvis`, `spine3`);
   Blender vgroups are MixedCase → `.lower()` them. (DayZ matching is case-insensitive, but match vanilla.)
 - **Identity binding (py3d F1-05).** Alias `points = lod.points` BEFORE creating any `Face(lod.points, …)`
@@ -262,7 +267,8 @@ Result. LFInfectedBig was rebuilt three ways from one dump, each with the "F": R
 equal to the shipped p3d in every point, normal, face and selection without the marker. References: a
 vanilla `ZmbM_SoldierNormal` and the player, sun from the east.
 - Rule 12 build: solid, the "F" reads correctly, lit like the vanilla zombie and the player.
-  check_dayz_winding.py fails it ("inside-out"); the absolute check passes it.
+  check_dayz_winding.py as it was that day failed it ("inside-out"); the absolute check passes it, and so
+  does the gate rewritten afterwards.
 - Rule 12 with outward normals: solid, the "F" reads correctly, lit inverted.
 - Shipped recipe: solid, the "F" MIRRORED, lit inverted.
 - An AI-enabled Rule 12 build walked about 18 m with its limbs in place; the attack was not seen (it never
