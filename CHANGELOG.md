@@ -324,6 +324,60 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   walks through it" is replaced, and so are "no collision" in the killer's opening and "physically
   invisible" in its root cause; the old text is quoted in a dated note. `dayz-model-pipeline`'s
   SP-003 note no longer lists "walks through" among the symptoms of collision winding.
+- `dayz-p3d-audit` "From Check B to fix" (`references/winding-diagnostics.md`), run on real
+  models (2026-10-02). Step 1 said a healthy welded component yields one group: on the SUB_BRZ
+  co-driver door (healthy, verified in game) the fill splits a 2,235-face component 2,121 + 114
+  with 7 parity conflicts, and the minority follows the order of the fill (6 to 246 faces over
+  41 other orders), and a real 30-face patch reversed inside that component came back mixed with
+  those 114 (144 faces). Step 1 now counts conflicts: a component with one, or one that splits
+  evenly, has no minority group and is inspected with item 2's visibility battery. Cutting the
+  edges traversed the same way and filling again found the damaged faces in two constructed cases
+  and four intact faces in a third (damage that took in a face of the door's seam), so no fill
+  decides it.
+  Step 3's branches were written for a part whose normals agree with its winding; on a part in
+  the older convention (the door's paint) they pick the wrong side. The part's row is now decided
+  first, from its faces outside the group, with the Check A table, never from its normals alone:
+  brought to Rule 12, step 1 run again and the group read as written, or, kept in the older
+  convention on purpose, read against it; no face outside the group, or MIXED, is inspected. One
+  face with no reading stops the whole group, and the closing corner check reads a part kept in
+  the older convention with `dot ≤ −0.1` (the healthy door's flags: 26,576 → 441 if all its 11
+  such parts are kept). The three GunRacks MLODs of the step's own record go through it as
+  before: their 156 faces read ≥ +0.99, and the result matches the files the 2026-08-28 fix saved
+  byte for byte once py3d rewrites both.
+  Check A's `MIXED` bullet aligned. Old text quoted in dated notes.
+- `dayz-p3d-audit`: two passages still spoke of `check_dayz_winding.py` as before its Rule 12 rewrite
+  (#53). Killer #1's dated note in `references/killers-detail.md` said the script "fails a correct
+  export", and Check A's `UNIFORM_FLIPPED` bullet in `references/winding-diagnostics.md` named it with
+  the LFInfectedBig outward-normal recipe. The gate now passes a correct export and fails the
+  outward-normal state on its normals (`mirror_b_normals_out.p3d` and LFInfectedBig's outward-normal
+  build, measured offline for #53); both passages say what it did then and what it does now.
+- `packctl gate` ran only `tests/packctl` and `tools/py3d/tests`, and CI only `tests/packctl`, so
+  the other twelve test folders the pack ships (`skills/<skill>/tests` in four skills, eight
+  `tools/<tool>/tests`) could go red with both green. One pytest run over the skill folders runs
+  nothing either: the four skills ship the same `test_install_py3d.py`, and the default import
+  mode aborts the collection ("import file mismatch", exit 2). The gate now runs each
+  `skills/<skill>/tests` and `tools/<tool>/tests` folder in its own pytest process (checks
+  `skill_tests` and `tool_tests`, findings `SKILL-TESTS-FAILED` and `TOOL-TESTS-FAILED`, a log and
+  a run record per folder in the report directory), and `packctl test-folders` runs those checks
+  alone (its tools tree includes `tools/py3d/tests`, which the gate checks separately). The gate
+  loads a pytest plugin, `packctl/pytest_observer.py`, into each run, and it records the run
+  through pytest's hooks. A folder passes when pytest exits 0 or 5 ("no test collected") and that
+  record shows no failure, no test deselected, dropped or added after collection, every
+  collected test run to the end, and every `test_*.py` or `*_test.py` module of the folder
+  either collected or skipping itself at import; exit 5 also needs that skip, which is what
+  modules that skip themselves at import (`pytest.importorskip("bpy")` without Blender)
+  produce. A failing or uncollectable folder, an empty one, script-style checks, a
+  collection-only run, a module kept out of collection by configuration and a run ended early
+  fail, and the gate's pytest runs ignore `PYTEST_ADDOPTS`. CI runs `packctl test-folders --tree
+  skills`; the tool folders stay gate-only,
+  since five of them import packages the runner does not install (jsonschema, numpy, Pillow,
+  py3d). They add 4 to 8 minutes to the gate, almost all of it `dayz-vehicle-proxy-contract`.
+  Measured on `26e76a4`, folder by folder: 24 skill tests and 629 tool tests pass,
+  `dayz-odol-strict` skips 5 without `DAYZ_ODOL_BACKEND_ROOT`, and none of these twelve folders
+  needs Blender, DayZ or the P: drive. Test files outside `skills/<skill>/tests` are not run:
+  `dayz-realistic-animation-director/scripts/tests` (one of its modules imports `bpy`),
+  `dayz-proxy-align/scripts/test_proxy_frame.py` and
+  `dayz-mcp-verify/references/test_drive_ladder.py`.
 - `dayz-model-pipeline` SP-003 no longer tells you to match a collision LOD's winding to the Visual
   LOD. It said to compare the two "(centroid method) BEFORE deploying — they must agree in sign",
   and that `audit_p3d.py` does not validate this. `audit_p3d.py` does run that comparison, py3d's
