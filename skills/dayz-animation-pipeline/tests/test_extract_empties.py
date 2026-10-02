@@ -3,7 +3,9 @@ and build_rig_dayz.py.
 
 extract_empties.py runs inside Blender. These tests run it against stand-in
 `bpy` and `mathutils` modules that hold a scene built by hand, so they need
-numpy only. Every expected matrix is worked out in the comment above it.
+numpy only (build_rig_dayz.py needs it too); without numpy, as on the CI
+runner, the module skips itself. Every expected matrix is worked out in the
+comment above it.
 """
 
 import json
@@ -15,8 +17,9 @@ import subprocess
 import sys
 from types import ModuleType, SimpleNamespace
 
-import numpy as np
 import pytest
+
+np = pytest.importorskip("numpy")
 
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"

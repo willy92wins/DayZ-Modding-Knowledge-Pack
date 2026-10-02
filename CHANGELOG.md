@@ -44,7 +44,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   "Reusable tools" list the pipeline in the order it runs, with `--python-exit-code 1` for the
   Blender steps and a stop at the first non-zero exit (without the flag an uncaught Python
   exception exits 0).
-  Regression test: `tests/test_extract_empties.py`. Its FBX path placeholder adds it to the pinned
+  Regression test: `tests/test_extract_empties.py`, which skips itself where numpy is missing, as on
+  the CI runner that now runs the skill test folders. Its FBX path placeholder adds it to the pinned
   census of payloads that only run once an operator edits a path (`tests/packctl/test_promotion.py`).
 ### Changed
 
@@ -371,6 +372,39 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   before: their 156 faces read ≥ +0.99, and the result matches the files the 2026-08-28 fix saved
   byte for byte once py3d rewrites both.
   Check A's `MIXED` bullet aligned. Old text quoted in dated notes.
+- `dayz-p3d-audit`: two passages still spoke of `check_dayz_winding.py` as before its Rule 12 rewrite
+  (#53). Killer #1's dated note in `references/killers-detail.md` said the script "fails a correct
+  export", and Check A's `UNIFORM_FLIPPED` bullet in `references/winding-diagnostics.md` named it with
+  the LFInfectedBig outward-normal recipe. The gate now passes a correct export and fails the
+  outward-normal state on its normals (`mirror_b_normals_out.p3d` and LFInfectedBig's outward-normal
+  build, measured offline for #53); both passages say what it did then and what it does now.
+- `packctl gate` ran only `tests/packctl` and `tools/py3d/tests`, and CI only `tests/packctl`, so
+  the other twelve test folders the pack ships (`skills/<skill>/tests` in four skills, eight
+  `tools/<tool>/tests`) could go red with both green. One pytest run over the skill folders runs
+  nothing either: the four skills ship the same `test_install_py3d.py`, and the default import
+  mode aborts the collection ("import file mismatch", exit 2). The gate now runs each
+  `skills/<skill>/tests` and `tools/<tool>/tests` folder in its own pytest process (checks
+  `skill_tests` and `tool_tests`, findings `SKILL-TESTS-FAILED` and `TOOL-TESTS-FAILED`, a log and
+  a run record per folder in the report directory), and `packctl test-folders` runs those checks
+  alone (its tools tree includes `tools/py3d/tests`, which the gate checks separately). The gate
+  loads a pytest plugin, `packctl/pytest_observer.py`, into each run, and it records the run
+  through pytest's hooks. A folder passes when pytest exits 0 or 5 ("no test collected") and that
+  record shows no failure, no test deselected, dropped or added after collection, every
+  collected test run to the end, and every `test_*.py` or `*_test.py` module of the folder
+  either collected or skipping itself at import; exit 5 also needs that skip, which is what
+  modules that skip themselves at import (`pytest.importorskip("bpy")` without Blender)
+  produce. A failing or uncollectable folder, an empty one, script-style checks, a
+  collection-only run, a module kept out of collection by configuration and a run ended early
+  fail, and the gate's pytest runs ignore `PYTEST_ADDOPTS`. CI runs `packctl test-folders --tree
+  skills`; the tool folders stay gate-only,
+  since five of them import packages the runner does not install (jsonschema, numpy, Pillow,
+  py3d). They add 4 to 8 minutes to the gate, almost all of it `dayz-vehicle-proxy-contract`.
+  Measured on `26e76a4`, folder by folder: 24 skill tests and 629 tool tests pass,
+  `dayz-odol-strict` skips 5 without `DAYZ_ODOL_BACKEND_ROOT`, and none of these twelve folders
+  needs Blender, DayZ or the P: drive. Test files outside `skills/<skill>/tests` are not run:
+  `dayz-realistic-animation-director/scripts/tests` (one of its modules imports `bpy`),
+  `dayz-proxy-align/scripts/test_proxy_frame.py` and
+  `dayz-mcp-verify/references/test_drive_ladder.py`.
 
 ## [1.5.0] - 2026-10-02
 

@@ -39,3 +39,10 @@ jobs:
 
       - name: Test packctl
         run: python -m pytest -q -p no:cacheprovider tests/packctl
+
+      # The skill test folders, each in its own pytest process, through the
+      # code and pass rule of the publish gate's skill_tests check.
+      # tools/<tool>/tests stay gate-only: five of them import packages this
+      # runner does not install (jsonschema, numpy, Pillow, py3d).
+      - name: Test skills
+        run: python -m packctl test-folders --root . --tree skills --report-dir "$env:RUNNER_TEMP\skill-tests"
