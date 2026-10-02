@@ -1222,6 +1222,19 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-mcp-verify-stand-probe@2026-10-02",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+      "claim_id": "CLAIM-ANIM-ROUTEC-FBX-INGAME",
+      "evidence_locator": "In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cbb11150 (criteria written before the run: C:/tmp/chiral-ingame-work/FWD_TEST_PLAN.md). LeftArm alone keyed on animation_rig_character.fbx (Blender 5.1.1) straight ahead at 20 deg above horizontal (anim/bl_fwdraise.py). FB: skills/dayz-animation-pipeline/scripts/seanim_export.py (sha256 e697fcf0..., rig read as fbx, rot (-x,-z,-y,w)); FA: WeaponAnimPipeline_dev tools/seanim_export.py (sha256 6383fa03..., rot (-y,-z,x,w)); each LeftArm track spliced alone into the DayZATool v1.3 extract of p_1hd_erc_idle_low.anm (modifiers kept; anim/splice_fwd.py), DayZATool --generate-anim, child .asi of player_main_1h_fruit.asi on Locomotion.Erc.Idle* via AddItemInHandsProfileIK on Apple subclasses held in the right hand. FB: left arm forward of the chest, slightly above horizontal (left-side capture 205332_268, overhead 205444_625); FA: out to the character's left, a little behind the shoulder line (front 205255_114 and 205409_025, overhead 205424_856); second takes agreed. Offline FK on the vanilla idle (anim/fwd_predict2.py): FBX map forward 14 deg up, JD map to the side 16 deg down; elevation not measured in game; front = +Z of the clip's SEAnim space from its toes, elbows and knees (anim/front_check.py). Scope: one bone, rotations only (bone offsets from the vanilla clip, so the (x,z,y) offset map is not exercised), one run; the JD rig not played. Evidence: C:/tmp/chiral-ingame-work/REPORT.md section 4, shots/fwd_raise_contact_sheet.png, logs/run_cbb11150.",
+      "license": "MIT",
+      "line_end": 213,
+      "line_start": 213,
+      "observed_at": "2026-10-02",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1
