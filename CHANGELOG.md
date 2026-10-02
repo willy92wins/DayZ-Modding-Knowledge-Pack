@@ -314,6 +314,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   walks through it" is replaced, and so are "no collision" in the killer's opening and "physically
   invisible" in its root cause; the old text is quoted in a dated note. `dayz-model-pipeline`'s
   SP-003 note no longer lists "walks through" among the symptoms of collision winding.
+- `dayz-p3d-audit`: two passages still spoke of `check_dayz_winding.py` as before its Rule 12 rewrite
+  (#53). Killer #1's dated note in `references/killers-detail.md` said the script "fails a correct
+  export", and Check A's `UNIFORM_FLIPPED` bullet in `references/winding-diagnostics.md` named it with
+  the LFInfectedBig outward-normal recipe. The gate now passes a correct export and fails the
+  outward-normal state on its normals (`mirror_b_normals_out.p3d` and LFInfectedBig's outward-normal
+  build, measured offline for #53); both passages say what it did then and what it does now.
 
 ## [1.5.0] - 2026-10-02
 

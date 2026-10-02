@@ -551,10 +551,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-p3d-audit-killer1-walk@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Two dayz-p3d-audit passages still described check_dayz_winding.py as before its Rule 12 rewrite (Pack #53, 18ffa31): killer #1's dated note (references/killers-detail.md) said it fails a correct export, and Check A's UNIFORM_FLIPPED bullet (references/winding-diagnostics.md) named it with the LFInfectedBig outward-normal recipe. Both now say what it did then and what it does now. The new behaviour is the one measured offline for #53: the gate passes mirror_b (Rule 12) and fails mirror_b_normals_out and LFInfectedBig's outward-normal build on their normals. Owner request 2026-10-02 (the two lines left to their branches when #53 merged). Written by Claude (Anthropic); wording-only change, no cross-family review.",
+          "license": "MIT",
+          "source_hash": "252d9af7b04c9239400060ec0334b7d4cddb461cf4f5c0507aafda6fa566c7cf",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-p3d-audit-gate-mentions@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "570c58569634a133449f4a7a3a9449dc8419d9dcee4c2f8166b87c7049665bb1",
+      "output_hash": "252d9af7b04c9239400060ec0334b7d4cddb461cf4f5c0507aafda6fa566c7cf",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8314,10 +8324,20 @@
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-p3d-audit-killer1-walk@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Two dayz-p3d-audit passages still described check_dayz_winding.py as before its Rule 12 rewrite (Pack #53, 18ffa31): killer #1's dated note (references/killers-detail.md) said it fails a correct export, and Check A's UNIFORM_FLIPPED bullet (references/winding-diagnostics.md) named it with the LFInfectedBig outward-normal recipe. Both now say what it did then and what it does now. The new behaviour is the one measured offline for #53: the gate passes mirror_b (Rule 12) and fails mirror_b_normals_out and LFInfectedBig's outward-normal build on their normals. Owner request 2026-10-02 (the two lines left to their branches when #53 merged). Written by Claude (Anthropic); wording-only change, no cross-family review.",
+          "license": "MIT",
+          "source_hash": "7f2b34c0f65c80505d49e4d33bc29727117abb49c10f4fe5c8d10f487020d66d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "kp-update-p3d-audit-gate-mentions@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "02f28b12fbe713efe0694aa3c9b2e170fa9ea91eca0b8ea95db55c107f0d9eb9",
+      "output_hash": "7f2b34c0f65c80505d49e4d33bc29727117abb49c10f4fe5c8d10f487020d66d",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -8428,10 +8448,20 @@
           "source_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
           "source_revision": "kp-update-p3d-audit-step3@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Two dayz-p3d-audit passages still described check_dayz_winding.py as before its Rule 12 rewrite (Pack #53, 18ffa31): killer #1's dated note (references/killers-detail.md) said it fails a correct export, and Check A's UNIFORM_FLIPPED bullet (references/winding-diagnostics.md) named it with the LFInfectedBig outward-normal recipe. Both now say what it did then and what it does now. The new behaviour is the one measured offline for #53: the gate passes mirror_b (Rule 12) and fails mirror_b_normals_out and LFInfectedBig's outward-normal build on their normals. Owner request 2026-10-02 (the two lines left to their branches when #53 merged). Written by Claude (Anthropic); wording-only change, no cross-family review.",
+          "license": "MIT",
+          "source_hash": "eb2946a813e2b6ff175963a8536a54d45e53a269654f9abfd26ae8adce3aacf6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
+          "source_revision": "kp-update-p3d-audit-gate-mentions@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0a5bf846bb2f5575576ccf0e407244af7dbf3425a9af27e2357ad2089f0fe2fc",
+      "output_hash": "eb2946a813e2b6ff175963a8536a54d45e53a269654f9abfd26ae8adce3aacf6",
       "output_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
