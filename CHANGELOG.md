@@ -436,17 +436,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   reversed every face of every LOD, which on a model whose LODs are not all wrong moves the
   inversion onto the healthy ones, against killer #1 and rule 7. It now reverses only the faces
   the direction check of their kind reads wrong: Rule 18's per-component check on a collision
-  component (prerequisites and stored normals as killer #1 says), the signed volume of each closed
-  Visual shell, read after Check B, against the side meant to be seen (an open or double-sided
-  part has no sign), and rule 4's sign on walkable Roadway faces; every face of every LOD only
-  inside a whole-model operation, undoing the reversal `P3D.transform()` applies for a det<0
-  matrix or rule 8's reflection. Measured offline (py3d 1.9.0, synthetic 2 m boxes, stored
-  normals agreeing with the winding): a correct exterior Visual LOD (signed volume −8) over a
-  Geometry box wound outward (+8) ended at Visual +8 and Geometry −8 under the old rule,
-  `ERR_WINDING_INVERTED` still raised, and at −8 and −8 with no winding finding under the new
-  one; on an export with every face of every LOD reversed, the two write the same faces and
-  normals. The normals branch is unchanged, and the old sentence is quoted in a dated note.
-  Finding R21-ALIGN-01 of the cross-family review of #67.
+  component (prerequisites as killer #1 says), the signed volume of each closed Visual shell, read
+  after Check B, against the side meant to be seen (an open or double-sided part has no sign), and
+  rule 4's sign on walkable Roadway faces; then it negates each corner normal of those faces that
+  points against its face. Every face of every LOD only inside a whole-model operation, undoing
+  the reversal `P3D.transform()` applies for a det<0 matrix or rule 8's reflection. The normals
+  branch negates the whole pool only when every corner points against its face, as on the
+  LFSecure exports the rule was written for, and otherwise only the corners that do, through a
+  negated copy of any entry a kept corner also uses. Measured offline (py3d 1.9.0, synthetic 2 m
+  boxes, stored normals agreeing with the winding): a correct exterior Visual LOD (signed volume
+  −8) over a Geometry box wound outward (+8) ended at Visual +8 and Geometry −8 under the old
+  rule, `ERR_WINDING_INVERTED` still raised, and at −8 and −8 with no winding finding under the
+  new one; on an export with every face of every LOD reversed, the two write the same faces and
+  normals; in a Visual LOD whose healthy and inverted boxes share six pool entries, negating the
+  whole pool after the repair left 24 of 48 corners agreeing and turned the healthy box's
+  normals, where six negated copies left 48 of 48. The old sentence stays quoted in a dated note.
+  Finding R21-ALIGN-01 of the cross-family review of #67; the pool rule answers this change's own
+  review.
 
 ## [1.5.0] - 2026-10-02
 
