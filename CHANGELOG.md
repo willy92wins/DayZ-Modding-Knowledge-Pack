@@ -324,6 +324,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   walks through it" is replaced, and so are "no collision" in the killer's opening and "physically
   invisible" in its root cause; the old text is quoted in a dated note. `dayz-model-pipeline`'s
   SP-003 note no longer lists "walks through" among the symptoms of collision winding.
+- `dayz-p3d-audit` "From Check B to fix" (`references/winding-diagnostics.md`), run on real
+  models (2026-10-02). Step 1 said a healthy welded component yields one group: on the SUB_BRZ
+  co-driver door (healthy, verified in game) the fill splits a 2,235-face component 2,121 + 114
+  with 7 parity conflicts, and the minority follows the order of the fill (6 to 246 faces over
+  41 other orders), and a real 30-face patch reversed inside that component came back mixed with
+  those 114 (144 faces). Step 1 now counts conflicts: a component with one, or one that splits
+  evenly, has no minority group and is inspected with item 2's visibility battery. Cutting the
+  edges traversed the same way and filling again found the damaged faces in two constructed cases
+  and four intact faces in a third (damage that took in a face of the door's seam), so no fill
+  decides it.
+  Step 3's branches were written for a part whose normals agree with its winding; on a part in
+  the older convention (the door's paint) they pick the wrong side. The part's row is now decided
+  first, from its faces outside the group, with the Check A table, never from its normals alone:
+  brought to Rule 12, step 1 run again and the group read as written, or, kept in the older
+  convention on purpose, read against it; no face outside the group, or MIXED, is inspected. One
+  face with no reading stops the whole group, and the closing corner check reads a part kept in
+  the older convention with `dot ≤ −0.1` (the healthy door's flags: 26,576 → 441 if all its 11
+  such parts are kept). The three GunRacks MLODs of the step's own record go through it as
+  before: their 156 faces read ≥ +0.99, and the result matches the files the 2026-08-28 fix saved
+  byte for byte once py3d rewrites both.
+  Check A's `MIXED` bullet aligned. Old text quoted in dated notes.
 - `packctl gate` ran only `tests/packctl` and `tools/py3d/tests`, and CI only `tests/packctl`, so
   the other twelve test folders the pack ships (`skills/<skill>/tests` in four skills, eight
   `tools/<tool>/tests`) could go red with both green. One pytest run over the skill folders runs
