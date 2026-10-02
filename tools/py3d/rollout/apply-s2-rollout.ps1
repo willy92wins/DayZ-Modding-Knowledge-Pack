@@ -144,11 +144,16 @@ function Get-SkillWheelFiles(
     if (-not (Test-Path -LiteralPath $WheelsDirectory -PathType Container)) {
         return @()
     }
+    # Both distribution names count: py3d-* up to 1.4.0 and py3d_dayz-* since
+    # the rename. A py3d_dayz wheel of an earlier pin left out here would stay
+    # next to the new one, and the skills' installer, which wants exactly one
+    # py3d_dayz-*-py3-none-any.whl, would refuse the directory.
     return @(
         Get-ChildItem -LiteralPath $WheelsDirectory -File |
             Where-Object {
                 $_.Name -eq $PinnedFileName -or
-                $_.Name -like "py3d-*.whl"
+                $_.Name -like "py3d-*.whl" -or
+                $_.Name -like "py3d_dayz-*.whl"
             }
     )
 }

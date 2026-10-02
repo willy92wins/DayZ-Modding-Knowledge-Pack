@@ -315,7 +315,8 @@ Geometry LOD has mass (`new Point()` defaults to `mass=None`; `add_proxy` points
 ### 3.5 `validate()` findings that are EXPECTED for a vehicle (don't chase)
 
 - **`ERR_COMPONENT_NAMING` (lowercase `component01`)** is a **false-positive for vehicles** from py3d up
-  to 1.8.0, the pinned wheel — vanilla CivilianSedan itself triggers it (it uses lowercase); py3d 1.9.0
+  to 1.8.0 (pinned until 2026-10-02) — vanilla CivilianSedan itself triggers it (it uses
+  lowercase); py3d 1.9.0
   does not check the case. Match vanilla: lowercase. (`component01` collided
   like `Component01` on an `Inventory_Base` item too: dayz-p3d-audit killer #2, measured in game 2026-10-02. The same code
   for a collision LOD with faces and no component at all is not expected: on an item and a building that
