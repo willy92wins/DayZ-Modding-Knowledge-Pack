@@ -123,6 +123,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `ERR_WINDING_VS_NORMALS`, and `validate()` goes quiet only once those LODs' normals are negated
   too, with every LOD wound outward.
 
+### Changed
+
+- `dayz-p3d-audit` "Absolute winding check", rule 6: the kit box's missing collision is measured
+  now, not a hypothesis. In a paired run (2026-10-02, DayZDiag 1.29.163709, the kit's own config on
+  three classes, the MLODs packed unbinarized) the shipped `lf_kit_box.p3d` took 0 of 27
+  `scene_raycast` rays in `geom`, `view` and `fire` again, and the same bytes with only the
+  collision LODs' faces reversed took 27 of 27, with the collision normals negated or kept, at the
+  same coordinates; a vanilla `WoodenCrate` took 27 of 27. Binarize writes the two fixed variants
+  to the same ODOL. A physics-world ray (`DayZPhysics.RayCastBullet`) hits the shipped kit where it
+  hits the fixed ones: the outward winding breaks the `RaycastRV`/`RaycastRVProxy` consumers (the
+  action cursor, hologram placement), not the physics body. The replaced sentence is quoted in a
+  dated note.
+
 ## [1.5.0] - 2026-10-02
 
 The Blender→DayZ map end to end: py3d 1.8.0 `blender_to_dayz()` and the deprecation of
