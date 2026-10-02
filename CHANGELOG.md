@@ -99,6 +99,33 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   outward component), and `dayz-model-pipeline`
   `py3d-direct-generation.md` said any disagreement between winding and normals renders
   inside-out.
+- `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
+  said a broken Geometry LOD has its normals pointing inward and fixed it by swapping
+  `vertices[1]`/`[2]`; Rule 12 stores the cross product and the normals both inward, and the swap
+  turns a quad into a crossed face. The killer is now a collision LOD wound opposite to the
+  Visual LOD, the relative check `audit_p3d.py` runs through py3d `P3D.validate()`
+  (`ERR_WINDING_INVERTED`), read as a trigger. Rule 18's per-component check decides: every face
+  of every closed, convex component must point inward, and faces outside every component, or a
+  face whose first three corners are collinear, leave it unresolved. `face.vertices.reverse()`
+  fixes the faces that read outward, and a collision LOD is never reversed to match the Visual
+  LOD ("Absolute winding check", rule 7). The decision tree's step 5a now reverses each outward
+  face too (it reversed every face of the component, which turns its healthy faces outward), and
+  `dayz-model-pipeline` Rule 18 gets a dated note saying the same: every face, not most, and only
+  the outward faces reversed, since its whole-LOD fix moves the inversion onto the healthy
+  component of a LOD with one healthy and one outward component. Measured offline
+  with py3d 1.8.0 on synthetic boxes: the finding fires on an outward box and clears after
+  `reverse()`, also fires on a healthy box under a Visual LOD whose cross product points outward,
+  and on two boxes 4 m apart reads only `WARN_WINDING_MIXED`, healthy or not. The killer's offline
+  pointer to `check_dayz_winding.py`, which fails a correct export, and the "Z-up → Y-up flips
+  collision winding but not visual" pitfall are corrected with it. Check A called any 5-95 %
+  reading a CRITICAL real bug; the SUB_BRZ co-driver door, verified in game, reads `MIXED`
+  (72.67 % of 11,921 faces flipped, 25.9 % agreeing) without an inverted face group (Check B: one
+  stray edge in 17,542, and with it cut every welded component orients as one group), because its
+  parts follow two conventions: exterior paint, black trim and mirror against their normals,
+  cabin trim and glass with them. A mixed reading is now a WARNING to split by part, each part or
+  group repaired from the Check A table, so a group's normals turn with its winding only when
+  they agreed with it. Rule 2 of "Absolute winding check" keeps its sentence and gets the
+  measurement in a dated note: on that door the twins (144 faces) do not explain the mix.
 - py3d `ERR_WINDING_VS_NORMALS` message: it read every disagreement between winding and stored
   normals as faces wound backwards and prescribed `face.vertices.reverse()` on every face, and
   the py3d README called that fix always correct. The finding only says the two disagree. On the
