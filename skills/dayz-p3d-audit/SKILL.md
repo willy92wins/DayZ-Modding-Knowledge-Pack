@@ -257,8 +257,9 @@ Missing stages produce engine warnings but don't crash.
 
 5. Run audit_p3d.py and check:
    a. Collision cross product INWARD per component (dayz-model-pipeline Rule 18)?
-                                 → If OUTWARD: face.vertices.reverse() on that LOD's faces, never
-                                   a verts[1]/verts[2] swap (a quad crosses); for the normals, see
+                                 → If OUTWARD: face.vertices.reverse() on the faces of that
+                                   component only (proxy:* faces excluded), never a
+                                   verts[1]/verts[2] swap (a quad crosses); for the normals, see
                                    the Check A table in references/winding-diagnostics.md.
                                    (Corrected 2026-10-02: this line asked for OUTWARD winding and
                                    swapped verts[1]/verts[2] when inward.)
