@@ -319,7 +319,7 @@ updated, gate an export with inward normals with dayz-p3d-audit "Absolute windin
 fails the inside-out one. Measured on a skinned character too (LFInfectedBig, in game 2026-10-02, chiral
 check in `references/character-rigging.md`): the Rule 12 build the script fails is solid and lit like
 vanilla; the builds it passes, normals stored outward, are lit inverted, and the shipped one is also
-mirrored. Store the normals inward; the absolute check passes the Rule 12 build and fails both others.
+mirrored. Store the normals inward; the absolute check passes the Rule 12 build and fails both others. (claim: CLAIM-CHAR-NORMALS-INWARD-SKILL)
 
 ```
 python references/check_dayz_winding.py <source_mlod.p3d>   # legacy outward-normal builds only (see above)

@@ -200,7 +200,7 @@ normals (`mesh.corner_normals[loop].vector`, transformed by `matrix_world.to_3x3
   Its fix hints ("reverse every face", "orient normals outward") would turn that model inside-out.
   [✓ in-game 2026-10-02, LFInfectedBig, chiral check below] The state this gate passes, winding in the MLOD
   order with the normals stored OUTWARD, renders solid but lit inverted (dark on the sunlit side), and so
-  does the shipped LFInfectedBig; the Rule 12 build it fails renders solid and lit like a vanilla zombie.
+  does the shipped LFInfectedBig; the Rule 12 build it fails renders solid and lit like a vanilla zombie. (claim: CLAIM-CHAR-NORMALS-INWARD-INGAME)
   Binarize gives all of them vanilla's winding; only the inward-normal build keeps vanilla's relation
   between stored normals and winding in the ODOL (agreement 0.2 %, vanilla zombies 0.3-0.4 %, the
   outward-normal builds 99.8 %). So store the normals inward, and until the script is updated, gate the
