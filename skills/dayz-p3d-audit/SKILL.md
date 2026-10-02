@@ -135,9 +135,10 @@ each killer (root cause, detection snippet, fix, caveats) →
    `Component01` (rays, physics ray, walk; unbinarized and binarized, and binarize writes both as
    `component01`), so do not rename it to repair collision; other spellings were not measured
    (`references/killers-detail.md` §2). Fix: select each closed, convex part as its own
-   `ComponentNN`, the components together covering the LOD (killer #8). py3d
-   `ERR_COMPONENT_NAMING` is right when the Geometry LOD has no component and a false positive on
-   `component01`. *(Corrected 2026-10-02: titled "Component Selection Case
+   `ComponentNN`, the components together covering the LOD (killer #8). py3d 1.9.0
+   `ERR_COMPONENT_NAMING` flags exactly this, on the Geometry, View and Fire LODs, whatever the
+   name's case; up to 1.8.0 (the pinned wheel) it checked the Geometry LOD alone and was a false
+   positive on `component01`. *(Corrected 2026-10-02: titled "Component Selection Case
    Sensitivity", this entry read "Geometry component MUST be `Component01` (uppercase C); any
    variation silently loses ALL collision.")*
 3. **Missing `autocenter=0` LOD Property** (CRITICAL for Inventory_Base) — items with
@@ -339,7 +340,8 @@ Missing stages produce engine warnings but don't crash.
    published ODOL with a predicate calibrated on ODOL, never one ported from the MLOD
    (LL-273, "MLOD to ODOL is a winding-sign boundary", below)
 5. **`component01` collides like `Component01`** — the MLOD keeps the name as written and py3d
-   compares names exactly, but in game `component01` behaved exactly like `Component01`, and
+   looks selections up by exact name (its component check ignores the case from 1.9.0), but in
+   game `component01` behaved exactly like `Component01`, and
    binarize writes `Component01` as `component01` (killer #2). Other spellings, other selections
    and names that differ only by case inside one model were not measured. *(Corrected 2026-10-02: this item read "**Named selections are
    case-sensitive** in MLOD format. `Component01` ≠ `component01`".)*

@@ -79,9 +79,12 @@ python -m py3d diff     a.p3d b.p3d  # structural comparison
   Note DayZ does **not** use the Arma-3-era `e13` ids for FireGeo/ViewGeo:
   they are `7e15` and `6e15`. Getting this wrong means bullets pass through
   your model.
-- `P3D.validate()` reports missing/misnamed `Component01`, `#Mass#` outside the
-  Geometry LOD, non-watertight collision, degenerate faces, memory-point
-  structure, winding problems, and more.
+- `P3D.validate()` reports a Geometry, View or Fire LOD with faces but no
+  `ComponentNN` selection (in game such a LOD collides with nothing, and
+  nothing logs it), `#Mass#` outside the Geometry LOD, non-watertight
+  collision, degenerate faces, memory-point structure, winding problems, and
+  more. The case of a component's name is not checked: `component01` collided
+  in game exactly like `Component01`.
 
 **Editing helpers**
 - `bbox`, `triangulate`, `set_selection`, `set_total_mass`, `set_memory_point`,

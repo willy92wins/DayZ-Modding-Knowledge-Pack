@@ -122,6 +122,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   winds every face of each collision box outward and trades the finding for
   `ERR_WINDING_VS_NORMALS`, and `validate()` goes quiet only once those LODs' normals are negated
   too, with every LOD wound outward.
+- py3d `ERR_COMPONENT_NAMING` (py3d 1.9.0). It checked the Geometry LOD alone and also fired on a
+  lowercase `component01` ("Engine requires 'Component01' (uppercase C); collision silently
+  fails"), which in game collides exactly like `Component01` (the killer #2 entry above); vanilla vehicles
+  name their components that way. It now flags a Geometry, View or Fire LOD that has faces outside
+  its proxy selections and no component selection, says its collision is lost silently, and does
+  not check the case of the name. `WARN_COMPONENT_NAMING` now only flags a LOD whose component
+  names are none of them `Component` and a number (e.g. only `Component_01`, a spelling never
+  measured); `COMPONENT01` and `Component02` raise nothing. A collision LOD without faces of its
+  own (a mass-only Geometry LOD, or one holding only proxy triangles) raises nothing. A LOD
+  without a component while the other collision LODs have one was not measured in game; each LOD
+  is checked on its own. Measured offline with the old and the new module through
+  `P3D._scan_v12_findings` on 414 unique MLODs (the owner's mod and vehicle projects and the
+  Pack's door samples): the old check raised 94 errors, all on Geometry LODs, 88 of them with
+  lowercase component names and 5 on Geometry LODs without faces (ruined wheels, one a
+  debinarized vanilla `sedanwheel_destroyed`); the new one raises 1, a Geometry LOD with faces and
+  no component, and nothing on View or Fire, where every LOD with faces has a component. The v2
+  test fixture's View and Fire LODs, which had no component, get `Component01`. The `dayz-p3d-audit`, `dayz-vehicles` and `dayz-clothing` notes on
+  this finding now say which py3d version does what. No new wheel: the pinned and installed
+  `py3d_dayz-1.8.0` keeps the old check, and `apply-s2-rollout.ps1 -WheelOnly` refuses to restock
+  until a 1.9.0 wheel is built and pinned.
 
 ## [1.5.0] - 2026-10-02
 

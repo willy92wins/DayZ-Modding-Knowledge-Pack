@@ -451,10 +451,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-p3d-audit-step3@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "89d2dcb64a453967937401a68f0ac573e399d820c4cf09411af4fa3beafb2cf0",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e6ca404b21a2647acf92049d0a7c51b55a5368e3bb222eec1404d575af1f44e3",
+      "output_hash": "89d2dcb64a453967937401a68f0ac573e399d820c4cf09411af4fa3beafb2cf0",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6158,10 +6168,20 @@
           "source_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "510013a08278363d10efdc4c3d79f326e1cf40ceaeed20e401550f75965f56d1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "bf43698c445141d4c149cfe9c785a38861d7ac01aa07bd3f8908ab67104fda6c",
+      "output_hash": "510013a08278363d10efdc4c3d79f326e1cf40ceaeed20e401550f75965f56d1",
       "output_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "offline_tested"
@@ -7902,10 +7922,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-p3d-audit-step3@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d10fcf968ea796f0a3d0c6c6bc8bbdeaf42939e1f969ebe47c4d3183b019b68c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f5080a691dec9c9823cf03596a9491fc53460c5e1a7a3137ca8c6a7f14c4472e",
+      "output_hash": "d10fcf968ea796f0a3d0c6c6bc8bbdeaf42939e1f969ebe47c4d3183b019b68c",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -7944,10 +7974,20 @@
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6f122c568b3417131f96e99688e0a196c5715d8328b3b54ce5ffbd5edf1b3611",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "010920c5b4a4df7ca742637ef7baeecec262fc4c407ec20970e382a493cc213b",
+      "output_hash": "6f122c568b3417131f96e99688e0a196c5715d8328b3b54ce5ffbd5edf1b3611",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -12226,10 +12266,20 @@
           "source_path": "skills/dayz-vehicles/references/rip-import.md",
           "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c632b0d406ac02db21dabd43ffabd0d08c4964327b8869cf3939ecb59f147632",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/rip-import.md",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "011cfc76cf0f40986ce238934195c10497f1337d21e8fafbcab0df5bca5090cb",
+      "output_hash": "c632b0d406ac02db21dabd43ffabd0d08c4964327b8869cf3939ecb59f147632",
       "output_path": "skills/dayz-vehicles/references/rip-import.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -12360,10 +12410,20 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
           "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cb986bd246f2fe6f0a2547073ec5e577758e5cb9b71a97f0148f69569f069fed",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "aa113739fa97aabf763636f17951a8fb64f4a508d841bf633db2ca816af06d52",
+      "output_hash": "cb986bd246f2fe6f0a2547073ec5e577758e5cb9b71a97f0148f69569f069fed",
       "output_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -14915,10 +14975,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-p3d-audit-step3@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Moves the line ranges of claims whose markers shifted in files this change edits (dayz-p3d-audit SKILL.md gained lines above CLAIM-P3D-KITBOX-OUTWARD-INGAME); no claim added or reworded.",
+          "license": "MIT",
+          "source_hash": "a6afa9a44c7e6bb13a50bceb18b6174c91b042f82b649931c66beb96be0f31c5",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f37e894fac6daa783d43567f9341d2f0c045c09096cccb897b00b798d696780d",
+      "output_hash": "a6afa9a44c7e6bb13a50bceb18b6174c91b042f82b649931c66beb96be0f31c5",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -23885,7 +23955,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "650bb11b3660a659561ff5d2d85dd916d1fea5bf6d1b5b921e05626b0e8d92f1",
+      "output_hash": "c7da847d98a428ebcf6470a3501e2edfd1c5c173f4e0a07a299d29645d95ce33",
       "output_path": "tools/py3d/KNOWN-ISSUES.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24026,10 +24096,20 @@
           "source_path": "tools/py3d/README.md",
           "source_revision": "kp-update-py3d-winding-hint@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9ad502436bf385a213252600c6d4a2d3c5e813446304ea5fbd3ddd0765a19190",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/README.md",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2a7ea2e2606d0ef6897741541817e8fe64a9badfd09901a08a4d71f22087d60e",
+      "output_hash": "9ad502436bf385a213252600c6d4a2d3c5e813446304ea5fbd3ddd0765a19190",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24118,10 +24198,20 @@
           "source_path": "tools/py3d/py3d/__init__.py",
           "source_revision": "kp-update-py3d-winding-hint@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b959a2895292b38ab8ae6db860013e82d3fe630efe424e43cd9140b81d82395d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/py3d/__init__.py",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "66d8748d69e7f8d6b2f109df1f55eec262784d18d3125cb6026d3b0960f6d245",
+      "output_hash": "b959a2895292b38ab8ae6db860013e82d3fe630efe424e43cd9140b81d82395d",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24916,10 +25006,20 @@
           "source_path": "tools/py3d/setup.py",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "36aa2c2642af50992017722265976cf91709afe930bea9949add2cf07161a371",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/setup.py",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0eeb17f7e484fca1f3500eab21227d95b6523302ca4e9c78da83770cb0efeef2",
+      "output_hash": "36aa2c2642af50992017722265976cf91709afe930bea9949add2cf07161a371",
       "output_path": "tools/py3d/setup.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24978,10 +25078,20 @@
           "source_path": "tools/py3d/tests/builders.py",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "11de8777de7c2c9f67cb828da3d2cb207ae18ccf367ba878c68e6f4493070dce",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/builders.py",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "004878d1d9d8eb62151710d2ff3e03344970bde095e1ba50737cc4d55c116986",
+      "output_hash": "11de8777de7c2c9f67cb828da3d2cb207ae18ccf367ba878c68e6f4493070dce",
       "output_path": "tools/py3d/tests/builders.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25050,10 +25160,20 @@
           "source_path": "tools/py3d/tests/conftest.py",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cf04ef11f4e4b9cd74cdbd68d753a44cf335250a96c50e215fb752603e36870a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/conftest.py",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7ab62c765ab38ec43e0f01e6a7968a8a630787638b3a57ec5589659c7e458b55",
+      "output_hash": "cf04ef11f4e4b9cd74cdbd68d753a44cf335250a96c50e215fb752603e36870a",
       "output_path": "tools/py3d/tests/conftest.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25706,10 +25826,20 @@
           "source_path": "tests/test_s2_validate12.py",
           "source_revision": "filesystem@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_naming. Up to 1.8.0 it ran on the Geometry LOD alone and raised ERR_COMPONENT_NAMING on a lowercase component01 ('Engine requires Component01 (uppercase C); collision silently fails'). In-game A/B (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7; dayz-p3d-audit killer #2, CLAIM-P3D-COMPONENT-CASE-INGAME): component01 collided exactly like Component01 (scene_raycast geom/view/fire 6 of 6 per mode, RayCastBullet, a walking player stopped 0.36 m before the face), unbinarized and binarized, and binarize writes both as component01; a box with no component in its Geometry, View and Fire LODs took 0 rays, missed the physics ray, let the player through, and no log line said so. Owner's choices the same day: the case is not checked (WARN_COMPONENT_NAMING only when no component-like name is Component plus a number, e.g. only Component_01, never measured); the missing-component ERROR runs on Geometry, View and Fire, each LOD on its own (a single LOD missing it was not measured); faces in proxy selections do not count, so a faceless or proxy-only LOD raises nothing; version 1.9.0 in source, no new wheel (the pinned and installed py3d_dayz-1.8.0 keeps the old check; apply-s2-rollout.ps1 -WheelOnly refuses a restock until a 1.9.0 wheel is pinned); WARN_COMPONENT_COVERAGE left for a separate task. Offline: py3d suite 293 passed, 11 skipped (baseline 283 passed, 11 skipped); the new and changed tests of test_s2_validate12.py run against the base commit's __init__.py fail 11 of 50 (lowercase, COMPONENT01 and Component02 positives, View and Fire negatives, the message and faceless/proxy cases) and pass 50 of 50 on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run (verify_impact.py) on 414 unique MLODs of the owner's mod and vehicle projects and the Pack's door samples, through P3D._scan_v12_findings with the base module and the new one: old 94 ERR_COMPONENT_NAMING, all on Geometry LODs (88 with lowercase component names, 5 on Geometry LODs without faces, among them debinarized vanilla sedanwheel_destroyed, 1 with faces and no component); new 1 (that last one); 93 models change verdict, all from that error to none; no finding appears only after the change (every View and Fire LOD with faces carries a component). tools/py3d/KNOWN-ISSUES.md is registered by output_hash only, as #29 and #30 did: its entry carries two adopt inputs and a new merge input would trip SOURCE-CONFLICT-UNDECIDED. Skill notes that described the old behaviour (dayz-p3d-audit SKILL.md killer #2 and PART 5 item 5, killers-detail.md section 2 Detection, dayz-vehicles rip-import.md 3.5 and vehicle-structural-parity.md, dayz-clothing autofit-from-official-rig.md) now say which py3d version does what. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1ff64c16fffe39cc7f097b4d7c80f802f4da231110d032dd109d769115d4cf9b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/test_s2_validate12.py",
+          "source_revision": "kp-update-py3d-component-naming@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "15aa14fe68e99fa9be5d291e83773ad19feef7c19374152d0b067c3a533f9c81",
+      "output_hash": "1ff64c16fffe39cc7f097b4d7c80f802f4da231110d032dd109d769115d4cf9b",
       "output_path": "tools/py3d/tests/test_s2_validate12.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
