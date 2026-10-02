@@ -432,6 +432,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   tree vendors a wheel today, so nothing was affected. Earlier `py3d_dayz` wheels are now backed up
   and removed like legacy ones: a new case in `tests/py3d_rollout/test_apply_rollout.py` and test E
   of `verify-wheel-restock.ps1` fail on the previous applicator and pass now.
+- `dayz-p3d-audit` "Absolute winding check", rule 5: when the winding was the wrong side, it
+  reversed every face of every LOD, which on a model whose LODs are not all wrong moves the
+  inversion onto the healthy ones, against killer #1 and rule 7. It now reverses only the faces
+  the direction check of their kind reads wrong: Rule 18's per-component check on a collision
+  component (prerequisites and stored normals as killer #1 says), the signed volume of each closed
+  Visual shell, read after Check B, against the side meant to be seen (an open or double-sided
+  part has no sign), and rule 4's sign on walkable Roadway faces; every face of every LOD only
+  inside a whole-model operation, undoing the reversal `P3D.transform()` applies for a det<0
+  matrix or rule 8's reflection. Measured offline (py3d 1.9.0, synthetic 2 m boxes, stored
+  normals agreeing with the winding): a correct exterior Visual LOD (signed volume −8) over a
+  Geometry box wound outward (+8) ended at Visual +8 and Geometry −8 under the old rule,
+  `ERR_WINDING_INVERTED` still raised, and at −8 and −8 with no winding finding under the new
+  one; on an export with every face of every LOD reversed, the two write the same faces and
+  normals. The normals branch is unchanged, and the old sentence is quoted in a dated note.
+  Finding R21-ALIGN-01 of the cross-family review of #67.
 
 ## [1.5.0] - 2026-10-02
 
