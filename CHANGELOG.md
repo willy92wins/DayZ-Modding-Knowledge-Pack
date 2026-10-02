@@ -5,6 +5,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `dayz-mcp-verify` static-object playbook and tool table: two probes from the killer #2 run
+  (2026-10-02, DayZDiag 1.29.163709). `scene_raycast(method="bullet")` queries the server's physics
+  world on a fixed layer mask (`DayZPhysics.RayCastBullet`), next to the LOD rays; a hit counts only
+  on the target at its face, and a miss alone is not proof. A `player_move` walk into the object
+  reads player collision: blocked is `arrived:false` with the player stopped just before the face
+  (about 0.36 m on that run's 2 m boxes), free is `arrived:true`, anything else inconclusive, with a
+  same-distance open-ground walk as the free reference; a walk-through alone is not read as missing
+  collision geometry (a low vanilla `WoodenCrate` took every ray and did not stop the player). For
+  test fixtures, `rotation=64` spawned a box with its faces on the world axes where the default
+  `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the yaw with two parallel rays and the
+  direction of the returned normal before trusting face coordinates.
+
 ### Fixed
 
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
@@ -75,6 +89,53 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   per-component check and sends the fix to killer #1, and rule 7 no longer offers the kit box's
   outward sign, or a component Rule 18 cannot score, as one to keep. The old text is quoted in dated
   notes.
+- `dayz-p3d-audit` killer #2 said the Geometry component MUST be `Component01` and that any other
+  case silently loses all collision; `dayz-vehicles` limited that rule to `Inventory_Base` items.
+  Measured in game (2026-10-02, DayZDiag 1.29.163709) with one 2 m box written three times,
+  byte-identical except for the collision selection (`Component01`, `component01`, none), each
+  packed unbinarized and binarized, as an `Inventory_Base` item and as a `HouseNoDestruct`: both
+  names took every `scene_raycast` ray in `geom`, `view` and `fire` (6 of 6 per mode on the items),
+  the physics ray, and stopped a walking player 0.36 m before the face; the box without a
+  selection took none, and the player walked through it, with no log line. Binarize writes both
+  names as the same ODOL, `component01`. Killer #2 is now that measured silent failure: no
+  `ComponentNN` selection in the collision LODs (measured with all three unselected; other
+  spellings untested). Decision-tree step 5b, the "case-sensitive" pitfall in PART 5 and the two
+  `dayz-vehicles` notes are aligned; py3d `ERR_COMPONENT_NAMING` on `component01` is documented as
+  a false positive (code unchanged). Killer #8 and step 5e asked for one `Component01` covering
+  every face, which merges separate parts into one non-convex component; they now ask for one
+  component per convex part, together covering the LOD, and note that py3d
+  `WARN_COMPONENT_COVERAGE` counts `Component01` alone (it fires on the healthy six-component
+  `gate_and.p3d`). The old text is quoted in dated notes.
+- `dayz-p3d-audit` "From Check B to fix", step 3: it negated the stored normals of every minority
+  group in the same pass as its winding, unless the pipeline recalculates normals afterwards. That
+  fits a group whose normals turned along with its winding (the GunRacks case, the second row of
+  the Check A table) and turns right normals wrong on a group whose winding alone was reversed,
+  normals still matching its neighbours' (the fourth row). Measured offline on a Visual LOD made of
+  one Rule 12 unit box with one face reversed and its normals untouched: the coupled fix left
+  83.3 % agreement, reversing alone restored 100 % and the undamaged model; smoothed normals
+  shared by three faces, and a two-face group with one face in each state, read the same way.
+  Step 3 now reads the group with Check A before the fix and decides face by face: normals that
+  agree with the inverted winding (reading at least +0.5) are negated with it, normals that
+  disagree (at most −0.5) are kept, and a face that reads in between, or has a corner on the other
+  side of it or within 0.1 of its plane (an average can hide one), is inspected. The reading goes
+  through each face's vector area, because the first three corners of a non-planar or non-convex
+  quad can read backwards once the face is reversed (measured on a planar dart quad and a twisted
+  one: wrong branch in both states); Check A's definition and its `MIXED` bullet now read such
+  quads the same way, and the door and Rule 12 MLODs measured there are all triangles, so their
+  numbers stand. Its pool rule gives a negated copy to an entry that any kept corner also uses,
+  and the fix closes on the whole LOD: Check B, plus every corner normal along its face by at
+  least 0.1, a failing corner inspected rather than negated (a smoothed sharp fold fails it with
+  every face wound right). py3d's absolute check reads one corner per face, and on a smoothed box
+  whose shared entries had been negated in place it read 100 % with 8 corners still wrong. The
+  section title and the `SKILL.md` index line said the same and are corrected with it; the
+  GunRacks measurement and the recalculation caveat are kept verbatim, and the old text is quoted
+  in dated notes. Item 1 of "The three py3d gates" said `ERR_WINDING_INVERTED` "suggests swapping
+  vertices on every face"; the message of the pinned `py3d_dayz-1.8.0` names
+  `face.vertices.reverse()` and warns against the swap. Following it on a healthy collision LOD
+  still breaks the LOD: on the py3d multi-LOD fixture with its Visual LOD turned inside-out, it
+  winds every face of each collision box outward and trades the finding for
+  `ERR_WINDING_VS_NORMALS`, and `validate()` goes quiet only once those LODs' normals are negated
+  too, with every LOD wound outward.
 - `dayz-p3d-audit` killer #1 (`references/killers-detail.md`): the note on generating or editing a
   collision LOD quoted the text of py3d's relative-check message ("winding is INVERTED relative to
   the Visual LOD"), which can change with py3d; it now names the finding by its code,

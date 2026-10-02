@@ -22,10 +22,10 @@ complete import checklist.
 
 #### How TO verify
 
-1. **Check A — winding-vs-averaged-normal per face (DIAGNOSTIC).** For each face, calculate `n_winding = normalize(cross(v1-v0, v2-v0))` and compare with normalized average of `face.vertices[i].normal` over corners. % of faces with `dot < -0.5` counts the faces that strongly disagree with their stored normals; it does not say which way either one points (Rule 18 of `dayz-model-pipeline`). Leave `proxy:*` triangles out of this census and out of every fix below: their vertex order encodes the proxy frame (see "Render-sign A/B" below).
+1. **Check A — winding-vs-averaged-normal per face (DIAGNOSTIC).** For each face, calculate `n_winding = normalize(cross(v1-v0, v2-v0))` and compare with normalized average of `face.vertices[i].normal` over corners. On a quad that is not planar and convex, take `n_winding` from the face's vector area instead, the sum of `cross(v[j] − v[0], v[j+1] − v[0])` over its fan (step 3 of "From Check B to fix"): its first three corners can point the other way. On a triangle the two are the same; the SUB_BRZ door and the Rule 12 MLODs measured below are all triangles. % of faces with `dot < -0.5` counts the faces that strongly disagree with their stored normals; it does not say which way either one points (Rule 18 of `dayz-model-pipeline`). Leave `proxy:*` triangles out of this census and out of every fix below: their vertex order encodes the proxy frame (see "Render-sign A/B" below).
    - **~0% UNIFORM_NON_FLIPPED** → no face strongly disagrees. Count agreement as well, on the same averaged normal (`dot > 0`): only ≈ 100 % agreement means winding and normals agree, because normals turned 90-120° away from their faces also read 0 % here. The absolute check in `SKILL.md` counts agreement on the first corner's normal only, so on smoothed normals the two counts can differ; a face whose corner normals point opposite ways is a defect to inspect, not a sign to flip. A correct Rule 12 export reads this with ≈ 100 % agreement (`dayz-model-pipeline`: cross product AND stored normals both INWARD), like the production MLODs in `SKILL.md` "Absolute winding check: what 0 % means". So do a det=+1 mirror with reversed faces and negated normals, and an inside-out model with both OUTWARD. → severity NOTE: consistent with Rule 12, not proof of it.
    - **~100% UNIFORM_FLIPPED** → they disagree. The older outward-normal convention reads this: cross product inward, normals outward, as in the LFInfectedBig det=+1 recipe (`dayz-characters`, `check_dayz_winding.py`). It renders solid but is not what Rule 12 writes. Crate_Wooden read this state: **Empirically verified with Crate_Wooden 2026-04-25 in-game: render/bullets/cursor/collision all OK.** A correct export whose faces were reversed afterwards also reads it, and is inside-out. → severity WARNING on a new export.
-   - **5-95% MIXED** → parts in different states, not a verdict by itself. [OFFLINE MEASURED 2026-10-02] The SUB_BRZ co-driver door MLOD of `SKILL.md` "Absolute winding check" (verified in game; its 26 % agreement reproduced) reads MIXED: 72.67 % of 11,921 faces at `dot < -0.5`, 25.9 % agreeing. Check B finds 1 of its 17,542 two-face edges traversed the same way by both faces (a paint triangle against a black-trim one); with that edge cut, each of its 23 welded components orients as one group with no conflict, so no face group is wound against its neighbours, and that seam is left to inspect. The parts vote apart: the exterior paint, black trim and mirror read 94-100 % of their faces flipped (the paint winds its cross product into the door and stores its normals toward the outside: the older outward-normal convention, which renders solid and, measured on a character, lights inverted — `dayz-characters`, 2026-10-02; not checked on this door), while the cabin plastic, leather and metal and the glass read 97.9-100 % agreeing. Coincident twins (opposite winding, centroids within 2 mm) are 144 faces, and the census without them is unchanged (72.7 % flipped, 25.9 % agreeing). Never reverse the LOD on this reading. Locate any group wound against the rest of its component with Check B ("From Check B to fix", steps 1-2), split the census by part (welded component, then material), and take each part's or group's repair from the table below: a group whose stored normals disagree with its own winding (still pointing like its neighbours') needs `reverse()` only (fourth row), and the coupled negation of "From Check B to fix" step 3 fits only a group whose normals agree with its inverted winding (second row). → severity WARNING; a visible part that the table reads inside-out is the defect, its urgency set by visibility ("From Check B to fix", item 2). *(Corrected 2026-10-02: this bullet read "real bug, inconsistent render/collision between faces. → severity CRITICAL", which that door, verified in game, contradicts; `SKILL.md` "Absolute winding check", rule 2.)*
+   - **5-95% MIXED** → parts in different states, not a verdict by itself. [OFFLINE MEASURED 2026-10-02] The SUB_BRZ co-driver door MLOD of `SKILL.md` "Absolute winding check" (verified in game; its 26 % agreement reproduced) reads MIXED: 72.67 % of 11,921 faces at `dot < -0.5`, 25.9 % agreeing. Check B finds 1 of its 17,542 two-face edges traversed the same way by both faces (a paint triangle against a black-trim one); with that edge cut, each of its 23 welded components orients as one group with no conflict, so no face group is wound against its neighbours, and that seam is left to inspect. The parts vote apart: the exterior paint, black trim and mirror read 94-100 % of their faces flipped (the paint winds its cross product into the door and stores its normals toward the outside: the older outward-normal convention, which renders solid and, measured on a character, lights inverted — `dayz-characters`, 2026-10-02; not checked on this door), while the cabin plastic, leather and metal and the glass read 97.9-100 % agreeing. Coincident twins (opposite winding, centroids within 2 mm) are 144 faces, and the census without them is unchanged (72.7 % flipped, 25.9 % agreeing). Never reverse the LOD on this reading. Locate any group wound against the rest of its component with Check B ("From Check B to fix", steps 1-2), split the census by part (welded component, then material), and take each part's or group's repair from the table below, each face read as step 3 of "From Check B to fix" reads it (vector area, ±0.5, corner margin): a group whose stored normals disagree with its own winding (still pointing like its neighbours') needs `reverse()` only (fourth row), and the coupled negation of "From Check B to fix" step 3 fits only a group whose normals agree with its inverted winding (second row). → severity WARNING; a visible part that the table reads inside-out is the defect, its urgency set by visibility ("From Check B to fix", item 2). *(Corrected 2026-10-02: this bullet read "real bug, inconsistent render/collision between faces. → severity CRITICAL", which that door, verified in game, contradicts; `SKILL.md` "Absolute winding check", rule 2.)*
 
    Coordinate-system-agnostic. Neither uniform label is a fix instruction. First decide, part by part, whether the cross product points AWAY from the side meant to be seen (into the material: the MLOD convention of Rule 12, which on a solid seen from outside is inward) or TOWARD it:
 
@@ -70,7 +70,7 @@ complete import checklist.
   moved point and a cleared texture on the same faces each change it (round-trip 2026-08-24). The
   `0x20000` vs `0x00000020` dispute is moot: no face-flag value reaches the game.
 
-#### From Check B to fix: isolate minority group and flip it ENTIRELY (winding + stored normals)
+#### From Check B to fix: isolate minority group and flip it ENTIRELY (winding; stored normals as Check A reads them)
 
 Verified method (GunRacks T1/T2/T3 2026-08-28: 156 inverted faces across 11 parts of three
 external artist models, player report "plank normals are inverted"):
@@ -91,15 +91,68 @@ external artist models, player report "plank normals are inverted"):
    "identical to shipped" does NOT exonerate: shipped asset can carry defect from origin.
    Real legitimate residual: front-dominant faces with minor slit backfaces
    (healthy pattern measured: 4335 px front / 59 back).
-3. **Coupled fix**: invert vertex order (`v[:1] + reversed(v[1:])`) **and negate
-   stored normals of those corners in the same pass** — UNLESS pipeline recalculates
-   normals in a subsequent step. A fixer that only inverts vertices (e.g. GunRacks
-   `fix_winding.py`) is correct ONLY because its pipeline recalculated
-   normals afterwards; copying that mechanic to a pipeline without recalculation leaves face visible
-   but shaded inside out (second lost cycle). Safe mechanics with global POOL:
-   if `normal_index` of faces to flip are exclusive to them, negate in place;
-   if any is shared with a face not touched, add negated normal as new pool entry
-   (32768 budget) and reindex only those corners.
+3. **Read the group's stored normals, then fix it**: before touching the group, read each of
+   its faces with Check A, `dot(n_face, average of its corner normals)` with both vectors
+   normalized, where `n_face` is the face's vector area: the sum of
+   `cross(v[j] − v[0], v[j+1] − v[0])` over its fan triangles. On a triangle or a planar
+   convex quad it points like Check A's `n_winding`; on a non-planar or non-convex quad the
+   first three corners can point the other way, and which three they are changes with the
+   reversal, while the vector area turns exactly. [OFFLINE MEASURED 2026-10-02] A planar dart
+   quad whose reflex corner sat at index 1 after `reverse()`, and a twisted quad reversed by
+   `v[:1] + reversed(v[1:])`, sent the first-three reading to the wrong branch in both states
+   below; the vector area sent all four right. Then invert the vertex order of every face of
+   the group (`v[:1] + reversed(v[1:])`), and per face:
+   - **Normals agree with the inverted winding** (reading ≥ +0.5: they turned along with it;
+     second row of the Check A table): **negate stored normals of those corners in the same
+     pass** — UNLESS pipeline recalculates normals in a subsequent step. This is the GunRacks
+     case: there each minority group had its winding AND its stored normals reversed against
+     its neighbours', and the fixers of T1/T2 and of the second pass refused to save unless 0
+     flipped faces had summed stored normals against the new winding (2026-08-28).
+     A fixer that only inverts vertices (e.g. GunRacks `fix_winding.py`) is correct ONLY
+     because its pipeline recalculated normals afterwards; copying that mechanic to a pipeline
+     without recalculation leaves face visible but shaded inside out (second lost cycle).
+   - **Normals disagree with the inverted winding** (reading ≤ −0.5: only the winding was
+     reversed, and the normals still point like the neighbours'; fourth row): **keep them**;
+     the new vertex order alone makes them agree. [OFFLINE MEASURED 2026-10-02] On a Visual
+     LOD made of one Rule 12 unit box, with one face reversed and its normals untouched,
+     negating them as well left 5 of 6 faces agreeing (83.3 %, in py3d's absolute check and in
+     Check A), while keeping them restored 6 of 6, corner for corner the undamaged model; both
+     left 0 edges traversed the same way by both faces. The same held with smoothed normals
+     (one pool entry per point, shared by three faces) and for a two-face group with one face
+     in each state: 83.3 % after negating both, 100 % after deciding face by face.
+   - A face that reads between −0.5 and +0.5 (normals near its plane, where the sign is noise
+     and a change of 1e-15 picks the other branch), or that has a corner on the other side of
+     it or within 0.1 of its plane (`|dot| < 0.1` against `n_face`: an average can hide one
+     such corner, as three agreeing corners and one at 1e-15 average to 0.9487), has no
+     reading: inspect it, never infer its normals from the rest of the group.
+
+   Safe mechanics with global POOL: if `normal_index` of the corners to negate are exclusive
+   to them, negate in place; if any is shared with a corner whose normal you keep (a face
+   outside the group, or a face of the group that keeps its normals), add negated normal as
+   new pool entry (32768 budget) and reindex only those corners.
+
+   Close on the whole LOD, not on the group: Check B finds no edge traversed the same way by
+   both faces, and every corner normal points along its face's vector area by the same corner
+   margin (`dot ≥ 0.1`). A corner that fails is inspected, never negated on this reading
+   alone: a corner normal smoothed across a sharp fold can point against one of its faces
+   with every face wound right. py3d's absolute check reads one corner per face and the
+   group's reading sees only the group, so neither sees corners spoiled outside it.
+   [OFFLINE MEASURED 2026-10-02] On the smoothed box, with the reversed face's normals negated
+   in place on entries its four neighbours share, this step repaired that face with four pool
+   copies and left 8 corners of the neighbours pointing outward; py3d read 100 % with no
+   winding finding (each neighbour's first corner was intact), while the corner check found
+   the 8 and Check A read 33.3 %. A flat tetrahedron wound coherently inward, with
+   area-weighted corner normals, fails the corner check at 6 of its 12 corners.
+
+   *(Corrected 2026-10-02: this item read "**Coupled fix**: invert vertex order
+   (`v[:1] + reversed(v[1:])`) **and negate stored normals of those corners in the same
+   pass** — UNLESS pipeline recalculates normals in a subsequent step." for every minority
+   group, and its pool rule read "if `normal_index` of faces to flip are exclusive to them,
+   negate in place; if any is shared with a face not touched, add negated normal as new pool
+   entry". That fits a group whose normals turned with its winding, as in GunRacks; on a
+   group whose winding alone was reversed it turns right normals wrong (the 83.3 % above).
+   The section title read "isolate minority group and flip it ENTIRELY (winding + stored
+   normals)".)*
 4. **Artist defect RECURS**: measured identical across three consecutive deliveries of
    same model (16/08, 18/08, 19/08) — lives in working file, re-exporting does not cure it.
    Check is run on EVERY delivery reintegration, not only initial import; and
