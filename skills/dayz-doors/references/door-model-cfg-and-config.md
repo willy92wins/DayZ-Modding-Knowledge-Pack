@@ -14,9 +14,9 @@
 
 ## Evidence convention
 
-- **Verified** means the class/property appears in a shipped working file under **assets/**, or the stated behavior is explicitly taught by one of the four local tutorials.
+- **Verified** means the class/property appears in one of the example files of novoGOD's door tutorial *Doors_Buttons_Lesson*, or the stated behavior is explicitly taught by one of its four texts. The tutorial carries no license, so the Pack does not ship it: citations name its files by path and line, for example **Doors_Buttons_Lesson/Door/Simple_Door.cfg:1-14**.
 - A leading **?** means the supplied files do not independently confirm the claim, or the sources conflict.
-- Code in [worked-examples.md](worked-examples.md) is **[EXACT]**: copied from the real files. This document describes the contract without silently normalizing those examples.
+- [worked-examples.md](worked-examples.md) describes the three examples in tables; neither page copies their code. This document describes the contract without silently normalizing those examples.
 
 ## Name flow
 
@@ -28,17 +28,17 @@ Moving geometry mapping:
 
 **P3D moving named selection -> CfgSkeletons bone -> CfgModels animation selection**
 
-The two chains can share a name (**door1**) or diverge (**selection = "door1"**, **source = "door1_open"**). See **WELCOME TO novoGODS Shit Door Tutorial.txt:17-22** and **assets/Door_w_Button/Door_w_Button.cfg:27-38**.
+The two chains can share a name (**door1**) or diverge (**selection = "door1"**, **source = "door1_open"**). See **WELCOME TO novoGODS Shit Door Tutorial.txt:17-22** and **Doors_Buttons_Lesson/Door_w_Button/Door_w_Button.cfg:27-38**.
 
 ## model.cfg contract
 
 ### CfgSkeletons
 
-The shipped files spell the root class **cfgSkeletons**; the tutorial/common convention calls it **CfgSkeletons**. Preserve the working syntax when copying an example.
+The tutorial's files spell the root class **cfgSkeletons**; the tutorial/common convention calls it **CfgSkeletons**. Preserve the working syntax when following an example.
 
 | Class/property | Contract | Verification |
 |---|---|---|
-| **class CfgSkeletons / cfgSkeletons** | Root skeleton declaration. | Simple **assets/Door/Simple_Door.cfg:1-14**; button **:1-12**; expert **:1-14**. |
+| **class CfgSkeletons / cfgSkeletons** | Root skeleton declaration. | Simple **Doors_Buttons_Lesson/Door/Simple_Door.cfg:1-14**; button **:1-12**; expert **:1-14**. |
 | Custom skeleton class | Referenced by the model's **skeletonName**. | **Simple_DoorSkeleton** at Simple **:3-13**; equivalents in other CFGs. |
 | **skeletonInherit** | Parent skeleton; all examples use **""**. | Simple **:5**; button **:5**; expert **:5**. |
 | **isDiscrete** | All three real examples use **0**. | Simple **:6**; button **:6**; expert **:6**. |
@@ -54,7 +54,7 @@ Prefer a model-unique skeleton name derived from the P3D basename, such as **<p3
 
 | Class/property | Contract | Verification |
 |---|---|---|
-| **class CfgModels** | Root model declaration. | Simple **assets/Door/Simple_Door.cfg:15-55**; button **:13-41**; expert **:15-67**. |
+| **class CfgModels** | Root model declaration. | Simple **Doors_Buttons_Lesson/Door/Simple_Door.cfg:15-55**; button **:13-41**; expert **:15-67**. |
 | **class Default** | Empty base with sections and skeleton fields. | Simple **:17-22**; button **:15-20**; expert **:17-22**. |
 | **sections[]** | Named material sections; empty here. | Simple **:19,26**; button **:17,24**; expert **:19,26**. |
 | **sectionsInherit** | Inherited sections; empty here. | Simple **:20**; button **:18**; expert **:20**. |
@@ -71,15 +71,15 @@ Prefer a model-unique skeleton name derived from the P3D basename, such as **<p3
 | **angle0** | Rotation at minValue; all examples use **0**. | Simple **:38,50**; button **:36**; expert **:38,50,62**. |
 | **angle1** | Rotation at maxValue; sign sets direction in these files. | Simple **1.9/-1.4 :39,51**; expert **1.9/-1.7/-0.88 :39,51,63**. |
 
-**Verified: `angle0/angle1` are in RADIANS.** BI Model Config wiki: angle values are specified in radians (= degrees x pi/180); a bare number is radians, or write `"rad 90"` to give degrees. Independently confirmed in the user's `dayz-animation-pipeline/references/config-driven-animation.md:40`. The shipped values fit: Simple Door `angle1 = 1.9` rad ~= 109 deg of swing. (Verified 2026-07-14 vs BI wiki + local skill.)
+**Verified: `angle0/angle1` are in RADIANS.** BI Model Config wiki: angle values are specified in radians (= degrees x pi/180); a bare number is radians, or write `"rad 90"` to give degrees. Independently confirmed in the user's `dayz-animation-pipeline/references/config-driven-animation.md:40`. The tutorial's values fit: Simple Door `angle1 = 1.9` rad ~= 109 deg of swing. (Verified 2026-07-14 vs BI wiki + local skill.)
 
 ### Source aggregation
 
 A single source can drive several animation classes:
 
-- Simple Door: **Door1** and **handle** both use **source = "door1"** (**assets/Door/Simple_Door.cfg:29-52**).
-- Button: only **Door1** animates, using **source = "door1_open"** (**assets/Door_w_Button/Door_w_Button.cfg:27-38**).
-- Expert: **Door1**, **Handle**, and **Lever** all use **source = "door1_open"** (**assets/Expert_Mode/Expert_Mode.cfg:29-64**).
+- Simple Door: **Door1** and **handle** both use **source = "door1"** (**Doors_Buttons_Lesson/Door/Simple_Door.cfg:29-52**).
+- Button: only **Door1** animates, using **source = "door1_open"** (**Doors_Buttons_Lesson/Door_w_Button/Door_w_Button.cfg:27-38**).
+- Expert: **Door1**, **Handle**, and **Lever** all use **source = "door1_open"** (**Doors_Buttons_Lesson/Expert_Mode/Expert_Mode.cfg:29-64**).
 
 The button is absent from its skeleton because it does not animate (**Door_w_Button Readme.txt:65**).
 
@@ -105,7 +105,7 @@ The button is absent from its skeleton because it does not animate (**Door_w_But
 
 | Property | Contract in supplied examples | Verification |
 |---|---|---|
-| Doors subclass | Corresponds by convention to source/component; **component** is exact binding. | Simple **assets/Door/config.cpp:18-21**; button **assets/Door_w_Button/config.cpp:18-21**. |
+| Doors subclass | Corresponds by convention to source/component; **component** is exact binding. | Simple **Doors_Buttons_Lesson/Door/config.cpp:18-21**; button **Doors_Buttons_Lesson/Door_w_Button/config.cpp:18-21**. |
 | **displayName** | Player-facing door/controller label. | Simple/button/expert main **:20**; expert secondary **:33**. |
 | **component** | Exact model.cfg interaction source. | Simple **:21**; button **:21**; expert **:21,34**. |
 | **soundPos** | Memory point where door sound originates. | Simple **:22**; button **:22**; expert main **:22**; real Expert Lever omits it. |
@@ -116,7 +116,7 @@ The button is absent from its skeleton because it does not animate (**Door_w_But
 | **soundClose** | Closing sound name. | Full door entries Simple/button/expert **:27**. |
 | **soundLocked** | Locked/rattle sound. | Full door entries Simple/button/expert **:28**. |
 | **soundOpenABit** | Partial-opening sound. | Full door entries Simple/button/expert **:29**. |
-| **relatedInventorySlots[]** (since 1.30 Exp) | Names of inventory slots tied to this door (locks). Parsed into `AdditionalDoorInfo.m_RelatedInventorySlotNames`. Absent from the tutorial **assets/** examples. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:23-26`. **[UNVERIFIED]** no extracted vanilla `config.cpp` **class Doors** entry in this dump actually sets the property. |
+| **relatedInventorySlots[]** (since 1.30 Exp) | Names of inventory slots tied to this door (locks). Parsed into `AdditionalDoorInfo.m_RelatedInventorySlotNames`. Absent from the tutorial's examples. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:23-26`. **[UNVERIFIED]** no extracted vanilla `config.cpp` **class Doors** entry in this dump actually sets the property. |
 | **lockCompatibilityBitMask** (since 1.30 Exp) | Integer already in bitwise form. If omitted, script default is `1 << EBuildingLockType.LOCKPICK`. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:29-32`, `exp/scripts/scripts/3_Game/Enums/EBuildingLockTypes.c:7-16`. |
 | **interactPositionPoint** / **interactDirPoint** (since 1.30 Exp) | Memory point names for one-sided open/close. Config keys are these two strings; members are `m_InteractLimitingPositionPoint` / `m_InteractLimitingDirPoint`. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:34-38`, `exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:335-342`. |
 | **doorConstructionPart** / **doorConstructionPhysicsSource** (since 1.30 Exp) | Rebuildable-house door: construction part name and AnimationSource that toggles door physics. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:40-44`, `exp/scripts/scripts/4_World/Classes/Rebuilding/Rebuilding.c:440-464`. |
@@ -131,7 +131,7 @@ Tutorial sound list: **DZ\sounds\hpp\config.cpp** (**WELCOME TO novoGODS Shit Do
 
 Preferred starting rule: create one **class Doors** subclass per unique **source**, with **component** equal to that source. Animated selections sharing the source do not get separate normal door entries. Simple and Button follow this.
 
-? Expert contradicts a universal rule: its model has only **source = "door1_open"** (**assets/Expert_Mode/Expert_Mode.cfg:33,45,57**), but config declares **Door1_Open** and **Lever**, both with **component = "door1_open"** (**assets/Expert_Mode/config.cpp:18-38**). Ask before copying the second entry.
+? Expert contradicts a universal rule: its model has only **source = "door1_open"** (**Doors_Buttons_Lesson/Expert_Mode/Expert_Mode.cfg:33,45,57**), but config declares **Door1_Open** and **Lever**, both with **component = "door1_open"** (**Doors_Buttons_Lesson/Expert_Mode/config.cpp:18-38**). Ask before copying the second entry.
 
 ## DamageSystem contract
 
@@ -164,8 +164,8 @@ Resolved 2026-07-14 (details in the per-property sections above): `angle0/angle1
 Remaining:
 
 - ? Duplicate skeleton names causing a server crash: tutorial warning, not independently reproduced. Treat skeleton-name uniqueness as a cheap preventive convention.
-- Conflict (resolved by authority, not a ?): the one-source/one-Doors rule is contradicted by Expert -- two Doors entries share component `door1_open`. A real quirk of the shipped example.
-- Conflict (resolved by authority): Expert prose has `soundOpen = "switchOpen"` / `soundClose = "switchClose"`, but real `assets/Expert_Mode/config.cpp:31-38` omits both. The real file wins.
+- Conflict (resolved by authority, not a ?): the one-source/one-Doors rule is contradicted by Expert -- two Doors entries share component `door1_open`. A real quirk of the tutorial's example.
+- Conflict (resolved by authority): Expert prose has `soundOpen = "switchOpen"` / `soundClose = "switchClose"`, but the tutorial's real `Doors_Buttons_Lesson/Expert_Mode/config.cpp:31-38` omits both. The real file wins.
 - ? (1.30 Exp) No extracted vanilla `config.cpp` **class Doors** child in this dump sets `relatedInventorySlots[]`, `lockCompatibilityBitMask`, `interactPositionPoint`, or `doorConstructionPart`. The parser and script consumers are verified; a copy-paste vanilla Doors block with those keys is **[UNVERIFIED]**. Fence uses entity-level `attachments[] = {..., "Att_CombinationLock", "Att_CodeLock", ...}` (`exp/gear_camping/DZ/gear/camping/config.cpp:2683`) rather than per-door `relatedInventorySlots[]`.
 
 ## Door open conditions and locks (DayZ 1.30 Exp)
@@ -326,18 +326,18 @@ Native engine locks are unchanged: `LockDoor`, `UnlockDoor`, `IsDoorLocked` (`Bu
 
 ## Sources
 
-Local tutorials read in full:
+novoGOD's tutorial *Doors_Buttons_Lesson* (files dated 2025-04-23; no license, not shipped with the Pack). Texts read in full:
 
 - **WELCOME TO novoGODS Shit Door Tutorial.txt**
 - **Simple_Door Readme.txt**
 - **Door_w_Button Readme.txt**
 - **Welcome to novoGODs Expert_Mode Door mod.txt**
 
-Shipped examples:
+Example files:
 
-- **assets/Door/Simple_Door.cfg** and **assets/Door/config.cpp**
-- **assets/Door_w_Button/Door_w_Button.cfg** and **assets/Door_w_Button/config.cpp**
-- **assets/Expert_Mode/Expert_Mode.cfg** and **assets/Expert_Mode/config.cpp**
+- **Doors_Buttons_Lesson/Door/Simple_Door.cfg** and **Doors_Buttons_Lesson/Door/config.cpp**
+- **Doors_Buttons_Lesson/Door_w_Button/Door_w_Button.cfg** and **Doors_Buttons_Lesson/Door_w_Button/config.cpp**
+- **Doors_Buttons_Lesson/Expert_Mode/Expert_Mode.cfg** and **Doors_Buttons_Lesson/Expert_Mode/config.cpp**
 
 Official references cited by tutorials, not fetched during authoring:
 
