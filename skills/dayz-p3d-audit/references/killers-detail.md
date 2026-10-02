@@ -131,8 +131,8 @@ in-game and therefore defines this model's correct convention)", and ended: "If 
 fires, swap `vertices[1]`/`[2]` on every face of that LOD so it matches the Visual LOD
 convention." The Fix line read: "Swap `vertices[1]` and `vertices[2]` of each inverted face."
 The last paragraph ended: "Check offline with
-`skills/dayz-characters/references/check_dayz_winding.py`." That script predates Rule 12 and
-fails a correct export (dayz-characters, "OFFLINE GATE").)*
+`skills/dayz-characters/references/check_dayz_winding.py`." That script then predated Rule 12 and
+failed a correct export; since 2026-10-02 it reads Rule 12 (dayz-characters, "OFFLINE GATE").)*
 
 *(Measured in game 2026-10-02, the outward boxes above: the opening said an outward component
 "lets raycasts from outside pass through without detecting collision — no collision, no action
