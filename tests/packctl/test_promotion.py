@@ -4309,6 +4309,97 @@ def test_v1_relocated_receipt_does_not_explain_targets_of_another_installation(
     assert not plan_path.exists()
 
 
+def test_v1_relocated_receipt_does_not_explain_a_path_it_did_not_write(
+    repo_factory, tmp_path: Path,
+) -> None:
+    # Same installation root, another concrete path: the sealed write went to
+    # claude/renamed-demo, this check writes claude/demo.
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    sealed_target = paths["claude"] / "renamed-demo"
+    digest = _set_test_target_state(sealed_target, "promoted\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=sealed_target,
+        name="cc" * 12, target_id="claude_user_skills",
+        after_digest=digest, completed_at="2026-09-11T12:00:00+00:00",
+    )
+    moved = _remove_sealed_checkout(root, tmp_path)
+    assert _set_test_target_state(paths["claude"] / "demo", "promoted\n") == digest
+
+    report = check_promotion(moved, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-JOURNAL-MISMATCH" not in codes(report)
+    unexplained = [
+        str(item["evidence"]) for item in report["findings"]
+        if item["code"] == "PROMOTION-TARGET-UNEXPLAINED"
+    ]
+    assert len(unexplained) == 1 and unexplained[0].startswith("target=claude_user_skills ")
+    assert not plan_path.exists()
+
+
+def test_relocated_v1_receipt_refuses_an_unreadable_sealed_path(
+    repo_factory, tmp_path: Path, monkeypatch,
+) -> None:
+    # Present but unreadable is not gone (Path.exists() answers False here).
+    name = "cd" * 12
+    root, plan = _tracked_receipt_and_plan(repo_factory, tmp_path, name)
+    sealed = os.path.normcase(str(plan["receipt_path"]))
+    real_lstat = os.lstat
+
+    def lstat(path, *args, **kwargs):
+        if os.path.normcase(os.fspath(path)) == sealed:
+            raise PermissionError(13, "Access is denied", os.fspath(path))
+        return real_lstat(path, *args, **kwargs)
+
+    monkeypatch.setattr(promotion.os, "lstat", lstat)
+
+    assert promotion._relocated_v1_receipt(root, plan, name) is None
+
+
+def test_relocated_v1_receipt_compares_raw_head_bytes_not_filtered_ones(
+    repo_factory, tmp_path: Path,
+) -> None:
+    # A clean filter stores E in HEAD while the file on disk keeps D: hashes
+    # taken through the filter would agree, the raw blob does not.
+    root, _, _, _, _ = promotion_fixture(repo_factory, tmp_path)
+    flip = tmp_path / "flip.py"
+    flip.write_text(
+        "import sys\n"
+        "data = sys.stdin.buffer.read()\n"
+        "a, b = b'\"schema_version\":1', b'\"schema_version\":9'\n"
+        "sys.stdout.buffer.write(data.replace(a, b) if sys.argv[1] == 'clean' else data.replace(b, a))\n",
+        encoding="utf-8",
+    )
+    command = f'"{Path(sys.executable).as_posix()}" "{flip.as_posix()}"'
+    run_git(root, "config", "filter.flip.clean", f"{command} clean")
+    run_git(root, "config", "filter.flip.smudge", f"{command} smudge")
+    attributes = root / ".git" / "info" / "attributes"
+    attributes.parent.mkdir(parents=True, exist_ok=True)
+    attributes.write_text("promotions/receipts/*.json filter=flip\n", encoding="utf-8")
+    name = "ce" * 12
+    relative = f"promotions/receipts/{name}.json"
+    receipt = root / relative
+    receipt.parent.mkdir(parents=True, exist_ok=True)
+    receipt.write_bytes(b'{"schema_version":1}\n')
+    run_git(root, "add", relative)
+    run_git(root, "commit", "-qm", "add a filtered receipt")
+    head_blob = subprocess.run(
+        ["git", "cat-file", "blob", f"HEAD:{relative}"],
+        cwd=root, capture_output=True, check=True,
+    ).stdout
+    assert head_blob == b'{"schema_version":9}\n'
+    assert receipt.read_bytes() == b'{"schema_version":1}\n'
+    gone = tmp_path / "gone"
+    plan = {
+        "schema_version": 1,
+        "source_root": str(gone),
+        "receipt_path": str(gone / "promotions" / "receipts" / f"{name}.json"),
+    }
+
+    assert promotion._relocated_v1_receipt(root, plan, name) is None
+
+
 def test_v1_receipt_is_not_relocated_while_its_sealed_path_exists(
     repo_factory, tmp_path: Path,
 ) -> None:
