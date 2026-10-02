@@ -119,7 +119,7 @@ The broader **dayz-animation-pipeline** skill describes a rotation axis as a pai
 | Fire Geometry | Relevant components with penetration materials. |
 | Memory | **door1_axis**, **handle_axis**, **door1_action**, interaction point. |
 
-Mapping: handle child of door; both animations source **door1** (**assets/Door/Simple_Door.cfg:10-11,29-52**).
+Mapping: handle child of door; both animations source **door1** (**Doors_Buttons_Lesson/Door/Simple_Door.cfg:10-11,29-52**).
 
 ### Door with Button
 
@@ -131,7 +131,7 @@ Mapping: handle child of door; both animations source **door1** (**assets/Door/S
 | Fire Geometry | Named components with penetration RVMATs. |
 | Memory | **door1_axis**, **door1_action**, interaction point at button. |
 
-Mapping: only door is a bone; it rotates from source **door1_open** (**assets/Door_w_Button/Door_w_Button.cfg:7-10,27-38**).
+Mapping: only door is a bone; it rotates from source **door1_open** (**Doors_Buttons_Lesson/Door_w_Button/Door_w_Button.cfg:7-10,27-38**).
 
 ### Expert Mode
 
@@ -143,7 +143,7 @@ Mapping: only door is a bone; it rotates from source **door1_open** (**assets/Do
 | Fire Geometry | Named components with penetration RVMATs. The tutorial's P3D leaves the lever out of every component. |
 | Memory | Door/handle/lever axes, action/sound point, interaction point. |
 
-Mapping: handle follows door; lever follows nothing; all source **door1_open** (**assets/Expert_Mode/Expert_Mode.cfg:7-12,29-64**).
+Mapping: handle follows door; lever follows nothing; all source **door1_open** (**Doors_Buttons_Lesson/Expert_Mode/Expert_Mode.cfg:7-12,29-64**).
 
 ## Object Builder validation
 

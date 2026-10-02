@@ -69,16 +69,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   face counted). Owner's choice (2026-10-02): an ERROR only where measured. Downstream an ERROR
   fails `dayz-model-preflight` (`PREFLIGHT_PY3D_ERROR`), makes `dayz-vehicle-proxy-contract` refuse
   the MLOD and `python -m py3d validate` exit 1, and `validate()` skips its in-memory round trip.
-  Measured offline on 414 unique MLODs (the owner's mod and vehicle projects and the `dayz-doors`
-  samples) with the 1.9.0 and 1.10.0 modules through `P3D._scan_v12_findings`: `Expert_Mode`'s
-  lever, one closed 18-face piece in no component, becomes the ERROR in its Geometry and Fire LODs
-  (its only ERROR); a vehicle's Fire LOD keeps the WARN for its two stray 1 mm triangles; no other
-  finding changed. Version 1.10.0 because the pinned 1.9.0 wheel (entry below) carries the 1.9.0
-  check; no new wheel. `dayz-p3d-audit` killer #8 (`SKILL.md` and `references/killers-detail.md` §8,
-  the replaced text quoted in dated notes) and the `dayz-doors` LOD reference (the Expert lever
-  paragraph and the checklist line) name both codes, and the py3d README the new finding. Tests: 42
-  new in `tools/py3d/tests/test_s2_validate12.py` (py3d suite 376 passed, 11 skipped; base 334
-  passed, 11 skipped).
+  Measured offline on 414 unique MLODs (the owner's mod and vehicle projects and the three door
+  models of the `dayz-doors` tutorial) with the 1.9.0 and 1.10.0 modules through
+  `P3D._scan_v12_findings`: `Expert_Mode`'s lever, one closed 18-face piece in no component, becomes
+  the ERROR in its Geometry and Fire LODs (its only ERROR); a vehicle's Fire LOD keeps the WARN for
+  its two stray 1 mm triangles; no other finding changed. Version 1.10.0 because the pinned 1.9.0
+  wheel (entry below) carries the 1.9.0 check; no new wheel. `dayz-p3d-audit` killer #8 (`SKILL.md`
+  and `references/killers-detail.md` §8, the replaced text quoted in dated notes) and the
+  `dayz-doors` LOD reference (the Expert lever paragraph and the checklist line) name both codes,
+  and the py3d README the new finding. Tests: 42 new in `tools/py3d/tests/test_s2_validate12.py`
+  (py3d suite 376 passed, 11 skipped; base 334 passed, 11 skipped).
 - `dayz-p3d-audit` "Absolute winding check", rule 6: the kit box's missing collision is measured
   now, not a hypothesis. In a paired run (2026-10-02, DayZDiag 1.29.163709, the kit's own config on
   three classes, the MLODs packed unbinarized) the shipped `lf_kit_box.p3d` took 0 of 27
@@ -118,6 +118,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `rip-import.md` §3.5 and `vehicle-structural-parity.md`; `dayz-clothing`
   `autofit-from-official-rig.md`), and item 1 describes the 1.9.0 `ERR_WINDING_INVERTED` message
   next to the 1.8.0 one.
+
+### Removed
+
+- `dayz-doors` no longer ships `assets/` (nine files: three `.p3d` models, each with its
+  `model.cfg` and `config.cpp`) or the six verbatim copies of those `model.cfg` and `config.cpp`
+  files in `references/worked-examples.md`. They are not the Pack author's work: they are the
+  examples of novoGOD's door tutorial `Doors_Buttons_Lesson` (a Discord attachment, files dated
+  2025-04-23), whose archive holds no license or permission text. Their SHA-256 hashes equal the
+  archive's members (the text files after LF normalisation), yet since v1.3.0 the source map
+  labelled them, like the rest of the skill, "author-owned MIT", and the compatibility matrix and
+  the 1.2.0 entry below called them the author's. `worked-examples.md` now describes the three
+  patterns in tables (bones, animation windows, Doors entries) and, like the other two references,
+  cites the tutorial's files by path and line. The source map registers the tutorial as an excluded
+  source (no license or redistribution grant observed) and corrects the license of the old
+  `worked-examples.md` input, which held the six copies; `THIRD_PARTY_NOTICES.md` lists the
+  tutorial with the research-only sources. The files stay in the git history and in the v1.3.0 to
+  v1.5.0 source archives.
 
 ### Fixed
 
