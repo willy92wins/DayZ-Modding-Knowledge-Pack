@@ -11,9 +11,10 @@ These produce ZERO engine errors but break functionality completely. The core SK
 A collision component (Geometry, View or Fire Geometry LOD) whose cross product
 `cross(v1-v0, v2-v0)` points OUTWARD lets the LOD raycasts (`RaycastRV`, `RaycastRVProxy`)
 from outside pass through it, the rays action targeting (`view`) and ballistic hits (`fire`)
-rely on (`dayz-model-pipeline` Rule 18 and its symptom triplet), while its physics body still
-stops and carries the player (measured below). A correct MLOD winds the cross product away from
-the side meant to be seen and stores its normals the same way (Rule 12): INWARD on a solid seen from
+rely on (`dayz-model-pipeline` Rule 18 and its symptom triplet). On the boxes measured below
+its physics body still stopped a walking player and held one standing on it. A correct MLOD
+winds the cross product away from the side meant to be seen and stores its normals the same
+way (Rule 12): INWARD on a solid seen from
 outside, which every collision component is. Rule 12's in-game probe of 2026-10-01 agrees:
 Geometry, View and Fire components converted with its map registered `scene_raycast` hits from
 both sides, and after the det=+1 map alone none — a map that also mirrors the model and leaves
@@ -23,31 +24,36 @@ its normals outward, so not a winding-only experiment.
 (one `Component01` per collision LOD, every face wound inward) against the same bytes with every
 face of its Geometry, View and Fire LODs reversed and their normals negated (Rule 18: 6 of 6
 faces outward per LOD; `audit_p3d.py`: `ERR_WINDING_INVERTED` on all three; Visual and Memory
-LODs byte-identical). Each was packed unbinarized and binarized (binarize keeps the outward
-winding in the ODOL) and loaded as an `Inventory_Base` item (`physLayer="item_large"`) and as a
-`HouseNoDestruct`:
+LODs byte-identical). Each was packed unbinarized and binarized (binarize does not undo the
+outward winding: the binarized outward boxes missed the same rays) and loaded as an
+`Inventory_Base` item (`physLayer="item_large"`) and as a `HouseNoDestruct`:
 
-| collision LODs | `scene_raycast` in `geom`, `view`, `fire` | `RayCastBullet` (physics) | player walking into it | player on top (items) |
+| collision LODs | `scene_raycast` in `geom`, `view`, `fire` | `RayCastBullet` (physics) | player walking into it | player standing on top |
 |---|---|---|---|---|
-| wound inward | every ray hits | hits the faces | stopped 0.36 m before the face | stands on the top |
-| wound outward | no ray hits; vertical rays reach the ground | hits the same faces | stopped 0.36 m before the face | stands on the top |
+| wound inward | every ray hits | hits the faces | stopped about 0.36 m before the face | stands on the top (MLOD item) |
+| wound outward | no ray hits; vertical rays reach the ground | hits the same faces | stopped about 0.36 m before the face | stands on the top (MLOD and binarized items) |
 
-Rays per item and mode: one from above, one from the side, one from inside; on the static
-copies one from the side per mode and one from above in `view`. A `view` ray cast like the
-action cursor's, from eye height toward the box, stopped on the inward box and went through the
-outward one. The answer was the same for both packings and both classes. Same-run controls: a
-vanilla `HescoBox` stopped the player where it did in the killer #2 run; on open ground the
-walk covered 7.5 m in 5 s, and a player placed 2 m above the ground fell to it. The outward
-winding hid the box from the LOD raycasts and from nothing measured in the physics world, so
-walking into an object says nothing about its collision winding.
+Rays per item and mode: one from above, one from the side, one from inside; on the static copies
+one from the side per mode and one from above in `view`. A `view` ray cast like the action
+cursor's, from eye height toward the box, stopped on the inward MLOD item and went through the
+outward one. The rays and the walk gave the same answer for both packings and both classes; the
+standoff is the server's reading (the owner client stopped about 0.33 m before the face). The
+stand probe put the player 6-7 cm above the top and moved them for 0.5 s, then read the server:
+right after a teleport, standing still, the server kept the teleported height for 3 s even above
+open ground. Same-run controls: a vanilla `HescoBox` stopped the player where it did in the
+killer #2 run; on open ground the walk covered 7.5 m in 5 s, and a player placed 2.17 m above
+the ground and moved for 0.5 s fell to it. On these boxes the outward winding hid the box from
+the LOD raycasts and from nothing measured in the physics world. A walk does not diagnose the
+winding either way: these outward boxes stopped the player, and a 0.49 m `item_small` kit let
+the player through with either winding (`SKILL.md` "Absolute winding check", rule 6).
 (claim: CLAIM-P3D-WINDING-PHYSICS-INGAME)
 
 **Root cause**: the collision LOD and the Visual LOD reached the MLOD by different paths.
 Rule 12's map treats every LOD alike; the mismatch comes from a LOD that did not go through it
 the same way: collision boxes built in code in DayZ space with outward winding (code-built
 geometry does not go through the map), a collision LOD exported with another axis map, or a
-face reversal applied to some LODs and not to others. The model looks perfect and stops the
-player, but the LOD raycasts go through it.
+face reversal applied to some LODs and not to others. The model looks perfect and can still
+stop the player (measured above), but the LOD raycasts go through it.
 
 **Detection**: Rule 18's per-component check decides, once its prerequisites hold: every
 non-proxy face of the collision LOD belongs to a `ComponentNN` selection (killer #8), and every
@@ -87,12 +93,14 @@ disabled for false positives.
 > read inward. An `ERR_WINDING_INVERTED` CRITICAL that a complete
 > per-component check does not confirm says nothing against the collision: check the Visual LOD
 > against the side meant to be seen instead (Check A table in `winding-diagnostics.md`; a room
-> seen from inside is right as it is). An unresolved check confirms nothing either way. Do not
-> judge the winding from the physics side: a collision LOD wound outward still stops and carries
-> the player (measured above), and a body made with `dBodyCreateDynamicEx` takes its shape from
-> the geoms passed to it (`1_core/proto/enphysics.c:51`), not from the LOD. A player walking
-> through the object points at a collision LOD with no `ComponentNN` selection (killer #2) or at
-> the body itself (`dayz-physics-engine`), not at the winding.
+> seen from inside is right as it is). An unresolved check confirms nothing either way. Run
+> these checks even when the object blocks the player: the outward boxes measured above still
+> stopped a walking player and held one standing on top, and a body made with
+> `dBodyCreateDynamicEx` takes its shape from the geoms passed to it
+> (`1_core/proto/enphysics.c:51`), not from the LOD, so neither a walk nor a moving body tells
+> the winding. A player walking through the object is not evidence of outward winding either:
+> look for a collision LOD with no `ComponentNN` selection (killer #2) and at the body itself
+> (its layer, its height, how it was created: `dayz-physics-engine`).
 
 **Fix**: `face.vertices.reverse()` on each face that reads outward, and only on those
 (`proxy:*` faces excluded): on a convex, closed component the reading is exact, and a component
@@ -132,9 +140,9 @@ targeting, no ballistic hits"; the root cause ended "The model looks perfect but
 invisible."; and the MANDATORY note ended "A separately-created dynamic physics body
 (`dBodyCreateDynamicEx`) can still make the object move, which masks inverted collision winding
 — the object rolls but the player walks through it and no action cursor registers." The outward
-boxes stopped and carried the player like the inward ones, and only the LOD raycasts missed
-them, the `view` rays the action cursor casts among them: the missing action fits the
-measurement, the walk-through does not. The sentence matches the
+boxes stopped a walking player like the inward ones and held one standing on top, and only the
+LOD raycasts missed them, the `view` rays the action cursor casts among them: the missing action
+fits the measurement, the walk-through does not. The sentence matches the
 rolling stone of `dayz-physics-engine/references/fisica-engine-deep-dive.md` §7, a
 `dBodyCreateDynamicEx` sphere, and that section puts the stone's walk-through down to a body
 created only on the server and its missing action to a missing View Geometry LOD.)*
