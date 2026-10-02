@@ -23,7 +23,7 @@ A door action crosses five name domains:
 
 The moving **selection** and interactive **source** may differ. This is the key to a door controlled by an adjacent button or lever.
 
-Read [door-model-cfg-and-config.md](references/door-model-cfg-and-config.md) before editing model.cfg or config.cpp. Read [lods-and-object-builder.md](references/lods-and-object-builder.md) before editing the P3D. Read [worked-examples.md](references/worked-examples.md) when choosing a pattern. Exact source folders are in **assets/**.
+Read [door-model-cfg-and-config.md](references/door-model-cfg-and-config.md) before editing model.cfg or config.cpp. Read [lods-and-object-builder.md](references/lods-and-object-builder.md) before editing the P3D. Read [worked-examples.md](references/worked-examples.md) when choosing a pattern. The three patterns are the examples of novoGOD's door tutorial *Doors_Buttons_Lesson*; it carries no license, so the Pack does not ship its files, and the references describe them and cite them by path and line.
 
 (until 1.29: a building door's lock state was the engine native pair `LockDoor` / `UnlockDoor`, operated with a lockpick through `ActionLockDoors` / `ActionUnlockDoors` and `CanDoorBeOpened(int doorIndex, bool checkIfLocked = false)`.) (since 1.30 Exp: that native path still exists, but `BuildingBase` also accepts inventory locks on slots `Att_CombinationLock` and `Att_CodeLock`, bound per door by `AdditionalDoorInfo`. Vanilla `ActionOpenDoors` now calls `CanDoorBeOpened(notnull DoorManipulationParams params)` and `DoorsDirectionalCheck`. See [Door open conditions and locks](references/door-model-cfg-and-config.md#door-open-conditions-and-locks-dayz-130-exp) and [Building locks](references/worked-examples.md#building-locks-dayz-130-exp).)
 
@@ -76,7 +76,7 @@ Follow the debug order: config load -> entity spawn -> action location -> animat
 - Use phase sub-ranges to sequence motion: Simple Door handle runs **0..0.15**, then the door runs **0.15..1**.
 - **initOpened** is a spawn probability: `rand < initOpened` spawns the door opened (0 = always closed, 0.5 ~= half). Verified vs BI Doors_on_buildings wiki.
 - Keep skeleton names unique. The tutorial warns that duplicate skeleton names can crash a server.
-- The shipped Expert Mode example has a source-to-Doors anomaly; read its warning before copying it.
+- The tutorial's Expert Mode example has a source-to-Doors anomaly; read its warning in [worked-examples.md](references/worked-examples.md) before reusing the pattern.
 - (until 1.29: `LockDoor` / `UnlockDoor` plus lockpick was the only building-door lock path.) (since 1.30 Exp: a locked `DigitalCodeLock` or `CombinationLock` on a related slot also makes `BuildingBase.CanDoorBeOpened` return false. Lockpick is skipped when an external lock is already on that door. Combination unlock is a separate action `ActionCombinationLockUnlock` after the dials match.)
 - (since 1.30 Exp) `EBuildingLockType` is still lockpick / ship-container keys. Combination and code locks are **inventory attachments**, not extra enum bits. Do not invent `COMBINATION_LOCK = 2` / `CODE_LOCK = 4`.
 - **Vanilla house furniture is PROXY geometry inside the building's ODOL, not a placed object.** Fridges and wardrobes inside houses are not instances of `StaticObj_Furniture_*`: the model path appears as a proxy inside ~25 house ODOLs of `DZ/structures` (1,546+ `kitchen\fridge\fridge` placements in `dayzOffline.chernarusplus\mapgrouppos.xml`, lower bound), so neither a `modded` override of `StaticObj_Furniture_fridge` nor `CF_ObjectManager.HideMapObject` reaches them. [EXACT][CLAIM-FURNITURE-FRIDGE-CLASS] The trap: `StaticObj_Furniture_fridge : HouseNoDestruct` exists with `scope=1` and no `Doors` subclass (`DZ/structures/furniture/config.cpp:565-569`, DayZ 1.30.164014 Exp) — the class existing does not make house fridges instances of it. Before designing doors for furniture, grep the extracted `DZ/structures` P3Ds for the model path as a proxy (use `.` and not `\` as path separator: in shell tooling the escaped backslash collapses and even the control stops matching) and count placements in the world WRP.
@@ -90,7 +90,7 @@ STOP and ask the user when a source, interaction selection, axis, component, LOD
 
 - [Model/config contract](references/door-model-cfg-and-config.md)
 - [LODs and Object Builder](references/lods-and-object-builder.md)
-- [Verified worked examples](references/worked-examples.md)
+- [Worked examples](references/worked-examples.md)
 - [Official DayZ doors reference](https://community.bistudio.com/wiki/DayZ:Doors_on_buildings)
 - [Official DayZ Samples](https://github.com/BohemiaInteractive/DayZ-Samples)
 - [Official LOD reference](https://community.bistudio.com/wiki/LOD)
