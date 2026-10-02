@@ -181,8 +181,8 @@ normals (`mesh.corner_normals[loop].vector`, transformed by `matrix_world.to_3x3
     BACKWARD (S7); `(−x, z, y)` turned it round but left it mirrored, and the limbs flung back/up until the
     L/R selections were swapped (S9). The shipped build (`(−x, z, y)` + reversed faces + L/R swap) is the
     mirror image of the authored mesh.
-  - Not yet run in game on a skinned character [DESIGN]: confirm with the chiral check at the end of this
-    section before relying on it for a release.
+  - [✓ in-game 2026-10-02, LFInfectedBig] The chiral check at the end of this section ran: the `(x, z, y)`
+    build reads its marker correctly and is lit like a vanilla zombie; the shipped recipe reads it mirrored.
 - **Winding and normals follow Rule 12; do not reverse the faces.** Under `(x, z, y)` the Blender face order
   lands in the MLOD convention by itself (cross product inward, collision LODs included, as Rule 18 wants);
   the shading normals are negated (MLOD stores them inward). The old "reverse every visual face" was right
@@ -197,12 +197,17 @@ normals (`mesh.corner_normals[loop].vector`, transformed by `matrix_world.to_3x3
   normals and `cross · normal < 0`, the state of the LFInfectedBig det = +1 build. [OFFLINE MEASURED
   2026-10-01] On the three MLODs of the Rule 12 in-game probe it exits 1 on all three. That includes the one
   that renders solid and reads correctly in game (`cross.normal_positive=1.00`, `normals_outward=0.00`).
-  Its fix hints ("reverse every face", "orient normals outward") would turn that model inside-out. The
-  probe had no variant with inward winding and OUTWARD normals (the state this gate passes), so it refutes
-  the gate's `cross · normal > 0 ⇒ inside-out`, not the normal sign of the builds the gate passed. Until the
-  script is updated, gate the export with dayz-p3d-audit "Absolute winding check": normal agreement ≈ 100 %
-  and a negative signed volume by winding, the production sign. On the probe that check passes both solid
-  variants and fails the inside-out one; like every winding gate, it cannot see a mirror. A double-sided
+  Its fix hints ("reverse every face", "orient normals outward") would turn that model inside-out.
+  [✓ in-game 2026-10-02, LFInfectedBig, chiral check below] The state this gate passes, winding in the MLOD
+  order with the normals stored OUTWARD, renders solid but lit inverted (dark on the sunlit side), and so
+  does the shipped LFInfectedBig; the Rule 12 build it fails renders solid and lit like a vanilla zombie.
+  Binarize gives all of them vanilla's winding; only the inward-normal build keeps vanilla's relation
+  between stored normals and winding in the ODOL (agreement 0.2 %, vanilla zombies 0.3-0.4 %, the
+  outward-normal builds 99.8 %). So store the normals inward, and until the script is updated, gate the
+  export with dayz-p3d-audit "Absolute winding check": normal agreement ≈ 100 % and a negative signed
+  volume by winding, the production sign. On the static probe that check passes both solid variants and
+  fails the inside-out one; on LFInfectedBig it passes the Rule 12 build (99.3 %, −0.109) and fails both
+  inverted ones (0.7-0.8 %). Like every winding gate, it cannot see a mirror. A double-sided
   Blender/Three.js preview never shows DayZ's single-sided culling, so a gate is still needed. Do NOT
   compare to a *debinarized* vanilla model for winding: the ODOL→MLOD converter's winding handling inverts
   the comparison.
@@ -237,8 +242,9 @@ logs `Bone X doesn't exist in skeleton OFP2_ManSkeleton`.
 Reference scripts (LFInfectedBig): `3dmodel\LFInfectedBig\_export\{bl_export_rig,build_p3d,verify_p3d}.py`
 + `debin_vanilla.py` (the vanilla ground-truth extractor).
 
-**Chiral in-game check for this route [DESIGN, not yet run].** Winding gates, the bbox and the facing test
-cannot see a mirror once the L/R selections have been swapped, which is how LFInfectedBig shipped.
+**Chiral in-game check for this route [run 2026-10-02, DayZDiag 1.29.163709].** Winding gates, the bbox and
+the facing test cannot see a mirror once the L/R selections have been swapped, which is how LFInfectedBig
+shipped.
 1. Re-export LFInfectedBig with `(x, z, y)`, faces in Blender order, negated normals and no L/R swap. Add
    one marker: an "F" in relief on the chest, weighted 100 % to `spine3`. Build the shipped recipe once
    more with the same marker as the negative control.
@@ -249,6 +255,18 @@ cannot see a mirror once the L/R selections have been swapped, which is how LFIn
    control: "F" mirrored, hole on the other side.
 4. Lighting: the lit side of the body is bright. The normal sign comes from Rule 12, measured on static
    models only.
+
+Result. LFInfectedBig was rebuilt three ways from one dump, each with the "F": Rule 12 via
+`py3d.blender_to_dayz()`; the same with the normals re-negated OUTWARD; and the shipped recipe as control,
+equal to the shipped p3d in every point, normal, face and selection without the marker. References: a
+vanilla `ZmbM_SoldierNormal` and the player, sun from the east.
+- Rule 12 build: solid, the "F" reads correctly, lit like the vanilla zombie and the player.
+  check_dayz_winding.py fails it ("inside-out"); the absolute check passes it.
+- Rule 12 with outward normals: solid, the "F" reads correctly, lit inverted.
+- Shipped recipe: solid, the "F" MIRRORED, lit inverted.
+- An AI-enabled Rule 12 build walked about 18 m with its limbs in place; the attack was not seen (it never
+  engaged the player). The chest hole is centred (x ≈ 0), so step 3's hole criterion cannot show chirality
+  on this model. The client ran without textures, so colour was not judged.
 
 ## Failure → cause quick map
 

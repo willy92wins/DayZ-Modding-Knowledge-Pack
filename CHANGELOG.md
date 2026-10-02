@@ -52,6 +52,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   row for Check A's `UNIFORM_NON_FLIPPED` reversed every face; a correct Rule 12 export reads
   exactly that, so the row now asks for a direction check (signed volume or the per-component
   check of Rule 18) first.
+- `dayz-characters`: the chiral in-game check of the character route ran (2026-10-02, DayZDiag
+  1.29.163709, LFInfectedBig rebuilt three ways from one dump with an "F" on the chest). The Rule 12
+  build (`py3d.blender_to_dayz()`) is solid, reads the F correctly and is lit like a vanilla zombie.
+  The state `check_dayz_winding.py` passes, MLOD winding with the normals stored OUTWARD, is solid
+  but lit inverted, and so is the shipped LFInfectedBig, which also reads the F mirrored. In the
+  binarized files only the Rule 12 build keeps vanilla's relation between normals and winding. The
+  docs now say to store normals inward on characters too, gate with dayz-p3d-audit's absolute check
+  (it passes the Rule 12 build and fails both inverted ones), and read a PASS of
+  `check_dayz_winding.py` on an outward-normal build as a lighting defect; a symptom row is added.
 - packctl `promote`: schema-1 receipts sealed in a checkout that no longer exists stopped every
   `--check` (`PROMOTION-RECEIPT-JOURNAL-MISMATCH` on all nine receipts) and would have stopped
   the pre-apply journal sweep (`PROMOTION-RECOVERY-REQUIRED`). Such a receipt is now read from

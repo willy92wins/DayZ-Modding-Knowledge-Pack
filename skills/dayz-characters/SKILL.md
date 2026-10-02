@@ -165,8 +165,9 @@ in-game improvement.
 - **Valid deform gates, in order**: (1) in-game spawn — the real one; (2) Buldozer (BI model viewer, real
   engine skinning). The Blender armature pose-test is good only for gross "does a limb move at all" sanity.
 - **What DID hold up offline** (so the offline work isn't all waste): the winding gate `check_dayz_winding.py`
-  (it held for the det +1 builds of that time; it fails a Rule 12 export that rendered correctly in a later
-  in-game test, see OFFLINE GATE below and `references/character-rigging.md` Stage B), scale (f from
+  (it held for the winding of the det +1 builds of that time, which in game turn out lit inverted; it fails
+  a Rule 12 export that renders correctly, see OFFLINE GATE below and `references/character-rigging.md`
+  Stage B), scale (f from
   armature span), orientation (T2), and **always LOOK at
   the REST SIDE/depth render** — a TPS conform to near-coplanar bone-midpoint targets flattened the mesh to
   paper (2D in-game); the flat side-view was in the render folder a whole build cycle before it was noticed.
@@ -301,6 +302,7 @@ this wall. Warn the user whenever a plan ships custom character anims. (`dayz-an
 | **Whole mesh renders flat / paper / 2D in-game** | a conform/warp collapsed depth (Y) — e.g. TPS to near-coplanar bone-midpoint targets | conform in X/Z only, preserve Y; ALWAYS check the REST SIDE render, not just front |
 | **In-game diffuse = "camo" / black-grey facet noise, persists without `_nohq`** | corrupt high→low bake (mis-aligned high/low) — the noise is in the `_co` DIFFUSE, not the normal map | open and LOOK at the baked `_co` PNG; `references/character-uv-bake.md` pre-conform proxy |
 | **Green/grey/brown "camo" patches that SURVIVE replacing the `_co` entirely (uniform `_co` too) AND disabling `_nohq`** | an ENVIRONMENT/terrain texture in an rvmat stage with `uvSource="tex"` projects that texture onto the body UV. [LFInfectedBig S10] `dz\data\data\env_land_co.paa` (a landscape photo = DayZ env map) was in Stage7 with `uvSource="tex"` → painted the landscape over the mesh; survived 6 `_co` iterations because the fix is the rvmat, not the diffuse | **Audit EVERY rvmat stage** — an env/macro/detail map must be `uvSource="none"` (sampled by reflection), never `"tex"`. `ImageToPAA in.paa out.png` to LOOK at each stage's texture. The `_co`+normal Blender preview HIDES rvmat stages = FALSE GATE. First prove the mesh is clean with the CLAY-TEST (render `.p3d` geometry, NO textures) |
+| **Solid, but dark on the sunlit side and lit in the shade (inverted lighting)** | shading normals stored OUTWARD: the det +1 recipe (LFInfectedBig as shipped) or a Rule 12 export with its normals re-negated; measured in game 2026-10-02 | store the normals inward: Rule 12 / `py3d.blender_to_dayz()` negates them; gate with dayz-p3d-audit's absolute check (agreement ≈ 100 %, negative signed volume) |
 | **Textures on the INTERIOR / model see-through from outside (inside-out)** | the faces are not in the MLOD inward order: a det +1 map without face reversal (LFInfectedBig S6), or a det −1 map with one. Blender/Three.js previews are double-sided and HIDE this | export with Rule 12: `(x,z,y)`, faces in Blender order, normals negated. Reversing every face is right only under a det +1 map, and that map mirrors the mesh. See `references/character-rigging.md §6` |
 
 ## OFFLINE GATE — run before EVERY PBO (catches the inside-out bug without an in-game cycle)
@@ -314,10 +316,13 @@ that renders solid (det +1, faces reversed, normals negated); its fix hints woul
 The determinant does not say which convention a build follows; the stored normals do. Until the script is
 updated, gate an export with inward normals with dayz-p3d-audit "Absolute winding check": normal agreement
 ≈ 100 % and a negative signed volume by winding. On the probe that check passes both solid variants and
-fails the inside-out one.
+fails the inside-out one. Measured on a skinned character too (LFInfectedBig, in game 2026-10-02, chiral
+check in `references/character-rigging.md`): the Rule 12 build the script fails is solid and lit like
+vanilla; the builds it passes, normals stored outward, are lit inverted, and the shipped one is also
+mirrored. Store the normals inward; the absolute check passes the Rule 12 build and fails both others.
 
 ```
-python references/check_dayz_winding.py <source_mlod.p3d>   # builds that store normals OUTWARD only (see above)
+python references/check_dayz_winding.py <source_mlod.p3d>   # legacy outward-normal builds only (see above)
 ```
 A double-sided preview never shows DayZ's single-sided culling, so an inside-out model (textures on the
 interior) only surfaces in-game — losing a test cycle. For a build that stores its normals outward (the
@@ -325,7 +330,10 @@ LFInfectedBig recipe; the script's `normals_outward` info line reads that sign) 
 in-game-confirmed rule (LFInfectedBig S6): a correct SOURCE-MLOD visual LOD has
 `cross(v1-v0,v2-v0)·stored_normal < 0`. Run it after building the `.p3d` and before AddonBuilder; if it
 FAILs on such a build, reverse the visual winding and rebuild. A FAIL on a build with inward normals says
-nothing about the winding: use the absolute check above, never the face reversal.
+nothing about the winding: use the absolute check above, never the face reversal. S6 confirmed the
+winding only: an outward-normal build renders solid but lit inverted (2026-10-02). Re-export it with
+Rule 12 (a det +1 build is also mirrored); a Rule 12 build with outward normals only needs its normal
+pool negated.
 Detail + why (incl. why NOT to compare against a debinarized vanilla) in `references/character-rigging.md §6`.
 
 

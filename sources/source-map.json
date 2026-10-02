@@ -361,10 +361,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-promotion-receipts@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Fixed entry for the dayz-characters in-game A/B (in-game A/B on LFInfectedBig, 2026-10-02, DayZDiag 1.29.163709, driven by dayz-mcp: three builds from one Blender-space dump with an F on the chest; the Rule 12 build (py3d.blender_to_dayz) is solid, reads the F correctly and is lit like a vanilla ZmbM_SoldierNormal; the Rule 12 build with outward normals and the shipped det +1 recipe (equal to the shipped p3d) are lit inverted, the latter also mirrored; in the ODOL only the inward-normal build keeps vanilla's normal-to-winding relation (0.2 %, vanilla 0.3-0.4 %, the others 99.8 %); dayz-p3d-audit's absolute check passes the Rule 12 build (99.3 %, -0.109) and fails the other two (0.7-0.8 %); check_dayz_winding.py fails the Rule 12 build. Attack animation not observed). Authored by Claude (Anthropic) on the owner's request; PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "88a41ada834b1de80533e86f8509d5ba9ec6f44c330803adba5c4d5f7e3b1811",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-characters-ab@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "46ff1b76dba209f2584d876af3913569ea917ded83ebf8b9b80846517233a62a",
+      "output_hash": "88a41ada834b1de80533e86f8509d5ba9ec6f44c330803adba5c4d5f7e3b1811",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5650,10 +5660,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "OFFLINE GATE and the offline-holds note: outward stored normals light inverted on a character, store them inward and gate with the absolute check; a symptom row for inverted lighting. Basis: in-game A/B on LFInfectedBig, 2026-10-02, DayZDiag 1.29.163709, driven by dayz-mcp: three builds from one Blender-space dump with an F on the chest; the Rule 12 build (py3d.blender_to_dayz) is solid, reads the F correctly and is lit like a vanilla ZmbM_SoldierNormal; the Rule 12 build with outward normals and the shipped det +1 recipe (equal to the shipped p3d) are lit inverted, the latter also mirrored; in the ODOL only the inward-normal build keeps vanilla's normal-to-winding relation (0.2 %, vanilla 0.3-0.4 %, the others 99.8 %); dayz-p3d-audit's absolute check passes the Rule 12 build (99.3 %, -0.109) and fails the other two (0.7-0.8 %); check_dayz_winding.py fails the Rule 12 build. Attack animation not observed. Authored by Claude (Anthropic) on the owner's request; PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "0550179016e38baff61cb7f522a0f297d00e23dea71221feed3932db3a029a4a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "kp-update-characters-ab@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "4035613935b6c3a05bbee6b6dfa4841575e43817b7fe2d30b06b869ab4a92e68",
+      "output_hash": "0550179016e38baff61cb7f522a0f297d00e23dea71221feed3932db3a029a4a",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -5712,10 +5732,20 @@
           "source_path": "skills/dayz-characters/references/character-rigging.md",
           "source_revision": "kp-update-rig-handedness@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Stage B and the GATE bullet record the result, and the chiral in-game check is marked run with its outcome: in-game A/B on LFInfectedBig, 2026-10-02, DayZDiag 1.29.163709, driven by dayz-mcp: three builds from one Blender-space dump with an F on the chest; the Rule 12 build (py3d.blender_to_dayz) is solid, reads the F correctly and is lit like a vanilla ZmbM_SoldierNormal; the Rule 12 build with outward normals and the shipped det +1 recipe (equal to the shipped p3d) are lit inverted, the latter also mirrored; in the ODOL only the inward-normal build keeps vanilla's normal-to-winding relation (0.2 %, vanilla 0.3-0.4 %, the others 99.8 %); dayz-p3d-audit's absolute check passes the Rule 12 build (99.3 %, -0.109) and fails the other two (0.7-0.8 %); check_dayz_winding.py fails the Rule 12 build. Attack animation not observed. Authored by Claude (Anthropic) on the owner's request; PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "d5f2a9ce83a885937eef97de0c9994da20d5ac0910f936cbb4272dc4c097698a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/character-rigging.md",
+          "source_revision": "kp-update-characters-ab@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "06199aa9478242f2f8aea91b9bc87552944f5ae9423a334ffd7f046410c931ee",
+      "output_hash": "d5f2a9ce83a885937eef97de0c9994da20d5ac0910f936cbb4272dc4c097698a",
       "output_path": "skills/dayz-characters/references/character-rigging.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
