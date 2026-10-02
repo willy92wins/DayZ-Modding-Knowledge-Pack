@@ -561,10 +561,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-mcp-verify-stand-probe@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-model-pipeline SP-003 told the reader, when generating or editing a collision LOD, to compare its winding against the Visual LOD of the same model (centroid method) before deploying and make the two agree in sign (~100% inward), and said audit_p3d.py does not validate this; the collider recipe in references/py3d-direct-generation.md (SP-025) said to make the collider's sign match the Visual LOD and called that relative comparison the operational gate; dayz-p3d-inspector's SP-003 section said the same. Since PR #38 (6dfe299) dayz-p3d-audit killer #1 (references/killers-detail.md) reads the relative check against the Visual LOD as a trigger and Rule 18's per-component check as the verdict (prerequisites: every non-proxy face in a ComponentNN selection, every component closed and convex, no degenerate face; otherwise unresolved), reverses only the faces that read outward, and says never to reverse a collision LOD to match the Visual LOD ('Absolute winding check' rule 7). Checked against base 164f8fb: audit_p3d.py runs py3d P3D.validate() (skills/dayz-p3d-audit/scripts/audit_p3d.py:337; the absolute-centroid winding check is retired, lines 11-12); py3d _check_winding_vs_visual (tools/py3d/py3d/__init__.py:1176, called at line 3103 for every geometry-class LOD other than the Visual LOD) raises ERR_WINDING_INVERTED when the collision LOD and the Visual LOD are both uniform (over 90 % or under 10 % of faces outward from the LOD's centroid) and opposite; killers-detail.md lines 58-69 (detection), 71-103 (the automated check is a trigger and also fires on a healthy inward box under an inside-out Visual LOD or a room seen from inside) and 105-116 (fix only the faces that read outward, never match the Visual LOD); dayz-p3d-audit SKILL.md line 430 (rule 7) and line 30 (item 1 of the three py3d gates: offline, the relative check accuses healthy collision LODs under an inside-out Visual LOD); dayz-model-pipeline SKILL.md line 233 (Rule 18, narrowed 2026-10-02 to every face). The three sections now say so, and each keeps a dated note quoting the replaced text verbatim (checked mechanically, whitespace-normalized, against base 164f8fb; three single-character mutants fail the check). The walk-through sentence of SP-003 and its 2026-10-02 note are unchanged. No new measurement: documentation alignment only. A cross-family reviewer (Codex gpt-6.1-sol) flagged the contradiction in both rounds of PR #56. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0d1956965c698b5a6d1ed30a52cd107abb9b63025a93418606a748cc01923ef7",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-sp003-align@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "060c7a1db4c53b36cf6e3757e9300bd546dc9106d20609794d3ae361eb0bf11b",
+      "output_hash": "0d1956965c698b5a6d1ed30a52cd107abb9b63025a93418606a748cc01923ef7",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7634,10 +7644,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-p3d-audit-killer1-walk@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-model-pipeline SP-003 told the reader, when generating or editing a collision LOD, to compare its winding against the Visual LOD of the same model (centroid method) before deploying and make the two agree in sign (~100% inward), and said audit_p3d.py does not validate this; the collider recipe in references/py3d-direct-generation.md (SP-025) said to make the collider's sign match the Visual LOD and called that relative comparison the operational gate; dayz-p3d-inspector's SP-003 section said the same. Since PR #38 (6dfe299) dayz-p3d-audit killer #1 (references/killers-detail.md) reads the relative check against the Visual LOD as a trigger and Rule 18's per-component check as the verdict (prerequisites: every non-proxy face in a ComponentNN selection, every component closed and convex, no degenerate face; otherwise unresolved), reverses only the faces that read outward, and says never to reverse a collision LOD to match the Visual LOD ('Absolute winding check' rule 7). Checked against base 164f8fb: audit_p3d.py runs py3d P3D.validate() (skills/dayz-p3d-audit/scripts/audit_p3d.py:337; the absolute-centroid winding check is retired, lines 11-12); py3d _check_winding_vs_visual (tools/py3d/py3d/__init__.py:1176, called at line 3103 for every geometry-class LOD other than the Visual LOD) raises ERR_WINDING_INVERTED when the collision LOD and the Visual LOD are both uniform (over 90 % or under 10 % of faces outward from the LOD's centroid) and opposite; killers-detail.md lines 58-69 (detection), 71-103 (the automated check is a trigger and also fires on a healthy inward box under an inside-out Visual LOD or a room seen from inside) and 105-116 (fix only the faces that read outward, never match the Visual LOD); dayz-p3d-audit SKILL.md line 430 (rule 7) and line 30 (item 1 of the three py3d gates: offline, the relative check accuses healthy collision LODs under an inside-out Visual LOD); dayz-model-pipeline SKILL.md line 233 (Rule 18, narrowed 2026-10-02 to every face). The three sections now say so, and each keeps a dated note quoting the replaced text verbatim (checked mechanically, whitespace-normalized, against base 164f8fb; three single-character mutants fail the check). The walk-through sentence of SP-003 and its 2026-10-02 note are unchanged. No new measurement: documentation alignment only. A cross-family reviewer (Codex gpt-6.1-sol) flagged the contradiction in both rounds of PR #56. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3669bba048c099d103905d25e115f3c8ffe8d80578325f6e4e87e054a00dd218",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "kp-update-sp003-align@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4ed06587c2979256dcbbb5d49588b31cc8bee208437ab803d403931453a7afae",
+      "output_hash": "3669bba048c099d103905d25e115f3c8ffe8d80578325f6e4e87e054a00dd218",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8026,10 +8046,20 @@
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-characters-winding-gate@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-model-pipeline SP-003 told the reader, when generating or editing a collision LOD, to compare its winding against the Visual LOD of the same model (centroid method) before deploying and make the two agree in sign (~100% inward), and said audit_p3d.py does not validate this; the collider recipe in references/py3d-direct-generation.md (SP-025) said to make the collider's sign match the Visual LOD and called that relative comparison the operational gate; dayz-p3d-inspector's SP-003 section said the same. Since PR #38 (6dfe299) dayz-p3d-audit killer #1 (references/killers-detail.md) reads the relative check against the Visual LOD as a trigger and Rule 18's per-component check as the verdict (prerequisites: every non-proxy face in a ComponentNN selection, every component closed and convex, no degenerate face; otherwise unresolved), reverses only the faces that read outward, and says never to reverse a collision LOD to match the Visual LOD ('Absolute winding check' rule 7). Checked against base 164f8fb: audit_p3d.py runs py3d P3D.validate() (skills/dayz-p3d-audit/scripts/audit_p3d.py:337; the absolute-centroid winding check is retired, lines 11-12); py3d _check_winding_vs_visual (tools/py3d/py3d/__init__.py:1176, called at line 3103 for every geometry-class LOD other than the Visual LOD) raises ERR_WINDING_INVERTED when the collision LOD and the Visual LOD are both uniform (over 90 % or under 10 % of faces outward from the LOD's centroid) and opposite; killers-detail.md lines 58-69 (detection), 71-103 (the automated check is a trigger and also fires on a healthy inward box under an inside-out Visual LOD or a room seen from inside) and 105-116 (fix only the faces that read outward, never match the Visual LOD); dayz-p3d-audit SKILL.md line 430 (rule 7) and line 30 (item 1 of the three py3d gates: offline, the relative check accuses healthy collision LODs under an inside-out Visual LOD); dayz-model-pipeline SKILL.md line 233 (Rule 18, narrowed 2026-10-02 to every face). The three sections now say so, and each keeps a dated note quoting the replaced text verbatim (checked mechanically, whitespace-normalized, against base 164f8fb; three single-character mutants fail the check). The walk-through sentence of SP-003 and its 2026-10-02 note are unchanged. No new measurement: documentation alignment only. A cross-family reviewer (Codex gpt-6.1-sol) flagged the contradiction in both rounds of PR #56. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e8bbe1e2b1a2d6d9b6e78fcb1fad19a9eb3ec0967200c048f5b4941a5833a62c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "kp-update-sp003-align@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4c9eca0f75eb0617fe43d181958242d9485fe0850ed6be31db5588f4c10112ce",
+      "output_hash": "e8bbe1e2b1a2d6d9b6e78fcb1fad19a9eb3ec0967200c048f5b4941a5833a62c",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8512,10 +8542,20 @@
           "source_path": "skills/dayz-p3d-inspector/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-model-pipeline SP-003 told the reader, when generating or editing a collision LOD, to compare its winding against the Visual LOD of the same model (centroid method) before deploying and make the two agree in sign (~100% inward), and said audit_p3d.py does not validate this; the collider recipe in references/py3d-direct-generation.md (SP-025) said to make the collider's sign match the Visual LOD and called that relative comparison the operational gate; dayz-p3d-inspector's SP-003 section said the same. Since PR #38 (6dfe299) dayz-p3d-audit killer #1 (references/killers-detail.md) reads the relative check against the Visual LOD as a trigger and Rule 18's per-component check as the verdict (prerequisites: every non-proxy face in a ComponentNN selection, every component closed and convex, no degenerate face; otherwise unresolved), reverses only the faces that read outward, and says never to reverse a collision LOD to match the Visual LOD ('Absolute winding check' rule 7). Checked against base 164f8fb: audit_p3d.py runs py3d P3D.validate() (skills/dayz-p3d-audit/scripts/audit_p3d.py:337; the absolute-centroid winding check is retired, lines 11-12); py3d _check_winding_vs_visual (tools/py3d/py3d/__init__.py:1176, called at line 3103 for every geometry-class LOD other than the Visual LOD) raises ERR_WINDING_INVERTED when the collision LOD and the Visual LOD are both uniform (over 90 % or under 10 % of faces outward from the LOD's centroid) and opposite; killers-detail.md lines 58-69 (detection), 71-103 (the automated check is a trigger and also fires on a healthy inward box under an inside-out Visual LOD or a room seen from inside) and 105-116 (fix only the faces that read outward, never match the Visual LOD); dayz-p3d-audit SKILL.md line 430 (rule 7) and line 30 (item 1 of the three py3d gates: offline, the relative check accuses healthy collision LODs under an inside-out Visual LOD); dayz-model-pipeline SKILL.md line 233 (Rule 18, narrowed 2026-10-02 to every face). The three sections now say so, and each keeps a dated note quoting the replaced text verbatim (checked mechanically, whitespace-normalized, against base 164f8fb; three single-character mutants fail the check). The walk-through sentence of SP-003 and its 2026-10-02 note are unchanged. No new measurement: documentation alignment only. A cross-family reviewer (Codex gpt-6.1-sol) flagged the contradiction in both rounds of PR #56. CHANGELOG [Unreleased] Fixed entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "38776c8c7abd45e8a2b3f3c088c2419f194b545cbfde2403dc4480212035c6f3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "kp-update-sp003-align@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4e63224f637d26c5e8601ed9fccff3896d3f41a6aff452d3540701cbc17c240e",
+      "output_hash": "38776c8c7abd45e8a2b3f3c088c2419f194b545cbfde2403dc4480212035c6f3",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
