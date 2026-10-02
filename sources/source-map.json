@@ -521,10 +521,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-characters-winding-gate@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "[Unreleased] Added entry for the dayz-mcp-verify standing-on-top probe (an idle teleported player does not fall; a 0.5 s player_move before query_player_state applies it), measured in dayz-mcp run 3afed8ef, DayZDiag 1.29.163709, 2026-10-02.",
+          "license": "MIT",
+          "source_hash": "2f9607f0de9870a07e0192a774ac9a6a48b27d87950280b3678e0f030782c1cc",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-mcp-verify-stand-probe@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6d0fd27f439094e3df3e0e9199f1971bc39fc758c80674a788f75e1267eb1998",
+      "output_hash": "2f9607f0de9870a07e0192a774ac9a6a48b27d87950280b3678e0f030782c1cc",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7088,10 +7098,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-chiral-ingame@2026-10-02",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: dayz-mcp-verify static-object playbook gains a standing-on-top probe next to the walk-into probe (an idle teleported player does not fall; a 0.5 s player_move applies the fall), and the CHANGELOG an Added entry. In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 3afed8ef (the killer #1 walk A/B; project DayZ_MCP plus one probe mod), NWAF concrete, 2 m probe boxes (origin at the bottom centre) spawned with rotation 64 as Inventory_Base items (item_large): killer #2's inward-wound Component01 box and a copy with the Geometry, View and Fire faces reversed. player_teleport(pos=[4211, 340.6, 10660], skip_clearance_check=true), 0.065 m above the outward-wound MLOD box's top, then query_player_state twice: y 340.6000 both times, the second result 3.9 s after the teleport's (bridge ids 1164-1166); the same call at [4235, 340.6, 10660] above open ground: y 340.6000 twice, the second 3.3 s after (1168-1170), and the start_pos of the player_move issued 15 s after that teleport still read y 340.6000 (the client's PhysicsGetPositionWS at the move's start: addon/scripts/4_World/MCP_PlayerMove.c:540 in the DayZ_MCP bridge, file sha256 1d98c6e3c7d00531e38856a960401f5a358064189f58a1fbe7921cdd4a412708). player_move(angle_deg=0, speed walk, hold_s=0.5; released_by hold, applied_angle_deg 0) then query_player_state: above open ground y 338.4589, the ground (1171-1172); after teleports 0.065-0.069 m above the tops, y 340.5346 on the outward-wound MLOD box, 340.4813 on the outward-wound binarized box and 340.5633 on the inward-wound MLOD box, each 0.00003 m below spawn y + 2.000, where DayZPhysics.RayCastBullet hit the top, with the player 0.70-0.75 m north of the 2 m top's centre (1174-1184). The server script log shows each of the four moves accepted and released. Agrees with the worn-items section's teleport to y=160 (run 1c289781, no fall after 30 s). Not measured: idle reads past 15 s, other heights, shapes, physics layers or gaits, a static (HouseNoDestruct) top. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "89a3859c4e9172babb5906c4b8751a1aa0811cd3572c1afed6936cb4e0fdfb9d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-mcp-verify-stand-probe@2026-10-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "91325e9ea0b6d159762a286b9fd3b17cb2bf247c2717cab71ae52d4111106083",
+      "output_hash": "89a3859c4e9172babb5906c4b8751a1aa0811cd3572c1afed6936cb4e0fdfb9d",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -15225,10 +15245,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-characters-winding-gate@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registers CLAIM-MCPV-STAND-PROBE (runtime_verified) for the dayz-mcp-verify static-object playbook's standing-on-top probe, and moves CLAIM-MCPV-FIXTURE-NOPERSIST and CLAIM-MCPV-WORN-MANNEQUIN to the lines their markers now hold (+18 each, below the inserted bullet); their evidence and levels unchanged. Evidence of the new claim: In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 3afed8ef (the killer #1 walk A/B; project DayZ_MCP plus one probe mod), NWAF concrete, 2 m probe boxes (origin at the bottom centre) spawned with rotation 64 as Inventory_Base items (item_large): killer #2's inward-wound Component01 box and a copy with the Geometry, View and Fire faces reversed. player_teleport(pos=[4211, 340.6, 10660], skip_clearance_check=true), 0.065 m above the outward-wound MLOD box's top, then query_player_state twice: y 340.6000 both times, the second result 3.9 s after the teleport's (bridge ids 1164-1166); the same call at [4235, 340.6, 10660] above open ground: y 340.6000 twice, the second 3.3 s after (1168-1170), and the start_pos of the player_move issued 15 s after that teleport still read y 340.6000 (the client's PhysicsGetPositionWS at the move's start: addon/scripts/4_World/MCP_PlayerMove.c:540 in the DayZ_MCP bridge, file sha256 1d98c6e3c7d00531e38856a960401f5a358064189f58a1fbe7921cdd4a412708). player_move(angle_deg=0, speed walk, hold_s=0.5; released_by hold, applied_angle_deg 0) then query_player_state: above open ground y 338.4589, the ground (1171-1172); after teleports 0.065-0.069 m above the tops, y 340.5346 on the outward-wound MLOD box, 340.4813 on the outward-wound binarized box and 340.5633 on the inward-wound MLOD box, each 0.00003 m below spawn y + 2.000, where DayZPhysics.RayCastBullet hit the top, with the player 0.70-0.75 m north of the 2 m top's centre (1174-1184). The server script log shows each of the four moves accepted and released.",
+          "license": "MIT",
+          "source_hash": "db539573e3f24bfd6fb3bd9426888fdcd6270e4ba302847ad661674f3e726438",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-mcp-verify-stand-probe@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c39469e7ac2764fce826fbbb6e5f3ef74b511d5925e8a16edc11e75229797644",
+      "output_hash": "db539573e3f24bfd6fb3bd9426888fdcd6270e4ba302847ad661674f3e726438",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

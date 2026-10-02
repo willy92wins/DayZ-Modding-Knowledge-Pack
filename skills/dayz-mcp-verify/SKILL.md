@@ -333,6 +333,24 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   a yaw (unequal readings) but not a tilt, so also check that the returned `normal`, read as a
   direction, lies along the axis (the run read (-2.1, 0, 0)), and read the fixture again a few seconds
   later. It may change an item's configured resting side; slopes and settling were not measured.
+- **Standing on top: move the player before reading its height** (added 2026-10-02, measured on
+  DayZDiag 1.29.163709 in a later run, on 2 m boxes) [EXACT][CLAIM-MCPV-STAND-PROBE]: a second
+  reading of the object's physics body next to the walk-into probe above, on its top instead of a
+  side face. An idle player is not a probe. After
+  `player_teleport(pos=[x, <top + 0.07>, z], skip_clearance_check=true)` the player kept the
+  teleport height (y 340.6000) and did not fall, on a box top and above open ground alike: the
+  server read it twice over 3-4 s (`query_player_state`), and above open ground the client's
+  physics position (the `start_pos` that `player_move` reports) still read it 15 s after the
+  teleport (the worn-items section below saw the same after a teleport to y=160). A short move
+  applies the fall: the run called `player_move(angle_deg=0, speed="walk", hold_s=0.5)` after the
+  teleport, then `query_player_state`. Above open ground the player dropped to the ground
+  (y 340.6000 to 338.459); on the boxes the server's y matched the top to within 0.0001 m
+  (spawn y + 2.000 m, where `scene_raycast(method="bullet")` hit it), on two outward-wound boxes
+  (MLOD and binarized) as on an inward-wound one. Stands means the server's y equals the top after
+  the move, falls means it reaches the ground, anything else is INCONCLUSIVE; run the same teleport
+  and move above open ground as the falling reference. Keep the move short: in 0.5 s the walk took
+  the player 0.70-0.75 m from the centre of the 2 m top by the server's position, and the edge is
+  1 m away, so a longer move can walk it off the top and read as a fall.
 - **Placement**: `telemetry_read(mode="object_at", type=<classname>, pos=<spawn_pos>, radius=2)`
   → `found=true`, `pos` ~ spawn, reasonable `orientation`. PASS = not buried or floating
   (cross-reference `pos.y` with visuals).
