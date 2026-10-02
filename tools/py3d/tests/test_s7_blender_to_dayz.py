@@ -298,6 +298,114 @@ def test_b2d_second_call_undoes_the_first(fork):
     assert lod.facenormals[0] == (0.0, 1.0, 0.0)
 
 
+# ---- ERR_WINDING_VS_NORMALS: a disagreement, not a direction ---------------
+
+def negate_normals(lod):
+    for i, n in enumerate(lod.facenormals):
+        lod.facenormals[i] = (-n[0], -n[1], -n[2])
+
+
+def reverse_faces(lod):
+    for fa in lod.faces:
+        fa.vertices.reverse()
+
+
+def turned(fork, side):
+    """B, the export that rendered right, with one side turned on every
+    face: its normals ("normals") or its vertex order ("winding")."""
+    p3d = variant(fork, "B")
+    {"normals": negate_normals, "winding": reverse_faces}[side](p3d.lods[0])
+    return p3d
+
+
+def shell_volume(lod, box):
+    """Signed volume by winding of one box, a closed shell with its own
+    eight points: the sum of dot(v0, v1 x v2) / 6 over the fan triangles of
+    its faces. Negative when the cross product points into the box, the
+    sign of a solid seen from outside on shipped MLODs."""
+    total = 0.0
+    for fa in lod.faces:
+        if fa.vertices[0].point_index // 8 != box:
+            continue
+        vs = [v.point.coords for v in fa.vertices]
+        for i in range(1, len(vs) - 1):
+            total += dot(vs[0], cross(vs[i], vs[i + 1])) / 6.0
+    return total
+
+
+def vs_normals(p3d):
+    return [f for f in p3d.validate() if f.code == "ERR_WINDING_VS_NORMALS"]
+
+
+def test_vs_normals_cannot_tell_which_side_is_wrong(fork):
+    """Normals turned and faces turned read alike: 0 % agreement and the
+    same finding with the same text, though they need opposite fixes. So
+    the message names how to decide and both fixes, not one. B passes."""
+    assert vs_normals(variant(fork, "B")) == []
+    msgs = []
+    for side in ("normals", "winding"):
+        p3d = turned(fork, side)
+        assert fork._pct_normal_agreement(p3d.lods[0]) == 0.0, side
+        found = vs_normals(p3d)
+        assert [(f.severity, f.lod) for f in found] == [("ERROR", 0)], side
+        msgs.append(found[0].msg)
+    assert msgs[0] == msgs[1]
+    for needle in ("not which one is wrong", "signed volume",
+                   "lod.facenormals[j] = (-x, -y, -z)",
+                   "face.vertices.reverse()"):
+        assert needle in msgs[0], needle
+    assert "wound backwards" not in msgs[0]
+
+
+def test_vs_normals_direction_picks_the_fix(fork):
+    """The signed volume tells the two apart: with the normals turned every
+    box keeps B's negative sign, so the winding is right; with the faces
+    turned every box flips, so the winding is wrong. The fix it picks gives
+    back B's orientation, cross product and normals inward on 48 of 48
+    faces. The other fix silences the finding just as well - 100 %
+    agreement, validate() returns [] - and leaves both outward, the
+    orientation C rendered inside-out with. On the normals-turned model that
+    other fix is the one this finding's message used to give."""
+    b = variant(fork, "B").lods[0]
+    assert all(shell_volume(b, k) < 0 for k in range(4))
+    cases = (("normals", True, negate_normals, reverse_faces),
+             ("winding", False, reverse_faces, negate_normals))
+    for side, winding_right, fix, other in cases:
+        lod = turned(fork, side).lods[0]
+        assert ([shell_volume(lod, k) < 0 for k in range(4)]
+                == [winding_right] * 4), side
+        right = turned(fork, side)
+        fix(right.lods[0])
+        assert inward_counts(right) == (48, 48, 48), side
+        assert right.validate() == [], side
+        wrong = turned(fork, side)
+        other(wrong.lods[0])
+        assert inward_counts(wrong) == (48, 0, 0), side
+        assert wrong.validate() == [], side
+
+
+def test_vs_normals_blind_to_faces_and_normals_turned_together(fork):
+    """C rendered inside-out in game and validate() has nothing to say about
+    it: its faces and normals agree on every face."""
+    c = variant(fork, "C")
+    assert inward_counts(c) == (48, 0, 0)
+    assert fork._pct_normal_agreement(c.lods[0]) == 100.0
+    assert c.validate() == []
+
+
+def test_vs_normals_collision_lod_asks_for_the_component_check(fork):
+    """On a collision LOD the message asks for the per-component check
+    instead of the signed volume."""
+    p3d = build_multilod_v2_p3d(fork)
+    fork.blender_to_dayz(p3d)
+    index = [lod.kind() for lod in p3d.lods].index("geometry")
+    negate_normals(p3d.lods[index])
+    found = vs_normals(p3d)
+    assert [(f.severity, f.lod) for f in found] == [("ERROR", index)]
+    assert "component" in found[0].msg
+    assert "signed volume" not in found[0].msg
+
+
 # ---- proxies: measured in game the same day --------------------------------
 
 # Blender poses of the in-game proxy test: canonical raw rows (x, y, z) in

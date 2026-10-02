@@ -99,6 +99,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   outward component), and `dayz-model-pipeline`
   `py3d-direct-generation.md` said any disagreement between winding and normals renders
   inside-out.
+- py3d `ERR_WINDING_VS_NORMALS` message: it read every disagreement between winding and stored
+  normals as faces wound backwards and prescribed `face.vertices.reverse()` on every face, and
+  the py3d README called that fix always correct. The finding only says the two disagree. On the
+  model of the Rule 12 in-game test, rebuilt byte for byte by the py3d tests, the correct export
+  with its normals turned and the same export with its faces turned raise the same finding with
+  the same text and need opposite fixes; either fix silences it, and the wrong one leaves the
+  cross product and the normals both outward, the orientation of the variant that rendered
+  inside-out in game. Reversing every face did exactly that to two Blender exports in DayZDiag
+  (`dayz-p3d-audit`, "Absolute winding check: what 0 % means"). The message now says the two
+  disagree, asks for the direction first (signed volume by winding of each closed shell on a
+  visual LOD, the per-component outward check on a collision LOD) and gives both fixes: normals
+  wrong → negate the normal pool; winding wrong → `face.vertices.reverse()` on every face of that
+  part, never a `vertices[1]`/`[2]` swap. The README says the same, adds that neither winding
+  check sees faces and normals turned together (`transform(ROT_X_NEG90)` alone: 100 %
+  agreement, `validate()` returns `[]`), and no longer gives a wrong normal sign the inside-out
+  symptom of a wrong face order. Finding code and severity unchanged. No new wheel: the pinned
+  and installed `py3d_dayz-1.8.0` still prints the old message.
 
 ## [1.4.0] - 2026-10-01
 

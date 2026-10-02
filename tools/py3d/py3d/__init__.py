@@ -1097,6 +1097,13 @@ def _check_winding_absolute(lod, lod_index, kind_label):
     returned [] - precisely the state a Blender Z-up to Y-up export
     produces when the vertex order is not reversed.
 
+    It sees that winding and normals disagree, not which of the two is
+    wrong. After that export the vertex order is the right side - the
+    MLOD order - and the normals are the side to negate; reversing the
+    faces instead turns the model inside-out and silences the check. A
+    LOD whose faces and normals were turned together (both outward:
+    inside-out) agrees 100% and passes.
+
     Additive: new finding codes, leaving `_check_winding_vs_visual`'s
     alone.
     """
@@ -1109,15 +1116,28 @@ def _check_winding_absolute(lod, lod_index, kind_label):
             "non-degenerate winding and a non-degenerate declared normal."
             % kind_label))
     elif pct < 10.0:
+        if kind_label == "visual":
+            how = ("the signed volume by winding of each closed shell: "
+                   "negative for a solid seen from outside, positive for "
+                   "a room seen from inside")
+        else:
+            how = ("the cross product against each component's outward "
+                   "direction (face centroid minus component centroid): "
+                   "inward expected")
         findings.append(Finding(
             "ERR_WINDING_VS_NORMALS", "ERROR", lod_index,
-            "%s LOD winding contradicts its own declared normals (only "
-            "%.0f%% agree). Every face is wound backwards while its normal "
-            "still points outward: the signature of a Z-up -> Y-up export "
-            "that changed handedness without reordering vertices. The "
-            "texture will only be visible from INSIDE and raycasts from "
-            "outside pass through. Fix: face.vertices.reverse() on every "
-            "face of this LOD." % (kind_label, pct)))
+            "%s LOD: winding and declared normals disagree (only %.0f%% "
+            "agree). That says they disagree, not which one is wrong: in "
+            "a DayZ MLOD both cross(v1-v0, v2-v0) and the stored normals "
+            "point away from the side meant to be seen. Decide the wrong "
+            "side, part by part, before any fix, with %s. Winding as "
+            "expected -> the normals are wrong: negate them in the pool "
+            "(lod.facenormals[j] = (-x, -y, -z)). Winding opposite -> "
+            "face.vertices.reverse() on every face of that part, never a "
+            "vertices[1]/[2] swap (a quad becomes a crossed face). "
+            "Reversing every face on this finding alone has turned "
+            "exports whose winding was right inside-out."
+            % (kind_label, pct, how)))
     elif pct <= 90.0:
         findings.append(Finding(
             "WARN_WINDING_NORMAL_MISMATCH", "WARN", lod_index,

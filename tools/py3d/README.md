@@ -182,9 +182,11 @@ above.
 ## Winding: read this before trusting any validator
 
 The single most common way to break a DayZ model is a Blender (Z-up) to DayZ
-(Y-up) export whose face order or normal sign does not match its axis map: the
-texture becomes visible only from *inside*, and raycasts pass through. (The
-other common way, a mirrored model, is invisible to every check below; see
+(Y-up) export whose face order or normal sign does not match its axis map.
+Faces in the wrong order make the texture visible only from *inside*, and
+raycasts pass through; normals with the wrong sign leave the model solid but
+shade it wrong (lit inverted, measured on a character). (The other common way,
+a mirrored model, is invisible to every check below; see
 [Blender → DayZ](#blender--dayz).)
 
 This fork checks winding two ways:
@@ -196,16 +198,46 @@ This fork checks winding two ways:
   way from the Visual LOD?
 
 The relative check alone **cannot** see a model where *every* LOD is inverted —
-everything is consistent with everything else. That is exactly what the bad
-export produces, which is why the absolute check exists.
+everything is consistent with everything else — which is why the absolute
+check exists. The absolute check cannot see faces and normals turned
+*together*: `transform(ROT_X_NEG90)` alone, which rendered inside-out in game
+(the table above), agrees on 100 % of its faces and `validate()` returns `[]`.
 
-The correct fix for an inverted face is always `face.vertices.reverse()`.
-Do **not** swap `vertices[1]` and `vertices[2]`: that inverts a triangle but
-turns a quad `[0,1,2,3]` into `[0,2,1,3]`, a crossed face.
+`ERR_WINDING_VS_NORMALS` says that winding and normals **disagree**, not which
+of the two is wrong, and the two cases need opposite fixes. In a DayZ MLOD the
+vertex-order cross product `cross(v1 − v0, v2 − v0)` and the stored normals both
+point away from the side meant to be seen: inward on a solid, as
+`blender_to_dayz` writes them. So decide the wrong side first, part by part:
+
+- **visual LOD**: the signed volume by winding of each closed shell, the sum of
+  `dot(v0, cross(v1, v2)) / 6` over the fan triangles of its faces in the
+  file's own coordinates. Negative on a solid meant to be seen from outside,
+  positive on a room meant to be seen from inside. Not the sum over the whole
+  LOD, which can hide an inverted part; and a shell is closed only when each of
+  its edges is shared by exactly two of its faces: an open sheet has no
+  meaningful sign.
+- **collision LODs**: in each component, the cross product against the face's
+  outward direction (face centroid minus component centroid). Inward expected.
+
+Then fix that side only:
+
+- winding as expected → the **normals** are wrong: keep the faces and negate
+  the normals in the pool, `lod.facenormals[j] = (-x, -y, -z)` (not through
+  `Vertex.normal`, whose setter looks the value up in the pool);
+- winding opposite → the **winding** is wrong: `face.vertices.reverse()` on
+  every face of that part, normals kept.
+
+Never reverse faces on this finding alone. Two Blender exports read 0 % and
+their winding was right: the build that reversed every face rendered both
+inside-out in game, and the one that negated their normals rendered both right
+side out. Either fix silences the finding, the wrong one too, so decide the
+direction before fixing, not after. And never reverse a face by swapping
+`vertices[1]` and `vertices[2]`: that inverts a triangle but turns a quad
+`[0,1,2,3]` into `[0,2,1,3]`, a crossed face.
 
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 282 tests pass -- 275 of them
+The library is used in a real modding pipeline, and 286 tests pass -- 279 of them
 on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
 upstream (see [Tests](#tests)). It has also been through a deliberately
 adversarial audit, and **not every problem it found is fixed yet**. Before
