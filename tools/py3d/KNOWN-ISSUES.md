@@ -168,12 +168,20 @@ reader independent of this library, covered what the first left out:
   `add_proxy(space="engine")` writes for them; the same matrices through
   `add_proxy(space="raw")` in DayZ space do not. In game the proxied F stood
   in the pose drawn in Blender, and read correctly where it faced the camera
-  (the identity and the yawed proxy).
+  (the identity and the yawed proxy). The two binarized parents, Blender-drawn
+  proxies converted and `add_proxy(space="engine")`, are byte-identical files.
 
-Not covered, and not claimed: crew and wheel proxies of a driven vehicle,
-proxies drawn with another convention or as ambiguous (isosceles) triangles,
-player collision (only raycasts), and any model built partly in DayZ space
-before the conversion.
+Crew and wheel proxies of a driven vehicle follow by equivalence, not by a
+drive of their own: vanilla gives them the identity frame, one of the three
+poses above, so drawn this way they come out of binarize as
+`add_proxy(space="engine")` writes them, and that engine-space path is the
+one a py3d-built motorbike was driven with in game (2026-09-22/23: rider
+seated, wheels turning, up to 137 km/h). No vehicle was driven through
+`blender_to_dayz` itself.
+
+Not covered, and not claimed: proxies drawn with another convention or as
+ambiguous (isosceles) triangles, player collision (only raycasts), and any
+model built partly in DayZ space before the conversion.
 
 ---
 

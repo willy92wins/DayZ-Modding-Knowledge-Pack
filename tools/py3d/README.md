@@ -157,9 +157,13 @@ Measured the same day with the same map:
   `add_proxy(space="raw")` builds in Blender coordinates — comes out of
   binarize with the same engine frame as `add_proxy(space="engine")` given the
   matching rotation, and renders in the pose it had in Blender (static proxies;
-  identity, a yaw and a tilted yaw). Proxies drawn another way get whatever
-  frame their triangle implies: check those in the binarized file against a
-  model that works.
+  identity, a yaw and a tilted yaw). The binarized file is byte-identical to
+  the one `add_proxy(space="engine")` gives, and that engine-space path is the
+  one a py3d-built motorbike was driven with in game, rider seated and wheels
+  turning; so crew and wheel proxies drawn this way behave the same, although
+  none was driven through this conversion. Proxies drawn another way get
+  whatever frame their triangle implies: check those in the binarized file
+  against a model that works.
 
 **Migrating from `py3d.BLENDER_TO_DAYZ`.** Up to 1.7.0 this README gave
 `model.transform(py3d.BLENDER_TO_DAYZ)`, the det=+1 rotation `(x, z, −y)`, as
