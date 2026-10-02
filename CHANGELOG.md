@@ -19,6 +19,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the yaw with two parallel rays and the
   direction of the returned normal before trusting face coordinates.
 
+### Changed
+
+- `dayz-p3d-audit` "Absolute winding check", rule 6: the kit box's missing collision is measured
+  now, not a hypothesis. In a paired run (2026-10-02, DayZDiag 1.29.163709, the kit's own config on
+  three classes, the MLODs packed unbinarized) the shipped `lf_kit_box.p3d` took 0 of 27
+  `scene_raycast` rays in `geom`, `view` and `fire` again, and the same bytes with only the
+  collision LODs' faces reversed took 27 of 27, with the collision normals negated or kept, at the
+  same coordinates relative to the kit; a vanilla `WoodenCrate` took 27 of 27. Binarize writes the
+  two fixed variants to the same ODOL. A server physics-world ray (`DayZPhysics.RayCastBullet`)
+  finds the shipped kit where it finds the fixed ones, so the winding did not hide it from that
+  static query (player contact was not measured). The misses were measured on the dayz-mcp
+  bridge's `RaycastRVProxy` rays; the vanilla cursor and hologram rays in the same intersection
+  modes are named as the reason to expect the defect in play, untested. The replaced sentence is
+  quoted in a dated note. The first run's cursor-like ray is corrected too: the dayz-mcp bridge
+  replaces a requested radius of 0 with its 0.05 m default, so it was a 0.05 m sphere, not radius 0.
+
 ### Fixed
 
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
@@ -140,6 +156,53 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   collision LOD quoted the text of py3d's relative-check message ("winding is INVERTED relative to
   the Visual LOD"), which can change with py3d; it now names the finding by its code,
   `ERR_WINDING_INVERTED`, as the automated-check note above it already does.
+- py3d `ERR_WINDING_INVERTED` message: the relative check compares the share of faces wound
+  outward from each LOD's centroid, files the finding on the collision LOD and told the reader to
+  reverse every face of that LOD. On the clean multi-LOD model of the py3d tests, converted with
+  `blender_to_dayz()`, a visual LOD turned inside-out (faces and normals together, which the
+  absolute check passes) raised it on the three healthy collision LODs and nowhere else;
+  reversing them traded it for `ERR_WINDING_VS_NORMALS` on each, and negating their normals as
+  well left `validate()` at `[]` with every LOD wound outward, the collision LODs as
+  `transform(ROT_X_NEG90)` alone leaves them, which registered no raycast in game. The pack
+  already warned about this (`dayz-vehicles` `visual-gates-and-winding.md`; `dayz-p3d-audit`,
+  item 1 of "The three py3d gates", "Absolute winding check" rule 7, and killer #1, which reads
+  the finding as a trigger). The message now names the visual LOD it compares against, the one of
+  lowest resolution, by index and resolution (`get_lod("visual")` returns the first in file
+  order, which need not be it); says the collision LOD and that visual LOD disagree on which way
+  is out, by a centroid test that assumes convex geometry, not which one is wrong; and gives for
+  both LODs the order of `ERR_WINDING_VS_NORMALS`: the winding first, normals untouched (visual
+  LOD per closed shell by its signed volume, collision LOD per convex component), steps that
+  leave a part that reads right as it is, never a `vertices[1]`/`[2]` swap; then each corner
+  normal still against its face. A part the steps cannot read (an open sheet, twins, a component
+  that is not closed and convex) leaves it unresolved, to be checked in game or against a model
+  that renders right; only with every part of both LODs reading right is there nothing to fix,
+  as on a visual LOD meant to be seen from inside, which reads positive. Both messages take their
+  winding steps from one helper, and every `ERR_WINDING_VS_NORMALS` text is unchanged. The README
+  and KNOWN-ISSUES say the same. Finding code and severity unchanged: on that model it is the
+  only finding that sees the inside-out visual LOD. No new wheel: the pinned and installed
+  `py3d_dayz-1.8.0` still prints the old message.
+- py3d `ERR_COMPONENT_NAMING` (py3d 1.9.0). It checked the Geometry LOD alone and also fired on a
+  lowercase `component01` ("Engine requires 'Component01' (uppercase C); collision silently fails"),
+  which in game collides exactly like `Component01` (the killer #2 entry above); vanilla vehicles
+  name their components that way. It now flags a Geometry, View or Fire LOD that has faces outside
+  its proxy triangles and no selection whose name starts with `component`, in any case; its message
+  says that a model with no component in any collision LOD lost its collision silently in game, and
+  that one LOD missing it alone was not measured. `WARN_COMPONENT_NAMING` now only flags a LOD whose
+  component names are none of them `Component` and a number (e.g. only `Component_01`, a spelling
+  never measured); `COMPONENT01` and `Component02` raise nothing. A collision LOD without faces of
+  its own (a mass-only Geometry LOD, or one holding only proxy triangles) raises nothing; a
+  selection under a proxy name counts as a proxy only with a proxy's shape (1 triangle, selected
+  with its 3 corners). Each LOD is checked on its own. Measured offline with the old and the new
+  module through `P3D._scan_v12_findings` on 414 unique MLODs (the owner's mod and vehicle projects
+  and the Pack's door samples): the old check raised 94 errors, all on Geometry LODs, 88 of them
+  with lowercase component names and 5 on Geometry LODs without faces (ruined wheels, one a
+  debinarized vanilla `sedanwheel_destroyed`); the new one raises 1, a Geometry LOD with faces and
+  no component, and nothing on View or Fire, where every LOD with faces has a component. The v2 test
+  fixture's View and Fire LODs, which had no component, get `Component01`. The `dayz-p3d-audit`,
+  `dayz-vehicles` and `dayz-clothing` notes on this finding now say which py3d version does what,
+  and a knowledge note's claim that Object Builder is case-sensitive is marked as unmeasured. No new
+  wheel: the pinned and installed `py3d_dayz-1.8.0` keeps the old check, and `apply-s2-rollout.ps1
+  -WheelOnly` refuses to restock until a 1.9.0 wheel is built and pinned.
 - `dayz-characters` `check_dayz_winding.py`, the pre-PBO gate of the character pipeline, encoded the
   LFInfectedBig det +1 build: stored normals OUTWARD and `cross·normal < 0` (`NORMALS_OUTWARD_MIN =
   0.35`). It exited 1 on all three MLODs of the Rule 12 in-game test, the correct one included, with fix
