@@ -124,9 +124,10 @@ inside; the two names gave the same faces to the centimetre. The `HouseNoDestruc
 same answer on one horizontal ray per mode, the physics ray and the walk. Same-run vanilla
 controls (layers from their vanilla configs): `HescoBox` (`item_large`) took every ray and
 stopped the player at the same 0.36 m; `WoodenCrate` (`item_small`, inherited from
-`Inventory_Base`) took every ray and did not stop the player, so a walk reads the physics layer
-as well as the mesh. A free walk covered the 7.5 m in about 5 s; a blocked one held for the full
-10 s. (claim: CLAIM-P3D-COMPONENT-CASE-INGAME)
+`Inventory_Base`) took every ray and did not stop the player. The crate is also low, so the run
+does not tell whether its layer or its height let the player pass; either way, a walk-through
+alone does not show that the collision geometry is missing. A free walk covered the 7.5 m in
+about 5 s; a blocked one held for the full 10 s. (claim: CLAIM-P3D-COMPONENT-CASE-INGAME)
 
 **Binarize removes the difference anyway**: from the `Component01` and the `component01` MLOD it
 writes the same ODOL, byte for byte, with the name stored as `component01`.
