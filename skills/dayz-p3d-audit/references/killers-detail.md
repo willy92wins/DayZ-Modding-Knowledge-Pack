@@ -9,21 +9,45 @@ These produce ZERO engine errors but break functionality completely. The core SK
 ### 1. Collision LOD Wound Opposite to the Visual LOD (CRITICAL — Most Common from Blender)
 
 A collision component (Geometry, View or Fire Geometry LOD) whose cross product
-`cross(v1-v0, v2-v0)` points OUTWARD lets raycasts from outside pass through without
-detecting collision — no collision, no action targeting, no ballistic hits (`dayz-model-pipeline`
-Rule 18 and its symptom triplet). A correct MLOD winds the cross product away from the side
-meant to be seen and stores its normals the same way (Rule 12): INWARD on a solid seen from
+`cross(v1-v0, v2-v0)` points OUTWARD lets the LOD raycasts (`RaycastRV`, `RaycastRVProxy`)
+from outside pass through it, the rays action targeting (`view`) and ballistic hits (`fire`)
+rely on (`dayz-model-pipeline` Rule 18 and its symptom triplet), while its physics body still
+stops and carries the player (measured below). A correct MLOD winds the cross product away from
+the side meant to be seen and stores its normals the same way (Rule 12): INWARD on a solid seen from
 outside, which every collision component is. Rule 12's in-game probe of 2026-10-01 agrees:
 Geometry, View and Fire components converted with its map registered `scene_raycast` hits from
 both sides, and after the det=+1 map alone none — a map that also mirrors the model and leaves
 its normals outward, so not a winding-only experiment.
 
+**Measured in game** (2026-10-02, DayZDiag 1.29.163709, driven by dayz-mcp): killer #2's 2 m box
+(one `Component01` per collision LOD, every face wound inward) against the same bytes with every
+face of its Geometry, View and Fire LODs reversed and their normals negated (Rule 18: 6 of 6
+faces outward per LOD; `audit_p3d.py`: `ERR_WINDING_INVERTED` on all three; Visual and Memory
+LODs byte-identical). Each was packed unbinarized and binarized (binarize keeps the outward
+winding in the ODOL) and loaded as an `Inventory_Base` item (`physLayer="item_large"`) and as a
+`HouseNoDestruct`:
+
+| collision LODs | `scene_raycast` in `geom`, `view`, `fire` | `RayCastBullet` (physics) | player walking into it | player on top (items) |
+|---|---|---|---|---|
+| wound inward | every ray hits | hits the faces | stopped 0.36 m before the face | stands on the top |
+| wound outward | no ray hits; vertical rays reach the ground | hits the same faces | stopped 0.36 m before the face | stands on the top |
+
+Rays per item and mode: one from above, one from the side, one from inside; on the static
+copies one from the side per mode and one from above in `view`. A `view` ray cast like the
+action cursor's, from eye height toward the box, stopped on the inward box and went through the
+outward one. The answer was the same for both packings and both classes. Same-run controls: a
+vanilla `HescoBox` stopped the player where it did in the killer #2 run; on open ground the
+walk covered 7.5 m in 5 s, and a player placed 2 m above the ground fell to it. The outward
+winding hid the box from the LOD raycasts and from nothing measured in the physics world, so
+walking into an object says nothing about its collision winding.
+(claim: CLAIM-P3D-WINDING-PHYSICS-INGAME)
+
 **Root cause**: the collision LOD and the Visual LOD reached the MLOD by different paths.
 Rule 12's map treats every LOD alike; the mismatch comes from a LOD that did not go through it
 the same way: collision boxes built in code in DayZ space with outward winding (code-built
 geometry does not go through the map), a collision LOD exported with another axis map, or a
-face reversal applied to some LODs and not to others. The model looks perfect but is
-physically invisible.
+face reversal applied to some LODs and not to others. The model looks perfect and stops the
+player, but the LOD raycasts go through it.
 
 **Detection**: Rule 18's per-component check decides, once its prerequisites hold: every
 non-proxy face of the collision LOD belongs to a `ComponentNN` selection (killer #8), and every
@@ -63,10 +87,12 @@ disabled for false positives.
 > read inward. An `ERR_WINDING_INVERTED` CRITICAL that a complete
 > per-component check does not confirm says nothing against the collision: check the Visual LOD
 > against the side meant to be seen instead (Check A table in `winding-diagnostics.md`; a room
-> seen from inside is right as it is). An unresolved check confirms nothing either way. A
-> separately-created dynamic physics body (`dBodyCreateDynamicEx`) can still make the object
-> move, which masks inverted collision winding — the object rolls but the player walks
-> through it and no action cursor registers.
+> seen from inside is right as it is). An unresolved check confirms nothing either way. Do not
+> judge the winding from the physics side: a collision LOD wound outward still stops and carries
+> the player (measured above), and a body made with `dBodyCreateDynamicEx` takes its shape from
+> the geoms passed to it (`1_core/proto/enphysics.c:51`), not from the LOD. A player walking
+> through the object points at a collision LOD with no `ComponentNN` selection (killer #2) or at
+> the body itself (`dayz-physics-engine`), not at the winding.
 
 **Fix**: `face.vertices.reverse()` on each face that reads outward, and only on those
 (`proxy:*` faces excluded): on a convex, closed component the reading is exact, and a component
@@ -99,6 +125,19 @@ convention." The Fix line read: "Swap `vertices[1]` and `vertices[2]` of each in
 The last paragraph ended: "Check offline with
 `skills/dayz-characters/references/check_dayz_winding.py`." That script predates Rule 12 and
 fails a correct export (dayz-characters, "OFFLINE GATE").)*
+
+*(Measured in game 2026-10-02, the outward boxes above: the opening said an outward component
+"lets raycasts from outside pass through without detecting collision — no collision, no action
+targeting, no ballistic hits"; the root cause ended "The model looks perfect but is physically
+invisible."; and the MANDATORY note ended "A separately-created dynamic physics body
+(`dBodyCreateDynamicEx`) can still make the object move, which masks inverted collision winding
+— the object rolls but the player walks through it and no action cursor registers." The outward
+boxes stopped and carried the player like the inward ones, and only the LOD raycasts missed
+them, the `view` rays the action cursor casts among them: the missing action fits the
+measurement, the walk-through does not. The sentence matches the
+rolling stone of `dayz-physics-engine/references/fisica-engine-deep-dive.md` §7, a
+`dBodyCreateDynamicEx` sphere, and that section puts the stone's walk-through down to a body
+created only on the server and its missing action to a missing View Geometry LOD.)*
 
 ### 2. No `ComponentNN` Selection in the Collision LODs (CRITICAL)
 

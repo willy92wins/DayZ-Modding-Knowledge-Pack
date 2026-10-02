@@ -255,6 +255,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `py3d-direct-generation.md` no longer say the gate fails a correct export or that characters use the
   opposite sign. The rewritten gate was not run in game; its verdicts are checked against the recorded
   in-game results of the probe and of the chiral check.
+- `dayz-p3d-audit` killer #1 no longer says that inverted collision winding lets the player walk
+  through. Measured in game (2026-10-02, DayZDiag 1.29.163709): killer #2's 2 m box against the same
+  bytes with every face of its Geometry, View and Fire LODs reversed and their normals negated,
+  packed unbinarized and binarized, as an `item_large` `Inventory_Base` and as a `HouseNoDestruct`.
+  The outward boxes took no `scene_raycast` ray in `geom`, `view` or `fire` (a cursor-like `view` ray
+  went through too), while `DayZPhysics.RayCastBullet` hit them at the same faces as the inward ones,
+  every probe box stopped a walking player 0.36 m before its face, and the player stood on the outward
+  boxes' tops. The sentence that a `dBodyCreateDynamicEx` body "masks inverted collision winding —
+  the object rolls but the player walks through it" is replaced, and so are "no collision" in the
+  killer's opening and "physically invisible" in its root cause; the old text is quoted in a dated
+  note. `dayz-model-pipeline`'s SP-003 note no longer lists "walks through" among the symptoms of
+  collision winding.
 
 ## [1.5.0] - 2026-10-02
 
