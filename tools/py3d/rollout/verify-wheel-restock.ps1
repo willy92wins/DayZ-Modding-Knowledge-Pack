@@ -31,6 +31,8 @@ $PinnedName = [string]$Manifest.filename
 $PinnedSha = ([string]$Manifest.sha256).ToLowerInvariant()
 $DistWheel = Join-Path (Join-Path $Py3dRoot "dist") $PinnedName
 $StaleName = "py3d-1.4.0-py3-none-any.whl"
+# An earlier pin under the py3d_dayz name; never a version that gets pinned.
+$PreviousName = "py3d_dayz-0.0.0-py3-none-any.whl"
 $PatchPath = Join-Path $Root "patches\dayz-proxy-align__SKILL.md.patch"
 if ([string]::IsNullOrWhiteSpace($FixtureRoot)) {
     # Never inside the working tree: stray fixtures make the pack gate BUILD-DIRTY.
@@ -247,6 +249,9 @@ function Initialize-TargetRoot {
         Copy-Item -LiteralPath $DistWheel -Destination (Join-Path $wheelsDir $PinnedName)
     } elseif ($Scenario -eq "stale") {
         Write-LfFile (Join-Path $wheelsDir $StaleName) "stale-legacy-py3d-1.4.0-wheel`n"
+    } elseif ($Scenario -eq "previous") {
+        Copy-Item -LiteralPath $DistWheel -Destination (Join-Path $wheelsDir $PinnedName)
+        Write-LfFile (Join-Path $wheelsDir $PreviousName) "earlier-py3d_dayz-pin`n"
     }
 }
 
@@ -324,6 +329,14 @@ function Assert-NoStaleWheel([string]$TargetRoot) {
     $stalePath = Join-Path $TargetRoot "dayz-proxy-align\wheels\$StaleName"
     if (Test-Path -LiteralPath $stalePath -PathType Leaf) {
         throw "stale wheel was not removed: $stalePath"
+    }
+}
+
+function Assert-OnlyPinnedWheel([string]$TargetRoot) {
+    $wheelsDir = Join-Path $TargetRoot "dayz-proxy-align\wheels"
+    $names = @(Get-ChildItem -LiteralPath $wheelsDir -File | ForEach-Object { $_.Name })
+    if ($names.Count -ne 1 -or $names[0] -ne $PinnedName) {
+        throw ("wheels directory is not the pinned wheel alone: " + ($names -join ", "))
     }
 }
 
@@ -417,6 +430,30 @@ try {
     Write-Log "TEST C: PASS"
 } catch {
     Write-Log ("TEST C: FAIL " + $_)
+    $failed = $true
+}
+
+Write-Log "======== TEST E: earlier py3d_dayz pin beside the pinned wheel -> removed ========"
+Write-Log ("ApplyScript=" + $ApplyScript)
+try {
+    $targetE = Join-Path $FixtureRoot "target-e"
+    $backupE = Join-Path $FixtureRoot "backup-e"
+    Initialize-TargetRoot -TargetRoot $targetE -Scenario "previous"
+    $resultE = Invoke-ApplyRollout -Script $ApplyScript -Target $targetE -Backup $backupE
+    Write-Log $resultE.Output
+    Write-Log ("EXIT=" + $resultE.ExitCode)
+    if ($resultE.ExitCode -ne 0) {
+        throw "rollout exit $($resultE.ExitCode)"
+    }
+    Assert-PinnedWheel $targetE
+    Assert-OnlyPinnedWheel $targetE
+    $backups = @(Get-ChildItem -LiteralPath $backupE -Recurse -File -Filter $PreviousName)
+    if ($backups.Count -ne 1) {
+        throw "earlier py3d_dayz wheel has no single backup: $($backups.Count)"
+    }
+    Write-Log "TEST E: PASS"
+} catch {
+    Write-Log ("TEST E: FAIL " + $_)
     $failed = $true
 }
 

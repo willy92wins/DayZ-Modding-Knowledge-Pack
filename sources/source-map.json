@@ -611,10 +611,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Changed entry for the 1.9.0 wheel pin and the skill notes that followed it, and a Fixed entry for the applicator's earlier-py3d_dayz-wheel defect the review found. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
+          "license": "MIT",
+          "source_hash": "bb080f811188bc1d45ffe591f9e21622ffb2cfd30228750591ad7a294f409e0d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ad0c60ad7dcef9aa9f167b645ae2121180ac061eac1f16af1b7d76d6b2d53221",
+      "output_hash": "bb080f811188bc1d45ffe591f9e21622ffb2cfd30228750591ad7a294f409e0d",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6568,10 +6578,20 @@
           "source_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The empty-Geometry-LOD note: py3d up to 1.8.0 is the wheel pinned until 2026-10-02, and 1.9.0 is pinned since. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
+          "license": "MIT",
+          "source_hash": "727f382f52dc8c2596476de9cf37cff6f6b2f2512f06b9640af95c63cf935075",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "510013a08278363d10efdc4c3d79f326e1cf40ceaeed20e401550f75965f56d1",
+      "output_hash": "727f382f52dc8c2596476de9cf37cff6f6b2f2512f06b9640af95c63cf935075",
       "output_path": "skills/dayz-clothing/references/autofit-from-official-rig.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "offline_tested"
@@ -8392,10 +8412,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Item 1 of 'The three py3d gates' describes the 1.9.0 ERR_WINDING_INVERTED message (#40: names the Visual LOD it compares against, says the two LODs disagree, gives the winding steps for both) next to the 1.8.0 one, now the wheel pinned until 2026-10-02, and its measurement now says it followed the 1.8.0 instruction; killers #2 and #8 say 1.8.0 was pinned until 2026-10-02 instead of calling it the pinned wheel. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
+          "license": "MIT",
+          "source_hash": "cecce805e0dca088adbce7aabb2f3700b59ea80164e6314d8da63c31f348b915",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e6cc7245d8172def20a78127de4b897f2ea6ad05a14665083d1f426265415c34",
+      "output_hash": "cecce805e0dca088adbce7aabb2f3700b59ea80164e6314d8da63c31f348b915",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -8484,10 +8514,20 @@
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-p3d-audit-gate-mentions@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Sections 2 and 8: 'the version of the pinned wheel' becomes 'the wheel pinned until 2026-10-02'. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
+          "license": "MIT",
+          "source_hash": "e10aeada9b2357322db22cf72583e00ff8bc8adff7afeadf090dfbdf71aa89cb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7f2b34c0f65c80505d49e4d33bc29727117abb49c10f4fe5c8d10f487020d66d",
+      "output_hash": "e10aeada9b2357322db22cf72583e00ff8bc8adff7afeadf090dfbdf71aa89cb",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -12796,10 +12836,20 @@
           "source_path": "skills/dayz-vehicles/references/rip-import.md",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Section 3.5: py3d up to 1.8.0 is described as pinned until 2026-10-02, not as the pinned wheel. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
+          "license": "MIT",
+          "source_hash": "1c0316c69fa6551d03f8b83a3f6c8e166ed554a4b29ca43d44ab786b7b78e659",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/rip-import.md",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c632b0d406ac02db21dabd43ffabd0d08c4964327b8869cf3939ecb59f147632",
+      "output_hash": "1c0316c69fa6551d03f8b83a3f6c8e166ed554a4b29ca43d44ab786b7b78e659",
       "output_path": "skills/dayz-vehicles/references/rip-import.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -12940,10 +12990,20 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The ERR_COMPONENT_NAMING note: py3d 1.8.0 is described as pinned until 2026-10-02, not as the pinned wheel. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
+          "license": "MIT",
+          "source_hash": "bbb770e15f3c159c47944d21e8c00478f26ff194880aec50cc1db9f057aabe22",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cb986bd246f2fe6f0a2547073ec5e577758e5cb9b71a97f0148f69569f069fed",
+      "output_hash": "bbb770e15f3c159c47944d21e8c00478f26ff194880aec50cc1db9f057aabe22",
       "output_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -15605,10 +15665,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "see files",
+          "license": "MIT",
+          "source_hash": "76bc6d7c99eefdce64ce514029b5158ef84b885778c1e088f4f52459fccd4d6b",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c2067d19dccee8b3d771464ecaedf6ed9d65753f2d0a358e52c4227f20582463",
+      "output_hash": "76bc6d7c99eefdce64ce514029b5158ef84b885778c1e088f4f52459fccd4d6b",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -16552,10 +16622,20 @@
           "source_path": "tests/py3d_rollout/test_apply_rollout.py",
           "source_revision": "r21-patch-only@2026-07-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "test_earlier_py3d_dayz_wheel_next_to_the_pinned_one_is_replaced: an earlier py3d_dayz wheel beside an exact pinned wheel is backed up and removed; fails on the a085672 applicator, passes on the fixed one (8 passed). Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
+          "license": "MIT",
+          "source_hash": "8a2b926ea2472675357f690da4ea431c5d97a449fc54b7fbc1c1dfa709076bf9",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/py3d_rollout/test_apply_rollout.py",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "459379d5c38ea6b0e63615f4ded96bafcf9915db0a0773d4c006fe3688a7502e",
+      "output_hash": "8a2b926ea2472675357f690da4ea431c5d97a449fc54b7fbc1c1dfa709076bf9",
       "output_path": "tests/py3d_rollout/test_apply_rollout.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -25074,10 +25154,20 @@
           "source_path": "tools/py3d/rollout/README.md",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Identity gate: the current pin is 1.9.0, with how it was sealed and checked (toolchain rebuild of the 1.8.0 pin, six builds to one hash, members against the source, the restock verifier) and what was not checked; the 1.8.0 history kept in a sentence. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
+          "license": "MIT",
+          "source_hash": "2f2ebff9be790b601e8a375bc26e1bd646973a416a60e1f1620134cca9f1448e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/README.md",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "06437e78dd68c6e9b6754e1ba21b170f625df322485f50c58538edf9f8f3bb96",
+      "output_hash": "2f2ebff9be790b601e8a375bc26e1bd646973a416a60e1f1620134cca9f1448e",
       "output_path": "tools/py3d/rollout/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25176,10 +25266,20 @@
           "source_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
           "source_revision": "rollout-wheel-only@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Get-SkillWheelFiles also counts py3d_dayz-*.whl, so a wheel of an earlier pin under the py3d_dayz name is backed up and removed like a legacy py3d-*.whl, and the readback sees it. Found by the cross-family review of this pin (F1, P2): the previous enumerator left py3d_dayz-1.8.0 beside 1.9.0 and its readback passed, while install_py3d.py refuses more than one py3d_dayz wheel. Verified: test E of verify-wheel-restock.ps1 and the new pytest case fail on the a085672 applicator (E leaves py3d_dayz-0.0.0 and py3d_dayz-1.9.0 together) and pass on this one; tests/py3d_rollout/test_apply_rollout.py 8 passed. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
+          "license": "MIT",
+          "source_hash": "ae9136ea82c8d70ab216eed225390c3382bd25bfdb94bf42b8ab8f6f6d0f05c6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ca3b0cb502ce51f77dc0392223652a8933bc337a294f9829ce7794fb88a398e3",
+      "output_hash": "ae9136ea82c8d70ab216eed225390c3382bd25bfdb94bf42b8ab8f6f6d0f05c6",
       "output_path": "tools/py3d/rollout/apply-s2-rollout.ps1",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25562,10 +25662,20 @@
           "source_path": "tools/py3d/rollout/wheel-manifest.json",
           "source_revision": "kp-update-py3d-blender-to-dayz@2026-10-01",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Wheel identity resealed from py3d_dayz-1.8.0 (e7184429...) to py3d_dayz-1.9.0 (33d8b5ba...) by build-wheel.ps1 -UpdateManifest, source_version 1.9.0, same source_date_epoch and build_requires, python_version 3.14.3. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
+          "license": "MIT",
+          "source_hash": "401a83a2985ac634f0c6364eca16c0ccce197c339abddfc67fd6449d0d373766",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/wheel-manifest.json",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a650e6e92e6cfad31c034ec507ca6fe9deceeba350d3eea43b31356698fcfd14",
+      "output_hash": "401a83a2985ac634f0c6364eca16c0ccce197c339abddfc67fd6449d0d373766",
       "output_path": "tools/py3d/rollout/wheel-manifest.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -26836,10 +26946,20 @@
           "source_path": "tools/py3d/rollout/verify-wheel-restock.ps1",
           "source_revision": "rollout-wheel-name@2026-08-31",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Test E: an earlier pin under the py3d_dayz name beside the pinned wheel must end as the pinned wheel alone, with one backup of the earlier one. Passes on the fixed applicator, fails on the a085672 one. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
+          "license": "MIT",
+          "source_hash": "883b4cc57b804ce6d40a7c1ce883982c596cef2e031c42486985f496fc4ef81b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/rollout/verify-wheel-restock.ps1",
+          "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4d2c86b21a3291fc95a785bb7457621ddd42e6c6259933d9c4b9a0cf33a1350d",
+      "output_hash": "883b4cc57b804ce6d40a7c1ce883982c596cef2e031c42486985f496fc4ef81b",
       "output_path": "tools/py3d/rollout/verify-wheel-restock.ps1",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
