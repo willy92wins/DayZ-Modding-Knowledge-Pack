@@ -19,6 +19,7 @@ of them, or it is not checking anything.
 
 import hashlib
 import math
+import re
 import warnings
 
 import pytest
@@ -318,19 +319,23 @@ def turned(fork, side):
     return p3d
 
 
-def shell_volume(lod, box):
-    """Signed volume by winding of one box, a closed shell with its own
-    eight points: the sum of dot(v0, v1 x v2) / 6 over the fan triangles of
-    its faces. Negative when the cross product points into the box, the
-    sign of a solid seen from outside on shipped MLODs."""
+def signed_volume(faces):
+    """The sum of dot(v0, v1 x v2) / 6 over the fan triangles of *faces*:
+    the signed volume by winding, when they form a closed shell."""
     total = 0.0
-    for fa in lod.faces:
-        if fa.vertices[0].point_index // 8 != box:
-            continue
+    for fa in faces:
         vs = [v.point.coords for v in fa.vertices]
         for i in range(1, len(vs) - 1):
             total += dot(vs[0], cross(vs[i], vs[i + 1])) / 6.0
     return total
+
+
+def shell_volume(lod, box):
+    """Signed volume by winding of one box, a closed shell with its own
+    eight points. Negative when the cross product points into the box, the
+    sign of a solid seen from outside on shipped MLODs."""
+    return signed_volume([fa for fa in lod.faces
+                          if fa.vertices[0].point_index // 8 == box])
 
 
 def vs_normals(p3d):
@@ -695,6 +700,243 @@ def test_vs_normals_fix_normals_corner_by_corner(fork):
     fix_corners(p3d.lods[0])
     assert corners_right(p3d) == 144
     assert p3d.validate() == []
+
+
+# ---- ERR_WINDING_INVERTED: two LODs disagree, not which one is wrong --------
+
+def visual_shell(lod):
+    """The visual LOD's shell, the icosphere. The proxy triangle is an open
+    sheet and is left out."""
+    proxy = lod.selections[PROXY].faces
+    return [fa for fa in lod.faces if fa not in proxy]
+
+
+def closed(faces):
+    """Every edge of *faces* is shared by exactly two of them."""
+    use = {}
+    for fa in faces:
+        idx = [v.point_index for v in fa.vertices]
+        for a, b in zip(idx, idx[1:] + idx[:1]):
+            key = (min(a, b), max(a, b))
+            use[key] = use.get(key, 0) + 1
+    return all(n == 2 for n in use.values())
+
+
+def multilod(fork, inside_out=None):
+    """The clean multi-LOD model after blender_to_dayz(), with LOD
+    *inside_out* turned inside-out: faces and normals together, which the
+    absolute check passes. On the visual LOD, its shell."""
+    p3d = build_multilod_v2_p3d(fork)
+    fork.blender_to_dayz(p3d)
+    if inside_out is not None:
+        lod = p3d.lods[inside_out]
+        faces = visual_shell(lod) if inside_out == 0 else lod.faces
+        for fa in faces:
+            fa.vertices.reverse()
+        negate_normals_of(lod, faces)
+    return p3d
+
+
+def outward_faces(lod, faces=None):
+    """Faces whose cross product points away from the centroid of the LOD's
+    points. Each collision LOD of the fixture is one convex box, so that is
+    the per-component check."""
+    middle = centroid([p.coords for p in lod.points])
+    out = []
+    for fa in lod.faces if faces is None else faces:
+        vs = [v.point.coords for v in fa.vertices]
+        if dot(cross(sub(vs[1], vs[0]), sub(vs[2], vs[0])),
+               sub(centroid(vs), middle)) > 0:
+            out.append(fa)
+    return out
+
+
+def named_visual(msg):
+    """The index of the Visual LOD the message names, the same where it
+    names the LOD and where it gives that LOD's steps."""
+    opening = re.search(r"Visual LOD (\d+) \(resolution ", msg).group(1)
+    steps = re.search(r"Visual LOD (\d+): in each closed shell", msg).group(1)
+    assert opening == steps, (opening, steps)
+    return int(opening)
+
+
+def settle_winding(fork, p3d, visual):
+    """The winding steps the message gives, normals untouched, on the
+    visual LOD at index *visual* and on every collision LOD: the visual
+    shell, coherent here, reversed whole if it is closed and its signed
+    volume is positive (a solid seen from outside); each face of a
+    collision LOD reversed if it points outward. Returns how many faces
+    each of those LODs had reversed, by index."""
+    turned = {}
+    for i, lod in enumerate(p3d.lods):
+        if i == visual:
+            assert fork._pct_edge_coherence(lod) == 100.0
+            shell = visual_shell(lod)
+            faces = (shell if closed(shell) and signed_volume(shell) > 0
+                     else [])
+        elif lod.kind() in ("geometry", "view_geometry", "fire_geometry"):
+            faces = outward_faces(lod)
+        else:
+            continue
+        for fa in faces:
+            fa.vertices.reverse()
+        turned[i] = len(faces)
+    return turned
+
+
+def snapshot(p3d):
+    return [([p.coords for p in lod.points], list(lod.facenormals),
+             [[(v.point_index, v.normal_index, v.uv) for v in fa.vertices]
+              for fa in lod.faces]) for lod in p3d.lods]
+
+
+def test_inverted_cannot_tell_which_lod_is_wrong(fork):
+    """The visual LOD inside-out raises the finding on the three healthy
+    collision LODs and nowhere else; the geometry LOD inside-out, on the
+    geometry LOD. The geometry LOD's text is the same in both, numbers
+    aside - collision LOD first: 0 % and 100 % of faces wound outward in
+    one, 100 % and 0 % in the other - and it gives the steps for both LODs,
+    not "reverse every face of this LOD"."""
+    assert multilod(fork).validate() == []
+    msgs = []
+    for inside_out, flagged, shares in ((0, [1, 2, 3], "0% and 100%"),
+                                        (1, [1], "100% and 0%")):
+        found = multilod(fork, inside_out).validate()
+        assert ([(f.code, f.severity, f.lod) for f in found]
+                == [("ERR_WINDING_INVERTED", "ERROR", i) for i in flagged])
+        msg = found[0].msg
+        assert msg.startswith(
+            "geometry LOD and Visual LOD 0 (resolution 1, the visual LOD of "
+            "lowest resolution, which this check compares against) are "
+            "wound opposite ways: %s of their faces wind outward" % shares)
+        msgs.append(msg)
+    for needle in ("not which one is wrong",
+                   "an inside-out Visual LOD raises this on the healthy "
+                   "collision LODs",
+                   "winding of both LODs first, normals untouched",
+                   "Visual LOD 0: in each closed shell", "signed volume",
+                   "geometry LOD: in each convex component",
+                   "Never a vertices[1]/[2] swap",
+                   "each corner normal that still points against its face"):
+        assert needle in msgs[0], needle
+    assert "on every face of this LOD" not in msgs[0]
+    assert len({re.sub(r"\d+%", "N%", msg) for msg in msgs}) == 1
+
+
+def test_inverted_steps_leave_the_part_that_reads_right(fork):
+    """The signs the message gives, each next to its measurement. The clean
+    model's visual shell is negative - a solid seen from outside - and no
+    collision face points outward. With the visual LOD inside-out - which is
+    also what a room seen from inside is - the shell reads positive and the
+    collision boxes stay inward; with the geometry LOD inside-out its six
+    faces read outward and the shell stays negative. Run on the LODs the
+    message names, the steps reverse the turned LOD and nothing else, and
+    once the corners are fixed the model is the clean one again."""
+    msg = multilod(fork, 0).validate()[0].msg
+    clean = multilod(fork)
+    assert signed_volume(visual_shell(clean.lods[0])) < 0
+    assert "negative for a solid seen from outside" in msg
+    assert [len(outward_faces(clean.lods[i])) for i in (1, 2, 3)] == [0, 0, 0]
+    assert ("outward, against face centroid minus component centroid "
+            "(inward expected)" in msg)
+    cases = ((0, True, [0, 0, 0], {0: 320, 1: 0, 2: 0, 3: 0}),
+             (1, False, [6, 0, 0], {0: 0, 1: 6, 2: 0, 3: 0}))
+    for inside_out, positive, outward, turned in cases:
+        p3d = multilod(fork, inside_out)
+        assert (signed_volume(visual_shell(p3d.lods[0])) > 0) is positive
+        assert [len(outward_faces(p3d.lods[i])) for i in (1, 2, 3)] == outward
+        visual = named_visual(p3d.validate()[0].msg)
+        assert visual == 0
+        assert settle_winding(fork, p3d, visual) == turned, inside_out
+        for lod in p3d.lods:
+            fix_corners(lod)
+        assert p3d.validate() == [], inside_out
+        assert snapshot(p3d) == snapshot(clean), inside_out
+    assert "positive for a room seen from inside" in msg
+    assert "meant to be seen from inside reads positive and is right" in msg
+
+
+def test_inverted_names_the_reference_visual_lod(fork):
+    """With two visual LODs the check compares against the one of lowest
+    resolution, which need not be the first in file order, the one
+    get_lod("visual") returns. LOD 0 (resolution 10) is healthy and LOD 1
+    (resolution 0) inside-out: every finding names LOD 1, the steps on the
+    LOD it names clear them, and the same steps on get_lod("visual") change
+    nothing."""
+    def two_visuals():
+        p3d = multilod(fork)
+        p3d.lods[0].resolution = 10.0
+        reference = multilod(fork, 0).lods[0]
+        reference.resolution = 0.0
+        p3d.lods.insert(1, reference)
+        return p3d
+    p3d = two_visuals()
+    found = p3d.validate()
+    assert ([(f.code, f.lod) for f in found]
+            == [("ERR_WINDING_INVERTED", i) for i in (2, 3, 4)])
+    assert all("Visual LOD 1 (resolution 0, the visual LOD of lowest "
+               "resolution" in f.msg for f in found)
+    assert {named_visual(f.msg) for f in found} == {1}
+    first = p3d.lods.index(p3d.get_lod("visual"))
+    assert first == 0
+    assert settle_winding(fork, p3d, first) == {0: 0, 2: 0, 3: 0, 4: 0}
+    assert [f.lod for f in p3d.validate()] == [2, 3, 4]
+    p3d = two_visuals()
+    assert settle_winding(fork, p3d, 1) == {1: 320, 2: 0, 3: 0, 4: 0}
+    for lod in p3d.lods:
+        fix_corners(lod)
+    assert p3d.validate() == []
+
+
+def test_inverted_open_surface_stays_unresolved(fork):
+    """The visual shell with one face removed is an open surface, with no
+    closed shell for the steps to read. Turned inside-out, its 319 faces
+    all wind outward and it raises the finding on the three collision LODs;
+    the steps change nothing and the finding stands, so the message calls
+    such a part unresolved, not right."""
+    p3d = multilod(fork, 0)
+    vis = p3d.lods[0]
+    gone = visual_shell(vis)[0]
+    vis.faces.remove(gone)
+    for selection in vis.selections.values():
+        selection.faces.pop(gone, None)
+    shell = visual_shell(vis)
+    assert len(shell) == 319 and not closed(shell)
+    assert len(outward_faces(vis, shell)) == 319
+    found = p3d.validate()
+    assert ([(f.code, f.lod) for f in found]
+            == [("ERR_WINDING_INVERTED", i) for i in (1, 2, 3)])
+    assert settle_winding(fork, p3d, 0) == {0: 0, 1: 0, 2: 0, 3: 0}
+    for lod in p3d.lods:
+        fix_corners(lod)
+    assert [f.lod for f in p3d.validate()] == [1, 2, 3]
+    assert len(outward_faces(vis, shell)) == 319
+    assert ("A part these steps cannot read - not a closed shell, not a "
+            "closed convex component - leaves this unresolved" in found[0].msg)
+    assert "Only when every part of both LODs reads right" in found[0].msg
+
+
+def test_inverted_old_fix_winds_the_collision_lods_outward(fork):
+    """What the message used to say, on the visual case: reverse every face
+    of each flagged LOD. That trades the finding for ERR_WINDING_VS_NORMALS
+    on the three healthy collision LODs; with their normals negated as well,
+    validate() returns [] and every LOD is wound outward - the collision
+    LODs as transform(ROT_X_NEG90) alone leaves them, the map whose
+    collision LODs registered no raycast in game."""
+    p3d = multilod(fork, 0)
+    for i in (1, 2, 3):
+        reverse_faces(p3d.lods[i])
+    assert ([(f.code, f.lod) for f in p3d.validate()]
+            == [("ERR_WINDING_VS_NORMALS", i) for i in (1, 2, 3)])
+    for i in (1, 2, 3):
+        negate_normals(p3d.lods[i])
+    assert p3d.validate() == []
+    assert signed_volume(visual_shell(p3d.lods[0])) > 0
+    assert [len(outward_faces(p3d.lods[i])) for i in (1, 2, 3)] == [6, 6, 6]
+    rotated = build_multilod_v2_p3d(fork)
+    rotated.transform(fork.ROT_X_NEG90)
+    assert ([len(outward_faces(rotated.lods[i])) for i in (1, 2, 3)]
+            == [6, 6, 6])
 
 
 # ---- proxies: measured in game the same day --------------------------------
