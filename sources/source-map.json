@@ -364,9 +364,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02: a lesson written in place into the installed dayz-mcp-verify on 2026-10-02 (one aborted attempt to gate an external PR by repointing a gate executor's source_root in its TOML config: backslash escaping in TOML basic strings broke the parse with TOMLDecodeError in preflight; the deployed PBO differed from the sealed baseline), ported here in English and without private names, by the owner's decision, before promoting this repository over that installed copy. TOML literal strings and the tomllib check follow the TOML specification. Written by Claude (Anthropic); cross-family review pending.",
+          "decision_evidence": "kp-update 2026-10-02: a lesson written in place into the installed dayz-mcp-verify on 2026-10-02 (one aborted attempt to gate an external PR by repointing the source path in a gate executor's TOML config: backslash escaping in TOML basic strings broke the parse with TOMLDecodeError in preflight; the deployed PBO differed from the sealed baseline), ported here in English and without private names, by the owner's decision, before promoting this repository over that installed copy. TOML literal strings and the tomllib check follow the TOML specification. Cross-family review by Codex gpt-6.1-sol, one round: SOUND-with-fixes (generalise the executor's field names rather than publish them; after parsing, compare the decoded path, since a single backslash before t or n parses into a tab or a newline), both applied. The reviewer rebuilt the last receipt's projection and found the live tree equal to it except for this section. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "29c0656d69fcd1fb421365166b32f217e715c08fd0c92cc2122d202d23ef86fb",
+          "source_hash": "dfbce21aff6de981b95c014c9c6ddc4dfc4ee758a83d98c1c52adc6a5348ecda",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-mcp-verify-port@2026-10-02",
@@ -374,7 +374,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "29c0656d69fcd1fb421365166b32f217e715c08fd0c92cc2122d202d23ef86fb",
+      "output_hash": "dfbce21aff6de981b95c014c9c6ddc4dfc4ee758a83d98c1c52adc6a5348ecda",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6781,9 +6781,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02: a lesson written in place into the installed dayz-mcp-verify on 2026-10-02 (one aborted attempt to gate an external PR by repointing a gate executor's source_root in its TOML config: backslash escaping in TOML basic strings broke the parse with TOMLDecodeError in preflight; the deployed PBO differed from the sealed baseline), ported here in English and without private names, by the owner's decision, before promoting this repository over that installed copy. TOML literal strings and the tomllib check follow the TOML specification. Written by Claude (Anthropic); cross-family review pending.",
+          "decision_evidence": "kp-update 2026-10-02: a lesson written in place into the installed dayz-mcp-verify on 2026-10-02 (one aborted attempt to gate an external PR by repointing the source path in a gate executor's TOML config: backslash escaping in TOML basic strings broke the parse with TOMLDecodeError in preflight; the deployed PBO differed from the sealed baseline), ported here in English and without private names, by the owner's decision, before promoting this repository over that installed copy. TOML literal strings and the tomllib check follow the TOML specification. Cross-family review by Codex gpt-6.1-sol, one round: SOUND-with-fixes (generalise the executor's field names rather than publish them; after parsing, compare the decoded path, since a single backslash before t or n parses into a tab or a newline), both applied. The reviewer rebuilt the last receipt's projection and found the live tree equal to it except for this section. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "db206a2edc392bdcfe4ce5bfba8a6a84fcaa15e457980158d1a029714c271090",
+          "source_hash": "1b999ed8104f44dd0820ab35a15933dbe84a0342f5455321c525cfcc2bfc6481",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-mcp-verify-port@2026-10-02",
@@ -6791,7 +6791,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "db206a2edc392bdcfe4ce5bfba8a6a84fcaa15e457980158d1a029714c271090",
+      "output_hash": "1b999ed8104f44dd0820ab35a15933dbe84a0342f5455321c525cfcc2bfc6481",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
