@@ -2937,10 +2937,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02 promotion of main 26e76a4 (#37, #38, #39, #42, #43 since the last promotion of da73457) to the installed skill trees and the vault snapshots, at the owner's request ('haz la promocion a los arboles vivos'). promote --check from a fresh worktree of 26e76a4 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT (76 of 119 operations: skill/dayz-model-pipeline, skill/dayz-p3d-audit and skill/dayz-vehicles on agents_user_skills+claude_user_skills, and 73 new vault snapshot directories; no live file removed). Projected file by file with packctl's own alias localization, the skill changes are exactly the files git changed under skills/ since da73457: dayz-model-pipeline SKILL.md; dayz-p3d-audit SKILL.md, references/killers-detail.md, references/winding-diagnostics.md; dayz-vehicles references/rip-import.md and references/vehicle-structural-parity.md. promote --apply PASS, transaction a5e776aef17a1d2312e3c0da, COMMIT event 230 at 2026-10-02T16:19:46Z; the receipt's sha256 (ba797612...) equals the COMMIT payload's receipt_hash. Every destination re-measured after apply with packctl tree_digest equals its plan after_digest (119/119). adjudications.json carries the advance packctl made at COMMIT for the 6 adjudicated pairs it promoted over (3 skills x 2 targets), each observed_digest now equal to its plan after_digest; the other 76 pairs are unchanged. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "04ca0ff9677cfe9891c9462bbc26e57829b562025902638374a1727400a14999",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-26e76a4@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "82db64755310729a9f70a53725dc90be8b87c152b5a7defc89fe4a940c6e2847",
+      "output_hash": "04ca0ff9677cfe9891c9462bbc26e57829b562025902638374a1727400a14999",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -28051,6 +28061,28 @@
       "license": "MIT",
       "output_hash": "773163570834a12270445358169290661261bf33c1469565359046637260983c",
       "output_path": "promotions/receipts/1ff300dc61088b3b7bb0478a.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/a5e776aef17a1d2312e3c0da.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-02 promotion of main 26e76a4 (#37, #38, #39, #42, #43 since the last promotion of da73457) to the installed skill trees and the vault snapshots, at the owner's request ('haz la promocion a los arboles vivos'). promote --check from a fresh worktree of 26e76a4 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT (76 of 119 operations: skill/dayz-model-pipeline, skill/dayz-p3d-audit and skill/dayz-vehicles on agents_user_skills+claude_user_skills, and 73 new vault snapshot directories; no live file removed). Projected file by file with packctl's own alias localization, the skill changes are exactly the files git changed under skills/ since da73457: dayz-model-pipeline SKILL.md; dayz-p3d-audit SKILL.md, references/killers-detail.md, references/winding-diagnostics.md; dayz-vehicles references/rip-import.md and references/vehicle-structural-parity.md. promote --apply PASS, transaction a5e776aef17a1d2312e3c0da, COMMIT event 230 at 2026-10-02T16:19:46Z; the receipt's sha256 (ba797612...) equals the COMMIT payload's receipt_hash. Every destination re-measured after apply with packctl tree_digest equals its plan after_digest (119/119). adjudications.json carries the advance packctl made at COMMIT for the 6 adjudicated pairs it promoted over (3 skills x 2 targets), each observed_digest now equal to its plan after_digest; the other 76 pairs are unchanged. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ba797612c7aac007a9ee9ccd05039036b8a229ce080f594647987826c67f41fa",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/a5e776aef17a1d2312e3c0da.json",
+          "source_revision": "kp-update-promotion-26e76a4@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ba797612c7aac007a9ee9ccd05039036b8a229ce080f594647987826c67f41fa",
+      "output_path": "promotions/receipts/a5e776aef17a1d2312e3c0da.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
