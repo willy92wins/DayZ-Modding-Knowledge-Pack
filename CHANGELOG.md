@@ -434,16 +434,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   of `verify-wheel-restock.ps1` fail on the previous applicator and pass now.
 - `dayz-model-pipeline` `references/lods-and-geometry.md`, the py3d fix for the GLB/glTF source
   case: the bullet above it reverses every face in every LOD except proxy triangles, but the loop
-  under it reversed the proxy triangles too. The loop now skips the faces of
-  `proxy:<path>.<index>` selections (`py3d.PROXY_NAME_RE`), and a sentence says that
-  `P3D.transform()` with the swap matrix (det<0) has already reversed every face, proxy triangles
-  included, so after it only the proxy triangles go back; run after `transform()`, the loop would
-  put every other face back in its original order and leave the proxies reversed. Measured offline
-  with py3d 1.9.0 (the repository source and the installed wheel), running the documented block
-  itself on a synthetic model of five LODs (two visual, Geometry, View Geometry, Memory) with five
-  proxy triangles: the proxies keep their vertex order and the other 48 faces are reversed, also on
-  the model read back from MLOD bytes; the old block, a no-op and a loop that skips the faces of
-  every selection fail the same check. The replaced block is quoted in a dated note. The GLB
+  under it reversed the proxy triangles too. The loop now keeps the order of each proxy triangle,
+  the only face of a `proxy:<path>.<index>` selection (`py3d.PROXY_NAME_RE`) when it is a
+  triangle, and reverses every other face once: a selection under a proxy name with more faces, or
+  a quad, holds geometry and is reversed with the rest, and a `Face` object listed twice (two LODs
+  sharing it), which would be reversed twice, stops the loop before any face changes. A sentence
+  says that `P3D.transform()` with the swap matrix (det<0) has already reversed every face, proxy
+  triangles included, so after it only the proxy triangles go back; run after `transform()`, the
+  loop would put every other face back in its original order and leave the proxies reversed.
+  Measured offline with py3d 1.9.0 (the repository source and the installed wheel), running the
+  documented block itself on synthetic models: the proxy triangles keep their order, one whose
+  selection lists no points included, and every other face is reversed, a box and a quad under
+  proxy names included, also after an MLOD write and read; a shared or repeated `Face` raises with
+  nothing changed; the old block, a loop that skips every face of a proxy-named selection and a
+  no-op fail. On 411 MLODs of the owner's projects (13,688,834 faces, read only) the block raised
+  on none, kept the 1,979 faces that are the single triangle of a proxy-named selection (191 of
+  them in debinarized SUB_BRZ round trips whose proxy selections list no points) and reversed
+  every other face once, the 108 faces of 18 six-face proxy-named selections in the LFPowerGrid
+  logic gates' collision LODs included. The replaced block is quoted in a dated note. The GLB
   reversal itself is unchanged.
 
 ## [1.5.0] - 2026-10-02
