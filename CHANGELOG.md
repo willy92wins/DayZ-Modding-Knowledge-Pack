@@ -203,6 +203,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and a knowledge note's claim that Object Builder is case-sensitive is marked as unmeasured. No new
   wheel: the pinned and installed `py3d_dayz-1.8.0` keeps the old check, and `apply-s2-rollout.ps1
   -WheelOnly` refuses to restock until a 1.9.0 wheel is built and pinned.
+- py3d `WARN_COMPONENT_COVERAGE` (py3d 1.9.0). It compared `Component01` alone with the whole
+  Geometry LOD ("Component01 covers 8/48 vertices; uncovered vertices won't participate in
+  collision" on the six-component `gate_and.p3d`), so it fired on every Geometry LOD with more than
+  one component, healthy or not (the killer #2 entry above), never read components named in
+  lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire.
+  It now reads the union of every selection named `Component` and a number, in any case, on the
+  Geometry, View and Fire LODs: one finding per LOD (it raised up to two) counts the faces, proxy
+  triangles aside, that no component holds and the points those faces use that none holds; points
+  that no face uses are not counted. A LOD with no component (`ERR_COMPONENT_NAMING`'s finding) or
+  only proxy triangles raises nothing; one whose component selections are all empty is reported with
+  every face counted. It stays a WARN: in game a box with no component collided with nothing
+  (killer #2), but a face outside every component on a LOD that has others was not measured.
+  Measured offline with the old and the new module through `P3D._scan_v12_findings` on 414 unique
+  MLODs (the owner's mod and vehicle projects and the Pack's door samples): the old check raised 78
+  findings on 39 Geometry LODs, the new one raises 3, and no other finding changed. Two of the 3 are
+  the door sample `Expert_Mode`, whose lever (18 faces) is in no component in its Geometry and Fire
+  LODs, though `dayz-doors` lists the lever among its Geometry parts; the third is a vehicle's Fire
+  LOD with two 1 mm triangles in no selection. `dayz-p3d-audit` killer #8 and
+  `references/killers-detail.md` §8 say which py3d version does what. No new wheel: the pinned and
+  installed `py3d_dayz-1.8.0` keeps the old check.
 
 ## [1.5.0] - 2026-10-02
 

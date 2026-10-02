@@ -158,8 +158,10 @@ each killer (root cause, detection snippet, fix, caveats) →
 8. **Incomplete Component Coverage** — every vertex and face of a collision LOD must belong to
    a `ComponentNN` selection with weight=1, one component per closed, convex part, the components
    together covering the LOD, or collision is partial. Never merge separate parts into one
-   `Component01` to make it cover everything: that component is no longer convex. py3d
-   `WARN_COMPONENT_COVERAGE` counts `Component01` alone and fires on a healthy multi-component LOD
+   `Component01` to make it cover everything: that component is no longer convex. py3d 1.9.0
+   `WARN_COMPONENT_COVERAGE` counts the union of the `ComponentNN` selections, whatever the case,
+   on the Geometry, View and Fire LODs; up to 1.8.0 (the pinned wheel) it counted `Component01`
+   alone, on the Geometry LOD, and fired on a healthy multi-component LOD
    (`references/killers-detail.md` §8). *(Corrected 2026-10-02: titled "Incomplete Component01
    Coverage", this entry read "`Component01` must include ALL verts AND faces with weight=1, or
    collision is partial.")*

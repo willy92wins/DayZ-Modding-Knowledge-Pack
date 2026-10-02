@@ -501,10 +501,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "99020e9dce38f20c95bd153c0cf020c836d00b825b038bff7323f85ee471b01d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b0c0a418fa6c532379ff936c65e3310d1f4b8f4ce89d5864dccdd789c44a5a98",
+      "output_hash": "99020e9dce38f20c95bd153c0cf020c836d00b825b038bff7323f85ee471b01d",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8012,10 +8022,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c0cdd211b1647df869b658e1a8b36813c91460a9e10a89849e7cb9842873fdf5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fa8de64cebfef23d534d88935202ae405b2dadcb059b81a0aef0658de1db5630",
+      "output_hash": "c0cdd211b1647df869b658e1a8b36813c91460a9e10a89849e7cb9842873fdf5",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -8074,10 +8094,20 @@
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "55af962a08d2faa4dc81d9910b9cec1917885dbbcbfaaf0ab67b087e44963497",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "19cc71435712a858c61bfc88bbf6d5c559e907a1054195ff5573a794e2817ef4",
+      "output_hash": "55af962a08d2faa4dc81d9910b9cec1917885dbbcbfaaf0ab67b087e44963497",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -15095,10 +15125,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Moves the line ranges of claims whose markers shifted in files this change edits (dayz-p3d-audit SKILL.md killer #8 and references/killers-detail.md section 8 gained lines above later claims); no claim added or reworded.",
+          "license": "MIT",
+          "source_hash": "3a0d118fbc383f39ea0b6ca6ce621da636fd1d6c25b9e157d548581a2d39a2a0",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "212ac834adc5ebbf3d8a2419ca0e97f767c4ccd3b016d17cab4252b9fce5b705",
+      "output_hash": "3a0d118fbc383f39ea0b6ca6ce621da636fd1d6c25b9e157d548581a2d39a2a0",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -24226,10 +24266,20 @@
           "source_path": "tools/py3d/README.md",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2f53fbc51012d8b4c86f5f097864dc174ef809504a7ba7517506e5a43d72f418",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/README.md",
+          "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cb2825462b82c10e076343fdfb29afa484b43e722ea67ff0f3289fb782f6dc9a",
+      "output_hash": "2f53fbc51012d8b4c86f5f097864dc174ef809504a7ba7517506e5a43d72f418",
       "output_path": "tools/py3d/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24338,10 +24388,20 @@
           "source_path": "tools/py3d/py3d/__init__.py",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c0dfd9a8bee0b869ceae4123ec0dedcf33422f9b27db7fbffe77f78868307ff4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/py3d/__init__.py",
+          "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "436e48be9fc845d0659e2edeccdcaa19155ea6708589cfe62d216ef21c77e98c",
+      "output_hash": "c0dfd9a8bee0b869ceae4123ec0dedcf33422f9b27db7fbffe77f78868307ff4",
       "output_path": "tools/py3d/py3d/__init__.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25966,10 +26026,20 @@
           "source_path": "tools/py3d/tests/test_s2_validate12.py",
           "source_revision": "kp-update-py3d-component-naming@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02: py3d 1.9.0 _check_component_coverage (WARN_COMPONENT_COVERAGE). Up to 1.8.0, and on main after #46, it compared a selection named exactly 'Component01' with the whole Geometry LOD ('Component01 covers %d/%d vertices; uncovered vertices won't participate in collision.' and the same for faces), so it fired on every Geometry LOD with more than one component, never read components named in lowercase, counted proxy triangles and points that no face uses, and did not run on View or Fire. Owner's choices the same day: coverage is the union of every selection named Component plus a number, in any case (#46's _COMPONENT_NAME_RE, fullmatch), on the Geometry, View and Fire LODs; it counts the faces that are not proxy triangles (#46's _proxy_triangle_faces) that no component holds, and the points those faces use that none holds; points no face uses are ignored; it stays a WARN, one finding per LOD; a LOD with no component is left to ERR_COMPONENT_NAMING, and one whose component selections are all empty is reported with every face counted; it ships under #46's unreleased 1.9.0 with no new wheel. In-game basis: the killer #2 run (DayZDiag 1.29.163709, CLAIM-P3D-COMPONENT-CASE-INGAME): a box with no component in its Geometry, View and Fire LODs collided with nothing; a face outside every component on a LOD that has others was not measured. Offline: py3d suite 331 passed, 11 skipped (base 05121a9: 309 passed, 11 skipped); the 22 new tests of test_s2_validate12.py run against the base commit's module fail 18 and pass 4 (guards: lowercase components covering the LOD, a LOD with no component, and the face-outside mutant whose message test discriminates), and all 22 pass on the new one; dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH. Read-only impact run on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's door samples) through P3D._scan_v12_findings with the base module and the new one: old 78 findings on 39 Geometry LODs, new 3 (the door sample Expert_Mode, whose lever is in no component in its Geometry and Fire LODs, and a vehicle Fire LOD with two 1 mm triangles in no selection); no other finding changed in any model. Skill notes on this finding (dayz-p3d-audit SKILL.md killer #8, references/killers-detail.md section 8) now say which py3d version does what; the py3d README test count follows the suite. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "86550d11156b72751981699cc6c551635f28b7ec8bbb8cd491459b439b4731ed",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/py3d/tests/test_s2_validate12.py",
+          "source_revision": "kp-update-py3d-component-coverage@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5349bb4a5dcf370d28af0ba33ffac5dad92ddc24ef41e9fc97ce0ef97143facf",
+      "output_hash": "86550d11156b72751981699cc6c551635f28b7ec8bbb8cd491459b439b4731ed",
       "output_path": "tools/py3d/tests/test_s2_validate12.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
