@@ -203,6 +203,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and a knowledge note's claim that Object Builder is case-sensitive is marked as unmeasured. No new
   wheel: the pinned and installed `py3d_dayz-1.8.0` keeps the old check, and `apply-s2-rollout.ps1
   -WheelOnly` refuses to restock until a 1.9.0 wheel is built and pinned.
+- The chiral in-game checks that #28 designed for the clothing and animation routes ran, and the
+  character check got its attack (2026-10-02, DayZDiag 1.29.163709, one run driven by dayz-mcp).
+  `dayz-clothing`: a test garment with an "F" on the left chest, exported with Rule 12, reads
+  correctly on the wearer's left chest, opposite the item hand; the old `(x, z, −y)` + 180° + swap
+  export reads mirrored on the right chest (worn by a spawned survivor with empty hands, since
+  dayz-mcp cannot take a worn item off the player). `dayz-animation-pipeline`: `LeftArm` alone keyed
+  in Blender on the official rig and exported through the calibrated Route C script rose on the side
+  opposite the item hand; the skill's uncalibrated `scripts/seanim_export.py` left the arm at shoulder
+  height. That shows the route keeps the track on `LeftArm` and raises it as keyed. It does not test
+  the handedness of the frame change (the bone offsets came from the vanilla clip), nor whether Route
+  C's formula, calibrated on the JD rig, fits the official FBX rig's bone frames (turned 90° about Z
+  on 105 of 113 bones, within 0.5°): this raise turns mostly about the bone's own Z, so both maps
+  raise the arm. `dayz-characters`: the Rule 12 LFInfectedBig build from #34 attacked the player with
+  its limbs in place, like a vanilla `ZmbM_SoldierNormal`.
+  The `[DESIGN, not yet run]` labels become run results with their scope. `dayz-mcp-verify` gets what the
+  run taught: no verb takes a worn item off the player, so a second garment goes on a spawned survivor;
+  an infected attacks only once it notices the player; in this run, infected spawned without AI later
+  read health 0.
+  Four claims registered.
 - `dayz-characters` `check_dayz_winding.py`, the pre-PBO gate of the character pipeline, encoded the
   LFInfectedBig det +1 build: stored normals OUTWARD and `cross·normal < 0` (`NORMALS_OUTWARD_MIN =
   0.35`). It exited 1 on all three MLODs of the Rule 12 in-game test, the correct one included, with fix

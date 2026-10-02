@@ -275,6 +275,13 @@ vanilla `ZmbM_SoldierNormal` and the player, sun from the east.
   engaged the player). The chest hole is centred (x ≈ 0), so step 3's hole criterion cannot show chirality
   on this model. The client ran without textures: this covers the base shading of these builds, not
   colour, `_nohq` normal maps or tangents.
+- Second run the same day, same PBO, client with textures, sun from the east: an AI-enabled Rule 12 build
+  spawned 2.4 m in front of the player attacked it once the player moved (a wind-up with one arm raised
+  behind, then swings at the shoulder), with its limbs in place, the same moves a vanilla
+  `ZmbM_SoldierNormal` made on that player. A static Rule 12 build kept its limbs in place over about 80 s
+  of idle, with the "F" reading correctly; the shipped recipe looked dark, as in the first run. The
+  ribcage mesh seen through the hole spans x −0.165 to +0.134 m in the Blender dump (centre −0.016 m),
+  consistent with a centred hole. (claim: CLAIM-CHAR-ATTACK-INGAME)
 
 ## Failure → cause quick map
 
