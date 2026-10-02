@@ -9,9 +9,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `dayz-mcp-verify`: gating a PR through an external executor. A programmatic swap of Windows
   paths inside its TOML config edits TOML escapes, not path bytes (`TOMLDecodeError: Invalid hex
-  value` in preflight); validate the rewritten TOML with `tomllib` before handing it over. Check
-  the deployed PBO against the sealed baseline before planning the gate. Measured in one aborted
-  gate run; written first in an installed copy, ported here.
+  value` in preflight); parse the rewritten TOML with `tomllib` and compare the decoded path with
+  the intended one before handing it over. Check the deployed PBO against the sealed baseline
+  before planning the gate. Measured in one aborted gate run; written first in an installed copy,
+  ported here.
 
 ### Deprecated
 
