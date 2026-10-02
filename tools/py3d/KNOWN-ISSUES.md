@@ -241,6 +241,19 @@ noise reads as signal.
 
 ## Fixed
 
+- **`validate()` flagged a component name that works and missed lost
+  collision in View and Fire.** Up to 1.8.0 `ERR_COMPONENT_NAMING` ran on the
+  Geometry LOD alone and fired on a lowercase `component01` ("Engine requires
+  'Component01' (uppercase C); collision silently fails"). In game (DayZDiag
+  1.29.163709, 2026-10-02) `component01` collided exactly like `Component01`
+  in `geom`, `view` and `fire` rays, the physics ray and a walking player,
+  packed unbinarized and binarized, and binarize writes both names as
+  `component01`; a box with no component in its Geometry, View and Fire LODs
+  took no ray in any of them, let the player through, and no log line said
+  so. From 1.9.0 the error flags any of those three LODs that has faces
+  outside its proxy triangles and no selection whose name starts with
+  `component`, and ignores the case of the name. A LOD missing a component while the others have one was
+  not measured.
 - **The documented Blender → DayZ path mirrored the model.** Up to 1.7.0,
   `BLENDER_TO_DAYZ` was the det=+1 rotation `(x,y,z) -> (x,z,-y)` and
   `p3d.transform(py3d.BLENDER_TO_DAYZ)` was the documented usage. Blender is

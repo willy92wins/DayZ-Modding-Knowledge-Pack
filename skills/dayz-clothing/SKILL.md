@@ -66,7 +66,7 @@ of them wastes cycles if you chase the others first.
   Either reflection moves every point (memory points included), reverses
   every face and reflects the normals the same way; `P3D.transform()` with
   that diagonal matrix (det −1) does all three.
-- **Chiral in-game check [DESIGN, not yet run].** The anatomical test above
+- **Chiral in-game check [run 2026-10-02, DayZDiag 1.29.163709].** The anatomical test above
   rules out a det +1 export only while the L/R selections were never swapped by
   hand; a swapped build needs an asymmetric feature. Put an "F" in relief on the
   left chest of a test garment (weighted 100 % to `spine3`). Export it once with
@@ -76,6 +76,18 @@ of them wastes cycles if you chase the others first.
   `RightHand_Dummy`). Expected on the control: the "F" mirrored, on the item
   side. On ArmorHneck itself, compare one asymmetric detail against the
   artist's Blender file.
+  Result, on a vest-like test garment worn in the `Armband` slot (binarized,
+  ODOL skeleton `DayzTemporarySkeleton`, driven by dayz-mcp): the Rule 12
+  build (`py3d.blender_to_dayz()`), worn by the player with a crowbar in the
+  right hand, shows the "F" reading correctly on the wearer's left chest,
+  opposite the crowbar. The control (`ROT_X_NEG90`, every face reversed and
+  every normal negated, then 180° about +Y) shows the "F" mirrored on the
+  wearer's right chest. The garment carries only `spine3`, so the control's
+  L/R swap renamed nothing. dayz-mcp cannot take a worn item off the player,
+  so the control was worn by a `SurvivorM_Francis` spawned beside the player,
+  facing the camera with empty hands; its right side was read from its facing.
+  (claim: CLAIM-CLOTHING-CHIRAL-INGAME) Not covered: ArmorHneck itself, a
+  garment with left/right-weighted parts, a female body.
 
 ## THE CLOTHING CONTRACT (structure of a working wearable)
 
