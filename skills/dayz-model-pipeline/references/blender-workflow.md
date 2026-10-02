@@ -394,7 +394,7 @@ If no textures came with the model, generate procedurally (see `procedural-textu
 | **Model is inside-out (black)** | Normals flipped | Recalculate normals outside: `normals_make_consistent(inside=False)` |
 | **Black faces or holes** | Duplicate vertices | Run remove doubles with threshold 0.0001 |
 | **UV seams visible in-game** | Tight UV margins | Re-pack islands with larger margin (0.02+) |
-| **Model faces wrong direction** | Export axis wrong | Re-export with Forward=-Y, Up=Z |
+| **Model faces wrong direction** | Export axes converted, or the model faces another way in Blender | Re-export with Forward=Y, Up=Z (no conversion; py3d applies Rule 12 once). If it still faces wrong, turn the model in Blender so its front looks down -Y; do not fix the facing through the export axes |
 | **Textures look stretched** | UVs not unwrapped properly | Run Smart UV Project, manual layout |
 | **LODs are distorted** | Decimate broke geometry | Use Voxel Remesh modifier instead for preservation |
 | **Smooth shading looks jagged** | Auto-smooth threshold too low | Increase auto-smooth angle (60-80 degrees typical) |
@@ -425,7 +425,7 @@ See `py3d-assembly.md` for p3d assembly, and `config-cpp-objects.md` for final D
 - [ ] UV islands packed with proper margins
 - [ ] LODs generated and decimated
 - [ ] Each LOD verified for geometry integrity
-- [ ] Export settings: Forward=-Y, Up=Z
+- [ ] Export settings: Forward=Y, Up=Z (no conversion; py3d applies Rule 12)
 - [ ] Each LOD exported as separate OBJ
 - [ ] Textures renamed per DayZ convention
 - [ ] Ready for py3d assembly

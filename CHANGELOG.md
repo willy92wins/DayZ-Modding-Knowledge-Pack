@@ -48,7 +48,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   headless OBJ export recipe exported Y-up (`(x,z,-y)`) before py3d applied Rule 12, and
   `blender-workflow.md` gave Forward -Y, a 180° turn; both now export Blender's own coordinates
   (Forward Y / Up Z, measured in Blender 5.1.1), and the four documented `wm.obj_export` calls,
-  which Blender 5.1.1 rejected with `TypeError`, use its parameter names.
+  which Blender 5.1.1 rejected with `TypeError`, use its parameter names. Its troubleshooting
+  row for Check A's `UNIFORM_NON_FLIPPED` reversed every face; a correct Rule 12 export reads
+  exactly that, so the row now asks for a direction check (signed volume or the per-component
+  check of Rule 18) first.
 
 ## [1.4.0] - 2026-10-01
 

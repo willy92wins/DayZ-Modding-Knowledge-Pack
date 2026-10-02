@@ -630,9 +630,9 @@ lods = generate_lods(original_box, '/tmp/lods/')
 
 ```python
 # WRONG
-bpy.ops.wm.obj_export(filepath="model.obj")
+bpy.ops.wm.obj_export(filepath="model.obj", forward_axis='Y', up_axis='Z')
 
-# RIGHT
+# RIGHT (axes as in Core OBJ Export: Blender's own coordinates)
 def apply_all_modifiers(obj):
     bpy.context.view_layer.objects.active = obj
     obj.select_set(True)
@@ -640,7 +640,7 @@ def apply_all_modifiers(obj):
         bpy.ops.object.modifier_apply(modifier=mod.name)
 
 apply_all_modifiers(cube)
-bpy.ops.wm.obj_export(filepath="model.obj")
+bpy.ops.wm.obj_export(filepath="model.obj", forward_axis='Y', up_axis='Z')
 ```
 
 ### Not Selecting Object Before Operations
