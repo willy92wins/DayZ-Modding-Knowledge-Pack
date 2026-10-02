@@ -103,6 +103,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `autofit-from-official-rig.md`), and item 1 describes the 1.9.0 `ERR_WINDING_INVERTED` message
   next to the 1.8.0 one.
 
+### Removed
+
+- `dayz-doors` no longer ships `assets/` (nine files: three `.p3d` models, each with its
+  `model.cfg` and `config.cpp`) or the six verbatim copies of those `model.cfg` and `config.cpp`
+  files in `references/worked-examples.md`. They are not the Pack author's work: they are the
+  examples of novoGOD's door tutorial `Doors_Buttons_Lesson` (a Discord attachment, files dated
+  2025-04-23), whose archive holds no license or permission text. Their SHA-256 hashes equal the
+  archive's members (the text files after LF normalisation), yet since v1.3.0 the source map
+  labelled them, like the rest of the skill, "author-owned MIT", and the compatibility matrix and
+  the 1.2.0 entry below called them the author's. `worked-examples.md` now describes the three
+  patterns in tables (bones, animation windows, Doors entries) and, like the other two references,
+  cites the tutorial's files by path and line. The source map registers the tutorial as an excluded
+  source (no license or redistribution grant observed) and corrects the license of the old
+  `worked-examples.md` input, which held the six copies; `THIRD_PARTY_NOTICES.md` lists the
+  tutorial with the research-only sources. The files stay in the git history and in the v1.3.0 to
+  v1.5.0 source archives.
+
 ### Fixed
 
 - `dayz-mcp-verify`: the pose check of "Axis-aligned test fixtures" and the `scene_raycast` entry

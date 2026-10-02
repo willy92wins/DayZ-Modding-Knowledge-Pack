@@ -634,9 +634,19 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Unreleased entries for the dayz-mcp-verify item-yaw caveat (Changed) and the rvproxy normal correction (Fixed), and the PR #44 Added entry's last clause, which repeated the normal check, now names the bullet ray's face normal. kp-update 2026-10-02: dayz-mcp-verify static-object playbook, 'Axis-aligned test fixtures: try rotation=64, then check the pose'. (1) A measured caveat: with rotation 64 a two-box fixture came out as modelled on HouseNoDestruct and with the boxes' sides swapped on Inventory_Base, as a 180-degree turn about Y leaves them (the z-symmetric boxes do not separate it from a mirror in x), which two parallel rays, face normals and a symmetric fixture cannot show; check the yaw with sides a ray can tell apart (one component per side read from rvproxy hits' component, or a collider on one side only, off-centre in z too); claim CLAIM-MCPV-ITEM-YAW. (2) On the owner's choice (2026-10-02), the pose check no longer reads the default rvproxy reply's normal, which is the ray's intersection (direction and size), and the 'What it does not cover' scene_raycast entry no longer says to use it as a direction; the face normal is read from method bullet, on two faces that are not parallel; claim CLAIM-MCPV-RVPROXY-NORMAL; both replaced sentences quoted in dated notes. CLAIM-MCPV-STAND-PROBE, CLAIM-MCPV-FIXTURE-NOPERSIST and CLAIM-MCPV-WORN-MANNEQUIN move to the lines their markers now hold, evidence and levels unchanged. Evidence: In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3 (project DayZ_MCP plus the probe @KP_LeverProbe only), NWAF concrete; raw bridge replies re-read. pair_cov.p3d (sha256 cbd47c02ee4560b9bf0894d9ea5fc6cf2c754d998e17776e456f8d46929ae47b): two 2 m boxes, A (x -3..-1) in Component01 and B (x 1..3) in Component02, y 0..2, z -1..1; pair_unc.p3d (sha256 314679a55f1d078b034a1c4364a4f5edd057cee2295722016fcd375b24530490): the same bytes without B's Component02. Each packed binarized and with -packonly, spawned with world_spawn flags 8389668 and rotation 64 as HouseNoDestruct (KP_LP_PairCov/PairUnc_Bin/_Mlod, x 4204-4234, z 10662) and as Inventory_Base, physLayer item_large (KP_LP_PairCovI/PairUncI_Bin/_Mlod, z 10676). rvproxy rays in geom, view and fire: on the four statics the west box (world x spawn - 3 .. spawn - 1) answered as component 0 (Component01, A) on every hit, the east box as component 1 on the two covered statics and not at all on the two uncovered ones; on the four items the west box answered as component 1 on the two covered items and took no ray on the two uncovered ones, where every hit (from the west, east, south and above) was component 0 on the east box. Two parallel rays 1.2 m apart on the west face read one x per object on statics (4200.9541, 4210.9551, 4220.9541, 4230.9526) and covered items (4200.9502, 4220.9502); rvproxy normals lay along their rays and bullet normals faced them ((-1, 0, 0) on the items, (-1, 0.003 to 0.005, 0) on the statics), so neither tells 0 from 180 degrees. The items' tops read spawn y + 2.05 (the 0.05 m sphere included): upright. The boxes are symmetric in z, so these rays do not separate a half-turn about Y from a mirror in x. object_inspect (GetMemoryPointPos, MCPBridge.c:2240, model space: vanilla wraps it in ModelToWorld, scripts/3_game/entities/object.c:1296-1297) was called on the four pair statics (bridge ids 1353-1356, ce_center (0, 1, 0) each) and the two door samples, not on the items; telemetry_read object_at (GetOrientation, MCPBridge.c:3137) was not called. The asymmetric dayz-doors tutorial sample, spawned the same way as HouseNoDestruct, answered on the model's +X side (its base box, Component05, at spawn x + 1.51 at two z offsets), as modelled. The bridge passes rotation to CreateObjectEx (MCPBridge.c:632, set at :3394 when non-zero, RF_DEFAULT at :3335); scripts/3_game/ce/centraleconomy.c:56 and :62 define 64 as RF_IGNORE and RF_RANDOMROT. Not measured: repeat spawns, other rotation and flags values, other base classes and layers, the cause. In game, DayZDiag 1.29.163709, 2026-10-02, two dayz-mcp runs on project DayZ_MCP, NWAF concrete: 454c93d7 (the killer #2 A/B) and cf2d6bb3 (the doors-lever A/B); every scene_raycast reply re-read from the raw bridge results (190 and 162 replies). rvproxy (DayZPhysics.RaycastRVProxy with the bridge's 0.05 m sphere; addon/scripts/5_Mission/MCPBridge.c:2958 copies RaycastRVResult.dir into normal, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): 190 of 190 hits on an object (116 + 74) returned a normal parallel to the ray and in its direction (cosine with the ray above 0.9999), length 0.09-2.39 m: 2.1 on 2 m boxes crossed along an axis (the width plus the sphere at each side), and on the Inventory_Base probe that rotation 0 yawed about 10 degrees (east-face readings 4224.098 and 4223.874 at z + 0.6 and z - 0.6, bridge ids 310-311) (-1.963, 0, 0) and (-1.966, 0, 0) on east-to-west rays; rvproxy hits with no object returned a zero vector (26) or a vector along the ray (12). The vanilla scripts document RaycastRVResult.dir as 'direction outside (in world coord) or (in case of line-object collision) direction and size of the intersection' (scripts/3_game/global/dayzphysics.c:104, sha256 279ce05c528e467cbf7de820954ee0ce98355d47f8efdd04eca4c5de50d86b07), as enforce-script-reference SP-LFS-2 ('Surface normals', 2026-09-09) measured on house walls. method bullet (DayZPhysics.RayCastBullet, MCPBridge.c:2983-3004, hitNormal copied at :2998): 40 of 40 hits (32 on objects, 8 on the terrain) returned a unit vector against the ray within 0.33 degrees, exactly on the axis on every Inventory_Base hit (the probe items of both runs, HescoBox, WoodenCrate) and 0.15-0.31 degrees off it on every HouseNoDestruct hit (the lever run's covered statics' tops read (0.004, 1, -0.0013), the normal the terrain returned under the uncovered twin at x 4216, z 10662). The 2026-09-07 entry measured magnitudes 0.16-0.42. Written by Claude (Anthropic). Cross-family review round 1 (Codex gpt-6.1-sol, read-only, on 1f222ac): UNSOUND, three findings applied: H1 the pose check reads bullet normals on two faces that are not parallel, with the measured off-axis readings as the allowance (a tilt about one face's normal leaves that normal unchanged); H2 the item result is stated as a side swap consistent with a 180-degree turn about Y, not separated from a mirror in x by these z-symmetric boxes, with off-centre parts in z as the remedy; H3 the object_inspect evidence names the four inspected statics, not every object.",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: [Unreleased] Removed entry: dayz-doors no longer ships the nine files of novoGOD's Doors_Buttons_Lesson tutorial or the six verbatim copies, and the provenance labels are corrected. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
           "license": "MIT",
-          "source_hash": "b9da5a0ff240a29b55f5700cad2bebc38814bf29d3a3d6d559d50328c9a3faf9",
+          "source_hash": "e45788aa7be0c94a19f0bac6d8e6cbd6f577b57b8a76fc58ab7cb73cd1b1b13c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased entries for the dayz-mcp-verify item-yaw caveat (Changed) and the rvproxy normal correction (Fixed), and the PR #44 Added entry's last clause, which repeated the normal check, now names the bullet ray's face normal. kp-update 2026-10-02: dayz-mcp-verify static-object playbook, 'Axis-aligned test fixtures: try rotation=64, then check the pose'. (1) A measured caveat: with rotation 64 a two-box fixture came out as modelled on HouseNoDestruct and with the boxes' sides swapped on Inventory_Base, as a 180-degree turn about Y leaves them (the z-symmetric boxes do not separate it from a mirror in x), which two parallel rays, face normals and a symmetric fixture cannot show; check the yaw with sides a ray can tell apart (one component per side read from rvproxy hits' component, or a collider on one side only, off-centre in z too); claim CLAIM-MCPV-ITEM-YAW. (2) On the owner's choice (2026-10-02), the pose check no longer reads the default rvproxy reply's normal, which is the ray's intersection (direction and size), and the 'What it does not cover' scene_raycast entry no longer says to use it as a direction; the face normal is read from method bullet, on two faces that are not parallel; claim CLAIM-MCPV-RVPROXY-NORMAL; both replaced sentences quoted in dated notes. CLAIM-MCPV-STAND-PROBE, CLAIM-MCPV-FIXTURE-NOPERSIST and CLAIM-MCPV-WORN-MANNEQUIN move to the lines their markers now hold, evidence and levels unchanged. Evidence: In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3 (project DayZ_MCP plus the probe @KP_LeverProbe only), NWAF concrete; raw bridge replies re-read. pair_cov.p3d (sha256 cbd47c02ee4560b9bf0894d9ea5fc6cf2c754d998e17776e456f8d46929ae47b): two 2 m boxes, A (x -3..-1) in Component01 and B (x 1..3) in Component02, y 0..2, z -1..1; pair_unc.p3d (sha256 314679a55f1d078b034a1c4364a4f5edd057cee2295722016fcd375b24530490): the same bytes without B's Component02. Each packed binarized and with -packonly, spawned with world_spawn flags 8389668 and rotation 64 as HouseNoDestruct (KP_LP_PairCov/PairUnc_Bin/_Mlod, x 4204-4234, z 10662) and as Inventory_Base, physLayer item_large (KP_LP_PairCovI/PairUncI_Bin/_Mlod, z 10676). rvproxy rays in geom, view and fire: on the four statics the west box (world x spawn - 3 .. spawn - 1) answered as component 0 (Component01, A) on every hit, the east box as component 1 on the two covered statics and not at all on the two uncovered ones; on the four items the west box answered as component 1 on the two covered items and took no ray on the two uncovered ones, where every hit (from the west, east, south and above) was component 0 on the east box. Two parallel rays 1.2 m apart on the west face read one x per object on statics (4200.9541, 4210.9551, 4220.9541, 4230.9526) and covered items (4200.9502, 4220.9502); rvproxy normals lay along their rays and bullet normals faced them ((-1, 0, 0) on the items, (-1, 0.003 to 0.005, 0) on the statics), so neither tells 0 from 180 degrees. The items' tops read spawn y + 2.05 (the 0.05 m sphere included): upright. The boxes are symmetric in z, so these rays do not separate a half-turn about Y from a mirror in x. object_inspect (GetMemoryPointPos, MCPBridge.c:2240, model space: vanilla wraps it in ModelToWorld, scripts/3_game/entities/object.c:1296-1297) was called on the four pair statics (bridge ids 1353-1356, ce_center (0, 1, 0) each) and the two door samples, not on the items; telemetry_read object_at (GetOrientation, MCPBridge.c:3137) was not called. The asymmetric dayz-doors tutorial sample, spawned the same way as HouseNoDestruct, answered on the model's +X side (its base box, Component05, at spawn x + 1.51 at two z offsets), as modelled. The bridge passes rotation to CreateObjectEx (MCPBridge.c:632, set at :3394 when non-zero, RF_DEFAULT at :3335); scripts/3_game/ce/centraleconomy.c:56 and :62 define 64 as RF_IGNORE and RF_RANDOMROT. Not measured: repeat spawns, other rotation and flags values, other base classes and layers, the cause. In game, DayZDiag 1.29.163709, 2026-10-02, two dayz-mcp runs on project DayZ_MCP, NWAF concrete: 454c93d7 (the killer #2 A/B) and cf2d6bb3 (the doors-lever A/B); every scene_raycast reply re-read from the raw bridge results (190 and 162 replies). rvproxy (DayZPhysics.RaycastRVProxy with the bridge's 0.05 m sphere; addon/scripts/5_Mission/MCPBridge.c:2958 copies RaycastRVResult.dir into normal, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): 190 of 190 hits on an object (116 + 74) returned a normal parallel to the ray and in its direction (cosine with the ray above 0.9999), length 0.09-2.39 m: 2.1 on 2 m boxes crossed along an axis (the width plus the sphere at each side), and on the Inventory_Base probe that rotation 0 yawed about 10 degrees (east-face readings 4224.098 and 4223.874 at z + 0.6 and z - 0.6, bridge ids 310-311) (-1.963, 0, 0) and (-1.966, 0, 0) on east-to-west rays; rvproxy hits with no object returned a zero vector (26) or a vector along the ray (12). The vanilla scripts document RaycastRVResult.dir as 'direction outside (in world coord) or (in case of line-object collision) direction and size of the intersection' (scripts/3_game/global/dayzphysics.c:104, sha256 279ce05c528e467cbf7de820954ee0ce98355d47f8efdd04eca4c5de50d86b07), as enforce-script-reference SP-LFS-2 ('Surface normals', 2026-09-09) measured on house walls. method bullet (DayZPhysics.RayCastBullet, MCPBridge.c:2983-3004, hitNormal copied at :2998): 40 of 40 hits (32 on objects, 8 on the terrain) returned a unit vector against the ray within 0.33 degrees, exactly on the axis on every Inventory_Base hit (the probe items of both runs, HescoBox, WoodenCrate) and 0.15-0.31 degrees off it on every HouseNoDestruct hit (the lever run's covered statics' tops read (0.004, 1, -0.0013), the normal the terrain returned under the uncovered twin at x 4216, z 10662). The 2026-09-07 entry measured magnitudes 0.16-0.42. Written by Claude (Anthropic). Cross-family review (Codex gpt-6.1-sol, read-only, cap of two rounds set before round 1): round 1 on 1f222ac UNSOUND, three findings applied in ad74d14: H1 the pose check reads bullet normals on two faces that are not parallel, with the measured off-axis readings as the allowance (a tilt about one face's normal leaves that normal unchanged); H2 the item result is stated as a side swap consistent with a 180-degree turn about Y, not separated from a mirror in x by these z-symmetric boxes, with off-centre parts in z as the remedy; H3 the object_inspect evidence names the four inspected statics, not every object. Round 2 on ad74d14: SOUND, no new findings.",
+          "license": "MIT",
+          "source_hash": "839691b204cb260a3fb8a8f71d7612839e1400a36b5433b3dd88da2edbbacfaf",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-mcp-verify-item-yaw@2026-10-02",
@@ -644,7 +654,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b9da5a0ff240a29b55f5700cad2bebc38814bf29d3a3d6d559d50328c9a3faf9",
+      "output_hash": "839691b204cb260a3fb8a8f71d7612839e1400a36b5433b3dd88da2edbbacfaf",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -977,10 +987,20 @@
           "source_path": "THIRD_PARTY_NOTICES.md",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: research-only table gains novoGOD's Doors_Buttons_Lesson (no license or redistribution grant observed; not redistributed since 2026-10-02; v1.3.0 to v1.5.0 shipped its nine example files mislabelled as author-owned MIT). Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "94b1233bd2d3eee992ca9033f71f637d61408c2bebfafe28981e702d700cd318",
+          "source_id": "pack-r21-authored",
+          "source_path": "THIRD_PARTY_NOTICES.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "003ae2301f7d045bc8645367c42b6753c909fbe86294c960210f18ba1c80a340",
+      "output_hash": "94b1233bd2d3eee992ca9033f71f637d61408c2bebfafe28981e702d700cd318",
       "output_path": "THIRD_PARTY_NOTICES.md",
       "routing_artifact_id": "root/third-party-notices",
       "verification_level": "cross_checked"
@@ -1051,10 +1071,20 @@
           "source_path": "compatibility-matrix.md",
           "source_revision": "release-v1.4.0@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: dayz-doors row: the example models are novoGOD's tutorial's, not author MIT assets; the evidence column points at worked-examples.md instead of the removed assets/. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "a442e911552e82864c89756ca04e78532a86a4dc9c3e9d288aa5c61c546fc6fd",
+          "source_id": "pack-r21-authored",
+          "source_path": "compatibility-matrix.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5e3b67ec1caaa1c456f6e195e8809e6046547b1c68891ede278e5faed9fc2b18",
+      "output_hash": "a442e911552e82864c89756ca04e78532a86a4dc9c3e9d288aa5c61c546fc6fd",
       "output_path": "compatibility-matrix.md",
       "routing_artifact_id": "root/compatibility-matrix",
       "verification_level": "cross_checked"
@@ -6704,209 +6734,21 @@
           "source_path": "skills/dayz-doors/SKILL.md",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: the skill's three worked patterns are the examples of novoGOD's door tutorial Doors_Buttons_Lesson (source novogod-doors-buttons-lesson; its archive holds no license or permission text), shipped since v1.3.0 under assets/ as author-owned MIT. The 'Exact source folders are in assets/' sentence now names the tutorial and says the Pack does not ship its files; the Expert Mode gotcha points at worked-examples.md; the reference link reads 'Worked examples'. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "1237c0d015bd0bd9e19d2068259c74edbd42edf2e9d39ab5a0290a2b1a23ec20",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b9c46b2de6bacf92375460e4d6385b68f30c929754466f76fd4c696bcd8fd86a",
+      "output_hash": "1237c0d015bd0bd9e19d2068259c74edbd42edf2e9d39ab5a0290a2b1a23ec20",
       "output_path": "skills/dayz-doors/SKILL.md",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door/simple_door.cfg",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "efd1833a1e73c01e54f0ea4d48b07e0652a51dc88d60b68df4db1aaee522a1fb",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door/Simple_Door.cfg",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "42d6dbd3c404772179133147c835b6d54764ed36748da5206d8b39a3c8b7a0d1",
-      "output_path": "skills/dayz-doors/assets/Door/Simple_Door.cfg",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door/simple_door.p3d",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "82afac6899fa1e0a61cd3e9aaa20dea9c9e1d4b5e0fab7cea4842a9c323c5d1c",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door/Simple_Door.p3d",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "82afac6899fa1e0a61cd3e9aaa20dea9c9e1d4b5e0fab7cea4842a9c323c5d1c",
-      "output_path": "skills/dayz-doors/assets/Door/Simple_Door.p3d",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door/config.cpp",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "a7e0b0f032803a9d979594dfa671ae2a132ab2490bdb2c7d79cb25734276d349",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door/config.cpp",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "a7e0b0f032803a9d979594dfa671ae2a132ab2490bdb2c7d79cb25734276d349",
-      "output_path": "skills/dayz-doors/assets/Door/config.cpp",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door_w_button/door_w_button.cfg",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "26acbfb88a0acc97fd314e4541d4e2d23bcd6a1eebe46b30bc2cf5571dd59d1f",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door_w_Button/Door_w_Button.cfg",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "c62b4d93accc202385a0720759e1ca8fe01234dd7ae00aba775ab91408b4653e",
-      "output_path": "skills/dayz-doors/assets/Door_w_Button/Door_w_Button.cfg",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door_w_button/door_w_button.p3d",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "97349b3ff1f18a44a81a3b7db17e7761d62bbd7c218b979cd4e64d973979396e",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door_w_Button/Door_w_Button.p3d",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "97349b3ff1f18a44a81a3b7db17e7761d62bbd7c218b979cd4e64d973979396e",
-      "output_path": "skills/dayz-doors/assets/Door_w_Button/Door_w_Button.p3d",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/door_w_button/config.cpp",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "42d8e317c1b2dbd5f6cf4c7e13a7c4b427b9544a0830f4a6269e124a19d0b1d1",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Door_w_Button/config.cpp",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "57b64de1c0c8a7fc233763e460010e8af095b3490b7fa5052ae7be1b3fb36e1e",
-      "output_path": "skills/dayz-doors/assets/Door_w_Button/config.cpp",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/expert_mode/expert_mode.cfg",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "1fb7e8247d3b883696c1d3946d6f37bcd6eda2517fe682bd255fe26eecad4748",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Expert_Mode/Expert_Mode.cfg",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "3857f448bd2d6ec15f2c4e6ff65d0ff46d0963c2c8885f4d8fba6aec9bfc16be",
-      "output_path": "skills/dayz-doors/assets/Expert_Mode/Expert_Mode.cfg",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/expert_mode/expert_mode.p3d",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "18ab0ac254b080bd87dbbd54b63c50c983e71dc4be390d8cb214740b0c36dee0",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Expert_Mode/Expert_Mode.p3d",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "18ab0ac254b080bd87dbbd54b63c50c983e71dc4be390d8cb214740b0c36dee0",
-      "output_path": "skills/dayz-doors/assets/Expert_Mode/Expert_Mode.p3d",
-      "routing_artifact_id": "skill/dayz-doors",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-doors/assets/expert_mode/config.cpp",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "8aba001c007a3f0fc32bb75119c06cdff5e06dec2638c3ebf5a64d589ce4f2f0",
-          "source_id": "installed-skills",
-          "source_path": "dayz-doors/assets/Expert_Mode/config.cpp",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "5ec4af9b9c9e1b7d19b75137687b498fc591d458d5df52a700babd1efefca465",
-      "output_path": "skills/dayz-doors/assets/Expert_Mode/config.cpp",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
     },
@@ -6924,10 +6766,20 @@
           "source_path": "dayz-doors/references/door-model-cfg-and-config.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: the evidence convention defines Verified against the tutorial's example files instead of shipped assets/ files and no longer calls worked-examples.md [EXACT] copies; every assets/ citation names the tutorial's own path (Doors_Buttons_Lesson/<pattern>/<file>, same line numbers: the archive's files differ from the removed copies only in line endings, mixed LF/CRLF); 'shipped' wording now says the tutorial's; the Sources section lists the tutorial as not shipped. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "8a6c18a914744fb5d7862ddf7a0765a6a075303e342f74ae097739b062f41720",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/references/door-model-cfg-and-config.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "52df3e6e4409f6c04d10a4feb378722e1d5761d0547925633bdb4a016c2a91dc",
+      "output_hash": "8a6c18a914744fb5d7862ddf7a0765a6a075303e342f74ae097739b062f41720",
       "output_path": "skills/dayz-doors/references/door-model-cfg-and-config.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -6956,10 +6808,20 @@
           "source_path": "skills/dayz-doors/references/lods-and-object-builder.md",
           "source_revision": "kp-update-doors-expert-lever@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: the three pattern 'Mapping' citations name the tutorial's paths (Doors_Buttons_Lesson/...) instead of assets/; line numbers unchanged. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "87aeed3d7d0126a84d06d1a68e852b352a8dd2be7c9519bc3cad9e6b20d6d030",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/references/lods-and-object-builder.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f8b0d898510656937fc71ddc41348ebaabb1c4d10650fdea934e3b38e4665143",
+      "output_hash": "87aeed3d7d0126a84d06d1a68e852b352a8dd2be7c9519bc3cad9e6b20d6d030",
       "output_path": "skills/dayz-doors/references/lods-and-object-builder.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -6971,17 +6833,27 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack. Corrected 2026-10-02: 'author-owned MIT' was wrong for this input as a whole. Its six BEGIN/END VERBATIM blocks copy the model.cfg and config.cpp files of novoGOD's Doors_Buttons_Lesson tutorial (source novogod-doors-buttons-lesson, no license or redistribution grant observed); the 2026-10-02 merge input removes them, and the current output is first-party.",
+          "license": "MIT for the first-party prose; its six BEGIN/END VERBATIM blocks are novoGOD's Doors_Buttons_Lesson model.cfg/config.cpp files (no license/redistribution grant observed)",
           "source_hash": "192decc7d1b8efb49e5ab2f5dc16bdc7732b533071366e2bd0cf9aa02721e3d8",
           "source_id": "installed-skills",
           "source_path": "dayz-doors/references/worked-examples.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-02, dayz-doors provenance: the six BEGIN/END VERBATIM copies of the tutorial's model.cfg and config.cpp files are removed; each pattern is described in first-party tables (bones, animations with phase windows and turns, Doors entries) that cite the tutorial's files by path and line; a new opening section says where the examples come from. The Cross-pattern diff section and everything from 'Building locks (DayZ 1.30 Exp)' on are byte-identical. Owner's decision 2026-10-02 (AskUserQuestion): remove the files and the verbatim copies, describe the patterns in prose and tables.",
+          "license": "MIT",
+          "source_hash": "54ba7fdf56d0d29774b6353d21f1cd8cd6d0c6e43c9c37fab4138d79a8f8a6cb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/references/worked-examples.md",
+          "source_revision": "kp-update-doors-provenance@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5dcace4ea8154047980953a0b3911f1ce5198cc0c405a8f837fd2ce2c5daefa9",
+      "output_hash": "54ba7fdf56d0d29774b6353d21f1cd8cd6d0c6e43c9c37fab4138d79a8f8a6cb",
       "output_path": "skills/dayz-doors/references/worked-examples.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -7391,7 +7263,7 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-02: dayz-mcp-verify static-object playbook, 'Axis-aligned test fixtures: try rotation=64, then check the pose'. (1) A measured caveat: with rotation 64 a two-box fixture came out as modelled on HouseNoDestruct and with the boxes' sides swapped on Inventory_Base, as a 180-degree turn about Y leaves them (the z-symmetric boxes do not separate it from a mirror in x), which two parallel rays, face normals and a symmetric fixture cannot show; check the yaw with sides a ray can tell apart (one component per side read from rvproxy hits' component, or a collider on one side only, off-centre in z too); claim CLAIM-MCPV-ITEM-YAW. (2) On the owner's choice (2026-10-02), the pose check no longer reads the default rvproxy reply's normal, which is the ray's intersection (direction and size), and the 'What it does not cover' scene_raycast entry no longer says to use it as a direction; the face normal is read from method bullet, on two faces that are not parallel; claim CLAIM-MCPV-RVPROXY-NORMAL; both replaced sentences quoted in dated notes. CLAIM-MCPV-STAND-PROBE, CLAIM-MCPV-FIXTURE-NOPERSIST and CLAIM-MCPV-WORN-MANNEQUIN move to the lines their markers now hold, evidence and levels unchanged. Evidence: In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3 (project DayZ_MCP plus the probe @KP_LeverProbe only), NWAF concrete; raw bridge replies re-read. pair_cov.p3d (sha256 cbd47c02ee4560b9bf0894d9ea5fc6cf2c754d998e17776e456f8d46929ae47b): two 2 m boxes, A (x -3..-1) in Component01 and B (x 1..3) in Component02, y 0..2, z -1..1; pair_unc.p3d (sha256 314679a55f1d078b034a1c4364a4f5edd057cee2295722016fcd375b24530490): the same bytes without B's Component02. Each packed binarized and with -packonly, spawned with world_spawn flags 8389668 and rotation 64 as HouseNoDestruct (KP_LP_PairCov/PairUnc_Bin/_Mlod, x 4204-4234, z 10662) and as Inventory_Base, physLayer item_large (KP_LP_PairCovI/PairUncI_Bin/_Mlod, z 10676). rvproxy rays in geom, view and fire: on the four statics the west box (world x spawn - 3 .. spawn - 1) answered as component 0 (Component01, A) on every hit, the east box as component 1 on the two covered statics and not at all on the two uncovered ones; on the four items the west box answered as component 1 on the two covered items and took no ray on the two uncovered ones, where every hit (from the west, east, south and above) was component 0 on the east box. Two parallel rays 1.2 m apart on the west face read one x per object on statics (4200.9541, 4210.9551, 4220.9541, 4230.9526) and covered items (4200.9502, 4220.9502); rvproxy normals lay along their rays and bullet normals faced them ((-1, 0, 0) on the items, (-1, 0.003 to 0.005, 0) on the statics), so neither tells 0 from 180 degrees. The items' tops read spawn y + 2.05 (the 0.05 m sphere included): upright. The boxes are symmetric in z, so these rays do not separate a half-turn about Y from a mirror in x. object_inspect (GetMemoryPointPos, MCPBridge.c:2240, model space: vanilla wraps it in ModelToWorld, scripts/3_game/entities/object.c:1296-1297) was called on the four pair statics (bridge ids 1353-1356, ce_center (0, 1, 0) each) and the two door samples, not on the items; telemetry_read object_at (GetOrientation, MCPBridge.c:3137) was not called. The asymmetric dayz-doors tutorial sample, spawned the same way as HouseNoDestruct, answered on the model's +X side (its base box, Component05, at spawn x + 1.51 at two z offsets), as modelled. The bridge passes rotation to CreateObjectEx (MCPBridge.c:632, set at :3394 when non-zero, RF_DEFAULT at :3335); scripts/3_game/ce/centraleconomy.c:56 and :62 define 64 as RF_IGNORE and RF_RANDOMROT. Not measured: repeat spawns, other rotation and flags values, other base classes and layers, the cause. In game, DayZDiag 1.29.163709, 2026-10-02, two dayz-mcp runs on project DayZ_MCP, NWAF concrete: 454c93d7 (the killer #2 A/B) and cf2d6bb3 (the doors-lever A/B); every scene_raycast reply re-read from the raw bridge results (190 and 162 replies). rvproxy (DayZPhysics.RaycastRVProxy with the bridge's 0.05 m sphere; addon/scripts/5_Mission/MCPBridge.c:2958 copies RaycastRVResult.dir into normal, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): 190 of 190 hits on an object (116 + 74) returned a normal parallel to the ray and in its direction (cosine with the ray above 0.9999), length 0.09-2.39 m: 2.1 on 2 m boxes crossed along an axis (the width plus the sphere at each side), and on the Inventory_Base probe that rotation 0 yawed about 10 degrees (east-face readings 4224.098 and 4223.874 at z + 0.6 and z - 0.6, bridge ids 310-311) (-1.963, 0, 0) and (-1.966, 0, 0) on east-to-west rays; rvproxy hits with no object returned a zero vector (26) or a vector along the ray (12). The vanilla scripts document RaycastRVResult.dir as 'direction outside (in world coord) or (in case of line-object collision) direction and size of the intersection' (scripts/3_game/global/dayzphysics.c:104, sha256 279ce05c528e467cbf7de820954ee0ce98355d47f8efdd04eca4c5de50d86b07), as enforce-script-reference SP-LFS-2 ('Surface normals', 2026-09-09) measured on house walls. method bullet (DayZPhysics.RayCastBullet, MCPBridge.c:2983-3004, hitNormal copied at :2998): 40 of 40 hits (32 on objects, 8 on the terrain) returned a unit vector against the ray within 0.33 degrees, exactly on the axis on every Inventory_Base hit (the probe items of both runs, HescoBox, WoodenCrate) and 0.15-0.31 degrees off it on every HouseNoDestruct hit (the lever run's covered statics' tops read (0.004, 1, -0.0013), the normal the terrain returned under the uncovered twin at x 4216, z 10662). The 2026-09-07 entry measured magnitudes 0.16-0.42. Written by Claude (Anthropic). Cross-family review round 1 (Codex gpt-6.1-sol, read-only, on 1f222ac): UNSOUND, three findings applied: H1 the pose check reads bullet normals on two faces that are not parallel, with the measured off-axis readings as the allowance (a tilt about one face's normal leaves that normal unchanged); H2 the item result is stated as a side swap consistent with a 180-degree turn about Y, not separated from a mirror in x by these z-symmetric boxes, with off-centre parts in z as the remedy; H3 the object_inspect evidence names the four inspected statics, not every object.",
+          "decision_evidence": "kp-update 2026-10-02: dayz-mcp-verify static-object playbook, 'Axis-aligned test fixtures: try rotation=64, then check the pose'. (1) A measured caveat: with rotation 64 a two-box fixture came out as modelled on HouseNoDestruct and with the boxes' sides swapped on Inventory_Base, as a 180-degree turn about Y leaves them (the z-symmetric boxes do not separate it from a mirror in x), which two parallel rays, face normals and a symmetric fixture cannot show; check the yaw with sides a ray can tell apart (one component per side read from rvproxy hits' component, or a collider on one side only, off-centre in z too); claim CLAIM-MCPV-ITEM-YAW. (2) On the owner's choice (2026-10-02), the pose check no longer reads the default rvproxy reply's normal, which is the ray's intersection (direction and size), and the 'What it does not cover' scene_raycast entry no longer says to use it as a direction; the face normal is read from method bullet, on two faces that are not parallel; claim CLAIM-MCPV-RVPROXY-NORMAL; both replaced sentences quoted in dated notes. CLAIM-MCPV-STAND-PROBE, CLAIM-MCPV-FIXTURE-NOPERSIST and CLAIM-MCPV-WORN-MANNEQUIN move to the lines their markers now hold, evidence and levels unchanged. Evidence: In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3 (project DayZ_MCP plus the probe @KP_LeverProbe only), NWAF concrete; raw bridge replies re-read. pair_cov.p3d (sha256 cbd47c02ee4560b9bf0894d9ea5fc6cf2c754d998e17776e456f8d46929ae47b): two 2 m boxes, A (x -3..-1) in Component01 and B (x 1..3) in Component02, y 0..2, z -1..1; pair_unc.p3d (sha256 314679a55f1d078b034a1c4364a4f5edd057cee2295722016fcd375b24530490): the same bytes without B's Component02. Each packed binarized and with -packonly, spawned with world_spawn flags 8389668 and rotation 64 as HouseNoDestruct (KP_LP_PairCov/PairUnc_Bin/_Mlod, x 4204-4234, z 10662) and as Inventory_Base, physLayer item_large (KP_LP_PairCovI/PairUncI_Bin/_Mlod, z 10676). rvproxy rays in geom, view and fire: on the four statics the west box (world x spawn - 3 .. spawn - 1) answered as component 0 (Component01, A) on every hit, the east box as component 1 on the two covered statics and not at all on the two uncovered ones; on the four items the west box answered as component 1 on the two covered items and took no ray on the two uncovered ones, where every hit (from the west, east, south and above) was component 0 on the east box. Two parallel rays 1.2 m apart on the west face read one x per object on statics (4200.9541, 4210.9551, 4220.9541, 4230.9526) and covered items (4200.9502, 4220.9502); rvproxy normals lay along their rays and bullet normals faced them ((-1, 0, 0) on the items, (-1, 0.003 to 0.005, 0) on the statics), so neither tells 0 from 180 degrees. The items' tops read spawn y + 2.05 (the 0.05 m sphere included): upright. The boxes are symmetric in z, so these rays do not separate a half-turn about Y from a mirror in x. object_inspect (GetMemoryPointPos, MCPBridge.c:2240, model space: vanilla wraps it in ModelToWorld, scripts/3_game/entities/object.c:1296-1297) was called on the four pair statics (bridge ids 1353-1356, ce_center (0, 1, 0) each) and the two door samples, not on the items; telemetry_read object_at (GetOrientation, MCPBridge.c:3137) was not called. The asymmetric dayz-doors tutorial sample, spawned the same way as HouseNoDestruct, answered on the model's +X side (its base box, Component05, at spawn x + 1.51 at two z offsets), as modelled. The bridge passes rotation to CreateObjectEx (MCPBridge.c:632, set at :3394 when non-zero, RF_DEFAULT at :3335); scripts/3_game/ce/centraleconomy.c:56 and :62 define 64 as RF_IGNORE and RF_RANDOMROT. Not measured: repeat spawns, other rotation and flags values, other base classes and layers, the cause. In game, DayZDiag 1.29.163709, 2026-10-02, two dayz-mcp runs on project DayZ_MCP, NWAF concrete: 454c93d7 (the killer #2 A/B) and cf2d6bb3 (the doors-lever A/B); every scene_raycast reply re-read from the raw bridge results (190 and 162 replies). rvproxy (DayZPhysics.RaycastRVProxy with the bridge's 0.05 m sphere; addon/scripts/5_Mission/MCPBridge.c:2958 copies RaycastRVResult.dir into normal, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): 190 of 190 hits on an object (116 + 74) returned a normal parallel to the ray and in its direction (cosine with the ray above 0.9999), length 0.09-2.39 m: 2.1 on 2 m boxes crossed along an axis (the width plus the sphere at each side), and on the Inventory_Base probe that rotation 0 yawed about 10 degrees (east-face readings 4224.098 and 4223.874 at z + 0.6 and z - 0.6, bridge ids 310-311) (-1.963, 0, 0) and (-1.966, 0, 0) on east-to-west rays; rvproxy hits with no object returned a zero vector (26) or a vector along the ray (12). The vanilla scripts document RaycastRVResult.dir as 'direction outside (in world coord) or (in case of line-object collision) direction and size of the intersection' (scripts/3_game/global/dayzphysics.c:104, sha256 279ce05c528e467cbf7de820954ee0ce98355d47f8efdd04eca4c5de50d86b07), as enforce-script-reference SP-LFS-2 ('Surface normals', 2026-09-09) measured on house walls. method bullet (DayZPhysics.RayCastBullet, MCPBridge.c:2983-3004, hitNormal copied at :2998): 40 of 40 hits (32 on objects, 8 on the terrain) returned a unit vector against the ray within 0.33 degrees, exactly on the axis on every Inventory_Base hit (the probe items of both runs, HescoBox, WoodenCrate) and 0.15-0.31 degrees off it on every HouseNoDestruct hit (the lever run's covered statics' tops read (0.004, 1, -0.0013), the normal the terrain returned under the uncovered twin at x 4216, z 10662). The 2026-09-07 entry measured magnitudes 0.16-0.42. Written by Claude (Anthropic). Cross-family review (Codex gpt-6.1-sol, read-only, cap of two rounds set before round 1): round 1 on 1f222ac UNSOUND, three findings applied in ad74d14: H1 the pose check reads bullet normals on two faces that are not parallel, with the measured off-axis readings as the allowance (a tilt about one face's normal leaves that normal unchanged); H2 the item result is stated as a side swap consistent with a 180-degree turn about Y, not separated from a mirror in x by these z-symmetric boxes, with off-centre parts in z as the remedy; H3 the object_inspect evidence names the four inspected statics, not every object. Round 2 on ad74d14: SOUND, no new findings.",
           "license": "MIT",
           "source_hash": "55ca9025d341b9fd60b45418ebda999441da58ffd1321915e02458936d51088b",
           "source_id": "pack-r21-authored",
@@ -15748,7 +15620,7 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Registers CLAIM-MCPV-RVPROXY-NORMAL and CLAIM-MCPV-ITEM-YAW (runtime_verified) for skills/dayz-mcp-verify/SKILL.md and moves CLAIM-MCPV-STAND-PROBE, CLAIM-MCPV-FIXTURE-NOPERSIST and CLAIM-MCPV-WORN-MANNEQUIN to the lines their markers now hold; their evidence and levels unchanged. kp-update 2026-10-02: dayz-mcp-verify static-object playbook, 'Axis-aligned test fixtures: try rotation=64, then check the pose'. (1) A measured caveat: with rotation 64 a two-box fixture came out as modelled on HouseNoDestruct and with the boxes' sides swapped on Inventory_Base, as a 180-degree turn about Y leaves them (the z-symmetric boxes do not separate it from a mirror in x), which two parallel rays, face normals and a symmetric fixture cannot show; check the yaw with sides a ray can tell apart (one component per side read from rvproxy hits' component, or a collider on one side only, off-centre in z too); claim CLAIM-MCPV-ITEM-YAW. (2) On the owner's choice (2026-10-02), the pose check no longer reads the default rvproxy reply's normal, which is the ray's intersection (direction and size), and the 'What it does not cover' scene_raycast entry no longer says to use it as a direction; the face normal is read from method bullet, on two faces that are not parallel; claim CLAIM-MCPV-RVPROXY-NORMAL; both replaced sentences quoted in dated notes. CLAIM-MCPV-STAND-PROBE, CLAIM-MCPV-FIXTURE-NOPERSIST and CLAIM-MCPV-WORN-MANNEQUIN move to the lines their markers now hold, evidence and levels unchanged. Evidence: In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3 (project DayZ_MCP plus the probe @KP_LeverProbe only), NWAF concrete; raw bridge replies re-read. pair_cov.p3d (sha256 cbd47c02ee4560b9bf0894d9ea5fc6cf2c754d998e17776e456f8d46929ae47b): two 2 m boxes, A (x -3..-1) in Component01 and B (x 1..3) in Component02, y 0..2, z -1..1; pair_unc.p3d (sha256 314679a55f1d078b034a1c4364a4f5edd057cee2295722016fcd375b24530490): the same bytes without B's Component02. Each packed binarized and with -packonly, spawned with world_spawn flags 8389668 and rotation 64 as HouseNoDestruct (KP_LP_PairCov/PairUnc_Bin/_Mlod, x 4204-4234, z 10662) and as Inventory_Base, physLayer item_large (KP_LP_PairCovI/PairUncI_Bin/_Mlod, z 10676). rvproxy rays in geom, view and fire: on the four statics the west box (world x spawn - 3 .. spawn - 1) answered as component 0 (Component01, A) on every hit, the east box as component 1 on the two covered statics and not at all on the two uncovered ones; on the four items the west box answered as component 1 on the two covered items and took no ray on the two uncovered ones, where every hit (from the west, east, south and above) was component 0 on the east box. Two parallel rays 1.2 m apart on the west face read one x per object on statics (4200.9541, 4210.9551, 4220.9541, 4230.9526) and covered items (4200.9502, 4220.9502); rvproxy normals lay along their rays and bullet normals faced them ((-1, 0, 0) on the items, (-1, 0.003 to 0.005, 0) on the statics), so neither tells 0 from 180 degrees. The items' tops read spawn y + 2.05 (the 0.05 m sphere included): upright. The boxes are symmetric in z, so these rays do not separate a half-turn about Y from a mirror in x. object_inspect (GetMemoryPointPos, MCPBridge.c:2240, model space: vanilla wraps it in ModelToWorld, scripts/3_game/entities/object.c:1296-1297) was called on the four pair statics (bridge ids 1353-1356, ce_center (0, 1, 0) each) and the two door samples, not on the items; telemetry_read object_at (GetOrientation, MCPBridge.c:3137) was not called. The asymmetric dayz-doors tutorial sample, spawned the same way as HouseNoDestruct, answered on the model's +X side (its base box, Component05, at spawn x + 1.51 at two z offsets), as modelled. The bridge passes rotation to CreateObjectEx (MCPBridge.c:632, set at :3394 when non-zero, RF_DEFAULT at :3335); scripts/3_game/ce/centraleconomy.c:56 and :62 define 64 as RF_IGNORE and RF_RANDOMROT. Not measured: repeat spawns, other rotation and flags values, other base classes and layers, the cause. In game, DayZDiag 1.29.163709, 2026-10-02, two dayz-mcp runs on project DayZ_MCP, NWAF concrete: 454c93d7 (the killer #2 A/B) and cf2d6bb3 (the doors-lever A/B); every scene_raycast reply re-read from the raw bridge results (190 and 162 replies). rvproxy (DayZPhysics.RaycastRVProxy with the bridge's 0.05 m sphere; addon/scripts/5_Mission/MCPBridge.c:2958 copies RaycastRVResult.dir into normal, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): 190 of 190 hits on an object (116 + 74) returned a normal parallel to the ray and in its direction (cosine with the ray above 0.9999), length 0.09-2.39 m: 2.1 on 2 m boxes crossed along an axis (the width plus the sphere at each side), and on the Inventory_Base probe that rotation 0 yawed about 10 degrees (east-face readings 4224.098 and 4223.874 at z + 0.6 and z - 0.6, bridge ids 310-311) (-1.963, 0, 0) and (-1.966, 0, 0) on east-to-west rays; rvproxy hits with no object returned a zero vector (26) or a vector along the ray (12). The vanilla scripts document RaycastRVResult.dir as 'direction outside (in world coord) or (in case of line-object collision) direction and size of the intersection' (scripts/3_game/global/dayzphysics.c:104, sha256 279ce05c528e467cbf7de820954ee0ce98355d47f8efdd04eca4c5de50d86b07), as enforce-script-reference SP-LFS-2 ('Surface normals', 2026-09-09) measured on house walls. method bullet (DayZPhysics.RayCastBullet, MCPBridge.c:2983-3004, hitNormal copied at :2998): 40 of 40 hits (32 on objects, 8 on the terrain) returned a unit vector against the ray within 0.33 degrees, exactly on the axis on every Inventory_Base hit (the probe items of both runs, HescoBox, WoodenCrate) and 0.15-0.31 degrees off it on every HouseNoDestruct hit (the lever run's covered statics' tops read (0.004, 1, -0.0013), the normal the terrain returned under the uncovered twin at x 4216, z 10662). The 2026-09-07 entry measured magnitudes 0.16-0.42. Written by Claude (Anthropic). Cross-family review round 1 (Codex gpt-6.1-sol, read-only, on 1f222ac): UNSOUND, three findings applied: H1 the pose check reads bullet normals on two faces that are not parallel, with the measured off-axis readings as the allowance (a tilt about one face's normal leaves that normal unchanged); H2 the item result is stated as a side swap consistent with a 180-degree turn about Y, not separated from a mirror in x by these z-symmetric boxes, with off-centre parts in z as the remedy; H3 the object_inspect evidence names the four inspected statics, not every object.",
+          "decision_evidence": "Registers CLAIM-MCPV-RVPROXY-NORMAL and CLAIM-MCPV-ITEM-YAW (runtime_verified) for skills/dayz-mcp-verify/SKILL.md and moves CLAIM-MCPV-STAND-PROBE, CLAIM-MCPV-FIXTURE-NOPERSIST and CLAIM-MCPV-WORN-MANNEQUIN to the lines their markers now hold; their evidence and levels unchanged. kp-update 2026-10-02: dayz-mcp-verify static-object playbook, 'Axis-aligned test fixtures: try rotation=64, then check the pose'. (1) A measured caveat: with rotation 64 a two-box fixture came out as modelled on HouseNoDestruct and with the boxes' sides swapped on Inventory_Base, as a 180-degree turn about Y leaves them (the z-symmetric boxes do not separate it from a mirror in x), which two parallel rays, face normals and a symmetric fixture cannot show; check the yaw with sides a ray can tell apart (one component per side read from rvproxy hits' component, or a collider on one side only, off-centre in z too); claim CLAIM-MCPV-ITEM-YAW. (2) On the owner's choice (2026-10-02), the pose check no longer reads the default rvproxy reply's normal, which is the ray's intersection (direction and size), and the 'What it does not cover' scene_raycast entry no longer says to use it as a direction; the face normal is read from method bullet, on two faces that are not parallel; claim CLAIM-MCPV-RVPROXY-NORMAL; both replaced sentences quoted in dated notes. CLAIM-MCPV-STAND-PROBE, CLAIM-MCPV-FIXTURE-NOPERSIST and CLAIM-MCPV-WORN-MANNEQUIN move to the lines their markers now hold, evidence and levels unchanged. Evidence: In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3 (project DayZ_MCP plus the probe @KP_LeverProbe only), NWAF concrete; raw bridge replies re-read. pair_cov.p3d (sha256 cbd47c02ee4560b9bf0894d9ea5fc6cf2c754d998e17776e456f8d46929ae47b): two 2 m boxes, A (x -3..-1) in Component01 and B (x 1..3) in Component02, y 0..2, z -1..1; pair_unc.p3d (sha256 314679a55f1d078b034a1c4364a4f5edd057cee2295722016fcd375b24530490): the same bytes without B's Component02. Each packed binarized and with -packonly, spawned with world_spawn flags 8389668 and rotation 64 as HouseNoDestruct (KP_LP_PairCov/PairUnc_Bin/_Mlod, x 4204-4234, z 10662) and as Inventory_Base, physLayer item_large (KP_LP_PairCovI/PairUncI_Bin/_Mlod, z 10676). rvproxy rays in geom, view and fire: on the four statics the west box (world x spawn - 3 .. spawn - 1) answered as component 0 (Component01, A) on every hit, the east box as component 1 on the two covered statics and not at all on the two uncovered ones; on the four items the west box answered as component 1 on the two covered items and took no ray on the two uncovered ones, where every hit (from the west, east, south and above) was component 0 on the east box. Two parallel rays 1.2 m apart on the west face read one x per object on statics (4200.9541, 4210.9551, 4220.9541, 4230.9526) and covered items (4200.9502, 4220.9502); rvproxy normals lay along their rays and bullet normals faced them ((-1, 0, 0) on the items, (-1, 0.003 to 0.005, 0) on the statics), so neither tells 0 from 180 degrees. The items' tops read spawn y + 2.05 (the 0.05 m sphere included): upright. The boxes are symmetric in z, so these rays do not separate a half-turn about Y from a mirror in x. object_inspect (GetMemoryPointPos, MCPBridge.c:2240, model space: vanilla wraps it in ModelToWorld, scripts/3_game/entities/object.c:1296-1297) was called on the four pair statics (bridge ids 1353-1356, ce_center (0, 1, 0) each) and the two door samples, not on the items; telemetry_read object_at (GetOrientation, MCPBridge.c:3137) was not called. The asymmetric dayz-doors tutorial sample, spawned the same way as HouseNoDestruct, answered on the model's +X side (its base box, Component05, at spawn x + 1.51 at two z offsets), as modelled. The bridge passes rotation to CreateObjectEx (MCPBridge.c:632, set at :3394 when non-zero, RF_DEFAULT at :3335); scripts/3_game/ce/centraleconomy.c:56 and :62 define 64 as RF_IGNORE and RF_RANDOMROT. Not measured: repeat spawns, other rotation and flags values, other base classes and layers, the cause. In game, DayZDiag 1.29.163709, 2026-10-02, two dayz-mcp runs on project DayZ_MCP, NWAF concrete: 454c93d7 (the killer #2 A/B) and cf2d6bb3 (the doors-lever A/B); every scene_raycast reply re-read from the raw bridge results (190 and 162 replies). rvproxy (DayZPhysics.RaycastRVProxy with the bridge's 0.05 m sphere; addon/scripts/5_Mission/MCPBridge.c:2958 copies RaycastRVResult.dir into normal, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): 190 of 190 hits on an object (116 + 74) returned a normal parallel to the ray and in its direction (cosine with the ray above 0.9999), length 0.09-2.39 m: 2.1 on 2 m boxes crossed along an axis (the width plus the sphere at each side), and on the Inventory_Base probe that rotation 0 yawed about 10 degrees (east-face readings 4224.098 and 4223.874 at z + 0.6 and z - 0.6, bridge ids 310-311) (-1.963, 0, 0) and (-1.966, 0, 0) on east-to-west rays; rvproxy hits with no object returned a zero vector (26) or a vector along the ray (12). The vanilla scripts document RaycastRVResult.dir as 'direction outside (in world coord) or (in case of line-object collision) direction and size of the intersection' (scripts/3_game/global/dayzphysics.c:104, sha256 279ce05c528e467cbf7de820954ee0ce98355d47f8efdd04eca4c5de50d86b07), as enforce-script-reference SP-LFS-2 ('Surface normals', 2026-09-09) measured on house walls. method bullet (DayZPhysics.RayCastBullet, MCPBridge.c:2983-3004, hitNormal copied at :2998): 40 of 40 hits (32 on objects, 8 on the terrain) returned a unit vector against the ray within 0.33 degrees, exactly on the axis on every Inventory_Base hit (the probe items of both runs, HescoBox, WoodenCrate) and 0.15-0.31 degrees off it on every HouseNoDestruct hit (the lever run's covered statics' tops read (0.004, 1, -0.0013), the normal the terrain returned under the uncovered twin at x 4216, z 10662). The 2026-09-07 entry measured magnitudes 0.16-0.42. Written by Claude (Anthropic). Cross-family review (Codex gpt-6.1-sol, read-only, cap of two rounds set before round 1): round 1 on 1f222ac UNSOUND, three findings applied in ad74d14: H1 the pose check reads bullet normals on two faces that are not parallel, with the measured off-axis readings as the allowance (a tilt about one face's normal leaves that normal unchanged); H2 the item result is stated as a side swap consistent with a 180-degree turn about Y, not separated from a mirror in x by these z-symmetric boxes, with off-centre parts in z as the remedy; H3 the object_inspect evidence names the four inspected statics, not every object. Round 2 on ad74d14: SOUND, no new findings.",
           "license": "MIT",
           "source_hash": "104c0cabf5b11aa1e1c9a0e7d5553bcf027379b1a4e84c23b2b30488abe79d22",
           "source_id": "pack-r21-authored",
@@ -30137,6 +30009,110 @@
       "source_id": "installed-skills",
       "source_path": "dayz-animation-pipeline/wheels/py3d-1.4.0-py3-none-any.whl",
       "source_revision": "filesystem@2026-08-17"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door/Simple_Door.cfg (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "efd1833a1e73c01e54f0ea4d48b07e0652a51dc88d60b68df4db1aaee522a1fb",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door/Simple_Door.cfg",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door/Simple_Door.p3d (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "82afac6899fa1e0a61cd3e9aaa20dea9c9e1d4b5e0fab7cea4842a9c323c5d1c",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door/Simple_Door.p3d",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door/config.cpp (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "a7e0b0f032803a9d979594dfa671ae2a132ab2490bdb2c7d79cb25734276d349",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door/config.cpp",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Tutorial text by novoGOD; the archive holds no license or permission text. Never shipped; dayz-doors paraphrases its guidance in first-party words and cites it by file name and line.",
+      "reason": "license_restricted",
+      "source_hash": "32472cd62238c120efcd90db4e8f718e26b8a453ee39f812e62a246c8bd335af",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door_w_Button Readme.txt",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door_w_Button/Door_w_Button.cfg (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "26acbfb88a0acc97fd314e4541d4e2d23bcd6a1eebe46b30bc2cf5571dd59d1f",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door_w_Button/Door_w_Button.cfg",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door_w_Button/Door_w_Button.p3d (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "97349b3ff1f18a44a81a3b7db17e7761d62bbd7c218b979cd4e64d973979396e",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door_w_Button/Door_w_Button.p3d",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Door_w_Button/config.cpp (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "42d8e317c1b2dbd5f6cf4c7e13a7c4b427b9544a0830f4a6269e124a19d0b1d1",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Door_w_Button/config.cpp",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Expert_Mode/Expert_Mode.cfg (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "1fb7e8247d3b883696c1d3946d6f37bcd6eda2517fe682bd255fe26eecad4748",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Expert_Mode/Expert_Mode.cfg",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Expert_Mode/Expert_Mode.p3d (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "18ab0ac254b080bd87dbbd54b63c50c983e71dc4be390d8cb214740b0c36dee0",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Expert_Mode/Expert_Mode.p3d",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Example file of novoGOD's door tutorial; the archive holds no license or permission text (its four texts grepped for licen|copyright|permission|allowed|redistribut|credit on 2026-10-02). Shipped in v1.3.0 to v1.5.0 as skills/dayz-doors/assets/Expert_Mode/config.cpp (source_hash equal to this member) and labelled author-owned MIT by mistake; removed from the payload on 2026-10-02 at the owner's decision. dayz-doors describes it in first-party words and cites it by path and line.",
+      "reason": "license_restricted",
+      "source_hash": "8aba001c007a3f0fc32bb75119c06cdff5e06dec2638c3ebf5a64d589ce4f2f0",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Expert_Mode/config.cpp",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Tutorial text by novoGOD; the archive holds no license or permission text. Never shipped; dayz-doors paraphrases its guidance in first-party words and cites it by file name and line.",
+      "reason": "license_restricted",
+      "source_hash": "3746f8ba2a2ac247b32dc9c79f24151b08abb0ca6b62134a024c609c1c77f1ce",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Simple_Door Readme.txt",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Tutorial text by novoGOD; the archive holds no license or permission text. Never shipped; dayz-doors paraphrases its guidance in first-party words and cites it by file name and line.",
+      "reason": "license_restricted",
+      "source_hash": "027d475d2ea0b50dfd7f318aae56321c37238d764bace857fb6ad618b06fee95",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/WELCOME TO novoGODS Shit Door Tutorial.txt",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "Tutorial text by novoGOD; the archive holds no license or permission text. Never shipped; dayz-doors paraphrases its guidance in first-party words and cites it by file name and line.",
+      "reason": "license_restricted",
+      "source_hash": "b4d760aa854024f4526324a6befadba3a96509c351bc1597cf393b7d087cf732",
+      "source_id": "novogod-doors-buttons-lesson",
+      "source_path": "Doors_Buttons_Lesson/Welcome to novoGODs Expert_Mode Door mod.txt",
+      "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
     }
   ],
   "generated_artifacts": [
@@ -30340,6 +30316,13 @@
       "public_locator": "https://dzconfig.com/wiki",
       "revision": "dzconfig-wiki-harvest@2026-09-07",
       "source_id": "dzconfig-wiki-2026-09"
+    },
+    {
+      "kind": "archive",
+      "license": "No license/redistribution grant observed",
+      "notes": "novoGOD's door tutorial Doors_Buttons_Lesson (three example models, each with model.cfg and config.cpp, and four texts), a Discord attachment (the attachment ID in the download's Zone.Identifier dates the upload to 2025-04-23 15:09 UTC; the members' timestamps are 2025-04-23); the archive holds no license or permission text. Reference only: dayz-doors describes its examples in first-party words and cites them by path and line. v1.3.0 to v1.5.0 shipped its nine example files as author-owned MIT by mistake; removed 2026-10-02. The signed attachment URL is deliberately not recorded.",
+      "revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757",
+      "source_id": "novogod-doors-buttons-lesson"
     }
   ]
 }
