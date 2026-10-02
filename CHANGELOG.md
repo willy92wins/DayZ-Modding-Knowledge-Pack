@@ -361,6 +361,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   before: their 156 faces read ≥ +0.99, and the result matches the files the 2026-08-28 fix saved
   byte for byte once py3d rewrites both.
   Check A's `MIXED` bullet aligned. Old text quoted in dated notes.
+- `dayz-p3d-audit`: two passages still spoke of `check_dayz_winding.py` as before its Rule 12 rewrite
+  (#53). Killer #1's dated note in `references/killers-detail.md` said the script "fails a correct
+  export", and Check A's `UNIFORM_FLIPPED` bullet in `references/winding-diagnostics.md` named it with
+  the LFInfectedBig outward-normal recipe. The gate now passes a correct export and fails the
+  outward-normal state on its normals (`mirror_b_normals_out.p3d` and LFInfectedBig's outward-normal
+  build, measured offline for #53); both passages say what it did then and what it does now.
 - py3d rollout applicator (`tools/py3d/rollout/apply-s2-rollout.ps1`): restocking a skill's
   `wheels/` counted the pinned name and legacy `py3d-*.whl` wheels but not an earlier
   `py3d_dayz-*.whl`, so a 1.8.0 → 1.9.0 restock would copy 1.9.0 beside 1.8.0, pass its own

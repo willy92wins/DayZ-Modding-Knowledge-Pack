@@ -574,9 +574,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Two dayz-p3d-audit passages still described check_dayz_winding.py as before its Rule 12 rewrite (Pack #53, 18ffa31): killer #1's dated note (references/killers-detail.md) said it fails a correct export, and Check A's UNIFORM_FLIPPED bullet (references/winding-diagnostics.md) named it with the LFInfectedBig outward-normal recipe. Both now say what it did then and what it does now. The new behaviour is the one measured offline for #53: the gate passes mirror_b (Rule 12) and fails mirror_b_normals_out and LFInfectedBig's outward-normal build on their normals. Owner request 2026-10-02 (the two lines left to their branches when #53 merged). Written by Claude (Anthropic); wording-only change, no cross-family review.",
+          "license": "MIT",
+          "source_hash": "42f0a77cb22fddd77c067b97085c089fc6e7acc234f2481cad8b84968582190d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-p3d-audit-gate-mentions@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Unreleased Changed entry for the 1.9.0 wheel pin and the skill notes that followed it, and a Fixed entry for the applicator's earlier-py3d_dayz-wheel defect the review found. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
           "license": "MIT",
-          "source_hash": "4189454a172e3a13eedf090c08a50c5ec8fcf758dca105231646823b1247da91",
+          "source_hash": "e42bc3805a79d0955de85757aec67768f3d400bded53ca9e1edc80fddd5b4b74",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
@@ -584,7 +594,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4189454a172e3a13eedf090c08a50c5ec8fcf758dca105231646823b1247da91",
+      "output_hash": "e42bc3805a79d0955de85757aec67768f3d400bded53ca9e1edc80fddd5b4b74",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8377,9 +8387,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Two dayz-p3d-audit passages still described check_dayz_winding.py as before its Rule 12 rewrite (Pack #53, 18ffa31): killer #1's dated note (references/killers-detail.md) said it fails a correct export, and Check A's UNIFORM_FLIPPED bullet (references/winding-diagnostics.md) named it with the LFInfectedBig outward-normal recipe. Both now say what it did then and what it does now. The new behaviour is the one measured offline for #53: the gate passes mirror_b (Rule 12) and fails mirror_b_normals_out and LFInfectedBig's outward-normal build on their normals. Owner request 2026-10-02 (the two lines left to their branches when #53 merged). Written by Claude (Anthropic); wording-only change, no cross-family review.",
+          "license": "MIT",
+          "source_hash": "7f2b34c0f65c80505d49e4d33bc29727117abb49c10f4fe5c8d10f487020d66d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "kp-update-p3d-audit-gate-mentions@2026-10-02",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Sections 2 and 8: 'the version of the pinned wheel' becomes 'the wheel pinned until 2026-10-02'. Measured 2026-10-02 on this machine (Python 3.14.3, setuptools 83.0.0 from the pinned build requirement): rollout/build-wheel.ps1 run from a detached checkout of 053dc7f, the commit that sealed the 1.8.0 pin, rebuilt it byte for byte (two builds, e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304, nothing written). On the source on main at 62c3dcc (py3d 1.9.0: #37, #40, #46 and #54 since the 1.8.0 seal) the check run failed as documented (expected=e7184429... actual=33d8b5ba726c933d9bf1921f610e66de2e5395a7b38bee44fdebb4b49bcc635e, dist/ left empty, manifest untouched); -UpdateManifest built it twice to that hash and wrote py3d_dayz-1.9.0-py3-none-any.whl (50,790 bytes) and the manifest; a second check run built it twice more to the same hash and reported it pinned. The wheel's py3d/__init__.py, py3d/__main__.py and dist-info LICENSE are byte-identical to the source; METADATA says py3d-dayz 1.9.0 and its long description is README.md with CRLF line endings. rollout/verify-wheel-restock.ps1 passed against the new pin (tests A-C on synthetic skill roots under %TEMP%; the negative control D needs -BaselineScript and did not run). No installed skill tree (~/.claude/skills, ~/.agents/skills) has a wheels/ directory; only the desktop app's plugin copies do, at 1.2.0-1.5.0 (listed the same day), and this rollout does not manage them. py3d suite on the branch: 334 passed, 11 skipped, test_s4_wheel_gate 7 of 7. Nothing was installed: the user site-packages install (1.8.0 today) follows the merge, at the owner's request. Authored by Claude (Anthropic) on the owner's request (2026-10-02: build and pin the 1.9.0 wheel; fix the skill notes that call 1.8.0 the pinned wheel in the same PR; install into site-packages after the merge). Cross-family review by Codex gpt-6.1-sol, one round (cap of one set before it), on a085672: SOUND-WITH-FIXES, one finding (F1, P2: the applicator ignored an earlier py3d_dayz wheel), fixed after the round and verified mechanically by the receptor (a pytest case and test E of verify-wheel-restock.ps1 fail on the a085672 applicator and pass on the fixed one); not re-reviewed. The reviewer confirmed the wheel matches 62c3dcc (hash, members, LICENSE, version, README description, RECORD), the item 1 description against the emitted message, and the registration.",
           "license": "MIT",
-          "source_hash": "e8a4ee3f2eb0f31c423bd177b9ccd1f2a98065f8b73db3314ecec4ba9a36e5e5",
+          "source_hash": "e10aeada9b2357322db22cf72583e00ff8bc8adff7afeadf090dfbdf71aa89cb",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
@@ -8387,7 +8407,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e8a4ee3f2eb0f31c423bd177b9ccd1f2a98065f8b73db3314ecec4ba9a36e5e5",
+      "output_hash": "e10aeada9b2357322db22cf72583e00ff8bc8adff7afeadf090dfbdf71aa89cb",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -8508,10 +8528,20 @@
           "source_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
           "source_revision": "kp-update-p3d-audit-step3-real@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Two dayz-p3d-audit passages still described check_dayz_winding.py as before its Rule 12 rewrite (Pack #53, 18ffa31): killer #1's dated note (references/killers-detail.md) said it fails a correct export, and Check A's UNIFORM_FLIPPED bullet (references/winding-diagnostics.md) named it with the LFInfectedBig outward-normal recipe. Both now say what it did then and what it does now. The new behaviour is the one measured offline for #53: the gate passes mirror_b (Rule 12) and fails mirror_b_normals_out and LFInfectedBig's outward-normal build on their normals. Owner request 2026-10-02 (the two lines left to their branches when #53 merged). Written by Claude (Anthropic); wording-only change, no cross-family review.",
+          "license": "MIT",
+          "source_hash": "36153c2f653c079c86269629db63be0655b39de9f3be3195b6e6017535ed6d4b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
+          "source_revision": "kp-update-p3d-audit-gate-mentions@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e70c374e67479448bcf2a48578a00177bd622104440599de36b9e242d7c9deec",
+      "output_hash": "36153c2f653c079c86269629db63be0655b39de9f3be3195b6e6017535ed6d4b",
       "output_path": "skills/dayz-p3d-audit/references/winding-diagnostics.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
