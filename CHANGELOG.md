@@ -16,8 +16,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   same-distance open-ground walk as the free reference; a walk-through alone is not read as missing
   collision geometry (a low vanilla `WoodenCrate` took every ray and did not stop the player). For
   test fixtures, `rotation=64` spawned a box with its faces on the world axes where the default
-  `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the pose with two parallel rays before
-  trusting face coordinates.
+  `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the yaw with two parallel rays and the
+  direction of the returned normal before trusting face coordinates.
 
 ### Fixed
 

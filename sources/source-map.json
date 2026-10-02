@@ -456,7 +456,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-02: dayz-mcp-verify static-object playbook gains two probes measured in the killer #2 run, and the CHANGELOG an Added entry. In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (the killer #2 A/B; project DayZ_MCP plus one probe mod), NWAF concrete. scene_raycast method bullet, radius 0, is PopulateRaycastBullet in the DayZ_MCP bridge (addon/scripts/5_Mission/MCPBridge.c:2983-3004, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): DayZPhysics.RayCastBullet with the layer mask BUILDING|DOOR|VEHICLE|ROADWAY|TERRAIN|ITEM_SMALL|ITEM_LARGE|FENCE. On 2 m probe boxes it hit the exact face (E->W at centre + 1.000, vertical at y0 + 2.000) when the collision LODs carried a component selection and gave no object hit when they carried none (a vertical ray through such a box returned hit 1 on the terrain), matching the rvproxy geom/view/fire rays (6 of 6 per mode against 0 of 6). player_teleport to 4 m south of the object's centre, then player_move(to = 4 m north of the centre, speed walk, hold_s 10), every walk straight ahead (applied_angle_deg 0; 0.04 on the HescoBox walk), end position from query_player_state: the 8 walks into probe boxes with a component read arrived false, released_by hold, the player 0.358-0.363 m before the face, after the full 10.00-10.05 s; the 6 free walks (open ground, the four no-component boxes, a vanilla WoodenCrate) read arrived true over 7.51 m in 5.03-5.10 s. Vanilla HescoBox (item_large) stopped the player 0.36 m before its face; vanilla WoodenCrate (item_small, top about 0.23 m above its origin) took every ray and did not stop the player, so the run does not separate layer from height. world_spawn rotation 0 (the bridge's RF_DEFAULT) left an Inventory_Base probe yawed about 10 degrees: its east face read x 4224.098 at z + 0.6 and 4223.874 at z - 0.6; with rotation 64 the same model read x 4224.0498 at both offsets and normal (-2.1, 0, 0), and the four respawned items with a component read their side faces at centre +/- 1.0498 m (the 0.05 m ray radius included; the two without a component gave no hit). scripts/3_game/ce/centraleconomy.c defines 64 as RF_IGNORE (line 56, 'object will spawn as model was created') and as RF_RANDOMROT (line 62). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "2ee5b7826cf8b5a5fb83348f6854f9846e5596000199a110e18e546be3aa09de",
+          "source_hash": "e63c719640a8704b3f33c0c7ed47458ca2d6d9484f4dea22fc43c138cf50a358",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-mcp-verify-collision-probes@2026-10-02",
@@ -464,7 +464,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2ee5b7826cf8b5a5fb83348f6854f9846e5596000199a110e18e546be3aa09de",
+      "output_hash": "e63c719640a8704b3f33c0c7ed47458ca2d6d9484f4dea22fc43c138cf50a358",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6913,7 +6913,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-02: dayz-mcp-verify static-object playbook gains two probes measured in the killer #2 run, and the CHANGELOG an Added entry. In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (the killer #2 A/B; project DayZ_MCP plus one probe mod), NWAF concrete. scene_raycast method bullet, radius 0, is PopulateRaycastBullet in the DayZ_MCP bridge (addon/scripts/5_Mission/MCPBridge.c:2983-3004, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): DayZPhysics.RayCastBullet with the layer mask BUILDING|DOOR|VEHICLE|ROADWAY|TERRAIN|ITEM_SMALL|ITEM_LARGE|FENCE. On 2 m probe boxes it hit the exact face (E->W at centre + 1.000, vertical at y0 + 2.000) when the collision LODs carried a component selection and gave no object hit when they carried none (a vertical ray through such a box returned hit 1 on the terrain), matching the rvproxy geom/view/fire rays (6 of 6 per mode against 0 of 6). player_teleport to 4 m south of the object's centre, then player_move(to = 4 m north of the centre, speed walk, hold_s 10), every walk straight ahead (applied_angle_deg 0; 0.04 on the HescoBox walk), end position from query_player_state: the 8 walks into probe boxes with a component read arrived false, released_by hold, the player 0.358-0.363 m before the face, after the full 10.00-10.05 s; the 6 free walks (open ground, the four no-component boxes, a vanilla WoodenCrate) read arrived true over 7.51 m in 5.03-5.10 s. Vanilla HescoBox (item_large) stopped the player 0.36 m before its face; vanilla WoodenCrate (item_small, top about 0.23 m above its origin) took every ray and did not stop the player, so the run does not separate layer from height. world_spawn rotation 0 (the bridge's RF_DEFAULT) left an Inventory_Base probe yawed about 10 degrees: its east face read x 4224.098 at z + 0.6 and 4223.874 at z - 0.6; with rotation 64 the same model read x 4224.0498 at both offsets and normal (-2.1, 0, 0), and the four respawned items with a component read their side faces at centre +/- 1.0498 m (the 0.05 m ray radius included; the two without a component gave no hit). scripts/3_game/ce/centraleconomy.c defines 64 as RF_IGNORE (line 56, 'object will spawn as model was created') and as RF_RANDOMROT (line 62). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "69e5e043c70c5e9d37fcd45f3d9d152152a792ec76b3611980058ccbc1edea37",
+          "source_hash": "5616105f06cebea704bfe18080f5487dcb121d98cb9c3ec21463a920f42bfa5c",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-mcp-verify-collision-probes@2026-10-02",
@@ -6921,7 +6921,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "69e5e043c70c5e9d37fcd45f3d9d152152a792ec76b3611980058ccbc1edea37",
+      "output_hash": "5616105f06cebea704bfe18080f5487dcb121d98cb9c3ec21463a920f42bfa5c",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -14940,7 +14940,7 @@
           "decision": "merge",
           "decision_evidence": "Registers CLAIM-MCPV-COLLISION-PROBES (runtime_verified) for the dayz-mcp-verify static-object playbook. In game, DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 454c93d7 (the killer #2 A/B; project DayZ_MCP plus one probe mod), NWAF concrete. scene_raycast method bullet, radius 0, is PopulateRaycastBullet in the DayZ_MCP bridge (addon/scripts/5_Mission/MCPBridge.c:2983-3004, file sha256 76c20f97d7860956a2ce849abc2fcd1113211577ce846439569531f2203bb988): DayZPhysics.RayCastBullet with the layer mask BUILDING|DOOR|VEHICLE|ROADWAY|TERRAIN|ITEM_SMALL|ITEM_LARGE|FENCE. On 2 m probe boxes it hit the exact face (E->W at centre + 1.000, vertical at y0 + 2.000) when the collision LODs carried a component selection and gave no object hit when they carried none (a vertical ray through such a box returned hit 1 on the terrain), matching the rvproxy geom/view/fire rays (6 of 6 per mode against 0 of 6). player_teleport to 4 m south of the object's centre, then player_move(to = 4 m north of the centre, speed walk, hold_s 10), every walk straight ahead (applied_angle_deg 0; 0.04 on the HescoBox walk), end position from query_player_state: the 8 walks into probe boxes with a component read arrived false, released_by hold, the player 0.358-0.363 m before the face, after the full 10.00-10.05 s; the 6 free walks (open ground, the four no-component boxes, a vanilla WoodenCrate) read arrived true over 7.51 m in 5.03-5.10 s. Vanilla HescoBox (item_large) stopped the player 0.36 m before its face; vanilla WoodenCrate (item_small, top about 0.23 m above its origin) took every ray and did not stop the player, so the run does not separate layer from height. world_spawn rotation 0 (the bridge's RF_DEFAULT) left an Inventory_Base probe yawed about 10 degrees: its east face read x 4224.098 at z + 0.6 and 4223.874 at z - 0.6; with rotation 64 the same model read x 4224.0498 at both offsets and normal (-2.1, 0, 0), and the four respawned items with a component read their side faces at centre +/- 1.0498 m (the 0.05 m ray radius included; the two without a component gave no hit). scripts/3_game/ce/centraleconomy.c defines 64 as RF_IGNORE (line 56, 'object will spawn as model was created') and as RF_RANDOMROT (line 62).",
           "license": "MIT",
-          "source_hash": "f17b12e35085e79b3bd642ce2b4edfb6bdfdab6c773cb70763fa4baf50695d37",
+          "source_hash": "4ab95ec1bb9c198872db4733ac6edc5fe115e1497dc5cadf4b805da2011e96f2",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-mcp-verify-collision-probes@2026-10-02",
@@ -14948,7 +14948,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f17b12e35085e79b3bd642ce2b4edfb6bdfdab6c773cb70763fa4baf50695d37",
+      "output_hash": "4ab95ec1bb9c198872db4733ac6edc5fe115e1497dc5cadf4b805da2011e96f2",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

@@ -316,8 +316,9 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   stopped just before the face, after the full hold (about 0.36 m before it on that run's 2 m
   boxes); `released_by:"hold"` only says the hold expired, and `arrived:false` anywhere else is
   INCONCLUSIVE. Free means `arrived:true` (7.5 m in about 5 s); walk the same distance and bearing on
-  open ground as the free reference. Every walk of that run went straight ahead
-  (`applied_angle_deg` 0, northward), so it did not exercise the override's angle sign.
+  open ground as the free reference. Every walk of that run went north nearly straight ahead
+  (`applied_angle_deg` 0, and 0.04 on one walk), so it did not exercise a steering angle or its
+  sign.
   A walk-through alone does not prove missing collision geometry: a vanilla `WoodenCrate`
   (`item_small`, low) took every ray and did not stop the player, while a `HescoBox` (`item_large`)
   stopped it; that run did not separate the crate's layer from its height.
@@ -328,8 +329,10 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   offsets, normal (-2.1, 0, 0)), on flat concrete. `scripts/3_game/ce/centraleconomy.c` gives 64 two
   names, `RF_IGNORE` ("object will spawn as model was created", :56) and `RF_RANDOMROT` (:62); the
   result agrees with the first comment and does not settle how the engine reads the value. Before
-  trusting face coordinates, read two parallel rays on one face: equal readings mean the face is on
-  an axis. It may change an item's configured resting side; slopes and settling were not measured.
+  trusting face coordinates, check the pose: two parallel rays at one height on a vertical face catch
+  a yaw (unequal readings) but not a tilt, so also check that the returned `normal`, read as a
+  direction, lies along the axis (the run read (-2.1, 0, 0)), and read the fixture again a few seconds
+  later. It may change an item's configured resting side; slopes and settling were not measured.
 - **Placement**: `telemetry_read(mode="object_at", type=<classname>, pos=<spawn_pos>, radius=2)`
   → `found=true`, `pos` ~ spawn, reasonable `orientation`. PASS = not buried or floating
   (cross-reference `pos.y` with visuals).
