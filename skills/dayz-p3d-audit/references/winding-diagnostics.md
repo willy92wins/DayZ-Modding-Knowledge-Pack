@@ -25,7 +25,7 @@ complete import checklist.
 1. **Check A — winding-vs-averaged-normal per face (DIAGNOSTIC).** For each face, calculate `n_winding = normalize(cross(v1-v0, v2-v0))` and compare with normalized average of `face.vertices[i].normal` over corners. On a quad that is not planar and convex, take `n_winding` from the face's vector area instead, the sum of `cross(v[j] − v[0], v[j+1] − v[0])` over its fan (step 3 of "From Check B to fix"): its first three corners can point the other way. On a triangle the two are the same; the SUB_BRZ door and the Rule 12 MLODs measured below are all triangles. % of faces with `dot < -0.5` counts the faces that strongly disagree with their stored normals; it does not say which way either one points (Rule 18 of `dayz-model-pipeline`). Leave `proxy:*` triangles out of this census and out of every fix below: their vertex order encodes the proxy frame (see "Render-sign A/B" below).
    - **~0% UNIFORM_NON_FLIPPED** → no face strongly disagrees. Count agreement as well, on the same averaged normal (`dot > 0`): only ≈ 100 % agreement means winding and normals agree, because normals turned 90-120° away from their faces also read 0 % here. The absolute check in `SKILL.md` counts agreement on the first corner's normal only, so on smoothed normals the two counts can differ; a face whose corner normals point opposite ways is a defect to inspect, not a sign to flip. A correct Rule 12 export reads this with ≈ 100 % agreement (`dayz-model-pipeline`: cross product AND stored normals both INWARD), like the production MLODs in `SKILL.md` "Absolute winding check: what 0 % means". So do a det=+1 mirror with reversed faces and negated normals, and an inside-out model with both OUTWARD. → severity NOTE: consistent with Rule 12, not proof of it.
    - **~100% UNIFORM_FLIPPED** → they disagree. The older outward-normal convention reads this: cross product inward, normals outward, as in the LFInfectedBig det=+1 recipe (`dayz-characters`; `check_dayz_winding.py` passed this state until its 2026-10-02 rewrite for Rule 12, and now fails it on the normals). It renders solid but is not what Rule 12 writes. Crate_Wooden read this state: **Empirically verified with Crate_Wooden 2026-04-25 in-game: render/bullets/cursor/collision all OK.** A correct export whose faces were reversed afterwards also reads it, and is inside-out. → severity WARNING on a new export.
-   - **5-95% MIXED** → parts in different states, not a verdict by itself. [OFFLINE MEASURED 2026-10-02] The SUB_BRZ co-driver door MLOD of `SKILL.md` "Absolute winding check" (verified in game; its 26 % agreement reproduced) reads MIXED: 72.67 % of 11,921 faces at `dot < -0.5`, 25.9 % agreeing. Check B finds 1 of its 17,542 two-face edges traversed the same way by both faces (a paint triangle against a black-trim one); with that edge cut, each of its 23 welded components orients as one group with no conflict, so no face group is wound against its neighbours, and that seam is left to inspect. The parts vote apart: the exterior paint, black trim and mirror read 94-100 % of their faces flipped (the paint winds its cross product into the door and stores its normals toward the outside: the older outward-normal convention, which renders solid and, measured on a character, lights inverted — `dayz-characters`, 2026-10-02; not checked on this door), while the cabin plastic, leather and metal and the glass read 97.9-100 % agreeing. Coincident twins (opposite winding, centroids within 2 mm) are 144 faces, and the census without them is unchanged (72.7 % flipped, 25.9 % agreeing). Never reverse the LOD on this reading. Locate any group wound against the rest of its component with Check B ("From Check B to fix", steps 1-2), split the census by part (welded component, then material), and take each part's or group's repair from the table below, each face read as step 3 of "From Check B to fix" reads it (vector area, ±0.5, corner margin): a group whose stored normals disagree with its own winding (still pointing like its neighbours') needs `reverse()` only (fourth row), and the coupled negation of "From Check B to fix" step 3 fits only a group whose normals agree with its inverted winding (second row). → severity WARNING; a visible part that the table reads inside-out is the defect, its urgency set by visibility ("From Check B to fix", item 2). *(Corrected 2026-10-02: this bullet read "real bug, inconsistent render/collision between faces. → severity CRITICAL", which that door, verified in game, contradicts; `SKILL.md` "Absolute winding check", rule 2.)*
+   - **5-95% MIXED** → parts in different states, not a verdict by itself. [OFFLINE MEASURED 2026-10-02] The SUB_BRZ co-driver door MLOD of `SKILL.md` "Absolute winding check" (verified in game; its 26 % agreement reproduced) reads MIXED: 72.67 % of 11,921 faces at `dot < -0.5`, 25.9 % agreeing. Check B finds 1 of its 17,542 two-face edges traversed the same way by both faces (a paint triangle against a black-trim one); with that edge cut, each of its 23 welded components orients as one group with no conflict, so no face group is wound against its neighbours, and that seam is left to inspect. The parts vote apart: the exterior paint, black trim and mirror read 94-100 % of their faces flipped (the paint winds its cross product into the door and stores its normals toward the outside: the older outward-normal convention, which renders solid and, measured on a character, lights inverted — `dayz-characters`, 2026-10-02; not checked on this door), while the cabin plastic, leather and metal and the glass read 97.9-100 % agreeing. Coincident twins (opposite winding, centroids within 2 mm) are 144 faces, and the census without them is unchanged (72.7 % flipped, 25.9 % agreeing). Never reverse the LOD on this reading. Locate any group wound against the rest of its component with Check B ("From Check B to fix", steps 1-2), split the census by part (welded component, then material), and take each part's or group's repair from the table below, each face read as step 3 of "From Check B to fix" reads it (vector area, ±0.5, corner margin, the part's row decided first): on a part whose normals agree with its winding, a group whose stored normals disagree with its own winding (still pointing like its neighbours') needs `reverse()` only (fourth row), and the coupled negation of "From Check B to fix" step 3 fits only a group whose normals agree with its inverted winding (second row); on a part kept in the older convention on purpose, as this door's paint could be (it renders solid in game), the two readings swap. → severity WARNING; a visible part that the table reads inside-out is the defect, its urgency set by visibility ("From Check B to fix", item 2). *(Corrected 2026-10-02: this bullet read "real bug, inconsistent render/collision between faces. → severity CRITICAL", which that door, verified in game, contradicts; `SKILL.md` "Absolute winding check", rule 2.)* *(Corrected 2026-10-02: its repair sentence read "a group whose stored normals disagree with its own winding (still pointing like its neighbours') needs `reverse()` only (fourth row), and the coupled negation of "From Check B to fix" step 3 fits only a group whose normals agree with its inverted winding (second row)" for every part; on this door's paint it picks the wrong branch: "From Check B to fix", step 3.)*
 
    Coordinate-system-agnostic. Neither uniform label is a fix instruction. First decide, part by part, whether the cross product points AWAY from the side meant to be seen (into the material: the MLOD convention of Rule 12, which on a solid seen from outside is inward) or TOWARD it:
 
@@ -78,9 +78,28 @@ external artist models, player report "plank normals are inverted"):
 1. **Isolate**: weld points by position (5 decimals), split visual LOD into connected
    components (excluding faces from `proxy:*` selections), and within each component run
    orientation flood-fill with Check B rule (two manifold faces traversing
-   shared edge in SAME direction are opposite). A healthy component yields ONE group;
-   a broken one yields two, and **the minority one is the inverted one** — reference is part's
-   own majority, never an absolute sign convention.
+   shared edge in SAME direction are opposite). Then count the component's parity
+   conflicts: two-face edges whose faces ended in the same group although they traverse the
+   edge the same way, or in opposite groups although they traverse it opposite ways. A
+   component with no conflict yields ONE group when healthy and two when broken, and **the
+   minority one is the inverted one** — reference is part's own majority, never an absolute
+   sign convention. A component with a conflict, or one that splits evenly, has no minority
+   group: where a conflicted fill splits follows the order of the fill. Inspect it with the
+   visibility battery of item 2; its edges traversed the same way mark where to look.
+   [OFFLINE MEASURED 2026-10-02] The SUB_BRZ co-driver door's LOD 1.0 (healthy, verified in
+   game: Check A, `MIXED`) has one edge traversed the same way; with it, the fill splits a
+   2,235-face component 2,121 + 114 with 7 conflicts, and over 41 other orders of the faces the
+   minority ran from 6 to 246 faces, never none; with it cut, no conflict and no minority. With
+   a 30-face patch of that component's paint reversed in memory, the fill returned 144 faces
+   (the patch and the 114). Cutting every edge traversed the same way, keeping cut those with
+   the same piece on both sides and filling again returned exactly that patch, behind 22 cut
+   edges, and exactly the 29 damaged faces of an annulus around a healthy face, but four intact
+   faces and none of the 29 when the damaged annulus took in a face of the door's one edge
+   traversed the same way: no fill decides such a component. The three GunRacks MLODs of the record above have no conflict:
+   their minority groups are the 156 faces their fix reversed, and two of them also hold two
+   1 + 1 splits each.
+   *(Corrected 2026-10-02: this item read "A healthy component yields ONE group; a broken one
+   yields two, and the minority one is the inverted one", with no conflict count.)*
 2. **Severity by visibility, not by count**: render with id-buffer and screen culling,
    with sign CALIBRATED against population (majority of a model looking good in-game
    must come out front-facing; same lesson as centroid-check above). Minority group
@@ -100,8 +119,30 @@ external artist models, player report "plank normals are inverted"):
    reversal, while the vector area turns exactly. [OFFLINE MEASURED 2026-10-02] A planar dart
    quad whose reflex corner sat at index 1 after `reverse()`, and a twisted quad reversed by
    `v[:1] + reversed(v[1:])`, sent the first-three reading to the wrong branch in both states
-   below; the vector area sent all four right. Then invert the vertex order of every face of
-   the group (`v[:1] + reversed(v[1:])`), and per face:
+   below; the vector area sent all four right. The branches below are written for a part
+   whose normals agree with its winding (rows 1-2 of the Check A table). Decide the row of the
+   group's part (welded component, then material, as in Check A's `MIXED`) first, from its
+   faces outside the group, with the table and its direction test, never from the normals
+   alone: a Rule 12 part whose normals were all turned reads like the older convention. A part
+   with no face outside the group, or whose other faces read MIXED, has no row: inspect. Bring
+   the part to Rule 12 with its row's fix (the third row: keep the winding, negate the normals),
+   run step 1 again (a fix that reverses faces can repair the group with them), and read the
+   group it finds as written. A part kept in the older convention on purpose, checked in game,
+   is read against it: there the two branches swap, ≤ −0.5 meaning winding and normals turned
+   together and ≥ +0.5 the winding alone. [OFFLINE MEASURED 2026-10-02] On a 30-face patch of
+   the SUB_BRZ door's paint (a 1,926-face part, 98.5 % below −0.5), damaged in memory, every
+   face read −1.000 with winding and normals reversed and +1.000 with the winding alone; the
+   branches as written left 90 of 90 corners against the undamaged normals both times, while
+   bringing the part to Rule 12 first, or reading it against its kept convention, restored 30
+   of 30 (to the part converted, or as it was). On `verify_step3.py`'s flat Rule 12 box with
+   one face reversed and every normal turned, the other five faces read UNIFORM_FLIPPED with
+   their cross product toward the box's centre (the third row): that face read against them
+   was reversed only and left 24 of 24 corners against the undamaged normals, with Check B
+   clean, while the box brought to Rule 12 first came back corner for corner. With that face a
+   part of its own, reversed with its normals or alone (rows 2 and 4), its row's fix restored
+   the box, and reversing the old group as well took Check B to 4.
+   Once every face of the group has a reading, invert the vertex order of every face of the
+   group (`v[:1] + reversed(v[1:])`), and per face:
    - **Normals agree with the inverted winding** (reading ≥ +0.5: they turned along with it;
      second row of the Check A table): **negate stored normals of those corners in the same
      pass** — UNLESS pipeline recalculates normals in a subsequent step. This is the GunRacks
@@ -124,7 +165,16 @@ external artist models, player report "plank normals are inverted"):
      and a change of 1e-15 picks the other branch), or that has a corner on the other side of
      it or within 0.1 of its plane (`|dot| < 0.1` against `n_face`: an average can hide one
      such corner, as three agreeing corners and one at 1e-15 average to 0.9487), has no
-     reading: inspect it, never infer its normals from the rest of the group.
+     reading: inspect it, never infer its normals from the rest of the group. One face with no
+     reading stops the whole group, before any face is inverted. [OFFLINE MEASURED 2026-10-02]
+     16 of the 114 faces of the door's split (the fill of step 1 without its conflict count)
+     have no reading (glass: a corner on the other side of 13 of them, within 0.1 of 3);
+     stopping the group leaves the healthy door as it was, while fixing the other 98 alone
+     takes Check B from 1 to 20 edges traversed the same way, and every face reversed with the
+     98 negated, to 7. It stops real groups too: a
+     30-face patch of the door's cabin plastic (99.5 % agreeing), damaged both ways, has one
+     face at ±0.392, and the other 29 read the right branch (29 of 30 restored with that face
+     set aside).
 
    Safe mechanics with global POOL: if `normal_index` of the corners to negate are exclusive
    to them, negate in place; if any is shared with a corner whose normal you keep (a face
@@ -133,7 +183,9 @@ external artist models, player report "plank normals are inverted"):
 
    Close on the whole LOD, not on the group: Check B finds no edge traversed the same way by
    both faces, and every corner normal points along its face's vector area by the same corner
-   margin (`dot ≥ 0.1`). A corner that fails is inspected, never negated on this reading
+   margin (`dot ≥ 0.1`), or against it (`dot ≤ −0.1`) on a part kept in the older convention
+   on purpose (step 3), where most corners fail `dot ≥ 0.1` by construction. A corner that
+   fails is inspected, never negated on this reading
    alone: a corner normal smoothed across a sharp fold can point against one of its faces
    with every face wound right. py3d's absolute check reads one corner per face and the
    group's reading sees only the group, so neither sees corners spoiled outside it.
@@ -142,7 +194,15 @@ external artist models, player report "plank normals are inverted"):
    copies and left 8 corners of the neighbours pointing outward; py3d read 100 % with no
    winding finding (each neighbour's first corner was intact), while the corner check found
    the 8 and Check A read 33.3 %. A flat tetrahedron wound coherently inward, with
-   area-weighted corner normals, fails the corner check at 6 of its 12 corners.
+   area-weighted corner normals, fails the corner check at 6 of its 12 corners. On the healthy
+   SUB_BRZ door's LOD 1.0, `dot ≥ 0.1` alone fails 26,576 of 35,766 corners, 25,934 of them on
+   faces reading ≤ −0.5 and 100 on faces reading ≥ +0.5; read against the face on its 11
+   parts that read UNIFORM_FLIPPED (95 % of their faces or more below −0.5), as if all were
+   kept, 441. After the paint patch of step 3 was fixed down the wrong branch, the first count
+   fell by 90 (to 26,486) and the second rose by 90 (to 531). The GunRacks MLODs read 0, 112
+   and 239 both ways (no part reads UNIFORM_FLIPPED), and the smoothed box 8. That label does
+   not fix every corner: a strip of 20 quads with the normals of 19 turned reads 95 % with 4
+   of its 80 corners at `dot ≥ 0.1`.
 
    *(Corrected 2026-10-02: this item read "**Coupled fix**: invert vertex order
    (`v[:1] + reversed(v[1:])`) **and negate stored normals of those corners in the same
