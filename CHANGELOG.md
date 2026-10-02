@@ -445,9 +445,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   "Absolute winding check" rule 4, and the Check A row reversed whatever its direction check read
   outward, Visual LODs included: read literally on a closed Visual room seen from inside (signed
   volume +8, right for a room), it gave -8 with 100 % agreement and no py3d winding finding. That
-  row now reads a closed Visual shell by the side meant to be seen (negative for a solid seen from
-  outside, positive for a room seen from inside, rule 4) and leaves open or double-sided Visual
-  parts unresolved by that sign. In `references/py3d-direct-generation.md`, the "Face Winding
+  row now reads a Visual LOD shell by shell, never by the LOD-wide sum, after Check B has turned
+  back any face wound against its neighbours (a face turned with its normal inside a closed solid
+  left that solid at -5.33 instead of -8 with 100 % agreement, and only py3d's
+  `WARN_WINDING_EDGE_INCOHERENT` saw it), and by the side meant to be seen: negative for a solid
+  seen from outside, positive for a room seen from inside (rule 4); open or double-sided Visual
+  parts stay unresolved by that sign. In `references/py3d-direct-generation.md`, the "Face Winding
   Order Fix" loop, which reverses every face of every LOD, proxy triangles included, is marked as
   the undo of a whole-model `P3D.transform()` reversal, its one use, and the section says how a
   collision LOD is repaired instead. Rule 18 also pointed at `check_face_winding` as its
