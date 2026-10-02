@@ -44,15 +44,15 @@ It is the #1 cause of failures when porting models from Blender to DayZ. Subtle 
 - Sometimes only ONE of these symptoms: winding may be fine in Visual and bad in Geometry, or vice versa. **Verify each LOD separately.**
 
 ### Root cause
-The winding decision depends on the asset source — Blender-authored or GLB/glTF; both maps below are det=-1 (source: [`skills/dayz-model-pipeline/SKILL.md`](../skills/dayz-model-pipeline/SKILL.md), Rule 12), with two cases:
+The winding decision follows the map, which is the same for Blender-authored and GLB/glTF geometry (source: [`skills/dayz-model-pipeline/SKILL.md`](../skills/dayz-model-pipeline/SKILL.md), Rule 12 and "GLB/glTF imports"):
 - **Blender-authored geometry**, via the reflection `x'=x, y'=z, z'=y` (det=-1): map vertices and normals in all LODs, keep the face order and negate the normals (`dayz-model-pipeline` Rule 12, measured in game 2026-10-01; the old det=+1 rotation `z'=-y` ships a mirrored model).
-- **Geometry originating from GLB/glTF**, via pure swap `(x,y,z)->(x,z,y)` (det=-1): **ALWAYS** invert vertex order of each face across each LOD, except proxy triangles, whose order encodes attachment frame.
-Never assume which of the two cases applies: verify result with `check_face_winding`; must yield ~0% flipped.
+- **Geometry originating from GLB/glTF** (exported to spec, brought through Blender): the same map, the same face order, normals negated. **Never** reverse the faces after the det=-1 map: that rendered see-through in game (MercedesAMGLF, 2026-06-24), and A6_MK47 v12c rendered correctly with the order kept (2026-06-11).
+Never assume: verify the result with `check_face_winding` (it must yield ~0% flipped, and it shows only that the face order and the normals agree) and check chirality on an asymmetric feature. *(Aligned 2026-10-03: the opening read "The winding decision depends on the asset source — Blender-authored or GLB/glTF; both maps below are det=-1 (source: [`skills/dayz-model-pipeline/SKILL.md`](../skills/dayz-model-pipeline/SKILL.md), Rule 12), with two cases:", the GLB/glTF case read "**Geometry originating from GLB/glTF**, via pure swap `(x,y,z)->(x,z,y)` (det=-1): **ALWAYS** invert vertex order of each face across each LOD, except proxy triangles, whose order encodes attachment frame." and this line read "Never assume which of the two cases applies: verify result with `check_face_winding`; must yield ~0% flipped.")*
 
 Reversing faces does NOT touch the normals in the `lod.facenormals` pool — they keep pointing where they pointed before (for Blender-authored geometry, Rule 12 negates them explicitly). That is why the model *looks* correct when inspecting normals but fails in game: **what matters to the raycast/render engine is the winding, not the declared normal**.
 
 ### Canonical fix
-For Blender authorship, follow `dayz-model-pipeline` Rule 12 (det=-1 reflection, face order kept, normals negated); the det=+1 rotation ships a mirrored model. For a GLB/glTF source with det=-1 swap, invert vertex order with:
+For Blender authorship and for a GLB/glTF source, follow `dayz-model-pipeline` Rule 12 (det=-1 reflection, face order kept, normals negated); the det=+1 rotation ships a mirrored model. Reverse every face only to undo a reversal that hit every face, such as py3d `P3D.transform()` with a det<0 map (it reversed the proxy triangles too), and then negate every normal (Rule 12; `py3d.blender_to_dayz()` does both); faces that read outward only in part are fixed per face (`dayz-p3d-audit` killer #1). The whole-model reversal: *(Aligned 2026-10-03: this paragraph read "For Blender authorship, follow `dayz-model-pipeline` Rule 12 (det=-1 reflection, face order kept, normals negated); the det=+1 rotation ships a mirrored model. For a GLB/glTF source with det=-1 swap, invert vertex order with:")*
 ```python
 import py3d
 with open(p3d_path, 'rb') as f:
@@ -65,7 +65,7 @@ with open(p3d_path, 'wb') as f:
 ```
 
 Rules:
-- When Rule 12 requires inverting winding (GLB/glTF case, det=-1), apply to **all** LODs except proxy triangles: Visual + ShadowVolume + Geometry + LandContact + ViewGeometry + FireGeometry. Leaving one out produces inconsistencies between render and collision.
+- When the whole-model reversal above is right, apply it to **all** LODs, proxy triangles included (`P3D.transform()` reversed them too): Visual + ShadowVolume + Geometry + LandContact + ViewGeometry + FireGeometry. Leaving one out produces inconsistencies between render and collision. *(Aligned 2026-10-03: this bullet opened "When Rule 12 requires inverting winding (GLB/glTF case, det=-1), apply to **all** LODs except proxy triangles:".)*
 - `reverse()` operates in-place on the list of Vertex objects. **It does NOT touch the `lod.facenormals` pool** (it is global, indexed by `vertex.normal_index`) or `normal_index` — declared normals still point to the same pool location, which is correct.
 - **DO NOT use the old "swap `vertices[1]` and `vertices[2]`"** — works only for tris. Quads and larger polys require `reverse()`.
 - **UNIFORM application is essential.** If you skip some faces, the model ends up with mixed winding, which is WORSE than an inside-out flipped model: some areas show from outside, others from inside, unpredictable rendering. **Verify post-fix with Check B (edge-pair topology).**
