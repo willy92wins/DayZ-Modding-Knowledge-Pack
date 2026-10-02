@@ -255,6 +255,29 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `py3d-direct-generation.md` no longer say the gate fails a correct export or that characters use the
   opposite sign. The rewritten gate was not run in game; its verdicts are checked against the recorded
   in-game results of the probe and of the chiral check.
+- `dayz-animation-pipeline` `scripts/seanim_export.py` wrote the viewer's bone-local quaternions and
+  rest offsets as they are, in the viewer's right-handed frame. It now carries the Route C
+  conversion calibrated 2026-06-29 on the JD Master Rig (rotation `(x,y,z,w) → (−y,−z,x,w)`, rest
+  offset `(x,y,z) → (y,z,−x)` in cm, exact offline over 73 bone/frame pairs), one map per rig. The
+  BI FBX rig that `build_rig_dayz.py` builds has the JD bone frames turned 90° about Z (113 of 114
+  rest rotations within 1°, the root excepted): the literal map turns every one of its bone frames
+  90° (rest offsets against DayZATool extracts of vanilla clips: 0 of 77 within 5°), so it gets
+  `(−x,−z,−y,w)` / `(x,z,y)` instead, derived offline (77 of 77; rest rotations within 0.87° of the
+  JD rig's against a vanilla idle). The rig is read from its rest offsets: the bone axis of its
+  anatomical chains (helpers such as `RightHand_Dummy` and its child `Weapon_Root` skipped) and the
+  roll of `Spine3` and both hands, within 2° of vanilla (both rigs read within 0.07°); any other rig,
+  an anim bone missing from the rig and a missing `--rest-pose` file are refused, and an exported
+  root bone and per-frame positions are flagged. `--rest-pose` loaded a
+  vanilla SEAnim and ignored it; it now emits only that clip's bones, as the project copy does (the
+  mask fixed a flop in game on 2026-06-30). Positions always come from the rig: the project copy
+  also takes the reference's, but DayZATool marks most bones of vanilla action extracts RELATIVE
+  (SEAnim bone modifiers, offsets from rest), so it writes their zeros as absolute offsets. On a
+  real JD-rig clip without `--rest-pose` the output is byte-identical to the project copy's. The
+  structural round-trip gate checks every bone's rotation and position keys.
+  Docs: `blender-authoring.md` "Coordinate handling", `weapon-anim-authoring-viewer.md` (section
+  "Route C bone-frame maps, per rig"), `SKILL.md` and `blender-animation`'s `dayz-handoff.md`. In
+  game, the JD map played one full-body action wrong (A6_SR2M, 2026-06-30); in-game playback stays
+  the gate. Regression test: `tests/test_seanim_export.py` (18 cases).
 
 ## [1.5.0] - 2026-10-02
 
