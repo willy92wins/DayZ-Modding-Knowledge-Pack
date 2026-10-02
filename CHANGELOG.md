@@ -5,6 +5,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `dayz-mcp-verify` static-object playbook and tool table: two probes from the killer #2 run
+  (2026-10-02, DayZDiag 1.29.163709). `scene_raycast(method="bullet")` queries the server's physics
+  world on a fixed layer mask (`DayZPhysics.RayCastBullet`), next to the LOD rays; a hit counts only
+  on the target at its face, and a miss alone is not proof. A `player_move` walk into the object
+  reads player collision: blocked is `arrived:false` with the player stopped just before the face
+  (about 0.36 m on that run's 2 m boxes), free is `arrived:true`, anything else inconclusive, with a
+  same-distance open-ground walk as the free reference; a walk-through alone is not read as missing
+  collision geometry (a low vanilla `WoodenCrate` took every ray and did not stop the player). For
+  test fixtures, `rotation=64` spawned a box with its faces on the world axes where the default
+  `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the yaw with two parallel rays and the
+  direction of the returned normal before trusting face coordinates.
+
 ### Fixed
 
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
@@ -122,27 +136,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   winds every face of each collision box outward and trades the finding for
   `ERR_WINDING_VS_NORMALS`, and `validate()` goes quiet only once those LODs' normals are negated
   too, with every LOD wound outward.
+- `dayz-p3d-audit` killer #1 (`references/killers-detail.md`): the note on generating or editing a
+  collision LOD quoted the text of py3d's relative-check message ("winding is INVERTED relative to
+  the Visual LOD"), which can change with py3d; it now names the finding by its code,
+  `ERR_WINDING_INVERTED`, as the automated-check note above it already does.
 - py3d `ERR_COMPONENT_NAMING` (py3d 1.9.0). It checked the Geometry LOD alone and also fired on a
-  lowercase `component01` ("Engine requires 'Component01' (uppercase C); collision silently
-  fails"), which in game collides exactly like `Component01` (the killer #2 entry above); vanilla vehicles
+  lowercase `component01` ("Engine requires 'Component01' (uppercase C); collision silently fails"),
+  which in game collides exactly like `Component01` (the killer #2 entry above); vanilla vehicles
   name their components that way. It now flags a Geometry, View or Fire LOD that has faces outside
   its proxy triangles and no selection whose name starts with `component`, in any case; its message
   says that a model with no component in any collision LOD lost its collision silently in game, and
-  that one LOD missing it alone was not measured. `WARN_COMPONENT_NAMING` now only flags a LOD whose component
-  names are none of them `Component` and a number (e.g. only `Component_01`, a spelling never
-  measured); `COMPONENT01` and `Component02` raise nothing. A collision LOD without faces of its
-  own (a mass-only Geometry LOD, or one holding only proxy triangles) raises nothing. A LOD
-  without a component while the other collision LODs have one was not measured in game; each LOD
-  is checked on its own. Measured offline with the old and the new module through
-  `P3D._scan_v12_findings` on 414 unique MLODs (the owner's mod and vehicle projects and the
-  Pack's door samples): the old check raised 94 errors, all on Geometry LODs, 88 of them with
-  lowercase component names and 5 on Geometry LODs without faces (ruined wheels, one a
-  debinarized vanilla `sedanwheel_destroyed`); the new one raises 1, a Geometry LOD with faces and
-  no component, and nothing on View or Fire, where every LOD with faces has a component. The v2
-  test fixture's View and Fire LODs, which had no component, get `Component01`. The `dayz-p3d-audit`, `dayz-vehicles` and `dayz-clothing` notes on
-  this finding now say which py3d version does what. No new wheel: the pinned and installed
-  `py3d_dayz-1.8.0` keeps the old check, and `apply-s2-rollout.ps1 -WheelOnly` refuses to restock
-  until a 1.9.0 wheel is built and pinned.
+  that one LOD missing it alone was not measured. `WARN_COMPONENT_NAMING` now only flags a LOD whose
+  component names are none of them `Component` and a number (e.g. only `Component_01`, a spelling
+  never measured); `COMPONENT01` and `Component02` raise nothing. A collision LOD without faces of
+  its own (a mass-only Geometry LOD, or one holding only proxy triangles) raises nothing; a
+  selection under a proxy name counts as a proxy only with a proxy's shape (3 points, 1 triangle).
+  Each LOD is checked on its own. Measured offline with the old and the new module through
+  `P3D._scan_v12_findings` on 414 unique MLODs (the owner's mod and vehicle projects and the Pack's
+  door samples): the old check raised 94 errors, all on Geometry LODs, 88 of them with lowercase
+  component names and 5 on Geometry LODs without faces (ruined wheels, one a debinarized vanilla
+  `sedanwheel_destroyed`); the new one raises 1, a Geometry LOD with faces and no component, and
+  nothing on View or Fire, where every LOD with faces has a component. The v2 test fixture's View
+  and Fire LODs, which had no component, get `Component01`. The `dayz-p3d-audit`, `dayz-vehicles`
+  and `dayz-clothing` notes on this finding now say which py3d version does what, and a knowledge
+  note's claim that Object Builder is case-sensitive is marked as unmeasured. No new wheel: the
+  pinned and installed `py3d_dayz-1.8.0` keeps the old check, and `apply-s2-rollout.ps1 -WheelOnly`
+  refuses to restock until a 1.9.0 wheel is built and pinned.
 
 ## [1.5.0] - 2026-10-02
 

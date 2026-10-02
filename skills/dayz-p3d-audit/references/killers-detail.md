@@ -60,7 +60,7 @@ disabled for false positives.
 > **MANDATORY when you GENERATE or EDIT a collision LOD** (procedural sphere, py3d round-trip,
 > Blender import, inspector rebuild): re-run `audit_p3d.py` and Rule 18's per-component check
 > **before deploying**: with its prerequisites met, every non-proxy face of every component must
-> read inward. A "winding is INVERTED relative to the Visual LOD" CRITICAL that a complete
+> read inward. An `ERR_WINDING_INVERTED` CRITICAL that a complete
 > per-component check does not confirm says nothing against the collision: check the Visual LOD
 > against the side meant to be seen instead (Check A table in `winding-diagnostics.md`; a room
 > seen from inside is right as it is). An unresolved check confirms nothing either way. A
