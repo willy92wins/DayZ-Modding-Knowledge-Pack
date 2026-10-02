@@ -18,7 +18,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   project's `data/rig_dayz.json` byte for byte except its `space` label. SKILL.md's scripts index
   and `weapon-anim-authoring-viewer.md` "Reusable tools" list the pipeline in the order it runs,
   with `--python-exit-code 1` for the Blender steps (without it a Python error exits 0).
-  Regression test: `tests/test_extract_empties.py`.
+  Regression test: `tests/test_extract_empties.py`. Its FBX path placeholder adds it to the pinned
+  census of payloads that only run once an operator edits a path (`tests/packctl/test_promotion.py`).
 
 ### Fixed
 
