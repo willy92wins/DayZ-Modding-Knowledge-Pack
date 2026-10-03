@@ -104,7 +104,10 @@ whose Center is a white/colorable image (the WhitePixel Center is the load-beari
 
 Also style-driven for free: ButtonWidget/Default overlays `alpha_176` on Pushed, `alpha_128` on
 Focus, `alpha_64` on Disabled (`:1613/:1635/:1646`) — **picking `style Default` on a button gives
-working press/focus/disabled visual feedback with zero script**.
+working press/focus/disabled visual feedback with zero script**. Its `Normal` state has every
+slice empty (`:1593-1604`), so at rest it draws no body. A button declared with a `color` and no
+`style` drew no fill in game, while the same frame's `style Colorable` button did (SimpleGroup,
+2026-09-28; added 2026-10-03).
 
 ## 6. Style inventory (what exists to pick from — most-used names)
 

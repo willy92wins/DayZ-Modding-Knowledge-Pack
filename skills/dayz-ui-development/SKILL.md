@@ -70,8 +70,12 @@ Companion: `ui_reconcile.py <addon_root>` reconciles `FindAnyWidget` ↔ layouts
 stringtable, which no compiler catches; `--strict` turns its WARN into failure.
 
 5. **Preview offline**: `python tools/dayz-layout-viewer/build_viewer.py <layout>`
-   → a self-contained `.preview.html` you switch between 1080p / 1440p / 21:9 / 720p to SEE
-   exact-flag breakage without a build.
+   → a self-contained `.preview.html` you switch between 1080p / 1440p / 21:9 / 720p.
+   Its geometry lays exact units out as pixels at every viewport
+   (`tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775`), while the engine scales them with the
+   screen height (Rule 3): at any viewport but 1080p it misplaces exact widgets, so trust those
+   views for proportional geometry only. *(corrected 2026-10-03: this step said the viewports let
+   you «SEE exact-flag breakage without a build».)*
    **What it does and does not model, read out of the code 2026-08-20.** Two copies of this
    skill used to disagree here — one said "structure and anchoring only", the other said to
    trust it for text — and neither was right. It DOES model text layout: font size from
@@ -203,19 +207,36 @@ Every rule below caused a real crash or visual failure in production.
    "LoadImageFile can't load", observed on LFPowerGrid) — fallbacks: ship a 1×1 white `.edds` and
    LoadImageFile that, or use a `Colorable` style (WhitePixel Center, styles-format.md §5).
 
-3. **Declare all 4 pos/size-mode flags EXPLICITLY (0 or 1) — do NOT default them to 1.**
-   *(Corrected 2026-07-03; the old "always set all 4 to `1`" advice was a top cause of
-   resolution-dependent divergence.)* The exact flags choose UNITS, not "definedness":
-   `hexactpos/vexactpos/hexactsize/vexactsize 1` = **physical screen pixels**
-   (`enwidgets.c:68-71`: `EXACTPOS //< Uses physical resolution (g_iWidth, h_iHeight)`), so an
-   all-`1` layout authored at 1080p occupies different RELATIVE space at 1440p/ultrawide/console —
-   this is exactly the "looked right in my mockup, lands wrong in-game" failure. `0` = **fraction of
-   parent (0.0–1.0)**, which is what vanilla predominantly uses (`gui/layouts` stat: `hexactsize 0`
-   5851× vs `hexactsize 1` 2727×; `loading.layout` uses all four = 0). RULE: default to
-   **proportional (0)** for anything that must scale; use **exact (1)** only for elements that must be
-   pixel-true (fixed icon/border sizes). For a resolution-independent full-screen background use the
+3. **Declare all 4 pos/size-mode flags EXPLICITLY (0 or 1).** The exact flags choose UNITS,
+   not "definedness". `hexactpos/vexactpos/hexactsize/vexactsize 1` = **1/1080 of the screen
+   HEIGHT, on both axes**: the engine draws `declared × height/1080` px whatever the width, so the
+   screen is always 1080 units tall and `1080 × width/height` units wide (1920 at 16:9, 2560 at
+   2560x1080). Measured in game at heights 461, 720, 900, 1080 and 1108 (`ui_tree` rects,
+   `dayz_re_scratch/ui_matrix.md` sections 8, 9 and 11, 2026-08-28/29) and on frames (SimpleGroup,
+   2026-09-28): a 400-unit panel 16 units from the right edge drew 400 px wide and 16 px from the
+   edge at 1920x1080 and at 2560x1080, and 267 px wide and 11 px from it at 1280x720. A layout that
+   fits in 1080 units of height fits vertically at every resolution; only the horizontal room
+   changes with the aspect ratio. Do not reason in physical pixels (a reviewer who did flagged an
+   overflow that did not exist), and do not rescale exact widgets from script by height/1080: the
+   engine already did, and the script doubles it (TEXT SIZING LAWS). The header comment
+   `EXACTPOS //< Uses physical resolution (g_iWidth, h_iHeight)` (`enwidgets.c:68-71`) does not
+   describe what is drawn. `0` = **fraction of parent (0.0–1.0)**, which is what vanilla
+   predominantly uses (`gui/layouts` stat: `hexactsize 0` 5851× vs `hexactsize 1` 2727×;
+   `loading.layout` uses all four = 0). Choosing: exact (1) keeps a widget's shape and scales it
+   with the screen height; proportional (0) stretches it with its parent. At 16:9 the two agree at
+   every resolution measured; at another aspect ratio a proportional width follows the screen
+   width and an exact one does not. For a resolution-independent full-screen background use the
    canonical `size 0.16 0.09` + `halign/valign center_ref` + `fixaspect outside` pattern
    (`gui/layouts/loading.layout:36-55`).
+   *(corrected 2026-10-03)* This rule's heading added «— do NOT default them to 1», after a
+   2026-07-03 note: «the old "always set all 4 to `1`" advice was a top cause of
+   resolution-dependent divergence.» It said `1` means «**physical screen pixels**», «so an
+   all-`1` layout authored at 1080p occupies different RELATIVE space at 1440p/ultrawide/console —
+   this is exactly the "looked right in my mockup, lands wrong in-game" failure», and «RULE:
+   default to **proportional (0)** for anything that must scale; use **exact (1)** only for
+   elements that must be pixel-true (fixed icon/border sizes).» Measured in game, exact units keep
+   their share of the screen height at every height above (1440 was not measured), and at
+   another aspect ratio they keep their size in height units.
    Corpus refinements (2026-07-04, 8,671 vanilla widgets): **mixing exact and proportional axes on
    one widget is the vanilla NORM** (50.8%; top profiles: exact pos + proportional size 1,892×, and
    exact pos + prop width + pixel height 1,182×) — the old "mixing is fragile" warning is refuted.
@@ -331,7 +352,7 @@ Supports ignore lists and variable→widget rename mappings.
 
 ### Layout (.layout)
 - [ ] Brace format, NOT XML (`<?xml` / `<GUI>` = native CTD); braces balanced
-- [ ] All 4 unit flags DECLARED per widget (0=proportional default, 1=pixel only when pixel-true)
+- [ ] All 4 unit flags DECLARED per widget (0 = fraction of parent, 1 = 1/1080 of screen height; Rule 3)
 - [ ] Anchors (`halign/valign *_ref` + `position 0 0`) for placement that must survive resolutions
 - [ ] Backgrounds: ImageWidgetClass `ignorepointer 1` + `stretch 1`, or a 9-slice style (styles-format.md)
 - [ ] Widget names unique AND matching the spec table (they are the FindAnyWidget/binding contract)
@@ -900,7 +921,7 @@ Useful for feature flags across mod boundaries.
 | Relay_Command runs more than once | Handler returned false/void → re-invoked up the parent chain | Command handlers must `return true` when handled (Rule 16) |
 | EditBox text not updating | Binding not notified | Call `NotifyPropertyChanged("FieldName")` after changing value |
 | Layout crashes game on load | XML-format layout, or unbalanced braces, or MISSING layout file (CTD inside native CreateWidgets — null-check never runs) | Brace format only; run the linter (LAYOUT-XML-FORMAT + ES-LAYOUT-FILE-MISSING detectors). NOT caused by missing leaf `{ }` (Rule 1) |
-| UI right at 1080p, wrong at other resolutions | Exact flags = physical pixels | Proportional flags (0) + anchor idiom (Rule 3); switch viewports in `dayz-layout-viewer` / `build_viewer.py` before spending a boot |
+| UI right at 1080p, wrong at other resolutions | Not the exact flags: they scale with the screen height (Rule 3, corrected 2026-10-03). A script that also scales exact widgets by height/1080 (double scaling), bitmap glyphs that do not shrink with their boxes (TEXT SIZING LAWS), or a proportional width at another aspect ratio | Drop the script-side scaling; size bitmap text for the smallest supported height; check in game at 720p and at your widest aspect. `dayz-layout-viewer` / `build_viewer.py` lay exact units out as pixels at every viewport (`tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775`), so their non-1080 views misplace exact widgets |
 | Half my UI is missing (widgets after some point never appear) | Parser stops at first syntax error, loads partially | Check brace balance at/before the first missing widget; `MissionBase.DumpCurrentUILayout()` shows what actually loaded |
 | Imageset/style renders in Workbench but blank in-game (or vice versa) | Dual registration missed | Register in BOTH `dayz.gproj` (editor) and `config.cpp class defs` (game) — plan-to-implementation.md §3 |
 | Scroll content doesn't scroll | No spacer child in ScrollWidget | Add WrapSpacerWidget or GridSpacerWidget as direct child |
@@ -968,21 +989,51 @@ not a flag and not applicable to a `TextWidget`. `CreateWidget(TextWidgetTypeID,
 ...)` + `SetFlags(...)` cannot express wrap; the probe above shows the `.layout`
 attribute cannot either.
 
-## TEXT SIZING LAWS — measured across two live resolutions (2026-08-28)
+## TEXT SIZING LAWS — measured in game (2026-08-21, 2026-08-28, 2026-09-28)
 
 One probe layout (`$profile:` hot-reload, cases A-G), same strings, measured per-pixel on
 full-res captures at TWO viewports on the SAME running client (846x461, then 1600x900 via
 host-side SetWindowPos + reload — no reboot needed for a resolution sweep). Evidence:
-`dayz_re_scratch/ui_matrix.md` section 9 (flight F, run dbca698d). Rules to design by:
+`dayz_re_scratch/ui_matrix.md` section 9 (flight F, run dbca698d). The face laws below add
+SimpleGroup's panels, hot-loaded and captured natively at 1920x1080, 1280x720 and 2560x1080
+(2026-09-28). Rules to design by:
 
-- **The font-only default (a `font` attribute and no size key) SCALES with the viewport
-  and IGNORES the widget box.** Half-height box = same glyphs, clipped. Corollary that
-  closed a real bug: rects with exact flags scale by (height/1080) and so does the default
-  glyph size — they stay coupled across resolutions UNTIL a script calls SetSize on the
-  rects (a script-side scaler shrank rects x0.444 while glyphs stayed viewport-sized =
-  the guillotined-text panel). Skip the scaler and both scale together for free.
-- **`"exact text size" N` obeys a DIFFERENT law per widget class.** On `TextWidgetClass`
-  the rendered size scales with the viewport (N=20 was unreadable ~3px at 461-high, ~9px
+- **A face with no size key (a `font` attribute, no `"exact text size"`, no `text_proportion`)
+  takes its glyph height from the widget box, bitmap or SDF.** `sdf_MetronBook24` at 720p:
+  glyph = 0.74 × box height (`references/hot-iteration.md`, "Glyph height tracks the WIDGET
+  height", 2026-08-20/21). The bitmap `gui/fonts/Metron` and `MetronBook` in SimpleGroup's
+  shipped panel: ink 10 px in an 18-unit box and 14-17 px in 24-26-unit boxes at 1920x1080,
+  7 px and 8-12 px at 1280x720, 0.5-0.7 of the box at both, nothing clipped. A plan built on
+  a box-independent ~22 px glyph predicted clipping that did not happen. The one reading the
+  other way: flight F's case G, a 20-unit box, drew the same glyph as case F's 40-unit box,
+  clipped (at which of its two resolutions is not recorded; at 846x461 the box is 8.5 px tall).
+  `gui/fonts/metron.xml` lists one atlas per size (12, 14, 16, 22, 28, 48, 58), so the
+  readings are consistent with the engine picking an atlas by box height, with nothing smaller
+  than 12 for a box too short for it — not verified. Corollary that closed a real bug: rects
+  with exact flags scale by (height/1080) (Rule 3) and the glyphs scale with them. A script
+  that then shrank the rects with SetSize (x0.444 at 720p) did not shrink the glyphs, and the
+  text was guillotined (2026-08-28). Skip the scaler and both scale together for free.
+  *(corrected 2026-10-03)* This bullet said: «**The font-only default (a `font` attribute and no
+  size key) SCALES with the viewport and IGNORES the widget box.** Half-height box = same glyphs,
+  clipped.» Its corollary had the default glyph size scale by (height/1080) on its own, «while
+  glyphs stayed viewport-sized».
+- **A sized bitmap face (`gui/fonts/Metron14`, `MetronBook12`, `Metron22`…) keeps its pixel
+  size at every resolution.** SimpleGroup's p9 panel, same capture pair: the ink of its
+  `Metron22`, `Metron14`, `MetronBook12` and `Metron22` texts was 13, 10, 8 and 14 px at
+  1920x1080 and 13, 9, 8 and 14 px at 1280x720, so 0.46-0.50 of the box became 0.68-0.75 as the
+  boxes shrank to 2/3. `MetronBook12` labels at ~84% box fill at 1080p touched both
+  edges at 720p, and a `MetronBook12` sentence became unreadable. Size such text to <= ~75% of
+  its box at 1080p and do not set sentences in `MetronBook12`; S2 sorter rule 2 below is the
+  same law ("POWERED" in `Metron12`).
+- **`"exact text size" N` obeys a DIFFERENT law per widget class and face.** On
+  `TextWidgetClass` with an SDF face — vanilla's inventory header recipe, `font
+  "gui/fonts/sdf_MetronLight24"` + `"exact text" 1` + `"exact text size" 20`
+  (`inventory_new/closable_header.layout:139-158`) — the text is drawn at about N px per 1080
+  of screen height and scales with the boxes: SimpleGroup's title in `sdf_MetronBook24` at N=24
+  drew 17 px of ink (no descender) at 1920x1080 and at 2560x1080 and 12 px at 1280x720
+  (2026-09-28), and at N=20 the advance is ~10.5 px per Latin character at 1080p. That is the face to pick for text that must
+  keep its proportions. On `TextWidgetClass` with the bitmap `gui/fonts/Metron` the rendered
+  size scaled with the viewport too, but smaller (N=20 was unreadable ~3px at 461-high, ~9px
   cap at 900-high). Inside the canonical dialog recipe on `RichTextWidgetClass`
   (`"exact text" 1` + `"exact text size" 20` + `"size to text h/v" 1` + `wrap 1` +
   `clipchildren 1`) the glyphs stay PHYSICALLY CONSTANT across resolutions (cap ~10px at
@@ -1003,9 +1054,17 @@ host-side SetWindowPos + reload — no reboot needed for a resolution sweep). Ev
   outside). Never start text flush at a colored box edge — pad >=4-8px horizontally.
 - **The alpha channel of a layout `color R G B A` on a texture-less ImageWidget is IGNORED
   by the compositor** (three 0.25-alpha panels rendered their source color pure, measured
-  per-pixel; the token itself DOES reach the engine — ui_tree reports it). Declared
-  translucent washes do not exist: pre-mix the wash into an opaque token, or SetColor at
+  per-pixel; the token itself DOES reach the engine — ui_tree reports it). On that widget
+  declared translucent washes do not exist: pre-mix the wash into an opaque token, or SetColor at
   runtime. (Texture-less ImageWidget does paint a flat opaque fill — twice confirmed.)
+  A `PanelWidgetClass` with `style rover_sim_colorable` (WhitePixel in all nine slices,
+  `dayzwidgets.styles:3223-3246`) does honour the alpha: `color 0 0 0 0` drew nothing and
+  `1 0 0 1` a red fill (SimpleGroup, 2026-09-28; partial alphas not measured). A
+  `ButtonWidgetClass` with a `color` and no `style` drew no fill at all, while the same frame's
+  `style Colorable` button did (`style Default` draws nothing in Normal either:
+  `dayzwidgets.styles:1593-1604`). Vanilla's pause-menu buttons are an invisible
+  `ButtonWidget` over a child `<name>_panel` the script tints, plus a `<name>_label`
+  (`day_z_ingamemenu.layout:122-158`, `ingamemenu.c:365-415`).
 
 ## MOCKUP FIDELITY — calibrate to text_proportion; don't edit .layout off a mockup (added 2026-06-03)
 
@@ -1080,8 +1139,13 @@ captures `capture_20260829_003222_408` / `_003807_235`.
 3. **Typographic hierarchy in default font-only mode = sized faces**:
    `gui/fonts/Metron12/14/16` and `MetronBook12/14` exist and vanilla uses them
    (`day_z_hud.layout:1965` Metron14). Unnumbered faces ("Metron",
-   "MetronBook") yield ~22 and offer no fine hierarchy. `text_proportion` remains
+   "MetronBook") take their size from the box (TEXT SIZING LAWS), so with them the
+   hierarchy is the box heights. Sized bitmap faces keep their pixel size at every
+   resolution; text that must scale with the panel wants an SDF face with
+   `"exact text size"` (same section). `text_proportion` remains
    barred (no consistency across resolutions).
+   *(corrected 2026-10-03: this rule said unnumbered faces «yield ~22 and offer no fine
+   hierarchy».)*
 4. **Pre-mixed tokens validated end-to-end on real panel**: ARGB of
    `ui_tree` returns declared float byte-exact and render paints PURE
    color (declared alpha ignored). Recipe: `c = base*(1-a) + wash*a`, always

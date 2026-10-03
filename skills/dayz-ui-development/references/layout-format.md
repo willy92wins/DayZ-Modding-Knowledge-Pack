@@ -174,13 +174,18 @@ the 819-file 2026-08-19 counts later in this file (`text_proportion` 1048 =
 ### Positioning & Sizing
 
 ```
-position X Y              // Position (pixels if hexactpos/vexactpos=1, fraction 0-1 if =0)
-size W H                  // Size (pixels if hexactsize/vexactsize=1, fraction 0-1 if =0)
-hexactpos 0|1             // 1=pixel X position, 0=proportional (0.0-1.0)
-vexactpos 0|1             // 1=pixel Y position, 0=proportional (0.0-1.0)
-hexactsize 0|1            // 1=pixel width, 0=proportional (0.0-1.0)
-vexactsize 0|1            // 1=pixel height, 0=proportional (0.0-1.0)
+position X Y              // Position (exact units if hexactpos/vexactpos=1, fraction 0-1 if =0)
+size W H                  // Size (exact units if hexactsize/vexactsize=1, fraction 0-1 if =0)
+hexactpos 0|1             // 1=exact X position, 0=proportional (0.0-1.0)
+vexactpos 0|1             // 1=exact Y position, 0=proportional (0.0-1.0)
+hexactsize 0|1            // 1=exact width, 0=proportional (0.0-1.0)
+vexactsize 0|1            // 1=exact height, 0=proportional (0.0-1.0)
 ```
+
+An exact unit is 1/1080 of the screen HEIGHT, on both axes: the engine draws `declared ×
+height/1080` px whatever the width (measured in game at heights 461 to 1108 and at 2560x1080;
+SKILL.md Rule 3). It is a pixel only at a 1080-pixel-tall screen. *(corrected 2026-10-03: the
+comments above said «pixels».)*
 
 **RULE** (corrected 2026-07-04): declare all 4 flags explicitly for readability — but omission
 defaults to PROPORTIONAL in practice, not "undefined" (42 vanilla widgets omit all four, incl.
@@ -193,8 +198,9 @@ production menu ROOTS like `day_z_ingamemenu.layout:1`, and render correctly wit
 - The dominant positioning idiom is **anchor + zero offset**: `halign/valign *_ref` +
   `position 0 0` (70% of exact-pos widgets have position 0 0) + proportional or height-pixel size.
 - Full proportional (0000): 26.0% — e.g. MultilineText is 93% all-proportional.
-- Full pixel (1111): 21.9% — reserve for pixel-true chrome; it is what breaks off-1080p (exact
-  units = physical resolution, `enwidgets.c:68-71`).
+- Full exact (1111): 21.9% — scales with the screen height like everything exact (SKILL.md
+  Rule 3). *(corrected 2026-10-03: this line said «reserve for pixel-true chrome; it is what
+  breaks off-1080p (exact units = physical resolution, `enwidgets.c:68-71`)».)*
 
 ### Alignment
 
@@ -221,9 +227,10 @@ dossier §4.1's `parent_right - width + px` was wrong.
 
 Measured with `ui_tree` over `HudFrameWidget` on a live client (DayZ
 1.29.163709, 1920x1080), comparing each anchored widget's drawn edge against
-its parent's. Only `hexactpos` / `vexactpos == 1` rows are quoted, so the
-numbers are pixels and no unit conversion sits between the layout and the
-measurement:
+its parent's. Only `hexactpos` / `vexactpos == 1` rows are quoted, so on this
+1080-pixel-tall screen the numbers are pixels and no unit conversion sits
+between the layout and the measurement (exact units scale with the screen
+height: SKILL.md Rule 3):
 
 | widget | anchor | declared offset | drawn edge − parent edge |
 |---|---|---|---|
@@ -515,7 +522,7 @@ rtw.SetText(withIcon);
 Before delivering ANY .layout file:
 
 - [ ] Brace format (not XML); brace count balanced (opens == closes)
-- [ ] All 4 unit flags DECLARED on every widget (0=proportional default; 1 only for pixel-true)
+- [ ] All 4 unit flags DECLARED on every widget (0 = fraction of parent; 1 = 1/1080 of screen height, SKILL.md Rule 3)
 - [ ] ALL ImageWidget backgrounds have `ignorepointer 1`
 - [ ] ALL visible backgrounds use `ImageWidgetClass` (not Frame/Panel)
 - [ ] Widget names unique across entire layout
@@ -1161,16 +1168,23 @@ Walk the tree depth-first carrying the parent's absolute box `(px, py, pw, ph)`;
 the root's parent box is the screen. For each widget:
 
 ```
-w = size_x           if hexactsize == 1   else size_x * pw
-h = size_y           if vexactsize == 1   else size_y * ph
-x = px + position_x  if hexactpos  == 1   else px + position_x * pw
-y = py + position_y  if vexactpos  == 1   else py + position_y * ph
+s = screen_height / 1080                     # exact units, SKILL.md Rule 3
+w = size_x * s           if hexactsize == 1   else size_x * pw
+h = size_y * s           if vexactsize == 1   else size_y * ph
+x = px + position_x * s  if hexactpos  == 1   else px + position_x * pw
+y = py + position_y * s  if vexactpos  == 1   else py + position_y * ph
 ```
 
 `halign center_ref` centres the widget and its `position_x` is then applied on
 top: `x = px + (pw - w) / 2 + position_term`, where `position_term` is the same
-pixel-or-fraction expression as the general case above. `valign center_ref`
+exact-or-fraction expression as the general case above. `valign center_ref`
 does the same vertically. An absent `position` behaves as `0 0`.
+
+*(corrected 2026-10-03)* The exact branches used the declared value as pixels
+(`w = size_x if hexactsize == 1`), which holds only on a 1080-pixel-tall screen.
+The 1920x1080 calibration below is unaffected (`s = 1`); the 1280x720 table it
+mentions was computed by hand with the same formula, not read from the engine.
+`tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775` still uses the pixel form.
 
 **Corrected 2026-08-19.** This paragraph used to say `position_x` is *ignored*
 under `center_ref`. The engine adds it. Measured on the live HUD: `Zeroing`
@@ -1204,6 +1218,21 @@ Ignoring this produces confident nonsense: a geometry check that flagged
 layouts (`option_accept_button`, `option_promote_button`, ... all `size 0.0 1.0`)
 and every single one was a `ButtonWidget` under a `GridSpacerWidget`, i.e. a
 normal authoring idiom, not a defect.
+
+### Spacers, measured in game (SimpleGroup, 2026-09-28)
+
+- **`WrapSpacerWidgetClass` + `"Size To Content V" 1` stacks children of mixed
+  heights and grows with them.** A window holding frames, a 3-unit panel, text
+  and a nested `GridSpacerWidgetClass` list (`Columns 1`, `Rows 100`) ended
+  right after its last child with 4, 6 and 20 rows. Vanilla stacks its
+  pause-menu buttons the same way (`day_z_ingamemenu.layout:99-120`, `bottom`).
+- **Attribute keys are case-sensitive, and an unknown key is ignored without a
+  word.** A `GridSpacerWidgetClass` declaring `columns 1` / `rows 0` laid its
+  rows out side by side; in the same frame, a list declaring `Columns 1` /
+  `Rows 100` stacked them. Not isolated: the `rows` value differs too. Vanilla
+  spells them `Columns` / `Rows` (1060 `Columns`, `layout-empirical-corpus.md`
+  §2); a gate comparing every attribute key with its spelling in the vanilla
+  corpus caught it.
 
 ## Which widget classes actually carry which text attribute (819 layouts, 2026-08-19)
 
