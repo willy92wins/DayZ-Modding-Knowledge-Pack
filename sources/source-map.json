@@ -784,9 +784,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03: Unreleased Fixed entry for dayz-ui-development (exact units are 1/1080 of the screen height; one law per face: a face with no size key follows its box, a sized bitmap face keeps its pixel size, an SDF face with exact text size N draws about N px per 1080 of height; spacer, key-case, alpha and button findings) and the aligned references, templates, TOOLS.md and layout viewer README. Evidence as recorded on the SKILL.md input of the same change. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03: Unreleased Fixed entry for dayz-ui-development (exact units are 1/1080 of the screen height; one law per face: a face with no size key follows its box, a sized bitmap face keeps its pixel size, an SDF face with exact text size N draws about N px per 1080 of height; spacer, key-case, alpha and button findings) and the aligned references, templates, TOOLS.md and layout viewer README. Evidence as recorded on the SKILL.md input of the same change. Written by Claude (Anthropic). Updated after review round 1.",
           "license": "MIT",
-          "source_hash": "c5f2b6a8a0848739b1291315d73721d718804335d921e7743782274b63e2aa00",
+          "source_hash": "aa7ecf8b714615760b701b239fba28923c82be2a23b147dd26be99d8b6b85cac",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
@@ -794,7 +794,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c5f2b6a8a0848739b1291315d73721d718804335d921e7743782274b63e2aa00",
+      "output_hash": "aa7ecf8b714615760b701b239fba28923c82be2a23b147dd26be99d8b6b85cac",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -1172,9 +1172,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5): the dayz-layout-viewer paragraph called its exact-pixel versus scaled-proportional difference the 'looked right in the mockup, wrong in game' failure made visible; in game exact units scale with the screen height (dayz-ui-development Rule 3), so off 1080p that difference is the viewer's model (tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775). Quoted in a dated note. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5): the dayz-layout-viewer paragraph called its exact-pixel versus scaled-proportional difference the 'looked right in the mockup, wrong in game' failure made visible; in game exact units scale with the screen height (dayz-ui-development Rule 3), so off 1080p that difference is the viewer's model (tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775). Quoted in a dated note. Written by Claude (Anthropic). Updated after review round 1.",
           "license": "MIT",
-          "source_hash": "1280b5d8e08bd745f578c6787c035098cd8d915979dd66936499ce272e7beb03",
+          "source_hash": "e5c5ad9193496317e97b4c64b7f32f44bfb60910207ad513e3b20eb83b3c9636",
           "source_id": "pack-r21-authored",
           "source_path": "TOOLS.md",
           "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
@@ -1182,7 +1182,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1280b5d8e08bd745f578c6787c035098cd8d915979dd66936499ce272e7beb03",
+      "output_hash": "e5c5ad9193496317e97b4c64b7f32f44bfb60910207ad513e3b20eb83b3c9636",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -11411,9 +11411,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03 (pipeline tickets fb-20260928-130346-5144 and fb-20260928-150846-21d5). Rule 3 said hexact*/vexact* 1 = physical screen pixels (enwidgets.c:68-71 header comment) and advised proportional by default; TEXT SIZING LAWS said the font-only default ignores the widget box, against references/hot-iteration.md 'Glyph height tracks the WIDGET height'; S2 sorter rule 3 said unnumbered faces yield ~22. All quoted verbatim in dated notes (checked mechanically: 25 quotes found in the base after whitespace collapse; a one-word mutant of each file's first quote fails). In game: ui_tree rects at heights 461, 720, 900, 1080 and 1108 scaled declared x height/1080 (owner's ui_matrix.md sections 8, 9, 11, 2026-08-28/29). SimpleGroup p9b captures, 2026-09-28, native 1920x1080, 2560x1080 and 1280x720 from fresh launches, re-measured 2026-10-03 per pixel: the 400-unit right_ref panel spans 400 px with a 16 px right gap at both 1080-high resolutions and 267 px with 11 px at 720p; the sdf_MetronBook24 'exact text size' 24 title has 17/17/12 px of ink (110/110/74 px wide). SimpleGroup p9 captures (1080p and 720p, same frame for the shipped and the new panel), re-measured per pixel: unsized gui/fonts/Metron and MetronBook ink 10 px in an 18-unit box, 14 px in 24, 17 px in 26 at 1080p; 7, 8 and 12 px at 720p (0.5-0.7 of the box), nothing clipped; sized Metron22/Metron14/MetronBook12/Metron22 ink 13/10/8/14 px at 1080p and 13/9/8/14 px at 720p. Flight F case G (20-unit box, same glyph as the 40-unit case, clipped) kept as the one contrary reading, its resolution not recorded. P:/gui/fonts/metron.xml lists atlas sizes 12-58 (atlas selection by box height stated as not verified). Vanilla cited and read: inventory_new/closable_header.layout:139-158 (sdf_MetronLight24, exact text size 20), dayzwidgets.styles:3223-3246 (rover_sim_colorable WhitePixel) and :1593-1604 (ButtonWidget Default Normal empty), day_z_ingamemenu.layout:122-158 and ingamemenu.c:365-415 (button + _panel + _label). Frames show rover_sim_colorable color 0 0 0 0 invisible and 1 0 0 1 red, and a no-style ButtonWidget with a color drawing no fill next to a style Colorable one. The offline-preview step and the troubleshooting row now say dayz-ui-lab parse.py:772-775 lays exact units out as pixels. Not measured: heights above 1108, partial alphas on rover_sim_colorable, the engine's atlas choice. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline tickets fb-20260928-130346-5144 and fb-20260928-150846-21d5). Rule 3 said hexact*/vexact* 1 = physical screen pixels (enwidgets.c:68-71 header comment) and advised proportional by default; TEXT SIZING LAWS said the font-only default ignores the widget box, against references/hot-iteration.md 'Glyph height tracks the WIDGET height'; S2 sorter rule 3 said unnumbered faces yield ~22. All quoted verbatim in dated notes (checked mechanically: 25 quotes found in the base after whitespace collapse; a one-word mutant of each file's first quote fails). In game: ui_tree rects at heights 461, 720, 900, 1080 and 1108 scaled declared x height/1080 (owner's ui_matrix.md sections 8, 9, 11, 2026-08-28/29). SimpleGroup p9b captures, 2026-09-28, native 1920x1080, 2560x1080 and 1280x720 from fresh launches, re-measured 2026-10-03 per pixel: the 400-unit right_ref panel spans 400 px with a 16 px right gap at both 1080-high resolutions and 267 px with 11 px at 720p; the sdf_MetronBook24 'exact text size' 24 title has 17/17/12 px of ink (110/110/74 px wide). SimpleGroup p9 captures (1080p and 720p, same frame for the shipped and the new panel), re-measured per pixel: unsized gui/fonts/Metron and MetronBook ink 10 px in an 18-unit box, 14 px in 24, 17 px in 26 at 1080p; 7, 8 and 12 px at 720p (0.5-0.7 of the box), nothing clipped; sized Metron22/Metron14/MetronBook12/Metron22 ink 13/10/8/14 px at 1080p and 13/9/8/14 px at 720p. Flight F case G (20-unit box, same glyph as the 40-unit case, clipped) kept as the one contrary reading, its resolution not recorded. P:/gui/fonts/metron.xml lists atlas sizes 12-58 (atlas selection by box height stated as not verified). Vanilla cited and read: inventory_new/closable_header.layout:139-158 (sdf_MetronLight24, exact text size 20), dayzwidgets.styles:3223-3246 (rover_sim_colorable WhitePixel) and :1593-1604 (ButtonWidget Default Normal empty), day_z_ingamemenu.layout:122-158 and ingamemenu.c:365-415 (button + _panel + _label). Frames show rover_sim_colorable color 0 0 0 0 invisible and 1 0 0 1 red, and a no-style ButtonWidget with a color drawing no fill next to a style Colorable one. The offline-preview step and the troubleshooting row now say dayz-ui-lab parse.py:772-775 lays exact units out as pixels. Not measured: heights above 1108, partial alphas on rover_sim_colorable, the engine's atlas choice. Written by Claude (Anthropic). Review round 1 (Codex gpt-6.1-sol, workspace-write on a git-archive export, effort max; UNSOUND): R1-01 (P1) layout-empirical-corpus.md:71-74 still said 0=fraction, 1=pixels; R1-02 (P2) 'no size key' also covered numbered bitmap faces such as Metron22 (box 28->18.667, ink 13->13 px), and MOCKUP FIDELITY still calibrated every face by text_proportion x box; R1-03 (P2) ~75% fill at 1080p overflows a fixed-pixel glyph at 720p (90 px ink, 120-unit box -> 80 px); R1-04 (P2) the preview's non-1080 views also misplace proportional children of exact parents. Fixed: the corpus lines with a dated note; the law names unnumbered bitmap faces or SDF faces, numbered bitmap faces keep their pixels; the fill bound is 2/3 of the box at 1080p for 720p, padding included, the ticket's ~75% kept as what held in that panel; the mockup calibration is per face; preview views trusted only for widgets with no exact ancestor (SKILL.md and TOOLS.md). The unsized-face ink figures now use texts without descenders (10 px in 18 units, 14 px in 24 units at 1080p; 7 and 8 px at 720p).",
           "license": "MIT",
-          "source_hash": "bbbc6dd99400156cb0e35784a22a101e76fc0c071e46a868d614f1b80ec25d15",
+          "source_hash": "cdd213c8e4f0786a6657158fca428841dba6ea667ac155804fac53fda814ad8e",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
@@ -11421,7 +11421,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "bbbc6dd99400156cb0e35784a22a101e76fc0c071e46a868d614f1b80ec25d15",
+      "output_hash": "cdd213c8e4f0786a6657158fca428841dba6ea667ac155804fac53fda814ad8e",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -11688,10 +11688,20 @@
           "source_path": "dayz-ui-development/references/layout-empirical-corpus.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5, review round 1 R1-01): the attribute table defined hexact*/vexact* as '0=fraction, 1=pixels'; now '1=exact (1/1080 of screen height)', with a dated note quoting the old words; counts unchanged. Evidence as recorded on the SKILL.md input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9c266505e2d643a2ab61aaf92af608d6e64c082d69b96ce26aa20bbf851800ac",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-empirical-corpus.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "495575da0199390b2498f8faf9103c84e52d4585e282bd1c8c3139dfdaebc37d",
+      "output_hash": "9c266505e2d643a2ab61aaf92af608d6e64c082d69b96ce26aa20bbf851800ac",
       "output_path": "skills/dayz-ui-development/references/layout-empirical-corpus.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"

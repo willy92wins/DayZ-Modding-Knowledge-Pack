@@ -302,7 +302,7 @@ parser's diagnostics. In it exact widgets keep their declared pixels at every
 viewport while proportional ones scale. The engine draws exact units as 1/1080
 of the screen height (`dayz-ui-development` Rule 3, measured in game), so off
 1080p that difference is the viewer's model, not the game's: trust its other
-viewports for proportional geometry only. *(Corrected 2026-10-03: this called
+viewports only for widgets with no exact ancestor. *(Corrected 2026-10-03: this called
 the difference the "looked right in the mockup, wrong in game" failure made
 visible without a build.)*
 

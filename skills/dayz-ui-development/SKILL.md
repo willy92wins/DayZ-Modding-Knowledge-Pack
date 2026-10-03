@@ -73,8 +73,9 @@ stringtable, which no compiler catches; `--strict` turns its WARN into failure.
    → a self-contained `.preview.html` you switch between 1080p / 1440p / 21:9 / 720p.
    Its geometry lays exact units out as pixels at every viewport
    (`tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775`), while the engine scales them with the
-   screen height (Rule 3): at any viewport but 1080p it misplaces exact widgets, so trust those
-   views for proportional geometry only. *(corrected 2026-10-03: this step said the viewports let
+   screen height (Rule 3): at any viewport but 1080p it misplaces exact widgets and everything
+   inside them, so trust those views only for widgets with no exact ancestor. *(corrected
+   2026-10-03: this step said the viewports let
    you «SEE exact-flag breakage without a build».)*
    **What it does and does not model, read out of the code 2026-08-20.** Two copies of this
    skill used to disagree here — one said "structure and anchoring only", the other said to
@@ -998,12 +999,14 @@ host-side SetWindowPos + reload — no reboot needed for a resolution sweep). Ev
 SimpleGroup's panels, hot-loaded and captured natively at 1920x1080, 1280x720 and 2560x1080
 (2026-09-28). Rules to design by:
 
-- **A face with no size key (a `font` attribute, no `"exact text size"`, no `text_proportion`)
-  takes its glyph height from the widget box, bitmap or SDF.** `sdf_MetronBook24` at 720p:
-  glyph = 0.74 × box height (`references/hot-iteration.md`, "Glyph height tracks the WIDGET
-  height", 2026-08-20/21). The bitmap `gui/fonts/Metron` and `MetronBook` in SimpleGroup's
-  shipped panel: ink 10 px in an 18-unit box and 14-17 px in 24-26-unit boxes at 1920x1080,
-  7 px and 8-12 px at 1280x720, 0.5-0.7 of the box at both, nothing clipped. A plan built on
+- **An unnumbered bitmap face (`gui/fonts/Metron`, `MetronBook`) or an SDF face, with no size
+  key (no `"exact text size"`, no `text_proportion`), takes its glyph height from the widget
+  box.** A numbered bitmap face (`Metron14`…) does not: next bullet. `sdf_MetronBook24` at
+  720p: glyph = 0.74 × box height (`references/hot-iteration.md`, "Glyph height tracks the
+  WIDGET height", 2026-08-20/21). The bitmap `gui/fonts/Metron` and `MetronBook` in
+  SimpleGroup's shipped panel, on texts without descenders: ink 10 px in an 18-unit box and
+  14 px in a 24-unit box at 1920x1080, 7 and 8 px at 1280x720, 0.5-0.6 of the box at both,
+  nothing clipped. A plan built on
   a box-independent ~22 px glyph predicted clipping that did not happen. The one reading the
   other way: flight F's case G, a 20-unit box, drew the same glyph as case F's 40-unit box,
   clipped (at which of its two resolutions is not recorded; at 846x461 the box is 8.5 px tall).
@@ -1017,14 +1020,17 @@ SimpleGroup's panels, hot-loaded and captured natively at 1920x1080, 1280x720 an
   size key) SCALES with the viewport and IGNORES the widget box.** Half-height box = same glyphs,
   clipped.» Its corollary had the default glyph size scale by (height/1080) on its own, «while
   glyphs stayed viewport-sized».
-- **A sized bitmap face (`gui/fonts/Metron14`, `MetronBook12`, `Metron22`…) keeps its pixel
-  size at every resolution.** SimpleGroup's p9 panel, same capture pair: the ink of its
-  `Metron22`, `Metron14`, `MetronBook12` and `Metron22` texts was 13, 10, 8 and 14 px at
-  1920x1080 and 13, 9, 8 and 14 px at 1280x720, so 0.46-0.50 of the box became 0.68-0.75 as the
-  boxes shrank to 2/3. `MetronBook12` labels at ~84% box fill at 1080p touched both
-  edges at 720p, and a `MetronBook12` sentence became unreadable. Size such text to <= ~75% of
-  its box at 1080p and do not set sentences in `MetronBook12`; S2 sorter rule 2 below is the
-  same law ("POWERED" in `Metron12`).
+- **A numbered bitmap face (`gui/fonts/Metron14`, `MetronBook12`, `Metron22`…) keeps its pixel
+  size at every resolution, whatever its box.** SimpleGroup's p9 panel, same capture pair: the
+  ink of its `Metron22`, `Metron14`, `MetronBook12` and `Metron22` texts was 13, 10, 8 and 14 px
+  at 1920x1080 and 13, 9, 8 and 14 px at 1280x720, so 0.46-0.50 of the box became 0.68-0.75 as
+  the boxes shrank to 2/3. `MetronBook12` labels at ~84% box fill at 1080p touched both edges at
+  720p, and a `MetronBook12` sentence became unreadable. Size such text for the smallest height
+  you support: at 720p the box is 2/3 of its 1080p size and the glyph is not, so text that must
+  fit there fills at most 2/3 of its box at 1080p, padding included. The ticket's rule of thumb,
+  ~75%, held in that panel; by the arithmetic it overflows at 720p unless the glyph shrinks (one
+  `Metron14` text did, by one pixel). Do not set sentences in `MetronBook12`; S2 sorter rule 2
+  below is the same law ("POWERED" in `Metron12`).
 - **`"exact text size" N` obeys a DIFFERENT law per widget class and face.** On
   `TextWidgetClass` with an SDF face — vanilla's inventory header recipe, `font
   "gui/fonts/sdf_MetronLight24"` + `"exact text" 1` + `"exact text size" 20`
@@ -1071,9 +1077,14 @@ SimpleGroup's panels, hot-loaded and captured natively at 1920x1080, 1280x720 an
 When building an HTML/preview mockup of a DayZ `.layout`, the mockup's CSS `font-size` (px) does
 NOT represent the in-game render: DayZ TextWidget text size is driven by `text_proportion`
 (fraction of widget height), not px. An arbitrary mockup font wraps/overlaps differently than in-game.
+*(scoped 2026-10-03: that holds for the faces that follow their box; a numbered bitmap face such
+as `Metron14` keeps its pixel size, and an SDF face with `"exact text size"` N scales with the
+screen height — TEXT SIZING LAWS.)*
 
-- **Calibrate** the mockup font to `text_proportion × box-height`, OR label the mockup explicitly
-  as "approximation, not the in-game render".
+- **Calibrate** the mockup font per face: `text_proportion × box-height` for a face that follows
+  its box, the face's own pixel size for a numbered bitmap face, N × height/1080 for an SDF face
+  with `"exact text size"` N. OR label the mockup explicitly as "approximation, not the in-game
+  render".
 - **Do NOT change the real `.layout`** (convert a widget to MultilineTextWidget, move positions,
   shrink text) to fix something seen ONLY in an unfaithful mockup — mark it `[verify in-game]`
   first; the in-game render may already be fine. Origin: a 25px mockup title wrapped + overlapped

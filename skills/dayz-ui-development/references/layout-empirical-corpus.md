@@ -68,10 +68,10 @@ This file complements (does not replace) `layout-format.md`, `widget-api.md`,
 
 ```
 10349 size                hexactsize/vexactsize toggle units
-10302 vexactsize          0=fraction, 1=pixels
-10256 hexactsize          0=fraction, 1=pixels
-10242 vexactpos           0=fraction, 1=pixels
-10242 hexactpos           0=fraction, 1=pixels
+10302 vexactsize          0=fraction, 1=exact (1/1080 of screen height)
+10256 hexactsize          0=fraction, 1=exact (1/1080 of screen height)
+10242 vexactpos           0=fraction, 1=exact (1/1080 of screen height)
+10242 hexactpos           0=fraction, 1=exact (1/1080 of screen height)
  7778 position
  7494 ignorepointer       1=transparent to mouse
  4518 valign              top|center|bottom|*_ref|0|1|2
@@ -117,6 +117,10 @@ This file complements (does not replace) `layout-format.md`, `widget-api.md`,
   163 keepsafezone        respect TV-safe margins
   154 Progress            ProgressBarWidget initial value
 ```
+
+*(corrected 2026-10-03: the four `exact` lines above said «0=fraction, 1=pixels». Measured in game, an
+exact unit is 1/1080 of the screen height on both axes, a pixel only on a 1080-pixel-tall screen:
+SKILL.md Rule 3. The counts are unchanged.)*
 
 ### Newly documented attributes (semantics inferred from corpus + community wiki)
 
