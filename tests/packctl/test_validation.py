@@ -635,14 +635,21 @@ def test_conflict_markers_of_an_unmerged_path_are_reported_once(
 ) -> None:
     # During an unresolved merge, git ls-files lists the path once per stage.
     root = repo_factory({"notes.md": "base\n"})
-    run_git(root, "checkout", "-q", "-b", "side")
-    (root / "notes.md").write_text("side\n", encoding="utf-8", newline="\n")
-    run_git(root, "commit", "-qam", "side")
-    run_git(root, "checkout", "-q", "-")
-    (root / "notes.md").write_text("main\n", encoding="utf-8", newline="\n")
-    run_git(root, "commit", "-qam", "main")
+    ours = run_git(root, "rev-parse", "--abbrev-ref", "HEAD")
+    theirs = ours + "-theirs"
+    run_git(root, "checkout", "-q", "-b", theirs)
+    (root / "notes.md").write_text("theirs\n", encoding="utf-8", newline="\n")
+    run_git(root, "commit", "-qam", "theirs")
+    run_git(root, "checkout", "-q", ours)
+    (root / "notes.md").write_text("ours\n", encoding="utf-8", newline="\n")
+    run_git(root, "commit", "-qam", "ours")
     with pytest.raises(subprocess.CalledProcessError):
-        run_git(root, "-c", "merge.conflictStyle=merge", "merge", "side")
+        run_git(
+            root, "-c", "merge.conflictStyle=merge", "-c", "merge.ff=false",
+            "merge", theirs,
+        )
+    # The premise: the conflicted path sits in the index once per stage.
+    assert len(run_git(root, "ls-files", "-u").splitlines()) == 3
 
     findings = validate_conflict_markers(root)
 
