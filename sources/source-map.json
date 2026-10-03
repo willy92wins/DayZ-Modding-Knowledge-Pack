@@ -3387,10 +3387,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-mcpv-live-port@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 promotion of main b97026c following #75 (receipt eb9e9571ca46bed0fb3ee409 of the promotion of 3e22429): the owner asked to promote #74 to the live trees; promotion is per commit, so it carries what main gained since 3e22429 (#67, #68, #76, #77, #74, #71, #72, #78, #80, #79 and #81). The first check, from a fresh worktree of c26b0e2, failed with PROMOTION-TARGET-UNEXPLAINED on skill/dayz-mcp-verify in both skill roots: another session had written into the installed copy that day. By the owner's choice its two remaining sections were ported to the Pack and the live copy re-adjudicated (#81, merged as b97026c). promote --check from a fresh worktree of b97026c with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (80 of 119 operations: seven skills on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the 12 paths git changed under skills/ since 3e22429: ai-3d-to-dayz SKILL.md; dayz-characters SKILL.md, references/check_dayz_winding.py, references/test_check_dayz_winding.py; dayz-doors references/lods-and-object-builder.md; dayz-mcp-verify SKILL.md (replacing the hand-edited live copy, kept in the transaction backup); dayz-model-pipeline SKILL.md, references/lods-and-geometry.md, references/py3d-direct-generation.md; dayz-p3d-audit SKILL.md, references/killers-detail.md; dayz-vehicles SKILL.md; nothing removed. promote --apply PASS, transaction 065bcb4e2d96d07c20104681, COMMIT event 242 at 2026-10-03T11:50:54Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash with the plan's operations and no absolute path, 14 of 82 adjudicated pairs advanced, exactly the 14 that had to; the live dayz-mcp-verify SKILL.md is byte-identical to b97026c's. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a21f25ca9ceedadbf85859908944887134b5271cfc01e30dabaffa68c2a19db1",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-b97026c@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "1613cf792e943b98f76cd1bdd8ee983ffe6b1f9116e94f24bf98319eea0f34cf",
+      "output_hash": "a21f25ca9ceedadbf85859908944887134b5271cfc01e30dabaffa68c2a19db1",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -29766,6 +29776,28 @@
       "license": "MIT",
       "output_hash": "2a5cd5781928144e0fc8f430fccdc3d6ecefdf1dcaebf6e68e64dee77357be61",
       "output_path": "promotions/receipts/eb9e9571ca46bed0fb3ee409.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/065bcb4e2d96d07c20104681.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03 promotion of main b97026c following #75 (receipt eb9e9571ca46bed0fb3ee409 of the promotion of 3e22429): the owner asked to promote #74 to the live trees; promotion is per commit, so it carries what main gained since 3e22429 (#67, #68, #76, #77, #74, #71, #72, #78, #80, #79 and #81). The first check, from a fresh worktree of c26b0e2, failed with PROMOTION-TARGET-UNEXPLAINED on skill/dayz-mcp-verify in both skill roots: another session had written into the installed copy that day. By the owner's choice its two remaining sections were ported to the Pack and the live copy re-adjudicated (#81, merged as b97026c). promote --check from a fresh worktree of b97026c with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (80 of 119 operations: seven skills on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the 12 paths git changed under skills/ since 3e22429: ai-3d-to-dayz SKILL.md; dayz-characters SKILL.md, references/check_dayz_winding.py, references/test_check_dayz_winding.py; dayz-doors references/lods-and-object-builder.md; dayz-mcp-verify SKILL.md (replacing the hand-edited live copy, kept in the transaction backup); dayz-model-pipeline SKILL.md, references/lods-and-geometry.md, references/py3d-direct-generation.md; dayz-p3d-audit SKILL.md, references/killers-detail.md; dayz-vehicles SKILL.md; nothing removed. promote --apply PASS, transaction 065bcb4e2d96d07c20104681, COMMIT event 242 at 2026-10-03T11:50:54Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash with the plan's operations and no absolute path, 14 of 82 adjudicated pairs advanced, exactly the 14 that had to; the live dayz-mcp-verify SKILL.md is byte-identical to b97026c's. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "77bec8b5f3c21b8786dc2fbe4b4ddecc6d9c53075012fbdb4e59bd060ff87199",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/065bcb4e2d96d07c20104681.json",
+          "source_revision": "kp-update-promotion-b97026c@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "77bec8b5f3c21b8786dc2fbe4b4ddecc6d9c53075012fbdb4e59bd060ff87199",
+      "output_path": "promotions/receipts/065bcb4e2d96d07c20104681.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
