@@ -209,15 +209,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   messages of a staged build tolerable; the ArmorHneck ODOL it cited as working (deployed
   2026-08-04) carries its Fire Geometry material `armor_5mm_plate.rvmat` empty. The rule now
   stages the cited files beside the mod (copies, or a `DZ` junction to the extracted vanilla
-  data), and a new rule 5 gates every ODOL for empty embedded materials. Measured: CocaLab
+  data), and a new rule 5 gates every ODOL for empty embedded materials. An unresolved material
+  has no shader, stage or surface and the engine's default colours; a bare vanilla `.rvmat`
+  (colours or render flags only, e.g. `half_lighted_default.rvmat`, `streambed_leaves.rvmat`)
+  has the first three too, so the gate fails a flagged material only when its `.rvmat` declares
+  a shader, a stage or a surface, with those two vanilla ODOLs as its positive control. Measured: CocaLab
   (2026-09-27; gate control without the files: 6 failures) and the DayZ MCP v1.3.1 spike on
   SimpleGroup (2026-10-01, 11 builds): binarize parses every `config.cpp` under `-addon`, through
   junctions; AddonBuilder exits 0 with `[ResultCode]=1`; `-project=<source>` drops every `.paa`,
   `.rvmat` and `texHeaders.bin` from the PBO; with the mod alone under `-addon`, `T1_FlagKit.p3d`
   embeds its two `dz\` materials empty, and with a `DZ` junction beside it, it is byte-identical
-  to the production build. `dayz-clothing` BUILD step 1 points at the rule, and SP-069 rule 1
-  records the spike's nine binarized builds with `-temp` in a local folder. Not measured: what an
-  empty material does in game. The replaced sentences are quoted in a dated note.
+  to the production build. `dayz-clothing` BUILD step 1 points at the rule. SP-069 rule 1 no
+  longer says `-temp` "must stay under `P:\`": with the spike's nine binarized builds in a local
+  `-temp` added to four earlier ones, `P:\` is the habit, not a measured requirement. The
+  "Gate ordering" paragraph says AddonBuilder's own exit code is 0 on a failed build. Not
+  measured: what an empty material does in game. The replaced sentences are quoted in dated
+  notes.
 - `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
   by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
   bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties

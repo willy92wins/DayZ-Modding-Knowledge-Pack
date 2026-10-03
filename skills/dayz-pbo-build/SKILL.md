@@ -563,12 +563,20 @@ AddonBuilder clears its `-temp` before copying.
 
 5. **Gate every binarized p3d for empty embedded materials** (added 2026-10-03; CocaLab gate
    since 2026-09-27). Read the ODOL with the external `odol_reader.py` (`dayz-p3d-debinarizer`;
-   not distributed with this pack) and fail on any embedded material, in any LOD, that has
-   `pixel_shader == 0`, `vertex_shader == 0`, `surface_file == ""` and no stage texture. A
-   resolved penetration material passes: it carries its `.bisurf`. Run the control once: the
-   same build without the cited files must fail the gate. Gate on those fields, not on the
-   ODOL hash: three SimpleGroup flagpoles varied by up to 67 B across builds of the same
-   source (2026-10-01; same trap in `tools/py3d/KNOWN-ISSUES.md`).
+   not distributed with this pack). A material binarize could not find reads, in every LOD
+   that cites it: `pixel_shader == 0`, `vertex_shader == 0`, `surface_file == ""`, no stage
+   texture, and the engine's default colours (diffuse and ambient 1,1,1,1, emissive 0,0,0,1).
+   The first four alone are not a verdict: a `.rvmat` that declares only colours or render
+   flags reads the same apart from those. Two vanilla ones do, in Bohemia's own ODOLs:
+   `dz\data\data\half_lighted_default.rvmat` (diffuse 0.5) in `dz\data\cl_feathers2.p3d`, and
+   `dz\water\streambed\data\streambed_leaves.rvmat` (diffuse 0.3, `NoZWrite`) in
+   `water.pbo`'s `Streambed\streambed_leaf_short_straight.p3d`. So fail a flagged material when
+   its `.rvmat`, read from the files the game loads, declares a shader, a stage or a surface.
+   A resolved penetration material passes: it carries its `.bisurf`. Run both controls once:
+   the same build without the cited files must fail the gate, and those two vanilla ODOLs must
+   pass it. Gate on those fields, not on the ODOL hash: three SimpleGroup flagpoles varied by
+   up to 67 B across five builds that resolved the same files (2026-10-01; same trap in
+   `tools/py3d/KNOWN-ISSUES.md`).
 
 The orchestrated build path (temp wipe + deploy + launch) lives in dayz-test-ingame's
 `dayz-test.ps1` template.
@@ -576,15 +584,17 @@ The orchestrated build path (temp wipe + deploy + launch) lives in dayz-test-ing
 
 **Binarize via AddonBuilder CLI (SP-069, LFHeli OH-1 2026-07-19):**
 
-1. **`-temp` for binarize must stay under `P:\`.** With `-temp` outside `P:\`, the
-   "Binarizing" step dies in ~4 s with "Process ended with non-zero code. Exit code: 1",
-   empty stderr and zero p3d produced — AddonBuilder still exits 0 ("Build failed" only
-   in its log). Keep `-temp` on `P:\` (canonical: `-temp=P:\temp\<ModName>`).
-   That explanation did not reproduce in four later builds with `-temp` outside `P:\` and the work drive
-   mounted (`references/build-appendices.md`, item 6): keep `-temp` on `P:\`, but re-measure before blaming it.
-   Nine more binarized builds with `-temp` in a local folder produced their ODOL on 2026-10-01
-   (SP-155 rule 1), and a binarize exit 1 within a second is also what a broken `config.cpp`
-   under `-addon` gives.
+1. **`-temp` for binarize: `P:\` is the habit, not a measured requirement.** On 2026-07-19,
+   with `-temp` outside `P:\`, the "Binarizing" step died in ~4 s with "Process ended with
+   non-zero code. Exit code: 1", empty stderr and zero p3d produced — AddonBuilder still
+   exited 0 ("Build failed" only in its log) — and `-temp` took the blame. That explanation
+   did not reproduce in four later builds with `-temp` outside `P:\` and the work drive mounted
+   (`references/build-appendices.md`, item 6), nor in nine binarized builds with `-temp` in a
+   local folder on 2026-10-01, all with their ODOL (SP-155 rule 1). A binarize exit 1 within a
+   second is also what a broken `config.cpp` under `-addon` gives, so rule that out first.
+   Keeping `-temp` on `P:\` (canonical: `-temp=P:\temp\<ModName>`) costs nothing; none of
+   those builds ran with the work drive unmounted. *(corrected 2026-10-03: the heading said
+   «**`-temp` for binarize must stay under `P:\`.**»)*
    `-packonly` still accepts local folders outside `P:\`, so local staging remains valid.
 
 2. **ODOL output is neither the source nor the target.** It lands in
@@ -796,7 +806,9 @@ if not (len(data) > 21 and data[-21] == 0
 **Gate ordering.** A build step that reports success without checking `$LASTEXITCODE` after
 each AddonBuilder invocation, and a deploy step that accepts a PBO on `Test-Path` alone, will
 both hand you a stale artifact and call it fresh. Check the return code after *every*
-invocation, and print a `SHA-256` build-id at pack time that a boot sentinel inside the mod
+invocation — and for AddonBuilder, whose exit code is 0 even when the build fails (SP-155
+rule 1), read the rpt's `[ResultCode]` and check that the PBO exists and was rebuilt — and
+print a `SHA-256` build-id at pack time that a boot sentinel inside the mod
 can be checked against — otherwise an old PBO is indistinguishable from a new one that does
 nothing.
 
