@@ -11,9 +11,10 @@ never compiled is not judged:
     #defines X before that point on a line it always keeps (outside every
     block, or under an #ifdef of a macro it #defined the same way).
 
-line_branches() and compatible() tell which live lines can compile in the
-same build: two branches of one block never do, so an expression is never
-read across them.
+line_branches() and compatible() tell apart lines in different branches of
+one block, which never compile in the same build. Blocks are not related
+through their macros: `#ifdef X` and a later `#ifndef X` are two unrelated
+blocks, so lines of both can be read together.
 """
 
 import re

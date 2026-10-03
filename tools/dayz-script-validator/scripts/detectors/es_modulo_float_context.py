@@ -238,35 +238,41 @@ def _group_value_start(tokens, partner, opener, closer):
 
 
 def _float_literal_at_level(tokens, partner, first, last):
-    cursor = first
-    while cursor <= last:
-        kind, text = tokens[cursor][:2]
-        if kind == "float":
-            return text
-        if text == "[" or (text == "(" and _is_call_or_control(tokens, cursor)):
-            closer = partner.get(cursor)
-            if closer is None:
-                return None
-            cursor = closer + 1
-            continue
-        if text == "(":
-            closer = partner.get(cursor)
-            if closer is None or closer > last:
-                # The expression starts inside this parenthesis: read on.
-                cursor += 1
+    # Groups are entered through an explicit stack, not by recursion, so no
+    # depth of parentheses can exhaust the interpreter's stack. Each entry is
+    # a stretch still to read; an unbalanced bracket ends only its stretch.
+    stretches = [(first, last)]
+    while stretches:
+        cursor, last = stretches.pop()
+        while cursor <= last:
+            kind, text = tokens[cursor][:2]
+            if kind == "float":
+                return text
+            if text == "[" or (text == "(" and _is_call_or_control(tokens, cursor)):
+                closer = partner.get(cursor)
+                if closer is None:
+                    break
+                cursor = closer + 1
                 continue
-            if closer == cursor + 2 and tokens[cursor + 1][1] == "int":
-                # `(int)x`: the cast's operand is an int, whatever it holds.
-                cursor = _after_cast_operand(tokens, partner, closer + 1)
+            if text == "(":
+                closer = partner.get(cursor)
+                if closer is None or closer > last:
+                    # The expression starts inside this parenthesis: read on.
+                    cursor += 1
+                    continue
+                if closer == cursor + 2 and tokens[cursor + 1][1] == "int":
+                    # `(int)x`: the cast's operand is an int, whatever it holds.
+                    cursor = _after_cast_operand(tokens, partner, closer + 1)
+                    continue
+                start = _group_value_start(tokens, partner, cursor, closer)
+                if start is not None:
+                    # Read the group first, then what follows it.
+                    stretches.append((closer + 1, last))
+                    cursor, last = start, closer - 1
+                    continue
+                cursor = closer + 1
                 continue
-            start = _group_value_start(tokens, partner, cursor, closer)
-            if start is not None:
-                literal = _float_literal_at_level(tokens, partner, start, closer - 1)
-                if literal is not None:
-                    return literal
-            cursor = closer + 1
-            continue
-        cursor += 1
+            cursor += 1
     return None
 
 

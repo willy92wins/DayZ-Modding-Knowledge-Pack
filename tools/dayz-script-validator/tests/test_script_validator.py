@@ -2046,10 +2046,12 @@ class TestReservedWordIdentifier(unittest.TestCase):
 
         # A parameter split over two lines, a later declarator, a foreach
         # variable and the second variable of a for header; not the use of
-        # `out` among the arguments of line 10.
+        # `out` among the arguments of line 11. Later declarators end with
+        # `=`, `;`, `,` and `[` (review round 2, R2-06).
         self.assertEqual(1, exit_code)
         self.assertEqual(
-            [(7, "sealed"), (9, "out"), (11, "local"), (14, "owned")],
+            [(8, "sealed"), (10, "out"), (12, "local"), (15, "owned"),
+             (18, "local"), (19, "owned"), (20, "out")],
             [(e["line"], e["message"].split("'")[1])
              for e in _errors_of(result, RESERVED_RULE)],
         )
@@ -2131,7 +2133,7 @@ class TestModuloFloatContext(unittest.TestCase):
         self.assertFalse(flagged("#if 0\nfloat g = (n % 4) * 0.5;\n#endif"))
         self.assertTrue(flagged("#ifdef FX_OTHER_MOD\nfloat h = (n % 4) * 0.5;\n#endif"))
 
-    def test_an_expression_is_read_only_across_lines_that_compile_together(self):
+    def test_an_expression_skips_dead_lines_and_other_branches_of_its_blocks(self):
         from detectors.es_modulo_float_context import check_es_modulo_float_context
         from stripper import strip_enforce_comments_and_strings
 
@@ -2139,6 +2141,15 @@ class TestModuloFloatContext(unittest.TestCase):
             source = "class C\n{\n    int F(int n)\n    {\n%s\n    }\n}\n" % body
             stripped, _warnings = strip_enforce_comments_and_strings(source, "x.c")
             return bool(check_es_modulo_float_context(source, stripped, "x.c"))
+
+        # Every block around the `%` counts, not only the innermost one
+        # (review round 2, R2-05).
+        self.assertFalse(flagged(
+            "        return n\n"
+            "#ifdef FX_OUTER\n#ifdef FX_INNER\n            % 4\n"
+            "#else\n            % 4\n#endif\n"
+            "#else\n            * 0.5\n#endif\n        ;"
+        ))
 
         # A float in a branch that never compiles is no part of the
         # expression (review round 1, R01).
@@ -2160,6 +2171,23 @@ class TestModuloFloatContext(unittest.TestCase):
             "        return (n % 4)\n"
             "#ifdef FX_OTHER_MOD\n            * 0.5\n#endif\n        ;"
         ))
+
+    def test_deep_parentheses_end_in_a_finding_not_an_exception(self):
+        from detectors.es_modulo_float_context import check_es_modulo_float_context
+        from stripper import strip_enforce_comments_and_strings
+
+        # Deeper than the interpreter's recursion limit (review round 2,
+        # R2-01: 1100 pairs raised RecursionError).
+        depth = sys.getrecursionlimit() + 200
+        statement = (
+            "return (n % 4) * " + "(" * depth + "0.7" + ")" * depth + " - 1.05;"
+        )
+        source = "class C\n{\n    float F(int n)\n    {\n        %s\n    }\n}\n" % statement
+        stripped, _warnings = strip_enforce_comments_and_strings(source, "x.c")
+        errors = check_es_modulo_float_context(source, stripped, "x.c")
+
+        self.assertEqual([5], [e["line"] for e in errors])
+        self.assertIn("0.7", errors[0]["message"])
 
     def test_string_spans_are_the_strings_the_stripper_blanks(self):
         from detectors.es_modulo_float_context import _string_spans

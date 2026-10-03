@@ -67,7 +67,9 @@ Two rules come from script modules that did not compile, each with its log:
   not listed until a failure is on record. A name counts after its type,
   on the same line or the next, as a later declarator (`int a = 1, out;`)
   and as a foreach variable; a later use of the variable is not reported
-  again.
+  again. Later declarators are found by counting brackets over every live
+  line, so one that follows brackets which differ between two branches of
+  an `#ifdef` can go unseen.
 - `ES-MODULO-FLOAT-CONTEXT` (FAIL): `%` inside an arithmetic expression that
   also holds a float literal, such as `(n % 4) * 0.7`. Both operands of `%`
   can be integers and it still fails with `Unknown operator '%'` (DayZDiag
@@ -75,17 +77,21 @@ Two rules come from script modules that did not compile, each with its log:
   compiles. The expression stops at a call's or an index's brackets, a
   comparison, an assignment, `;` and `,`, and one that holds a string
   literal anywhere is not judged (there `+` concatenates); quotes inside a
-  comment are no string. A float literal under an `(int)` cast, or in a
-  parenthesised condition (only the results behind a `?` count), does not
-  reach the expression. A float variable is not seen: only the literal case
-  is caught.
+  comment are no string. That includes a string that is only the receiver
+  of a method: `"cell".Length() + (n % 4) * 0.5` is not judged, because
+  types are not tracked and another method could return a string. A float
+  literal under an `(int)` cast, or in a parenthesised condition (only the
+  results behind a `?` count), does not reach the expression. A float
+  variable is not seen: only the literal case is caught.
 
 Each finding is wrong wherever the code compiles, so code under another
 mod's `#ifdef` is judged too. A branch that never compiles is not: `#if`
 blocks, and the `#ifndef` or `#else` branch of a macro the same file
-`#define`s first (`scripts/shared/dead_branches.py`). An expression is read
-only across lines that can compile together: never through a branch that
-never compiles, nor from one branch of a block into another.
+`#define`s first (`scripts/shared/dead_branches.py`). An expression is never
+read through a branch that never compiles, nor from the branch that holds
+the `%` into another branch of the same block. Blocks are not compared by
+their macros: `#ifdef X` and a later `#ifndef X` count as unrelated, so
+their lines can still meet in one expression.
 
 Measured on 2026-10-03: nothing on vanilla 1.29.0.163451 (69 `%` judged) or
 on vanilla 1.30.164014 Exp (94 `%`), and on the source that failed in game,

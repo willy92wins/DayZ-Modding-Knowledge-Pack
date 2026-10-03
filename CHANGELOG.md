@@ -208,7 +208,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   both operands of `%` are integers, and the `%` in an int local first compiles. A float variable
   is not seen, only the literal. Code under another mod's `#ifdef` is judged; `#if` blocks and the
   `#ifndef`/`#else` of a macro the same file `#define`s first are not, and an expression is never
-  read through them or across two branches of one block. Neither rule reports
+  read through them, nor from the branch that holds the `%` into another branch of that block.
+  Neither rule reports
   anything on vanilla 1.29.0.163451 (the vanilla control still matches its baseline) or on vanilla
   1.30.164014 Exp. Two errors filed with them get no rule yet: `Variable name 'X' already used as
   type name` needs the vanilla tree's class names, and `Formula too complex` has no measured limit
