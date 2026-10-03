@@ -512,8 +512,9 @@ AddonBuilder clears its `-temp` before copying.
    Copy each at its cited path (`src\dz\data\data\penetration\metalplate.rvmat`, taken from the
    files the game loads), or reach the vanilla ones through a junction `src\DZ` → the extracted
    vanilla data. A junction target is parsed too, so it must hold no broken `config.cpp`. These
-   files only feed binarize: AddonBuilder packs the source folder alone. Then gate the ODOL
-   (rule 5). `CocaLab_dev\tools\build.py` does all three (staging, cited files, ODOL gate);
+   files only feed binarize: AddonBuilder packs the source folder alone. Check them before and
+   after the build (rule 5). `CocaLab_dev\tools\build.py` does all three (staging, cited files,
+   ODOL check);
    `ArmorHneck_dev\tools\build.ps1` stages but does not provide the cited files.
    - `-project=<source>` narrows `-addon` to the source itself and is not a way out: the PBO came
      out with no `.paa`, no `.rvmat` and no `texHeaders.bin` ("no textures found"; 606 KB
@@ -561,25 +562,32 @@ AddonBuilder clears its `-temp` before copying.
    spawn (world_spawn from the bridge or console), NEVER just strings/entries of the PBO —
    static analysis of config.bin reported "healthy" while the engine ignored it.
 
-5. **Gate every binarized p3d for empty embedded materials** (added 2026-10-03; CocaLab gate
-   since 2026-09-27). Read the ODOL with the external `odol_reader.py` (`dayz-p3d-debinarizer`;
-   not distributed with this pack). A material binarize could not find reads, in every LOD
-   that cites it: `pixel_shader == 0`, `vertex_shader == 0`, `surface_file == ""`, no stage
-   texture, and the engine's default colours (diffuse and ambient 1,1,1,1, emissive 0,0,0,1).
-   The ODOL alone cannot convict: bare vanilla materials embed with the same first four, in
-   Bohemia's own ODOLs. `dz\data\data\half_lighted_default.rvmat` (in
-   `dz\data\cl_feathers2.p3d`) and `dz\water\streambed\data\streambed_leaves.rvmat` (in
-   `water.pbo`'s `Streambed\streambed_leaf_short_straight.p3d`) differ only by their colours
-   and render flag, and `dz\data\data\default_2pass.rvmat` (in
-   `dz\data\data\penetration\impact_test_object.p3d`) only by a specular alpha of 0. So flag a
-   material on those four fields, then fail it when its `.rvmat`, read from the files the game
-   loads, declares something the embedded copy lacks: a stage texture, a surface, a render
-   flag, colours other than the defaults, or a shader other than `PixelShaderID="Normal"` /
-   `VertexShaderID="Basic"` (both embed as 0). A resolved penetration material is never
-   flagged: it carries its `.bisurf`. Run both controls once: the same build without the cited
-   files must fail the gate, and those three vanilla ODOLs must pass it. Gate on those fields,
-   not on the ODOL hash: three SimpleGroup flagpoles varied by up to 67 B across five builds
-   that resolved the same files (2026-10-01; same trap in `tools/py3d/KNOWN-ISSUES.md`).
+5. **Check that binarize can find every file the p3d cite: before the build, and in the ODOL
+   after it** (added 2026-10-03; CocaLab's build since 2026-09-27).
+   - **Before — the gate.** List every path the faces cite, in every LOD: `face.texture` and
+     `face.material` with py3d (`tools/py3d/py3d/__init__.py:1855-1856`; CocaLab scans the MLOD
+     bytes for `*.paa`/`*.rvmat` paths). Stop if one does not exist under the staging folder:
+     rule 1 says binarize looks for it there and nowhere else. Stage each cited `.rvmat` with
+     the textures it names (CocaLab staged the DrugsPLUS `.rvmat` with its three `.paa`; a
+     texture missing on its own was not tested).
+   - **After — the control.** Read the ODOL with the external `odol_reader.py`
+     (`dayz-p3d-debinarizer`; not distributed with this pack). Every unresolved material read
+     so far showed, in every LOD that cites it: `pixel_shader == 0`, `vertex_shader == 0`,
+     `surface_file == ""`, no stage texture (the thermal `StageTI`, `stage_ti`, included) and
+     the engine's default colours (diffuse and ambient 1,1,1,1, emissive 0,0,0,1). A match is a
+     lead, not a verdict: bare vanilla materials match most of those fields in Bohemia's own
+     ODOLs — `dz\data\data\half_lighted_default.rvmat` in `dz\data\cl_feathers2.p3d`,
+     `dz\water\streambed\data\streambed_leaves.rvmat` in `water.pbo`'s
+     `Streambed\streambed_leaf_short_straight.p3d` — and `dz\data\data\default_2pass.rvmat`
+     in `dz\data\data\penetration\impact_test_object.p3d` matches all of them. Confirm a lead
+     against the material's text `.rvmat`: an extracted copy, or a binarized one (`raP`)
+     decoded first. CfgConvert does that only as `CfgConvert.exe -txt -dst <name>.cpp
+     <name>.bin`, run from the file's folder; given the `.rvmat` name it exits 0 and writes
+     nothing. A file you cannot read as text confirms nothing. Run the control once: the same
+     build without the cited files must turn their materials into leads.
+   - Compare ODOLs by those fields, not by hash: three SimpleGroup flagpoles varied by up to
+     67 B across five builds that resolved the same files (2026-10-01; same trap in
+     `tools/py3d/KNOWN-ISSUES.md`).
 
 The orchestrated build path (temp wipe + deploy + launch) lives in dayz-test-ingame's
 `dayz-test.ps1` template.
