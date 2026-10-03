@@ -84,7 +84,7 @@ otherwise lists what it could not judge under `info.skipped_checks` (and as a
 | a `requiredAddons[]` entry that is not a string literal (a macro, a number) | SKIP: that dependency is unknown |
 | no `config.cpp` in the tree lists any `requiredAddons[]` entry | SKIP: dependencies unknown |
 | code under `#ifdef`/`#ifndef` of a macro that vanilla does not test and no scanned script `#define`s or `CfgMods defines[]` lists | not judged: usually another mod's flag |
-| the `#ifndef` or `#else` branch of a macro that a scanned script `#define`s, or a scanned `CfgMods defines[]` lists, outside any `#if` block | not judged: that branch never compiles |
+| the `#ifndef` or `#else` branch of a macro that a scanned script `#define`s, or a scanned `CfgMods defines[]` lists, on a line the preprocessor always keeps (outside every block, or under an `#ifdef` of a macro the same file defines first) | not judged: that branch never compiles |
 
 A mod that uses another mod's classes without listing it in `requiredAddons[]`
 does get the FAIL; the message names both remedies. "Vanilla patch" means one

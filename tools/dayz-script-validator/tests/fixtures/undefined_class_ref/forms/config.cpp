@@ -6,6 +6,8 @@ class CfgPatches
     };
 };
 
+#define FX_CONFIG_SWITCH
+
 class CfgMods
 {
     class FX_Forms
@@ -16,6 +18,17 @@ class CfgMods
     class FX_FormsOptional
     {
         defines[] = {"FX_CONDITIONAL_CONFIG_FLAG"};
+    };
+#endif
+#ifdef FX_CONFIG_SWITCH
+    class FX_FormsSwitched
+    {
+        defines[] = {
+            "FX_SWITCHED_FLAG",
+#ifdef FX_OPTIONAL_MOD
+            "FX_SPANNING_FLAG",
+#endif
+        };
     };
 #endif
 };

@@ -2,6 +2,9 @@
 #ifdef DIAG_DEVELOPER
 #define FX_DIAG_ONLY_FLAG
 #endif
+#ifdef FX_LOCAL_FLAG
+#define FX_LOCAL_DERIVED
+#endif
 
 class FX_Known
 {
@@ -34,13 +37,19 @@ class FX_Forms<Class TItem>
         PlayerBase player = PlayerBase.Cast(source);
         SurfaceDetectionParameters params = new SurfaceDetectionParameters();
         FX_MissingSpacedCall.Hook ();
+        int fx_a = 1;
+        int fx_b = 2;
+        bool fx_less = fx_a<fx_b, FX_LocalFlag = fx_b>fx_a;
+        string flagText = FX_LocalFlag.ToString();
         string fx_first, FX_Second;
         int length = FX_Second.Length();
 #ifdef FX_SOME_OTHER_MOD
         FX_OptionalDependency.Hook();
         auto optional = new Param3<int, FX_MissingBehindTemplate, int>(0, null, 0);
+        auto boxed = new FX_Box_<int, FX_MissingBehindBoxTemplate, int>(0, null, 0);
 #endif
         FX_MissingBehindTemplate.Sort();
+        FX_MissingBehindBoxTemplate.Sort();
 #ifdef DIAG_DEVELOPER
         FX_MissingUnderVanillaMacro.Debug();
         FX_VanillaDiagOnly diag;
@@ -63,6 +72,15 @@ class FX_Forms<Class TItem>
 #endif
 #ifndef FX_CONDITIONAL_CONFIG_FLAG
         FX_MissingUnderConditionalConfigDefine.Hook();
+#endif
+#ifndef FX_SWITCHED_FLAG
+        FX_DeadUnderSwitchedDefine.Hook();
+#endif
+#ifndef FX_SPANNING_FLAG
+        FX_MissingUnderSpanningDefine.Hook();
+#endif
+#ifndef FX_LOCAL_DERIVED
+        FX_DeadUnderDerivedDefine.Hook();
 #endif
     }
 }

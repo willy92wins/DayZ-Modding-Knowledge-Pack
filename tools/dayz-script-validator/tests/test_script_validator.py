@@ -2339,9 +2339,12 @@ class TestUndefinedClassRef(unittest.TestCase):
                 # #ifndef branches compile too
                 "FX_MissingUnderConditionalDefine",
                 "FX_MissingUnderConditionalConfigDefine",
+                # one entry of a defines[] sits under #ifdef FX_OPTIONAL_MOD
+                "FX_MissingUnderSpanningDefine",
                 # named as a template argument in an unjudged branch: a comma
                 # inside `<...>` does not declare a variable
                 "FX_MissingBehindTemplate",
+                "FX_MissingBehindBoxTemplate",
             },
             flagged,
         )
@@ -2353,7 +2356,13 @@ class TestUndefinedClassRef(unittest.TestCase):
         for name in ("Planner", "EVanillaMode", "TStringArray", "TItem",
                      "FX_VanillaDiagOnly", "PlayerBase", "FX_OptionalDependency",
                      "SurfaceDetectionParameters", "FX_Second",
-                     "FX_DeadUnderIfndef", "FX_DeadUnderElse"):
+                     "FX_DeadUnderIfndef", "FX_DeadUnderElse",
+                     # `fx_a<fx_b` is a comparison, so FX_LocalFlag is the
+                     # second variable of its declaration
+                     "FX_LocalFlag",
+                     # FX_SWITCHED_FLAG (config) and FX_LOCAL_DERIVED (script)
+                     # are defined under an #ifdef the same file guarantees
+                     "FX_DeadUnderSwitchedDefine", "FX_DeadUnderDerivedDefine"):
             self.assertNotIn(name, flagged)
         assert_standard_findings(self, result)
 

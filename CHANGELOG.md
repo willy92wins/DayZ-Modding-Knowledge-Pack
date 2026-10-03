@@ -233,9 +233,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   declares in `CfgPatches`; a `requiredAddons[]` entry that is not a string literal; or no
   `requiredAddons[]` entry at all. Pass each dependency's root, the folder with its `config.cpp`,
   with `--external-scripts` to get verdicts. Variables declared after a comma
-  (`string a, B;`) count as variables, and the `#ifndef`/`#else` branch of a macro that a scanned
-  script `#define`s, or a scanned `CfgMods defines[]` lists, outside any `#if` block is not judged. `vanilla_control.py` passes the tree as its own vanilla
-  root, so the rule runs there instead of skipping, and the control still matches its baseline.
+  (`string a, B;`) count as variables, while the commas of template arguments and of comparisons
+  do not, and the `#ifndef`/`#else` branch of a macro that a scanned script `#define`s, or a
+  scanned `CfgMods defines[]` lists, on a line the preprocessor always keeps is not judged.
+  `vanilla_control.py` passes the tree as its own vanilla root, so the rule runs there instead of
+  skipping, and the control still matches its baseline.
   On the TransferZ tree with CF passed, the first version of the rule reported one FAIL, on that
   line, and none on the mod's `main` at `2c7d5c1` (2026-09-19).
 

@@ -49,9 +49,10 @@ ES_UNDEFINED_CLASS_REF_RULE_ID = "ES-UNDEFINED-CLASS-REF"
 # vanilla (engine and build flags), #define'd by the scanned scripts, or listed
 # in a scanned CfgMods defines[]. Anything else is usually an optional mod's
 # flag, and that code compiles only when the mod is loaded. A macro that a
-# scanned script #defines, or a scanned CfgMods defines[] lists, outside any #if
-# block is always on, so its #ifndef and #else branches never compile and are
-# not judged either.
+# scanned script #defines, or a scanned CfgMods defines[] lists, on a line the
+# preprocessor always keeps (outside every block, or under an #ifdef of a macro
+# the same file defines before it) is always on, so its #ifndef and #else
+# branches never compile and are not judged either.
 
 _CLASS_LIKE_RE = re.compile(r"^[A-Z]")
 
@@ -185,15 +186,38 @@ class Definitions:
         return name in self.types or name in self.template_params
 
 
+def _template_end(text, index):
+    """Index of the `>` that closes template arguments opened at `index`.
+
+    Only a `<` right after a name, followed by nothing but names, spaces,
+    commas and nested `<...>` up to its match, is a template
+    (`Param3<int, X, int>`, `map<string, array<int>>`). Anything else, such
+    as `a<b, C = false` or `a<=b`, is a comparison: None.
+    """
+    if index == 0 or not (text[index - 1].isalnum() or text[index - 1] == "_"):
+        return None
+    depth = 0
+    for position in range(index, len(text)):
+        char = text[position]
+        if char == "<":
+            depth += 1
+        elif char == ">":
+            depth -= 1
+            if depth == 0:
+                return position
+        elif not (char.isalnum() or char in "_, \t\r\n"):
+            return None
+    return None
+
+
 def declared_variables(text):
     names = {match.group("name") for match in _DECLARED_NAME_RE.finditer(text)}
     for start in _DECLARATION_START_RE.finditer(text):
         # The later declarators of the same statement: what follows a comma
-        # outside every bracket, up to the `;` that ends it. A `<` right after
-        # a name opens template arguments (`new Param3<int, X, int>(...)`),
-        # whose commas separate types, not declarators.
+        # outside every bracket, up to the `;` that ends it. The commas of
+        # template arguments (`new Param3<int, X, int>(...)`) separate types,
+        # not declarators, so a template is stepped over whole.
         depth = 0
-        angle = 0
         index = start.end()
         while index < len(text):
             char = text[index]
@@ -203,13 +227,14 @@ def declared_variables(text):
                 if depth == 0:
                     break
                 depth -= 1
-            elif char == "<" and (text[index - 1].isalnum() or text[index - 1] == "_"):
-                angle += 1
-            elif char == ">" and angle:
-                angle -= 1
+            elif char == "<":
+                end = _template_end(text, index)
+                if end is not None:
+                    index = end + 1
+                    continue
             elif depth == 0 and char == ";":
                 break
-            elif depth == 0 and angle == 0 and char == ",":
+            elif depth == 0 and char == ",":
                 declarator = _NEXT_DECLARATOR_RE.match(text, index + 1)
                 if declarator and _CLASS_LIKE_RE.match(declarator.group("name")):
                     names.add(declarator.group("name"))
@@ -327,29 +352,63 @@ def config_defines(config_sources):
     return _config_array_values(config_sources, _DEFINES_RE)
 
 
-def unconditional_config_defines(config_sources):
-    """defines[] entries written outside every #if / #ifdef / #ifndef block.
+def _guaranteed_lines(text):
+    """Per line of a config or script text: True when the preprocessor keeps it.
 
-    Only those are on whenever the mod is loaded: a defines[] under a
-    condition depends on it, so its macro stays a two-way flag.
+    A line is kept for certain outside every block, and inside `#ifdef X` (or
+    the `#else` of `#ifndef X`) when this same file #defines X, at a line
+    kept for certain, before it. Any other condition depends on something
+    outside the file.
+    """
+    local = set()
+    stack = []
+    guaranteed = []
+    for line in text.split("\n"):
+        kept = all(
+            macro is not None and macro in local and when_defined
+            for macro, when_defined in stack
+        )
+        guaranteed.append(kept)
+        opened = _PP_OPEN_RE.match(line)
+        if opened:
+            stack.append((opened.group("macro"), opened.group("kind") == "ifdef"))
+        elif _PP_OPEN_UNSUPPORTED_RE.match(line):
+            stack.append((None, True))
+        elif _PP_ELIF_RE.match(line):
+            if stack:
+                stack[-1] = (None, True)
+        elif _PP_ELSE_RE.match(line):
+            if stack:
+                macro, when_defined = stack[-1]
+                stack[-1] = (macro, not when_defined)
+        elif _PP_ENDIF_RE.match(line):
+            if stack:
+                stack.pop()
+        elif kept:
+            defined = _MACRO_DEFINE_RE.match(line)
+            if defined:
+                local.add(defined.group("name"))
+    return guaranteed
+
+
+def unconditional_config_defines(config_sources):
+    """defines[] entries the preprocessor keeps whatever else is defined.
+
+    Only those are on whenever the mod is loaded: an entry under a condition
+    that depends on something outside the config.cpp stays a two-way flag.
+    Each entry is judged on its own line, so a `#ifdef` inside the array
+    counts too.
     """
     values = set()
     for _rel_path, text in config_sources:
         text = _strip_config_comments(text)
-        depth_at_line = []
-        depth = 0
-        for line in text.split("\n"):
-            depth_at_line.append(depth)
-            if _PP_OPEN_RE.match(line) or _PP_OPEN_UNSUPPORTED_RE.match(line):
-                depth += 1
-            elif _PP_ENDIF_RE.match(line):
-                depth = max(0, depth - 1)
+        guaranteed = _guaranteed_lines(text)
         for block in _DEFINES_RE.finditer(text):
-            if depth_at_line[text.count("\n", 0, block.start())]:
-                continue
+            body_start = block.start("body")
             for item in _QUOTED_RE.finditer(block.group("body")):
+                line = text.count("\n", 0, body_start + item.start())
                 value = item.group("value").strip()
-                if value:
+                if value and guaranteed[line]:
                     values.add(value)
     return values
 
@@ -431,20 +490,17 @@ def _template_args(args):
 
 
 def unconditional_defines(stripped):
-    """Macros `#define`d outside every #if / #ifdef / #ifndef block.
+    """Macros `#define`d on a line the preprocessor always keeps.
 
-    Only those are always on. A #define inside a block depends on that block's
-    condition (vanilla's 1_core/defines.c lists its build flags under
-    `#ifdef DOXYGEN`), so its macro stays a two-way build flag.
+    Only those are always on: outside every block, or under conditions this
+    same file guarantees (_guaranteed_lines). A #define under any other
+    condition depends on it (vanilla's 1_core/defines.c lists its build flags
+    under `#ifdef DOXYGEN`), so its macro stays a two-way build flag.
     """
     names = set()
-    depth = 0
-    for line in stripped.split("\n"):
-        if _PP_OPEN_RE.match(line) or _PP_OPEN_UNSUPPORTED_RE.match(line):
-            depth += 1
-        elif _PP_ENDIF_RE.match(line):
-            depth = max(0, depth - 1)
-        elif depth == 0:
+    lines = stripped.split("\n")
+    for line, kept in zip(lines, _guaranteed_lines(stripped)):
+        if kept:
             match = _MACRO_DEFINE_RE.match(line)
             if match:
                 names.add(match.group("name"))
