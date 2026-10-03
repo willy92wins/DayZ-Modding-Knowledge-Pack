@@ -276,6 +276,12 @@ TIntArray itemSize = new TIntArray;
 GetGame().ConfigGetIntArray(cfgPathItem, itemSize);
 ```
 
+[EXACT][CLAIM-ENF-CONFIGISEXISTING-TRAILING-SPACE] A trailing space after the class name
+(`"CfgVehicles " + className + " "`) still finds the class: measured on DayZDiag 1.29.163709, a currency
+catalog checked that way passed with its four real classes. Vanilla builds the path without it
+(`VANILLA/4_world/systems/inventory/attachmentsoutofreach.c:89`), and so should new code. Not tested: a class
+that does not exist, with the trailing space, so a false positive through that path is not ruled out.
+
 ### String Operations (Enforce limitations)
 ```
 // No printf — format manually

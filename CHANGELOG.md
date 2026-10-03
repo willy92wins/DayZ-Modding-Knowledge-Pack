@@ -7,6 +7,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-persistence`: two sections from the LFPowerGrid mod (SP-459, SP-460; DayZDiag 1.29.163709). A class
+  with no `types.xml` entry lives 30 to 60 minutes of server time (claim `CLAIM-PERS-CE-DEFAULT-LIFETIME`):
+  `lifeMax` 1800, new entities at 1.03 to 1.98 times that, the lifetime falls with a player 10 m away, survives
+  restarts and ignores server downtime, reads 0 in `EEInit` of a restored entity, and restored entities that ran
+  out are deleted at startup before any player connects. Adding the entry later (`CLAIM-PERS-CE-ENTRY-LATE`)
+  protects new objects only, rescues nothing that ran out, and `types.bin` keeps it after the XML is removed;
+  the rule is an entry with an explicit lifetime for every class that persists, checked against `config.cpp`.
+  An entry with `nominal` above 0 and without `category`, `usage` or `value` still spawns as loot
+  (`CLAIM-PERS-CE-UNTAGGED-LOOT`: 202 placements on a fresh storage). `OnStoreLoad` returning false keeps the
+  entity, with its script state at the defaults apart from what the load had assigned
+  (`CLAIM-PERS-ONSTORELOAD-FALSE-KEEPS`: three batteries kept their wires and started with their energy at 0);
+  the next save is not measured. The description names the symptom: placed objects that vanish after a restart.
+- `dayz-pbo-build`: a manual release-package line in the folder-structure checks, an explicit-lifetime
+  `types.xml` entry for every class that persists in the world (SP-459).
+- `enforce-script-reference` `verified-api-catalog.md`: `ConfigIsExisting` with a trailing space after the class
+  name still finds the class (`CLAIM-ENF-CONFIGISEXISTING-TRAILING-SPACE`; positive control only, and vanilla
+  writes no space).
 - `dayz-animation-pipeline`: the frame a vanilla ikpose keys its helpers in, and what to do when a
   held item points the wrong way (from CocaLab). `player-skeleton.md` (claim
   `CLAIM-ANIM-IKPOSE-OBJECT-FRAME`): `LeftHandIKTarget` is keyed in the held object's frame, the

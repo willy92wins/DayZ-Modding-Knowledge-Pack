@@ -931,10 +931,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-spb-restore-absence@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "[Unreleased] Added entries for dayz-persistence (SP-459, SP-460: a class with no types.xml entry lives 30 to 60 minutes of server time; adding the entry later protects new objects only; an untagged entry still spawns as loot; OnStoreLoad returning false keeps the entity), dayz-pbo-build (the release-package types.xml line) and enforce-script-reference (ConfigIsExisting with a trailing space). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "68bd3c65e348d6d47432707a343b62083fa10dc80e3625e30507c685fb39714d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-persistence-ce-lifetime@2026-10-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a78ea7f253878c3b5b03be313c043b2cecd13fc66991c64067cdfbccb4985f39",
+      "output_hash": "68bd3c65e348d6d47432707a343b62083fa10dc80e3625e30507c685fb39714d",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -9962,10 +9972,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "kp-update-inbc-pbo-sp155@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04 (SP-459): the folder-structure checks gain a manual release-package line, an explicit-lifetime types.xml entry for every class that persists in the world, pointing to dayz-persistence (CLAIM-PERS-CE-DEFAULT-LIFETIME). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "db3528366d3bfd21aa1bb2997a8af3fc845e4ee6a1e1b10d2f3947a7853536b2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "kp-update-persistence-ce-lifetime@2026-10-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4bd6fd283260ab28d0fb7fea701d11ef5dcfab326aea6b0951677573c1bee4c8",
+      "output_hash": "db3528366d3bfd21aa1bb2997a8af3fc845e4ee6a1e1b10d2f3947a7853536b2",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -10204,10 +10224,20 @@
           "source_path": "skills/dayz-persistence/SKILL.md",
           "source_revision": "kp-update-spb-restore-absence@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04 (SP-459 and SP-460 of the skill-patches ledger, from the LFPowerGrid mod, DayZDiag 1.29.163709): two sections under the migration gate. A class with no types.xml entry lives 30 to 60 minutes of server time (CLAIM-PERS-CE-DEFAULT-LIFETIME: lifeMax 1800 from the economy profile, new entities at 1.03 to 1.98 times that, the lifetime falls with a player 10 m away, is saved and restored by a restart, reads 0 in EEInit of a restored entity, and restored entities that ran out are deleted at startup before any player connects; GetLifetime and GetLifetimeMax at VANILLA/3_game/entities/entityai.c:3378-3387, GetEconomyProfile at :883). Adding the entry later protects new objects only and types.bin keeps it after the XML is removed (CLAIM-PERS-CE-ENTRY-LATE); the rule ships an explicit-lifetime entry for every class that persists, checked against config.cpp. An entry without category, usage or value still spawns as loot (CLAIM-PERS-CE-UNTAGGED-LOOT: 202 placements on a fresh storage, nine more Adding lines were a scripted scene). OnStoreLoad returning false (VANILLA/3_game/entities/entityai.c:2989) keeps the entity, with its script state at the defaults apart from what the load had assigned (CLAIM-PERS-ONSTORELOAD-FALSE-KEEPS: three batteries kept their wires and started at energy 0); the next save is not measured. The description names the symptom, placed objects that vanish after a restart. Sources: LFPowerGrid_dev/plans/2026-10-01-d2-vida-ce-aparatos.md sections 1, 8b and 8e; LFPowerGrid_dev/reviews/2026-10-02-d2-lifetime-logs/; LFPowerGrid_dev/reviews/2026-10-03-ingame-r1e1/. The cleanup deferral by CleanupAvoidance and a territory flag's RadiusLifetimeReset (VANILLA/4_world/entities/itembase/basebuildingbase/totem.c:168 and :207; VANILLA/3_game/ce/centraleconomy.c:562-569) are stated as not measured. Cross-family review by Gemini 3.8 Flash (high) through agy, round 1 SOUND-WITH-FIXES: H01 was the branch behind origin/main (rebuilt on the current main), H02 (territory-flag caveat), H03 (measured countdown versus nominal deferral) and H04 applied. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d229e4e1f7350c38ff050aec5f812c3b4d9459eab149e0f9f9ae0340e809b5da",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/SKILL.md",
+          "source_revision": "kp-update-persistence-ce-lifetime@2026-10-04",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "2beb6bea0ec2757e5b6cbea651595e40ce356e64aaa6a5792760857b23c697b4",
+      "output_hash": "d229e4e1f7350c38ff050aec5f812c3b4d9459eab149e0f9f9ae0340e809b5da",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -14882,10 +14912,20 @@
           "source_path": "enforce-script-reference/references/verified-api-catalog.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04 (SP-460 point 4): Config Lookup gains a note, ConfigIsExisting with a trailing space after the class name still finds the class (CLAIM-ENF-CONFIGISEXISTING-TRAILING-SPACE: LFPowerGrid's currency catalog passed with four real classes on DayZDiag 1.29.163709); vanilla writes no space (VANILLA/4_world/systems/inventory/attachmentsoutofreach.c:89); a missing class with the space is not tested. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b4c6fc620ef1c377a77994a90efe4edf561e2c02e8c64f1cf7a36b8723739668",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
+          "source_revision": "kp-update-persistence-ce-lifetime@2026-10-04",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "fe2b0c1eab10c5f3008cc572e079bc7542fe8f27a0fa9b5f6b73a534b3e2f116",
+      "output_hash": "b4c6fc620ef1c377a77994a90efe4edf561e2c02e8c64f1cf7a36b8723739668",
       "output_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -16985,10 +17025,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-spb-restore-absence@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registers CLAIM-PERS-CE-DEFAULT-LIFETIME, CLAIM-PERS-CE-ENTRY-LATE, CLAIM-PERS-CE-UNTAGGED-LOOT and CLAIM-PERS-ONSTORELOAD-FALSE-KEEPS for dayz-persistence and CLAIM-ENF-CONFIGISEXISTING-TRAILING-SPACE for enforce-script-reference (all runtime_verified on DayZDiag 1.29.163709; SP-459 and SP-460 of the skill-patches ledger, from the LFPowerGrid mod). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a0b964351d281c4701e47261f80e9c216dd31d413e79f4fdeac827a3b94affbe",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-persistence-ce-lifetime@2026-10-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "411ee496e97405be2410d31e4dba745ae6507659ed6513f3af606b73fef12c54",
+      "output_hash": "a0b964351d281c4701e47261f80e9c216dd31d413e79f4fdeac827a3b94affbe",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

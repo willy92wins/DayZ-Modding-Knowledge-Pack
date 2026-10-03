@@ -44,6 +44,9 @@ Each check reports **PASS**, **WARN**, or **FAIL** status. The final summary sho
 - **REQUIRED:** No uppercase file extensions (.PAA, .CPP are flagged)
 - **FAIL:** Stale files found (.bak, .blend, .psd, .xcf, .tmp, .swp—these bloat PBOs)
 - **WARN:** Large asset files > 10MB (texture atlases, unoptimized meshes)
+- **Release package (manual; the checks above do not run it):** every class a player places, or that otherwise
+  persists in the world, has an entry with an explicit lifetime in the `types.xml` the release ships. Without
+  one it runs out after 30 to 60 minutes of server time (`dayz-persistence`, SP-459).
 
 **Example output:**
 ```
