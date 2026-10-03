@@ -76,6 +76,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   A third section it had written, a Mission-module lesson about a class holding a `static ref` to
   itself, was retracted by its author as measured on the wrong mod and is not ported; vanilla 1.29
   contradicts it as well (`VicinityItemManager` holds one and its module compiles).
+- `dayz-model-pipeline` `references/lods-and-geometry.md`: "Collision of a large building with an
+  interior", from a rock-shaped building generated from Blender with a hangar, an attic and a lift
+  inside (SecretRock RocaHeli R7.1-R7.3, 2026-10-01 to 2026-10-03; ledger SP-453, SP-457 and
+  SP-458). An MLOD stores each named selection as one byte per point and per face of its LOD
+  (py3d `Selection.write`), so collision pieces cost about the square of their count: 478 MB with
+  1,150 pieces, 55-75 MB with 827-997 pieces of 6 points. Then: no room-membership test on open
+  meshes; collision prisms that follow the visible face (geometric normal, neighbours by
+  position, a room test with horizontal rays, every exterior triangle probed at 7 points), with
+  the scope of each figure; the visual budget split into two models; and a `binarize` limit that
+  prints nothing. With too many pieces in its collision LODs, `binarize.exe` wrote no ODOL and no
+  capacity line (`OTHER_FAIL`). Over 9 variants, faces, named selections × points and selection
+  bytes separate the passes from the failures equally, the piece and point counts alone do not,
+  and the variable is not isolated; a truncated MLOD gives the same verdict. The fix, a second
+  collision-only model with the same transform, took rays in game (0 holes in Geometry, Fire and
+  View). Also: the pre-binarize check in `config-and-packing.md`, a pointer in `SKILL.md`'s Quick
+  Reference and at `ComponentXX`, this cause of `OTHER_FAIL` with its two checks in `dayz-vehicles`
+  `references/binarize-vertex-budget.md` and in `dayz-p3d-audit` SP-359, and a `dayz-p3d-audit`
+  section on source meshes (zero-area faces and orphan points; faces against their normals read
+  with Check A, not turned to them; `bmesh.ops.convex_hull` hulls recomputed with Qhull).
 
 ### Changed
 

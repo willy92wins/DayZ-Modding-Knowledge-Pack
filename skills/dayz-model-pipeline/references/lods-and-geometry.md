@@ -28,7 +28,10 @@ To reduce a LOD while PRESERVING a specific feature (radiator grille, logo, badg
 Defines physical collision — what stops players and objects from passing through.
 
 **Critical Requirements:**
-- Every component MUST be named `ComponentXX` (e.g., Component01, Component02, up to Component2048)
+- Every component MUST be named `ComponentXX` (e.g., Component01, Component02, up to Component2048).
+  Far below 2048, a collision LOD with many pieces can make `binarize` fail with no message: 1,501
+  pieces of a building failed, and 1,786 lighter ones passed ("Collision of a large building with an
+  interior", below).
 - Every component MUST be **convex** — use Structure > Convexity > Component Convex Hull
 - Every component MUST be **closed** (watertight mesh, no holes)
 - Every component MUST have **mass assigned** (Alt-M in Object Builder, minimum 10 for character collision)
@@ -37,7 +40,9 @@ Defines physical collision — what stops players and objects from passing throu
 
 **In Blender:**
 - Name objects as `ComponentXX_LODGeometry` for auto-assignment on FBX import
-- Use Mesh > Convex Hull in edit mode to ensure convexity
+- Use Mesh > Convex Hull in edit mode to ensure convexity. Check the result: hulls built by script
+  with `bmesh.ops.convex_hull` came out folded by a few mm, and recomputed with Qhull they passed
+  the convexity check (`dayz-p3d-audit` SKILL.md, "Source meshes for collision")
 - Assign mass via the Arma 3 Object Builder addon's vertex mass tools
 
 ### Fire Geometry LOD (Ballistics/Damage)
@@ -247,3 +252,111 @@ cited in YouTube tutorial BrW7V1lFbmQ 2026.) The rest of the resolution-LOD auth
 tutorials show -- copy LOD0, decimate ~50%/25%/12%, set textures/sections BEFORE cutting
 LODs so they carry over -- is already covered above and in `blender-headless.md`; this
 ceiling is the one extra hard limit.
+
+## Collision of a large building with an interior (SP-453, SP-457, SP-458, added 2026-10-03)
+
+Measured on one project: a rock-shaped building generated from Blender, with a hangar, an attic,
+a ground-floor room and a lift inside (SecretRock RocaHeli, rounds R7.1 to R7.3, 2026-10-01 to
+2026-10-03). Its collision is hundreds of convex pieces per model. Every figure below comes from
+that project; none was re-measured on another model.
+
+### MLOD size grows with the square of the piece count
+
+[OFFLINE MEASURED] An MLOD stores each named selection as one byte per point and one byte per
+face of its LOD (py3d writes `len(all_points) + len(all_faces)` bytes per selection,
+`tools/py3d/py3d/__init__.py:1968-1974`, py3d 1.10.1), and every `ComponentNN` is a selection.
+N pieces of k points and f faces each make a LOD of about N·k points and N·f faces, so their
+selections take about N²·(k + f) bytes in each collision LOD (arithmetic on that layout). With
+1,150 pieces in Geometry, View and Fire, the rock's MLOD weighed 478 MB; with 827 to 997 pieces
+of 6 points each and a separate, coarser View Geometry that kept the functional pieces (doors,
+buttons), 55-75 MB. The binarized ODOL does not carry the cost (78.4 MB of MLOD became 2.1 MB of
+ODOL); the MLOD does, and in a Git repository it needs LFS past GitHub's 100 MB. The separate
+View did not last: in R7.3 its own set of pieces left 28 % of the skin open to the project's ray
+test and went past 2,048 components, so the View went back to the Geometry's pieces.
+
+Before assembling, clean the source meshes and check the hulls: zero-area faces, orphan points,
+faces wound against their normals and `bmesh.ops.convex_hull` hulls that are not exactly convex
+are in `dayz-p3d-audit` SKILL.md, "Source meshes for collision".
+
+### Which room a point belongs to: no membership test on open meshes
+
+[OFFLINE MEASURED] Interior surfaces are open meshes (floors and ceilings are other objects).
+Near their edges, cross-sections of the lining, upward rays and the side of the nearest surface
+all placed points in the wrong room. What worked (R7.1): each patch extruded behind its visible
+side up to the next visible surface along a ray, minus 3 cm; analytic hard volumes for what
+moves (platform travel, lift cabin, doors); and floor slabs by convex decomposition of the
+outline, minus convex holes cut by half-planes.
+
+### Collision that follows the visible face (R7.3)
+
+1. [OFFLINE MEASURED] Patches from k-means clusters of random samples stand far behind a wall
+   that curves tightly: the hull's chord enters the room, and the cut that removes it leaves the
+   patch far back. On the hangar lining, 38 % of the wall had its collision more than 15 cm
+   behind, and the corners up to 1 m, the probe's limit. Prisms built per region of near-flat
+   faces, each extruded from 0.5 cm behind the region's deepest face to 3 cm short of the next
+   visible surface behind it, gave a median of 1 cm and less than 2 % beyond 15 cm. That reading
+   is of the prisms alone, before the generator's room and hard-volume test thins, splits or
+   drops a prism that enters a room; the full model was not part of it.
+2. [OFFLINE MEASURED] Extrude along the face's geometric normal turned toward its visible side,
+   not along the mean of its corner normals: next to a crease the smoothed normal leans by up to
+   ~45°, and prisms along it stood up to a face's width behind their far corner (median 10.5 cm);
+   along the geometric normal, 1 cm.
+3. [OFFLINE MEASURED] Grow the regions by position, not by topology. The room meshes, like the
+   vanilla skin, are triangle soups: 1,872 faces gave 1,843 regions with neighbours by shared
+   edge, and 652 with neighbours by corners closer than 2 cm (flatness tolerance 8 cm).
+4. [OFFLINE MEASURED] A room test that only looks down and up (floor below, ceiling above) counts
+   the rock of a door's lintel and jambs as room: the pieces there were rejected and a
+   0.84 × 1.55 m gap opened (131 of 368,013 samples of the project's hole probe). A room's ceiling
+   can also be another object, such as the slab of the room above: without it the vertical test
+   missed the room almost everywhere, and pieces entered it by up to 0.40 m. Rule: floor below,
+   ceiling above, and 3 of 4 horizontal rays that hit the visible side of the walls.
+5. [OFFLINE MEASURED] Random samples miss the seams: four passes of 60,000 samples left 0.15 % of
+   the skin open. Testing every exterior triangle at 7 points finds the triangles with a hole in
+   one pass.
+
+### Binarize: the visual budget
+
+[OFFLINE MEASURED] Binarized with its Visual LOD 0 only, textures and materials on: R7.1 in one
+model, with smooth normals, gave `CAPACITY_FAIL` at 92,430 resolved vertices (py3d
+`(point, normal, uv)` count). Split into the rock (49,929) and the interior with smooth normals
+on its inner face (42,501), both passed. The rock passed above the HH-60G's cliff of 46,133, so
+that cliff does not carry over to another model (`dayz-vehicles`
+`references/binarize-vertex-budget.md`, item 4). Split normals on a height-field face more than
+triple its resolved vertices: the attic's inner face, 33,046 triangles, counted 56,743 with split
+normals and 17,392 with smooth ones (a triple counter run in Blender, a lower bound).
+
+### Binarize: a silent limit on the collision LODs
+
+1. [OFFLINE MEASURED] With 1,843 convex pieces in Geometry, View and Fire, `binarize.exe` wrote
+   no ODOL and printed no capacity line: the three-state bench read `OTHER_FAIL`, and no message
+   explained it.
+2. [OFFLINE MEASURED] It is not the file size: a 247.8 MB MLOD failed and a 264.4 MB one passed.
+   Without its collision LODs, the same model passed.
+3. [OFFLINE MEASURED, variable not isolated] The boundary over 9 variants, read per collision LOD
+   (a variant without its View LOD failed like the full one):
+
+   | Per collision LOD | Largest that passed | Smallest that failed |
+   |---|---|---|
+   | Faces | 28,124 | 32,766 |
+   | Named selections × points | 31.5 M | 33.9 M |
+   | Selection bytes | 81.7 M | 83.7 M |
+   | Pieces | 1,786 | 1,501 |
+   | Points | 22,281 | 22,281 |
+
+   The first three separate the passes from the failures equally well (2^25 = 33.6 M lies between
+   the two products); the piece count and the point count alone do not. A cap at 32,768 faces is
+   ruled out: 32,766 already failed. A variant with few faces and many selections would decide it;
+   it was not run.
+4. [OFFLINE MEASURED] A truncated MLOD gives the same `OTHER_FAIL`: one variant was cut off while
+   being written, inside its Geometry LOD. Before reading an `OTHER_FAIL` as this limit, walk the
+   MLOD to the `#EndOfFile#` tagg of every LOD.
+5. Rule (the project's, applied to the models it shipped): before binarizing, measure each
+   collision LOD with a header reader. Points and faces are in each LOD's `P3DM` header, and the
+   named selections and their bytes in its TAGG list, which a reader skips through by each tagg's
+   size without loading the file (seconds for 350 MB). Where any of the three measures is above
+   the largest value known to pass, move pieces to another model with the same transform, created
+   and deleted with the main one. Do not merge or decimate pieces to fit.
+6. [IN-GAME VERIFIED, DayZDiag 1.29, 2026-10-03] The separate model works: a collision-only
+   `House` class of 602 pieces, spawned with the rock at its transform. A `geom` ray cast from
+   30 m out toward the rock stopped on one of its pieces, and the project's battery of 1,188 rays
+   per LOD from outside found 0 holes in Geometry, Fire and View.

@@ -565,3 +565,33 @@ The authoritative gate is `binarize.exe`, not this count, and it has three state
 CAPACITY_FAIL / OTHER_FAIL. CAPACITY_FAIL means do not go in-game to "fix" Geometry; OTHER_FAIL
 means do not touch geometry at all. Evidence and the measured cliff: SP-122 in
 `dayz-vehicles/SKILL.md` and `dayz-vehicles/references/binarize-vertex-budget.md`.
+One `OTHER_FAIL` measured since is a size limit of the collision LODs that prints nothing; its
+two checks and its fix, which moves pieces to another model and changes none of them, are in
+that file, item 3 (SP-458).
+
+## Source meshes for collision: zero-area faces, orphan points, inexact hulls (SP-453, added 2026-10-03)
+
+Measured offline on a building generated from Blender whose collision is hundreds of convex
+pieces (SecretRock RocaHeli, R7.1, 2026-10-01; `dayz-model-pipeline`
+`references/lods-and-geometry.md`, "Collision of a large building with an interior"):
+
+1. **[OFFLINE MEASURED] Source meshes carry zero-area faces, and dropping them can leave orphan
+   points.** 5.4 % of the rock's faces and 11 % of the lift cabin's had zero area. Drop them, then
+   emit only the points the remaining faces use: after the drop, 8 points stood 1.5-10.8 cm off
+   the surface in the project's fidelity check, all of them corners of dropped faces, and a point
+   without a face poisons any bounding box computed from `lod.points` (`dayz-model-pipeline`
+   SKILL.md, "Artist-return .p3d preflight", item 6). The same meshes had about 240 rock faces and
+   38 interior faces wound against their stored normals. That disagreement does not say which
+   side is wrong ("Absolute winding check", rule 1), and smoothed normals can point against a face
+   that is right (rule 5): read those faces with the Check A table
+   (`references/winding-diagnostics.md`) before reversing any. The project turned each one to its
+   normals; that step was not checked in game.
+2. **[OFFLINE MEASURED] `bmesh.ops.convex_hull` hulls are not exactly convex.** In that project's
+   builds the hulls merged near-coplanar triangles into n-gons that are not planar, and fanned back
+   into triangles those folded by a few mm; near-duplicate points made slivers whose plane is
+   noise. Recomputing each hull with Qhull (`scipy.spatial.ConvexHull`), after welding points at
+   1 mm and dropping the point that made a sliver, left 0 open or non-convex pieces in the
+   project's integrity check. A convexity check needs a model built to fail it, and it must
+   require the models it expects: the project's first version passed on an empty folder (a gate
+   proves itself on an intentionally broken input, as in "MLOD to ODOL is a winding-sign
+   boundary").
