@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -23,12 +22,12 @@ if str(SCRIPT_DIR) not in sys.path:
 from build_vanilla_index import tree_digest  # noqa: E402
 from script_validator import validate_addon  # noqa: E402
 from shared.input_errors import discover_files  # noqa: E402
+from shared.vanilla_tree import resolve_vanilla_root  # noqa: E402
 
 
 DEFAULT_BASELINE_PATH = (
     TOOL_DIR / "tests" / "baselines" / "vanilla_control_baseline.json"
 )
-PDRIVE_SCRIPTS = Path(r"P:\scripts")
 DIGEST_MISMATCH_MESSAGE = (
     "the control tree is not the one that was measured; check the DayZ "
     "build, then re-baseline on purpose with --update"
@@ -189,7 +188,9 @@ def format_human(comparison):
 
 def collect_run(vanilla_root):
     root = Path(vanilla_root).resolve()
-    result = validate_addon(root)
+    # The tree is its own vanilla root: without it ES-UNDEFINED-CLASS-REF
+    # would SKIP and the control would prove nothing about that rule.
+    result = validate_addon(root, vanilla_root=root)
     files = discover_files(root)
     return {
         "errors": list(result.get("errors") or []),
@@ -288,27 +289,6 @@ def write_baseline(path, document):
     with path.open("w", encoding="utf-8", newline="\n") as handle:
         handle.write(payload)
     return path
-
-
-def resolve_vanilla_root(explicit):
-    if explicit:
-        path = Path(explicit)
-        if path.exists():
-            return path, None
-        return None, "vanilla tree not found: %s" % explicit
-    env = os.environ.get("DAYZ_VANILLA_ROOT")
-    if env:
-        path = Path(env)
-        if path.exists():
-            return path, None
-        return None, "vanilla tree not found: %s (DAYZ_VANILLA_ROOT)" % env
-    if PDRIVE_SCRIPTS.exists():
-        return PDRIVE_SCRIPTS, None
-    return (
-        None,
-        "vanilla tree not found. Set --vanilla-root or DAYZ_VANILLA_ROOT, "
-        "or place the tree at P:\\scripts",
-    )
 
 
 def build_parser():

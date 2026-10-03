@@ -34,7 +34,7 @@ Exit `0` = PASS, `1` = FAIL, `2` = WARN. Findings are JSON on stdout.
 
 ## Checks that need more than one file
 
-Most rules read a single file. Two read the tree, and one of them needs a root
+Most rules read a single file. Three read the tree, and two of them need roots
 outside the addon:
 
 - `ES-PROTECTED-CROSS-MODULE` compares modules against each other. Enforce
@@ -53,6 +53,44 @@ python tools/dayz-script-validator/scripts/script_validator.py <addon_root> `
 Both only fire when the receiver's declared type resolves inside the addon.
 That is deliberate: judging by member name alone produced 164 false positives
 on a tree that compiles clean.
+
+- `ES-UNDEFINED-CLASS-REF` (FAIL) flags a class-like name (first letter upper
+  case) used where only a type fits -- `Name.Method(`, `Name.Cast(`,
+  `new Name`, a template argument, a typed declaration at the start of a line
+  -- when no `class`, `enum` or `typedef` of that name exists in the addon,
+  in the vanilla scripts tree or in any `--external-scripts` root. Found on
+  TransferZ PR #12, which deleted a `4_World` class that `5_Mission` still
+  called: a guaranteed Mission compile failure the linter reported as WARN
+  with 0 errors. The vanilla tree comes from `--vanilla-root`, then
+  `DAYZ_VANILLA_ROOT`, then `P:\scripts`.
+
+```powershell
+python tools/dayz-script-validator/scripts/script_validator.py <addon_root> `
+    --external-scripts <CF_scripts_root>
+```
+
+It judges only when it can see every place the type could be declared, and
+otherwise lists what it could not judge under `info.skipped_checks` (and as a
+`SKIP` line in `--terse`) without changing the status:
+
+| Situation | Result |
+|---|---|
+| no vanilla tree | SKIP: every vanilla type would look undefined |
+| `requiredAddons[]` names a mod (not `DZ_*`) that no scanned root declares in `CfgPatches` | SKIP with the unresolved names; pass that mod's scripts with `--external-scripts` to get verdicts |
+| no `config.cpp` in the tree lists any `requiredAddons[]` entry | SKIP: dependencies unknown |
+| code under `#ifdef`/`#ifndef` of a macro that vanilla does not test and no scanned script `#define`s or `CfgMods defines[]` lists | not judged: usually another mod's flag |
+
+A mod that uses another mod's classes without listing it in `requiredAddons[]`
+does get the FAIL; the message names both remedies. `P:\DZ` has 206
+`CfgPatches` names and all start with `DZ_`, which is what "vanilla" means
+above.
+
+Measured on 2026-09-19: 33 003 references judged on the vanilla tree with no
+finding; over 161 addon roots under `P:\` it left 12 FAILs in 3 roots (one
+probable real bug, two recovered-source trees that use a sibling mod they do
+not declare) and 32 SKIPs whose unresolved names all belong to mods. Reading
+the vanilla tree adds about 0.9 s per invocation (2.6 s against 1.7 s on a
+23-file addon, four runs each).
 
 ## Compile errors read from one file
 
@@ -133,7 +171,10 @@ python scripts/vanilla_control.py
 ```
 
 `--vanilla-root` defaults to `DAYZ_VANILLA_ROOT`, then `P:\scripts` if that
-path exists. `--baseline` defaults to
+path exists. The control passes the tree as its own vanilla root, so
+`ES-UNDEFINED-CLASS-REF` runs instead of skipping, and vanilla's empty
+`requiredAddons[]` is not read as "dependencies unknown": a false positive of
+that rule fails the control rather than hiding in a SKIP. `--baseline` defaults to
 `tests/baselines/vanilla_control_baseline.json` next to this tool, not the
 cwd. `--update` rewrites the baseline on purpose after a DayZ patch or an
 accepted change; it prints what moved. Exit 0 is PASS, 1 is FAIL, 2 is

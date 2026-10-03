@@ -1,9 +1,11 @@
 # Test suite — rules CANDIDATE-1..7 implemented in top-5; CANDIDATE-8/9/10 added 2026-05-19.
 import json
+import os
 import pathlib
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -12,6 +14,30 @@ FIXTURES = ROOT / "tests" / "fixtures"
 sys.path.insert(0, str(SCRIPTS))
 
 import script_validator
+from shared import vanilla_tree
+
+
+_MODULE_PATCHES = []
+
+
+def setUpModule():
+    # run() looks for the vanilla tree in DAYZ_VANILLA_ROOT, then P:\scripts.
+    # A unit test must not change verdict with what this machine has mounted,
+    # so neither is visible here; tests that need a tree pass --vanilla-root.
+    env = mock.patch.dict(os.environ)
+    env.start()
+    _MODULE_PATCHES.append(env)
+    os.environ.pop("DAYZ_VANILLA_ROOT", None)
+    pdrive = mock.patch.object(
+        vanilla_tree, "PDRIVE_SCRIPTS", FIXTURES / "no_vanilla_tree_in_unit_tests"
+    )
+    pdrive.start()
+    _MODULE_PATCHES.append(pdrive)
+
+
+def tearDownModule():
+    while _MODULE_PATCHES:
+        _MODULE_PATCHES.pop().stop()
 
 
 REQUIRED_FINDING_KEYS = {"check", "file", "line", "message", "severity", "rule_id"}
@@ -2227,6 +2253,170 @@ class TestModuloFloatContext(unittest.TestCase):
         )
         for start, end in spans:
             self.assertEqual("", stripped[start:end].strip())
+
+
+UNDEFINED = FIXTURES / "undefined_class_ref"
+UNDEFINED_RULE = "ES-UNDEFINED-CLASS-REF"
+
+
+def _undefined_run(fixture, *extra):
+    return script_validator.run(
+        [str(UNDEFINED / fixture), "--vanilla-root", str(UNDEFINED / "vanilla")]
+        + [str(arg) for arg in extra]
+    )
+
+
+def _rule_errors(result):
+    return [e for e in result["errors"] if e["rule_id"] == UNDEFINED_RULE]
+
+
+def _rule_skips(result):
+    return [
+        s for s in result["info"].get("skipped_checks", [])
+        if s["rule_id"] == UNDEFINED_RULE
+    ]
+
+
+class TestUndefinedClassRef(unittest.TestCase):
+    """ES-UNDEFINED-CLASS-REF — observed 2026-09-19 on TransferZ PR #12.
+
+    The PR deleted class TransferZExternalStagingSortPlanner from 4_World while
+    5_Mission still called TransferZExternalStagingSortPlanner.Sort(...). The
+    type existed in no module, so Mission could not compile; the linter said
+    WARN with 0 errors. `bad_mission_ref` is that shape with fixture names.
+    """
+
+    def test_mission_calls_class_that_exists_in_no_module_fails(self):
+        exit_code, result = _undefined_run("bad_mission_ref")
+
+        self.assertEqual(1, exit_code)
+        self.assertEqual("FAIL", result["status"])
+        self.assertEqual(1, len(result["errors"]))
+        error = result["errors"][0]
+        self.assertEqual(UNDEFINED_RULE, error["rule_id"])
+        self.assertEqual("FAIL", error["severity"])
+        self.assertEqual(11, error["line"])
+        self.assertIn("fx_maintenance_client.c", error["file"])
+        self.assertIn("FX_ExternalStagingSortPlanner", error["message"])
+        self.assertIn("5_Mission", error["message"])
+        self.assertEqual([], _rule_skips(result))
+        assert_standard_findings(self, result)
+
+    def test_same_tree_with_the_class_declared_passes(self):
+        exit_code, result = _undefined_run("ok_mission_ref")
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual([], result["errors"])
+        self.assertEqual([], _rule_skips(result))
+
+    def test_each_reference_form_and_macro_gate(self):
+        _exit_code, result = _undefined_run("forms")
+
+        flagged = {
+            e["message"].split("'")[1] for e in _rule_errors(result)
+        }
+        self.assertEqual(
+            {
+                "FX_MissingNew",
+                "FX_MissingCast",
+                "FX_MissingDecl",
+                "FX_MissingTemplateArg",
+                "FX_MissingStatic",
+                # judged: DIAG_DEVELOPER is tested by vanilla, FX_FORMS_ON is in
+                # the addon's defines[], FX_LOCAL_FLAG is #define'd, and #else
+                # of a known macro is as knowable as its first branch
+                "FX_MissingUnderVanillaMacro",
+                "FX_MissingUnderConfigDefine",
+                "FX_MissingUnderLocalDefine",
+                "FX_MissingUnderElse",
+            },
+            flagged,
+        )
+        # Not flagged: a PascalCase member used as a receiver (Planner), enum
+        # access, a typedef, a template parameter, a vanilla class declared
+        # under #ifdef, a `/*sealed*/ class`, and code under another mod's flag.
+        for name in ("Planner", "EVanillaMode", "TStringArray", "TItem",
+                     "FX_VanillaDiagOnly", "PlayerBase", "FX_OptionalDependency",
+                     "SurfaceDetectionParameters"):
+            self.assertNotIn(name, flagged)
+        assert_standard_findings(self, result)
+
+    def test_uncovered_dependency_is_skipped_not_failed(self):
+        """requiredAddons names a mod no scanned root provides: the type may live there."""
+        exit_code, result = _undefined_run("dependency")
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual([], _rule_errors(result))
+        skips = _rule_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("FX_Dep_Scripts", skips[0]["reason"])
+        self.assertEqual(
+            {"FX_DepManager", "FX_GonePlanner"},
+            {item["name"] for item in skips[0]["unresolved"]},
+        )
+
+    def test_dependency_passed_as_external_root_turns_skip_into_verdict(self):
+        exit_code, result = _undefined_run(
+            "dependency",
+            "--external-scripts", UNDEFINED / "dependency_external",
+        )
+
+        self.assertEqual(1, exit_code)
+        errors = _rule_errors(result)
+        self.assertEqual(1, len(errors))
+        self.assertIn("FX_GonePlanner", errors[0]["message"])
+        self.assertEqual([], _rule_skips(result))
+
+    def test_empty_required_addons_means_unknown_dependencies(self):
+        exit_code, result = _undefined_run("no_required_addons")
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual([], _rule_errors(result))
+        skips = _rule_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertEqual(
+            ["FX_SomeoneElsesType"], [item["name"] for item in skips[0]["unresolved"]]
+        )
+
+    def test_missing_vanilla_tree_is_a_skip_never_a_fail(self):
+        exit_code, result = script_validator.run(
+            [str(UNDEFINED / "bad_mission_ref"),
+             "--vanilla-root", str(UNDEFINED / "no_such_vanilla_tree")]
+        )
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual("PASS", result["status"])
+        skips = _rule_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("vanilla tree not found", skips[0]["reason"])
+
+    def test_default_resolution_without_any_vanilla_tree_skips(self):
+        """No --vanilla-root, no DAYZ_VANILLA_ROOT, no P:\\scripts (setUpModule)."""
+        exit_code, result = script_validator.run([str(UNDEFINED / "bad_mission_ref")])
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual([], result["errors"])
+        self.assertEqual(1, len(_rule_skips(result)))
+
+    def test_vanilla_tree_as_its_own_addon_is_clean(self):
+        """The vanilla control shape: the tree is both the addon and vanilla.
+
+        Its config-less layout must not turn into "dependencies unknown": a
+        finding here has to fail the control, not hide in a SKIP.
+        """
+        vanilla = UNDEFINED / "vanilla"
+        result = script_validator.validate_addon(vanilla, vanilla_root=vanilla)
+
+        self.assertEqual([], _rule_errors(result))
+        self.assertEqual([], _rule_skips(result))
+
+    def test_skip_is_printed_after_the_verdict_in_terse_mode(self):
+        _code, result = _undefined_run("dependency")
+        lines = script_validator.format_terse(result).split("\n")
+
+        self.assertEqual("PASS", lines[0])
+        self.assertTrue(lines[1].startswith("  SKIP ES-UNDEFINED-CLASS-REF"))
+        self.assertIn("FX_GonePlanner", lines[1])
 
 
 if __name__ == "__main__":

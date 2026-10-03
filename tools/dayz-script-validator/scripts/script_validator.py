@@ -165,6 +165,8 @@ from detectors.es_reserved_word_identifier import (
     check_es_reserved_word_identifier,
 )
 from detectors.es_modulo_float_context import check_es_modulo_float_context
+from detectors.es_undefined_class_ref import check_es_undefined_class_ref
+from shared.vanilla_tree import resolve_vanilla_root
 from detectors.es_member_redeclare_base import (
     ES_MEMBER_REDECLARE_BASE_RULE_ID,
     check_es_member_redeclare_base,
@@ -229,7 +231,8 @@ from detectors.es_override_of_platform_gated_method import (
 )
 
 
-def build_result(addon_root, errors, warnings, files_scanned, elapsed_ms):
+def build_result(addon_root, errors, warnings, files_scanned, elapsed_ms,
+                 skipped_checks=None):
     if errors:
         status = "FAIL"
     elif warnings:
@@ -237,15 +240,20 @@ def build_result(addon_root, errors, warnings, files_scanned, elapsed_ms):
     else:
         status = "PASS"
 
+    info = {
+        "files_scanned": files_scanned,
+        "elapsed_ms": elapsed_ms,
+    }
+    if skipped_checks:
+        # Lo que una regla no pudo juzgar. No cambia el status: un arbol ausente
+        # no es un fallo del addon, pero tampoco es un PASS de esa regla.
+        info["skipped_checks"] = skipped_checks
     return {
         "addon_root": str(addon_root),
         "status": status,
         "errors": errors,
         "warnings": warnings,
-        "info": {
-            "files_scanned": files_scanned,
-            "elapsed_ms": elapsed_ms,
-        },
+        "info": info,
     }
 
 
@@ -279,7 +287,24 @@ def collect_external_scripts(external_roots):
     return collected
 
 
-def validate_addon(addon_root, external_roots=None):
+def collect_external_configs(external_roots):
+    """config.cpp de las raices externas: su CfgPatches dice que dependencia cubren."""
+    collected = []
+    for root in external_roots or []:
+        root_path = pathlib.Path(root)
+        if not root_path.exists():
+            continue
+        for path in sorted(root_path.rglob("config.cpp")):
+            try:
+                source = path.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            collected.append((relative_path(path, root_path), source))
+    return collected
+
+
+def validate_addon(addon_root, external_roots=None, vanilla_root=None,
+                   vanilla_skip_reason=None):
     start = time.perf_counter()
     received_addon_root = pathlib.Path(addon_root)
     addon_root = pathlib.Path(addon_root).resolve()
@@ -295,6 +320,7 @@ def validate_addon(addon_root, external_roots=None):
     files = discover_files(addon_root)
     module_files = []
     addon_sources = []
+    addon_configs = []
     pboprefix = parse_pboprefix(addon_root)
     inputs_xml_present = detect_inputs_xml(relative_root)
     errors.extend(check_es_inputs_xml_root(relative_root))
@@ -373,6 +399,7 @@ def validate_addon(addon_root, external_roots=None):
         elif suffix == ".layout":
             errors.extend(check_layout_xml_format(source, rel_path))
         elif suffix == ".cpp" and path.name.lower() == "config.cpp":
+            addon_configs.append((rel_path, source))
             config_stripped, config_strip_warnings = (
                 strip_enforce_comments_and_strings(source, rel_path)
             )
@@ -393,16 +420,31 @@ def validate_addon(addon_root, external_roots=None):
             )
 
     # Comprobaciones de ARBOL, no de fichero: necesitan ver un modulo frente a
-    # otro, o el addon frente a un consumidor externo.
+    # otro, el addon frente a un consumidor externo, o el addon frente a todo
+    # lo que declara tipos (vanilla y dependencias).
+    external_sources = collect_external_scripts(external_roots)
     errors.extend(check_es_protected_cross_module(module_files))
     errors.extend(
-        check_es_external_consumer_missing(
-            addon_sources, collect_external_scripts(external_roots)
-        )
+        check_es_external_consumer_missing(addon_sources, external_sources)
     )
+    undefined_errors, skipped_checks = check_es_undefined_class_ref(
+        addon_sources,
+        addon_configs,
+        external_sources,
+        collect_external_configs(external_roots),
+        vanilla_root,
+        vanilla_skip_reason or "vanilla tree not passed (vanilla_root=None)",
+        addon_is_vanilla=(
+            vanilla_root is not None
+            and pathlib.Path(vanilla_root).resolve() == addon_root
+        ),
+    )
+    errors.extend(undefined_errors)
 
     elapsed_ms = int((time.perf_counter() - start) * 1000)
-    return build_result(addon_root, errors, warnings, len(files), elapsed_ms)
+    return build_result(
+        addon_root, errors, warnings, len(files), elapsed_ms, skipped_checks
+    )
 
 
 def build_parser():
@@ -424,7 +466,18 @@ def build_parser():
             "Root of script that lives OUTSIDE the addon and calls into it -- a "
             "mission folder, another mod. Repeatable. Enables "
             "ES-EXTERNAL-CONSUMER-MISSING, which catches a method removed from "
-            "an addon class while an external consumer still calls it."
+            "an addon class while an external consumer still calls it. Its "
+            "classes also count as declared for ES-UNDEFINED-CLASS-REF: pass "
+            "every dependency mod (CF, ...) the addon's config.cpp requires."
+        ),
+    )
+    parser.add_argument(
+        "--vanilla-root",
+        metavar="DIR",
+        help=(
+            "Vanilla scripts tree (default: DAYZ_VANILLA_ROOT, then P:\\scripts "
+            "if present). Needed by ES-UNDEFINED-CLASS-REF; without it that "
+            "rule is reported as skipped in info, never as a finding."
         ),
     )
     return parser
@@ -433,7 +486,13 @@ def build_parser():
 def run(argv=None):
     args = build_parser().parse_args(argv)
 
-    result = validate_addon(args.addon_root, args.external_scripts)
+    vanilla_root, vanilla_skip_reason = resolve_vanilla_root(args.vanilla_root)
+    result = validate_addon(
+        args.addon_root,
+        args.external_scripts,
+        vanilla_root=vanilla_root,
+        vanilla_skip_reason=vanilla_skip_reason,
+    )
     return exit_code_for_status(result["status"]), result
 
 
@@ -458,6 +517,10 @@ def format_terse(result):
     lines = [head]
     for finding in errors + warnings:
         lines.append("  %s  %s" % (finding.get("rule_id", "?"), finding.get("message", "")))
+    for skipped in (result.get("info") or {}).get("skipped_checks") or []:
+        lines.append(
+            "  SKIP %s  %s" % (skipped.get("rule_id", "?"), skipped.get("reason", ""))
+        )
     return "\n".join(lines)
 
 
