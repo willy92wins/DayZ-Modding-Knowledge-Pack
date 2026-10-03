@@ -660,12 +660,22 @@ Two constraints that decide whether the run works:
   `default_base_mods` format above: `_open_descendant` rejects any component whose
   `reparse_tag != 0`. A junction has to be listed by its absolute workshop path and
   sealed in `mod_roots`.
-- **Pick a carrier project that compiles.** Script compilation aborts on the first mod
-  that fails, so a broken carrier's error only surfaces once yours already compiles -
-  which reads as "my mod broke it". `LFPowerGrid` is verified as a carrier
-  (`Module: Mission; loaded 231x files`). `@DayZ_MCP` is not usable as one: its
-  `5_Mission` fails with `CParser: quoted string not closed` attributed to
-  `mcpclientbridge.c`.
+- **Pick a carrier project that compiles, and check it on the day.** Script compilation aborts on
+  the first mod that fails, so a broken carrier's error only surfaces once yours already compiles -
+  which reads as "my mod broke it". Whether a carrier compiles depends on its source that day, not
+  on the project. [EXACT][CLAIM-TEST-DAYZMCP-CARRIER] On 2026-10-02 (DayZDiag 1.29.163709) project
+  `DayZ_MCP` carried extra mods in two runs: `13cc2542` (`@LFInfectedBig`, `@KP_CharAB`) and
+  `1c289781` (those two plus `@KP_ChiralWear` and `@KP_ChiralAnim`). In both, the server and client
+  script logs read `Module: Mission; loaded 217x files; 540x classes`, with no `CParser` line, and in
+  `1c289781` the probe's `4_World` print ran on both peers. Ten minutes before `13cc2542`,
+  `LFPowerGrid` carrying `@DayZ_MCP`, `@LFInfectedBig` and `@KP_CharAB` (run `f1afd2c3`) stopped at
+  `Can't compile "Mission" script module!` on an error in its own `5_Mission`; on 2026-07-28 it had
+  compiled as a carrier (`Module: Mission; loaded 231x files`). Before reading your mod's errors,
+  find the carrier's `Module: Mission; loaded ...` line in the server script log; when it is
+  missing, `Can't compile "Mission" script module!` and the `crash_*.log` name the failing file.
+  *(Corrected 2026-10-03: this bullet said "`@DayZ_MCP` is not usable as one: its `5_Mission` fails
+  with `CParser: quoted string not closed` attributed to `mcpclientbridge.c`", measured for SP-128
+  on 2026-07-28.)*
 
 Origin: SP-128 (2026-07-28), measured against the launcher source; supersedes the
 "cannot be tested at all" reading of SP-089.
