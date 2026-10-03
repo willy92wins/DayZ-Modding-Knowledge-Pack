@@ -30,8 +30,18 @@ API:
     bones: list of {"name": str,
                     "pos_keys":  [(frame:int, (x,y,z)), ...],     # optional
                     "rot_keys":  [(frame:int, (x,y,z,w)), ...],   # optional, XYZW
-                    "scale_keys":[(frame:int, (x,y,z)), ...]}     # optional
+                    "scale_keys":[(frame:int, (x,y,z)), ...],     # optional
+                    "modifier":  int 0..255 or None}              # optional
   read_seanim(path) -> dict  (for verification / editing round-trips)
+
+Bone modifiers: "modifier" is that bone's own animation type, overriding the
+header's anim_type (seanim.py SEANIM_TYPE: 0 absolute, 1 additive, 2 relative,
+3 delta). read_seanim returns it on every bone (None when the file gives that
+bone none) and write_seanim writes one entry per bone that has one, in bone
+order, so a clip read and written back keeps them. DayZATool extracts of
+vanilla clips carry them: p_1hd_erc_idle_low has an absolute header and 60 of
+its 65 bones relative. Until 2026-10-03 this script skipped them on read and
+always wrote none.
 """
 import struct
 import sys
@@ -84,7 +94,18 @@ def write_seanim(path, bones, framerate=30.0, looped=False, anim_type=0, notes=N
     fc = _frame_char(frame_count)
     anim_flags = SEANIM_FLAG_LOOPED if looped else 0
     data_property_flags = 0  # float32 precision (no SEANIM_PRECISION_HIGH)
-    bone_modifier_count = 0  # not emitted by this writer (v1)
+    # Bone anim modifiers: (bone index, anim type) for each bone carrying one.
+    modifiers = []
+    for i, b in enumerate(bones):
+        m = b.get("modifier")
+        if m is None:
+            continue
+        if isinstance(m, bool) or not isinstance(m, int) or not 0 <= m <= 0xFF:
+            raise ValueError("bone %r: modifier must be an int in 0..255, got %r" % (b.get("name"), m))
+        modifiers.append((i, m))
+    if len(modifiers) > 0xFF:
+        raise ValueError("%d bone modifiers; the header's modifier count is one byte" % len(modifiers))
+    bone_modifier_count = len(modifiers)
 
     buf = bytearray()
     # Info
@@ -105,7 +126,10 @@ def write_seanim(path, bones, framerate=30.0, looped=False, anim_type=0, notes=N
     for b in bones:
         nm = b["name"].encode("utf-8")
         buf += struct.pack("%ds" % (len(nm) + 1), nm)
-    # Bone anim modifiers: none (bone_modifier_count == 0)
+    # Bone anim modifiers: bone index (bone_t, sized by the bone count like the reader) + type
+    bone_char = "B" if bone_count <= 0xFF else ("H" if bone_count <= 0xFFFF else "I")
+    for i, m in modifiers:
+        buf += struct.pack("=" + bone_char + "B", i, m)
     # Per-bone keyframe data
     for b in bones:
         buf += struct.pack("B", 0)  # per-bone flags (unused here)
@@ -159,14 +183,20 @@ def read_seanim(path):
          _r2, _r3, _r4, note_count) = data
         fc = _frame_char(frame_count)
         names = [_read_cstr(f) for _ in range(bone_count)]
-        # modifiers
+        # modifiers: one per bone at most, kept on the bone they belong to
         bone_char = "B" if bone_count <= 0xFF else ("H" if bone_count <= 0xFFFF else "I")
+        modifiers = {}
         for _ in range(bone_mod_count):
-            struct.unpack("=" + bone_char + "B", f.read(struct.calcsize("=" + bone_char + "B")))
+            index, modifier = struct.unpack("=" + bone_char + "B", f.read(struct.calcsize("=" + bone_char + "B")))
+            if index >= bone_count or index in modifiers:
+                raise ValueError("bone modifier for bone index %d: out of range or repeated (%d bones)"
+                                 % (index, bone_count))
+            modifiers[index] = modifier
         bones = []
         for i in range(bone_count):
             f.read(1)  # per-bone flags
-            bone = {"name": names[i], "pos_keys": [], "rot_keys": [], "scale_keys": []}
+            bone = {"name": names[i], "modifier": modifiers.get(i),
+                    "pos_keys": [], "rot_keys": [], "scale_keys": []}
             if presence & SEANIM_BONE_LOC:
                 n = struct.unpack(fc, f.read(struct.calcsize(fc)))[0]
                 for _ in range(n):
@@ -206,7 +236,7 @@ def _self_test():
          "pos_keys": [(0, (0.0, 0.0, 0.0)), (10, (0.0, 1.5, 0.0))],
          "rot_keys": [(0, (0.0, 0.0, 0.0, 1.0)), (10, (0.0, 0.707, 0.0, 0.707))]},
         {"name": "j_spine",
-         "rot_keys": [(0, (0.0, 0.0, 0.0, 1.0))]},
+         "rot_keys": [(0, (0.0, 0.0, 0.0, 1.0))], "modifier": 2},
     ]
     raw = write_seanim("/tmp/_seanim_test.seanim", bones, framerate=30.0,
                        looped=True, notes=[(10, "end")])
@@ -226,6 +256,7 @@ def _self_test():
     assert _approx(h["rot_keys"][1][1], (0.0, 0.707, 0.0, 0.707))
     # j_spine has no pos keys but the LOC channel is global -> 0-key block round-trips
     assert got["bones"][1]["pos_keys"] == []
+    assert [b["modifier"] for b in got["bones"]] == [None, 2]
     assert got["notes"] == [(10, "end")]
     print("seanim_writer self-test OK (round-trip + structure verified)")
 
