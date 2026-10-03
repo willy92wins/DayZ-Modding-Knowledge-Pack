@@ -1081,10 +1081,12 @@ NOT represent the in-game render: DayZ TextWidget text size is driven by `text_p
 as `Metron14` keeps its pixel size, and an SDF face with `"exact text size"` N scales with the
 screen height — TEXT SIZING LAWS.)*
 
-- **Calibrate** the mockup font per face: `text_proportion × box-height` for a face that follows
-  its box, the face's own pixel size for a numbered bitmap face, N × height/1080 for an SDF face
-  with `"exact text size"` N. OR label the mockup explicitly as "approximation, not the in-game
-  render".
+- **Calibrate** the mockup font per face and resolution, from a measured frame: the face's own
+  pixel size for a numbered bitmap face; about N × height/1080 for an SDF face with
+  `"exact text size"` N; glyph = 0.74 × `text_proportion` × box height only where that was
+  measured (`sdf_MetronBook24` on `TextWidgetClass`, `references/hot-iteration.md`), since
+  `text_proportion` on the bitmap `Metron` did not scale cleanly (TEXT SIZING LAWS). OR label
+  the mockup explicitly as "approximation, not the in-game render".
 - **Do NOT change the real `.layout`** (convert a widget to MultilineTextWidget, move positions,
   shrink text) to fix something seen ONLY in an unfaithful mockup — mark it `[verify in-game]`
   first; the in-game render may already be fine. Origin: a 25px mockup title wrapped + overlapped

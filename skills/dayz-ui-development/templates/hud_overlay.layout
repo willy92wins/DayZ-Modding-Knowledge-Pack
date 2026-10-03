@@ -34,7 +34,7 @@ FrameWidgetClass HudOverlayRoot {
 			color 0.12 0.12 0.12 0.90
 			// Top-right as a fraction: x = 1 - width - margin = 0.76.
 			// Equivalent corner to vanilla BadgesPanel (gui/layouts/day_z_hud.layout:514-521,
-			// right_ref + 252 px inward) without copying the pixel offset.
+			// right_ref + 252 exact units inward) without copying the exact offset.
 			position 0.76 0.04
 			size 0.22 0.10
 			// Vanilla writes `halign left` (38x) and `valign top` (34x), never
@@ -53,13 +53,13 @@ FrameWidgetClass HudOverlayRoot {
 					name "HudIcon"
 					// Vanilla HUD badge icon: gui/layouts/day_z_hud.layout:534-551
 					// (Wetness, image0 set:dayz_gui). Most-used vanilla class (1638x).
-					// Vanilla sizes this icon in exact square pixels (size 35 35,
+					// Vanilla sizes this icon in exact square units (size 35 35,
 					// hexactsize/vexactsize 1, fixaspect fixwidth). This box is
 					// proportional by design, so it predicts 67.58x60.48 at 1920 --
 					// a 1.117:1 box that would squash a square glyph ~12%. Left as is
 					// on purpose: fixaspect on a proportional box is not modelled by
 					// any parser here, and only a rendered frame settles whether the
-					// squash shows. Swap to exact px + fixaspect if it does.
+					// squash shows. Swap to exact units + fixaspect if it does.
 					ignorepointer 1
 					position 0.04 0.22
 					size 0.16 0.56

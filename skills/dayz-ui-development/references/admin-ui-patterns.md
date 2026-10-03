@@ -312,10 +312,15 @@ void FitText(TextWidget txt, int maxSize, int minSize) {
 - **Layout coordinates in 0.0–1.0 range** (relative/proportional) — engine handles these
 - **SpacerWidget/WrapSpacerWidget children** — auto-flow is resolution-independent
 - **Widget.SetSize(w, h)** with values 0.0–1.0 — these are proportional to parent
+- **Exact-flag layout values, and `SetSize` on an exact widget** — the engine already draws
+  them at height/1080 (SKILL.md Rule 3; added 2026-10-03). A script that multiplies them again
+  scales them twice (SetSize 480 rendered 320 at 720p).
 
 **Only pixel-absolute values need the multiplier:** `SetScreenSize`, `SetScreenPos`,
 `SetTextExactSize`, pixel gaps, and any hardcoded distances used in hit-testing or
-screen-space math.
+screen-space math. *(2026-10-03: the layout key `"exact text size"` N on an SDF face already
+scales with the screen height, SKILL.md TEXT SIZING LAWS; whether `SetTextExactSize` does the
+same was not measured.)*
 
 ---
 

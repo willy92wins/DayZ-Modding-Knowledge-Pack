@@ -478,10 +478,10 @@ SOURCEALPHA    // Use source alpha blending
 BLEND          // Enable blending
 ADDITIVE       // Additive blending
 VISIBLE        // Widget visible
-HEXACTPOS      // Horizontal exact position (pixels)
-VEXACTPOS      // Vertical exact position (pixels)
-HEXACTSIZE     // Horizontal exact size (pixels)
-VEXACTSIZE     // Vertical exact size (pixels)
+HEXACTPOS      // Horizontal exact position (exact units, 1/1080 of screen height)
+VEXACTPOS      // Vertical exact position (exact units)
+HEXACTSIZE     // Horizontal exact size (exact units)
+VEXACTSIZE     // Vertical exact size (exact units)
 NOFILTER       // No texture filtering
 STRETCH        // Stretch image to fill
 IGNOREPOINTER  // Transparent to mouse
@@ -495,6 +495,9 @@ DISABLED       // Widget disabled
 widget.SetFlags(WidgetFlags.IGNOREPOINTER);
 widget.ClearFlags(WidgetFlags.VISIBLE);
 ```
+
+*(corrected 2026-10-03: the four exact flags above said «(pixels)»; exact units are 1/1080 of the
+screen height, SKILL.md Rule 3.)*
 
 ---
 

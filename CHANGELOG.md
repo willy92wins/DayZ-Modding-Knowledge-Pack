@@ -220,7 +220,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `layout-format.md` (unit comments, rect arithmetic, spacers), `layout-empirical-corpus.md`
   (the attribute table), `plan-to-implementation.md`
   (§0, §1.1, §2, the previewer note, §6.3), `widget-api.md`, `styles-format.md`,
-  `hot-iteration.md`, two template comments, `TOOLS.md` and the layout viewer's README. The pack
+  `advanced-patterns.md`, `admin-ui-patterns.md` (exact values need no script scaling),
+  `hot-iteration.md`, the comments of the three templates, `TOOLS.md` and the layout viewer's README. The pack
   parser still lays exact units out as pixels (`tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775`);
   the docs now say so. Replaced passages are quoted in dated notes.
 - `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
