@@ -301,8 +301,10 @@ def git_commit(root: Path) -> str:
 
 
 def git_tracked_files(root: Path) -> list[str]:
+    # Mid-merge, git ls-files prints an unmerged path once per index stage
+    # (up to three times); each tracked path is listed once, in sorted order.
     output = git_output(root, "ls-files", "-z")
-    return sorted(item.replace("\\", "/") for item in output.split("\0") if item)
+    return sorted({item.replace("\\", "/") for item in output.split("\0") if item})
 
 
 def git_is_dirty(root: Path) -> bool:

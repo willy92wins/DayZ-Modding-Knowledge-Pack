@@ -683,8 +683,15 @@ telemetry). To condition for real (authoritative wheels+fluids) without touching
 `vehicle_drive {throttle:0.01, duration:0.5}` — its PREP phase executes `car.OnDebugSpawn()`
 SERVER-side (MCPBridge.c:2104-2112) and the 0.5 s micro-drive is negligible. NOTE:
 `vehicle_drive` requires the SERVER-side seat (gives `not_seated` with owner-client seat).
-`vehicle_prepare_fixture` does NOT work outside the Mercedes (`MERCEDES_AMGLF` hardcoded in
-MCPBridge.c:835 and loopback.py:113; open issue to generalize it). Raw `/enqueue`
+`vehicle_prepare_fixture` takes any `CarScript` classname: an object of another class fails with
+`fixture_not_vehicle` (`DayZ_MCP_dev/addon/scripts/5_Mission/MCPBridge.c:1214-1280`).
+[EXACT][CLAIM-MCPV-PREPARE-FIXTURE-ANY-CARSCRIPT] Between 2026-08-18 and 2026-10-01 it returned
+`vehicle_fixture_ready=1` with `wheel_count` 4 on 15 other `CarScript` types, among them `SUB_BRZ`,
+`LFQuad2`, `Arma2Quad`, `Hatchback_02` and the vanilla `CivilianSedan`; three test variants of one
+quad returned `fixture_not_ready`. *(Corrected 2026-10-03: this said "`vehicle_prepare_fixture` does
+NOT work outside the Mercedes (`MERCEDES_AMGLF` hardcoded in MCPBridge.c:835 and loopback.py:113;
+open issue to generalize it)". The loopback copy of 2026-07-25 still had that check; the tools'
+2026-08-16 release does not.)* Raw `/enqueue`
 requires `{identity, lease_token}` in body in addition to `?key=` (identity/token come from
 `session_acquire`). gear idx of `vehicle_telemetry`: 0=R, 1=N, 2=1st ... 7=6th.
 Verified in-game SUB_BRZ s37 (wheel_count 0->4, fuel 1.0, complete kit, run B3 to 6th).
@@ -996,21 +1003,37 @@ Validated pattern:
    between marks. Cross this pattern with `dayz-test-ingame`.
 6. [EXACT] Archive the case directory on completion — always, not only between runs — and never execute a command that already has its `res_<seq>.json`. Measured failure (2026-09-27, LFPowerGrid): a driver whose sequence reset to 1 on a stale `cmd_1.json` re-ran the bank-mounting command every ~1.5 s; half an hour later the world held thousands of duplicate objects and the user aborted the next session for performance. The log lines dismissed as harness noise were the signal: a repeated `OP seq=1` means the command IS running again, and duplicated live device ids mean two entities share one id. Before filing a repeated or `ERR` line as noise, write in one sentence what it would mean if true; if that sentence describes damage, it is signal. (measured in game, DayZ 1.30.164014 Exp)
 
-## Lease preflight, capped telemetry, and zombie commands (SP-152, added 2026-08-31)
+## Lease preflight, object telemetry, and zombie commands (SP-152, added 2026-08-31; corrected 2026-10-03)
 
-- On the frozen platform, `telemetry_read(mode="object_at")` only accepts
-  `type="MERCEDES_AMGLF"`: the limit is in the Python loopback, even though the Enforce bridge is
-  generic. For another classname, plan diagnosis with server logs and user
-  tests; do not promise object telemetry.
+- `telemetry_read(mode="object_at")` reads any classname: the bridge matches it by exact
+  `GetType()` inside the radius (`DayZ_MCP_dev/addon/scripts/5_Mission/MCPBridge.c:3007-3051`), and
+  the loopback checks `type` only for a non-empty string (`DayZ_MCP_dev/tools/dayz_mcp/loopback.py:1349-1358`).
+  [EXACT][CLAIM-MCPV-OBJECT-AT-ANY-TYPE] On 2026-10-02 (DayZDiag 1.29.163709, run `1c289781`) it
+  answered `telemetry.found=1` with `pos`, `orientation`, `health01` and `declared_slots` (the reply's
+  top-level `found` stays 0) for three types:
+  `KP_CharAB_V1` (`health01` 0), the vanilla `ZmbM_SoldierNormal` (0) and `KP_CharAB_V3` (0.7525).
+  `inventory_attach` returned the same telemetry block for `SurvivorM_Francis`. It reads only the
+  fields the bridge fills, not a mod's script members or sync variables.
+  *(Corrected 2026-10-03: this bullet said "On the frozen platform, `telemetry_read(mode="object_at")`
+  only accepts `type="MERCEDES_AMGLF"`: the limit is in the Python loopback, even though the Enforce
+  bridge is generic. For another classname, plan diagnosis with server logs and user tests; do not
+  promise object telemetry." The oldest copy of the tools on disk (2026-07-25) has the
+  `type != "MERCEDES_AMGLF"` check only in the loopback's `vehicle_prepare_fixture` branch, whose
+  arguments also carry `mode="object_at"`, and its `telemetry_read` took any non-empty `type`; which
+  verb returned the `bad_args` behind SP-152 on 2026-08-02 is not recorded. The tools' 2026-08-16
+  release has no such check.)*
 - `query_*`, telemetry, raycast, and captures cross the bridge and require
   `session_acquire`. Only `dayz_test_run`/`dayz_test_stop` manage their own lease; do not extrapolate
   that management to other verbs. (rev. 2026-09-06: "require `session_acquire`" includes ADOPTING the
   run that launch left `RUNNING_IDLE`; the grant of `session_acquire_wait` does so and declares it in
   `adopted_run` — §COMPOSITION, "Bridge startup sequence".)
 - A `world_spawn` timeout leaves a zombie command: it may execute after losing the
-  `object_id`. Before retrying, reconcile the effect with supported telemetry for that type;
-  if the `object_at` cap prevents it, use logs plus user inspection. Do not blindly duplicate
-  spawn.
+  `object_id`. Before retrying, reconcile the effect with `telemetry_read(mode="object_at")` for that
+  type at the spawn position: `telemetry.found` 0 means none of that type is inside the radius when the
+  read runs (the zombie command can still run later), and two or more of that type inside the radius
+  fail with `ambiguous_fixture` (`MCPBridge.c:3031-3045`; not exercised on a zombie spawn).
+  Do not blindly duplicate spawn. *(Corrected 2026-10-03: this said "if the `object_at` cap prevents
+  it, use logs plus user inspection"; there is no such cap, first bullet.)*
 
 ## `inventory_give`: one call does not equal one unit (SP-300, added 2026-08-31)
 
