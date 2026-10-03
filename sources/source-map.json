@@ -894,9 +894,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "[Unreleased] Added entry for dayz-physics-engine engine truth 11: walking and jumping on the moving platform that is a separate entity (SP-452), measured in game on DayZDiag 1.29.163709, dayz-mcp run 8e032fd9, 2026-10-01.",
+          "license": "MIT",
+          "source_hash": "1f3fa3d8d0e53670ed7e8db585876000bac16b78c685bc5dc336928cfa57ee28",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-spb-physics-walk@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03: Unreleased Fixed entry for dayz-pbo-build SP-155 rule 1 (a staged binarize embeds a face material it cannot resolve under -addon empty; the 'tolerable' sentence quoted and replaced; rule 5 ODOL gate), dayz-clothing BUILD step 1 and SP-069 rule 1. Evidence as recorded on the SKILL.md input of the same change. Written by Claude (Anthropic). Updated after review round 1 (rule-5 predicate, SP-069 heading, gate ordering). Updated after review round 2 (rule 5: gate before the build, ODOL read as a control).",
           "license": "MIT",
-          "source_hash": "197d1470cbc95cde75cc704dde8be89685d847a37ed195dc983ecc3ddcc1df44",
+          "source_hash": "29586d679ca4dbaf17731d2013f188121e27ecf8e80d1c6875f34b9b2d81121f",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inbc-pbo-sp155@2026-10-03",
@@ -904,7 +914,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "197d1470cbc95cde75cc704dde8be89685d847a37ed195dc983ecc3ddcc1df44",
+      "output_hash": "29586d679ca4dbaf17731d2013f188121e27ecf8e80d1c6875f34b9b2d81121f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -10324,10 +10334,20 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-inbb-rules@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-452 of the skill-patches ledger): engine truth 11 gains a sub-bullet, Walking and jumping on it, with claim CLAIM-PHYS-PLATFORM-WALK-INGAME. In game, DayZDiag 1.29.163709, 2026-10-01, one client on localhost, dayz-mcp run 8e032fd9, the SR_LiftPlatform2 entity of truth 11 in mode B, four 8.9 m trips played by hand, the player's position logged at 20 Hz while moving and 2 Hz at rest (1,448 server, 1,369 client samples): walking kept link=1 with no slide and 96.0-97.8 % (server) / 98.4-99.6 % (client) of the samples within 8 cm of the face on the three trips walked; two jumps on the way down kept the link, 0.42-0.47 s airborne, peak 0.30-0.32 m above the face, landing on it, against the vanilla StartCommand_Fall(2.6) arc of 0.345 m / 0.53 s computed by ballistics (4_world/entities/dayzplayerimplementjumpclimb.c:97; 3_game/human.c:1467), so the jump is relative to the platform, whether carried by the link or inheriting its velocity at take-off (not separated); walking aboard linked with no preparatory step about 8 s before the start; no sample read a fall when stepping off at the bottom (0.35 m step, logged at 2 Hz) or onto the deck at the top (about the last half second, platform within 3 cm, 20 Hz); spikes of up to 22 cm (server) and 12.6 cm (client) for one to three samples, the client ones following long frames, the server cause open. Not measured: a jump while rising, a driven vehicle aboard, a second client's latency. Sources: SecretRock_dev/reviews/2026-10-01-lift-spike2/RESULTS2.md (run 5) and run5_8e032fd9/walk_detail.json, analysis.json and both script logs; numbers re-read from walk_detail.json and the logs. Cross-family review by Codex. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "525fc156de8ef6c3cfa051a68e0476cee03ccde975f5a149c74471c23f78cfc5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "kp-update-spb-physics-walk@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "4a9f079d226a916e030ff6c2602a527b86be553a00d859acf8c5898ab18953a7",
+      "output_hash": "525fc156de8ef6c3cfa051a68e0476cee03ccde975f5a149c74471c23f78cfc5",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -16775,10 +16795,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-inba-seanim@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registers CLAIM-PHYS-PLATFORM-WALK-INGAME (runtime_verified) for the dayz-physics-engine truth 11 sub-bullet on walking and jumping on the moving platform (SP-452): DayZDiag 1.29.163709, 2026-10-01, dayz-mcp run 8e032fd9, four 8.9 m trips played by hand on SR_LiftPlatform2 in mode B, 1,448 server and 1,369 client samples (20 Hz while the platform moved, 2 Hz while it stood); numbers from SecretRock_dev/reviews/2026-10-01-lift-spike2/RESULTS2.md (run 5) and run5_8e032fd9/walk_detail.json, the ballistic figures computed from StartCommand_Fall(2.6) (4_world/entities/dayzplayerimplementjumpclimb.c:97). No other claim moves.",
+          "license": "MIT",
+          "source_hash": "74f313f1716fa701d75338d6c70705d5b8aea56a9c09d44af85c7b2f78a55b26",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-spb-physics-walk@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d5425b14ad833f5a44932d835f7eca6574323fe8c5696b1199987d7b4f6416ab",
+      "output_hash": "74f313f1716fa701d75338d6c70705d5b8aea56a9c09d44af85c7b2f78a55b26",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
