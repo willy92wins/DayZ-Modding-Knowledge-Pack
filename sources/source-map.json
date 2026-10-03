@@ -854,9 +854,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "[Unreleased] Added entry for dayz-persistence Hard stops item 9 and its section and the rigorous-data-audit entry-point audit's worked example: a registry entry leaves by its id, never by proximity (SP-456, SecretRock audit DZ-R9, 2026-10-03; the unregister rule verified in game on DayZDiag 1.29.163709, the restore rule [DESIGN] and the shutdown rule read in the code).",
+          "license": "MIT",
+          "source_hash": "f3a0016d47305c7d3bba6cddc987137ce644738923938ab7952e9036259465ed",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20260927-170625-092a, from CocaLab). dayz-model-pipeline references/animations.md section 5 'Placement Rules' rule 3 'Scale' (lines 311-313 at ea7b396) said \"Axis vector doesn't define scale; only direction matters.\" for every axis, rule 2's example called its 1 m axis \"normalized to -X direction\", and the TRANSLATION section (lines 102-103, 109-110) and three later examples read offset0/offset1 as metres. Read on 2026-10-03: Binarize stores a translation's offsets as model.cfg writes them and its axis at its own length (CocaLab release PBO: model.cfg offset1 = 1 on twelve drift axes 12.10 to 16.16 mm long, binarized tray ODOL v55 stores offset1 1.0 and each axis at its source length; a metres-to-axis-lengths conversion would have stored 62 to 83), so, assuming the m249's older binarizer (ODOL v54) kept offsets as the v55 pair shows (not verified: no m249 model.cfg is at hand), the binarized vanilla DZ/weapons/firearms/m249/m249.p3d (sha256 3b403365447c5cf4...) carries the offsets its authors wrote, read as compiled values: belt classes -1 to 0 on axes 1.11 to 1.15 cm, bolt_pull_1 0 to +1 on 8.34 cm, magazine_reload_move_1 0 to +1.45 on 10 cm; every rotation axis of the same file is stored as a unit vector. Inferred, not measured in game: the engine moves a selection by offset times axis. Rule 3 now separates rotation (direction only) from translation (offset times axis length; a 1 m axis makes the offset read in metres, the workaround dayz-vehicles SKILL.md already recommends, under which both readings agree), with claim CLAIM-MODEL-TRANSLATION-AXIS-LENGTH; rule 2 says an offset of 1 moves by the whole axis vector; the TRANSLATION section explains the unit and points to the inference; the push-button, drawer and screen example comments keep their text with \"on a 1 m axis (section 5, rule 3)\" added; the troubleshooting table gains 'Translation barely moves, or leaves the model'. A dated note under the table qualifies the row 'Multiple animations fight' with the same file's anims2bones (one bone carries the magazine's hide, two rotations and five translations; another bolt_pull_1 and bolt_pull_2; each belt round's bone two hides, a rotation and a translation); which combinations fight was not measured. The replaced sentences (the TRANSLATION comments and bullets, rule 3's two bullets, rule 2's bracket) are quoted verbatim in dated notes. CHANGELOG [Unreleased] Fixed entry. Cross-family review (Codex gpt-6.1-sol, max effort, cap of two rounds): round 1 on a3d54d0 SOUND-WITH-FIXES, no P1; R1-01 (the ODOL values did not identify the model.cfg unit: a compiler dividing metres by the axis length gives the same bytes) answered with the CocaLab source/binarized pair above and the rule relabelled as inference; R1-02 (the dayz-3d-viewer formula is a planned feature, not an implemented renderer) reworded; R1-03 (the coverage sentence about quoted replacements was broader than the notes) narrowed here and in the CHANGELOG. Round 2 on f8db3f5 SOUND-WITH-FIXES, no P1: R1-02 and R1-03 closed; R1-01 partial, R2-01 (P2): the v54 assumption stated in the reference and the claim was missing from this provenance and the CHANGELOG, which said the m249 carries its authors' offsets unconditionally; both now carry the condition (fixed after the cap of two rounds, checked by grep, no third round). Not done: the ticket's related note that the ODOL stores hideValue normalized to [minValue, maxValue] (m249 min -1, max 0, hideValue 0.935) is not added, since CocaLab's hides use 0..1 and no other source model.cfg was at hand to compare; dayz-vehicles SKILL.md's 'documented inconsistently' wording and dayz-vehicles references/animation-sign-and-axis.md line 65 (unit(axis_dir) * (offset1 - offset0), a sign check) are left as they are. Docs only. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "6b745f5a9025115d6a0b5ae6a4d28d677bc3e2a3710921911573f924c488a87f",
+          "source_hash": "91cf4e8dc3f48f0a17c21e39b202f016fd1d09db4e8db9663e44ce2df46d0bdc",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inba-translation@2026-10-03",
@@ -864,7 +874,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6b745f5a9025115d6a0b5ae6a4d28d677bc3e2a3710921911573f924c488a87f",
+      "output_hash": "91cf4e8dc3f48f0a17c21e39b202f016fd1d09db4e8db9663e44ce2df46d0bdc",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -9974,10 +9984,20 @@
           "source_path": "skills/dayz-persistence/SKILL.md",
           "source_revision": "kp-update-inbb-rules@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-456 of the skill-patches ledger): Hard stops gain item 9 and a section, A registry entry leaves by its id, never by proximity, for a mod's own registry of world entities (Contract 3, sidecar JSON). From the SecretRock audit DZ-R9 of 2026-10-03 (Codex read the code, Claude checked the six findings against it): an unregister that fell back to the nearest entry of the same class within 0.75 m deleted a neighbour's entry when an entity without an id was deleted (a placement refused after creation, an admin's console spawn), so an unregister needs a matching id (claim CLAIM-PERS-UNREGISTER-BY-ID, runtime_verified: with that rule, in game on DayZDiag 1.29.163709, a console rock 0.3 m from a registered one horizontally (0.37 m apart) created and deleted left placed.json's SHA-256 unchanged and the registered rock came back after the restart; the failure itself not reproduced; an id two entries share identifies neither); restore binds by id, and a candidate inside the radius without the entry's id is a conflict to log, neither bound, given state nor duplicated ([DESIGN]: the cross-family review traced three ways a position match in SecretRock's fixed code takes the wrong entity or creates a second one, rounds 1 and 2), since GetObjectsAtPosition3D promises no order (VANILLA/3_game/global/game.c:924-929; claim CLAIM-PERS-RESTORE-BIND-BY-ID, source_verified); a restore pass still queued in CALL_CATEGORY_SYSTEM (VANILLA/3_game/global/game.c:1515) is removed with ScriptCallQueue.Remove (VANILLA/2_gamelib/tools.c:65) before the shutdown flag is set (claim CLAIM-PERS-SHUTDOWN-QUEUE, source_verified; the shutdown order in game not confirmed). Sources: SecretRock_dev/reviews/2026-10-03-roca-r73/README.md sections 5 and 6, dzr9_codex.md, dzr9_delta.md, dzr9_fix.diff. Cross-family review by Codex. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "387413b0d9fa47025fed9e0bc210a04397d21ccf5015071564868fc66864ce69",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/SKILL.md",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "eedaa020cbf9cf24dbe74b3b96412418a6cdb229d5f2f35f932174f6411f36b7",
+      "output_hash": "387413b0d9fa47025fed9e0bc210a04397d21ccf5015071564868fc66864ce69",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -14944,10 +14964,20 @@
           "source_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-456): the entry-point audit gains a worked example, DZ-R9 F1 (SecretRock's UnregisterEntity fell back to the nearest entry of the same class within 0.75 m, so the two entry points that delete an entity without an id, a placement refused after creation and an admin console spawn, removed a registered neighbour's entry; the shutdown face F6, a restore pass still queued in CALL_CATEGORY_SYSTEM after OnMissionFinish reopening saving), the invariant 'an entry of the mod's own registry leaves only by its own id' with five entry points, and a Step 3 search for proximity used as identity (GetObjectsAtPosition3D promises no order, 3_game/global/game.c:924-929; a candidate without the entry's id is a conflict to log, not a match). Evidence: SecretRock_dev/reviews/2026-10-03-roca-r73/README.md sections 5 and 6, dzr9_codex.md, dzr9_delta.md, dzr9_fix.diff; F1's fix verified in game on DayZDiag 1.29.163709 (test 5), F6's shutdown order not confirmed in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f5e7529b85e37f60f25315d9911164e08d3988daa98b994ec41d8fa6c78b62c1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c699216daa389382212ab2eba8d70f547f2888991ad0a578dff92b357155e5f8",
+      "output_hash": "f5e7529b85e37f60f25315d9911164e08d3988daa98b994ec41d8fa6c78b62c1",
       "output_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -16538,9 +16568,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Registers CLAIM-PERS-UNREGISTER-BY-ID (runtime_verified), CLAIM-PERS-RESTORE-BIND-BY-ID and CLAIM-PERS-SHUTDOWN-QUEUE (source_verified) for the dayz-persistence section on registry entries (SP-456): the SecretRock audit DZ-R9 of 2026-10-03 with its fix and in-game test 5 (DayZDiag 1.29.163709), and the vanilla 1.29 sources 3_game/global/game.c:924-929 and :1515 and 2_gamelib/tools.c:65. No other claim moves.",
+          "license": "MIT",
+          "source_hash": "ced1b36f9ee1d5e75f71f0173987098283a846f432eb98f5331993ab4fd3dc62",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20260927-170625-092a, from CocaLab). dayz-model-pipeline references/animations.md section 5 'Placement Rules' rule 3 'Scale' (lines 311-313 at ea7b396) said \"Axis vector doesn't define scale; only direction matters.\" for every axis, rule 2's example called its 1 m axis \"normalized to -X direction\", and the TRANSLATION section (lines 102-103, 109-110) and three later examples read offset0/offset1 as metres. Read on 2026-10-03: Binarize stores a translation's offsets as model.cfg writes them and its axis at its own length (CocaLab release PBO: model.cfg offset1 = 1 on twelve drift axes 12.10 to 16.16 mm long, binarized tray ODOL v55 stores offset1 1.0 and each axis at its source length; a metres-to-axis-lengths conversion would have stored 62 to 83), so, assuming the m249's older binarizer (ODOL v54) kept offsets as the v55 pair shows (not verified: no m249 model.cfg is at hand), the binarized vanilla DZ/weapons/firearms/m249/m249.p3d (sha256 3b403365447c5cf4...) carries the offsets its authors wrote, read as compiled values: belt classes -1 to 0 on axes 1.11 to 1.15 cm, bolt_pull_1 0 to +1 on 8.34 cm, magazine_reload_move_1 0 to +1.45 on 10 cm; every rotation axis of the same file is stored as a unit vector. Inferred, not measured in game: the engine moves a selection by offset times axis. Rule 3 now separates rotation (direction only) from translation (offset times axis length; a 1 m axis makes the offset read in metres, the workaround dayz-vehicles SKILL.md already recommends, under which both readings agree), with claim CLAIM-MODEL-TRANSLATION-AXIS-LENGTH; rule 2 says an offset of 1 moves by the whole axis vector; the TRANSLATION section explains the unit and points to the inference; the push-button, drawer and screen example comments keep their text with \"on a 1 m axis (section 5, rule 3)\" added; the troubleshooting table gains 'Translation barely moves, or leaves the model'. A dated note under the table qualifies the row 'Multiple animations fight' with the same file's anims2bones (one bone carries the magazine's hide, two rotations and five translations; another bolt_pull_1 and bolt_pull_2; each belt round's bone two hides, a rotation and a translation); which combinations fight was not measured. The replaced sentences (the TRANSLATION comments and bullets, rule 3's two bullets, rule 2's bracket) are quoted verbatim in dated notes. CHANGELOG [Unreleased] Fixed entry. Cross-family review (Codex gpt-6.1-sol, max effort, cap of two rounds): round 1 on a3d54d0 SOUND-WITH-FIXES, no P1; R1-01 (the ODOL values did not identify the model.cfg unit: a compiler dividing metres by the axis length gives the same bytes) answered with the CocaLab source/binarized pair above and the rule relabelled as inference; R1-02 (the dayz-3d-viewer formula is a planned feature, not an implemented renderer) reworded; R1-03 (the coverage sentence about quoted replacements was broader than the notes) narrowed here and in the CHANGELOG. Round 2 on f8db3f5 SOUND-WITH-FIXES, no P1: R1-02 and R1-03 closed; R1-01 partial, R2-01 (P2): the v54 assumption stated in the reference and the claim was missing from this provenance and the CHANGELOG, which said the m249 carries its authors' offsets unconditionally; both now carry the condition (fixed after the cap of two rounds, checked by grep, no third round). Not done: the ticket's related note that the ODOL stores hideValue normalized to [minValue, maxValue] (m249 min -1, max 0, hideValue 0.935) is not added, since CocaLab's hides use 0..1 and no other source model.cfg was at hand to compare; dayz-vehicles SKILL.md's 'documented inconsistently' wording and dayz-vehicles references/animation-sign-and-axis.md line 65 (unit(axis_dir) * (offset1 - offset0), a sign check) are left as they are. Docs only. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "83cbb382838427c7f04c532d4ac1dc630c3735322cf2a3d07d7a91ff2a8f0d5d",
+          "source_hash": "ceb9d2bfbd4b76dd54c0b71c5224c9fb9ad592d2a3d2d447b5857cb67353b929",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-inba-translation@2026-10-03",
@@ -16548,7 +16588,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "83cbb382838427c7f04c532d4ac1dc630c3735322cf2a3d07d7a91ff2a8f0d5d",
+      "output_hash": "ceb9d2bfbd4b76dd54c0b71c5224c9fb9ad592d2a3d2d447b5857cb67353b929",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
