@@ -596,6 +596,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `acceptance-ladder.md` cite the new paths. Measured with `packctl test-folders --tree skills`:
   six folders pass, also with numpy hidden from the test processes, and the same two mutants fail
   `dayz-mcp-verify` and `dayz-proxy-align`.
+- `dayz-characters`' `test_check_dayz_winding.py`, the 39 tests of its pre-PBO winding gate (#53),
+  sat in `references/`, outside the `skills/<skill>/tests` folders the gate's `skill_tests` check
+  and CI run, so a failing test there turned neither red. It now sits in `tests/` and reads
+  `check_dayz_winding.py` and its fixtures where they stay, in `references/` and
+  `references/winding_fixtures/`; `SKILL.md` and the gate's usage note cite the new path.
+  Measured with `packctl test-folders --tree skills`: seven folders pass, `dayz-characters` with
+  39 tests, on Python 3.14.3 and on 3.12.14 with pytest as the only package, as on the CI runner.
+  With the gate's `DISAGREE_BELOW` mutated from 10 to 0, `dayz-characters` fails (6 of its 39
+  tests), where `main` at `ea7b396` with the same mutant passes its six folders.
 - py3d rollout applicator (`tools/py3d/rollout/apply-s2-rollout.ps1`): restocking a skill's
   `wheels/` counted the pinned name and legacy `py3d-*.whl` wheels but not an earlier
   `py3d_dayz-*.whl`, so a 1.8.0 → 1.9.0 restock would copy 1.9.0 beside 1.8.0, pass its own
