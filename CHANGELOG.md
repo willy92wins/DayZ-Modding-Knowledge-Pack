@@ -347,6 +347,52 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   sound. Item 9 stops a restore that gives an entry a new entity while one it already had may
   still live, and the audit search no longer calls a candidate without the id "a conflict to
   log". Traced through the code and the rules' text; none of it was reproduced in game.
+- `dayz-pbo-build` SP-155 rule 1: a staged binarize looks for every file the p3d cite under the
+  staging folder, which AddonBuilder passes as `-addon` (the source's parent), never under `P:\`,
+  and embeds a face material it cannot find EMPTY in the ODOL (no shader, no stage texture, no
+  `.bisurf`) while the build says "Build Successful". The rule called the "Material not loaded"
+  messages of a staged build tolerable; the ArmorHneck ODOL it cited as working (deployed
+  2026-08-04) carries its Fire Geometry material `armor_5mm_plate.rvmat` empty. The rule now
+  stages the cited files beside the mod (copies, or a `DZ` junction to the extracted vanilla
+  data). A new rule 5 checks, before the build, that every path the faces cite exists under the
+  staging folder, and reads the ODOL afterwards as a control: an unresolved material has no
+  shader, stage or surface and the engine's default colours, but bare vanilla `.rvmat`s
+  (`half_lighted_default`, `streambed_leaves`, `default_2pass`) embed much the same, so a match
+  is a lead to confirm against the text `.rvmat` (CfgConvert decoded a binarized `wood.rvmat`
+  from `.bin` to `.cpp`). Measured: CocaLab
+  (2026-09-27; gate control without the files: 6 failures) and the DayZ MCP v1.3.1 spike on
+  SimpleGroup (2026-10-01, 11 builds): binarize parses every `config.cpp` under `-addon`, through
+  junctions; AddonBuilder exits 0 with `[ResultCode]=1`; `-project=<source>` drops every `.paa`,
+  `.rvmat` and `texHeaders.bin` from the PBO; with the mod alone under `-addon`, `T1_FlagKit.p3d`
+  embeds its two `dz\` materials empty, and with a `DZ` junction beside it, it is byte-identical
+  to the production build. `dayz-clothing` BUILD step 1 points at the rule. SP-069 rule 1 no
+  longer says `-temp` "must stay under `P:\`": with the spike's nine binarized builds in a local
+  `-temp` added to four earlier ones, `P:\` is the habit, not a measured requirement. The
+  "Gate ordering" paragraph says AddonBuilder's own exit code is 0 on a failed build. Not
+  measured: what an empty material does in game. The replaced sentences are quoted in dated
+  notes.
+- `dayz-ui-development`: exact units are 1/1080 of the screen height, and an unnumbered face
+  with no size key follows its box. Rule 3 called `hexact*`/`vexact* 1` physical screen pixels and advised
+  proportional units by default. Measured in game, exact units scale with the screen height on
+  both axes: `ui_tree` rects at heights 461 to 1108 (2026-08-28/29), and on SimpleGroup's frames
+  (2026-09-28) a 400-unit panel drew 400 px wide at 1920x1080 and at 2560x1080 and 267 px at
+  1280x720. TEXT SIZING LAWS said the font-only default ignores the widget box, against
+  `hot-iteration.md`'s "glyph height tracks the WIDGET height". SimpleGroup's shipped panel
+  (unsized `Metron`/`MetronBook`, captures at 1080p and 720p) sides with the box, and the
+  section now holds one law per face: an unnumbered bitmap face or an SDF face with no size key
+  follows its box, a numbered bitmap face keeps its pixel size (the same ink at 1080p and 720p;
+  text that must fit at 720p fills at most 2/3 of its box at 1080p), and an SDF face with
+  `"exact text size"` N draws about N px per 1080 of height; the mockup calibration follows. Also from those captures:
+  `WrapSpacer` + `"Size To Content V"` stacking, case-sensitive attribute keys (a GridSpacer's
+  lowercase `columns`/`rows`), `rover_sim_colorable` honouring alpha, and a button with no style
+  drawing no body. Aligned: the troubleshooting row, the offline preview step, S2 sorter rule 3,
+  `layout-format.md` (unit comments, rect arithmetic, spacers), `layout-empirical-corpus.md`
+  (the attribute table), `plan-to-implementation.md`
+  (§0, §1.1, §2, the previewer note, §6.3), `widget-api.md`, `styles-format.md`,
+  `advanced-patterns.md`, `admin-ui-patterns.md` (exact values need no script scaling),
+  `hot-iteration.md`, the comments of the three templates, `TOOLS.md` and the layout viewer's README. The pack
+  parser still lays exact units out as pixels (`tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775`);
+  the docs now say so. Replaced passages are quoted in dated notes.
 - `dayz-animation-pipeline` `scripts/seanim_writer.py` keeps SEAnim bone modifiers. `read_seanim`
   skipped them and `write_seanim` always wrote a count of 0, so a DayZATool extract read and
   written back lost them: `p_1hd_erc_idle_low` (65 bones, ABSOLUTE header) lost its 60 RELATIVE

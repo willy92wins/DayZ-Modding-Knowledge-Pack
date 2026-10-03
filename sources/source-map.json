@@ -904,9 +904,29 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: Unreleased Fixed entry for dayz-ui-development (exact units are 1/1080 of the screen height; one law per face: a face with no size key follows its box, a sized bitmap face keeps its pixel size, an SDF face with exact text size N draws about N px per 1080 of height; spacer, key-case, alpha and button findings) and the aligned references, templates, TOOLS.md and layout viewer README. Evidence as recorded on the SKILL.md input of the same change. Written by Claude (Anthropic). Updated after review round 1. Updated after review round 2.",
+          "license": "MIT",
+          "source_hash": "15674b556b8f69de82372021474ab0902d1e7a7c130473be31d7a8af723ce664",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: Unreleased Fixed entry for dayz-pbo-build SP-155 rule 1 (a staged binarize embeds a face material it cannot resolve under -addon empty; the 'tolerable' sentence quoted and replaced; rule 5 ODOL gate), dayz-clothing BUILD step 1 and SP-069 rule 1. Evidence as recorded on the SKILL.md input of the same change. Written by Claude (Anthropic). Updated after review round 1 (rule-5 predicate, SP-069 heading, gate ordering). Updated after review round 2 (rule 5: gate before the build, ODOL read as a control). Updated after review round 3 (R6: the CfgConvert form is the one measured on wood.rvmat, not stated as the only one).",
+          "license": "MIT",
+          "source_hash": "faadbdd1605267413e7201dc038bbdd47851442dae7f803534eff2119663f208",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-inbc-pbo-sp155@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "[Unreleased] Fixed entry for the fix-forward of PR #97: point 2 no longer gives a restore rule; the rule merged in #97 and the three [DESIGN] rules written to replace it came out UNSOUND in cross-family review, and the traced failures are listed as an open problem. The #97 Added entry now says its [DESIGN] restore rule is withdrawn.",
           "license": "MIT",
-          "source_hash": "e63fbb38521d633d22cd0149fe61cb096270cda4f60a776af36e4e2aa1ffa631",
+          "source_hash": "a78ea7f253878c3b5b03be313c043b2cecd13fc66991c64067cdfbccb4985f39",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-spb-restore-absence@2026-10-03",
@@ -914,7 +934,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e63fbb38521d633d22cd0149fe61cb096270cda4f60a776af36e4e2aa1ffa631",
+      "output_hash": "a78ea7f253878c3b5b03be313c043b2cecd13fc66991c64067cdfbccb4985f39",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -1319,10 +1339,20 @@
           "source_path": "TOOLS.md",
           "source_revision": "kp-update-py3d-wheel-1.10.1@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5): the dayz-layout-viewer paragraph called its exact-pixel versus scaled-proportional difference the 'looked right in the mockup, wrong in game' failure made visible; in game exact units scale with the screen height (dayz-ui-development Rule 3), so off 1080p that difference is the viewer's model (tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775). Quoted in a dated note. Written by Claude (Anthropic). Updated after review round 1. Round 2 follow-up where touched: see the SKILL.md input of this change.",
+          "license": "MIT",
+          "source_hash": "9fb371af51a1b57fde5a614a09f3300e569f903365f8eefdd1117ffec740ec42",
+          "source_id": "pack-r21-authored",
+          "source_path": "TOOLS.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "3caf5eeb65417bf7ca6af0e81a58bee02f68faa9c3bf5679b949ebedc63fa2b7",
+      "output_hash": "9fb371af51a1b57fde5a614a09f3300e569f903365f8eefdd1117ffec740ec42",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -6978,10 +7008,20 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "kp-update-chiral-ingame@2026-10-02",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260927-031737-695b): BUILD step 1 staged the mod without the files its p3d cite outside the prefix. It now stages them and points at dayz-pbo-build SP-155 rules 1 and 5 (corrected 2026-10-03): a staged binarize embeds a face material it cannot resolve under -addon empty. Read 2026-10-03 with the external converter's odol_reader.py on ArmorHneck.pbo deployed 2026-08-04 (the template's build): armorhneck_g.p3d Fire Geometry material dz/data/data/penetration/armor_5mm_plate.rvmat has pixel_shader 0, vertex_shader 0, no surface file and no stage texture. In-game effect not measured. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "14754c2a1e15f1b121800847c91c4dacc2943605b8241d5f19fae3d419184ed3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "kp-update-inbc-pbo-sp155@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b6ce2cfc7169d57fbfd0b49576de2cf939c5a86adc1b4e3b2e673cfb3a2c2c23",
+      "output_hash": "14754c2a1e15f1b121800847c91c4dacc2943605b8241d5f19fae3d419184ed3",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -9912,10 +9952,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline tickets fb-20260927-031737-695b and fb-20261001-175000-6371): SP-155 rule 1 said the 'Material not loaded' / 'Note: creating empty class' messages of a staged binarized build are tolerable (HH-60G and ArmorHneck 'build and work') and named ArmorHneck_dev/tools/build.ps1 a validated end-to-end template; quoted verbatim in a dated note and replaced. AddonBuilder 1.0.240639 / BINARIZE rev.163709. DayZ MCP v1.3.1 spike on SimpleGroup, 11 builds, 2026-10-01 (AddonBuilder.rpt [Arguments]= lines, PBO entry tables; owner's research notes notes-abiso.md, spike1/2-summary.json, decision D-99): AddonBuilder passes binarize -addon=\"<parent of the source>\" (P:/SimpleGroup -> -addon=\"P:\"; the projects folder for the production source; the copy's parent for a copy); a broken config.cpp in a sibling folder (P0) or behind a sibling junction (P3) gives binarize exit 1 in 0.1-0.15 s, no PBO, AddonBuilder exit 0 with 'Build finished. [ResultCode]=1'; -project=<source> gives -addon=<source> and a 606,274 B PBO with 5 entries against 20 (every .paa/.rvmat and texHeaders.bin missing, 'Texture headers file was not created - no textures found'); -addon over the projects folder 248.9 s (P: 251.0 s), dedicated parent 6.3-13.3 s; T1_FlagKit.p3d 43,376 B sha256 9ce5a22f... with the mod alone under -addon (P1, P2, V1, V2, V3) and 55,221 B sha256 05bd45ed... with a DZ junction to the extracted vanilla data (D1, D2), equal to the broad builds (B0, V4) and to the production PBO; the PBOs of D1/D2 hold the same 20 entries as B0 (no vanilla file packed); flagpoles varied up to 67 B across builds of the same source; nine binarized builds with -temp in a local folder produced ODOL. Read 2026-10-03 with the ODOL reader of the external ODOL->MLOD converter (odol_reader.py, sha256 688aaa90...) on the spike's preserved PBOs: in P2 and V2, T1_FlagKit's dz/gear/consumables/data/rags_bandages.rvmat (visual LOD) and dz/data/data/penetration/wood.rvmat (three collision LODs) are embedded with pixel_shader 0, vertex_shader 0, no surface file and no stage texture; in B0 the first has vertex_shader 102 and 10 stage textures and the second dz/data/data/penetration/wood.bisurf; LOD, face, section and selection counts equal. CocaLab 2026-09-27 (CocaLab_dev tools/build.py at a298a14; owner's vault assumptions.md and validation-matrix.md): a staged build embedded the DrugsPLUS leaf rvmat and dz/data/data/penetration/metalplate.rvmat (present on the work drive's dz) empty, alpha-cutout sections lost bit 0x200 (0x24200 -> 0x24000), 'Build Successful' with no log line (control 0 lines); with the cited files staged 0 empty materials; gate control without them: 6 failures. ArmorHneck.pbo deployed 2026-08-04 (sha256 54e21d7e...), read 2026-10-03: armorhneck_g.p3d Fire Geometry (7e15) material dz/data/data/penetration/armor_5mm_plate.rvmat embedded empty; its 15 visual-LOD materials resolved. Rule 5 (ODOL gate) added; SP-069 rule 1 records the nine local-temp builds and that a binarize exit 1 within a second is also a broken config under -addon. Not measured: the in-game effect of an empty material; 'creating empty class' on its own. Written by Claude (Anthropic). Review round 1 (Codex gpt-6.1-sol, read-only, effort max; UNSOUND): R1 (P1, repro) the rule-5 predicate failed vanilla bare materials, streambed_leaves.rvmat in water.pbo Streambed/streambed_leaf_short_straight.p3d (diffuse 0.3, NoZWrite) and half_lighted_default.rvmat in dz/data/cl_feathers2.p3d (diffuse 0.5); fixed: the unresolved signature adds the engine's default colours (diffuse and ambient 1,1,1,1, emissive 0,0,0,1, read on all five empty materials), a material flagged on shader, stage and surface fails only when its .rvmat (read from the game files) declares something the embedded copy lacks (a stage texture, a surface, a render flag, non-default colours, or a shader other than Normal/Basic, both of which embed as 0: default_2pass.rvmat in dz/data/data/penetration/impact_test_object.p3d embeds exactly so, differing from an unresolved material only by specular alpha 0). A read-only implementation of the rule as written passes the three vanilla ODOLs (cl_feathers2, streambed_leaf_short_straight, impact_test_object) and the broad-build T1_FlagKit, and fails the isolated T1_FlagKit (rags_bandages: stage and shader; wood: surface and colours) and ArmorHneck's armorhneck_g.p3d (armor_5mm_plate: surface and colours). R2 (P2, repro) SP-069 rule 1 kept 'must stay under P:' against nine local-temp builds; the heading now calls P: the habit, not a measured requirement, quoted in a dated note. Own fix: the Gate ordering paragraph says AddonBuilder exits 0 on a failed build. Review round 2, the last under the cap (Codex gpt-6.1-sol, read-only, max; UNSOUND): R1 and R2 FIXED; new R3 (P1) the round-1 checker failed resolved vanilla materials whose StageTI the copy carries in stage_ti (weapons_proxies.pbo muzzle_flash_pistol_FNP.p3d, default_hot_ti_ca.paa); R4 (P1) a binarized (raP) .rvmat read as text looks bare, so an unresolved material passed; R5 (P1) default_2pass also differs in specular alpha, a stage transform's uv_source and one extended value, not only specular alpha. Fixed after the cap: rule 5 now gates BEFORE the build (every path the faces cite, face.texture/face.material per LOD with py3d, must exist under the staging folder) and reads the ODOL after it as a control whose match is a lead to confirm against the text .rvmat; the lead includes StageTI and the default colours; a binarized .rvmat is decoded first: CfgConvert.exe -txt -dst <name>.cpp <name>.bin, run from its folder, decoded dz.pbo data/Penetration/wood.rvmat on 2026-10-03 (the .bin->.cpp form wrote the text, the .rvmat name exited 0 with no file). Checked mechanically 2026-10-03 (rule5_leads.py, read-only): leads on the isolated T1_FlagKit (rags_bandages, wood x3) and ArmorHneck (armor_5mm_plate); none on B0, the muzzle flash, cl_feathers2 and streambed_leaf_short_straight; impact_test_object's default_2pass is a lead its text .rvmat shows bare, as the rule says; all 15 unresolved materials read have an empty stage_ti. Merged main 200e3ce: rule 5 names the reader by the phrase #96 set ('the ODOL reader of an external ODOL->MLOD converter'), not by an unpublished skill. Review round 3 (final, opened by the orchestrator after the cap; Codex gpt-6.1-sol, read-only, max; UNSOUND on one P2 wording finding): R3, R4 and R5 FIXED, no P1 and no new P2 design; R6 (P2 wording) 'CfgConvert does that only as' claimed exclusivity on a single wood.rvmat. Fixed after round 3: 'only' dropped in SKILL.md rule 5, CHANGELOG.md and this record; checked mechanically (validate).",
+          "license": "MIT",
+          "source_hash": "4bd6fd283260ab28d0fb7fea701d11ef5dcfab326aea6b0951677573c1bee4c8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "kp-update-inbc-pbo-sp155@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "cef5e7108b274086f9f1f6fbef2f5e676ff0c2ceff4190bc3d70fd0777201764",
+      "output_hash": "4bd6fd283260ab28d0fb7fea701d11ef5dcfab326aea6b0951677573c1bee4c8",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -11888,10 +11938,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline tickets fb-20260928-130346-5144 and fb-20260928-150846-21d5). Rule 3 said hexact*/vexact* 1 = physical screen pixels (enwidgets.c:68-71 header comment) and advised proportional by default; TEXT SIZING LAWS said the font-only default ignores the widget box, against references/hot-iteration.md 'Glyph height tracks the WIDGET height'; S2 sorter rule 3 said unnumbered faces yield ~22. All quoted verbatim in dated notes (checked mechanically: 25 quotes found in the base after whitespace collapse; a one-word mutant of each file's first quote fails). In game: ui_tree rects at heights 461, 720, 900, 1080 and 1108 scaled declared x height/1080 (owner's ui_matrix.md sections 8, 9, 11, 2026-08-28/29). SimpleGroup p9b captures, 2026-09-28, native 1920x1080, 2560x1080 and 1280x720 from fresh launches, re-measured 2026-10-03 per pixel: the 400-unit right_ref panel spans 400 px with a 16 px right gap at both 1080-high resolutions and 267 px with 11 px at 720p; the sdf_MetronBook24 'exact text size' 24 title has 17/17/12 px of ink (110/110/74 px wide). SimpleGroup p9 captures (1080p and 720p, same frame for the shipped and the new panel), re-measured per pixel: unsized gui/fonts/Metron and MetronBook ink 10 px in an 18-unit box, 14 px in 24, 17 px in 26 at 1080p; 7, 8 and 12 px at 720p (0.5-0.7 of the box), nothing clipped; sized Metron22/Metron14/MetronBook12/Metron22 ink 13/10/8/14 px at 1080p and 13/9/8/14 px at 720p. Flight F case G (20-unit box, same glyph as the 40-unit case, clipped) kept as the one contrary reading, its resolution not recorded. P:/gui/fonts/metron.xml lists atlas sizes 12-58 (atlas selection by box height stated as not verified). Vanilla cited and read: inventory_new/closable_header.layout:139-158 (sdf_MetronLight24, exact text size 20), dayzwidgets.styles:3223-3246 (rover_sim_colorable WhitePixel) and :1593-1604 (ButtonWidget Default Normal empty), day_z_ingamemenu.layout:122-158 and ingamemenu.c:365-415 (button + _panel + _label). Frames show rover_sim_colorable color 0 0 0 0 invisible and 1 0 0 1 red, and a no-style ButtonWidget with a color drawing no fill next to a style Colorable one. The offline-preview step and the troubleshooting row now say dayz-ui-lab parse.py:772-775 lays exact units out as pixels. Not measured: heights above 1108, partial alphas on rover_sim_colorable, the engine's atlas choice. Written by Claude (Anthropic). Review round 1 (Codex gpt-6.1-sol, workspace-write on a git-archive export, effort max; UNSOUND): R1-01 (P1) layout-empirical-corpus.md:71-74 still said 0=fraction, 1=pixels; R1-02 (P2) 'no size key' also covered numbered bitmap faces such as Metron22 (box 28->18.667, ink 13->13 px), and MOCKUP FIDELITY still calibrated every face by text_proportion x box; R1-03 (P2) ~75% fill at 1080p overflows a fixed-pixel glyph at 720p (90 px ink, 120-unit box -> 80 px); R1-04 (P2) the preview's non-1080 views also misplace proportional children of exact parents. Fixed: the corpus lines with a dated note; the law names unnumbered bitmap faces or SDF faces, numbered bitmap faces keep their pixels; the fill bound is 2/3 of the box at 1080p for 720p, padding included, the ticket's ~75% kept as what held in that panel; the mockup calibration is per face; preview views trusted only for widgets with no exact ancestor (SKILL.md and TOOLS.md). The unsized-face ink figures now use texts without descenders (10 px in 18 units, 14 px in 24 units at 1080p; 7 and 8 px at 720p). Review round 2, the last under the cap (Codex gpt-6.1-sol, workspace-write, max; UNSOUND): R1-03 and R1-04 FIXED, R1-01 and R1-02 PARTIAL; R2-01 (P1) live 'exact = pixels' wording remained in advanced-patterns.md:333/:412, layout-format.md WidgetFlags comments and hud_overlay.layout:56; R2-02 (P1) hot-iteration.md's pointer still said 'a face with no size key'; R2-03 (P2) the mockup formula text_proportion x box was broader than its evidence. Fixed after the cap, not re-reviewed (responds to P1s, so not merged under the orchestrator's rule): those passages and three more template comments say exact units with dated notes where a claim changed; admin-ui-patterns.md lists exact-flag values and SetSize on exact widgets as already scaled and marks SetTextExactSize's scaling as not measured; hot-iteration.md names unnumbered bitmap and SDF faces; the mockup formula is limited to sdf_MetronBook24 on TextWidgetClass. Template trees unchanged (parse.py, line fields excluded); 29 quotes verbatim.",
+          "license": "MIT",
+          "source_hash": "8570ad6604e4ca2aa32b3a7e4c6152dc77502aac65495957c705ffc1a536b7b4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "5fa90e34a751d88db5652dd66b97e3614a84720db08c9bc3039fa03d2d827625",
+      "output_hash": "8570ad6604e4ca2aa32b3a7e4c6152dc77502aac65495957c705ffc1a536b7b4",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -11974,10 +12034,20 @@
           "source_path": "dayz-ui-development/references/admin-ui-patterns.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5, review round 2 R2-01): 'What doesn't need scaling' adds exact-flag values and SetSize on exact widgets (the engine draws them at height/1080; a script scaler doubles it, SetSize 480 rendered 320 at 720p), and notes that the SDF layout key 'exact text size' N scales with the screen height while SetTextExactSize's scaling was not measured. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "677535719261f01d35a817f82915d69735cffbe02a28e6fedc7ee8c8a451f1fa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/admin-ui-patterns.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "c4071875b02731e756e2466869ac0c819d5a69eb9f48aa82b0f08212816af38a",
+      "output_hash": "677535719261f01d35a817f82915d69735cffbe02a28e6fedc7ee8c8a451f1fa",
       "output_path": "skills/dayz-ui-development/references/admin-ui-patterns.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -11996,10 +12066,20 @@
           "source_path": "dayz-ui-development/references/advanced-patterns.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5, review round 2 R2-01): two passages called exact flags pixels; they now say exact units (1/1080 of the screen height, SKILL.md Rule 3) and quote the old words. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c2a55ad448560d5651e6f9e8ece8eb38ddabacd7583dd68a41dfdcee8edf2a3f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/advanced-patterns.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "ff342094fe4460229dd0f6a08a36f7aff503ed7bc550897601f2d218070da278",
+      "output_hash": "c2a55ad448560d5651e6f9e8ece8eb38ddabacd7583dd68a41dfdcee8edf2a3f",
       "output_path": "skills/dayz-ui-development/references/advanced-patterns.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -12126,10 +12206,20 @@
           "source_path": "skills/dayz-ui-development/references/hot-iteration.md",
           "source_revision": "hot-ui-iteration@2026-08-19",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-130346-5144): 'Glyph height tracks the WIDGET height' gains a pointer to SKILL.md TEXT SIZING LAWS, which now keeps it as the one law for a face with no size key, bitmap Metron/MetronBook included (SimpleGroup captures at 1920x1080 and 1280x720, 2026-09-28, re-measured per pixel 2026-10-03). Written by Claude (Anthropic). Round 2 follow-up where touched: see the SKILL.md input of this change.",
+          "license": "MIT",
+          "source_hash": "75513dce73cfabf54f66c6305193bfc595cdf90f95d3d7a29023dd7bd1f7f4a1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/hot-iteration.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "1a13cd4b154f0516327e63a5881613fc5cf7d8a6a875f6bf623e5401592e5e47",
+      "output_hash": "75513dce73cfabf54f66c6305193bfc595cdf90f95d3d7a29023dd7bd1f7f4a1",
       "output_path": "skills/dayz-ui-development/references/hot-iteration.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "runtime_verified"
@@ -12148,10 +12238,20 @@
           "source_path": "dayz-ui-development/references/layout-empirical-corpus.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5, review round 1 R1-01): the attribute table defined hexact*/vexact* as '0=fraction, 1=pixels'; now '1=exact (1/1080 of screen height)', with a dated note quoting the old words; counts unchanged. Evidence as recorded on the SKILL.md input of the same change. Written by Claude (Anthropic). Round 2 follow-up where touched: see the SKILL.md input of this change.",
+          "license": "MIT",
+          "source_hash": "9c266505e2d643a2ab61aaf92af608d6e64c082d69b96ce26aa20bbf851800ac",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-empirical-corpus.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "495575da0199390b2498f8faf9103c84e52d4585e282bd1c8c3139dfdaebc37d",
+      "output_hash": "9c266505e2d643a2ab61aaf92af608d6e64c082d69b96ce26aa20bbf851800ac",
       "output_path": "skills/dayz-ui-development/references/layout-empirical-corpus.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -12170,10 +12270,20 @@
           "source_path": "dayz-ui-development/references/layout-format.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline tickets fb-20260928-150846-21d5 and fb-20260928-130346-5144): the unit comments said exact = pixels and the corpus bullet called full-exact layouts what breaks off-1080p (physical resolution); the offline rect arithmetic used declared exact values as pixels (now x screen_height/1080; the 1920x1080 calibration unaffected); quoted in dated notes. New 'Spacers, measured in game': WrapSpacer + 'Size To Content V' 1 stacking mixed children (SimpleGroup p9b frames with 6 and 20 rows read 2026-10-03; vanilla day_z_ingamemenu.layout:99-120 'bottom' read), and case-sensitive keys (p9 frame: a GridSpacer with lowercase columns 1 / rows 0 laid rows side by side, the same frame's Columns 1 / Rows 100 stacked them; not isolated). Checklist line aligned. Written by Claude (Anthropic). Round 2 follow-up where touched: see the SKILL.md input of this change.",
+          "license": "MIT",
+          "source_hash": "b6be6078868a5fbaf7a52da5da6143f208236c2888fe7b2060bf9cbc7cf67ef8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-format.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "3f2c307aaa61b008f275d4a2302ab6dad495f30d7f124efa885c503cc2ad72b1",
+      "output_hash": "b6be6078868a5fbaf7a52da5da6143f208236c2888fe7b2060bf9cbc7cf67ef8",
       "output_path": "skills/dayz-ui-development/references/layout-format.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -12224,10 +12334,20 @@
           "source_path": "skills/dayz-ui-development/references/plan-to-implementation.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5): section 1.1 'Exact flags mean PHYSICAL PIXELS', TL;DR move 1, section 2, the previewer's 'money feature' paragraph, the delivery step that flipped through resolutions and section 6.3's divergence attribution rested on exact = pixels; replaced with the measured law (1/1080 of the screen height; SKILL.md Rule 3 evidence) and quoted in dated notes; 2560x1440 and the cause frequency marked not measured. Written by Claude (Anthropic). Round 2 follow-up where touched: see the SKILL.md input of this change.",
+          "license": "MIT",
+          "source_hash": "cfd3b1fc4e801f5d23467e918ea3e51cfb9bb362b257dd0a4d2e8ceb1e6a3c6e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/plan-to-implementation.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "d4aea8ad54c26b89124e844d029c397de83fcd8937689a08e825748750944f9d",
+      "output_hash": "cfd3b1fc4e801f5d23467e918ea3e51cfb9bb362b257dd0a4d2e8ceb1e6a3c6e",
       "output_path": "skills/dayz-ui-development/references/plan-to-implementation.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -12246,10 +12366,20 @@
           "source_path": "dayz-ui-development/references/styles-format.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-130346-5144): ButtonWidget/Default draws no body in Normal (P:/gui/looknfeel/dayzwidgets.styles:1593-1604, every slice empty); in game a ButtonWidget with a color and no style drew no fill while the same frame's style Colorable button did (SimpleGroup p9 capture 2026-09-28). Written by Claude (Anthropic). Round 2 follow-up where touched: see the SKILL.md input of this change.",
+          "license": "MIT",
+          "source_hash": "d0dae171c21fb50ea76f7780ebea42418387f41a1a4154c2ff7ca9384c9507e6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/styles-format.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "630c97f6021d89082419fb0067759879e2b961103ba249313249b6d2ab0899c6",
+      "output_hash": "d0dae171c21fb50ea76f7780ebea42418387f41a1a4154c2ff7ca9384c9507e6",
       "output_path": "skills/dayz-ui-development/references/styles-format.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -12310,10 +12440,20 @@
           "source_path": "skills/dayz-ui-development/references/widget-api.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5): the EXACTPOS line keeps the engine's 'physical resolution' comment and adds what is drawn (1/1080 of the screen height, SKILL.md Rule 3). Written by Claude (Anthropic). Round 2 follow-up where touched: see the SKILL.md input of this change.",
+          "license": "MIT",
+          "source_hash": "d302afe167cbed2700ae7ebdd95207407b0a8f5f4efce60ed4a42bdd2892972d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/widget-api.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "d1e7ae2257f3cf5232ae3bc0a5db5aec17cabc8b002ade30672c65efc2b19c34",
+      "output_hash": "d302afe167cbed2700ae7ebdd95207407b0a8f5f4efce60ed4a42bdd2892972d",
       "output_path": "skills/dayz-ui-development/references/widget-api.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -12354,10 +12494,20 @@
           "source_path": "skills/dayz-ui-development/templates/form_row.layout",
           "source_revision": "ui-templates@2026-08-20",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5, review round 2): comment only, 'in pixels' -> 'in exact units' (SKILL.md Rule 3); parsed tree unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "275bfedbfb0f664b66aa227ea5c94ba112a3cbc8b5b12f05f7e287663edfa7cd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/form_row.layout",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "6b2f05fc1120479acdf28c5465d9c03af0ccb17fd8bf9bfb1b238ed5d0d8d468",
+      "output_hash": "275bfedbfb0f664b66aa227ea5c94ba112a3cbc8b5b12f05f7e287663edfa7cd",
       "output_path": "skills/dayz-ui-development/templates/form_row.layout",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "offline_tested"
@@ -12420,10 +12570,20 @@
           "source_path": "skills/dayz-ui-development/templates/hud_overlay.layout",
           "source_revision": "ui-templates@2026-08-20",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5): comment only. It called hexactpos 1 + 252 px what breaks 1280x720; exact offsets scale with the screen height (SKILL.md Rule 3); the layout-format.md citation moves to :237 with that file's new lines. Widgets and attributes unchanged. Written by Claude (Anthropic). Round 2 follow-up where touched: see the SKILL.md input of this change.",
+          "license": "MIT",
+          "source_hash": "aff8af3f40e7ca2d19d38d9e2a560cf27ab694132ecf8742ae411232c196f23e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/hud_overlay.layout",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "9bcf97ebe5584c076d443c2a516ae3b764ca411eacde11ec12925567f0494441",
+      "output_hash": "aff8af3f40e7ca2d19d38d9e2a560cf27ab694132ecf8742ae411232c196f23e",
       "output_path": "skills/dayz-ui-development/templates/hud_overlay.layout",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "offline_tested"
@@ -12486,10 +12646,20 @@
           "source_path": "skills/dayz-ui-development/templates/modal_panel.layout",
           "source_revision": "ui-templates@2026-08-20",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5): comment only. It called hexact* 1 physical pixels that break 1280x720; exact units are 1/1080 of the screen height (SKILL.md Rule 3). Widgets and attributes unchanged. Written by Claude (Anthropic). Round 2 follow-up where touched: see the SKILL.md input of this change.",
+          "license": "MIT",
+          "source_hash": "db292b6c561db0e358db3190e302df6834f2a3a12d0fa69879d61a01040eac24",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/templates/modal_panel.layout",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "844be16e4c386086f6da86b708d0b5c14ec98a1fe74727b395a5aeef6ab14176",
+      "output_hash": "db292b6c561db0e358db3190e302df6834f2a3a12d0fa69879d61a01040eac24",
       "output_path": "skills/dayz-ui-development/templates/modal_panel.layout",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "offline_tested"
@@ -18868,10 +19038,20 @@
           "source_path": "tools/dayz-layout-viewer/README.md",
           "source_revision": "r21-layout-viewer@2026-08-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260928-150846-21d5): the opening paragraph called the exact-px versus scaled-proportional difference the usual mockup-versus-game failure; in game exact units scale with the screen height (dayz-ui-development Rule 3); the parser lays them out as pixels (tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775). Quoted in a dated note; code unchanged. Written by Claude (Anthropic). Round 2 follow-up where touched: see the SKILL.md input of this change.",
+          "license": "MIT",
+          "source_hash": "1e9a71dbc1fca2cccb8f6e1a1bd218c6411fcd237290cb381debd29ad7850c0a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-layout-viewer/README.md",
+          "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "e1d9826d436e0b84b391a87b15127cf33f3cabd25d1e48f85c3d1bab2068c5b4",
+      "output_hash": "1e9a71dbc1fca2cccb8f6e1a1bd218c6411fcd237290cb381debd29ad7850c0a",
       "output_path": "tools/dayz-layout-viewer/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

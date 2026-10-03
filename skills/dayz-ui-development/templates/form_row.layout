@@ -3,7 +3,7 @@
 // (mcp_dialog.layout Row0 at y=0.285, Row1 at 0.36, step 0.075; not distributed
 // with this pack). Internals copied from mcp_dialog.layout:61-97 (on-screen
 // 2026-08-19; not distributed). Vanilla gui/layouts/dialog_input_text.layout is
-// the same pair in pixels (PrimaryLabel + PrimaryEditBox); this file keeps the
+// the same pair in exact units (PrimaryLabel + PrimaryEditBox); this file keeps the
 // proportional contract.
 FrameWidgetClass FormRow {
 	name "FormRow"

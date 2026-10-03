@@ -181,6 +181,12 @@ screen (measured 435x720 px at 720p) and it renders a single screen-filling lett
 — renders readable text. Nothing else was touched, `text_proportion` included. That is the
 mechanism behind an oversized body: the box, not the font.
 
+`SKILL.md` TEXT SIZING LAWS keeps this as the law for an unnumbered bitmap face or an SDF face
+with no size key, the bitmap `Metron`/`MetronBook` included (SimpleGroup captures at 1920x1080
+and 1280x720, 2026-09-28). A numbered bitmap face (`Metron22`…) keeps its pixel size instead.
+Its contrary bullet, "the font-only default IGNORES the widget box", was corrected on
+2026-10-03.
+
 ### `text_proportion` works on `TextWidget`, and is ignored on `MultilineTextWidget`
 
 Settled 2026-08-21. The 2026-08-20 sweep below this heading used to say the question was

@@ -302,9 +302,13 @@ for anything that depends on real rasterization, fonts or the live widget tree.
 
 Emits one self-contained `*.preview.html` for a `.layout`, with the same tree
 drawn at **four viewports** (1080p, 1440p, ultrawide 21:9, 720p) plus the
-parser's diagnostics. Switching between them is the whole point: exact-pixel
-widgets keep their pixels while proportional ones scale, which is the "looked
-right in the mockup, wrong in game" failure made visible without a build.
+parser's diagnostics. In it exact widgets keep their declared pixels at every
+viewport while proportional ones scale. The engine draws exact units as 1/1080
+of the screen height (`dayz-ui-development` Rule 3, measured in game), so off
+1080p that difference is the viewer's model, not the game's: trust its other
+viewports only for widgets with no exact ancestor. *(Corrected 2026-10-03: this called
+the difference the "looked right in the mockup, wrong in game" failure made
+visible without a build.)*
 
 ```bash
 python tools/dayz-layout-viewer/build_viewer.py <layout> [-o out.html]

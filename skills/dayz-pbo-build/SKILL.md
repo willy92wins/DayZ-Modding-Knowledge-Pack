@@ -483,18 +483,61 @@ build reports success. If the PBO does not reflect your changes, wipe `P:\temp\<
 (or pass `-clear`) before rebuilding. Never place staging or sources under `P:\temp\*`:
 AddonBuilder clears its `-temp` before copying.
 
-**Binarized-build preflight rules (SP-155, verified 2026-08-03 ArmorHneck build):**
+**Binarized-build preflight rules (SP-155, verified 2026-08-03 ArmorHneck build; rule 1 corrected
+2026-10-03 from measurements of 2026-09-27 and 2026-10-01; rule 5 added the same day):**
 
-1. **Staging is mandatory for binarized builds.** The canonical `AddonBuilder P:\<Mod> …`
-   invocation is fragile on a `P:\` with history: AddonBuilder derives `[Project]=P:\` and
-   passes `-addon="P:"` to binarize, which parses configs across ALL of `P:\` and aborts on
-   the first broken foreign config (e.g. `P:\temp\Utopia_PC\…\legacy_generic_attempt\config.cpp`).
-   AddonBuilder reports "Build failed" with exit 0 and does not name the culprit (with
-   `-noLogs -silent` the path never appears). **Rule:** stage a clean copy in
-   `%TEMP%\<mod>_build_<stamp>\src\<Mod>` and run AddonBuilder against the staging directory
-   (`[Project]` = staging → clean addon-space). "Material not loaded" / "Note: creating empty
-   class" messages from the staging are tolerable (verified: HH-60G heli and ArmorHneck
-   clothing both build and work). Validated end-to-end template: `ArmorHneck_dev\tools\build.ps1`.
+1. **Staging is mandatory for binarized builds, and binarize looks for everything under the
+   staging folder.**
+   AddonBuilder passes binarize `-addon="<parent of the source folder>"` (the `[Arguments]=`
+   lines of `DayZ Tools\Bin\Logs\AddonBuilder.rpt`): `P:\<Mod>` gives `-addon="P:"`, a staged
+   `…\src\<Mod>` gives `-addon="…\src"`. Under that folder binarize:
+   - **parses every `config.cpp`, recursively and through junctions**, and aborts on the first
+     broken one. The canonical `AddonBuilder P:\<Mod> …` therefore dies on any broken foreign
+     config on `P:\` (e.g. `P:\temp\Utopia_PC\…\legacy_generic_attempt\config.cpp`, or another
+     project's test fixture). A broken `config.cpp` in a folder beside the staged mod, or behind
+     a junction beside it, stops the build the same way (binarize exit 1, no PBO).
+   - **resolves every file the p3d cite (`dz\…`, another mod's prefix) under that folder, never
+     under `P:\`.** A face material it cannot find is embedded EMPTY in the ODOL: no shader, no
+     stage texture, no `.bisurf`. A section with an alpha-cutout texture also loses bit `0x200`
+     of its special flags (`0x24200` → `0x24000`). The build still says "Build Successful", and
+     AddonBuilder's log carries no line about the missing material, so grepping it finds
+     nothing.
+
+   AddonBuilder.exe exits 0 when the build fails (`Build finished. [ResultCode]=1` in the rpt)
+   and does not name the culprit (with `-noLogs -silent` the path never appears). Judge a build
+   by the rpt's `[ResultCode]` or by the PBO (present, and rebuilt), never by the exit code.
+
+   **Rule:** stage the mod in a dedicated folder that holds nothing else:
+   `%TEMP%\<mod>_build_<stamp>\src\<Mod>`, plus every file its p3d cite outside its own prefix.
+   Copy each at its cited path (`src\dz\data\data\penetration\metalplate.rvmat`, taken from the
+   files the game loads), or reach the vanilla ones through a junction `src\DZ` → the extracted
+   vanilla data. A junction target is parsed too, so it must hold no broken `config.cpp`. These
+   files only feed binarize: AddonBuilder packs the source folder alone. Check them before and
+   after the build (rule 5). `CocaLab_dev\tools\build.py` does all three (staging, cited files,
+   ODOL check);
+   `ArmorHneck_dev\tools\build.ps1` stages but does not provide the cited files.
+   - `-project=<source>` narrows `-addon` to the source itself and is not a way out: the PBO came
+     out with no `.paa`, no `.rvmat` and no `texHeaders.bin` ("no textures found"; 606 KB
+     against 16.5 MB).
+   - Cost: `-addon` over a whole projects folder took 249-251 s; the dedicated folder 6-13 s.
+   - Measured with AddonBuilder 1.0.240639 and BINARIZE rev.163709. DayZ MCP v1.3.1 spike,
+     SimpleGroup, 11 builds (2026-10-01): with the mod alone in its folder, `T1_FlagKit.p3d`
+     came out 43,376 B, with `dz\gear\consumables\data\rags_bandages.rvmat` (visual LOD) and
+     `dz\data\data\penetration\wood.rvmat` (collision LODs) embedded empty. With a `DZ` junction
+     beside it, it came out 55,221 B with both resolved, byte-identical to the build whose
+     `-addon` was the whole projects folder. CocaLab (2026-09-27): a staged build embedded
+     `dz\data\data\penetration\metalplate.rvmat`, present on `P:\dz`, and a DrugsPLUS leaf
+     material empty. With the cited files staged there were none, and the gate's control
+     without them failed (6 failures).
+   - Not measured: what an empty material does in game.
+
+   *(corrected 2026-10-03)* This rule used to end: «"Material not loaded" / "Note: creating
+   empty class" messages from the staging are tolerable (verified: HH-60G heli and ArmorHneck
+   clothing both build and work). Validated end-to-end template: `ArmorHneck_dev\tools\build.ps1`.»
+   For materials cited by p3d faces that is false: they are embedded empty (above). The
+   ArmorHneck ODOL deployed on 2026-08-04 carries its Fire Geometry material
+   `dz\data\data\penetration\armor_5mm_plate.rvmat` empty. "Work" meant the item loads and
+   renders; its penetration was not tested. "Creating empty class" was not measured on its own.
 
 2. **RVMATs referenced only from config.cpp do NOT enter the PBO.** The binarize whitelist
    (`*.p3d;*.paa`) + face-reference scan only pulls materials referenced by p3d FACES. An rvmat
@@ -519,18 +562,50 @@ AddonBuilder clears its `-temp` before copying.
    spawn (world_spawn from the bridge or console), NEVER just strings/entries of the PBO —
    static analysis of config.bin reported "healthy" while the engine ignored it.
 
+5. **Check that binarize can find every file the p3d cite: before the build, and in the ODOL
+   after it** (added 2026-10-03; CocaLab's build since 2026-09-27).
+   - **Before — the gate.** List every path the faces cite, in every LOD: `face.texture` and
+     `face.material` with py3d (`tools/py3d/py3d/__init__.py:1855-1856`; CocaLab scans the MLOD
+     bytes for `*.paa`/`*.rvmat` paths). Stop if one does not exist under the staging folder:
+     rule 1 says binarize looks for it there and nowhere else. Stage each cited `.rvmat` with
+     the textures it names (CocaLab staged the DrugsPLUS `.rvmat` with its three `.paa`; a
+     texture missing on its own was not tested).
+   - **After — the control.** Read the ODOL with the ODOL reader of
+     an external ODOL->MLOD converter (not distributed with this pack). Every unresolved material read
+     so far showed, in every LOD that cites it: `pixel_shader == 0`, `vertex_shader == 0`,
+     `surface_file == ""`, no stage texture (the thermal `StageTI`, `stage_ti`, included) and
+     the engine's default colours (diffuse and ambient 1,1,1,1, emissive 0,0,0,1). A match is a
+     lead, not a verdict: bare vanilla materials match most of those fields in Bohemia's own
+     ODOLs — `dz\data\data\half_lighted_default.rvmat` in `dz\data\cl_feathers2.p3d`,
+     `dz\water\streambed\data\streambed_leaves.rvmat` in `water.pbo`'s
+     `Streambed\streambed_leaf_short_straight.p3d` — and `dz\data\data\default_2pass.rvmat`
+     in `dz\data\data\penetration\impact_test_object.p3d` matches all of them. Confirm a lead
+     against the material's text `.rvmat`: an extracted copy, or a binarized one (`raP`)
+     decoded first. CfgConvert decoded `dz.pbo`'s `wood.rvmat` with `CfgConvert.exe -txt -dst
+     <name>.cpp <name>.bin`, run from the file's folder; given the `.rvmat` name it exited 0
+     and wrote nothing. A file you cannot read as text confirms nothing. Run the control once:
+     the same build without the cited files must turn their materials into leads.
+   - Compare ODOLs by those fields, not by hash: three SimpleGroup flagpoles varied by up to
+     67 B across five builds that resolved the same files (2026-10-01; same trap in
+     `tools/py3d/KNOWN-ISSUES.md`).
+
 The orchestrated build path (temp wipe + deploy + launch) lives in dayz-test-ingame's
 `dayz-test.ps1` template.
 
 
 **Binarize via AddonBuilder CLI (SP-069, LFHeli OH-1 2026-07-19):**
 
-1. **`-temp` for binarize must stay under `P:\`.** With `-temp` outside `P:\`, the
-   "Binarizing" step dies in ~4 s with "Process ended with non-zero code. Exit code: 1",
-   empty stderr and zero p3d produced — AddonBuilder still exits 0 ("Build failed" only
-   in its log). Keep `-temp` on `P:\` (canonical: `-temp=P:\temp\<ModName>`).
-   That explanation did not reproduce in four later builds with `-temp` outside `P:\` and the work drive
-   mounted (`references/build-appendices.md`, item 6): keep `-temp` on `P:\`, but re-measure before blaming it.
+1. **`-temp` for binarize: `P:\` is the habit, not a measured requirement.** On 2026-07-19,
+   with `-temp` outside `P:\`, the "Binarizing" step died in ~4 s with "Process ended with
+   non-zero code. Exit code: 1", empty stderr and zero p3d produced — AddonBuilder still
+   exited 0 ("Build failed" only in its log) — and `-temp` took the blame. That explanation
+   did not reproduce in four later builds with `-temp` outside `P:\` and the work drive mounted
+   (`references/build-appendices.md`, item 6), nor in nine binarized builds with `-temp` in a
+   local folder on 2026-10-01, all with their ODOL (SP-155 rule 1). A binarize exit 1 within a
+   second is also what a broken `config.cpp` under `-addon` gives, so rule that out first.
+   Keeping `-temp` on `P:\` (canonical: `-temp=P:\temp\<ModName>`) costs nothing; none of
+   those builds ran with the work drive unmounted. *(corrected 2026-10-03: the heading said
+   «**`-temp` for binarize must stay under `P:\`.**»)*
    `-packonly` still accepts local folders outside `P:\`, so local staging remains valid.
 
 2. **ODOL output is neither the source nor the target.** It lands in
@@ -742,7 +817,9 @@ if not (len(data) > 21 and data[-21] == 0
 **Gate ordering.** A build step that reports success without checking `$LASTEXITCODE` after
 each AddonBuilder invocation, and a deploy step that accepts a PBO on `Test-Path` alone, will
 both hand you a stale artifact and call it fresh. Check the return code after *every*
-invocation, and print a `SHA-256` build-id at pack time that a boot sentinel inside the mod
+invocation — and for AddonBuilder, whose exit code is 0 even when the build fails (SP-155
+rule 1), read the rpt's `[ResultCode]` and check that the PBO exists and was rebuilt — and
+print a `SHA-256` build-id at pack time that a boot sentinel inside the mod
 can be checked against — otherwise an old PBO is indistinguishable from a new one that does
 nothing.
 

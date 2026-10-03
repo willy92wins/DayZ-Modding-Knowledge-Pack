@@ -12,9 +12,10 @@ FrameWidgetClass ModalRoot {
 	ignorepointer 1
 	position 0 0
 	size 1 1
-	// All four flags 0: fraction of the screen. hexact* 1 is physical pixels
-	// (enwidgets.c EXACTPOS) and is what breaks 1280x720. Vanilla 214 files
-	// (parse.py, 8724 nodes): hexactsize 0 is 5851x vs 2727x (SKILL.md Rule 3).
+	// All four flags 0: fraction of the screen. hexact* 1 would be units of
+	// 1/1080 of the screen height, measured in game (SKILL.md Rule 3, corrected
+	// 2026-10-03; this comment called them physical pixels that break 1280x720).
+	// Vanilla 214 files (parse.py, 8724 nodes): hexactsize 0 is 5851x vs 2727x.
 	hexactpos 0
 	vexactpos 0
 	hexactsize 0
@@ -107,7 +108,7 @@ FrameWidgetClass ModalRoot {
 				ButtonWidgetClass BtnYes {
 					name "BtnYes"
 					// Left of a two-button pair. Vanilla dialog.layout bYes is left
-					// (position 15, valign bottom_ref, pixel). Proportional stand-in
+					// (position 15, valign bottom_ref, exact). Proportional stand-in
 					// so 1920 and 1280 keep the same fraction. Does not overlap BtnNo.
 					position 0.08 0.86
 					size 0.38 0.08
