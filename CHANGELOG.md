@@ -93,6 +93,30 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   copy of its PBO without the offending entries, in a probe folder under `P:\Mods` written with the
   owner's OK, hosted by an approved project whose `default_base_mods` carry its dependencies (an
   absolute workshop path in `base_mods` fails with `bad_mod`).
+- `dayz-physics-engine` truth #11, a sub-bullet: a Roadway face of another model across a lift's
+  travel stops the ride down (SecretRock elevator, DayZDiag 1.29.163709, 2026-10-02/03). The cabin
+  carried a player up through its stops, but going down it left them standing at the stop's floor
+  height while it went on: the building's interior model had the shaft cut out of its collision
+  slabs, not out of its Roadway LOD. With the shaft cut out of that Roadway too, the player rode
+  down linked to the cabin. A character stands on Roadway where no Geometry is, and `RaycastRV`
+  cannot target Roadway (`ObjIntersect`, `3_game/constants.c:31-38`), so the check is offline: no
+  Roadway face of another model in the volume a moving piece's collision sweeps.
+- `dayz-persistence`, after Contract 3: build what stored entities rest on inside
+  `OnMissionStart` (same mod and build). A helicopter parked on a structure that the mod rebuilt
+  from its sidecar 2 s after `OnMissionStart`, with parts 0.5 s after `EEInit`, came back before
+  the structure after an orderly restart and fell 6.9 m; with the restore and the parts created
+  inside `OnMissionStart` it stayed parked after two orderly restarts. It matches
+  `enforce-script-reference` SP-LFS-3 (stored entities are created after `OnMissionStart` returns);
+  the rule holds for a structure that needs nothing from the game's storage.
+- `enforce-script-reference` Override Rules, rule 42, and a pointer from
+  `references/vanilla-deep-dive.md`: a recipe's `CanDo` copies `ingredients[0]` and `[1]` to locals
+  first and does not call `super.CanDo` (CocaLab, DayZDiag 1.29, 2026-09-27). With
+  `super.CanDo(ingredients, player)` called first, the server's `CanDo` returned false while every
+  part of its condition read true, and `ActionWorldCraft` cancelled the craft as it started; a probe
+  that read the array after its `super` call found the tray in both slots. Copying to locals
+  without `super` fixed it in game (the same commit also split the final `return` into a null
+  guard, so which change mattered was not isolated). Vanilla: 1 of 206 `CanDo` overrides calls
+  `super` (`craftlongtorch.c:61`, as its only statement). The mechanism is not established.
 - `dayz-model-pipeline` `references/lods-and-geometry.md`: "Collision of a large building with an
   interior", from a rock-shaped building generated from Blender with a hangar, an attic and a lift
   inside (SecretRock RocaHeli R7.1-R7.3, 2026-10-01 to 2026-10-03; ledger SP-453, SP-457 and
