@@ -781,10 +781,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "skill-tests-pytest-folders@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20260927-170625-092a, from CocaLab). dayz-model-pipeline references/animations.md section 5 'Placement Rules' rule 3 'Scale' (lines 311-313 at ea7b396) said \"Axis vector doesn't define scale; only direction matters.\" for every axis, rule 2's example called its 1 m axis \"normalized to -X direction\", and the TRANSLATION section (lines 102-103, 109-110) and three later examples read offset0/offset1 as metres. Read from vanilla on 2026-10-03, not measured in game: the binarized DZ/weapons/firearms/m249/m249.p3d (sha256 3b403365447c5cf4..., ODOL v54, dayz-p3d-debinarizer odol_reader) stores its translation axes unnormalized and its offsets only make sense in their lengths: the belt classes run from -1 to 0 on axes 1.11 to 1.15 cm long, bolt_pull_1 from 0 to +1 on 8.34 cm, magazine_reload_move_1 from 0 to +1.45 on 10 cm; every rotation axis of the same file reads 1.0000. Rule 3 now separates rotation (direction only) from translation (offset times axis length; a 1 m axis makes the offset read in metres, the workaround dayz-vehicles SKILL.md already recommends, under which both readings agree), with claim CLAIM-MODEL-TRANSLATION-AXIS-LENGTH; rule 2 says an offset of 1 moves by the whole axis vector; the TRANSLATION section explains the unit; the push-button, drawer and screen examples say their offsets assume a 1 m axis; the troubleshooting table gains 'Translation barely moves, or leaves the model'. A dated note under the table qualifies the row 'Multiple animations fight' with the same file's anims2bones (one bone carries the magazine's hide, two rotations and five translations; another bolt_pull_1 and bolt_pull_2; each belt round's bone two hides, a rotation and a translation); which combinations fight was not measured. Every replaced sentence is quoted in a dated note. CHANGELOG [Unreleased] Fixed entry. Not done: the ticket's related note that the ODOL stores hideValue normalized to [minValue, maxValue] (m249 min -1, max 0, hideValue 0.935) is not added, since no source model.cfg was at hand to compare; dayz-vehicles SKILL.md's 'documented inconsistently' wording and dayz-vehicles references/animation-sign-and-axis.md line 65 (unit(axis_dir) * (offset1 - offset0), a sign check) are left as they are. Docs only. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "aee2ffd98ee7cddfaf0ad854dd71f11317ea66781f05397bcabd3821fda72487",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-inba-translation@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "857df1ea410ee0f946c585be23b453c12bb785e55859b2a974b57216e82cfb1f",
+      "output_hash": "aee2ffd98ee7cddfaf0ad854dd71f11317ea66781f05397bcabd3821fda72487",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8068,10 +8078,20 @@
           "source_path": "dayz-model-pipeline/references/animations.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20260927-170625-092a, from CocaLab). dayz-model-pipeline references/animations.md section 5 'Placement Rules' rule 3 'Scale' (lines 311-313 at ea7b396) said \"Axis vector doesn't define scale; only direction matters.\" for every axis, rule 2's example called its 1 m axis \"normalized to -X direction\", and the TRANSLATION section (lines 102-103, 109-110) and three later examples read offset0/offset1 as metres. Read from vanilla on 2026-10-03, not measured in game: the binarized DZ/weapons/firearms/m249/m249.p3d (sha256 3b403365447c5cf4..., ODOL v54, dayz-p3d-debinarizer odol_reader) stores its translation axes unnormalized and its offsets only make sense in their lengths: the belt classes run from -1 to 0 on axes 1.11 to 1.15 cm long, bolt_pull_1 from 0 to +1 on 8.34 cm, magazine_reload_move_1 from 0 to +1.45 on 10 cm; every rotation axis of the same file reads 1.0000. Rule 3 now separates rotation (direction only) from translation (offset times axis length; a 1 m axis makes the offset read in metres, the workaround dayz-vehicles SKILL.md already recommends, under which both readings agree), with claim CLAIM-MODEL-TRANSLATION-AXIS-LENGTH; rule 2 says an offset of 1 moves by the whole axis vector; the TRANSLATION section explains the unit; the push-button, drawer and screen examples say their offsets assume a 1 m axis; the troubleshooting table gains 'Translation barely moves, or leaves the model'. A dated note under the table qualifies the row 'Multiple animations fight' with the same file's anims2bones (one bone carries the magazine's hide, two rotations and five translations; another bolt_pull_1 and bolt_pull_2; each belt round's bone two hides, a rotation and a translation); which combinations fight was not measured. Every replaced sentence is quoted in a dated note. CHANGELOG [Unreleased] Fixed entry. Not done: the ticket's related note that the ODOL stores hideValue normalized to [minValue, maxValue] (m249 min -1, max 0, hideValue 0.935) is not added, since no source model.cfg was at hand to compare; dayz-vehicles SKILL.md's 'documented inconsistently' wording and dayz-vehicles references/animation-sign-and-axis.md line 65 (unit(axis_dir) * (offset1 - offset0), a sign check) are left as they are. Docs only. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1fcfdc6b8227d0078222d8470ec7d65c43a669d148dad6262c3575c79397f81f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/animations.md",
+          "source_revision": "kp-update-inba-translation@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3530a20a0fcdeeccba47cf11a7c603b40cdd894193c2d14b3c53f83abfd80dca",
+      "output_hash": "1fcfdc6b8227d0078222d8470ec7d65c43a669d148dad6262c3575c79397f81f",
       "output_path": "skills/dayz-model-pipeline/references/animations.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -16145,10 +16165,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-py3d-normals-per-part@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20260927-170625-092a, from CocaLab). dayz-model-pipeline references/animations.md section 5 'Placement Rules' rule 3 'Scale' (lines 311-313 at ea7b396) said \"Axis vector doesn't define scale; only direction matters.\" for every axis, rule 2's example called its 1 m axis \"normalized to -X direction\", and the TRANSLATION section (lines 102-103, 109-110) and three later examples read offset0/offset1 as metres. Read from vanilla on 2026-10-03, not measured in game: the binarized DZ/weapons/firearms/m249/m249.p3d (sha256 3b403365447c5cf4..., ODOL v54, dayz-p3d-debinarizer odol_reader) stores its translation axes unnormalized and its offsets only make sense in their lengths: the belt classes run from -1 to 0 on axes 1.11 to 1.15 cm long, bolt_pull_1 from 0 to +1 on 8.34 cm, magazine_reload_move_1 from 0 to +1.45 on 10 cm; every rotation axis of the same file reads 1.0000. Rule 3 now separates rotation (direction only) from translation (offset times axis length; a 1 m axis makes the offset read in metres, the workaround dayz-vehicles SKILL.md already recommends, under which both readings agree), with claim CLAIM-MODEL-TRANSLATION-AXIS-LENGTH; rule 2 says an offset of 1 moves by the whole axis vector; the TRANSLATION section explains the unit; the push-button, drawer and screen examples say their offsets assume a 1 m axis; the troubleshooting table gains 'Translation barely moves, or leaves the model'. A dated note under the table qualifies the row 'Multiple animations fight' with the same file's anims2bones (one bone carries the magazine's hide, two rotations and five translations; another bolt_pull_1 and bolt_pull_2; each belt round's bone two hides, a rotation and a translation); which combinations fight was not measured. Every replaced sentence is quoted in a dated note. CHANGELOG [Unreleased] Fixed entry. Not done: the ticket's related note that the ODOL stores hideValue normalized to [minValue, maxValue] (m249 min -1, max 0, hideValue 0.935) is not added, since no source model.cfg was at hand to compare; dayz-vehicles SKILL.md's 'documented inconsistently' wording and dayz-vehicles references/animation-sign-and-axis.md line 65 (unit(axis_dir) * (offset1 - offset0), a sign check) are left as they are. Docs only. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "48a77958ffe960167578fbe2421701ea58026800439014d2173d874cccb8b5e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-inba-translation@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0e5c41f40ed8d6cf9bbcb0d595069ed4a7634f5cbeaddb4fb0140a112ea91605",
+      "output_hash": "48a77958ffe960167578fbe2421701ea58026800439014d2173d874cccb8b5e5",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

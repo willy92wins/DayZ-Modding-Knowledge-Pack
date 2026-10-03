@@ -1300,6 +1300,19 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-anim-empties@2026-10-02",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/animations.md",
+      "claim_id": "CLAIM-MODEL-TRANSLATION-AXIS-LENGTH",
+      "evidence_locator": "Offline, 2026-10-03: vanilla DZ/weapons/firearms/m249/m249.p3d from the unpacked P: data (sha256 3b403365447c5cf4..., 1,276,458 B, ODOL v54) read with the dayz-p3d-debinarizer odol_reader (Animations.classes, axis_data and anims2bones of LOD 0; axis_data is (position, direction)). Translations: bulletMove000-011 and linkMove000-011, source reload, minValue 0, maxValue 1, offset0 -1, offset1 0, direction lengths 0.0111 to 0.0115 m; bolt_pull_1 (reloadmagazine 0.78-0.8) offset 0 to +1 and bolt_pull_2 (0.868-0.872) 0 to -1, both on (0.0834, 0, 0); magazine_reload_move_1 0 to +1.45 and _2 0 to -1.45 on (0, 0, -0.1000); _3 0 to +2, _4 0 to -0.5 and _5 0 to -1.5 on (0.02, 0, -0.1), length 0.1020. Rotations: every rotation class (bulletRot*, linkRot*, trigger_rot, magazine_reload_rot_1/2, feedtray_cover_up/down) has a direction of length 1.0000. anims2bones, LOD 0: one bone carries magazine_reload_hide, magazine_reload_rot_1/2 and magazine_reload_move_1-5; one bolt_pull_1 and bolt_pull_2; each bulletNNN bone bulletHideNNN, bulletEmptyNNN, bulletRotNNN and bulletMoveNNN. Read as metres the belt offsets would move a round 1 m. Reported by pipeline feedback fb-20260927-170625-092a (CocaLab), same figures; re-measured here. Not measured in game: the Pack records no in-game travel of a translation on an axis other than 1 m (SUB_BRZ, 2026-08-21, moved its marker to 1 m axes, where both readings agree: dayz-vehicles SKILL.md 'Translation offsets: make the memory axis exactly 1 m'); CocaLab ships offset1 = 1 on 9 to 15 mm axes (commit 95e5c9f) without a recorded in-game reading of the travel. Consistent with dayz-vehicles references/animation-sign-and-axis.md (wheel axes read as unit vectors; a damper axis (0, 0.3, 0) whose 0.3 is the travel) and dayz-3d-viewer references/states-animations-leds.md (displacement = lerp(offset0, offset1, t) * axis_length).",
+      "license": "MIT",
+      "line_end": 317,
+      "line_start": 317,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "skill/dayz-model-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-inba-translation@2026-10-03",
+      "verification_level": "offline_tested"
     }
   ],
   "schema_version": 1
