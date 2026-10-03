@@ -138,7 +138,7 @@ Install: `apt-get install -y blender && pip install opensimplex --break-system-p
 
 **Step 3: Generate Geometry in Blender Headless**
 
-> For imported vehicles, follow the domain profile (`rip-vehicle-import` / `dayz-vehicles`), NOT the generic Smart UV / decimation / flip defaults. Domain profile: measured det=+1 transform; face partition, not decimation; preserve winding with minority repair; UV by sections. Winding preserve-vs-flip is per profile/transform (Rule 12), not a universal constant — SP-071 remains the generic-DCC visual-cull guide. A synthetic-cube A/B measures the collision-raycast mechanism, not a universal flip doctrine; measure a real rip before generalizing, and collision A/B is not the same axis as SP-071 visual culling.
+> For imported vehicles, follow the domain profile (`rip-vehicle-import` / `dayz-vehicles`), NOT the generic Smart UV / decimation defaults. Domain profile: measured det=+1 transform; face partition, not decimation; preserve winding with minority repair; UV by sections. Winding preserve-vs-flip is per profile/transform (Rule 12), not a universal constant — generic DCC geometry keeps its face order under a det=-1 map (Rule 12; section "Generic DCC visual-winding profile (SP-071)"). A synthetic-cube A/B measures the collision-raycast mechanism, not a universal flip doctrine; measure a real rip before generalizing, and collision A/B is not the same axis as SP-071 visual culling. *(Aligned 2026-10-03 with Rule 12: this note read "NOT the generic Smart UV / decimation / flip defaults" and "SP-071 remains the generic-DCC visual-cull guide.")*
 - See `references/blender-headless.md` for complete API reference
 - Create geometry using primitives + modifiers (bevel, subdiv, boolean)
 - Apply shade smooth for curved surfaces
@@ -675,21 +675,50 @@ Measured offline in Blender 5.1 headless while reshaping a vanilla rock for a mo
 
 Blender/FBX-authored geometry follows Rule 12 instead (det=-1 map, face order kept, normals negated): a
 winding-preserving det=+1 transform mirrors the model. A GLB/glTF brought through Blender follows Rule 12
-too, and one read directly follows section "GLB/glTF imports". For other raw OBJ imports whose measured axis
-transform preserves the source winding, reverse the vertices of every **visual** MLOD face before binarization,
-and check chirality on an asymmetric feature. *(Aligned 2026-10-03: this sentence read "For other raw OBJ or
+too, and one read directly follows section "GLB/glTF imports". An OBJ is in the frame its exporter wrote.
+Exported from Blender with Forward Y / Up Z it keeps Blender's own coordinates
+(`references/blender-headless.md`) and follows Rule 12 as it stands; in any other frame of a right-handed
+source with counter-clockwise front faces, Blender's default axes included, derive a det=-1 map from that
+frame as for a glTF read directly, keep the face order, and check chirality on an asymmetric feature.
+Reverse the vertices of every **visual** MLOD face only for a source whose own lineage was measured to
+need it: an in-game A/B against the all-visual-faces-flipped variant plus a chirality check, as
+`ai-3d-to-dayz` SP-071 says. No lineage recorded in the Pack needs it: each that reversed every visual
+face under a det=+1 map started from Blender coordinates, where any det=+1 map mirrors the model —
+SP-071's one calibration, the LFHeli OH-1 (2026-07-19: an artist's Blender model exported as OBJ, mapped
+with `x'=x, y'=z, z'=-y` and judged by which side rendered), LFInfectedBig (read mirrored in game:
+`dayz-characters` `references/character-rigging.md` §6) and the SP-432 recipe ("Rule 13 nuance
+(history)"). *(Aligned 2026-10-03 with Rule 12, measured in game 2026-10-01: from "An OBJ is in the
+frame" to here, this paragraph read "For other raw OBJ imports whose measured axis transform preserves
+the source winding, reverse the vertices of every **visual** MLOD face before binarization, and check
+chirality on an asymmetric feature.")* *(Aligned 2026-10-03: this sentence read "For other raw OBJ or
 glTF imports whose measured axis transform preserves the source winding".)*
 Never include proxy triangles: their winding encodes the proxy frame. This is the generic
 DCC profile only. Imported vehicles continue to use the domain profile in Path A, where
 preserve-versus-flip is decided from the measured transform and source lineage.
 
-Use a pre-binarize census of `dot(cross(v1-v0, v2-v0), mean_stored_normal)` per visual
-LOD, excluding `abs(dot) < 1e-9`, as a cheap predictor. In the calibrated generic-DCC
-profile, at least 95% negative is `SOLID`, positive-dominant is `INVERTED`, and an
-intermediate result requires a per-piece mixed-winding check. Do not apply that threshold
+A pre-binarize census of `dot(cross(v1-v0, v2-v0), mean_stored_normal)` per visual LOD, excluding
+`abs(dot) < 1e-9`, reads whether the stored normals agree with the winding, not which side renders. Its
+thresholds, at least 95% negative `SOLID` and positive-dominant `INVERTED`, come from SP-071's one
+calibration, the OH-1 pipeline, which stored the normals outward against an inward winding; a Rule 12
+export stores both inward. [OFFLINE MEASURED 2026-10-03] On the MLODs of the Rule 12 in-game test, rebuilt
+byte for byte by `tools/py3d/tests/test_s7_blender_to_dayz.py`, the export that rendered solid and read
+correctly reads 0% negative, `INVERTED` by those thresholds; the same export with every face reversed
+(winding outward: inside-out) and SP-071's own recipe, the det=+1 map with reversed faces and outward
+normals (a mirror), both read 100% negative, `SOLID`. Read a Rule 12 export with `dayz-p3d-audit`
+instead: a healthy single-sided MLOD reads about 100% agreement ("Absolute winding check", rule 1), and
+the direction comes from the signed volume by winding of each closed shell, even at 100% agreement, never
+from the sum over the LOD: one shell reversed with its normals negated keeps 100% agreement and a negative
+sum (Check A in its `references/winding-diagnostics.md`). Open sheets and double-sided parts take the
+visibility battery of "From Check B to fix"; isolate a mixed result per part before any bulk fix
+("Absolute winding check", rule 2). Do not apply that threshold
 to ODOL, to MLOD produced by conversion from ODOL, or as a ratio comparison against a
 vanilla model: stored-normal conventions differ by origin. The final gate remains an
-in-game A/B of the candidate and an all-visual-faces-flipped variant.
+in-game A/B of the candidate and an all-visual-faces-flipped variant. That A/B cannot see a mirror, since
+both variants share the map: check chirality too. *(Aligned 2026-10-03 with Rule 12 and the census
+measured offline: this paragraph opened "Use a pre-binarize census of
+`dot(cross(v1-v0, v2-v0), mean_stored_normal)` per visual LOD, excluding `abs(dot) < 1e-9`, as a cheap
+predictor. In the calibrated generic-DCC profile, at least 95% negative is `SOLID`, positive-dominant is
+`INVERTED`, and an intermediate result requires a per-piece mixed-winding check.")*
 
 ## Spawn remains an engine gate (SP-216, added 2026-08-31)
 

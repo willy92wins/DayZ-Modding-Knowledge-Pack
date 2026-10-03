@@ -433,6 +433,14 @@ First character imported. ~1.2× infected, pass-through chest hole (ribs+spine),
   that DayZ back-faces despite the det+1 transform. Fix = reverse every visual face. Built
   `references/check_dayz_winding.py` (FAILs the inside-out build, PASSes the fixed one) and wired it as a
   pre-PBO gate so this never costs an in-game cycle again. Corrected §6 (it wrongly said "no flip").
+  *(2026-10-03: the inside-out render came from the det=+1 map, not from the source's winding. From
+  Blender any det=+1 map mirrors the mesh, and reversing every visual face then hides the mirror
+  (`references/character-rigging.md §6`; LFInfectedBig S6). In game on 2026-10-02 the shipped build, det=+1
+  with its faces reversed, read its chiral marker mirrored and lit inverted; the Rule 12 build, `(x,z,y)`
+  with the faces in their order and the normals negated, read it correctly and lit like a vanilla zombie.
+  §6's "no flip", which this entry called wrong, holds under Rule 12's det=-1 map, and
+  `check_dayz_winding.py`, rewritten for Rule 12 the same day, passes the Rule 12 build and fails the
+  shipped one on its normals.)*
 - **Scale + orientation fixed, residual = proportions** [✓ in-game S7 2026-06-24]: the deep investigation
   diagnosed the S6 breakage offline. Texture "camo" = a corrupt high→low bake (noise in the `_co` DIFFUSE,
   not `_nohq`; body UV was clean) → replaced with a clean procedural flesh. Deform had two systemic causes,
