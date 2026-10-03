@@ -15,6 +15,7 @@ from conftest import (
     write_json,
 )
 
+from packctl.common import git_tracked_files
 from packctl.validation import (
     validate_claims,
     validate_conflict_markers,
@@ -657,6 +658,51 @@ def test_conflict_markers_of_an_unmerged_path_are_reported_once(
         ("notes.md", 1),
         ("notes.md", 3),
         ("notes.md", 5),
+    ]
+
+
+def leave_unresolved_merge(root: Path, path: str, ours: str, theirs: str) -> None:
+    # Each side commits its own text for *path*, then merging theirs stops on
+    # the conflict, as an interrupted `git merge` leaves a worktree.
+    branch = run_git(root, "rev-parse", "--abbrev-ref", "HEAD")
+    run_git(root, "checkout", "-q", "-b", branch + "-theirs")
+    (root / path).write_text(theirs, encoding="utf-8", newline="\n")
+    run_git(root, "commit", "-qam", "theirs")
+    run_git(root, "checkout", "-q", branch)
+    (root / path).write_text(ours, encoding="utf-8", newline="\n")
+    run_git(root, "commit", "-qam", "ours")
+    with pytest.raises(subprocess.CalledProcessError):
+        run_git(
+            root, "-c", "merge.conflictStyle=merge", "-c", "merge.ff=false",
+            "merge", branch + "-theirs",
+        )
+
+
+def test_git_tracked_files_lists_an_unmerged_path_once(repo_factory) -> None:
+    root = repo_factory({"notes.md": "base\n"})
+    leave_unresolved_merge(root, "notes.md", "ours\n", "theirs\n")
+    # The premise: git ls-files prints the path once per index stage.
+    assert run_git(root, "ls-files").splitlines().count("notes.md") == 3
+
+    tracked = git_tracked_files(root)
+
+    assert tracked.count("notes.md") == 1
+    assert tracked == sorted(set(run_git(root, "ls-files").splitlines()))
+
+
+def test_a_broken_link_in_an_unmerged_file_is_reported_once(repo_factory) -> None:
+    root = repo_factory({"notes.md": "[missing](missing.md)\nbase\n"})
+    leave_unresolved_merge(
+        root,
+        "notes.md",
+        "[missing](missing.md)\nours\n",
+        "[missing](missing.md)\ntheirs\n",
+    )
+
+    findings = validate_links(root)
+
+    assert [(item["code"], item["path"], item["line"]) for item in findings] == [
+        ("LINK-BROKEN", "notes.md", 1),
     ]
 
 

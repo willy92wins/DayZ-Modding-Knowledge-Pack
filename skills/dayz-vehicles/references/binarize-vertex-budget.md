@@ -27,6 +27,15 @@ bisection from ~6 min per variant into ~90 s per batch.
 - `OTHER_FAIL` - any other absence: bad `model.cfg`, undeclared basename, malformed MLOD, I/O,
   aborted tool. **It blocks and does NOT authorize touching geometry.** Without this state you
   decimate a mesh because your bench was misconfigured.
+  One cause measured since prints nothing of its own (SP-458, 2026-10-03, on a building, not a
+  vehicle): with too many pieces in its collision LODs, `binarize.exe` wrote no ODOL and no
+  capacity line, and the bench read `OTHER_FAIL` while the bench was fine. Rule it in only once
+  the MLOD walks to `#EndOfFile#` in every LOD (a truncated MLOD gave the same verdict) and the
+  same model passes without its collision LODs: those two checks place the failure in the
+  collision LODs, they do not measure the limit. The fix then moves pieces to another model with
+  the same transform and leaves every piece as it is (none is merged or decimated), and each
+  resulting model still has to PASS. Boundary and figures: `dayz-model-pipeline`
+  `references/lods-and-geometry.md`, "Collision of a large building with an interior".
 
 **The verdict is reproducible; the ODOL bytes are NOT.** The same `.p3d` produced 1,725,025 and
 1,726,689 bytes with different hashes in two clean consecutive runs. Never gate on the ODOL SHA.

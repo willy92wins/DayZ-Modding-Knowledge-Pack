@@ -35,6 +35,16 @@ Gotchas: the workspace (`player_main_heavy.asi`) is fixed per item weight class 
 
 When to use: early-stage mod, no animator, item proportions close to a vanilla equivalent. When not: strong visual identity, or a wildly different shape (a 1.5 m tractor wheel on Hatchback IK looks wrong).
 
+### Turn the model, not the ikpose (CocaLab, added 2026-10-03)
+
+[EXACT][CLAIM-ANIM-ITEM-TURN-MODEL] When a vanilla ikpose already gives a natural pose and only the direction the item points in the hands is wrong, turn the item's geometry about its vertical, keeping its origin, instead of editing the ikpose. Confirmed in game by the user (DayZDiag 1.29, 2026-09-27, CocaLab commit `0569fea`): the tray `clab_tray.p3d`, turned 90° at assembly (`assemble_p3d.py --yaw 90`; `--yaw 0` rebuilds the previous p3d byte for byte) so that its 43 cm length lies along X, registered in `RegisterTwoHanded` with no ikpose of its own:
+
+```c
+pType.AddItemInHandsProfileIK("CLab_CocaTray", "dz/anims/workspaces/player/player_main/props/player_main_2h_pot.asi", pBehavior, "dz/anims/anm/player/ik/vehicles/BatteryTruck.anm");
+```
+
+That is the truck battery's ikpose (vanilla `TruckBattery`, `dayzplayercfgbase.c:843` in the unpacked `P:\scripts`, `:866` in 1.30.164014 Exp; wrists at +29.4 and −28.0 cm from the origin on X) with the pot's animation set, a pairing vanilla also makes for `GiftBox_Small` (`:1000`, `:1040` in 1.30 Exp: the pot's `.asi` with the cauldron's ikpose). The hands took the tray by its short ends in the battery's natural pose, and the pot's pour stayed. Before that, the pot's own ikpose put the hands through the tray, and an own ikpose with `RightHand_Dummy` turned about the wrong SEAnim axis broke the pose (frames and axes: `player-skeleton.md` §The frame an ikpose keys its helpers in). The grip was chosen in game among six vanilla ikposes, one test subclass of the item per grip, the method `weapon-in-hands.md` §Testing ikpose / grip variants uses for weapons. To shortlist candidates by size, the wrist's distance from the item's origin (`|t|` of the `RightHand_Dummy` key, measured offline 2026-10-03): pot 16.9 cm, cauldron 16.3, car battery 18.4, truck battery 31.0, car radiator 36.9.
+
 ## Pattern B — hide-on-attach (animation source of type `hide`)
 
 An item that lives in the `.p3d` (geometry + texture already there) appears/disappears based on whether it is attached to its slot. Visibility is a `hide` animation driven by a `user` source, toggled in the attach/detach lifecycle events.
