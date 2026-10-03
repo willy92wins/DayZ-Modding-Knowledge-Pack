@@ -98,13 +98,16 @@ server script log, and it fell 6.9 m to the terrain and lay rolled -54.3°. With
 restore called directly in `OnMissionStart` and the parts created in that call, the
 parts line came before the helicopter's `EEInit` after two orderly restarts, and the
 helicopter stayed where it was parked (0.010 and 0.014 mm from its parked height,
-level within 0.07°) and later rose with the platform. The 2 s pass was kept to bind what already exists and created
-nothing twice. This matches `enforce-script-reference` SP-LFS-3: stored entities are
-created after `OnMissionStart` returns. Rule: anything a stored entity can rest on (a
-floor, a platform, a hangar) is created synchronously in `OnMissionStart`; a later
-pass may only bind, idempotently. Not measured: a crash restart, stored entities other
-than this one vehicle, and freezing the vehicles until the structure exists, the
-alternative the project did not take.
+level within 0.07°) and later rose with the platform. The 2 s pass was kept to bind
+what already exists and created nothing twice. The builds before and after differed in
+other ways too; what ties the fall to the timing is the order of those two log lines.
+This matches `enforce-script-reference` SP-LFS-3: stored entities are created after
+`OnMissionStart` returns. Rule: a structure the mod rebuilds from its own sidecar, if
+stored entities can rest on it (a floor, a platform, a hangar), is created
+synchronously in `OnMissionStart`, as long as nothing it needs comes from the game's
+storage, which loads later; a later pass may only bind, idempotently. Not measured: a
+crash restart, stored entities other than this one vehicle, and freezing the vehicles
+until the structure exists, the alternative the project did not take.
 
 ## Migration gate
 
