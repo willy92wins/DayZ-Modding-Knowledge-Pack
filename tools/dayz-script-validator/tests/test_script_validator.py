@@ -2334,8 +2334,14 @@ class TestUndefinedClassRef(unittest.TestCase):
                 "FX_MissingUnderConfigDefine",
                 "FX_MissingUnderLocalDefine",
                 # FX_DIAG_ONLY_FLAG is #define'd only under #ifdef DIAG_DEVELOPER,
-                # so it is not always on and its #ifndef branch compiles too
+                # and FX_CONDITIONAL_CONFIG_FLAG is in a defines[] under
+                # #ifdef FX_OPTIONAL_MOD: neither is always on, so their
+                # #ifndef branches compile too
                 "FX_MissingUnderConditionalDefine",
+                "FX_MissingUnderConditionalConfigDefine",
+                # named as a template argument in an unjudged branch: a comma
+                # inside `<...>` does not declare a variable
+                "FX_MissingBehindTemplate",
             },
             flagged,
         )
@@ -2385,6 +2391,7 @@ class TestUndefinedClassRef(unittest.TestCase):
         skips = _rule_skips(result)
         self.assertEqual(1, len(skips))
         self.assertIn("FX_DEPENDENCY (not a string literal)", skips[0]["reason"])
+        self.assertIn("123 (not a string literal)", skips[0]["reason"])
 
     def test_dependency_of_a_dependency_must_be_scanned_too(self):
         exit_code, result = _undefined_run(
@@ -2428,16 +2435,24 @@ class TestUndefinedClassRef(unittest.TestCase):
         self.assertIsNone(path)
         self.assertIn("vanilla tree not found", reason)
 
-    def test_vanilla_root_that_is_empty_or_a_file_skips(self):
+    def test_vanilla_root_that_is_empty_a_file_or_without_the_class_skips(self):
         with tempfile.TemporaryDirectory() as empty:
-            for vanilla in (empty, UNDEFINED / "bad_mission_ref" / "config.cpp"):
-                exit_code, result = script_validator.run(
-                    [str(UNDEFINED / "bad_mission_ref"), "--vanilla-root", str(vanilla)]
+            with tempfile.TemporaryDirectory() as enum_only:
+                # an enum named Managed is not the class every scripts tree
+                # declares
+                (pathlib.Path(enum_only) / "only.c").write_text(
+                    "enum Managed\n{\n    FX_Value\n}\n", encoding="utf-8"
                 )
+                for vanilla in (empty, enum_only,
+                                UNDEFINED / "bad_mission_ref" / "config.cpp"):
+                    exit_code, result = script_validator.run(
+                        [str(UNDEFINED / "bad_mission_ref"),
+                         "--vanilla-root", str(vanilla)]
+                    )
 
-                self.assertEqual(0, exit_code)
-                self.assertEqual([], _rule_errors(result))
-                self.assertEqual(1, len(_rule_skips(result)))
+                    self.assertEqual(0, exit_code)
+                    self.assertEqual([], _rule_errors(result))
+                    self.assertEqual(1, len(_rule_skips(result)))
 
     def test_empty_required_addons_means_unknown_dependencies(self):
         exit_code, result = _undefined_run("no_required_addons")

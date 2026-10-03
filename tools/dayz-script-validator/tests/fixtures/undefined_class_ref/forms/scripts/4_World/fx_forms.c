@@ -38,7 +38,9 @@ class FX_Forms<Class TItem>
         int length = FX_Second.Length();
 #ifdef FX_SOME_OTHER_MOD
         FX_OptionalDependency.Hook();
+        auto optional = new Param3<int, FX_MissingBehindTemplate, int>(0, null, 0);
 #endif
+        FX_MissingBehindTemplate.Sort();
 #ifdef DIAG_DEVELOPER
         FX_MissingUnderVanillaMacro.Debug();
         FX_VanillaDiagOnly diag;
@@ -58,6 +60,9 @@ class FX_Forms<Class TItem>
 #endif
 #ifndef FX_DIAG_ONLY_FLAG
         FX_MissingUnderConditionalDefine.Hook();
+#endif
+#ifndef FX_CONDITIONAL_CONFIG_FLAG
+        FX_MissingUnderConditionalConfigDefine.Hook();
 #endif
     }
 }

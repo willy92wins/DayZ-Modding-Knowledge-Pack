@@ -48,10 +48,10 @@ ES_UNDEFINED_CLASS_REF_RULE_ID = "ES-UNDEFINED-CLASS-REF"
 # Code under #ifdef/#ifndef is judged only when the macro is known: tested by
 # vanilla (engine and build flags), #define'd by the scanned scripts, or listed
 # in a scanned CfgMods defines[]. Anything else is usually an optional mod's
-# flag, and that code compiles only when the mod is loaded. A macro the scanned
-# scripts #define outside any #if block, or a scanned CfgMods defines[] lists,
-# is always on, so its #ifndef and #else branches never compile and are not
-# judged either.
+# flag, and that code compiles only when the mod is loaded. A macro that a
+# scanned script #defines, or a scanned CfgMods defines[] lists, outside any #if
+# block is always on, so its #ifndef and #else branches never compile and are
+# not judged either.
 
 _CLASS_LIKE_RE = re.compile(r"^[A-Z]")
 
@@ -129,7 +129,6 @@ _LINE_COMMENT_RE = re.compile(r"//[^\n]*")
 # 1.29.0.163451 and 1.30.164014): a "vanilla tree" without it is an empty or
 # wrong folder, and judging against it would call every vanilla type undefined.
 VANILLA_ANCHOR_CLASS = "Managed"
-_UNQUOTED_TOKEN_RE = re.compile(r"[A-Za-z_]\w*")
 
 ES_UNDEFINED_CLASS_REF_MESSAGE = (
     "[FAIL] {rel_path} line {line}: '{name}' is used as a type ({form}) but no "
@@ -150,10 +149,12 @@ class Definitions:
         self.template_params = set()
         self.macros = set()
         self.variables = set()
+        self.classes = set()
 
     def add_source(self, text, tested_macros_are_known=False, variables=True):
         for match in _CLASS_DEF_RE.finditer(text):
             self.types.add(match.group("name"))
+            self.classes.add(match.group("name"))
             params = match.group("params")
             if params:
                 for param in _TEMPLATE_PARAM_RE.finditer(params):
@@ -178,6 +179,7 @@ class Definitions:
         self.template_params |= other.template_params
         self.macros |= other.macros
         self.variables |= other.variables
+        self.classes |= other.classes
 
     def is_type(self, name):
         return name in self.types or name in self.template_params
@@ -187,8 +189,11 @@ def declared_variables(text):
     names = {match.group("name") for match in _DECLARED_NAME_RE.finditer(text)}
     for start in _DECLARATION_START_RE.finditer(text):
         # The later declarators of the same statement: what follows a comma
-        # outside every bracket, up to the `;` that ends it.
+        # outside every bracket, up to the `;` that ends it. A `<` right after
+        # a name opens template arguments (`new Param3<int, X, int>(...)`),
+        # whose commas separate types, not declarators.
         depth = 0
+        angle = 0
         index = start.end()
         while index < len(text):
             char = text[index]
@@ -198,9 +203,13 @@ def declared_variables(text):
                 if depth == 0:
                     break
                 depth -= 1
+            elif char == "<" and (text[index - 1].isalnum() or text[index - 1] == "_"):
+                angle += 1
+            elif char == ">" and angle:
+                angle -= 1
             elif depth == 0 and char == ";":
                 break
-            elif depth == 0 and char == ",":
+            elif depth == 0 and angle == 0 and char == ",":
                 declarator = _NEXT_DECLARATOR_RE.match(text, index + 1)
                 if declarator and _CLASS_LIKE_RE.match(declarator.group("name")):
                     names.add(declarator.group("name"))
@@ -279,7 +288,7 @@ def unquoted_required_addons(config_sources):
     for _rel_path, text in config_sources:
         for block in _REQUIRED_ADDONS_RE.finditer(_strip_config_comments(text)):
             rest = _QUOTED_RE.sub(" ", block.group("body"))
-            tokens |= set(_UNQUOTED_TOKEN_RE.findall(rest))
+            tokens |= {piece.strip() for piece in rest.split(",") if piece.strip()}
     return tokens
 
 
@@ -316,6 +325,33 @@ def dependency_closure(addon_configs, external_configs):
 def config_defines(config_sources):
     """Every CfgMods defines[] entry: macros a loaded mod turns on."""
     return _config_array_values(config_sources, _DEFINES_RE)
+
+
+def unconditional_config_defines(config_sources):
+    """defines[] entries written outside every #if / #ifdef / #ifndef block.
+
+    Only those are on whenever the mod is loaded: a defines[] under a
+    condition depends on it, so its macro stays a two-way flag.
+    """
+    values = set()
+    for _rel_path, text in config_sources:
+        text = _strip_config_comments(text)
+        depth_at_line = []
+        depth = 0
+        for line in text.split("\n"):
+            depth_at_line.append(depth)
+            if _PP_OPEN_RE.match(line) or _PP_OPEN_UNSUPPORTED_RE.match(line):
+                depth += 1
+            elif _PP_ENDIF_RE.match(line):
+                depth = max(0, depth - 1)
+        for block in _DEFINES_RE.finditer(text):
+            if depth_at_line[text.count("\n", 0, block.start())]:
+                continue
+            for item in _QUOTED_RE.finditer(block.group("body")):
+                value = item.group("value").strip()
+                if value:
+                    values.add(value)
+    return values
 
 
 def declared_patches(config_sources):
@@ -483,7 +519,7 @@ def check_es_undefined_class_ref(
         ]
 
     vanilla_key = str(pathlib.Path(vanilla_root).resolve())
-    if VANILLA_ANCHOR_CLASS not in vanilla_definitions(vanilla_key).types:
+    if VANILLA_ANCHOR_CLASS not in vanilla_definitions(vanilla_key).classes:
         return [], [
             {
                 "rule_id": ES_UNDEFINED_CLASS_REF_RULE_ID,
@@ -503,9 +539,8 @@ def check_es_undefined_class_ref(
         definitions.add_source(stripped)
         always_on |= unconditional_defines(stripped)
     all_configs = list(addon_configs) + list(external_configs or [])
-    defines = config_defines(all_configs)
-    definitions.macros |= defines
-    always_on |= defines
+    definitions.macros |= config_defines(all_configs)
+    always_on |= unconditional_config_defines(all_configs)
 
     unresolved = []
     for rel_path, stripped in addon_sources:

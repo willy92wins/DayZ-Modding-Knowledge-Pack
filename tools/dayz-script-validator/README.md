@@ -81,10 +81,10 @@ otherwise lists what it could not judge under `info.skipped_checks` (and as a
 |---|---|
 | no vanilla tree, or a folder that declares no `class Managed` | SKIP: every vanilla type would look undefined |
 | `requiredAddons[]` names an addon that is not a vanilla patch and that no scanned root declares in `CfgPatches`, directly or as the dependency of a scanned dependency | SKIP with the unresolved names; pass that addon's root with `--external-scripts` to get verdicts |
-| a `requiredAddons[]` entry that is not a string literal (a macro) | SKIP: that dependency is unknown |
+| a `requiredAddons[]` entry that is not a string literal (a macro, a number) | SKIP: that dependency is unknown |
 | no `config.cpp` in the tree lists any `requiredAddons[]` entry | SKIP: dependencies unknown |
 | code under `#ifdef`/`#ifndef` of a macro that vanilla does not test and no scanned script `#define`s or `CfgMods defines[]` lists | not judged: usually another mod's flag |
-| the `#ifndef` or `#else` branch of a macro that a scanned script `#define`s outside any `#if` block, or that a scanned `CfgMods defines[]` lists | not judged: that branch never compiles |
+| the `#ifndef` or `#else` branch of a macro that a scanned script `#define`s, or a scanned `CfgMods defines[]` lists, outside any `#if` block | not judged: that branch never compiles |
 
 A mod that uses another mod's classes without listing it in `requiredAddons[]`
 does get the FAIL; the message names both remedies. "Vanilla patch" means one
