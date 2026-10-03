@@ -9,7 +9,8 @@ Two modes:
   - propose:  Reads raw geometry → generates proposed recipe with memory points, LODs, etc.
 
 Dependencies:
-  # py3d = wheel del fork DayZ (wheels/py3d_dayz-1.5.0-py3-none-any.whl, via scripts/install_py3d.py). NUNCA `pip install py3d`
+  # py3d = wheel del fork DayZ (wheels/py3d_dayz-1.10.1-py3-none-any.whl, the pin in tools/py3d/rollout/wheel-manifest.json,
+  # via scripts/install_py3d.py). NUNCA `pip install py3d`
   # (PyPI = point-cloud lib) NI git+upstream KoffeinFlummi (sin guards DayZ). Ver dayz-model-pipeline.
   pip install numpy --break-system-packages
 """

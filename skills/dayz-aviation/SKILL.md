@@ -135,8 +135,14 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
   nothing until the pilot drives to wake it). `dBodyActive(ALWAYS_ACTIVE)` from EEInit helps but was NOT
   fully sufficient in one run (still needed drive-to-wake) — PENDING; confirm the body stays awake with a
   pilot seated + engine on, or wake in the get-in / engine-start hook.
-  Tooling note: the MCP `vehicle_prepare_fixture` conditioning is hardcoded to one car (`MCPBridge.c:835`),
-  so a custom test vehicle should self-condition via `EEInit -> CallLater(OnDebugSpawn)`.
+  Tooling note: the MCP `vehicle_prepare_fixture` takes any `CarScript`. It runs the vehicle's own
+  `OnDebugSpawn` unless every declared wheel, fuel and any vital battery or spark plug are already there,
+  and answers `fixture_not_ready` if they still are not (`DayZ_MCP_dev/addon/scripts/5_Mission/MCPBridge.c:1282-1295`,
+  `:3833-3868`), so it conditions a test heli exactly as that heli's `OnDebugSpawn` does (see (3)).
+  Self-conditioning via `EEInit -> CallLater(OnDebugSpawn)` remains an option. *(Corrected 2026-10-03:
+  this said "the MCP `vehicle_prepare_fixture` conditioning is hardcoded to one car (`MCPBridge.c:835`), so a
+  custom test vehicle should self-condition via `EEInit -> CallLater(OnDebugSpawn)`"; `dayz-mcp-verify`,
+  2026-07-18 section, has the evidence.)*
 ## DayZ 1.30 Exp (build 1.30.164014)
 
 - **CarScript-as-aviation runs under `NetworkMoveStrategy.PHYSICS` in 1.29 — client fluidity needs the
