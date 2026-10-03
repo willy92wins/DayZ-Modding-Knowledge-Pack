@@ -127,15 +127,17 @@ the full entry (symptom, origin, evidence) lives there. Do not remove the citati
 
 Every route of this skill reaches the MLOD as geometry authored in Blender: the generator's mesh
 (GLB, OBJ or FBX) is imported, retopologized, unwrapped and baked there (steps 3-4). Emit it with
-`dayz-model-pipeline` Rule 12: the det=-1 map `(x,y,z)->(x,z,y)` on every point and normal of every
-LOD, faces in their original order, shading normals negated (py3d >= 1.8.0:
-`py3d.blender_to_dayz(model)`). Do not reverse the faces. Winding gates cannot see a mirror, so
-check chirality on an asymmetric feature too (Rule 12); an MLOD written by another exporter, such
-as the Arma 3 Object Builder add-on, gets the same checks, winding and normals with
-`dayz-p3d-audit` included. On this skill's own route, LFInfectedBig (an AI-generated GLB,
-retopologized and rigged in Blender) read correctly in game with this map, and mirrored with its
-shipped det=+1 recipe of reversed faces (`dayz-characters` `references/character-rigging.md` §6,
-2026-10-02).
+the FBX / Blender-authored bullet of `dayz-model-pipeline` Rule 12, whatever format the generator
+wrote (the mesh is Blender-authored by then; the GLB/glTF case does not apply): the det=-1 map
+`(x,y,z)->(x,z,y)` on every point and normal of every LOD, faces in their original order, shading
+normals negated (py3d >= 1.8.0: `py3d.blender_to_dayz(model)`, called once, before adding anything
+built in DayZ space, such as collision boxes made in code, which skip the map). Do not reverse the
+faces. Winding gates cannot see a mirror, so check chirality on an asymmetric feature too (Rule 12);
+an MLOD written by another exporter, such as the Arma 3 Object Builder add-on, gets the same checks,
+winding and normals with `dayz-p3d-audit` included. On this skill's own route, LFInfectedBig (an
+AI-generated GLB, retopologized and rigged in Blender) read correctly in game with this map, and
+mirrored with its shipped det=+1 recipe of reversed faces (`dayz-characters`
+`references/character-rigging.md` §6, 2026-10-02).
 
 Reverse the vertex order of every **visual** face only for a source whose own lineage was measured
 to need it: an in-game A/B against the all-visual-faces-flipped variant plus a chirality check.
@@ -156,9 +158,12 @@ that rendered solid and read correctly reads 0% negative, `INVERTED` by those th
 export with every face reversed (winding outward: inside-out) and SP-071's own recipe, the det=+1
 map with reversed faces and outward normals (a mirror), both read 100% negative, `SOLID`. Normals
 stored outward render solid but lit inverted (`character-rigging.md` §6). Read a Rule 12 export
-with `dayz-p3d-audit` "Absolute winding check" instead (a healthy single-sided MLOD reads about
-100% agreement; the signed volume by winding decides the direction), and isolate a mixed result
-per part before any bulk fix (its rule 2).
+with `dayz-p3d-audit` instead: a healthy single-sided MLOD reads about 100% agreement ("Absolute
+winding check", rule 1), and the direction comes from the signed volume by winding of each closed
+shell, even at 100% agreement, never from the sum over the LOD: one shell reversed with its normals
+negated keeps 100% agreement and a negative sum (Check A in `references/winding-diagnostics.md`).
+Open sheets and double-sided parts take the visibility battery of "From Check B to fix"; isolate a
+mixed result per part before any bulk fix (rule 2).
 
 This census is a **profile signal, not a universal gate**. Do not compare its ratios across
 ODOL, MLOD produced from ODOL by an external ODOL->MLOD converter (not distributed with this
