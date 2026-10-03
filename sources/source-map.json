@@ -864,9 +864,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): Unreleased Added entry for the large-building collision harvest (ledger SP-453, SP-457, SP-458). Evidence as recorded on the references/lods-and-geometry.md input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9ec6324cc5e6256223e331d07f8a1c68b0b7fc2dfaf8a830bfeddb7ca1a6f2c8",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "[Unreleased] Added entry for dayz-physics-engine engine truth 11: walking and jumping on the moving platform that is a separate entity (SP-452), measured in game on DayZDiag 1.29.163709, dayz-mcp run 8e032fd9, 2026-10-01.",
           "license": "MIT",
-          "source_hash": "5fcda04a58bb3bfbeeb41cc0cb68b71eb1445444f7c647d06cc1799224aa3fa0",
+          "source_hash": "4cf6051fede39108b70479bdfff2e81a10648a268b62583303e2254f898dbe03",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-spb-physics-walk@2026-10-03",
@@ -874,7 +884,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5fcda04a58bb3bfbeeb41cc0cb68b71eb1445444f7c647d06cc1799224aa3fa0",
+      "output_hash": "4cf6051fede39108b70479bdfff2e81a10648a268b62583303e2254f898dbe03",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8266,10 +8276,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-dmp-sp071-rule12@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): the Quick Reference line for references/lods-and-geometry.md names its new section 'Collision of a large building with an interior' (ledger SP-453, SP-457, SP-458). Same line, so no registered claim range moves. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "579ac750c907244b05c1acafd5fbc8763cfc2cc2455a347934391e808b11d800",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ea744890bf1c3821373bb8739a3d478b80e6d98efebeba0b641828e4c61cc358",
+      "output_hash": "579ac750c907244b05c1acafd5fbc8763cfc2cc2455a347934391e808b11d800",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8406,10 +8426,20 @@
           "source_path": "dayz-model-pipeline/references/config-and-packing.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): 'Before binarizing: measure each collision LOD' (ledger SP-458) under Packing into PBO, pointing to lods-and-geometry.md for the figures and the fix. Evidence as recorded on the references/lods-and-geometry.md input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1f1313ba13f9dfee8b9c89de3b4ee5ac324817a2b4c8b2244c2bde7617a125e6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/config-and-packing.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4caa855fcab94020ffdabf7188fda7850cee5bfd83119ff6bf4d1badee37f1fe",
+      "output_hash": "1f1313ba13f9dfee8b9c89de3b4ee5ac324817a2b4c8b2244c2bde7617a125e6",
       "output_path": "skills/dayz-model-pipeline/references/config-and-packing.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8480,10 +8510,20 @@
           "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
           "source_revision": "kp-update-glb-reversal@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): new section 'Collision of a large building with an interior' (ledger SP-453 points 1, 4 and 5; SP-457; SP-458) and pointers at the ComponentXX and Mesh > Convex Hull bullets. Source: the owner's SecretRock RocaHeli rounds R7.1-R7.3 (2026-10-01 to 2026-10-03). Cross-checked against that project's review folders: the per-collision-LOD table recomputed from its binarize variant table and nine verdict files (faces, named selections x points and selection bytes separate pass from fail; the piece and point counts alone do not; one more variant truncated inside its Geometry LOD); 478 MB, 55-75 MB with 827-997 pieces, 78.4 -> 2.1 MB and the R7.3 View reversal from its block-1 and R7.3 reviews; 49,929 / 42,501 PASS and 92,430 CAPACITY_FAIL from the block-0 verdicts; 56,743 / 17,392 from the discovery review; 38 % beyond 15 cm for the k-means patches from the round-2 wall diagnosis (its probe stops at 1 m); the shell's in-game hit (geom ray, component 292 at 18.9 m) from the test-5 MCP call log. The per-selection byte layout read in tools/py3d/py3d/__init__.py:1968-1974 (py3d 1.10.1). The prism-only figures (median 1 cm, under 2 % beyond 15 cm, 10.5 cm along smoothed normals, 1,843 vs 652 regions, the 0.84 x 1.55 m gap with 131 of 368,013 samples, 0.40 m, 0.15 % with random samples) come from the ledger entries; no saved output was found for them. Nothing was re-measured for this change. Two claims registered on this file: CLAIM-BINARIZE-COLLISION-LOD-SILENT and CLAIM-COLLISION-ONLY-MODEL-INGAME. Cross-family review (Codex gpt-6.1-sol, read-only, effort max, cap of 2 rounds set before round 1): round 1 on 345d90a SOUND-WITH-FIXES with four findings, all applied in 158f413 (R21-01 P2: a 32,768-face cap cannot be the only limit, one alongside another is not ruled out; R21-02: Check A on the MLOD after the Rule 12 conversion; R21-03: the prisms aim at a 3 cm margin that a depth cap and a 1.5 cm minimum thickness can shrink; R21-04: exact bounds, one project's conservative bounds and not a PASS threshold); round 2 on 158f413 SOUND-WITH-FIXES, the four closed and one new P3 (R21-05: register the executable claims), applied after the cap and checked by packctl validate's claims check. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "10c8d8ab736043953c9b4dddd59c3e8013c34b59ab87f8e4c1a5c9b3e25cb3b4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7df3a0873c99996454ccfe81135e4159b6e81b595073a19ef1a1918d0baeb2f9",
+      "output_hash": "10c8d8ab736043953c9b4dddd59c3e8013c34b59ab87f8e4c1a5c9b3e25cb3b4",
       "output_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8994,10 +9034,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-spb-item-collision@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): appended section 'Source meshes for collision' (ledger SP-453 points 2 and 3): zero-area faces (5.4 % of the rock's faces, 11 % of the cabin's) and the orphan points their removal left (8 points 1.5-10.8 cm off the surface); about 240 rock and 38 interior faces wound against their stored normals, sent to the Check A table instead of being turned to their normals, a step the project never checked in game; bmesh.ops.convex_hull hulls recomputed with Qhull (0 open or non-convex pieces in the project's integrity check), and a convexity check that needs a failing model and must require its models. Also a pointer at the end of SP-359 to the OTHER_FAIL cause of references/binarize-vertex-budget.md item 3 in dayz-vehicles (ledger SP-458). Everything sits after the last registered claim line, so no claim range moves. Source: the SecretRock RocaHeli block-1 review, R7.1, 2026-10-01. Cross-family review (Codex gpt-6.1-sol, read-only, effort max, cap of 2 rounds set before round 1): round 1 on 345d90a SOUND-WITH-FIXES with four findings, all applied in 158f413 (R21-01 P2: a 32,768-face cap cannot be the only limit, one alongside another is not ruled out; R21-02: Check A on the MLOD after the Rule 12 conversion; R21-03: the prisms aim at a 3 cm margin that a depth cap and a 1.5 cm minimum thickness can shrink; R21-04: exact bounds, one project's conservative bounds and not a PASS threshold); round 2 on 158f413 SOUND-WITH-FIXES, the four closed and one new P3 (R21-05: register the executable claims), applied after the cap and checked by packctl validate's claims check. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3e0ba4af2d68357130610972fbad9662f4732a370a14098533848589e2ef133b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d0d17c9a32b7cf990cd4268ef60fbd283317a94ae1386a59a01a12d5f6099a87",
+      "output_hash": "3e0ba4af2d68357130610972fbad9662f4732a370a14098533848589e2ef133b",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -12820,10 +12870,20 @@
           "source_path": "dayz-vehicles/references/binarize-vertex-budget.md",
           "source_revision": "filesystem@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): the OTHER_FAIL bullet gains the cause measured on SecretRock RocaHeli R7.3 (ledger SP-458, also reported to the pipeline inbox): too many pieces in the collision LODs, no ODOL and no capacity line while the bench was fine; ruled in only once the MLOD walks to #EndOfFile# in every LOD and the same model passes without its collision LODs; the fix moves pieces to another model with the same transform and merges or decimates none; the two checks place the failure without measuring the limit, and each resulting model must still PASS. Evidence as recorded on the references/lods-and-geometry.md input of the same change. Cross-family review (Codex gpt-6.1-sol, read-only, effort max, cap of 2 rounds set before round 1): round 1 on 345d90a SOUND-WITH-FIXES with four findings, all applied in 158f413 (R21-01 P2: a 32,768-face cap cannot be the only limit, one alongside another is not ruled out; R21-02: Check A on the MLOD after the Rule 12 conversion; R21-03: the prisms aim at a 3 cm margin that a depth cap and a 1.5 cm minimum thickness can shrink; R21-04: exact bounds, one project's conservative bounds and not a PASS threshold); round 2 on 158f413 SOUND-WITH-FIXES, the four closed and one new P3 (R21-05: register the executable claims), applied after the cap and checked by packctl validate's claims check. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d5a57c4338f11bca316f338b739c31c9693374b25b7103920793519d28d9501a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "683d576f08a3c9e1b033b8986214aec2f254c28397176b8212d11029e2e2e0d3",
+      "output_hash": "d5a57c4338f11bca316f338b739c31c9693374b25b7103920793519d28d9501a",
       "output_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -16578,9 +16638,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): two claims on skills/dayz-model-pipeline/references/lods-and-geometry.md, 'Binarize: a silent limit on the collision LODs': CLAIM-BINARIZE-COLLISION-LOD-SILENT (offline_tested, item 1, lines 335-337) and CLAIM-COLLISION-ONLY-MODEL-INGAME (runtime_verified, item 6, lines 366-370), with their evidence locators; requested as R21-05 by the round-2 review. claim_baseline_commit unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "327367aeaa35779b2f052898637cc8e284a6a92dba837ba5a93cd1af87a0aaec",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Registers CLAIM-PHYS-PLATFORM-WALK-INGAME (runtime_verified) for the dayz-physics-engine truth 11 sub-bullet on walking and jumping on the moving platform (SP-452): DayZDiag 1.29.163709, 2026-10-01, dayz-mcp run 8e032fd9, four 8.9 m trips played by hand on SR_LiftPlatform2 in mode B, 1,448 server and 1,369 client samples (20 Hz while the platform moved, 2 Hz while it stood); numbers from SecretRock_dev/reviews/2026-10-01-lift-spike2/RESULTS2.md (run 5) and run5_8e032fd9/walk_detail.json, the ballistic figures computed from StartCommand_Fall(2.6) (4_world/entities/dayzplayerimplementjumpclimb.c:97). No other claim moves.",
           "license": "MIT",
-          "source_hash": "b989bddf25a198e2407dd8d3ab605af812be3d8eaacbec727beb845686427c42",
+          "source_hash": "f0d5ec0e51d4558ea293c212226901e8986cfb476f430238f77e2573e80febbc",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-spb-physics-walk@2026-10-03",
@@ -16588,7 +16658,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b989bddf25a198e2407dd8d3ab605af812be3d8eaacbec727beb845686427c42",
+      "output_hash": "f0d5ec0e51d4558ea293c212226901e8986cfb476f430238f77e2573e80febbc",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

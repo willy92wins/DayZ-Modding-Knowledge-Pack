@@ -282,6 +282,16 @@ in config.cpp to swap materials at runtime (e.g., LED on vs LED off).
 
 ## Packing into PBO
 
+### Before binarizing: measure each collision LOD (SP-458, added 2026-10-03)
+
+A collision LOD with many pieces can make `binarize` write no ODOL and print no capacity line, so
+a three-state bench reads `OTHER_FAIL` (`dayz-vehicles` `references/binarize-vertex-budget.md`,
+item 3). Before AddonBuilder or `binarize`, read the points, faces, named selections and
+selection bytes of each Geometry, View and Fire LOD with a header reader, and check that every
+LOD walks to its `#EndOfFile#` tagg: a truncated MLOD gives the same `OTHER_FAIL`. The values
+known to pass, the boundary and the fix (pieces moved to a second model, none merged or
+decimated): `lods-and-geometry.md`, "Collision of a large building with an interior".
+
 ### Using Addon Builder (Official)
 1. Open Addon Builder (from DayZ Tools / Arma 3 Tools on Steam)
 2. Set source directory to your addon folder
