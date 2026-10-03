@@ -784,9 +784,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "[Unreleased] Added entry for the dayz-mcp-verify ray battery and its controls, the pickup that is no collision test and the probe copy for a mod that does not compile (SP-454; DayZDiag 1.29.163709, dayz-mcp run 606a5dbb, 2026-10-02), and a Fixed entry for dayz-physics-engine truth 2's cone-search qualification and the stale extra_mods/base_mods boundary note in dayz-mcp-verify PREREQUISITES 4.",
+          "decision_evidence": "[Unreleased] Added entry for the dayz-mcp-verify ray battery and its controls, the pickup that is no collision test and the probe copy for a mod that does not compile (SP-454; DayZDiag 1.29.163709, dayz-mcp run 606a5dbb, 2026-10-02), and a Fixed entry for dayz-physics-engine truth 2's cone-search qualification and the stale extra_mods/base_mods boundary note in dayz-mcp-verify PREREQUISITES 4, with two dated qualifications under WHAT IT DOES NOT COVER (the vanilla CONTROL readings and entry=0).",
           "license": "MIT",
-          "source_hash": "ddf9ebae8f7c5e7ba3d90988ddcb8def2c05152dd810e18147598b02eead5e68",
+          "source_hash": "837f415fd7f313e2227608ff12cf885c246f68ff60b5a8ab085095121a117a72",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-spb-item-collision@2026-10-03",
@@ -794,7 +794,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ddf9ebae8f7c5e7ba3d90988ddcb8def2c05152dd810e18147598b02eead5e68",
+      "output_hash": "837f415fd7f313e2227608ff12cf885c246f68ff60b5a8ab085095121a117a72",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7563,9 +7563,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03 (SP-454 of the skill-patches ledger): the static-object playbook's collision bullet runs the battery in geom, view and fire instead of rays 'from >=2 angles' (dated note); a new bullet Ray battery and its controls (claim CLAIM-MCPV-COLLISION-BATTERY) gives dayz-p3d-audit rule 6's nine rays per mode, the same-PBO and same-layer vanilla controls and the winding-only pair as a recipe; a new bullet Picking an item up proves nothing about its collision (claim CLAIM-MCPV-PICKUP-NO-RAY) cites vanilla ActionTargets (4_world/classes/useractionscomponent/actiontargets.c:211-219, :286-287, :730-735; 3_game/global/dayzphysics.c:88), CCTObject (cctobject.c:10-22; actiontakeitemtohands.c:13) and the DayZ_MCP bridge (MCPClientBridge.c:3769, :3783, :3861; MCPBridge.c:2496, :2528-2531 at DayZ_MCP_dev 506de5d); the item playbook points to the battery; PREREQUISITES 4 gains the probe copy for a mod that does not compile (claim CLAIM-MCPV-PROBE-COPY) and a dated note that the extra_mods/base_mods boundary now accepts an absolute path inside the project's mod_roots (dayz_test_tool.py:269-272, :399; dayz_test_request.py:222-233). In game: DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 606a5dbb, the LFPowerGrid kit box 0 of 27 rays, same-PBO gate kit and WoodenCrate 21 of 21 each, the kit taken to hands by action_use. The cone path was read in the source, not measured. Cross-family review by Codex. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03 (SP-454 of the skill-patches ledger): the static-object playbook's collision bullet runs the battery in geom, view and fire instead of rays 'from >=2 angles' (dated note); a new bullet Ray battery and its controls (claim CLAIM-MCPV-COLLISION-BATTERY) gives dayz-p3d-audit rule 6's nine rays per mode, the same-PBO and same-layer vanilla controls and the winding-only pair as a recipe; a new bullet Picking an item up proves nothing about its collision (claim CLAIM-MCPV-PICKUP-NO-RAY) cites vanilla ActionTargets (4_world/classes/useractionscomponent/actiontargets.c:211-219, :286-287, :730-735; 3_game/global/dayzphysics.c:88), CCTObject (cctobject.c:10-22; actiontakeitemtohands.c:13) and the DayZ_MCP bridge (MCPClientBridge.c:3769, :3783, :3861; MCPBridge.c:2496, :2528-2531 at DayZ_MCP_dev 506de5d); the item playbook points to the battery; two dated notes under WHAT IT DOES NOT COVER qualify the vanilla CONTROL bullet (its readings name a likely cause, which only a winding-only pair decides) and the scene_raycast entry=0 bullet (a ray that starts inside an object also reads entry 0, exit 1, distance 0); the vertical ray's recentring argument is scoped to a solid box whose collision spans its axis, and the take action's target condition, not the action, is what checks only distance (actiontargets.c:444-445 for the scoring; actiontakeitemtohands.c:31-41 for its other conditions; cross-family review round 1); PREREQUISITES 4 gains the probe copy for a mod that does not compile (claim CLAIM-MCPV-PROBE-COPY) and a dated note that the extra_mods/base_mods boundary now accepts an absolute path inside the project's mod_roots (dayz_test_tool.py:269-272, :399; dayz_test_request.py:222-233). In game: DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 606a5dbb, the LFPowerGrid kit box 0 of 27 rays, same-PBO gate kit and WoodenCrate 21 of 21 each, the kit taken to hands by action_use. The cone path was read in the source, not measured. Cross-family review by Codex. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "78b8e1e584ee258d93ab36dac601146e8e718d7cd21f51e065c07aad70b995c9",
+          "source_hash": "e8b0f66f0817539f8fa1b7ea7b7fbb4bbe91cf39ddf08b7a8902276a1beea9fc",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-spb-item-collision@2026-10-03",
@@ -7573,7 +7573,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "78b8e1e584ee258d93ab36dac601146e8e718d7cd21f51e065c07aad70b995c9",
+      "output_hash": "e8b0f66f0817539f8fa1b7ea7b7fbb4bbe91cf39ddf08b7a8902276a1beea9fc",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -9877,9 +9877,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03 (SP-454): engine truth 2 ('No View Geometry LOD in the .p3d -> no action') gains a dated qualification read in the 1.29 source and not measured: at camera pitch <= -45 ActionTargets.Update also takes the objects of a 30 degree, 3 m cone and scores them by their distance to the cursor ray with no hit on them needed (4_world/classes/useractionscomponent/actiontargets.c:286-287, :730-735), so an item on the ground can become a target without a View Geometry hit; 1.30 not checked. Points to dayz-mcp-verify. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03 (SP-454): engine truth 2 ('No View Geometry LOD in the .p3d -> no action') gains a dated qualification read in the 1.29 source and not measured: at camera pitch <= -45 ActionTargets.Update also takes the objects of a 30 degree, 3 m cone and scores them by their distance to the cursor ray with no hit on them needed (4_world/classes/useractionscomponent/actiontargets.c:286-287, :444-445, :730-735), so an item on the ground can become a target without a View Geometry hit; 1.30 not checked. Points to dayz-mcp-verify. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "675fa8e58da56c25207bb4c9b2bf17b72df8e0a5e5eb0b70d4a9073eed27c2db",
+          "source_hash": "58e2db34bc861aa0ed0b58f71750485157ea66075055bd1510ccd5ee011213e6",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-spb-item-collision@2026-10-03",
@@ -9887,7 +9887,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "675fa8e58da56c25207bb4c9b2bf17b72df8e0a5e5eb0b70d4a9073eed27c2db",
+      "output_hash": "58e2db34bc861aa0ed0b58f71750485157ea66075055bd1510ccd5ee011213e6",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -16190,7 +16190,7 @@
           "decision": "merge",
           "decision_evidence": "Registers CLAIM-MCPV-COLLISION-BATTERY, CLAIM-MCPV-PICKUP-NO-RAY and CLAIM-MCPV-PROBE-COPY (runtime_verified) for the dayz-mcp-verify additions of SP-454 (DayZDiag 1.29.163709, dayz-mcp run 606a5dbb, 2026-10-02; vanilla 1.29 scripts and DayZ_MCP_dev 506de5d read for the mechanism), and moves the dayz-mcp-verify claims below the inserted text to the lines their markers now hold; their evidence and levels are unchanged.",
           "license": "MIT",
-          "source_hash": "f6248d9ce7946519c1cc6cda3243187698b1629df4047720570e18f844c8670f",
+          "source_hash": "127a18556b7caf852c1cde82057cbc831e29db933ef3fe22992c22e7d49fe1c4",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-spb-item-collision@2026-10-03",
@@ -16198,7 +16198,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f6248d9ce7946519c1cc6cda3243187698b1629df4047720570e18f844c8670f",
+      "output_hash": "127a18556b7caf852c1cde82057cbc831e29db933ef3fe22992c22e7d49fe1c4",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

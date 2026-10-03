@@ -36,7 +36,7 @@ only when the task needs that depth:
    `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:532-534`; `ActionTarget` ctor takes `surfaceName` at `:125-138`.)
    *(Qualified 2026-10-03, read in the 1.29 source, not measured; 1.30 not checked: at a camera pitch of −45° or
    lower, targeting also takes the objects of a 30°, 3 m cone and scores them by their distance to the cursor ray,
-   with no hit on them needed (`4_world/classes/useractionscomponent/actiontargets.c:286-287`, `:730-735`), so an item on
+   with no hit on them needed (`4_world/classes/useractionscomponent/actiontargets.c:286-287`, `:444-445`, `:730-735`), so an item on
    the ground can become a target without any View Geometry hit. See `dayz-mcp-verify`, "Picking an item up proves
    nothing about its collision".)*
 3. **`dSetInteractionLayer` is GLOBAL.** It edits the world's layer↔layer interaction matrix

@@ -326,8 +326,11 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
 - **Ray battery and its controls** (added 2026-10-03; the battery of `dayz-p3d-audit` "Absolute
   winding check" rule 6, fired on DayZDiag 1.29.163709 on 2026-10-02, dayz-mcp run 606a5dbb)
   [EXACT][CLAIM-MCPV-COLLISION-BATTERY]: nine rays per mode.
-  - One vertical ray down the object's axis. A LOD recentred by a missing `autocenter=0`
-    (`dayz-p3d-audit` killer #3) still sits on that ray, so a miss there is not the recentring.
+  - One vertical ray down the object's axis. On a solid box whose collision spans its own axis,
+    like the measured kit box, a LOD recentred by a missing `autocenter=0` (`dayz-p3d-audit`
+    killer #3) still sits on that ray, so a miss there is not the recentring. On an object with gaps
+    or several separate parts the shifted collision can leave the axis: check that the ray crosses
+    the collider both where it is modelled and where the recentring would put it.
   - Four horizontal rays through the middle, one from each side, and two more heights on one side.
   - Two rays from inside the object outward: a sound object answers `entry 0, exit 1` at distance 0.
 
@@ -345,10 +348,14 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   targeting casts `RaycastRVProxy` from the camera, 5 m, with the default `ObjIntersectView`
   (`4_world/classes/useractionscomponent/actiontargets.c:211-219`, `3_game/global/dayzphysics.c:88`),
   and at a camera pitch of −45° or lower it also takes the objects of a 30°, 3 m cone and scores them
-  by their distance to that ray, with no hit on them needed (`actiontargets.c:286-287`, `:730-735`). The take
-  action then checks only the distance to the object's position: `ActionTakeItemToHands` uses
-  `CCTObject` (`4_world/classes/useractionscomponent/actions/interact/actiontakeitemtohands.c:13`,
-  `4_world/classes/useractionscomponent/targetconditionscomponents/cctobject.c:10-22`). `action_use`
+  by their distance to that ray, with no hit on them needed (`actiontargets.c:286-287`, `:444-445`,
+  `:730-735`). The take action's target condition then checks only the distance to the object's
+  position: `ActionTakeItemToHands` uses `CCTObject`
+  (`4_world/classes/useractionscomponent/actions/interact/actiontakeitemtohands.c:13`,
+  `4_world/classes/useractionscomponent/targetconditionscomponents/cctobject.c:10-22`), and its other
+  conditions (takeable, not being placed or deleted, attachment state, room in the hands;
+  `actiontakeitemtohands.c:31-41`)
+  do not look at collision either. `action_use`
   builds its world target from the nearest object of the class, with `componentIndex -1` and the
   object's position as the cursor hit, and casts no ray (`MCPClientBridge.c:3769`, `:3783`,
   `:3861`). In that run `action_use(ActionTakeItemToHands)` put the kit box in the player's hands
@@ -569,6 +576,9 @@ Key takeaways:
   nor use it as a threshold (`dot >= 0.9` is never reached); a face normal comes from `method="bullet"`.
   *(Corrected 2026-10-02: this line said to use it only as direction (sign/axis).)* A mod that filters
   `!hit.entry` discards natural ground (hologram that never snaps to ground: LFSecure I-1).
+  *(Qualified 2026-10-03: a ray that starts inside an object also reads `entry=0`: the inside rays of
+  run 606a5dbb read `entry 0, exit 1` at distance 0 on the controls. Tell terrain by its empty
+  `object_type`, not by `entry=0` alone; `entry=1` holds for hits from outside.)*
 - **Collision probe with vanilla CONTROL before blaming the mesh** (measured 2026-09-07, LFSecure L3 -> L4):
   if `scene_raycast` does not hit a mod static, repeat the SAME ray (view, fire, and geom; from outside AND
   from inside) against a vanilla static spawned next to it (`world_spawn(type="Land_Container_1Aoh")`: flat
@@ -577,6 +587,9 @@ Key takeaways:
   ODOL preserves them, engine does not see them); control HIT + mod HIT only from inside = reversed faces only in
   visuals. With the source winding restored (L4) the same ray gave the front face at +0.079 m and a wall
   of 0.42 m. The correction rule lives in `dayz-p3d-audit` (0% agreement = discrepancy, not direction).
+  *(Qualified 2026-10-03: the two readings above name the likely cause, not a measured one; only a pair
+  that changes the winding alone decides it, as "Ray battery and its controls" in the static-object
+  playbook says.)*
 
 ## REPORTING
 
