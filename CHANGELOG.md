@@ -202,6 +202,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-pbo-build` SP-155 rule 1: a staged binarize looks for every file the p3d cite under the
+  staging folder, which AddonBuilder passes as `-addon` (the source's parent), never under `P:\`,
+  and embeds a face material it cannot find EMPTY in the ODOL (no shader, no stage texture, no
+  `.bisurf`) while the build says "Build Successful". The rule called the "Material not loaded"
+  messages of a staged build tolerable; the ArmorHneck ODOL it cited as working (deployed
+  2026-08-04) carries its Fire Geometry material `armor_5mm_plate.rvmat` empty. The rule now
+  stages the cited files beside the mod (copies, or a `DZ` junction to the extracted vanilla
+  data), and a new rule 5 gates every ODOL for empty embedded materials. Measured: CocaLab
+  (2026-09-27; gate control without the files: 6 failures) and the DayZ MCP v1.3.1 spike on
+  SimpleGroup (2026-10-01, 11 builds): binarize parses every `config.cpp` under `-addon`, through
+  junctions; AddonBuilder exits 0 with `[ResultCode]=1`; `-project=<source>` drops every `.paa`,
+  `.rvmat` and `texHeaders.bin` from the PBO; with the mod alone under `-addon`, `T1_FlagKit.p3d`
+  embeds its two `dz\` materials empty, and with a `DZ` junction beside it, it is byte-identical
+  to the production build. `dayz-clothing` BUILD step 1 points at the rule, and SP-069 rule 1
+  records the spike's nine binarized builds with `-temp` in a local folder. Not measured: what an
+  empty material does in game. The replaced sentences are quoted in a dated note.
 - `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
   by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
   bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties

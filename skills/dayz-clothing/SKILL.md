@@ -124,6 +124,11 @@ model.cfg:
 
 1. Stage the mod to %TEMP% (binarize with -addon=P:\ dies on any broken
    third-party config in the tree — "Error 3", names the wrong culprit).
+   Stage beside it every file the p3d cite outside the mod's prefix, the
+   vanilla penetration rvmat of the Fire Geometry included, or binarize
+   embeds those materials EMPTY (dayz-pbo-build SP-155 rules 1 and 5,
+   corrected 2026-10-03: ArmorHneck's ODOL of 2026-08-04 carries
+   `dz\data\data\penetration\armor_5mm_plate.rvmat` empty).
 2. Full AddonBuilder pass to binarize the p3d (model.cfg NEXT TO the p3d in
    the staging; ODOL must come out with skeleton name DayzTemporarySkeleton —
    verify with the external ODOL parser, `model_info.skeleton.name`).
