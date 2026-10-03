@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -609,6 +610,46 @@ def test_conflict_markers_read_bytes_and_number_lines_as_git_does(
         ("notes.md", 4),
         ("notes.md", 6),
         ("notes.md", 8),
+    ]
+
+
+def test_conflict_markers_on_a_last_line_without_line_feed(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "alone.md": "text\n<<<<<<< HEAD",
+            "open.md": "<<<<<<< ours\na\n=======",
+        }
+    )
+
+    findings = validate_conflict_markers(root)
+
+    assert [(item["path"], item["line"]) for item in findings] == [
+        ("alone.md", 2),
+        ("open.md", 1),
+        ("open.md", 3),
+    ]
+
+
+def test_conflict_markers_of_an_unmerged_path_are_reported_once(
+    repo_factory,
+) -> None:
+    # During an unresolved merge, git ls-files lists the path once per stage.
+    root = repo_factory({"notes.md": "base\n"})
+    run_git(root, "checkout", "-q", "-b", "side")
+    (root / "notes.md").write_text("side\n", encoding="utf-8", newline="\n")
+    run_git(root, "commit", "-qam", "side")
+    run_git(root, "checkout", "-q", "-")
+    (root / "notes.md").write_text("main\n", encoding="utf-8", newline="\n")
+    run_git(root, "commit", "-qam", "main")
+    with pytest.raises(subprocess.CalledProcessError):
+        run_git(root, "-c", "merge.conflictStyle=merge", "merge", "side")
+
+    findings = validate_conflict_markers(root)
+
+    assert [(item["path"], item["line"]) for item in findings] == [
+        ("notes.md", 1),
+        ("notes.md", 3),
+        ("notes.md", 5),
     ]
 
 

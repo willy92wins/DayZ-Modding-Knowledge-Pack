@@ -1125,7 +1125,8 @@ def validate_conflict_markers(root: Path) -> list[dict[str, object]]:
     """
     root = Path(root).resolve()
     findings: list[dict[str, object]] = []
-    for relative in git_tracked_files(root):
+    # Mid-merge, git lists an unmerged path once per index stage: read it once.
+    for relative in sorted(set(git_tracked_files(root))):
         path = root / relative
         if not path.is_file():
             continue
