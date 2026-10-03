@@ -82,7 +82,7 @@ Before doing anything, read the relevant reference file:
 - **Blender headless pipeline (PRIMARY)** → `references/blender-headless.md`
 - **Procedural texture generation (OpenSimplex)** → `references/procedural-textures.md`
 - **Direct P3D assembly (for LOD packaging)** → `references/py3d-direct-generation.md`
-- **LODs & geometry rules** → `references/lods-and-geometry.md`
+- **LODs & geometry rules** → `references/lods-and-geometry.md`. A large building or rock with an interior (hundreds of collision pieces, an MLOD of hundreds of MB, `binarize` `OTHER_FAIL` with no capacity line): its section "Collision of a large building with an interior" (SP-453, SP-457, SP-458).
 - **Memory points & named selections** → `references/memory-and-selections.md`
 - **Animations (model.cfg)** → `references/animations.md`
 - **Config.cpp & addon structure** → `references/config-and-packing.md`
