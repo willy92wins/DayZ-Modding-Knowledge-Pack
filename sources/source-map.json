@@ -824,9 +824,29 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03, pipeline inbox tickets fb-20261002-165906-2bcb and fb-20261002-165906-3705: two dayz-mcp limits the skills stated no longer hold. (1) dayz-test-ingame 'Testing a mod that is not in the allow-list': the carrier bullet said @DayZ_MCP is not usable as a carrier (5_Mission CParser: quoted string not closed, mcpclientbridge.c; SP-128, 2026-07-28). In game on 2026-10-02 (DayZDiag 1.29.163709) project DayZ_MCP carried @LFInfectedBig and @KP_CharAB in run 13cc2542 and those plus @KP_ChiralWear and @KP_ChiralAnim in run 1c289781; server and client script logs read 'Module: Mission; loaded 217x files; 540x classes' (line 9 of each), with no CParser or \"Can't compile\" line, and the probe's 4_World print '[KP_ChiralAnim] RegisterOneHanded' ran on both peers. Run f1afd2c3, LFPowerGrid carrying @DayZ_MCP, @LFInfectedBig and @KP_CharAB ten minutes earlier, stopped at \"Can't compile \\\"Mission\\\" script module!\" on LFPowerGrid/scripts/5_Mission/lfpg_sg58harness.c(238) (crash_2026-10-02_12-31-41.log). The bullet now says a carrier's compile state is a property of its source that day and to read its 'Module: Mission' line first; the replaced sentence is quoted in a dated note. (2) dayz-mcp-verify: SP-152 said telemetry_read(mode=object_at) only accepts type MERCEDES_AMGLF. Run 1c289781 read found=1 with pos, orientation, health01 and declared_slots for KP_CharAB_V1 (health01 0), ZmbM_SoldierNormal (0) and KP_CharAB_V3 (0.7525) (bridge ids 780-782), and inventory_attach returned the same block for SurvivorM_Francis (737, 773). Source at DayZ_MCP_dev 506de5d: MCPBridge.c:3007-3051 matches any exact GetType(), loopback.py:1349-1358 checks type only for a non-empty string, server.py:4603-4608 rejects only an empty type. The 2026-07-25 rollback copy of the tools has the MERCEDES_AMGLF check only in loopback.py's vehicle_prepare_fixture branch (:169, args also carry mode object_at) and a telemetry_read that took any non-empty type; the tools' first public commit 8e2ad98 (2026-08-16) has no MERCEDES string. Added beyond the ticket, same root cause: the 2026-07-18 section's 'vehicle_prepare_fixture does NOT work outside the Mercedes' is corrected (vehicle_fixture_ready=1, wheel_count 4 on 15 other CarScript types between 2026-08-18 and 2026-10-01, tool results re-read from session transcripts; three test variants of one quad returned fixture_not_ready). The zombie-command bullet reconciles a lost spawn with object_at (found=false, ambiguous_fixture per MCPBridge.c:3031-3045, not exercised on a zombie spawn). Every replaced sentence is quoted in a dated note. Cross-family review round 1 (Codex gpt-6.1-sol, desktop codex.exe 0.160.0, read-only, effort max; cap of two rounds set before round 1) on 47339f4: SOUND-CON-FIXES, no P1. R21-01 (P2): skills/dayz-aviation/SKILL.md:138 still said the vehicle_prepare_fixture conditioning is hardcoded to one car (MCPBridge.c:835); now corrected in a dated note: any CarScript, the vehicle's own OnDebugSpawn runs unless every declared wheel, fuel and a vital battery or spark plug are present, fixture_not_ready otherwise (MCPBridge.c:1282-1295, IsVehicleFixtureReady :3833-3868 at 506de5d). R21-02 (P3): the reply's top-level found field is 0 while telemetry.found is 1 (bridge id 782); both object_at bullets now name telemetry.found, and the zombie bullet bounds an absence to the radius and the moment of the read. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "740216eec998815683dda9f9b53d081aded0742bfb942f03e8e4ddc2dc60745c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-inbb-mcp-notes@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "[Unreleased] Added entry for the dayz-mcp-verify ray battery and its controls, the pickup that is no collision test and the probe copy for a mod that does not compile (SP-454; DayZDiag 1.29.163709, dayz-mcp run 606a5dbb, 2026-10-02), and a Fixed entry for dayz-physics-engine truth 2's cone-search qualification and the stale extra_mods/base_mods boundary note in dayz-mcp-verify PREREQUISITES 4, with two dated qualifications under WHAT IT DOES NOT COVER (the vanilla CONTROL readings and entry=0).",
+          "license": "MIT",
+          "source_hash": "35303ac998900fd9a13eecd04ab9404fcb1619c28e889769496d2f7ee485f046",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-spb-item-collision@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03 (spa): Unreleased Added entry for the large-building collision harvest (ledger SP-453, SP-457, SP-458). Evidence as recorded on the references/lods-and-geometry.md input of the same change. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "5e7507195d0dafbe88c78e2acf563a89b5c85873484d8c965a4b2ec34f5018c7",
+          "source_hash": "12f47046f4b115f265a71b577e9a00f36d2cf69f03b48658da79ebae607a102c",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
@@ -834,7 +854,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5e7507195d0dafbe88c78e2acf563a89b5c85873484d8c965a4b2ec34f5018c7",
+      "output_hash": "12f47046f4b115f265a71b577e9a00f36d2cf69f03b48658da79ebae607a102c",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5874,10 +5894,20 @@
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03, pipeline inbox tickets fb-20261002-165906-2bcb and fb-20261002-165906-3705: two dayz-mcp limits the skills stated no longer hold. (1) dayz-test-ingame 'Testing a mod that is not in the allow-list': the carrier bullet said @DayZ_MCP is not usable as a carrier (5_Mission CParser: quoted string not closed, mcpclientbridge.c; SP-128, 2026-07-28). In game on 2026-10-02 (DayZDiag 1.29.163709) project DayZ_MCP carried @LFInfectedBig and @KP_CharAB in run 13cc2542 and those plus @KP_ChiralWear and @KP_ChiralAnim in run 1c289781; server and client script logs read 'Module: Mission; loaded 217x files; 540x classes' (line 9 of each), with no CParser or \"Can't compile\" line, and the probe's 4_World print '[KP_ChiralAnim] RegisterOneHanded' ran on both peers. Run f1afd2c3, LFPowerGrid carrying @DayZ_MCP, @LFInfectedBig and @KP_CharAB ten minutes earlier, stopped at \"Can't compile \\\"Mission\\\" script module!\" on LFPowerGrid/scripts/5_Mission/lfpg_sg58harness.c(238) (crash_2026-10-02_12-31-41.log). The bullet now says a carrier's compile state is a property of its source that day and to read its 'Module: Mission' line first; the replaced sentence is quoted in a dated note. (2) dayz-mcp-verify: SP-152 said telemetry_read(mode=object_at) only accepts type MERCEDES_AMGLF. Run 1c289781 read found=1 with pos, orientation, health01 and declared_slots for KP_CharAB_V1 (health01 0), ZmbM_SoldierNormal (0) and KP_CharAB_V3 (0.7525) (bridge ids 780-782), and inventory_attach returned the same block for SurvivorM_Francis (737, 773). Source at DayZ_MCP_dev 506de5d: MCPBridge.c:3007-3051 matches any exact GetType(), loopback.py:1349-1358 checks type only for a non-empty string, server.py:4603-4608 rejects only an empty type. The 2026-07-25 rollback copy of the tools has the MERCEDES_AMGLF check only in loopback.py's vehicle_prepare_fixture branch (:169, args also carry mode object_at) and a telemetry_read that took any non-empty type; the tools' first public commit 8e2ad98 (2026-08-16) has no MERCEDES string. Added beyond the ticket, same root cause: the 2026-07-18 section's 'vehicle_prepare_fixture does NOT work outside the Mercedes' is corrected (vehicle_fixture_ready=1, wheel_count 4 on 15 other CarScript types between 2026-08-18 and 2026-10-01, tool results re-read from session transcripts; three test variants of one quad returned fixture_not_ready). The zombie-command bullet reconciles a lost spawn with object_at (found=false, ambiguous_fixture per MCPBridge.c:3031-3045, not exercised on a zombie spawn). Every replaced sentence is quoted in a dated note. Cross-family review round 1 (Codex gpt-6.1-sol, desktop codex.exe 0.160.0, read-only, effort max; cap of two rounds set before round 1) on 47339f4: SOUND-CON-FIXES, no P1. R21-01 (P2): skills/dayz-aviation/SKILL.md:138 still said the vehicle_prepare_fixture conditioning is hardcoded to one car (MCPBridge.c:835); now corrected in a dated note: any CarScript, the vehicle's own OnDebugSpawn runs unless every declared wheel, fuel and a vital battery or spark plug are present, fixture_not_ready otherwise (MCPBridge.c:1282-1295, IsVehicleFixtureReady :3833-3868 at 506de5d). R21-02 (P3): the reply's top-level found field is 0 while telemetry.found is 1 (bridge id 782); both object_at bullets now name telemetry.found, and the zombie bullet bounds an absence to the radius and the moment of the read. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6ab2122b920af345bd7f2848c940684d411aa20b4571fe11ce85310cb319b8b9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "kp-update-inbb-mcp-notes@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "d5922de0123225b1c8ecbc7d9f8f14e4fb02dbef97dd3e39840541cf9a2b62a9",
+      "output_hash": "6ab2122b920af345bd7f2848c940684d411aa20b4571fe11ce85310cb319b8b9",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -7700,10 +7730,30 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "skill-tests-pytest-folders@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03, pipeline inbox tickets fb-20261002-165906-2bcb and fb-20261002-165906-3705: two dayz-mcp limits the skills stated no longer hold. (1) dayz-test-ingame 'Testing a mod that is not in the allow-list': the carrier bullet said @DayZ_MCP is not usable as a carrier (5_Mission CParser: quoted string not closed, mcpclientbridge.c; SP-128, 2026-07-28). In game on 2026-10-02 (DayZDiag 1.29.163709) project DayZ_MCP carried @LFInfectedBig and @KP_CharAB in run 13cc2542 and those plus @KP_ChiralWear and @KP_ChiralAnim in run 1c289781; server and client script logs read 'Module: Mission; loaded 217x files; 540x classes' (line 9 of each), with no CParser or \"Can't compile\" line, and the probe's 4_World print '[KP_ChiralAnim] RegisterOneHanded' ran on both peers. Run f1afd2c3, LFPowerGrid carrying @DayZ_MCP, @LFInfectedBig and @KP_CharAB ten minutes earlier, stopped at \"Can't compile \\\"Mission\\\" script module!\" on LFPowerGrid/scripts/5_Mission/lfpg_sg58harness.c(238) (crash_2026-10-02_12-31-41.log). The bullet now says a carrier's compile state is a property of its source that day and to read its 'Module: Mission' line first; the replaced sentence is quoted in a dated note. (2) dayz-mcp-verify: SP-152 said telemetry_read(mode=object_at) only accepts type MERCEDES_AMGLF. Run 1c289781 read found=1 with pos, orientation, health01 and declared_slots for KP_CharAB_V1 (health01 0), ZmbM_SoldierNormal (0) and KP_CharAB_V3 (0.7525) (bridge ids 780-782), and inventory_attach returned the same block for SurvivorM_Francis (737, 773). Source at DayZ_MCP_dev 506de5d: MCPBridge.c:3007-3051 matches any exact GetType(), loopback.py:1349-1358 checks type only for a non-empty string, server.py:4603-4608 rejects only an empty type. The 2026-07-25 rollback copy of the tools has the MERCEDES_AMGLF check only in loopback.py's vehicle_prepare_fixture branch (:169, args also carry mode object_at) and a telemetry_read that took any non-empty type; the tools' first public commit 8e2ad98 (2026-08-16) has no MERCEDES string. Added beyond the ticket, same root cause: the 2026-07-18 section's 'vehicle_prepare_fixture does NOT work outside the Mercedes' is corrected (vehicle_fixture_ready=1, wheel_count 4 on 15 other CarScript types between 2026-08-18 and 2026-10-01, tool results re-read from session transcripts; three test variants of one quad returned fixture_not_ready). The zombie-command bullet reconciles a lost spawn with object_at (found=false, ambiguous_fixture per MCPBridge.c:3031-3045, not exercised on a zombie spawn). Every replaced sentence is quoted in a dated note. Cross-family review round 1 (Codex gpt-6.1-sol, desktop codex.exe 0.160.0, read-only, effort max; cap of two rounds set before round 1) on 47339f4: SOUND-CON-FIXES, no P1. R21-01 (P2): skills/dayz-aviation/SKILL.md:138 still said the vehicle_prepare_fixture conditioning is hardcoded to one car (MCPBridge.c:835); now corrected in a dated note: any CarScript, the vehicle's own OnDebugSpawn runs unless every declared wheel, fuel and a vital battery or spark plug are present, fixture_not_ready otherwise (MCPBridge.c:1282-1295, IsVehicleFixtureReady :3833-3868 at 506de5d). R21-02 (P3): the reply's top-level found field is 0 while telemetry.found is 1 (bridge id 782); both object_at bullets now name telemetry.found, and the zombie bullet bounds an absence to the radius and the moment of the read. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c9b54847a43d52eb8171ccdd1788f11d23758780aa85485bb3e88286590c005f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-inbb-mcp-notes@2026-10-03",
+          "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-454 of the skill-patches ledger): the static-object playbook's collision bullet runs the battery in geom, view and fire instead of rays 'from >=2 angles' (dated note); a new bullet Ray battery and its controls (claim CLAIM-MCPV-COLLISION-BATTERY) gives dayz-p3d-audit rule 6's nine rays per mode, the same-PBO and same-layer vanilla controls and the winding-only pair as a recipe; a new bullet Picking an item up proves nothing about its collision (claim CLAIM-MCPV-PICKUP-NO-RAY) cites vanilla ActionTargets (4_world/classes/useractionscomponent/actiontargets.c:211-219, :286-287, :730-735; 3_game/global/dayzphysics.c:88), CCTObject (cctobject.c:10-22; actiontakeitemtohands.c:13) and the DayZ_MCP bridge (MCPClientBridge.c:3769, :3783, :3861; MCPBridge.c:2496, :2528-2531 at DayZ_MCP_dev 506de5d); the item playbook points to the battery; two dated notes under WHAT IT DOES NOT COVER qualify the vanilla CONTROL bullet (its readings name a likely cause, which only a winding-only pair decides) and the scene_raycast entry=0 bullet (a ray that starts inside an object also reads entry 0, exit 1, distance 0); the vertical ray's recentring argument is scoped to a solid box whose collision spans its axis, and the take action's target condition, not the action, is what checks only distance (actiontargets.c:444-445 for the scoring; actiontakeitemtohands.c:31-41 for its other conditions; cross-family review round 1); PREREQUISITES 4 gains the probe copy for a mod that does not compile (claim CLAIM-MCPV-PROBE-COPY) and a dated note that the extra_mods/base_mods boundary now accepts an absolute path inside the project's mod_roots (dayz_test_tool.py:269-272, :399; dayz_test_request.py:222-233). In game: DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 606a5dbb, the LFPowerGrid kit box 0 of 27 rays, same-PBO gate kit and WoodenCrate 21 of 21 each, the kit taken to hands by action_use. The cone path was read in the source, not measured. Cross-family review by Codex. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "26fcab5735a2f766ac2aaf7fa790c9db4f7a4150056078b21fa927bbbe2d71e2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-spb-item-collision@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "db012cb2fa36a607e0162828032db5e24c5d966c384a2434936dafcf25749101",
+      "output_hash": "26fcab5735a2f766ac2aaf7fa790c9db4f7a4150056078b21fa927bbbe2d71e2",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -8947,9 +8997,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-454): Absolute winding check rule 6 gains a sub-bullet, Measuring it in game, that points to dayz-mcp-verify's Ray battery and its controls (nine rays per mode, the same-PBO and same-layer vanilla controls, a winding-only pair before naming the winding) and says a pickup shows no collision: the vanilla cone search needs no hit on the item (4_world/classes/useractionscomponent/actiontargets.c:286-287) and action_use casts no ray (DayZ_MCP bridge MCPClientBridge.c:3861). Pointer only; the measurements stay in rule 6 and its claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d0d17c9a32b7cf990cd4268ef60fbd283317a94ae1386a59a01a12d5f6099a87",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-spb-item-collision@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03 (spa): appended section 'Source meshes for collision' (ledger SP-453 points 2 and 3): zero-area faces (5.4 % of the rock's faces, 11 % of the cabin's) and the orphan points their removal left (8 points 1.5-10.8 cm off the surface); about 240 rock and 38 interior faces wound against their stored normals, sent to the Check A table instead of being turned to their normals, a step the project never checked in game; bmesh.ops.convex_hull hulls recomputed with Qhull (0 open or non-convex pieces in the project's integrity check), and a convexity check that needs a failing model and must require its models. Also a pointer at the end of SP-359 to the OTHER_FAIL cause of references/binarize-vertex-budget.md item 3 in dayz-vehicles (ledger SP-458). Everything sits after the last registered claim line, so no claim range moves. Source: the SecretRock RocaHeli block-1 review, R7.1, 2026-10-01. Cross-family review (Codex gpt-6.1-sol, read-only, effort max, cap of 2 rounds set before round 1): round 1 on 345d90a SOUND-WITH-FIXES with four findings, all applied in 158f413 (R21-01 P2: a 32,768-face cap cannot be the only limit, one alongside another is not ruled out; R21-02: Check A on the MLOD after the Rule 12 conversion; R21-03: the prisms aim at a 3 cm margin that a depth cap and a 1.5 cm minimum thickness can shrink; R21-04: exact bounds, one project's conservative bounds and not a PASS threshold); round 2 on 158f413 SOUND-WITH-FIXES, the four closed and one new P3 (R21-05: register the executable claims), applied after the cap and checked by packctl validate's claims check. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "a1609effeeb95f0dd422c7ac6400ad5e6ce26f80b752e9f711a41c531d22558e",
+          "source_hash": "3e0ba4af2d68357130610972fbad9662f4732a370a14098533848589e2ef133b",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
@@ -8957,7 +9017,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a1609effeeb95f0dd422c7ac6400ad5e6ce26f80b752e9f711a41c531d22558e",
+      "output_hash": "3e0ba4af2d68357130610972fbad9662f4732a370a14098533848589e2ef133b",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -10074,10 +10134,20 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-sp450-451@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-454): engine truth 2 ('No View Geometry LOD in the .p3d -> no action') gains a dated qualification read in the 1.29 source and not measured: at camera pitch <= -45 ActionTargets.Update also takes the objects of a 30 degree, 3 m cone and scores them by their distance to the cursor ray with no hit on them needed (4_world/classes/useractionscomponent/actiontargets.c:286-287, :444-445, :730-735), so an item on the ground can become a target without a View Geometry hit; 1.30 not checked. Points to dayz-mcp-verify. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "58e2db34bc861aa0ed0b58f71750485157ea66075055bd1510ccd5ee011213e6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "kp-update-spb-item-collision@2026-10-03",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "cf5f2c114aeab0c7d6f37064e0dfdf10152a942c3fbdd07bade99834c986e294",
+      "output_hash": "58e2db34bc861aa0ed0b58f71750485157ea66075055bd1510ccd5ee011213e6",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -11056,10 +11126,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03, pipeline inbox tickets fb-20261002-165906-2bcb and fb-20261002-165906-3705: two dayz-mcp limits the skills stated no longer hold. (1) dayz-test-ingame 'Testing a mod that is not in the allow-list': the carrier bullet said @DayZ_MCP is not usable as a carrier (5_Mission CParser: quoted string not closed, mcpclientbridge.c; SP-128, 2026-07-28). In game on 2026-10-02 (DayZDiag 1.29.163709) project DayZ_MCP carried @LFInfectedBig and @KP_CharAB in run 13cc2542 and those plus @KP_ChiralWear and @KP_ChiralAnim in run 1c289781; server and client script logs read 'Module: Mission; loaded 217x files; 540x classes' (line 9 of each), with no CParser or \"Can't compile\" line, and the probe's 4_World print '[KP_ChiralAnim] RegisterOneHanded' ran on both peers. Run f1afd2c3, LFPowerGrid carrying @DayZ_MCP, @LFInfectedBig and @KP_CharAB ten minutes earlier, stopped at \"Can't compile \\\"Mission\\\" script module!\" on LFPowerGrid/scripts/5_Mission/lfpg_sg58harness.c(238) (crash_2026-10-02_12-31-41.log). The bullet now says a carrier's compile state is a property of its source that day and to read its 'Module: Mission' line first; the replaced sentence is quoted in a dated note. (2) dayz-mcp-verify: SP-152 said telemetry_read(mode=object_at) only accepts type MERCEDES_AMGLF. Run 1c289781 read found=1 with pos, orientation, health01 and declared_slots for KP_CharAB_V1 (health01 0), ZmbM_SoldierNormal (0) and KP_CharAB_V3 (0.7525) (bridge ids 780-782), and inventory_attach returned the same block for SurvivorM_Francis (737, 773). Source at DayZ_MCP_dev 506de5d: MCPBridge.c:3007-3051 matches any exact GetType(), loopback.py:1349-1358 checks type only for a non-empty string, server.py:4603-4608 rejects only an empty type. The 2026-07-25 rollback copy of the tools has the MERCEDES_AMGLF check only in loopback.py's vehicle_prepare_fixture branch (:169, args also carry mode object_at) and a telemetry_read that took any non-empty type; the tools' first public commit 8e2ad98 (2026-08-16) has no MERCEDES string. Added beyond the ticket, same root cause: the 2026-07-18 section's 'vehicle_prepare_fixture does NOT work outside the Mercedes' is corrected (vehicle_fixture_ready=1, wheel_count 4 on 15 other CarScript types between 2026-08-18 and 2026-10-01, tool results re-read from session transcripts; three test variants of one quad returned fixture_not_ready). The zombie-command bullet reconciles a lost spawn with object_at (found=false, ambiguous_fixture per MCPBridge.c:3031-3045, not exercised on a zombie spawn). Every replaced sentence is quoted in a dated note. Cross-family review round 1 (Codex gpt-6.1-sol, desktop codex.exe 0.160.0, read-only, effort max; cap of two rounds set before round 1) on 47339f4: SOUND-CON-FIXES, no P1. R21-01 (P2): skills/dayz-aviation/SKILL.md:138 still said the vehicle_prepare_fixture conditioning is hardcoded to one car (MCPBridge.c:835); now corrected in a dated note: any CarScript, the vehicle's own OnDebugSpawn runs unless every declared wheel, fuel and a vital battery or spark plug are present, fixture_not_ready otherwise (MCPBridge.c:1282-1295, IsVehicleFixtureReady :3833-3868 at 506de5d). R21-02 (P3): the reply's top-level found field is 0 while telemetry.found is 1 (bridge id 782); both object_at bullets now name telemetry.found, and the zombie bullet bounds an absence to the radius and the moment of the read. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e9db9efa409c125d6f1fc9db21c99d77f941ce7c15e1478fecddabc8a4ec9cae",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-inbb-mcp-notes@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "f8aca04b42761a0c2f043a7945868df75357375ad7119b007a91b6c367c4731e",
+      "output_hash": "e9db9efa409c125d6f1fc9db21c99d77f941ce7c15e1478fecddabc8a4ec9cae",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -16418,9 +16498,29 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Registers CLAIM-TEST-DAYZMCP-CARRIER (skills/dayz-test-ingame/SKILL.md), CLAIM-MCPV-OBJECT-AT-ANY-TYPE and CLAIM-MCPV-PREPARE-FIXTURE-ANY-CARSCRIPT (skills/dayz-mcp-verify/SKILL.md), all runtime_verified, and moves the dayz-mcp-verify claims below the edited lines to their markers' new lines; their evidence is unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "dec6fd65108241f05d2633fedfb9be844949fd3f2f1feaea32a7d00cd27bf704",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-inbb-mcp-notes@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registers CLAIM-MCPV-COLLISION-BATTERY, CLAIM-MCPV-PICKUP-NO-RAY and CLAIM-MCPV-PROBE-COPY (runtime_verified) for the dayz-mcp-verify additions of SP-454 (DayZDiag 1.29.163709, dayz-mcp run 606a5dbb, 2026-10-02; vanilla 1.29 scripts and DayZ_MCP_dev 506de5d read for the mechanism), and moves the dayz-mcp-verify claims below the inserted text to the lines their markers now hold; their evidence and levels are unchanged.",
+          "license": "MIT",
+          "source_hash": "138a6a81c0e5b375e872a9bd28ba5c32b896656223c9d108122783d7949b99a3",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-spb-item-collision@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03 (spa): two claims on skills/dayz-model-pipeline/references/lods-and-geometry.md, 'Binarize: a silent limit on the collision LODs': CLAIM-BINARIZE-COLLISION-LOD-SILENT (offline_tested, item 1, lines 335-337) and CLAIM-COLLISION-ONLY-MODEL-INGAME (runtime_verified, item 6, lines 366-370), with their evidence locators; requested as R21-05 by the round-2 review. claim_baseline_commit unchanged. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "1d3204ead45ca70f2728d1497b56f24c76cdc3456765a897a8a0aa385069cdc3",
+          "source_hash": "694db508ec230ab3c38abb9c9cfbb7525e1abeb36be20b63014d12af1f514141",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
@@ -16428,7 +16528,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1d3204ead45ca70f2728d1497b56f24c76cdc3456765a897a8a0aa385069cdc3",
+      "output_hash": "694db508ec230ab3c38abb9c9cfbb7525e1abeb36be20b63014d12af1f514141",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
