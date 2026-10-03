@@ -18,7 +18,9 @@ Source-verified vs vanilla v1.24 + real mods: recipes/crafting (PluginRecipesMan
 - The official typo is `RegisterRecipies()` (double i). Mod pattern verified in production:
   `modded class PluginRecipesManagerBase { override void RegisterRecipies() { super.RegisterRecipies(); RegisterRecipe(new MyRecipe); } }`.
 - Base `CanDo()` rejects ingredients with attachments — override required for recipes with
-  weapons/items with attachments.
+  weapons/items with attachments. An override copies `ingredients[0]` and `[1]` to locals first
+  and does not call `super.CanDo`: measured in game, the array read back after that call held the
+  same item in both slots and the craft cancelled itself (`SKILL.md`, Override Rules, rule 42).
 - `m_ResultToInventory`: only `-1` (to inventory) works; the swap branch `>= 0` is commented out in
   `SpawnItems`. `SetIsCacheable` does not exist.
 - (through 1.29: `TransferItemProperties` on a result with `m_ResultReplacesIngredient` could overwrite health from `m_ResultInheritsHealth`). (since 1.30 Exp: `TransferItemProperties(ingr, res, true, true, false, false)` is called — `transfer_health = false` — `RecipeBase.c:353`. Signature: `MiscGameplayFunctions.c:269`. New: `PluginRecipesManager.GetRecipeClassName(int recipe_id)` at `:84`, not at `:54`.)
