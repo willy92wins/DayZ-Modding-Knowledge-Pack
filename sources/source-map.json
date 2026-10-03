@@ -906,7 +906,7 @@
           "decision": "merge",
           "decision_evidence": "[Unreleased] Fixed entry for the fix-forward of PR #97: the [DESIGN] restore rule no longer creates on an empty radius; an id is identity only while one entry and one live entity carry it, the id is durable before use, binding is by id only, and creation needs a lifecycle list of every live entity of the class (post-merge review R21-05; this PR's round 1, R21-06 and R21-07).",
           "license": "MIT",
-          "source_hash": "9de8f301b293c319f5852374fd1eae87291023646d4b7003daebb84b9575373d",
+          "source_hash": "074331aba5266a7f91829a490130d8f58d2711ef823d920b51a26cb25ea45cd3",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-spb-restore-absence@2026-10-03",
@@ -914,7 +914,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9de8f301b293c319f5852374fd1eae87291023646d4b7003daebb84b9575373d",
+      "output_hash": "074331aba5266a7f91829a490130d8f58d2711ef823d920b51a26cb25ea45cd3",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -10147,9 +10147,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03, fix-forward of PR #97 after its post-merge cross-family review (Codex gpt-6.1-sol, read-only, on f42f503: UNSOUND, R21-05 P2): Hard stops item 9 and point 2 of the section 'A registry entry leaves by its id, never by proximity'. The [DESIGN] restore rule merged in #97 created an entity whenever the radius held none of the class; the review traced that into a second entity (an id regenerated after a failed save, then the entity moved out of the radius; an entity outside the radius, under another class name, or not yet loaded by the engine). The rule now treats an id as identity only while exactly one entry and one live entity carry it, makes the id durable before use (save first; on a failed save bind and create nothing for that entry in that pass), binds only by id, and creates only when no live entity carries the id by a list the entities keep themselves (EEInit in, EEDelete out), never a radius or a per-mission list (round 1 of this PR's own review: R21-06, R21-07); where the engine persists them, the id and state live in the entity's OnStoreSave stream and an unclaimed entry is a conflict kept for an admin. Still [DESIGN], implemented and tested nowhere; claim CLAIM-PERS-RESTORE-BIND-BY-ID updated, CLAIM-PERS-SHUTDOWN-QUEUE moved to its marker. Cross-family review by Codex. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03, fix-forward of PR #97 after its post-merge cross-family review (Codex gpt-6.1-sol, read-only, on f42f503: UNSOUND, R21-05 P2): Hard stops item 9 and point 2 of the section 'A registry entry leaves by its id, never by proximity'. The [DESIGN] restore rule merged in #97 created an entity whenever the radius held none of the class; the review traced that into a second entity (an id regenerated after a failed save, then the entity moved out of the radius; an entity outside the radius, under another class name, or not yet loaded by the engine). The rule now treats an id as identity only while exactly one entry and one live entity carry it, makes the id durable before use (save first; on a failed save bind and create nothing for that entry in that pass), binds only by id, and creates only when no live entity carries the id by a list the entities keep themselves (EEInit in, EEDelete out), never a radius or a per-mission list (round 1 of this PR's own review: R21-06, R21-07); where the engine persists them, the id and state live in the entity's OnStoreSave stream and an unclaimed entry is a conflict kept for an admin. Round 2 of this PR's review found R21-08 (a creation in flight seen as absence by a reentrant pass); a reservation of the entry until the id is on the new entity was added after the review cap and is not reviewed. Still [DESIGN], implemented and tested nowhere; claim CLAIM-PERS-RESTORE-BIND-BY-ID updated, CLAIM-PERS-SHUTDOWN-QUEUE moved to its marker. Cross-family review by Codex. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "86716c7b3d37646afb229c24b39c106f0c51508c83d43d14e3bdaf15318212e2",
+          "source_hash": "bca8c6147ebef4658fd4bdc5d12ee95acecdc7e97154792d1940c949922c8916",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-persistence/SKILL.md",
           "source_revision": "kp-update-spb-restore-absence@2026-10-03",
@@ -10157,7 +10157,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "86716c7b3d37646afb229c24b39c106f0c51508c83d43d14e3bdaf15318212e2",
+      "output_hash": "bca8c6147ebef4658fd4bdc5d12ee95acecdc7e97154792d1940c949922c8916",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -16810,7 +16810,7 @@
           "decision": "merge",
           "decision_evidence": "Updates CLAIM-PERS-RESTORE-BIND-BY-ID (source_verified) with the post-merge review of PR #97 (R21-05) and the rule's new wording, and moves CLAIM-PERS-SHUTDOWN-QUEUE to the line its marker now holds; its evidence and level are unchanged.",
           "license": "MIT",
-          "source_hash": "48445f05de79eb2a8378d40f2b1074a647c399fd6026fe9ccbbdfbad212c5044",
+          "source_hash": "4ec4a80b584b6070d8dd910bd2cd3fd2587ff08887350b925eb7a03ff612f60c",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-spb-restore-absence@2026-10-03",
@@ -16818,7 +16818,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "48445f05de79eb2a8378d40f2b1074a647c399fd6026fe9ccbbdfbad212c5044",
+      "output_hash": "4ec4a80b584b6070d8dd910bd2cd3fd2587ff08887350b925eb7a03ff612f60c",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

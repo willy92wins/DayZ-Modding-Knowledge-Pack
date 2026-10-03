@@ -339,7 +339,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   later pass no longer saw). The rule now treats an id as identity only while exactly one entry and
   one live entity carry it, makes the id durable before using it, binds only by id, and creates
   only when no live entity carries the id by a list of every live entity of the class kept by the
-  entities themselves (`EEInit` in, `EEDelete` out), not by a radius or a list kept per mission.
+  entities themselves (`EEInit` in, `EEDelete` out), not by a radius or a list kept per mission,
+  and under a reservation of the entry that lasts until the id is on the new entity.
   Where the engine persists the entities, the id and the state live in their own stream and an
   entry no loaded entity claims is a conflict kept for an admin. Still [DESIGN], implemented and
   tested nowhere.

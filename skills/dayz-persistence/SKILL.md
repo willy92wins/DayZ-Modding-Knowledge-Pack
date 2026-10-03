@@ -210,6 +210,9 @@ three ways to cross that binding.
      included. A radius search is no such proof, and neither is a list kept per mission or per
      restore pass, which a mission change can empty while the entities live. A list that can have
      been emptied while its entities lived (a script reload) proves nothing: create nothing;
+   - make that creation exclusive: reserve the entry before creating its entity and keep the
+     reservation until the id is on the entity and bound, so that a pass finding the entry reserved,
+     one started from the new entity's own `EEInit` included, does nothing for it;
    - where the engine persists these entities, keep the id on the entity itself, with the entity's
      state, in its own `OnStoreSave` stream (Contract 1); the registry only indexes it. No pass can
      prove the engine has finished loading, so an entry that no loaded entity claims is a conflict
