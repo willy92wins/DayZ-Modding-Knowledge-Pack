@@ -781,10 +781,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "skill-tests-pytest-folders@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: two Unreleased Fixed entries. (1) packctl git_tracked_files listed a path in conflict once per index stage mid-merge (git ls-files prints each stage entry); it now lists each tracked path once, sorted; the effect on each caller (validate's link check, the gate's python_compile list and count, build's symlink check) and why the others were unaffected (source-map, privacy and conflict-marker checks read it through a set; promote --check returns on PROMOTION-DIRTY before _tracked_projection). (2) tests/packctl/test_promotion.py try_dir_link decoded cmd's mklink /J output as UTF-8 while cmd writes it in the OEM code page (cp850 on this host: UnicodeDecodeError on byte 0xa2), so each directory link raised PytestUnhandledThreadExceptionWarning; the output is kept as bytes. Measured on main ea7b396 and on this change, Python 3.14.3, pytest 9.1.1, OEM code page 850: the nine junction test runs, 10 warnings and under -W error::pytest.PytestUnhandledThreadExceptionWarning 9 failed before, no warning and 9 passed after; CI's Test packctl step on ea7b396 (run 37140346524) logs 359 passed and no warning.",
+          "license": "MIT",
+          "source_hash": "9aa80bf0c43b2096bf43b5a9dffd6e28153a2c8fe879052ae3f9e23da714ecf0",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-chips-packctl@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "857df1ea410ee0f946c585be23b453c12bb785e55859b2a974b57216e82cfb1f",
+      "output_hash": "9aa80bf0c43b2096bf43b5a9dffd6e28153a2c8fe879052ae3f9e23da714ecf0",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2913,10 +2923,20 @@
           "source_path": "packctl/common.py",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: git_tracked_files() returned git ls-files -z as it came, and mid-merge git lists an unmerged path once per index stage (up to three times); it now returns each tracked path once, sorted as before (a set, then sorted). Callers checked for a dependence on the repeats and none had one: builder._reparse_findings (builder.py:28) would repeat a BUILD-REPARSE finding; gate's python_compile list (gate.py:315) passed the file to py_compile three times and counted it in file_count; promotion._tracked_projection (promotion.py:199, called at 2078) is reached only on a clean tree, since promote --check records PROMOTION-DIRTY at promotion.py:2017 and returns on it at 2068-2070; validation's link check (validation.py:658) reported LINK-BROKEN once per stage; validation._payload_paths (validation.py:716) falls back to it only without a loadable source map, and its one caller reads it through a set; validation.py:382, 725 and 1129 read it through a set already. Measured on main ea7b396 plus this change (Python 3.14.3, pytest 9.1.1, git 2.53.0): the two new tests in tests/packctl/test_validation.py fail on the old function (notes.md listed 3 times; LINK-BROKEN reported 3 times) and pass; tests/packctl 359 passed, 2 skipped.",
+          "license": "MIT",
+          "source_hash": "fa4e28f27a22900c5e144ecc2dda32948bf951f45792e2fb551477eb99ab007f",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/common.py",
+          "source_revision": "kp-chips-packctl@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "076404ee6764936781cde15b7b8ff3db48e45c61c3919a559ab17e6578e779d1",
+      "output_hash": "fa4e28f27a22900c5e144ecc2dda32948bf951f45792e2fb551477eb99ab007f",
       "output_path": "packctl/common.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -16704,10 +16724,20 @@
           "source_path": "tests/packctl/test_promotion.py",
           "source_revision": "kp-update-anim-empties@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: try_dir_link captures the cmd /c mklink /J fallback's output as bytes and never decodes it; only the return code is read. cmd writes that message in the OEM code page (cp850 on a Spanish-locale Windows host, where Developer Mode is off and os.symlink is refused), and decoding it as UTF-8 failed in subprocess's reader thread ('utf-8' codec can't decode byte 0xa2 in position 3), which pytest reported as PytestUnhandledThreadExceptionWarning while every test still passed. Port of a local commit of 2026-09-24 that was never pushed (59d002c on branch claude/mklink-decode-20260924; same two lines removed, plus a comment saying why). Measured on main ea7b396 and on this change (Python 3.14.3, pytest 9.1.1, OEM code page 850): the eight tests that create a directory link, nine runs with one parametrized, give 10 warnings and, under -W error::pytest.PytestUnhandledThreadExceptionWarning, 9 failed before; no warning and 9 passed after. No other cmd or mklink subprocess call exists under packctl/ or tests/ (grep).",
+          "license": "MIT",
+          "source_hash": "33fc645c2714e564fc8be3a237f82faf6e3cc9298291e4f7d2ac78100de1cc05",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "kp-chips-packctl@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0023ae972274101664b282289536204c474bde3fa7b36d439085030785e6f454",
+      "output_hash": "33fc645c2714e564fc8be3a237f82faf6e3cc9298291e4f7d2ac78100de1cc05",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -16813,10 +16843,20 @@
           "source_path": "tests/packctl/test_validation.py",
           "source_revision": "kp-update-conflict-markers@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: two tests of git_tracked_files mid-merge, through a helper that commits a different text for one path on each side and stops git merge on the conflict (merge.conflictStyle=merge, merge.ff=false, as the existing unmerged-path conflict-marker test does). test_git_tracked_files_lists_an_unmerged_path_once checks the premise (git ls-files prints notes.md 3 times) and that the list holds it once and equals the sorted set of git ls-files; test_a_broken_link_in_an_unmerged_file_is_reported_once checks that validate_links reports the broken link of the unmerged file once. Both fail on the old git_tracked_files (3 entries; 3 LINK-BROKEN findings) and pass on the new one (git 2.53.0, Python 3.14.3, pytest 9.1.1).",
+          "license": "MIT",
+          "source_hash": "bc759d929b7e07d1ce69f26e4b588c4d50fad3378d2399fb5cada2fc822e2019",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_validation.py",
+          "source_revision": "kp-chips-packctl@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d78735ac8ff3a253dc1505f1f6fbdafce318d8a428bd0892016abbd72fe81816",
+      "output_hash": "bc759d929b7e07d1ce69f26e4b588c4d50fad3378d2399fb5cada2fc822e2019",
       "output_path": "tests/packctl/test_validation.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"

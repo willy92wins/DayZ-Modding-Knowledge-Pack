@@ -298,11 +298,11 @@ def try_dir_link(src: Path, dest: Path) -> bool:
         os.symlink(src, dest, target_is_directory=True)
         return True
     except OSError:
+        # Captured as bytes and never decoded: cmd writes mklink's message in
+        # the OEM code page (cp850 on a Spanish host), and only the code counts.
         result = subprocess.run(
             ["cmd", "/c", "mklink", "/J", str(dest), str(src)],
             capture_output=True,
-            text=True,
-            encoding="utf-8",
         )
         return result.returncode == 0
 
