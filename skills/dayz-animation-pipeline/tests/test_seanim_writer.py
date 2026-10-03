@@ -172,6 +172,19 @@ def test_modifier_0_is_kept_as_a_value_and_255_is_a_valid_byte(tmp_path):
     assert _write_back(tmp_path / "zero_back.seanim", data) == raw
 
 
+def test_a_modifier_equal_to_the_header_type_is_still_written(tmp_path):
+    # An explicit override that repeats the header's type is redundant but present in the
+    # file; dropping it would change the bytes of a clip read and written back.
+    bones = [("Root", [(0, (0.0, 0.0, 0.0))], [(0, IDENTITY)]), ("Spine", [], [(0, TURN)]),
+             ("Arm", [], [(0, IDENTITY)])]
+    raw = build_seanim(bones, [(1, ABSOLUTE)], frame_count=1, anim_type=ABSOLUTE)
+    path = tmp_path / "same.seanim"
+    path.write_bytes(raw)
+    data = sw.read_seanim(str(path))
+    assert [b["modifier"] for b in data["bones"]] == [None, ABSOLUTE, None]
+    assert _write_back(tmp_path / "same_back.seanim", data) == raw
+
+
 @pytest.mark.parametrize("bone_count", [255, 256, 65535, 65536])
 def test_the_modifier_index_widens_exactly_past_255_and_65535_bones(tmp_path, bone_count):
     # bone_t is one byte up to 255 bones, two up to 65535, four above (seanim.py)
@@ -211,8 +224,8 @@ def test_bones_without_a_modifier_key_write_no_modifier_block(tmp_path):
     assert [b["modifier"] for b in sw.read_seanim(str(tmp_path / "plain.seanim"))["bones"]] == [None, None]
 
 
-@pytest.mark.parametrize("modifiers", [[(9, RELATIVE)], [(4, RELATIVE), (4, 1)]],
-                         ids=["index-out-of-range", "index-repeated"])
+@pytest.mark.parametrize("modifiers", [[(9, RELATIVE)], [(4, RELATIVE), (4, 1)], [(4, RELATIVE), (4, RELATIVE)]],
+                         ids=["index-out-of-range", "index-repeated", "index-repeated-same-type"])
 def test_read_refuses_a_modifier_it_cannot_attach_to_one_bone(tmp_path, modifiers):
     path = tmp_path / "bad.seanim"
     path.write_bytes(build_seanim(EXTRACT_BONES, modifiers, frame_count=4))
