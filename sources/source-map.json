@@ -834,9 +834,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "[Unreleased] Added entry for the dayz-mcp-verify ray battery and its controls, the pickup that is no collision test and the probe copy for a mod that does not compile (SP-454; DayZDiag 1.29.163709, dayz-mcp run 606a5dbb, 2026-10-02), and a Fixed entry for dayz-physics-engine truth 2's cone-search qualification and the stale extra_mods/base_mods boundary note in dayz-mcp-verify PREREQUISITES 4, with two dated qualifications under WHAT IT DOES NOT COVER (the vanilla CONTROL readings and entry=0).",
+          "license": "MIT",
+          "source_hash": "35303ac998900fd9a13eecd04ab9404fcb1619c28e889769496d2f7ee485f046",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-spb-item-collision@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03, pipeline inbox tickets fb-20261002-194308-f6f0 (SecretRock) and fb-20260927-213707-4a4b (CocaLab); neither finding was in any skill (git grep on main ea7b396). (1) dayz-physics-engine truth #11 gains a sub-bullet: a Roadway face of another model across a lift's travel stops the ride down. In game (DayZDiag 1.29.163709), SecretRock's elevator cabin (LF_RocaHeli_Cabin, a HouseNoDestruct moved with SetPosition from the update queue, truth #11's mechanism) carried the player up but left them at 18.59 and 12.78 going down (prueba 3, 2026-10-02; trace_cabin_down_from_hangar.jsonl: floor LF_RocaHeli_Interior, linked empty, falling 0, y 12.78). The interior's collision slabs had the shaft hole and its Roadway polygons did not (rh_gen_blender.prueba3.py:1315-1317 vs :1396, :1398; 26 + 16 triangles counted by the project with py3d, not recounted here). With the shaft hole in the Roadway (only the interior model changed) the player rode 2 -> 1 -> 0 linked (prueba 4, 2026-10-03), and a 2 -> 0 ride on build R7.3 stayed linked in all 1033 samples (prueba 5). RaycastRV cannot target Roadway: ObjIntersect is Fire, View, Geom, IFire, None (scripts/3_game/constants.c:31-38, 1.29). Destination chosen over vehicles, basebuilding and persistence because the rule is about what holds a player on a moving platform, next to truths #10 and #11, which already cover lifts and riders. (2) dayz-persistence, a subsection after Contract 3: build what stored entities rest on inside OnMissionStart. The structure, rebuilt from the mod's sidecar by a CallLater 2 s after OnMissionStart with parts 0.5 s after EEInit, came back after the CE-stored helicopter parked on it, which fell 6.9 m and rolled -54.3 degrees (prueba 3, runB_51edb0e6_server_script.log:25, :28, :41); with the restore and parts created inside OnMissionStart the parts came first and the helicopter stayed (0.010 and 0.014 mm, level within 0.07 degrees) in two orderly restarts (prueba 4 runB_9f838de9 and prueba 5 run2_312bacda). Destination chosen over physics and vehicles because the cause and the fix are the order of two restores, the sidecar's and the game storage's; the vehicle only shows it. It matches enforce-script-reference SP-LFS-3. The alternative of freezing vehicles is not measured and not written as a rule. (3) enforce-script-reference Override Rules, rule 42, and a pointer in references/vanilla-deep-dive.md next to the base CanDo bullet: a recipe's CanDo copies ingredients[0] and [1] to locals first and does not call super.CanDo. In game (DayZDiag 1.29, 2026-09-27, CocaLab B-003): with super.CanDo called first the server CanDo returned false while each part read true and ActionWorldCraft's continue condition cancelled the craft; a replay probe read the tray in both slots after its super call (script_2026-09-27_15-13-14.log:49-50); the fix (CocaLab d6c255c, locals, no super) crafted six buds (script_2026-09-27_15-18-33.log:88). Vanilla 1.29: 1 of 206 CanDo overrides calls super (craftlongtorch.c:61, as its only statement); RecipeBase.CanDo (recipebase.c:551-561) only rejects attachments. The ticket's 'static array of the recipe manager' is corrected: CanDo receives RecipeBase.m_IngredientsSorted (recipebase.c:30, :494-497), and the explain probe failed the same way with a local array; its rule 'call super only as the final return, like vanilla' is not written as tested. Mechanism not established. Cross-family review round 1 (Codex gpt-6.1-sol, desktop codex.exe 0.160.0, read-only, effort max; cap of two rounds set before round 1) on 2155def: SOUND-CON-FIXES, no P1. R21-01 (P2): the Roadway rule said 'any model', which takes in the cabin's own Roadway (lf_rocaheli_cabin.p3d has a 1-face Roadway LOD, read with py3d) and the project's gate leaves the cabin out (rh_gate1.py: rock, interior and shell only); now 'any other model', with the reason. R21-02 (P3): CocaLab d6c255c also split the final 'return tray && ...' into a null guard, so rule 42 and its CHANGELOG entry say which change mattered was not isolated. R21-03 (P3, hypothesis): the restore rule is scoped to a structure rebuilt from the mod's own sidecar that needs nothing from the game's storage. From the round's premise answer: the persistence text says the builds before and after differed in other ways and that the log order is what ties the fall to the timing; the Roadway text attributes 'only that model, only those Roadway polygons' to the project. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "a7673cc667b570eab07ce63b738a799419abc83572c65421762d604adf06b0f9",
+          "source_hash": "37e3ce5a571ef223a28f3c35f0019abf48bb091f28e964019ab53387169662c3",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inbb-rules@2026-10-03",
@@ -844,7 +854,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a7673cc667b570eab07ce63b738a799419abc83572c65421762d604adf06b0f9",
+      "output_hash": "37e3ce5a571ef223a28f3c35f0019abf48bb091f28e964019ab53387169662c3",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7730,10 +7740,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-inbb-mcp-notes@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-454 of the skill-patches ledger): the static-object playbook's collision bullet runs the battery in geom, view and fire instead of rays 'from >=2 angles' (dated note); a new bullet Ray battery and its controls (claim CLAIM-MCPV-COLLISION-BATTERY) gives dayz-p3d-audit rule 6's nine rays per mode, the same-PBO and same-layer vanilla controls and the winding-only pair as a recipe; a new bullet Picking an item up proves nothing about its collision (claim CLAIM-MCPV-PICKUP-NO-RAY) cites vanilla ActionTargets (4_world/classes/useractionscomponent/actiontargets.c:211-219, :286-287, :730-735; 3_game/global/dayzphysics.c:88), CCTObject (cctobject.c:10-22; actiontakeitemtohands.c:13) and the DayZ_MCP bridge (MCPClientBridge.c:3769, :3783, :3861; MCPBridge.c:2496, :2528-2531 at DayZ_MCP_dev 506de5d); the item playbook points to the battery; two dated notes under WHAT IT DOES NOT COVER qualify the vanilla CONTROL bullet (its readings name a likely cause, which only a winding-only pair decides) and the scene_raycast entry=0 bullet (a ray that starts inside an object also reads entry 0, exit 1, distance 0); the vertical ray's recentring argument is scoped to a solid box whose collision spans its axis, and the take action's target condition, not the action, is what checks only distance (actiontargets.c:444-445 for the scoring; actiontakeitemtohands.c:31-41 for its other conditions; cross-family review round 1); PREREQUISITES 4 gains the probe copy for a mod that does not compile (claim CLAIM-MCPV-PROBE-COPY) and a dated note that the extra_mods/base_mods boundary now accepts an absolute path inside the project's mod_roots (dayz_test_tool.py:269-272, :399; dayz_test_request.py:222-233). In game: DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run 606a5dbb, the LFPowerGrid kit box 0 of 27 rays, same-PBO gate kit and WoodenCrate 21 of 21 each, the kit taken to hands by action_use. The cone path was read in the source, not measured. Cross-family review by Codex. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "26fcab5735a2f766ac2aaf7fa790c9db4f7a4150056078b21fa927bbbe2d71e2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-spb-item-collision@2026-10-03",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "c9b54847a43d52eb8171ccdd1788f11d23758780aa85485bb3e88286590c005f",
+      "output_hash": "26fcab5735a2f766ac2aaf7fa790c9db4f7a4150056078b21fa927bbbe2d71e2",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -8944,10 +8964,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-py3d-wheel-1.10.1@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-454): Absolute winding check rule 6 gains a sub-bullet, Measuring it in game, that points to dayz-mcp-verify's Ray battery and its controls (nine rays per mode, the same-PBO and same-layer vanilla controls, a winding-only pair before naming the winding) and says a pickup shows no collision: the vanilla cone search needs no hit on the item (4_world/classes/useractionscomponent/actiontargets.c:286-287) and action_use casts no ray (DayZ_MCP bridge MCPClientBridge.c:3861). Pointer only; the measurements stay in rule 6 and its claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d0d17c9a32b7cf990cd4268ef60fbd283317a94ae1386a59a01a12d5f6099a87",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-spb-item-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c0e078457690f25fc93c9d121686b2a29836d99024629df61e18ac19ce99edff",
+      "output_hash": "d0d17c9a32b7cf990cd4268ef60fbd283317a94ae1386a59a01a12d5f6099a87",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -10077,9 +10107,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-454): engine truth 2 ('No View Geometry LOD in the .p3d -> no action') gains a dated qualification read in the 1.29 source and not measured: at camera pitch <= -45 ActionTargets.Update also takes the objects of a 30 degree, 3 m cone and scores them by their distance to the cursor ray with no hit on them needed (4_world/classes/useractionscomponent/actiontargets.c:286-287, :444-445, :730-735), so an item on the ground can become a target without a View Geometry hit; 1.30 not checked. Points to dayz-mcp-verify. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "58e2db34bc861aa0ed0b58f71750485157ea66075055bd1510ccd5ee011213e6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "kp-update-spb-item-collision@2026-10-03",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03, pipeline inbox tickets fb-20261002-194308-f6f0 (SecretRock) and fb-20260927-213707-4a4b (CocaLab); neither finding was in any skill (git grep on main ea7b396). (1) dayz-physics-engine truth #11 gains a sub-bullet: a Roadway face of another model across a lift's travel stops the ride down. In game (DayZDiag 1.29.163709), SecretRock's elevator cabin (LF_RocaHeli_Cabin, a HouseNoDestruct moved with SetPosition from the update queue, truth #11's mechanism) carried the player up but left them at 18.59 and 12.78 going down (prueba 3, 2026-10-02; trace_cabin_down_from_hangar.jsonl: floor LF_RocaHeli_Interior, linked empty, falling 0, y 12.78). The interior's collision slabs had the shaft hole and its Roadway polygons did not (rh_gen_blender.prueba3.py:1315-1317 vs :1396, :1398; 26 + 16 triangles counted by the project with py3d, not recounted here). With the shaft hole in the Roadway (only the interior model changed) the player rode 2 -> 1 -> 0 linked (prueba 4, 2026-10-03), and a 2 -> 0 ride on build R7.3 stayed linked in all 1033 samples (prueba 5). RaycastRV cannot target Roadway: ObjIntersect is Fire, View, Geom, IFire, None (scripts/3_game/constants.c:31-38, 1.29). Destination chosen over vehicles, basebuilding and persistence because the rule is about what holds a player on a moving platform, next to truths #10 and #11, which already cover lifts and riders. (2) dayz-persistence, a subsection after Contract 3: build what stored entities rest on inside OnMissionStart. The structure, rebuilt from the mod's sidecar by a CallLater 2 s after OnMissionStart with parts 0.5 s after EEInit, came back after the CE-stored helicopter parked on it, which fell 6.9 m and rolled -54.3 degrees (prueba 3, runB_51edb0e6_server_script.log:25, :28, :41); with the restore and parts created inside OnMissionStart the parts came first and the helicopter stayed (0.010 and 0.014 mm, level within 0.07 degrees) in two orderly restarts (prueba 4 runB_9f838de9 and prueba 5 run2_312bacda). Destination chosen over physics and vehicles because the cause and the fix are the order of two restores, the sidecar's and the game storage's; the vehicle only shows it. It matches enforce-script-reference SP-LFS-3. The alternative of freezing vehicles is not measured and not written as a rule. (3) enforce-script-reference Override Rules, rule 42, and a pointer in references/vanilla-deep-dive.md next to the base CanDo bullet: a recipe's CanDo copies ingredients[0] and [1] to locals first and does not call super.CanDo. In game (DayZDiag 1.29, 2026-09-27, CocaLab B-003): with super.CanDo called first the server CanDo returned false while each part read true and ActionWorldCraft's continue condition cancelled the craft; a replay probe read the tray in both slots after its super call (script_2026-09-27_15-13-14.log:49-50); the fix (CocaLab d6c255c, locals, no super) crafted six buds (script_2026-09-27_15-18-33.log:88). Vanilla 1.29: 1 of 206 CanDo overrides calls super (craftlongtorch.c:61, as its only statement); RecipeBase.CanDo (recipebase.c:551-561) only rejects attachments. The ticket's 'static array of the recipe manager' is corrected: CanDo receives RecipeBase.m_IngredientsSorted (recipebase.c:30, :494-497), and the explain probe failed the same way with a local array; its rule 'call super only as the final return, like vanilla' is not written as tested. Mechanism not established. Cross-family review round 1 (Codex gpt-6.1-sol, desktop codex.exe 0.160.0, read-only, effort max; cap of two rounds set before round 1) on 2155def: SOUND-CON-FIXES, no P1. R21-01 (P2): the Roadway rule said 'any model', which takes in the cabin's own Roadway (lf_rocaheli_cabin.p3d has a 1-face Roadway LOD, read with py3d) and the project's gate leaves the cabin out (rh_gate1.py: rock, interior and shell only); now 'any other model', with the reason. R21-02 (P3): CocaLab d6c255c also split the final 'return tray && ...' into a null guard, so rule 42 and its CHANGELOG entry say which change mattered was not isolated. R21-03 (P3, hypothesis): the restore rule is scoped to a structure rebuilt from the mod's own sidecar that needs nothing from the game's storage. From the round's premise answer: the persistence text says the builds before and after differed in other ways and that the log order is what ties the fall to the timing; the Roadway text attributes 'only that model, only those Roadway polygons' to the project. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "28e4b672aafa625d5df8aa730b1881c092304c57ae5caf474b5d03da56d5066b",
+          "source_hash": "4a9f079d226a916e030ff6c2602a527b86be553a00d859acf8c5898ab18953a7",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-inbb-rules@2026-10-03",
@@ -10087,7 +10127,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "28e4b672aafa625d5df8aa730b1881c092304c57ae5caf474b5d03da56d5066b",
+      "output_hash": "4a9f079d226a916e030ff6c2602a527b86be553a00d859acf8c5898ab18953a7",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -16458,9 +16498,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Registers CLAIM-MCPV-COLLISION-BATTERY, CLAIM-MCPV-PICKUP-NO-RAY and CLAIM-MCPV-PROBE-COPY (runtime_verified) for the dayz-mcp-verify additions of SP-454 (DayZDiag 1.29.163709, dayz-mcp run 606a5dbb, 2026-10-02; vanilla 1.29 scripts and DayZ_MCP_dev 506de5d read for the mechanism), and moves the dayz-mcp-verify claims below the inserted text to the lines their markers now hold; their evidence and levels are unchanged.",
+          "license": "MIT",
+          "source_hash": "138a6a81c0e5b375e872a9bd28ba5c32b896656223c9d108122783d7949b99a3",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-spb-item-collision@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Registers CLAIM-PHYS-ROADWAY-ACROSS-TRAVEL (skills/dayz-physics-engine/SKILL.md), CLAIM-PERS-RESTORE-BEFORE-STORED (skills/dayz-persistence/SKILL.md) and CLAIM-ENF-RECIPE-CANDO-SUPER (skills/enforce-script-reference/SKILL.md), all runtime_verified, and moves the claims below the edited lines to their markers' new lines; their evidence is unchanged. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "60405d3faa0d0f640c14c363f08292549ee4c8b3c5689455065d07cbba9e39f8",
+          "source_hash": "9185a74f043c8b11488a715e1a7d777c68237023e1a95cba489938fb9a4506e9",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-inbb-rules@2026-10-03",
@@ -16468,7 +16518,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "60405d3faa0d0f640c14c363f08292549ee4c8b3c5689455065d07cbba9e39f8",
+      "output_hash": "9185a74f043c8b11488a715e1a7d777c68237023e1a95cba489938fb9a4506e9",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
