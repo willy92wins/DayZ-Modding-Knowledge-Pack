@@ -318,7 +318,7 @@ restarts. And multi-client behaviour is under-tested, because one Steam account 
 `tools/py3d/` is a **DayZ-specific fork of** [KoffeinFlummi/py3d](https://github.com/KoffeinFlummi/py3d)
 (MIT) — a pure-Python reader/writer for the **MLOD `.p3d`** format (the editable, non-binarized
 model format). Most asset scripts in these skills import it. Upstream is an unmaintained minimal
-codec; this fork (`__version__ = "1.5.0"`, `IS_DAYZ_FORK = True`) adds anti-corruption guards so
+codec; this fork (`__version__ = "1.10.1"`, `IS_DAYZ_FORK = True`) adds anti-corruption guards so
 the paths that used to silently corrupt a `.p3d` now fail *early* with an actionable message.
 
 Highlights (see `tools/py3d/README.md` for the full list):

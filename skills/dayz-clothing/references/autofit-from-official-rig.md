@@ -206,8 +206,9 @@ after the axis swap.
      `ERR_COMPONENT_NAMING` unless it carries an empty `Component01` selection (0 points).
      Adding it satisfies the validator; whether vanilla worn p3ds carry it is [ASSUMPTION].
      That is py3d up to 1.8.0, the wheel pinned until 2026-10-02; from 1.9.0 (the pin from
-     2026-10-02 to 2026-10-03; 1.10.1 since), a collision LOD without faces raises nothing, so
-     the validator no longer asks for the empty selection.
+     2026-10-02 to 2026-10-03; 1.10.1 since), a collision LOD without faces raises no
+     component-naming or component-coverage finding, so the validator no longer asks for the
+     empty selection.
    Result on the test jacket: 49,994 verts, 0 unweighted, max 4 influences, 0 midline bleed,
    34 of the 44 selections populated.
 
