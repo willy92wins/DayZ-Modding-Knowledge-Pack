@@ -597,6 +597,38 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `dayz-vehicles` invariant #10, whose generic-DCC case said "flip visual by default (SP-071;
   proxies exempt)", points to Rule 12 too. The old text is quoted in dated notes. Docs only;
   nothing re-measured in game for this change.
+- `dayz-model-pipeline`: the GLB/glTF import path no longer reverses faces. `SKILL.md` (section
+  "GLB/glTF imports — LL-020 refined", Rule 12's GLB bullet, the Rule 13 note, two troubleshooting
+  rows and SP-071's glTF clause), `references/lods-and-geometry.md` (the rule, its py3d and Blender
+  fixes and the all-LODs paragraph) and `knowledge/DAYZ_TECHNICAL_NOTES.md` (root cause, canonical
+  fix, first rule) said that a GLB/glTF source mapped with the pure swap `(x,y,z)->(x,z,y)`
+  (det=-1) needs every face reversed except proxy triangles. glTF front faces are CCW like
+  Blender's, and Blender's glTF importer maps Y-up to Z-up with a rotation (det=+1, Blender 5.1
+  `io_scene_gltf2/blender/imp/blender_gltf.py:70-72`), so after the det=-1 map the cross product
+  already points inward, the MLOD convention Rule 12 measured in game on 2026-10-01; the reversal
+  turned it outward, which renders inside-out. Two GLB/glTF-origin projects measured it in game:
+  MercedesAMGLF (2026-06-24) rendered see-through with its faces reversed after a det=-1 map and
+  solid with the glTF order kept (the case `dayz-vehicles` `references/vehicle-structural-parity.md`
+  records), and A6_MK47 v12c (2026-06-11, binarized) rendered correctly with the pure swap,
+  negated normals and no reversal, the rule `dayz-weapons` `references/import-rule-v4.md` already
+  carried. The reversal dated from A6_MK47's v6-v7 stage (the Pack's v1.3.0 text still called its
+  v7 in-game re-test pending), when that project's builds shipped a stray raw MLOD at the PBO root
+  and the engine loaded that file. A GLB/glTF exported to spec and brought through
+  Blender now takes Rule 12's recipe (`py3d.blender_to_dayz()`); a glTF read without Blender bakes
+  its node transforms, reversing the faces of mirrored instances (glTF winds them clockwise, glTF
+  2.0 §3.7.4), derives its own det=-1 map from the asset's frame and keeps that order (not tested
+  in game), and ripped `.glb` assets stay with `dayz-vehicles`. A mirrored node brought through
+  Blender arrives there as an object with negative scale; the text marks that case as not checked
+  and points to `check_dayz_winding.py` to read the exported part. `lods-and-geometry.md` also drops
+  "Flipped Geometry faces cause physics pass-through": `dayz-p3d-audit` killer #1 measured outward
+  2 m collision boxes that the LOD raycasts miss while physics still stops a walking player, and a
+  walk alone does not diagnose winding. The py3d block that the entry above had just made keep
+  proxy triangles goes too: no face is reversed now, and after `P3D.transform()` every face goes
+  back, proxy triangles included; that block is quoted in the dated note. `check_face_winding`
+  could not catch the old recipe (it reads only whether the cross product and the normals
+  agree), and the texts now say so.
+  Documentation only: nothing was re-measured in game for this change. Every replaced passage is
+  quoted in a dated note.
 
 ## [1.5.0] - 2026-10-02
 
