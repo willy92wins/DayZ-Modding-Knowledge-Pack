@@ -210,10 +210,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   2026-08-04) carries its Fire Geometry material `armor_5mm_plate.rvmat` empty. The rule now
   stages the cited files beside the mod (copies, or a `DZ` junction to the extracted vanilla
   data), and a new rule 5 gates every ODOL for empty embedded materials. An unresolved material
-  has no shader, stage or surface and the engine's default colours; a bare vanilla `.rvmat`
-  (colours or render flags only, e.g. `half_lighted_default.rvmat`, `streambed_leaves.rvmat`)
-  has the first three too, so the gate fails a flagged material only when its `.rvmat` declares
-  a shader, a stage or a surface, with those two vanilla ODOLs as its positive control. Measured: CocaLab
+  has no shader, stage or surface and the engine's default colours, but bare vanilla `.rvmat`s
+  (`half_lighted_default`, `streambed_leaves`, `default_2pass`) embed with the same shader,
+  stage and surface fields; so the gate flags on those fields and fails a material only when
+  its `.rvmat` declares something the embedded copy lacks, with those three vanilla ODOLs as its
+  positive control. Measured: CocaLab
   (2026-09-27; gate control without the files: 6 failures) and the DayZ MCP v1.3.1 spike on
   SimpleGroup (2026-10-01, 11 builds): binarize parses every `config.cpp` under `-addon`, through
   junctions; AddonBuilder exits 0 with `[ResultCode]=1`; `-project=<source>` drops every `.paa`,

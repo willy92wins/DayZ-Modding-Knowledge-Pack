@@ -566,17 +566,20 @@ AddonBuilder clears its `-temp` before copying.
    not distributed with this pack). A material binarize could not find reads, in every LOD
    that cites it: `pixel_shader == 0`, `vertex_shader == 0`, `surface_file == ""`, no stage
    texture, and the engine's default colours (diffuse and ambient 1,1,1,1, emissive 0,0,0,1).
-   The first four alone are not a verdict: a `.rvmat` that declares only colours or render
-   flags reads the same apart from those. Two vanilla ones do, in Bohemia's own ODOLs:
-   `dz\data\data\half_lighted_default.rvmat` (diffuse 0.5) in `dz\data\cl_feathers2.p3d`, and
-   `dz\water\streambed\data\streambed_leaves.rvmat` (diffuse 0.3, `NoZWrite`) in
-   `water.pbo`'s `Streambed\streambed_leaf_short_straight.p3d`. So fail a flagged material when
-   its `.rvmat`, read from the files the game loads, declares a shader, a stage or a surface.
-   A resolved penetration material passes: it carries its `.bisurf`. Run both controls once:
-   the same build without the cited files must fail the gate, and those two vanilla ODOLs must
-   pass it. Gate on those fields, not on the ODOL hash: three SimpleGroup flagpoles varied by
-   up to 67 B across five builds that resolved the same files (2026-10-01; same trap in
-   `tools/py3d/KNOWN-ISSUES.md`).
+   The ODOL alone cannot convict: bare vanilla materials embed with the same first four, in
+   Bohemia's own ODOLs. `dz\data\data\half_lighted_default.rvmat` (in
+   `dz\data\cl_feathers2.p3d`) and `dz\water\streambed\data\streambed_leaves.rvmat` (in
+   `water.pbo`'s `Streambed\streambed_leaf_short_straight.p3d`) differ only by their colours
+   and render flag, and `dz\data\data\default_2pass.rvmat` (in
+   `dz\data\data\penetration\impact_test_object.p3d`) only by a specular alpha of 0. So flag a
+   material on those four fields, then fail it when its `.rvmat`, read from the files the game
+   loads, declares something the embedded copy lacks: a stage texture, a surface, a render
+   flag, colours other than the defaults, or a shader other than `PixelShaderID="Normal"` /
+   `VertexShaderID="Basic"` (both embed as 0). A resolved penetration material is never
+   flagged: it carries its `.bisurf`. Run both controls once: the same build without the cited
+   files must fail the gate, and those three vanilla ODOLs must pass it. Gate on those fields,
+   not on the ODOL hash: three SimpleGroup flagpoles varied by up to 67 B across five builds
+   that resolved the same files (2026-10-01; same trap in `tools/py3d/KNOWN-ISSUES.md`).
 
 The orchestrated build path (temp wipe + deploy + launch) lives in dayz-test-ingame's
 `dayz-test.ps1` template.
