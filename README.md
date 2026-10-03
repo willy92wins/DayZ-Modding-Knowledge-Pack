@@ -241,8 +241,11 @@ Every playbook listed in §3 lives under `skills/` and loads like any other skil
 That is the complete set the author chose to distribute.
 
 Six of the p3d/pipeline playbooks used to vendor a py3d 1.4.0 wheel; the wheel is not
-in the pack. Install the pack fork with `pip install -e tools/py3d` (1.5.0, distribution
-`py3d-dayz`, import `py3d`).
+in the pack. Install the pack fork with `pip install -e tools/py3d` (1.10.1, distribution
+`py3d-dayz`, import `py3d`). The pinned wheel built from that source is
+`py3d_dayz-1.10.1-py3-none-any.whl`, SHA-256
+`c9f000a51e6aca83104a8f021ef5e3eefe8d7f0a5b053623544b49dbdd5d1785`
+(`tools/py3d/rollout/wheel-manifest.json`).
 
 ### True external dependencies
 
