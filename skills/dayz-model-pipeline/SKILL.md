@@ -222,9 +222,9 @@ For cases where the user imports a model and needs to tag parts interactively:
 11. **Always verify the .p3d** — read it back with py3d after writing to confirm integrity
 12. **Blender Z-up → DayZ Y-up conversion is MANDATORY, and it is a REFLECTION (det=-1)** — Blender is right-handed (Z up); DayZ is left-handed (X east, Y up, Z north). A map that preserves the SHAPE between them must flip one axis in the numbers. Two source cases:
     - **FBX / Blender-authored geometry (outward faces and normals):** axis `(x,y,z)→(x,z,y)` (det=-1) applied to ALL vertices AND normals in ALL LODs. The vertex order then lands in the MLOD convention by itself (cross product INWARD): do **not** reverse faces; **negate** the shading normals (MLOD stores them inward). [EXACT] Measured in game 2026-10-01, DayZDiag 1.29.163709: one chiral model exported three ways — this map renders solid and reads correctly; the old det=+1 recipe renders solid but MIRRORED; `P3D.transform(py3d.BLENDER_TO_DAYZ)` alone renders inside-out AND mirrored (see the LL-504 section below). With py3d: `P3D.transform(((1, 0, 0), (0, 0, 1), (0, 1, 0)))` maps points and normals and, because det<0, reverses every face itself — reverse them back and negate every normal (net: original order, negated normals); from py3d 1.8.0 `py3d.blender_to_dayz(model)` is exactly that call, writing the same bytes as the measured model, and `py3d.BLENDER_TO_DAYZ` is deprecated (same det=+1 value, now `py3d.ROT_X_NEG90`). Geometry authored directly in DayZ space (collision boxes built in code) does not go through the map. The old recipe — `(x,y,z)→(x,z,-y)` (det=+1) + reverse faces + negate normals, validated on five LFPG models with offline gates only — passes every winding gate because it is a MIRROR: the mirror is what turned the faces inside out, so reversing them "fixed" it. Invisible on symmetric props; text, logos and one-sided parts ship reversed — re-export those. [EXACT] Measured the same day with the same map (DayZDiag 1.29.163709, ODOL read with the LL-505 reader): Geometry/ViewGeometry/FireGeometry components register `scene_raycast` hits in `geom`, `view` and `fire` from both sides, and after the det=+1 map alone they register none; static proxies drawn in Blender as py3d canonical raw triangles and converted with the model get the same ODOL engine frames as `add_proxy(space="engine")` with the matching rotation and render in the pose drawn in Blender; the two binarized parents are byte-identical, and that engine-space path is the one LFDucati was driven with (frame fix LL-505, drives LL-506), so a crew or wheel proxy drawn this way with the identity frame gets a frame that works (claim: CLAIM-B2D-PROXY-FRAME-EQUIV). That is an equivalence of the proxy frame, not a drive through this conversion: selections, bones, model.cfg bindings and LODs must still match a working model, and only the identity crew frame is known to work in game (a tilted one came out of binarize as asked and the rider turned to the left instead of leaning forward, LFDucati T93). Proxies drawn another way: compare them in the ODOL against a working model (LL-505).
-    - **GLB/glTF-sourced geometry (separate case):** glTF front faces are CCW by spec — do **not** treat this as the same rule as the FBX/Blender measured recipe above. See section "GLB/glTF imports — LL-020 refined" below for GLB-only guidance (optional pure-swap det=-1 + reverse, lateral-mirror notes).
+    - **GLB/glTF-sourced geometry: the same recipe.** glTF front faces are CCW by spec, as Blender's are, and Blender's glTF importer turns Y-up into Z-up with a rotation (det=+1) that keeps them so: a GLB brought through Blender converts like the FBX/Blender case above — det=-1 map, face order kept, normals negated, **no** reversal. [EXACT] Measured in game on GLB/glTF-origin models: the kept order rendered correctly on A6_MK47 v12c (2026-06-11) and on MercedesAMGLF (2026-06-24), whose earlier build with its faces reversed after a det=-1 map rendered see-through. A glTF read without Blender first bakes its node transforms and takes its own det=-1 map. Detail, sources and the det=+1 history: section "GLB/glTF imports — LL-020 refined" below. *(Aligned 2026-10-03: this bullet read "**GLB/glTF-sourced geometry (separate case):** glTF front faces are CCW by spec — do **not** treat this as the same rule as the FBX/Blender measured recipe above. See section "GLB/glTF imports — LL-020 refined" below for GLB-only guidance (optional pure-swap det=-1 + reverse, lateral-mirror notes).")*
     - Never assume either case. Winding gates cannot see a mirror (the old recipe passes all of them): check chirality on an asymmetric feature — text, a logo, a one-sided part — in game, or compare the binarized ODOL against a vanilla model through the same reader.
-13. *(Merged into Rule 12 — the Blender/FBX map is the det=-1 reflection with negated normals; GLB remains a separate case.)*
+13. *(Merged into Rule 12 — the Blender/FBX map is the det=-1 reflection with negated normals, and a GLB/glTF brought through Blender takes the same one. Aligned 2026-10-03: this note ended "GLB remains a separate case.")*
 14. **Attachments require proxy system (3 parts)** — for items to render visually when attached: (a) proxy face + selection in visual LODs of the parent p3d, (b) a proxy p3d referenced by the selection, (c) `CfgNonAIVehicles` entry mapping `inventorySlot` to the proxy model. Missing any part = attachment is logically present but invisible. See `memory-and-selections.md` and `config-and-packing.md`.
 (until 1.29: visual LODs of the parent were sufficient for the server to read proxy position.) (since 1.30 Exp [CHANGELOG]: duplicate the proxy triangle in **ViewGeometry** so a dedicated server does not fall back to the parent origin — `work\changelog-1.30-exp-modding.md:39`. See `references/dayz-1-30-model-pipeline.md`.)
 15. **Proxy selections use special naming** — `proxy:addon_path\proxy_model.p3d.NNN` where NNN is a 3-digit index starting at 001. The face assigned to this selection defines position and orientation of the rendered attachment.
@@ -276,8 +276,8 @@ A complete working example exists as the LFPG Push Button (worn industrial style
 
 | Symptom | Root Cause | Fix |
 |---------|-----------|-----|
-| Model spawns sideways/upside-down | Z-up → Y-up conversion not applied | Apply the source-appropriate conversion: FBX/Blender `(x,y,z)→(x,z,y)` + negate normals, faces in their original order, or the GLB-only path (Rule 12) |
-| Textures render on inside of faces (invisible exterior) | Winding does not match the measured recipe / GLB path | FBX/Blender: apply `(x,z,y)` + negate normals, faces in their original order (Rule 12). GLB-only: see "GLB/glTF imports". Verify with `check_face_winding` / offline gates, and check chirality on an asymmetric feature |
+| Model spawns sideways/upside-down | Z-up → Y-up conversion not applied | Apply Rule 12's conversion, `(x,y,z)→(x,z,y)` + negate normals, faces in their original order, to FBX/Blender geometry and to a GLB/glTF brought through Blender alike; a glTF read without Blender is Y-up and takes the map "GLB/glTF imports" derives *(aligned 2026-10-03: read "Apply the source-appropriate conversion: FBX/Blender `(x,y,z)→(x,z,y)` + negate normals, faces in their original order, or the GLB-only path (Rule 12)")* |
+| Textures render on inside of faces (invisible exterior) | Winding does not match the measured recipe, e.g. faces reversed after the det=-1 map, as the former GLB path did | FBX/Blender and a GLB/glTF brought through Blender: apply `(x,z,y)` + negate normals, faces in their original order (Rule 12); a glTF read without Blender: bake node transforms, reverse mirrored instances, then its own det=-1 map ("GLB/glTF imports"). Verify with `check_face_winding` / offline gates, and check chirality on an asymmetric feature *(aligned 2026-10-03: the cause read "Winding does not match the measured recipe / GLB path" and the fix opened "FBX/Blender: apply `(x,z,y)` + negate normals, faces in their original order (Rule 12). GLB-only: see "GLB/glTF imports".")* |
 | Textures look like TV static | Using `random()` per pixel instead of coherent noise | Use OpenSimplex FBM with multi-layer compositing |
 | Textures look flat/artificial | Single noise layer, no wear/variation | Add 5-6 layers: base + flow + grain + micro + wear + sparse details |
 | Textures appear stretched/misaligned | UVs not generated or exported incorrectly | Run Smart UV Project in Blender before export, verify UV layer exists |
@@ -340,29 +340,69 @@ For monochrome / flat-color-per-piece models, use one .rvmat per material with `
 base color and `texture=""` (zero UV, zero gaps). A UV-atlas bake of many flat materials yields
 black holes/smudges. Atlas baking is for models with real texture detail.
 
-### GLB/glTF imports — LL-020 refined (added 2026-06-11; separated from FBX/Blender recipe 2026-09-26)
+### GLB/glTF imports — LL-020 refined (added 2026-06-11; separated from FBX/Blender recipe 2026-09-26; aligned with Rule 12 2026-10-03)
 
-This section is **GLB/glTF-only**. It does **not** override Rule 12's measured FBX/Blender recipe.
+A GLB/glTF exported to spec and brought through Blender takes **Rule 12's recipe**: points and
+normals through `(x,y,z)->(x,z,y)` (det=-1), every face in its vertex order (proxy triangles
+included), and every normal negated — `py3d.blender_to_dayz(model)`. Do **not** reverse the faces.
+A glTF read without Blender needs one more step first (last paragraph). Not checked on this path:
+a mirrored node (negative determinant, below) arrives in Blender as an object with negative scale;
+read that part's winding in the exported MLOD (signed volume per closed shell, `dayz-characters`
+`references/check_dayz_winding.py`) before trusting it.
 
-**glTF front faces are CCW by spec.** A GLB-sourced mesh exported with the det=+1 rotation
-`(x,z,-y)` can ship with BOTH defects at once (reproduced historically on A6_MK47 cycle 1,
-2026-06-11):
+**glTF front faces are CCW by spec**, as Blender's are (a node whose global transform has a
+negative determinant, a mirrored instance, winds them clockwise: glTF 2.0 §3.7.4
+"Instantiation"), and Blender's glTF importer turns Y-up into Z-up with a rotation,
+`(x,y,z)->(x,-z,y)` (det=+1; Blender 5.1
+`io_scene_gltf2/blender/imp/blender_gltf.py:70-72`), which keeps that order: a GLB brought through
+Blender is Blender geometry. The det=-1 map turns its vertex-order cross product INWARD, the MLOD
+convention; reversing the faces after it turns the cross product OUTWARD, the case that renders
+inside-out (`references/py3d-direct-generation.md` §4 "Face Winding Verification"). [EXACT]
+Measured in game on two GLB/glTF-origin models:
+
+- A6_MK47 v12c (2026-06-11, binarized): pure swap, normals `−S·n` and `REVERSE_WINDING=False`
+  rendered with correct textures (`dayz-weapons` `references/import-rule-v4.md`);
+- MercedesAMGLF Phase 2 (2026-06-24): with its faces reversed after its det=-1 map it rendered
+  see-through, and with the glTF order kept it rendered solid (`dayz-vehicles`
+  `references/vehicle-structural-parity.md`, "glTF→DayZ winding: the offline check can be a
+  tautology").
+
+A GLB-sourced mesh exported with the det=+1 rotation `(x,z,-y)` can ship with BOTH defects at
+once (reproduced historically on A6_MK47 cycle 1, 2026-06-11):
 
 - textures render on the INNER faces (CCW winding kept), and
 - the weapon is MIRRORED laterally (the -y flip puts the weapon's right side at -Z; vanilla
   weapons carry it at **+Z** — verified on the BI sample candygun MLOD: `nabojnicestart` +Z).
 
-**GLB-only pipeline (when the lateral-mirror / CCW issues apply):** pure swap
-`(x,y,z)->(x,z,y)` (det=-1) + reverse the vertex order of EVERY face in every LOD — except
-proxy triangles, whose vertex order encodes the attachment frame (P0/P1/P2) and must NOT be
-reversed. Mirror-detection: compare one canonical LATERAL point (e.g. `nabojnicestart`) against
-a vanilla reference — bbox and audits cannot see a mirror. Weapon proxy-triangle conventions
-(large 2.0/1.0 legs, per-slot leg directions, `proxy:\DZ\...001` naming) documented from the
-Destra3000 sample in `A6_MK47_dev\HANDOFF.md` §REGLA DE IMPORTS.
+Both come from the det=+1 map (LL-504), and Rule 12's det=-1 map removes both. Mirror-detection:
+compare one canonical LATERAL point (e.g. `nabojnicestart`) against a vanilla reference — bbox
+and audits cannot see a mirror. Weapon proxy-triangle conventions (large 2.0/1.0 legs, per-slot
+leg directions, `proxy:\DZ\...001` naming) documented from the Destra3000 sample in
+`A6_MK47_dev\HANDOFF.md` §REGLA DE IMPORTS.
 
-Do **not** treat «any GLB/Blender import» as one shared rule with the FBX/Blender recipe in
+The swap expects Z-up input; a glTF read without Blender is Y-up. Derive its det=-1 map from the
+asset's own frame (re-derived per asset, as `import-rule-v4.md` says for weapons). Bake each
+node's global transform into its mesh first, and reverse the faces of every instance whose global
+transform has a negative determinant: glTF winds those clockwise, so after baking they must be
+reversed to run counter-clockwise from the visible side again. Then keep that order through the
+det=-1 map: any det=-1 map turns a CCW front face's cross product inward (not measured in game
+for a direct read). A ripped game asset in a `.glb` can carry its game's frame rather than the
+spec's (the measured rip profile keeps the raw winding with a det=+1 map): `dayz-vehicles` decides
+it from the measured transform and source lineage.
+
+*(Aligned 2026-10-03 with Rule 12. The section opened "This section is **GLB/glTF-only**. It
+does **not** override Rule 12's measured FBX/Blender recipe."; its pipeline read "**GLB-only
+pipeline (when the lateral-mirror / CCW issues apply):** pure swap `(x,y,z)->(x,z,y)`
+(det=-1) + reverse the vertex order of EVERY face in every LOD — except proxy triangles, whose
+vertex order encodes the attachment frame (P0/P1/P2) and must NOT be reversed."; and it closed
+"Do **not** treat «any GLB/Blender import» as one shared rule with the FBX/Blender recipe in
 Rule 12 — Blender-authored FBX follows the det=-1 map with negated normals; GLB keeps its own
-path above (not re-tested against the 2026-10-01 in-game test).
+path above (not re-tested against the 2026-10-01 in-game test)." The reversal dates from
+A6_MK47's v6-v7 stage — the Pack's v1.3.0 text closed "Status: root cause verified against
+spec+vanilla; A6_MK47 v7 in-game re-test pending as final confirmation." — when that project's
+builds shipped a stray raw MLOD at the PBO root, the file the engine loaded (`dayz-weapons`
+`references/import-rule-v4.md`, W-BUILD1); its first build that loaded the binarized model,
+v12c, kept the vertex order.)*
 
 ### Decimate COLLAPSE corner normals (docs note)
 Decimate COLLAPSE can zero or invert `corner_normals`, surfacing as `WARN_WINDING_NORMAL_MISMATCH`.
@@ -634,9 +674,11 @@ Measured offline in Blender 5.1 headless while reshaping a vanilla rock for a mo
 ## Generic DCC visual-winding profile (SP-071, added 2026-08-31)
 
 Blender/FBX-authored geometry follows Rule 12 instead (det=-1 map, face order kept, normals negated): a
-winding-preserving det=+1 transform mirrors the model. For other raw OBJ or glTF imports whose measured axis
+winding-preserving det=+1 transform mirrors the model. A GLB/glTF brought through Blender follows Rule 12
+too, and one read directly follows section "GLB/glTF imports". For other raw OBJ imports whose measured axis
 transform preserves the source winding, reverse the vertices of every **visual** MLOD face before binarization,
-and check chirality on an asymmetric feature.
+and check chirality on an asymmetric feature. *(Aligned 2026-10-03: this sentence read "For other raw OBJ or
+glTF imports whose measured axis transform preserves the source winding".)*
 Never include proxy triangles: their winding encodes the proxy frame. This is the generic
 DCC profile only. Imported vehicles continue to use the domain profile in Path A, where
 preserve-versus-flip is decided from the measured transform and source lineage.
