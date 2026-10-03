@@ -76,6 +76,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   A third section it had written, a Mission-module lesson about a class holding a `static ref` to
   itself, was retracted by its author as measured on the wrong mod and is not ported; vanilla 1.29
   contradicts it as well (`VicinityItemManager` holds one and its module compiles).
+- `dayz-physics-engine` truth #11, a sub-bullet: a Roadway face of another model across a lift's
+  travel stops the ride down (SecretRock elevator, DayZDiag 1.29.163709, 2026-10-02/03). The cabin
+  carried a player up through its stops, but going down it left them standing at the stop's floor
+  height while it went on: the building's interior model had the shaft cut out of its collision
+  slabs, not out of its Roadway LOD. With the shaft cut out of that Roadway too, the player rode
+  down linked to the cabin. A character stands on Roadway where no Geometry is, and `RaycastRV`
+  cannot target Roadway (`ObjIntersect`, `3_game/constants.c:31-38`), so the check is offline: no
+  Roadway face in the volume a moving piece's collision sweeps.
+- `dayz-persistence`, after Contract 3: build what stored entities rest on inside
+  `OnMissionStart` (same mod and build). A helicopter parked on a structure that the mod rebuilt
+  from its sidecar 2 s after `OnMissionStart`, with parts 0.5 s after `EEInit`, came back before
+  the structure after an orderly restart and fell 6.9 m; with the restore and the parts created
+  inside `OnMissionStart` it stayed parked after two orderly restarts. It matches
+  `enforce-script-reference` SP-LFS-3 (stored entities are created after `OnMissionStart` returns).
+- `enforce-script-reference` Override Rules, rule 42, and a pointer from
+  `references/vanilla-deep-dive.md`: a recipe's `CanDo` copies `ingredients[0]` and `[1]` to locals
+  first and does not call `super.CanDo` (CocaLab, DayZDiag 1.29, 2026-09-27). With
+  `super.CanDo(ingredients, player)` called first, the server's `CanDo` returned false while every
+  part of its condition read true, and `ActionWorldCraft` cancelled the craft as it started; a probe
+  that read the array after its `super` call found the tray in both slots. Copying to locals
+  without `super` fixed it in game. Vanilla: 1 of 206 `CanDo` overrides calls `super`
+  (`craftlongtorch.c:61`, as its only statement). The mechanism is not established.
 
 ### Changed
 
