@@ -17,7 +17,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   collision geometry (a low vanilla `WoodenCrate` took every ray and did not stop the player). For
   test fixtures, `rotation=64` spawned a box with its faces on the world axes where the default
   `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the yaw with two parallel rays and the
-  direction of the returned normal before trusting face coordinates.
+  tilt with `bullet` normals on two faces that are not parallel before trusting face coordinates.
 - `dayz-mcp-verify` static-object playbook: a standing-on-top reading of the physics body, next to
   the walk-into probe, from a later run (2026-10-02, DayZDiag 1.29.163709). A teleported player
   left idle does not fall: after `player_teleport` above a 2 m box's top or above open ground, the
@@ -69,6 +69,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and a pre-export checklist line; the P3D is unchanged.
   py3d's `WARN_COMPONENT_COVERAGE` severity and message are unchanged (its message still says the
   case was not measured).
+
+- `dayz-mcp-verify` "Axis-aligned test fixtures": a measured caveat. In one run (2026-10-02,
+  DayZDiag 1.29.163709) a model with two 2 m boxes, one in `Component01` and the other in
+  `Component02` or in no component, spawned with `rotation=64` came out as modelled on
+  `HouseNoDestruct` and with the boxes' sides swapped on `Inventory_Base` (`item_large`), as a
+  180-degree turn about Y leaves them (the boxes, symmetric in z, cannot tell it from a mirror in
+  x), read from the component index of each hit and from which box took rays. Two parallel rays,
+  face normals and a fixture symmetric about its origin cannot show the swap; the playbook now says
+  to give the fixture sides a ray can tell apart (one component per side, read from the `component`
+  of `rvproxy` hits) and check which answers where. Whether the swap is fixed or random, and its
+  cause, were not measured.
+
 - `dayz-p3d-audit` "Absolute winding check", rule 6: the kit box's missing collision is measured
   now, not a hypothesis. In a paired run (2026-10-02, DayZDiag 1.29.163709, the kit's own config on
   three classes, the MLODs packed unbinarized) the shipped `lf_kit_box.p3d` took 0 of 27
@@ -128,6 +140,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+<<<<<<< HEAD
 - `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
   by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
   bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties
@@ -137,6 +150,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   The SKILL.md entry of `fbx_extract.py` now says its `rig_raw.json` carries that
   `matrix_world` for the empties, and "Reusable tools" no longer calls `build_rig_dayz.py`'s
   output DayZ-space.
+=======
+- `dayz-mcp-verify`: the pose check of "Axis-aligned test fixtures" and the `scene_raycast` entry
+  of "What it does not cover" no longer read anything from the default `rvproxy` reply's `normal`.
+  That field is the engine's `RaycastRVResult.dir`, for a ray the direction and size of the
+  intersection: in two runs (2026-10-02) it lay along the ray in all 190 hits on an object, a box
+  yawed about 10 degrees included, so its direction never showed a tilt or the side of the face.
+  The face normal comes from `method="bullet"` (a unit vector in all 40 of its hits), read on two
+  faces that are not parallel, since a tilt about one face's normal leaves that normal unchanged.
+  The replaced sentences are quoted in dated notes.
+
+>>>>>>> 4de8b5a1a84d6efdf81293d5c83d9cabaafef204
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
   said a broken Geometry LOD has its normals pointing inward and fixed it by swapping
   `vertices[1]`/`[2]`; Rule 12 stores the cross product and the normals both inward, and the swap
@@ -476,6 +500,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   tree vendors a wheel today, so nothing was affected. Earlier `py3d_dayz` wheels are now backed up
   and removed like legacy ones: a new case in `tests/py3d_rollout/test_apply_rollout.py` and test E
   of `verify-wheel-restock.ps1` fail on the previous applicator and pass now.
+- `dayz-model-pipeline` SP-003 no longer tells you to match a collision LOD's winding to the Visual
+  LOD. It said to compare the two "(centroid method) BEFORE deploying — they must agree in sign",
+  and that `audit_p3d.py` does not validate this. `audit_p3d.py` does run that comparison, py3d's
+  relative check (`ERR_WINDING_INVERTED`, through `P3D.validate()`), and since killer #1 was
+  rewritten it is a trigger, not the verdict: it also fires on healthy collision LODs under an
+  inside-out Visual LOD. Rule 18's per-component check decides (with its prerequisites met, every
+  non-proxy face of every component reads inward), only the faces that read outward are reversed,
+  their stored normals as killer #1's fix says, and a collision LOD is never reversed to match the
+  Visual LOD. The section's title and body say so now, and so do the rule's two other copies: the
+  collider recipe in `references/py3d-direct-generation.md`, which called the relative comparison
+  "the operational gate", and `dayz-p3d-inspector`'s SP-003 section. The collider recipe also says
+  to store the negated `hull.equations` normal on every face, reversed or not: scipy's `ConvexHull`
+  returns its faces in no consistent order (measured offline, scipy 1.17.1: 22 of 44 faces of a
+  12-gon cylinder wound outward), and the outward normals kept on the faces left alone read 50 %
+  agreement in py3d. The old text is quoted in dated notes.
 
 ## [1.5.0] - 2026-10-02
 
