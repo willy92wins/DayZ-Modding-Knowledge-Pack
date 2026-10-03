@@ -326,9 +326,15 @@ cross product and the stored normals both point into the material.
   every corner: smooth-shaded exports carry corners against their face. Below 10 % in every shell they
   disagree, which with the winding right means normals stored outward: negate the normal pool and keep the
   faces, never reverse them on that reading; the gate counts the corners that agree now and that fix turns
-  too, and withholds it when part of the LOD is not read. Anything else lists the shells to fix corner by
-  corner. py3d `_pct_normal_agreement`, the absolute check's count, reads only each face's first corner; the
-  gate prints it alongside, over every face of the LOD.
+  too, and withholds it when part of the LOD is not read. Anything else lists the shells, to read part by
+  part, never a corner on its own sign: in a shell that reads cleanly, negate the normals of the faces that
+  read against their winding and keep the rest; leave any other shell as it is, to inspect (py3d README,
+  "Winding", step 3). A corner normal smoothed across a sharp fold can point against a face wound right.
+  py3d `_pct_normal_agreement`, the absolute check's count, reads only each face's first corner; the gate
+  prints it alongside, over every face of the LOD. *(Changed 2026-10-03: this read "Anything else lists the
+  shells to fix corner by corner.", and the gate's fix negated each corner against its face; a flat
+  tetrahedron wound right, with one area-weighted normal per point, has 6 of its 12 corners against their
+  faces.)*
 - **Not scored**: an open part (a sheet, an open tube) or a flat one (welded twins) has no volume sign; its
   faces are counted as not scored, for dayz-p3d-audit's visibility battery. A visual LOD with no closed
   shell is not measurable.

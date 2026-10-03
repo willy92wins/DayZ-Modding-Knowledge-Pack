@@ -19,6 +19,7 @@ of them, or it is not checking anything.
 
 import hashlib
 import math
+import os
 import re
 import warnings
 
@@ -382,21 +383,14 @@ def negate_normals_of(lod, faces):
             lod.facenormals[j] = (-n[0], -n[1], -n[2])
 
 
-def fix_corners(lod):
-    """The normals step, once the winding is settled: negate each corner
-    normal that points against its face's cross product. An entry only such
-    corners use is negated in place. An entry that a kept corner also uses
-    stays, and the corner is re-pointed to a kept entry that already holds
-    the negated value, or else to a negated copy."""
-    flip, keep = [], set()
-    for fa in lod.faces:
-        vs = [v.point.coords for v in fa.vertices]
-        cr = cross(sub(vs[1], vs[0]), sub(vs[2], vs[0]))
-        for v in fa.vertices:
-            if dot(cr, v.normal) < 0:
-                flip.append(v)
-            else:
-                keep.add(v.normal_index)
+def negate_corners(lod, flip):
+    """Negate the normals of the corners in *flip*, in the pool. An entry
+    only those corners use is negated in place. An entry that a kept corner
+    also uses stays, and the corner is re-pointed to a kept entry that
+    already holds the negated value, or else to a negated copy."""
+    mine = {id(v) for v in flip}
+    keep = {v.normal_index for fa in lod.faces for v in fa.vertices
+            if id(v) not in mine}
     kept_value = {}
     for j in sorted(keep):
         kept_value.setdefault(lod.facenormals[j], j)
@@ -417,6 +411,123 @@ def fix_corners(lod):
             lod.facenormals.append(target)
             copies[target] = len(lod.facenormals) - 1
         v.normal_index = copies[target]
+
+
+def fix_corners(lod):
+    """The normals step up to 1.10.0, once the winding is settled: negate
+    each corner normal that points against its face's cross product, with
+    the pool rule of negate_corners()."""
+    flip = []
+    for fa in lod.faces:
+        vs = [v.point.coords for v in fa.vertices]
+        cr = cross(sub(vs[1], vs[0]), sub(vs[2], vs[0]))
+        flip += [v for v in fa.vertices if dot(cr, v.normal) < 0]
+    negate_corners(lod, flip)
+
+
+def unit(a):
+    length = math.sqrt(dot(a, a))
+    if length == 0.0:
+        return None
+    return (a[0] / length, a[1] / length, a[2] / length)
+
+
+def vector_area(fa):
+    """The sum of cross(v[j] - v[0], v[j+1] - v[0]) over the face's fan:
+    twice its vector area, the same from any first corner, and turned
+    exactly by a reversal."""
+    vs = [v.point.coords for v in fa.vertices]
+    total = (0.0, 0.0, 0.0)
+    for j in range(1, len(vs) - 1):
+        c = cross(sub(vs[j], vs[0]), sub(vs[j + 1], vs[0]))
+        total = (total[0] + c[0], total[1] + c[1], total[2] + c[2])
+    return total
+
+
+def face_reading(fa):
+    """README, 'Winding', step 3: the average of a face's corner normals
+    against its vector area, both normalized. Returns (dot, side): side +1
+    reads with its winding (dot >= 0.5), -1 against it (dot <= -0.5), 0 no
+    reading - in between, or with a corner normal that is zero or whose own
+    dot has the other sign or lies within 0.1 of zero."""
+    area = unit(vector_area(fa))
+    total = (0.0, 0.0, 0.0)
+    for v in fa.vertices:
+        n = v.normal
+        total = (total[0] + n[0], total[1] + n[1], total[2] + n[2])
+    mean = unit(total)
+    if area is None or mean is None:
+        return 0.0, 0
+    reading = dot(area, mean)
+    normals = [unit(v.normal) for v in fa.vertices]
+    if None in normals:
+        return reading, 0
+    corners = [dot(area, n) for n in normals]
+    if reading >= 0.5 and min(corners) >= 0.1:
+        return reading, 1
+    if reading <= -0.5 and max(corners) <= -0.1:
+        return reading, -1
+    return reading, 0
+
+
+def fix_parts(lod, parts, groups=None):
+    """README, 'Winding', step 3, once the winding is settled. *parts* are
+    the parts steps 1 and 2 read, as lists of faces; *groups* maps a part's
+    index to the faces step 1 or 2 found wound against the rest before
+    turning any. A part reads cleanly when every face of it has a reading
+    and its larger group (the whole part without one) reads all one way;
+    there the normals of the faces that read against their winding are
+    negated and the rest kept. Returns the indices of the parts left as
+    they are, to inspect."""
+    groups = groups or {}
+    against, inspect = [], []
+    for k, faces in enumerate(parts):
+        side = {id(fa): face_reading(fa)[1] for fa in faces}
+        group = {id(fa) for fa in groups.get(k, ())}
+        rest = [fa for fa in faces if id(fa) not in group]
+        if 2 * len(rest) == len(faces):
+            inspect.append(k)
+            continue
+        larger = (rest if 2 * len(rest) > len(faces)
+                  else [fa for fa in faces if id(fa) in group])
+        if 0 in side.values() or len({side[id(fa)] for fa in larger}) != 1:
+            inspect.append(k)
+            continue
+        against += [fa for fa in faces if side[id(fa)] < 0]
+    negate_corners(lod, [v for fa in against for v in fa.vertices])
+    return inspect
+
+
+def smoothed(fork, points, faces):
+    """A LOD of *faces* over *points* with one normal per point, shared by
+    every face that uses it: the normalized sum of their vector areas, so
+    the normals follow the winding."""
+    lod = fork.LOD()
+    lod.resolution = 0.0
+    for c in points:
+        p = fork.Point()
+        p.coords = c
+        lod.points.append(p)
+    sums = [(0.0, 0.0, 0.0)] * len(points)
+    for idx in faces:
+        vs = [points[i] for i in idx]
+        area = (0.0, 0.0, 0.0)
+        for j in range(1, len(vs) - 1):
+            c = cross(sub(vs[j], vs[0]), sub(vs[j + 1], vs[0]))
+            area = (area[0] + c[0], area[1] + c[1], area[2] + c[2])
+        for i in idx:
+            s = sums[i]
+            sums[i] = (s[0] + area[0], s[1] + area[1], s[2] + area[2])
+    lod.facenormals[:] = [unit(s) for s in sums]
+    for idx in faces:
+        fa = fork.Face(lod.points, lod.facenormals)
+        for i in idx:
+            v = fork.Vertex(lod.points, lod.facenormals)
+            v.point_index = i
+            v.normal_index = i
+            fa.vertices.append(v)
+        lod.faces.append(fa)
+    return lod
 
 
 def share_pool(lod):
@@ -467,18 +578,22 @@ def test_vs_normals_cannot_tell_which_side_is_wrong(fork):
                    "winding first, normals untouched",
                    "WARN_WINDING_EDGE_INCOHERENT", "signed volume",
                    "face.vertices.reverse()", "vertices[1]/[2] swap",
-                   "each corner normal that still points against its face",
+                   fork._normals_step(),
                    "lod.facenormals[j] = (-x, -y, -z)", "negated copy"):
         assert needle in msgs[0], needle
     assert "wound backwards" not in msgs[0]
+    assert "each corner normal that still points" not in msgs[0]
 
 
 def test_vs_normals_direction_picks_the_fix(fork):
     """The signed volume tells the two apart: with the normals turned every
     box keeps B's negative sign, so the winding stays; with the faces
-    turned every box flips, so every face is reversed. Then the corners
-    that still point against their face are negated, and B comes back,
-    cross product and normals inward on 48 of 48 faces. The other fix
+    turned every box flips, so every face is reversed. Then the normals,
+    box by box: every box reads cleanly, its faces against their winding
+    where the normals were turned and with it where the faces were, and
+    negating the faces that read against gives back B, cross product and
+    normals inward on 48 of 48 faces; negating the faces that read with it
+    instead leaves 0 of 48 normals inward. The other fix
     silences the finding just as well - 100 % agreement, validate()
     returns [] - and leaves both outward, the orientation C rendered
     inside-out with; on the normals-turned model it is the fix this
@@ -502,7 +617,16 @@ def test_vs_normals_direction_picks_the_fix(fork):
                 == [winding_right] * 4), side
         if not winding_right:
             reverse_faces(lod)
-        fix_corners(lod)
+        sides = {face_reading(fa)[1] for fa in lod.faces}
+        assert sides == ({-1} if winding_right else {1}), side
+        swapped = turned(fork, side)
+        if not winding_right:
+            reverse_faces(swapped.lods[0])
+        negate_corners(swapped.lods[0],
+                       [v for fa in swapped.lods[0].faces
+                        if face_reading(fa)[1] > 0 for v in fa.vertices])
+        assert inward_counts(swapped)[2] == 0, side
+        assert fix_parts(lod, boxes(lod)) == [], side
         assert inward_counts(p3d) == (48, 48, 48), side
         assert p3d.validate() == [], side
         wrong = turned(fork, side)
@@ -550,9 +674,10 @@ def test_vs_normals_shared_pool_entry_gets_a_copy(fork):
     turned, on a pool of six entries that serve every box. Negating the
     entries of the boxes whose normals are wrong also turns the stem's,
     which were right: 75 %, its 12 faces disagreeing. Reversing the stem by
-    its volume, then fixing corner by corner, gives back B, re-pointing
-    corners to entries that already hold the negated values: the pool
-    stays at six."""
+    its volume, then reading the normals box by box, gives back B: the
+    three boxes read against their winding and the stem with it, and the
+    corners negated are re-pointed to entries that already hold the negated
+    values, so the pool stays at six."""
     def broken():
         p3d = variant(fork, "B")
         lod = p3d.lods[0]
@@ -583,7 +708,9 @@ def test_vs_normals_shared_pool_entry_gets_a_copy(fork):
     lod = p3d.lods[0]
     for fa in boxes(lod)[STEM]:
         fa.vertices.reverse()
-    fix_corners(lod)
+    assert [{face_reading(fa)[1] for fa in faces} for faces in boxes(lod)] == [
+        {1} if k == STEM else {-1} for k in range(4)]
+    assert fix_parts(lod, boxes(lod)) == []
     assert inward_counts(p3d) == (48, 48, 48)
     assert corners_right(p3d) == 144
     assert len(lod.facenormals) == 6
@@ -597,7 +724,10 @@ def test_vs_normals_shell_agrees_with_itself_before_its_volume_counts(fork):
     normals", which leaves that face inside-out and the edge warning
     standing. Turning first the vertex order of the face that disagrees
     with its neighbours makes the shell coherent; its volume then keeps the
-    winding, and fixing the corners gives back B."""
+    winding. The plate's larger group, the 11 faces left, reads against its
+    winding, the turned face with it, and negating the faces that read
+    against gives back B. Read without setting the turned face apart, the
+    plate splits 11 against 1 and is left to inspect."""
     def broken():
         p3d = variant(fork, "B")
         lod = p3d.lods[0]
@@ -627,7 +757,14 @@ def test_vs_normals_shell_agrees_with_itself_before_its_volume_counts(fork):
         fa.vertices.reverse()
     assert [f.code for f in p3d.validate()] == ["ERR_WINDING_VS_NORMALS"]
     assert shell_volume(lod, PLATE) < 0
-    fix_corners(lod)
+    plate = boxes(lod)[PLATE]
+    assert [face_reading(fa)[1] for fa in plate] == [1] + [-1] * 11
+    whole = broken()
+    for fa in faces_against_every_neighbour(whole.lods[0]):
+        fa.vertices.reverse()
+    assert fix_parts(whole.lods[0], boxes(whole.lods[0])) == [PLATE]
+    assert inward_counts(whole) == (48, 48, 37)
+    assert fix_parts(lod, boxes(lod), {PLATE: against}) == []
     assert inward_counts(p3d) == (48, 48, 48)
     assert p3d.validate() == []
 
@@ -640,7 +777,9 @@ def test_vs_normals_turn_the_odd_face_without_its_normal(fork):
     shell by its volume, then the normals of the boxes left (the order of
     the previous message) leaves that face's normal wrong, and validate()
     returns [] at 47 of 48. Turning only its vertex order, then the shell,
-    then every corner still against its face gives back B."""
+    then reading the normals box by box gives back B: the plate's larger
+    group, the 11 faces the shell turned once, reads with its winding, and
+    so does the odd face, turned twice; the other boxes read against."""
     def broken():
         p3d = variant(fork, "B")
         lod = p3d.lods[0]
@@ -670,17 +809,22 @@ def test_vs_normals_turn_the_odd_face_without_its_normal(fork):
                                     for fa in parts[k]])
             assert inward_counts(p3d) == (48, 48, 47)
         else:
-            fix_corners(lod)
+            assert {face_reading(fa)[1] for fa in parts[PLATE]} == {1}
+            assert fix_parts(lod, parts, {PLATE: odd}) == []
             assert inward_counts(p3d) == (48, 48, 48)
         assert p3d.validate() == []
 
 
-def test_vs_normals_fix_normals_corner_by_corner(fork):
+def test_vs_normals_odd_corners_leave_their_part_to_inspect(fork):
     """B with only each face's first corner turned: the check reads 0 %, as
     it reads first corners, though 96 of 144 corners are right. Negating
     whole faces turns those too - 48 of 144 right while the check reads
-    100 % and validate() returns [] - and negating each corner that points
-    against its face gives back all 144."""
+    100 % and validate() returns []. Read part by part, no face has a
+    reading - each has a corner on the other side of it - so every box is
+    left as it is, to inspect, and the finding stands. Negating each corner
+    that points against its face, the step up to 1.10.0, gives back all 144
+    on these flat normals; on smoothed ones it turns right normals (the flat
+    tetrahedron below)."""
     def broken():
         p3d = variant(fork, "B")
         lod = p3d.lods[0]
@@ -697,9 +841,294 @@ def test_vs_normals_fix_normals_corner_by_corner(fork):
     assert corners_right(p3d) == 48
     assert p3d.validate() == []
     p3d = broken()
+    lod = p3d.lods[0]
+    assert {face_reading(fa)[1] for fa in lod.faces} == {0}
+    assert fix_parts(lod, boxes(lod)) == [0, 1, 2, 3]
+    assert corners_right(p3d) == 96
+    assert [f.code for f in p3d.validate()] == ["ERR_WINDING_VS_NORMALS"]
+    p3d = broken()
     fix_corners(p3d.lods[0])
     assert corners_right(p3d) == 144
     assert p3d.validate() == []
+
+
+FLAT_TETRA_POINTS = [(0.0, 0.0, 0.0), (2.0, 0.0, 0.0), (0.0, 2.0, 0.0),
+                     (0.2, 0.2, 0.02)]
+FLAT_TETRA_FACES = [(0, 1, 2), (3, 1, 0), (0, 2, 3), (3, 2, 1)]
+
+
+def corner_normals(lod):
+    return [[v.normal for v in fa.vertices] for fa in lod.faces]
+
+
+def winding_codes(fork, lod):
+    p3d = fork.P3D()
+    p3d.lods = [lod]
+    return [f.code for f in p3d.validate() if "WINDING" in f.code]
+
+
+def test_normals_step_leaves_a_smoothed_flat_tetrahedron_as_it_is(fork):
+    """README, 'Winding', step 3. A flat tetrahedron wound inward, the sign
+    of a solid seen from outside, with one area-weighted normal per point:
+    healthy, it has 6 of its 12 corners against their faces, and validate()
+    reads it at 75 % (WARN_WINDING_NORMAL_MISMATCH). Reversed whole and set
+    right by its volume, it reads part by part with faces that have no
+    reading, so it is left as it is: the healthy model, normal for normal.
+    Negating each corner that points against its face, the step up to
+    1.9.0, turns six right normals through three pool copies and takes it
+    to 100 % with no finding."""
+    healthy = smoothed(fork, FLAT_TETRA_POINTS, FLAT_TETRA_FACES)
+    assert signed_volume(healthy.faces) < 0
+    assert sum(dot(vector_area(fa), v.normal) < 0
+               for fa in healthy.faces for v in fa.vertices) == 6
+    assert fork._pct_normal_agreement(healthy) == 75.0
+    assert winding_codes(fork, healthy) == ["WARN_WINDING_NORMAL_MISMATCH"]
+    reference = corner_normals(healthy)
+    for repair in ("per part", "per corner"):
+        lod = smoothed(fork, FLAT_TETRA_POINTS, FLAT_TETRA_FACES)
+        reverse_faces(lod)
+        assert signed_volume(lod.faces) > 0
+        reverse_faces(lod)
+        assert corner_normals(lod) == reference
+        if repair == "per part":
+            assert 0 in {face_reading(fa)[1] for fa in lod.faces}
+            assert fix_parts(lod, [list(lod.faces)]) == [0]
+            assert corner_normals(lod) == reference
+            assert len(lod.facenormals) == 4
+            assert winding_codes(fork, lod) == ["WARN_WINDING_NORMAL_MISMATCH"]
+        else:
+            fix_corners(lod)
+            assert sum(n != r for got, ref in zip(corner_normals(lod),
+                                                 reference)
+                       for n, r in zip(got, ref)) == 6
+            assert len(lod.facenormals) == 4 + 3
+            assert fork._pct_normal_agreement(lod) == 100.0
+            assert winding_codes(fork, lod) == []
+
+
+def test_normals_step_reading_turns_with_the_face(fork):
+    """A face whose winding is turned reads as before with the sign turned,
+    from whichever corner the reversal starts: the vector area turns
+    exactly, also on a dart quad whose first three corners point against
+    it and on a twisted quad. A part whose two groups are of one size has
+    no larger one, and is left to inspect."""
+    quads = {
+        "planar": [(0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (1.0, 1.0, 0.0),
+                   (0.0, 1.0, 0.0)],
+        "dart": [(0.0, 2.0, 0.0), (0.5, 1.0, 0.0), (0.0, 0.0, 0.0),
+                 (2.0, 1.0, 0.0)],
+        "twisted": [(0.0, 0.0, 0.0), (1.0, 0.0, 0.3), (1.0, 1.0, 0.0),
+                    (0.0, 1.0, 0.3)],
+    }
+    first_three = {}
+    for name, points in quads.items():
+        for turn in ("reverse", "keep the first corner"):
+            lod = fork.LOD()
+            for c in points:
+                p = fork.Point()
+                p.coords = c
+                lod.points.append(p)
+            lod.facenormals.append(unit((0.2, -0.3, 1.0)))
+            fa = fork.Face(lod.points, lod.facenormals)
+            for i in range(4):
+                v = fork.Vertex(lod.points, lod.facenormals)
+                v.point_index = i
+                v.normal_index = 0
+                fa.vertices.append(v)
+            lod.faces.append(fa)
+            vs = [v.point.coords for v in fa.vertices]
+            first_three[name] = dot(cross(sub(vs[1], vs[0]),
+                                          sub(vs[2], vs[0])), fa.vertices[0].normal)
+            before = face_reading(fa)
+            assert before[1] == 1, name
+            if turn == "reverse":
+                fa.vertices.reverse()
+            else:
+                fa.vertices[1:] = fa.vertices[:0:-1]
+            after = face_reading(fa)
+            assert after[0] == pytest.approx(-before[0], abs=1e-12), name
+            assert after[1] == -1, (name, turn)
+    assert first_three["dart"] < 0 < first_three["planar"]
+    lod = variant(fork, "B").lods[0]
+    plate = boxes(lod)[PLATE]
+    assert fix_parts(lod, [plate], {0: plate[:6]}) == [0]
+    assert fix_parts(lod, [plate], {0: plate[:5]}) == []
+
+
+SMOOTH_BOX_POINTS = [(-1.0, -1.0, -1.0), (1.0, -1.0, -1.0), (1.0, 1.0, -1.0),
+                     (-1.0, 1.0, -1.0), (-1.0, -1.0, 1.0), (1.0, -1.0, 1.0),
+                     (1.0, 1.0, 1.0), (-1.0, 1.0, 1.0)]
+SMOOTH_BOX_FACES = [tri for quad in ((1, 2, 3, 0), (7, 6, 5, 4), (4, 5, 1, 0),
+                                     (2, 6, 7, 3), (3, 7, 4, 0), (5, 6, 2, 1))
+                    for tri in ((quad[0], quad[1], quad[2]),
+                                (quad[0], quad[2], quad[3]))]
+
+
+def test_normals_step_shared_entries_spoiled_in_place_are_inspected(fork):
+    """A box smoothed with one normal per point, each shared by the three
+    sides at its corner, wound inward. One side turned with its normals
+    negated in place on those shared entries: once the side is turned back,
+    18 of 36 corners point against their faces, on that side and on its
+    four neighbours, whose faces lose their reading, so the box is left as
+    it is, to inspect. Negating each corner against its face gives this
+    box back, since every corner on the four entries points against its
+    face. The same side turned with its normals through negated copies
+    reads cleanly once turned back, and negating the two faces that read
+    against gives back the box's normals."""
+    healthy = smoothed(fork, SMOOTH_BOX_POINTS, SMOOTH_BOX_FACES)
+    assert signed_volume(healthy.faces) < 0
+    assert {face_reading(fa)[1] for fa in healthy.faces} == {1}
+    reference = corner_normals(healthy)
+    for how in ("in place", "copies", "in place, per corner"):
+        lod = smoothed(fork, SMOOTH_BOX_POINTS, SMOOTH_BOX_FACES)
+        side = lod.faces[:2]
+        for fa in side:
+            fa.vertices.reverse()
+        if how == "copies":
+            negate_normals_of(lod, side)
+        else:
+            for j in {v.normal_index for fa in side for v in fa.vertices}:
+                n = lod.facenormals[j]
+                lod.facenormals[j] = (-n[0], -n[1], -n[2])
+        for fa in side:
+            fa.vertices.reverse()
+        if how == "copies":
+            assert fix_parts(lod, [list(lod.faces)], {0: side}) == []
+            assert corner_normals(lod) == reference
+            continue
+        assert sum(dot(vector_area(fa), v.normal) < 0
+                   for fa in lod.faces for v in fa.vertices) == 18
+        if how == "in place":
+            spoiled = corner_normals(lod)
+            assert fix_parts(lod, [list(lod.faces)], {0: side}) == [0]
+            assert corner_normals(lod) == spoiled
+        else:
+            fix_corners(lod)
+            assert corner_normals(lod) == reference
+
+
+def tilted(n, along):
+    """A unit normal at dot *along* with the unit normal *n*, the rest of
+    it perpendicular to n."""
+    other = (1.0, 0.0, 0.0) if abs(n[0]) < 0.9 else (0.0, 1.0, 0.0)
+    t = unit(cross(n, other))
+    s = math.sqrt(1.0 - along * along)
+    return (along * n[0] + s * t[0], along * n[1] + s * t[1],
+            along * n[2] + s * t[2])
+
+
+def own_normal(lod, corner, n):
+    lod.facenormals.append(n)
+    corner.normal_index = len(lod.facenormals) - 1
+
+
+def unclear(fork, how):
+    """B with faces that have no reading, as README step 3 defines it, and
+    the groups to read them with. Every face of B is a triangle of a quad
+    whose normal entry points along its vector area."""
+    p3d = variant(fork, "B")
+    lod = p3d.lods[0]
+    plate = boxes(lod)[PLATE]
+    groups = {}
+    if how == "mean between, against":
+        for j, n in enumerate(lod.facenormals):
+            lod.facenormals[j] = tilted(n, -0.4)
+    elif how == "corner within 0.1, against":
+        negate_normals(lod)
+        for fa in lod.faces:
+            own_normal(lod, fa.vertices[0],
+                       tilted(unit(vector_area(fa)), -0.05))
+    elif how == "zero corner":
+        own_normal(lod, lod.faces[0].vertices[0], (0.0, 0.0, 0.0))
+    else:
+        n = unit(vector_area(plate[0]))
+        for v in plate[0].vertices:
+            own_normal(lod, v, (-n[0], -n[1], -n[2]))
+        groups = {PLATE: plate[:1]}
+        for fa in plate[1:]:
+            area = unit(vector_area(fa))
+            if how == "mean between, with":
+                for v in fa.vertices:
+                    own_normal(lod, v, tilted(area, 0.4))
+            else:
+                own_normal(lod, fa.vertices[0], tilted(area, 0.05))
+    return p3d, groups
+
+
+def test_normals_step_unclear_faces_leave_their_part_as_it_is(fork):
+    """README, 'Winding', step 3: a face has no reading when its corner
+    normals average between -0.5 and 0.5 against its vector area, when one
+    of them lies within 0.1 of its plane, or when one is zero, and a part
+    with such a face is left as it is. On B: every normal turned to dot
+    -0.4 (the faces average -0.4); every normal turned, with each face's
+    first corner at -0.05 instead (the faces average -0.899, that corner
+    within the margin); one corner normal zero, which validate() does not
+    report; and the plate's first face turned against its winding, read as
+    a group of one against the other 11, which average +0.4 or have a
+    corner at +0.05. Each part with such a face is left to inspect, its
+    normals as they were."""
+    cases = {"mean between, against": ([0, 1, 2, 3], -0.4),
+             "corner within 0.1, against": ([0, 1, 2, 3], -0.899),
+             "zero corner": ([PLATE], None),
+             "mean between, with": ([PLATE], 0.4),
+             "corner within 0.1, with": ([PLATE], 0.899)}
+    for how, (left, mean) in cases.items():
+        p3d, groups = unclear(fork, how)
+        lod = p3d.lods[0]
+        readings = [face_reading(fa) for fa in boxes(lod)[PLATE][-1:]]
+        if mean is not None:
+            assert readings[0][0] == pytest.approx(mean, abs=1e-3), how
+            assert readings[0][1] == 0, how
+        else:
+            assert face_reading(lod.faces[0])[1] == 0
+            assert p3d.validate() == []
+        before = corner_normals(lod)
+        assert fix_parts(lod, boxes(lod), groups) == left, how
+        assert corner_normals(lod) == before, how
+
+
+def test_normals_step_is_one_text_in_both_findings(fork):
+    """Both winding findings close with the same normals step, once each,
+    and it says what README, 'Winding', step 3 does - part by part, the
+    faces that read against their winding negated where the part reads
+    cleanly, any other part left as it is - while the README gives the
+    thresholds face_reading() uses and the tetrahedron's numbers measured
+    above. The per-corner step of 1.10.0 and earlier is gone from both
+    messages."""
+    step = fork._normals_step()
+    for needle in ("part by part, never a corner on its own sign",
+                   "a normal smoothed across a sharp fold can point against "
+                   "a face wound right",
+                   "In a part that reads cleanly (py3d README, 'Winding', "
+                   "step 3)",
+                   "negate the normals of the faces that read against their "
+                   "winding", "lod.facenormals[j] = (-x, -y, -z)",
+                   "an entry a kept corner also uses gets a negated copy",
+                   "and keep the rest",
+                   "leave any other part as it is, for inspection"):
+        assert needle in step, needle
+    vs = vs_normals(turned(fork, "normals"))[0].msg
+    inverted = multilod(fork, 0).validate()[0].msg
+    for msg in (vs, inverted):
+        assert msg.count(step) == 1
+        assert "each corner normal that still points" not in msg
+    readme = os.path.join(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))), "README.md")
+    with open(readme, encoding="utf-8") as f:
+        text = f.read()
+    section = " ".join(text.split("3. **Normals**", 1)[1]
+                       .split("\n\n", 1)[0].split())
+    for needle in ("never a corner on its own sign", "`dot ≥ 0.5`",
+                   "`dot ≤ −0.5`", "one of its corner normals is zero",
+                   "within 0.1 of zero",
+                   "its larger group of faces wound alike",
+                   "two groups of one size leave no larger one",
+                   "negate the normals of the faces that read against their "
+                   "winding and keep the rest",
+                   "Leave any other part as it is, to inspect",
+                   "6 of its 12 corners", "at 75 %",
+                   "through three pool copies", "to 100 % with no finding"):
+        assert needle in section, needle
 
 
 # ---- ERR_WINDING_INVERTED: two LODs disagree, not which one is wrong --------
@@ -790,6 +1219,17 @@ def snapshot(p3d):
               for fa in lod.faces]) for lod in p3d.lods]
 
 
+def parts_of(lod):
+    """The parts the winding steps read: the visual LOD's shell when it is
+    closed, and each collision LOD of the fixture, one convex box."""
+    if lod.kind() == "visual":
+        shell = visual_shell(lod)
+        return [shell] if closed(shell) else []
+    if lod.kind() in ("geometry", "view_geometry", "fire_geometry"):
+        return [list(lod.faces)]
+    return []
+
+
 def test_inverted_cannot_tell_which_lod_is_wrong(fork):
     """The visual LOD inside-out raises the finding on the three healthy
     collision LODs and nowhere else; the geometry LOD inside-out, on the
@@ -816,10 +1256,10 @@ def test_inverted_cannot_tell_which_lod_is_wrong(fork):
                    "winding of both LODs first, normals untouched",
                    "Visual LOD 0: in each closed shell", "signed volume",
                    "geometry LOD: in each convex component",
-                   "Never a vertices[1]/[2] swap",
-                   "each corner normal that still points against its face"):
+                   "Never a vertices[1]/[2] swap", fork._normals_step()):
         assert needle in msgs[0], needle
     assert "on every face of this LOD" not in msgs[0]
+    assert "each corner normal that still points" not in msgs[0]
     assert len({re.sub(r"\d+%", "N%", msg) for msg in msgs}) == 1
 
 
@@ -831,7 +1271,8 @@ def test_inverted_steps_leave_the_part_that_reads_right(fork):
     collision boxes stay inward; with the geometry LOD inside-out its six
     faces read outward and the shell stays negative. Run on the LODs the
     message names, the steps reverse the turned LOD and nothing else, and
-    once the corners are fixed the model is the clean one again."""
+    once the normals are read part by part - every part reads cleanly - the
+    model is the clean one again."""
     msg = multilod(fork, 0).validate()[0].msg
     clean = multilod(fork)
     assert signed_volume(visual_shell(clean.lods[0])) < 0
@@ -849,7 +1290,7 @@ def test_inverted_steps_leave_the_part_that_reads_right(fork):
         assert visual == 0
         assert settle_winding(fork, p3d, visual) == turned, inside_out
         for lod in p3d.lods:
-            fix_corners(lod)
+            assert fix_parts(lod, parts_of(lod)) == [], inside_out
         assert p3d.validate() == [], inside_out
         assert snapshot(p3d) == snapshot(clean), inside_out
     assert "positive for a room seen from inside" in msg
@@ -884,7 +1325,7 @@ def test_inverted_names_the_reference_visual_lod(fork):
     p3d = two_visuals()
     assert settle_winding(fork, p3d, 1) == {1: 320, 2: 0, 3: 0, 4: 0}
     for lod in p3d.lods:
-        fix_corners(lod)
+        assert fix_parts(lod, parts_of(lod)) == []
     assert p3d.validate() == []
 
 
@@ -907,8 +1348,9 @@ def test_inverted_open_surface_stays_unresolved(fork):
     assert ([(f.code, f.lod) for f in found]
             == [("ERR_WINDING_INVERTED", i) for i in (1, 2, 3)])
     assert settle_winding(fork, p3d, 0) == {0: 0, 1: 0, 2: 0, 3: 0}
+    assert parts_of(vis) == []
     for lod in p3d.lods:
-        fix_corners(lod)
+        assert fix_parts(lod, parts_of(lod)) == []
     assert [f.lod for f in p3d.validate()] == [1, 2, 3]
     assert len(outward_faces(vis, shell)) == 319
     assert ("A part these steps cannot read - not a closed shell, not a "

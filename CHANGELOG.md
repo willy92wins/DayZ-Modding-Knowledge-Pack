@@ -67,8 +67,40 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   closed, convex components in every collision LOD, each closed on the side they share, kept in
   `door1_open` and in `lever`, which the tutorial's View and Fire LODs lack; not tested in game)
   and a pre-export checklist line; the P3D is unchanged.
-  py3d's `WARN_COMPONENT_COVERAGE` severity and message are unchanged (its message still says the
-  case was not measured).
+  py3d 1.10.0 raises that case as `ERR_COMPONENT_COVERAGE` (next entry); the pinned 1.9.0 wheel's
+  `WARN_COMPONENT_COVERAGE` message still calls it not measured.
+- py3d 1.10.0: `ERR_COMPONENT_COVERAGE`, an ERROR, for a closed part left out of every `ComponentNN`
+  of a Geometry, View or Fire LOD, the case the in-game A/B of the previous entry measured (such
+  parts took no ray in the LODs they were left out of, also beside covered parts, and no log line
+  said so). `_check_component_coverage` groups the LOD's faces, proxy triangles aside, into pieces
+  that share a corner position, read as the MLOD stores it (float32), and raises the ERROR for a
+  piece that is a closed solid (each edge used by two of its faces, once each way, and thicker than
+  16 float32 steps at its distance from the origin, so a flat double-sided sheet never is one) with
+  no face and no point in any component. Each LOD is read on its own: the message counts the parts
+  and their faces, gives each measured part its own readings (a box left out of all three LODs,
+  which the player walked through; a lever left out of Geometry and Fire, whose knob did not stop a
+  player) and says that a part left out of one LOD alone, component selections that hold nothing,
+  and weapon fire were not measured. Every other face in no component stays
+  `WARN_COMPONENT_COVERAGE` (a part left out only in part, an open piece such as a stray triangle, a
+  flat double-sided sheet, a closed part too thin for the cutoff, which errs toward the WARN): its
+  message says that was not measured, where 1.9.0's said "expect them to take no part in collision",
+  and it no longer counts the ERROR's faces; the WARN for points alone is unchanged. A LOD whose
+  component selections are all empty raises the ERROR for its closed parts (1.9.0: the WARN, every
+  face counted). Owner's choice (2026-10-02): an ERROR only where measured. Downstream an ERROR
+  fails `dayz-model-preflight` (`PREFLIGHT_PY3D_ERROR`), makes `dayz-vehicle-proxy-contract` refuse
+  the MLOD and `python -m py3d validate` exit 1, and `validate()` skips its in-memory round trip.
+  Measured offline on 414 unique MLODs (the owner's mod and vehicle projects and the three door
+  models of the `dayz-doors` tutorial) with the 1.9.0 and 1.10.0 modules through
+  `P3D._scan_v12_findings`: `Expert_Mode`'s lever, one closed 18-face piece in no component, becomes
+  the ERROR in its Geometry and Fire LODs (its only ERROR); a vehicle's Fire LOD keeps the WARN for
+  its two stray 1 mm triangles; no other finding changed. Version 1.10.0 because the pinned 1.9.0
+  wheel (entry below) carries the 1.9.0 check; no new wheel. `dayz-p3d-audit` killer #8 (`SKILL.md`
+  and `references/killers-detail.md` §8: the py3d text and, after review round 2, the opening
+  sentence, which gave the lever the box's readings; the replaced text quoted in dated notes) and
+  the `dayz-doors` LOD reference (the Expert lever paragraph and the checklist line) name both
+  codes, and the py3d README the new finding. Tests: 52 new in
+  `tools/py3d/tests/test_s2_validate12.py` (py3d suite 386 passed, 11 skipped; base 334 passed, 11
+  skipped).
 
 - `dayz-mcp-verify` "Axis-aligned test fixtures": a measured caveat. In one run (2026-10-02,
   DayZDiag 1.29.163709) a model with two 2 m boxes, one in `Component01` and the other in
@@ -615,6 +647,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   agree), and the texts now say so.
   Documentation only: nothing was re-measured in game for this change. Every replaced passage is
   quoted in a dated note.
+- py3d `ERR_WINDING_VS_NORMALS` and `ERR_WINDING_INVERTED` (py3d 1.10.1): both closed with "negate
+  each corner normal that still points against its face", and the README's "Winding" step 3 said
+  to go corner by corner. A corner normal smoothed across a sharp fold can point against a face
+  wound right, so that step turns right normals, and `dayz-p3d-audit`'s
+  `references/winding-diagnostics.md` ("From Check B to fix", item 3) rules it out. Measured
+  offline in py3d's tests: a flat tetrahedron wound right, with one area-weighted normal per
+  point, has 6 of its 12 corners against their faces and reads 75 %
+  (`WARN_WINDING_NORMAL_MISMATCH`); the per-corner step turns those six normals through three pool
+  copies and takes it to 100 % with no finding. Both messages now close with one normals step,
+  part by part, never a corner on its own sign, and step 3 says how a face and a part read: a face
+  by the average of its corner normals against its vector area (with its winding at ≥ 0.5, against
+  it at ≤ −0.5, no reading in between, or with a corner normal that is zero or whose dot has the
+  other sign or lies within 0.1 of zero); a part reads cleanly when every face of it has a reading and its larger group of faces
+  wound alike reads all one way, and there the faces that read against their winding have their
+  normals negated and the rest are kept; any other part is left as it is, to inspect. On the
+  fixtures of every test that used the old step (the F of the Rule 12 in-game test with its
+  normals turned, its faces turned, a shared pool, a plate face turned back and an odd face, and
+  the multi-LOD model with its visual or geometry LOD inside-out) the new step gives back the clean
+  model, and on the tetrahedron it changes nothing. Where it is more cautious it changes nothing
+  and leaves the part to inspect, while the old step had fixed it: only each face's first corner
+  turned, on flat normals, and a smoothed box whose shared entries were negated in place. Codes,
+  severities and the checks are unchanged; the pinned 1.9.0 wheel still prints the old step.
+  `dayz-characters` `check_dayz_winding.py` cited step 3 for its own per-corner fix: its fix for
+  the shells between 10 % and 90 %, and the by-hand alternative to its pool fix, now read the
+  shells part by part (its measurement, thresholds and exit codes are unchanged), and `SKILL.md`
+  "OFFLINE GATE" says so, with the old text quoted in a dated note.
 - `dayz-model-pipeline` SP-071 ("Generic DCC visual-winding profile") no longer reverses every visual
   face of other raw OBJ imports, and its census no longer reads a correct export as inverted. The
   section said to reverse the vertices of every **visual** MLOD face of a raw OBJ whose measured axis

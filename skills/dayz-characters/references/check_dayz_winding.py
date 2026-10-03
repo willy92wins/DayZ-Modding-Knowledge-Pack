@@ -29,8 +29,10 @@ winding check", engine verdict 2026-09-07)
       body shell reads 99.5 %). Below 10 % in every shell they disagree: with the winding right that means
       the normals point out of the material, and the fix is to negate the normal pool, never to reverse the
       faces; the gate says how many corners that agree now the pool fix turns too. Anything else lists the
-      shells to fix corner by corner. py3d _pct_normal_agreement's count (dayz-p3d-audit's absolute check),
-      over every face of the LOD with each face's first corner only, is printed alongside.
+      shells, to read part by part, never a corner on its own sign: a normal smoothed across a sharp fold can
+      point against a face wound right (py3d README, "Winding", step 3). py3d _pct_normal_agreement's count
+      (dayz-p3d-audit's absolute check), over every face of the LOD with each face's first corner only, is
+      printed alongside.
   The fixes come in the order of the table in winding-diagnostics.md and of the py3d README ("Winding"): the
   winding first, normals untouched; then the normals against the settled winding.
 
@@ -49,6 +51,10 @@ HISTORY
   The version of 2026-06-25 (LFInfectedBig S6) encoded that build's det=+1 recipe: stored normals OUTWARD
   and cross . normal < 0. It failed all three MLODs of the Rule 12 in-game test, the correct one included
   (measured 2026-10-01), and passed the outward-normal state (dayz-characters SKILL.md, OFFLINE GATE).
+  Until 2026-10-03 its fix for the shells in between read "negate the normal of each corner that points
+  against its face and keep those that agree", and the pool fix's note offered that by hand; a normal
+  smoothed across a sharp fold can point against a face wound right (py3d README, "Winding", step 3,
+  changed the same day).
 
 USAGE
   python check_dayz_winding.py path\to\model.p3d
@@ -74,9 +80,10 @@ PERPENDICULAR = 0.0872   # |cos| between a corner normal and its face's vector a
 
 POOL_FIX = ("negate the normal pool in place: lod.facenormals[j] = (-x, -y, -z) for every j "
             "(not through Vertex.normal).")
-CORNER_FIX = ("negate the normal of each corner that points against its face and keep those that agree; a "
-              "pool entry that a corner you keep also uses gets a negated copy; a corner with no clear sign is "
-              "for inspection, not for flipping (py3d README, \"Winding\", step 3).")
+PARTS_FIX = ("read the normals shell by shell, never a corner on its own sign: in a shell that reads cleanly, "
+             "negate the normals of the faces that read against their winding and keep the rest (a pool entry "
+             "that a corner you keep also uses gets a negated copy); leave any other shell as it is, for "
+             "inspection (py3d README, \"Winding\", step 3).")
 BATTERY = ("no volume sign decides an open or flat part: check them with the visibility battery "
            "(dayz-p3d-audit references/winding-diagnostics.md, \"From Check B to fix\").")
 
@@ -437,7 +444,7 @@ def read_lod(lod, index):
         lines.append(f"{head}{skipped}.")
         fixes += 1
         if bad or unread:
-            lines.append(f"  fix {fixes}: {CORNER_FIX} Not the whole pool: part of this LOD is not read.")
+            lines.append(f"  fix {fixes}: {PARTS_FIX} Not the whole pool: part of this LOD is not read.")
         else:
             text = f"  fix {fixes}: {POOL_FIX}"
             if not reversal:
@@ -449,9 +456,8 @@ def read_lod(lod, index):
                 verb = would if reversal or agree > 1 else "agrees"
                 text += (f" It also turns {_plural(agree, 'corner')} that {verb} now: right for an export that stored "
                          "every normal the other way, whose odd corners go back to how they were authored "
-                         "(LFInfectedBig's Rule 12 build has 219 against their face); if you put corners right by hand, "
-                         "negate only the corners that point against their face instead (py3d README, \"Winding\", "
-                         "step 3).")
+                         "(LFInfectedBig's Rule 12 build has 219 against their face); to keep them, read the shells "
+                         "part by part instead, never a corner on its own sign (py3d README, \"Winding\", step 3).")
             lines.append(text)
     elif classes == {"disagree"}:
         fail = True
@@ -464,7 +470,7 @@ def read_lod(lod, index):
             note = "" if s.kind() in ("positive", "negative") else " (direction not scored)"
             lines.append(f"    {s.where()}: {s.corner_agree} of {s.corners} corners {would}{note}")
         fixes += 1
-        lines.append(f"  fix {fixes}: {CORNER_FIX}")
+        lines.append(f"  fix {fixes}: {PARTS_FIX}")
     if unread:
         error = True
         lines.append(f"  normals: no corner with a clear sign in {nfaces(unread)} faces of "
