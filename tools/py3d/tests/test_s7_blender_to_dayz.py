@@ -414,7 +414,7 @@ def negate_corners(lod, flip):
 
 
 def fix_corners(lod):
-    """The normals step up to 1.9.0, once the winding is settled: negate
+    """The normals step up to 1.10.0, once the winding is settled: negate
     each corner normal that points against its face's cross product, with
     the pool rule of negate_corners()."""
     flip = []
@@ -822,7 +822,7 @@ def test_vs_normals_odd_corners_leave_their_part_to_inspect(fork):
     100 % and validate() returns []. Read part by part, no face has a
     reading - each has a corner on the other side of it - so every box is
     left as it is, to inspect, and the finding stands. Negating each corner
-    that points against its face, the step up to 1.9.0, gives back all 144
+    that points against its face, the step up to 1.10.0, gives back all 144
     on these flat normals; on smoothed ones it turns right normals (the flat
     tetrahedron below)."""
     def broken():
@@ -1093,7 +1093,8 @@ def test_normals_step_is_one_text_in_both_findings(fork):
     faces that read against their winding negated where the part reads
     cleanly, any other part left as it is - while the README gives the
     thresholds face_reading() uses and the tetrahedron's numbers measured
-    above. The per-corner step of 1.9.0 is gone from both messages."""
+    above. The per-corner step of 1.10.0 and earlier is gone from both
+    messages."""
     step = fork._normals_step()
     for needle in ("part by part, never a corner on its own sign",
                    "a normal smoothed across a sharp fold can point against "
