@@ -539,6 +539,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   nor with that box stored first (measured offline the same way). Rule 18 now says no function of
   the skill runs its check, and `check_face_winding`'s section says what it reads. The old text is
   quoted in dated notes.
+- `dayz-model-pipeline` `references/lods-and-geometry.md`, the py3d fix for the GLB/glTF source
+  case: the bullet above it reverses every face in every LOD except proxy triangles, but the loop
+  under it reversed the proxy triangles too. The loop now keeps the order of each proxy triangle,
+  the only face of a `proxy:<path>.<index>` selection (`py3d.PROXY_NAME_RE`) when it is a
+  triangle, entries of weight 0 not counting, and reverses every other face once: a selection
+  under a proxy name with more faces, or a quad, holds geometry and is reversed with the rest, and
+  a vertex list that would be reversed twice (one `Face` listed twice, or two faces sharing one
+  list) stops the loop before any face changes. A sentence says that `P3D.transform()` with the
+  swap matrix (det<0) has already reversed every face, proxy triangles included, so after it only
+  the proxy triangles go back; run after `transform()`, the loop would put every other face back
+  in its original order and leave the proxies reversed. Measured offline with py3d 1.9.0 (the
+  repository source and the installed wheel), running the documented block itself on synthetic
+  models: the proxy triangles keep their order, one whose selection lists no points and one with a
+  weight-0 entry beside it included, and every other face is reversed, a box and a quad under
+  proxy names included, also after an MLOD write and read; a repeated `Face` or a shared vertex
+  list raises with nothing changed; the old block, a loop that skips every face of a proxy-named
+  selection and a no-op fail. On 411 MLODs of the owner's projects (13,688,834 faces, read only)
+  the block raised on none, kept the 1,979 faces that are the single triangle of a proxy-named
+  selection (191 of them in debinarized SUB_BRZ round trips whose proxy selections list no
+  points) and reversed every other face once, the 108 faces of 18 six-face proxy-named selections
+  in the LFPowerGrid logic gates' collision LODs included. The replaced block is quoted in a dated
+  note. The GLB reversal itself is unchanged.
 - `ai-3d-to-dayz` SP-071 no longer reverses every visual face of a Blender, OBJ, glTF or FBX
   import, and its census no longer reads a correct export as inverted. It said to reverse "every
   **visual** face" whenever the measured axis transform preserves winding, a det=+1 map: the recipe
