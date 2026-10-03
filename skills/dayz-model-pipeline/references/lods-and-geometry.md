@@ -139,59 +139,74 @@ The RV engine uses face winding order to determine which side of a face is
 - Object appears transparent or invisible from outside
 - Object appears solid black from outside (shadow-only)
 
-**Rule (source: [`SKILL.md`](../SKILL.md), Rule 12):** The winding decision is
-conditional on the asset source (Blender-authored vs GLB/glTF) — both maps below are det=-1 — with two
-cases:
+**Rule (source: [`SKILL.md`](../SKILL.md), Rule 12):** Blender-authored geometry and
+GLB/glTF-sourced geometry brought through Blender take the same det=-1 map, and
+neither is reversed (a glTF read without Blender: SKILL.md "GLB/glTF imports"):
 - **Blender-authored geometry** via the reflection `x'=x, y'=z, z'=y` (det=-1):
   apply it to ALL vertices and normals in ALL LODs, keep the vertex order (it comes
   out INWARD, the MLOD convention) and negate the normals. The old det=+1 rotation
   `z'=-y` ships a MIRRORED model (measured in game 2026-10-01).
-- **GLB/glTF-sourced geometry** via the pure swap `(x,y,z)->(x,z,y)` (det=-1):
-  ALWAYS reverse the vertex order of every face in every LOD, except proxy
-  triangles, whose vertex order encodes the attachment frame.
-Never assume either case: verify post-assembly with `check_face_winding`; it
-must read ~0% flipped.
+- **GLB/glTF-sourced geometry** brought through Blender is Blender geometry: glTF
+  front faces are CCW like Blender's, and Blender's glTF importer keeps them so. The
+  same map, order and normals apply. Reversing the faces after the det=-1 map turns
+  them OUTWARD, which rendered inside-out in game (MercedesAMGLF, 2026-06-24; SKILL.md
+  "GLB/glTF imports").
+Never assume: `check_face_winding` must read ~0% flipped, but it only shows that the
+vertex order and the normals agree, and an inside-out export with both outward reads
+the same.
 
-**Fix in py3d for the GLB/glTF source case:**
-```python
-import py3d
+**In py3d:** `py3d.blender_to_dayz(model)` (py3d 1.8.0 and later) maps a model in
+Blender space; call it before adding anything built in DayZ space. With
+`P3D.transform(((1, 0, 0), (0, 0, 1), (0, 1, 0)))` instead, det<0 makes it reverse
+every face, proxy triangles included: reverse them all back and negate every normal,
+which leaves the original order (`references/py3d-direct-generation.md`, "Blender
+Z-up → DayZ Y-up Rotation").
 
-# After the swap, applied to points and normals with every face's vertex order kept.
-# A proxy triangle, the only face of a 'proxy:<path>.<index>' selection when it is a
-# triangle, keeps its order. A selection under a proxy name with more faces, or a quad,
-# holds geometry: its faces are reversed with the rest. Weight 0 is not membership.
-keep, faces, lists = set(), set(), set()
-for lod in model.lods:
-    for name, sel in lod.selections.items():
-        sel_faces = [face for face, weight in sel.faces.items() if weight > 0]
-        if (py3d.PROXY_NAME_RE.match(name) and len(sel_faces) == 1
-                and len(sel_faces[0].vertices) == 3):
-            keep.add(sel_faces[0])
-    for face in lod.faces:
-        # A Face listed twice, or two faces sharing one vertex list, would be reversed
-        # twice: refuse before anything changes.
-        if id(face.vertices) in lists:
-            raise ValueError("a vertex list is listed twice: give each face its own")
-        lists.add(id(face.vertices))
-        faces.add(face)
-for face in faces - keep:
-    face.vertices.reverse()
-```
-`P3D.transform()` with the swap matrix reverses every face itself, proxy triangles included,
-because det<0: after it, reverse only the proxy triangles back. The loop above, run after
-`transform()`, undoes the reversal of every other face and leaves the proxies reversed (measured
-offline, py3d 1.9.0).
-*(Fixed 2026-10-03: the block read `for lod in model.lods: for face in lod.faces: face.vertices.reverse()`,
-on three lines, which reversed the proxy triangles too, against the rule above.)*
+**In Blender:** a GLB/glTF import needs no flip. Before export, faces should show
+blue from outside in the Face Orientation overlay (`blender-visual-review`). If some
+show red, select all of the mesh's faces (not the proxy triangles), use Mesh →
+Normals → Recalculate Outside and check the overlay again: on an open mesh it can
+guess wrong. Mesh → Normals → Flip turns the selected faces inward, and Rule 12's map
+then turns them OUTWARD.
 
-**Fix in Blender for the GLB/glTF source case:**
-- Select all faces → Mesh → Normals → Flip
-- Or: Mesh → Normals → Recalculate Outside
+**Apply the map to ALL LODs** — Geometry, Fire Geometry, View Geometry, Shadow and
+Memory LODs included — so that they all land in one convention. A collision LOD left
+OUTWARD lets the LOD raycasts through, the `view` and `fire` rays that actions and
+ballistic hits rely on (`dayz-p3d-audit` killer #1, measured in game 2026-10-02). On
+the 2 m boxes measured there, physics still stopped a walking player; a walk alone
+does not diagnose winding, since the 0.49 m `item_small` kit let the player through
+with either winding.
 
-**When Rule 12 requires reversal, it applies to ALL LODs except proxy
-triangles** — Geometry, Fire Geometry, View Geometry, and Shadow LODs are
-affected too. Flipped Geometry faces cause physics pass-through; flipped Fire
-Geometry faces cause bullets to pass through.
+*(Aligned 2026-10-03 with SKILL.md Rule 12 and "GLB/glTF imports". The rule opened "The
+winding decision is conditional on the asset source (Blender-authored vs GLB/glTF) — both
+maps below are det=-1 — with two cases:"; its GLB case read "**GLB/glTF-sourced geometry**
+via the pure swap `(x,y,z)->(x,z,y)` (det=-1): ALWAYS reverse the vertex order of every face
+in every LOD, except proxy triangles, whose vertex order encodes the attachment frame."; and
+it closed "Never assume either case: verify post-assembly with `check_face_winding`; it must
+read ~0% flipped." The py3d fix, titled "Fix in py3d for the GLB/glTF source case:", ran, since #68
+(2026-10-03), `import py3d # After the swap, applied to points and normals with every face's
+vertex order kept. # A proxy triangle, the only face of a 'proxy:<path>.<index>' selection when
+it is a # triangle, keeps its order. A selection under a proxy name with more faces, or a quad, #
+holds geometry: its faces are reversed with the rest. Weight 0 is not membership. keep, faces,
+lists = set(), set(), set() for lod in model.lods: for name, sel in lod.selections.items():
+sel_faces = [face for face, weight in sel.faces.items() if weight > 0] if
+(py3d.PROXY_NAME_RE.match(name) and len(sel_faces) == 1 and len(sel_faces[0].vertices) == 3):
+keep.add(sel_faces[0]) for face in lod.faces: # A Face listed twice, or two faces sharing one
+vertex list, would be reversed # twice: refuse before anything changes. if id(face.vertices) in
+lists: raise ValueError("a vertex list is listed twice: give each face its own")
+lists.add(id(face.vertices)) faces.add(face) for face in faces - keep: face.vertices.reverse()`
+on 22 lines, followed by "`P3D.transform()` with the swap matrix reverses every face itself,
+proxy triangles included, because det<0: after it, reverse only the proxy triangles back. The
+loop above, run after `transform()`, undoes the reversal of every other face and leaves the
+proxies reversed (measured offline, py3d 1.9.0)." and by the note "(Fixed 2026-10-03: the block
+read `for lod in model.lods: for face in lod.faces: face.vertices.reverse()`, on three lines,
+which reversed the proxy triangles too, against the rule above.)"; the
+Blender fix, titled "Fix in Blender for the GLB/glTF source case:", read "Select all faces →
+Mesh → Normals → Flip" and "Or: Mesh → Normals → Recalculate Outside"; and the last paragraph
+read "**When Rule 12 requires reversal, it applies to ALL LODs except proxy triangles** —
+Geometry, Fire Geometry, View Geometry, and Shadow LODs are affected too. Flipped Geometry
+faces cause physics pass-through; flipped Fire Geometry faces cause bullets to pass
+through." Killer #1 measured outward 2 m collision boxes that still stopped the player.)*
 
 <!-- [repaired 2026-06-05: plugin file was truncated at "## Nami" (Edit >5KB bug); full section restored from <claude-home>\skills user copy] -->
 ## Naming Convention in Blender for FBX Export
