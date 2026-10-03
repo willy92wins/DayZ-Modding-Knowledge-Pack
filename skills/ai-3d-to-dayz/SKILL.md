@@ -125,20 +125,59 @@ the full entry (symptom, origin, evidence) lives there. Do not remove the citati
 
 ## (added 2026-08-31, SP-071) Generic-DCC visual winding at MLOD emission
 
-For a raw Blender, OBJ, glTF, or FBX import whose measured axis transform preserves winding,
-reverse the vertex order of every **visual** face when emitting the authoring MLOD. Proxy
-triangles are exempt: their winding encodes the proxy frame. Keep this step in the generic-DCC
-profile handed to `dayz-model-pipeline`; do not generalize it to a vehicle or reconstructed
-source profile with a different measured lineage.
+Every route of this skill reaches the MLOD as geometry authored in Blender: the generator's mesh
+(GLB, OBJ or FBX) is imported, retopologized, unwrapped and baked there (steps 3-4). Emit it with
+the FBX / Blender-authored bullet of `dayz-model-pipeline` Rule 12, whatever format the generator
+wrote (the mesh is Blender-authored by then; the GLB/glTF case does not apply): the det=-1 map
+`(x,y,z)->(x,z,y)` on every point and normal of every LOD, faces in their original order, shading
+normals negated (py3d >= 1.8.0: `py3d.blender_to_dayz(model)`, called once, before adding anything
+built in DayZ space, such as collision boxes made in code, which skip the map). Do not reverse the
+faces. Winding gates cannot see a mirror, so check chirality on an asymmetric feature too (Rule 12);
+an MLOD written by another exporter, such as the Arma 3 Object Builder add-on, gets the same checks,
+winding and normals with `dayz-p3d-audit` included. On this skill's own route, LFInfectedBig (an
+AI-generated GLB, retopologized and rigged in Blender) read correctly in game with this map, and
+mirrored with its shipped det=+1 recipe of reversed faces (`dayz-characters`
+`references/character-rigging.md` §6, 2026-10-02).
 
-A pre-binarize census of
-`dot(cross(v1-v0, v2-v0), mean_stored_normal)` can predict the result inside a calibrated
-source profile. Exclude `abs(dot) < 1e-9`. At the measured generic-DCC calibration, at least
-95% negative is `SOLID`, positive-dominant is `INVERTED`, and an intermediate result means
-mixed per-piece winding that must be isolated before a bulk fix.
+Reverse the vertex order of every **visual** face only for a source whose own lineage was measured
+to need it: an in-game A/B against the all-visual-faces-flipped variant plus a chirality check.
+Proxy triangles are exempt: their winding encodes the proxy frame. SP-071's one calibration does
+not qualify: the LFHeli OH-1 (2026-07-19) was an artist's Blender model exported as OBJ and mapped
+with the det=+1 rotation `x'=x, y'=z, z'=-y`, the map Rule 12 measured in game as a mirror; the
+reversal made it render solid, and nothing in that verdict checked chirality. Do not carry the
+reversal to a vehicle or reconstructed source profile either: those keep their own measured
+lineage.
+
+A pre-binarize census of `dot(cross(v1-v0, v2-v0), mean_stored_normal)`, excluding
+`abs(dot) < 1e-9`, reads whether the stored normals agree with the winding, not which side
+renders. Its OH-1 thresholds (at least 95% negative `SOLID`, positive-dominant `INVERTED`) belong
+to that pipeline, which stored the normals outward against an inward winding; a Rule 12 export
+stores them inward like the winding. [OFFLINE MEASURED 2026-10-03] On the MLODs of the Rule 12
+in-game test, rebuilt byte for byte by `tools/py3d/tests/test_s7_blender_to_dayz.py`, the export
+that rendered solid and read correctly reads 0% negative, `INVERTED` by those thresholds; the same
+export with every face reversed (winding outward: inside-out) and SP-071's own recipe, the det=+1
+map with reversed faces and outward normals (a mirror), both read 100% negative, `SOLID`. Normals
+stored outward render solid but lit inverted (`character-rigging.md` §6). Read a Rule 12 export
+with `dayz-p3d-audit` instead: a healthy single-sided MLOD reads about 100% agreement ("Absolute
+winding check", rule 1), and the direction comes from the signed volume by winding of each closed
+shell, even at 100% agreement, never from the sum over the LOD: one shell reversed with its normals
+negated keeps 100% agreement and a negative sum (Check A in `references/winding-diagnostics.md`).
+Open sheets and double-sided parts take the visibility battery of "From Check B to fix"; isolate a
+mixed result per part before any bulk fix (rule 2).
 
 This census is a **profile signal, not a universal gate**. Do not compare its ratios across
 ODOL, MLOD produced from ODOL by an external ODOL->MLOD converter (not distributed with this
 pack), raw DCC MLOD, or vanilla references: stored-normal conventions differ by origin. Only
 enforce a threshold after an in-game A/B has calibrated that exact source pipeline. The final
 verdict remains the in-game A/B between the candidate and an all-visual-faces-flipped variant.
+That A/B cannot see a mirror either, since both variants share the map: check chirality too.
+
+*(Aligned 2026-10-03 with Rule 12, measured in game 2026-10-01. This section read "For a raw
+Blender, OBJ, glTF, or FBX import whose measured axis transform preserves winding, reverse the
+vertex order of every **visual** face when emitting the authoring MLOD.", "Keep this step in the
+generic-DCC profile handed to `dayz-model-pipeline`; do not generalize it to a vehicle or
+reconstructed source profile with a different measured lineage." and "A pre-binarize census of
+`dot(cross(v1-v0, v2-v0), mean_stored_normal)` can predict the result inside a calibrated source
+profile. Exclude `abs(dot) < 1e-9`. At the measured generic-DCC calibration, at least 95% negative
+is `SOLID`, positive-dominant is `INVERTED`, and an intermediate result means mixed per-piece
+winding that must be isolated before a bulk fix.")*
