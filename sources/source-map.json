@@ -8295,7 +8295,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03 (spa): new section 'Collision of a large building with an interior' (ledger SP-453 points 1, 4 and 5; SP-457; SP-458) and pointers at the ComponentXX and Mesh > Convex Hull bullets. Source: the owner's SecretRock RocaHeli rounds R7.1-R7.3 (2026-10-01 to 2026-10-03). Cross-checked against that project's review folders: the per-collision-LOD table recomputed from its binarize variant table and nine verdict files (faces, named selections x points and selection bytes separate pass from fail; the piece and point counts alone do not; one more variant truncated inside its Geometry LOD); 478 MB, 55-75 MB with 827-997 pieces, 78.4 -> 2.1 MB and the R7.3 View reversal from its block-1 and R7.3 reviews; 49,929 / 42,501 PASS and 92,430 CAPACITY_FAIL from the block-0 verdicts; 56,743 / 17,392 from the discovery review; 38 % beyond 15 cm for the k-means patches from the round-2 wall diagnosis (its probe stops at 1 m); the shell's in-game hit (geom ray, component 292 at 18.9 m) from the test-5 MCP call log. The per-selection byte layout read in tools/py3d/py3d/__init__.py:1968-1974 (py3d 1.10.1). The prism-only figures (median 1 cm, under 2 % beyond 15 cm, 10.5 cm along smoothed normals, 1,843 vs 652 regions, the 0.84 x 1.55 m gap with 131 of 368,013 samples, 0.40 m, 0.15 % with random samples) come from the ledger entries; no saved output was found for them. Nothing was re-measured for this change. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "387d80536d250b625d3735d14daaf1fd25b5400b64283c447d3b0abe60d6720c",
+          "source_hash": "ca6e38a94a97a5cc960390bf840026ef9f44963612ce5f5ff4aa037602396178",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
@@ -8303,7 +8303,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "387d80536d250b625d3735d14daaf1fd25b5400b64283c447d3b0abe60d6720c",
+      "output_hash": "ca6e38a94a97a5cc960390bf840026ef9f44963612ce5f5ff4aa037602396178",
       "output_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8789,7 +8789,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03 (spa): appended section 'Source meshes for collision' (ledger SP-453 points 2 and 3): zero-area faces (5.4 % of the rock's faces, 11 % of the cabin's) and the orphan points their removal left (8 points 1.5-10.8 cm off the surface); about 240 rock and 38 interior faces wound against their stored normals, sent to the Check A table instead of being turned to their normals, a step the project never checked in game; bmesh.ops.convex_hull hulls recomputed with Qhull (0 open or non-convex pieces in the project's integrity check), and a convexity check that needs a failing model and must require its models. Also a pointer at the end of SP-359 to the OTHER_FAIL cause of references/binarize-vertex-budget.md item 3 in dayz-vehicles (ledger SP-458). Everything sits after the last registered claim line, so no claim range moves. Source: the SecretRock RocaHeli block-1 review, R7.1, 2026-10-01. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "e06c8fe27aaf4bc60a7dbaf37b0221b87d44c11dbd119677597bac9f37486147",
+          "source_hash": "83cb694b0d20a84a31480b1eb0affb8d65808d492af19151ec4395fb50e84ff1",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
@@ -8797,7 +8797,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e06c8fe27aaf4bc60a7dbaf37b0221b87d44c11dbd119677597bac9f37486147",
+      "output_hash": "83cb694b0d20a84a31480b1eb0affb8d65808d492af19151ec4395fb50e84ff1",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -12545,7 +12545,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03 (spa): the OTHER_FAIL bullet gains the cause measured on SecretRock RocaHeli R7.3 (ledger SP-458, also reported to the pipeline inbox): too many pieces in the collision LODs, no ODOL and no capacity line while the bench was fine; ruled in only once the MLOD walks to #EndOfFile# in every LOD and the same model passes without its collision LODs; the fix moves pieces to another model with the same transform and merges or decimates none. Evidence as recorded on the references/lods-and-geometry.md input of the same change. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "5bff30dcf1e7a403123437158b70d60fb5fb25b151738bef4fd40b9172de8638",
+          "source_hash": "d5a57c4338f11bca316f338b739c31c9693374b25b7103920793519d28d9501a",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
@@ -12553,7 +12553,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5bff30dcf1e7a403123437158b70d60fb5fb25b151738bef4fd40b9172de8638",
+      "output_hash": "d5a57c4338f11bca316f338b739c31c9693374b25b7103920793519d28d9501a",
       "output_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

@@ -31,10 +31,11 @@ bisection from ~6 min per variant into ~90 s per batch.
   vehicle): with too many pieces in its collision LODs, `binarize.exe` wrote no ODOL and no
   capacity line, and the bench read `OTHER_FAIL` while the bench was fine. Rule it in only once
   the MLOD walks to `#EndOfFile#` in every LOD (a truncated MLOD gave the same verdict) and the
-  same model passes without its collision LODs. The fix then moves pieces to another model with
-  the same transform and leaves every piece as it is: none is merged or decimated. Boundary and
-  figures: `dayz-model-pipeline` `references/lods-and-geometry.md`, "Collision of a large
-  building with an interior".
+  same model passes without its collision LODs: those two checks place the failure in the
+  collision LODs, they do not measure the limit. The fix then moves pieces to another model with
+  the same transform and leaves every piece as it is (none is merged or decimated), and each
+  resulting model still has to PASS. Boundary and figures: `dayz-model-pipeline`
+  `references/lods-and-geometry.md`, "Collision of a large building with an interior".
 
 **The verdict is reproducible; the ODOL bytes are NOT.** The same `.p3d` produced 1,725,025 and
 1,726,689 bytes with different hashes in two clean consecutive runs. Never gate on the ODOL SHA.

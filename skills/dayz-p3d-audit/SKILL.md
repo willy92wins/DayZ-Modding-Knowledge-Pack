@@ -584,8 +584,10 @@ pieces (SecretRock RocaHeli, R7.1, 2026-10-01; `dayz-model-pipeline`
    38 interior faces wound against their stored normals. That disagreement does not say which
    side is wrong ("Absolute winding check", rule 1), and smoothed normals can point against a face
    that is right (rule 5): read those faces with the Check A table
-   (`references/winding-diagnostics.md`) before reversing any. The project turned each one to its
-   normals; that step was not checked in game.
+   (`references/winding-diagnostics.md`) on the MLOD, after the Rule 12 conversion, before
+   reversing any. Its rows are written toward Rule 12's MLOD convention, not toward the Blender
+   mesh before the conversion. The project turned each one to its normals; that step was not
+   checked in game.
 2. **[OFFLINE MEASURED] `bmesh.ops.convex_hull` hulls are not exactly convex.** In that project's
    builds the hulls merged near-coplanar triangles into n-gons that are not planar, and fanned back
    into triangles those folded by a few mm; near-duplicate points made slivers whose plane is

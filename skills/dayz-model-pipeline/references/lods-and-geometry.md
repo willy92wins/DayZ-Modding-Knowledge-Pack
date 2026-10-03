@@ -262,17 +262,20 @@ that project; none was re-measured on another model.
 
 ### MLOD size grows with the square of the piece count
 
-[OFFLINE MEASURED] An MLOD stores each named selection as one byte per point and one byte per
-face of its LOD (py3d writes `len(all_points) + len(all_faces)` bytes per selection,
-`tools/py3d/py3d/__init__.py:1968-1974`, py3d 1.10.1), and every `ComponentNN` is a selection.
-N pieces of k points and f faces each make a LOD of about N·k points and N·f faces, so their
-selections take about N²·(k + f) bytes in each collision LOD (arithmetic on that layout). With
-1,150 pieces in Geometry, View and Fire, the rock's MLOD weighed 478 MB; with 827 to 997 pieces
-of 6 points each and a separate, coarser View Geometry that kept the functional pieces (doors,
-buttons), 55-75 MB. The binarized ODOL does not carry the cost (78.4 MB of MLOD became 2.1 MB of
-ODOL); the MLOD does, and in a Git repository it needs LFS past GitHub's 100 MB. The separate
-View did not last: in R7.3 its own set of pieces left 28 % of the skin open to the project's ray
-test and went past 2,048 components, so the View went back to the Geometry's pieces.
+[OFFLINE MEASURED] With 1,150 pieces in Geometry, View and Fire, the rock's MLOD weighed 478 MB;
+with 827 to 997 pieces of 6 points each and a separate, coarser View Geometry that kept the
+functional pieces (doors, buttons), 55-75 MB. The binarized ODOL does not carry the cost (78.4 MB
+of MLOD became 2.1 MB of ODOL); the MLOD does, and in a Git repository it needs LFS past GitHub's
+100 MB. The separate View did not last: in R7.3 its own set of pieces left 28 % of the skin open
+to the project's ray test and went past 2,048 components, so the View went back to the Geometry's
+pieces.
+
+Why it grows that way, from the format rather than from a measurement: an MLOD stores each named
+selection as one byte per point and one byte per face of its LOD (py3d writes
+`len(all_points) + len(all_faces)` bytes per selection, `tools/py3d/py3d/__init__.py:1968-1974`,
+py3d 1.10.1), and every `ComponentNN` is a selection. N pieces of k points and f faces each make a
+LOD of about N·k points and N·f faces, so their selections take about N²·(k + f) bytes in each
+collision LOD.
 
 Before assembling, clean the source meshes and check the hulls: zero-area faces, orphan points,
 faces wound against their normals and `bmesh.ops.convex_hull` hulls that are not exactly convex
@@ -293,10 +296,12 @@ outline, minus convex holes cut by half-planes.
    that curves tightly: the hull's chord enters the room, and the cut that removes it leaves the
    patch far back. On the hangar lining, 38 % of the wall had its collision more than 15 cm
    behind, and the corners up to 1 m, the probe's limit. Prisms built per region of near-flat
-   faces, each extruded from 0.5 cm behind the region's deepest face to 3 cm short of the next
-   visible surface behind it, gave a median of 1 cm and less than 2 % beyond 15 cm. That reading
-   is of the prisms alone, before the generator's room and hard-volume test thins, splits or
-   drops a prism that enters a room; the full model was not part of it.
+   faces, each extruded from 0.5 cm behind the region's deepest face toward the next visible
+   surface behind it, gave a median of 1 cm and less than 2 % beyond 15 cm. The extrusion aims to
+   stop 3 cm short of that surface; a cap on depth and a minimum thickness of 1.5 cm can leave a
+   smaller margin, so check the clearance that comes out. That reading is of the prisms alone,
+   before the generator's room and hard-volume test thins, splits or drops a prism that enters a
+   room; the full model was not part of it.
 2. [OFFLINE MEASURED] Extrude along the face's geometric normal turned toward its visible side,
    not along the mean of its corner normals: next to a crease the smoothed normal leans by up to
    ~45°, and prisms along it stood up to a face's width behind their far corner (median 10.5 cm);
@@ -338,15 +343,15 @@ normals and 17,392 with smooth ones (a triple counter run in Blender, a lower bo
    | Per collision LOD | Largest that passed | Smallest that failed |
    |---|---|---|
    | Faces | 28,124 | 32,766 |
-   | Named selections × points | 31.5 M | 33.9 M |
-   | Selection bytes | 81.7 M | 83.7 M |
+   | Named selections × points | 31,494,324 | 33,889,401 |
+   | Selection bytes | 81,723,788 | 83,726,487 |
    | Pieces | 1,786 | 1,501 |
    | Points | 22,281 | 22,281 |
 
-   The first three separate the passes from the failures equally well (2^25 = 33.6 M lies between
-   the two products); the piece count and the point count alone do not. A cap at 32,768 faces is
-   ruled out: 32,766 already failed. A variant with few faces and many selections would decide it;
-   it was not run.
+   The first three separate the passes from the failures equally well (2^25 = 33,554,432 lies
+   between the two products); the piece count and the point count alone do not. A cap at 32,768
+   faces cannot be the only limit, since 32,766 already failed; one alongside another limit is not
+   ruled out. A variant with few faces and many selections would help decide it; it was not run.
 4. [OFFLINE MEASURED] A truncated MLOD gives the same `OTHER_FAIL`: one variant was cut off while
    being written, inside its Geometry LOD. Before reading an `OTHER_FAIL` as this limit, walk the
    MLOD to the `#EndOfFile#` tagg of every LOD.
@@ -354,9 +359,12 @@ normals and 17,392 with smooth ones (a triple counter run in Blender, a lower bo
    collision LOD with a header reader. Points and faces are in each LOD's `P3DM` header, and the
    named selections and their bytes in its TAGG list, which a reader skips through by each tagg's
    size without loading the file (seconds for 350 MB). Where any of the three measures is above
-   the largest value known to pass, move pieces to another model with the same transform, created
-   and deleted with the main one. Do not merge or decimate pieces to fit.
+   the largest value seen to pass (the first column of the table, exact), move pieces to another
+   model with the same transform, created and deleted with the main one. Do not merge or decimate
+   pieces to fit. Those values are one project's conservative bounds, not a PASS threshold:
+   `binarize` still adjudicates every resulting model.
 6. [IN-GAME VERIFIED, DayZDiag 1.29, 2026-10-03] The separate model works: a collision-only
    `House` class of 602 pieces, spawned with the rock at its transform. A `geom` ray cast from
    30 m out toward the rock stopped on one of its pieces, and the project's battery of 1,188 rays
-   per LOD from outside found 0 holes in Geometry, Fire and View.
+   per LOD from outside found 0 holes in Geometry, Fire and View. No Fire or View ray was checked
+   against that model's pieces on their own.
