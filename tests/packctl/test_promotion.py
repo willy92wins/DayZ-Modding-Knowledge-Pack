@@ -1477,6 +1477,7 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
     # outside that tuple is invisible here AND unconfigurable, so an entry
     # leaving is a fact about the scanner until someone runs the file.
     assert observed_paths == [
+        "skills/dayz-animation-pipeline/scripts/extract_empties.py",
         "skills/dayz-animation-pipeline/scripts/extract_weapon.py",
         "skills/dayz-animation-pipeline/scripts/fbx_extract.py",
         "skills/dayz-animation-pipeline/scripts/seanim_export.py",
