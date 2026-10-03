@@ -56,7 +56,7 @@ The tutorial's text puts the lever in Geometry (**Expert tutorial:11**), but its
 | View Geometry | `Component01`..`09` | `door1_open`, and `Component09` holding the same 18 faces |
 | Fire Geometry | `Component01`..`08` | `door1_open`, in no component |
 
-The lever is one closed piece that is not convex: an octagonal knob and a bar (its convex hull holds 1.4 times its volume). py3d 1.10.0 raises `ERR_COMPONENT_COVERAGE` on the Geometry and Fire LODs (a closed part in no component: 18 of 48 and 18 of 66 faces; the pinned 1.9.0 wheel raises `WARN_COMPONENT_COVERAGE` there); on the Simple Door and Door with Button P3Ds the coverage check reports nothing.
+The lever is one closed piece that is not convex: an octagonal knob and a bar (its convex hull holds 1.4 times its volume). py3d 1.10.0 raises `ERR_COMPONENT_COVERAGE` on the Geometry and Fire LODs (a closed part in no component: 18 of 48 and 18 of 66 faces; so does the 1.10.1 wheel, pinned since 2026-10-03, while the 1.9.0 wheel, the pin before it, raises `WARN_COMPONENT_COVERAGE` there); on the Simple Door and Door with Button P3Ds the coverage check reports nothing.
 
 In game (DayZDiag 1.29.163709, the P3D packed binarized and unbinarized and spawned as a `HouseNoDestruct`), no Geometry, Fire or physics ray touched the lever, and a player walking into the knob was stopped by the block behind it, not by the knob. In View Geometry only the knob answered rays; the bar took none. Copied as is, the pattern therefore gives a lever that no Geometry, Fire or physics query hits and that does not stop a walking player (weapon fire was not tested), and whose View Geometry component answers rays only at the knob (the action cursor was not tested either). The general rule, measured in the same run on first-party boxes, is `dayz-p3d-audit` killer #8.
 
@@ -163,7 +163,7 @@ Menu paths/tips: **Simple_Door Readme.txt:12-14**. The tutorial warns about non-
 - [ ] Visible animated parts named in Resolution LOD.
 - [ ] Only space-occupying parts in Geometry.
 - [ ] Geometry components found and named.
-- [ ] No Geometry, View or Fire Geometry face outside every `ComponentNN` (py3d 1.10.0 `ERR_COMPONENT_COVERAGE` for a closed part left out whole, `WARN_COMPONENT_COVERAGE` for the rest; the 1.9.0 wheel, the WARN for all of them): in game a part left out of every component collided with nothing.
+- [ ] No Geometry, View or Fire Geometry face outside every `ComponentNN` (py3d 1.10.0 `ERR_COMPONENT_COVERAGE` for a closed part left out whole, `WARN_COMPONENT_COVERAGE` for the rest, as does the 1.10.1 wheel pinned since 2026-10-03; the 1.9.0 wheel pinned before it, the WARN for all of them): in game a part left out of every component collided with nothing.
 - [ ] Geometry/View/Fire shapes closed and convex.
 - [ ] View Geometry contains actual source interaction selection.
 - [ ] View Geometry provides intended occlusion.

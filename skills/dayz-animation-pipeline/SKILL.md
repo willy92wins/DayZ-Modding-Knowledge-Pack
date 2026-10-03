@@ -188,7 +188,7 @@ Applies to any sandbox tooling this skill or its consumers produce. Cross-ref: `
 
 ## py3d 1.0.0 quirks for in-sandbox `.p3d` writes (anchor 6, added 2026-05-29)
 
-(historical — the pack fork is py3d 1.6.0 which supersedes these quirks; see
+(historical — the pack fork, py3d 1.6.0 or later as this skill requires, supersedes these quirks; see
 `references/py3d-1.0.0-quirks.md` header.)
 
 The Layer-1 scripts this skill ships (or this skill's consumers write on top

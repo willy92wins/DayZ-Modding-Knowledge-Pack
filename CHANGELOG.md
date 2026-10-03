@@ -91,6 +91,47 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   A third section it had written, a Mission-module lesson about a class holding a `static ref` to
   itself, was retracted by its author as measured on the wrong mod and is not ported; vanilla 1.29
   contradicts it as well (`VicinityItemManager` holds one and its module compiles).
+- `dayz-mcp-verify` static-object playbook, collision: the ray battery of `dayz-p3d-audit` rule 6 as
+  a recipe with its two controls, and why picking an item up is not a collision test (SP-454;
+  DayZDiag 1.29.163709, dayz-mcp run 606a5dbb, 2026-10-02). Nine rays per mode in `geom`, `view` and
+  `fire`: one down the axis, which on a solid box rules out a LOD recentred by a missing
+  `autocenter=0`; four through the middle from the sides and two more heights on one side; two from
+  inside, which a sound object answers `entry 0, exit 1` at distance 0. The same battery goes at a
+  control from the same PBO and load path and at a vanilla control of the same physics layer
+  (`WoodenCrate` for `item_small`), and the winding is named as the cause only by a pair that
+  changes the winding alone. The collision bullet no longer asks for rays "from ≥2 angles". Vanilla
+  targeting adds a 30°, 3 m cone search, with no hit on the object needed, when the camera looks
+  down at −45° or lower, and the target condition of `ActionTakeItemToHands` checks only distance;
+  `action_use` builds its target without a ray, and in that run it put in the player's hands a kit
+  box that all 27 rays of the battery missed. The item playbook points to the battery, and
+  `dayz-p3d-audit` rule 6 to both. PREREQUISITES 4: when the mod under test does not compile, test a
+  copy of its PBO without the offending entries, in a probe folder under `P:\Mods` written with the
+  owner's OK, hosted by an approved project whose `default_base_mods` carry its dependencies (an
+  absolute workshop path in `base_mods` fails with `bad_mod`).
+- `dayz-physics-engine` truth #11, a sub-bullet: a Roadway face of another model across a lift's
+  travel stops the ride down (SecretRock elevator, DayZDiag 1.29.163709, 2026-10-02/03). The cabin
+  carried a player up through its stops, but going down it left them standing at the stop's floor
+  height while it went on: the building's interior model had the shaft cut out of its collision
+  slabs, not out of its Roadway LOD. With the shaft cut out of that Roadway too, the player rode
+  down linked to the cabin. A character stands on Roadway where no Geometry is, and `RaycastRV`
+  cannot target Roadway (`ObjIntersect`, `3_game/constants.c:31-38`), so the check is offline: no
+  Roadway face of another model in the volume a moving piece's collision sweeps.
+- `dayz-persistence`, after Contract 3: build what stored entities rest on inside
+  `OnMissionStart` (same mod and build). A helicopter parked on a structure that the mod rebuilt
+  from its sidecar 2 s after `OnMissionStart`, with parts 0.5 s after `EEInit`, came back before
+  the structure after an orderly restart and fell 6.9 m; with the restore and the parts created
+  inside `OnMissionStart` it stayed parked after two orderly restarts. It matches
+  `enforce-script-reference` SP-LFS-3 (stored entities are created after `OnMissionStart` returns);
+  the rule holds for a structure that needs nothing from the game's storage.
+- `enforce-script-reference` Override Rules, rule 42, and a pointer from
+  `references/vanilla-deep-dive.md`: a recipe's `CanDo` copies `ingredients[0]` and `[1]` to locals
+  first and does not call `super.CanDo` (CocaLab, DayZDiag 1.29, 2026-09-27). With
+  `super.CanDo(ingredients, player)` called first, the server's `CanDo` returned false while every
+  part of its condition read true, and `ActionWorldCraft` cancelled the craft as it started; a probe
+  that read the array after its `super` call found the tray in both slots. Copying to locals
+  without `super` fixed it in game (the same commit also split the final `return` into a null
+  guard, so which change mattered was not isolated). Vanilla: 1 of 206 `CanDo` overrides calls
+  `super` (`craftlongtorch.c:61`, as its only statement). The mechanism is not established.
 
 ### Changed
 
@@ -197,6 +238,33 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `rip-import.md` §3.5 and `vehicle-structural-parity.md`; `dayz-clothing`
   `autofit-from-official-rig.md`), and item 1 describes the 1.9.0 `ERR_WINDING_INVERTED` message
   next to the 1.8.0 one.
+- py3d wheel pinned at 1.10.1 (`tools/py3d/rollout/wheel-manifest.json`):
+  `py3d_dayz-1.10.1-py3-none-any.whl`, SHA-256
+  `c9f000a51e6aca83104a8f021ef5e3eefe8d7f0a5b053623544b49dbdd5d1785`, built by
+  `rollout/build-wheel.ps1 -UpdateManifest` from the source on main at `ea7b396` (`tools/py3d` as
+  #78 left it), at the owner's request (2026-10-03). Since the 1.9.0 pin it carries
+  `ERR_COMPONENT_COVERAGE` (#72, 1.10.0) and the part-by-part normals step of the two winding
+  messages (#78, 1.10.1), whose entries (#72's above, #78's under Fixed) say no wheel carried them.
+  The toolchain was checked first: the same script rebuilt the 1.9.0 pin (`33d8b5ba…`) byte for byte
+  from the commit that sealed it (`4626f4b`), with Python 3.14.3 and setuptools 83.0.0; then 1.10.1
+  built six times to one hash, two of them in the seal. The wheel's `py3d/` files and `LICENSE` are
+  byte-identical to the source, `verify-wheel-restock.ps1` passed against it on synthetic skill
+  roots, and the 7 CANON tests passed against upstream `7acd58b` (py3d suite with the upstream
+  clone: 398 passed, 4 skipped). No installed skill tree vendors the wheel, so nothing was
+  restocked; a dry run of the applicator on temporary copies of the build machine's skill roots
+  planned 46 replacements, all in trees this rollout does not manage, and wrote nothing. The 1.9.0
+  wheel is kept as the rollback, and the user site-packages install follows the merge. The skill
+  notes that called 1.9.0 the pinned wheel, or said the pinned wheel's winding messages close with
+  the per-corner normals step, now give 1.9.0 as the pin from 2026-10-02 to 2026-10-03 and name the
+  1.10.1 pin (`dayz-p3d-audit` item 1 of "The three py3d gates", killer #8, "Absolute winding check"
+  rule 5 and `references/killers-detail.md` §8; `dayz-doors`
+  `references/lods-and-object-builder.md`, the Expert lever paragraph and the checklist line;
+  `dayz-clothing` `autofit-from-official-rig.md`), and `TOOLS.md`, `README.md` and
+  `GETTING-STARTED.md` give the current version, 1.10.1, and the pin, where they said 1.5.0, as do
+  `dayz-model-pipeline` `references/py3d-direct-generation.md` (it said 1.7.0) and the docstring of
+  `dayz-p3d-inspector` `scripts/p3d_inspector_extract.py` (it named the 1.5.0 wheel).
+  `dayz-animation-pipeline` `SKILL.md` and `tools/dayz-3d-viewer/README.md`, which gave 1.6.0 as the
+  pack fork's version, now give it as the minimum they need.
 
 ### Removed
 
@@ -218,22 +286,44 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - `dayz-animation-pipeline` `scripts/seanim_writer.py` keeps SEAnim bone modifiers. `read_seanim`
-  skipped them and `write_seanim` always wrote a count of 0, so a DayZATool extract read and written
-  back lost them: `p_1hd_erc_idle_low` (65 bones, ABSOLUTE header) lost its 60 RELATIVE modifiers,
-  and editing one track of a vanilla clip turned every bone ABSOLUTE. `read_seanim` now returns each
-  bone's `modifier` (None when it has none) and refuses a modifier index out of range or repeated;
-  `write_seanim` writes one entry per bone that carries one, in bone order, two bytes wide past 255
-  bones (four past 65,535), and refuses a value that is not a byte. That extract and four clips
-  spliced from it read and write back byte for byte; bones without `modifier` write what they wrote
-  before. Regression test `tests/test_seanim_writer.py`: fixtures built byte by byte from the SEAnim
-  layout, 22 cases, all failing on the previous script; each mutant the review found surviving
-  (modifier 0 dropped on read or write, the index width off by one at 255 or 65,535 bones, only 0 to
-  3 accepted, 255 modifiers refused, `False` accepted, a repeated index of the same type accepted, a
-  modifier equal to the header's type dropped) fails at least one of them.
-  `skeletal-anm-enfusion.md` (claim
-  `CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS`): DayZATool's `--generate-anim` does not keep them either; the
-  `.anm` built from that extract unchanged re-extracts with none. `weapon-anim-authoring-viewer.md`
-  and a comment in `seanim_export.py` no longer say that `read_seanim` drops them.
+  skipped them and `write_seanim` always wrote a count of 0, so a DayZATool extract read and
+  written back lost them: `p_1hd_erc_idle_low` (65 bones, ABSOLUTE header) lost its 60 RELATIVE
+  modifiers, and editing one track of a vanilla clip turned every bone ABSOLUTE. `read_seanim` now
+  returns each bone's `modifier` (None when it has none) and refuses a modifier index out of range
+  or repeated; `write_seanim` writes one entry per bone that carries one, in bone order, two bytes
+  wide past 255 bones (four past 65,535), and refuses a value that is not a byte. That extract and
+  four clips spliced from it read and write back byte for byte; bones without `modifier` write
+  what they wrote before. Regression test `tests/test_seanim_writer.py`: fixtures built byte by
+  byte from the SEAnim layout, 22 cases, all failing on the previous script; each mutant the
+  review found surviving (modifier 0 dropped on read or write, the index width off by one at 255
+  or 65,535 bones, only 0 to 3 accepted, 255 modifiers refused, `False` accepted, a repeated index
+  of the same type accepted, a modifier equal to the header's type dropped) fails at least one of
+  them. `skeletal-anm-enfusion.md` (claim `CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS`): DayZATool's
+  `--generate-anim` does not keep them either; the `.anm` built from that extract unchanged
+  re-extracts with none. `weapon-anim-authoring-viewer.md` and a comment in `seanim_export.py` no
+  longer say that `read_seanim` drops them.
+- `dayz-vehicles`: `references/gauge-needles.md` (twice) and
+  `references/vehicle-config-and-modelcfg.md` named an unpublished skill as the tool that read the
+  vanilla cars' animation classes from their ODOL, and `promotions/adjudications.json` named it in
+  the reason of the `skill/ai-3d-to-dayz` adjudication. The three passages now name the capability,
+  the ODOL reader of the external ODOL->MLOD converter, in the phrase the pack already uses for that
+  converter. Where an installation sets the phrase alias for it (`packctl/promotion.py`,
+  `promotions/local-targets.example.json`), a promotion writes the converter's local name in its
+  place, so that installed copy still points at the tool; without the alias the public wording
+  ships as it is. The adjudication's reason says "external converter -> the converter's local
+  name"; its key and digest are unchanged, and `promote` uses only those (of a reason it checks that
+  there is one). The measurements and what they cite are unchanged.
+- `dayz-physics-engine` engine truth 2 said that a model with no View Geometry LOD gets no action.
+  Read in the 1.29 source (not measured): at a camera pitch of −45° or lower, targeting also takes
+  the objects of a 30°, 3 m cone and scores them by their distance to the cursor ray, with no hit on
+  them needed, so an item on the ground can still become a target; the truth now says so and points
+  to `dayz-mcp-verify`. In `dayz-mcp-verify` PREREQUISITES 4, the `extra_mods`/`base_mods` boundary
+  was described as rejecting `:`, `\` and `/` in every project; it now also accepts an absolute path
+  inside the project's `mod_roots`, and a workshop path, outside them, still fails with `bad_mod`
+  (dated note; the old text is kept). Two more dated notes under WHAT IT DOES NOT COVER: the vanilla
+  control's readings ("control HIT + mod MISS ... = reversed collision convex components") name a
+  likely cause, which only a winding-only pair decides; and `entry=0` is not terrain by itself, since
+  a ray that starts inside an object reads `entry 0, exit 1` at distance 0 (run 606a5dbb).
 - `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
   by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
   bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties
@@ -601,6 +691,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `acceptance-ladder.md` cite the new paths. Measured with `packctl test-folders --tree skills`:
   six folders pass, also with numpy hidden from the test processes, and the same two mutants fail
   `dayz-mcp-verify` and `dayz-proxy-align`.
+- `dayz-characters`' `test_check_dayz_winding.py`, the 39 tests of its pre-PBO winding gate (#53),
+  sat in `references/`, outside the `skills/<skill>/tests` folders the gate's `skill_tests` check
+  and CI run, so a failing test there turned neither red. It now sits in `tests/` and reads
+  `check_dayz_winding.py` and its fixtures where they stay, in `references/` and
+  `references/winding_fixtures/`; `SKILL.md` and the gate's usage note cite the new path.
+  Measured with `packctl test-folders --tree skills`: seven folders pass, `dayz-characters` with
+  39 tests, on Python 3.14.3 and on 3.12.14 with pytest as the only package, as on the CI runner.
+  With the gate's `DISAGREE_BELOW` mutated from 10 to 0, `dayz-characters` fails (6 of its 39
+  tests), where `main` at `ea7b396` with the same mutant passes its six folders.
 - py3d rollout applicator (`tools/py3d/rollout/apply-s2-rollout.ps1`): restocking a skill's
   `wheels/` counted the pinned name and legacy `py3d-*.whl` wheels but not an earlier
   `py3d_dayz-*.whl`, so a 1.8.0 → 1.9.0 restock would copy 1.9.0 beside 1.8.0, pass its own
@@ -802,6 +901,43 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   inside-out render, and the reversal hid a mirror (`references/character-rigging.md` §6, in game
   2026-10-02). The old text is quoted in dated notes. Docs only; nothing re-measured in game for this
   change.
+- packctl: in the middle of a merge, `git_tracked_files` (`packctl/common.py`) listed a path in
+  conflict once per index stage, up to three times, as `git ls-files` prints it. It now lists each
+  tracked path once, still sorted. None of its callers needed the repeats: `validate`'s link check
+  reported a broken link in such a Markdown file three times, the gate passed such a Python file to
+  `py_compile` three times and counted it three times, and `build`'s symlink check would repeat its
+  finding; the source-map, privacy and conflict-marker checks read the list through a set, and
+  `promote` refuses a dirty tree before it lists a route's files. Two tests in
+  `tests/packctl/test_validation.py` leave a merge unresolved: the list and the link check fail on
+  the old function and pass now.
+- `tests/packctl/test_promotion.py`: on a Spanish-locale Windows host, the eight tests that create a
+  directory link (nine runs, one test being parametrized) passed with a
+  `PytestUnhandledThreadExceptionWarning` per link. Without Developer Mode `try_dir_link` falls back
+  to `cmd /c mklink /J`, cmd writes its message in the console code page, the OEM one unless the
+  console runs UTF-8 (cp850 here: `UnicodeDecodeError` on byte `0xa2`, the `ó` of `Unión`), and the
+  helper decoded it as UTF-8 in subprocess's reader thread. It now keeps the output as bytes and
+  reads only the return code. Under `-W error::pytest.PytestUnhandledThreadExceptionWarning` the nine
+  runs go from failed to passed (in a console at code page 65001 both versions pass). CI never
+  showed it: its `tests/packctl` step on `ea7b396` reports 359 passed and no warning.
+- `dayz-test-ingame`, "Testing a mod that is not in the allow-list": project `DayZ_MCP` works as a
+  carrier. The bullet said `@DayZ_MCP` could not carry other mods (its `5_Mission` failed with
+  `CParser: quoted string not closed`, SP-128, 2026-07-28). On 2026-10-02 (DayZDiag 1.29.163709) it
+  carried two extra mods in run `13cc2542` and four in run `1c289781`, and both peers compiled every
+  script module (`Module: Mission; loaded 217x files; 540x classes`, no `CParser` line). Ten minutes
+  before `13cc2542`, `LFPowerGrid`, the carrier the bullet recommended, carrying `@DayZ_MCP` and the
+  same two mods, stopped at `Can't compile "Mission" script module!` on an error in its own
+  `5_Mission` (run `f1afd2c3`). The bullet now says to check the carrier's `Module: Mission` line on
+  the day, and quotes the replaced sentence in a dated note.
+- `dayz-mcp-verify`: `telemetry_read(mode="object_at")` reads any classname, and
+  `vehicle_prepare_fixture` any `CarScript`. SP-152 said object telemetry only took
+  `type="MERCEDES_AMGLF"`. On 2026-10-02 `object_at` answered `telemetry.found=1` for `KP_CharAB_V1`, the
+  vanilla `ZmbM_SoldierNormal` and `KP_CharAB_V3`, and the loopback checks `type` only for a non-empty
+  string. The oldest copy of the tools on disk (2026-07-25) had the `MERCEDES_AMGLF` check only in the
+  `vehicle_prepare_fixture` branch, and the tools' 2026-08-16 release has none: between 2026-08-18
+  and 2026-10-01 that verb returned `vehicle_fixture_ready=1` on 15 other `CarScript` types, which
+  the 2026-07-18 server-side conditioning section and `dayz-aviation`'s tooling note also denied.
+  The zombie-command bullet now reconciles a lost spawn with `object_at` instead of logs and user
+  inspection. The replaced sentences are quoted in dated notes.
 
 ## [1.5.0] - 2026-10-02
 
