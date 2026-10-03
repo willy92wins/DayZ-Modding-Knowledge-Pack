@@ -54,6 +54,45 @@ Both only fire when the receiver's declared type resolves inside the addon.
 That is deliberate: judging by member name alone produced 164 false positives
 on a tree that compiles clean.
 
+## Compile errors read from one file
+
+Two rules come from script modules that did not compile, each with its log:
+
+- `ES-RESERVED-WORD-IDENTIFIER` (FAIL): a variable, member or parameter named
+  `sealed`, `local`, `owned` or `out`. These four failed as names in a real
+  compile: `Expected name, not a keyword 'sealed'` on DayZDiag 1.29.163709,
+  and `Broken expression (missing ';'?)` for the others (`local` on DayZDiag
+  1.30.164014 Exp). Vanilla uses each only as a keyword. Other modifiers
+  vanilla uses the same way (`notnull`, `inout`, `autoptr`, `event`...) are
+  not listed until a failure is on record.
+- `ES-MODULO-FLOAT-CONTEXT` (FAIL): `%` inside an arithmetic expression that
+  also holds a float literal, such as `(n % 4) * 0.7`. Both operands of `%`
+  can be integers and it still fails with `Unknown operator '%'` (DayZDiag
+  1.29 and DayZ 1.30 Exp); computing the `%` into an int local first
+  compiles. The expression stops at a call's or an index's brackets, a
+  comparison, an assignment, `;` and `,`, and one that holds a string
+  literal is not judged (there `+` concatenates). A float variable is not
+  seen: only the literal case is caught.
+
+Each finding is wrong wherever the code compiles, so code under another
+mod's `#ifdef` is judged too. A branch that never compiles is not: `#if`
+blocks, and the `#ifndef` or `#else` branch of a macro the same file
+`#define`s first (`scripts/shared/dead_branches.py`).
+
+Measured on 2026-10-03: nothing on vanilla 1.29.0.163451 (69 `%` judged) or
+on vanilla 1.30.164014 Exp (94 `%`), and on the source that failed in game,
+`vector local;`, the reserved-word rule fires on that line.
+
+Two compile errors filed with these have no rule here yet:
+
+- `Variable name 'X' already used as type name` (a local or member named
+  like a vanilla class, such as `bool Debug = false;`) needs the vanilla
+  scripts tree to know the class names, and waits for the `--vanilla-root`
+  option.
+- `Formula too complex`: vanilla compiles a statement with 14 `+`, the one
+  that failed had about 20 terms and its source is gone, and the limit
+  between them was not measured.
+
 ## Tests
 
 ```powershell

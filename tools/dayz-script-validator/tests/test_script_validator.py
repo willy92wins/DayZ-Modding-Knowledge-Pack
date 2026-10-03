@@ -1963,6 +1963,132 @@ class TestExternalConsumerMissing(unittest.TestCase):
         assert_standard_findings(self, result)
 
 
+RESERVED = FIXTURES / "reserved_word_identifier"
+RESERVED_RULE = "ES-RESERVED-WORD-IDENTIFIER"
+
+
+def _errors_of(result, rule_id):
+    return [e for e in result["errors"] if e["rule_id"] == rule_id]
+
+
+class TestReservedWordIdentifier(unittest.TestCase):
+    """ES-RESERVED-WORD-IDENTIFIER: a keyword used as a name.
+
+    sealed: parameter, DayZDiag 1.29.163709, 2026-10-02, "Expected name, not a
+    keyword 'sealed'". local: local variable, DayZDiag 1.30.164014 (Exp),
+    2026-09-28, "Broken expression (missing ';'?)". owned and out: the same
+    error on a local (enforce-script-reference SKILL.md).
+    """
+
+    def test_sealed_parameter_fails(self):
+        exit_code, result = script_validator.run([str(RESERVED / "bad_sealed_param")])
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, RESERVED_RULE)
+        self.assertEqual([5], [e["line"] for e in errors])
+        self.assertIn("fx_probe_sealed.c", errors[0]["file"])
+        self.assertIn("'sealed'", errors[0]["message"])
+        self.assertEqual("FAIL", errors[0]["severity"])
+        assert_standard_findings(self, result)
+
+    def test_local_variable_fails_on_its_declaration(self):
+        exit_code, result = script_validator.run([str(RESERVED / "bad_local_var")])
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, RESERVED_RULE)
+        # The declaration only; `local[0] = mx;` and `return local;` follow it.
+        self.assertEqual([7], [e["line"] for e in errors])
+        self.assertIn("'local'", errors[0]["message"])
+
+    def test_owned_member_and_out_local_fail(self):
+        _code, result = script_validator.run([str(RESERVED / "bad_owned_out")])
+
+        errors = _errors_of(result, RESERVED_RULE)
+        self.assertEqual(
+            [(3, "owned"), (7, "out")],
+            [(e["line"], e["message"].split("'")[1]) for e in errors],
+        )
+
+    def test_keywords_where_vanilla_puts_them_pass(self):
+        _code, result = script_validator.run([str(RESERVED / "ok_modifiers")])
+
+        self.assertEqual([], _errors_of(result, RESERVED_RULE))
+
+    def test_only_branches_that_can_compile_are_judged(self):
+        _code, result = script_validator.run([str(RESERVED / "preprocessor")])
+
+        # `vector local;` and `EntityAI owned;` under #ifndef of macros this file
+        # always defines (one of them under an #ifdef it guarantees) and
+        # `int out;` under #if 0 never compile; `vector sealed;` compiles once
+        # FX_SOME_OTHER_MOD's mod is loaded.
+        self.assertEqual(
+            [(16, "sealed")],
+            [(e["line"], e["message"].split("'")[1])
+             for e in _errors_of(result, RESERVED_RULE)],
+        )
+
+
+MODULO = FIXTURES / "modulo_float_context"
+MODULO_RULE = "ES-MODULO-FLOAT-CONTEXT"
+
+
+class TestModuloFloatContext(unittest.TestCase):
+    """ES-MODULO-FLOAT-CONTEXT: '%' in an expression with a float literal.
+
+    `((g % 5) - 2) * 7.0` failed on DayZDiag 1.29 (2026-09-28) and
+    `float ox = (n % 4) * 0.7 - 1.05;` on DayZ 1.30 Exp (2026-09-24), both
+    with "Unknown operator '%'".
+    """
+
+    def test_both_failing_shapes_fail(self):
+        exit_code, result = script_validator.run([str(MODULO / "bad")])
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, MODULO_RULE)
+        self.assertEqual([7, 12], [e["line"] for e in errors])
+        self.assertIn("7.0", errors[0]["message"])
+        self.assertIn("0.7", errors[1]["message"])
+        assert_standard_findings(self, result)
+
+    def test_integer_modulo_and_the_int_local_fix_pass(self):
+        _code, result = script_validator.run([str(MODULO / "ok")])
+
+        self.assertEqual([], _errors_of(result, MODULO_RULE))
+
+    def test_expression_boundaries(self):
+        from detectors.es_modulo_float_context import check_es_modulo_float_context
+        from stripper import strip_enforce_comments_and_strings
+
+        def flagged(statement):
+            source = (
+                "class C\n{\n    void F(int n, int i)\n    {\n        %s\n    }\n}\n"
+                % statement
+            )
+            stripped, _warnings = strip_enforce_comments_and_strings(source, "x.c")
+            return bool(check_es_modulo_float_context(source, stripped, "x.c"))
+
+        # Same expression as the float literal: judged.
+        self.assertTrue(flagged("float a = 0.5 * (n % 4);"))
+        self.assertTrue(flagged("return (n % 4) * 0.5;"))
+        self.assertTrue(flagged("SetPos(1, ((n % 3) + 1) * 2.5);"))
+        # Another expression: an argument, an index, a comparison, another
+        # statement, or a call's arguments. Not judged.
+        self.assertFalse(flagged("Foo(n % 4, 0.5);"))
+        self.assertFalse(flagged("float b = m_Arr[i % 3] * 0.5;"))
+        self.assertFalse(flagged("if (n % 2 == 0) x = 1.5;"))
+        self.assertFalse(flagged("int k = n % 4; float c = k * 0.5;"))
+        self.assertFalse(flagged("float d = Math.Floor(n % 4) * 0.5;"))
+        self.assertFalse(flagged("n %= 4;"))
+        # A string literal makes `+` a concatenation: not judged.
+        self.assertFalse(flagged('Print("cell " + (n % 4) + " of " + 0.5);'))
+        # A comment is not part of the expression.
+        self.assertFalse(flagged("int k = n % 4; // scale by 0.5 later"))
+        self.assertTrue(flagged("float e = (n % 4) /* cell */ * 0.5;"))
+        # Code that never compiles is not judged; another mod's branch is.
+        self.assertFalse(flagged("#if 0\nfloat g = (n % 4) * 0.5;\n#endif"))
+        self.assertTrue(flagged("#ifdef FX_OTHER_MOD\nfloat h = (n % 4) * 0.5;\n#endif"))
+
+
 if __name__ == "__main__":
     unittest.main()
 

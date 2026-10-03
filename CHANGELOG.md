@@ -195,6 +195,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   needs, and no sample of either exit read a fall (the bottom one logged at 2 Hz). Short spikes of up to 22 cm (server) and
   12.6 cm (client) lasted one to three samples; on the client they follow long frames, and on the
   server the cause is open. A jump while the platform rises was not tried.
+- `dayz-script-validator`: two FAIL rules from script modules that did not compile, each filed in
+  the pipeline inbox with its log. `ES-RESERVED-WORD-IDENTIFIER` flags a variable, member or
+  parameter named `sealed`, `local`, `owned` or `out`: `void Setup(vector rest, vector sealed)`
+  stopped the World module on DayZDiag 1.29.163709 with `Expected name, not a keyword 'sealed'`,
+  and `vector local;` stopped the Mission module on DayZDiag 1.30.164014 Exp with
+  `Broken expression (missing ';'?)`, the error `owned` and `out` gave earlier
+  (`enforce-script-reference`). Vanilla uses all four only as keywords; other modifiers it uses the
+  same way wait for a failure on record. `ES-MODULO-FLOAT-CONTEXT` flags `%` in an arithmetic
+  expression that also holds a float literal: `((g % 5) - 2) * 7.0` (DayZDiag 1.29) and
+  `float ox = (n % 4) * 0.7 - 1.05;` (DayZ 1.30 Exp) failed with `Unknown operator '%'` although
+  both operands of `%` are integers, and the `%` in an int local first compiles. A float variable
+  is not seen, only the literal. Code under another mod's `#ifdef` is judged; `#if` blocks and the
+  `#ifndef`/`#else` of a macro the same file `#define`s first are not. Neither rule reports
+  anything on vanilla 1.29.0.163451 (the vanilla control still matches its baseline) or on vanilla
+  1.30.164014 Exp. Two errors filed with them get no rule yet: `Variable name 'X' already used as
+  type name` needs the vanilla tree's class names, and `Formula too complex` has no measured limit
+  (vanilla compiles a statement with 14 `+`; the one that failed had about 20 terms and its source
+  is gone).
 
 ### Changed
 

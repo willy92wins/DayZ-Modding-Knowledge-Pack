@@ -161,6 +161,10 @@ from detectors.es_protected_cross_module import (
 from detectors.es_external_consumer_missing import (
     check_es_external_consumer_missing,
 )
+from detectors.es_reserved_word_identifier import (
+    check_es_reserved_word_identifier,
+)
+from detectors.es_modulo_float_context import check_es_modulo_float_context
 from detectors.es_member_redeclare_base import (
     ES_MEMBER_REDECLARE_BASE_RULE_ID,
     check_es_member_redeclare_base,
@@ -356,6 +360,10 @@ def validate_addon(addon_root, external_roots=None):
             )
             errors.extend(
                 check_es_override_of_platform_gated_method(stripped, rel_path)
+            )
+            errors.extend(check_es_reserved_word_identifier(stripped, rel_path))
+            errors.extend(
+                check_es_modulo_float_context(source, stripped, rel_path)
             )
         elif suffix == ".rvmat":
             errors.extend(check_rvmat_normalmapmacro(source, rel_path))

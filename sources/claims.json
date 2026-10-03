@@ -1612,6 +1612,32 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-persistence-ce-lifetime@2026-10-04",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_reserved_word_identifier.py",
+      "claim_id": "CLAIM-ENFORCE-RESERVED-WORD-NAME",
+      "evidence_locator": "In game, two script logs re-read on 2026-10-03. DayZDiag 1.29 (defines DAYZ_1_29), 2026-10-02 18:10, the server script log of SecretRock's failed launch d7c9a6f6: secretrock_rocahelilidcap.c,39: Expected name, not a keyword 'sealed', then Can't compile \"World\" script module!; the parameter was renamed sealedPos and that line now reads `void SR_RH_Setup(vector restPos, vector sealedPos, int state)` (pipeline inbox fb-20261002-161741-4e15, with the repro `void Setup(vector rest, vector sealed)` on 1.29.163709). DayZDiag 1.30.164014 Exp, 2026-09-28 07:20, LFH2R probe run 20260928-072023, server and client script logs: lfh_probespawn.c,75: Broken expression (missing ';'?); line 75 of the built source is `vector local;`, and renamed to off it compiled (fb-20260928-053003-f5e6). owned: `EntityAI owned;` gave the same error (enforce-script-reference SKILL.md, SP-073, LFPowerGrid T0 2026-07-20); out: a local named out gave it too (enforce-script-reference SKILL.md, 'Three ways to break the compiler'). Vanilla 1.29.0.163451 uses the four as keywords only: 1_core/physics/contact.c:9, 4_world/plugins/pluginbase/pluginconfigviewer.c:153, 1_core/proto/enconvert.c:536, 3_game/global/game.c:947. Offline: the rule fires on line 75 of that LFH2R source; nothing on vanilla 1.29.0.163451 or 1.30.164014 Exp.",
+      "license": "MIT",
+      "line_end": 36,
+      "line_start": 9,
+      "observed_at": "2026-10-02",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-val-compile-errors@2026-10-03",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_modulo_float_context.py",
+      "claim_id": "CLAIM-ENFORCE-MODULO-FLOAT-CONTEXT",
+      "evidence_locator": "In game. DayZDiag 1.29 (defines DAYZ_1_29), 2026-09-28 03:43, LFPowerGrid client script log: lfpg_probe3d.c,255: Unknown operator '%', then Can't compile \"Mission\" script module! (log re-read on 2026-10-03; the probe source is deleted: its author filed the expression as `((g % 5) - 2) * 7.0` in pipeline inbox fb-20260928-032137-7ce1, the correction of fb-20260928-014950-7b9e, which had replaced it with `g - (g / 5) * 5`). DayZ 1.30 Exp, 2026-09-24: `float ox = (n % 4) * 0.7 - 1.05;` failed with the same error and compiled once the `%` went into an int local first (vault lessons-learned, revision of 2026-09-24; that log is deleted). Vanilla 1.29.0.163451 holds 69 `%` operators and 1.30.164014 Exp 94, none in an expression with a float literal. Offline: fixtures under tests/fixtures/modulo_float_context; nothing on either vanilla tree.",
+      "license": "MIT",
+      "line_end": 30,
+      "line_start": 9,
+      "observed_at": "2026-09-28",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-val-compile-errors@2026-10-03",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1
