@@ -1009,7 +1009,8 @@ Validated pattern:
   `GetType()` inside the radius (`DayZ_MCP_dev/addon/scripts/5_Mission/MCPBridge.c:3007-3051`), and
   the loopback checks `type` only for a non-empty string (`DayZ_MCP_dev/tools/dayz_mcp/loopback.py:1349-1358`).
   [EXACT][CLAIM-MCPV-OBJECT-AT-ANY-TYPE] On 2026-10-02 (DayZDiag 1.29.163709, run `1c289781`) it
-  answered `found=1` with `pos`, `orientation`, `health01` and `declared_slots` for three types:
+  answered `telemetry.found=1` with `pos`, `orientation`, `health01` and `declared_slots` (the reply's
+  top-level `found` stays 0) for three types:
   `KP_CharAB_V1` (`health01` 0), the vanilla `ZmbM_SoldierNormal` (0) and `KP_CharAB_V3` (0.7525).
   `inventory_attach` returned the same telemetry block for `SurvivorM_Francis`. It reads only the
   fields the bridge fills, not a mod's script members or sync variables.
@@ -1028,8 +1029,9 @@ Validated pattern:
   `adopted_run` — §COMPOSITION, "Bridge startup sequence".)
 - A `world_spawn` timeout leaves a zombie command: it may execute after losing the
   `object_id`. Before retrying, reconcile the effect with `telemetry_read(mode="object_at")` for that
-  type at the spawn position: `found=false` means none is there, and two or more of that type inside
-  the radius fail with `ambiguous_fixture` (`MCPBridge.c:3031-3045`; not exercised on a zombie spawn).
+  type at the spawn position: `telemetry.found` 0 means none of that type is inside the radius when the
+  read runs (the zombie command can still run later), and two or more of that type inside the radius
+  fail with `ambiguous_fixture` (`MCPBridge.c:3031-3045`; not exercised on a zombie spawn).
   Do not blindly duplicate spawn. *(Corrected 2026-10-03: this said "if the `object_at` cap prevents
   it, use logs plus user inspection"; there is no such cap, first bullet.)*
 
