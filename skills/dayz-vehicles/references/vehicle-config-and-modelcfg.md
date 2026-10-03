@@ -544,7 +544,7 @@ matching 2-point `*_axis` selection in the Memory LOD or it silently does nothin
 
 ### Dashboard needles: what the engine actually feeds `speed` / `rpm` (measured on vanilla ODOL, added 2026-09-02, LFQuad3)
 
-Read with the debinarizer skill's `odol_reader.py` from `DZ\vehicles\wheeled\offroadhatchback\offroadhatchback.p3d`
+Read with the ODOL reader of the external ODOL->MLOD converter from `DZ\vehicles\wheeled\offroadhatchback\offroadhatchback.p3d`
 and `civiliansedan\civiliansedan.p3d` (ODOL v54, DayZ 1.29). These are the classes the vanilla cars ship with,
 not the Landrover template above:
 

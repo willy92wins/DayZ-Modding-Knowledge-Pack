@@ -570,8 +570,8 @@ AddonBuilder clears its `-temp` before copying.
      rule 1 says binarize looks for it there and nowhere else. Stage each cited `.rvmat` with
      the textures it names (CocaLab staged the DrugsPLUS `.rvmat` with its three `.paa`; a
      texture missing on its own was not tested).
-   - **After — the control.** Read the ODOL with the external `odol_reader.py`
-     (`dayz-p3d-debinarizer`; not distributed with this pack). Every unresolved material read
+   - **After — the control.** Read the ODOL with the ODOL reader of
+     an external ODOL->MLOD converter (not distributed with this pack). Every unresolved material read
      so far showed, in every LOD that cites it: `pixel_shader == 0`, `vertex_shader == 0`,
      `surface_file == ""`, no stage texture (the thermal `StageTI`, `stage_ti`, included) and
      the engine's default colours (diffuse and ambient 1,1,1,1, emissive 0,0,0,1). A match is a

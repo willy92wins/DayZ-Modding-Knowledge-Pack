@@ -319,10 +319,11 @@ parts raising the ERROR (an empty selection itself was not measured). On the thr
 the `dayz-doors` tutorial it is silent on `Simple_Door` and `Door_w_Button` and raises the ERROR on
 the Geometry and Fire LODs of `Expert_Mode`, whose lever (18 faces, one closed piece: selection
 `lever` in Geometry, `door1_open` in Fire) is in no component there, though the tutorial's text
-lists the lever among the parts that take up space. The 1.9.0 wheel, pinned on 2026-10-02, raises
-every face in no component as `WARN_COMPONENT_COVERAGE`, and its message says that a face left out
-beside covered ones was not measured: with that wheel, read a closed part it counts in no component
-as the measured case below.
+lists the lever among the parts that take up space. The 1.10.1 wheel, pinned since 2026-10-03,
+runs this check unchanged. The 1.9.0 wheel, the pin from 2026-10-02 to 2026-10-03, raises every face in
+no component as `WARN_COMPONENT_COVERAGE`, and its message says that a face left out beside covered
+ones was not measured: with that wheel, read a closed part it counts in no component as the
+measured case below.
 
 **Measured in game** (2026-10-02, DayZDiag 1.29.163709, driven by dayz-mcp): a pair of 2 m boxes,
 A in `Component01` and B either in `Component02` or in no component (the two MLODs byte-identical
