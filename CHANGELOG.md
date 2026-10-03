@@ -203,8 +203,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   1.10.1 pin (`dayz-p3d-audit` item 1 of "The three py3d gates", killer #8, "Absolute winding check"
   rule 5 and `references/killers-detail.md` §8; `dayz-doors`
   `references/lods-and-object-builder.md`, the Expert lever paragraph and the checklist line;
-  `dayz-clothing` `autofit-from-official-rig.md`), and `TOOLS.md` and `README.md` give the current
-  version, 1.10.1, and the pin, where they said 1.5.0.
+  `dayz-clothing` `autofit-from-official-rig.md`), and `TOOLS.md`, `README.md` and
+  `GETTING-STARTED.md` give the current version, 1.10.1, and the pin, where they said 1.5.0, as do
+  `dayz-model-pipeline` `references/py3d-direct-generation.md` (it said 1.7.0) and the docstring of
+  `dayz-p3d-inspector` `scripts/p3d_inspector_extract.py` (it named the 1.5.0 wheel).
+  `dayz-animation-pipeline` `SKILL.md` and `tools/dayz-3d-viewer/README.md`, which gave 1.6.0 as the
+  pack fork's version, now give it as the minimum they need.
 
 ### Removed
 
