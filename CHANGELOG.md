@@ -60,6 +60,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   indents it. On `3e22429` the check reads 923 of the 932 tracked files (the 9 it skips are binary
   test fixtures) and reports those three lines only; a longer run, such as the 33 `=` at
   `skills/dayz-pbo-build/SKILL.md:337`, is not a marker. Tests in `tests/packctl/test_validation.py`.
+- `dayz-mcp-verify`: two sections that a session testing a mod through the MCP wrote into the
+  installed copy on 2026-10-03, ported in English without private names; the live copy is
+  re-adjudicated in `promotions/adjudications.json`, so the next promotion replaces it with this one.
+  "Check which mod a run loaded before reading its verdict": `dayz_test_run` accepts any `project`
+  and reports `succeeded` whatever mod set it booted; one run loaded another mod, and the missing
+  compile errors of the mod under test were read as a fix, so the run's `-mod=` and `-mission=` are
+  read in its RPT first. "`dayz_test_run(build=true)`: the native debug gate rejects localized .NET
+  satellites": on a host with a Spanish culture the AddonBuilder helper loads `*.resources`
+  satellites that the allowlist does not cover (`native_debug_gate_rejected:unapproved_debug_image`).
+  A third section it had written, a Mission-module lesson about a class holding a `static ref` to
+  itself, was retracted by its author as measured on the wrong mod and is not ported; vanilla 1.29
+  contradicts it as well (`VicinityItemManager` holds one and its module compiles).
 
 ### Changed
 

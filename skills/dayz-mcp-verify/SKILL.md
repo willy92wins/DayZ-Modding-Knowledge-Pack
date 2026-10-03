@@ -1160,3 +1160,27 @@ routes) [EXACT][CLAIM-MCPV-WORN-MANNEQUIN]:
   `health01 = 0` in `telemetry_read(mode="object_at")` and lay on the ground, the third read 0.75. No
   log line explains it and the cause was not found; one observation, no AI/no-AI control. Capture
   static infected early, and re-read their health before a late capture.
+
+## Check which mod a run loaded before reading its verdict (added 2026-10-03)
+
+`dayz_test_run` accepts any `project` and reports `succeeded` whatever mod set it booted. In one run
+the `project` argument named another mod's project by mistake: the server loaded that mod and
+`@DayZ_MCP` with another mission, never the mod under test, and the absence of that mod's compile
+errors was read as a fix. A "defect measured in the engine" was written from it and had to be
+retracted. Before you attribute a compile result or any verdict to the mod under test, read the
+run's RPT and check the `-mod=` and `-mission=` it was started with (the reading of SP-124 above,
+applied to your own run).
+
+## `dayz_test_run(build=true)`: the native debug gate rejects localized .NET satellites (added 2026-10-03)
+
+On a host whose culture is Spanish (`es`), `dayz_test_run(build=true)` on a project whose build
+runs AddonBuilder fails with `native_debug_gate_rejected:unapproved_debug_image`. The .NET helper
+loads satellite resource assemblies
+(`C:\Windows\Microsoft.NET\assembly\GAC_MSIL\*.resources\v4.0_*_es_*`; measured:
+`mscorlib.resources.dll`), and the server's allowlist of modules for addon builds does not cover
+them. The reply on the wire carries no detail (kind, pid, image): read it in the MCP server's
+stderr log (search for `unapproved_debug_image`). It is a defect of the MCP server, not of the mod
+under test.
+
+Source: written into the installed copy on 2026-10-03 by a session testing a mod through the MCP;
+ported here in English, without private names.

@@ -761,10 +761,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-conflict-markers@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: Unreleased Added entry for the dayz-mcp-verify port of two sections written into the installed copy (RPT -mod=/-mission= check before a verdict; native debug gate vs .NET satellites on a Spanish-culture host) and the re-adjudication of the live copy; the retracted static-ref lesson is not ported. Evidence as recorded on the SKILL.md input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2d858b1b580a2c999ffb1a3428fd28c3679e8aede2f58a84dc9d1a8fb0d5cb6b",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-mcpv-live-port@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "353aee635e130e360d3713dc816a793c6ba25b30d6d5c3c24467f1807410e7dc",
+      "output_hash": "2d858b1b580a2c999ffb1a3428fd28c3679e8aede2f58a84dc9d1a8fb0d5cb6b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3367,10 +3377,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-3e22429@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: port of two sections that a session testing a mod through the MCP wrote into the INSTALLED dayz-mcp-verify (both skill roots) on 2026-10-03, found when packctl promote --check of main c26b0e2 failed with PROMOTION-TARGET-UNEXPLAINED on skill/dayz-mcp-verify. That session first wrote (02:44 UTC) a Mission-module lesson, a class broken by its own static ref member, then (03:21 UTC) retracted it as false, its run having loaded another mod, and replaced it with the two sections ported here: check a run's -mod= and -mission= in its RPT before reading its verdict (dayz_test_run accepts any project and reports succeeded), and dayz_test_run(build=true) failing with native_debug_gate_rejected:unapproved_debug_image on a host with a Spanish culture (.NET satellite resources, measured mscorlib.resources.dll). The retracted lesson is not ported; vanilla 1.29 contradicts it too (scripts/5_mission/gui/inventorynew/vicinityitemmanager.c:20 declares private static ref VicinityItemManager s_Instance inside its own class; the same line is in the installed dta/scripts.pbo of DayZ 1.29). Owner's choices 2026-10-03: port and promote; destination dayz-mcp-verify. The live copy is re-adjudicated in promotions/adjudications.json (both roots) at the digest measured at 11:00 UTC with packctl tree_digest, 080f527e..., unchanged since 03:21 UTC; promotion backs up the whole live tree before it writes. Ported in English without private names (checked mechanically: none of the project, class, run or host names of the live text appears in the diff). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ef13493ed7db399a26c8dd67c4171ac4e355eeb9af7f0a2f2eaea9242ae2426c",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-mcpv-live-port@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dc82567b058b9d82cfa82fd13e63f6b52291cfd7070ce5235cf340ee9ef102a8",
+      "output_hash": "ef13493ed7db399a26c8dd67c4171ac4e355eeb9af7f0a2f2eaea9242ae2426c",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -7490,10 +7510,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-mcp-verify-item-yaw@2026-10-02",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: port of two sections that a session testing a mod through the MCP wrote into the INSTALLED dayz-mcp-verify (both skill roots) on 2026-10-03, found when packctl promote --check of main c26b0e2 failed with PROMOTION-TARGET-UNEXPLAINED on skill/dayz-mcp-verify. That session first wrote (02:44 UTC) a Mission-module lesson, a class broken by its own static ref member, then (03:21 UTC) retracted it as false, its run having loaded another mod, and replaced it with the two sections ported here: check a run's -mod= and -mission= in its RPT before reading its verdict (dayz_test_run accepts any project and reports succeeded), and dayz_test_run(build=true) failing with native_debug_gate_rejected:unapproved_debug_image on a host with a Spanish culture (.NET satellite resources, measured mscorlib.resources.dll). The retracted lesson is not ported; vanilla 1.29 contradicts it too (scripts/5_mission/gui/inventorynew/vicinityitemmanager.c:20 declares private static ref VicinityItemManager s_Instance inside its own class; the same line is in the installed dta/scripts.pbo of DayZ 1.29). Owner's choices 2026-10-03: port and promote; destination dayz-mcp-verify. The live copy is re-adjudicated in promotions/adjudications.json (both roots) at the digest measured at 11:00 UTC with packctl tree_digest, 080f527e..., unchanged since 03:21 UTC; promotion backs up the whole live tree before it writes. Ported in English without private names (checked mechanically: none of the project, class, run or host names of the live text appears in the diff). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c39ce92069609dd0a1de8dc5f06eee4a7a276a75f4153415424a60acee28eb9f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-mcpv-live-port@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "55ca9025d341b9fd60b45418ebda999441da58ffd1321915e02458936d51088b",
+      "output_hash": "c39ce92069609dd0a1de8dc5f06eee4a7a276a75f4153415424a60acee28eb9f",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
