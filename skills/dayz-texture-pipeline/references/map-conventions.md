@@ -31,20 +31,36 @@ python scripts/normal_convention.py --normal <normal.png> --albedo <albedo.png> 
 ```
 
 It needs the normal map and the albedo of the same UV layout, same size, as PNG (decode a
-`.paa` with ImageToPAA first). The albedo's high-pass marks the hollows (a pixel darker than its
-blurred surroundings). Across a hollow d(nx)/dx and d(ny)/dy have the same sign in DirectX and
-opposite signs in OpenGL; the red channel calibrates the sign, so an albedo darker on the ridges
-than in the hollows gives the same verdict. Exit 0 = `DirectX` or `OpenGL`, 2 = `INCONCLUSIVE`
-(a correlation under 0.02 or undefined, e.g. a flat or clean albedo), 1 = bad input.
+`.paa` with ImageToPAA first). It takes two independent readings and gives a verdict only when
+they agree:
 
-- Measured: LFPowerGrid's heater (Sketchfab, 2026-09-21) read **DirectX**, red −0.130 and
-  green −0.085 over 491,775 of 1,048,576 pixels; not checked in game.
-- Limits: it reads the albedo as a groove map, like the 1D sweep below, so painted dark marks
-  with no relief dilute it. An inverted-green rerun is no control (it only negates the green
-  correlation); `tests/test_normal_convention.py` holds fixtures of known convention.
-- Source: contributed from LFPowerGrid_dev `assets/heater/normal_convencion.py` (commit
-  `a4c6e29`, the Pack owner's) through pipeline ticket `fb-20260921-164248-a140`; on the heater
-  maps the Pack script returns the same two correlations and pixel count as the original.
+- **Albedo reading.** The albedo's high-pass marks the hollows (a pixel darker than its blurred
+  surroundings). Across a hollow d(nx)/dx and d(ny)/dy have the same sign in DirectX and
+  opposite signs in OpenGL; the red channel calibrates the sign, so an albedo darker on the
+  ridges than in the hollows gives the same answer. No answer when a correlation is under 0.02
+  or undefined (a flat or clean albedo).
+- **Curl reading.** With p = −nx/nz and q = ny/nz, the slopes of a height field satisfy
+  d(p)/d(row) = d(q)/d(col) under OpenGL and d(p)/d(row) = −d(q)/d(col) under DirectX. The
+  convention whose median residual is under 0.8 of the other's wins; otherwise no answer.
+
+Exit 0 = `DirectX` or `OpenGL` (both readings agree), 2 = `INCONCLUSIVE`, 1 = bad input.
+
+- Measured: LFPowerGrid's heater (Sketchfab) read **DirectX** both ways: red −0.130 and
+  green −0.085 over 491,775 of 1,048,576 pixels (2026-09-21), and curl residuals 0.013 under
+  DirectX against 0.024 under OpenGL (2026-10-03). Not checked in game.
+- Limits, each with a fixture in `tests/test_normal_convention.py`: the albedo reading is
+  wrong, with strong correlations, on a surface that curves one way along x and the other
+  along y (ribs whose amplitude grows down the image; found by the cross-family review,
+  2026-10-03), and the two readings then disagree; the curl reading has no signal on a surface
+  that is a sum of one function of x and one of y. Painted dark marks with no relief dilute the
+  albedo reading, like the 1D sweep below. How often the curl reading is conclusive on real
+  maps was measured on the heater only. An inverted-green rerun is no control (it flips both
+  readings).
+- Source: the albedo reading is contributed from LFPowerGrid_dev
+  `assets/heater/normal_convencion.py` (commit `a4c6e29`, the Pack owner's) through pipeline
+  ticket `fb-20260921-164248-a140`; on the heater maps it returns the same two correlations and
+  pixel count as the original. The curl reading and the agreement rule were added after the
+  review.
 
 ### DXT5nm packing `[MECHANISM VERIFIED]`
 

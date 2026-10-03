@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Fixtures of known convention for scripts/normal_convention.py.
 
-One synthetic height field (pits whose albedo is darker, as dirt collects in hollows) is
-encoded twice: as a DirectX (Y-) normal map and as an OpenGL (Y+) one. Generated in the test,
-so no third-party texture ships with the Pack. Needs numpy and Pillow; without them the module
-skips (the CI runner installs pytest only).
+Synthetic height fields encoded as DirectX (Y-) and as OpenGL (Y+) normal maps, with an albedo
+built from the same heights. Generated in the test, so no third-party texture ships with the
+Pack. Needs numpy and Pillow; without them the module skips (the CI runner installs pytest only).
 
 Run: python -m pytest skills/dayz-texture-pipeline/tests -q
 """
@@ -36,10 +35,7 @@ def _height() -> "np.ndarray":
     return h
 
 
-def _normal_map(h: "np.ndarray", convention: str) -> "Image.Image":
-    dh_dcol = np.gradient(h, axis=1)
-    dh_drow = np.gradient(h, axis=0)
-    k = 4.0
+def _encode(dh_dcol: "np.ndarray", dh_drow: "np.ndarray", convention: str, k: float = 4.0) -> "Image.Image":
     nx = -k * dh_dcol
     # DirectX: +Y points down the rows; OpenGL: +Y points up, so the row slope keeps its sign.
     ny = -k * dh_drow if convention == "DirectX" else k * dh_drow
@@ -49,21 +45,42 @@ def _normal_map(h: "np.ndarray", convention: str) -> "Image.Image":
     return Image.fromarray(np.round((rgb + 1.0) * 0.5 * 255.0).astype(np.uint8), "RGB")
 
 
+def _normal_map(h: "np.ndarray", convention: str) -> "Image.Image":
+    return _encode(np.gradient(h, axis=1), np.gradient(h, axis=0), convention)
+
+
+def _grey(g: "np.ndarray") -> "Image.Image":
+    return Image.fromarray(np.round(np.stack([g * 0.9, g, g * 0.8], axis=-1) * 255.0).astype(np.uint8), "RGB")
+
+
 def _albedo(h: "np.ndarray") -> "Image.Image":
-    span = h.max() - h.min()
-    grey = 0.25 + 0.6 * (h - h.min()) / span          # hollows darker
-    rgb = np.stack([grey * 0.9, grey, grey * 0.8], axis=-1)
-    return Image.fromarray(np.round(rgb * 255.0).astype(np.uint8), "RGB")
+    return _grey(0.25 + 0.6 * (h - h.min()) / (h.max() - h.min()))     # hollows darker
+
+
+def _ribs(size: int = 128):
+    """Ribs whose amplitude grows down the image: across a hollow the surface curves one way
+    along x and the other way along y (the counter-example of R21 round 1, analytic slopes)."""
+    rows, cols = np.mgrid[0:size, 0:size].astype(np.float64)
+    omega = 2.0 * np.pi * 3 / size
+    beta = 4.0 / (size - 1)
+    amplitude = np.exp(4.0 * (rows / (size - 1) - 0.5))
+    h = np.cos(omega * cols) * amplitude
+    dh_dcol = -omega * np.sin(omega * cols) * amplitude
+    dh_drow = beta * np.cos(omega * cols) * amplitude
+    return h, dh_dcol, dh_drow
 
 
 @pytest.fixture(scope="module")
 def maps():
     h = _height()
+    rows, cols = np.mgrid[0:SIZE, 0:SIZE].astype(np.float64)
     return {
         "DirectX": _normal_map(h, "DirectX"),
         "OpenGL": _normal_map(h, "OpenGL"),
         "albedo": _albedo(h),
         "flat_albedo": Image.new("RGB", (SIZE, SIZE), (140, 140, 140)),
+        # a pattern with no relation to the heights: finite, weak correlations
+        "weak_albedo": _grey(0.5 + 0.3 * np.sin(1.7 * cols + 2.3 * rows)),
     }
 
 
@@ -71,6 +88,7 @@ def maps():
 def test_known_convention_is_read_back(maps, convention):
     result = nc.detect(maps[convention], maps["albedo"])
     assert result["verdict"] == convention, result
+    assert result["albedo_verdict"] == convention and result["curl_verdict"] == convention, result
     # the red channel calibrates: across a pit d(nx)/dx falls where the albedo is dark.
     # Both readings are strong on this fixture (about 0.75); a green derivative taken along the
     # wrong axis still keeps the sign here but drops to about 0.14, so the bound is 0.5.
@@ -88,11 +106,45 @@ def test_dark_ridges_instead_of_dark_hollows_keep_the_verdict(maps, convention):
     assert result["corr_red"] > 0.1, result
 
 
+@pytest.mark.parametrize("convention", ["DirectX", "OpenGL"])
+def test_opposite_curvatures_make_the_albedo_reading_lie_and_the_verdict_abstain(convention):
+    h, dh_dcol, dh_drow = _ribs()
+    result = nc.detect(_encode(dh_dcol, dh_drow, convention), _albedo(h))
+    wrong = "OpenGL" if convention == "DirectX" else "DirectX"
+    # the albedo reading alone is wrong here, with strong correlations ...
+    assert result["albedo_verdict"] == wrong, result
+    assert abs(result["corr_red"]) > 0.5 and abs(result["corr_green"]) > 0.3, result
+    # ... the curl reading is right, and the two disagreeing is never a verdict
+    assert result["curl_verdict"] == convention, result
+    assert result["verdict"] == "INCONCLUSIVE", result
+
+
+@pytest.mark.parametrize("convention", ["DirectX", "OpenGL"])
+def test_a_sum_of_x_and_y_profiles_leaves_the_curl_reading_without_signal(convention):
+    # h = f(col) + g(row) has no mixed derivative, so both curl residuals are equal noise
+    rows, cols = np.mgrid[0:SIZE, 0:SIZE].astype(np.float64)
+    omega = 2.0 * np.pi * 4 / SIZE
+    h = np.cos(omega * cols) + np.cos(omega * rows)
+    result = nc.detect(_normal_map(h, convention), _albedo(h))
+    assert result["albedo_verdict"] == convention, result
+    assert result["curl_verdict"] == "INCONCLUSIVE", result
+    assert result["verdict"] == "INCONCLUSIVE", result
+
+
+def test_weak_albedo_correlations_are_inconclusive(maps):
+    result = nc.detect(maps["DirectX"], maps["weak_albedo"])
+    assert math.isfinite(result["corr_red"]) and math.isfinite(result["corr_green"]), result
+    assert max(abs(result["corr_red"]), abs(result["corr_green"])) < nc.MIN_CORR, result
+    assert result["albedo_verdict"] == "INCONCLUSIVE", result
+    assert result["verdict"] == "INCONCLUSIVE", result
+
+
 def test_flat_albedo_is_inconclusive_not_directx(maps):
     # no hollow signal: both correlations are undefined. The contributed script read NaN as DirectX.
-    result = nc.detect(maps["DirectX"], maps["flat_albedo"])
+    result = nc.detect(maps["OpenGL"], maps["flat_albedo"])
     assert result["verdict"] == "INCONCLUSIVE", result
     assert not math.isfinite(result["corr_green"])
+    assert result["curl_verdict"] == "OpenGL", result
 
 
 def test_inverting_green_only_negates_the_green_correlation(maps):
@@ -103,6 +155,13 @@ def test_inverting_green_only_negates_the_green_correlation(maps):
     original = nc.detect(maps["DirectX"], maps["albedo"])
     assert flipped["corr_green"] == pytest.approx(-original["corr_green"], abs=0.02)
     assert flipped["corr_red"] == pytest.approx(original["corr_red"], abs=1e-12)
+    assert flipped["curl_residual_directx"] == pytest.approx(original["curl_residual_opengl"], rel=0.05)
+
+
+def _strict_json(text):
+    def refuse(token):
+        raise ValueError("non-JSON number %s" % token)
+    return json.loads(text, parse_constant=refuse)
 
 
 def test_cli_exit_codes_and_json(maps, tmp_path, capsys):
@@ -115,9 +174,12 @@ def test_cli_exit_codes_and_json(maps, tmp_path, capsys):
 
     for convention in ("DirectX", "OpenGL"):
         code = nc.main(["--normal", str(paths[convention]), "--albedo", str(paths["albedo"]), "--json"])
-        out = json.loads(capsys.readouterr().out)
+        out = _strict_json(capsys.readouterr().out)
         assert code == 0 and out["verdict"] == convention, out
 
+    code = nc.main(["--normal", str(paths["DirectX"]), "--albedo", str(paths["flat_albedo"]), "--json"])
+    out = _strict_json(capsys.readouterr().out)       # undefined numbers are null, never NaN
+    assert code == 2 and out["verdict"] == "INCONCLUSIVE" and out["corr_red"] is None, out
     assert nc.main(["--normal", str(paths["DirectX"]), "--albedo", str(paths["flat_albedo"])]) == 2
     assert "INCONCLUSIVE" in capsys.readouterr().out
     assert nc.main(["--normal", str(paths["DirectX"]), "--albedo", str(small)]) == 1

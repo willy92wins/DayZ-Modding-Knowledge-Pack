@@ -8,20 +8,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - `dayz-texture-pipeline` `scripts/normal_convention.py`: tells an OpenGL (Y+) normal map from a
-  DirectX (Y-) one by measurement. The albedo's dark grooves mark the hollows; across a hollow
+  DirectX (Y-) one by measurement, from two independent readings, and gives a verdict only when
+  they agree. The albedo reading: the albedo's dark grooves mark the hollows; across a hollow
   d(nx)/dx and d(ny)/dy share their sign in DirectX and oppose it in OpenGL, and the red channel
-  calibrates the sign. Exit 0 with a verdict, 2 `INCONCLUSIVE`, 1 bad input. Contributed from
-  LFPowerGrid_dev `assets/heater/normal_convencion.py` (commit `a4c6e29`, the Pack owner's;
-  pipeline ticket `fb-20260921-164248-a140`) with command-line paths, a size check and JSON
-  output; a non-finite correlation is now `INCONCLUSIVE` (the original read NaN as DirectX). On
-  the heater maps it returns the original's numbers exactly (red −0.1296, green −0.0851, 491,775
-  pixels, DirectX). SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at
-  it. `tests/test_normal_convention.py` encodes one synthetic height field as DirectX and as
-  OpenGL and reads both back, and checks dark ridges, a flat albedo and the exit codes; four
-  mutants of the detector (verdict swapped, NaN read as a verdict, green derivative on the wrong
-  axis, hollow signal negated) each fail it. It skips where numpy or Pillow is missing, as on the
-  CI runner. The ticket's second script (`uv_convencion.py`, V convention of a validated p3d) is
-  not part of this change.
+  calibrates the sign. The curl reading needs no albedo: a height field's slopes have no curl
+  under one convention only. Exit 0 with a verdict, 2 `INCONCLUSIVE`, 1 bad input; `--json`
+  writes null for undefined numbers. The albedo reading is contributed from LFPowerGrid_dev
+  `assets/heater/normal_convencion.py` (commit `a4c6e29`, the Pack owner's; pipeline ticket
+  `fb-20260921-164248-a140`) and returns its numbers exactly on the heater maps (red −0.1296,
+  green −0.0851, 491,775 pixels); a non-finite correlation is now `INCONCLUSIVE` (the original
+  read NaN as DirectX). The cross-family review found the albedo reading wrong, with strong
+  correlations, on a surface that curves one way along x and the other along y, and a missing
+  weak-correlation test; the curl reading, the agreement rule and both fixtures followed. On the
+  heater both readings say DirectX (curl residuals 0.013 against 0.024); nothing was checked in
+  game. SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at it.
+  `tests/test_normal_convention.py` (12 tests) encodes synthetic height fields as DirectX and as
+  OpenGL and reads them back; eight mutants of the detector each fail it. It skips where numpy
+  or Pillow is missing, as on the CI runner. The ticket's second script (`uv_convencion.py`,
+  V convention of a validated p3d) is not part of this change.
 - `dayz-mcp-verify`: one section ported from the installed copy (added 2026-10-04, written by the
   orchestration session that ran a seed-and-prune strike scenario against an LFPowerGrid PR) and
   corrected in the review of PR #105: "A server HANG is bounded by log tails first" — read both log
