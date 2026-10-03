@@ -40,9 +40,10 @@ REVERSE_LOD = ("  fix 1: face.vertices.reverse() on every face of this LOD (the 
                "never a vertices[1]/[2] swap, which turns a quad into a crossed face).")
 NEGATE_POOL = ("negate the normal pool in place: lod.facenormals[j] = (-x, -y, -z) for every j "
                "(not through Vertex.normal).")
-CORNER_FIX = ("negate the normal of each corner that points against its face and keep those that agree; a pool "
-              "entry that a corner you keep also uses gets a negated copy; a corner with no clear sign is for "
-              "inspection, not for flipping (py3d README, \"Winding\", step 3).")
+PARTS_FIX = ("read the normals shell by shell, never a corner on its own sign: in a shell that reads cleanly, "
+             "negate the normals of the faces that read against their winding and keep the rest (a pool entry "
+             "that a corner you keep also uses gets a negated copy); leave any other shell as it is, for "
+             "inspection (py3d README, \"Winding\", step 3).")
 PY3D_COUNT_END = "the count of dayz-p3d-audit's absolute check, over every face of the LOD."
 CAVITY = ("  (a closed shell meant to be seen from inside, a cavity, reads positive by design: leave it out of "
           "fix 1)")
@@ -261,7 +262,7 @@ def test_a_right_part_among_outward_normals_is_not_negated_with_the_pool(tmp_pat
     assert ("  normals: MIXED. 6 of 144 corner normals (4.2 %) agree with their face's winding; these shells do not "
             "reach 90 %:") in lines, out
     assert "    shell at lod.faces 0-11: 6 of 36 corners agree" in lines, out
-    assert "  fix 1: " + CORNER_FIX in lines, out
+    assert "  fix 1: " + PARTS_FIX in lines, out
     assert NEGATE_POOL not in out, out
     for j in range(len(lod.facenormals)):
         n = lod.facenormals[j]
@@ -349,8 +350,9 @@ def test_the_pool_fix_says_what_else_it_turns(tmp_path):
             "convention).") in lines, out
     assert ("It also turns 1 corner that agrees now: right for an export that stored every normal the other way, "
             "whose odd corners go back to how they were authored (LFInfectedBig's Rule 12 build has 219 against "
-            "their face); if you put corners right by hand, negate only the corners that point against their face "
-            "instead (py3d README, \"Winding\", step 3).") in out, out
+            "their face); to keep them, read the shells part by part instead, never a corner on its own sign "
+            "(py3d README, \"Winding\", step 3).") in out, out
+    assert "negate only the corners" not in out, out
     for j in range(len(lod.facenormals)):
         n = lod.facenormals[j]
         lod.facenormals[j] = (-n[0], -n[1], -n[2])
@@ -384,7 +386,7 @@ def test_no_pool_fix_when_part_of_the_lod_is_not_read(tmp_path):
     reverse_faces(lod, lod.faces[0:1])
     code, lines, out = run_gate(write(p3d, tmp_path / "b_out_plate_incoherent.p3d"))
     assert code == 1, out
-    assert ("  fix 2: " + CORNER_FIX + " Not the whole pool: part of this LOD is not read.") in lines, out
+    assert ("  fix 2: " + PARTS_FIX + " Not the whole pool: part of this LOD is not read.") in lines, out
     assert NEGATE_POOL not in out, out
 
 
@@ -565,7 +567,7 @@ def test_one_inverted_box_is_named_and_the_lod_sum_does_not_hide_it(tmp_path):
     assert ("  normals: MIXED after fix 1. 108 of 144 corner normals (75.0 %) would agree with their face's "
             "winding; these shells do not reach 90 %:") in lines, out
     assert "    shell at lod.faces 12-23: 0 of 36 corners would agree" in lines, out
-    assert "  fix 2: " + CORNER_FIX in lines, out
+    assert "  fix 2: " + PARTS_FIX in lines, out
 
 
 def test_a_face_turned_against_its_neighbours_is_made_coherent_before_any_volume(tmp_path):
@@ -610,7 +612,7 @@ def test_one_part_with_outward_normals_is_listed_without_any_reversal(tmp_path):
     assert ("  normals: MIXED. 108 of 144 corner normals (75.0 %) agree with their face's winding; these shells do "
             "not reach 90 %:") in lines, out
     assert "    shell at lod.faces 12-23: 0 of 36 corners agree" in lines, out
-    assert "  fix 1: " + CORNER_FIX in lines, out
+    assert "  fix 1: " + PARTS_FIX in lines, out
     assert "face.vertices.reverse()" not in out, out
 
 

@@ -241,17 +241,41 @@ left alone, and only then fix the normals against it:
    component centroid. The test assumes a convex component, which Geometry
    components must be; on a concave one (a ring, an L) it reads faces that are
    right as outward.
-3. **Normals**, once the winding is right: negate each corner normal that still
-   points against its face, in the pool, `lod.facenormals[j] = (-x, -y, -z)`
-   (not through `Vertex.normal`, whose setter looks the value up in the pool).
-   Go corner by corner: the check reads each face's first corner only, and
-   negating whole faces turns corners that were right. An entry that a corner
-   you keep also uses stays as it is, and the corners you fix are re-pointed to
-   an entry you leave unchanged that already holds the negated value or,
-   failing that, to a negated copy; copies count toward the 32768 entries
-   `validate()` checks (`WARN_NORMALS_BUDGET`). A corner normal close to
-   perpendicular to its face gives no clear sign: inspect it rather than flip
-   it.
+3. **Normals**, once the winding is right: part by part, in the parts steps 1
+   and 2 read, never a corner on its own sign. Read each face by the average of
+   its corner normals against its vector area, the sum of
+   `cross(v[j] − v[0], v[j+1] − v[0])` over its fan, both normalized: it reads
+   with its winding at `dot ≥ 0.5` and against it at `dot ≤ −0.5`, and has no
+   reading in between, or when one of its corner normals, normalized, gives a
+   `dot` of the other sign or within 0.1 of zero. A face whose winding you
+   turned reads as before with the sign turned: the vector area turns exactly
+   with the face. A part reads cleanly when every face of it has a reading and
+   its larger group of faces wound alike, as step 1 or 2 found them before
+   turning any (the whole part where they found one group; two groups of one
+   size leave no larger one), reads all one way. In a part that reads cleanly,
+   negate the normals of the faces that read against their winding and keep the
+   rest: that negates normals stored the other way or turned along with their
+   winding, and keeps those of faces whose winding alone was turned. Leave any
+   other part as it is, to inspect.
+   Negate in the pool, `lod.facenormals[j] = (-x, -y, -z)` (not through
+   `Vertex.normal`, whose setter looks the value up in the pool). An entry that
+   a corner you keep also uses stays as it is, and the corners you fix are
+   re-pointed to an entry you leave unchanged that already holds the negated
+   value or, failing that, to a negated copy; copies count toward the 32768
+   entries `validate()` checks (`WARN_NORMALS_BUDGET`).
+   A corner normal still against its face at the end is inspected, never
+   negated on that alone: a normal smoothed across a sharp fold can point
+   against a face wound right. A flat tetrahedron wound right, with one
+   area-weighted normal per point, has 6 of its 12 corners against their faces;
+   `validate()` reads it at 75 % (`WARN_WINDING_NORMAL_MISMATCH`), and negating
+   those corners turns six right normals, through three pool copies, and takes
+   it to 100 % with no finding.
+   *(Changed 2026-10-03, 1.9.1: this step read "negate each corner normal that
+   still points against its face, in the pool, [...] Go corner by corner: the
+   check reads each face's first corner only, and negating whole faces turns
+   corners that were right. [...] A corner normal close to perpendicular to its
+   face gives no clear sign: inspect it rather than flip it." On smoothed
+   normals that turns right ones, as on the tetrahedron above.)*
 
 Never reverse faces on this finding alone. Two Blender exports read 0 % and
 their winding was right: the build that reversed every face rendered both
@@ -279,10 +303,11 @@ instead, which this finding used to recommend, trades it for
 
 ## Status and known issues
 
-The library is used in a real modding pipeline, and 341 tests pass -- 334 of them
-on a plain `pytest` run, plus the 7 CANON tests that need a local clone of
-upstream (see [Tests](#tests)). It has also been through a deliberately
-adversarial audit, and **not every problem it found is fixed yet**. Before
+The library is used in a real modding pipeline. On a plain `pytest` run 338
+tests pass and 11 skip: the 7 CANON tests, which need a local clone of upstream
+(see [Tests](#tests)), and 4 that need the companion scripts. It has also been
+through a deliberately adversarial audit, and **not every problem it found is
+fixed yet**. Before
 relying on this for anything you cannot redo, read
 [KNOWN-ISSUES.md](KNOWN-ISSUES.md) — in particular the entries about
 `save(verify=True)`, `python -m py3d diff` and the Recipe JSON round-trip, which

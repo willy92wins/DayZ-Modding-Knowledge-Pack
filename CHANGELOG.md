@@ -539,6 +539,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   nor with that box stored first (measured offline the same way). Rule 18 now says no function of
   the skill runs its check, and `check_face_winding`'s section says what it reads. The old text is
   quoted in dated notes.
+- py3d `ERR_WINDING_VS_NORMALS` and `ERR_WINDING_INVERTED` (py3d 1.9.1): both closed with "negate
+  each corner normal that still points against its face", and the README's "Winding" step 3 said
+  to go corner by corner. A corner normal smoothed across a sharp fold can point against a face
+  wound right, so that step turns right normals, and `dayz-p3d-audit`'s
+  `references/winding-diagnostics.md` ("From Check B to fix", item 3) rules it out. Measured
+  offline in py3d's tests: a flat tetrahedron wound right, with one area-weighted normal per
+  point, has 6 of its 12 corners against their faces and reads 75 %
+  (`WARN_WINDING_NORMAL_MISMATCH`); the per-corner step turns those six normals through three pool
+  copies and takes it to 100 % with no finding. Both messages now close with one normals step,
+  part by part, never a corner on its own sign, and step 3 says how a face and a part read: a face
+  by the average of its corner normals against its vector area (with its winding at ≥ 0.5, against
+  it at ≤ −0.5, no reading in between or with a corner normal of the other sign or within 0.1 of
+  zero); a part reads cleanly when every face of it has a reading and its larger group of faces
+  wound alike reads all one way, and there the faces that read against their winding have their
+  normals negated and the rest are kept; any other part is left as it is, to inspect. On the
+  fixtures of every test that used the old step (the F of the Rule 12 in-game test with its
+  normals turned, its faces turned, a shared pool, a plate face turned back and an odd face, and
+  the multi-LOD model with its visual or geometry LOD inside-out) the new step gives back the clean
+  model, and on the tetrahedron it changes nothing. Where it is more cautious it changes nothing
+  and leaves the part to inspect, while the old step had fixed it: only each face's first corner
+  turned, on flat normals, and a smoothed box whose shared entries were negated in place. Codes,
+  severities and the checks are unchanged; the pinned 1.9.0 wheel still prints the old step.
+  `dayz-characters` `check_dayz_winding.py` cited step 3 for its own per-corner fix: its fix for
+  the shells between 10 % and 90 %, and the by-hand alternative to its pool fix, now read the
+  shells part by part (its measurement, thresholds and exit codes are unchanged), and `SKILL.md`
+  "OFFLINE GATE" says so, with the old text quoted in a dated note.
 
 ## [1.5.0] - 2026-10-02
 
