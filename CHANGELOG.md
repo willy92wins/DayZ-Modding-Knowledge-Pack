@@ -140,7 +140,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
-<<<<<<< HEAD
 - `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
   by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
   bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties
@@ -150,7 +149,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   The SKILL.md entry of `fbx_extract.py` now says its `rig_raw.json` carries that
   `matrix_world` for the empties, and "Reusable tools" no longer calls `build_rig_dayz.py`'s
   output DayZ-space.
-=======
 - `dayz-mcp-verify`: the pose check of "Axis-aligned test fixtures" and the `scene_raycast` entry
   of "What it does not cover" no longer read anything from the default `rvproxy` reply's `normal`.
   That field is the engine's `RaycastRVResult.dir`, for a ray the direction and size of the
@@ -160,7 +158,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   faces that are not parallel, since a tilt about one face's normal leaves that normal unchanged.
   The replaced sentences are quoted in dated notes.
 
->>>>>>> 4de8b5a1a84d6efdf81293d5c83d9cabaafef204
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
   said a broken Geometry LOD has its normals pointing inward and fixed it by swapping
   `vertices[1]`/`[2]`; Rule 12 stores the cross product and the normals both inward, and the swap
@@ -515,6 +512,55 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   returns its faces in no consistent order (measured offline, scipy 1.17.1: 22 of 44 faces of a
   12-gon cylinder wound outward), and the outward normals kept on the faces left alone read 50 %
   agreement in py3d. The old text is quoted in dated notes.
+- `dayz-model-pipeline` Rule 18 no longer reverses whole collision LODs. Its body read the
+  per-component check on "most faces" and fixed it with `face.vertices.reverse()` on every face of
+  every collision LOD, though its own 2026-10-02 note had narrowed both: on a collision LOD holding
+  one box wound inward and one wound outward, that loop swaps them (signed volumes by winding -8 and
+  +8 become +8 and -8; measured offline, py3d 1.9.0, synthetic 2 m boxes), while reversing only the
+  faces that read outward and negating their normals leaves both at -8. The body now carries killer
+  #1's prerequisites and fix: every non-proxy face of every closed, convex component reads inward,
+  only the faces that read outward are reversed, and a collision LOD is never reversed to match the
+  Visual LOD. The two troubleshooting rows that reversed every face say the same; the
+  symptom-triplet row also reversed Roadway, whose walkable faces it now sends to `dayz-p3d-audit`
+  "Absolute winding check" rule 4, and the Check A row reversed whatever its direction check read
+  outward, Visual LODs included: read literally on a closed Visual room seen from inside (signed
+  volume +8, right for a room), it gave -8 with 100 % agreement and no py3d winding finding. That
+  row now reads a Visual LOD shell by shell, never by the LOD-wide sum, after Check B has turned
+  back any face wound against its neighbours (a face turned with its normal inside a closed solid
+  left that solid at -5.33 instead of -8 with 100 % agreement, and only py3d's
+  `WARN_WINDING_EDGE_INCOHERENT` saw it), and by the side meant to be seen: negative for a solid
+  seen from outside, positive for a room seen from inside (rule 4); open or double-sided Visual
+  parts stay unresolved by that sign. In `references/py3d-direct-generation.md`, the "Face Winding
+  Order Fix" loop, which reverses every face of every LOD, proxy triangles included, is marked as
+  the undo of a whole-model `P3D.transform()` reversal, its one use, and the section says how a
+  collision LOD is repaired instead. Rule 18 also pointed at `check_face_winding` as its
+  implementation: that function compares winding with stored normals on the first LOD only, and it
+  returned no finding on a model whose first LOD is the Memory LOD over an outward collision box,
+  nor with that box stored first (measured offline the same way). Rule 18 now says no function of
+  the skill runs its check, and `check_face_winding`'s section says what it reads. The old text is
+  quoted in dated notes.
+- `dayz-model-pipeline` `references/lods-and-geometry.md`, the py3d fix for the GLB/glTF source
+  case: the bullet above it reverses every face in every LOD except proxy triangles, but the loop
+  under it reversed the proxy triangles too. The loop now keeps the order of each proxy triangle,
+  the only face of a `proxy:<path>.<index>` selection (`py3d.PROXY_NAME_RE`) when it is a
+  triangle, entries of weight 0 not counting, and reverses every other face once: a selection
+  under a proxy name with more faces, or a quad, holds geometry and is reversed with the rest, and
+  a vertex list that would be reversed twice (one `Face` listed twice, or two faces sharing one
+  list) stops the loop before any face changes. A sentence says that `P3D.transform()` with the
+  swap matrix (det<0) has already reversed every face, proxy triangles included, so after it only
+  the proxy triangles go back; run after `transform()`, the loop would put every other face back
+  in its original order and leave the proxies reversed. Measured offline with py3d 1.9.0 (the
+  repository source and the installed wheel), running the documented block itself on synthetic
+  models: the proxy triangles keep their order, one whose selection lists no points and one with a
+  weight-0 entry beside it included, and every other face is reversed, a box and a quad under
+  proxy names included, also after an MLOD write and read; a repeated `Face` or a shared vertex
+  list raises with nothing changed; the old block, a loop that skips every face of a proxy-named
+  selection and a no-op fail. On 411 MLODs of the owner's projects (13,688,834 faces, read only)
+  the block raised on none, kept the 1,979 faces that are the single triangle of a proxy-named
+  selection (191 of them in debinarized SUB_BRZ round trips whose proxy selections list no
+  points) and reversed every other face once, the 108 faces of 18 six-face proxy-named selections
+  in the LFPowerGrid logic gates' collision LODs included. The replaced block is quoted in a dated
+  note. The GLB reversal itself is unchanged.
 - `dayz-model-pipeline`: the GLB/glTF import path no longer reverses faces. `SKILL.md` (section
   "GLB/glTF imports — LL-020 refined", Rule 12's GLB bullet, the Rule 13 note, two troubleshooting
   rows and SP-071's glTF clause), `references/lods-and-geometry.md` (the rule, its py3d and Blender
@@ -540,8 +586,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and points to `check_dayz_winding.py` to read the exported part. `lods-and-geometry.md` also drops
   "Flipped Geometry faces cause physics pass-through": `dayz-p3d-audit` killer #1 measured outward
   2 m collision boxes that the LOD raycasts miss while physics still stops a walking player, and a
-  walk alone does not diagnose winding. `check_face_winding` could not catch the old recipe (it
-  reads only whether the cross product and the normals agree), and the texts now say so.
+  walk alone does not diagnose winding. The py3d block that the entry above had just made keep
+  proxy triangles goes too: no face is reversed now, and after `P3D.transform()` every face goes
+  back, proxy triangles included; that block is quoted in the dated note. `check_face_winding`
+  could not catch the old recipe (it reads only whether the cross product and the normals
+  agree), and the texts now say so.
   Documentation only: nothing was re-measured in game for this change. Every replaced passage is
   quoted in a dated note.
 

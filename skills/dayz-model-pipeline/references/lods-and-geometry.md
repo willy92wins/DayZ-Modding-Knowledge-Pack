@@ -183,8 +183,24 @@ maps below are det=-1 — with two cases:"; its GLB case read "**GLB/glTF-source
 via the pure swap `(x,y,z)->(x,z,y)` (det=-1): ALWAYS reverse the vertex order of every face
 in every LOD, except proxy triangles, whose vertex order encodes the attachment frame."; and
 it closed "Never assume either case: verify post-assembly with `check_face_winding`; it must
-read ~0% flipped." The py3d fix, titled "Fix in py3d for the GLB/glTF source case:", ran
-`for lod in model.lods: for face in lod.faces: face.vertices.reverse()` on three lines; the
+read ~0% flipped." The py3d fix, titled "Fix in py3d for the GLB/glTF source case:", ran, since #68
+(2026-10-03), `import py3d # After the swap, applied to points and normals with every face's
+vertex order kept. # A proxy triangle, the only face of a 'proxy:<path>.<index>' selection when
+it is a # triangle, keeps its order. A selection under a proxy name with more faces, or a quad, #
+holds geometry: its faces are reversed with the rest. Weight 0 is not membership. keep, faces,
+lists = set(), set(), set() for lod in model.lods: for name, sel in lod.selections.items():
+sel_faces = [face for face, weight in sel.faces.items() if weight > 0] if
+(py3d.PROXY_NAME_RE.match(name) and len(sel_faces) == 1 and len(sel_faces[0].vertices) == 3):
+keep.add(sel_faces[0]) for face in lod.faces: # A Face listed twice, or two faces sharing one
+vertex list, would be reversed # twice: refuse before anything changes. if id(face.vertices) in
+lists: raise ValueError("a vertex list is listed twice: give each face its own")
+lists.add(id(face.vertices)) faces.add(face) for face in faces - keep: face.vertices.reverse()`
+on 22 lines, followed by "`P3D.transform()` with the swap matrix reverses every face itself,
+proxy triangles included, because det<0: after it, reverse only the proxy triangles back. The
+loop above, run after `transform()`, undoes the reversal of every other face and leaves the
+proxies reversed (measured offline, py3d 1.9.0)." and by the note "(Fixed 2026-10-03: the block
+read `for lod in model.lods: for face in lod.faces: face.vertices.reverse()`, on three lines,
+which reversed the proxy triangles too, against the rule above.)"; the
 Blender fix, titled "Fix in Blender for the GLB/glTF source case:", read "Select all faces →
 Mesh → Normals → Flip" and "Or: Mesh → Normals → Recalculate Outside"; and the last paragraph
 read "**When Rule 12 requires reversal, it applies to ALL LODs except proxy triangles** —
