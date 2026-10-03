@@ -76,6 +76,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   A third section it had written, a Mission-module lesson about a class holding a `static ref` to
   itself, was retracted by its author as measured on the wrong mod and is not ported; vanilla 1.29
   contradicts it as well (`VicinityItemManager` holds one and its module compiles).
+- `dayz-mcp-verify` static-object playbook, collision: the ray battery of `dayz-p3d-audit` rule 6
+  as a recipe with its two controls, and why picking an item up is not a collision test (SP-454;
+  DayZDiag 1.29.163709, dayz-mcp run 606a5dbb, 2026-10-02). Nine rays per mode in `geom`, `view` and
+  `fire`: one down the axis, which rules out a LOD recentred by a missing `autocenter=0`; four
+  through the middle from the sides and two more heights on one side; two from inside, which a sound
+  object answers `entry 0, exit 1` at distance 0. The same battery goes at a control from the same
+  PBO and load path and at a vanilla control of the same physics layer (`WoodenCrate` for
+  `item_small`), and the winding is named as the cause only by a pair that changes the winding
+  alone. The collision bullet no longer asks for rays "from ≥2 angles". Vanilla targeting adds a
+  30°, 3 m cone search, with no hit on the object needed, when the camera looks down at −45° or
+  lower, and `ActionTakeItemToHands` checks only distance; `action_use` builds its target without a
+  ray, and in that run it put in the player's hands a kit box that all 27 rays of the battery
+  missed. The item playbook points to the battery, and `dayz-p3d-audit` rule 6 to both. PREREQUISITES
+  4: when the mod under test does not compile, test a copy of its PBO without the offending entries,
+  in a probe folder under `P:\Mods` written with the owner's OK, hosted by an approved project whose
+  `default_base_mods` carry its dependencies (an absolute workshop path in `base_mods` fails with
+  `bad_mod`).
 
 ### Changed
 
@@ -202,6 +219,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-physics-engine` engine truth 2 said that a model with no View Geometry LOD gets no action.
+  Read in the 1.29 source (not measured): at a camera pitch of −45° or lower, targeting also takes
+  the objects of a 30°, 3 m cone and scores them by their distance to the cursor ray, with no hit on
+  them needed, so an item on the ground can still become a target; the truth now says so and points
+  to `dayz-mcp-verify`. In `dayz-mcp-verify` PREREQUISITES 4, the `extra_mods`/`base_mods` boundary
+  was described as rejecting `:`, `\` and `/` in every project; it now also accepts an absolute path
+  inside the project's `mod_roots`, and a workshop path, outside them, still fails with `bad_mod`
+  (dated note; the old text is kept).
 - `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
   by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
   bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties
