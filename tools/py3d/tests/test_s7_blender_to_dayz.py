@@ -448,8 +448,8 @@ def face_reading(fa):
     """README, 'Winding', step 3: the average of a face's corner normals
     against its vector area, both normalized. Returns (dot, side): side +1
     reads with its winding (dot >= 0.5), -1 against it (dot <= -0.5), 0 no
-    reading - in between, or with a corner normal whose own dot has the
-    other sign or lies within 0.1 of zero."""
+    reading - in between, or with a corner normal that is zero or whose own
+    dot has the other sign or lies within 0.1 of zero."""
     area = unit(vector_area(fa))
     total = (0.0, 0.0, 0.0)
     for v in fa.vertices:
@@ -459,7 +459,10 @@ def face_reading(fa):
     if area is None or mean is None:
         return 0.0, 0
     reading = dot(area, mean)
-    corners = [dot(area, unit(v.normal)) for v in fa.vertices]
+    normals = [unit(v.normal) for v in fa.vertices]
+    if None in normals:
+        return reading, 0
+    corners = [dot(area, n) for n in normals]
     if reading >= 0.5 and min(corners) >= 0.1:
         return reading, 1
     if reading <= -0.5 and max(corners) <= -0.1:
@@ -1004,6 +1007,86 @@ def test_normals_step_shared_entries_spoiled_in_place_are_inspected(fork):
             assert corner_normals(lod) == reference
 
 
+def tilted(n, along):
+    """A unit normal at dot *along* with the unit normal *n*, the rest of
+    it perpendicular to n."""
+    other = (1.0, 0.0, 0.0) if abs(n[0]) < 0.9 else (0.0, 1.0, 0.0)
+    t = unit(cross(n, other))
+    s = math.sqrt(1.0 - along * along)
+    return (along * n[0] + s * t[0], along * n[1] + s * t[1],
+            along * n[2] + s * t[2])
+
+
+def own_normal(lod, corner, n):
+    lod.facenormals.append(n)
+    corner.normal_index = len(lod.facenormals) - 1
+
+
+def unclear(fork, how):
+    """B with faces that have no reading, as README step 3 defines it, and
+    the groups to read them with. Every face of B is a triangle of a quad
+    whose normal entry points along its vector area."""
+    p3d = variant(fork, "B")
+    lod = p3d.lods[0]
+    plate = boxes(lod)[PLATE]
+    groups = {}
+    if how == "mean between, against":
+        for j, n in enumerate(lod.facenormals):
+            lod.facenormals[j] = tilted(n, -0.4)
+    elif how == "corner within 0.1, against":
+        negate_normals(lod)
+        for fa in lod.faces:
+            own_normal(lod, fa.vertices[0],
+                       tilted(unit(vector_area(fa)), -0.05))
+    elif how == "zero corner":
+        own_normal(lod, lod.faces[0].vertices[0], (0.0, 0.0, 0.0))
+    else:
+        n = unit(vector_area(plate[0]))
+        for v in plate[0].vertices:
+            own_normal(lod, v, (-n[0], -n[1], -n[2]))
+        groups = {PLATE: plate[:1]}
+        for fa in plate[1:]:
+            area = unit(vector_area(fa))
+            if how == "mean between, with":
+                for v in fa.vertices:
+                    own_normal(lod, v, tilted(area, 0.4))
+            else:
+                own_normal(lod, fa.vertices[0], tilted(area, 0.05))
+    return p3d, groups
+
+
+def test_normals_step_unclear_faces_leave_their_part_as_it_is(fork):
+    """README, 'Winding', step 3: a face has no reading when its corner
+    normals average between -0.5 and 0.5 against its vector area, when one
+    of them lies within 0.1 of its plane, or when one is zero, and a part
+    with such a face is left as it is. On B: every normal turned to dot
+    -0.4 (the faces average -0.4); every normal turned, with each face's
+    first corner at -0.05 instead (the faces average -0.899, that corner
+    within the margin); one corner normal zero, which validate() does not
+    report; and the plate's first face turned against its winding, read as
+    a group of one against the other 11, which average +0.4 or have a
+    corner at +0.05. Each part with such a face is left to inspect, its
+    normals as they were."""
+    cases = {"mean between, against": ([0, 1, 2, 3], -0.4),
+             "corner within 0.1, against": ([0, 1, 2, 3], -0.899),
+             "zero corner": ([PLATE], None),
+             "mean between, with": ([PLATE], 0.4),
+             "corner within 0.1, with": ([PLATE], 0.899)}
+    for how, (left, mean) in cases.items():
+        p3d, groups = unclear(fork, how)
+        lod = p3d.lods[0]
+        readings = [face_reading(fa) for fa in boxes(lod)[PLATE][-1:]]
+        if mean is not None:
+            assert readings[0][0] == pytest.approx(mean, abs=1e-3), how
+            assert readings[0][1] == 0, how
+        else:
+            assert face_reading(lod.faces[0])[1] == 0
+            assert p3d.validate() == []
+        before = corner_normals(lod)
+        assert fix_parts(lod, boxes(lod), groups) == left, how
+        assert corner_normals(lod) == before, how
+
+
 def test_normals_step_is_one_text_in_both_findings(fork):
     """Both winding findings close with the same normals step, once each,
     and it says what README, 'Winding', step 3 does - part by part, the
@@ -1035,7 +1118,8 @@ def test_normals_step_is_one_text_in_both_findings(fork):
     section = " ".join(text.split("3. **Normals**", 1)[1]
                        .split("\n\n", 1)[0].split())
     for needle in ("never a corner on its own sign", "`dot ≥ 0.5`",
-                   "`dot ≤ −0.5`", "within 0.1 of zero",
+                   "`dot ≤ −0.5`", "one of its corner normals is zero",
+                   "within 0.1 of zero",
                    "its larger group of faces wound alike",
                    "two groups of one size leave no larger one",
                    "negate the normals of the faces that read against their "

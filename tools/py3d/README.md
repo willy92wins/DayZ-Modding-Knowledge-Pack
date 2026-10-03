@@ -246,17 +246,17 @@ left alone, and only then fix the normals against it:
    its corner normals against its vector area, the sum of
    `cross(v[j] − v[0], v[j+1] − v[0])` over its fan, both normalized: it reads
    with its winding at `dot ≥ 0.5` and against it at `dot ≤ −0.5`, and has no
-   reading in between, or when one of its corner normals, normalized, gives a
-   `dot` of the other sign or within 0.1 of zero. A face whose winding you
-   turned reads as before with the sign turned: the vector area turns exactly
-   with the face. A part reads cleanly when every face of it has a reading and
-   its larger group of faces wound alike, as step 1 or 2 found them before
-   turning any (the whole part where they found one group; two groups of one
-   size leave no larger one), reads all one way. In a part that reads cleanly,
-   negate the normals of the faces that read against their winding and keep the
-   rest: that negates normals stored the other way or turned along with their
-   winding, and keeps those of faces whose winding alone was turned. Leave any
-   other part as it is, to inspect.
+   reading in between, or when one of its corner normals is zero or,
+   normalized, gives a `dot` of the other sign or within 0.1 of zero. A face
+   whose winding you turned reads as before with the sign turned: the vector
+   area turns exactly with the face. A part reads cleanly when every face of it
+   has a reading and its larger group of faces wound alike, as step 1 or 2
+   found them before turning any (the whole part where they found one group;
+   two groups of one size leave no larger one), reads all one way. In a part
+   that reads cleanly, negate the normals of the faces that read against their
+   winding and keep the rest: that negates normals stored the other way or
+   turned along with their winding, and keeps those of faces whose winding
+   alone was turned. Leave any other part as it is, to inspect.
    Negate in the pool, `lod.facenormals[j] = (-x, -y, -z)` (not through
    `Vertex.normal`, whose setter looks the value up in the pool). An entry that
    a corner you keep also uses stays as it is, and the corners you fix are
@@ -303,7 +303,7 @@ instead, which this finding used to recommend, trades it for
 
 ## Status and known issues
 
-The library is used in a real modding pipeline. On a plain `pytest` run 338
+The library is used in a real modding pipeline. On a plain `pytest` run 339
 tests pass and 11 skip: the 7 CANON tests, which need a local clone of upstream
 (see [Tests](#tests)), and 4 that need the companion scripts. It has also been
 through a deliberately adversarial audit, and **not every problem it found is

@@ -550,8 +550,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   copies and takes it to 100 % with no finding. Both messages now close with one normals step,
   part by part, never a corner on its own sign, and step 3 says how a face and a part read: a face
   by the average of its corner normals against its vector area (with its winding at ≥ 0.5, against
-  it at ≤ −0.5, no reading in between or with a corner normal of the other sign or within 0.1 of
-  zero); a part reads cleanly when every face of it has a reading and its larger group of faces
+  it at ≤ −0.5, no reading in between, or with a corner normal that is zero or whose dot has the
+  other sign or lies within 0.1 of zero); a part reads cleanly when every face of it has a reading and its larger group of faces
   wound alike reads all one way, and there the faces that read against their winding have their
   normals negated and the rest are kept; any other part is left as it is, to inspect. On the
   fixtures of every test that used the old step (the F of the Rule 12 in-game test with its
