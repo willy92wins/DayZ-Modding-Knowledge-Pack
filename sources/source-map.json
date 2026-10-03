@@ -784,9 +784,39 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: Unreleased Fixed entry, after #66's, for dayz-characters' test_check_dayz_winding.py, moved from references/ to tests/, where packctl gate's skill_tests check and CI's packctl test-folders --tree skills run it. Numbers measured on main ea7b396 plus this change: packctl test-folders --tree skills PASS with seven folders, dayz-characters 39 tests collected and 39 run (Python 3.14.3 with pytest 9.1.1, and Python 3.12.14 with pytest 9.1.1 as the only package, as on the CI runner); with check_dayz_winding.py's DISAGREE_BELOW mutated from 10.0 to 0.0, dayz-characters FAIL (6 failed, 33 passed; SKILL-TESTS-FAILED), while main ea7b396 with the same mutant passes its six folders; files restored byte for byte.",
+          "license": "MIT",
+          "source_hash": "b4245999500a5c648c1f1b929a48fde8e27570f5a0ada7b122e6f1780f283a18",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-chips-chartests@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: two Unreleased Fixed entries. (1) packctl git_tracked_files listed a path in conflict once per index stage mid-merge (git ls-files prints each stage entry); it now lists each tracked path once, sorted; the effect on each caller (validate's link check, the gate's python_compile list and count, build's symlink check) and why the others were unaffected (source-map, privacy and conflict-marker checks read it through a set; promote --check returns on PROMOTION-DIRTY before _tracked_projection). (2) tests/packctl/test_promotion.py try_dir_link decoded cmd's mklink /J output as UTF-8 while cmd writes it in the console code page, the OEM one (cp850 on this host: UnicodeDecodeError on byte 0xa2) unless the console runs UTF-8, so each directory link raised PytestUnhandledThreadExceptionWarning; the output is kept as bytes. Measured on main ea7b396 and on this change, Python 3.14.3, pytest 9.1.1, console code page 850: the nine junction test runs, 10 warnings and under -W error::pytest.PytestUnhandledThreadExceptionWarning 9 failed before, no warning and 9 passed after; at code page 65001 the old helper passes too (review round 1, Codex gpt-6.1-sol, reproduced by the author); CI's Test packctl step on ea7b396 (run 37140346524) logs 359 passed and no warning.",
+          "license": "MIT",
+          "source_hash": "f875d5256925618076ad8b66ed533bce27e303de3bebafd45f96401c9cb3fc5f",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-chips-packctl@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: Unreleased Fixed entry: three dayz-vehicles passages and one promotion adjudication named an unpublished skill; they now name the capability (the ODOL reader of the external ODOL->MLOD converter) in the pack's phrase for that converter, which the promotion's phrase alias (packctl/promotion.py PROMOTION_PHRASE_PLACEHOLDERS) replaces with the converter's local name on an installation that sets the alias (promotions/local-targets.example.json); without the alias the public wording ships unchanged. Checked: git grep on main ea7b396 finds the unpublished name in no other tracked file; promote reads an adjudication's artifact_id, target_id and observed_digest only, and checks that its reason is a non-empty string (packctl/promotion.py:1010-1046). Wording made precise after review round 1 (Codex gpt-6.1-sol, SOUND, no finding), which noted that the localized name needs the alias.",
+          "license": "MIT",
+          "source_hash": "672ed1037877e863a3720433087d4055c32580833e8098f4f327816ca4275afc",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-chips-privname@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03, pipeline inbox tickets fb-20261002-194308-f6f0 (SecretRock) and fb-20260927-213707-4a4b (CocaLab); neither finding was in any skill (git grep on main ea7b396). (1) dayz-physics-engine truth #11 gains a sub-bullet: a Roadway face of another model across a lift's travel stops the ride down. In game (DayZDiag 1.29.163709), SecretRock's elevator cabin (LF_RocaHeli_Cabin, a HouseNoDestruct moved with SetPosition from the update queue, truth #11's mechanism) carried the player up but left them at 18.59 and 12.78 going down (prueba 3, 2026-10-02; trace_cabin_down_from_hangar.jsonl: floor LF_RocaHeli_Interior, linked empty, falling 0, y 12.78). The interior's collision slabs had the shaft hole and its Roadway polygons did not (rh_gen_blender.prueba3.py:1315-1317 vs :1396, :1398; 26 + 16 triangles counted by the project with py3d, not recounted here). With the shaft hole in the Roadway (only the interior model changed) the player rode 2 -> 1 -> 0 linked (prueba 4, 2026-10-03), and a 2 -> 0 ride on build R7.3 stayed linked in all 1033 samples (prueba 5). RaycastRV cannot target Roadway: ObjIntersect is Fire, View, Geom, IFire, None (scripts/3_game/constants.c:31-38, 1.29). Destination chosen over vehicles, basebuilding and persistence because the rule is about what holds a player on a moving platform, next to truths #10 and #11, which already cover lifts and riders. (2) dayz-persistence, a subsection after Contract 3: build what stored entities rest on inside OnMissionStart. The structure, rebuilt from the mod's sidecar by a CallLater 2 s after OnMissionStart with parts 0.5 s after EEInit, came back after the CE-stored helicopter parked on it, which fell 6.9 m and rolled -54.3 degrees (prueba 3, runB_51edb0e6_server_script.log:25, :28, :41); with the restore and parts created inside OnMissionStart the parts came first and the helicopter stayed (0.010 and 0.014 mm, level within 0.07 degrees) in two orderly restarts (prueba 4 runB_9f838de9 and prueba 5 run2_312bacda). Destination chosen over physics and vehicles because the cause and the fix are the order of two restores, the sidecar's and the game storage's; the vehicle only shows it. It matches enforce-script-reference SP-LFS-3. The alternative of freezing vehicles is not measured and not written as a rule. (3) enforce-script-reference Override Rules, rule 42, and a pointer in references/vanilla-deep-dive.md next to the base CanDo bullet: a recipe's CanDo copies ingredients[0] and [1] to locals first and does not call super.CanDo. In game (DayZDiag 1.29, 2026-09-27, CocaLab B-003): with super.CanDo called first the server CanDo returned false while each part read true and ActionWorldCraft's continue condition cancelled the craft; a replay probe read the tray in both slots after its super call (script_2026-09-27_15-13-14.log:49-50); the fix (CocaLab d6c255c, locals, no super) crafted six buds (script_2026-09-27_15-18-33.log:88). Vanilla 1.29: 1 of 206 CanDo overrides calls super (craftlongtorch.c:61, as its only statement); RecipeBase.CanDo (recipebase.c:551-561) only rejects attachments. The ticket's 'static array of the recipe manager' is corrected: CanDo receives RecipeBase.m_IngredientsSorted (recipebase.c:30, :494-497), and the explain probe failed the same way with a local array; its rule 'call super only as the final return, like vanilla' is not written as tested. Mechanism not established. Cross-family review round 1 (Codex gpt-6.1-sol, desktop codex.exe 0.160.0, read-only, effort max; cap of two rounds set before round 1) on 2155def: SOUND-CON-FIXES, no P1. R21-01 (P2): the Roadway rule said 'any model', which takes in the cabin's own Roadway (lf_rocaheli_cabin.p3d has a 1-face Roadway LOD, read with py3d) and the project's gate leaves the cabin out (rh_gate1.py: rock, interior and shell only); now 'any other model', with the reason. R21-02 (P3): CocaLab d6c255c also split the final 'return tray && ...' into a null guard, so rule 42 and its CHANGELOG entry say which change mattered was not isolated. R21-03 (P3, hypothesis): the restore rule is scoped to a structure rebuilt from the mod's own sidecar that needs nothing from the game's storage. From the round's premise answer: the persistence text says the builds before and after differed in other ways and that the log order is what ties the fall to the timing; the Roadway text attributes 'only that model, only those Roadway polygons' to the project. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "75177987c2086b188e527d7309fd0c5677c25ab375c46006d5473868e6935882",
+          "source_hash": "3281f3de4776ab62c4097cb5d841b71fcd1b9f57f8a68f8ecdfc5bdad5cd0ed6",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inbb-rules@2026-10-03",
@@ -794,7 +824,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "75177987c2086b188e527d7309fd0c5677c25ab375c46006d5473868e6935882",
+      "output_hash": "3281f3de4776ab62c4097cb5d841b71fcd1b9f57f8a68f8ecdfc5bdad5cd0ed6",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2923,10 +2953,20 @@
           "source_path": "packctl/common.py",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: git_tracked_files() returned git ls-files -z as it came, and mid-merge git lists an unmerged path once per index stage (up to three times); it now returns each tracked path once, sorted as before (a set, then sorted). Callers checked for a dependence on the repeats and none had one: builder._reparse_findings (builder.py:28) would repeat a BUILD-REPARSE finding; gate's python_compile list (gate.py:315) passed the file to py_compile three times and counted it in file_count; promotion._tracked_projection (promotion.py:199, called at 2078) is reached only on a clean tree, since promote --check records PROMOTION-DIRTY at promotion.py:2017 and returns on it at 2068-2070; validation's link check (validation.py:658) reported LINK-BROKEN once per stage; validation._payload_paths (validation.py:716) falls back to it only without a loadable source map, and its one caller reads it through a set; validation.py:382, 725 and 1129 read it through a set already. Measured on main ea7b396 plus this change (Python 3.14.3, pytest 9.1.1, git 2.53.0): the two new tests in tests/packctl/test_validation.py fail on the old function (notes.md listed 3 times; LINK-BROKEN reported 3 times) and pass; tests/packctl 359 passed, 2 skipped.",
+          "license": "MIT",
+          "source_hash": "fa4e28f27a22900c5e144ecc2dda32948bf951f45792e2fb551477eb99ab007f",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/common.py",
+          "source_revision": "kp-chips-packctl@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "076404ee6764936781cde15b7b8ff3db48e45c61c3919a559ab17e6578e779d1",
+      "output_hash": "fa4e28f27a22900c5e144ecc2dda32948bf951f45792e2fb551477eb99ab007f",
       "output_path": "packctl/common.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -3417,10 +3457,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-b97026c@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: the reason of the skill/ai-3d-to-dayz adjudication (target claude_user_skills) named an unpublished skill as the value of the promotion's phrase alias; it now reads 'external converter -> the converter's local name'. Only that substring changed: the file stays canonical JSON (packctl.common.canonical_json_bytes), its artifact_id, target_id and observed_digest are unchanged, and promote reads only those plus a non-empty reason (packctl/promotion.py:1010-1046; _advance_matching_adjudications, 1063-1105, rewrites observed_digest on apply). No receipt under promotions/receipts names the file; its bytes feed the repo/promotions tree route (promotions/promotion-map.json), whose next snapshot carries them under the new commit while the 17 recorded receipts, which describe earlier commits, stay as they are. CONTRIBUTING.md sets no rule for the file. Review round 1 (Codex gpt-6.1-sol): SOUND, no finding; it reproduced the single-substring change, the unchanged adjudication contract and the repo/promotions digest change.",
+          "license": "MIT",
+          "source_hash": "e44d97a72c1daba45f3630da940cd4bc888c0bf40092e26a5d11f11f0ff34274",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-chips-privname@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a21f25ca9ceedadbf85859908944887134b5271cfc01e30dabaffa68c2a19db1",
+      "output_hash": "e44d97a72c1daba45f3630da940cd4bc888c0bf40092e26a5d11f11f0ff34274",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -6440,10 +6490,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "kp-update-dmp-sp071-rule12@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: test_check_dayz_winding.py moved from references/ to tests/, where packctl gate's skill_tests check and CI run it. The OFFLINE GATE paragraph cites the new path: one path on one line, no line added, so CLAIM-CHAR-NORMALS-INWARD-SKILL (line 356) does not move; the path was checked to exist in the tree and the rest of the text is unchanged.",
+          "license": "MIT",
+          "source_hash": "b84d632a5f2cd3f5438d5456551b68ca107e69b669651bdc254d320582bfa09c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "kp-chips-chartests@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "54730e1e7f5e882ad6790fcecf85575e63a154691667890993fbeeece029ccab",
+      "output_hash": "b84d632a5f2cd3f5438d5456551b68ca107e69b669651bdc254d320582bfa09c",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -6646,10 +6706,20 @@
           "source_path": "skills/dayz-characters/references/check_dayz_winding.py",
           "source_revision": "kp-update-py3d-normals-per-part@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: the docstring's USAGE note placed the test next to this script; it moved to ../tests/ (packctl gate's skill_tests check and CI run it there), and the note says where the fixtures (winding_fixtures/, still next to this script) and the test are. Docstring only, the code is unchanged; the 39 tests pass against it from tests/.",
+          "license": "MIT",
+          "source_hash": "cada186be253b9c78d6c7cde25e02eeb5e030cdd165fa8d53716d54e61b2c57d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/check_dayz_winding.py",
+          "source_revision": "kp-chips-chartests@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "83dd0625b3efb745677d09c05ec231981945680bc1e3dedcdd29811e61795eec",
+      "output_hash": "cada186be253b9c78d6c7cde25e02eeb5e030cdd165fa8d53716d54e61b2c57d",
       "output_path": "skills/dayz-characters/references/check_dayz_winding.py",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -12804,10 +12874,20 @@
           "source_path": "skills/dayz-vehicles/references/gauge-needles.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: the two citations of the tool that read the vanilla cars' ODOL (the native-sources paragraph, line 348; Trap 5, lines 386-387) named an unpublished skill and its script path. They now name the capability, the ODOL reader of the external ODOL->MLOD converter, in the pack's phrase for that converter (packctl/promotion.py PROMOTION_PHRASE_PLACEHOLDERS), kept on one line so that a promotion writes it as the converter's local name (checked with packctl.promotion._localized_payload_bytes and a placeholder alias: lines 348 and 387 change, no other). No line added or removed; the measurements, tables and corrections are unchanged.",
+          "license": "MIT",
+          "source_hash": "8cfea93def35342c2deaaee9008ef4c5de55cfc8b2729a28f5cc2dd7871e27ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/gauge-needles.md",
+          "source_revision": "kp-chips-privname@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a218bb63cdeb454c856963879091189eca861084cdb4893a6fa9da183889fd64",
+      "output_hash": "8cfea93def35342c2deaaee9008ef4c5de55cfc8b2729a28f5cc2dd7871e27ce",
       "output_path": "skills/dayz-vehicles/references/gauge-needles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -13358,10 +13438,20 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: the dashboard-needles section (line 547) named the tool that read the vanilla cars' ODOL as an unpublished skill's script. It now names the capability, the ODOL reader of the external ODOL->MLOD converter, in the pack's phrase for that converter, which a promotion writes as the converter's local name (checked with packctl.promotion._localized_payload_bytes and a placeholder alias: line 547 changes, no other). No line added or removed; the measured table is unchanged.",
+          "license": "MIT",
+          "source_hash": "612fa060527e7692dee9e06c73ffabc9f847022be04018a566986f8e561cb075",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
+          "source_revision": "kp-chips-privname@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d654ed36077dd025ecb8272ed62b9fe89681d42fd03fbcea30c7962501c7ab5b",
+      "output_hash": "612fa060527e7692dee9e06c73ffabc9f847022be04018a566986f8e561cb075",
       "output_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -16764,10 +16854,20 @@
           "source_path": "tests/packctl/test_promotion.py",
           "source_revision": "kp-update-anim-empties@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: try_dir_link captures the cmd /c mklink /J fallback's output as bytes and never decodes it; only the return code is read. cmd writes that message in the console code page, the OEM one (cp850 on a Spanish-locale Windows host, where Developer Mode is off and os.symlink is refused) unless the console runs UTF-8, and decoding it as UTF-8 failed in subprocess's reader thread ('utf-8' codec can't decode byte 0xa2 in position 3), which pytest reported as PytestUnhandledThreadExceptionWarning while every test still passed. Port of a local commit of 2026-09-24 that was never pushed (59d002c on branch claude/mklink-decode-20260924; the same two lines removed, plus a comment saying why). Measured on main ea7b396 and on this change (Python 3.14.3, pytest 9.1.1, console code page 850): the eight tests that create a directory link, nine runs with one parametrized, give 10 warnings and, under -W error::pytest.PytestUnhandledThreadExceptionWarning, 9 failed before; no warning and 9 passed after. With the console at code page 65001 the old helper passes the nine runs too (measured by review round 1, Codex gpt-6.1-sol, and again by the author), so the comment names the console code page. No other cmd or mklink subprocess call exists under packctl/ or tests/ (grep).",
+          "license": "MIT",
+          "source_hash": "01bd3b5359a834cd2ef70fb6ecc504d8f29ecd128380177c7d249c4fb0467724",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "kp-chips-packctl@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0023ae972274101664b282289536204c474bde3fa7b36d439085030785e6f454",
+      "output_hash": "01bd3b5359a834cd2ef70fb6ecc504d8f29ecd128380177c7d249c4fb0467724",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -16873,10 +16973,20 @@
           "source_path": "tests/packctl/test_validation.py",
           "source_revision": "kp-update-conflict-markers@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: two tests of git_tracked_files mid-merge, through a helper that commits a different text for one path on each side and stops git merge on the conflict (merge.conflictStyle=merge, merge.ff=false, as the existing unmerged-path conflict-marker test does). test_git_tracked_files_lists_an_unmerged_path_once checks the premise (git ls-files prints notes.md 3 times) and that the list holds it once and equals the sorted set of git ls-files; test_a_broken_link_in_an_unmerged_file_is_reported_once checks that validate_links reports the broken link of the unmerged file once. Both fail on the old git_tracked_files (3 entries; 3 LINK-BROKEN findings) and pass on the new one (git 2.53.0, Python 3.14.3, pytest 9.1.1).",
+          "license": "MIT",
+          "source_hash": "bc759d929b7e07d1ce69f26e4b588c4d50fad3378d2399fb5cada2fc822e2019",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_validation.py",
+          "source_revision": "kp-chips-packctl@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d78735ac8ff3a253dc1505f1f6fbdafce318d8a428bd0892016abbd72fe81816",
+      "output_hash": "bc759d929b7e07d1ce69f26e4b588c4d50fad3378d2399fb5cada2fc822e2019",
       "output_path": "tests/packctl/test_validation.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -28724,38 +28834,6 @@
       "verification_level": "historical"
     },
     {
-      "artifact_id": "file/skills/dayz-characters/references/test_check_dayz_winding.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Test of check_dayz_winding.py: 39 cases on the four fixtures and on variants built in the test (faces reversed after export, one box inverted with the LOD sum still negative, most boxes inverted, one part with outward normals, a small part below 10 % under an agreeing LOD, open sheets, welded twins, proxies, a Moebius band, an extra visual LOD and a collision LOD, zero normals, ODOL, truncated, no visual LOD) plus one per review-r1 finding (a right quad among outward normals and the pool fix applied anyway, first corners turned before a reversal, normals wrong only at the corners py3d does not read, zero first corners, a shell with no normal, a 50-micrometre inside-out part, a fake py3d). Each verdict line is matched whole with its measured sign; the printed py3d count is compared with py3d _pct_normal_agreement on the model as it is and after the reversal. Review r2 cases: the pool fix's statement of what it turns, the 90 % tolerance both ways (35/36 passes, 32/36 fails), no pool fix with part of the LOD unread, a dart-quad prism in four rotations, a corner normal in its face plane tipped by +-1e-8, the py3d count with a proxy and with an incoherent shell. Nineteen targeted mutations of the gate each fail it.",
-          "license": "MIT",
-          "source_hash": "8b211df0c94637d25368f4fd821e150f4e2d38d99afaef2ad21c784f8be55614",
-          "source_id": "pack-r21-authored",
-          "source_path": "skills/dayz-characters/references/test_check_dayz_winding.py",
-          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03: follow-up of PR #71's cross-family review, round 2, finding R5-02 (PRE-EXISTING, left out of #71's scope). py3d 1.9.0's ERR_WINDING_VS_NORMALS and ERR_WINDING_INVERTED messages (tools/py3d/py3d/__init__.py at 4de8b5a: lines 1152-1154 and 1221-1224) and the py3d README 'Winding' step 3 (README.md lines 244-254) closed with 'negate each corner normal that still points against its face'; dayz-p3d-audit references/winding-diagnostics.md, 'From Check B to fix' item 3 (lines 184-197), rules that out: a corner that fails is inspected, never negated on its own reading, since a corner normal smoothed across a sharp fold can point against a face that is right. Owner's choices (2026-10-03, asked with the drafted text): the message closes with a short normals step, part by part, never a corner on its own sign, pointing to README step 3, which holds the rule (a face reads the average of its corner normals against its vector area: with its winding at dot >= 0.5, against at <= -0.5, no reading in between or with a corner normal of the other sign or within 0.1 of zero; a part reads cleanly when every face of it has a reading and its larger group of faces wound alike reads all one way; there the faces that read against have their normals negated and the rest kept; any other part is left as it is, to inspect); one helper, _normals_step(), used by both messages; py3d version by merge order, a patch (1.9.1 before PR #72's 1.10.0, 1.10.1 after): #72 landed first (8660bc6), so 1.10.1, and the per-corner step is named the step up to 1.10.0; no wheel built, the pinned 1.9.0 wheel unchanged; dayz-characters check_dayz_winding.py, which cited README step 3 for its own per-corner fix (its fix for the shells between 10 % and 90 %, and the by-hand note of its pool fix), aligned in the same change, its measurement, thresholds and exit codes unchanged; dayz-characters SKILL.md 'OFFLINE GATE' says so with a dated note; the README keeps a dated note quoting the replaced text. Measured offline 2026-10-03 (receptor's measure_parts.py and search_nonconvex.py, py3d 1.9.0 from the worktree): on every scenario test_s7_blender_to_dayz.py ran the per-corner step on (the Rule 12 F fixture with its normals turned, its faces turned, a shared six-entry pool, a plate face turned back with its own normal, an odd face; the multi-LOD model with its visual or geometry LOD inside-out) the part-by-part step gives back the clean model, snapshot-equal where the tests compare snapshots; on the flat tetrahedron of R5-02 (points (0,0,0), (2,0,0), (0,2,0), (0.2,0.2,0.02), wound inward, one area-weighted normal per point; healthy, 6 of 12 corners against their faces, py3d 75.0 % WARN_WINDING_NORMAL_MISMATCH) reversed and set right by its volume it changes nothing (faces with no reading), while the per-corner step turns 6 of 12 normals through 3 pool copies and takes it to 100.0 % with no finding; it leaves two damaged cases to inspection that the per-corner step fixed (only each face's first corner turned on flat normals; a smoothed box whose shared entries were negated in place, 18 of 36 corners against their faces). Of 3000 healthy radially perturbed icospheres (closed, inward, one area-weighted normal per point), 226 have a face whose every corner reads against it, and in each of the 226 another face has no reading. Tests: py3d 391 passed, 11 skipped with #72 merged in (main 8660bc6: 386 passed; before #72, 339 against a base of 334; the 11 skipped are 7 CANON without an upstream clone and 4 without the companion scripts); test_s7_blender_to_dayz.py replaces the per-corner helper with fix_parts() (README step 3) in every scenario and adds the tetrahedron, the reading turned with the face (planar, dart and twisted quads; a two-group tie left to inspect), the smoothed box, faces with no reading (mean between -0.5 and 0.5, a corner within 0.1 of zero, either side; a zero corner normal) leaving their part as it was, and one test that both messages carry the same step once, the 1.9.0 sentence is gone, and the README carries the thresholds and the tetrahedron's numbers; check_dayz_winding.py's tests 39 passed. 19 mutants (the step's text, sign or absence in either message, the version, the README's threshold, tie rule, sign, zero normal, numbers and old text, the test helper's two thresholds, two margins and zero-normal guard, the gate's two fix texts) each fail a test; files restored byte for byte (receptor's mutants.py). CHANGELOG [Unreleased] Fixed entry. Review round 1 (Codex gpt-6.1-sol, read-only, on 605df1f; cap of two rounds set before round 1): SOUND-WITH-FIXES, two findings, both fixed: R1-01 P2 NEW, the test helper face_reading() raised TypeError on a zero-length corner normal (validate() reports nothing for one) instead of leaving the part to inspect; it now reads such a face as having no reading, README step 3 says a zero corner normal gives no reading, and a test leaves that part as it was. R1-02 P3 NEW, the ±0.5 thresholds and ±0.1 margins had no behavioural test (set to zero, every test still passed); a test now builds faces with no reading on both sides (mean -0.4 and +0.4; a corner at -0.05 and +0.05 with the face averaging -0.899 and +0.899) and each threshold or margin mutant fails it. Review round 2 (Codex gpt-6.1-sol, read-only, on 48cdb2b, the last round under the cap): SOUND; R1-01 and R1-02 closed (the zero-normal case across 72 corner placements and signs raised nothing and changed nothing; the four threshold and margin mutants and the guard removal each fail the new test); no new finding; an independent implementation of the Check A table matched the README step on 248 clear cases and left mixed-majority and equal-group cases unchanged. packctl gate PASS on 48cdb2b (9 of 9 checks; py3d 339 passed, 11 skipped; packctl 348 passed; dayz-model-preflight 74 and dayz-vehicle-proxy-contract 128 passed with this py3d). Written by Claude (Anthropic).",
-          "license": "MIT",
-          "source_hash": "1255ca0fdc4cbd6cbceff391681a41196ed76b7f2b344d034dff12e0acbf24de",
-          "source_id": "pack-r21-authored",
-          "source_path": "skills/dayz-characters/references/test_check_dayz_winding.py",
-          "source_revision": "kp-update-py3d-normals-per-part@2026-10-03",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "1255ca0fdc4cbd6cbceff391681a41196ed76b7f2b344d034dff12e0acbf24de",
-      "output_path": "skills/dayz-characters/references/test_check_dayz_winding.py",
-      "routing_artifact_id": "skill/dayz-characters",
-      "verification_level": "offline_tested"
-    },
-    {
       "artifact_id": "file/skills/dayz-characters/references/winding_fixtures/make_fixtures.py",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -28862,6 +28940,48 @@
       "license": "MIT",
       "output_hash": "ac5f0f77f6d93db93226e631ed0b02c3492c6e13d815a621bd9ed82e2b4e1da8",
       "output_path": "skills/dayz-characters/references/winding_fixtures/mirror_c.p3d",
+      "routing_artifact_id": "skill/dayz-characters",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-characters/tests/test_check_dayz_winding.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Test of check_dayz_winding.py: 39 cases on the four fixtures and on variants built in the test (faces reversed after export, one box inverted with the LOD sum still negative, most boxes inverted, one part with outward normals, a small part below 10 % under an agreeing LOD, open sheets, welded twins, proxies, a Moebius band, an extra visual LOD and a collision LOD, zero normals, ODOL, truncated, no visual LOD) plus one per review-r1 finding (a right quad among outward normals and the pool fix applied anyway, first corners turned before a reversal, normals wrong only at the corners py3d does not read, zero first corners, a shell with no normal, a 50-micrometre inside-out part, a fake py3d). Each verdict line is matched whole with its measured sign; the printed py3d count is compared with py3d _pct_normal_agreement on the model as it is and after the reversal. Review r2 cases: the pool fix's statement of what it turns, the 90 % tolerance both ways (35/36 passes, 32/36 fails), no pool fix with part of the LOD unread, a dart-quad prism in four rotations, a corner normal in its face plane tipped by +-1e-8, the py3d count with a proxy and with an incoherent shell. Nineteen targeted mutations of the gate each fail it.",
+          "license": "MIT",
+          "source_hash": "8b211df0c94637d25368f4fd821e150f4e2d38d99afaef2ad21c784f8be55614",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/test_check_dayz_winding.py",
+          "source_revision": "kp-update-characters-winding-gate@2026-10-02",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: follow-up of PR #71's cross-family review, round 2, finding R5-02 (PRE-EXISTING, left out of #71's scope). py3d 1.9.0's ERR_WINDING_VS_NORMALS and ERR_WINDING_INVERTED messages (tools/py3d/py3d/__init__.py at 4de8b5a: lines 1152-1154 and 1221-1224) and the py3d README 'Winding' step 3 (README.md lines 244-254) closed with 'negate each corner normal that still points against its face'; dayz-p3d-audit references/winding-diagnostics.md, 'From Check B to fix' item 3 (lines 184-197), rules that out: a corner that fails is inspected, never negated on its own reading, since a corner normal smoothed across a sharp fold can point against a face that is right. Owner's choices (2026-10-03, asked with the drafted text): the message closes with a short normals step, part by part, never a corner on its own sign, pointing to README step 3, which holds the rule (a face reads the average of its corner normals against its vector area: with its winding at dot >= 0.5, against at <= -0.5, no reading in between or with a corner normal of the other sign or within 0.1 of zero; a part reads cleanly when every face of it has a reading and its larger group of faces wound alike reads all one way; there the faces that read against have their normals negated and the rest kept; any other part is left as it is, to inspect); one helper, _normals_step(), used by both messages; py3d version by merge order, a patch (1.9.1 before PR #72's 1.10.0, 1.10.1 after): #72 landed first (8660bc6), so 1.10.1, and the per-corner step is named the step up to 1.10.0; no wheel built, the pinned 1.9.0 wheel unchanged; dayz-characters check_dayz_winding.py, which cited README step 3 for its own per-corner fix (its fix for the shells between 10 % and 90 %, and the by-hand note of its pool fix), aligned in the same change, its measurement, thresholds and exit codes unchanged; dayz-characters SKILL.md 'OFFLINE GATE' says so with a dated note; the README keeps a dated note quoting the replaced text. Measured offline 2026-10-03 (receptor's measure_parts.py and search_nonconvex.py, py3d 1.9.0 from the worktree): on every scenario test_s7_blender_to_dayz.py ran the per-corner step on (the Rule 12 F fixture with its normals turned, its faces turned, a shared six-entry pool, a plate face turned back with its own normal, an odd face; the multi-LOD model with its visual or geometry LOD inside-out) the part-by-part step gives back the clean model, snapshot-equal where the tests compare snapshots; on the flat tetrahedron of R5-02 (points (0,0,0), (2,0,0), (0,2,0), (0.2,0.2,0.02), wound inward, one area-weighted normal per point; healthy, 6 of 12 corners against their faces, py3d 75.0 % WARN_WINDING_NORMAL_MISMATCH) reversed and set right by its volume it changes nothing (faces with no reading), while the per-corner step turns 6 of 12 normals through 3 pool copies and takes it to 100.0 % with no finding; it leaves two damaged cases to inspection that the per-corner step fixed (only each face's first corner turned on flat normals; a smoothed box whose shared entries were negated in place, 18 of 36 corners against their faces). Of 3000 healthy radially perturbed icospheres (closed, inward, one area-weighted normal per point), 226 have a face whose every corner reads against it, and in each of the 226 another face has no reading. Tests: py3d 391 passed, 11 skipped with #72 merged in (main 8660bc6: 386 passed; before #72, 339 against a base of 334; the 11 skipped are 7 CANON without an upstream clone and 4 without the companion scripts); test_s7_blender_to_dayz.py replaces the per-corner helper with fix_parts() (README step 3) in every scenario and adds the tetrahedron, the reading turned with the face (planar, dart and twisted quads; a two-group tie left to inspect), the smoothed box, faces with no reading (mean between -0.5 and 0.5, a corner within 0.1 of zero, either side; a zero corner normal) leaving their part as it was, and one test that both messages carry the same step once, the 1.9.0 sentence is gone, and the README carries the thresholds and the tetrahedron's numbers; check_dayz_winding.py's tests 39 passed. 19 mutants (the step's text, sign or absence in either message, the version, the README's threshold, tie rule, sign, zero normal, numbers and old text, the test helper's two thresholds, two margins and zero-normal guard, the gate's two fix texts) each fail a test; files restored byte for byte (receptor's mutants.py). CHANGELOG [Unreleased] Fixed entry. Review round 1 (Codex gpt-6.1-sol, read-only, on 605df1f; cap of two rounds set before round 1): SOUND-WITH-FIXES, two findings, both fixed: R1-01 P2 NEW, the test helper face_reading() raised TypeError on a zero-length corner normal (validate() reports nothing for one) instead of leaving the part to inspect; it now reads such a face as having no reading, README step 3 says a zero corner normal gives no reading, and a test leaves that part as it was. R1-02 P3 NEW, the ±0.5 thresholds and ±0.1 margins had no behavioural test (set to zero, every test still passed); a test now builds faces with no reading on both sides (mean -0.4 and +0.4; a corner at -0.05 and +0.05 with the face averaging -0.899 and +0.899) and each threshold or margin mutant fails it. Review round 2 (Codex gpt-6.1-sol, read-only, on 48cdb2b, the last round under the cap): SOUND; R1-01 and R1-02 closed (the zero-normal case across 72 corner placements and signs raised nothing and changed nothing; the four threshold and margin mutants and the guard removal each fail the new test); no new finding; an independent implementation of the Check A table matched the README step on 248 clear cases and left mixed-majority and equal-group cases unchanged. packctl gate PASS on 48cdb2b (9 of 9 checks; py3d 339 passed, 11 skipped; packctl 348 passed; dayz-model-preflight 74 and dayz-vehicle-proxy-contract 128 passed with this py3d). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1255ca0fdc4cbd6cbceff391681a41196ed76b7f2b344d034dff12e0acbf24de",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/references/test_check_dayz_winding.py",
+          "source_revision": "kp-update-py3d-normals-per-part@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: moved from references/ to tests/, where packctl gate's skill_tests check and CI's packctl test-folders --tree skills run it; in references/ nothing ran it. GATE and FIXTURES resolve through HERE.parent / 'references' (check_dayz_winding.py and winding_fixtures/ stay in references/), REPO_PY3D keeps HERE.parents[2] (the same depth), and the docstring's run command and fixture path follow; no test changed. Measured on main ea7b396 plus this change: 39 passed (pytest 9.1.1 on Python 3.14.3, and on 3.12.14 with pytest as the only package, with the repository's py3d 1.10.1 through --py3d); packctl test-folders --tree skills PASS with seven folders, dayz-characters 39 collected and 39 run; with check_dayz_winding.py's DISAGREE_BELOW mutated from 10.0 to 0.0 the folder fails (6 failed, 33 passed; SKILL-TESTS-FAILED).",
+          "license": "MIT",
+          "source_hash": "e6a0e01562a93ef355435529a438019fb633ecd9b95851e1a35d37f7012688ba",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/tests/test_check_dayz_winding.py",
+          "source_revision": "kp-chips-chartests@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e6a0e01562a93ef355435529a438019fb633ecd9b95851e1a35d37f7012688ba",
+      "output_path": "skills/dayz-characters/tests/test_check_dayz_winding.py",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "offline_tested"
     },

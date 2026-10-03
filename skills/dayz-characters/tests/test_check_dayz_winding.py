@@ -1,9 +1,9 @@
 """check_dayz_winding.py against the MLODs of the Rule 12 in-game test, and variants of them.
 
 Run from the repository root (or from an installed copy of the skill):
-    python -m pytest -q -p no:cacheprovider skills/dayz-characters/references/test_check_dayz_winding.py
+    python -m pytest -q -p no:cacheprovider skills/dayz-characters/tests/test_check_dayz_winding.py
 
-The fixtures in winding_fixtures/ are the three MLODs of dayz-model-pipeline Rule 12's in-game test,
+The fixtures in references/winding_fixtures/ are the three MLODs of dayz-model-pipeline Rule 12's in-game test,
 byte for byte (DayZDiag 1.29.163709, 2026-10-01: b and a solid, c inside-out; a is mirrored), plus b with its
 normals negated. make_fixtures.py regenerates them with py3d >= 1.8.0. Each test ties a verdict line to the
 measurement it reports - the volume sign and the agreement - so a test cannot pass on a phrase with the
@@ -19,8 +19,8 @@ from pathlib import Path
 import pytest
 
 HERE = Path(__file__).resolve().parent
-GATE = HERE / "check_dayz_winding.py"
-FIXTURES = HERE / "winding_fixtures"
+GATE = HERE.parent / "references" / "check_dayz_winding.py"
+FIXTURES = HERE.parent / "references" / "winding_fixtures"
 REPO_PY3D = HERE.parents[2] / "tools" / "py3d"
 PY3D_ARGS = ["--py3d", str(REPO_PY3D)] if (REPO_PY3D / "py3d" / "__init__.py").is_file() else []
 

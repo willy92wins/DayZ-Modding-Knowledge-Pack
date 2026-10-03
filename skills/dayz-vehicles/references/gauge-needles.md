@@ -345,7 +345,7 @@ units and `angle1` comes from theta(6.4)).
 
 `speed`, `rpm`, `fuel`, and `coolant` **are native engine sources**, measured in the
 ODOL of two 1.29 vanilla cars -- `offroadhatchback` (35 animation classes) and
-`civiliansedan` (51) -- read with `dayz-p3d-debinarizer/scripts/odol_reader.py`. Both
+`civiliansedan` (51) -- read with the ODOL reader of the external ODOL->MLOD converter. Both
 have `IndicatorFuel { source = "fuel"; }` on the `dial_fuel` bone, and none
 of their cluster animations passes through script `AnimationSources`.
 
@@ -383,8 +383,8 @@ the other and believe something has been proven; reasoning is circular and fails
 detect error.
 
 Rule comes from shipped content. Eleven cluster animations from four vanilla
-1.29 cars, read from ODOL with
-`dayz-p3d-debinarizer/scripts/odol_reader.py` (`Animations.classes` for
+1.29 cars, read from ODOL with the ODOL reader of the
+external ODOL->MLOD converter (`Animations.classes` for
 `angle0/angle1`, `Animations.axis_data[0][i]` for already resolved axis):
 
 | car | animation | resolved axis | angle0 | angle1 | sweep | axis | rotation |

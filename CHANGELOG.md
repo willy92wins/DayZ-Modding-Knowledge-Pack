@@ -226,6 +226,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-vehicles`: `references/gauge-needles.md` (twice) and
+  `references/vehicle-config-and-modelcfg.md` named an unpublished skill as the tool that read the
+  vanilla cars' animation classes from their ODOL, and `promotions/adjudications.json` named it in
+  the reason of the `skill/ai-3d-to-dayz` adjudication. The three passages now name the capability,
+  the ODOL reader of the external ODOL->MLOD converter, in the phrase the pack already uses for that
+  converter. Where an installation sets the phrase alias for it (`packctl/promotion.py`,
+  `promotions/local-targets.example.json`), a promotion writes the converter's local name in its
+  place, so that installed copy still points at the tool; without the alias the public wording
+  ships as it is. The adjudication's reason says "external converter -> the converter's local
+  name"; its key and digest are unchanged, and `promote` uses only those (of a reason it checks that
+  there is one). The measurements and what they cite are unchanged.
 - `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
   by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
   bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties
@@ -593,6 +604,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `acceptance-ladder.md` cite the new paths. Measured with `packctl test-folders --tree skills`:
   six folders pass, also with numpy hidden from the test processes, and the same two mutants fail
   `dayz-mcp-verify` and `dayz-proxy-align`.
+- `dayz-characters`' `test_check_dayz_winding.py`, the 39 tests of its pre-PBO winding gate (#53),
+  sat in `references/`, outside the `skills/<skill>/tests` folders the gate's `skill_tests` check
+  and CI run, so a failing test there turned neither red. It now sits in `tests/` and reads
+  `check_dayz_winding.py` and its fixtures where they stay, in `references/` and
+  `references/winding_fixtures/`; `SKILL.md` and the gate's usage note cite the new path.
+  Measured with `packctl test-folders --tree skills`: seven folders pass, `dayz-characters` with
+  39 tests, on Python 3.14.3 and on 3.12.14 with pytest as the only package, as on the CI runner.
+  With the gate's `DISAGREE_BELOW` mutated from 10 to 0, `dayz-characters` fails (6 of its 39
+  tests), where `main` at `ea7b396` with the same mutant passes its six folders.
 - py3d rollout applicator (`tools/py3d/rollout/apply-s2-rollout.ps1`): restocking a skill's
   `wheels/` counted the pinned name and legacy `py3d-*.whl` wheels but not an earlier
   `py3d_dayz-*.whl`, so a 1.8.0 → 1.9.0 restock would copy 1.9.0 beside 1.8.0, pass its own
@@ -794,6 +814,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   inside-out render, and the reversal hid a mirror (`references/character-rigging.md` §6, in game
   2026-10-02). The old text is quoted in dated notes. Docs only; nothing re-measured in game for this
   change.
+- packctl: in the middle of a merge, `git_tracked_files` (`packctl/common.py`) listed a path in
+  conflict once per index stage, up to three times, as `git ls-files` prints it. It now lists each
+  tracked path once, still sorted. None of its callers needed the repeats: `validate`'s link check
+  reported a broken link in such a Markdown file three times, the gate passed such a Python file to
+  `py_compile` three times and counted it three times, and `build`'s symlink check would repeat its
+  finding; the source-map, privacy and conflict-marker checks read the list through a set, and
+  `promote` refuses a dirty tree before it lists a route's files. Two tests in
+  `tests/packctl/test_validation.py` leave a merge unresolved: the list and the link check fail on
+  the old function and pass now.
+- `tests/packctl/test_promotion.py`: on a Spanish-locale Windows host, the eight tests that create a
+  directory link (nine runs, one test being parametrized) passed with a
+  `PytestUnhandledThreadExceptionWarning` per link. Without Developer Mode `try_dir_link` falls back
+  to `cmd /c mklink /J`, cmd writes its message in the console code page, the OEM one unless the
+  console runs UTF-8 (cp850 here: `UnicodeDecodeError` on byte `0xa2`, the `ó` of `Unión`), and the
+  helper decoded it as UTF-8 in subprocess's reader thread. It now keeps the output as bytes and
+  reads only the return code. Under `-W error::pytest.PytestUnhandledThreadExceptionWarning` the nine
+  runs go from failed to passed (in a console at code page 65001 both versions pass). CI never
+  showed it: its `tests/packctl` step on `ea7b396` reports 359 passed and no warning.
 
 ## [1.5.0] - 2026-10-02
 
