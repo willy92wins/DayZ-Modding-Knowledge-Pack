@@ -84,13 +84,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   entity was created, or an admin's console spawn. The rule: an unregister needs a matching id, and
   an entity without one never touches the file; in game (DayZDiag 1.29), with that rule, a console
   entity 0.3 m (horizontally) from a registered one was created and deleted, the registry kept its
-  SHA-256 and the registered entity came back after the restart. Restore binds the entity with the
-  entry's id before the nearest one without an id, never one bound to another entry, since
-  `GetObjectsAtPosition3D` promises no order and the nearest is only a heuristic; a restore pass
-  still queued in `CALL_CATEGORY_SYSTEM` is removed (`ScriptCallQueue.Remove`) before the shutdown
-  flag is set, so the shutdown's deletions cannot unregister entries; both were read in the code and
-  not reproduced in game. The entry-point audit gains the worked example, the invariant's entry
-  points and a search for proximity used as identity.
+  SHA-256 and the registered entity came back after the restart. Restore binds by id: a candidate
+  inside the radius without the entry's id is a conflict to log, neither bound nor duplicated
+  ([DESIGN]), since `GetObjectsAtPosition3D` promises no order and three traced cases show a
+  position match taking the wrong entity or creating a second one; a restore pass still queued in
+  `CALL_CATEGORY_SYSTEM` is removed (`ScriptCallQueue.Remove`) before the shutdown flag is set, so
+  the shutdown's deletions cannot unregister entries; both were read in the code and not reproduced
+  in game. The entry-point audit gains the worked example, the invariant's entry points and a search
+  for proximity used as identity.
 
 ### Changed
 
