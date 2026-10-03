@@ -76,6 +76,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   A third section it had written, a Mission-module lesson about a class holding a `static ref` to
   itself, was retracted by its author as measured on the wrong mod and is not ported; vanilla 1.29
   contradicts it as well (`VicinityItemManager` holds one and its module compiles).
+- `dayz-persistence` Hard stops item 9 and its section, and `rigorous-data-audit`
+  `references/entry-point-audit.md`: an entry of a mod's own registry of world entities leaves by
+  its id, never by proximity (SP-456, from a code audit of the SecretRock mod, 2026-10-03). An
+  unregister that fell back to the nearest entry of the same class within 0.75 m deleted a
+  neighbour's entry whenever an entity without an id was deleted: a placement refused after the
+  entity was created, or an admin's console spawn. The rule: an unregister needs a matching id, and
+  an entity without one never touches the file; in game (DayZDiag 1.29), with that rule, a console
+  entity 0.3 m from a registered one was created and deleted, the registry kept its SHA-256 and the
+  registered entity came back after the restart. Restore binds the entity with the entry's id before
+  the nearest unclaimed one, since `GetObjectsAtPosition3D` promises no order, and a restore pass
+  still queued in `CALL_CATEGORY_SYSTEM` is removed (`ScriptCallQueue.Remove`) before the shutdown
+  flag is set, so the shutdown's deletions cannot unregister entries; both were read in the code and
+  not reproduced in game. The entry-point audit gains the worked example, the invariant's entry
+  points and a search for proximity used as identity.
 
 ### Changed
 

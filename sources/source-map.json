@@ -781,10 +781,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "skill-tests-pytest-folders@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "[Unreleased] Added entry for dayz-persistence Hard stops item 9 and its section and the rigorous-data-audit entry-point audit's worked example: a registry entry leaves by its id, never by proximity (SP-456, SecretRock audit DZ-R9, 2026-10-03; the unregister rule verified in game on DayZDiag 1.29.163709, the restore and shutdown rules read in the code).",
+          "license": "MIT",
+          "source_hash": "4f3388df39722951374c0bf408e7042ca9d93387e1054e23c00138ca07bcec16",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "857df1ea410ee0f946c585be23b453c12bb785e55859b2a974b57216e82cfb1f",
+      "output_hash": "4f3388df39722951374c0bf408e7042ca9d93387e1054e23c00138ca07bcec16",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -9694,10 +9704,20 @@
           "source_path": "skills/dayz-persistence/SKILL.md",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-456 of the skill-patches ledger): Hard stops gain item 9 and a section, A registry entry leaves by its id, never by proximity, for a mod's own registry of world entities (Contract 3, sidecar JSON). From the SecretRock audit DZ-R9 of 2026-10-03 (Codex read the code, Claude checked the six findings against it): an unregister that fell back to the nearest entry of the same class within 0.75 m deleted a neighbour's entry when an entity without an id was deleted (a placement refused after creation, an admin's console spawn), so an unregister needs a matching id (claim CLAIM-PERS-UNREGISTER-BY-ID, runtime_verified: with that rule, in game on DayZDiag 1.29.163709, a console rock 0.3 m from a registered one created and deleted left placed.json's SHA-256 unchanged and the registered rock came back after the restart; the failure itself not reproduced); restore binds by id before the nearest unclaimed entity, since GetObjectsAtPosition3D promises no order (VANILLA/3_game/global/game.c:924-929; claim CLAIM-PERS-RESTORE-BIND-BY-ID, source_verified); a restore pass still queued in CALL_CATEGORY_SYSTEM (VANILLA/3_game/global/game.c:1515) is removed with ScriptCallQueue.Remove (VANILLA/2_gamelib/tools.c:65) before the shutdown flag is set (claim CLAIM-PERS-SHUTDOWN-QUEUE, source_verified; the shutdown order in game not confirmed). Sources: SecretRock_dev/reviews/2026-10-03-roca-r73/README.md sections 5 and 6, dzr9_codex.md, dzr9_delta.md, dzr9_fix.diff. Cross-family review by Codex. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "86d1f1d1863d4283043532c690c15ec0874dd55051543e06508971fa27d86620",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/SKILL.md",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "05cf082ce994c362c2157575092fd18ef103646d3d8e85281af8d01b06365047",
+      "output_hash": "86d1f1d1863d4283043532c690c15ec0874dd55051543e06508971fa27d86620",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -14594,10 +14614,20 @@
           "source_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-456): the entry-point audit gains a worked example, DZ-R9 F1 (SecretRock's UnregisterEntity fell back to the nearest entry of the same class within 0.75 m, so the two entry points that delete an entity without an id, a placement refused after creation and an admin console spawn, removed a registered neighbour's entry; the shutdown face F6, a restore pass still queued in CALL_CATEGORY_SYSTEM after OnMissionFinish reopening saving), the invariant 'an entry of the mod's own registry leaves only by its own id' with five entry points, and a Step 3 search for proximity used as identity (GetObjectsAtPosition3D promises no order, 3_game/global/game.c:924-929). Evidence: SecretRock_dev/reviews/2026-10-03-roca-r73/README.md sections 5 and 6, dzr9_codex.md, dzr9_delta.md, dzr9_fix.diff; F1's fix verified in game on DayZDiag 1.29.163709 (test 5), F6's shutdown order not confirmed in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "08ea395930df56fc647756a2b502add8b5d1a1e49a4520c93a0e8dd6005c0be5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c699216daa389382212ab2eba8d70f547f2888991ad0a578dff92b357155e5f8",
+      "output_hash": "08ea395930df56fc647756a2b502add8b5d1a1e49a4520c93a0e8dd6005c0be5",
       "output_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -16145,10 +16175,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-py3d-normals-per-part@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registers CLAIM-PERS-UNREGISTER-BY-ID (runtime_verified), CLAIM-PERS-RESTORE-BIND-BY-ID and CLAIM-PERS-SHUTDOWN-QUEUE (source_verified) for the dayz-persistence section on registry entries (SP-456): the SecretRock audit DZ-R9 of 2026-10-03 with its fix and in-game test 5 (DayZDiag 1.29.163709), and the vanilla 1.29 sources 3_game/global/game.c:924-929 and :1515 and 2_gamelib/tools.c:65. No other claim moves.",
+          "license": "MIT",
+          "source_hash": "d13b0252080ab84443fc981d75115bf74b257e9c86a81447743e92c7bf36b6a8",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0e5c41f40ed8d6cf9bbcb0d595069ed4a7634f5cbeaddb4fb0140a112ea91605",
+      "output_hash": "d13b0252080ab84443fc981d75115bf74b257e9c86a81447743e92c7bf36b6a8",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

@@ -34,6 +34,28 @@ could re-read it.
 checked `IsVirtualized()`. Vanilla super already mutated cargo before the
 gate fired, leaving inconsistent state.
 
+### DZ-R9 F1: an unregister by proximity deletes a neighbour's entry
+
+SecretRock keeps the rocks it placed in its own registry (`placed.json`: class,
+position and id per entry). The canonical removal went by id: `EEDelete`
+called `UnregisterEntity`, which looked the rock up by id. When the rock had
+no id it fell back to the nearest entry of the same class within 0.75 m and
+saved the file without it. Two entry points delete a rock that never got an
+id: the placement that creates the rock, checks the site and deletes it on
+refusal, and an admin who spawns one from the console and deletes it. Both
+removed the entry of a registered rock nearby, which did not come back after
+the next restart. Fix: removal needs a matching id, and an entity without one
+never touches the file. Found by reading the code (audit 2026-10-03); with the
+fix, a console rock spawned 0.3 m from a registered one and deleted left the
+file's SHA-256 unchanged in game (DayZDiag 1.29), and the registered rock came
+back after the restart. The same audit's F6 is the shutdown face of this
+invariant: a restore pass still in the `CALL_CATEGORY_SYSTEM` queue after
+`OnMissionFinish` cleared the shutdown flag again, so the deletions of the
+shutdown unregistered entries. `OnMissionFinish` now removes the pass before
+setting the flag (the shutdown order in game is not confirmed). Both rules, and
+the restore that binds by id before position, are in `dayz-persistence`
+(Hard stops, item 9, and its section).
+
 ## Procedure
 
 ### Step 1 — Inventory entry points per invariant
@@ -64,6 +86,14 @@ honor it. Common invariants and their entry points:
 - `EEItemAttached` / `EEItemDetached`
 - `EEItemLocationChanged`
 - `OnStoreSave` / `OnStoreLoad`
+
+**Invariant: an entry of the mod's own registry leaves only by its own id**
+
+- `EEDelete` of a registered entity (pickup, dismantle, destruction)
+- Placement refused after the entity was created (create, check the site, delete)
+- Admin console spawn, then delete (the entity never got an id)
+- `EEDelete` of every entity while the mission shuts down
+- A restore pass still queued (`CallLater`) when `OnMissionFinish` runs
 
 ### Step 2 — For each invariant, walk every entry point
 
@@ -117,6 +147,17 @@ Grep "override\s+void\s+EE" --type c --output_mode content -n true
 
 For each EE override: read the body. The first 3 lines must be either
 gate-then-super or super-then-gate consistently. Mixed order = bug.
+
+**Proximity used as identity**:
+
+```powershell
+Grep "Closest|Nearest|GetObjectsAtPosition" --type c --output_mode content -n true
+```
+
+For each hit, ask whether it decides which registry entry an entity owns.
+If it does, a matching id must win; an entity without an id must not remove
+an entry; and on restore the first candidate in the radius is not the
+nearest one (`GetObjectsAtPosition3D` promises no order).
 
 ### Step 4 — Output
 
