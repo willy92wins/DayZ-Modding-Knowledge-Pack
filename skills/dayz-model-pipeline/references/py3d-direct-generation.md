@@ -268,7 +268,15 @@ inside-out AND mirrored in game (2026-10-01). From py3d 1.8.0 `py3d.blender_to_d
 
 Blender/FBX-authored geometry mapped with Rule 12's det=-1 reflection keeps its vertex order: no reversal. Reverse faces only to repair a mesh whose cross product points OUTWARD — for example after `P3D.transform()` with a det<0 map, which reverses on its own — and never proxy triangles (their vertex order encodes the attachment frame P0/P1/P2). The one case where proxy triangles are reversed too is undoing that `P3D.transform()` reversal, which hit them as well: reversing everything back leaves them in their authored order, as Rule 12 and `py3d.blender_to_dayz()` do (measured 2026-10-01 for py3d canonical triangles: they then render in the pose drawn in Blender; other conventions: check the ODOL against a working model, LL-505). glTF/GLB: see SKILL.md "GLB/glTF imports".
 
+The loop below is that undo and nothing else: it reverses every face of every LOD, proxy triangles
+included, so run it only on a model that `P3D.transform()` reversed whole. A collision LOD wound
+outward is repaired face by face instead (SKILL.md Rule 18, `dayz-p3d-audit` killer #1): reverse
+only the non-proxy faces Rule 18's per-component check reads outward, set their stored normals as
+killer #1's **Fix** says, and leave every other face and LOD alone. Run as a collision repair, the
+loop also turns a healthy Visual LOD inside-out and alters the proxies' P0/P1/P2 frames.
+
 ```python
+# Undo of a whole-model P3D.transform() reversal ONLY: every face of every LOD, proxies included.
 for lod in model.lods:
     for face in lod.faces:
         face.vertices.reverse()
@@ -279,8 +287,13 @@ for lod in model.lods:
 - Object appears transparent/invisible from the outside
 - Object appears solid black from outside (backface culling)
 
-**This applies to ALL LODs** including Geometry, Fire Geometry, View Geometry,
-and Shadow LODs — not just visual LODs.
+**The undo applies to ALL LODs**, Geometry, Fire Geometry, View Geometry and Shadow LODs included,
+not just visual LODs, because `P3D.transform()` reversed them all; a collision repair touches only
+the faces Rule 18 reads outward.
+*(Aligned 2026-10-02 with SKILL.md Rule 18 and `dayz-p3d-audit` killer #1: the loop above carried no
+word on its scope, and this paragraph read "**This applies to ALL LODs** including Geometry, Fire
+Geometry, View Geometry, and Shadow LODs — not just visual LODs." Copied to repair a collision LOD
+wound outward, the loop also reversed a healthy Visual LOD and every proxy triangle.)*
 
 ## Proxy Faces for Attachment Rendering
 
@@ -696,6 +709,9 @@ its fix. *(Corrected 2026-10-02: this sentence said any disagreement renders on 
 Check by comparing geometric normal (from cross product) with stored normal. *(Corrected 2026-10-02: the
 docstring below gave character source MLODs the opposite sign, `< 0`, the det +1 convention that
 `check_dayz_winding.py` encoded until it was rewritten for Rule 12 the same day.)*
+It reads `model.lods[0]` only, the first LOD in file order, and only for agreement: a file whose
+first LOD has no faces (a Memory LOD stored first) gets no finding at all, and neither does a
+collision box wound outward with agreeing normals. It is not SKILL.md Rule 18's per-component check.
 
 ```python
 import numpy as np

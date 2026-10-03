@@ -512,6 +512,33 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   returns its faces in no consistent order (measured offline, scipy 1.17.1: 22 of 44 faces of a
   12-gon cylinder wound outward), and the outward normals kept on the faces left alone read 50 %
   agreement in py3d. The old text is quoted in dated notes.
+- `dayz-model-pipeline` Rule 18 no longer reverses whole collision LODs. Its body read the
+  per-component check on "most faces" and fixed it with `face.vertices.reverse()` on every face of
+  every collision LOD, though its own 2026-10-02 note had narrowed both: on a collision LOD holding
+  one box wound inward and one wound outward, that loop swaps them (signed volumes by winding -8 and
+  +8 become +8 and -8; measured offline, py3d 1.9.0, synthetic 2 m boxes), while reversing only the
+  faces that read outward and negating their normals leaves both at -8. The body now carries killer
+  #1's prerequisites and fix: every non-proxy face of every closed, convex component reads inward,
+  only the faces that read outward are reversed, and a collision LOD is never reversed to match the
+  Visual LOD. The two troubleshooting rows that reversed every face say the same; the
+  symptom-triplet row also reversed Roadway, whose walkable faces it now sends to `dayz-p3d-audit`
+  "Absolute winding check" rule 4, and the Check A row reversed whatever its direction check read
+  outward, Visual LODs included: read literally on a closed Visual room seen from inside (signed
+  volume +8, right for a room), it gave -8 with 100 % agreement and no py3d winding finding. That
+  row now reads a Visual LOD shell by shell, never by the LOD-wide sum, after Check B has turned
+  back any face wound against its neighbours (a face turned with its normal inside a closed solid
+  left that solid at -5.33 instead of -8 with 100 % agreement, and only py3d's
+  `WARN_WINDING_EDGE_INCOHERENT` saw it), and by the side meant to be seen: negative for a solid
+  seen from outside, positive for a room seen from inside (rule 4); open or double-sided Visual
+  parts stay unresolved by that sign. In `references/py3d-direct-generation.md`, the "Face Winding
+  Order Fix" loop, which reverses every face of every LOD, proxy triangles included, is marked as
+  the undo of a whole-model `P3D.transform()` reversal, its one use, and the section says how a
+  collision LOD is repaired instead. Rule 18 also pointed at `check_face_winding` as its
+  implementation: that function compares winding with stored normals on the first LOD only, and it
+  returned no finding on a model whose first LOD is the Memory LOD over an outward collision box,
+  nor with that box stored first (measured offline the same way). Rule 18 now says no function of
+  the skill runs its check, and `check_face_winding`'s section says what it reads. The old text is
+  quoted in dated notes.
 - `dayz-model-pipeline` `references/lods-and-geometry.md`, the py3d fix for the GLB/glTF source
   case: the bullet above it reverses every face in every LOD except proxy triangles, but the loop
   under it reversed the proxy triangles too. The loop now keeps the order of each proxy triangle,
