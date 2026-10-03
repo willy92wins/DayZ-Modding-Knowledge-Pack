@@ -156,9 +156,9 @@ Stop and resolve the violation before recommending or shipping persistence work:
    I/O failures remain unexercised.
 7. Promotion reports `PROMOTION-UNROUTED` or `PROMOTION-DRIFT`.
 8. Live `CargoBase` is walked by frozen index across ticks while items can be removed mid-walk (SP-418).
-9. An entry of the mod's own registry of world entities is removed by proximity, or bound on
-   restore to an entity that does not carry its id (the first or the nearest candidate in a
-   radius), instead of by its id (SP-456).
+9. An entry of the mod's own registry of world entities is removed by proximity, bound on
+   restore to an entity that does not carry its id, or given a new entity after a search that
+   cannot prove the old one gone (SP-456).
 
 ### Live cargo capture across ticks (SP-418, added 2026-09-21, measured in game, DayZ 1.30.164014 Exp)
 
@@ -184,23 +184,35 @@ three ways to cross that binding.
    registered one horizontally (0.37 m apart, inside the radius) and then deleted left the registry
    byte-identical (same SHA-256), and the registered one came back after the restart
    [EXACT][CLAIM-PERS-UNREGISTER-BY-ID]; the failure itself was read in the code, not reproduced.
-2. **Restore binds by id; a position match proves nothing.** `GetObjectsAtPosition3D` returns the
-   objects in a sphere and promises no order (`VANILLA/3_game/global/game.c:924-929`)
-   [EXACT][CLAIM-PERS-RESTORE-BIND-BY-ID], so taking the first unclaimed candidate of the class
-   inside the radius can swap ids and states between two nearby entities of that class, and a
-   second restore pass (one 2 s after start, to bind what the mission created) runs that code on
-   every boot. SecretRock's fix takes the entity already bound to the entry's id, else the nearest
-   one not yet claimed in the pass. The cross-family review traced three ways through that code in
-   which an entry still takes the wrong entity or gets a second one: a neighbour that carries
-   another entry's id, an admin's console entity with no id next to an entry whose own entity is
-   gone, and an id regenerated after a failed save. SecretRock keeps the id in a script member, so
-   no entity carries it across a restart, and a position match is a guess. Rule [DESIGN]: an
-   entity that carries the entry's id is the entry's; with no entity of the class inside the
-   radius the entity is absent and the restore creates it; a candidate inside the radius without
-   the entry's id is a conflict, to log, neither bound to the entry, given its state, nor
-   duplicated. An id stored on the entity itself (its own `OnStoreSave` stream, Contract 1) ends
-   the guess for an entity the engine persists. Read in the code; neither the failures nor this
-   rule were tested in game.
+2. **Restore binds by id; a position search proves neither identity nor absence.**
+   `GetObjectsAtPosition3D` returns the objects in a sphere and promises no order
+   (`VANILLA/3_game/global/game.c:924-929`) [EXACT][CLAIM-PERS-RESTORE-BIND-BY-ID], so taking the
+   first unclaimed candidate of the class inside the radius can swap ids and states between two
+   nearby entities of that class, and a second restore pass (one 2 s after start, to bind what the
+   mission created) runs that code on every boot. SecretRock's fix takes the entity already bound to
+   the entry's id, else the nearest one not yet claimed in the pass. The cross-family review traced
+   through that code three ways in which an entry still takes the wrong entity or gets a second one
+   (a neighbour that carries another entry's id, an admin's console entity with no id next to an
+   entry whose own entity is gone, an id regenerated after a failed save), and a fourth through the
+   rule this section first gave, which read an empty radius as "absent": the entity sits outside
+   the radius, under another class name or still unloaded, and the restore creates a second one.
+   SecretRock keeps the id in a script member, so no entity carries it across a restart. Rule
+   [DESIGN]:
+   - make the id durable before using it: write it to the registry first, and if that save fails,
+     bind and create nothing for that entry in this pass;
+   - bind only by id, never by position or class;
+   - create an entry's entity only where the restore can prove it absent: the engine does not
+     persist these entities (only the restore creates them), and the restore keeps a census, id to
+     entity, of what it created or bound in this mission, dropping an entity when it is deleted and
+     clearing the census when the mission ends. An entry whose id is not in the census is absent;
+     an entity the restore did not create, such as an admin's console spawn, is left alone;
+   - where the engine persists these entities, keep the id on the entity itself (its own
+     `OnStoreSave` stream, Contract 1) and bind each one as it loads. An entry that no loaded entity
+     claims is a conflict kept in the registry for an admin, never a reason to create: no pass can
+     prove the engine has finished loading.
+
+   Read in the code; neither the failures nor this rule were tested in game, and the rule is
+   implemented nowhere.
 3. **A restore pass still queued can reopen saving at shutdown.** If the restore clears the
    shutdown flag (for a mission restart in the same process), a restore `CallLater` still in
    `CALL_CATEGORY_SYSTEM`, which is processed "without any restrictions"

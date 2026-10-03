@@ -320,6 +320,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-persistence` Hard stops item 9 and point 2 of "A registry entry leaves by its id, never by
+  proximity" (#97), and the matching search in `rigorous-data-audit`'s entry-point audit. The
+  [DESIGN] restore rule merged in #97 created an entry's entity whenever the radius held none of
+  its class; a post-merge cross-family review traced that into a second entity (the first one
+  outside the radius, under another class name or not yet loaded by the engine, and a conflict a
+  later pass no longer saw). The rule now makes the id durable before using it, binds only by id,
+  and creates only where the restore can prove absence: the engine does not persist these
+  entities and the restore keeps a census of what it created or bound in the mission. Where the
+  engine persists them, the id lives on the entity and an entry no loaded entity claims is a
+  conflict kept for an admin. Still [DESIGN], implemented and tested nowhere.
 - `dayz-animation-pipeline` `scripts/seanim_writer.py` keeps SEAnim bone modifiers. `read_seanim`
   skipped them and `write_seanim` always wrote a count of 0, so a DayZATool extract read and
   written back lost them: `p_1hd_erc_idle_low` (65 bones, ABSOLUTE header) lost its 60 RELATIVE

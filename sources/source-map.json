@@ -891,10 +891,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inba-seanim@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "[Unreleased] Fixed entry for the fix-forward of PR #97: the [DESIGN] restore rule no longer creates on an empty radius; it makes the id durable before use, binds only by id and creates only where the restore can prove absence (post-merge cross-family review, R21-05).",
+          "license": "MIT",
+          "source_hash": "70b0afe133aa647611714fdc723e3214286b2360f17ac53965afd67163fc11f0",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-spb-restore-absence@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a3e44cefd356c35ebdd884ba68f79e371511a3b85e6b84c041ff8b17b9683c3e",
+      "output_hash": "70b0afe133aa647611714fdc723e3214286b2360f17ac53965afd67163fc11f0",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -10124,10 +10134,20 @@
           "source_path": "skills/dayz-persistence/SKILL.md",
           "source_revision": "kp-update-spb-unregister-id@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03, fix-forward of PR #97 after its post-merge cross-family review (Codex gpt-6.1-sol, read-only, on f42f503: UNSOUND, R21-05 P2): Hard stops item 9 and point 2 of the section 'A registry entry leaves by its id, never by proximity'. The [DESIGN] restore rule merged in #97 created an entity whenever the radius held none of the class; the review traced that into a second entity (an id regenerated after a failed save, then the entity moved out of the radius; an entity outside the radius, under another class name, or not yet loaded by the engine). The rule now makes the id durable before use (save first; on a failed save bind and create nothing for that entry in that pass), binds only by id, and creates only where the restore can prove absence (the engine does not persist these entities and the restore keeps a census of what it created or bound in the mission); where the engine persists them, the id lives on the entity (OnStoreSave, Contract 1) and an unclaimed entry is a conflict kept for an admin. Still [DESIGN], implemented and tested nowhere; claim CLAIM-PERS-RESTORE-BIND-BY-ID updated, CLAIM-PERS-SHUTDOWN-QUEUE moved to its marker. Cross-family review by Codex. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "335b85a83b5209b1e034f27664d7d115306437b639b54ccb720425f181673878",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/SKILL.md",
+          "source_revision": "kp-update-spb-restore-absence@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "387413b0d9fa47025fed9e0bc210a04397d21ccf5015071564868fc66864ce69",
+      "output_hash": "335b85a83b5209b1e034f27664d7d115306437b639b54ccb720425f181673878",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -15114,10 +15134,20 @@
           "source_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
           "source_revision": "kp-update-spb-unregister-id@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03, fix-forward of PR #97: the Step 3 search 'Proximity used as identity' adds that an empty radius does not prove the entry's entity gone, so a restore that creates on it can make a second one (post-merge review R21-05), with a pointer to dayz-persistence Hard stops item 9. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b56de919411b06a1d3185b287594355928bf201f068fca2164afddc0f40151b5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
+          "source_revision": "kp-update-spb-restore-absence@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f5e7529b85e37f60f25315d9911164e08d3988daa98b994ec41d8fa6c78b62c1",
+      "output_hash": "b56de919411b06a1d3185b287594355928bf201f068fca2164afddc0f40151b5",
       "output_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -16745,10 +16775,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-inba-seanim@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Updates CLAIM-PERS-RESTORE-BIND-BY-ID (source_verified) with the post-merge review of PR #97 (R21-05) and the rule's new wording, and moves CLAIM-PERS-SHUTDOWN-QUEUE to the line its marker now holds; its evidence and level are unchanged.",
+          "license": "MIT",
+          "source_hash": "752712b0677ed3eef8a19dac06128e9476a601c5fbec49f6df8e4c087a6b39fc",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-spb-restore-absence@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d5425b14ad833f5a44932d835f7eca6574323fe8c5696b1199987d7b4f6416ab",
+      "output_hash": "752712b0677ed3eef8a19dac06128e9476a601c5fbec49f6df8e4c087a6b39fc",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
