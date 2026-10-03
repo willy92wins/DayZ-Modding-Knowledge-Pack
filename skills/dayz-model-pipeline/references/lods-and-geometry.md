@@ -162,16 +162,19 @@ which leaves the original order (`references/py3d-direct-generation.md`, "Blende
 Z-up → DayZ Y-up Rotation").
 
 **In Blender:** a GLB/glTF import needs no flip. Before export, faces should show
-blue from outside in the Face Orientation overlay (`blender-visual-review`); where
-they show red, select those mesh faces, not the proxy triangles, and use Mesh →
-Normals → Recalculate Outside. Mesh → Normals → Flip turns the selected faces inward,
-and Rule 12's map then turns them OUTWARD.
+blue from outside in the Face Orientation overlay (`blender-visual-review`). If some
+show red, select all of the mesh's faces (not the proxy triangles), use Mesh →
+Normals → Recalculate Outside and check the overlay again: on an open mesh it can
+guess wrong. Mesh → Normals → Flip turns the selected faces inward, and Rule 12's map
+then turns them OUTWARD.
 
 **Apply the map to ALL LODs** — Geometry, Fire Geometry, View Geometry, Shadow and
 Memory LODs included — so that they all land in one convention. A collision LOD left
 OUTWARD lets the LOD raycasts through, the `view` and `fire` rays that actions and
-ballistic hits rely on, while its physics body still stops a walking player
-(`dayz-p3d-audit` killer #1, measured in game 2026-10-02).
+ballistic hits rely on (`dayz-p3d-audit` killer #1, measured in game 2026-10-02). On
+the 2 m boxes measured there, physics still stopped a walking player; a walk alone
+does not diagnose winding, since the 0.49 m `item_small` kit let the player through
+with either winding.
 
 *(Aligned 2026-10-03 with SKILL.md Rule 12 and "GLB/glTF imports". The rule opened "The
 winding decision is conditional on the asset source (Blender-authored vs GLB/glTF) — both
@@ -186,7 +189,7 @@ Mesh → Normals → Flip" and "Or: Mesh → Normals → Recalculate Outside"; a
 read "**When Rule 12 requires reversal, it applies to ALL LODs except proxy triangles** —
 Geometry, Fire Geometry, View Geometry, and Shadow LODs are affected too. Flipped Geometry
 faces cause physics pass-through; flipped Fire Geometry faces cause bullets to pass
-through." Killer #1 measured outward collision LODs that still stopped the player.)*
+through." Killer #1 measured outward 2 m collision boxes that still stopped the player.)*
 
 <!-- [repaired 2026-06-05: plugin file was truncated at "## Nami" (Edit >5KB bug); full section restored from <claude-home>\skills user copy] -->
 ## Naming Convention in Blender for FBX Export

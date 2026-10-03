@@ -342,12 +342,15 @@ black holes/smudges. Atlas baking is for models with real texture detail.
 
 ### GLB/glTF imports — LL-020 refined (added 2026-06-11; separated from FBX/Blender recipe 2026-09-26; aligned with Rule 12 2026-10-03)
 
-A GLB/glTF exported to spec takes **Rule 12's recipe**: points and normals through
-`(x,y,z)->(x,z,y)` (det=-1), every face in its vertex order (proxy triangles included), and every
-normal negated — `py3d.blender_to_dayz(model)`. Do **not** reverse the faces.
+A GLB/glTF exported to spec and brought through Blender takes **Rule 12's recipe**: points and
+normals through `(x,y,z)->(x,z,y)` (det=-1), every face in its vertex order (proxy triangles
+included), and every normal negated — `py3d.blender_to_dayz(model)`. Do **not** reverse the faces.
+A glTF read without Blender needs one more step first (last paragraph).
 
-**glTF front faces are CCW by spec**, as Blender's are, and Blender's glTF importer turns Y-up
-into Z-up with a rotation, `(x,y,z)->(x,-z,y)` (det=+1; Blender 5.1
+**glTF front faces are CCW by spec**, as Blender's are (a node whose global transform has a
+negative determinant, a mirrored instance, winds them clockwise: glTF 2.0 §3.7.4
+"Instantiation"), and Blender's glTF importer turns Y-up into Z-up with a rotation,
+`(x,y,z)->(x,-z,y)` (det=+1; Blender 5.1
 `io_scene_gltf2/blender/imp/blender_gltf.py:70-72`), which keeps that order: a GLB brought through
 Blender is Blender geometry. The det=-1 map turns its vertex-order cross product INWARD, the MLOD
 convention; reversing the faces after it turns the cross product OUTWARD, the case that renders
@@ -375,10 +378,14 @@ leg directions, `proxy:\DZ\...001` naming) documented from the Destra3000 sample
 `A6_MK47_dev\HANDOFF.md` §REGLA DE IMPORTS.
 
 The swap expects Z-up input; a glTF read without Blender is Y-up. Derive its det=-1 map from the
-asset's own frame (re-derived per asset, as `import-rule-v4.md` says for weapons) and keep the
-vertex order there too: any det=-1 map turns a CCW front face's cross product inward (not
-measured in game for a direct read). A ripped game asset in a `.glb` carries its game's frame,
-not the spec's: `dayz-vehicles` decides it from the measured transform and source lineage.
+asset's own frame (re-derived per asset, as `import-rule-v4.md` says for weapons). Bake each
+node's global transform into its mesh first, and reverse the faces of every instance whose global
+transform has a negative determinant: glTF winds those clockwise, so after baking they must be
+reversed to run counter-clockwise from the visible side again. Then keep that order through the
+det=-1 map: any det=-1 map turns a CCW front face's cross product inward (not measured in game
+for a direct read). A ripped game asset in a `.glb` can carry its game's frame rather than the
+spec's (the measured rip profile keeps the raw winding with a det=+1 map): `dayz-vehicles` decides
+it from the measured transform and source lineage.
 
 *(Aligned 2026-10-03 with Rule 12. The section opened "This section is **GLB/glTF-only**. It
 does **not** override Rule 12's measured FBX/Blender recipe."; its pipeline read "**GLB-only
