@@ -874,9 +874,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20260927-170625-092a, from CocaLab). dayz-model-pipeline references/animations.md section 5 'Placement Rules' rule 3 'Scale' (lines 311-313 at ea7b396) said \"Axis vector doesn't define scale; only direction matters.\" for every axis, rule 2's example called its 1 m axis \"normalized to -X direction\", and the TRANSLATION section (lines 102-103, 109-110) and three later examples read offset0/offset1 as metres. Read on 2026-10-03: Binarize stores a translation's offsets as model.cfg writes them and its axis at its own length (CocaLab release PBO: model.cfg offset1 = 1 on twelve drift axes 12.10 to 16.16 mm long, binarized tray ODOL v55 stores offset1 1.0 and each axis at its source length; a metres-to-axis-lengths conversion would have stored 62 to 83), so, assuming the m249's older binarizer (ODOL v54) kept offsets as the v55 pair shows (not verified: no m249 model.cfg is at hand), the binarized vanilla DZ/weapons/firearms/m249/m249.p3d (sha256 3b403365447c5cf4...) carries the offsets its authors wrote, read as compiled values: belt classes -1 to 0 on axes 1.11 to 1.15 cm, bolt_pull_1 0 to +1 on 8.34 cm, magazine_reload_move_1 0 to +1.45 on 10 cm; every rotation axis of the same file is stored as a unit vector. Inferred, not measured in game: the engine moves a selection by offset times axis. Rule 3 now separates rotation (direction only) from translation (offset times axis length; a 1 m axis makes the offset read in metres, the workaround dayz-vehicles SKILL.md already recommends, under which both readings agree), with claim CLAIM-MODEL-TRANSLATION-AXIS-LENGTH; rule 2 says an offset of 1 moves by the whole axis vector; the TRANSLATION section explains the unit and points to the inference; the push-button, drawer and screen example comments keep their text with \"on a 1 m axis (section 5, rule 3)\" added; the troubleshooting table gains 'Translation barely moves, or leaves the model'. A dated note under the table qualifies the row 'Multiple animations fight' with the same file's anims2bones (one bone carries the magazine's hide, two rotations and five translations; another bolt_pull_1 and bolt_pull_2; each belt round's bone two hides, a rotation and a translation); which combinations fight was not measured. The replaced sentences (the TRANSLATION comments and bullets, rule 3's two bullets, rule 2's bracket) are quoted verbatim in dated notes. CHANGELOG [Unreleased] Fixed entry. Cross-family review (Codex gpt-6.1-sol, max effort, cap of two rounds): round 1 on a3d54d0 SOUND-WITH-FIXES, no P1; R1-01 (the ODOL values did not identify the model.cfg unit: a compiler dividing metres by the axis length gives the same bytes) answered with the CocaLab source/binarized pair above and the rule relabelled as inference; R1-02 (the dayz-3d-viewer formula is a planned feature, not an implemented renderer) reworded; R1-03 (the coverage sentence about quoted replacements was broader than the notes) narrowed here and in the CHANGELOG. Round 2 on f8db3f5 SOUND-WITH-FIXES, no P1: R1-02 and R1-03 closed; R1-01 partial, R2-01 (P2): the v54 assumption stated in the reference and the claim was missing from this provenance and the CHANGELOG, which said the m249 carries its authors' offsets unconditionally; both now carry the condition (fixed after the cap of two rounds, checked by grep, no third round). Not done: the ticket's related note that the ODOL stores hideValue normalized to [minValue, maxValue] (m249 min -1, max 0, hideValue 0.935) is not added, since CocaLab's hides use 0..1 and no other source model.cfg was at hand to compare; dayz-vehicles SKILL.md's 'documented inconsistently' wording and dayz-vehicles references/animation-sign-and-axis.md line 65 (unit(axis_dir) * (offset1 - offset0), a sign check) are left as they are. Docs only. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8e1aa0b85fec47991b5008d85f75af73ddaba6b58fbb1e1af40f512f7c42a855",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-inba-translation@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "[Unreleased] Added entry for dayz-physics-engine engine truth 11: walking and jumping on the moving platform that is a separate entity (SP-452), measured in game on DayZDiag 1.29.163709, dayz-mcp run 8e032fd9, 2026-10-01.",
           "license": "MIT",
-          "source_hash": "4cf6051fede39108b70479bdfff2e81a10648a268b62583303e2254f898dbe03",
+          "source_hash": "9ea8a62e03ef117edbb16c7ef2a65801f2629f54012b24a545e4e0a0186237af",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-spb-physics-walk@2026-10-03",
@@ -884,7 +894,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4cf6051fede39108b70479bdfff2e81a10648a268b62583303e2254f898dbe03",
+      "output_hash": "9ea8a62e03ef117edbb16c7ef2a65801f2629f54012b24a545e4e0a0186237af",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8308,10 +8318,20 @@
           "source_path": "dayz-model-pipeline/references/animations.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20260927-170625-092a, from CocaLab). dayz-model-pipeline references/animations.md section 5 'Placement Rules' rule 3 'Scale' (lines 311-313 at ea7b396) said \"Axis vector doesn't define scale; only direction matters.\" for every axis, rule 2's example called its 1 m axis \"normalized to -X direction\", and the TRANSLATION section (lines 102-103, 109-110) and three later examples read offset0/offset1 as metres. Read on 2026-10-03: Binarize stores a translation's offsets as model.cfg writes them and its axis at its own length (CocaLab release PBO: model.cfg offset1 = 1 on twelve drift axes 12.10 to 16.16 mm long, binarized tray ODOL v55 stores offset1 1.0 and each axis at its source length; a metres-to-axis-lengths conversion would have stored 62 to 83), so, assuming the m249's older binarizer (ODOL v54) kept offsets as the v55 pair shows (not verified: no m249 model.cfg is at hand), the binarized vanilla DZ/weapons/firearms/m249/m249.p3d (sha256 3b403365447c5cf4...) carries the offsets its authors wrote, read as compiled values: belt classes -1 to 0 on axes 1.11 to 1.15 cm, bolt_pull_1 0 to +1 on 8.34 cm, magazine_reload_move_1 0 to +1.45 on 10 cm; every rotation axis of the same file is stored as a unit vector. Inferred, not measured in game: the engine moves a selection by offset times axis. Rule 3 now separates rotation (direction only) from translation (offset times axis length; a 1 m axis makes the offset read in metres, the workaround dayz-vehicles SKILL.md already recommends, under which both readings agree), with claim CLAIM-MODEL-TRANSLATION-AXIS-LENGTH; rule 2 says an offset of 1 moves by the whole axis vector; the TRANSLATION section explains the unit and points to the inference; the push-button, drawer and screen example comments keep their text with \"on a 1 m axis (section 5, rule 3)\" added; the troubleshooting table gains 'Translation barely moves, or leaves the model'. A dated note under the table qualifies the row 'Multiple animations fight' with the same file's anims2bones (one bone carries the magazine's hide, two rotations and five translations; another bolt_pull_1 and bolt_pull_2; each belt round's bone two hides, a rotation and a translation); which combinations fight was not measured. The replaced sentences (the TRANSLATION comments and bullets, rule 3's two bullets, rule 2's bracket) are quoted verbatim in dated notes. CHANGELOG [Unreleased] Fixed entry. Cross-family review (Codex gpt-6.1-sol, max effort, cap of two rounds): round 1 on a3d54d0 SOUND-WITH-FIXES, no P1; R1-01 (the ODOL values did not identify the model.cfg unit: a compiler dividing metres by the axis length gives the same bytes) answered with the CocaLab source/binarized pair above and the rule relabelled as inference; R1-02 (the dayz-3d-viewer formula is a planned feature, not an implemented renderer) reworded; R1-03 (the coverage sentence about quoted replacements was broader than the notes) narrowed here and in the CHANGELOG. Round 2 on f8db3f5 SOUND-WITH-FIXES, no P1: R1-02 and R1-03 closed; R1-01 partial, R2-01 (P2): the v54 assumption stated in the reference and the claim was missing from this provenance and the CHANGELOG, which said the m249 carries its authors' offsets unconditionally; both now carry the condition (fixed after the cap of two rounds, checked by grep, no third round). Not done: the ticket's related note that the ODOL stores hideValue normalized to [minValue, maxValue] (m249 min -1, max 0, hideValue 0.935) is not added, since CocaLab's hides use 0..1 and no other source model.cfg was at hand to compare; dayz-vehicles SKILL.md's 'documented inconsistently' wording and dayz-vehicles references/animation-sign-and-axis.md line 65 (unit(axis_dir) * (offset1 - offset0), a sign check) are left as they are. Docs only. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "965364efcfee28a4b247f6971a6c14261855756933a96ba9a9e7382ec90e41ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/animations.md",
+          "source_revision": "kp-update-inba-translation@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3530a20a0fcdeeccba47cf11a7c603b40cdd894193c2d14b3c53f83abfd80dca",
+      "output_hash": "965364efcfee28a4b247f6971a6c14261855756933a96ba9a9e7382ec90e41ee",
       "output_path": "skills/dayz-model-pipeline/references/animations.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -16648,9 +16668,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20260927-170625-092a, from CocaLab). dayz-model-pipeline references/animations.md section 5 'Placement Rules' rule 3 'Scale' (lines 311-313 at ea7b396) said \"Axis vector doesn't define scale; only direction matters.\" for every axis, rule 2's example called its 1 m axis \"normalized to -X direction\", and the TRANSLATION section (lines 102-103, 109-110) and three later examples read offset0/offset1 as metres. Read on 2026-10-03: Binarize stores a translation's offsets as model.cfg writes them and its axis at its own length (CocaLab release PBO: model.cfg offset1 = 1 on twelve drift axes 12.10 to 16.16 mm long, binarized tray ODOL v55 stores offset1 1.0 and each axis at its source length; a metres-to-axis-lengths conversion would have stored 62 to 83), so, assuming the m249's older binarizer (ODOL v54) kept offsets as the v55 pair shows (not verified: no m249 model.cfg is at hand), the binarized vanilla DZ/weapons/firearms/m249/m249.p3d (sha256 3b403365447c5cf4...) carries the offsets its authors wrote, read as compiled values: belt classes -1 to 0 on axes 1.11 to 1.15 cm, bolt_pull_1 0 to +1 on 8.34 cm, magazine_reload_move_1 0 to +1.45 on 10 cm; every rotation axis of the same file is stored as a unit vector. Inferred, not measured in game: the engine moves a selection by offset times axis. Rule 3 now separates rotation (direction only) from translation (offset times axis length; a 1 m axis makes the offset read in metres, the workaround dayz-vehicles SKILL.md already recommends, under which both readings agree), with claim CLAIM-MODEL-TRANSLATION-AXIS-LENGTH; rule 2 says an offset of 1 moves by the whole axis vector; the TRANSLATION section explains the unit and points to the inference; the push-button, drawer and screen example comments keep their text with \"on a 1 m axis (section 5, rule 3)\" added; the troubleshooting table gains 'Translation barely moves, or leaves the model'. A dated note under the table qualifies the row 'Multiple animations fight' with the same file's anims2bones (one bone carries the magazine's hide, two rotations and five translations; another bolt_pull_1 and bolt_pull_2; each belt round's bone two hides, a rotation and a translation); which combinations fight was not measured. The replaced sentences (the TRANSLATION comments and bullets, rule 3's two bullets, rule 2's bracket) are quoted verbatim in dated notes. CHANGELOG [Unreleased] Fixed entry. Cross-family review (Codex gpt-6.1-sol, max effort, cap of two rounds): round 1 on a3d54d0 SOUND-WITH-FIXES, no P1; R1-01 (the ODOL values did not identify the model.cfg unit: a compiler dividing metres by the axis length gives the same bytes) answered with the CocaLab source/binarized pair above and the rule relabelled as inference; R1-02 (the dayz-3d-viewer formula is a planned feature, not an implemented renderer) reworded; R1-03 (the coverage sentence about quoted replacements was broader than the notes) narrowed here and in the CHANGELOG. Round 2 on f8db3f5 SOUND-WITH-FIXES, no P1: R1-02 and R1-03 closed; R1-01 partial, R2-01 (P2): the v54 assumption stated in the reference and the claim was missing from this provenance and the CHANGELOG, which said the m249 carries its authors' offsets unconditionally; both now carry the condition (fixed after the cap of two rounds, checked by grep, no third round). Not done: the ticket's related note that the ODOL stores hideValue normalized to [minValue, maxValue] (m249 min -1, max 0, hideValue 0.935) is not added, since CocaLab's hides use 0..1 and no other source model.cfg was at hand to compare; dayz-vehicles SKILL.md's 'documented inconsistently' wording and dayz-vehicles references/animation-sign-and-axis.md line 65 (unit(axis_dir) * (offset1 - offset0), a sign check) are left as they are. Docs only. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6024c1a4da43c4e3a1b642ff0a8258086628c1a84f05359aa236207bba918e65",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-inba-translation@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Registers CLAIM-PHYS-PLATFORM-WALK-INGAME (runtime_verified) for the dayz-physics-engine truth 11 sub-bullet on walking and jumping on the moving platform (SP-452): DayZDiag 1.29.163709, 2026-10-01, dayz-mcp run 8e032fd9, four 8.9 m trips played by hand on SR_LiftPlatform2 in mode B, 1,448 server and 1,369 client samples (20 Hz while the platform moved, 2 Hz while it stood); numbers from SecretRock_dev/reviews/2026-10-01-lift-spike2/RESULTS2.md (run 5) and run5_8e032fd9/walk_detail.json, the ballistic figures computed from StartCommand_Fall(2.6) (4_world/entities/dayzplayerimplementjumpclimb.c:97). No other claim moves.",
           "license": "MIT",
-          "source_hash": "f0d5ec0e51d4558ea293c212226901e8986cfb476f430238f77e2573e80febbc",
+          "source_hash": "5d41a984509e40741648b0d8a5f8eaf4c5e517fafdbd1cb7b81ffce86f9bb567",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-spb-physics-walk@2026-10-03",
@@ -16658,7 +16688,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f0d5ec0e51d4558ea293c212226901e8986cfb476f430238f77e2573e80febbc",
+      "output_hash": "5d41a984509e40741648b0d8a5f8eaf4c5e517fafdbd1cb7b81ffce86f9bb567",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

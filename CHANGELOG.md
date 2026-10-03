@@ -316,6 +316,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-model-pipeline` `references/animations.md`: a translation's `offset0`/`offset1` count
+  lengths of its axis, not metres. Section 5's "Scale" rule said "Axis vector doesn't define
+  scale; only direction matters" for every axis, and the examples read their offsets as metres.
+  Read on 2026-10-03: Binarize stores a translation's offsets as `model.cfg` writes them and its
+  axis at its own length (CocaLab's `offset1 = 1` on twelve 12.1 to 16.2 mm axes reads 1.0 in its
+  binarized tray, each axis at its source length). If the older binarizer of the vanilla m249
+  (ODOL v54) kept offsets the same way, the m249's compiled offsets are its authors' and only make
+  sense in axis lengths (the belt runs from -1 to 0 on axes 1.11 to 1.15 cm long, the bolt from 0
+  to +1 on 8.34 cm, the magazine from 0 to +1.45 on 10 cm); its rotation axes are stored as unit
+  vectors. Inferred from that, not measured in game: the engine moves a selection by the offset
+  times the axis. The rule now separates rotation (direction only) from translation (offset times
+  axis length; on a 1 m axis the offset reads in metres, the axis `dayz-vehicles` recommends), the
+  examples say their offsets assume a 1 m axis, and the troubleshooting table gains the symptom (a
+  translation that barely moves or leaves the model). A dated note qualifies its "Multiple
+  animations fight" row: the same m249 binds up to eight animations to one bone. Claim
+  `CLAIM-MODEL-TRANSLATION-AXIS-LENGTH`; the replaced sentences are quoted in dated notes, and the
+  example comments keep their text with "on a 1 m axis" added.
 - `dayz-vehicles`: `references/gauge-needles.md` (twice) and
   `references/vehicle-config-and-modelcfg.md` named an unpublished skill as the tool that read the
   vanilla cars' animation classes from their ODOL, and `promotions/adjudications.json` named it in

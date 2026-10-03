@@ -96,19 +96,21 @@ class button_press {
     type = "translation";
     source = "button_state";
     selection = "button";
-    axis = "button_axis";                 // 2 memory points, direction = point1 → point2
+    axis = "button_axis";                 // 2 memory points, direction = point1 → point2; 1 m long here
     minValue = 0;
     maxValue = 1;
-    offset0 = 0;                          // meters movement when source = minValue
-    offset1 = 0.003;                      // 3mm when source = maxValue
+    offset0 = 0;                          // in lengths of the axis, when source = minValue
+    offset1 = 0.003;                      // 3mm when source = maxValue, on this 1 m axis
 };
 ```
 
 **How it works:**
 - Translation follows the axis direction (from point 1 to point 2 of the axis).
-- `offset0` = 0, `offset1` = 0.003 means travel 3mm total.
-- At source = 0.5, the selection moves 1.5mm along the axis.
+- `offset0` and `offset1` count lengths of the axis, not metres (inferred from vanilla data, not measured in game: section 5, Placement Rules, rule 3): on a 1 m axis `offset0` = 0, `offset1` = 0.003 travel 3mm; on a 1 cm axis the same values travel 0.03mm.
+- At source = 0.5, the selection moves half of that, 1.5mm on the 1 m axis.
 - Movement is linear with source value.
+
+*(Corrected 2026-10-03: the comments read "meters movement when source = minValue" and "3mm when source = maxValue", and the bullets "`offset0` = 0, `offset1` = 0.003 means travel 3mm total." and "At source = 0.5, the selection moves 1.5mm along the axis.", true only on a 1 m axis.)*
 
 ---
 
@@ -299,19 +301,22 @@ The axis vector is: Point2 - Point1 = direction of rotation/translation.
    ```
 
 2. **Translation Axis:**
-   - P1→P2 vector = direction and magnitude reference.
+   - P1→P2 vector = direction and magnitude reference: an offset of 1 moves the selection by the whole P1→P2 vector (rule 3).
    - `offset` values apply along this direction.
    - Example: Sliding panel moving left 0.2m:
    ```
    "panel_slide_axis"
    P1: (0, 0, 0)
-   P2: (-1, 0, 0)       [normalized to -X direction]
+   P2: (-1, 0, 0)       [1 m long, so offset1 reads in metres]
    offset1 = 0.2        [moves -0.2m in X]
    ```
 
 3. **Scale:**
-   - Axis vector doesn't define scale; only direction matters.
-   - Can use (0,0,0)→(0,0,1) or (0,0,0)→(0,0,100) — both are Z axis.
+   - Rotation: only the direction matters; (0,0,0)→(0,0,1) and (0,0,0)→(0,0,100) are the same Z axis.
+   - Translation: the length matters (inferred from vanilla data, not measured in game; next bullet). `offset0`/`offset1` count lengths of the axis, so the selection moves `offset × |P2 − P1|`. To move `d` metres, make the axis `d` long with `offset1 = 1`, or 1 m long with `offset1 = d`. A short axis with an offset written in metres barely moves: 0.003 on a 1 cm axis is 0.03 mm.
+   - [EXACT][CLAIM-MODEL-TRANSLATION-AXIS-LENGTH] What was read on 2026-10-03, and what is inferred from it. Read: Binarize stores a translation's offsets as `model.cfg` writes them and its axis at its own length. CocaLab's `model.cfg` writes `offset1 = 1` on twelve drift axes 12.1 to 16.2 mm long, and the binarized tray of the same build (ODOL v55) stores 1.0, with each axis at its source length; a compiler that converted metres to axis lengths would have stored 62 to 83. The binarized vanilla `DZ\weapons\firearms\m249\m249.p3d` (ODOL v54, from an older binarizer, assumed to keep offsets the same way) therefore carries the offsets its authors wrote: `bulletMove000` to `bulletMove011` and the `linkMove*` classes run from −1 to 0 on axes 1.11 to 1.15 cm long, about the pitch of a belt link; `bolt_pull_1` runs from 0 to +1 on an 8.34 cm axis; `magazine_reload_move_1` runs from 0 to +1.45 on a 10 cm axis. Its rotation axes, in contrast, are stored as unit vectors, as wheel axes are in `dayz-vehicles` `references/animation-sign-and-axis.md`. Inferred, not measured in game: the engine moves a selection by the offset times that stored axis; read as metres, the m249's belt would jump a metre per round. `dayz-3d-viewer` plans the same formula for its animation preview, not yet implemented (`references/states-animations-leds.md`). A 1 m axis gives the same travel under either reading, which is why `dayz-vehicles` SKILL.md ("Translation offsets: make the memory axis exactly 1 m") recommends it.
+
+   *(Corrected 2026-10-03: this rule read "Axis vector doesn't define scale; only direction matters." and "Can use (0,0,0)→(0,0,1) or (0,0,0)→(0,0,100) — both are Z axis." for every axis, and rule 2's example called its 1 m axis "[normalized to -X direction]".)*
 
 ---
 
@@ -441,7 +446,7 @@ class button_press {
     minValue = 0;
     maxValue = 1;
     offset0 = 0;             // resting
-    offset1 = 0.003;         // 3mm down
+    offset1 = 0.003;         // 3mm down on a 1 m axis (section 5, rule 3)
 };
 
 // config.cpp animPeriod
@@ -523,7 +528,7 @@ class drawer_slide {
     minValue = 0;
     maxValue = 1;
     offset0 = 0;             // fully closed
-    offset1 = 0.4;           // 40cm extended
+    offset1 = 0.4;           // 40cm extended on a 1 m axis (section 5, rule 3)
 };
 
 // config.cpp
@@ -771,8 +776,11 @@ void SetLEDActive(bool active) {
 | Animation plays instantly | `animPeriod = 0` | Set `animPeriod` to > 0 (e.g., 0.5 seconds) |
 | Animation doesn't reach maxValue | Axis vector is zero | Ensure axis P1 ≠ P2 (non-zero vector) |
 | Wrong rotation direction | Axis vector points wrong way | Swap P1 and P2, or negate angle values |
+| Translation barely moves, or leaves the model | Offset written in metres on an axis that is not 1 m long | Offsets count lengths of the axis (section 5, rule 3): make the axis 1 m long and write the travel in metres |
 | Multiple animations fight | Same selection in different animations | Ensure each selection is in only one animation |
 | Bone inherits wrong transform | Bone parent mismatch | Parent bone must be declared first in `skeletonBones[]` |
+
+*(Note 2026-10-03 on "Multiple animations fight", read from vanilla data: the binarized m249 binds several animations to one bone. One bone carries the magazine's hide, two rotations and five translations, another `bolt_pull_1` and `bolt_pull_2`, and each belt round's bone two hides, a rotation and a translation. Sharing a selection is therefore not by itself the cause; which combinations do fight was not measured.)*
 
 ---
 
@@ -826,7 +834,7 @@ class HideScreen {
     minValue   = 0.0;
     maxValue   = 1.0;
     offset0    = 0.0;
-    offset1    = 0.5;                    // 0.5m — well off-screen
+    offset1    = 0.5;                    // 0.5m on a 1 m axis (section 5, rule 3) — well off-screen
 };
 ```
 
