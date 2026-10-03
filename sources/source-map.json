@@ -854,9 +854,39 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "[Unreleased] Added entry for dayz-persistence Hard stops item 9 and its section and the rigorous-data-audit entry-point audit's worked example: a registry entry leaves by its id, never by proximity (SP-456, SecretRock audit DZ-R9, 2026-10-03; the unregister rule verified in game on DayZDiag 1.29.163709, the restore rule [DESIGN] and the shutdown rule read in the code).",
+          "license": "MIT",
+          "source_hash": "f3a0016d47305c7d3bba6cddc987137ce644738923938ab7952e9036259465ed",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): Unreleased Added entry for the large-building collision harvest (ledger SP-453, SP-457, SP-458). Evidence as recorded on the references/lods-and-geometry.md input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9ec6324cc5e6256223e331d07f8a1c68b0b7fc2dfaf8a830bfeddb7ca1a6f2c8",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20260927-170625-092a, from CocaLab). dayz-model-pipeline references/animations.md section 5 'Placement Rules' rule 3 'Scale' (lines 311-313 at ea7b396) said \"Axis vector doesn't define scale; only direction matters.\" for every axis, rule 2's example called its 1 m axis \"normalized to -X direction\", and the TRANSLATION section (lines 102-103, 109-110) and three later examples read offset0/offset1 as metres. Read on 2026-10-03: Binarize stores a translation's offsets as model.cfg writes them and its axis at its own length (CocaLab release PBO: model.cfg offset1 = 1 on twelve drift axes 12.10 to 16.16 mm long, binarized tray ODOL v55 stores offset1 1.0 and each axis at its source length; a metres-to-axis-lengths conversion would have stored 62 to 83), so, assuming the m249's older binarizer (ODOL v54) kept offsets as the v55 pair shows (not verified: no m249 model.cfg is at hand), the binarized vanilla DZ/weapons/firearms/m249/m249.p3d (sha256 3b403365447c5cf4...) carries the offsets its authors wrote, read as compiled values: belt classes -1 to 0 on axes 1.11 to 1.15 cm, bolt_pull_1 0 to +1 on 8.34 cm, magazine_reload_move_1 0 to +1.45 on 10 cm; every rotation axis of the same file is stored as a unit vector. Inferred, not measured in game: the engine moves a selection by offset times axis. Rule 3 now separates rotation (direction only) from translation (offset times axis length; a 1 m axis makes the offset read in metres, the workaround dayz-vehicles SKILL.md already recommends, under which both readings agree), with claim CLAIM-MODEL-TRANSLATION-AXIS-LENGTH; rule 2 says an offset of 1 moves by the whole axis vector; the TRANSLATION section explains the unit and points to the inference; the push-button, drawer and screen example comments keep their text with \"on a 1 m axis (section 5, rule 3)\" added; the troubleshooting table gains 'Translation barely moves, or leaves the model'. A dated note under the table qualifies the row 'Multiple animations fight' with the same file's anims2bones (one bone carries the magazine's hide, two rotations and five translations; another bolt_pull_1 and bolt_pull_2; each belt round's bone two hides, a rotation and a translation); which combinations fight was not measured. The replaced sentences (the TRANSLATION comments and bullets, rule 3's two bullets, rule 2's bracket) are quoted verbatim in dated notes. CHANGELOG [Unreleased] Fixed entry. Cross-family review (Codex gpt-6.1-sol, max effort, cap of two rounds): round 1 on a3d54d0 SOUND-WITH-FIXES, no P1; R1-01 (the ODOL values did not identify the model.cfg unit: a compiler dividing metres by the axis length gives the same bytes) answered with the CocaLab source/binarized pair above and the rule relabelled as inference; R1-02 (the dayz-3d-viewer formula is a planned feature, not an implemented renderer) reworded; R1-03 (the coverage sentence about quoted replacements was broader than the notes) narrowed here and in the CHANGELOG. Round 2 on f8db3f5 SOUND-WITH-FIXES, no P1: R1-02 and R1-03 closed; R1-01 partial, R2-01 (P2): the v54 assumption stated in the reference and the claim was missing from this provenance and the CHANGELOG, which said the m249 carries its authors' offsets unconditionally; both now carry the condition (fixed after the cap of two rounds, checked by grep, no third round). Not done: the ticket's related note that the ODOL stores hideValue normalized to [minValue, maxValue] (m249 min -1, max 0, hideValue 0.935) is not added, since CocaLab's hides use 0..1 and no other source model.cfg was at hand to compare; dayz-vehicles SKILL.md's 'documented inconsistently' wording and dayz-vehicles references/animation-sign-and-axis.md line 65 (unit(axis_dir) * (offset1 - offset0), a sign check) are left as they are. Docs only. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8e1aa0b85fec47991b5008d85f75af73ddaba6b58fbb1e1af40f512f7c42a855",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-inba-translation@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 22 cases, all 22 failing against the ea7b396 script and passing with the fix (13 written first; 7 added after review round 1, which found 7 kinds of mutant surviving the 13: modifier 0 dropped on read or on write, the bone-index width off by one at 255 or 65,535 bones, only 0..3 accepted, 255 modifiers refused, False accepted; 2 added after review round 2, which found two more surviving the 20: a repeated index accepted when its type repeats too, and a modifier equal to the header's type dropped on write; 13 mutants of those kinds plus two the 13 already caught each fail at least one of the 22). The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim; positions within 0.0016 cm on any axis, 0.0027 cm as a distance, after round 1 found the earlier 'within 0.0015 cm' was a rounding of 0.00155). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Cross-family review (Codex gpt-6.1-sol, max effort, cap of two rounds): round 1 on 50badc8 UNSOUND on one P1 with repro (the rounded position bound) and two P2 (the 7 surviving mutant kinds; the pot's LOD0 height 24.3 for 24.2 cm); all fixed, and the same rounding pattern corrected in player-skeleton.md ('within 2.2 cm' for 2.22 now 'within 2.3 cm'; wrist positions given as measured, +29.4/-28.0 and +14.2/-15.7 cm). Round 2 on a342190 SOUND-WITH-FIXES, no P1: R1-01, R1-02 and R1-03 closed; R2-01 (P2, the two surviving mutants above) fixed with two cases, R2-02 (P3, the CHANGELOG range '0.48 to 7.31 cm' did not contain the cauldron's 0.478) now '0.47 to 7.31 cm'; both after the cap of two rounds, checked by running the mutants, no third round. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0, float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them), frame_count is still derived from the last key (a file declaring frames past its last key comes back shorter) and the file is still written in place, not atomically (all inherited, the last two found by the reviewer); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "5c7834a82d9f52eabe2f5dc0e599c18488ac83f49ffbc1e70a197ae92461afc7",
+          "source_hash": "a3e44cefd356c35ebdd884ba68f79e371511a3b85e6b84c041ff8b17b9683c3e",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inba-seanim@2026-10-03",
@@ -864,7 +894,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5c7834a82d9f52eabe2f5dc0e599c18488ac83f49ffbc1e70a197ae92461afc7",
+      "output_hash": "a3e44cefd356c35ebdd884ba68f79e371511a3b85e6b84c041ff8b17b9683c3e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8326,10 +8356,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-dmp-sp071-rule12@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): the Quick Reference line for references/lods-and-geometry.md names its new section 'Collision of a large building with an interior' (ledger SP-453, SP-457, SP-458). Same line, so no registered claim range moves. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "579ac750c907244b05c1acafd5fbc8763cfc2cc2455a347934391e808b11d800",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ea744890bf1c3821373bb8739a3d478b80e6d98efebeba0b641828e4c61cc358",
+      "output_hash": "579ac750c907244b05c1acafd5fbc8763cfc2cc2455a347934391e808b11d800",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8348,10 +8388,20 @@
           "source_path": "dayz-model-pipeline/references/animations.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20260927-170625-092a, from CocaLab). dayz-model-pipeline references/animations.md section 5 'Placement Rules' rule 3 'Scale' (lines 311-313 at ea7b396) said \"Axis vector doesn't define scale; only direction matters.\" for every axis, rule 2's example called its 1 m axis \"normalized to -X direction\", and the TRANSLATION section (lines 102-103, 109-110) and three later examples read offset0/offset1 as metres. Read on 2026-10-03: Binarize stores a translation's offsets as model.cfg writes them and its axis at its own length (CocaLab release PBO: model.cfg offset1 = 1 on twelve drift axes 12.10 to 16.16 mm long, binarized tray ODOL v55 stores offset1 1.0 and each axis at its source length; a metres-to-axis-lengths conversion would have stored 62 to 83), so, assuming the m249's older binarizer (ODOL v54) kept offsets as the v55 pair shows (not verified: no m249 model.cfg is at hand), the binarized vanilla DZ/weapons/firearms/m249/m249.p3d (sha256 3b403365447c5cf4...) carries the offsets its authors wrote, read as compiled values: belt classes -1 to 0 on axes 1.11 to 1.15 cm, bolt_pull_1 0 to +1 on 8.34 cm, magazine_reload_move_1 0 to +1.45 on 10 cm; every rotation axis of the same file is stored as a unit vector. Inferred, not measured in game: the engine moves a selection by offset times axis. Rule 3 now separates rotation (direction only) from translation (offset times axis length; a 1 m axis makes the offset read in metres, the workaround dayz-vehicles SKILL.md already recommends, under which both readings agree), with claim CLAIM-MODEL-TRANSLATION-AXIS-LENGTH; rule 2 says an offset of 1 moves by the whole axis vector; the TRANSLATION section explains the unit and points to the inference; the push-button, drawer and screen example comments keep their text with \"on a 1 m axis (section 5, rule 3)\" added; the troubleshooting table gains 'Translation barely moves, or leaves the model'. A dated note under the table qualifies the row 'Multiple animations fight' with the same file's anims2bones (one bone carries the magazine's hide, two rotations and five translations; another bolt_pull_1 and bolt_pull_2; each belt round's bone two hides, a rotation and a translation); which combinations fight was not measured. The replaced sentences (the TRANSLATION comments and bullets, rule 3's two bullets, rule 2's bracket) are quoted verbatim in dated notes. CHANGELOG [Unreleased] Fixed entry. Cross-family review (Codex gpt-6.1-sol, max effort, cap of two rounds): round 1 on a3d54d0 SOUND-WITH-FIXES, no P1; R1-01 (the ODOL values did not identify the model.cfg unit: a compiler dividing metres by the axis length gives the same bytes) answered with the CocaLab source/binarized pair above and the rule relabelled as inference; R1-02 (the dayz-3d-viewer formula is a planned feature, not an implemented renderer) reworded; R1-03 (the coverage sentence about quoted replacements was broader than the notes) narrowed here and in the CHANGELOG. Round 2 on f8db3f5 SOUND-WITH-FIXES, no P1: R1-02 and R1-03 closed; R1-01 partial, R2-01 (P2): the v54 assumption stated in the reference and the claim was missing from this provenance and the CHANGELOG, which said the m249 carries its authors' offsets unconditionally; both now carry the condition (fixed after the cap of two rounds, checked by grep, no third round). Not done: the ticket's related note that the ODOL stores hideValue normalized to [minValue, maxValue] (m249 min -1, max 0, hideValue 0.935) is not added, since CocaLab's hides use 0..1 and no other source model.cfg was at hand to compare; dayz-vehicles SKILL.md's 'documented inconsistently' wording and dayz-vehicles references/animation-sign-and-axis.md line 65 (unit(axis_dir) * (offset1 - offset0), a sign check) are left as they are. Docs only. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "965364efcfee28a4b247f6971a6c14261855756933a96ba9a9e7382ec90e41ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/animations.md",
+          "source_revision": "kp-update-inba-translation@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3530a20a0fcdeeccba47cf11a7c603b40cdd894193c2d14b3c53f83abfd80dca",
+      "output_hash": "965364efcfee28a4b247f6971a6c14261855756933a96ba9a9e7382ec90e41ee",
       "output_path": "skills/dayz-model-pipeline/references/animations.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8466,10 +8516,20 @@
           "source_path": "dayz-model-pipeline/references/config-and-packing.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): 'Before binarizing: measure each collision LOD' (ledger SP-458) under Packing into PBO, pointing to lods-and-geometry.md for the figures and the fix. Evidence as recorded on the references/lods-and-geometry.md input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1f1313ba13f9dfee8b9c89de3b4ee5ac324817a2b4c8b2244c2bde7617a125e6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/config-and-packing.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4caa855fcab94020ffdabf7188fda7850cee5bfd83119ff6bf4d1badee37f1fe",
+      "output_hash": "1f1313ba13f9dfee8b9c89de3b4ee5ac324817a2b4c8b2244c2bde7617a125e6",
       "output_path": "skills/dayz-model-pipeline/references/config-and-packing.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8540,10 +8600,20 @@
           "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
           "source_revision": "kp-update-glb-reversal@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): new section 'Collision of a large building with an interior' (ledger SP-453 points 1, 4 and 5; SP-457; SP-458) and pointers at the ComponentXX and Mesh > Convex Hull bullets. Source: the owner's SecretRock RocaHeli rounds R7.1-R7.3 (2026-10-01 to 2026-10-03). Cross-checked against that project's review folders: the per-collision-LOD table recomputed from its binarize variant table and nine verdict files (faces, named selections x points and selection bytes separate pass from fail; the piece and point counts alone do not; one more variant truncated inside its Geometry LOD); 478 MB, 55-75 MB with 827-997 pieces, 78.4 -> 2.1 MB and the R7.3 View reversal from its block-1 and R7.3 reviews; 49,929 / 42,501 PASS and 92,430 CAPACITY_FAIL from the block-0 verdicts; 56,743 / 17,392 from the discovery review; 38 % beyond 15 cm for the k-means patches from the round-2 wall diagnosis (its probe stops at 1 m); the shell's in-game hit (geom ray, component 292 at 18.9 m) from the test-5 MCP call log. The per-selection byte layout read in tools/py3d/py3d/__init__.py:1968-1974 (py3d 1.10.1). The prism-only figures (median 1 cm, under 2 % beyond 15 cm, 10.5 cm along smoothed normals, 1,843 vs 652 regions, the 0.84 x 1.55 m gap with 131 of 368,013 samples, 0.40 m, 0.15 % with random samples) come from the ledger entries; no saved output was found for them. Nothing was re-measured for this change. Two claims registered on this file: CLAIM-BINARIZE-COLLISION-LOD-SILENT and CLAIM-COLLISION-ONLY-MODEL-INGAME. Cross-family review (Codex gpt-6.1-sol, read-only, effort max, cap of 2 rounds set before round 1): round 1 on 345d90a SOUND-WITH-FIXES with four findings, all applied in 158f413 (R21-01 P2: a 32,768-face cap cannot be the only limit, one alongside another is not ruled out; R21-02: Check A on the MLOD after the Rule 12 conversion; R21-03: the prisms aim at a 3 cm margin that a depth cap and a 1.5 cm minimum thickness can shrink; R21-04: exact bounds, one project's conservative bounds and not a PASS threshold); round 2 on 158f413 SOUND-WITH-FIXES, the four closed and one new P3 (R21-05: register the executable claims), applied after the cap and checked by packctl validate's claims check. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "10c8d8ab736043953c9b4dddd59c3e8013c34b59ab87f8e4c1a5c9b3e25cb3b4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7df3a0873c99996454ccfe81135e4159b6e81b595073a19ef1a1918d0baeb2f9",
+      "output_hash": "10c8d8ab736043953c9b4dddd59c3e8013c34b59ab87f8e4c1a5c9b3e25cb3b4",
       "output_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -9054,10 +9124,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-spb-item-collision@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): appended section 'Source meshes for collision' (ledger SP-453 points 2 and 3): zero-area faces (5.4 % of the rock's faces, 11 % of the cabin's) and the orphan points their removal left (8 points 1.5-10.8 cm off the surface); about 240 rock and 38 interior faces wound against their stored normals, sent to the Check A table instead of being turned to their normals, a step the project never checked in game; bmesh.ops.convex_hull hulls recomputed with Qhull (0 open or non-convex pieces in the project's integrity check), and a convexity check that needs a failing model and must require its models. Also a pointer at the end of SP-359 to the OTHER_FAIL cause of references/binarize-vertex-budget.md item 3 in dayz-vehicles (ledger SP-458). Everything sits after the last registered claim line, so no claim range moves. Source: the SecretRock RocaHeli block-1 review, R7.1, 2026-10-01. Cross-family review (Codex gpt-6.1-sol, read-only, effort max, cap of 2 rounds set before round 1): round 1 on 345d90a SOUND-WITH-FIXES with four findings, all applied in 158f413 (R21-01 P2: a 32,768-face cap cannot be the only limit, one alongside another is not ruled out; R21-02: Check A on the MLOD after the Rule 12 conversion; R21-03: the prisms aim at a 3 cm margin that a depth cap and a 1.5 cm minimum thickness can shrink; R21-04: exact bounds, one project's conservative bounds and not a PASS threshold); round 2 on 158f413 SOUND-WITH-FIXES, the four closed and one new P3 (R21-05: register the executable claims), applied after the cap and checked by packctl validate's claims check. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3e0ba4af2d68357130610972fbad9662f4732a370a14098533848589e2ef133b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d0d17c9a32b7cf990cd4268ef60fbd283317a94ae1386a59a01a12d5f6099a87",
+      "output_hash": "3e0ba4af2d68357130610972fbad9662f4732a370a14098533848589e2ef133b",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -10034,10 +10114,20 @@
           "source_path": "skills/dayz-persistence/SKILL.md",
           "source_revision": "kp-update-inbb-rules@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-456 of the skill-patches ledger): Hard stops gain item 9 and a section, A registry entry leaves by its id, never by proximity, for a mod's own registry of world entities (Contract 3, sidecar JSON). From the SecretRock audit DZ-R9 of 2026-10-03 (Codex read the code, Claude checked the six findings against it): an unregister that fell back to the nearest entry of the same class within 0.75 m deleted a neighbour's entry when an entity without an id was deleted (a placement refused after creation, an admin's console spawn), so an unregister needs a matching id (claim CLAIM-PERS-UNREGISTER-BY-ID, runtime_verified: with that rule, in game on DayZDiag 1.29.163709, a console rock 0.3 m from a registered one horizontally (0.37 m apart) created and deleted left placed.json's SHA-256 unchanged and the registered rock came back after the restart; the failure itself not reproduced; an id two entries share identifies neither); restore binds by id, and a candidate inside the radius without the entry's id is a conflict to log, neither bound, given state nor duplicated ([DESIGN]: the cross-family review traced three ways a position match in SecretRock's fixed code takes the wrong entity or creates a second one, rounds 1 and 2), since GetObjectsAtPosition3D promises no order (VANILLA/3_game/global/game.c:924-929; claim CLAIM-PERS-RESTORE-BIND-BY-ID, source_verified); a restore pass still queued in CALL_CATEGORY_SYSTEM (VANILLA/3_game/global/game.c:1515) is removed with ScriptCallQueue.Remove (VANILLA/2_gamelib/tools.c:65) before the shutdown flag is set (claim CLAIM-PERS-SHUTDOWN-QUEUE, source_verified; the shutdown order in game not confirmed). Sources: SecretRock_dev/reviews/2026-10-03-roca-r73/README.md sections 5 and 6, dzr9_codex.md, dzr9_delta.md, dzr9_fix.diff. Cross-family review by Codex. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "387413b0d9fa47025fed9e0bc210a04397d21ccf5015071564868fc66864ce69",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/SKILL.md",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "eedaa020cbf9cf24dbe74b3b96412418a6cdb229d5f2f35f932174f6411f36b7",
+      "output_hash": "387413b0d9fa47025fed9e0bc210a04397d21ccf5015071564868fc66864ce69",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -12860,10 +12950,20 @@
           "source_path": "dayz-vehicles/references/binarize-vertex-budget.md",
           "source_revision": "filesystem@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): the OTHER_FAIL bullet gains the cause measured on SecretRock RocaHeli R7.3 (ledger SP-458, also reported to the pipeline inbox): too many pieces in the collision LODs, no ODOL and no capacity line while the bench was fine; ruled in only once the MLOD walks to #EndOfFile# in every LOD and the same model passes without its collision LODs; the fix moves pieces to another model with the same transform and merges or decimates none; the two checks place the failure without measuring the limit, and each resulting model must still PASS. Evidence as recorded on the references/lods-and-geometry.md input of the same change. Cross-family review (Codex gpt-6.1-sol, read-only, effort max, cap of 2 rounds set before round 1): round 1 on 345d90a SOUND-WITH-FIXES with four findings, all applied in 158f413 (R21-01 P2: a 32,768-face cap cannot be the only limit, one alongside another is not ruled out; R21-02: Check A on the MLOD after the Rule 12 conversion; R21-03: the prisms aim at a 3 cm margin that a depth cap and a 1.5 cm minimum thickness can shrink; R21-04: exact bounds, one project's conservative bounds and not a PASS threshold); round 2 on 158f413 SOUND-WITH-FIXES, the four closed and one new P3 (R21-05: register the executable claims), applied after the cap and checked by packctl validate's claims check. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d5a57c4338f11bca316f338b739c31c9693374b25b7103920793519d28d9501a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "683d576f08a3c9e1b033b8986214aec2f254c28397176b8212d11029e2e2e0d3",
+      "output_hash": "d5a57c4338f11bca316f338b739c31c9693374b25b7103920793519d28d9501a",
       "output_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -15004,10 +15104,20 @@
           "source_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (SP-456): the entry-point audit gains a worked example, DZ-R9 F1 (SecretRock's UnregisterEntity fell back to the nearest entry of the same class within 0.75 m, so the two entry points that delete an entity without an id, a placement refused after creation and an admin console spawn, removed a registered neighbour's entry; the shutdown face F6, a restore pass still queued in CALL_CATEGORY_SYSTEM after OnMissionFinish reopening saving), the invariant 'an entry of the mod's own registry leaves only by its own id' with five entry points, and a Step 3 search for proximity used as identity (GetObjectsAtPosition3D promises no order, 3_game/global/game.c:924-929; a candidate without the entry's id is a conflict to log, not a match). Evidence: SecretRock_dev/reviews/2026-10-03-roca-r73/README.md sections 5 and 6, dzr9_codex.md, dzr9_delta.md, dzr9_fix.diff; F1's fix verified in game on DayZDiag 1.29.163709 (test 5), F6's shutdown order not confirmed in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f5e7529b85e37f60f25315d9911164e08d3988daa98b994ec41d8fa6c78b62c1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c699216daa389382212ab2eba8d70f547f2888991ad0a578dff92b357155e5f8",
+      "output_hash": "f5e7529b85e37f60f25315d9911164e08d3988daa98b994ec41d8fa6c78b62c1",
       "output_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -16598,9 +16708,39 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Registers CLAIM-PERS-UNREGISTER-BY-ID (runtime_verified), CLAIM-PERS-RESTORE-BIND-BY-ID and CLAIM-PERS-SHUTDOWN-QUEUE (source_verified) for the dayz-persistence section on registry entries (SP-456): the SecretRock audit DZ-R9 of 2026-10-03 with its fix and in-game test 5 (DayZDiag 1.29.163709), and the vanilla 1.29 sources 3_game/global/game.c:924-929 and :1515 and 2_gamelib/tools.c:65. No other claim moves.",
+          "license": "MIT",
+          "source_hash": "ced1b36f9ee1d5e75f71f0173987098283a846f432eb98f5331993ab4fd3dc62",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-spb-unregister-id@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): two claims on skills/dayz-model-pipeline/references/lods-and-geometry.md, 'Binarize: a silent limit on the collision LODs': CLAIM-BINARIZE-COLLISION-LOD-SILENT (offline_tested, item 1, lines 335-337) and CLAIM-COLLISION-ONLY-MODEL-INGAME (runtime_verified, item 6, lines 366-370), with their evidence locators; requested as R21-05 by the round-2 review. claim_baseline_commit unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "327367aeaa35779b2f052898637cc8e284a6a92dba837ba5a93cd1af87a0aaec",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20260927-170625-092a, from CocaLab). dayz-model-pipeline references/animations.md section 5 'Placement Rules' rule 3 'Scale' (lines 311-313 at ea7b396) said \"Axis vector doesn't define scale; only direction matters.\" for every axis, rule 2's example called its 1 m axis \"normalized to -X direction\", and the TRANSLATION section (lines 102-103, 109-110) and three later examples read offset0/offset1 as metres. Read on 2026-10-03: Binarize stores a translation's offsets as model.cfg writes them and its axis at its own length (CocaLab release PBO: model.cfg offset1 = 1 on twelve drift axes 12.10 to 16.16 mm long, binarized tray ODOL v55 stores offset1 1.0 and each axis at its source length; a metres-to-axis-lengths conversion would have stored 62 to 83), so, assuming the m249's older binarizer (ODOL v54) kept offsets as the v55 pair shows (not verified: no m249 model.cfg is at hand), the binarized vanilla DZ/weapons/firearms/m249/m249.p3d (sha256 3b403365447c5cf4...) carries the offsets its authors wrote, read as compiled values: belt classes -1 to 0 on axes 1.11 to 1.15 cm, bolt_pull_1 0 to +1 on 8.34 cm, magazine_reload_move_1 0 to +1.45 on 10 cm; every rotation axis of the same file is stored as a unit vector. Inferred, not measured in game: the engine moves a selection by offset times axis. Rule 3 now separates rotation (direction only) from translation (offset times axis length; a 1 m axis makes the offset read in metres, the workaround dayz-vehicles SKILL.md already recommends, under which both readings agree), with claim CLAIM-MODEL-TRANSLATION-AXIS-LENGTH; rule 2 says an offset of 1 moves by the whole axis vector; the TRANSLATION section explains the unit and points to the inference; the push-button, drawer and screen example comments keep their text with \"on a 1 m axis (section 5, rule 3)\" added; the troubleshooting table gains 'Translation barely moves, or leaves the model'. A dated note under the table qualifies the row 'Multiple animations fight' with the same file's anims2bones (one bone carries the magazine's hide, two rotations and five translations; another bolt_pull_1 and bolt_pull_2; each belt round's bone two hides, a rotation and a translation); which combinations fight was not measured. The replaced sentences (the TRANSLATION comments and bullets, rule 3's two bullets, rule 2's bracket) are quoted verbatim in dated notes. CHANGELOG [Unreleased] Fixed entry. Cross-family review (Codex gpt-6.1-sol, max effort, cap of two rounds): round 1 on a3d54d0 SOUND-WITH-FIXES, no P1; R1-01 (the ODOL values did not identify the model.cfg unit: a compiler dividing metres by the axis length gives the same bytes) answered with the CocaLab source/binarized pair above and the rule relabelled as inference; R1-02 (the dayz-3d-viewer formula is a planned feature, not an implemented renderer) reworded; R1-03 (the coverage sentence about quoted replacements was broader than the notes) narrowed here and in the CHANGELOG. Round 2 on f8db3f5 SOUND-WITH-FIXES, no P1: R1-02 and R1-03 closed; R1-01 partial, R2-01 (P2): the v54 assumption stated in the reference and the claim was missing from this provenance and the CHANGELOG, which said the m249 carries its authors' offsets unconditionally; both now carry the condition (fixed after the cap of two rounds, checked by grep, no third round). Not done: the ticket's related note that the ODOL stores hideValue normalized to [minValue, maxValue] (m249 min -1, max 0, hideValue 0.935) is not added, since CocaLab's hides use 0..1 and no other source model.cfg was at hand to compare; dayz-vehicles SKILL.md's 'documented inconsistently' wording and dayz-vehicles references/animation-sign-and-axis.md line 65 (unit(axis_dir) * (offset1 - offset0), a sign check) are left as they are. Docs only. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6024c1a4da43c4e3a1b642ff0a8258086628c1a84f05359aa236207bba918e65",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-inba-translation@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 22 cases, all 22 failing against the ea7b396 script and passing with the fix (13 written first; 7 added after review round 1, which found 7 kinds of mutant surviving the 13: modifier 0 dropped on read or on write, the bone-index width off by one at 255 or 65,535 bones, only 0..3 accepted, 255 modifiers refused, False accepted; 2 added after review round 2, which found two more surviving the 20: a repeated index accepted when its type repeats too, and a modifier equal to the header's type dropped on write; 13 mutants of those kinds plus two the 13 already caught each fail at least one of the 22). The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim; positions within 0.0016 cm on any axis, 0.0027 cm as a distance, after round 1 found the earlier 'within 0.0015 cm' was a rounding of 0.00155). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Cross-family review (Codex gpt-6.1-sol, max effort, cap of two rounds): round 1 on 50badc8 UNSOUND on one P1 with repro (the rounded position bound) and two P2 (the 7 surviving mutant kinds; the pot's LOD0 height 24.3 for 24.2 cm); all fixed, and the same rounding pattern corrected in player-skeleton.md ('within 2.2 cm' for 2.22 now 'within 2.3 cm'; wrist positions given as measured, +29.4/-28.0 and +14.2/-15.7 cm). Round 2 on a342190 SOUND-WITH-FIXES, no P1: R1-01, R1-02 and R1-03 closed; R2-01 (P2, the two surviving mutants above) fixed with two cases, R2-02 (P3, the CHANGELOG range '0.48 to 7.31 cm' did not contain the cauldron's 0.478) now '0.47 to 7.31 cm'; both after the cap of two rounds, checked by running the mutants, no third round. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0, float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them), frame_count is still derived from the last key (a file declaring frames past its last key comes back shorter) and the file is still written in place, not atomically (all inherited, the last two found by the reviewer); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "44c4526a95406e302c14d796560060ed0eb9607963dd1b0d7eb671f3f17d384e",
+          "source_hash": "d5425b14ad833f5a44932d835f7eca6574323fe8c5696b1199987d7b4f6416ab",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-inba-seanim@2026-10-03",
@@ -16608,7 +16748,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "44c4526a95406e302c14d796560060ed0eb9607963dd1b0d7eb671f3f17d384e",
+      "output_hash": "d5425b14ad833f5a44932d835f7eca6574323fe8c5696b1199987d7b4f6416ab",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

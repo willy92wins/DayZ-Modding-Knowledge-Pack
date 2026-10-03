@@ -132,6 +132,41 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   without `super` fixed it in game (the same commit also split the final `return` into a null
   guard, so which change mattered was not isolated). Vanilla: 1 of 206 `CanDo` overrides calls
   `super` (`craftlongtorch.c:61`, as its only statement). The mechanism is not established.
+- `dayz-persistence` Hard stops item 9 and its section, and `rigorous-data-audit`
+  `references/entry-point-audit.md`: an entry of a mod's own registry of world entities leaves by
+  its id, never by proximity (SP-456, from a code audit of the SecretRock mod, 2026-10-03). An
+  unregister that fell back to the nearest entry of the same class within 0.75 m deleted a
+  neighbour's entry whenever an entity without an id was deleted: a placement refused after the
+  entity was created, or an admin's console spawn. The rule: an unregister needs a matching id, and
+  an entity without one never touches the file; in game (DayZDiag 1.29), with that rule, a console
+  entity 0.3 m (horizontally) from a registered one was created and deleted, the registry kept its
+  SHA-256 and the registered entity came back after the restart. Restore binds by id: a candidate
+  inside the radius without the entry's id is a conflict to log, neither bound nor duplicated
+  ([DESIGN]), since `GetObjectsAtPosition3D` promises no order and three traced cases show a
+  position match taking the wrong entity or creating a second one; a restore pass still queued in
+  `CALL_CATEGORY_SYSTEM` is removed (`ScriptCallQueue.Remove`) before the shutdown flag is set, so
+  the shutdown's deletions cannot unregister entries; both were read in the code and not reproduced
+  in game. The entry-point audit gains the worked example, the invariant's entry points and a search
+  for proximity used as identity.
+- `dayz-model-pipeline` `references/lods-and-geometry.md`: "Collision of a large building with an
+  interior", from a rock-shaped building generated from Blender with a hangar, an attic and a lift
+  inside (SecretRock RocaHeli R7.1-R7.3, 2026-10-01 to 2026-10-03; ledger SP-453, SP-457 and
+  SP-458). An MLOD stores each named selection as one byte per point and per face of its LOD
+  (py3d `Selection.write`), so collision pieces cost about the square of their count: 478 MB with
+  1,150 pieces, 55-75 MB with 827-997 pieces of 6 points. Then: no room-membership test on open
+  meshes; collision prisms that follow the visible face (geometric normal, neighbours by
+  position, a room test with horizontal rays, every exterior triangle probed at 7 points), with
+  the scope of each figure; the visual budget split into two models; and a `binarize` limit that
+  prints nothing. With too many pieces in its collision LODs, `binarize.exe` wrote no ODOL and no
+  capacity line (`OTHER_FAIL`). Over 9 variants, faces, named selections × points and selection
+  bytes separate the passes from the failures equally, the piece and point counts alone do not,
+  and the variable is not isolated; a truncated MLOD gives the same verdict. The fix, a second
+  collision-only model with the same transform, took rays in game (0 holes in Geometry, Fire and
+  View). Also: the pre-binarize check in `config-and-packing.md`, a pointer in `SKILL.md`'s Quick
+  Reference and at `ComponentXX`, this cause of `OTHER_FAIL` with its two checks in `dayz-vehicles`
+  `references/binarize-vertex-budget.md` and in `dayz-p3d-audit` SP-359, and a `dayz-p3d-audit`
+  section on source meshes (zero-area faces and orphan points; faces against their normals read
+  with Check A, not turned to them; `bmesh.ops.convex_hull` hulls recomputed with Qhull).
 
 ### Changed
 
@@ -302,6 +337,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `--generate-anim` does not keep them either; the `.anm` built from that extract unchanged
   re-extracts with none. `weapon-anim-authoring-viewer.md` and a comment in `seanim_export.py` no
   longer say that `read_seanim` drops them.
+- `dayz-model-pipeline` `references/animations.md`: a translation's `offset0`/`offset1` count
+  lengths of its axis, not metres. Section 5's "Scale" rule said "Axis vector doesn't define
+  scale; only direction matters" for every axis, and the examples read their offsets as metres.
+  Read on 2026-10-03: Binarize stores a translation's offsets as `model.cfg` writes them and its
+  axis at its own length (CocaLab's `offset1 = 1` on twelve 12.1 to 16.2 mm axes reads 1.0 in its
+  binarized tray, each axis at its source length). If the older binarizer of the vanilla m249
+  (ODOL v54) kept offsets the same way, the m249's compiled offsets are its authors' and only make
+  sense in axis lengths (the belt runs from -1 to 0 on axes 1.11 to 1.15 cm long, the bolt from 0
+  to +1 on 8.34 cm, the magazine from 0 to +1.45 on 10 cm); its rotation axes are stored as unit
+  vectors. Inferred from that, not measured in game: the engine moves a selection by the offset
+  times the axis. The rule now separates rotation (direction only) from translation (offset times
+  axis length; on a 1 m axis the offset reads in metres, the axis `dayz-vehicles` recommends), the
+  examples say their offsets assume a 1 m axis, and the troubleshooting table gains the symptom (a
+  translation that barely moves or leaves the model). A dated note qualifies its "Multiple
+  animations fight" row: the same m249 binds up to eight animations to one bone. Claim
+  `CLAIM-MODEL-TRANSLATION-AXIS-LENGTH`; the replaced sentences are quoted in dated notes, and the
+  example comments keep their text with "on a 1 m axis" added.
 - `dayz-vehicles`: `references/gauge-needles.md` (twice) and
   `references/vehicle-config-and-modelcfg.md` named an unpublished skill as the tool that read the
   vanilla cars' animation classes from their ODOL, and `promotions/adjudications.json` named it in

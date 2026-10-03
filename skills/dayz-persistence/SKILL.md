@@ -156,10 +156,61 @@ Stop and resolve the violation before recommending or shipping persistence work:
    I/O failures remain unexercised.
 7. Promotion reports `PROMOTION-UNROUTED` or `PROMOTION-DRIFT`.
 8. Live `CargoBase` is walked by frozen index across ticks while items can be removed mid-walk (SP-418).
+9. An entry of the mod's own registry of world entities is removed by proximity, or bound on
+   restore to an entity that does not carry its id (the first or the nearest candidate in a
+   radius), instead of by its id (SP-456).
 
 ### Live cargo capture across ticks (SP-418, added 2026-09-21, measured in game, DayZ 1.30.164014 Exp)
 
 [EXACT] `GetItemCount()` is frozen when the capture begins; a batched walk over `cargo.GetItem(i)` silently loses items if the player removes one mid-capture: the cargo compacts, the shifted item lands on an already-visited index, never enters the snapshot, and a later `ClearPhantomItems` destroys it unwritten. The guard `i < GetItemCount()` hides the out-of-range access. Invariant: walking live cargo across ticks requires either a fail-closed abort when the count changes, or capture by entity identity at a single instant. A range guard that skips the hole is silent loss. Do not improvise a smarter walk on a data path without an explicit decision: the minimum correct behaviour is to abort without writing world or disk.
+
+### A registry entry leaves by its id, never by proximity (SP-456, added 2026-10-03; read in the code, point 1 also in game, DayZDiag 1.29.163709)
+
+A mod that keeps its own registry of the world entities it placed (a sidecar JSON with class,
+position and id per entry; Contract 3) binds each entry to one entity. An audit of the SecretRock
+mod's code (DZ-R9, 2026-10-03: Codex read the code, Claude checked each finding against it) found
+three ways to cross that binding.
+
+1. **Unregister by proximity deletes another entity's entry.** `EEDelete` called an unregister that
+   looked the entity up by id and, failing that, took the nearest entry of the same class within
+   0.75 m and saved the file without it. Two paths create and then delete an entity that never got
+   an id: a placement that creates the entity, checks the site and deletes it on refusal, and an
+   entity an admin spawns from the console and deletes. Either way a registered neighbour of the
+   same class inside the radius loses its entry and does not come back after the next restart. Rule:
+   an unregister needs a matching id, and an entity without one never touches the file; an id that
+   two entries share identifies neither of them. In the degraded case (ids assigned in memory that
+   could not be saved) a deleted entity then comes back after a restart, which is preferred to
+   deleting another entity's entry. In game, with that rule, a console entity created 0.3 m from a
+   registered one horizontally (0.37 m apart, inside the radius) and then deleted left the registry
+   byte-identical (same SHA-256), and the registered one came back after the restart
+   [EXACT][CLAIM-PERS-UNREGISTER-BY-ID]; the failure itself was read in the code, not reproduced.
+2. **Restore binds by id; a position match proves nothing.** `GetObjectsAtPosition3D` returns the
+   objects in a sphere and promises no order (`VANILLA/3_game/global/game.c:924-929`)
+   [EXACT][CLAIM-PERS-RESTORE-BIND-BY-ID], so taking the first unclaimed candidate of the class
+   inside the radius can swap ids and states between two nearby entities of that class, and a
+   second restore pass (one 2 s after start, to bind what the mission created) runs that code on
+   every boot. SecretRock's fix takes the entity already bound to the entry's id, else the nearest
+   one not yet claimed in the pass. The cross-family review traced three ways through that code in
+   which an entry still takes the wrong entity or gets a second one: a neighbour that carries
+   another entry's id, an admin's console entity with no id next to an entry whose own entity is
+   gone, and an id regenerated after a failed save. SecretRock keeps the id in a script member, so
+   no entity carries it across a restart, and a position match is a guess. Rule [DESIGN]: an
+   entity that carries the entry's id is the entry's; with no entity of the class inside the
+   radius the entity is absent and the restore creates it; a candidate inside the radius without
+   the entry's id is a conflict, to log, neither bound to the entry, given its state, nor
+   duplicated. An id stored on the entity itself (its own `OnStoreSave` stream, Contract 1) ends
+   the guess for an entity the engine persists. Read in the code; neither the failures nor this
+   rule were tested in game.
+3. **A restore pass still queued can reopen saving at shutdown.** If the restore clears the
+   shutdown flag (for a mission restart in the same process), a restore `CallLater` still in
+   `CALL_CATEGORY_SYSTEM`, which is processed "without any restrictions"
+   (`VANILLA/3_game/global/game.c:1515`), clears it again after `OnMissionFinish`, and the
+   `EEDelete` calls of the shutdown then unregister entries. Rule: remove the pending passes
+   (`ScriptCallQueue.Remove`, `VANILLA/2_gamelib/tools.c:65`) before setting the flag
+   [EXACT][CLAIM-PERS-SHUTDOWN-QUEUE]. Read in the code; the shutdown order in game is not confirmed.
+
+Every entry point that creates or deletes such an entity has to honour the first rule; the
+inventory to walk is in `rigorous-data-audit`, `references/entry-point-audit.md`.
 
 ## DayZ 1.30 Exp (build 1.30.164014)
 
