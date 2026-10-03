@@ -684,7 +684,7 @@ telemetry). To condition for real (authoritative wheels+fluids) without touching
 SERVER-side (MCPBridge.c:2104-2112) and the 0.5 s micro-drive is negligible. NOTE:
 `vehicle_drive` requires the SERVER-side seat (gives `not_seated` with owner-client seat).
 `vehicle_prepare_fixture` takes any `CarScript` classname: an object of another class fails with
-`fixture_not_vehicle` (`DayZ_MCP_dev/addon/scripts/5_Mission/MCPBridge.c:1213-1280`).
+`fixture_not_vehicle` (`DayZ_MCP_dev/addon/scripts/5_Mission/MCPBridge.c:1214-1280`).
 [EXACT][CLAIM-MCPV-PREPARE-FIXTURE-ANY-CARSCRIPT] Between 2026-08-18 and 2026-10-01 it returned
 `vehicle_fixture_ready=1` with `wheel_count` 4 on 15 other `CarScript` types, among them `SUB_BRZ`,
 `LFQuad2`, `Arma2Quad`, `Hatchback_02` and the vanilla `CivilianSedan`; three test variants of one
@@ -1006,7 +1006,7 @@ Validated pattern:
 ## Lease preflight, object telemetry, and zombie commands (SP-152, added 2026-08-31; corrected 2026-10-03)
 
 - `telemetry_read(mode="object_at")` reads any classname: the bridge matches it by exact
-  `GetType()` inside the radius (`DayZ_MCP_dev/addon/scripts/5_Mission/MCPBridge.c:3007-3050`), and
+  `GetType()` inside the radius (`DayZ_MCP_dev/addon/scripts/5_Mission/MCPBridge.c:3007-3051`), and
   the loopback checks `type` only for a non-empty string (`DayZ_MCP_dev/tools/dayz_mcp/loopback.py:1349-1358`).
   [EXACT][CLAIM-MCPV-OBJECT-AT-ANY-TYPE] On 2026-10-02 (DayZDiag 1.29.163709, run `1c289781`) it
   answered `found=1` with `pos`, `orientation`, `health01` and `declared_slots` for three types:
@@ -1029,7 +1029,7 @@ Validated pattern:
 - A `world_spawn` timeout leaves a zombie command: it may execute after losing the
   `object_id`. Before retrying, reconcile the effect with `telemetry_read(mode="object_at")` for that
   type at the spawn position: `found=false` means none is there, and two or more of that type inside
-  the radius fail with `ambiguous_fixture` (`MCPBridge.c:3029-3043`; not exercised on a zombie spawn).
+  the radius fail with `ambiguous_fixture` (`MCPBridge.c:3031-3045`; not exercised on a zombie spawn).
   Do not blindly duplicate spawn. *(Corrected 2026-10-03: this said "if the `object_at` cap prevents
   it, use logs plus user inspection"; there is no such cap, first bullet.)*
 
