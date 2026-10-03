@@ -134,7 +134,8 @@ Stop and resolve the violation before recommending or shipping persistence work:
 7. Promotion reports `PROMOTION-UNROUTED` or `PROMOTION-DRIFT`.
 8. Live `CargoBase` is walked by frozen index across ticks while items can be removed mid-walk (SP-418).
 9. An entry of the mod's own registry of world entities is removed by proximity, or bound on
-   restore to the first candidate in a radius, instead of by its id (SP-456).
+   restore to the first candidate in a radius or to an entity that carries another entry's id,
+   instead of by its id (SP-456).
 
 ### Live cargo capture across ticks (SP-418, added 2026-09-21, measured in game, DayZ 1.30.164014 Exp)
 
@@ -151,12 +152,13 @@ three ways to cross that binding.
    looked the entity up by id and, failing that, took the nearest entry of the same class within
    0.75 m and saved the file without it. Two paths create and then delete an entity that never got
    an id: a placement that creates the entity, checks the site and deletes it on refusal, and an
-   entity an admin spawns from the console and deletes. Either way a registered neighbour of the same class
-   inside the radius loses its entry and does not come back after the next restart. Rule: an
-   unregister needs a matching id, and an entity without one never touches the file. In the
-   degraded case (ids assigned in memory that could not be saved) a deleted entity then comes back
-   after a restart, which is preferred to deleting another entity's entry. In game, with that rule,
-   a console entity created 0.3 m from a registered one and then deleted left the registry
+   entity an admin spawns from the console and deletes. Either way a registered neighbour of the
+   same class inside the radius loses its entry and does not come back after the next restart. Rule:
+   an unregister needs a matching id, and an entity without one never touches the file; an id that
+   two entries share identifies neither of them. In the degraded case (ids assigned in memory that
+   could not be saved) a deleted entity then comes back after a restart, which is preferred to
+   deleting another entity's entry. In game, with that rule, a console entity created 0.3 m from a
+   registered one horizontally (0.37 m apart, inside the radius) and then deleted left the registry
    byte-identical (same SHA-256), and the registered one came back after the restart
    [EXACT][CLAIM-PERS-UNREGISTER-BY-ID]; the failure itself was read in the code, not reproduced.
 2. **Restore binds by id before position.** `GetObjectsAtPosition3D` returns the objects in a
@@ -164,9 +166,13 @@ three ways to cross that binding.
    so taking the first unclaimed candidate of the class inside the radius can swap ids and states
    between two nearby entities of that class, and a second restore pass (one 2 s after start, to
    bind what the mission created) runs that code on every boot. Rule: the entity already bound to
-   the entry's id; if there is none, the nearest unclaimed one. The nearest is a heuristic, not
-   identity: with ids that were never saved, a greedy nearest choice can still swap two entries
-   inside the radius. Not reproduced in game.
+   the entry's id; if there is none, the nearest entity of the class that carries no id, never one
+   bound to another entry. SecretRock's fix falls back to the nearest entity not yet claimed in the
+   pass, and the cross-family review traced how that can still take an entity that carries another
+   entry's id (an entry left behind by an unregister whose save failed takes its neighbour's entity
+   and applies its own state to it). Proximity stays a heuristic, not identity: when two entries or
+   two entities of the class share the radius, read the match as ambiguous, not as a binding. Read
+   in the code, not reproduced in game.
 3. **A restore pass still queued can reopen saving at shutdown.** If the restore clears the
    shutdown flag (for a mission restart in the same process), a restore `CallLater` still in
    `CALL_CATEGORY_SYSTEM`, which is processed "without any restrictions"

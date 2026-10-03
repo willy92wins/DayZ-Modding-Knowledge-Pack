@@ -46,9 +46,9 @@ refusal, and an admin who spawns one from the console and deletes it. Both
 removed the entry of a registered rock nearby, which did not come back after
 the next restart. Fix: removal needs a matching id, and an entity without one
 never touches the file. Found by reading the code (audit 2026-10-03); with the
-fix, a console rock spawned 0.3 m from a registered one and deleted left the
-file's SHA-256 unchanged in game (DayZDiag 1.29), and the registered rock came
-back after the restart. The same audit's F6 is the shutdown face of this
+fix, a console rock spawned 0.3 m from a registered one (horizontally) and
+deleted left the file's SHA-256 unchanged in game (DayZDiag 1.29), and the
+registered rock came back after the restart. The same audit's F6 is the shutdown face of this
 invariant: a restore pass still in the `CALL_CATEGORY_SYSTEM` queue after
 `OnMissionFinish` cleared the shutdown flag again, so the deletions of the
 shutdown unregistered entries. `OnMissionFinish` now removes the pass before
@@ -156,8 +156,9 @@ Grep "Closest|Nearest|GetObjectsAtPosition" --type c --output_mode content -n tr
 
 For each hit, ask whether it decides which registry entry an entity owns.
 If it does, a matching id must win; an entity without an id must not remove
-an entry; and on restore the first candidate in the radius is not the
-nearest one (`GetObjectsAtPosition3D` promises no order).
+an entry; on restore the first candidate in the radius is not the nearest one
+(`GetObjectsAtPosition3D` promises no order), and an entity that carries
+another entry's id is no candidate at all.
 
 ### Step 4 — Output
 
