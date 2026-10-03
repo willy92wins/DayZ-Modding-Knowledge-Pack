@@ -83,12 +83,12 @@ python -m py3d diff     a.p3d b.p3d  # structural comparison
   `ComponentNN` selection (in game a model with no component in any collision
   LOD collides with nothing, and nothing logs it; one LOD missing it alone was
   not measured), a closed part left out of every component of such a LOD (in
-  game such a part, left out of the Geometry and Fire LODs or of all three,
-  collided with nothing, also beside covered parts; left out of one LOD alone
-  it was not measured), `#Mass#` outside the Geometry LOD, non-watertight
-  collision, degenerate faces, memory-point structure, winding problems, and
-  more. The case of a component's name is not checked: `component01` collided
-  in game exactly like `Component01`.
+  game two such parts took no ray in the LODs they were left out of, also
+  beside covered parts: a box left out of all three, a lever left out of
+  Geometry and Fire; one LOD alone was not measured), `#Mass#` outside the
+  Geometry LOD, non-watertight collision, degenerate faces, memory-point
+  structure, winding problems, and more. The case of a component's name is
+  not checked: `component01` collided in game exactly like `Component01`.
 
 **Editing helpers**
 - `bbox`, `triangulate`, `set_selection`, `set_total_mass`, `set_memory_point`,
@@ -282,7 +282,7 @@ instead, which this finding used to recommend, trades it for
 
 ## Status and known issues
 
-The library is used in a real modding pipeline. On a plain `pytest` run 376
+The library is used in a real modding pipeline. On a plain `pytest` run 386
 tests pass and 11 skip: the 7 CANON tests, which need a local clone of upstream
 (see [Tests](#tests)), and 4 that need the companion scripts. It has also been
 through a deliberately adversarial audit, and **not every problem it found is

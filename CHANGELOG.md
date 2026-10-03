@@ -52,17 +52,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   py3d 1.10.0 raises that case as `ERR_COMPONENT_COVERAGE` (next entry); the pinned 1.9.0 wheel's
   `WARN_COMPONENT_COVERAGE` message still calls it not measured.
 - py3d 1.10.0: `ERR_COMPONENT_COVERAGE`, an ERROR, for a closed part left out of every `ComponentNN`
-  of a Geometry, View or Fire LOD, the case the in-game A/B of the previous entry measured (such a
-  part collided with nothing, also beside covered parts, and no log line said so).
-  `_check_component_coverage` groups the LOD's faces, proxy triangles aside, into pieces that share
-  a corner position, read as the MLOD stores it (float32), and raises the ERROR for a piece that is
-  a closed solid (each edge used by two of its faces, once each way, and thicker than 16 float32
-  steps at its distance from the origin, so a flat double-sided sheet never is one) with no face and
-  no point in any component. Each LOD is read on its own: the message counts the parts and their
-  faces, names the omissions that were measured (all three LODs for the box, Geometry and Fire for
-  the lever) and says that a part left out of one LOD alone, component selections that hold nothing,
-  and weapon fire were not. Every other face in no component stays `WARN_COMPONENT_COVERAGE` (a part
-  left out only in part, an open piece such as a stray triangle, a flat double-sided sheet): its
+  of a Geometry, View or Fire LOD, the case the in-game A/B of the previous entry measured (such
+  parts took no ray in the LODs they were left out of, also beside covered parts, and no log line
+  said so). `_check_component_coverage` groups the LOD's faces, proxy triangles aside, into pieces
+  that share a corner position, read as the MLOD stores it (float32), and raises the ERROR for a
+  piece that is a closed solid (each edge used by two of its faces, once each way, and thicker than
+  16 float32 steps at its distance from the origin, so a flat double-sided sheet never is one) with
+  no face and no point in any component. Each LOD is read on its own: the message counts the parts
+  and their faces, gives each measured part its own readings (a box left out of all three LODs,
+  which the player walked through; a lever left out of Geometry and Fire, whose knob did not stop a
+  player) and says that a part left out of one LOD alone, component selections that hold nothing,
+  and weapon fire were not measured. Every other face in no component stays
+  `WARN_COMPONENT_COVERAGE` (a part left out only in part, an open piece such as a stray triangle, a
+  flat double-sided sheet, a closed part too thin for the cutoff, which errs toward the WARN): its
   message says that was not measured, where 1.9.0's said "expect them to take no part in collision",
   and it no longer counts the ERROR's faces; the WARN for points alone is unchanged. A LOD whose
   component selections are all empty raises the ERROR for its closed parts (1.9.0: the WARN, every
@@ -75,10 +77,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   the ERROR in its Geometry and Fire LODs (its only ERROR); a vehicle's Fire LOD keeps the WARN for
   its two stray 1 mm triangles; no other finding changed. Version 1.10.0 because the pinned 1.9.0
   wheel (entry below) carries the 1.9.0 check; no new wheel. `dayz-p3d-audit` killer #8 (`SKILL.md`
-  and `references/killers-detail.md` §8, the replaced text quoted in dated notes) and the
-  `dayz-doors` LOD reference (the Expert lever paragraph and the checklist line) name both codes,
-  and the py3d README the new finding. Tests: 42 new in `tools/py3d/tests/test_s2_validate12.py`
-  (py3d suite 376 passed, 11 skipped; base 334 passed, 11 skipped).
+  and `references/killers-detail.md` §8: the py3d text and, after review round 2, the opening
+  sentence, which gave the lever the box's readings; the replaced text quoted in dated notes) and
+  the `dayz-doors` LOD reference (the Expert lever paragraph and the checklist line) name both
+  codes, and the py3d README the new finding. Tests: 52 new in
+  `tools/py3d/tests/test_s2_validate12.py` (py3d suite 386 passed, 11 skipped; base 334 passed, 11
+  skipped).
 
 - `dayz-mcp-verify` "Axis-aligned test fixtures": a measured caveat. In one run (2026-10-02,
   DayZDiag 1.29.163709) a model with two 2 m boxes, one in `Component01` and the other in

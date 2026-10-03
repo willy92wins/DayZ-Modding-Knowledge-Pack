@@ -1396,8 +1396,9 @@ def _piece_thickness(piece):
     its volume over its area (a slab's thickness), and its largest
     coordinate, at least 1 m. The volume is summed with math.fsum from
     corners (_corner) taken relative to the piece's first corner, so the
-    sum does not cancel far from the origin: an exactly flat sheet gives 0
-    wherever it lies. The thickness is None for a piece without area."""
+    sum cancels little far from the origin: an exactly flat sheet gives 0,
+    or a residue far below _SOLID_MIN_STEPS, wherever it lies. The
+    thickness is None for a piece without area."""
     origin = _corner(piece[0].vertices[0].point)
     six_volume = []
     area = []
@@ -1424,8 +1425,10 @@ def _is_closed_solid(piece):
     exactly two of its faces, once in each direction, and the piece is
     thicker (_piece_thickness) than _SOLID_MIN_STEPS float32 steps at its
     distance from the origin, at least 1 m; so a flat double-sided sheet
-    is not a solid, wherever it lies. Whether the winding runs inward or
-    outward is not read."""
+    is not a solid, wherever it lies. The cutoff errs toward the WARN: a
+    real part thinner than it (a 0.3 mm slab 200 m from the origin) is not
+    counted as a solid either. Whether the winding runs inward or outward
+    is not read."""
     used = collections.Counter()
     for fa in piece:
         keys = [_corner(vx.point) for vx in fa.vertices]
@@ -1468,17 +1471,21 @@ def _check_component_coverage(lod, lod_index, kind_label):
     no ray in geom, view or fire and no physics ray, and the player walked
     through it; the same box as Component02 took every ray and stopped the
     player. A closed lever left out of the Geometry and Fire components of
-    a door model took no Geometry, Fire or physics ray either, while in
-    the View LOD, where it is one (non-convex) component, its knob
-    answered. No log line named any of them. Each LOD is read on its own
+    a door model took no Geometry, Fire or physics ray either, and a
+    player walking into its knob was stopped by the block behind it (a
+    walk along its arm was inconclusive), while in the View LOD, where it
+    is one (non-convex) component, its knob answered. No log line named
+    any of them. Each LOD is read on its own
     here, but those parts were left out of all three LODs (the box) and of
     Geometry and Fire (the lever): a part left out of one LOD alone was not
     measured, and the message says so.
 
     Every other face in no component raises the WARN: its piece is partly
     in a component (some of its faces, or the face's own points, are in
-    one) or is not a closed solid (an open sheet, a stray triangle).
-    Neither was measured. So does a LOD whose faces are all in components
+    one) or is not counted as a closed solid (an open sheet, a stray
+    triangle, a flat double-sided sheet, or a closed piece too thin for
+    the cutoff at its distance from the origin). None of these was
+    measured. So does a LOD whose faces are all in components
     while some of their points are in none (a component holding a face
     without its points, not measured either). One finding of each code
     per LOD at most; the WARN does not count the ERROR's faces and points.
@@ -1541,15 +1548,16 @@ def _check_component_coverage(lod, lod_index, kind_label):
             "ERR_COMPONENT_COVERAGE", "ERROR", lod_index,
             "%s LOD: %d of its %d face(s) (proxy triangles not counted) "
             "make up %d closed part(s) with no face and no point in any "
-            "ComponentNN selection. In game such a part collided with "
-            "nothing: left out of every component of the Geometry, View and "
-            "Fire LODs beside a covered part (a box), or of the Geometry "
-            "and Fire LODs (a lever, a component in View only, hit in View "
-            "only), it took no ray in the LODs it was left out of and no "
-            "physics ray, the player walked through it, and no log line "
-            "said so. A part left out of one LOD alone, or beside "
-            "component selections that hold nothing, was not measured, nor "
-            "was weapon fire. Select each closed, convex part as its own "
+            "ComponentNN selection. In game two such parts took no ray in "
+            "the LODs they were left out of and no physics ray, and no log "
+            "line said so: a box left out of every component of the "
+            "Geometry, View and Fire LODs beside a covered box, which the "
+            "player walked through, and a lever left out of the Geometry "
+            "and Fire LODs (a component in View, hit there), whose knob did "
+            "not stop a player walking into it. A part left out of one LOD "
+            "alone, or beside component selections that hold nothing, was "
+            "not measured, nor was weapon fire. Select each closed, convex "
+            "part as its own "
             "ComponentNN, the components together covering the LOD; never "
             "merge parts into one component to cover them (it would not be "
             "convex)."
@@ -1567,10 +1575,11 @@ def _check_component_coverage(lod, lod_index, kind_label):
         if bare_points:
             msg += (", nor are %d of the %d point(s) its faces use"
                     % (bare_points, len(points)))
-        msg += (". Each lies in a part partly in a component or in a piece "
-                "that is not a closed solid; neither was measured in game "
-                "(a closed part left out whole, ERR_COMPONENT_COVERAGE, "
-                "collided with nothing). "
+        msg += (". Each lies in a part partly in a component, or in a piece "
+                "that is open, wound inconsistently, flat, or too thin to "
+                "count as solid at its distance from the origin; none of "
+                "these was measured in game (closed parts left out whole are "
+                "ERR_COMPONENT_COVERAGE). "
                 "Select each closed, convex part as its own ComponentNN, "
                 "the components together covering the LOD; never merge "
                 "parts into one component to cover them (it would not be "

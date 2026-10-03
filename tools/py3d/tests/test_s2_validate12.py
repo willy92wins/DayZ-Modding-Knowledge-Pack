@@ -716,13 +716,19 @@ def test_coverage_silent_without_components(fork):
 # the WARN.
 
 MEASURED = (
-    "In game such a part collided with nothing: left out of every component "
-    "of the Geometry, View and Fire LODs beside a covered part (a box), or of "
-    "the Geometry and Fire LODs (a lever, a component in View only, hit in "
-    "View only), it took no ray in the LODs it was left out of and no physics "
-    "ray, the player walked through it, and no log line said so. A part left "
-    "out of one LOD alone, or beside component selections that hold nothing, "
-    "was not measured, nor was weapon fire.")
+    "In game two such parts took no ray in the LODs they were left out of and "
+    "no physics ray, and no log line said so: a box left out of every "
+    "component of the Geometry, View and Fire LODs beside a covered box, "
+    "which the player walked through, and a lever left out of the Geometry "
+    "and Fire LODs (a component in View, hit there), whose knob did not stop "
+    "a player walking into it. A part left out of one LOD alone, or beside "
+    "component selections that hold nothing, was not measured, nor was "
+    "weapon fire.")
+NOT_MEASURED = (
+    "Each lies in a part partly in a component, or in a piece that is open, "
+    "wound inconsistently, flat, or too thin to count as solid at its "
+    "distance from the origin; none of these was measured in game (closed "
+    "parts left out whole are ERR_COMPONENT_COVERAGE).")
 LOD_INDEX = {"geometry": 1, "view_geometry": 2, "fire_geometry": 3}
 SMALL = (0.25, 0.25, 0.25)
 
@@ -819,9 +825,7 @@ def test_coverage_err_and_warn_on_one_lod(fork):
     assert w.msg.startswith(
         "geometry LOD: besides the closed part(s) of ERR_COMPONENT_COVERAGE, "
         "1 of its 12 face(s) (proxy triangles not counted) are in no "
-        "ComponentNN selection. Each lies in a part partly in a component "
-        "or in a piece that is not a closed solid; neither was measured in "
-        "game"), w.msg
+        "ComponentNN selection. " + NOT_MEASURED), w.msg
 
 
 def test_coverage_err_and_points_only_warn(fork):
@@ -872,10 +876,7 @@ def test_coverage_warn_face_left_out_of_a_part(fork):
     (f,) = coverage(findings)
     assert f.msg.startswith(
         "geometry LOD: 1 of its 12 face(s) (proxy triangles not counted) are "
-        "in no ComponentNN selection. Each lies in a part partly in a "
-        "component or in a piece that is not a closed solid; neither was "
-        "measured in game (a closed part left out whole, "
-        "ERR_COMPONENT_COVERAGE, collided with nothing)."), f.msg
+        "in no ComponentNN selection. " + NOT_MEASURED), f.msg
     assert "expect them" not in f.msg
 
 
@@ -1235,10 +1236,11 @@ def test_coverage_thickness_boundary(fork, half, centre, code):
      2.0 ** -13),
 ])
 def test_coverage_flat_sheet_thickness_is_zero(fork, base, u, v, k, l, step):
-    """An exactly flat double-sided quad (its corners on an integer lattice,
-    exact in float32) has a thickness of exactly 0 wherever it lies: the
+    """These exactly flat double-sided quads (corners on an integer lattice,
+    exact in float32) have a thickness of exactly 0, 60 m to 2 km out: the
     volume is summed from the piece's own corner, not from the model's
-    origin, whose sum cancels into a small number far out."""
+    origin, whose sum cancels into a small number far out. Not every flat
+    sheet gives exactly 0 (see the next test)."""
     lattice = [base, tuple(base[j] + u[j] for j in range(3)),
                tuple(base[j] + k * u[j] + l * v[j] for j in range(3)),
                tuple(base[j] + v[j] for j in range(3))]
@@ -1249,3 +1251,89 @@ def test_coverage_flat_sheet_thickness_is_zero(fork, base, u, v, k, l, step):
     faces = add_mesh(fork, lod, coords, [(0, 1, 2, 3), (3, 2, 1, 0)])
     thickness, reach = fork._piece_thickness(faces)
     assert thickness == 0.0 and reach > 60.0
+
+
+def test_coverage_flat_sheet_residue_below_cutoff(fork):
+    """Review round 2, N4: an exactly flat double-sided quad whose computed
+    thickness is not exactly 0 (a residue of the sum, about 7e-17 m near
+    955 m from the origin) stays far below the solid cutoff: the WARN."""
+    a = (5887524, -7431202, 1760113)
+    u = (405116, 647338, 908875)
+    v = (376643, 939867, -31748)
+    lattice = [a, tuple(a[j] + u[j] for j in range(3)),
+               tuple(a[j] + 2 * u[j] + 3 * v[j] for j in range(3)),
+               tuple(a[j] + v[j] for j in range(3))]
+    coords = [tuple(x * 2.0 ** -13 for x in q) for q in lattice]
+    assert all(struct.unpack("<f", struct.pack("<f", x))[0] == x
+               for q in coords for x in q)
+    lod = fork.LOD()
+    faces = add_mesh(fork, lod, coords, [(0, 1, 2, 3), (3, 2, 1, 0)])
+    thickness, reach = fork._piece_thickness(faces)
+    cutoff = 16 * 2.0 ** -23 * reach
+    assert thickness < 1e-9 * cutoff
+    assert not fork._is_closed_solid(faces)
+    p3d = _with_mesh(fork, (coords, [(0, 1, 2, 3), (3, 2, 1, 0)]))
+    assert _coverage_codes(p3d.validate()) == ["WARN_COMPONENT_COVERAGE"]
+
+
+def _box_oracle(dims):
+    """Thickness of a box from its sizes alone: twice its volume over its
+    area, abc / (ab + bc + ca)."""
+    a, b, c = dims
+    return a * b * c / (a * b + b * c + c * a)
+
+
+@pytest.mark.parametrize("dims,centre", [
+    ((1.0, 0.6, 0.005), (1500.0, 3.0, 0.0)),
+    ((2.0, 2.0, 2.0), (0.0, 0.0, 3.0)),
+    ((100.0, 0.001, 0.001), (0.0, 0.0, 0.0)),
+    ((0.5, 0.25, 0.125), (62.5, 62.5, 62.5)),
+])
+def test_coverage_thickness_matches_box_oracle(fork, dims, centre):
+    """Review round 2, N3: the thickness is twice the volume over the area,
+    checked against the box's own sizes (not against the code's sums), and
+    the reach is the largest coordinate, at least 1 m."""
+    coords, quads = _box_mesh(tuple(d / 2.0 for d in dims), centre,
+                              rot=UNTURNED)
+    lod = fork.LOD()
+    faces = add_mesh(fork, lod, coords, quads)
+    thickness, reach = fork._piece_thickness(faces)
+    assert thickness == pytest.approx(_box_oracle(dims), rel=1e-5)
+    assert reach == pytest.approx(
+        max(1.0, max(abs(x) for p in coords for x in p)), rel=1e-6)
+
+
+@pytest.mark.parametrize("centre", [(1500.0, 3.0, 0.0), (0.0, 0.0, 0.75)])
+@pytest.mark.parametrize("factor,code", [
+    (0.9, "WARN_COMPONENT_COVERAGE"), (1.1, "ERR_COMPONENT_COVERAGE")])
+def test_coverage_solid_cutoff_is_16_steps(fork, centre, factor, code):
+    """Review round 2, N3: a slab 10 % thinner than 16 float32 steps at its
+    distance from the origin (at least 1 m) is the WARN, one 10 % thicker the
+    ERROR. The cutoff and the slab come from the sizes alone: a cutoff of 32
+    steps, or a thickness taken as 3V/A instead of 2V/A, moves a side."""
+    plate = (1.0, 0.6)
+    reach = max(1.0, max(abs(centre[j]) + (plate + (0.0,))[j] / 2.0
+                         for j in range(3)))
+    target = factor * 16 * 2.0 ** -23 * reach
+    # the slab thickness c whose oracle thickness abc/(ab+bc+ca) is target
+    a, b = plate
+    c = target * a * b / (a * b - target * (a + b))
+    p3d = _with_mesh(fork, _box_mesh((a / 2.0, b / 2.0, c / 2.0), centre,
+                                     rot=UNTURNED))
+    assert _box_oracle((a, b, c)) == pytest.approx(target, rel=1e-9)
+    assert _coverage_codes(p3d.validate()) == [code]
+
+
+def test_coverage_warn_thin_closed_part_says_why(fork):
+    """Review round 2, N1: the same closed 0.3 mm slab is a solid 3 m from
+    the origin (the ERROR) and too thin for the cutoff 200 m out (the WARN),
+    whose message says that a piece too thin to count as solid at its
+    distance from the origin was not measured."""
+    dims = (1.0, 0.6, 0.0003)
+    half = tuple(d / 2.0 for d in dims)
+    near = _with_mesh(fork, _box_mesh(half, (3.0, 3.0, 0.0), rot=UNTURNED))
+    assert _coverage_codes(near.validate()) == ["ERR_COMPONENT_COVERAGE"]
+    far = _with_mesh(fork, _box_mesh(half, (200.0, 3.0, 0.0), rot=UNTURNED))
+    (f,) = coverage(far.validate())
+    assert "or too thin to count as solid at its distance from the origin" \
+        in f.msg, f.msg
