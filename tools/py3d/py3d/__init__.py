@@ -50,7 +50,7 @@ import tempfile
 import warnings
 
 
-__version__ = "1.10.0"
+__version__ = "1.10.1"
 IS_DAYZ_FORK = True
 
 _REQUIRED = object()
@@ -1115,6 +1115,24 @@ def _winding_steps(kind_label):
             "centroid minus component centroid (inward expected)")
 
 
+def _normals_step():
+    """The normals step both winding findings close with, once the winding
+    is settled: part by part, never a corner on its own sign. A normal
+    smoothed across a sharp fold can point against a face wound right - a
+    flat tetrahedron wound right, with one area-weighted normal per point,
+    has 6 of its 12 corners against their faces - so negating each corner
+    that points against its face, the step up to 1.10.0, turns right normals
+    with no finding left to say so. How a face and a part read: README,
+    'Winding', step 3."""
+    return ("Then the normals, part by part, never a corner on its own "
+            "sign: a normal smoothed across a sharp fold can point against "
+            "a face wound right. In a part that reads cleanly (py3d README, "
+            "'Winding', step 3), negate the normals of the faces that read "
+            "against their winding (lod.facenormals[j] = (-x, -y, -z); an "
+            "entry a kept corner also uses gets a negated copy) and keep the "
+            "rest; leave any other part as it is, for inspection.")
+
+
 def _check_winding_absolute(lod, lod_index, kind_label):
     r"""A LOD's ABSOLUTE winding, without comparing it to any other LOD.
 
@@ -1153,13 +1171,11 @@ def _check_winding_absolute(lod, lod_index, kind_label):
             "cross(v1-v0, v2-v0) and the stored normals point away from "
             "the side meant to be seen. Settle the winding first, normals "
             "untouched: %s; never a vertices[1]/[2] swap (a quad becomes "
-            "a crossed face). Then negate each corner normal that still "
-            "points against its face (lod.facenormals[j] = (-x, -y, -z); "
-            "an entry a kept corner also uses gets a negated copy). "
-            "Reversing every face on this finding alone has turned "
-            "exports whose winding was right inside-out. More: py3d "
-            "README, 'Winding'."
-            % (kind_label, pct, _winding_steps(kind_label))))
+            "a crossed face). %s Reversing every face on this finding "
+            "alone has turned exports whose winding was right inside-out. "
+            "More: py3d README, 'Winding'."
+            % (kind_label, pct, _winding_steps(kind_label),
+               _normals_step())))
     elif pct <= 90.0:
         findings.append(Finding(
             "WARN_WINDING_NORMAL_MISMATCH", "WARN", lod_index,
@@ -1222,19 +1238,17 @@ def _check_winding_vs_visual(lod, lod_index, visual_lod, visual_index,
             "the side meant to be seen. Settle the winding of both LODs "
             "first, normals untouched; these steps leave a part that reads "
             "right as it is. Visual LOD %d: %s. %s LOD: %s. Never a "
-            "vertices[1]/[2] swap (a quad becomes a crossed face). Then "
-            "negate each corner normal that still points against its face "
-            "(lod.facenormals[j] = (-x, -y, -z); an entry a kept corner "
-            "also uses gets a negated copy). A part these steps cannot "
-            "read - not a closed shell, not a closed convex component - "
-            "leaves this unresolved: check in game, or against a model that "
-            "renders right, which side it is meant to show before turning "
-            "it. Only when every part of both LODs reads right is there "
-            "nothing to fix: a Visual LOD meant to be seen from inside reads "
-            "positive and is right. More: py3d README, 'Winding'."
+            "vertices[1]/[2] swap (a quad becomes a crossed face). %s A "
+            "part these steps cannot read - not a closed shell, not a "
+            "closed convex component - leaves this unresolved: check in "
+            "game, or against a model that renders right, which side it is "
+            "meant to show before turning it. Only when every part of both "
+            "LODs reads right is there nothing to fix: a Visual LOD meant to "
+            "be seen from inside reads positive and is right. More: py3d "
+            "README, 'Winding'."
             % (kind_label, visual_index, visual_lod.resolution, col, vis,
                visual_index, _winding_steps("visual"), kind_label,
-               _winding_steps(kind_label))))
+               _winding_steps(kind_label), _normals_step())))
     elif not col_uniform:
         findings.append(Finding(
             "WARN_WINDING_MIXED", "WARN", lod_index,
@@ -3330,6 +3344,11 @@ class P3D:
         LODs, a closed part with no face and no point in any ComponentNN
         selection, measured in game to collide with nothing; the other
         faces and points in no component stay WARN_COMPONENT_COVERAGE.
+        Changed in 1.10.1: ERR_WINDING_VS_NORMALS and ERR_WINDING_INVERTED
+        close with the normals read part by part, never a corner on its
+        own sign (README, 'Winding', step 3); up to 1.10.0 they said to
+        negate each corner normal that points against its face. Codes and
+        severities are unchanged.
 
         Returns list[Finding]. It does NOT raise on findings, though it
         does raise on misuse of its own parameters. The in-memory round
