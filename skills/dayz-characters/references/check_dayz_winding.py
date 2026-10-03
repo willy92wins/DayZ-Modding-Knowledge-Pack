@@ -60,7 +60,7 @@ USAGE
   python check_dayz_winding.py path\to\model.p3d
   python check_dayz_winding.py path\to\model.p3d --py3d path\to\py3d
   exit code 0 = PASS, 1 = model defect (winding or normals), 2 = invalid input, ODOL, or not measurable
-  Fixtures and test: winding_fixtures/ and test_check_dayz_winding.py, next to this script.
+  Fixtures: winding_fixtures/, next to this script. Test: ../tests/test_check_dayz_winding.py.
 """
 import argparse
 import math
