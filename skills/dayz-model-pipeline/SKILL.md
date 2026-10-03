@@ -678,14 +678,16 @@ winding-preserving det=+1 transform mirrors the model. A GLB/glTF brought throug
 too, and one read directly follows section "GLB/glTF imports". An OBJ is in the frame its exporter wrote.
 Exported from Blender with Forward Y / Up Z it keeps Blender's own coordinates
 (`references/blender-headless.md`) and follows Rule 12 as it stands; in any other frame of a right-handed
-source with counter-clockwise front faces, Blender's default axes included, derive a det=-1 map from that
-frame as for a glTF read directly, keep the face order, and check chirality on an asymmetric feature.
-Reverse the vertices of every **visual** MLOD face only for a source whose own lineage was measured to
-need it: an in-game A/B against the all-visual-faces-flipped variant plus a chirality check, as
-`ai-3d-to-dayz` SP-071 says. No lineage recorded in the Pack needs it: each that reversed every visual
-face under a det=+1 map started from Blender coordinates, where any det=+1 map mirrors the model —
-SP-071's one calibration, the LFHeli OH-1 (2026-07-19: an artist's Blender model exported as OBJ, mapped
-with `x'=x, y'=z, z'=-y` and judged by which side rendered), LFInfectedBig (read mirrored in game:
+source with counter-clockwise front faces, derive a det=-1 map from that frame as for a glTF read directly,
+keep the face order, negate the normals, and check chirality on an asymmetric feature. [OFFLINE MEASURED
+2026-10-03] Blender's default axes write `(x, z, -y)`; from them the map is `(x,y,z)->(x,y,-z)`, which on
+the model of Rule 12's in-game test writes the same bytes as Rule 12's export. Another exporter's frame
+was not measured in game. Reverse the vertices of every **visual** MLOD face only for a source whose own
+lineage was measured to need it: an in-game A/B against the all-visual-faces-flipped variant plus a
+chirality check, as `ai-3d-to-dayz` SP-071 says. Every lineage the Pack records with that reversal under a
+det=+1 map started from Blender coordinates, where any det=+1 map mirrors the model: SP-071's one
+calibration, the LFHeli OH-1 (2026-07-19: an artist's Blender model exported as OBJ, mapped with
+`x'=x, y'=z, z'=-y` and judged by which side rendered), LFInfectedBig (read mirrored in game:
 `dayz-characters` `references/character-rigging.md` §6) and the SP-432 recipe ("Rule 13 nuance
 (history)"). *(Aligned 2026-10-03 with Rule 12, measured in game 2026-10-01: from "An OBJ is in the
 frame" to here, this paragraph read "For other raw OBJ imports whose measured axis transform preserves
