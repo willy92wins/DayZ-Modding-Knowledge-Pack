@@ -8293,9 +8293,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03 (spa): new section 'Collision of a large building with an interior' (ledger SP-453 points 1, 4 and 5; SP-457; SP-458) and pointers at the ComponentXX and Mesh > Convex Hull bullets. Source: the owner's SecretRock RocaHeli rounds R7.1-R7.3 (2026-10-01 to 2026-10-03). Cross-checked against that project's review folders: the per-collision-LOD table recomputed from its binarize variant table and nine verdict files (faces, named selections x points and selection bytes separate pass from fail; the piece and point counts alone do not; one more variant truncated inside its Geometry LOD); 478 MB, 55-75 MB with 827-997 pieces, 78.4 -> 2.1 MB and the R7.3 View reversal from its block-1 and R7.3 reviews; 49,929 / 42,501 PASS and 92,430 CAPACITY_FAIL from the block-0 verdicts; 56,743 / 17,392 from the discovery review; 38 % beyond 15 cm for the k-means patches from the round-2 wall diagnosis (its probe stops at 1 m); the shell's in-game hit (geom ray, component 292 at 18.9 m) from the test-5 MCP call log. The per-selection byte layout read in tools/py3d/py3d/__init__.py:1968-1974 (py3d 1.10.1). The prism-only figures (median 1 cm, under 2 % beyond 15 cm, 10.5 cm along smoothed normals, 1,843 vs 652 regions, the 0.84 x 1.55 m gap with 131 of 368,013 samples, 0.40 m, 0.15 % with random samples) come from the ledger entries; no saved output was found for them. Nothing was re-measured for this change. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03 (spa): new section 'Collision of a large building with an interior' (ledger SP-453 points 1, 4 and 5; SP-457; SP-458) and pointers at the ComponentXX and Mesh > Convex Hull bullets. Source: the owner's SecretRock RocaHeli rounds R7.1-R7.3 (2026-10-01 to 2026-10-03). Cross-checked against that project's review folders: the per-collision-LOD table recomputed from its binarize variant table and nine verdict files (faces, named selections x points and selection bytes separate pass from fail; the piece and point counts alone do not; one more variant truncated inside its Geometry LOD); 478 MB, 55-75 MB with 827-997 pieces, 78.4 -> 2.1 MB and the R7.3 View reversal from its block-1 and R7.3 reviews; 49,929 / 42,501 PASS and 92,430 CAPACITY_FAIL from the block-0 verdicts; 56,743 / 17,392 from the discovery review; 38 % beyond 15 cm for the k-means patches from the round-2 wall diagnosis (its probe stops at 1 m); the shell's in-game hit (geom ray, component 292 at 18.9 m) from the test-5 MCP call log. The per-selection byte layout read in tools/py3d/py3d/__init__.py:1968-1974 (py3d 1.10.1). The prism-only figures (median 1 cm, under 2 % beyond 15 cm, 10.5 cm along smoothed normals, 1,843 vs 652 regions, the 0.84 x 1.55 m gap with 131 of 368,013 samples, 0.40 m, 0.15 % with random samples) come from the ledger entries; no saved output was found for them. Nothing was re-measured for this change. Two claims registered on this file: CLAIM-BINARIZE-COLLISION-LOD-SILENT and CLAIM-COLLISION-ONLY-MODEL-INGAME. Cross-family review (Codex gpt-6.1-sol, read-only, effort max, cap of 2 rounds set before round 1): round 1 on 345d90a SOUND-WITH-FIXES with four findings, all applied in 158f413 (R21-01 P2: a 32,768-face cap cannot be the only limit, one alongside another is not ruled out; R21-02: Check A on the MLOD after the Rule 12 conversion; R21-03: the prisms aim at a 3 cm margin that a depth cap and a 1.5 cm minimum thickness can shrink; R21-04: exact bounds, one project's conservative bounds and not a PASS threshold); round 2 on 158f413 SOUND-WITH-FIXES, the four closed and one new P3 (R21-05: register the executable claims), applied after the cap and checked by packctl validate's claims check. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "ca6e38a94a97a5cc960390bf840026ef9f44963612ce5f5ff4aa037602396178",
+          "source_hash": "10c8d8ab736043953c9b4dddd59c3e8013c34b59ab87f8e4c1a5c9b3e25cb3b4",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
@@ -8303,7 +8303,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ca6e38a94a97a5cc960390bf840026ef9f44963612ce5f5ff4aa037602396178",
+      "output_hash": "10c8d8ab736043953c9b4dddd59c3e8013c34b59ab87f8e4c1a5c9b3e25cb3b4",
       "output_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -8787,7 +8787,7 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03 (spa): appended section 'Source meshes for collision' (ledger SP-453 points 2 and 3): zero-area faces (5.4 % of the rock's faces, 11 % of the cabin's) and the orphan points their removal left (8 points 1.5-10.8 cm off the surface); about 240 rock and 38 interior faces wound against their stored normals, sent to the Check A table instead of being turned to their normals, a step the project never checked in game; bmesh.ops.convex_hull hulls recomputed with Qhull (0 open or non-convex pieces in the project's integrity check), and a convexity check that needs a failing model and must require its models. Also a pointer at the end of SP-359 to the OTHER_FAIL cause of references/binarize-vertex-budget.md item 3 in dayz-vehicles (ledger SP-458). Everything sits after the last registered claim line, so no claim range moves. Source: the SecretRock RocaHeli block-1 review, R7.1, 2026-10-01. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03 (spa): appended section 'Source meshes for collision' (ledger SP-453 points 2 and 3): zero-area faces (5.4 % of the rock's faces, 11 % of the cabin's) and the orphan points their removal left (8 points 1.5-10.8 cm off the surface); about 240 rock and 38 interior faces wound against their stored normals, sent to the Check A table instead of being turned to their normals, a step the project never checked in game; bmesh.ops.convex_hull hulls recomputed with Qhull (0 open or non-convex pieces in the project's integrity check), and a convexity check that needs a failing model and must require its models. Also a pointer at the end of SP-359 to the OTHER_FAIL cause of references/binarize-vertex-budget.md item 3 in dayz-vehicles (ledger SP-458). Everything sits after the last registered claim line, so no claim range moves. Source: the SecretRock RocaHeli block-1 review, R7.1, 2026-10-01. Cross-family review (Codex gpt-6.1-sol, read-only, effort max, cap of 2 rounds set before round 1): round 1 on 345d90a SOUND-WITH-FIXES with four findings, all applied in 158f413 (R21-01 P2: a 32,768-face cap cannot be the only limit, one alongside another is not ruled out; R21-02: Check A on the MLOD after the Rule 12 conversion; R21-03: the prisms aim at a 3 cm margin that a depth cap and a 1.5 cm minimum thickness can shrink; R21-04: exact bounds, one project's conservative bounds and not a PASS threshold); round 2 on 158f413 SOUND-WITH-FIXES, the four closed and one new P3 (R21-05: register the executable claims), applied after the cap and checked by packctl validate's claims check. Written by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "83cb694b0d20a84a31480b1eb0affb8d65808d492af19151ec4395fb50e84ff1",
           "source_id": "pack-r21-authored",
@@ -12543,7 +12543,7 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03 (spa): the OTHER_FAIL bullet gains the cause measured on SecretRock RocaHeli R7.3 (ledger SP-458, also reported to the pipeline inbox): too many pieces in the collision LODs, no ODOL and no capacity line while the bench was fine; ruled in only once the MLOD walks to #EndOfFile# in every LOD and the same model passes without its collision LODs; the fix moves pieces to another model with the same transform and merges or decimates none. Evidence as recorded on the references/lods-and-geometry.md input of the same change. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03 (spa): the OTHER_FAIL bullet gains the cause measured on SecretRock RocaHeli R7.3 (ledger SP-458, also reported to the pipeline inbox): too many pieces in the collision LODs, no ODOL and no capacity line while the bench was fine; ruled in only once the MLOD walks to #EndOfFile# in every LOD and the same model passes without its collision LODs; the fix moves pieces to another model with the same transform and merges or decimates none; the two checks place the failure without measuring the limit, and each resulting model must still PASS. Evidence as recorded on the references/lods-and-geometry.md input of the same change. Cross-family review (Codex gpt-6.1-sol, read-only, effort max, cap of 2 rounds set before round 1): round 1 on 345d90a SOUND-WITH-FIXES with four findings, all applied in 158f413 (R21-01 P2: a 32,768-face cap cannot be the only limit, one alongside another is not ruled out; R21-02: Check A on the MLOD after the Rule 12 conversion; R21-03: the prisms aim at a 3 cm margin that a depth cap and a 1.5 cm minimum thickness can shrink; R21-04: exact bounds, one project's conservative bounds and not a PASS threshold); round 2 on 158f413 SOUND-WITH-FIXES, the four closed and one new P3 (R21-05: register the executable claims), applied after the cap and checked by packctl validate's claims check. Written by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "d5a57c4338f11bca316f338b739c31c9693374b25b7103920793519d28d9501a",
           "source_id": "pack-r21-authored",
@@ -16205,10 +16205,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-py3d-normals-per-part@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (spa): two claims on skills/dayz-model-pipeline/references/lods-and-geometry.md, 'Binarize: a silent limit on the collision LODs': CLAIM-BINARIZE-COLLISION-LOD-SILENT (offline_tested, item 1, lines 335-337) and CLAIM-COLLISION-ONLY-MODEL-INGAME (runtime_verified, item 6, lines 366-370), with their evidence locators; requested as R21-05 by the round-2 review. claim_baseline_commit unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "df38f883b14cd44ed6ac822431f9c0fb28f47b44b285f7d522d4a39eabb644ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0e5c41f40ed8d6cf9bbcb0d595069ed4a7634f5cbeaddb4fb0140a112ea91605",
+      "output_hash": "df38f883b14cd44ed6ac822431f9c0fb28f47b44b285f7d522d4a39eabb644ce",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

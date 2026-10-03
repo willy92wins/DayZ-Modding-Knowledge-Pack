@@ -1300,6 +1300,32 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-anim-empties@2026-10-02",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/lods-and-geometry.md",
+      "claim_id": "CLAIM-BINARIZE-COLLISION-LOD-SILENT",
+      "evidence_locator": "binarize.exe (DayZ Tools) through the three-state bench p3d_vertex_gate.py binarize, with a model.cfg declaring the basename, 2026-10-03, SecretRock RocaHeli R7.3 (the owner's project; review folder 2026-10-03-roca-r73, binarize/g2x_table.txt and nine *_verdicts.json). Variants cut from one MLOD, every point and the 20 selections that are not pieces kept: with 1,843 convex pieces in Geometry, View and Fire (rh_g2v2, MLOD sha256 338d14cecce7cbf0..., 350,168,284 bytes) and with its View LOD removed (rh_g2x, 153b291098a7e3c4..., 247,826,248 bytes) binarize wrote no fresh ODOL and no capacity line attributed to the MLOD (OTHER_FAIL); so did rh_g2v3 (1,700 pieces), rh_g2v5 (1,501) and rh_g2v6 (1,503). rh_g2v7 (750 pieces) and rh_g2v8 (751) passed, as did the deployed rock (1,241) and interior (1,786; 264,400,946 bytes) inside their PBO, and the model without collision LODs (rh_g2v1). Per collision LOD, read with a header reader: largest pass 28,124 faces, 31,494,324 named selections x points and 81,723,788 selection bytes; smallest failure 32,766, 33,889,401 and 83,726,487; the piece and point counts alone do not separate them. A tenth variant (rh_g2v4), truncated inside its Geometry LOD by an interrupted write, also read OTHER_FAIL and is excluded. Which variable binarize limits is not isolated.",
+      "license": "MIT",
+      "line_end": 337,
+      "line_start": 335,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "skill/dayz-model-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/lods-and-geometry.md",
+      "claim_id": "CLAIM-COLLISION-ONLY-MODEL-INGAME",
+      "evidence_locator": "DayZDiag 1.29, 2026-10-03, SecretRock test 5 driven by dayz-mcp (runs 4c41175e and 312bacda; review folder 2026-10-03-roca-r73, README sections 3, 4 and 6, prueba5/p5_mcp_calls.txt): LF_RocaHeli_Shell, a House class with collision LODs only (602 convex pieces in Geometry, View and Fire; MLOD 32,141,137 bytes, sha256 prefix d0fed7b6), created, checked and deleted by script with the rock, at its transform. scene_raycast intersect geom, radius 0.01, from (13261.3, 20.03, 7180) to (13261.3, 20.03, 7150) hit LF_RocaHeli_Shell component 292 at 18.91 m (p5_mcp_calls.txt line 149). The fixture's holes battery v2 (1,188 rays per LOD from 30 m toward the axis; a first hit must be the rock, its platform, its lid or the shell) found 0 holes in Geometry, Fire and View: 958/944/943 rock, 44/58/59 another object, 132 the interior first, 28 below the terrain and 26 above the top, per LOD. No Fire or View ray was checked against the shell's pieces alone.",
+      "license": "MIT",
+      "line_end": 370,
+      "line_start": 366,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "skill/dayz-model-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1

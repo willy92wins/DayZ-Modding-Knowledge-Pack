@@ -334,7 +334,7 @@ normals and 17,392 with smooth ones (a triple counter run in Blender, a lower bo
 
 1. [OFFLINE MEASURED] With 1,843 convex pieces in Geometry, View and Fire, `binarize.exe` wrote
    no ODOL and printed no capacity line: the three-state bench read `OTHER_FAIL`, and no message
-   explained it.
+   explained it (claim: CLAIM-BINARIZE-COLLISION-LOD-SILENT).
 2. [OFFLINE MEASURED] It is not the file size: a 247.8 MB MLOD failed and a 264.4 MB one passed.
    Without its collision LODs, the same model passed.
 3. [OFFLINE MEASURED, variable not isolated] The boundary over 9 variants, read per collision LOD
@@ -367,4 +367,4 @@ normals and 17,392 with smooth ones (a triple counter run in Blender, a lower bo
    `House` class of 602 pieces, spawned with the rock at its transform. A `geom` ray cast from
    30 m out toward the rock stopped on one of its pieces, and the project's battery of 1,188 rays
    per LOD from outside found 0 holes in Geometry, Fire and View. No Fire or View ray was checked
-   against that model's pieces on their own.
+   against that model's pieces on their own (claim: CLAIM-COLLISION-ONLY-MODEL-INGAME).
