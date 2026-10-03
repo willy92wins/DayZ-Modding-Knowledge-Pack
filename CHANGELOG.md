@@ -7,9 +7,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- `dayz-texture-pipeline` `scripts/normal_convention.py`: tells an OpenGL (Y+) normal map from a
-  DirectX (Y-) one by measurement, from two independent readings, and gives a verdict only when
-  they agree. The albedo reading: the albedo's dark grooves mark the hollows; across a hollow
+- `dayz-texture-pipeline` `scripts/normal_convention.py`: proposes whether a normal map is
+  OpenGL (Y+) or DirectX (Y-) from two independent readings, and only when they agree; the
+  candidate is confirmed another way before a channel is inverted. The albedo reading: the albedo's dark grooves mark the hollows; across a hollow
   d(nx)/dx and d(ny)/dy share their sign in DirectX and oppose it in OpenGL, and the red channel
   calibrates the sign. The curl reading needs no albedo: a height field's slopes have no curl
   under one convention only. Exit 0 with a verdict, 2 `INCONCLUSIVE`, 1 bad input; `--json`
@@ -19,10 +19,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   green −0.0851, 491,775 pixels); a non-finite correlation is now `INCONCLUSIVE` (the original
   read NaN as DirectX). The cross-family review found the albedo reading wrong, with strong
   correlations, on a surface that curves one way along x and the other along y, and a missing
-  weak-correlation test; the curl reading, the agreement rule and both fixtures followed. On the
-  heater both readings say DirectX (curl residuals 0.013 against 0.024); nothing was checked in
-  game. SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at it.
-  `tests/test_normal_convention.py` (12 tests) encodes synthetic height fields as DirectX and as
+  weak-correlation test; the curl reading, the agreement rule and both fixtures followed. Its
+  second round built known-DirectX maps both readings call OpenGL (a tangent-space bake on a
+  sphere patch, undersampled tileable detail) and a weak-channel mutant the tests missed: the
+  output became a candidate to confirm, and one-weak-channel tests followed. On the heater both
+  readings say DirectX (curl residuals 0.013 against 0.024), not confirmed another way; nothing
+  was checked in game. SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at it.
+  `tests/test_normal_convention.py` (14 tests) encodes synthetic height fields as DirectX and as
   OpenGL and reads them back; eight mutants of the detector each fail it. It skips where numpy
   or Pillow is missing, as on the CI runner. The ticket's second script (`uv_convencion.py`,
   V convention of a validated p3d) is not part of this change.

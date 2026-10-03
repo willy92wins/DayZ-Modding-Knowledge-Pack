@@ -31,8 +31,8 @@ python scripts/normal_convention.py --normal <normal.png> --albedo <albedo.png> 
 ```
 
 It needs the normal map and the albedo of the same UV layout, same size, as PNG (decode a
-`.paa` with ImageToPAA first). It takes two independent readings and gives a verdict only when
-they agree:
+`.paa` with ImageToPAA first). It takes two independent readings and proposes a convention only
+when they agree:
 
 - **Albedo reading.** The albedo's high-pass marks the hollows (a pixel darker than its blurred
   surroundings). Across a hollow d(nx)/dx and d(ny)/dy have the same sign in DirectX and
@@ -43,13 +43,19 @@ they agree:
   d(p)/d(row) = d(q)/d(col) under OpenGL and d(p)/d(row) = −d(q)/d(col) under DirectX. The
   convention whose median residual is under 0.8 of the other's wins; otherwise no answer.
 
-Exit 0 = `DirectX` or `OpenGL` (both readings agree), 2 = `INCONCLUSIVE`, 1 = bad input.
+Exit 0 = a candidate, `DirectX` or `OpenGL` (both readings agree), 2 = `INCONCLUSIVE`, 1 = bad
+input. **A candidate is not proof.** The cross-family review (2026-10-03) built known-DirectX
+maps that both readings call OpenGL: a valid tangent-space bake on a sphere patch (the curved
+frame turns the slopes the readings assume into something else) and undersampled tileable
+detail. Confirm a candidate before inverting a channel: the baker's export setting, or a
+render under a raking light in which a known groove reads as a groove.
 
-- Measured: LFPowerGrid's heater (Sketchfab) read **DirectX** both ways: red −0.130 and
-  green −0.085 over 491,775 of 1,048,576 pixels (2026-09-21), and curl residuals 0.013 under
-  DirectX against 0.024 under OpenGL (2026-10-03). Not checked in game.
-- Limits, each with a fixture in `tests/test_normal_convention.py`: the albedo reading is
-  wrong, with strong correlations, on a surface that curves one way along x and the other
+- Measured: LFPowerGrid's heater (Sketchfab) gave the candidate **DirectX** both ways: red
+  −0.130 and green −0.085 over 491,775 of 1,048,576 pixels (2026-09-21), and curl residuals
+  0.013 under DirectX against 0.024 under OpenGL (2026-10-03). Not confirmed another way and not
+  checked in game.
+- Limits of each reading, with a fixture in `tests/test_normal_convention.py`: the albedo
+  reading is wrong, with strong correlations, on a surface that curves one way along x and the other
   along y (ribs whose amplitude grows down the image; found by the cross-family review,
   2026-10-03), and the two readings then disagree; the curl reading has no signal on a surface
   that is a sum of one function of x and one of y. Painted dark marks with no relief dilute the

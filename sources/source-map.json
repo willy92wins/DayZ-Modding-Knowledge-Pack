@@ -994,9 +994,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03: Unreleased Added entry for dayz-texture-pipeline scripts/normal_convention.py and its test. Evidence as recorded on the script input of the same change. Written by Claude (Anthropic). Updated after review round 1.",
+          "decision_evidence": "kp-update 2026-10-03: Unreleased Added entry for dayz-texture-pipeline scripts/normal_convention.py and its test. Evidence as recorded on the script input of the same change. Written by Claude (Anthropic). Updated after review round 1. Updated after review round 2: a candidate to confirm another way, not proof.",
           "license": "MIT",
-          "source_hash": "c0c8a2abcc91486f4ad08e5b611c6cf32abbc06badc74074f9bd94db0d221a5a",
+          "source_hash": "22f9832ba4e733b8eea833f76ad184312d11f528e5e283b27586ae89e3204c3f",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
@@ -1004,7 +1004,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c0c8a2abcc91486f4ad08e5b611c6cf32abbc06badc74074f9bd94db0d221a5a",
+      "output_hash": "22f9832ba4e733b8eea833f76ad184312d11f528e5e283b27586ae89e3204c3f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11811,9 +11811,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): rule 3 says to measure a source normal map's convention with scripts/normal_convention.py instead of guessing it, with its exit codes, the heater reading (DirectX, red -0.130, green -0.085, 491,775 pixels, 2026-09-21; curl cross-check agreed 2026-10-03; not checked in game) and why an inverted-green rerun is no control. Written by Claude (Anthropic). Updated after review round 1: two readings (albedo and curl), verdict only when they agree; the heater's curl residuals; the albedo reading's opposite-curvature failure and the curl reading's blind spot on separable surfaces.",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): rule 3 says to measure a source normal map's convention with scripts/normal_convention.py instead of guessing it, with its exit codes, the heater reading (DirectX, red -0.130, green -0.085, 491,775 pixels, 2026-09-21; curl cross-check agreed 2026-10-03; not checked in game) and why an inverted-green rerun is no control. Written by Claude (Anthropic). Updated after review round 1: two readings (albedo and curl), verdict only when they agree; the heater's curl residuals; the albedo reading's opposite-curvature failure and the curl reading's blind spot on separable surfaces. Review round 2, the last under the cap (Codex gpt-6.1-sol, workspace-write, max; UNSOUND): R1, R2, R3 FIXED on their repros; new N1 (P1) a valid tangent-space bake on a sphere patch, DirectX by construction, read OpenGL by both readings (exit 0); N2 (P1) undersampled tileable detail, DirectX, read OpenGL by both, also after DXT5nm and in a rotated/mirrored atlas; N3 (P1) or->and in the weak-correlation rejection passed the 12 tests; N4 (P2) exit 0 was presented as a measured orientation. Done after the cap, not re-reviewed (a design change, so not merged under the orchestrator's rule): the output is a candidate ('CANDIDATE: ...', JSON key 'verdict' kept) to confirm another way (the baker's export setting, or a raking-light render) before inverting; one-weak-channel tests (min_corr between the two correlations, both orders, both conventions, and the CLI --min-corr). 14 tests; nine mutants each fail (the or->and one 3 of 14).",
           "license": "MIT",
-          "source_hash": "e164d246c2754eb6a3fdbfb314bcc7ea8fd174e8162ea3e9d2c2efa2f462451a",
+          "source_hash": "0e8931a38d42db84bd118a8660d8af32320e866e8c348fe20816e98a8106019e",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-texture-pipeline/SKILL.md",
           "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
@@ -11821,7 +11821,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e164d246c2754eb6a3fdbfb314bcc7ea8fd174e8162ea3e9d2c2efa2f462451a",
+      "output_hash": "0e8931a38d42db84bd118a8660d8af32320e866e8c348fe20816e98a8106019e",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -11875,9 +11875,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): new subsection 'Measuring a source map's convention' (usage, method, exit codes, the heater reading, limits, provenance) and a pointer in the normal-map canon list. Written by Claude (Anthropic). Updated after review round 1: both readings, the agreement rule, limits with fixtures.",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): new subsection 'Measuring a source map's convention' (usage, method, exit codes, the heater reading, limits, provenance) and a pointer in the normal-map canon list. Written by Claude (Anthropic). Updated after review round 1: both readings, the agreement rule, limits with fixtures. Updated after review round 2: a candidate to confirm another way, not proof.",
           "license": "MIT",
-          "source_hash": "eb379c65a4a32545eaeb9b40079b2e056cc21e98df6d36506da096b59c1f3ada",
+          "source_hash": "852edcad09fea039cc1e1061537f1bce574e3ab9a275ac924eed1ac0cf70117a",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
           "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
@@ -11885,7 +11885,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "eb379c65a4a32545eaeb9b40079b2e056cc21e98df6d36506da096b59c1f3ada",
+      "output_hash": "852edcad09fea039cc1e1061537f1bce574e3ab9a275ac924eed1ac0cf70117a",
       "output_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -11973,9 +11973,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): the _nohq orientation item asks for a measurement with scripts/normal_convention.py when the source does not state its convention. Written by Claude (Anthropic). Updated after review round 1: exit 0 means both readings agree.",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): the _nohq orientation item asks for a measurement with scripts/normal_convention.py when the source does not state its convention. Written by Claude (Anthropic). Updated after review round 1: exit 0 means both readings agree. Updated after review round 2: a candidate to confirm another way, not proof.",
           "license": "MIT",
-          "source_hash": "5b35276affe876912c64586ae3c4ec04f2786cbc857cda5116c18c470600e677",
+          "source_hash": "cdc0bc53d0ed4397e7a2a6fe8b10aa80734b6eda43e7b2b1da8d2471edb33368",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-texture-pipeline/references/validation-checklist.md",
           "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
@@ -11983,7 +11983,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5b35276affe876912c64586ae3c4ec04f2786cbc857cda5116c18c470600e677",
+      "output_hash": "cdc0bc53d0ed4397e7a2a6fe8b10aa80734b6eda43e7b2b1da8d2471edb33368",
       "output_path": "skills/dayz-texture-pipeline/references/validation-checklist.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -12071,9 +12071,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140, kind tool_contribution): port of the owner's project LFPowerGrid_dev assets/heater/normal_convencion.py, commit a4c6e29 (2026-09-21, author the Pack owner, co-authored by Claude; the file on disk equals that commit, sha256 3913d85d43e8808cdf9ede3d785d5bbb879b6c7f3fb66610a73c3a90ffb67f9d). Changes: command-line paths instead of fixed ones, a size check, JSON output, and a non-finite correlation reported INCONCLUSIVE (the original prints DirectX for an OpenGL map with a flat albedo: both correlations NaN, verified 2026-10-03). Arithmetic unchanged: on the heater's Normal/BaseColor PNGs (third-party, not shipped) port and original return identical floats, red -0.1295735277571813, green -0.08508847481925291, 491,775 of 1,048,576 pixels, DirectX. Independent cross-check, not shipped: the curl of the map's slope field is smaller under DirectX (mean 0.0696 vs 0.0947, median 0.0133 vs 0.0239). Not checked in game. Written by Claude (Anthropic). Review round 1 (Codex gpt-6.1-sol, workspace-write sandbox, effort max; UNSOUND): R1 (P1) the albedo reading reads a DirectX map of ribs whose amplitude grows down the image (opposite curvatures along x and y) as OpenGL with corr_red -0.883, corr_green +0.596; R2 (P1) removing the weak-correlation threshold kept the old tests green; R3 (P2) --json printed NaN. Fixed: an albedo-free curl reading (median |d(-nx/nz)/drow -/+ d(ny/nz)/dcol| over the detail mask, winner below 0.8 x the other) and a verdict only when both readings agree; JSON writes null. Measured 2026-10-03: heater albedo reading unchanged to the last digit, curl residuals 0.013315 (DirectX) vs 0.023905 (OpenGL), verdict DirectX; the reviewer's 19 adversarial fixtures (analytic ribs both encodings, mixed wear both encodings, 16 tapered ribs, weak paint) all INCONCLUSIVE, none a wrong verdict.",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140, kind tool_contribution): port of the owner's project LFPowerGrid_dev assets/heater/normal_convencion.py, commit a4c6e29 (2026-09-21, author the Pack owner, co-authored by Claude; the file on disk equals that commit, sha256 3913d85d43e8808cdf9ede3d785d5bbb879b6c7f3fb66610a73c3a90ffb67f9d). Changes: command-line paths instead of fixed ones, a size check, JSON output, and a non-finite correlation reported INCONCLUSIVE (the original prints DirectX for an OpenGL map with a flat albedo: both correlations NaN, verified 2026-10-03). Arithmetic unchanged: on the heater's Normal/BaseColor PNGs (third-party, not shipped) port and original return identical floats, red -0.1295735277571813, green -0.08508847481925291, 491,775 of 1,048,576 pixels, DirectX. Independent cross-check, not shipped: the curl of the map's slope field is smaller under DirectX (mean 0.0696 vs 0.0947, median 0.0133 vs 0.0239). Not checked in game. Written by Claude (Anthropic). Review round 1 (Codex gpt-6.1-sol, workspace-write sandbox, effort max; UNSOUND): R1 (P1) the albedo reading reads a DirectX map of ribs whose amplitude grows down the image (opposite curvatures along x and y) as OpenGL with corr_red -0.883, corr_green +0.596; R2 (P1) removing the weak-correlation threshold kept the old tests green; R3 (P2) --json printed NaN. Fixed: an albedo-free curl reading (median |d(-nx/nz)/drow -/+ d(ny/nz)/dcol| over the detail mask, winner below 0.8 x the other) and a verdict only when both readings agree; JSON writes null. Measured 2026-10-03: heater albedo reading unchanged to the last digit, curl residuals 0.013315 (DirectX) vs 0.023905 (OpenGL), verdict DirectX; the reviewer's 19 adversarial fixtures (analytic ribs both encodings, mixed wear both encodings, 16 tapered ribs, weak paint) all INCONCLUSIVE, none a wrong verdict. Review round 2, the last under the cap (Codex gpt-6.1-sol, workspace-write, max; UNSOUND): R1, R2, R3 FIXED on their repros; new N1 (P1) a valid tangent-space bake on a sphere patch, DirectX by construction, read OpenGL by both readings (exit 0); N2 (P1) undersampled tileable detail, DirectX, read OpenGL by both, also after DXT5nm and in a rotated/mirrored atlas; N3 (P1) or->and in the weak-correlation rejection passed the 12 tests; N4 (P2) exit 0 was presented as a measured orientation. Done after the cap, not re-reviewed (a design change, so not merged under the orchestrator's rule): the output is a candidate ('CANDIDATE: ...', JSON key 'verdict' kept) to confirm another way (the baker's export setting, or a raking-light render) before inverting; one-weak-channel tests (min_corr between the two correlations, both orders, both conventions, and the CLI --min-corr). 14 tests; nine mutants each fail (the or->and one 3 of 14).",
           "license": "MIT",
-          "source_hash": "cf95fb25739ddc94cb90f4d09577a9814a96615bb01c2ee9cf71dba8dd269e29",
+          "source_hash": "4ca895462e6687aa7e10026192eb7515f5c345c260a3a7aa4bc9a4883f651fcf",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-texture-pipeline/scripts/normal_convention.py",
           "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
@@ -12081,7 +12081,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cf95fb25739ddc94cb90f4d09577a9814a96615bb01c2ee9cf71dba8dd269e29",
+      "output_hash": "4ca895462e6687aa7e10026192eb7515f5c345c260a3a7aa4bc9a4883f651fcf",
       "output_path": "skills/dayz-texture-pipeline/scripts/normal_convention.py",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "offline_tested"
@@ -12093,9 +12093,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): fixtures of known convention generated in the test (a deterministic 96x96 height field of pits, darker albedo in the hollows), encoded as DirectX and as OpenGL. 7 tests: both conventions read back with |corr| > 0.5, dark ridges keep the verdict, a flat albedo is INCONCLUSIVE, an inverted green only negates the green correlation, CLI exit codes 0/2/1 and JSON. Measured 2026-10-03: 7 passed; mutants of the detector each fail it (verdict swapped 5 failed, NaN read as a verdict 2, green derivative on axis 1 2, hollow signal negated 4); with numpy raising ModuleNotFoundError the module skips and packctl test-folders passes the folder. Written by Claude (Anthropic). Round-1 fixes: 12 tests; adds a separable surface h = cos(x) + cos(y) on which the curl reading has no signal (both residuals 0.00202, INCONCLUSIVE), the reviewer's opposite-curvature ribs (analytic slopes, 128 px; albedo reading wrong, curl right, verdict INCONCLUSIVE), a weak albedo with finite correlations under 0.02 (sin pattern, no RNG), curl verdict on a flat albedo, and strict JSON parsing of an INCONCLUSIVE result. Mutants (copies outside the repo), each fails the suite: albedo verdict swapped (9 of 12 failed), NaN read as a verdict (1), green derivative on axis 1 (6), hollow negated (4), weak threshold removed (1), curl residuals swapped (8), agreement rule dropped (4), JSON NaN (1).",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): fixtures of known convention generated in the test (a deterministic 96x96 height field of pits, darker albedo in the hollows), encoded as DirectX and as OpenGL. 7 tests: both conventions read back with |corr| > 0.5, dark ridges keep the verdict, a flat albedo is INCONCLUSIVE, an inverted green only negates the green correlation, CLI exit codes 0/2/1 and JSON. Measured 2026-10-03: 7 passed; mutants of the detector each fail it (verdict swapped 5 failed, NaN read as a verdict 2, green derivative on axis 1 2, hollow signal negated 4); with numpy raising ModuleNotFoundError the module skips and packctl test-folders passes the folder. Written by Claude (Anthropic). Round-1 fixes: 12 tests; adds a separable surface h = cos(x) + cos(y) on which the curl reading has no signal (both residuals 0.00202, INCONCLUSIVE), the reviewer's opposite-curvature ribs (analytic slopes, 128 px; albedo reading wrong, curl right, verdict INCONCLUSIVE), a weak albedo with finite correlations under 0.02 (sin pattern, no RNG), curl verdict on a flat albedo, and strict JSON parsing of an INCONCLUSIVE result. Mutants (copies outside the repo), each fails the suite: albedo verdict swapped (9 of 12 failed), NaN read as a verdict (1), green derivative on axis 1 (6), hollow negated (4), weak threshold removed (1), curl residuals swapped (8), agreement rule dropped (4), JSON NaN (1). Review round 2, the last under the cap (Codex gpt-6.1-sol, workspace-write, max; UNSOUND): R1, R2, R3 FIXED on their repros; new N1 (P1) a valid tangent-space bake on a sphere patch, DirectX by construction, read OpenGL by both readings (exit 0); N2 (P1) undersampled tileable detail, DirectX, read OpenGL by both, also after DXT5nm and in a rotated/mirrored atlas; N3 (P1) or->and in the weak-correlation rejection passed the 12 tests; N4 (P2) exit 0 was presented as a measured orientation. Done after the cap, not re-reviewed (a design change, so not merged under the orchestrator's rule): the output is a candidate ('CANDIDATE: ...', JSON key 'verdict' kept) to confirm another way (the baker's export setting, or a raking-light render) before inverting; one-weak-channel tests (min_corr between the two correlations, both orders, both conventions, and the CLI --min-corr). 14 tests; nine mutants each fail (the or->and one 3 of 14).",
           "license": "MIT",
-          "source_hash": "eea8f42efe131913b2ff9c7deda3fba68ce6180ec52ae5f6aecc78e0ef52a03e",
+          "source_hash": "a28484651fa4dab0981518aa2c035ea714fe5167cf19304915bb9484b9c8453f",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-texture-pipeline/tests/test_normal_convention.py",
           "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
@@ -12103,7 +12103,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "eea8f42efe131913b2ff9c7deda3fba68ce6180ec52ae5f6aecc78e0ef52a03e",
+      "output_hash": "a28484651fa4dab0981518aa2c035ea714fe5167cf19304915bb9484b9c8453f",
       "output_path": "skills/dayz-texture-pipeline/tests/test_normal_convention.py",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "offline_tested"

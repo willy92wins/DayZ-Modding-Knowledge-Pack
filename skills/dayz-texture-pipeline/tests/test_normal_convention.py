@@ -131,6 +131,19 @@ def test_a_sum_of_x_and_y_profiles_leaves_the_curl_reading_without_signal(conven
     assert result["verdict"] == "INCONCLUSIVE", result
 
 
+@pytest.mark.parametrize("convention", ["DirectX", "OpenGL"])
+def test_one_weak_channel_is_enough_to_abstain(maps, convention):
+    # red weak, green strong: on the pits |red| 0.745 < |green| 0.775
+    result = nc.detect(maps[convention], maps["albedo"], min_corr=0.76)
+    assert abs(result["corr_red"]) < 0.76 <= abs(result["corr_green"]), result
+    assert result["albedo_verdict"] == "INCONCLUSIVE" and result["verdict"] == "INCONCLUSIVE", result
+    # green weak, red strong: on the ribs |red| 0.807 > |green| 0.677
+    h, dh_dcol, dh_drow = _ribs()
+    result = nc.detect(_encode(dh_dcol, dh_drow, convention), _albedo(h), min_corr=0.74)
+    assert abs(result["corr_green"]) < 0.74 <= abs(result["corr_red"]), result
+    assert result["albedo_verdict"] == "INCONCLUSIVE", result
+
+
 def test_weak_albedo_correlations_are_inconclusive(maps):
     result = nc.detect(maps["DirectX"], maps["weak_albedo"])
     assert math.isfinite(result["corr_red"]) and math.isfinite(result["corr_green"]), result
@@ -181,6 +194,9 @@ def test_cli_exit_codes_and_json(maps, tmp_path, capsys):
     out = _strict_json(capsys.readouterr().out)       # undefined numbers are null, never NaN
     assert code == 2 and out["verdict"] == "INCONCLUSIVE" and out["corr_red"] is None, out
     assert nc.main(["--normal", str(paths["DirectX"]), "--albedo", str(paths["flat_albedo"])]) == 2
+    assert "INCONCLUSIVE" in capsys.readouterr().out
+    # --min-corr reaches the albedo reading: one weak channel makes the CLI abstain
+    assert nc.main(["--normal", str(paths["DirectX"]), "--albedo", str(paths["albedo"]), "--min-corr", "0.76"]) == 2
     assert "INCONCLUSIVE" in capsys.readouterr().out
     assert nc.main(["--normal", str(paths["DirectX"]), "--albedo", str(small)]) == 1
     assert "differ in size" in capsys.readouterr().err

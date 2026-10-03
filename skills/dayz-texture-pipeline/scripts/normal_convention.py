@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Tell an OpenGL (Y+) normal map from a DirectX (Y-) one by measurement, not by eye.
+"""Propose whether a normal map is OpenGL (Y+) or DirectX (Y-) from measurement, not by eye.
 
 DayZ `_nohq` is DirectX/Y- (SKILL.md rule 3). A source map of unknown convention is
 otherwise a guess, and a wrong guess turns every groove into a ridge.
 
-Two independent readings; the verdict needs both to agree, otherwise INCONCLUSIVE.
+Two independent readings; a candidate needs both to agree, otherwise INCONCLUSIVE. A candidate
+is not proof: both readings agreed on the wrong convention for a valid tangent-space bake on a
+sphere patch and for undersampled tileable detail (R21 round 2). Confirm it independently (the
+baker's export setting, or a render under a raking light) before inverting a channel.
 
 1. Albedo reading (the contributed `normal_convencion.py`, arithmetic unchanged, see
    Provenance): across a groove (a valley) the surface normals converge.
@@ -34,7 +37,8 @@ DayZ Tools ImageToPAA; a `_nohq` name makes it write the RGB normal.
 
 Usage:
   python normal_convention.py --normal heater_Normal.png --albedo heater_BaseColor.png [--json]
-Exit: 0 = both readings agree (DirectX or OpenGL), 2 = INCONCLUSIVE, 1 = bad input.
+Exit: 0 = both readings agree on a candidate (DirectX or OpenGL), 2 = INCONCLUSIVE, 1 = bad input.
+JSON keeps the key "verdict" for that candidate.
 
 Provenance: the albedo reading is adapted from LFPowerGrid_dev `assets/heater/normal_convencion.py`
 (commit a4c6e29, 2026-09-21), written by the Pack owner with Claude, contributed through
@@ -179,11 +183,11 @@ def main(argv: list[str] | None = None) -> int:
         print("curl reading: median residual DirectX %s, OpenGL %s -> %s"
               % (_fmt(result["curl_residual_directx"]), _fmt(result["curl_residual_opengl"]), result["curl_verdict"]))
         if result["verdict"] == DIRECTX:
-            print("VERDICT: DirectX (Y-) -> already DayZ's convention; keep the green channel")
+            print("CANDIDATE: DirectX (Y-) -> DayZ's convention; confirm it independently before shipping")
         elif result["verdict"] == OPENGL:
-            print("VERDICT: OpenGL (Y+) -> INVERT the green channel for DayZ")
+            print("CANDIDATE: OpenGL (Y+) -> invert the green channel once an independent check agrees")
         else:
-            print("VERDICT: INCONCLUSIVE (the two readings do not agree on a convention)")
+            print("INCONCLUSIVE: the two readings do not agree on a convention")
     return 2 if result["verdict"] == INCONCLUSIVE else 0
 
 
