@@ -21,7 +21,30 @@ Canon for this skill:
 - DayZ `_nohq` is DirectX/Y-.
 - Blender/Cycles and many baking workflows output OpenGL/Y+ by default.
 - If source is OpenGL/Y+, invert the green channel before final DayZ export.
+- A source of unknown convention is measured, not guessed: `scripts/normal_convention.py` (below).
 - Shipped `_nohq` is **DXT5nm**, not an RGB normal sitting in a DXT5 container. Do not audit the raw DXT block as `(X,Y,Z)` in RGB.
+
+### Measuring a source map's convention (`scripts/normal_convention.py`, added 2026-10-03)
+
+```
+python scripts/normal_convention.py --normal <normal.png> --albedo <albedo.png> [--json]
+```
+
+It needs the normal map and the albedo of the same UV layout, same size, as PNG (decode a
+`.paa` with ImageToPAA first). The albedo's high-pass marks the hollows (a pixel darker than its
+blurred surroundings). Across a hollow d(nx)/dx and d(ny)/dy have the same sign in DirectX and
+opposite signs in OpenGL; the red channel calibrates the sign, so an albedo darker on the ridges
+than in the hollows gives the same verdict. Exit 0 = `DirectX` or `OpenGL`, 2 = `INCONCLUSIVE`
+(a correlation under 0.02 or undefined, e.g. a flat or clean albedo), 1 = bad input.
+
+- Measured: LFPowerGrid's heater (Sketchfab, 2026-09-21) read **DirectX**, red −0.130 and
+  green −0.085 over 491,775 of 1,048,576 pixels; not checked in game.
+- Limits: it reads the albedo as a groove map, like the 1D sweep below, so painted dark marks
+  with no relief dilute it. An inverted-green rerun is no control (it only negates the green
+  correlation); `tests/test_normal_convention.py` holds fixtures of known convention.
+- Source: contributed from LFPowerGrid_dev `assets/heater/normal_convencion.py` (commit
+  `a4c6e29`, the Pack owner's) through pipeline ticket `fb-20260921-164248-a140`; on the heater
+  maps the Pack script returns the same two correlations and pixel count as the original.
 
 ### DXT5nm packing `[MECHANISM VERIFIED]`
 

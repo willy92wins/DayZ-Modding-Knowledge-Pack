@@ -991,10 +991,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-mcpv-hang-log-tails@2026-10-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: Unreleased Added entry for dayz-texture-pipeline scripts/normal_convention.py and its test. Evidence as recorded on the script input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "848f0f759adb78170f265b89e9dcc7c11b1bd165bac71388488fe8d258b1d6fa",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "97ea3a53df11e422c62941e6e8cc62db6ef412ddf227ce72733d30a17be73eed",
+      "output_hash": "848f0f759adb78170f265b89e9dcc7c11b1bd165bac71388488fe8d258b1d6fa",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11798,10 +11808,20 @@
           "source_path": "skills/dayz-texture-pipeline/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): rule 3 says to measure a source normal map's convention with scripts/normal_convention.py instead of guessing it, with its exit codes, the heater reading (DirectX, red -0.130, green -0.085, 491,775 pixels, 2026-09-21; curl cross-check agreed 2026-10-03; not checked in game) and why an inverted-green rerun is no control. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c964ca674efedfd5c641d7b73a45a8d1d7302c6f92bcf6bb562a1ef24568c45e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/SKILL.md",
+          "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2d148668c1ba1678ba680a4e73ef9b2321a7c22af0af25878307463a29ad4c87",
+      "output_hash": "c964ca674efedfd5c641d7b73a45a8d1d7302c6f92bcf6bb562a1ef24568c45e",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -11852,10 +11872,20 @@
           "source_path": "dayz-texture-pipeline/references/map-conventions.md",
           "source_revision": "filesystem@2026-09-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): new subsection 'Measuring a source map's convention' (usage, method, exit codes, the heater reading, limits, provenance) and a pointer in the normal-map canon list. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "693c846668078170eb1c530360a78929473586b194bf3dded7a81ead96248700",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
+          "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "906699b69d354a64ecb8b0fde0f1582cfc08d0a938657a45a02391a9444c2570",
+      "output_hash": "693c846668078170eb1c530360a78929473586b194bf3dded7a81ead96248700",
       "output_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -11940,10 +11970,20 @@
           "source_path": "dayz-texture-pipeline/references/validation-checklist.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): the _nohq orientation item asks for a measurement with scripts/normal_convention.py when the source does not state its convention. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d7ff5aa89e35cead8482a6e2f7a338c4d63b4ec8459cafb69cc3248aa5fae9ea",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/references/validation-checklist.md",
+          "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8e4074337d00d5314c08670aae6c79cb737be87ab14ff2350f9baaef58222a1e",
+      "output_hash": "d7ff5aa89e35cead8482a6e2f7a338c4d63b4ec8459cafb69cc3248aa5fae9ea",
       "output_path": "skills/dayz-texture-pipeline/references/validation-checklist.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -12023,6 +12063,50 @@
       "output_path": "skills/dayz-texture-pipeline/scripts/rvmat_template.py",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-texture-pipeline/scripts/normal_convention.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140, kind tool_contribution): port of the owner's project LFPowerGrid_dev assets/heater/normal_convencion.py, commit a4c6e29 (2026-09-21, author the Pack owner, co-authored by Claude; the file on disk equals that commit, sha256 3913d85d43e8808cdf9ede3d785d5bbb879b6c7f3fb66610a73c3a90ffb67f9d). Changes: command-line paths instead of fixed ones, a size check, JSON output, and a non-finite correlation reported INCONCLUSIVE (the original prints DirectX for an OpenGL map with a flat albedo: both correlations NaN, verified 2026-10-03). Arithmetic unchanged: on the heater's Normal/BaseColor PNGs (third-party, not shipped) port and original return identical floats, red -0.1295735277571813, green -0.08508847481925291, 491,775 of 1,048,576 pixels, DirectX. Independent cross-check, not shipped: the curl of the map's slope field is smaller under DirectX (mean 0.0696 vs 0.0947, median 0.0133 vs 0.0239). Not checked in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "363777617db00600dea649aec41473a4fa908ba4f0c8edd0a444fe68d65a2f7f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/scripts/normal_convention.py",
+          "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "363777617db00600dea649aec41473a4fa908ba4f0c8edd0a444fe68d65a2f7f",
+      "output_path": "skills/dayz-texture-pipeline/scripts/normal_convention.py",
+      "routing_artifact_id": "skill/dayz-texture-pipeline",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-texture-pipeline/tests/test_normal_convention.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline ticket fb-20260921-164248-a140): fixtures of known convention generated in the test (a deterministic 96x96 height field of pits, darker albedo in the hollows), encoded as DirectX and as OpenGL. 7 tests: both conventions read back with |corr| > 0.5, dark ridges keep the verdict, a flat albedo is INCONCLUSIVE, an inverted green only negates the green correlation, CLI exit codes 0/2/1 and JSON. Measured 2026-10-03: 7 passed; mutants of the detector each fail it (verdict swapped 5 failed, NaN read as a verdict 2, green derivative on axis 1 2, hollow signal negated 4); with numpy raising ModuleNotFoundError the module skips and packctl test-folders passes the folder. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b778552d749bb7f973b352e4577eac30b349a0303813f1d3b0eb56aa7573175a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/tests/test_normal_convention.py",
+          "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b778552d749bb7f973b352e4577eac30b349a0303813f1d3b0eb56aa7573175a",
+      "output_path": "skills/dayz-texture-pipeline/tests/test_normal_convention.py",
+      "routing_artifact_id": "skill/dayz-texture-pipeline",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-ui-development/skill.md",

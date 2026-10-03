@@ -7,6 +7,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-texture-pipeline` `scripts/normal_convention.py`: tells an OpenGL (Y+) normal map from a
+  DirectX (Y-) one by measurement. The albedo's dark grooves mark the hollows; across a hollow
+  d(nx)/dx and d(ny)/dy share their sign in DirectX and oppose it in OpenGL, and the red channel
+  calibrates the sign. Exit 0 with a verdict, 2 `INCONCLUSIVE`, 1 bad input. Contributed from
+  LFPowerGrid_dev `assets/heater/normal_convencion.py` (commit `a4c6e29`, the Pack owner's;
+  pipeline ticket `fb-20260921-164248-a140`) with command-line paths, a size check and JSON
+  output; a non-finite correlation is now `INCONCLUSIVE` (the original read NaN as DirectX). On
+  the heater maps it returns the original's numbers exactly (red −0.1296, green −0.0851, 491,775
+  pixels, DirectX). SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at
+  it. `tests/test_normal_convention.py` encodes one synthetic height field as DirectX and as
+  OpenGL and reads both back, and checks dark ridges, a flat albedo and the exit codes; four
+  mutants of the detector (verdict swapped, NaN read as a verdict, green derivative on the wrong
+  axis, hollow signal negated) each fail it. It skips where numpy or Pillow is missing, as on the
+  CI runner. The ticket's second script (`uv_convencion.py`, V convention of a validated p3d) is
+  not part of this change.
 - `dayz-mcp-verify`: one section ported from the installed copy (added 2026-10-04, written by the
   orchestration session that ran a seed-and-prune strike scenario against an LFPowerGrid PR) and
   corrected in the review of PR #105: "A server HANG is bounded by log tails first" — read both log
