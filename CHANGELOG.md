@@ -93,6 +93,46 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   copy of its PBO without the offending entries, in a probe folder under `P:\Mods` written with the
   owner's OK, hosted by an approved project whose `default_base_mods` carry its dependencies (an
   absolute workshop path in `base_mods` fails with `bad_mod`).
+- `dayz-physics-engine` truth #11, a sub-bullet: a Roadway face of another model across a lift's
+  travel stops the ride down (SecretRock elevator, DayZDiag 1.29.163709, 2026-10-02/03). The cabin
+  carried a player up through its stops, but going down it left them standing at the stop's floor
+  height while it went on: the building's interior model had the shaft cut out of its collision
+  slabs, not out of its Roadway LOD. With the shaft cut out of that Roadway too, the player rode
+  down linked to the cabin. A character stands on Roadway where no Geometry is, and `RaycastRV`
+  cannot target Roadway (`ObjIntersect`, `3_game/constants.c:31-38`), so the check is offline: no
+  Roadway face of another model in the volume a moving piece's collision sweeps.
+- `dayz-persistence`, after Contract 3: build what stored entities rest on inside
+  `OnMissionStart` (same mod and build). A helicopter parked on a structure that the mod rebuilt
+  from its sidecar 2 s after `OnMissionStart`, with parts 0.5 s after `EEInit`, came back before
+  the structure after an orderly restart and fell 6.9 m; with the restore and the parts created
+  inside `OnMissionStart` it stayed parked after two orderly restarts. It matches
+  `enforce-script-reference` SP-LFS-3 (stored entities are created after `OnMissionStart` returns);
+  the rule holds for a structure that needs nothing from the game's storage.
+- `enforce-script-reference` Override Rules, rule 42, and a pointer from
+  `references/vanilla-deep-dive.md`: a recipe's `CanDo` copies `ingredients[0]` and `[1]` to locals
+  first and does not call `super.CanDo` (CocaLab, DayZDiag 1.29, 2026-09-27). With
+  `super.CanDo(ingredients, player)` called first, the server's `CanDo` returned false while every
+  part of its condition read true, and `ActionWorldCraft` cancelled the craft as it started; a probe
+  that read the array after its `super` call found the tray in both slots. Copying to locals
+  without `super` fixed it in game (the same commit also split the final `return` into a null
+  guard, so which change mattered was not isolated). Vanilla: 1 of 206 `CanDo` overrides calls
+  `super` (`craftlongtorch.c:61`, as its only statement). The mechanism is not established.
+- `dayz-persistence` Hard stops item 9 and its section, and `rigorous-data-audit`
+  `references/entry-point-audit.md`: an entry of a mod's own registry of world entities leaves by
+  its id, never by proximity (SP-456, from a code audit of the SecretRock mod, 2026-10-03). An
+  unregister that fell back to the nearest entry of the same class within 0.75 m deleted a
+  neighbour's entry whenever an entity without an id was deleted: a placement refused after the
+  entity was created, or an admin's console spawn. The rule: an unregister needs a matching id, and
+  an entity without one never touches the file; in game (DayZDiag 1.29), with that rule, a console
+  entity 0.3 m (horizontally) from a registered one was created and deleted, the registry kept its
+  SHA-256 and the registered entity came back after the restart. Restore binds by id: a candidate
+  inside the radius without the entry's id is a conflict to log, neither bound nor duplicated
+  ([DESIGN]), since `GetObjectsAtPosition3D` promises no order and three traced cases show a
+  position match taking the wrong entity or creating a second one; a restore pass still queued in
+  `CALL_CATEGORY_SYSTEM` is removed (`ScriptCallQueue.Remove`) before the shutdown flag is set, so
+  the shutdown's deletions cannot unregister entries; both were read in the code and not reproduced
+  in game. The entry-point audit gains the worked example, the invariant's entry points and a search
+  for proximity used as identity.
 
 ### Changed
 
