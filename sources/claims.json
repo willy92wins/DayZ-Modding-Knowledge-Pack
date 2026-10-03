@@ -1300,6 +1300,45 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-anim-empties@2026-10-02",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/skeletal-anm-enfusion.md",
+      "claim_id": "CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS",
+      "evidence_locator": "Offline, 2026-10-03, DayZATool 1.3 (--extract-anim / --generate-anim, scale 100, stdin closed). Vanilla DZ/anims/anm/player/moves/1handed/p_1hd_erc_idle_low.anm (sha256 6eb2b5a5c0498aeb..., 209,300 B). Its DayZATool extract from the 2026-10-02 chiral in-game session (sha256 b798f6d2e2b6141a..., 370,800 B), read with the Pack's tools/dayz-animation-formats strict reader and with the fixed seanim_writer.read_seanim: anim_type 0 (ABSOLUTE), 65 bones, 431 frames at 60 fps, float32, 60 bone modifiers all 2 (RELATIVE); the five bones without one (Scene_Root, EntityPosition, Collision, Pelvis, LeftHand_Dummy) are the only ones with position keys. --generate-anim on that extract unchanged wrote an .anm of sha256 6b9fe72ca0f87394... (209,300 B, byte-identical to the 2026-10-02 session's kp_idle_v.anm; 132,855 bytes differ from the vanilla .anm); --extract-anim of it gave sha256 b9f0bc82aaa0a6a8... (370,680 B): 0 modifiers, the same 65 bone names in order, anim_type 0, worst rotation 0.0035 deg and worst position 0.0015 cm over 19,366 shared rotation keys. The four clips spliced into that extract on 2026-10-02 (kp_idle_l, kp_idle_u, kp_idle_fa, kp_idle_fb) re-extract with 0 modifiers as well. In game, DayZDiag 1.29.163709, dayz-mcp run 1c289781 (2026-10-02): the regenerated idle showed the vanilla standing pose. seanim_writer at ea7b396 read and wrote that extract back as 370,680 B with header modifier count 0; the fixed seanim_writer writes back the extract's own bytes (sha256 b798f6d2...) and those of kp_idle_l/u/fa/fb. Reported by pipeline feedback fb-20261002-165907-7e70; every number re-measured here.",
+      "license": "MIT",
+      "line_end": 45,
+      "line_start": 45,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-inba-seanim@2026-10-03",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/player-skeleton.md",
+      "claim_id": "CLAIM-ANIM-IKPOSE-OBJECT-FRAME",
+      "evidence_locator": "Offline, 2026-10-03: DayZATool 1.3 --extract-anim <anm> 100 (stdin closed) on copies of the unpacked vanilla DZ/anims/anm/player/ik/two_handed/cookingpot.anm (sha256 355e173481e30ef7...), cauldron.anm (9f65711132250dc2...), batterycar.anm (6a267da98be219ed...), ik/vehicles/batterytruck.anm (b75efea9564b7b42...) and radiator_car.anm (952859550e9c8041...); each SEAnim: 43 bones, 2 frames, RightHand_Dummy's two rotation keys equal, no modifiers; read with tools/dayz-animation-formats. R, t = RightHand_Dummy's frame-0 rotation (XYZW, normalized) and position; p = -R^T t against LeftHandIKTarget's position, cm: cookingpot (-9.1,+14.2,+1.5) / (-8.6,-15.7,+1.1), worst axis off the Y mirror 1.5; cauldron (-9.0,+12.5,+5.4) / (-8.5,-12.9,+4.9), 0.5; batterytruck (+29.4,+7.7,+6.1) / (-28.0,+8.0,+9.1), X mirror, 3.0; radiator_car (-30.9,-10.0,+17.6) / (+29.4,-7.7,+24.9), X mirror, 7.3; batterycar (+16.2,-8.7,-0.5) / (-2.3,+19.5,+3.2), no mirror. Read as -R t instead: 1.4, 1.0, 37.1 and 45.9 cm off the mirror; -R t and -R^T t differ by 2.2 cm (cookingpot) and 1.6 (cauldron). |t| 16.9, 16.3, 18.4 (batterycar), 31.0, 36.9 cm. |LeftHandOrigin - LeftHandIKTarget| 0.0, 8.3, 4.3 (batterycar), 6.9, 11.6 cm. RightHandOrigin positions (+2.5,-6.6,+3.9), (+2.4,-6.8,+2.5), (+0.4,+1.1,+9.7), (-2.6,-10.1,+22.6), (+2.9,-4.6,+16.1). DZ/anims/cfg/skeletons.anim.xml lines 149-151 declare RightHandOrigin, LeftHandOrigin and LeftHandIKTarget in both the unpacked copy (sha256 278ade33666d9ead..., 38,078 B) and the 1.30.164014 Exp extraction; references/ofp2-manskeleton-parents.txt (148 bones of player_testing.xob) has none of them and puts RightHandIK and LeftHandIK under RightHand_Dummy (its lines 158-159). LOD0 vertex bounds read with the dayz-p3d-debinarizer odol_reader: DZ/gear/cooking/cookingpot.p3d (sha256 e8b7a43136144c38...) X -12.7..12.8, Y 0.1..24.4, Z -13.2..13.3 cm; DZ/vehicles/parts/battery_truck.p3d (b0a98891b6757adc...) X -26.0..26.0, Y 0.0..24.0, Z -11.1..12.0 cm. In game, CocaLab session of 2026-09-27 (DayZDiag 1.29; CocaLab_dev bugs.md B-005, HANDOFF.md, plans/2026-09-26-codigo-v1.md B-005 note): an own ikpose with RightHand_Dummy turned by q*qy(90) tipped the tray over its long axis, and counter-rotating RightHandOrigin with it broke the right arm. The GetTransform swap is player-skeleton.md's RightHand_Dummy section (measured in game, DayZ 1.30.164014 Exp). Reported by pipeline feedback fb-20260927-163351-3c81; every offline number re-measured here, the in-game observations are the CocaLab session's.",
+      "license": "MIT",
+      "line_end": 101,
+      "line_start": 101,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-inba-seanim@2026-10-03",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
+      "claim_id": "CLAIM-ANIM-ITEM-TURN-MODEL",
+      "evidence_locator": "In game, DayZDiag 1.29, 2026-09-27, run 1bcfa0cd: the user confirmed the CocaLab tray grip on commit 0569fea of the CocaLab mod repository (CocaLab_dev bugs.md B-005: fixed and accepted at 0569fea, the user saying the tray is now held right; pipeline feedback fb-20260927-164039-386a, a follow-up of fb-20260927-163351-3c81 point 3). The commit (read 2026-10-03) rebuilds data/clab_tray.p3d turned 90 degrees about its vertical by model_src/assemble_p3d.py --yaw 90 (its message: --yaw 0 reproduces the previous model byte for byte; faces, points, selections and mass unchanged) and changes scripts/4_World/CocaLab/clab_actions.c RegisterTwoHanded to AddItemInHandsProfileIK(\"CLab_CocaTray\", \"dz/anims/workspaces/player/player_main/props/player_main_2h_pot.asi\", pBehavior, \"dz/anims/anm/player/ik/vehicles/BatteryTruck.anm\"), from the pot's CookingPot.anm. Vanilla, 4_world/entities/manbase/dayzplayer/dayzplayercfgbase.c in the unpacked P: scripts / 1.30.164014 Exp: TruckBattery -> player_main_2h.asi + vehicles/BatteryTruck.anm at :843 / :866; GiftBox_Small -> props/player_main_2h_pot.asi + two_handed/Cauldron.anm at :1000 / :1040; Pot -> props/player_main_2h_pot.asi + two_handed/CookingPot.anm at :1026 / :1066. Six vanilla grips compared in game with test subclasses in a test mod (@CocaLabDiag; vault session note 2026-09-27-cocalab-sesiones-jugadas-v13). |t| figures: offline 2026-10-03, see CLAIM-ANIM-IKPOSE-OBJECT-FRAME.",
+      "license": "MIT",
+      "line_end": 40,
+      "line_start": 40,
+      "observed_at": "2026-09-27",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-inba-seanim@2026-10-03",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1

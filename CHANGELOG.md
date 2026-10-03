@@ -7,6 +7,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-animation-pipeline`: the frame a vanilla ikpose keys its helpers in, and what to do when a
+  held item points the wrong way (from CocaLab). `player-skeleton.md` (claim
+  `CLAIM-ANIM-IKPOSE-OBJECT-FRAME`): `LeftHandIKTarget` is keyed in the held object's frame, the
+  frame of `RightHand_Dummy`. Measured offline on five vanilla two-handed ikposes extracted with
+  DayZATool 1.3: the right wrist in that frame (`-Rᵀt` of the `RightHand_Dummy` key) mirrors
+  `LeftHandIKTarget` in the four symmetric grips, 0.5 to 7.3 cm off on the worst axis, and the
+  truck battery and radiator rule out the opposite quaternion reading. `RightHandOrigin`'s frame is
+  not known (in game, counter-rotating it with the object broke the right arm) and
+  `LeftHandOrigin`'s was not tested; neither is in the bind-pose parent table. In that frame SEAnim
+  Z is the object's vertical and SEAnim Y its depth, signs not fixed: read against the LOD0 of the
+  vanilla pot and truck battery, and in game a 90-degree turn about SEAnim Y tipped a tray over.
+  `item-ik-and-hide.md` (claim `CLAIM-ANIM-ITEM-TURN-MODEL`, confirmed in game 2026-09-27): when a
+  vanilla ikpose gives a natural pose and only the item's direction is wrong, turn the model about
+  its vertical, origin kept, rather than edit the ikpose; CocaLab's tray, turned 90 degrees, holds
+  with the truck battery's ikpose and the pot's animation set. SKILL.md's routing rows name both.
 - `dayz-mcp-verify` static-object playbook and tool table: two probes from the killer #2 run
   (2026-10-02, DayZDiag 1.29.163709). `scene_raycast(method="bullet")` queries the server's physics
   world on a fixed layer mask (`DayZPhysics.RayCastBullet`), next to the LOD rays; a hit counts only
@@ -202,6 +217,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-animation-pipeline` `scripts/seanim_writer.py` keeps SEAnim bone modifiers. `read_seanim`
+  skipped them and `write_seanim` always wrote a count of 0, so a DayZATool extract read and written
+  back lost them: `p_1hd_erc_idle_low` (65 bones, ABSOLUTE header) lost its 60 RELATIVE modifiers,
+  and editing one track of a vanilla clip turned every bone ABSOLUTE. `read_seanim` now returns each
+  bone's `modifier` (None when it has none) and refuses a modifier index out of range or repeated;
+  `write_seanim` writes one entry per bone that carries one, in bone order, two bytes wide past 255
+  bones, and refuses a value that is not a byte. That extract and four clips spliced from it read
+  and write back byte for byte; bones without `modifier` write what they wrote before. Regression
+  test `tests/test_seanim_writer.py`: fixtures built byte by byte from the SEAnim layout, 13 cases,
+  all failing on the previous script. `skeletal-anm-enfusion.md` (claim
+  `CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS`): DayZATool's `--generate-anim` does not keep them either; the
+  `.anm` built from that extract unchanged re-extracts with none. `weapon-anim-authoring-viewer.md`
+  and a comment in `seanim_export.py` no longer say that `read_seanim` drops them.
 - `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
   by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
   bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties

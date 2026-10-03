@@ -263,7 +263,7 @@ What the maps do not cover:
   modifiers (61 of 73 in `p_erc_jam_pm73_ras`, `Spine` to `Head` at `(0,0,0)`),
   and in SEAnim a RELATIVE translation is an offset from rest, inherited by child
   bones, while this script writes an ABSOLUTE clip (`seanim_writer.read_seanim`
-  drops modifiers; `tools/dayz-animation-formats` reads them). That is the
+  returns the modifiers since 2026-10-03; this script writes none). That is the
   "Convention split" of `weapon-anim-blender-complete.md`. The project copy takes
   the reference's positions and writes those zeros as offsets; that part is not
   ported. A bone the viewer rig holds off bind is written off bind: the JD rig's

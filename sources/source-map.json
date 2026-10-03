@@ -781,10 +781,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "skill-tests-pytest-folders@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 13 cases, all 13 failing against the ea7b396 script, all passing with the fix; the skill's tests folder 46 passed. The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0 and float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7fe7e940a058b9ae3008e7930d61f6195d19738c4eaff44c0638ca39649da993",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-inba-seanim@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "857df1ea410ee0f946c585be23b453c12bb785e55859b2a974b57216e82cfb1f",
+      "output_hash": "7fe7e940a058b9ae3008e7930d61f6195d19738c4eaff44c0638ca39649da993",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -4890,10 +4900,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-anim-empties@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 13 cases, all 13 failing against the ea7b396 script, all passing with the fix; the skill's tests folder 46 passed. The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0 and float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5e1609c8b63cacd819ff7a9b796412db69455fdb36a9b9bc8b3813ab3f2ad436",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "kp-update-inba-seanim@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dc6a452225b27809833d0d89784917235186792bd5064bbea27fa14984289fdd",
+      "output_hash": "5e1609c8b63cacd819ff7a9b796412db69455fdb36a9b9bc8b3813ab3f2ad436",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5132,10 +5152,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 13 cases, all 13 failing against the ea7b396 script, all passing with the fix; the skill's tests folder 46 passed. The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0 and float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "609e075cf44d41991b85f4d3ff5e924b9598cc999e83641e49dddecefff17c18",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
+          "source_revision": "kp-update-inba-seanim@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8dec2a3f244e55047445e425f20e7f1885ba9aab96df246ee6edc020e968d8e0",
+      "output_hash": "609e075cf44d41991b85f4d3ff5e924b9598cc999e83641e49dddecefff17c18",
       "output_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5164,10 +5194,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
           "source_revision": "kp-update-wp-anim@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 13 cases, all 13 failing against the ea7b396 script, all passing with the fix; the skill's tests folder 46 passed. The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0 and float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "df46d589e765ba3a76964aa825e08997f41e57f1593660451ea723f9aa72d92f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
+          "source_revision": "kp-update-inba-seanim@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "308ea7c8e0c4b479988170a35f25e5c7e199e670db1407a7f2de8047b3f1e92e",
+      "output_hash": "df46d589e765ba3a76964aa825e08997f41e57f1593660451ea723f9aa72d92f",
       "output_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5262,10 +5302,20 @@
           "source_path": "dayz-animation-pipeline/references/skeletal-anm-enfusion.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 13 cases, all 13 failing against the ea7b396 script, all passing with the fix; the skill's tests folder 46 passed. The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0 and float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f1fd44820607789ee1568271b51da653f9cc8ced6780b9d416734924ea616e47",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/skeletal-anm-enfusion.md",
+          "source_revision": "kp-update-inba-seanim@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "818be32d4c21a354b03f4585c67d7be0bb74a2fd8735b1c432d6c57d6c238fd1",
+      "output_hash": "f1fd44820607789ee1568271b51da653f9cc8ced6780b9d416734924ea616e47",
       "output_path": "skills/dayz-animation-pipeline/references/skeletal-anm-enfusion.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5400,10 +5450,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
           "source_revision": "kp-update-anim-empties@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 13 cases, all 13 failing against the ea7b396 script, all passing with the fix; the skill's tests folder 46 passed. The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0 and float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4c85b794c1b7b24a15c95cf09d752d869b84850eb91b82e86ce8661b1c3b948d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+          "source_revision": "kp-update-inba-seanim@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "728453eba67a81c767d4472ef0140303b5b7a9bdb36f77c4fe0f385983ee3257",
+      "output_hash": "4c85b794c1b7b24a15c95cf09d752d869b84850eb91b82e86ce8661b1c3b948d",
       "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5658,10 +5718,20 @@
           "source_path": "skills/dayz-animation-pipeline/scripts/seanim_export.py",
           "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 13 cases, all 13 failing against the ea7b396 script, all passing with the fix; the skill's tests folder 46 passed. The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0 and float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1003caef3023c09f9217a7e123bcb9d63c6e05f7022d1bc60f5e2e30b635357a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/scripts/seanim_export.py",
+          "source_revision": "kp-update-inba-seanim@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "34ebadc99db8b606a4c7ec2c6f0d34c769703a5943ea95fee08cd74729d23051",
+      "output_hash": "1003caef3023c09f9217a7e123bcb9d63c6e05f7022d1bc60f5e2e30b635357a",
       "output_path": "skills/dayz-animation-pipeline/scripts/seanim_export.py",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5680,10 +5750,20 @@
           "source_path": "dayz-animation-pipeline/scripts/seanim_writer.py",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 13 cases, all 13 failing against the ea7b396 script, all passing with the fix; the skill's tests folder 46 passed. The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0 and float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "bd873f68e3846129746187b37dab1d62454e80d558f9a94846dcc4491d51ea1e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/scripts/seanim_writer.py",
+          "source_revision": "kp-update-inba-seanim@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "60f790c35854836b0f936f4d91e67b569135e66d2e1872ded148e59895ee616e",
+      "output_hash": "bd873f68e3846129746187b37dab1d62454e80d558f9a94846dcc4491d51ea1e",
       "output_path": "skills/dayz-animation-pipeline/scripts/seanim_writer.py",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -16145,10 +16225,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-py3d-normals-per-part@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 13 cases, all 13 failing against the ea7b396 script, all passing with the fix; the skill's tests folder 46 passed. The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0 and float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d1acbb20bd7dca8360d619e4af5278fdfa34390721525eef04a6c6a2ff4f5767",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-inba-seanim@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0e5c41f40ed8d6cf9bbcb0d595069ed4a7634f5cbeaddb4fb0140a112ea91605",
+      "output_hash": "d1acbb20bd7dca8360d619e4af5278fdfa34390721525eef04a6c6a2ff4f5767",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -30026,6 +30116,28 @@
       "output_path": "skills/dayz-underground/references/underground-triggers.md",
       "routing_artifact_id": "skill/dayz-underground",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/tests/test_seanim_writer.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03 (pipeline feedback fb-20261002-165907-7e70, fb-20260927-163351-3c81, fb-20260927-164039-386a). (1) dayz-animation-pipeline scripts/seanim_writer.py dropped SEAnim bone modifiers: read_seanim read the modifier block and discarded it (line 164 at ea7b396) and write_seanim always wrote bone_modifier_count = 0 (line 87). Measured 2026-10-03: the DayZATool 1.3 extract of vanilla p_1hd_erc_idle_low.anm (sha256 b798f6d2e2b6141a..., 370,800 B; 65 bones, ABSOLUTE header, 60 RELATIVE modifiers) read and written back by the ea7b396 script came out 370,680 B with the header modifier count 0. read_seanim now returns each bone's modifier (None when it has none) and raises ValueError on a modifier index out of range or repeated; write_seanim writes one (bone index, type) entry per bone carrying a modifier, in bone order, with the index as wide as the reader expects (one byte up to 255 bones, two up to 65,535), and raises ValueError on a value outside 0..255, a bool or a float, or more than 255 modifiers. The fixed script writes that extract and the four clips spliced from it on 2026-10-02 back byte for byte; bones without a modifier key write the same bytes as before. New tests/test_seanim_writer.py: fixtures built byte by byte from the SEAnim v1 layout (SE2Dev io_anim_seanim seanim.py), not with write_seanim, and read the same way by the Pack's tools/dayz-animation-formats strict reader; 13 cases, all 13 failing against the ea7b396 script, all passing with the fix; the skill's tests folder 46 passed. The --self-test also writes and reads one modifier. (2) skeletal-anm-enfusion.md, claim CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS: DayZATool's --generate-anim does not keep the modifiers; that extract regenerated unchanged re-extracts with none, measured 2026-10-03 (hashes and tolerances in the claim). weapon-anim-authoring-viewer.md line 266 and the comment at seanim_export.py lines 205-208 said read_seanim drops the modifiers; they now say it returns them and that seanim_export writes none (seanim_export's output is unchanged). (3) player-skeleton.md, claim CLAIM-ANIM-IKPOSE-OBJECT-FRAME: the frame an ikpose keys LeftHandIKTarget in (the object's, RightHand_Dummy's), RightHandOrigin's unknown frame, LeftHandOrigin's untested one, and the SEAnim axes of a held object (SEAnim Z up, Y depth, signs not fixed), re-measured offline on five vanilla ikposes and two vanilla LOD0s; the in-game observations are the CocaLab session's of 2026-09-27. (4) item-ik-and-hide.md, claim CLAIM-ANIM-ITEM-TURN-MODEL: turn the model about its vertical, not the ikpose, when a vanilla ikpose gives a natural pose and only the item's direction is wrong; confirmed in game by the user on CocaLab commit 0569fea (2026-09-27). SKILL.md: the routing rows of item-ik-and-hide.md and player-skeleton.md name the two additions. CHANGELOG [Unreleased] entries under Added and Fixed. Not done: the byte-identical copy of seanim_writer.py in the owner's WeaponAnimPipeline_dev/tools (outside the Pack); per-bone flags are still written as 0 and float64 (SEANIM_PRECISION_HIGH) files are still not read by this script (the strict tool reads them); points 4 and 5 of fb-20260927-163351-3c81 (the ODOL visual bounding box including memory points, and the test-subclass method) are not added beyond a cross-reference. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ecda740020a9e1fa23d2ab62bf0860ba5eab3b990d9d3e352b2345f99d79a7d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/tests/test_seanim_writer.py",
+          "source_revision": "kp-update-inba-seanim@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ecda740020a9e1fa23d2ab62bf0860ba5eab3b990d9d3e352b2345f99d79a7d7",
+      "output_path": "skills/dayz-animation-pipeline/tests/test_seanim_writer.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "offline_tested"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",

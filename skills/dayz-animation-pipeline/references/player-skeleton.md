@@ -96,6 +96,25 @@ These are what make the support-hand-on-foregrip pose work without ugly wrist tw
 
 **[VERIFIED 2026-06-17] Position ≠ orientation — the IK helpers do NOT roll the wrist.** The IK helpers (`LeftHandIKTarget`/`LeftHandOrigin`/`LeftHand_Dummy`) POSITION the support hand, but rotating them does **not** change the hand/wrist ORIENTATION in-game — an in-game probe that rotated them 40° produced zero visible change. To change the support-hand grip orientation (e.g. horizontal handguard → vertical foregrip), vanilla rotates the **raw `LeftHand` (wrist) bone + the finger bones** (`LeftHand{Thumb,Index,Middle,Ring,Pinky}*`). Proof: diff the two vanilla OTS-14 ikposes for the same weapon — `ots14_normal` (handguard) vs `ots14_barrelhandle` (forward grip): `LeftHand` rotates 24.8°, fingers 20–55°, the IK helpers are absent/0°, positions 0 (pure rotation). **Reusable technique:** diffing two vanilla ikposes of the SAME weapon with DIFFERENT grips (extract both `.anm` via DayZATool → SEAnim → per-bone delta) reveals exactly which bones control the grip. **Caveat:** an extracted ikpose may not contain `LeftHand` at all — `aks74u.anm` keys the IK helpers, not `LeftHand` — so to author a wrist roll, base off an ikpose that HAS `LeftHand` (e.g. an OTS-14 pose). Origin: A6_SR2M vertical-grip authoring.
 
+### The frame an ikpose keys its helpers in, and the axes of its SEAnim (added 2026-10-03)
+
+[EXACT][CLAIM-ANIM-IKPOSE-OBJECT-FRAME] An ikpose keys `LeftHandIKTarget` in the held object's frame, the frame of `RightHand_Dummy`, whose key `(R, t)` (quaternion XYZW) takes the object to the hand. Measured offline on five vanilla two-handed ikposes, each extracted with DayZATool 1.3 (`--extract-anim <anm> 100`; 43 bones, one pose): the right wrist expressed in the object's frame, `p = -Rᵀt`, mirrors `LeftHandIKTarget` across the grip axis in the four symmetric grips (cm, SEAnim axes):
+
+| ikpose | right wrist, `-Rᵀt` | `LeftHandIKTarget` | mirrored on | worst axis off |
+|---|---|---|---|---|
+| `ik/two_handed/cookingpot.anm` | (−9.1, +14.2, +1.5) | (−8.6, −15.7, +1.1) | Y | 1.5 |
+| `ik/two_handed/cauldron.anm` | (−9.0, +12.5, +5.4) | (−8.5, −12.9, +4.9) | Y | 0.5 |
+| `ik/vehicles/batterytruck.anm` | (+29.4, +7.7, +6.1) | (−28.0, +8.0, +9.1) | X | 3.0 |
+| `ik/vehicles/radiator_car.anm` | (−30.9, −10.0, +17.6) | (+29.4, −7.7, +24.9) | X | 7.3 |
+
+`ik/two_handed/batterycar.anm` holds its battery off-centre and mirrors nothing: (+16.2, −8.7, −0.5) against (−2.3, +19.5, +3.2). The truck battery and the radiator settle the quaternion convention: read as `-Rt` instead, their mirrors are 37 and 46 cm off. The pot's and cauldron's keys are close to a half turn, so there both readings agree within 2.2 cm and decide nothing.
+
+- `RightHandOrigin` mirrors nothing in the five, and its frame is not known. In game (CocaLab, 2026-09-27, DayZDiag 1.29) an own ikpose that counter-rotated it along with the object broke the right arm: do not treat it as the object's frame.
+- `LeftHandOrigin` equals `LeftHandIKTarget` in the pot's ikpose and sits 4 to 12 cm from it in the other four. Its frame was not tested on its own.
+- These three helpers are not bones of the bind-pose model: `skeletons.anim.xml:149-151` declares them, and the parent table of `player_testing.xob` (`ofp2-manskeleton-parents.txt`, 148 bones) has none of them. It has `RightHandIK` and `LeftHandIK`, both under `RightHand_Dummy`. No table gives the three helpers' frame; the mirror above is the evidence.
+
+**Axes.** In the object's frame SEAnim X is the model's X, SEAnim Y the model's Z (depth) and SEAnim Z the model's Y (up); the signs are not fixed. The truck battery's wrists sit at ±29 cm on SEAnim X, just past the ends of its LOD0 (X ±26.0 cm, 24.0 cm tall, Z −11.1 to +12.0). The pot's sit at ±15 cm on SEAnim Y, which cannot be the pot's vertical: its LOD0 is 25.6 × 24.3 × 26.5 cm with the base at the origin, so one wrist would sit 14 cm up its side and the other 16 cm under its base. `GetTransform` of an item in hand shows the same swap in game (`RightHand_Dummy` section above). In game (CocaLab, 2026-09-27), turning `RightHand_Dummy` 90° about SEAnim Y (`q·qy(90)`) tipped a tray over its long axis. Turning an object about its own vertical inside an ikpose is therefore a turn about SEAnim Z: inferred, not tried in game. When only the direction a held object points is wrong, turn the model instead (`item-ik-and-hide.md` §Turn the model, not the ikpose).
+
 ## Weapon attachment / interaction bones
 
 - `Weapon_Root` — main anchor for the weapon (where the weapon's own `Weapon_Root` proxy attaches).
