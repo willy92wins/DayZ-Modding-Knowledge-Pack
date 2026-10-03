@@ -98,8 +98,7 @@ it left 12 FAILs in 3 roots (one probable real bug, two recovered-source trees
 that use a sibling mod they do not declare) and 32 SKIPs whose unresolved
 names all belong to mods. Reading the vanilla tree adds about 0.9 s per
 invocation (2.6 s against 1.7 s on a 23-file addon, four runs each). On
-2026-10-03, after the review fixes (comma-separated variables, dead
-preprocessor branches, the dependency closure and the patch inventory), the
+2026-10-03, after the fixes from two rounds of cross-family review, the
 vanilla tree gave the same 33 003 references and no finding; the 161 roots
 were not measured again.
 
