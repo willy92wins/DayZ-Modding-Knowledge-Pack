@@ -806,6 +806,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   inside-out render, and the reversal hid a mirror (`references/character-rigging.md` §6, in game
   2026-10-02). The old text is quoted in dated notes. Docs only; nothing re-measured in game for this
   change.
+- packctl: in the middle of a merge, `git_tracked_files` (`packctl/common.py`) listed a path in
+  conflict once per index stage, up to three times, as `git ls-files` prints it. It now lists each
+  tracked path once, still sorted. None of its callers needed the repeats: `validate`'s link check
+  reported a broken link in such a Markdown file three times, the gate passed such a Python file to
+  `py_compile` three times and counted it three times, and `build`'s symlink check would repeat its
+  finding; the source-map, privacy and conflict-marker checks read the list through a set, and
+  `promote` refuses a dirty tree before it lists a route's files. Two tests in
+  `tests/packctl/test_validation.py` leave a merge unresolved: the list and the link check fail on
+  the old function and pass now.
+- `tests/packctl/test_promotion.py`: on a Spanish-locale Windows host, the eight tests that create a
+  directory link (nine runs, one test being parametrized) passed with a
+  `PytestUnhandledThreadExceptionWarning` per link. Without Developer Mode `try_dir_link` falls back
+  to `cmd /c mklink /J`, cmd writes its message in the console code page, the OEM one unless the
+  console runs UTF-8 (cp850 here: `UnicodeDecodeError` on byte `0xa2`, the `ó` of `Unión`), and the
+  helper decoded it as UTF-8 in subprocess's reader thread. It now keeps the output as bytes and
+  reads only the return code. Under `-W error::pytest.PytestUnhandledThreadExceptionWarning` the nine
+  runs go from failed to passed (in a console at code page 65001 both versions pass). CI never
+  showed it: its `tests/packctl` step on `ea7b396` reports 359 passed and no warning.
 
 ## [1.5.0] - 2026-10-02
 
