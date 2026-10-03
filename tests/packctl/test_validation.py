@@ -16,10 +16,12 @@ from conftest import (
 
 from packctl.validation import (
     validate_claims,
+    validate_conflict_markers,
     validate_licenses,
     validate_links,
     validate_moved_exact,
     validate_privacy,
+    validate_repo,
     validate_skills,
     validate_source_map,
 )
@@ -454,3 +456,169 @@ def test_moved_exact_pin_comparison_ignores_hex_case(tmp_path: Path) -> None:
 def test_every_moved_exact_seal_in_this_repo_matches_its_body() -> None:
     root = Path(__file__).resolve().parents[2]
     assert codes(validate_moved_exact(root)) == []
+
+
+# What `git merge` writes with merge.conflictStyle=diff3 (zdiff3 writes the same
+# markers): the plain style is this without the two base lines.
+CONFLICT_BLOCK = (
+    "<<<<<<< HEAD\n"
+    "ours\n"
+    "||||||| 224d81d\n"
+    "base\n"
+    "=======\n"
+    "theirs\n"
+    ">>>>>>> 4de8b5a1a84d6efdf81293d5c83d9cabaafef204\n"
+)
+
+
+def test_conflict_markers_are_reported_line_by_line(repo_factory) -> None:
+    # The measured failure: the squash of #52 committed three of these into
+    # CHANGELOG.md, and validate passed with 0 findings.
+    root = repo_factory({"CHANGELOG.md": "# Changelog\n\n" + CONFLICT_BLOCK})
+
+    findings = validate_conflict_markers(root)
+
+    assert codes(findings) == ["MERGE-CONFLICT-MARKER"] * 4
+    assert [(item["path"], item["line"]) for item in findings] == [
+        ("CHANGELOG.md", 3),
+        ("CHANGELOG.md", 5),
+        ("CHANGELOG.md", 7),
+        ("CHANGELOG.md", 9),
+    ]
+    assert findings[3]["evidence"] == (
+        ">>>>>>> 4de8b5a1a84d6efdf81293d5c83d9cabaafef204"
+    )
+
+
+def test_conflict_markers_count_inside_fences_and_in_any_text_file(
+    repo_factory,
+) -> None:
+    root = repo_factory(
+        {
+            "docs/example.md": (
+                "```python\n"
+                "<<<<<<< ours\n"
+                "x = 1\n"
+                "=======\n"
+                "x = 2\n"
+                ">>>>>>> theirs\n"
+                "```\n"
+            ),
+            "ui/menu.layout": "FrameWidgetClass root {\n<<<<<<<\tours\n}\n",
+            "scripts/run.sh": (
+                "<<<<<<<\r\necho one\r\n=======\r\necho two\r\n>>>>>>>\r\n"
+            ),
+        }
+    )
+
+    findings = validate_conflict_markers(root)
+
+    assert [(item["path"], item["line"]) for item in findings] == [
+        ("docs/example.md", 2),
+        ("docs/example.md", 4),
+        ("docs/example.md", 6),
+        ("scripts/run.sh", 1),
+        ("scripts/run.sh", 3),
+        ("scripts/run.sh", 5),
+        ("ui/menu.layout", 2),
+    ]
+
+
+def test_conflict_separators_count_only_inside_a_hunk(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "notes.md": (
+                "Example\n"
+                "=======\n"
+                "\n"
+                "<<<<<<< ours\n"
+                "a\n"
+                "========\n"
+                "=======\n"
+                "b\n"
+                ">>>>>>> theirs\n"
+                "=======\n"
+                "|||||||\n"
+                ">>>>>>> left behind\n"
+            ),
+        }
+    )
+
+    findings = validate_conflict_markers(root)
+
+    # The setext underline before the hunk, the 8-character run inside it and
+    # the separators after it pass; a closing marker counts without its opener.
+    assert [item["line"] for item in findings] == [4, 7, 9, 12]
+
+
+def test_conflict_marker_lookalikes_are_not_reported(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "notes.md": (
+                "A ruler as long as skills/dayz-pbo-build/SKILL.md:337 has\n"
+                "=================================\n"
+                "<<<<<<<< eight\n"
+                ">>>>>>>>>> ten\n"
+                "<<<<<<<HEAD\n"
+                "> > > a nested quote\n"
+                "  <<<<<<< indented, as a document shows one\n"
+                "| a | b |\n"
+            ),
+        }
+    )
+
+    assert validate_conflict_markers(root) == []
+
+
+def test_conflict_markers_skip_untracked_and_binary_files(repo_factory) -> None:
+    root = repo_factory()
+    block = CONFLICT_BLOCK.encode("utf-8")
+    (root / "untracked.md").write_bytes(block)
+    # Git's binary test: a NUL byte among the first 8000 bytes.
+    (root / "binary.p3d").write_bytes(b"x" * 7999 + b"\0\n" + block)
+    (root / "text.dat").write_bytes(b"x" * 8000 + b"\0\n" + block)
+    run_git(root, "add", "binary.p3d", "text.dat")
+
+    findings = validate_conflict_markers(root)
+
+    assert [(item["path"], item["line"]) for item in findings] == [
+        ("text.dat", 2),
+        ("text.dat", 4),
+        ("text.dat", 6),
+        ("text.dat", 8),
+    ]
+
+
+def test_conflict_markers_read_bytes_and_number_lines_as_git_does(
+    repo_factory,
+) -> None:
+    # A form feed, a lone CR and U+2028 end lines for str.splitlines() and the
+    # text reader, not for git; a Latin-1 file is text to git too.
+    root = repo_factory({"notes.md": "one\x0ctwo\rthree four\n" + CONFLICT_BLOCK})
+    (root / "latin1.cfg").write_bytes(b"caf\xe9\n" + CONFLICT_BLOCK.encode("utf-8"))
+    run_git(root, "add", "latin1.cfg")
+
+    findings = validate_conflict_markers(root)
+
+    assert [(item["path"], item["line"]) for item in findings] == [
+        ("latin1.cfg", 2),
+        ("latin1.cfg", 4),
+        ("latin1.cfg", 6),
+        ("latin1.cfg", 8),
+        ("notes.md", 2),
+        ("notes.md", 4),
+        ("notes.md", 6),
+        ("notes.md", 8),
+    ]
+
+
+def test_validate_repo_fails_on_a_conflict_marker(repo_factory) -> None:
+    root = repo_factory({"CHANGELOG.md": "# Changelog\n\n" + CONFLICT_BLOCK})
+
+    report = validate_repo(root)
+
+    assert report["verdict"] == "FAIL"
+    assert report["checks"]["conflict_markers"] == {
+        "finding_count": 4,
+        "verdict": "FAIL",
+    }

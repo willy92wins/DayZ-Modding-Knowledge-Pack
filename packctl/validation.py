@@ -1102,6 +1102,65 @@ def validate_generated(root: Path) -> list[dict[str, object]]:
     )
 
 
+# A marker line as git writes it at the default size of 7: one of these
+# characters 7 times from column 0, then a space, a tab or the end of the line.
+# A longer run, such as a ruler or a longer setext underline, is not a marker.
+CONFLICT_MARKER_PATTERN = re.compile(rb"([<|=>])\1{6}(?:[ \t]|$)")
+
+
+def validate_conflict_markers(root: Path) -> list[dict[str, object]]:
+    """Report git merge-conflict markers left in tracked files.
+
+    The squash of #52 (3e22429) committed `<<<<<<< HEAD`, `=======` and
+    `>>>>>>> 4de8b5a...` into CHANGELOG.md, and every other check passed it.
+
+    Every tracked file git would merge as text (no NUL byte in its first 8000
+    bytes, git's binary test) is read as bytes and split on line feeds, so the
+    line numbers are git's; fenced blocks are read too, since a conflict inside
+    a code example is still a conflict. `<<<<<<<` and `>>>>>>>` lines always
+    count. `=======` and `|||||||` lines count only between a `<<<<<<<` line and
+    the next `>>>>>>>` line: alone, `=======` is also the setext underline of a
+    7-letter heading. Git never indents a marker, so a document can show one by
+    indenting it.
+    """
+    root = Path(root).resolve()
+    findings: list[dict[str, object]] = []
+    for relative in git_tracked_files(root):
+        path = root / relative
+        if not path.is_file():
+            continue
+        try:
+            data = path.read_bytes()
+        except OSError:
+            continue
+        if b"\0" in data[:8000]:
+            continue
+        in_hunk = False
+        for line_number, line in enumerate(data.split(b"\n"), 1):
+            if line.endswith(b"\r"):
+                line = line[:-1]
+            match = CONFLICT_MARKER_PATTERN.match(line)
+            if match is None:
+                continue
+            marker = match.group(1)
+            if marker in (b"=", b"|") and not in_hunk:
+                continue
+            if marker == b"<":
+                in_hunk = True
+            elif marker == b">":
+                in_hunk = False
+            findings.append(
+                finding(
+                    "MERGE-CONFLICT-MARKER",
+                    path=relative,
+                    line=line_number,
+                    message="A tracked file contains a git merge-conflict marker.",
+                    evidence=line[:80].decode("utf-8", "replace"),
+                )
+            )
+    return sort_findings(findings)
+
+
 def validate_repo(root: Path) -> dict[str, object]:
     root = Path(root).resolve()
     checks = {
@@ -1109,6 +1168,7 @@ def validate_repo(root: Path) -> dict[str, object]:
         "skills": validate_skills(root),
         "moved_exact": validate_moved_exact(root),
         "generated": validate_generated(root),
+        "conflict_markers": validate_conflict_markers(root),
         "claims": validate_claims(root),
         "links": validate_links(root),
         "privacy": validate_privacy(root),

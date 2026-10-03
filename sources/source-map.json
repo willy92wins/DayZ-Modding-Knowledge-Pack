@@ -691,10 +691,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-glb-proxy-loop@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (owner's choice: a packctl validate check for git merge-conflict markers). Main 3e22429, the squash of #52, committed '<<<<<<< HEAD' (CHANGELOG.md line 143), '=======' (153) and '>>>>>>> 4de8b5a1a84d6efdf81293d5c83d9cabaafef204' (163) into CHANGELOG.md Unreleased -> Fixed, and python -m packctl validate passed with 0 findings; the squash of #67 (f27691e) removed the three lines. packctl/validation.py gains validate_conflict_markers, registered in validate_repo as the check conflict_markers, finding MERGE-CONFLICT-MARKER (error). Rule, with the three details the owner chose: every git-tracked file with no NUL byte in its first 8000 bytes (git's binary test; measured with git 2.53.0, a NUL at byte index 7999 makes git diff call a file binary and one at index 8000 does not) is read as bytes and split on line feeds, one trailing CR dropped, fenced blocks included; a marker line is 7 of '<', '>', '=' or '|' from column 0 followed by a space, a tab or the line end; '<<<<<<<' and '>>>>>>>' lines always count, '=======' and '|||||||' lines only between a '<<<<<<<' line and the next '>>>>>>>' line, so a 7-letter setext heading underline passes. Measured with the final code: on 3e22429 it reads 923 of 932 tracked files (9 binary test fixtures skipped) and reports exactly CHANGELOG.md:143, :153 and :163; the 33-'=' rulers at skills/dayz-pbo-build/SKILL.md:337 and :339, which a 'starts with =======' rule would flag, pass; on this branch it reports 0. tests/packctl/test_validation.py adds seven tests (diff3 hunk line by line with evidence, fences and non-Markdown files with tab and CRLF markers, separators only inside a hunk, lookalikes, untracked and binary files at git's 8000-byte boundary, bytes and git line numbering with a Latin-1 file, validate_repo wiring); ten mutations of the check (separators counted anywhere, no tab, no CR strip, splitlines numbering, UTF-8-only reading, no binary skip, a hunk that never closes, a prefix-only pattern, the check unregistered, a 7999-byte sniff) each turn at least one of them red. CHANGELOG.md: an Unreleased Added entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3acac5be146aca85ecab82efdad9ad0858769f4c19bb1526241c10909770f79e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-conflict-markers@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ad0a8fe5724928c330d1b3faaa37be501ace3e0570eb4dcf5eb5abe63b666c07",
+      "output_hash": "3acac5be146aca85ecab82efdad9ad0858769f4c19bb1526241c10909770f79e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3021,10 +3031,20 @@
           "source_path": "packctl/validation.py",
           "source_revision": "viewer-core@2026-09-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (owner's choice: a packctl validate check for git merge-conflict markers). Main 3e22429, the squash of #52, committed '<<<<<<< HEAD' (CHANGELOG.md line 143), '=======' (153) and '>>>>>>> 4de8b5a1a84d6efdf81293d5c83d9cabaafef204' (163) into CHANGELOG.md Unreleased -> Fixed, and python -m packctl validate passed with 0 findings; the squash of #67 (f27691e) removed the three lines. packctl/validation.py gains validate_conflict_markers, registered in validate_repo as the check conflict_markers, finding MERGE-CONFLICT-MARKER (error). Rule, with the three details the owner chose: every git-tracked file with no NUL byte in its first 8000 bytes (git's binary test; measured with git 2.53.0, a NUL at byte index 7999 makes git diff call a file binary and one at index 8000 does not) is read as bytes and split on line feeds, one trailing CR dropped, fenced blocks included; a marker line is 7 of '<', '>', '=' or '|' from column 0 followed by a space, a tab or the line end; '<<<<<<<' and '>>>>>>>' lines always count, '=======' and '|||||||' lines only between a '<<<<<<<' line and the next '>>>>>>>' line, so a 7-letter setext heading underline passes. Measured with the final code: on 3e22429 it reads 923 of 932 tracked files (9 binary test fixtures skipped) and reports exactly CHANGELOG.md:143, :153 and :163; the 33-'=' rulers at skills/dayz-pbo-build/SKILL.md:337 and :339, which a 'starts with =======' rule would flag, pass; on this branch it reports 0. tests/packctl/test_validation.py adds seven tests (diff3 hunk line by line with evidence, fences and non-Markdown files with tab and CRLF markers, separators only inside a hunk, lookalikes, untracked and binary files at git's 8000-byte boundary, bytes and git line numbering with a Latin-1 file, validate_repo wiring); ten mutations of the check (separators counted anywhere, no tab, no CR strip, splitlines numbering, UTF-8-only reading, no binary skip, a hunk that never closes, a prefix-only pattern, the check unregistered, a 7999-byte sniff) each turn at least one of them red. CHANGELOG.md: an Unreleased Added entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ecc5780e47c03d8f326bc00e642f906b640ba6523bd38e4ead8a883ec0b01ef4",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/validation.py",
+          "source_revision": "kp-update-conflict-markers@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "36496ae6a88a2f80140177c0dd3c5f907ddd206ec4da0aa62307f40b140d24c2",
+      "output_hash": "ecc5780e47c03d8f326bc00e642f906b640ba6523bd38e4ead8a883ec0b01ef4",
       "output_path": "packctl/validation.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -16435,10 +16455,20 @@
           "source_path": "tests/packctl/test_validation.py",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 (owner's choice: a packctl validate check for git merge-conflict markers). Main 3e22429, the squash of #52, committed '<<<<<<< HEAD' (CHANGELOG.md line 143), '=======' (153) and '>>>>>>> 4de8b5a1a84d6efdf81293d5c83d9cabaafef204' (163) into CHANGELOG.md Unreleased -> Fixed, and python -m packctl validate passed with 0 findings; the squash of #67 (f27691e) removed the three lines. packctl/validation.py gains validate_conflict_markers, registered in validate_repo as the check conflict_markers, finding MERGE-CONFLICT-MARKER (error). Rule, with the three details the owner chose: every git-tracked file with no NUL byte in its first 8000 bytes (git's binary test; measured with git 2.53.0, a NUL at byte index 7999 makes git diff call a file binary and one at index 8000 does not) is read as bytes and split on line feeds, one trailing CR dropped, fenced blocks included; a marker line is 7 of '<', '>', '=' or '|' from column 0 followed by a space, a tab or the line end; '<<<<<<<' and '>>>>>>>' lines always count, '=======' and '|||||||' lines only between a '<<<<<<<' line and the next '>>>>>>>' line, so a 7-letter setext heading underline passes. Measured with the final code: on 3e22429 it reads 923 of 932 tracked files (9 binary test fixtures skipped) and reports exactly CHANGELOG.md:143, :153 and :163; the 33-'=' rulers at skills/dayz-pbo-build/SKILL.md:337 and :339, which a 'starts with =======' rule would flag, pass; on this branch it reports 0. tests/packctl/test_validation.py adds seven tests (diff3 hunk line by line with evidence, fences and non-Markdown files with tab and CRLF markers, separators only inside a hunk, lookalikes, untracked and binary files at git's 8000-byte boundary, bytes and git line numbering with a Latin-1 file, validate_repo wiring); ten mutations of the check (separators counted anywhere, no tab, no CR strip, splitlines numbering, UTF-8-only reading, no binary skip, a hunk that never closes, a prefix-only pattern, the check unregistered, a 7999-byte sniff) each turn at least one of them red. CHANGELOG.md: an Unreleased Added entry. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e4becdc2757c2a957db4f7e4a728e69e76b0f526f36de65a055e3fe556e1f037",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_validation.py",
+          "source_revision": "kp-update-conflict-markers@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f488977d0a91441e3dd38bb7c0bd9c4ed8383963f6f282d73d832fac1d21cea9",
+      "output_hash": "e4becdc2757c2a957db4f7e4a728e69e76b0f526f36de65a055e3fe556e1f037",
       "output_path": "tests/packctl/test_validation.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"

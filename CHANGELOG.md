@@ -47,6 +47,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Regression test: `tests/test_extract_empties.py`, which skips itself where numpy is missing, as on
   the CI runner that now runs the skill test folders. Its FBX path placeholder adds it to the pinned
   census of payloads that only run once an operator edits a path (`tests/packctl/test_promotion.py`).
+- `packctl validate` fails on git merge-conflict markers. The squash of #52 (`3e22429`) committed
+  `<<<<<<< HEAD`, `=======` and `>>>>>>> 4de8b5a…` into this file's Unreleased → Fixed, and
+  `validate` passed with 0 findings; the squash of #67 (`f27691e`) removed them. The new
+  `conflict_markers` check reads every tracked file git would merge as text (no NUL byte in its
+  first 8000 bytes, git's binary test), fenced code blocks included, splits it on line feeds so the
+  line numbers are git's, and reports `MERGE-CONFLICT-MARKER` for each marker line: 7 `<`, `>`, `=`
+  or `|` from column 0, then a space, a tab or the line end. `<<<<<<<` and `>>>>>>>` lines always
+  count. `=======` and `|||||||` lines count only between a `<<<<<<<` line and the next `>>>>>>>`
+  line, so the setext underline of a 7-letter heading passes, and a separator left behind once both
+  side markers are gone is not reported. Git never indents a marker, so a document that shows one
+  indents it. On `3e22429` the check reads 923 of the 932 tracked files (the 9 it skips are binary
+  test fixtures) and reports those three lines only; a longer run, such as the 33 `=` at
+  `skills/dayz-pbo-build/SKILL.md:337`, is not a marker. Tests in `tests/packctl/test_validation.py`.
+
 ### Changed
 
 - `dayz-p3d-audit` killer #8 (`SKILL.md` and `references/killers-detail.md` §8): a closed part
