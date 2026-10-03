@@ -29,6 +29,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   top's footprint; anything else is inconclusive, and the move is kept short so the player does not
   walk off the top.
 
+- `dayz-animation-pipeline` `scripts/extract_empties.py`, the rig step that writes
+  `empties_armworld.json`. `build_rig_dayz.py` read that file, but no script of the skill wrote
+  it: the extractor stayed in the `WeaponAnimPipeline_dev` project and printed its JSON between
+  markers. A rig rebuilt with `{}` in its place kept its bones and lost every anchor, and
+  `build_viewer.py` then put the weapon at a fixed `(0, 1.3, 0.2)` instead of on
+  `RightHand_Dummy` `(-0.156, 1.368, 0.207)`. The script composes each helper's world through its
+  parent chain and exits 1 without writing when the FBX has no `RightHand_Dummy`; it removes the
+  previous run's file before the FBX import, read-only or not, so after a failed run
+  `build_rig_dayz.py` stops instead of building on stale anchors (a file it cannot remove stops the
+  extractor with that error). On the BI FBX (Blender 5.1.1), `fbx_extract.py`,
+  `extract_empties.py` and `build_rig_dayz.py` rebuild the project's `data/rig_dayz.json` byte for
+  byte except its `space` label. SKILL.md's scripts index and `weapon-anim-authoring-viewer.md`
+  "Reusable tools" list the pipeline in the order it runs, with `--python-exit-code 1` for the
+  Blender steps and a stop at the first non-zero exit (without the flag an uncaught Python
+  exception exits 0).
+  Regression test: `tests/test_extract_empties.py`, which skips itself where numpy is missing, as on
+  the CI runner that now runs the skill test folders. Its FBX path placeholder adds it to the pinned
+  census of payloads that only run once an operator edits a path (`tests/packctl/test_promotion.py`).
 ### Changed
 
 - `dayz-p3d-audit` killer #8 (`SKILL.md` and `references/killers-detail.md` §8): a closed part
@@ -122,6 +140,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
+  by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
+  bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties
+  that import disabled in viewports, `RightHand_Dummy`, `LeftHand_Dummy` and the
+  object-parented `Weapon_Root` among them, keep it at the origin before and after
+  `view_layer.update()`; the 21 others, 16 of them parented to bones, agree with the formula.
+  The SKILL.md entry of `fbx_extract.py` now says its `rig_raw.json` carries that
+  `matrix_world` for the empties, and "Reusable tools" no longer calls `build_rig_dayz.py`'s
+  output DayZ-space.
 - `dayz-mcp-verify`: the pose check of "Axis-aligned test fixtures" and the `scene_raycast` entry
   of "What it does not cover" no longer read anything from the default `rvproxy` reply's `normal`.
   That field is the engine's `RaycastRVResult.dir`, for a ray the direction and size of the
