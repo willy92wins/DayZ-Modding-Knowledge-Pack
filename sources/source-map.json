@@ -786,7 +786,7 @@
           "decision": "merge",
           "decision_evidence": "[Unreleased] Added entry for dayz-physics-engine engine truth 11: walking and jumping on the moving platform that is a separate entity (SP-452), measured in game on DayZDiag 1.29.163709, dayz-mcp run 8e032fd9, 2026-10-01.",
           "license": "MIT",
-          "source_hash": "e40c0e3a89cbfc07586d9cd0deeb902e96fd146f85c0a9e80bff4fc0e68ade1f",
+          "source_hash": "6c0c2b5588a5ac31336162bcf61cb006b8a1d8b58d763a6a1a03a2c6eead3558",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-spb-physics-walk@2026-10-03",
@@ -794,7 +794,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e40c0e3a89cbfc07586d9cd0deeb902e96fd146f85c0a9e80bff4fc0e68ade1f",
+      "output_hash": "6c0c2b5588a5ac31336162bcf61cb006b8a1d8b58d763a6a1a03a2c6eead3558",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -9857,9 +9857,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03 (SP-452 of the skill-patches ledger): engine truth 11 gains a sub-bullet, Walking and jumping on it, with claim CLAIM-PHYS-PLATFORM-WALK-INGAME. In game, DayZDiag 1.29.163709, 2026-10-01, one client on localhost, dayz-mcp run 8e032fd9, the SR_LiftPlatform2 entity of truth 11 in mode B, four 8.9 m trips played by hand, the player's position logged at 20 Hz (1,448 server, 1,369 client samples): walking kept link=1 with no slide and 96.0-97.8 % (server) / 98.4-99.6 % (client) of the samples within 8 cm of the face on the three trips walked; two jumps on the way down kept the link, 0.42-0.47 s airborne, peak 0.30-0.32 m above the face, landing on it, against the vanilla StartCommand_Fall(2.6) arc of 0.345 m / 0.53 s computed by ballistics (4_world/entities/dayzplayerimplementjumpclimb.c:97; 3_game/human.c:1467); walking aboard linked with no preparatory step about 8 s before the start; stepping off at the bottom (0.35 m step) and onto the deck at the top (last 0.56 s, platform within 3 cm) caused no fall; spikes of up to 22 cm (server) and 12.6 cm (client) for one to three samples, the client ones following long frames, the server cause open. Not measured: a jump while rising, a driven vehicle aboard, a second client's latency. Sources: SecretRock_dev/reviews/2026-10-01-lift-spike2/RESULTS2.md (run 5) and run5_8e032fd9/walk_detail.json, analysis.json and both script logs; numbers re-read from walk_detail.json and the logs. Cross-family review by Codex. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03 (SP-452 of the skill-patches ledger): engine truth 11 gains a sub-bullet, Walking and jumping on it, with claim CLAIM-PHYS-PLATFORM-WALK-INGAME. In game, DayZDiag 1.29.163709, 2026-10-01, one client on localhost, dayz-mcp run 8e032fd9, the SR_LiftPlatform2 entity of truth 11 in mode B, four 8.9 m trips played by hand, the player's position logged at 20 Hz while moving and 2 Hz at rest (1,448 server, 1,369 client samples): walking kept link=1 with no slide and 96.0-97.8 % (server) / 98.4-99.6 % (client) of the samples within 8 cm of the face on the three trips walked; two jumps on the way down kept the link, 0.42-0.47 s airborne, peak 0.30-0.32 m above the face, landing on it, against the vanilla StartCommand_Fall(2.6) arc of 0.345 m / 0.53 s computed by ballistics (4_world/entities/dayzplayerimplementjumpclimb.c:97; 3_game/human.c:1467), so the jump is relative to the platform, whether carried by the link or inheriting its velocity at take-off (not separated); walking aboard linked with no preparatory step about 8 s before the start; no sample read a fall when stepping off at the bottom (0.35 m step, logged at 2 Hz) or onto the deck at the top (about the last half second, platform within 3 cm, 20 Hz); spikes of up to 22 cm (server) and 12.6 cm (client) for one to three samples, the client ones following long frames, the server cause open. Not measured: a jump while rising, a driven vehicle aboard, a second client's latency. Sources: SecretRock_dev/reviews/2026-10-01-lift-spike2/RESULTS2.md (run 5) and run5_8e032fd9/walk_detail.json, analysis.json and both script logs; numbers re-read from walk_detail.json and the logs. Cross-family review by Codex. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "91ccacf1babbdbc4ac659f620179cfb7786b1fa67927e5c01cee2d99e69ea01f",
+          "source_hash": "dc9dd040718996efdbf108b4d98b2d9a7c701642283f3e458c365a1c2fa081cc",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-spb-physics-walk@2026-10-03",
@@ -9867,7 +9867,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "91ccacf1babbdbc4ac659f620179cfb7786b1fa67927e5c01cee2d99e69ea01f",
+      "output_hash": "dc9dd040718996efdbf108b4d98b2d9a7c701642283f3e458c365a1c2fa081cc",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -16170,7 +16170,7 @@
           "decision": "merge",
           "decision_evidence": "Registers CLAIM-PHYS-PLATFORM-WALK-INGAME (runtime_verified) for the dayz-physics-engine truth 11 sub-bullet on walking and jumping on the moving platform (SP-452): DayZDiag 1.29.163709, 2026-10-01, dayz-mcp run 8e032fd9, four 8.9 m trips played by hand on SR_LiftPlatform2 in mode B, 1,448 server and 1,369 client samples at 20 Hz; numbers from SecretRock_dev/reviews/2026-10-01-lift-spike2/RESULTS2.md (run 5) and run5_8e032fd9/walk_detail.json, the ballistic figures computed from StartCommand_Fall(2.6) (4_world/entities/dayzplayerimplementjumpclimb.c:97). No other claim moves.",
           "license": "MIT",
-          "source_hash": "3443b864fcfef9e2093d0cfe3bc6a8def9cce621d58c1133a691aeb6eccfa800",
+          "source_hash": "210b9926edba952dfefc01def213db2006c17c2d998a8cbda4ccdc6f60a84d0b",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-spb-physics-walk@2026-10-03",
@@ -16178,7 +16178,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3443b864fcfef9e2093d0cfe3bc6a8def9cce621d58c1133a691aeb6eccfa800",
+      "output_hash": "210b9926edba952dfefc01def213db2006c17c2d998a8cbda4ccdc6f60a84d0b",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
