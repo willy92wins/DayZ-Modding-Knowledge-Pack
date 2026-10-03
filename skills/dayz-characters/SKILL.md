@@ -344,7 +344,7 @@ cross product and the stored normals both point into the material.
 
 [OFFLINE MEASURED 2026-10-02] `references/winding_fixtures/` holds the three MLODs of the Rule 12 in-game
 probe byte for byte (`make_fixtures.py` rewrites them with py3d 1.8.0) and the correct one with its normals
-negated; `references/test_check_dayz_winding.py` holds the expected verdicts. The gate passes the correct
+negated; `tests/test_check_dayz_winding.py` holds the expected verdicts. The gate passes the correct
 export and the mirrored one, both solid in game, and fails the inside-out one (reverse every face, then
 negate the pool) and the outward-normal one (negate the pool). On the three LFInfectedBig builds of the
 chiral check it passes the Rule 12 build (48 closed shells negative; 99.8 % of its 131,278 corner normals
