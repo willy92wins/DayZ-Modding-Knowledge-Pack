@@ -620,7 +620,7 @@ hold_ttl_s)` (SUSTAINED control, fail-closed), `vehicle_telemetry()`, `vehicle_r
 ordered rungs **R1 spawns → R2 render → R3 get-in available → R4 seated → R5 drives → R6
 wheel direction**, each reading in-game ground-truth and mapping its failure to a known fix in the
 SUB_BRZ taxonomy (`dayz-vehicles/references/`). Reference orchestrator `references/drive_ladder.py`
-(drives R1→R6, outputs `verdict.json`; does NOT apply fixes nor rebuild) + fixtures `references/test_drive_ladder.py`.
+(drives R1→R6, outputs `verdict.json`; does NOT apply fixes nor rebuild) + fixtures `tests/test_drive_ladder.py`.
 
 **Full detail** (verbs, verified owner-side mechanism, preconditions, spawn placement,
 R2.5 restore-gameplay, anti-false-green guardrails, ladder table, and failure→fix mapping) →

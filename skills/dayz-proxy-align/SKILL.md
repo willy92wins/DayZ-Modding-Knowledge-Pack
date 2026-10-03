@@ -196,7 +196,7 @@ https://mrcmodding.gitbook.io/home/documents/proxy-coordinates):
 
 It is pure geometry, so orientation is **fully reproducible offline** — `proxy_frame.py` computes
 the same matrix the engine does. The old "confirm rotation in-game by trial" caveat came from not
-knowing this rule (`scripts/test_proxy_frame.py` checks it offline: canonical -> identity, the 90/45/45 tie -> ambiguous, rotation round-trips).
+knowing this rule (`tests/test_proxy_frame.py` checks it offline: canonical -> identity, the 90/45/45 tie -> ambiguous, rotation round-trips).
 
 **The degenerate-triangle gotcha (the usual cause of "worn but rotated").** If the two edges from
 the anchor are equal length — the 90/45/45 isosceles triangle hand-rolled proxy builders tend to

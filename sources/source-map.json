@@ -771,10 +771,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-mcpv-live-port@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Fixed entry for skill-tests-pytest-folders 2026-10-02, after the packctl gate entry that lists the four skill test files it does not run: they moved into skills/<skill>/tests and run under the gate's skill_tests check and CI. Numbers measured on 8e4be32 plus this change with Python 3.14.3, pytest 9.1.1, numpy 2.4.4 and Blender 5.1.1 (Python 3.13.9): pytest per file and per folder, the python test_<name>.py entries, run_regression_tests.py, packctl test-folders --tree skills with numpy present and hidden, and two mutants (drive_ladder R3 passing on the passenger seat, proxy_frame never flagging ambiguity) against the old and new files.",
+          "license": "MIT",
+          "source_hash": "857df1ea410ee0f946c585be23b453c12bb785e55859b2a974b57216e82cfb1f",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c879cec21a1205e7727b5b1e681bcb487d210753aea694abfbe0c5a038b60fdd",
+      "output_hash": "857df1ea410ee0f946c585be23b453c12bb785e55859b2a974b57216e82cfb1f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7530,10 +7540,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-mcpv-live-port@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: the four skill test files that packctl gate and CI did not run, because they sat outside skills/<skill>/tests, moved into their skill's tests/ folder. This file cites the new path; the path was checked to exist in the tree and the rest of the text is unchanged.",
+          "license": "MIT",
+          "source_hash": "db012cb2fa36a607e0162828032db5e24c5d966c384a2434936dafcf25749101",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9eb994034a6ff4f9529eaf2d32296f2eae8475cd40140859082e9b1329bc6c8c",
+      "output_hash": "db012cb2fa36a607e0162828032db5e24c5d966c384a2434936dafcf25749101",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -7582,10 +7602,20 @@
           "source_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: the four skill test files that packctl gate and CI did not run, because they sat outside skills/<skill>/tests, moved into their skill's tests/ folder. This file cites the new path; the path was checked to exist in the tree and the rest of the text is unchanged.",
+          "license": "MIT",
+          "source_hash": "7e4b042dd6fe2ad26b42896167336f58daaf613f83e41711defbeb681c630747",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f6685123429036b499ad1be77643a48d1dcdd0de35e0f255c36a605c84fada2c",
+      "output_hash": "7e4b042dd6fe2ad26b42896167336f58daaf613f83e41711defbeb681c630747",
       "output_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -7633,7 +7663,7 @@
       "verification_level": "cross_checked"
     },
     {
-      "artifact_id": "file/skills/dayz-mcp-verify/references/test_drive_ladder.py",
+      "artifact_id": "file/skills/dayz-mcp-verify/tests/test_drive_ladder.py",
       "distribution_role": "payload",
       "hash_policy": "sha256",
       "inputs": [
@@ -7666,13 +7696,23 @@
           "source_path": "skills/dayz-mcp-verify/references/test_drive_ladder.py",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: moved from references/ to tests/ and made to fail: each check() call, which recorded a failure and never raised (under pytest all 9 tests passed with a check failing), is an assert with the check's name as message; the module-level time.sleep patch is an autouse monkeypatch fixture; the fixture data is unchanged. Measured on 8e4be32 plus this change: 9 passed; with drive_ladder R3 mutated to pass on the passenger seat, 1 failed (test_r3_passenger_only) where the old file gave 9 passed under pytest; python test_drive_ladder.py keeps exit 0 = pass through pytest.main.",
+          "license": "MIT",
+          "source_hash": "c2b807466c24755f457aa47f0a3ae3d66f5fdf1d76b7821e559880d218a67e49",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/tests/test_drive_ladder.py",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "60d2aa229d13a0f0067cd09e4f973ba4af6156f185053295883dc2e597e1d94f",
-      "output_path": "skills/dayz-mcp-verify/references/test_drive_ladder.py",
+      "output_hash": "c2b807466c24755f457aa47f0a3ae3d66f5fdf1d76b7821e559880d218a67e49",
+      "output_path": "skills/dayz-mcp-verify/tests/test_drive_ladder.py",
       "routing_artifact_id": "skill/dayz-mcp-verify",
-      "verification_level": "cross_checked"
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-mod-workflow/skill.md",
@@ -9996,10 +10036,20 @@
           "source_path": "skills/dayz-proxy-align/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: the four skill test files that packctl gate and CI did not run, because they sat outside skills/<skill>/tests, moved into their skill's tests/ folder. This file cites the new path; the path was checked to exist in the tree and the rest of the text is unchanged.",
+          "license": "MIT",
+          "source_hash": "2ad65e2cdf2319f8fb3dca9c8170a0a614cea073730124f5e6630fe9d960a766",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d7c01f9604a4e9f8fb51aff73bdd1aade5e8bf92113140a502a707a893f8f084",
+      "output_hash": "2ad65e2cdf2319f8fb3dca9c8170a0a614cea073730124f5e6630fe9d960a766",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -10121,28 +10171,6 @@
       "license": "MIT",
       "output_hash": "2e62ec9519e115897954938a7d4a030bd215dc20bc1692fd3c0d6945bf233ab8",
       "output_path": "skills/dayz-proxy-align/scripts/proxy_viewer.py",
-      "routing_artifact_id": "skill/dayz-proxy-align",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-proxy-align/scripts/test_proxy_frame.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "2f12140c7679f5d6aafd87ee58f2c4041bbf3e6b506dd33adf40873c05cc768d",
-          "source_id": "installed-skills",
-          "source_path": "dayz-proxy-align/scripts/test_proxy_frame.py",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "2f12140c7679f5d6aafd87ee58f2c4041bbf3e6b506dd33adf40873c05cc768d",
-      "output_path": "skills/dayz-proxy-align/scripts/test_proxy_frame.py",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
     },
@@ -10376,13 +10404,23 @@
           "source_path": "dayz-realistic-animation-director/scripts/run_regression_tests.py",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: TEST_DIR follows the unit tests and their fixtures from scripts/tests to <skill>/tests (FIXTURE_DIR stays TEST_DIR/fixtures). Run on 8e4be32 plus this change: exit 0, unit 40 tests OK, blender_sampler PASS in Blender 5.1.1, synthetic PASS (positive fixture and every negative case).",
+          "license": "MIT",
+          "source_hash": "44e58c9153e578c815cbacee4e50ea0cfd8a175ffa5dc7597d0d39297c55bc9d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/scripts/run_regression_tests.py",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2cb1f2ffde0939523b225c2d618aba83250a5116dc62379db1d22276c95a3350",
+      "output_hash": "44e58c9153e578c815cbacee4e50ea0cfd8a175ffa5dc7597d0d39297c55bc9d",
       "output_path": "skills/dayz-realistic-animation-director/scripts/run_regression_tests.py",
       "routing_artifact_id": "skill/dayz-realistic-animation-director",
-      "verification_level": "cross_checked"
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-realistic-animation-director/scripts/sample_blender_motion.py",
@@ -10407,138 +10445,6 @@
       "verification_level": "cross_checked"
     },
     {
-      "artifact_id": "file/skills/dayz-realistic-animation-director/scripts/tests/fixtures/negative-checks.json",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "e85a64b41c34a1a0569f2858ad91749eb2b99ef890251d700078d6bf9962da01",
-          "source_id": "installed-skills",
-          "source_path": "dayz-realistic-animation-director/scripts/tests/fixtures/negative-checks.json",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "e85a64b41c34a1a0569f2858ad91749eb2b99ef890251d700078d6bf9962da01",
-      "output_path": "skills/dayz-realistic-animation-director/scripts/tests/fixtures/negative-checks.json",
-      "routing_artifact_id": "skill/dayz-realistic-animation-director",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-realistic-animation-director/scripts/tests/fixtures/positive-generic.contract.json",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "67d946a527276deb89f90010bde4d2ea0eb569cfa8441f9150079405670fcb3b",
-          "source_id": "installed-skills",
-          "source_path": "dayz-realistic-animation-director/scripts/tests/fixtures/positive-generic.contract.json",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "67d946a527276deb89f90010bde4d2ea0eb569cfa8441f9150079405670fcb3b",
-      "output_path": "skills/dayz-realistic-animation-director/scripts/tests/fixtures/positive-generic.contract.json",
-      "routing_artifact_id": "skill/dayz-realistic-animation-director",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-realistic-animation-director/scripts/tests/fixtures/positive-generic.json",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "e81ee428c8c1dd99d6a2051018081faae129e35fec8c7d843f1ec041401727d8",
-          "source_id": "installed-skills",
-          "source_path": "dayz-realistic-animation-director/scripts/tests/fixtures/positive-generic.json",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "e81ee428c8c1dd99d6a2051018081faae129e35fec8c7d843f1ec041401727d8",
-      "output_path": "skills/dayz-realistic-animation-director/scripts/tests/fixtures/positive-generic.json",
-      "routing_artifact_id": "skill/dayz-realistic-animation-director",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-realistic-animation-director/scripts/tests/fixtures/sr2m-v44.contract.json",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "62a5cb42e9977a37bd0559ed7d3c4a19b3681783c680e3b204564f08ae2eed7e",
-          "source_id": "installed-skills",
-          "source_path": "dayz-realistic-animation-director/scripts/tests/fixtures/sr2m-v44.contract.json",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "62a5cb42e9977a37bd0559ed7d3c4a19b3681783c680e3b204564f08ae2eed7e",
-      "output_path": "skills/dayz-realistic-animation-director/scripts/tests/fixtures/sr2m-v44.contract.json",
-      "routing_artifact_id": "skill/dayz-realistic-animation-director",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-realistic-animation-director/scripts/tests/test_sample_blender_motion.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "e8b1191b0e2790a13ba74823f5839c1f2b14ea9f90ba60e669cb700e3ca83658",
-          "source_id": "installed-skills",
-          "source_path": "dayz-realistic-animation-director/scripts/tests/test_sample_blender_motion.py",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "e8b1191b0e2790a13ba74823f5839c1f2b14ea9f90ba60e669cb700e3ca83658",
-      "output_path": "skills/dayz-realistic-animation-director/scripts/tests/test_sample_blender_motion.py",
-      "routing_artifact_id": "skill/dayz-realistic-animation-director",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/dayz-realistic-animation-director/scripts/tests/test_validate_motion_contract.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
-          "license": "MIT",
-          "source_hash": "9ce817dfdaf37997ab0bf2d456517138d854a253afd776e418b47449076e75ee",
-          "source_id": "installed-skills",
-          "source_path": "dayz-realistic-animation-director/scripts/tests/test_validate_motion_contract.py",
-          "source_revision": "filesystem@2026-08-17",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "9ce817dfdaf37997ab0bf2d456517138d854a253afd776e418b47449076e75ee",
-      "output_path": "skills/dayz-realistic-animation-director/scripts/tests/test_validate_motion_contract.py",
-      "routing_artifact_id": "skill/dayz-realistic-animation-director",
-      "verification_level": "cross_checked"
-    },
-    {
       "artifact_id": "file/skills/dayz-realistic-animation-director/scripts/validate_motion_contract.py",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -10559,6 +10465,198 @@
       "output_path": "skills/dayz-realistic-animation-director/scripts/validate_motion_contract.py",
       "routing_artifact_id": "skill/dayz-realistic-animation-director",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-realistic-animation-director/tests/fixtures/negative-checks.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "e85a64b41c34a1a0569f2858ad91749eb2b99ef890251d700078d6bf9962da01",
+          "source_id": "installed-skills",
+          "source_path": "dayz-realistic-animation-director/scripts/tests/fixtures/negative-checks.json",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: moved unchanged (sha256 equal) from scripts/tests/fixtures/ to tests/fixtures/ with the unit tests; scripts/run_regression_tests.py reads FIXTURE_DIR there. Run on 8e4be32 plus this change: synthetic PASS, every negative case.",
+          "license": "MIT",
+          "source_hash": "e85a64b41c34a1a0569f2858ad91749eb2b99ef890251d700078d6bf9962da01",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/tests/fixtures/negative-checks.json",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e85a64b41c34a1a0569f2858ad91749eb2b99ef890251d700078d6bf9962da01",
+      "output_path": "skills/dayz-realistic-animation-director/tests/fixtures/negative-checks.json",
+      "routing_artifact_id": "skill/dayz-realistic-animation-director",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-realistic-animation-director/tests/fixtures/positive-generic.contract.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "67d946a527276deb89f90010bde4d2ea0eb569cfa8441f9150079405670fcb3b",
+          "source_id": "installed-skills",
+          "source_path": "dayz-realistic-animation-director/scripts/tests/fixtures/positive-generic.contract.json",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: moved unchanged (sha256 equal) from scripts/tests/fixtures/ to tests/fixtures/ with the unit tests; scripts/run_regression_tests.py reads FIXTURE_DIR there. Run on 8e4be32 plus this change: synthetic positive PASS.",
+          "license": "MIT",
+          "source_hash": "67d946a527276deb89f90010bde4d2ea0eb569cfa8441f9150079405670fcb3b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/tests/fixtures/positive-generic.contract.json",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "67d946a527276deb89f90010bde4d2ea0eb569cfa8441f9150079405670fcb3b",
+      "output_path": "skills/dayz-realistic-animation-director/tests/fixtures/positive-generic.contract.json",
+      "routing_artifact_id": "skill/dayz-realistic-animation-director",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-realistic-animation-director/tests/fixtures/positive-generic.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "e81ee428c8c1dd99d6a2051018081faae129e35fec8c7d843f1ec041401727d8",
+          "source_id": "installed-skills",
+          "source_path": "dayz-realistic-animation-director/scripts/tests/fixtures/positive-generic.json",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: moved unchanged (sha256 equal) from scripts/tests/fixtures/ to tests/fixtures/ with the unit tests; scripts/run_regression_tests.py reads FIXTURE_DIR there. Run on 8e4be32 plus this change: synthetic positive PASS.",
+          "license": "MIT",
+          "source_hash": "e81ee428c8c1dd99d6a2051018081faae129e35fec8c7d843f1ec041401727d8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/tests/fixtures/positive-generic.json",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e81ee428c8c1dd99d6a2051018081faae129e35fec8c7d843f1ec041401727d8",
+      "output_path": "skills/dayz-realistic-animation-director/tests/fixtures/positive-generic.json",
+      "routing_artifact_id": "skill/dayz-realistic-animation-director",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-realistic-animation-director/tests/fixtures/sr2m-v44.contract.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "62a5cb42e9977a37bd0559ed7d3c4a19b3681783c680e3b204564f08ae2eed7e",
+          "source_id": "installed-skills",
+          "source_path": "dayz-realistic-animation-director/scripts/tests/fixtures/sr2m-v44.contract.json",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: moved unchanged (sha256 equal) from scripts/tests/fixtures/ to tests/fixtures/ with the unit tests; scripts/run_regression_tests.py reads FIXTURE_DIR there. Read only by --real-fixtures with SR2M_V44_BLEND set, which was not run.",
+          "license": "MIT",
+          "source_hash": "62a5cb42e9977a37bd0559ed7d3c4a19b3681783c680e3b204564f08ae2eed7e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/tests/fixtures/sr2m-v44.contract.json",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "62a5cb42e9977a37bd0559ed7d3c4a19b3681783c680e3b204564f08ae2eed7e",
+      "output_path": "skills/dayz-realistic-animation-director/tests/fixtures/sr2m-v44.contract.json",
+      "routing_artifact_id": "skill/dayz-realistic-animation-director",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-realistic-animation-director/tests/test_sample_blender_motion.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "e8b1191b0e2790a13ba74823f5839c1f2b14ea9f90ba60e669cb700e3ca83658",
+          "source_id": "installed-skills",
+          "source_path": "dayz-realistic-animation-director/scripts/tests/test_sample_blender_motion.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: moved from scripts/tests/ to tests/, SCRIPTS_DIR now parents[1]/scripts. Without bpy the module skips itself (pytest.skip(allow_module_level=True), pytest imported on that branch only, since Blender 5.1.1's bundled Python 3.13.9 has no pytest); it gains a test_sample_blender_motion() entry for where bpy imports. Measured on 8e4be32 plus this change: without bpy 1 skipped (exit 5 alone, exit 0 with its folder, which the old file stopped with a collection error, exit 2); in Blender 5.1.1 SAMPLE_BLENDER_MOTION_TEST=PASS as a script and through run_regression_tests.py, and the folder under pytest with the packctl observer ran 41 tests, judged PASS by packctl.gate._suite_passed.",
+          "license": "MIT",
+          "source_hash": "de42df6d11eaf9a4a75bdff98c1153bfa6d1a917950ee61e0d8e91a48a73012a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/tests/test_sample_blender_motion.py",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "de42df6d11eaf9a4a75bdff98c1153bfa6d1a917950ee61e0d8e91a48a73012a",
+      "output_path": "skills/dayz-realistic-animation-director/tests/test_sample_blender_motion.py",
+      "routing_artifact_id": "skill/dayz-realistic-animation-director",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-realistic-animation-director/tests/test_validate_motion_contract.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "9ce817dfdaf37997ab0bf2d456517138d854a253afd776e418b47449076e75ee",
+          "source_id": "installed-skills",
+          "source_path": "dayz-realistic-animation-director/scripts/tests/test_validate_motion_contract.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: moved from scripts/tests/ to tests/, SCRIPTS_DIR now parents[1]/scripts; still a unittest.TestCase. Measured on 8e4be32 plus this change: 40 passed and 8 subtests under pytest, Ran 40 tests OK as a script and through run_regression_tests.py.",
+          "license": "MIT",
+          "source_hash": "fdf62aa564e882a584426a58be7d3ee6c96ee8c28aa685565166ab288bb3ffc7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/tests/test_validate_motion_contract.py",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fdf62aa564e882a584426a58be7d3ee6c96ee8c28aa685565166ab288bb3ffc7",
+      "output_path": "skills/dayz-realistic-animation-director/tests/test_validate_motion_contract.py",
+      "routing_artifact_id": "skill/dayz-realistic-animation-director",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-sound-system/skill.md",
@@ -27609,6 +27707,38 @@
       "output_path": "skills/dayz-proxy-align/tests/test_install_py3d.py",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-proxy-align/tests/test_proxy_frame.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Adopted from the author's live store on 2026-08-17. Author-owned MIT skill previously unpublished in this pack.",
+          "license": "MIT",
+          "source_hash": "2f12140c7679f5d6aafd87ee58f2c4041bbf3e6b506dd33adf40873c05cc768d",
+          "source_id": "installed-skills",
+          "source_path": "dayz-proxy-align/scripts/test_proxy_frame.py",
+          "source_revision": "filesystem@2026-08-17",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "skill-tests-pytest-folders 2026-10-02: moved from scripts/test_proxy_frame.py and converted from module-level checks, which pytest ran at import and collected no test from (exit 5), to ten pytest tests behind pytest.importorskip('numpy'): the four canonical-triangle checks, the 90/45/45 tie and five parametrized rotation round-trips, each with the original condition. python test_proxy_frame.py keeps exit 0 = pass through pytest.main. Measured on 8e4be32 plus this change: 10 passed (also under --import-mode=importlib); with proxy_frame.derive_frame mutated to never flag ambiguity, 1 failed, where the old file collected no test under pytest; with numpy hidden from the test process the module skips and the folder passes (6 passed, 1 skipped).",
+          "license": "MIT",
+          "source_hash": "3aaa25b305f3dc5408d39b220b9abee2f3c4536cb34b4331a21bbb2d0cb77c6f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/tests/test_proxy_frame.py",
+          "source_revision": "skill-tests-pytest-folders@2026-10-02",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3aaa25b305f3dc5408d39b220b9abee2f3c4536cb34b4331a21bbb2d0cb77c6f",
+      "output_path": "skills/dayz-proxy-align/tests/test_proxy_frame.py",
+      "routing_artifact_id": "skill/dayz-proxy-align",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/promotions/receipts/99c0cf65e815aeaabc7f6f24.json",

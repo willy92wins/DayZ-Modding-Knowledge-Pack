@@ -169,7 +169,7 @@ turning calibration), which script does not close. Hardened after R21 (Codex 202
 the DRIVER seat (not just any), R4 fail-closed (seated+owner+fixture), a preflight aborts if
 player is already in a car (re-run would measure the old one), R5 requires engine_on+owner and emits
 `needs_clear_ground_retest` instead of guessing obstacle/drivetrain, each verb checks timeout/ok (a harness
-failure is NOT a model fix). Offline fixtures `references/test_drive_ladder.py` (9 PASS scenarios).
+failure is NOT a model fix). Offline fixtures `tests/test_drive_ladder.py` (9 PASS scenarios).
 Honest verification status: each rung reuses a verb sequence already gated separately in-game; the
 R1→R6 chain in a single run is the very in-game test the ladder exists to run (not gated
 as a unit). `py_compile` + fixtures OK.

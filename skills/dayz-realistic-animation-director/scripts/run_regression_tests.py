@@ -17,7 +17,7 @@ from typing import Any
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-TEST_DIR = SCRIPT_DIR / "tests"
+TEST_DIR = SCRIPT_DIR.parent / "tests"
 FIXTURE_DIR = TEST_DIR / "fixtures"
 sys.path.insert(0, str(SCRIPT_DIR))
 
