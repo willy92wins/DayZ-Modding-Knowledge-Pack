@@ -17,7 +17,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   collision geometry (a low vanilla `WoodenCrate` took every ray and did not stop the player). For
   test fixtures, `rotation=64` spawned a box with its faces on the world axes where the default
   `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the yaw with two parallel rays and the
-  direction of the returned normal before trusting face coordinates.
+  tilt with `bullet` normals on two faces that are not parallel before trusting face coordinates.
 - `dayz-mcp-verify` static-object playbook: a standing-on-top reading of the physics body, next to
   the walk-into probe, from a later run (2026-10-02, DayZDiag 1.29.163709). A teleported player
   left idle does not fall: after `player_teleport` above a 2 m box's top or above open ground, the
@@ -29,6 +29,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   top's footprint; anything else is inconclusive, and the move is kept short so the player does not
   walk off the top.
 
+- `dayz-animation-pipeline` `scripts/extract_empties.py`, the rig step that writes
+  `empties_armworld.json`. `build_rig_dayz.py` read that file, but no script of the skill wrote
+  it: the extractor stayed in the `WeaponAnimPipeline_dev` project and printed its JSON between
+  markers. A rig rebuilt with `{}` in its place kept its bones and lost every anchor, and
+  `build_viewer.py` then put the weapon at a fixed `(0, 1.3, 0.2)` instead of on
+  `RightHand_Dummy` `(-0.156, 1.368, 0.207)`. The script composes each helper's world through its
+  parent chain and exits 1 without writing when the FBX has no `RightHand_Dummy`; it removes the
+  previous run's file before the FBX import, read-only or not, so after a failed run
+  `build_rig_dayz.py` stops instead of building on stale anchors (a file it cannot remove stops the
+  extractor with that error). On the BI FBX (Blender 5.1.1), `fbx_extract.py`,
+  `extract_empties.py` and `build_rig_dayz.py` rebuild the project's `data/rig_dayz.json` byte for
+  byte except its `space` label. SKILL.md's scripts index and `weapon-anim-authoring-viewer.md`
+  "Reusable tools" list the pipeline in the order it runs, with `--python-exit-code 1` for the
+  Blender steps and a stop at the first non-zero exit (without the flag an uncaught Python
+  exception exits 0).
+  Regression test: `tests/test_extract_empties.py`, which skips itself where numpy is missing, as on
+  the CI runner that now runs the skill test folders. Its FBX path placeholder adds it to the pinned
+  census of payloads that only run once an operator edits a path (`tests/packctl/test_promotion.py`).
 ### Changed
 
 - `dayz-p3d-audit` killer #8 (`SKILL.md` and `references/killers-detail.md` §8): a closed part
@@ -51,6 +69,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and a pre-export checklist line; the P3D is unchanged.
   py3d's `WARN_COMPONENT_COVERAGE` severity and message are unchanged (its message still says the
   case was not measured).
+
+- `dayz-mcp-verify` "Axis-aligned test fixtures": a measured caveat. In one run (2026-10-02,
+  DayZDiag 1.29.163709) a model with two 2 m boxes, one in `Component01` and the other in
+  `Component02` or in no component, spawned with `rotation=64` came out as modelled on
+  `HouseNoDestruct` and with the boxes' sides swapped on `Inventory_Base` (`item_large`), as a
+  180-degree turn about Y leaves them (the boxes, symmetric in z, cannot tell it from a mirror in
+  x), read from the component index of each hit and from which box took rays. Two parallel rays,
+  face normals and a fixture symmetric about its origin cannot show the swap; the playbook now says
+  to give the fixture sides a ray can tell apart (one component per side, read from the `component`
+  of `rvproxy` hits) and check which answers where. Whether the swap is fixed or random, and its
+  cause, were not measured.
+
 - `dayz-p3d-audit` "Absolute winding check", rule 6: the kit box's missing collision is measured
   now, not a hypothesis. In a paired run (2026-10-02, DayZDiag 1.29.163709, the kit's own config on
   three classes, the MLODs packed unbinarized) the shipped `lf_kit_box.p3d` took 0 of 27
@@ -110,6 +140,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+<<<<<<< HEAD
+- `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
+  by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
+  bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties
+  that import disabled in viewports, `RightHand_Dummy`, `LeftHand_Dummy` and the
+  object-parented `Weapon_Root` among them, keep it at the origin before and after
+  `view_layer.update()`; the 21 others, 16 of them parented to bones, agree with the formula.
+  The SKILL.md entry of `fbx_extract.py` now says its `rig_raw.json` carries that
+  `matrix_world` for the empties, and "Reusable tools" no longer calls `build_rig_dayz.py`'s
+  output DayZ-space.
+=======
+- `dayz-mcp-verify`: the pose check of "Axis-aligned test fixtures" and the `scene_raycast` entry
+  of "What it does not cover" no longer read anything from the default `rvproxy` reply's `normal`.
+  That field is the engine's `RaycastRVResult.dir`, for a ray the direction and size of the
+  intersection: in two runs (2026-10-02) it lay along the ray in all 190 hits on an object, a box
+  yawed about 10 degrees included, so its direction never showed a tilt or the side of the face.
+  The face normal comes from `method="bullet"` (a unit vector in all 40 of its hits), read on two
+  faces that are not parallel, since a tilt about one face's normal leaves that normal unchanged.
+  The replaced sentences are quoted in dated notes.
+
+>>>>>>> 4de8b5a1a84d6efdf81293d5c83d9cabaafef204
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
   said a broken Geometry LOD has its normals pointing inward and fixed it by swapping
   `vertices[1]`/`[2]`; Rule 12 stores the cross product and the normals both inward, and the swap
