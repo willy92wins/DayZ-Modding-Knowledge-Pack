@@ -17,7 +17,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   collision geometry (a low vanilla `WoodenCrate` took every ray and did not stop the player). For
   test fixtures, `rotation=64` spawned a box with its faces on the world axes where the default
   `rotation=0` (RF_DEFAULT) yawed it about 10 degrees; check the yaw with two parallel rays and the
-  direction of the returned normal before trusting face coordinates.
+  tilt with `bullet` normals on two faces that are not parallel before trusting face coordinates.
 - `dayz-mcp-verify` static-object playbook: a standing-on-top reading of the physics body, next to
   the walk-into probe, from a later run (2026-10-02, DayZDiag 1.29.163709). A teleported player
   left idle does not fall: after `player_teleport` above a 2 m box's top or above open ground, the
@@ -51,6 +51,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and a pre-export checklist line; the P3D is unchanged.
   py3d's `WARN_COMPONENT_COVERAGE` severity and message are unchanged (its message still says the
   case was not measured).
+
+- `dayz-mcp-verify` "Axis-aligned test fixtures": a measured caveat. In one run (2026-10-02,
+  DayZDiag 1.29.163709) a model with two 2 m boxes, one in `Component01` and the other in
+  `Component02` or in no component, spawned with `rotation=64` came out as modelled on
+  `HouseNoDestruct` and with the boxes' sides swapped on `Inventory_Base` (`item_large`), as a
+  180-degree turn about Y leaves them (the boxes, symmetric in z, cannot tell it from a mirror in
+  x), read from the component index of each hit and from which box took rays. Two parallel rays,
+  face normals and a fixture symmetric about its origin cannot show the swap; the playbook now says
+  to give the fixture sides a ray can tell apart (one component per side, read from the `component`
+  of `rvproxy` hits) and check which answers where. Whether the swap is fixed or random, and its
+  cause, were not measured.
+
 - `dayz-p3d-audit` "Absolute winding check", rule 6: the kit box's missing collision is measured
   now, not a hypothesis. In a paired run (2026-10-02, DayZDiag 1.29.163709, the kit's own config on
   three classes, the MLODs packed unbinarized) the shipped `lf_kit_box.p3d` took 0 of 27
@@ -109,6 +121,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   v1.5.0 source archives.
 
 ### Fixed
+
+- `dayz-mcp-verify`: the pose check of "Axis-aligned test fixtures" and the `scene_raycast` entry
+  of "What it does not cover" no longer read anything from the default `rvproxy` reply's `normal`.
+  That field is the engine's `RaycastRVResult.dir`, for a ray the direction and size of the
+  intersection: in two runs (2026-10-02) it lay along the ray in all 190 hits on an object, a box
+  yawed about 10 degrees included, so its direction never showed a tilt or the side of the face.
+  The face normal comes from `method="bullet"` (a unit vector in all 40 of its hits), read on two
+  faces that are not parallel, since a tilt about one face's normal leaves that normal unchanged.
+  The replaced sentences are quoted in dated notes.
 
 - `dayz-p3d-audit` killer #1 and Check A's `MIXED` bullet. Killer #1 ("Inverted Face Winding")
   said a broken Geometry LOD has its normals pointing inward and fixed it by swapping
