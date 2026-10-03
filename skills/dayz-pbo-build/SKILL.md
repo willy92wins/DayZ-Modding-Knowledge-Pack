@@ -581,10 +581,10 @@ AddonBuilder clears its `-temp` before copying.
      `Streambed\streambed_leaf_short_straight.p3d` — and `dz\data\data\default_2pass.rvmat`
      in `dz\data\data\penetration\impact_test_object.p3d` matches all of them. Confirm a lead
      against the material's text `.rvmat`: an extracted copy, or a binarized one (`raP`)
-     decoded first. CfgConvert does that only as `CfgConvert.exe -txt -dst <name>.cpp
-     <name>.bin`, run from the file's folder; given the `.rvmat` name it exits 0 and writes
-     nothing. A file you cannot read as text confirms nothing. Run the control once: the same
-     build without the cited files must turn their materials into leads.
+     decoded first. CfgConvert decoded `dz.pbo`'s `wood.rvmat` with `CfgConvert.exe -txt -dst
+     <name>.cpp <name>.bin`, run from the file's folder; given the `.rvmat` name it exited 0
+     and wrote nothing. A file you cannot read as text confirms nothing. Run the control once:
+     the same build without the cited files must turn their materials into leads.
    - Compare ODOLs by those fields, not by hash: three SimpleGroup flagpoles varied by up to
      67 B across five builds that resolved the same files (2026-10-01; same trap in
      `tools/py3d/KNOWN-ISSUES.md`).

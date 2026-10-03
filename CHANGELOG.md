@@ -342,8 +342,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   staging folder, and reads the ODOL afterwards as a control: an unresolved material has no
   shader, stage or surface and the engine's default colours, but bare vanilla `.rvmat`s
   (`half_lighted_default`, `streambed_leaves`, `default_2pass`) embed much the same, so a match
-  is a lead to confirm against the text `.rvmat` (a binarized one decodes with CfgConvert only
-  as `.bin` to `.cpp`). Measured: CocaLab
+  is a lead to confirm against the text `.rvmat` (CfgConvert decoded a binarized `wood.rvmat`
+  from `.bin` to `.cpp`). Measured: CocaLab
   (2026-09-27; gate control without the files: 6 failures) and the DayZ MCP v1.3.1 spike on
   SimpleGroup (2026-10-01, 11 builds): binarize parses every `config.cpp` under `-addon`, through
   junctions; AddonBuilder exits 0 with `[ResultCode]=1`; `-project=<source>` drops every `.paa`,
